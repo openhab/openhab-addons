@@ -23,6 +23,7 @@ import org.openhab.core.thing.ThingTypeUID;
  */
 @NonNullByDefault
 public class HueSyncConstants {
+
     public static class ENDPOINTS {
         public static final String DEVICE = "device";
         public static final String REGISTRATIONS = "registrations";
@@ -80,9 +81,6 @@ public class HueSyncConstants {
 
     public static final String PARAMETER_HOST = "host";
     public static final String PARAMETER_PORT = "port";
-
-    public static final Integer REGISTRATION_INITIAL_DELAY = 3;
-    public static final Integer REGISTRATION_INTERVAL = 1;
 
     public static final String REGISTRATION_ID = "registrationId";
     public static final String API_TOKEN = "apiAccessToken";

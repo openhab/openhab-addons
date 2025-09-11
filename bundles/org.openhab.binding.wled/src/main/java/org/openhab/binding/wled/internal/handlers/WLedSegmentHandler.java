@@ -118,8 +118,7 @@ public class WLedSegmentHandler extends BaseThingHandler {
                             localApi.setMasterOn(false, config.segmentIndex);
                             return;
                         }
-                        // do not turn the globalOn in order to allow for configuring this segment for effects that
-                        // start later
+                        // do not turn the globalOn in order to allow for configuring this segment brightness limit only
                         localApi.setMasterBrightness(percentCommand, config.segmentIndex);
                     }
                     break;
@@ -140,22 +139,25 @@ public class WLedSegmentHandler extends BaseThingHandler {
                     localApi.setReverse(OnOffType.ON.equals(command), config.segmentIndex);
                     break;
                 case CHANNEL_PRIMARY_WHITE:
-                    if (command instanceof PercentType percentCommand) {
-                        localApi.sendGetRequest("/win&W=" + percentCommand.toBigDecimal().multiply(BIG_DECIMAL_2_55));
-                    }
+                    handleWhiteChannel("/win&W=", localApi, command);
                     break;
                 case CHANNEL_SECONDARY_WHITE:
-                    if (command instanceof PercentType percentCommand) {
-                        localApi.sendGetRequest("/win&W2=" + percentCommand.toBigDecimal().multiply(BIG_DECIMAL_2_55));
-                    }
+                    handleWhiteChannel("/win&W2=", localApi, command);
                     break;
                 case CHANNEL_MASTER_CONTROLS:
                     if (command instanceof OnOffType) {
-                        if (OnOffType.ON.equals(command)) {
-                            // global may be off, but we don't want to switch global off and affect other segments
-                            localApi.setGlobalOn(true);
+                        if (OnOffType.OFF.equals(command)) {
+                            localApi.setMasterOn(false, config.segmentIndex);
+                        } else {
+                            // switch on with last value, or 50% if no last value exists
+                            PercentType brightness = PercentType.ZERO.equals(primaryColor.getBrightness())
+                                    ? new PercentType(50)
+                                    : primaryColor.getBrightness();
+                            HSBType hsbCommand = new HSBType(primaryColor.getHue(), primaryColor.getSaturation(),
+                                    brightness);
+                            handleHsbCommand(bridgeHandler, localApi, hsbCommand);
                         }
-                        localApi.setMasterOn(OnOffType.ON.equals(command), config.segmentIndex);
+
                     } else if (command instanceof IncreaseDecreaseType) {
                         if (IncreaseDecreaseType.INCREASE.equals(command)) {
                             localApi.setGlobalOn(true);
@@ -172,28 +174,12 @@ public class WLedSegmentHandler extends BaseThingHandler {
                             }
                         }
                     } else if (command instanceof HSBType hsbCommand) {
-                        if ((hsbCommand.getBrightness()).equals(PercentType.ZERO)) {
-                            localApi.setMasterOn(false, config.segmentIndex);
-                            return;
-                        }
-                        localApi.setGlobalOn(true);
-                        primaryColor = hsbCommand;
-                        if (primaryColor.getSaturation().intValue() < bridgeHandler.config.saturationThreshold
-                                && bridgeHandler.hasWhite) {
-                            localApi.setWhiteOnly(hsbCommand, config.segmentIndex);
-                        } else if (primaryColor.getSaturation().intValue() == 32
-                                && primaryColor.getHue().intValue() == 36 && bridgeHandler.hasWhite) {
-                            localApi.setWhiteOnly(hsbCommand, config.segmentIndex);
-                        } else {
-                            localApi.setMasterHSB(hsbCommand, config.segmentIndex);
-                        }
+                        handleHsbCommand(bridgeHandler, localApi, hsbCommand);
+
                     } else if (command instanceof PercentType percentCommand) {
-                        if (PercentType.ZERO.equals(percentCommand)) {
-                            localApi.setMasterOn(false, config.segmentIndex);
-                            return;
-                        }
-                        localApi.setGlobalOn(true);
-                        localApi.setMasterBrightness(percentCommand, config.segmentIndex);
+                        HSBType hsbCommand = new HSBType(primaryColor.getHue(), primaryColor.getSaturation(),
+                                percentCommand);
+                        handleHsbCommand(bridgeHandler, localApi, hsbCommand);
                     }
                     return;
                 case CHANNEL_PRIMARY_COLOR:
@@ -225,7 +211,6 @@ public class WLedSegmentHandler extends BaseThingHandler {
                     localApi.setPalette(command.toString(), config.segmentIndex);
                     break;
                 case CHANNEL_FX:
-                    localApi.setGlobalOn(true);
                     localApi.setEffect(command.toString(), config.segmentIndex);
                     break;
                 case CHANNEL_SPEED:
@@ -236,7 +221,52 @@ public class WLedSegmentHandler extends BaseThingHandler {
                     break;
             }
         } catch (ApiException e) {
-            logger.debug("Exception occured:{}", e.getMessage());
+            logger.debug("Exception occurred:{}", e.getMessage());
+        }
+    }
+
+    private void handleWhiteChannel(String channel, WledApi localApi, Command command) throws ApiException {
+        if (command instanceof PercentType percentCommand) {
+            if (!PercentType.ZERO.equals(percentCommand)) {
+                // only switch the stripe on, but never off because we might want to use colors without the white
+                // channel instead
+                localApi.setGlobalOn(true);
+                localApi.setMasterOn(true, config.segmentIndex);
+            }
+            // mix white channel into color = do NOT use setWhiteOnly
+            localApi.setLegacyWhite(channel, percentCommand, config.segmentIndex);
+        } else if (command instanceof OnOffType onOffCommand) {
+            BigDecimal brightness = new BigDecimal(50);
+            if (OnOffType.ON.equals(onOffCommand)) {
+                localApi.setGlobalOn(true);
+                localApi.setMasterOn(true, config.segmentIndex);
+            } else {
+                localApi.setMasterOn(false, config.segmentIndex);
+                brightness = BigDecimal.ZERO;
+            }
+            // we want to switch to white only
+            localApi.setWhiteOnly(new PercentType(brightness), config.segmentIndex);
+        }
+    }
+
+    private void handleHsbCommand(WLedBridgeHandler bridgeHandler, WledApi localApi, HSBType hsbCommand)
+            throws ApiException {
+        if ((hsbCommand.getBrightness()).equals(PercentType.ZERO)) {
+            localApi.setMasterOn(false, config.segmentIndex);
+            return;
+        }
+
+        // global may be off, but we don't want to switch global off and affect other segments
+        localApi.setGlobalOn(true);
+        primaryColor = hsbCommand;
+        if (primaryColor.getSaturation().intValue() < bridgeHandler.config.saturationThreshold
+                && bridgeHandler.hasWhite) {
+            localApi.setWhiteOnly(hsbCommand, config.segmentIndex);
+        } else if (primaryColor.getSaturation().intValue() == 32 && primaryColor.getHue().intValue() == 36
+                && bridgeHandler.hasWhite) {
+            localApi.setWhiteOnly(hsbCommand, config.segmentIndex);
+        } else {
+            localApi.setMasterHSB(hsbCommand, config.segmentIndex);
         }
     }
 

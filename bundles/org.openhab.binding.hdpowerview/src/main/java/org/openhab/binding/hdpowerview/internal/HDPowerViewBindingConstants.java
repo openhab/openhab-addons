@@ -87,4 +87,8 @@ public class HDPowerViewBindingConstants {
     public static final String PROPERTY_NAME = "name";
     public static final String PROPERTY_POWER_TYPE = "powerType";
     public static final String PROPERTY_BLE_NAME = "bleName";
+
+    // keys for hub/gateway label translation
+    public static final String LABEL_KEY_HUB = "discovery.hub.label";
+    public static final String LABEL_KEY_GATEWAY = "discovery.gateway.label";
 }

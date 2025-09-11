@@ -35,7 +35,6 @@ public class MqttAsyncClientWrapperEx extends MqttAsyncClientWrapper {
     private final MqttBrokerConnectionEx connection;
 
     public MqttAsyncClientWrapperEx(MqttBrokerConnectionEx connection) {
-        super();
         this.connection = connection;
     }
 

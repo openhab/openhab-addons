@@ -7,6 +7,7 @@
 	<bridge-type id="account">
 		<label>Hydrawise Account Thing</label>
 		<description>Hydrawise account</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 		<config-description>
 			<parameter name="userName" type="text" required="true">
 				<label>User Name</label>
@@ -37,6 +38,7 @@
 		</supported-bridge-type-refs>
 		<label>Hydrawise Controller Thing</label>
 		<description>Hydrawise connected irrigation controller</description>
+		<semantic-equipment-tag>Irrigation</semantic-equipment-tag>
 
 		<!-- Until we have https://github.com/eclipse/smarthome/issues/1118 fixed, we need to list
 			all possible channel groups.
@@ -316,6 +318,7 @@
 	<thing-type id="local">
 		<label>Hydrawise Local Thing</label>
 		<description>Hydrawise local connected irrigation controller</description>
+		<semantic-equipment-tag>Irrigation</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="zone1" typeId="zone">
 				<label>Zone 1</label>

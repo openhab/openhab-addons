@@ -7,6 +7,8 @@
 	<thing-type id="dwdwarnings">
 		<label>Weather Warnings</label>
 		<description>Weather Warnings for an area.</description>
+		<semantic-equipment-tag>WeatherService</semantic-equipment-tag>
+
 		<channels>
 			<channel typeId="lastUpdated" id="lastUpdated"/>
 		</channels>
@@ -44,6 +46,10 @@
 		<label>Last Updated</label>
 		<description>Timestamp of the last update from the endpoint.</description>
 		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="warning">
@@ -53,6 +59,9 @@
 			While be switched to ON only after all other channels - except the
 			trigger channel - are updated.
 			Will be switched to OFF before all other channels are updated to UNDEF.</description>
+		<tags>
+			<tag>Alarm</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="updated">
@@ -83,6 +92,10 @@ This happens after all other channels are populated.]]></description>
 		<item-type>String</item-type>
 		<label>Description</label>
 		<description>Textual description of the warning.</description>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="effective">
@@ -90,6 +103,10 @@ This happens after all other channels are populated.]]></description>
 		<label>Issued</label>
 		<description>Issued Date and Time.</description>
 		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="onset">
@@ -97,6 +114,10 @@ This happens after all other channels are populated.]]></description>
 		<label>Valid From</label>
 		<description>Start Date and Time for which the warning is valid.</description>
 		<category>Time</category>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="expires">
@@ -104,18 +125,30 @@ This happens after all other channels are populated.]]></description>
 		<label>Valid To</label>
 		<description>End Date and Time for which the warning is valid.</description>
 		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="headline">
 		<item-type>String</item-type>
 		<label>Headline</label>
 		<description>Headline of the warning like "Amtliche Warnung vor FROST".</description>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="event">
 		<item-type>String</item-type>
 		<label>Type</label>
 		<description>Type of the warning, e.g. FROST.</description>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="altitude">
@@ -140,6 +173,10 @@ This happens after all other channels are populated.]]></description>
 		<item-type>String</item-type>
 		<label>Urgency</label>
 		<description>Urgency of the warning. Possible values are Immediate and Future.</description>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="Immediate">Immediate</option>

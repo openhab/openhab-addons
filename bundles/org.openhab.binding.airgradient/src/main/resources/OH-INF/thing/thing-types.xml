@@ -8,6 +8,7 @@
 	<bridge-type id="airgradient-api">
 		<label>AirGradient API</label>
 		<description>Connection to the AirGradient Cloud API</description>
+		<semantic-equipment-tag>WeatherService</semantic-equipment-tag>
 
 		<representation-property>token</representation-property>
 		<config-description>
@@ -36,6 +37,7 @@
 	<thing-type id="airgradient-local">
 		<label>AirGradient Local Sensor</label>
 		<description>Direct network connection to a local AirGradient Sensor</description>
+		<semantic-equipment-tag>WeatherStation</semantic-equipment-tag>
 
 		<channels>
 			<channel id="pm01" typeId="pm1"/>
@@ -138,6 +140,10 @@
 		<item-type>Number:Density</item-type>
 		<label>PM1</label>
 		<description>Particulate Matter 1 (0.001mm)</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>ParticulateMatter</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -145,6 +151,10 @@
 		<item-type>Number:Density</item-type>
 		<label>PM2</label>
 		<description>Particulate Matter 2 (0.002mm)</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>ParticulateMatter</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -152,6 +162,10 @@
 		<item-type>Number:Density</item-type>
 		<label>PM10</label>
 		<description>Particulate Matter 10 (0.01mm)</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>ParticulateMatter</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -159,6 +173,10 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Particle Count</label>
 		<description>Count of particles in 1 decilitre of air</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>ParticulateMatter</tag>
+		</tags>
 		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 
@@ -167,6 +185,10 @@
 		<label>RSSI</label>
 		<description>Received signal strength indicator</description>
 		<category>QualityOfService</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>RSSI</tag>
+		</tags>
 		<state readOnly="true" pattern="%d dBm"/>
 	</channel-type>
 
@@ -174,6 +196,10 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>CO2</label>
 		<description>CarbonDioxide</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>CO2</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -181,6 +207,10 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>TVOC</label>
 		<description>Total Volatile Organic Compounds</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>VOC</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -301,6 +331,10 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Led bar brightness</label>
 		<description>Brightness of the LED bar.</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Brightness</tag>
+		</tags>
 		<state min="0" max="100" step="1" readOnly="false" pattern="%d"/>
 	</channel-type>
 
@@ -308,6 +342,10 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Display brightness</label>
 		<description>Brightness of the display.</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Brightness</tag>
+		</tags>
 		<state min="0" max="100" step="1" readOnly="false" pattern="%d"/>
 	</channel-type>
 

@@ -16,51 +16,66 @@ import static org.openhab.binding.tibber.internal.TibberBindingConstants.*;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.math.BigDecimal;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
 import java.time.format.DateTimeParseException;
-import java.util.Properties;
-import java.util.concurrent.Future;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.Scanner;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+
+import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
-import org.eclipse.jetty.util.ssl.SslContextFactory;
-import org.eclipse.jetty.websocket.api.Session;
-import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
-import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
-import org.eclipse.jetty.websocket.api.annotations.OnWebSocketError;
-import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
-import org.eclipse.jetty.websocket.api.annotations.WebSocket;
-import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
-import org.eclipse.jetty.websocket.client.WebSocketClient;
+import org.eclipse.jetty.http.HttpStatus;
+import org.openhab.binding.tibber.internal.Utils;
+import org.openhab.binding.tibber.internal.action.TibberActions;
+import org.openhab.binding.tibber.internal.calculator.PriceCalculator;
 import org.openhab.binding.tibber.internal.config.TibberConfiguration;
-import org.openhab.core.io.net.http.HttpUtil;
-import org.openhab.core.library.types.DateTimeType;
+import org.openhab.binding.tibber.internal.exception.PriceCalculationException;
+import org.openhab.binding.tibber.internal.websocket.TibberWebsocket;
+import org.openhab.core.i18n.TimeZoneProvider;
+import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.types.StringType;
-import org.openhab.core.library.unit.Units;
+import org.openhab.core.library.unit.CurrencyUnits;
+import org.openhab.core.scheduler.CronScheduler;
+import org.openhab.core.scheduler.ScheduledCompletableFuture;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
-import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
+import org.openhab.core.thing.binding.builder.ChannelBuilder;
+import org.openhab.core.thing.binding.builder.ThingBuilder;
+import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.State;
 import org.openhab.core.types.TimeSeries;
-import org.osgi.framework.FrameworkUtil;
+import org.openhab.core.types.UnDefType;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,618 +89,609 @@ import com.google.gson.JsonSyntaxException;
  * The {@link TibberHandler} is responsible for handling queries to/from Tibber API.
  *
  * @author Stian Kjoglum - Initial contribution
+ * @author Bernd Weymann - Use common HttpClient, rework of Nullable fields
+ * @author Bernd Weymann - Rework initialization
  */
 @NonNullByDefault
 public class TibberHandler extends BaseThingHandler {
-    private static final int REQUEST_TIMEOUT = (int) TimeUnit.SECONDS.toMillis(20);
+    private static final int REQUEST_TIMEOUT_SEC = 10;
     private final Logger logger = LoggerFactory.getLogger(TibberHandler.class);
-    private final Properties httpHeader = new Properties();
+    private final Random random = new Random();
+    private final BundleContext bundleContext;
+    private final HttpClient httpClient;
+    private final CronScheduler cron;
+    private final Map<String, String> templates = new HashMap<>();
+    private final TimeZoneProvider timeZoneProvider;
+
+    private final ConcurrentLinkedQueue<String> messageQueue = new ConcurrentLinkedQueue<>();
     private TibberConfiguration tibberConfig = new TibberConfiguration();
-    private @Nullable SslContextFactory sslContextFactory;
-    private @Nullable TibberWebSocketListener socket;
-    private @Nullable Session session;
-    private @Nullable WebSocketClient client;
-    private @Nullable ScheduledFuture<?> pollingJob;
-    private @Nullable Future<?> sessionFuture;
-    private String rtEnabled = "false";
-    private @Nullable String subscriptionURL;
-    private @Nullable String versionString;
-    private @Nullable LocalDateTime lastWebSocketMessage;
+    private @Nullable ScheduledFuture<?> watchdog;
+    private @Nullable ScheduledCompletableFuture<?> cronDaily;
+    private @Nullable TibberWebsocket webSocket;
+    private @Nullable Boolean realtimeEnabled;
+    private @Nullable String currencyUnit;
+    private Object calculatorLock = new Object();
+    private int retryCounter = 0;
+    private boolean isDisposed = true;
 
-    public TibberHandler(Thing thing) {
+    private TimeSeries priceCache = new TimeSeries(TimeSeries.Policy.REPLACE);
+    private TimeSeries energyCache = new TimeSeries(TimeSeries.Policy.REPLACE);
+    private TimeSeries taxCache = new TimeSeries(TimeSeries.Policy.REPLACE);
+    private TimeSeries levelCache = new TimeSeries(TimeSeries.Policy.REPLACE);
+    private TimeSeries averageCache = new TimeSeries(TimeSeries.Policy.REPLACE);
+
+    protected @Nullable PriceCalculator calculator;
+
+    public TibberHandler(Thing thing, HttpClient httpClient, CronScheduler cron, BundleContext bundleContext,
+            TimeZoneProvider timeZoneProvider) {
         super(thing);
-    }
-
-    @Override
-    public void initialize() {
-        updateStatus(ThingStatus.UNKNOWN);
-        tibberConfig = getConfigAs(TibberConfiguration.class);
-
-        versionString = FrameworkUtil.getBundle(this.getClass()).getVersion().toString();
-        logger.debug("Binding version: {}", versionString);
-
-        scheduler.execute(() -> {
-            getTibberParameters();
-            startRefresh(tibberConfig.getRefresh());
-        });
+        this.httpClient = httpClient;
+        this.cron = cron;
+        this.bundleContext = bundleContext;
+        this.timeZoneProvider = timeZoneProvider;
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
-            startRefresh(tibberConfig.getRefresh());
-        } else {
-            logger.debug("Tibber API is read-only and does not handle commands");
+            String group = channelUID.getGroupId();
+            if (CHANNEL_GROUP_PRICE.equals(group)) {
+                switch (channelUID.getIdWithoutGroup()) {
+                    case CHANNEL_TOTAL_PRICE:
+                        sendTimeSeries(new ChannelUID(thing.getUID(), CHANNEL_GROUP_PRICE, CHANNEL_TOTAL_PRICE),
+                                priceCache);
+                        sendTimeSeries(
+                                new ChannelUID(thing.getUID(), CHANNEL_GROUP_PRICE, CHANNEL_DEPRECATED_SPOT_PRICE),
+                                priceCache);
+                        break;
+                    case CHANNEL_SPOT_PRICE:
+                        sendTimeSeries(new ChannelUID(thing.getUID(), CHANNEL_GROUP_PRICE, CHANNEL_SPOT_PRICE),
+                                energyCache);
+                        break;
+                    case CHANNEL_TAX:
+                        sendTimeSeries(new ChannelUID(thing.getUID(), CHANNEL_GROUP_PRICE, CHANNEL_TAX), taxCache);
+                        break;
+                    case CHANNEL_PRICE_LEVELS:
+                        sendTimeSeries(new ChannelUID(thing.getUID(), CHANNEL_GROUP_PRICE, CHANNEL_PRICE_LEVELS),
+                                levelCache);
+                        break;
+                    case CHANNEL_AVERAGE:
+                        sendTimeSeries(new ChannelUID(thing.getUID(), CHANNEL_GROUP_PRICE, CHANNEL_AVERAGE),
+                                averageCache);
+                        break;
+                }
+            }
         }
     }
 
     @Override
-    public void channelLinked(ChannelUID channelUID) {
-        if (channelUID.getAsString().contains("live_") && !isConnected() && "true".equals(rtEnabled)) {
-            try {
-                startLiveStream();
-            } catch (IOException e) {
-                logger.debug("Unable to start live data: {}", e.getMessage());
-            }
-        }
-    }
-
-    @Override
-    public void channelUnlinked(ChannelUID channelUID) {
-        if (channelUID.getAsString().contains("live_") && !liveChannelsLinked() && isConnected()) {
-            close();
-        }
-    }
-
-    public void getTibberParameters() {
-        String response = "";
-        try {
-            httpHeader.put("cache-control", "no-cache");
-            httpHeader.put("content-type", JSON_CONTENT_TYPE);
-            httpHeader.put(HttpHeader.USER_AGENT.asString(),
-                    "openHAB/Tibber " + versionString + " Tibber driver " + TIBBER_DRIVER);
-            httpHeader.put(HttpHeader.AUTHORIZATION.asString(), "Bearer " + tibberConfig.getToken());
-
-            TibberPriceConsumptionHandler tibberQuery = new TibberPriceConsumptionHandler();
-            InputStream connectionStream = tibberQuery.connectionInputStream(tibberConfig.getHomeid());
-            response = HttpUtil.executeUrl("POST", BASE_URL, httpHeader, connectionStream, null, REQUEST_TIMEOUT);
-
-            if (!response.contains("error") && !response.contains("<html>")) {
-                updateStatus(ThingStatus.ONLINE);
-                getURLInput(BASE_URL);
-
-                InputStream inputStream = tibberQuery.getRealtimeInputStream(tibberConfig.getHomeid());
-                String jsonResponse = HttpUtil.executeUrl("POST", BASE_URL, httpHeader, inputStream, null,
-                        REQUEST_TIMEOUT);
-
-                JsonObject object = (JsonObject) JsonParser.parseString(jsonResponse);
-                JsonObject dObject = object.getAsJsonObject("data");
-                if (dObject != null) {
-                    JsonObject viewerObject = dObject.getAsJsonObject("viewer");
-                    if (viewerObject != null) {
-                        JsonObject homeObject = viewerObject.getAsJsonObject("home");
-                        if (homeObject != null) {
-                            JsonObject featuresObject = homeObject.getAsJsonObject("features");
-                            if (featuresObject != null) {
-                                rtEnabled = featuresObject.get("realTimeConsumptionEnabled").toString();
-                            }
-                        }
-                    }
-                }
-
-                if (liveChannelsLinked() && "true".equals(rtEnabled)) {
-                    logger.debug("Pulse associated with HomeId: Live stream will be started");
-                    startLiveStream();
-                } else {
-                    logger.debug("No Pulse associated with HomeId: No live stream will be started");
-                }
-            } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Problems connecting/communicating with server: " + response);
-            }
-        } catch (IOException | JsonSyntaxException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-        }
-    }
-
-    public void getURLInput(String url) throws IOException {
-        String jsonResponse = "";
-        TibberPriceConsumptionHandler tibberQuery = new TibberPriceConsumptionHandler();
-
-        InputStream inputStream = tibberQuery.getInputStream(tibberConfig.getHomeid());
-        jsonResponse = HttpUtil.executeUrl("POST", url, httpHeader, inputStream, null, REQUEST_TIMEOUT);
-        logger.debug("API response: {}", jsonResponse);
-
-        if (!jsonResponse.contains("error") && !jsonResponse.contains("<html>")) {
-            if (getThing().getStatus() == ThingStatus.OFFLINE || getThing().getStatus() == ThingStatus.INITIALIZING) {
-                updateStatus(ThingStatus.ONLINE);
-            }
-
-            JsonObject rootJsonObject = (JsonObject) JsonParser.parseString(jsonResponse);
-
-            if (jsonResponse.contains("total")) {
-                try {
-                    JsonObject current = rootJsonObject.getAsJsonObject("data").getAsJsonObject("viewer")
-                            .getAsJsonObject("home").getAsJsonObject("currentSubscription").getAsJsonObject("priceInfo")
-                            .getAsJsonObject("current");
-
-                    updateState(CURRENT_TOTAL, new DecimalType(current.get("total").toString()));
-                    String timestamp = current.get("startsAt").toString().substring(1, 20);
-                    updateState(CURRENT_STARTSAT, new DateTimeType(timestamp));
-                    updateState(CURRENT_LEVEL,
-                            new StringType(current.get("level").toString().replaceAll("^\"|\"$", "")));
-
-                    JsonArray tomorrow = rootJsonObject.getAsJsonObject("data").getAsJsonObject("viewer")
-                            .getAsJsonObject("home").getAsJsonObject("currentSubscription").getAsJsonObject("priceInfo")
-                            .getAsJsonArray("tomorrow");
-                    updateState(TOMORROW_PRICES, new StringType(tomorrow.toString()));
-                    JsonArray today = rootJsonObject.getAsJsonObject("data").getAsJsonObject("viewer")
-                            .getAsJsonObject("home").getAsJsonObject("currentSubscription").getAsJsonObject("priceInfo")
-                            .getAsJsonArray("today");
-                    updateState(TODAY_PRICES, new StringType(today.toString()));
-
-                    TimeSeries timeSeries = buildTimeSeries(today, tomorrow);
-                    sendTimeSeries(CURRENT_TOTAL, timeSeries);
-                } catch (JsonSyntaxException | DateTimeParseException e) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "Error communicating with Tibber API: " + e.getMessage());
-                }
-            }
-            if (jsonResponse.contains("daily") && !jsonResponse.contains("\"daily\":{\"nodes\":[]")
-                    && !jsonResponse.contains("\"daily\":null")) {
-                try {
-                    JsonObject myObject = (JsonObject) rootJsonObject.getAsJsonObject("data").getAsJsonObject("viewer")
-                            .getAsJsonObject("home").getAsJsonObject("daily").getAsJsonArray("nodes").get(0);
-
-                    String timestampDailyFrom = myObject.get("from").toString().substring(1, 20);
-                    updateState(DAILY_FROM, new DateTimeType(timestampDailyFrom));
-
-                    String timestampDailyTo = myObject.get("to").toString().substring(1, 20);
-                    updateState(DAILY_TO, new DateTimeType(timestampDailyTo));
-
-                    updateChannel(DAILY_COST, myObject.get("cost").toString());
-                    updateChannel(DAILY_CONSUMPTION, myObject.get("consumption").toString());
-                } catch (JsonSyntaxException e) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "Error communicating with Tibber API: " + e.getMessage());
-                }
-            }
-            if (jsonResponse.contains("hourly") && !jsonResponse.contains("\"hourly\":{\"nodes\":[]")
-                    && !jsonResponse.contains("\"hourly\":null")) {
-                try {
-                    JsonObject myObject = (JsonObject) rootJsonObject.getAsJsonObject("data").getAsJsonObject("viewer")
-                            .getAsJsonObject("home").getAsJsonObject("hourly").getAsJsonArray("nodes").get(0);
-
-                    String timestampHourlyFrom = myObject.get("from").toString().substring(1, 20);
-                    updateState(HOURLY_FROM, new DateTimeType(timestampHourlyFrom));
-
-                    String timestampHourlyTo = myObject.get("to").toString().substring(1, 20);
-                    updateState(HOURLY_TO, new DateTimeType(timestampHourlyTo));
-
-                    updateChannel(HOURLY_COST, myObject.get("cost").toString());
-                    updateChannel(HOURLY_CONSUMPTION, myObject.get("consumption").toString());
-                } catch (JsonSyntaxException e) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "Error communicating with Tibber API: " + e.getMessage());
-                }
-            }
-        } else if (jsonResponse.contains("error")) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Error in response from Tibber API: " + jsonResponse);
-            try {
-                Thread.sleep(300 * 1000);
-                return;
-            } catch (InterruptedException e) {
-                logger.debug("Tibber OFFLINE, attempting thread sleep: {}", e.getMessage());
-            }
+    public void initialize() {
+        isDisposed = false;
+        tibberConfig = getConfigAs(TibberConfiguration.class);
+        if (tibberConfig.homeid.isBlank() || tibberConfig.token.isBlank()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/status.configuration-error");
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Unexpected response from Tibber: " + jsonResponse);
-            try {
-                Thread.sleep(300 * 1000);
-                return;
-            } catch (InterruptedException e) {
-                logger.debug("Tibber OFFLINE, attempting thread sleep: {}", e.getMessage());
-            }
-        }
-    }
-
-    /**
-     * Builds the {@link TimeSeries} that represents the future tibber prices.
-     *
-     * @param today The prices for today
-     * @param tomorrow The prices for tomorrow.
-     * @return The {@link TimeSeries} with future values.
-     */
-    private TimeSeries buildTimeSeries(JsonArray today, JsonArray tomorrow) {
-        final TimeSeries timeSeries = new TimeSeries(TimeSeries.Policy.REPLACE);
-        mapTimeSeriesEntries(today, timeSeries);
-        mapTimeSeriesEntries(tomorrow, timeSeries);
-        return timeSeries;
-    }
-
-    private void mapTimeSeriesEntries(JsonArray prices, TimeSeries timeSeries) {
-        for (JsonElement entry : prices) {
-            JsonObject entryObject = entry.getAsJsonObject();
-            final Instant startsAt = ZonedDateTime.parse(entryObject.get("startsAt").getAsString()).toInstant();
-            final DecimalType value = new DecimalType(entryObject.get("total").getAsString());
-            timeSeries.add(startsAt, value);
-        }
-    }
-
-    public void startRefresh(int refresh) {
-        if (pollingJob == null) {
-            pollingJob = scheduler.scheduleWithFixedDelay(() -> {
-                try {
-                    updateRequest();
-                } catch (IOException e) {
-                    logger.warn("IO Exception: {}", e.getMessage());
-                }
-            }, 1, refresh, TimeUnit.MINUTES);
-        }
-    }
-
-    public void updateRequest() throws IOException {
-        getURLInput(BASE_URL);
-        if (liveChannelsLinked() && "true".equals(rtEnabled)) {
-            if (lastWebSocketMessage != null && lastWebSocketMessage.plusMinutes(5).isBefore(LocalDateTime.now())) {
-                logger.debug("Last data from tibber on {}. Reconnecting WebSocket.", lastWebSocketMessage);
-                close();
-                startLiveStream();
-            } else if (isConnected()) {
-                logger.debug("Sending Ping Message");
-                session.getRemote().sendPing(ByteBuffer.wrap("openHAB Ping".getBytes(StandardCharsets.UTF_8)));
-            } else if (!isConnected()) {
-                startLiveStream();
-            }
-        }
-    }
-
-    private boolean liveChannelsLinked() {
-        return getThing().getChannels().stream().map(Channel::getUID)
-                .filter((channelUID -> channelUID.getAsString().contains("live_"))).anyMatch(this::isLinked);
-    };
-
-    private void getSubscriptionUrl() throws IOException {
-        TibberPriceConsumptionHandler tibberQuery = new TibberPriceConsumptionHandler();
-        InputStream wsURL = tibberQuery.getWebsocketUrl();
-        String wsResponse = HttpUtil.executeUrl("POST", BASE_URL, httpHeader, wsURL, null, REQUEST_TIMEOUT);
-
-        JsonObject wsobject = (JsonObject) JsonParser.parseString(wsResponse);
-        JsonObject dataObject = wsobject.getAsJsonObject("data");
-        if (dataObject != null) {
-            JsonObject viewerObject = dataObject.getAsJsonObject("viewer");
-            if (viewerObject != null) {
-                JsonElement subscriptionElement = viewerObject.get("websocketSubscriptionUrl");
-                if (subscriptionElement != null) {
-                    subscriptionURL = subscriptionElement.toString().replaceAll("^\"|\"$", "");
-                }
-            }
-        }
-    }
-
-    public void updateChannel(String channelID, String channelValue) {
-        if (!channelValue.contains("null")) {
-            if (channelID.contains("consumption") || channelID.contains("Consumption")
-                    || channelID.contains("accumulatedProduction")) {
-                updateState(channelID, new QuantityType<>(new BigDecimal(channelValue), Units.KILOWATT_HOUR));
-            } else if (channelID.contains("power") || channelID.contains("Power")) {
-                updateState(channelID, new QuantityType<>(new BigDecimal(channelValue), Units.WATT));
-            } else if (channelID.contains("voltage")) {
-                updateState(channelID, new QuantityType<>(new BigDecimal(channelValue), Units.VOLT));
-            } else if (channelID.contains("current")) {
-                updateState(channelID, new QuantityType<>(new BigDecimal(channelValue), Units.AMPERE));
-            } else {
-                updateState(channelID, new DecimalType(channelValue));
-            }
-        }
-    }
-
-    public void thingStatusChanged(ThingStatusInfo thingStatusInfo) {
-        logger.debug("Thing Status updated to {} for device: {}", thingStatusInfo.getStatus(), getThing().getUID());
-        if (thingStatusInfo.getStatus() != ThingStatus.ONLINE) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Unable to communicate with Tibber API");
+            updateStatus(ThingStatus.UNKNOWN);
+            scheduler.execute(this::doInitialize);
         }
     }
 
     @Override
     public void dispose() {
-        ScheduledFuture<?> pollingJob = this.pollingJob;
-        if (pollingJob != null) {
-            pollingJob.cancel(true);
-            this.pollingJob = null;
+        isDisposed = true;
+
+        ScheduledCompletableFuture<?> cronDaily = this.cronDaily;
+        if (cronDaily != null) {
+            cronDaily.cancel(true);
         }
-        if (isConnected()) {
-            close();
-            WebSocketClient client = this.client;
-            if (client != null) {
-                try {
-                    logger.debug("DISPOSE - Stopping and Terminating Websocket connection");
-                    client.stop();
-                } catch (Exception e) {
-                    logger.warn("Websocket Client Stop Exception: {}", e.getMessage());
-                }
-                client.destroy();
-                this.client = null;
-            }
+        this.cronDaily = null;
+
+        ScheduledFuture<?> watchdog = this.watchdog;
+        if (watchdog != null) {
+            watchdog.cancel(true);
         }
+        this.watchdog = null;
+
+        TibberWebsocket webSocket = this.webSocket;
+        if (webSocket != null) {
+            webSocket.stop();
+        }
+        this.webSocket = null;
+
         super.dispose();
     }
 
-    private void startLiveStream() throws IOException {
-        logger.debug("Attempting to open Websocket connection");
-        getSubscriptionUrl();
+    public Request getRequest() {
+        Request req = httpClient.POST(BASE_URL).timeout(REQUEST_TIMEOUT_SEC, TimeUnit.SECONDS);
+        req.header(HttpHeader.AUTHORIZATION, "Bearer " + tibberConfig.token);
+        req.header(HttpHeader.USER_AGENT, Utils.getUserAgent(this));
 
-        if (subscriptionURL == null || subscriptionURL.isBlank()) {
-            logger.debug("Unexpected subscription result from the server");
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Unexpected subscription result from the server");
-        } else {
-            logger.debug("Reconnecting Subscription to: {}", subscriptionURL);
-            open();
-        }
+        req.header(HttpHeader.CONTENT_TYPE, JSON_CONTENT_TYPE);
+        req.header("cache-control", "no-cache");
+        return req;
     }
 
-    public void open() {
-        WebSocketClient client = this.client;
-        if (client == null || !client.isRunning() || !isConnected()) {
-            if (client != null) {
-                try {
-                    client.stop();
-                } catch (Exception e) {
-                    logger.warn("OPEN FRAME - Failed to stop websocket client: {}", e.getMessage());
-                }
-                client.destroy();
-            }
-            sslContextFactory = new SslContextFactory.Client(true);
-            sslContextFactory.setTrustAll(true);
-            sslContextFactory.setEndpointIdentificationAlgorithm(null);
-
-            client = new WebSocketClient(new HttpClient(sslContextFactory));
-            client.setMaxIdleTimeout(30 * 1000);
-            this.client = client;
-
-            TibberWebSocketListener socket = this.socket;
-            if (socket == null) {
-                logger.debug("New socket being created");
-                socket = new TibberWebSocketListener();
-                this.socket = socket;
-            }
-
-            ClientUpgradeRequest newRequest = new ClientUpgradeRequest();
-            newRequest.setHeader(HttpHeader.USER_AGENT.asString(),
-                    "openHAB/Tibber " + versionString + " Tibber driver " + TIBBER_DRIVER);
-            newRequest.setHeader(HttpHeader.AUTHORIZATION.asString(), "Bearer " + tibberConfig.getToken());
-            newRequest.setSubProtocols("graphql-transport-ws");
-
-            try {
-                logger.debug("Starting Websocket connection");
-                client.start();
-            } catch (Exception e) {
-                logger.warn("Websocket Start Exception: {}", e.getMessage());
-            }
-            try {
-                logger.debug("Connecting Websocket connection");
-                sessionFuture = client.connect(socket, new URI(subscriptionURL), newRequest);
-                try {
-                    Thread.sleep(10 * 1000);
-                } catch (InterruptedException e) {
-                }
-                if (!isConnected()) {
-                    logger.warn("Unable to establish websocket session - Reattempting connection on next refresh");
+    private void doInitialize() {
+        if (isDisposed) {
+            logger.trace("doInitialize rejected due to disposed thing");
+            return;
+        }
+        Request initializeRequest = getRequest();
+        String body = String.format(QUERY_CONTAINER,
+                String.format(getTemplate(CURRENCY_QUERY_RESOURCE_PATH), tibberConfig.homeid));
+        logger.trace("Query with body {}", body);
+        initializeRequest.content(new StringContentProvider(body, "utf-8"));
+        try {
+            ContentResponse cr = initializeRequest.send();
+            int responseStatus = cr.getStatus();
+            String initialResponse = cr.getContentAsString();
+            logger.trace("doInitialze response {} - {}", responseStatus, initialResponse);
+            if (responseStatus == HttpStatus.OK_200) {
+                JsonObject jsonResponse = (JsonObject) JsonParser.parseString(initialResponse);
+                if (jsonResponse.has("errors")) {
+                    // case: error
+                    // if response is ok_200 and an error occurs homeid or token is wrong so raise configuration error
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                            "@text/status.initial-call-failed  [\"" + responseStatus + " - " + initialResponse + "\"]");
                 } else {
-                    logger.debug("Websocket session established");
-                }
-            } catch (IOException e) {
-                logger.warn("Websocket Connect Exception: {}", e.getMessage());
-            } catch (URISyntaxException e) {
-                logger.warn("Websocket URI Exception: {}", e.getMessage());
-            }
-        } else {
-            logger.warn("Open: Websocket client already running");
-        }
-    }
-
-    public void close() {
-        Session session = this.session;
-        if (session != null) {
-            String disconnect = "{\"type\":\"connection_terminate\",\"payload\":null}";
-            try {
-                TibberWebSocketListener socket = this.socket;
-                if (socket != null) {
-                    logger.debug("Sending websocket disconnect message");
-                    socket.sendMessage(disconnect);
-                } else {
-                    logger.warn("Socket unable to send disconnect message: Socket is null");
-                }
-            } catch (IOException e) {
-                logger.warn("Websocket Close Exception: {}", e.getMessage());
-            }
-            try {
-                session.close();
-            } catch (Exception e) {
-                logger.warn("Unable to disconnect session");
-            }
-            this.session = null;
-            this.socket = null;
-        }
-        Future<?> sessionFuture = this.sessionFuture;
-        if (sessionFuture != null && !sessionFuture.isDone()) {
-            sessionFuture.cancel(true);
-        }
-        WebSocketClient client = this.client;
-        if (client != null) {
-            try {
-                client.stop();
-            } catch (Exception e) {
-                logger.warn("CLOSE FRAME - Failed to stop websocket client: {}", e.getMessage());
-            }
-            client.destroy();
-        }
-    }
-
-    public boolean isConnected() {
-        Session session = this.session;
-        return session != null && session.isOpen();
-    }
-
-    @WebSocket
-    public class TibberWebSocketListener {
-
-        @OnWebSocketConnect
-        public void onConnect(Session wssession) {
-            TibberHandler.this.session = wssession;
-            TibberWebSocketListener socket = TibberHandler.this.socket;
-            String connection = "{\"type\":\"connection_init\", \"payload\":{\"token\":\"" + tibberConfig.getToken()
-                    + "\"}}";
-            try {
-                if (socket != null) {
-                    logger.debug("Sending websocket connect message");
-                    socket.sendMessage(connection);
-                } else {
-                    logger.debug("Socket unable to send connect message: Socket is null");
-                }
-            } catch (IOException e) {
-                logger.warn("Send Message Exception: {}", e.getMessage());
-            }
-        }
-
-        @OnWebSocketClose
-        public void onClose(int statusCode, String reason) {
-            logger.debug("Closing a WebSocket due to {}", reason);
-            WebSocketClient client = TibberHandler.this.client;
-            if (client != null && client.isRunning()) {
-                try {
-                    logger.debug("ONCLOSE - Stopping and Terminating Websocket connection");
-                    client.stop();
-                } catch (Exception e) {
-                    logger.warn("Websocket Client Stop Exception: {}", e.getMessage());
-                }
-            }
-        }
-
-        @OnWebSocketError
-        public void onWebSocketError(Throwable e) {
-            String message = e.getMessage();
-            logger.warn("Error during websocket communication: {}", message);
-            close();
-        }
-
-        @OnWebSocketMessage
-        public void onMessage(String message) {
-            if (message.contains("connection_ack")) {
-                logger.debug("WebSocket connected to Server");
-                startSubscription();
-            } else if (message.contains("error") || message.contains("terminate")) {
-                logger.debug("Error/terminate received from server: {}", message);
-                close();
-            } else if (message.contains("liveMeasurement")) {
-                logger.debug("Received liveMeasurement message.");
-                lastWebSocketMessage = LocalDateTime.now();
-                JsonObject object = (JsonObject) JsonParser.parseString(message);
-                JsonObject myObject = object.getAsJsonObject("payload").getAsJsonObject("data")
-                        .getAsJsonObject("liveMeasurement");
-                if (myObject.has("timestamp")) {
-                    String liveTimestamp = myObject.get("timestamp").toString().substring(1, 20);
-                    updateState(LIVE_TIMESTAMP, new DateTimeType(liveTimestamp));
-                }
-                if (myObject.has("power")) {
-                    updateChannel(LIVE_POWER, myObject.get("power").toString());
-                }
-                if (myObject.has("lastMeterConsumption")) {
-                    updateChannel(LIVE_LASTMETERCONSUMPTION, myObject.get("lastMeterConsumption").toString());
-                }
-                if (myObject.has("lastMeterProduction")) {
-                    updateChannel(LIVE_LASTMETERPRODUCTION, myObject.get("lastMeterProduction").toString());
-                }
-                if (myObject.has("accumulatedConsumption")) {
-                    updateChannel(LIVE_ACCUMULATEDCONSUMPTION, myObject.get("accumulatedConsumption").toString());
-                }
-                if (myObject.has("accumulatedConsumptionLastHour")) {
-                    updateChannel(LIVE_ACCUMULATEDCONSUMPTION_THIS_HOUR,
-                            myObject.get("accumulatedConsumptionLastHour").toString());
-                }
-                if (myObject.has("accumulatedCost")) {
-                    updateChannel(LIVE_ACCUMULATEDCOST, myObject.get("accumulatedCost").toString());
-                }
-                if (myObject.has("accumulatedReward")) {
-                    updateChannel(LIVE_ACCUMULATEREWARD, myObject.get("accumulatedReward").toString());
-                }
-                if (myObject.has("currency")) {
-                    updateState(LIVE_CURRENCY, new StringType(myObject.get("currency").toString()));
-                }
-                if (myObject.has("minPower")) {
-                    updateChannel(LIVE_MINPOWER, myObject.get("minPower").toString());
-                }
-                if (myObject.has("averagePower")) {
-                    updateChannel(LIVE_AVERAGEPOWER, myObject.get("averagePower").toString());
-                }
-                if (myObject.has("maxPower")) {
-                    updateChannel(LIVE_MAXPOWER, myObject.get("maxPower").toString());
-                }
-                if (myObject.has("voltagePhase1")) {
-                    updateChannel(LIVE_VOLTAGE1, myObject.get("voltagePhase1").toString());
-                }
-                if (myObject.has("voltagePhase2")) {
-                    updateChannel(LIVE_VOLTAGE2, myObject.get("voltagePhase2").toString());
-                }
-                if (myObject.has("voltagePhase3")) {
-                    updateChannel(LIVE_VOLTAGE3, myObject.get("voltagePhase3").toString());
-                }
-                if (myObject.has("currentL1")) {
-                    updateChannel(LIVE_CURRENT1, myObject.get("currentL1").toString());
-                }
-                if (myObject.has("currentL2")) {
-                    updateChannel(LIVE_CURRENT2, myObject.get("currentL2").toString());
-                }
-                if (myObject.has("currentL3")) {
-                    updateChannel(LIVE_CURRENT3, myObject.get("currentL3").toString());
-                }
-                if (myObject.has("powerProduction")) {
-                    updateChannel(LIVE_POWERPRODUCTION, myObject.get("powerProduction").toString());
-                }
-                if (myObject.has("accumulatedProduction")) {
-                    updateChannel(LIVE_ACCUMULATEDPRODUCTION, myObject.get("accumulatedProduction").toString());
-                }
-                if (myObject.has("accumulatedProductionLastHour")) {
-                    updateChannel(LIVE_ACCUMULATEDPRODUCTION_THIS_HOUR,
-                            myObject.get("accumulatedProductionLastHour").toString());
-                }
-                if (myObject.has("minPowerProduction")) {
-                    updateChannel(LIVE_MINPOWERPRODUCTION, myObject.get("minPowerProduction").toString());
-                }
-                if (myObject.has("maxPowerProduction")) {
-                    updateChannel(LIVE_MAXPOWERPRODUCTION, myObject.get("maxPowerProduction").toString());
+                    JsonObject initalJson = Utils.getJsonObject(jsonResponse, INITIAL_QUERY_JSON_PATH);
+                    if (initalJson.isEmpty()) {
+                        handleInitializeError(responseStatus + " - " + initialResponse, false);
+                    } else {
+                        if (initalJson.get("currentSubscription").isJsonNull()) {
+                            initializePulseUser();
+                        } else {
+                            JsonObject currentJson = Utils.getJsonObject(jsonResponse, CURRENCY_QUERY_JSON_PATH);
+                            if (!currentJson.isEmpty()) {
+                                initializeTibberCustomer(currentJson);
+                            } else {
+                                handleInitializeError(responseStatus + " - " + initialResponse, false);
+                            }
+                        }
+                    }
                 }
             } else {
-                logger.debug("Unknown live response from Tibber. Message: {}", message);
+                handleInitializeError(responseStatus + " - " + initialResponse, true);
             }
+        } catch (InterruptedException | TimeoutException | ExecutionException e) {
+            handleInitializeError(e.getMessage(), true);
+        }
+    }
+
+    private void initializeTibberCustomer(JsonObject initalJson) {
+        managePriceChannels(true);
+        updateStatus(ThingStatus.ONLINE);
+
+        // check if currency is supported
+        String currencyCode = initalJson.get("currency").getAsString();
+        Unit<?> unit = CurrencyUnits.getInstance().getUnit(currencyCode);
+        if (unit != null) {
+            currencyUnit = currencyCode;
+            logger.trace("Currency is set to {}", unit.getSymbol());
+        } else {
+            logger.trace("Currency {} is unknown, falling back to DecimalType", currencyCode);
         }
 
-        private void sendMessage(String message) throws IOException {
-            logger.debug("Send message: {}", message);
-            Session session = TibberHandler.this.session;
-            if (session != null) {
-                session.getRemote().sendString(message);
-            }
-        }
+        // create websocket and watchdog
+        webSocket = new TibberWebsocket(this, tibberConfig, httpClient);
+        watchdog = scheduler.scheduleWithFixedDelay(this::watchdog, 0, 1, TimeUnit.MINUTES);
 
-        public void startSubscription() {
-            String query = "{\"id\":\"1\",\"type\":\"subscribe\",\"payload\":{\"variables\":{},\"extensions\":{},\"operationName\":null,\"query\":\"subscription {\\n liveMeasurement(homeId:\\\""
-                    + tibberConfig.getHomeid()
-                    + "\\\") {\\n timestamp\\n power\\n lastMeterConsumption\\n lastMeterProduction\\n accumulatedConsumption\\n accumulatedConsumptionLastHour\\n accumulatedCost\\n accumulatedReward\\n currency\\n minPower\\n averagePower\\n maxPower\\n"
-                    + "voltagePhase1\\n voltagePhase2\\n voltagePhase3\\n currentL1\\n currentL2\\n currentL3\\n powerProduction\\n accumulatedProduction\\n accumulatedProductionLastHour\\n minPowerProduction\\n maxPowerProduction\\n }\\n }\\n\"}}";
-            try {
-                TibberWebSocketListener socket = TibberHandler.this.socket;
-                if (socket != null) {
-                    socket.sendMessage(query);
+        // start cron update for new spot prices
+        scheduler.schedule(this::updateSpotPrices, 0, TimeUnit.MINUTES);
+        int hour = tibberConfig.updateHour;
+        String cronHour = (hour < 0) ? "*" : String.valueOf(hour);
+        cronDaily = cron.schedule(this::updateSpotPrices, String.format(CRON_DAILY_AT, cronHour));
+    }
+
+    private void initializePulseUser() {
+        managePriceChannels(false);
+        updateStatus(ThingStatus.ONLINE);
+        // create websocket and watchdog
+        webSocket = new TibberWebsocket(this, tibberConfig, httpClient);
+        watchdog = scheduler.scheduleWithFixedDelay(this::watchdog, 0, 1, TimeUnit.MINUTES);
+    }
+
+    private void handleInitializeError(@Nullable String message, boolean retry) {
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                "@text/status.initial-call-failed  [\"" + message + "\"]");
+        if (retry) {
+            scheduler.schedule(this::doInitialize, 60, TimeUnit.SECONDS);
+        }
+    }
+
+    protected void managePriceChannels(boolean add) {
+        boolean hasPriceChannels = thing
+                .getChannel(new ChannelUID(thing.getUID(), CHANNEL_GROUP_PRICE, CHANNEL_SPOT_PRICE)) != null;
+        logger.trace("Add channels? {}. Has spot price channel? {}", add, hasPriceChannels);
+        if ((add && hasPriceChannels) || (!add && !hasPriceChannels)) {
+            // don't add channel if already available OR remove channel if not available
+            return;
+        }
+        // Collect channels to add/remove
+        List<Channel> channels = new ArrayList<>();
+        PRICE_COST_CHANNELS.forEach((channelId, channelType) -> {
+            Channel channel = ChannelBuilder.create(new ChannelUID(thing.getUID(), channelId), CoreItemFactory.NUMBER)
+                    .withType(new ChannelTypeUID(BINDING_ID, channelType)).build();
+            logger.trace("Add/Remove channel {} ", channel.getUID().getAsString());
+            channels.add(channel);
+        });
+        // update thing with / without channels
+        ThingBuilder thingBuilder = editThing();
+        if (add) {
+            for (Channel channel : channels) {
+                thingBuilder = thingBuilder.withChannel(channel);
+            }
+            updateThing(thingBuilder.build());
+        } else {
+            updateThing(thingBuilder.withoutChannels(channels).build());
+        }
+    }
+
+    private void watchdog() {
+        TibberWebsocket webSocket = this.webSocket;
+        if (liveChannelsLinked() && isRealtimeEnabled()) {
+            if (webSocket != null) {
+                if (!webSocket.isConnected()) {
+                    webSocket.start();
                 } else {
-                    logger.debug("Socket unable to send subscription message: Socket is null");
+                    webSocket.ping();
                 }
-            } catch (IOException e) {
-                logger.warn("Send Message Exception: {}", e.getMessage());
+            } else {
+                this.webSocket = webSocket = new TibberWebsocket(this, tibberConfig, httpClient);
+                webSocket.start();
+            }
+        } else {
+            if (webSocket != null) {
+                if (webSocket.isConnected()) {
+                    webSocket.stop();
+                }
+            } else {
+                logger.trace("Websocket is kept offline - either feature disabled ({}) or channel mot linked ({})",
+                        isRealtimeEnabled(), liveChannelsLinked());
             }
         }
+    }
+
+    private void updateSpotPrices() {
+        Request priceRequest = getRequest();
+        String body = String.format(QUERY_CONTAINER,
+                String.format(getTemplate(PRICE_QUERY_RESOURCE_PATH), tibberConfig.homeid));
+        priceRequest.content(new StringContentProvider(body, "utf-8"));
+        try {
+            ContentResponse cr = priceRequest.send();
+            int responseStatus = cr.getStatus();
+            String jsonResponse = cr.getContentAsString();
+            logger.trace("updatePrices response {} - {}", responseStatus, jsonResponse);
+            if (responseStatus != HttpStatus.OK_200) {
+                updatePriceInfoRetry();
+                return;
+            }
+            if (!jsonResponse.contains("error") && !jsonResponse.contains("<html>")) {
+                JsonObject rootJsonObject = (JsonObject) JsonParser.parseString(jsonResponse);
+                JsonObject priceInfo = Utils.getJsonObject(rootJsonObject, PRICE_INFO_JSON_PATH);
+
+                if (!priceInfo.isEmpty()) {
+                    try {
+                        // now check if tomorrows prices are updated for the given hour
+                        if (tibberConfig.updateHour <= Instant.now().atZone(timeZoneProvider.getTimeZone()).getHour()) {
+                            JsonArray tomorrowPrices = priceInfo.getAsJsonArray("tomorrow");
+                            if (tomorrowPrices.isEmpty()) {
+                                logger.debug("No update for tomorrow found - retry");
+                                updatePriceInfoRetry();
+                                return;
+                            } else {
+                                logger.debug("update found - continue");
+                                retryCounter = 0;
+                            }
+                        }
+                        JsonArray spotPrices = new JsonArray();
+                        spotPrices.addAll(priceInfo.getAsJsonArray("today"));
+                        spotPrices.addAll(priceInfo.getAsJsonArray("tomorrow"));
+
+                        TimeSeries timeSeriesTotalPrices = new TimeSeries(TimeSeries.Policy.REPLACE);
+                        TimeSeries timeSeriesEnergyPrices = new TimeSeries(TimeSeries.Policy.REPLACE);
+                        TimeSeries timeSeriesTaxPrices = new TimeSeries(TimeSeries.Policy.REPLACE);
+                        TimeSeries timeSeriesLevels = new TimeSeries(TimeSeries.Policy.REPLACE);
+                        for (JsonElement entry : spotPrices) {
+                            JsonObject entryObject = entry.getAsJsonObject();
+                            Instant startsAt = Instant.parse(entryObject.get("startsAt").getAsString());
+                            String totalPriceString = entryObject.get("total").getAsString();
+                            timeSeriesTotalPrices.add(startsAt, getEnergyPrice(totalPriceString));
+                            String energyPriceString = entryObject.get("energy").getAsString();
+                            timeSeriesEnergyPrices.add(startsAt, getEnergyPrice(energyPriceString));
+                            String taxPriceString = entryObject.get("tax").getAsString();
+                            timeSeriesTaxPrices.add(startsAt, getEnergyPrice(taxPriceString));
+
+                            String levelString = entryObject.get("level").getAsString();
+                            timeSeriesLevels.add(startsAt, Utils.mapToState(levelString));
+                        }
+                        priceCache = timeSeriesTotalPrices;
+                        sendTimeSeries(new ChannelUID(thing.getUID(), CHANNEL_GROUP_PRICE, CHANNEL_TOTAL_PRICE),
+                                timeSeriesTotalPrices);
+                        sendTimeSeries(
+                                new ChannelUID(thing.getUID(), CHANNEL_GROUP_PRICE, CHANNEL_DEPRECATED_SPOT_PRICE),
+                                timeSeriesTotalPrices);
+                        energyCache = timeSeriesEnergyPrices;
+                        sendTimeSeries(new ChannelUID(thing.getUID(), CHANNEL_GROUP_PRICE, CHANNEL_SPOT_PRICE),
+                                timeSeriesEnergyPrices);
+                        taxCache = timeSeriesTaxPrices;
+                        sendTimeSeries(new ChannelUID(thing.getUID(), CHANNEL_GROUP_PRICE, CHANNEL_TAX),
+                                timeSeriesTaxPrices);
+
+                        levelCache = timeSeriesLevels;
+                        sendTimeSeries(new ChannelUID(thing.getUID(), CHANNEL_GROUP_PRICE, CHANNEL_PRICE_LEVELS),
+                                timeSeriesLevels);
+                        PriceCalculator calculator;
+                        synchronized (calculatorLock) {
+                            this.calculator = calculator = new PriceCalculator(spotPrices);
+                        }
+
+                        TreeMap<Instant, Double> averagePrices = calculator.calculateAveragePrices();
+                        TimeSeries avgSeries = new TimeSeries(TimeSeries.Policy.REPLACE);
+                        averagePrices.forEach((key, value) -> {
+                            String priceString = String.valueOf(value);
+                            avgSeries.add(key, getEnergyPrice(priceString));
+                        });
+                        averageCache = avgSeries;
+                        sendTimeSeries(new ChannelUID(thing.getUID(), CHANNEL_GROUP_PRICE, CHANNEL_AVERAGE), avgSeries);
+                        updateStatus(ThingStatus.ONLINE);
+                    } catch (JsonSyntaxException | DateTimeParseException e) {
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                "@text/status.price-update-failed  [\"" + e.getMessage() + "\"]");
+                    }
+                }
+            } else if (jsonResponse.contains("error")) {
+                updatePriceInfoRetry();
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "@text/status.price-update-failed  [\"" + responseStatus + "\"]");
+            } else {
+                updatePriceInfoRetry();
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "@text/status.price-update-failed  [\"" + jsonResponse + "\"]");
+            }
+        } catch (TimeoutException | ExecutionException e) {
+            updatePriceInfoRetry();
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/status.price-update-failed  [\"" + e.getMessage() + "\"]");
+        } catch (InterruptedException e1) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/status.price-update-failed  [\"" + e1.getMessage() + "\"]");
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    public PriceCalculator getPriceCalculator() throws PriceCalculationException {
+        synchronized (calculatorLock) {
+            PriceCalculator calculator = this.calculator;
+            if (calculator != null) {
+                return calculator;
+            } else {
+                throw new PriceCalculationException(
+                        "No PriceCalculator available! Maybe OFFLINE or Thing deactivated.");
+            }
+        }
+    }
+
+    private State getEnergyPrice(String priceString) {
+        State priceState;
+        String currencyUnit = this.currencyUnit;
+        if (currencyUnit != null) {
+            priceState = QuantityType.valueOf(priceString + " " + currencyUnit + "/kWh");
+        } else {
+            priceState = DecimalType.valueOf(priceString);
+        }
+        return priceState;
+    }
+
+    private boolean isRealtimeEnabled() {
+        Boolean localRealtimeEnabled = realtimeEnabled;
+        if (localRealtimeEnabled != null) {
+            return localRealtimeEnabled.booleanValue();
+        } else {
+            Request realtimeRequest = getRequest();
+            String body = String.format(QUERY_CONTAINER,
+                    String.format(getTemplate(REALTIME_QUERY_RESOURCE_PATH), tibberConfig.homeid));
+            realtimeRequest.content(new StringContentProvider(body, "utf-8"));
+
+            try {
+                ContentResponse cr = realtimeRequest.send();
+                int responseStatus = cr.getStatus();
+                String jsonResponse = cr.getContentAsString();
+                logger.trace("isRealtimeEnabled response {} - {}", responseStatus, jsonResponse);
+                JsonObject object = (JsonObject) JsonParser.parseString(jsonResponse);
+                JsonObject featuresObject = Utils.getJsonObject(object, REALTIME_FEATURE_JSON_PATH);
+                if (!featuresObject.isEmpty()) {
+                    String rtEnabled = featuresObject.get("realTimeConsumptionEnabled").toString();
+                    localRealtimeEnabled = Boolean.valueOf(rtEnabled);
+                    realtimeEnabled = localRealtimeEnabled;
+                    return localRealtimeEnabled.booleanValue();
+                }
+            } catch (JsonSyntaxException | InterruptedException | TimeoutException | ExecutionException e) {
+                logger.warn("Realtime feature query failed {}", e.getMessage());
+            }
+        }
+        return false;
+    }
+
+    private boolean liveChannelsLinked() {
+        return getThing().getChannels().stream().map(Channel::getUID)
+                .filter((channelUID -> channelUID.getAsString().contains(CHANNEL_GROUP_LIVE)
+                        || channelUID.getAsString().contains(CHANNEL_GROUP_STATISTICS)))
+                .anyMatch(this::isLinked);
+    };
+
+    private void updatePriceInfoRetry() {
+        if (isDisposed) {
+            logger.trace("Retry rejected due to disposed thing");
+            return;
+        }
+        // fulfill https://developer.tibber.com/docs/guides/calling-api
+        // Clients must implement jitter and exponential backoff when retrying queries.
+        if (retryCounter == 0) {
+            retryCounter = 1;
+        } else {
+            retryCounter = Math.min(60, retryCounter * 2);
+        }
+
+        // return increasing time retry + random jitter, max 20 minutes
+        int retryMs = Math.min(1000 * retryCounter + random.nextInt(1000), 20 * 60 * 1000);
+        logger.trace("Try to update prices in {} ms", retryMs);
+        scheduler.schedule(this::updateSpotPrices, retryMs, TimeUnit.MILLISECONDS);
+    }
+
+    public void newMessage(String message) {
+        if (message.contains("error") || message.contains("terminate")) {
+            logger.debug("Error/terminate received from server: {}", message);
+        } else if (message.contains("liveMeasurement")) {
+            messageQueue.add(message);
+            scheduler.schedule(this::handleNewMessage, 0, TimeUnit.SECONDS);
+        }
+    }
+
+    @SuppressWarnings("all")
+    private void handleNewMessage() {
+        String message = messageQueue.poll();
+        // This is not dead code, value can be null!
+        if (message == null) {
+            return;
+        }
+        JsonObject jsonMessage = (JsonObject) JsonParser.parseString(message);
+        JsonObject jsonData = Utils.getJsonObject(jsonMessage, SOCKET_MESSAGE_JSON_PATH);
+        if (!jsonData.isEmpty()) {
+            String value = Utils.getJsonValue(jsonData, "lastMeterConsumption");
+            updateChannel(CHANNEL_GROUP_STATISTICS, CHANNEL_TOTAL_CONSUMPTION, value, "kWh");
+            value = Utils.getJsonValue(jsonData, "accumulatedConsumption");
+            updateChannel(CHANNEL_GROUP_STATISTICS, CHANNEL_DAILY_CONSUMPTION, value, "kWh");
+            value = Utils.getJsonValue(jsonData, "accumulatedConsumptionLastHour");
+            updateChannel(CHANNEL_GROUP_STATISTICS, CHANNEL_LAST_HOUR_CONSUMPTION, value, "kWh");
+            value = Utils.getJsonValue(jsonData, "accumulatedCost");
+            if (!EMPTY_VALUE.equals(value)) {
+                State costState;
+                if (!NULL_VALUE.equals(value)) {
+                    String currencyUnit = this.currencyUnit;
+                    if (currencyUnit != null) {
+                        costState = QuantityType.valueOf(value + " " + currencyUnit);
+                    } else {
+                        costState = DecimalType.valueOf(value);
+                    }
+                } else {
+                    costState = UnDefType.UNDEF;
+                }
+                updateState(new ChannelUID(thing.getUID(), CHANNEL_GROUP_STATISTICS, CHANNEL_DAILY_COST), costState);
+            }
+            value = Utils.getJsonValue(jsonData, "lastMeterProduction");
+            updateChannel(CHANNEL_GROUP_STATISTICS, CHANNEL_TOTAL_PRODUCTION, value, "kWh");
+            value = Utils.getJsonValue(jsonData, "accumulatedProduction");
+            updateChannel(CHANNEL_GROUP_STATISTICS, CHANNEL_DAILY_PRODUCTION, value, "kWh");
+            value = Utils.getJsonValue(jsonData, "accumulatedProductionLastHour");
+            updateChannel(CHANNEL_GROUP_STATISTICS, CHANNEL_LAST_HOUR_PRODUCTION, value, "kWh");
+            value = Utils.getJsonValue(jsonData, "minPower");
+            updateChannel(CHANNEL_GROUP_LIVE, CHANNEL_MIN_COSNUMPTION, value, "W");
+            value = Utils.getJsonValue(jsonData, "maxPower");
+            updateChannel(CHANNEL_GROUP_LIVE, CHANNEL_PEAK_CONSUMPTION, value, "W");
+            value = Utils.getJsonValue(jsonData, "averagePower");
+            updateChannel(CHANNEL_GROUP_LIVE, CHANNEL_AVERAGE_CONSUMPTION, value, "W");
+            value = Utils.getJsonValue(jsonData, "minPowerProduction");
+            updateChannel(CHANNEL_GROUP_LIVE, CHANNEL_MIN_PRODUCTION, value, "W");
+            value = Utils.getJsonValue(jsonData, "maxPowerProduction");
+            updateChannel(CHANNEL_GROUP_LIVE, CHANNEL_PEAK_PRODUCTION, value, "W");
+            value = Utils.getJsonValue(jsonData, "voltagePhase1");
+            updateChannel(CHANNEL_GROUP_LIVE, CHANNEL_VOLTAGE_1, value, "V");
+            value = Utils.getJsonValue(jsonData, "voltagePhase2");
+            updateChannel(CHANNEL_GROUP_LIVE, CHANNEL_VOLTAGE_2, value, "V");
+            value = Utils.getJsonValue(jsonData, "voltagePhase3");
+            updateChannel(CHANNEL_GROUP_LIVE, CHANNEL_VOLTAGE_3, value, "V");
+            value = Utils.getJsonValue(jsonData, "currentL1");
+            updateChannel(CHANNEL_GROUP_LIVE, CHANNEL_CURRENT_1, value, "A");
+            value = Utils.getJsonValue(jsonData, "currentL2");
+            updateChannel(CHANNEL_GROUP_LIVE, CHANNEL_CURRENT_2, value, "A");
+            value = Utils.getJsonValue(jsonData, "currentL3");
+            updateChannel(CHANNEL_GROUP_LIVE, CHANNEL_CURRENT_3, value, "A");
+
+            String consumption = Utils.getJsonValue(jsonData, "power");
+            String production = Utils.getJsonValue(jsonData, "powerProduction");
+            updateChannel(CHANNEL_GROUP_LIVE, CHANNEL_CONSUMPTION, consumption, "W");
+            updateChannel(CHANNEL_GROUP_LIVE, CHANNEL_PRODUCTION, production, "W");
+            double consumptionValue = parseValueSafely(consumption, "consumption");
+            double productionValue = parseValueSafely(production, "production");
+
+            updateChannel(CHANNEL_GROUP_LIVE, CHANNEL_POWER_BALANCE, String.valueOf(consumptionValue - productionValue),
+                    "W");
+        }
+    }
+
+    private double parseValueSafely(@Nullable String value, String valueType) {
+        if (value == null || value.isBlank() || EMPTY_VALUE.equals(value) || NULL_VALUE.equals(value)) {
+            return 0.0;
+        }
+
+        try {
+            return Double.parseDouble(value);
+        } catch (NumberFormatException e) {
+            logger.error("Unable to parse {} value: {}. Assuming 0.", valueType, value, e);
+            return 0.0;
+        }
+    }
+
+    private void updateChannel(String group, String channelId, String value, String unit) {
+        if (EMPTY_VALUE.equals(value)) {
+            // value not present - don't update
+            return;
+        }
+        // value is present
+        if (!NULL_VALUE.equals(value)) {
+            // value isn't null
+            updateState(new ChannelUID(thing.getUID(), group, channelId), QuantityType.valueOf(value + " " + unit));
+        } else {
+            // value is null
+            updateState(new ChannelUID(thing.getUID(), group, channelId), UnDefType.NULL);
+        }
+    }
+
+    public String getTemplate(String name) {
+        String template = templates.get(name);
+        if (template == null) {
+            template = getResourceFile(name);
+            if (!template.isBlank()) {
+                templates.put(name, template);
+            } else {
+                template = EMPTY_VALUE;
+            }
+        }
+        return template;
+    }
+
+    private String getResourceFile(String fileName) {
+        try {
+            Bundle myself = bundleContext.getBundle();
+            // do this check for unit tests to avoid NullPointerException
+            if (myself != null) {
+                URL url = myself.getResource(fileName);
+                logger.debug("try to get {}", url);
+                InputStream input = url.openStream();
+                // https://www.baeldung.com/java-scanner-usedelimiter
+                try (Scanner scanner = new Scanner(input).useDelimiter("\\A")) {
+                    String result = scanner.hasNext() ? scanner.next() : "";
+                    String resultReplaceAll = result.replaceAll("[\\n\\r]", "");
+                    scanner.close();
+                    return resultReplaceAll;
+                }
+            } else {
+                // only unit testing
+                return Files.readString(Paths.get("src/main/resources" + fileName));
+            }
+        } catch (IOException e) {
+            logger.warn("no resource found for path {}", fileName);
+        }
+        return EMPTY_VALUE;
+    }
+
+    /**
+     * Tibber Actions
+     */
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Set.of(TibberActions.class);
     }
 }

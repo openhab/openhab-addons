@@ -8,7 +8,7 @@
 	<thing-type id="iotawatt">
 		<label>IoTaWatt Binding Thing</label>
 		<description>An IoTaWatt devices</description>
-
+		<semantic-equipment-tag>ElectricMeter</semantic-equipment-tag>
 		<config-description>
 			<parameter name="hostname" type="text" required="true">
 				<context>network-address</context>
@@ -36,12 +36,20 @@
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Amps</label>
 		<description>The current Amps.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="frequency">
 		<item-type>Number:Frequency</item-type>
 		<label>AC Frequency</label>
 		<description>The current AC frequency.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Frequency</tag>
+		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="power-factor">
@@ -54,18 +62,30 @@
 		<item-type>Number:Power</item-type>
 		<label>Apparent Power</label>
 		<description>The current apparent power.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="reactive-power">
 		<item-type>Number:Power</item-type>
 		<label>Reactive Power</label>
 		<description>The current reactive power.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="reactive-power-hour">
 		<item-type>Number:Energy</item-type>
 		<label>Reactive Power Hour</label>
 		<description>The current reactive power hour.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="voltage">

@@ -28,7 +28,6 @@ public class MiotParseException extends Exception {
     private static final long serialVersionUID = -1280858607995252322L;
 
     public MiotParseException() {
-        super();
     }
 
     public MiotParseException(@Nullable String message) {

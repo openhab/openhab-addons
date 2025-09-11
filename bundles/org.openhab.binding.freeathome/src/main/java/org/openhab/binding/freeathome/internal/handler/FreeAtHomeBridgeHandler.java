@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collection;
@@ -83,33 +84,37 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler implements WebSoc
 
     private final Logger logger = LoggerFactory.getLogger(FreeAtHomeBridgeHandler.class);
 
-    private Map<String, FreeAtHomeDeviceHandler> mapEventListeners = new ConcurrentHashMap<>();
+    private final Map<String, FreeAtHomeDeviceHandler> mapEventListeners = new ConcurrentHashMap<>();
 
     // Clients for the network communication
-    private HttpClient httpClient;
+    private final HttpClient httpClient;
     private @Nullable WebSocketClient websocketClient = null;
-    private FreeAtHomeWebsocketMonitorThread socketMonitor = new FreeAtHomeWebsocketMonitorThread();
+    private final FreeAtHomeWebsocketMonitorThread socketMonitor = new FreeAtHomeWebsocketMonitorThread();
     private @Nullable QueuedThreadPool jettyThreadPool = null;
     private volatile @Nullable Session websocketSession = null;
 
-    private String sysApUID = "00000000-0000-0000-0000-000000000000";
+    private final String sysApUID = "00000000-0000-0000-0000-000000000000";
     private String ipAddress = "";
     private String username = "";
     private String password = "";
+    private boolean sendKeepAliveMessage = true;
 
     private String baseUrl = "";
 
     private String authField = "";
 
-    private Lock lock = new ReentrantLock();
-    private AtomicBoolean httpConnectionOK = new AtomicBoolean(false);
-    private Condition websocketSessionEstablished = lock.newCondition();
+    private String sysapVersion = "";
+
+    private final Lock lock = new ReentrantLock();
+    private final AtomicBoolean httpConnectionOK = new AtomicBoolean(false);
+    private final Condition websocketSessionEstablished = lock.newCondition();
+    private volatile long lastReceivedTime = 0;
 
     int numberOfComponents = 0;
 
-    private static final int BRIDGE_WEBSOCKET_RECONNECT_DELAY = 60;
-    private static final int BRIDGE_WEBSOCKET_TIMEOUT = 90;
-    private static final int BRIDGE_WEBSOCKET_KEEPALIVE = 50;
+    private static final int BRIDGE_WEBSOCKET_RECONNECT_DELAY = 5; // Seconds
+    private static final int BRIDGE_WEBSOCKET_TIMEOUT = 90; // Seconds
+    private static final int BRIDGE_WEBSOCKET_KEEPALIVE = 10; // Seconds
     private static final String BRIDGE_URL_GETDEVICELIST = "/rest/devicelist";
 
     public FreeAtHomeBridgeHandler(Bridge thing, HttpClient client) {
@@ -132,9 +137,84 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler implements WebSoc
     }
 
     /**
+     * Method to fetch SysApp Version
+     */
+    public boolean fetchSysapVersion() {
+        String url = baseUrl + "/rest/configuration";
+        try {
+            HttpClient client = httpClient;
+            Request req = client.newRequest(url);
+
+            if (req == null) {
+                logger.warn("Invalid request object in fetchSysapVersion with the URL [ {} ]", url);
+                return false;
+            }
+
+            ContentResponse response = req.send();
+
+            if (response.getStatus() != 200) {
+                logger.warn("HTTP request failed in fetchSysapVersion with status [{}] and reason [{}]",
+                        response.getStatus(), response.getReason());
+                return false;
+            }
+
+            String configString = new String(response.getContent());
+
+            JsonReader reader = new JsonReader(new StringReader(configString));
+            reader.setLenient(true); // Deprecated: use reader.setStrictness(Strictness.LENIENT) in future. Kept for
+                                     // backward compatibility with older library versions.
+            JsonElement jsonTree = JsonParser.parseReader(reader);
+
+            if (!jsonTree.isJsonObject()) {
+                logger.warn("Invalid jsonObject in fetchSysapVersion with the URL [ {} ]", url);
+                return false;
+            }
+
+            JsonObject jsonObject = jsonTree.getAsJsonObject();
+            JsonObject sysapObject = jsonObject.getAsJsonObject(sysApUID);
+
+            if (sysapObject == null) {
+                logger.warn("SysAP object not found in fetchSysapVersion with the URL [ {} ]", url);
+                return false;
+            }
+
+            JsonObject sysapDetails = sysapObject.getAsJsonObject("sysap");
+            if (sysapDetails == null) {
+                logger.warn("SysAP details not found in fetchSysapVersion with the URL [ {} ]", url);
+                return false;
+            }
+
+            JsonElement versionElement = sysapDetails.get("version");
+            if (versionElement == null || !versionElement.isJsonPrimitive()) {
+                logger.warn("Version not found or invalid in fetchSysapVersion with the URL [ {} ]", url);
+                return false;
+            }
+
+            sysapVersion = versionElement.getAsString();
+            logger.debug("SysAP version fetched: {}", sysapVersion);
+            return true;
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            logger.warn("Http communication interrupted in fetchSysapVersion: {}", e.getMessage());
+            return false;
+        } catch (ExecutionException | TimeoutException e) {
+            logger.warn("Http communication exception in fetchSysapVersion: {}", e.getMessage());
+            return false;
+        } catch (JsonParseException e) {
+            logger.warn("Invalid JSON in fetchSysapVersion: {}", e.getMessage());
+            return false;
+        } catch (Exception e) {
+            logger.warn("Unexpected error in fetchSysapVersion: {}", e.getMessage());
+            return false;
+        }
+    }
+
+    /**
      * Method to get the device list
      */
     public List<String> getDeviceDeviceList() throws FreeAtHomeHttpCommunicationException {
+        fetchSysapVersion();
+
         List<String> listOfComponentId = new ArrayList<String>();
         boolean ret = false;
 
@@ -232,7 +312,8 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler implements WebSoc
             String deviceString = new String(response.getContent());
 
             JsonReader reader = new JsonReader(new StringReader(deviceString));
-            reader.setLenient(true);
+            reader.setLenient(true); // Deprecated: use reader.setStrictness(Strictness.LENIENT) in future. Kept for
+                                     // backward compatibility with older library versions.
             JsonElement jsonTree = JsonParser.parseReader(reader);
 
             if (!jsonTree.isJsonObject()) {
@@ -312,7 +393,8 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler implements WebSoc
             String deviceString = new String(response.getContent());
 
             JsonReader reader = new JsonReader(new StringReader(deviceString));
-            reader.setLenient(true);
+            reader.setLenient(true); // Deprecated: use reader.setStrictness(Strictness.LENIENT) in future. Kept for
+                                     // backward compatibility with older library versions.
             JsonElement jsonTree = JsonParser.parseReader(reader);
 
             if (!jsonTree.isJsonObject()) {
@@ -403,7 +485,8 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler implements WebSoc
      */
     public void setDatapointOnWebsocketFeedback(String receivedText) {
         JsonReader reader = new JsonReader(new StringReader(receivedText));
-        reader.setLenient(true);
+        reader.setLenient(true); // Deprecated: use reader.setStrictness(Strictness.LENIENT) in future. Kept for
+                                 // backward compatibility with older library versions.
         JsonElement jsonTree = JsonParser.parseReader(reader);
 
         // check the output
@@ -439,7 +522,8 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler implements WebSoc
 
     public void markDeviceRemovedOnWebsocketFeedback(String receivedText) {
         JsonReader reader = new JsonReader(new StringReader(receivedText));
-        reader.setLenient(true);
+        reader.setLenient(true); // Deprecated: use reader.setStrictness(Strictness.LENIENT) in future. Kept for
+                                 // backward compatibility with older library versions.
         JsonElement jsonTree = JsonParser.parseReader(reader);
 
         // check the output
@@ -470,80 +554,114 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler implements WebSoc
     }
 
     /**
-     * Method to open Http connection
+     * Establishes an HTTP connection to the free@home system.
+     * This method sets up authentication and tests the connection by making a request.
+     *
+     * @return true if the HTTP connection is successfully established, false otherwise.
      */
     public boolean openHttpConnection() {
-        boolean ret = false;
+        logger.debug("Attempting to open HTTP connection to free@home system");
 
         try {
-            // Add authentication credentials.
+            // Set up authentication for the HTTP client
             AuthenticationStore auth = httpClient.getAuthenticationStore();
+            URI baseUri = new URI(baseUrl);
+            auth.addAuthenticationResult(new BasicAuthentication.BasicResult(baseUri, username, password));
 
-            URI uri1 = new URI(baseUrl);
-            auth.addAuthenticationResult(new BasicAuthentication.BasicResult(uri1, username, password));
+            // Construct the URL for the device list (used as a test endpoint)
+            String testUrl = baseUrl + BRIDGE_URL_GETDEVICELIST;
+            logger.debug("Test URL for HTTP connection: {}", testUrl);
 
-            String url = baseUrl + BRIDGE_URL_GETDEVICELIST;
-
-            Request req = httpClient.newRequest(url);
-            ContentResponse res = req.send();
-
-            // check status
-            if (res.getStatus() == HttpStatus.OK_200) {
-                // response OK
-                httpConnectionOK.set(true);
-
-                ret = true;
-
-                logger.debug("HTTP connection to SysAP is OK");
-            } else {
-                // response NOK, set error
-                httpConnectionOK.set(false);
-
-                ret = false;
+            // Create and send a test request
+            Request request = httpClient.newRequest(testUrl);
+            if (request == null) {
+                throw new IllegalStateException("Failed to create HTTP request");
             }
-        } catch (URISyntaxException | InterruptedException | ExecutionException | TimeoutException ex) {
-            logger.debug("Initial HTTP connection to SysAP is not successful");
 
-            ret = false;
+            // Send the request and get the response
+            ContentResponse response = request.send();
+
+            // Check the response status
+            int statusCode = response.getStatus();
+
+            if (statusCode == HttpStatus.OK_200) {
+                logger.debug("HTTP connection to free@home system established successfullystatus code: {}", statusCode);
+                httpConnectionOK.set(true);
+                return true;
+            } else {
+                logger.warn("HTTP connection failed. Status code: {}, Reason: {}", statusCode, response.getReason());
+                httpConnectionOK.set(false);
+                return false;
+            }
+        } catch (URISyntaxException e) {
+            logger.warn("Invalid URI syntax for base URL: {}", baseUrl, e);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            logger.warn("HTTP connection attempt was interrupted", e);
+        } catch (TimeoutException e) {
+            logger.warn("HTTP connection attempt timed out", e);
+        } catch (ExecutionException e) {
+            logger.warn("Error executing HTTP request", e);
+        } catch (Exception e) {
+            logger.warn("Unexpected error while opening HTTP connection", e);
         }
 
-        return ret;
+        httpConnectionOK.set(false);
+        return false;
     }
 
     /**
-     * Method to connect the websocket session
+     * Method to connect the WebSocket session.
+     * Attempts to establish a WebSocket connection to the SysAP and handles authentication.
+     * 
+     * @return true if the connection attempt is initiated successfully, false otherwise
      */
     public boolean connectWebsocketSession() {
         boolean ret = false;
 
+        // Create the WebSocket URI using the configured IP address
         URI uri = URI.create("ws://" + ipAddress + "/fhapi/v1/api/ws");
 
+        // Combine username and password for authentication
         String authString = username + ":" + password;
 
-        // create base64 encoder
+        // Create a Base64 encoder
         Base64.Encoder bas64Encoder = Base64.getEncoder();
 
-        // Encoding string using encoder object
+        // Encode the authentication string to Base64
         String authStringEnc = bas64Encoder.encodeToString(authString.getBytes());
 
+        // Set the Authorization header value
         authField = "Basic " + authStringEnc;
 
         WebSocketClient localWebsocketClient = websocketClient;
 
         try {
-            // Start socket client
+            // Start the WebSocket client if it exists
             if (localWebsocketClient != null) {
                 localWebsocketClient.setMaxTextMessageBufferSize(8 * 1024);
-                localWebsocketClient.setMaxIdleTimeout(BRIDGE_WEBSOCKET_TIMEOUT * 60 * 1000);
-                localWebsocketClient.setConnectTimeout(BRIDGE_WEBSOCKET_TIMEOUT * 60 * 1000);
+
+                // Set the maximum idle timeout for the WebSocket connection.
+                // If no activity occurs within this time, the connection will be closed automatically.
+                localWebsocketClient.setMaxIdleTimeout(BRIDGE_WEBSOCKET_TIMEOUT * 1000); // milliseconds
+
+                // Set the connection timeout for the WebSocket client.
+                // This defines how long the client should wait before considering the connection attempt as failed.
+                // Like the idle timeout, the value is converted from seconds to milliseconds.
+                localWebsocketClient.setConnectTimeout(BRIDGE_WEBSOCKET_TIMEOUT * 1000); // milliseconds
                 localWebsocketClient.start();
                 ClientUpgradeRequest request = new ClientUpgradeRequest();
                 request.setHeader("Authorization", authField);
-                request.setTimeout(BRIDGE_WEBSOCKET_TIMEOUT, TimeUnit.MINUTES);
+
+                // Set the timeout for the WebSocket upgrade process (i.e., the time allowed for the handshake to
+                // complete).
+                // Unlike `setConnectTimeout()`, which applies to the lower-level network connection, this timeout
+                // applies specifically to the WebSocket upgrade request.
+                // The timeout is specified in SECONDS, using `TimeUnit.SECONDS`.
+                request.setTimeout(BRIDGE_WEBSOCKET_TIMEOUT, TimeUnit.SECONDS);
                 localWebsocketClient.connect(this, uri, request);
 
-                logger.debug("Websocket connection to SysAP is OK, timeout: {}", BRIDGE_WEBSOCKET_TIMEOUT);
-
+                logger.debug("WebSocket connection attempt initiated, timeout: {} seconds", BRIDGE_WEBSOCKET_TIMEOUT);
                 ret = true;
             } else {
                 ret = false;
@@ -599,45 +717,67 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler implements WebSoc
     }
 
     /**
-     * Method to open the websocket connection
+     * Opens a WebSocket connection to the free@home system.
+     * This method initializes the thread pool and WebSocket client if they don't exist.
+     *
+     * @return true if the WebSocket connection is successfully opened or already exists, false otherwise.
      */
     public boolean openWebSocketConnection() {
         boolean ret = false;
 
-        QueuedThreadPool localThreadPool = jettyThreadPool;
+        try {
+            logger.debug("Current Jetty version: {}", org.eclipse.jetty.util.Jetty.VERSION);
 
-        if (localThreadPool == null) {
-            jettyThreadPool = new QueuedThreadPool();
+            QueuedThreadPool localThreadPool = jettyThreadPool;
 
-            localThreadPool = jettyThreadPool;
+            if (localThreadPool == null) {
+                // Create a new thread pool if it doesn't exist
+                jettyThreadPool = new QueuedThreadPool();
+                localThreadPool = jettyThreadPool;
 
-            if (localThreadPool != null) {
-                localThreadPool.setName(FreeAtHomeBridgeHandler.class.getSimpleName());
-                localThreadPool.setDaemon(true);
-                localThreadPool.setStopTimeout(0);
-
-                ret = true;
+                if (localThreadPool != null) {
+                    localThreadPool.setName(FreeAtHomeBridgeHandler.class.getSimpleName());
+                    localThreadPool.setDaemon(true);
+                    localThreadPool.setStopTimeout(0);
+                } else {
+                    throw new IllegalStateException("Failed to create QueuedThreadPool");
+                }
             }
-        }
 
-        WebSocketClient localWebSocketClient = websocketClient;
+            WebSocketClient localWebSocketClient = websocketClient;
 
-        if (localWebSocketClient == null) {
-            websocketClient = new WebSocketClient(httpClient);
+            if (localWebSocketClient == null) {
+                // Create a new WebSocket client if it doesn't exist
+                logger.debug("Creating new WebSocketClient with Jetty version {}",
+                        org.eclipse.jetty.util.Jetty.VERSION);
+                localWebSocketClient = new WebSocketClient(httpClient);
+                websocketClient = localWebSocketClient;
 
-            localWebSocketClient = websocketClient;
-
-            if (localWebSocketClient != null) {
-                localWebSocketClient.setExecutor(jettyThreadPool);
-
-                socketMonitor.start();
-
-                ret = true;
+                if (localWebSocketClient != null) {
+                    // Set the executor immediately after creation, before any start
+                    localWebSocketClient.setExecutor(localThreadPool);
+                    // Do not start the client here; let connectWebsocketSession() handle it, see
+                    // localWebsocketClient.start() there
+                    socketMonitor.start();
+                    ret = true;
+                } else {
+                    throw new IllegalStateException("WebSocketClient initialization failed");
+                }
             } else {
-                ret = false;
+                if (localWebSocketClient.isStarted()) {
+                    logger.debug("WebSocketClient is already started, skipping setExecutor()");
+                    ret = true; // Client exists and is running, no need to reconfigure
+                } else {
+                    // Set executor only if the client is not yet started
+                    logger.debug("WebSocketClient exists but not started, setting executor");
+                    localWebSocketClient.setExecutor(localThreadPool);
+                    socketMonitor.start();
+                    ret = true;
+                }
             }
-        } else {
-            ret = true;
+        } catch (Exception e) {
+            logger.warn("Error in openWebSocketConnection: {}", e.getMessage());
+            ret = false;
         }
 
         return ret;
@@ -652,6 +792,8 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler implements WebSoc
 
         // load configuration
         FreeAtHomeBridgeHandlerConfiguration locConfig = getConfigAs(FreeAtHomeBridgeHandlerConfiguration.class);
+
+        sendKeepAliveMessage = locConfig.sendKeepAliveMessage;
 
         ipAddress = locConfig.ipAddress;
         if (ipAddress.isBlank()) {
@@ -707,63 +849,133 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler implements WebSoc
     /**
      * Method to dispose
      */
+    @SuppressWarnings("null")
     @Override
     public void dispose() {
         // let run out the thread
+        logger.debug("Dispose called, interrupting socket monitor thread");
         socketMonitor.interrupt();
 
+        logger.debug("Closing WebSocket connection");
         closeWebSocketConnection();
+
+        if (jettyThreadPool != null) {
+            try {
+                logger.debug("Stopping Jetty thread pool");
+                jettyThreadPool.stop();
+            } catch (Exception e) {
+                logger.warn("Error stopping Jetty thread pool: {}", e.getMessage());
+            } finally {
+                jettyThreadPool = null;
+            }
+        }
     }
 
     /**
-     * Thread that maintains connection via Websocket.
+     * Inner class implementing the WebSocket monitor thread.
+     * This thread continuously monitors the WebSocket connection and attempts to reconnect if it fails.
      */
     private class FreeAtHomeWebsocketMonitorThread extends Thread {
 
-        // initial delay to initiate connection
-        private AtomicInteger reconnectDelay = new AtomicInteger();
+        // AtomicInteger to manage the delay (in seconds) before attempting to reconnect the WebSocket.
+        // This ensures thread-safe updates to the reconnect delay value across multiple threads.
+        private final AtomicInteger reconnectDelay = new AtomicInteger();
 
+        /**
+         * Default constructor for the FreeAtHomeWebsocketMonitorThread.
+         * Initializes a new instance of the monitor thread without any specific configuration.
+         * The reconnectDelay is implicitly initialized to 0 by AtomicInteger's default constructor.
+         */
         public FreeAtHomeWebsocketMonitorThread() {
+            // No additional initialization required at this point.
+            // The reconnectDelay is already set to 0 by default via AtomicInteger.
         }
 
+        /**
+         * Main execution method of the monitor thread.
+         * Runs a loop that checks the HTTP connection status and manages WebSocket reconnection attempts.
+         */
         @Override
         public void run() {
-            // set initial connect delay to 0
+            // Initialize reconnect delay to 0
             reconnectDelay.set(0);
+            int reconnectCounter = 0; // Counter for reconnection attempts
 
-            try {
-                while (!isInterrupted()) {
+            while (!isInterrupted()) {
+                try {
                     if (httpConnectionOK.get()) {
+                        reconnectCounter++;
+                        logger.debug("httpConnectionOK: {}", httpConnectionOK.get());
+                        logger.debug("Attempting WebSocket connection, attempt #{}", reconnectCounter);
+
+                        // Attempt to establish the WebSocket connection
                         if (connectSession()) {
+                            logger.debug("WebSocket connection established, starting monitoring");
+                            int aliveCounter = 0; // Counter for successful alive checks
+
+                            // Inner loop to monitor the active WebSocket connection
                             while (isSocketConnectionAlive()) {
+                                logger.debug(
+                                        "isSocketConnectionAlive is true, aliveCounter {}, (re)connectCounter {}, sleeping for {}s, SysApp Version {}, jetty {}, lastReceived {}ms ago",
+                                        aliveCounter++, reconnectCounter, BRIDGE_WEBSOCKET_KEEPALIVE, sysapVersion,
+                                        org.eclipse.jetty.util.Jetty.VERSION,
+                                        lastReceivedTime == 0 ? "nothing recieved yet"
+                                                : System.currentTimeMillis() - lastReceivedTime);
+
+                                // Sleep for the keep-alive interval to periodically check the connection
                                 TimeUnit.SECONDS.sleep(BRIDGE_WEBSOCKET_KEEPALIVE);
 
-                                logger.debug("Sending keep-alive message {}", System.currentTimeMillis());
-                                sendWebsocketKeepAliveMessage("keep-alive");
+                                // Send keep-alive message or ping based on configuration
+                                if (sendKeepAliveMessage) {
+                                    logger.debug("Sending keep-alive message, System.currentTimeMillis {}ms",
+                                            System.currentTimeMillis());
+                                    sendWebsocketKeepAliveMessage("keep-alive");
+                                } else {
+                                    logger.debug("Sending ping message, System.currentTimeMillis {}ms",
+                                            System.currentTimeMillis());
+                                    sendWebsocketPing();
+                                }
                             }
+                            logger.debug("Socket connection closed - isSocketConnectionAlive == false");
+                        } else {
+                            // Log if the connection attempt failed
+                            logger.debug("WebSocket connection attempt failed");
                         }
-                        logger.debug("Socket connection closed");
-                        reconnectDelay.set(BRIDGE_WEBSOCKET_RECONNECT_DELAY);
+
+                        // Delay before the next reconnect attempt
+                        logger.debug("Delaying (re)connect request by {} seconds", BRIDGE_WEBSOCKET_RECONNECT_DELAY);
+                        TimeUnit.SECONDS.sleep(BRIDGE_WEBSOCKET_RECONNECT_DELAY);
                     } else {
+                        logger.debug("httpConnectionOK NOT True, this should not happen");
+                        logger.debug("Retrying in {} seconds", BRIDGE_WEBSOCKET_RECONNECT_DELAY);
                         TimeUnit.SECONDS.sleep(BRIDGE_WEBSOCKET_RECONNECT_DELAY);
                     }
+                } catch (InterruptedException e) {
+                    // Handle thread interruption (e.g., during shutdown)
+                    Thread.currentThread().interrupt();
+                    logger.debug("WebSocket monitor thread interrupted as expected during shutdown");
+                } catch (IOException e) {
+                    // Handle IO errors (e.g., from sendWebsocketKeepAliveMessage or sendWebsocketPing)
+                    logger.warn("Error in WebSocket communication: {}", e.getMessage());
+                    try {
+                        // Delay before retrying after an IO error
+                        logger.debug("Retrying after IO error in {} seconds", BRIDGE_WEBSOCKET_RECONNECT_DELAY);
+                        TimeUnit.SECONDS.sleep(BRIDGE_WEBSOCKET_RECONNECT_DELAY);
+                    } catch (InterruptedException ie) {
+                        Thread.currentThread().interrupt();
+                        logger.debug("Interrupted during IO error recovery {}", ie.getMessage());
+                    }
                 }
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "@text/comm-error.general-websocket-issue");
-            } catch (IOException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "@text/comm-error.websocket-keep-alive-error");
             }
+            // Log when the thread stops
+            logger.debug("WebSocket monitor thread stopped");
         }
 
         private boolean connectSession() throws InterruptedException {
             int delay = reconnectDelay.get();
 
             if (delay > 0) {
-                logger.debug("Delaying (re)connect request by {} seconds.", reconnectDelay);
+                logger.debug("Delaying (re)connect request by {} seconds.", delay);
                 TimeUnit.SECONDS.sleep(delay);
             }
 
@@ -778,15 +990,25 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler implements WebSoc
                 return false;
             }
 
-            if (websocketSession == null) {
-                lock.lock();
-                try {
-                    websocketSessionEstablished.await();
-                } finally {
-                    lock.unlock();
+            // Wait for connection to be established or fail with a timeout
+            lock.lock();
+            try {
+                if (websocketSession == null) {
+                    boolean established = websocketSessionEstablished.await(BRIDGE_WEBSOCKET_TIMEOUT, TimeUnit.SECONDS);
+                    if (!established || websocketSession == null) {
+                        logger.trace("WebSocket connection timed out or failed during establishment");
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                "@text/comm-error.general-websocket-issue");
+                        reconnectDelay.set(BRIDGE_WEBSOCKET_RECONNECT_DELAY);
+                        return false;
+                    }
                 }
+            } finally {
+                lock.unlock();
             }
 
+            logger.debug("WebSocket session successfully established");
+            reconnectDelay.set(0); // Reset delay on successful connection
             return true;
         }
     }
@@ -803,14 +1025,40 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler implements WebSoc
     }
 
     /**
-     * Get socket alive state
-     * 
-     * @throws InterruptedException
+     * Send ping message to SysAp
      */
-    public boolean isSocketConnectionAlive() throws InterruptedException {
+    public void sendWebsocketPing() throws IOException {
         Session localSession = websocketSession;
 
-        return (localSession != null) ? localSession.isOpen() : false;
+        if (localSession != null) {
+            localSession.getRemote().sendPing(ByteBuffer.wrap("ping".getBytes()));
+        }
+    }
+
+    /**
+     * Get socket alive state
+     *
+     * @throws InterruptedException
+     */
+    public boolean isSocketConnectionAlive() {
+        Session localSession = websocketSession;
+
+        if (localSession == null) {
+            logger.debug("Socket connection is null");
+            return false;
+        } else if (!localSession.isOpen()) {
+            logger.debug("Socket connection is closed");
+            return false;
+        } else if (lastReceivedTime != 0) {
+            long timeSinceLastReceived = System.currentTimeMillis() - lastReceivedTime;
+            if (timeSinceLastReceived > BRIDGE_WEBSOCKET_TIMEOUT * 1000) {
+                logger.warn("No data received for {} ms, assuming connection is dead", timeSinceLastReceived);
+                localSession.close(StatusCode.ABNORMAL, "No data received");
+                return false;
+            }
+            return true;
+        }
+        return true;
     }
 
     /**
@@ -819,7 +1067,8 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler implements WebSoc
     @Override
     public void onWebSocketClose(int statusCode, @Nullable String reason) {
         websocketSession = null;
-        logger.debug("Socket Closed: [ {} ] {}", statusCode, reason);
+        lastReceivedTime = 0;
+        logger.warn("Socket Closed: [ {} ] {}", statusCode, reason);
     }
 
     /**
@@ -831,12 +1080,29 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler implements WebSoc
 
         if (localSession != null) {
             websocketSession = localSession;
+            localSession.setIdleTimeout(2 * BRIDGE_WEBSOCKET_KEEPALIVE * 1000); // Unit is milliseconds,
+                                                                                // sendWebsocketPing() and
+                                                                                // sendWebsocketKeepAliveMessage() are
+                                                                                // called every
+                                                                                // BRIDGE_WEBSOCKET_KEEPALIVE, so the
+                                                                                // timeout should be at least 2 times
+                                                                                // that
+            logger.debug("WebSocket connection to SysAP established successfully, timeout: {} ms",
+                    localSession.getIdleTimeout());
 
-            localSession.setIdleTimeout(-1);
+            // Fetch the SysAP version after a successful connection establishment
+            if (fetchSysapVersion()) {
+                logger.debug("SysAP version fetched successfully after reconnect: {}", sysapVersion);
+                updateStatus(ThingStatus.ONLINE); // Set the status to ONLINE
+            } else {
+                logger.warn("Failed to fetch SysAP version after successful reconnect");
+                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "@text/comm-error.fetch-version-error");
+            }
 
-            logger.debug("Socket Connected - Timeout {} - sesson: {}", localSession.getIdleTimeout(), session);
+            lastReceivedTime = System.currentTimeMillis();
         } else {
-            logger.debug("Socket Connected - Timeout (invalid) - sesson: (invalid)");
+            logger.debug("Socket Connected - Timeout (invalid) - session: (invalid)");
         }
 
         lock.lock();
@@ -852,13 +1118,31 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler implements WebSoc
      */
     @Override
     public void onWebSocketError(@Nullable Throwable cause) {
+        Session localSession = websocketSession;
+
+        // Log the error with details if available
+        if (cause != null) {
+            logger.warn("WebSocket error occurred: {}", cause.getLocalizedMessage());
+        } else {
+            logger.warn("WebSocket error occurred: unknown cause");
+        }
+
+        // Check and close the session if it is still open
+        if (localSession != null && localSession.isOpen()) {
+            try {
+                localSession.close(StatusCode.ABNORMAL, "Closed due to error");
+                logger.debug("WebSocket session closed due to error");
+            } catch (Exception e) {
+                logger.warn("Failed to close WebSocket session: {}", e.getMessage());
+            }
+        }
+
+        // Set the session to null to indicate it is no longer valid
         websocketSession = null;
 
-        if (cause != null) {
-            logger.debug("Socket Error: {}", cause.getLocalizedMessage());
-        } else {
-            logger.debug("Socket Error: unknown");
-        }
+        // Update the thing status to OFFLINE with error details
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                "WebSocket connection failed: " + (cause != null ? cause.getMessage() : "unknown error"));
     }
 
     /**
@@ -867,7 +1151,7 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler implements WebSoc
     @Override
     @NonNullByDefault({})
     public void onWebSocketBinary(byte[] payload, int offset, int len) {
-        logger.debug("Binary message received via websocket");
+        logger.warn("Binary message received via websocket - It shall not happen with the free@home SysAp");
     }
 
     /**
@@ -876,6 +1160,7 @@ public class FreeAtHomeBridgeHandler extends BaseBridgeHandler implements WebSoc
     @Override
     public void onWebSocketText(@Nullable String message) {
         if (message != null) {
+            lastReceivedTime = System.currentTimeMillis();
             if (message.toLowerCase(Locale.US).contains("bye")) {
                 Session localSession = websocketSession;
 

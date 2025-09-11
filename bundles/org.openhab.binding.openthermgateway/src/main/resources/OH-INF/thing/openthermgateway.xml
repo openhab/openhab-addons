@@ -6,6 +6,7 @@
 	<bridge-type id="openthermgateway">
 		<label>OpenTherm Gateway</label>
 		<description>OpenTherm Gateway</description>
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 		<channels>
 			<channel id="sendcommand" typeId="sendcommand"/>
 		</channels>

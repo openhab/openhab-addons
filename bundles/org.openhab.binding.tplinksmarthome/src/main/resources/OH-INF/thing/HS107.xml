@@ -8,7 +8,7 @@
 		<label>HS107</label>
 		<description>TP-Link HS107 Smart Wi-Fi Plug, 2-Outlets</description>
 		<category>PowerOutlet</category>
-
+		<semantic-equipment-tag>PowerOutlet</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="groupSwitch" typeId="switch-group"/>
 			<channel-group id="outlet1" typeId="switch-outlet">

@@ -37,6 +37,7 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
+import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
@@ -449,94 +450,122 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
         return thing;
     }
 
+    public List<Thing> findAllZoneThings() {
+        List<Thing> things = getThing().getThings();
+        return things.stream().filter(this::isZoneThing).toList();
+    }
+
+    private boolean isZoneThing(Thing thing) {
+        ThingHandler thingHandler = thing.getHandler();
+        if (thingHandler == null) {
+            return false;
+        }
+
+        DSCAlarmBaseThingHandler handler = (DSCAlarmBaseThingHandler) thingHandler;
+        return DSCAlarmThingType.ZONE.equals(handler.getDSCAlarmThingType());
+    }
+
     /**
      * Handles an incoming message from the DSC Alarm System.
      *
      * @param incomingMessage
      */
     public synchronized void handleIncomingMessage(String incomingMessage) {
-        if (incomingMessage != null && !incomingMessage.isEmpty()) {
-            DSCAlarmMessage dscAlarmMessage = new DSCAlarmMessage(incomingMessage);
-            DSCAlarmMessageType dscAlarmMessageType = dscAlarmMessage.getDSCAlarmMessageType();
+        if (incomingMessage == null || incomingMessage.isEmpty()) {
+            logger.debug("handleIncomingMessage(): No Message Received!");
+            return;
+        }
 
-            logger.debug("handleIncomingMessage(): Message received: {} - {}", incomingMessage,
-                    dscAlarmMessage.toString());
+        DSCAlarmMessage dscAlarmMessage = new DSCAlarmMessage(incomingMessage);
+        DSCAlarmMessageType dscAlarmMessageType = dscAlarmMessage.getDSCAlarmMessageType();
 
-            DSCAlarmEvent event = new DSCAlarmEvent(this);
-            event.dscAlarmEventMessage(dscAlarmMessage);
-            DSCAlarmThingType dscAlarmThingType = null;
-            int partitionId = 0;
-            int zoneId = 0;
+        logger.debug("handleIncomingMessage(): Message received: {} - {}", incomingMessage, dscAlarmMessage);
 
-            DSCAlarmCode dscAlarmCode = DSCAlarmCode
-                    .getDSCAlarmCodeValue(dscAlarmMessage.getMessageInfo(DSCAlarmMessageInfoType.CODE));
+        DSCAlarmCode dscAlarmCode = DSCAlarmCode
+                .getDSCAlarmCodeValue(dscAlarmMessage.getMessageInfo(DSCAlarmMessageInfoType.CODE));
 
-            if (panelThingHandler != null) {
-                panelThingHandler.setPanelMessage(dscAlarmMessage);
+        if (panelThingHandler != null) {
+            panelThingHandler.setPanelMessage(dscAlarmMessage);
+        }
+
+        if (dscAlarmCode == DSCAlarmCode.LoginResponse) {
+            String dscAlarmMessageData = dscAlarmMessage.getMessageInfo(DSCAlarmMessageInfoType.DATA);
+            if ("3".equals(dscAlarmMessageData)) {
+                sendCommand(DSCAlarmCode.NetworkLogin);
+                // onConnected();
+            } else if ("1".equals(dscAlarmMessageData)) {
+                onConnected();
             }
-
-            if (dscAlarmCode == DSCAlarmCode.LoginResponse) {
-                String dscAlarmMessageData = dscAlarmMessage.getMessageInfo(DSCAlarmMessageInfoType.DATA);
-                if ("3".equals(dscAlarmMessageData)) {
-                    sendCommand(DSCAlarmCode.NetworkLogin);
-                    // onConnected();
-                } else if ("1".equals(dscAlarmMessageData)) {
-                    onConnected();
-                }
-                return;
-            } else if (dscAlarmCode == DSCAlarmCode.CommandAcknowledge) {
-                String dscAlarmMessageData = dscAlarmMessage.getMessageInfo(DSCAlarmMessageInfoType.DATA);
-                if ("000".equals(dscAlarmMessageData)) {
-                    setBridgeStatus(true);
-                }
+            return;
+        } else if (dscAlarmCode == DSCAlarmCode.CommandAcknowledge) {
+            String dscAlarmMessageData = dscAlarmMessage.getMessageInfo(DSCAlarmMessageInfoType.DATA);
+            if ("000".equals(dscAlarmMessageData)) {
+                setBridgeStatus(true);
             }
+        }
 
-            switch (dscAlarmMessageType) {
-                case PANEL_EVENT:
-                    dscAlarmThingType = DSCAlarmThingType.PANEL;
-                    break;
-                case PARTITION_EVENT:
-                    dscAlarmThingType = DSCAlarmThingType.PARTITION;
-                    partitionId = Integer
-                            .parseInt(event.getDSCAlarmMessage().getMessageInfo(DSCAlarmMessageInfoType.PARTITION));
-                    break;
-                case ZONE_EVENT:
-                    dscAlarmThingType = DSCAlarmThingType.ZONE;
-                    zoneId = Integer.parseInt(event.getDSCAlarmMessage().getMessageInfo(DSCAlarmMessageInfoType.ZONE));
-                    break;
-                case KEYPAD_EVENT:
-                    dscAlarmThingType = DSCAlarmThingType.KEYPAD;
-                    break;
-                default:
-                    break;
+        DSCAlarmEvent event = new DSCAlarmEvent(this);
+        event.dscAlarmEventMessage(dscAlarmMessage);
+
+        DSCAlarmThingType dscAlarmThingType = null;
+        int partitionId = 0;
+        int zoneId = 0;
+
+        switch (dscAlarmMessageType) {
+            case PANEL_EVENT:
+                dscAlarmThingType = DSCAlarmThingType.PANEL;
+                break;
+            case PARTITION_EVENT:
+                dscAlarmThingType = DSCAlarmThingType.PARTITION;
+                partitionId = Integer
+                        .parseInt(event.getDSCAlarmMessage().getMessageInfo(DSCAlarmMessageInfoType.PARTITION));
+                break;
+            case ZONE_EVENT:
+                dscAlarmThingType = DSCAlarmThingType.ZONE;
+                zoneId = Integer.parseInt(event.getDSCAlarmMessage().getMessageInfo(DSCAlarmMessageInfoType.ZONE));
+                break;
+            case KEYPAD_EVENT:
+                dscAlarmThingType = DSCAlarmThingType.KEYPAD;
+                break;
+            default:
+                break;
+        }
+
+        if (dscAlarmThingType == null) {
+            return;
+        }
+
+        if (DSCAlarmCode.BypassedZonesBitfield.equals(dscAlarmCode)) {
+            List<Thing> allZoneThings = findAllZoneThings();
+            for (Thing zone : allZoneThings) {
+                handleIncomingMessage(event, zone, dscAlarmThingType);
             }
+        } else {
+            Thing thing = findThing(dscAlarmThingType, partitionId, zoneId);
+            handleIncomingMessage(event, thing, dscAlarmThingType);
+        }
+    }
 
-            if (dscAlarmThingType != null) {
-                Thing thing = findThing(dscAlarmThingType, partitionId, zoneId);
+    private void handleIncomingMessage(DSCAlarmEvent event, Thing thing, DSCAlarmThingType dscAlarmThingType) {
+        logger.debug("handleIncomingMessage(): Thing Search - '{}'", thing);
 
-                logger.debug("handleIncomingMessage(): Thing Search - '{}'", thing);
+        if (thing != null) {
+            DSCAlarmBaseThingHandler thingHandler = (DSCAlarmBaseThingHandler) thing.getHandler();
 
-                if (thing != null) {
-                    DSCAlarmBaseThingHandler thingHandler = (DSCAlarmBaseThingHandler) thing.getHandler();
+            if (thingHandler != null) {
+                if (thingHandler.isThingHandlerInitialized() && thing.getStatus() == ThingStatus.ONLINE) {
+                    thingHandler.dscAlarmEventReceived(event, thing);
 
-                    if (thingHandler != null) {
-                        if (thingHandler.isThingHandlerInitialized() && thing.getStatus() == ThingStatus.ONLINE) {
-                            thingHandler.dscAlarmEventReceived(event, thing);
-
-                        } else {
-                            logger.debug("handleIncomingMessage(): Thing '{}' Not Refreshed!", thing.getUID());
-                        }
-                    }
                 } else {
-                    logger.debug("handleIncomingMessage(): Thing Not Found! Send to Discovery Service!");
-
-                    if (dscAlarmDiscoveryService != null) {
-                        dscAlarmDiscoveryService.addThing(getThing(), dscAlarmThingType, event);
-                    }
+                    logger.debug("handleIncomingMessage(): Thing '{}' Not Refreshed!", thing.getUID());
                 }
             }
         } else {
-            logger.debug("handleIncomingMessage(): No Message Received!");
+            logger.debug("handleIncomingMessage(): Thing Not Found! Send to Discovery Service!");
+
+            if (dscAlarmDiscoveryService != null) {
+                dscAlarmDiscoveryService.addThing(getThing(), dscAlarmThingType, event);
+            }
         }
     }
 

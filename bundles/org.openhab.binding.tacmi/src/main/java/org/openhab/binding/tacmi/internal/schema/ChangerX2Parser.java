@@ -54,7 +54,6 @@ public class ChangerX2Parser extends AbstractSimpleMarkupHandler {
     private Map<String, @Nullable String> options;
 
     public ChangerX2Parser(String channelName) {
-        super();
         this.options = new LinkedHashMap<>();
         this.channelName = channelName;
     }

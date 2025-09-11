@@ -18,9 +18,9 @@ import static org.openhab.binding.mercedesme.internal.Constants.*;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.mercedesme.FileReader;
 import org.openhab.binding.mercedesme.internal.Constants;
@@ -40,9 +40,13 @@ import org.openhab.core.thing.link.ItemChannelLinkRegistry;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.UnDefType;
 
+import com.daimler.mbcarkit.proto.VehicleEvents.PushMessage;
+import com.daimler.mbcarkit.proto.VehicleEvents.PushMessage.Builder;
 import com.daimler.mbcarkit.proto.VehicleEvents.VEPUpdate;
 import com.daimler.mbcarkit.proto.Vehicleapi.AppTwinCommandStatus;
 import com.daimler.mbcarkit.proto.Vehicleapi.AppTwinCommandStatusUpdatesByPID;
+import com.google.protobuf.InvalidProtocolBufferException;
+import com.google.protobuf.util.JsonFormat;
 
 /**
  * {@link VehicleHandlerTest} check state updates and command sending of vehicles
@@ -59,7 +63,12 @@ class VehicleHandlerTest {
     public static final int POSITIONING_UPDATE_COUNT = 3;
 
     private static final int EVENT_STORAGE_COUNT = HVAC_UPDATE_COUNT + POSITIONING_UPDATE_COUNT + ECOSCORE_UPDATE_COUNT
-            + 76;
+            + 77;
+
+    @BeforeAll
+    public static void init() {
+        Utils.initialize(Utils.timeZoneProvider, Utils.localeProvider);
+    }
 
     public static Map<String, Object> createBEV() {
         Thing thingMock = mock(Thing.class);
@@ -67,17 +76,22 @@ class VehicleHandlerTest {
         when(thingMock.getUID()).thenReturn(new ThingUID("test", Constants.BEV));
         when(thingMock.getProperties()).thenReturn(Map.of(MB_KEY_COMMAND_CHARGE_PROGRAM_CONFIGURE, "true"));
         AccountHandlerMock ahm = new AccountHandlerMock();
-        VehicleHandler vh = new VehicleHandler(thingMock, new LocationProviderMock(),
-                mock(MercedesMeCommandOptionProvider.class), mock(MercedesMeStateOptionProvider.class));
-        vh.accountHandler = Optional.of(ahm);
+        MercedesMeCommandOptionProviderMock commandOptionMock = new MercedesMeCommandOptionProviderMock();
+        MercedesMeDynamicStateDescriptionProviderMock<?> patternMock = new MercedesMeDynamicStateDescriptionProviderMock<>(
+                mock(EventPublisher.class), mock(ItemChannelLinkRegistry.class),
+                mock(ChannelTypeI18nLocalizationService.class));
+        VehicleHandler vh = new VehicleHandler(thingMock, new LocationProviderMock(), commandOptionMock, patternMock);
+        vh.accountHandler = ahm;
         VehicleConfiguration vehicleConfig = new VehicleConfiguration();
-        vh.config = Optional.of(vehicleConfig);
+        vh.config = vehicleConfig;
         ThingCallbackListener updateListener = new ThingCallbackListener();
         vh.setCallback(updateListener);
         Map<String, Object> instances = new HashMap<>();
+        instances.put(Thing.class.getCanonicalName(), thingMock);
         instances.put(ThingCallbackListener.class.getCanonicalName(), updateListener);
         instances.put(VehicleHandler.class.getCanonicalName(), vh);
-        instances.put(AccountHandlerMock.class.getCanonicalName(), ahm);
+        instances.put(MercedesMeCommandOptionProviderMock.class.getCanonicalName(), commandOptionMock);
+        instances.put(MercedesMeDynamicStateDescriptionProviderMock.class.getCanonicalName(), patternMock);
         return instances;
     }
 
@@ -88,9 +102,9 @@ class VehicleHandlerTest {
         AccountHandlerMock ahm = new AccountHandlerMock();
         VehicleHandler vh = new VehicleHandler(thingMock, new LocationProviderMock(),
                 mock(MercedesMeCommandOptionProvider.class), mock(MercedesMeStateOptionProvider.class));
-        vh.accountHandler = Optional.of(ahm);
+        vh.accountHandler = ahm;
         VehicleConfiguration vehicleConfig = new VehicleConfiguration();
-        vh.config = Optional.of(vehicleConfig);
+        vh.config = vehicleConfig;
         ThingCallbackListener updateListener = new ThingCallbackListener();
         vh.setCallback(updateListener);
         Map<String, Object> instances = new HashMap<>();
@@ -102,20 +116,16 @@ class VehicleHandlerTest {
 
     @Test
     public void testBEVFullUpdateNoCapacities() {
-        Thing thingMock = mock(Thing.class);
-        when(thingMock.getThingTypeUID()).thenReturn(Constants.THING_TYPE_BEV);
-        when(thingMock.getUID()).thenReturn(new ThingUID("test", Constants.BEV));
-        VehicleHandler vh = new VehicleHandler(thingMock, new LocationProviderMock(),
-                mock(MercedesMeCommandOptionProvider.class), mock(MercedesMeStateOptionProvider.class));
-        vh.accountHandler = Optional.of(mock(AccountHandler.class));
-        VehicleConfiguration vehicleConfig = new VehicleConfiguration();
-        vh.config = Optional.of(vehicleConfig);
-        ThingCallbackListener updateListener = new ThingCallbackListener();
-        vh.setCallback(updateListener);
+        Map<String, Object> instances = createBEV();
+        ThingCallbackListener updateListener = (ThingCallbackListener) instances
+                .get(ThingCallbackListener.class.getCanonicalName());
+        VehicleHandler vHandler = (VehicleHandler) instances.get(VehicleHandler.class.getCanonicalName());
+        assertNotNull(updateListener);
+        assertNotNull(vHandler);
 
         String json = FileReader.readFileInString("src/test/resources/proto-json/MB-BEV-EQA.json");
         VEPUpdate update = ProtoConverter.json2Proto(json, true);
-        vh.enqueueUpdate(update);
+        vHandler.enqueueUpdate(update);
         updateListener.waitForUpdates();
 
         assertEquals(GROUP_COUNT, updateListener.updatesPerGroupMap.size(), "Group Update Count");
@@ -125,7 +135,7 @@ class VehicleHandlerTest {
         assertEquals(12, updateListener.getUpdatesForGroup("trip"), "Trip Update Count");
         assertEquals(10, updateListener.getUpdatesForGroup("tires"), "Tire Update Count");
         assertEquals(6, updateListener.getUpdatesForGroup("service"), "Service Update Count");
-        assertEquals(7, updateListener.getUpdatesForGroup("range"), "Range Update Count");
+        assertEquals(8, updateListener.getUpdatesForGroup("range"), "Range Update Count");
         assertEquals(POSITIONING_UPDATE_COUNT, updateListener.getUpdatesForGroup("position"), "Position Update Count");
         assertEquals(5, updateListener.getUpdatesForGroup("lock"), "Lock Update Count");
         assertEquals(HVAC_UPDATE_COUNT, updateListener.getUpdatesForGroup("hvac"), "HVAC Update Count");
@@ -134,25 +144,22 @@ class VehicleHandlerTest {
 
     @Test
     public void testBEVImperialUnits() {
-        Thing thingMock = mock(Thing.class);
-        when(thingMock.getThingTypeUID()).thenReturn(Constants.THING_TYPE_BEV);
-        when(thingMock.getUID()).thenReturn(new ThingUID("test", Constants.BEV));
-        MercedesMeDynamicStateDescriptionProviderMock<?> patternMock = new MercedesMeDynamicStateDescriptionProviderMock<>(
-                mock(EventPublisher.class), mock(ItemChannelLinkRegistry.class),
-                mock(ChannelTypeI18nLocalizationService.class));
-        MercedesMeCommandOptionProviderMock commandOptionMock = new MercedesMeCommandOptionProviderMock();
-        VehicleHandler vh = new VehicleHandler(thingMock, new LocationProviderMock(), commandOptionMock, patternMock);
-
-        AccountHandlerMock ahm = new AccountHandlerMock();
-        vh.accountHandler = Optional.of(ahm);
-        VehicleConfiguration vehicleConfig = new VehicleConfiguration();
-        vh.config = Optional.of(vehicleConfig);
-        ThingCallbackListener updateListener = new ThingCallbackListener();
-        vh.setCallback(updateListener);
+        Map<String, Object> instances = createBEV();
+        ThingCallbackListener updateListener = (ThingCallbackListener) instances
+                .get(ThingCallbackListener.class.getCanonicalName());
+        VehicleHandler vHandler = (VehicleHandler) instances.get(VehicleHandler.class.getCanonicalName());
+        MercedesMeCommandOptionProviderMock commandOptionMock = (MercedesMeCommandOptionProviderMock) instances
+                .get(MercedesMeCommandOptionProviderMock.class.getCanonicalName());
+        MercedesMeDynamicStateDescriptionProviderMock<?> patternMock = (MercedesMeDynamicStateDescriptionProviderMock<?>) instances
+                .get(MercedesMeDynamicStateDescriptionProviderMock.class.getCanonicalName());
+        assertNotNull(updateListener);
+        assertNotNull(vHandler);
+        assertNotNull(commandOptionMock);
+        assertNotNull(patternMock);
 
         String json = FileReader.readFileInString("src/test/resources/proto-json/MB-BEV-ImperialUnits.json");
         VEPUpdate update = ProtoConverter.json2Proto(json, true);
-        vh.enqueueUpdate(update);
+        vHandler.enqueueUpdate(update);
         updateListener.waitForUpdates();
 
         assertEquals(GROUP_COUNT, updateListener.updatesPerGroupMap.size(), "Group Update Count");
@@ -162,7 +169,7 @@ class VehicleHandlerTest {
         assertEquals(12, updateListener.getUpdatesForGroup("trip"), "Trip Update Count");
         assertEquals(10, updateListener.getUpdatesForGroup("tires"), "Tire Update Count");
         assertEquals(6, updateListener.getUpdatesForGroup("service"), "Service Update Count");
-        assertEquals(7, updateListener.getUpdatesForGroup("range"), "Range Update Count");
+        assertEquals(8, updateListener.getUpdatesForGroup("range"), "Range Update Count");
         assertEquals(POSITIONING_UPDATE_COUNT, updateListener.getUpdatesForGroup("position"), "Position Update Count");
         assertEquals(5, updateListener.getUpdatesForGroup("lock"), "Lock Update Count");
         assertEquals(HVAC_UPDATE_COUNT, updateListener.getUpdatesForGroup("hvac"), "HVAC Update Count");
@@ -189,7 +196,7 @@ class VehicleHandlerTest {
         // overwrite with EU Units
         json = FileReader.readFileInString("src/test/resources/proto-json/MB-BEV-EQA.json");
         update = ProtoConverter.json2Proto(json, true);
-        vh.enqueueUpdate(update);
+        vHandler.enqueueUpdate(update);
         updateListener.waitForUpdates();
 
         assertEquals("%.1f °C", patternMock.patternMap.get("test::bev:hvac#temperature"), "Temperature Pattern");
@@ -200,20 +207,20 @@ class VehicleHandlerTest {
 
     @Test
     public void testBEVCharging() {
-        Thing thingMock = mock(Thing.class);
-        when(thingMock.getThingTypeUID()).thenReturn(Constants.THING_TYPE_BEV);
-        when(thingMock.getUID()).thenReturn(new ThingUID("test", Constants.BEV));
-        VehicleHandler vh = new VehicleHandler(thingMock, new LocationProviderMock(),
-                mock(MercedesMeCommandOptionProvider.class), mock(MercedesMeStateOptionProvider.class));
-        vh.accountHandler = Optional.of(mock(AccountHandler.class));
+        Map<String, Object> instances = createBEV();
+        ThingCallbackListener updateListener = (ThingCallbackListener) instances
+                .get(ThingCallbackListener.class.getCanonicalName());
+        VehicleHandler vHandler = (VehicleHandler) instances.get(VehicleHandler.class.getCanonicalName());
+        assertNotNull(updateListener);
+        assertNotNull(vHandler);
+
         VehicleConfiguration vehicleConfig = new VehicleConfiguration();
-        vh.config = Optional.of(vehicleConfig);
-        ThingCallbackListener updateListener = new ThingCallbackListener();
-        vh.setCallback(updateListener);
+        vehicleConfig.batteryCapacity = (float) 66.5;
+        vHandler.config = vehicleConfig;
 
         String json = FileReader.readFileInString("src/test/resources/proto-json/MB-BEV-EQA-Charging.json");
         VEPUpdate update = ProtoConverter.json2Proto(json, true);
-        vh.enqueueUpdate(update);
+        vHandler.enqueueUpdate(update);
         updateListener.waitForUpdates();
 
         assertEquals(GROUP_COUNT, updateListener.updatesPerGroupMap.size(), "Group Update Count");
@@ -223,7 +230,7 @@ class VehicleHandlerTest {
         assertEquals(12, updateListener.getUpdatesForGroup("trip"), "Trip Update Count");
         assertEquals(10, updateListener.getUpdatesForGroup("tires"), "Tire Update Count");
         assertEquals(6, updateListener.getUpdatesForGroup("service"), "Service Update Count");
-        assertEquals(7, updateListener.getUpdatesForGroup("range"), "Range Update Count");
+        assertEquals(8, updateListener.getUpdatesForGroup("range"), "Range Update Count");
         assertEquals(POSITIONING_UPDATE_COUNT, updateListener.getUpdatesForGroup("position"), "Position Update Count");
         assertEquals(5, updateListener.getUpdatesForGroup("lock"), "Lock Update Count");
         assertEquals(HVAC_UPDATE_COUNT, updateListener.getUpdatesForGroup("hvac"), "HVAC Update Count");
@@ -234,24 +241,24 @@ class VehicleHandlerTest {
         assertEquals("0", updateListener.getResponse("test::bev:charge#status").toFullString(), "Charge Status");
         // No Error = 0
         assertEquals("0", updateListener.getResponse("test::bev:charge#error").toFullString(), "Charge Error");
+
+        assertEquals("3.990000009536743 kWh",
+                updateListener.getResponse("test::bev:range#energy-to-max-soc").toFullString(),
+                "Energy to max SoC Update");
     }
 
     @Test
     public void testBEVChargeEndtime() {
-        Thing thingMock = mock(Thing.class);
-        when(thingMock.getThingTypeUID()).thenReturn(Constants.THING_TYPE_BEV);
-        when(thingMock.getUID()).thenReturn(new ThingUID("test", Constants.BEV));
-        VehicleHandler vh = new VehicleHandler(thingMock, new LocationProviderMock(),
-                mock(MercedesMeCommandOptionProvider.class), mock(MercedesMeStateOptionProvider.class));
-        vh.accountHandler = Optional.of(mock(AccountHandler.class));
-        VehicleConfiguration vehicleConfig = new VehicleConfiguration();
-        vh.config = Optional.of(vehicleConfig);
-        ThingCallbackListener updateListener = new ThingCallbackListener();
-        vh.setCallback(updateListener);
+        Map<String, Object> instances = createBEV();
+        ThingCallbackListener updateListener = (ThingCallbackListener) instances
+                .get(ThingCallbackListener.class.getCanonicalName());
+        VehicleHandler vHandler = (VehicleHandler) instances.get(VehicleHandler.class.getCanonicalName());
+        assertNotNull(updateListener);
+        assertNotNull(vHandler);
 
         String json = FileReader.readFileInString("src/test/resources/proto-json/MB-BEV-EQA-Charging-Weekday.json");
         VEPUpdate update = ProtoConverter.json2Proto(json, true);
-        vh.enqueueUpdate(update);
+        vHandler.enqueueUpdate(update);
         updateListener.waitForUpdates();
 
         assertEquals("2023-09-09 13:54", ((DateTimeType) updateListener.getResponse("test::bev:charge#end-time"))
@@ -259,7 +266,7 @@ class VehicleHandlerTest {
 
         json = FileReader.readFileInString("src/test/resources/proto-json/MB-BEV-EQA-Charging-Weekday-Underrun.json");
         update = ProtoConverter.json2Proto(json, true);
-        vh.enqueueUpdate(update);
+        vHandler.enqueueUpdate(update);
         updateListener.waitForUpdates();
 
         assertEquals("2023-09-11 13:55", ((DateTimeType) updateListener.getResponse("test::bev:charge#end-time"))
@@ -268,20 +275,16 @@ class VehicleHandlerTest {
 
     @Test
     public void testBEVPartialChargingUpdate() {
-        Thing thingMock = mock(Thing.class);
-        when(thingMock.getThingTypeUID()).thenReturn(Constants.THING_TYPE_BEV);
-        when(thingMock.getUID()).thenReturn(new ThingUID("test", Constants.BEV));
-        VehicleHandler vh = new VehicleHandler(thingMock, new LocationProviderMock(),
-                mock(MercedesMeCommandOptionProvider.class), mock(MercedesMeStateOptionProvider.class));
-        vh.accountHandler = Optional.of(mock(AccountHandler.class));
-        VehicleConfiguration vehicleConfig = new VehicleConfiguration();
-        vh.config = Optional.of(vehicleConfig);
-        ThingCallbackListener updateListener = new ThingCallbackListener();
-        vh.setCallback(updateListener);
+        Map<String, Object> instances = createBEV();
+        ThingCallbackListener updateListener = (ThingCallbackListener) instances
+                .get(ThingCallbackListener.class.getCanonicalName());
+        VehicleHandler vHandler = (VehicleHandler) instances.get(VehicleHandler.class.getCanonicalName());
+        assertNotNull(updateListener);
+        assertNotNull(vHandler);
 
         String json = FileReader.readFileInString("src/test/resources/proto-json/PartialUpdate-Charging.json");
         VEPUpdate update = ProtoConverter.json2Proto(json, false);
-        vh.enqueueUpdate(update);
+        vHandler.enqueueUpdate(update);
         updateListener.waitForUpdates();
 
         assertEquals(2, updateListener.updatesReceived.size(), "Update Count");
@@ -292,20 +295,17 @@ class VehicleHandlerTest {
 
     @Test
     public void testBEVPartialGPSUpdate() {
-        Thing thingMock = mock(Thing.class);
-        when(thingMock.getThingTypeUID()).thenReturn(Constants.THING_TYPE_BEV);
-        when(thingMock.getUID()).thenReturn(new ThingUID("test", Constants.BEV));
-        VehicleHandler vh = new VehicleHandler(thingMock, new LocationProviderMock(),
-                mock(MercedesMeCommandOptionProvider.class), mock(MercedesMeStateOptionProvider.class));
-        vh.accountHandler = Optional.of(mock(AccountHandler.class));
-        VehicleConfiguration vehicleConfig = new VehicleConfiguration();
-        vh.config = Optional.of(vehicleConfig);
-        ThingCallbackListener updateListener = new ThingCallbackListener();
-        vh.setCallback(updateListener);
+        Map<String, Object> instances = createBEV();
+        ThingCallbackListener updateListener = (ThingCallbackListener) instances
+                .get(ThingCallbackListener.class.getCanonicalName());
+        VehicleHandler vHandler = (VehicleHandler) instances.get(VehicleHandler.class.getCanonicalName());
+        assertNotNull(updateListener);
+        assertNotNull(vHandler);
 
         String json = FileReader.readFileInString("src/test/resources/proto-json/PartialUpdate-GPS.json");
         VEPUpdate update = ProtoConverter.json2Proto(json, false);
-        vh.enqueueUpdate(update);
+        vHandler.enqueueUpdate(update);
+
         updateListener.waitForUpdates();
         assertEquals(3, updateListener.updatesReceived.size(), "Update Count");
         assertEquals("1.23,4.56", updateListener.getResponse("test::bev:position#gps").toFullString(), "GPS update");
@@ -315,20 +315,16 @@ class VehicleHandlerTest {
 
     @Test
     public void testBEVPartialRangeUpdate() {
-        Thing thingMock = mock(Thing.class);
-        when(thingMock.getThingTypeUID()).thenReturn(Constants.THING_TYPE_BEV);
-        when(thingMock.getUID()).thenReturn(new ThingUID("test", Constants.BEV));
-        VehicleHandler vh = new VehicleHandler(thingMock, new LocationProviderMock(),
-                mock(MercedesMeCommandOptionProvider.class), mock(MercedesMeStateOptionProvider.class));
-        vh.accountHandler = Optional.of(mock(AccountHandler.class));
-        VehicleConfiguration vehicleConfig = new VehicleConfiguration();
-        vh.config = Optional.of(vehicleConfig);
-        ThingCallbackListener updateListener = new ThingCallbackListener();
-        vh.setCallback(updateListener);
+        Map<String, Object> instances = createBEV();
+        ThingCallbackListener updateListener = (ThingCallbackListener) instances
+                .get(ThingCallbackListener.class.getCanonicalName());
+        VehicleHandler vHandler = (VehicleHandler) instances.get(VehicleHandler.class.getCanonicalName());
+        assertNotNull(updateListener);
+        assertNotNull(vHandler);
 
         String json = FileReader.readFileInString("src/test/resources/proto-json/PartialUpdate-Range.json");
         VEPUpdate update = ProtoConverter.json2Proto(json, false);
-        vh.enqueueUpdate(update);
+        vHandler.enqueueUpdate(update);
         updateListener.waitForUpdates();
 
         assertEquals(3, updateListener.updatesReceived.size(), "Update Count");
@@ -347,9 +343,9 @@ class VehicleHandlerTest {
         when(thingMock.getUID()).thenReturn(new ThingUID("test", Constants.HYBRID));
         VehicleHandler vh = new VehicleHandler(thingMock, new LocationProviderMock(),
                 mock(MercedesMeCommandOptionProvider.class), mock(MercedesMeStateOptionProvider.class));
-        vh.accountHandler = Optional.of(mock(AccountHandler.class));
+        vh.accountHandler = mock(AccountHandler.class);
         VehicleConfiguration vehicleConfig = new VehicleConfiguration();
-        vh.config = Optional.of(vehicleConfig);
+        vh.config = vehicleConfig;
         ThingCallbackListener updateListener = new ThingCallbackListener();
         vh.setCallback(updateListener);
 
@@ -365,7 +361,7 @@ class VehicleHandlerTest {
         assertEquals(12, updateListener.getUpdatesForGroup("trip"), "Trip Update Count");
         assertEquals(10, updateListener.getUpdatesForGroup("tires"), "Trip Update Count");
         assertEquals(8, updateListener.getUpdatesForGroup("service"), "Trip Update Count");
-        assertEquals(14, updateListener.getUpdatesForGroup("range"), "Update Upadte Count");
+        assertEquals(15, updateListener.getUpdatesForGroup("range"), "Update Upadte Count");
         assertEquals(POSITIONING_UPDATE_COUNT, updateListener.getUpdatesForGroup("position"), "Update Upadte Count");
         assertEquals(6, updateListener.getUpdatesForGroup("lock"), "Lock Update Count");
         assertEquals(HVAC_UPDATE_COUNT, updateListener.getUpdatesForGroup("hvac"), "HVAC Update Count");
@@ -379,11 +375,11 @@ class VehicleHandlerTest {
         when(thingMock.getUID()).thenReturn(new ThingUID("test", "hybrid"));
         VehicleHandler vh = new VehicleHandler(thingMock, new LocationProviderMock(),
                 mock(MercedesMeCommandOptionProvider.class), mock(MercedesMeStateOptionProvider.class));
-        vh.accountHandler = Optional.of(mock(AccountHandler.class));
+        vh.accountHandler = mock(AccountHandler.class);
         VehicleConfiguration vehicleConfig = new VehicleConfiguration();
         vehicleConfig.batteryCapacity = (float) 9.2;
         vehicleConfig.fuelCapacity = (float) 59.9;
-        vh.config = Optional.of(vehicleConfig);
+        vh.config = vehicleConfig;
         ThingCallbackListener updateListener = new ThingCallbackListener();
         vh.setCallback(updateListener);
 
@@ -397,6 +393,8 @@ class VehicleHandlerTest {
                 "Battery Charged Update");
         assertEquals("3.4000000953674316 kWh",
                 updateListener.getResponse("test::hybrid:range#uncharged").toFullString(), "Battery Uncharged Update");
+        assertEquals(UnDefType.NULL.toFullString(),
+                updateListener.getResponse("test::hybrid:range#energy-to-max-soc").toFullString(), "Energy to Max SoC");
         assertEquals("9.579999923706055 l", updateListener.getResponse("test::hybrid:range#tank-remain").toFullString(),
                 "Tank Remain Update");
         assertEquals("50.31999969482422 l", updateListener.getResponse("test::hybrid:range#tank-open").toFullString(),
@@ -410,9 +408,9 @@ class VehicleHandlerTest {
         when(thingMock.getUID()).thenReturn(new ThingUID("test", Constants.BEV));
         VehicleHandler vh = new VehicleHandler(thingMock, new LocationProviderMock(),
                 mock(MercedesMeCommandOptionProvider.class), mock(MercedesMeStateOptionProvider.class));
-        vh.accountHandler = Optional.of(mock(AccountHandler.class));
+        vh.accountHandler = mock(AccountHandler.class);
         VehicleConfiguration vehicleConfig = new VehicleConfiguration();
-        vh.config = Optional.of(vehicleConfig);
+        vh.config = vehicleConfig;
         ThingCallbackListener updateListener = new ThingCallbackListener();
         updateListener.linked = true;
         vh.setCallback(updateListener);
@@ -430,7 +428,7 @@ class VehicleHandlerTest {
         assertEquals(12, updateListener.getUpdatesForGroup("trip"), "Trip Update Count");
         assertEquals(10, updateListener.getUpdatesForGroup("tires"), "Tire Update Count");
         assertEquals(6, updateListener.getUpdatesForGroup("service"), "Service Update Count");
-        assertEquals(7, updateListener.getUpdatesForGroup("range"), "Range Update Count");
+        assertEquals(8, updateListener.getUpdatesForGroup("range"), "Range Update Count");
         assertEquals(POSITIONING_UPDATE_COUNT, updateListener.getUpdatesForGroup("position"), "Position Update Count");
         assertEquals(5, updateListener.getUpdatesForGroup("lock"), "Lock Update Count");
         assertEquals(HVAC_UPDATE_COUNT, updateListener.getUpdatesForGroup("hvac"), "HVAC Update Count");
@@ -459,9 +457,9 @@ class VehicleHandlerTest {
         when(thingMock.getUID()).thenReturn(new ThingUID("test", Constants.BEV));
         VehicleHandler vh = new VehicleHandler(thingMock, new LocationProviderMock(),
                 mock(MercedesMeCommandOptionProvider.class), mock(MercedesMeStateOptionProvider.class));
-        vh.accountHandler = Optional.of(mock(AccountHandler.class));
+        vh.accountHandler = mock(AccountHandler.class);
         VehicleConfiguration vehicleConfig = new VehicleConfiguration();
-        vh.config = Optional.of(vehicleConfig);
+        vh.config = vehicleConfig;
         ThingCallbackListener updateListener = new ThingCallbackListener();
         vh.setCallback(updateListener);
 
@@ -481,35 +479,31 @@ class VehicleHandlerTest {
 
     @Test
     public void testTemperaturePoints() {
-        Thing thingMock = mock(Thing.class);
-        when(thingMock.getThingTypeUID()).thenReturn(Constants.THING_TYPE_BEV);
-        when(thingMock.getUID()).thenReturn(new ThingUID("test", Constants.BEV));
-        VehicleHandler vh = new VehicleHandler(thingMock, new LocationProviderMock(),
-                mock(MercedesMeCommandOptionProvider.class), mock(MercedesMeStateOptionProvider.class));
-        vh.accountHandler = Optional.of(mock(AccountHandler.class));
-        VehicleConfiguration vehicleConfig = new VehicleConfiguration();
-        vh.config = Optional.of(vehicleConfig);
-        AccountHandlerMock ahm = new AccountHandlerMock();
-        vh.accountHandler = Optional.of(ahm);
-        ThingCallbackListener updateListener = new ThingCallbackListener();
-        vh.setCallback(updateListener);
+        Map<String, Object> instances = createBEV();
+        ThingCallbackListener updateListener = (ThingCallbackListener) instances
+                .get(ThingCallbackListener.class.getCanonicalName());
+        VehicleHandler vHandler = (VehicleHandler) instances.get(VehicleHandler.class.getCanonicalName());
+        Thing thing = (Thing) instances.get(Thing.class.getCanonicalName());
+        assertNotNull(updateListener);
+        assertNotNull(vHandler);
+        assertNotNull(thing);
 
         String json = FileReader.readFileInString("src/test/resources/proto-json/MB-Unknown.json");
         VEPUpdate update = ProtoConverter.json2Proto(json, true);
-        vh.enqueueUpdate(update);
+        vHandler.enqueueUpdate(update);
         updateListener.waitForUpdates();
         assertEquals("22 °C", updateListener.getResponse("test::bev:hvac#temperature").toFullString(),
                 "Temperature Point One Updated");
 
-        ChannelUID cuid = new ChannelUID(thingMock.getUID(), Constants.GROUP_HVAC, "zone");
+        ChannelUID cuid = new ChannelUID(thing.getUID(), Constants.GROUP_HVAC, "zone");
         updateListener = new ThingCallbackListener();
-        vh.setCallback(updateListener);
-        vh.handleCommand(cuid, new DecimalType(2));
+        vHandler.setCallback(updateListener);
+        vHandler.handleCommand(cuid, new DecimalType(2));
         assertEquals("2", updateListener.getResponse("test::bev:hvac#zone").toFullString(),
                 "Temperature Point One Updated");
         assertEquals("19 °C", updateListener.getResponse("test::bev:hvac#temperature").toFullString(),
                 "Temperature Point One Updated");
-        vh.handleCommand(cuid, new DecimalType(-1));
+        vHandler.handleCommand(cuid, new DecimalType(-1));
     }
 
     @Test
@@ -521,9 +515,9 @@ class VehicleHandlerTest {
         AccountHandlerMock ahm = new AccountHandlerMock();
         VehicleHandler vh = new VehicleHandler(thingMock, new LocationProviderMock(),
                 mock(MercedesMeCommandOptionProvider.class), mock(MercedesMeStateOptionProvider.class));
-        vh.accountHandler = Optional.of(ahm);
+        vh.accountHandler = ahm;
         VehicleConfiguration vehicleConfig = new VehicleConfiguration();
-        vh.config = Optional.of(vehicleConfig);
+        vh.config = vehicleConfig;
         ThingCallbackListener updateListener = new ThingCallbackListener();
         vh.setCallback(updateListener);
         String json = FileReader.readFileInString("src/test/resources/proto-json/MB-Unknown.json");
@@ -551,9 +545,9 @@ class VehicleHandlerTest {
         AccountHandlerMock ahm = new AccountHandlerMock();
         VehicleHandler vh = new VehicleHandler(thingMock, new LocationProviderMock(),
                 mock(MercedesMeCommandOptionProvider.class), mock(MercedesMeStateOptionProvider.class));
-        vh.accountHandler = Optional.of(ahm);
+        vh.accountHandler = ahm;
         VehicleConfiguration vehicleConfig = new VehicleConfiguration();
-        vh.config = Optional.of(vehicleConfig);
+        vh.config = vehicleConfig;
         ThingCallbackListener updateListener = new ThingCallbackListener();
         vh.setCallback(updateListener);
 
@@ -677,5 +671,48 @@ class VehicleHandlerTest {
 
         assertEquals("29 %", updateListener.getResponse("test::combustion:range#adblue-level").toFullString(),
                 "AdBlue Tank Level");
+    }
+
+    @Test
+    public void testChargeProgramUpdate() {
+        Map<String, Object> instances = createBEV();
+        ThingCallbackListener updateListener = (ThingCallbackListener) instances
+                .get(ThingCallbackListener.class.getCanonicalName());
+        VehicleHandler vHandler = (VehicleHandler) instances.get(VehicleHandler.class.getCanonicalName());
+        assertNotNull(updateListener);
+        assertNotNull(vHandler);
+
+        VehicleConfiguration vehicleConfig = new VehicleConfiguration();
+        vehicleConfig.batteryCapacity = (float) 66.5;
+        vHandler.config = vehicleConfig;
+
+        // One update to set the charge program
+        String initJson = FileReader.readFileInString("src/test/resources/proto-json/MB-BEV-ChargeProgram0.json");
+        VEPUpdate update = ProtoConverter.json2Proto(initJson, true);
+        vHandler.enqueueUpdate(update);
+        updateListener.waitForUpdates();
+
+        assertEquals("80 %", updateListener.getResponse("test::bev:charge#max-soc").toFullString(), "Max SoC init");
+        QuantityType<?> energy = (QuantityType<?>) updateListener.getResponse("test::bev:range#energy-to-max-soc");
+        assertEquals(3.990, energy.doubleValue(), 0.001, "Energy to max SoC init");
+
+        // Partial update
+        String json = FileReader.readFileInString("src/test/resources/proto-json/PartialUpdate-MaxSoc.json");
+        Builder pmBuilder = PushMessage.newBuilder();
+        try {
+            JsonFormat.parser().ignoringUnknownFields().merge(json, pmBuilder);
+        } catch (InvalidProtocolBufferException e) {
+            fail(e.getMessage());
+        }
+        PushMessage pm = pmBuilder.build();
+        assertTrue(pm.hasVepUpdates());
+        update = pm.getVepUpdates().getUpdatesMap().get("UNIT_TEST_VIN");
+        assertNotNull(update);
+        vHandler.enqueueUpdate(update);
+        updateListener.waitForUpdates();
+
+        energy = (QuantityType<?>) updateListener.getResponse("test::bev:range#energy-to-max-soc");
+        assertEquals("90 %", updateListener.getResponse("test::bev:charge#max-soc").toFullString(), "Max SoC update");
+        assertEquals(10.640, energy.doubleValue(), 0.001, "Energy to max SoC Update");
     }
 }

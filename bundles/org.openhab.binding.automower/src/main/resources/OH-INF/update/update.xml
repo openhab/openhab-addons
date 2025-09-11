@@ -1,0 +1,509 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<update:update-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:update="https://openhab.org/schemas/update-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/update-description/v1.0.0 https://openhab.org/schemas/update-description-1.0.0.xsd">
+
+	<thing-type uid="automower:automower">
+		<instruction-set targetVersion="1">
+			<!-- Status -->
+			<update-channel id="name" groupIds="status">
+				<type>automower:nameType</type>
+			</update-channel>
+			<update-channel id="mode" groupIds="status">
+				<type>automower:modeType</type>
+			</update-channel>
+			<update-channel id="activity" groupIds="status">
+				<type>automower:activityType</type>
+			</update-channel>
+			<add-channel id="inactive-reason" groupIds="status">
+				<type>automower:inactiveReasonType</type>
+			</add-channel>
+			<update-channel id="state" groupIds="status">
+				<type>automower:stateType</type>
+			</update-channel>
+			<update-channel id="last-update" groupIds="status">
+				<type>automower:lastUpdateType</type>
+			</update-channel>
+			<add-channel id="last-poll-update" groupIds="status">
+				<type>automower:lastPollUpdateType</type>
+			</add-channel>
+			<add-channel id="poll-update" groupIds="status">
+				<type>automower:pollUpdateType</type>
+			</add-channel>
+			<update-channel id="battery" groupIds="status">
+				<type>system:battery-level</type>
+			</update-channel>
+			<update-channel id="error-code" groupIds="status">
+				<type>automower:errorCodeType</type>
+			</update-channel>
+			<add-channel id="error-message" groupIds="status">
+				<type>automower:errorMessageType</type>
+			</add-channel>
+			<update-channel id="error-timestamp" groupIds="status">
+				<type>automower:errorTimestampType</type>
+			</update-channel>
+			<update-channel id="next-start" groupIds="status">
+				<type>automower:nextStartType</type>
+			</update-channel>
+			<update-channel id="override-action" groupIds="status">
+				<type>automower:overrideActionType</type>
+			</update-channel>
+			<add-channel id="restricted-reason" groupIds="status">
+				<type>automower:restrictedReasonType</type>
+			</add-channel>
+			<add-channel id="external-reason" groupIds="status">
+				<type>automower:externalReasonType</type>
+			</add-channel>
+
+			<remove-channel id="planner-next-start"/>
+			<remove-channel id="planner-override-action"/>
+
+			<!-- Settings -->
+			<add-channel id="cutting-height" groupIds="settings">
+				<type>automower:settingCuttingHeightType</type>
+			</add-channel>
+
+			<!-- Statistics -->
+			<add-channel id="cutting-blade-usage-time" groupIds="statistics">
+				<type>automower:statCuttingBladeUsageTimeType</type>
+			</add-channel>
+			<add-channel id="down-time" groupIds="statistics">
+				<type>automower:statDownTimeType</type>
+			</add-channel>
+			<add-channel id="number-of-charging-cycles" groupIds="statistics">
+				<type>automower:statNumberOfChargingCyclesType</type>
+			</add-channel>
+			<add-channel id="number-of-collisions" groupIds="statistics">
+				<type>automower:statNumberOfCollisionsType</type>
+			</add-channel>
+			<add-channel id="total-charging-time" groupIds="statistics">
+				<type>automower:statTotalChargingTimeType</type>
+			</add-channel>
+			<add-channel id="total-cutting-time" groupIds="statistics">
+				<type>automower:statTotalCuttingTimeType</type>
+			</add-channel>
+			<add-channel id="total-cutting-percent" groupIds="statistics">
+				<type>automower:statTotalCuttingPercentType</type>
+			</add-channel>
+			<add-channel id="total-drive-distance" groupIds="statistics">
+				<type>automower:statTotalDriveDistanceType</type>
+			</add-channel>
+			<add-channel id="total-running-time" groupIds="statistics">
+				<type>automower:statTotalRunningTimeType</type>
+			</add-channel>
+			<add-channel id="total-searching-time" groupIds="statistics">
+				<type>automower:statTotalSearchingTimeType</type>
+			</add-channel>
+			<add-channel id="total-searching-percent" groupIds="statistics">
+				<type>automower:statTotalSearchingPercentType</type>
+			</add-channel>
+			<add-channel id="up-time" groupIds="statistics">
+				<type>automower:statUpTimeType</type>
+			</add-channel>
+
+			<!-- Calendar Tasks -->
+			<remove-channel id="calendar-tasks"/>
+
+			<!-- Positions -->
+			<remove-channel id="last-position"/>
+			<remove-channel id="position01"/>
+			<remove-channel id="position02"/>
+			<remove-channel id="position03"/>
+			<remove-channel id="position04"/>
+			<remove-channel id="position05"/>
+			<remove-channel id="position06"/>
+			<remove-channel id="position07"/>
+			<remove-channel id="position08"/>
+			<remove-channel id="position09"/>
+			<remove-channel id="position10"/>
+			<remove-channel id="position11"/>
+			<remove-channel id="position12"/>
+			<remove-channel id="position13"/>
+			<remove-channel id="position14"/>
+			<remove-channel id="position15"/>
+			<remove-channel id="position16"/>
+			<remove-channel id="position17"/>
+			<remove-channel id="position18"/>
+			<remove-channel id="position19"/>
+			<remove-channel id="position20"/>
+			<remove-channel id="position21"/>
+			<remove-channel id="position22"/>
+			<remove-channel id="position23"/>
+			<remove-channel id="position24"/>
+			<remove-channel id="position25"/>
+			<remove-channel id="position26"/>
+			<remove-channel id="position27"/>
+			<remove-channel id="position28"/>
+			<remove-channel id="position29"/>
+			<remove-channel id="position30"/>
+			<remove-channel id="position31"/>
+			<remove-channel id="position32"/>
+			<remove-channel id="position33"/>
+			<remove-channel id="position34"/>
+			<remove-channel id="position35"/>
+			<remove-channel id="position36"/>
+			<remove-channel id="position37"/>
+			<remove-channel id="position38"/>
+			<remove-channel id="position39"/>
+			<remove-channel id="position40"/>
+			<remove-channel id="position41"/>
+			<remove-channel id="position42"/>
+			<remove-channel id="position43"/>
+			<remove-channel id="position44"/>
+			<remove-channel id="position45"/>
+			<remove-channel id="position46"/>
+			<remove-channel id="position47"/>
+			<remove-channel id="position48"/>
+			<remove-channel id="position49"/>
+			<remove-channel id="position50"/>
+
+			<!-- Commands -->
+			<update-channel id="start" groupIds="command">
+				<type>automower:start</type>
+			</update-channel>
+			<update-channel id="resume_schedule" groupIds="command">
+				<type>automower:resumeSchedule</type>
+			</update-channel>
+			<update-channel id="pause" groupIds="command">
+				<type>automower:pause</type>
+			</update-channel>
+			<update-channel id="park" groupIds="command">
+				<type>automower:park</type>
+			</update-channel>
+			<update-channel id="park_until_next_schedule" groupIds="command">
+				<type>automower:parkUntilNextSchedule</type>
+			</update-channel>
+			<update-channel id="park_until_further_notice" groupIds="command">
+				<type>automower:parkUntilFurtherNotice</type>
+			</update-channel>
+		</instruction-set>
+
+		<instruction-set targetVersion="2">
+			<!-- Positions -->
+			<remove-channel id="position#last"/>
+			<remove-channel id="position#01-pos"/>
+			<remove-channel id="position#02-pos"/>
+			<remove-channel id="position#03-pos"/>
+			<remove-channel id="position#04-pos"/>
+			<remove-channel id="position#05-pos"/>
+			<remove-channel id="position#06-pos"/>
+			<remove-channel id="position#07-pos"/>
+			<remove-channel id="position#08-pos"/>
+			<remove-channel id="position#09-pos"/>
+			<remove-channel id="position#10-pos"/>
+			<remove-channel id="position#11-pos"/>
+			<remove-channel id="position#12-pos"/>
+			<remove-channel id="position#13-pos"/>
+			<remove-channel id="position#14-pos"/>
+			<remove-channel id="position#15-pos"/>
+			<remove-channel id="position#16-pos"/>
+			<remove-channel id="position#17-pos"/>
+			<remove-channel id="position#18-pos"/>
+			<remove-channel id="position#19-pos"/>
+			<remove-channel id="position#20-pos"/>
+			<remove-channel id="position#21-pos"/>
+			<remove-channel id="position#22-pos"/>
+			<remove-channel id="position#23-pos"/>
+			<remove-channel id="position#24-pos"/>
+			<remove-channel id="position#25-pos"/>
+			<remove-channel id="position#26-pos"/>
+			<remove-channel id="position#27-pos"/>
+			<remove-channel id="position#28-pos"/>
+			<remove-channel id="position#29-pos"/>
+			<remove-channel id="position#30-pos"/>
+			<remove-channel id="position#31-pos"/>
+			<remove-channel id="position#32-pos"/>
+			<remove-channel id="position#33-pos"/>
+			<remove-channel id="position#34-pos"/>
+			<remove-channel id="position#35-pos"/>
+			<remove-channel id="position#36-pos"/>
+			<remove-channel id="position#37-pos"/>
+			<remove-channel id="position#38-pos"/>
+			<remove-channel id="position#39-pos"/>
+			<remove-channel id="position#40-pos"/>
+			<remove-channel id="position#41-pos"/>
+			<remove-channel id="position#42-pos"/>
+			<remove-channel id="position#43-pos"/>
+			<remove-channel id="position#44-pos"/>
+			<remove-channel id="position#45-pos"/>
+			<remove-channel id="position#46-pos"/>
+			<remove-channel id="position#47-pos"/>
+			<remove-channel id="position#48-pos"/>
+			<remove-channel id="position#49-pos"/>
+			<remove-channel id="position#50-pos"/>
+
+			<!-- Messages -->
+			<remove-channel id="message#01-msg-timestamp"/>
+			<remove-channel id="message#01-msg-code"/>
+			<remove-channel id="message#01-msg-text"/>
+			<remove-channel id="message#01-msg-severity"/>
+			<remove-channel id="message#01-msg-gps-position"/>
+			<remove-channel id="message#02-msg-timestamp"/>
+			<remove-channel id="message#02-msg-code"/>
+			<remove-channel id="message#02-msg-text"/>
+			<remove-channel id="message#02-msg-severity"/>
+			<remove-channel id="message#02-msg-gps-position"/>
+			<remove-channel id="message#03-msg-timestamp"/>
+			<remove-channel id="message#03-msg-code"/>
+			<remove-channel id="message#03-msg-text"/>
+			<remove-channel id="message#03-msg-severity"/>
+			<remove-channel id="message#03-msg-gps-position"/>
+			<remove-channel id="message#04-msg-timestamp"/>
+			<remove-channel id="message#04-msg-code"/>
+			<remove-channel id="message#04-msg-text"/>
+			<remove-channel id="message#04-msg-severity"/>
+			<remove-channel id="message#04-msg-gps-position"/>
+			<remove-channel id="message#05-msg-timestamp"/>
+			<remove-channel id="message#05-msg-code"/>
+			<remove-channel id="message#05-msg-text"/>
+			<remove-channel id="message#05-msg-severity"/>
+			<remove-channel id="message#05-msg-gps-position"/>
+			<remove-channel id="message#06-msg-timestamp"/>
+			<remove-channel id="message#06-msg-code"/>
+			<remove-channel id="message#06-msg-text"/>
+			<remove-channel id="message#06-msg-severity"/>
+			<remove-channel id="message#06-msg-gps-position"/>
+			<remove-channel id="message#07-msg-timestamp"/>
+			<remove-channel id="message#07-msg-code"/>
+			<remove-channel id="message#07-msg-text"/>
+			<remove-channel id="message#07-msg-severity"/>
+			<remove-channel id="message#07-msg-gps-position"/>
+			<remove-channel id="message#08-msg-timestamp"/>
+			<remove-channel id="message#08-msg-code"/>
+			<remove-channel id="message#08-msg-text"/>
+			<remove-channel id="message#08-msg-severity"/>
+			<remove-channel id="message#08-msg-gps-position"/>
+			<remove-channel id="message#09-msg-timestamp"/>
+			<remove-channel id="message#09-msg-code"/>
+			<remove-channel id="message#09-msg-text"/>
+			<remove-channel id="message#09-msg-severity"/>
+			<remove-channel id="message#09-msg-gps-position"/>
+			<remove-channel id="message#10-msg-timestamp"/>
+			<remove-channel id="message#10-msg-code"/>
+			<remove-channel id="message#10-msg-text"/>
+			<remove-channel id="message#10-msg-severity"/>
+			<remove-channel id="message#10-msg-gps-position"/>
+			<remove-channel id="message#11-msg-timestamp"/>
+			<remove-channel id="message#11-msg-code"/>
+			<remove-channel id="message#11-msg-text"/>
+			<remove-channel id="message#11-msg-severity"/>
+			<remove-channel id="message#11-msg-gps-position"/>
+			<remove-channel id="message#12-msg-timestamp"/>
+			<remove-channel id="message#12-msg-code"/>
+			<remove-channel id="message#12-msg-text"/>
+			<remove-channel id="message#12-msg-severity"/>
+			<remove-channel id="message#12-msg-gps-position"/>
+			<remove-channel id="message#13-msg-timestamp"/>
+			<remove-channel id="message#13-msg-code"/>
+			<remove-channel id="message#13-msg-text"/>
+			<remove-channel id="message#13-msg-severity"/>
+			<remove-channel id="message#13-msg-gps-position"/>
+			<remove-channel id="message#14-msg-timestamp"/>
+			<remove-channel id="message#14-msg-code"/>
+			<remove-channel id="message#14-msg-text"/>
+			<remove-channel id="message#14-msg-severity"/>
+			<remove-channel id="message#14-msg-gps-position"/>
+			<remove-channel id="message#15-msg-timestamp"/>
+			<remove-channel id="message#15-msg-code"/>
+			<remove-channel id="message#15-msg-text"/>
+			<remove-channel id="message#15-msg-severity"/>
+			<remove-channel id="message#15-msg-gps-position"/>
+			<remove-channel id="message#16-msg-timestamp"/>
+			<remove-channel id="message#16-msg-code"/>
+			<remove-channel id="message#16-msg-text"/>
+			<remove-channel id="message#16-msg-severity"/>
+			<remove-channel id="message#16-msg-gps-position"/>
+			<remove-channel id="message#17-msg-timestamp"/>
+			<remove-channel id="message#17-msg-code"/>
+			<remove-channel id="message#17-msg-text"/>
+			<remove-channel id="message#17-msg-severity"/>
+			<remove-channel id="message#17-msg-gps-position"/>
+			<remove-channel id="message#18-msg-timestamp"/>
+			<remove-channel id="message#18-msg-code"/>
+			<remove-channel id="message#18-msg-text"/>
+			<remove-channel id="message#18-msg-severity"/>
+			<remove-channel id="message#18-msg-gps-position"/>
+			<remove-channel id="message#19-msg-timestamp"/>
+			<remove-channel id="message#19-msg-code"/>
+			<remove-channel id="message#19-msg-text"/>
+			<remove-channel id="message#19-msg-severity"/>
+			<remove-channel id="message#19-msg-gps-position"/>
+			<remove-channel id="message#20-msg-timestamp"/>
+			<remove-channel id="message#20-msg-code"/>
+			<remove-channel id="message#20-msg-text"/>
+			<remove-channel id="message#20-msg-severity"/>
+			<remove-channel id="message#20-msg-gps-position"/>
+			<remove-channel id="message#21-msg-timestamp"/>
+			<remove-channel id="message#21-msg-code"/>
+			<remove-channel id="message#21-msg-text"/>
+			<remove-channel id="message#21-msg-severity"/>
+			<remove-channel id="message#21-msg-gps-position"/>
+			<remove-channel id="message#22-msg-timestamp"/>
+			<remove-channel id="message#22-msg-code"/>
+			<remove-channel id="message#22-msg-text"/>
+			<remove-channel id="message#22-msg-severity"/>
+			<remove-channel id="message#22-msg-gps-position"/>
+			<remove-channel id="message#23-msg-timestamp"/>
+			<remove-channel id="message#23-msg-code"/>
+			<remove-channel id="message#23-msg-text"/>
+			<remove-channel id="message#23-msg-severity"/>
+			<remove-channel id="message#23-msg-gps-position"/>
+			<remove-channel id="message#24-msg-timestamp"/>
+			<remove-channel id="message#24-msg-code"/>
+			<remove-channel id="message#24-msg-text"/>
+			<remove-channel id="message#24-msg-severity"/>
+			<remove-channel id="message#24-msg-gps-position"/>
+			<remove-channel id="message#25-msg-timestamp"/>
+			<remove-channel id="message#25-msg-code"/>
+			<remove-channel id="message#25-msg-text"/>
+			<remove-channel id="message#25-msg-severity"/>
+			<remove-channel id="message#25-msg-gps-position"/>
+			<remove-channel id="message#26-msg-timestamp"/>
+			<remove-channel id="message#26-msg-code"/>
+			<remove-channel id="message#26-msg-text"/>
+			<remove-channel id="message#26-msg-severity"/>
+			<remove-channel id="message#26-msg-gps-position"/>
+			<remove-channel id="message#27-msg-timestamp"/>
+			<remove-channel id="message#27-msg-code"/>
+			<remove-channel id="message#27-msg-text"/>
+			<remove-channel id="message#27-msg-severity"/>
+			<remove-channel id="message#27-msg-gps-position"/>
+			<remove-channel id="message#28-msg-timestamp"/>
+			<remove-channel id="message#28-msg-code"/>
+			<remove-channel id="message#28-msg-text"/>
+			<remove-channel id="message#28-msg-severity"/>
+			<remove-channel id="message#28-msg-gps-position"/>
+			<remove-channel id="message#29-msg-timestamp"/>
+			<remove-channel id="message#29-msg-code"/>
+			<remove-channel id="message#29-msg-text"/>
+			<remove-channel id="message#29-msg-severity"/>
+			<remove-channel id="message#29-msg-gps-position"/>
+			<remove-channel id="message#30-msg-timestamp"/>
+			<remove-channel id="message#30-msg-code"/>
+			<remove-channel id="message#30-msg-text"/>
+			<remove-channel id="message#30-msg-severity"/>
+			<remove-channel id="message#30-msg-gps-position"/>
+			<remove-channel id="message#31-msg-timestamp"/>
+			<remove-channel id="message#31-msg-code"/>
+			<remove-channel id="message#31-msg-text"/>
+			<remove-channel id="message#31-msg-severity"/>
+			<remove-channel id="message#31-msg-gps-position"/>
+			<remove-channel id="message#32-msg-timestamp"/>
+			<remove-channel id="message#32-msg-code"/>
+			<remove-channel id="message#32-msg-text"/>
+			<remove-channel id="message#32-msg-severity"/>
+			<remove-channel id="message#32-msg-gps-position"/>
+			<remove-channel id="message#33-msg-timestamp"/>
+			<remove-channel id="message#33-msg-code"/>
+			<remove-channel id="message#33-msg-text"/>
+			<remove-channel id="message#33-msg-severity"/>
+			<remove-channel id="message#33-msg-gps-position"/>
+			<remove-channel id="message#34-msg-timestamp"/>
+			<remove-channel id="message#34-msg-code"/>
+			<remove-channel id="message#34-msg-text"/>
+			<remove-channel id="message#34-msg-severity"/>
+			<remove-channel id="message#34-msg-gps-position"/>
+			<remove-channel id="message#35-msg-timestamp"/>
+			<remove-channel id="message#35-msg-code"/>
+			<remove-channel id="message#35-msg-text"/>
+			<remove-channel id="message#35-msg-severity"/>
+			<remove-channel id="message#35-msg-gps-position"/>
+			<remove-channel id="message#36-msg-timestamp"/>
+			<remove-channel id="message#36-msg-code"/>
+			<remove-channel id="message#36-msg-text"/>
+			<remove-channel id="message#36-msg-severity"/>
+			<remove-channel id="message#36-msg-gps-position"/>
+			<remove-channel id="message#37-msg-timestamp"/>
+			<remove-channel id="message#37-msg-code"/>
+			<remove-channel id="message#37-msg-text"/>
+			<remove-channel id="message#37-msg-severity"/>
+			<remove-channel id="message#37-msg-gps-position"/>
+			<remove-channel id="message#38-msg-timestamp"/>
+			<remove-channel id="message#38-msg-code"/>
+			<remove-channel id="message#38-msg-text"/>
+			<remove-channel id="message#38-msg-severity"/>
+			<remove-channel id="message#38-msg-gps-position"/>
+			<remove-channel id="message#39-msg-timestamp"/>
+			<remove-channel id="message#39-msg-code"/>
+			<remove-channel id="message#39-msg-text"/>
+			<remove-channel id="message#39-msg-severity"/>
+			<remove-channel id="message#39-msg-gps-position"/>
+			<remove-channel id="message#40-msg-timestamp"/>
+			<remove-channel id="message#40-msg-code"/>
+			<remove-channel id="message#40-msg-text"/>
+			<remove-channel id="message#40-msg-severity"/>
+			<remove-channel id="message#40-msg-gps-position"/>
+			<remove-channel id="message#41-msg-timestamp"/>
+			<remove-channel id="message#41-msg-code"/>
+			<remove-channel id="message#41-msg-text"/>
+			<remove-channel id="message#41-msg-severity"/>
+			<remove-channel id="message#41-msg-gps-position"/>
+			<remove-channel id="message#42-msg-timestamp"/>
+			<remove-channel id="message#42-msg-code"/>
+			<remove-channel id="message#42-msg-text"/>
+			<remove-channel id="message#42-msg-severity"/>
+			<remove-channel id="message#42-msg-gps-position"/>
+			<remove-channel id="message#43-msg-timestamp"/>
+			<remove-channel id="message#43-msg-code"/>
+			<remove-channel id="message#43-msg-text"/>
+			<remove-channel id="message#43-msg-severity"/>
+			<remove-channel id="message#43-msg-gps-position"/>
+			<remove-channel id="message#44-msg-timestamp"/>
+			<remove-channel id="message#44-msg-code"/>
+			<remove-channel id="message#44-msg-text"/>
+			<remove-channel id="message#44-msg-severity"/>
+			<remove-channel id="message#44-msg-gps-position"/>
+			<remove-channel id="message#45-msg-timestamp"/>
+			<remove-channel id="message#45-msg-code"/>
+			<remove-channel id="message#45-msg-text"/>
+			<remove-channel id="message#45-msg-severity"/>
+			<remove-channel id="message#45-msg-gps-position"/>
+			<remove-channel id="message#46-msg-timestamp"/>
+			<remove-channel id="message#46-msg-code"/>
+			<remove-channel id="message#46-msg-text"/>
+			<remove-channel id="message#46-msg-severity"/>
+			<remove-channel id="message#46-msg-gps-position"/>
+			<remove-channel id="message#47-msg-timestamp"/>
+			<remove-channel id="message#47-msg-code"/>
+			<remove-channel id="message#47-msg-text"/>
+			<remove-channel id="message#47-msg-severity"/>
+			<remove-channel id="message#47-msg-gps-position"/>
+			<remove-channel id="message#48-msg-timestamp"/>
+			<remove-channel id="message#48-msg-code"/>
+			<remove-channel id="message#48-msg-text"/>
+			<remove-channel id="message#48-msg-severity"/>
+			<remove-channel id="message#48-msg-gps-position"/>
+			<remove-channel id="message#49-msg-timestamp"/>
+			<remove-channel id="message#49-msg-code"/>
+			<remove-channel id="message#49-msg-text"/>
+			<remove-channel id="message#49-msg-severity"/>
+			<remove-channel id="message#49-msg-gps-position"/>
+			<remove-channel id="message#50-msg-timestamp"/>
+			<remove-channel id="message#50-msg-code"/>
+			<remove-channel id="message#50-msg-text"/>
+			<remove-channel id="message#50-msg-severity"/>
+			<remove-channel id="message#50-msg-gps-position"/>
+
+			<add-channel id="msg-timestamp" groupIds="message">
+				<type>automower:messageTimeType</type>
+			</add-channel>
+			<add-channel id="msg-code" groupIds="message">
+				<type>automower:messageCodeType</type>
+			</add-channel>
+			<add-channel id="msg-text" groupIds="message">
+				<type>automower:messageType</type>
+			</add-channel>
+			<add-channel id="msg-severity" groupIds="message">
+				<type>automower:messageSeverityType</type>
+			</add-channel>
+			<add-channel id="msg-gps-position" groupIds="message">
+				<type>automower:messagePositionType</type>
+			</add-channel>
+
+			<!-- Commands -->
+			<add-channel id="start_in_work_area" groupIds="command">
+				<type>automower:startInWorkArea</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+</update:update-descriptions>

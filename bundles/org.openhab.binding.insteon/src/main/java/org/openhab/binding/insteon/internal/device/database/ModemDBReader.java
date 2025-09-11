@@ -12,9 +12,8 @@
  */
 package org.openhab.binding.insteon.internal.device.database;
 
-import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -28,6 +27,7 @@ import org.openhab.binding.insteon.internal.transport.PortListener;
 import org.openhab.binding.insteon.internal.transport.message.FieldException;
 import org.openhab.binding.insteon.internal.transport.message.InvalidMessageTypeException;
 import org.openhab.binding.insteon.internal.transport.message.Msg;
+import org.openhab.binding.insteon.internal.transport.message.Priority;
 import org.openhab.binding.insteon.internal.utils.HexUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,15 +39,30 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class ModemDBReader implements PortListener {
+    private static final int PRODUCT_REQUEST_RETRIES = 2;
+    private static final int PRODUCT_REQUEST_TIMEOUT = 3000; // in milliseconds
+    private static final int RECONNECT_INTERVAL = 6000; // in milliseconds
+    private static final int RESTART_DELAY = 1500; // in milliseconds
+
+    private static enum ReaderStatus {
+        LOADING_RECORDS,
+        LOADING_PRODUCTS,
+        RESTARTING,
+        DONE
+    }
+
     private final Logger logger = LoggerFactory.getLogger(ModemDBReader.class);
 
     private InsteonModem modem;
     private ScheduledExecutorService scheduler;
-    private @Nullable ScheduledFuture<?> job;
-    private Set<InsteonAddress> productQueries = new HashSet<>();
-    private boolean done = true;
-    private long lastMsgReceived;
-    private int messageCount;
+    private @Nullable ScheduledFuture<?> productJob;
+    private @Nullable ScheduledFuture<?> recordJob;
+    private @Nullable ScheduledFuture<?> restartJob;
+    private Queue<InsteonAddress> productQueue = new ConcurrentLinkedQueue<>();
+    private ReaderStatus status = ReaderStatus.DONE;
+    private volatile long lastMsgReceived;
+    private volatile int messageCount;
+    private volatile int retryCount;
 
     public ModemDBReader(InsteonModem modem, ScheduledExecutorService scheduler) {
         this.modem = modem;
@@ -56,16 +71,144 @@ public class ModemDBReader implements PortListener {
         modem.getPort().registerListener(this);
     }
 
-    public boolean isRunning() {
-        return job != null;
-    }
-
     public void read() {
         logger.debug("starting modem database reader");
 
         getAllRecords();
+    }
 
-        job = scheduler.scheduleWithFixedDelay(() -> {
+    public void stop() {
+        cancelProductRequestTimer();
+        cancelRecordLoadingTimer();
+        cancelRestartJob();
+    }
+
+    private void restart() {
+        logger.debug("restarting modem database reader");
+        status = ReaderStatus.RESTARTING;
+
+        cancelProductRequestTimer();
+        cancelRecordLoadingTimer();
+
+        restartJob = scheduler.scheduleWithFixedDelay(() -> {
+            if (!modem.reconnect()) {
+                logger.debug("unable to reconnect to modem");
+            } else {
+                getAllRecords();
+                cancelRestartJob();
+            }
+        }, RESTART_DELAY, RECONNECT_INTERVAL, TimeUnit.MILLISECONDS);
+    }
+
+    private void getAllRecords() {
+        status = ReaderStatus.LOADING_RECORDS;
+        modem.getDB().clear();
+        getFirstLinkRecord();
+    }
+
+    private void getAllProductData() {
+        status = ReaderStatus.LOADING_PRODUCTS;
+        productQueue.clear();
+        productQueue.addAll(modem.getDB().getDevices());
+        getNextProductData();
+    }
+
+    private void done() {
+        logger.debug("modem database reader finished");
+        status = ReaderStatus.DONE;
+        stop();
+        modem.getDB().setIsComplete(true);
+        modem.getDBM().operationCompleted();
+    }
+
+    private void getFirstLinkRecord() {
+        try {
+            Msg msg = Msg.makeMessage("GetFirstALLLinkRecord");
+            msg.setPriority(Priority.DATABASE);
+            modem.writeMessage(msg);
+        } catch (InvalidMessageTypeException e) {
+            logger.warn("error creating message", e);
+        }
+    }
+
+    private void getNextLinkRecord() {
+        try {
+            Msg msg = Msg.makeMessage("GetNextALLLinkRecord");
+            msg.setPriority(Priority.DATABASE);
+            modem.writeMessage(msg);
+        } catch (InvalidMessageTypeException e) {
+            logger.warn("error creating message", e);
+        }
+    }
+
+    private void getProductId(InsteonAddress address) {
+        try {
+            Msg msg = Msg.makeStandardMessage(address, (byte) 0x10, (byte) 0x00);
+            msg.setPriority(Priority.DATABASE);
+            modem.writeMessage(msg);
+        } catch (FieldException | InvalidMessageTypeException e) {
+            logger.warn("error creating message", e);
+        }
+    }
+
+    private void getProductData(InsteonAddress address) {
+        // skip if modem db not complete, device not in modem db, product data already known or address already queued
+        if (!modem.getDB().isComplete() || !modem.getDB().hasEntry(address) || modem.getDB().hasProductData(address)
+                || productQueue.contains(address)) {
+            return;
+        }
+        productQueue.add(address);
+        // get product data if not running already
+        if (productJob == null && productQueue.size() == 1) {
+            getNextProductData();
+        }
+    }
+
+    private void getNextProductData() {
+        cancelProductRequestTimer();
+
+        InsteonAddress address = productQueue.peek();
+        if (address != null) {
+            getProductId(address);
+        } else if (status == ReaderStatus.LOADING_PRODUCTS) {
+            logger.debug("got all product data");
+            done();
+        }
+    }
+
+    private void startProductRequestTimer(Msg msg) throws FieldException {
+        InsteonAddress address = msg.getInsteonAddress("toAddress");
+        logger.trace("starting product request timer for {}", address);
+
+        retryCount = 0;
+
+        productJob = scheduler.scheduleWithFixedDelay(() -> {
+            if (productQueue.contains(address) && retryCount++ < PRODUCT_REQUEST_RETRIES) {
+                logger.trace("product request retry #{} for {}", retryCount, address);
+                getProductId(address);
+                return;
+            } else if (productQueue.remove(address)) {
+                logger.debug("product request failed for {}", address);
+                getNextProductData();
+            }
+        }, PRODUCT_REQUEST_TIMEOUT, PRODUCT_REQUEST_TIMEOUT, TimeUnit.MILLISECONDS);
+    }
+
+    private void cancelProductRequestTimer() {
+        ScheduledFuture<?> productJob = this.productJob;
+        if (productJob != null) {
+            productJob.cancel(true);
+            this.productJob = null;
+        }
+    }
+
+    private void startRecordLoadingTimer() {
+        logger.trace("starting record loading timer");
+
+        lastMsgReceived = System.currentTimeMillis();
+        messageCount = 0;
+
+        recordJob = scheduler.scheduleWithFixedDelay(() -> {
             if (System.currentTimeMillis() - lastMsgReceived > DatabaseManager.MESSAGE_TIMEOUT) {
                 String s = "";
                 if (messageCount == 0) {
@@ -77,78 +220,28 @@ public class ModemDBReader implements PortListener {
                 logger.warn("Failed to read modem database, restarting!{}", s);
                 restart();
             }
-        }, 0, 1, TimeUnit.SECONDS);
+        }, 0, 1000, TimeUnit.MILLISECONDS);
     }
 
-    public void stop() {
-        logger.debug("modem database reader finished");
-
-        ScheduledFuture<?> job = this.job;
-        if (job != null) {
-            job.cancel(true);
-            this.job = null;
-        }
-
-        modem.getDBM().operationCompleted();
-    }
-
-    private void restart() {
-        modem.getDB().clear();
-        modem.reconnect();
-        getAllRecords();
-    }
-
-    private void getAllRecords() {
-        lastMsgReceived = System.currentTimeMillis();
-        messageCount = 0;
-        done = false;
-        getFirstLinkRecord();
-    }
-
-    private void done() {
-        modem.getDB().recordsLoaded();
-        done = true;
-        stop();
-    }
-
-    private void getFirstLinkRecord() {
-        try {
-            Msg msg = Msg.makeMessage("GetFirstALLLinkRecord");
-            modem.writeMessage(msg);
-        } catch (IOException e) {
-            logger.warn("error sending first link record query ", e);
-        } catch (InvalidMessageTypeException e) {
-            logger.warn("invalid message ", e);
+    private void cancelRecordLoadingTimer() {
+        ScheduledFuture<?> recordJob = this.recordJob;
+        if (recordJob != null) {
+            recordJob.cancel(true);
+            this.recordJob = null;
         }
     }
 
-    private void getNextLinkRecord() {
-        try {
-            Msg msg = Msg.makeMessage("GetNextALLLinkRecord");
-            modem.writeMessage(msg);
-        } catch (IOException e) {
-            logger.warn("error sending next link record query ", e);
-        } catch (InvalidMessageTypeException e) {
-            logger.warn("invalid message ", e);
-        }
-    }
-
-    private void getProductId(InsteonAddress address) {
-        try {
-            Msg msg = Msg.makeStandardMessage(address, (byte) 0x10, (byte) 0x00);
-            modem.writeMessage(msg);
-        } catch (FieldException e) {
-            logger.warn("cannot access field:", e);
-        } catch (IOException e) {
-            logger.warn("error sending product id query ", e);
-        } catch (InvalidMessageTypeException e) {
-            logger.warn("invalid message ", e);
+    private void cancelRestartJob() {
+        ScheduledFuture<?> restartJob = this.restartJob;
+        if (restartJob != null) {
+            restartJob.cancel(true);
+            this.restartJob = null;
         }
     }
 
     @Override
     public void disconnected() {
-        if (!done) {
+        if (status == ReaderStatus.LOADING_RECORDS || status == ReaderStatus.LOADING_PRODUCTS) {
             logger.debug("port disconnected, restarting");
             restart();
         }
@@ -156,7 +249,7 @@ public class ModemDBReader implements PortListener {
 
     @Override
     public void messageReceived(Msg msg) {
-        if (isRunning()) {
+        if (status == ReaderStatus.LOADING_RECORDS) {
             lastMsgReceived = msg.getTimestamp();
             messageCount++;
         }
@@ -169,9 +262,6 @@ public class ModemDBReader implements PortListener {
                     && (msg.getByte("command1") == 0x01 || msg.getByte("command1") == 0x02)) {
                 // we got a product data broadcast message
                 handleProductData(msg);
-            } else if ((msg.getCommand() == 0x50 || msg.getCommand() == 0x5C) && msg.getByte("command1") == 0x10) {
-                // we got a product data request ack
-                handleProductDataAck(msg);
             } else if (msg.getCommand() == 0x53) {
                 // we got a linking completed message
                 handleLinkingCompleted(msg);
@@ -180,47 +270,54 @@ public class ModemDBReader implements PortListener {
                 handleLinkRecord(msg);
             } else if ((msg.getCommand() == 0x69 || msg.getCommand() == 0x6A) && msg.isReplyNack()) {
                 // we got a get link record reply nack
-                if (!done) {
-                    logger.debug("got all link records");
-                    done();
-                }
+                handleLinkRecordCompleted();
             } else if (msg.getCommand() == 0x6F && msg.isReplyAck()) {
                 // we got a manage link record reply ack
                 handleLinkRecordUpdated(msg);
             }
         } catch (FieldException e) {
-            logger.warn("error parsing modem link record field ", e);
+            logger.warn("error parsing message", e);
         }
     }
 
     @Override
     public void messageSent(Msg msg) {
-        // ignore outbound message
-    }
-
-    private void getProductData(InsteonAddress address) {
-        // skip if not in modem db or product data already known
-        if (!modem.getDB().hasEntry(address) || modem.getDB().hasProductData(address)) {
-            return;
-        }
-        // get product id if not already queried
-        synchronized (productQueries) {
-            if (productQueries.add(address)) {
-                getProductId(address);
+        try {
+            if (msg.getCommand() == 0x62 && msg.getByte("command1") == 0x10) {
+                // we sent a get product id message
+                if (status != ReaderStatus.LOADING_RECORDS && productJob == null) {
+                    startProductRequestTimer(msg);
+                }
+            } else if (msg.getCommand() == 0x69) {
+                // we sent a get first link record message
+                if (status == ReaderStatus.LOADING_RECORDS && recordJob == null) {
+                    startRecordLoadingTimer();
+                }
             }
+        } catch (FieldException e) {
+            logger.warn("error parsing message", e);
         }
     }
 
     private void handleLinkRecord(Msg msg) throws FieldException {
-        if (done) {
-            logger.debug("unsolicited link record, ignoring");
+        if (status != ReaderStatus.LOADING_RECORDS) {
+            logger.trace("unsolicited link record, ignoring");
             return;
         }
         ModemDBRecord record = ModemDBRecord.fromRecordMsg(msg);
-        InsteonAddress address = msg.getInsteonAddress("LinkAddr");
         modem.getDB().addRecord(record);
-        getProductData(address);
         getNextLinkRecord();
+    }
+
+    private void handleLinkRecordCompleted() {
+        if (status != ReaderStatus.LOADING_RECORDS) {
+            logger.trace("unsolicited link record completed, ignoring");
+            return;
+        }
+        logger.debug("got all link records");
+        modem.getDB().recordsLoaded();
+        cancelRecordLoadingTimer();
+        getAllProductData();
     }
 
     private void handleLinkRecordUpdated(Msg msg) throws FieldException {
@@ -275,6 +372,11 @@ public class ModemDBReader implements PortListener {
     }
 
     private void handleAllLinkMessage(Msg msg) throws FieldException {
+        if (status == ReaderStatus.LOADING_RECORDS) {
+            logger.debug("unsolicited all link message, restarting");
+            restart();
+            return;
+        }
         InsteonAddress address = msg.getInsteonAddress("fromAddress");
         getProductData(address);
     }
@@ -293,13 +395,9 @@ public class ModemDBReader implements PortListener {
         if (modem.getDB().hasEntry(fromAddr)) {
             modem.getDB().setProductData(fromAddr, productData);
         }
-    }
-
-    private void handleProductDataAck(Msg msg) throws FieldException {
-        InsteonAddress address = msg.getInsteonAddress("fromAddress");
-        // remove address from product queries
-        synchronized (productQueries) {
-            productQueries.remove(address);
+        // get next product data if in queue
+        if (productQueue.remove(fromAddr)) {
+            getNextProductData();
         }
     }
 }

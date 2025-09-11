@@ -1,13 +1,13 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
     <groupId>org.openhab.addons.bundles</groupId>
     <artifactId>org.openhab.addons.reactor.bundles</artifactId>
-    <version>5.0.0-SNAPSHOT</version>
+    <version>5.1.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>org.openhab.automation.jsscripting</artifactId>
@@ -15,56 +15,39 @@
   <name>openHAB Add-ons :: Bundles :: Automation :: JavaScript Scripting</name>
 
   <properties>
-    <bnd.importpackage>
-      !sun.misc.*,
-      !sun.reflect.*,
-      !com.sun.management.*,
-      !jdk.internal.reflect.*,
-      !jdk.vm.ci.services
-    </bnd.importpackage>
     <!-- Remember to check if the fix https://github.com/openhab/openhab-core/pull/4437 still works when upgrading GraalJS -->
-    <graaljs.version>24.1.1</graaljs.version>
-    <oh.version>${project.version}</oh.version>
-    <ohjs.version>openhab@5.8.1</ohjs.version>
+    <graaljs.version>24.2.1</graaljs.version>
+    <ohjs.version>openhab@5.13.0</ohjs.version>
   </properties>
+
+  <dependencies>
+    <!-- Graal Polyglot Framework -->
+    <dependency>
+      <groupId>org.openhab.osgiify</groupId>
+      <artifactId>org.graalvm.polyglot.polyglot</artifactId>
+      <version>${graaljs.version}</version>
+      <!-- provided as OSGi bundle at runtime, available only at compile time -->
+      <scope>provided</scope>
+    </dependency>
+    <!-- Graal JavaScript ScriptEngine JSR 223 support -->
+    <dependency>
+      <groupId>org.openhab.osgiify</groupId>
+      <artifactId>org.graalvm.js.js-scriptengine</artifactId>
+      <version>${graaljs.version}</version>
+      <!-- provided as OSGi bundle at runtime, available only at compile time -->
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
 
   <build>
     <plugins>
-      <!-- bundle the modular dependencies into an uber-JAR -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-shade-plugin</artifactId>
-        <version>3.6.0</version>
-        <executions>
-          <execution>
-            <phase>package</phase>
-            <goals>
-              <goal>shade</goal>
-            </goals>
-            <configuration>
-              <artifactSet>
-                <excludes>
-                  <exclude>org.lastnpe.eea:eea-all</exclude>
-                  <exclude>org.apache.karaf.features:framework</exclude>
-                </excludes>
-              </artifactSet>
-              <createDependencyReducedPom>false</createDependencyReducedPom>
-              <transformers>
-                <!-- Transformer to merge module-info.class files, if needed -->
-                <transformer
-                  implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
-              </transformers>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
       <!-- bundle the openhab-js library -->
       <plugin>
         <groupId>com.github.eirslett</groupId>
         <artifactId>frontend-maven-plugin</artifactId>
         <version>1.15.1</version>
         <configuration>
-          <nodeVersion>v16.17.1</nodeVersion> <!-- DO NOT DOWNGRADE: NodeJS < 16 doesn't support Apple Silicon -->
+          <nodeVersion>v22.13.1</nodeVersion>
           <workingDirectory>target/js</workingDirectory>
         </configuration>
         <executions>
@@ -82,7 +65,8 @@
             </goals>
             <configuration>
               <!--suppress UnresolvedMavenProperty -->
-              <arguments>install ${ohjs.version} webpack@^5.94.0 webpack-cli@^5.1.4</arguments> <!-- webpack & webpack-cli versions should match to the ones from openhab-js -->
+              <arguments>install ${ohjs.version} webpack@^5.101.3 webpack-cli@^5.1.4 --prefix .</arguments>
+              <!-- webpack & webpack-cli versions should match to the ones from openhab-js -->
             </configuration>
           </execution>
           <execution>
@@ -109,6 +93,7 @@
           </execution>
         </executions>
       </plugin>
+      <!-- embed the JS resources into the bundle -->
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>build-helper-maven-plugin</artifactId>
@@ -139,32 +124,4 @@
       </plugin>
     </plugins>
   </build>
-
-  <dependencies>
-    <dependency>
-      <groupId>org.graalvm.polyglot</groupId>
-      <artifactId>polyglot</artifactId>
-      <version>${graaljs.version}</version>
-    </dependency>
-    <!-- Graal JavaScript ScriptEngine JSR 223 support -->
-    <dependency>
-      <groupId>org.graalvm.js</groupId>
-      <artifactId>js-scriptengine</artifactId>
-      <version>${graaljs.version}</version>
-    </dependency>
-    <!-- Graal TRegex engine (internally used by Graal JavaScript engine) -->
-    <dependency>
-      <groupId>org.graalvm.regex</groupId>
-      <artifactId>regex</artifactId>
-      <version>${graaljs.version}</version>
-    </dependency>
-    <!-- Graal JavaScript engine (depends on Graal TRegex engine, must be added after it) -->
-    <dependency>
-      <groupId>org.graalvm.polyglot</groupId>
-      <artifactId>js-community</artifactId>
-      <version>${graaljs.version}</version>
-      <type>pom</type>
-      <scope>runtime</scope>
-    </dependency>
-  </dependencies>
 </project>

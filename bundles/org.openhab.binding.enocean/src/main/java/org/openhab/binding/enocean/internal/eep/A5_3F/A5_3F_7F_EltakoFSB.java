@@ -44,7 +44,6 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage {
     static final byte DOWN = 0x50;
 
     public A5_3F_7F_EltakoFSB() {
-        super();
     }
 
     public A5_3F_7F_EltakoFSB(ERP1Message packet) {
@@ -76,7 +75,11 @@ public class A5_3F_7F_EltakoFSB extends _4BSMessage {
                                 (Math.abs(current.intValue() - percentCommand.intValue()) * shutTime)
                                         / PercentType.HUNDRED.intValue());
 
-                        setData(ZERO, duration, direction, TEACHIN_BIT);
+                        if (duration == 0) {
+                            setData(ZERO, (byte) 0xFF, STOP, TEACHIN_BIT);
+                        } else {
+                            setData(ZERO, duration, direction, TEACHIN_BIT);
+                        }
                     }
                 }
             }

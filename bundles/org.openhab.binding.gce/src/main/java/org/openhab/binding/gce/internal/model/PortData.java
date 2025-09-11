@@ -12,11 +12,11 @@
  */
 package org.openhab.binding.gce.internal.model;
 
-import java.time.ZonedDateTime;
-import java.util.Optional;
+import java.time.Instant;
 import java.util.concurrent.ScheduledFuture;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link PortData} is responsible for holding data regarding current status of a port.
@@ -26,19 +26,31 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class PortData {
     private double value = -1;
-    private ZonedDateTime timestamp = ZonedDateTime.now();
-    private Optional<ScheduledFuture<?>> pulsing = Optional.empty();
+    private Instant timestamp = Instant.now();
+    private @Nullable ScheduledFuture<?> pulsing;
+    private @Nullable ScheduledFuture<?> pulseCanceler;
 
     public void cancelPulsing() {
-        pulsing.ifPresent(pulse -> pulse.cancel(true));
-        pulsing = Optional.empty();
+        if (pulsing instanceof ScheduledFuture job) {
+            job.cancel(true);
+            pulsing = null;
+        }
+        cancelCanceler();
+    }
+
+    public void cancelCanceler() {
+        if (pulseCanceler instanceof ScheduledFuture job) {
+            job.cancel(true);
+            pulseCanceler = null;
+        }
     }
 
     public void dispose() {
         cancelPulsing();
+        cancelCanceler();
     }
 
-    public void setData(double value, ZonedDateTime timestamp) {
+    public void setData(double value, Instant timestamp) {
         this.value = value;
         this.timestamp = timestamp;
     }
@@ -47,15 +59,20 @@ public class PortData {
         return value;
     }
 
-    public ZonedDateTime getTimestamp() {
+    public Instant getTimestamp() {
         return timestamp;
     }
 
     public void setPulsing(ScheduledFuture<?> pulsing) {
-        this.pulsing = Optional.of(pulsing);
+        cancelPulsing();
+        this.pulsing = pulsing;
     }
 
-    public boolean isInitializing() {
-        return value == -1;
+    public boolean isInitialized() {
+        return value != -1;
+    }
+
+    public void setPulseCanceler(ScheduledFuture<?> pulseCanceler) {
+        this.pulseCanceler = pulseCanceler;
     }
 }

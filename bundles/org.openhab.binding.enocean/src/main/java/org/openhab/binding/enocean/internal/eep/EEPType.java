@@ -151,6 +151,7 @@ import org.openhab.binding.enocean.internal.eep.D2_06.D2_06_50;
 import org.openhab.binding.enocean.internal.eep.D2_14.D2_14_30;
 import org.openhab.binding.enocean.internal.eep.D2_50.D2_50;
 import org.openhab.binding.enocean.internal.eep.D5_00.D5_00_01;
+import org.openhab.binding.enocean.internal.eep.F6_00.F6_00_00_EltakoFJ62;
 import org.openhab.binding.enocean.internal.eep.F6_01.F6_01_01;
 import org.openhab.binding.enocean.internal.eep.F6_02.F6_02_01;
 import org.openhab.binding.enocean.internal.eep.F6_02.F6_02_02;
@@ -413,6 +414,9 @@ public enum EEPType {
     CentralCommandBlinds(RORG._4BS, 0x38, 0x08, false, A5_38_08_Blinds.class, THING_TYPE_ROLLERSHUTTER, 0x07,
             CHANNEL_ROLLERSHUTTER, CHANNEL_ANGLE, CHANNEL_TEACHINCMD),
 
+    EltakoFJ62_RPS(RORG.RPS, 0x00, 0x00, false, "EltakoFJ62", 0, F6_00_00_EltakoFJ62.class, THING_TYPE_ROLLERSHUTTER,
+            CHANNEL_ROLLERSHUTTER, CHANNEL_CONTACT),
+
     // UniversalCommand(RORG._4BS, 0x3f, 0x7f, false, A5_3F_7F_Universal.class, THING_TYPE_UNIVERSALACTUATOR,
     // CHANNEL_GENERIC_ROLLERSHUTTER, CHANNEL_GENERIC_LIGHT_SWITCHING, CHANNEL_GENERIC_DIMMER, CHANNEL_TEACHINCMD),
     EltakoFSB(RORG._4BS, 0x3f, 0x7f, false, false, "EltakoFSB", 0, A5_3F_7F_EltakoFSB.class, THING_TYPE_ROLLERSHUTTER,
@@ -476,7 +480,7 @@ public enum EEPType {
     SwitchWithEnergyMeasurment_0B(RORG.VLD, 0x01, 0x0B, true, D2_01_0B.class, THING_TYPE_MEASUREMENTSWITCH,
             CHANNEL_GENERAL_SWITCHING, CHANNEL_TOTALUSAGE, CHANNEL_INSTANTPOWER),
     SwitchWithEnergyMeasurment_0C(RORG.VLD, 0x01, 0x0C, true, D2_01_0C.class, THING_TYPE_MEASUREMENTSWITCH,
-            CHANNEL_GENERAL_SWITCHING, CHANNEL_TOTALUSAGE, CHANNEL_INSTANTPOWER),
+            CHANNEL_GENERAL_SWITCHING, CHANNEL_PILOT_WIRE, CHANNEL_TOTALUSAGE, CHANNEL_INSTANTPOWER),
     SwitchWithEnergyMeasurment_0D(RORG.VLD, 0x01, 0x0D, true, D2_01_0D.class, THING_TYPE_MEASUREMENTSWITCH,
             CHANNEL_GENERAL_SWITCHING),
     SwitchWithEnergyMeasurment_0E(RORG.VLD, 0x01, 0x0E, true, D2_01_0E.class, THING_TYPE_MEASUREMENTSWITCH,

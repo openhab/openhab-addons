@@ -11,6 +11,7 @@
 		<label>Xiaomi Aqara Intelligent Curtain Motor</label>
 		<description>Smart curtain controller for drawing back and forth fabric curtains. It has manual and remote operation
 			modes.</description>
+		<semantic-equipment-tag>Drapes</semantic-equipment-tag>
 		<channels>
 			<channel id="curtainControl" typeId="curtainControl"/>
 		</channels>

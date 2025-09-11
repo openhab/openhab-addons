@@ -13,6 +13,7 @@
 package org.openhab.binding.ecovacs.internal.api.commands;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -26,8 +27,10 @@ public class SpotAreaCleaningCommand extends AbstractAreaCleaningCommand {
     }
 
     private static String prepareRoomIds(List<String> roomIds, boolean usesFreeClean) {
-        String prefix = usesFreeClean ? "1," : "";
-        String separator = usesFreeClean ? ";" : ",";
-        return prefix + String.join(separator, roomIds);
+        if (usesFreeClean) {
+            return roomIds.stream().map(id -> "1," + id).collect(Collectors.joining(";"));
+        } else {
+            return String.join(",", roomIds);
+        }
     }
 }

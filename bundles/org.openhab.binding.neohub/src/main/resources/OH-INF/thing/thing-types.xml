@@ -8,6 +8,7 @@
 
 		<label>NeoHub</label>
 		<description>Heatmiser NeoHub bridge to NeoStat and NeoPlug devices</description>
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 
 		<channels>
 			<channel typeId="meshNetworkQoS" id="meshNetworkQoS"/>
@@ -76,6 +77,7 @@
 
 		<label>Heatmiser NeoStat</label>
 		<description>Heatmiser Neo Smart Thermostat</description>
+		<semantic-equipment-tag>Thermostat</semantic-equipment-tag>
 
 		<channels>
 			<channel id="roomTemperature" typeId="temperature">
@@ -119,6 +121,7 @@
 
 		<label>Heatmiser NeoPlug</label>
 		<description>Heatmiser Neo Smart Plug</description>
+		<semantic-equipment-tag>PowerOutlet</semantic-equipment-tag>
 
 		<channels>
 			<channel id="plugOutputState" typeId="plugOutputState"/>
@@ -148,6 +151,7 @@
 
 		<label>Heatmiser Contact Sensor</label>
 		<description>Heatmiser (wireless) Window or Door Contact</description>
+		<semantic-equipment-tag>ContactSensor</semantic-equipment-tag>
 
 		<channels>
 			<channel id="contactState" typeId="contactState"/>
@@ -180,6 +184,7 @@
 
 		<label>Heatmiser Wireless Air Sensor</label>
 		<description>Heatmiser (wireless) Temperature Sensor</description>
+		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
 
 		<channels>
 			<channel id="sensorTemperature" typeId="temperature">
@@ -213,6 +218,10 @@
 		<label>Temperature</label>
 		<description>Measured temperature value (Read-Only)</description>
 		<category>temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 		<config-description>
 			<parameter name="holdOnlineState" type="boolean" required="false">
@@ -228,6 +237,10 @@
 		<label>Target Temperature</label>
 		<description>Target temperature setting of the room</description>
 		<category>temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="false" pattern="%.1f %unit%" step="0.5"/>
 		<config-description>
 			<parameter name="holdOnlineState" type="boolean" required="false">
@@ -243,6 +256,10 @@
 		<label>Thermostat Output State</label>
 		<description>Status of whether the thermostat is Off, or calling for Heat</description>
 		<category>fire</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Heating</tag>
+		</tags>
 		<state readOnly="true"/>
 		<config-description>
 			<parameter name="holdOnlineState" type="boolean" required="false">
@@ -258,6 +275,10 @@
 		<label>Occupancy Mode Present</label>
 		<description>The Thermostat is in the Present Occupancy Mode (Off=Absent, On=Present)</description>
 		<category>presence</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Presence</tag>
+		</tags>
 		<state readOnly="false"/>
 		<config-description>
 			<parameter name="holdOnlineState" type="boolean" required="false">
@@ -273,6 +294,10 @@
 		<label>Plug Auto Mode</label>
 		<description>The Plug is in Automatic Mode (Off=Manual, On=Automatic)</description>
 		<category>energy</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="false"/>
 		<config-description>
 			<parameter name="holdOnlineState" type="boolean" required="false">
@@ -287,6 +312,10 @@
 		<item-type>Switch</item-type>
 		<label>Plug Output State</label>
 		<description>The state of the Plug switch, Off or On</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="false"/>
 		<config-description>
 			<parameter name="holdOnlineState" type="boolean" required="false">
@@ -302,6 +331,10 @@
 		<label>Contact State</label>
 		<description>The state of the contact</description>
 		<category>window</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 		<config-description>
 			<parameter name="holdOnlineState" type="boolean" required="false">
@@ -316,6 +349,10 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Mesh Network QoS</label>
 		<description>Quality of Service: percentage of configured devices currently connected to the RF mesh network</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>QualityOfService</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %%"></state>
 	</channel-type>
 

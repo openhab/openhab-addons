@@ -16,6 +16,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.util.StringContentProvider;
@@ -35,6 +36,7 @@ import com.google.gson.JsonParser;
  * @author Mark Hilbush - Add support for LMS authentication
  * @author Mark Hilbush - Rework exception handling
  */
+@NonNullByDefault
 public class HttpUtils {
     private static Logger logger = LoggerFactory.getLogger(HttpUtils.class);
 
@@ -103,7 +105,7 @@ public class HttpUtils {
             throws SqueezeBoxNotAuthorizedException, SqueezeBoxCommunicationException {
         String url = "http://" + ip + ":" + webPort + "/jsonrpc.js";
         String json = HttpUtils.post(url, JSON_REQ);
-        logger.trace("Recieved json from server {}", json);
+        logger.trace("Received json from server {}", json);
         JsonElement resp = JsonParser.parseString(json);
         String cliPort = resp.getAsJsonObject().get("result").getAsJsonObject().get("_p2").getAsString();
         return Integer.parseInt(cliPort);

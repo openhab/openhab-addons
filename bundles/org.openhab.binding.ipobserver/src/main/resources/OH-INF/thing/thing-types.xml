@@ -7,6 +7,7 @@
 	<thing-type id="weatherstation">
 		<label>Weather Station</label>
 		<description>Use for any weather station sold under multiple brands that come with an IP Observer unit.</description>
+		<semantic-equipment-tag>WeatherStation</semantic-equipment-tag>
 		<channels>
 			<channel id="temperatureIndoor" typeId="temperatureIndoor"/>
 			<channel id="temperatureOutdoor" typeId="system.outdoor-temperature"/>
@@ -141,7 +142,7 @@
 		<category>Sun</category>
 		<tags>
 			<tag>Measurement</tag>
-			<tag>Light</tag>
+			<tag>Illuminance</tag>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -152,7 +153,7 @@
 		<category>Sun</category>
 		<tags>
 			<tag>Measurement</tag>
-			<tag>Light</tag>
+			<tag>Ultraviolet</tag>
 		</tags>
 		<state pattern="%.0f" readOnly="true"/>
 	</channel-type>
@@ -163,7 +164,7 @@
 		<category>Sun</category>
 		<tags>
 			<tag>Measurement</tag>
-			<tag>Light</tag>
+			<tag>Ultraviolet</tag>
 		</tags>
 		<state pattern="%.0f" readOnly="true"/>
 	</channel-type>
@@ -172,6 +173,10 @@
 		<label>Wind Average Speed</label>
 		<description>Average Wind Speed</description>
 		<category>Wind</category>
+		<tags>
+			<tag>Calculation</tag>
+			<tag>Wind</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="windSpeed" advanced="true">
@@ -205,7 +210,7 @@
 		<description>How much rain will fall in an Hour if the rate continues</description>
 		<category>Rain</category>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Forecast</tag>
 			<tag>Rain</tag>
 		</tags>
 		<state pattern="%.2f" readOnly="true"/>
@@ -215,6 +220,10 @@
 		<label>Rain Today</label>
 		<description>Rain since Midnight</description>
 		<category>Rain</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Rain</tag>
+		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="rainForWeek" advanced="true">
@@ -236,12 +245,20 @@
 		<label>Rain for Year</label>
 		<description>Total rain since 12:00 on 1st Jan</description>
 		<category>Rain</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Rain</tag>
+		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="rainTotal">
 		<item-type>Number:Length</item-type>
 		<label>Total Rain</label>
 		<category>Rain</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Rain</tag>
+		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="lastUpdatedTime" advanced="true">

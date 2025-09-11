@@ -7,6 +7,7 @@
 	<bridge-type id="controller">
 		<label>AmpliPi Controller</label>
 		<description>An AmpliPi controller</description>
+		<semantic-equipment-tag>AudioVisual</semantic-equipment-tag>
 
 		<channels>
 			<channel id="preset" typeId="preset"/>
@@ -49,6 +50,7 @@
 
 		<label>AmpliPi Zone</label>
 		<description>A zone of the AmpliPi system</description>
+		<semantic-equipment-tag>AudioVisual</semantic-equipment-tag>
 
 		<channels>
 			<channel typeId="system.power" id="power"/>
@@ -82,6 +84,7 @@
 
 		<label>AmpliPi Group</label>
 		<description>A group of the AmpliPi system</description>
+		<semantic-equipment-tag>AudioVisual</semantic-equipment-tag>
 
 		<channels>
 			<channel typeId="system.power" id="power"/>
@@ -126,6 +129,10 @@
 		<item-type>Number</item-type>
 		<label>Source</label>
 		<description>The audio source that is played</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Channel</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="0">Source 1</option>

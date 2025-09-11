@@ -9,6 +9,7 @@
 			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 		<label>Somfy Heating System with On/Off</label>
+		<semantic-equipment-tag>HVAC</semantic-equipment-tag>
 		<channels>
 			<channel id="gate_state" typeId="gate_state"></channel>
 			<channel id="gate_command" typeId="gate_command"></channel>

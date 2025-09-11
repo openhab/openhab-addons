@@ -11,6 +11,7 @@
 
 		<label>Freeplug</label>
 		<description>Ethernet / CPL gateway</description>
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 
 		<channels>
 			<channel id="line-status" typeId="line-status"/>

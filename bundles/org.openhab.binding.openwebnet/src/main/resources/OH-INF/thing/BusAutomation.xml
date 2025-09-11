@@ -13,7 +13,7 @@
 		<label>Automation</label>
 		<description>An OpenWebNet BUS/SCS automation device to control roller shutters, blinds, etc. BTicino models:
 			xxx/yyyy/etc.</description>
-
+		<semantic-equipment-tag>Blinds</semantic-equipment-tag>
 		<channels>
 			<channel id="shutter" typeId="shutter"/>
 		</channels>

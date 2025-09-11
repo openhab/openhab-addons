@@ -8,6 +8,7 @@
 	<thing-type id="rc1572">
 		<label>RC-1572 Stereo Preamplifier</label>
 		<description>Connection to the Rotel RC-1572 or RC-1572MKII stereo preamplifier</description>
+		<semantic-equipment-tag>AudioVisual</semantic-equipment-tag>
 
 		<channels>
 			<channel id="power" typeId="system.power"/>

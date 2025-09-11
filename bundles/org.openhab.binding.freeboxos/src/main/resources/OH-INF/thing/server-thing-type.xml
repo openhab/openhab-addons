@@ -11,6 +11,7 @@
 
 		<label>Freebox Revolution</label>
 		<description>Provides various informations regarding the status of the Freebox Revolution Server</description>
+		<semantic-equipment-tag>Router</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group typeId="display" id="display"/>

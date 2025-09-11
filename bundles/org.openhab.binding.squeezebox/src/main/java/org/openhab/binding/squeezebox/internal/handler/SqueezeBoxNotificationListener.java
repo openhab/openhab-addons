@@ -16,6 +16,8 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.squeezebox.internal.model.Favorite;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +29,7 @@ import org.slf4j.LoggerFactory;
  * @author Mark Hilbush - Initial contribution
  * @author Mark Hilbush - Added event to update favorites list
  */
+@NonNullByDefault
 public final class SqueezeBoxNotificationListener implements SqueezeBoxPlayerEventListener {
     private final Logger logger = LoggerFactory.getLogger(SqueezeBoxNotificationListener.class);
 
@@ -238,7 +241,7 @@ public final class SqueezeBoxNotificationListener implements SqueezeBoxPlayerEve
     }
 
     @Override
-    public void buttonsChangeEvent(String mac, String likeCommand, String unlikeCommand) {
+    public void buttonsChangeEvent(String mac, @Nullable String likeCommand, @Nullable String unlikeCommand) {
     }
 
     @Override

@@ -32,9 +32,9 @@ import org.openhab.binding.insteon.internal.utils.HexUtils;
 public final class Field {
     private final String name;
     private final int offset;
-    private final DataType type;
+    private final FieldType type;
 
-    public Field(String name, int offset, DataType type) {
+    public Field(String name, int offset, FieldType type) {
         this.name = name;
         this.offset = offset;
         this.type = type;
@@ -48,7 +48,7 @@ public final class Field {
         return offset;
     }
 
-    private void check(int len, DataType t) throws FieldException {
+    private void check(int len, FieldType t) throws FieldException {
         if (offset + type.getSize() > len) {
             throw new FieldException("field write beyond end of msg");
         }
@@ -79,7 +79,7 @@ public final class Field {
      * @throws FieldException
      */
     public void setByte(byte[] data, byte b) throws FieldException {
-        check(data.length, DataType.BYTE);
+        check(data.length, FieldType.BYTE);
         data[offset] = b;
     }
 
@@ -92,7 +92,7 @@ public final class Field {
      * @throws FieldException
      */
     public void setAddress(byte[] data, InsteonAddress address) throws FieldException {
-        check(data.length, DataType.ADDRESS);
+        check(data.length, FieldType.ADDRESS);
         System.arraycopy(address.getBytes(), 0, data, offset, type.getSize());
     }
 
@@ -104,7 +104,7 @@ public final class Field {
      * @throws FieldException
      */
     public byte getByte(byte[] data) throws FieldException {
-        check(data.length, DataType.BYTE);
+        check(data.length, FieldType.BYTE);
         return data[offset];
     }
 
@@ -116,7 +116,7 @@ public final class Field {
      * @throws FieldException
      */
     public InsteonAddress getAddress(byte[] data) throws FieldException {
-        check(data.length, DataType.ADDRESS);
+        check(data.length, FieldType.ADDRESS);
         byte[] address = Arrays.copyOfRange(data, offset, offset + type.getSize());
         return new InsteonAddress(address);
     }

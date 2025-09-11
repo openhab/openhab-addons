@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="airparif"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="api">
+		<label>AirParif API Portal</label>
+		<description>
+			Bridge to the AirParif API Portal. In order to receive the data, you must register an account on
+			https://www.airparif.fr/contact and receive your API token.
+		</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
+
+		<channel-groups>
+			<channel-group id="pollens" typeId="bridge-pollens"/>
+			<channel-group id="aq-bulletin" typeId="air-quality-bulletin">
+				<label>Today's Air Quality Bulletin</label>
+			</channel-group>
+			<channel-group id="aq-bulletin-tomorrow" typeId="air-quality-bulletin">
+				<label>Tomorrow's Air Quality Bulletin</label>
+			</channel-group>
+			<channel-group id="daily" typeId="daily"/>
+		</channel-groups>
+
+		<config-description>
+			<parameter name="apikey" type="text" required="true">
+				<label>API Key</label>
+				<description>Token used to access the service</description>
+				<context>password</context>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+</thing:thing-descriptions>

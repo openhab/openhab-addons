@@ -283,7 +283,7 @@ public class BluetoothDiscoveryService extends AbstractDiscoveryService implemen
                 return result;
             }).whenComplete((r, t) -> {
                 if (t != null) {
-                    logger.warn("Error occured during discovery of {}", device.getAddress(), t);
+                    logger.warn("Error occurred during discovery of {}", device.getAddress(), t);
                 }
             });
 

@@ -8,6 +8,7 @@
 
 		<label>OpenAI Account</label>
 		<description>Account at OpenAI that is used for accessing the ChatGPT API.</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 
 		<channels>
 			<channel id="chat" typeId="chat"/>

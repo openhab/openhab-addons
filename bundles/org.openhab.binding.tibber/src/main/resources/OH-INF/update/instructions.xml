@@ -17,6 +17,197 @@
 				<type>tibber:production</type>
 			</add-channel>
 		</instruction-set>
+		<instruction-set targetVersion="3">
+			<remove-channel id="current_total"/>
+			<remove-channel id="current_startsAt"/>
+			<remove-channel id="current_level"/>
+			<remove-channel id="daily_cost"/>
+			<remove-channel id="daily_consumption"/>
+			<remove-channel id="daily_from"/>
+			<remove-channel id="daily_to"/>
+			<remove-channel id="hourly_cost"/>
+			<remove-channel id="hourly_consumption"/>
+			<remove-channel id="hourly_from"/>
+			<remove-channel id="hourly_to"/>
+			<remove-channel id="tomorrow_prices"/>
+			<remove-channel id="today_prices"/>
+
+			<remove-channel id="live_timestamp"/>
+			<remove-channel id="live_power"/>
+			<remove-channel id="live_lastMeterConsumption"/>
+			<remove-channel id="live_accumulatedConsumption"/>
+			<remove-channel id="live_accumulatedConsumptionThisHour"/>
+			<remove-channel id="live_accumulatedCost"/>
+			<remove-channel id="live_accumulatedReward"/>
+			<remove-channel id="live_currency"/>
+			<remove-channel id="live_minPower"/>
+			<remove-channel id="live_averagePower"/>
+			<remove-channel id="live_maxPower"/>
+			<remove-channel id="live_voltage1"/>
+			<remove-channel id="live_voltage2"/>
+			<remove-channel id="live_voltage3"/>
+			<remove-channel id="live_current1"/>
+			<remove-channel id="live_current2"/>
+			<remove-channel id="live_current3"/>
+			<remove-channel id="live_powerProduction"/>
+			<remove-channel id="live_accumulatedProduction"/>
+			<remove-channel id="live_accumulatedProductionThisHour"/>
+			<remove-channel id="live_lastMeterProduction"/>
+			<remove-channel id="live_minPowerproduction"/>
+			<remove-channel id="live_maxPowerproduction"/>
+
+			<add-channel id="spot-prices" groupIds="price">
+				<type>tibber:price</type>
+				<label>Spot Prices</label>
+				<description>Spot prices for today and tomorrow</description>
+			</add-channel>
+			<add-channel id="level" groupIds="price">
+				<type>tibber:price-level</type>
+				<label>Price Level</label>
+				<description>Price levels for today and tomorrow</description>
+			</add-channel>
+			<add-channel id="average" groupIds="price">
+				<type>tibber:price</type>
+				<label>Average 24h</label>
+				<description>Average price from last 24 hours</description>
+			</add-channel>
+
+			<add-channel id="consumption" groupIds="live">
+				<type>tibber:power</type>
+				<label>Live Consumption</label>
+				<description>Consumption at the moment in watts</description>
+			</add-channel>
+			<add-channel id="minimum-consumption" groupIds="live">
+				<type>tibber:power</type>
+				<label>Minimum Consumption</label>
+				<description>Minimum power consumption since midnight in watts</description>
+			</add-channel>
+			<add-channel id="peak-consumption" groupIds="live">
+				<type>tibber:power</type>
+				<label>Peak Consumption</label>
+				<description>Peak power consumption since midnight in watts</description>
+			</add-channel>
+			<add-channel id="production" groupIds="live">
+				<type>tibber:power</type>
+				<label>Live Production</label>
+				<description>Net power production at the moment in watts</description>
+			</add-channel>
+			<add-channel id="minimum-production" groupIds="live">
+				<type>tibber:power</type>
+				<label>Minimum Production</label>
+				<description>Minimum net power production since midnight in watts</description>
+			</add-channel>
+			<add-channel id="peak-production" groupIds="live">
+				<type>tibber:power</type>
+				<label>Peak Production</label>
+				<description>Maximum net power production since midnight in watts</description>
+			</add-channel>
+			<add-channel id="voltage1" groupIds="live">
+				<type>tibber:voltage</type>
+				<label>Voltage 1</label>
+				<description>Electric potential on phase 1</description>
+			</add-channel>
+			<add-channel id="voltage2" groupIds="live">
+				<type>tibber:voltage</type>
+				<label>Voltage 2</label>
+				<description>Electric potential on phase 2</description>
+			</add-channel>
+			<add-channel id="voltage3" groupIds="live">
+				<type>tibber:voltage</type>
+				<label>Voltage 3</label>
+				<description>Electric potential on phase 3</description>
+			</add-channel>
+			<add-channel id="current1" groupIds="live">
+				<type>tibber:current</type>
+				<label>Current 1</label>
+				<description>Electric current on phase 1</description>
+			</add-channel>
+			<add-channel id="current2" groupIds="live">
+				<type>tibber:current</type>
+				<label>Current 2</label>
+				<description>Electric current on phase 2</description>
+			</add-channel>
+			<add-channel id="current3" groupIds="live">
+				<type>tibber:current</type>
+				<label>Current 3</label>
+				<description>Electric current on phase 3</description>
+			</add-channel>
+
+			<add-channel id="total-consumption" groupIds="statistics">
+				<type>tibber:energy</type>
+				<label>Total Consumption</label>
+				<description>Total energy consumption measured by Tibber Pulse meter</description>
+			</add-channel>
+			<add-channel id="daily-consumption" groupIds="statistics">
+				<type>tibber:energy-detailed</type>
+				<label>Daily Consumption</label>
+				<description>Energy consumed since midnight in kilowatt-hours</description>
+			</add-channel>
+			<add-channel id="daily-cost" groupIds="statistics">
+				<type>tibber:cost</type>
+				<label>Daily Cost</label>
+				<description>Accumulated cost since midnight</description>
+			</add-channel>
+			<add-channel id="last-hour-consumption" groupIds="statistics">
+				<type>tibber:energy-detailed</type>
+				<label>Last Hour Consumption</label>
+				<description>Energy consumed since last hour shift in kilowatt-hours</description>
+			</add-channel>
+			<add-channel id="total-production" groupIds="statistics">
+				<type>tibber:energy</type>
+				<label>Total Production</label>
+				<description>Total energy production measured by Tibber Pulse meter</description>
+			</add-channel>
+			<add-channel id="daily-production" groupIds="statistics">
+				<type>tibber:energy-detailed</type>
+				<label>Daily Production</label>
+				<description>Net energy produced since midnight in kilowatt-hours</description>
+			</add-channel>
+			<add-channel id="last-hour-production" groupIds="statistics">
+				<type>tibber:energy-detailed</type>
+				<label>Last Hour Production</label>
+				<description>Net energy produced since last hour shift in kilowatt-hours</description>
+			</add-channel>
+		</instruction-set>
+
+		<instruction-set targetVersion="4">
+			<add-channel id="average-consumption" groupIds="live">
+				<type>tibber:power</type>
+				<label>Average Consumption</label>
+				<description>Average power consumption since midnight in watts</description>
+			</add-channel>
+		</instruction-set>
+
+		<instruction-set targetVersion="5">
+			<add-channel id="power-balance" groupIds="live">
+				<type>tibber:power</type>
+				<label>Power Balance</label>
+				<description>Current power consumption (as positive value) and production (as negative value)</description>
+			</add-channel>
+		</instruction-set>
+
+		<instruction-set targetVersion="6">
+			<add-channel id="total" groupIds="price">
+				<type>tibber:price</type>
+				<label>Total Price</label>
+				<description>Total price including energy and taxes</description>
+			</add-channel>
+			<add-channel id="spot" groupIds="price">
+				<type>tibber:price</type>
+				<label>Spot Price</label>
+				<description>Spot prices for energy today and tomorrow</description>
+			</add-channel>
+			<add-channel id="tax" groupIds="price">
+				<type>tibber:price</type>
+				<label>Tax</label>
+				<description>Taxes and additional expenses</description>
+			</add-channel>
+			<update-channel id="spot-price" groupIds="price">
+				<type>tibber:advanced-price</type>
+				<label>Spot Price (DEPRECATED)</label>
+				<description>(DEPRECATED) Use total channel from price group</description>
+			</update-channel>
+		</instruction-set>
 	</thing-type>
 
 </update:update-descriptions>

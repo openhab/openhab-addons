@@ -6,56 +6,100 @@
 	<channel-type id="driver-front-channel">
 		<item-type>String</item-type>
 		<label>Driver Door</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="driver-rear-channel">
 		<item-type>String</item-type>
 		<label>Driver Door Rear</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="passenger-front-channel">
 		<item-type>String</item-type>
 		<label>Passenger Door</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="passenger-rear-channel">
 		<item-type>String</item-type>
 		<label>Passenger Door Rear</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="hood-channel">
 		<item-type>String</item-type>
 		<label>Hood</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="trunk-channel">
 		<item-type>String</item-type>
 		<label>Trunk</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="window-driver-front-channel">
 		<item-type>String</item-type>
 		<label>Driver Window</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="window-driver-rear-channel">
 		<item-type>String</item-type>
 		<label>Driver Rear Window</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="window-passenger-front-channel">
 		<item-type>String</item-type>
 		<label>Passenger Window</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="window-passenger-rear-channel">
 		<item-type>String</item-type>
 		<label>Passenger Rear Window</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="sunroof-channel">
 		<item-type>String</item-type>
 		<label>Sunroof</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>

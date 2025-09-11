@@ -16,7 +16,7 @@ The openHAB Cloud service (and thus the connector to it) is useful for different
 - Open the openHAB web UI and login as an administrator.
 - Click on Add-on Store, followed by System Integrations.
 - Use the Install button to install the openHAB Cloud Connector.
-- Register your session (https://myopenhab.org/) using UUID and Secret.
+- Register your session (<https://myopenhab.org/>) using UUID and Secret.
 
 ## UUID and Secret
 
@@ -140,7 +140,7 @@ The additional parameter for these variants have the following meaning:
 - `title`: The title of the notification. Defaults to "openHAB" inside the Android and iOS apps.
 - `referenceId`: A user supplied id to both replace existing messages when pushed, and later remove messages with the `hideNotificationByReferenceId` actions.
 - `onClickAction`: The action to be performed when the user clicks on the notification. Specified using the [action syntax](#action-syntax).
-- `mediaAttachmentUrl`: The URL of the media attachment to be displayed with the notification. This can either be a fully qualified URL, prefixed with `http://` or `https://` and reachable by the client device, a relative path on the user's openHAB instance starting with `/`, or an image item with the format `item:MyImageItem`
+- `mediaAttachmentUrl`: The URL of the media attachment to be displayed with the notification. This can either be a fully qualified URL, prefixed with `http://` or `https://` and reachable by the client device, a relative path on the user's openHAB instance starting with `/`, or an image item with the format `item:MyImageItem`. If the media attachment URL is not reachable by the client device (ie. the URL is not available on the public internet), use the `setImage` action to set the image item to the URL first then use `item:MyImageItem` as the media attachment URL. See [example](#examples) for more details.
 - `actionButton1`: The action to be performed when the user clicks on the first action button. Specified as `Title=$action`, where `$action` follows the [action syntax](#action-syntax).
 - `actionButton2`: The action to be performed when the user clicks on the second action button. Specified as `Title=$action`, where `$action` follows the [action syntax](#action-syntax).
 - `actionButton3`: The action to be performed when the user clicks on the third action button. Specified as `Title=$action`, where `$action` follows the [action syntax](#action-syntax).
@@ -277,7 +277,7 @@ end
 
 ::::
 
-Notify all openHAB Cloud users that motion was detected, attach a camera snapshot and add an action button to turn on the light:
+Notify all openHAB Cloud users that motion was detected, attach a camera snapshot from a globally accessible URL and add an action button to turn on the light:
 
 :::: tabs
 
@@ -323,8 +323,70 @@ rule "Motion Detected Notification" do
                       icon: "motion",
                       tag: "Motion Tag",
                       title: "Motion Detected",
-                      id: "motion-id-1234"
+                      id: "motion-id-1234",
                       attachment: "https://apartment.my/camera-snapshot.jpg",
+                      buttons: { "Turn on the light" => "command:Apartment_Light:ON" }
+  end
+end
+```
+
+:::
+
+::::
+
+::::
+
+Notify all openHAB Cloud users that motion was detected, attach a camera snapshot from a network local camera using an image item and add an action button to turn on the light:
+
+:::: tabs
+
+::: tab DSL
+
+```java
+rule "Motion Detected Notification"
+when
+  Item Apartment_MotionSensor changed to ON
+then
+  setImage("Apartment_Camera_Snapshot", "http://camera.local/camera-snapshot.jpg");
+  sendBroadcastNotification("Motion detected in the apartment!", "motion", "Motion Tag",
+                                    "Motion Detected", "motion-id-1234", null, "item:Apartment_Camera_Snapshot",
+                                    "Turn on the light=command:Apartment_Light:ON", null, null)
+end
+```
+
+:::
+
+::: tab JS
+
+```javascript
+rules.when().item('Apartment_MotionSensor').changed().to('ON').then(() => {
+  actions.HTTP.setImage("Apartment_Camera_Snapshot", "http://camera.local/camera-snapshot.jpg");
+  actions.notificationBuilder('Motion detected in the apartment!')
+    .withIcon('motion')
+    .withTag('Motion Tag')
+    .withTitle('Motion Detected')
+    .withReferenceId('motion-id-1234')
+    .withMediaAttachment('item:Apartment_Camera_Snapshot')
+    .addActionButton('Turn on the light', 'command:Apartment_Light:ON')
+    .send();
+}).build('Motion Detected Notification');
+```
+
+:::
+
+::: tab JRuby
+
+```ruby
+rule "Motion Detected Notification" do
+  changed Apartment_MotionSensor, to: ON
+  run do
+    HTTP.setImage("Apartment_Camera_Snapshot", "http://camera.local/camera-snapshot.jpg");
+    Notification.send "Motion detected in the apartment!",
+                      icon: "motion",
+                      tag: "Motion Tag",
+                      title: "Motion Detected",
+                      id: "motion-id-1234",
+                      attachment: "item:Apartment_Camera_Snapshot",
                       buttons: { "Turn on the light" => "command:Apartment_Light:ON" }
   end
 end

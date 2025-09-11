@@ -39,6 +39,7 @@ The binding has no configuration options, all configuration is done at `bridge`,
 | `username`        | The username to authenticate with the inverter settings for battery control    | No       |
 | `password`        | The password to authenticate with the inverter settings for battery control    | No       |
 | `refreshInterval` | Refresh interval in seconds                                                    | No       |
+| `scheme`          | Set the protocol scheme that is used to connect to your device (default: http) | No       |
 
 ### Powerinverter Thing Configuration
 
@@ -185,6 +186,14 @@ Once the actions instance has been retrieved, you can invoke the following metho
 - `forceBatteryCharging(QuantityType<Power> power)`: Force the battery to charge with the specified power (removes all battery control schedules first and applies all the time).
 - `addForcedBatteryChargingSchedule(LocalTime from, LocalTime until, QuantityType<Power> power)`: Add a schedule to force the battery to charge with the specified power in the specified time range.
 - `addForcedBatteryChargingSchedule(ZonedDateTime from, ZonedDateTime until, QuantityType<Power> power)`: Add a schedule to force the battery to charge with the specified power in the specified time range.
+- `preventBatteryCharging()`: Prevent the battery from charging (removes all battery control schedules first and applies all the time).
+- `addPreventBatteryChargingSchedule(LocalTime from, LocalTime until)`: Add a schedule to prevent the battery from charging in the specified time range.
+- `addPreventBatteryChargingSchedule(ZonedDateTime from, ZonedDateTime until)`: Add a schedule to prevent the battery from charging in the specified time range.
+- `forceBatteryDischarging(QuantityType<Power> power)`: Force the battery to discharge with the specified power (removes all battery control schedules first and applies all the time).
+- `addForcedBatteryDischargingSchedule(LocalTime from, LocalTime until, QuantityType<Power> power)`: Add a schedule to force the battery to discharge with the specified power in the specified time range.
+- `addForcedBatteryDischargingSchedule(ZonedDateTime from, ZonedDateTime until, QuantityType<Power> power)`: Add a schedule to force the battery to discharge with the specified power in the specified time range.
+- `setBackupReservedBatteryCapacity(int percent)`: Set the reserved battery capacity for backup power.
+- `setBackupReservedBatteryCapacity(PercentType percent)`: Set the reserved battery capacity for backup power.
 
 All methods return a boolean value indicating whether the action was successful.
 
@@ -201,6 +210,10 @@ froniusInverterActions.resetBatteryControl();
 froniusInverterActions.addHoldBatteryChargeSchedule(time.toZDT('18:00'), time.toZDT('22:00'));
 froniusInverterActions.addForcedBatteryChargingSchedule(time.toZDT('22:00'), time.toZDT('23:59'), Quantity('5 kW'));
 froniusInverterActions.addForcedBatteryChargingSchedule(time.toZDT('00:00'), time.toZDT('06:00'), Quantity('5 kW'));
+froniusInverterActions.addForcesBatteryDischargingSchedule(time.toZDT('07:00'), time.toZDT('09:00'));
+froniusInverterActions.addPreventBatteryChargingSchedule(time.toZDT('09:00'), time.toZDT('12:00'));
+
+froniusInverterActions.setBackupReservedBatteryCapacity(50);
 ```
 
 ## Full Example
@@ -208,12 +221,14 @@ froniusInverterActions.addForcedBatteryChargingSchedule(time.toZDT('00:00'), tim
 demo.things:
 
 ```java
-Bridge fronius:bridge:mybridge [hostname="192.168.66.148", refreshInterval=5] {
+Bridge fronius:bridge:mybridge [hostname="192.168.66.148", refreshInterval=5, username="customer", password="someSecretPassword", scheme="http"] {
     Thing powerinverter myinverter [deviceId=1]
     Thing meter mymeter [deviceId=0]
     Thing ohmpilot myohmpilot [deviceId=0]
 }
 ```
+
+Please note that `username` and `password` are only required if you want to use battery control Thing actions.
 
 demo.items:
 

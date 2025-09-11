@@ -7,7 +7,7 @@
 	<thing-type id="synopanalyzer">
 		<label>Synop Message</label>
 		<description>This is the interpretation of the last message of a given station.</description>
-
+		<semantic-equipment-tag>WeatherService</semantic-equipment-tag>
 		<channels>
 			<channel id="temperature" typeId="system.outdoor-temperature"/>
 			<channel id="pressure" typeId="system.barometric-pressure"/>
@@ -41,6 +41,10 @@
 		<label>Beaufort</label>
 		<description>Wind speed in Beaufort Scale</description>
 		<category>Wind</category>
+		<tags>
+			<tag>Calculation</tag>
+			<tag>Speed</tag>
+		</tags>
 		<state readOnly="true" pattern="%d" min="0" max="12"/>
 	</channel-type>
 
@@ -49,6 +53,10 @@
 		<label>Wind Direction</label>
 		<description>Wind direction</description>
 		<category>Wind</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Wind</tag>
+		</tags>
 		<state readOnly="true" pattern="%s">
 			<options>
 				<option value="N">N</option>

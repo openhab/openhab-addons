@@ -6,41 +6,73 @@
 	<channel-type id="front-left-current-channel">
 		<item-type>Number:Pressure</item-type>
 		<label>Tire Pressure Front Left</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Pressure</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="front-left-target-channel">
 		<item-type>Number:Pressure</item-type>
 		<label>Tire Pressure Front Left Target</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Pressure</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="front-right-current-channel">
 		<item-type>Number:Pressure</item-type>
 		<label>Tire Pressure Front Right</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Pressure</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="front-right-target-channel">
 		<item-type>Number:Pressure</item-type>
 		<label>Tire Pressure Front Right Target</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Pressure</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="rear-left-current-channel">
 		<item-type>Number:Pressure</item-type>
 		<label>Tire Pressure Rear Left</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Pressure</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="rear-left-target-channel">
 		<item-type>Number:Pressure</item-type>
 		<label>Tire Pressure Rear Left Target</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Pressure</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="rear-right-current-channel">
 		<item-type>Number:Pressure</item-type>
 		<label>Tire Pressure Rear Right</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Pressure</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="rear-right-target-channel">
 		<item-type>Number:Pressure</item-type>
 		<label>Tire Pressure Rear Right Target</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Pressure</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>

@@ -12,6 +12,7 @@
 
 		<label>VMB2PBN</label>
 		<description>Push-button interface for Niko 1- or 2-fold push-buttons</description>
+		<semantic-equipment-tag>Button</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="input" typeId="8channelInputModule"/>
 			<channel-group id="button" typeId="8channelButtonModule"/>
@@ -29,6 +30,7 @@
 
 		<label>VMB4AN</label>
 		<description>Analog I/O module</description>
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="alarm" typeId="8channelInputModule"/>
 			<channel-group id="analogInput" typeId="4channelAnalogInputModule"/>
@@ -46,6 +48,7 @@
 
 		<label>VMB4PB</label>
 		<description>4 button interface module</description>
+		<semantic-equipment-tag>Button</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="input" typeId="8channelInputModule"/>
 			<channel-group id="button" typeId="8channelButtonModule"/>
@@ -64,6 +67,7 @@
 
 		<label>VMB6PB-20</label>
 		<description>6 button interface module</description>
+		<semantic-equipment-tag>Button</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="input" typeId="8channelInputModule"/>
 			<channel-group id="button" typeId="8channelButtonModule"/>
@@ -82,6 +86,7 @@
 
 		<label>VMB6IN</label>
 		<description>6-channel input module</description>
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="input" typeId="6channelInputModule"/>
 			<channel-group id="button" typeId="6channelButtonModule"/>
@@ -98,6 +103,7 @@
 
 		<label>VMB6PBN</label>
 		<description>Push-button interface module for Niko 4- or 6-fold push-button</description>
+		<semantic-equipment-tag>Button</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="input" typeId="8channelInputModule"/>
 			<channel-group id="button" typeId="8channelButtonModule"/>
@@ -116,6 +122,7 @@
 
 		<label>VMB7IN</label>
 		<description>7-channel input module (potentialfree + pulse)</description>
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="input" typeId="8channelInputModule"/>
 			<channel-group id="button" typeId="8channelButtonModule"/>
@@ -134,6 +141,7 @@
 
 		<label>VMB8IN-20</label>
 		<description>8-channel input module (potentialfree + pulse)</description>
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="input" typeId="8channelInputModule"/>
 			<channel-group id="button" typeId="8channelButtonModule"/>
@@ -141,7 +149,7 @@
 			<channel-group id="clockAlarm" typeId="clockAlarm"/>
 		</channel-groups>
 
-		<config-description-ref uri="thing-type:velbus:8channelDeviceWithCounters"/>
+		<config-description-ref uri="thing-type:velbus:8channelDeviceWith8Counters"/>
 	</thing-type>
 
 	<thing-type id="vmb8ir">
@@ -152,6 +160,7 @@
 
 		<label>VMB8IR</label>
 		<description>Infrared remote control receiver module</description>
+		<semantic-equipment-tag>RemoteControl</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="input" typeId="8channelInputModule"/>
 			<channel-group id="button" typeId="8channelButtonModule"/>
@@ -168,6 +177,7 @@
 
 		<label>VMB8PB</label>
 		<description>8-Channel Push Button module</description>
+		<semantic-equipment-tag>Button</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="input" typeId="8channelInputModule"/>
 			<channel-group id="button" typeId="8channelButtonModule"/>
@@ -185,6 +195,7 @@
 
 		<label>VMB8PBU</label>
 		<description>Push-button interface with 8 channels for universal mounting</description>
+		<semantic-equipment-tag>Button</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="input" typeId="8channelInputModule"/>
 			<channel-group id="button" typeId="8channelButtonModule"/>
@@ -203,6 +214,7 @@
 
 		<label>VMBEL1</label>
 		<description>Edge-lit one touch button module</description>
+		<semantic-equipment-tag>Button</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="input" typeId="9channelInputModuleWithTemperatureSensor"/>
 			<channel-group id="button" typeId="8channelButtonModule"/>
@@ -226,6 +238,7 @@
 
 		<label>VMBEL1-20</label>
 		<description>Edge-lit one touch button module</description>
+		<semantic-equipment-tag>Button</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="input" typeId="9channelInputModuleWithTemperatureSensor"/>
 			<channel-group id="button" typeId="8channelButtonModule"/>
@@ -249,6 +262,7 @@
 
 		<label>VMBEL2</label>
 		<description>Edge-lit two touch buttons module</description>
+		<semantic-equipment-tag>Button</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="input" typeId="9channelInputModuleWithTemperatureSensor"/>
 			<channel-group id="button" typeId="8channelButtonModule"/>
@@ -272,6 +286,7 @@
 
 		<label>VMBEL2-20</label>
 		<description>Edge-lit two touch buttons module</description>
+		<semantic-equipment-tag>Button</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="input" typeId="9channelInputModuleWithTemperatureSensor"/>
 			<channel-group id="button" typeId="8channelButtonModule"/>
@@ -295,6 +310,7 @@
 
 		<label>VMBEL4</label>
 		<description>Edge-lit four touch buttons module</description>
+		<semantic-equipment-tag>Button</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="input" typeId="9channelInputModuleWithTemperatureSensor"/>
 			<channel-group id="button" typeId="8channelButtonModule"/>
@@ -318,6 +334,7 @@
 
 		<label>VMBEL4-20</label>
 		<description>Edge-lit four touch buttons module</description>
+		<semantic-equipment-tag>Button</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="input" typeId="9channelInputModuleWithTemperatureSensor"/>
 			<channel-group id="button" typeId="8channelButtonModule"/>
@@ -341,6 +358,7 @@
 
 		<label>VMBELO</label>
 		<description>Edge-lit touch panel with Oled display</description>
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="input" typeId="33channelInputModuleWithTemperatureSensor"/>
 			<channel-group id="button" typeId="32channelButtonModule"/>
@@ -365,6 +383,7 @@
 
 		<label>VMBELO-20</label>
 		<description>Edge-lit touch panel with Oled display</description>
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="input" typeId="33channelInputModuleWithTemperatureSensor"/>
 			<channel-group id="button" typeId="32channelButtonModule"/>
@@ -389,6 +408,7 @@
 
 		<label>VMBGP1</label>
 		<description>Glass control module with 1 touch key</description>
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="input" typeId="9channelInputModuleWithTemperatureSensor"/>
 			<channel-group id="button" typeId="8channelButtonModule"/>
@@ -408,6 +428,7 @@
 
 		<label>VMBGP1-2</label>
 		<description>Glass control module with 1 touch key (Edition 2)</description>
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="input" typeId="9channelInputModuleWithTemperatureSensor"/>
 			<channel-group id="button" typeId="8channelButtonModule"/>
@@ -427,6 +448,7 @@
 
 		<label>VMBGP1-20</label>
 		<description>Glass control module with 1 touch key</description>
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="input" typeId="9channelInputModuleWithTemperatureSensor"/>
 			<channel-group id="button" typeId="8channelButtonModule"/>
@@ -446,6 +468,7 @@
 
 		<label>VMBGP2</label>
 		<description>Glass control module with 2 touch keys</description>
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="input" typeId="9channelInputModuleWithTemperatureSensor"/>
 			<channel-group id="button" typeId="8channelButtonModule"/>
@@ -465,6 +488,7 @@
 
 		<label>VMBGP2-2</label>
 		<description>Glass control module with 2 touch keys (Edition 2)</description>
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="input" typeId="9channelInputModuleWithTemperatureSensor"/>
 			<channel-group id="button" typeId="8channelButtonModule"/>
@@ -484,6 +508,7 @@
 
 		<label>VMBGP2-20</label>
 		<description>Glass control module with 2 touch keys</description>
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="input" typeId="9channelInputModuleWithTemperatureSensor"/>
 			<channel-group id="button" typeId="8channelButtonModule"/>
@@ -503,6 +528,7 @@
 
 		<label>VMBGP4</label>
 		<description>Glass control module with 4 touch keys</description>
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="input" typeId="9channelInputModuleWithTemperatureSensor"/>
 			<channel-group id="button" typeId="8channelButtonModule"/>
@@ -522,6 +548,7 @@
 
 		<label>VMBGP4-2</label>
 		<description>Glass control module with 4 touch keys (Edition 2)</description>
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="input" typeId="9channelInputModuleWithTemperatureSensor"/>
 			<channel-group id="button" typeId="8channelButtonModule"/>
@@ -541,6 +568,7 @@
 
 		<label>VMBGP4-20</label>
 		<description>Glass control module with 4 touch keys</description>
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="input" typeId="9channelInputModuleWithTemperatureSensor"/>
 			<channel-group id="button" typeId="8channelButtonModule"/>
@@ -560,6 +588,7 @@
 
 		<label>VMBGPO</label>
 		<description>Glass control module with oled display</description>
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="input" typeId="33channelInputModuleWithTemperatureSensor"/>
 			<channel-group id="button" typeId="32channelButtonModule"/>
@@ -580,6 +609,7 @@
 
 		<label>VMBGPO-20</label>
 		<description>Glass control module with oled display</description>
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="input" typeId="33channelInputModuleWithTemperatureSensor"/>
 			<channel-group id="button" typeId="32channelButtonModule"/>
@@ -600,6 +630,7 @@
 
 		<label>VMBGPOD</label>
 		<description>Glass control module with oled display and temperature controller</description>
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="input" typeId="33channelInputModuleWithTemperatureSensor"/>
 			<channel-group id="button" typeId="32channelButtonModule"/>
@@ -620,6 +651,7 @@
 
 		<label>VMBGPOD-2</label>
 		<description>Glass control module with oled display and temperature controller (Edition 2)</description>
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="input" typeId="33channelInputModuleWithTemperatureSensor"/>
 			<channel-group id="button" typeId="32channelButtonModule"/>
@@ -640,6 +672,7 @@
 
 		<label>VMBKP</label>
 		<description>Keypad interface module</description>
+		<semantic-equipment-tag>Keypad</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="input" typeId="8channelInputModule"/>
 			<channel-group id="button" typeId="5SubchannelButtonModule"/>
@@ -657,6 +690,7 @@
 
 		<label>VMBIN</label>
 		<description>1-channel input module</description>
+		<semantic-equipment-tag>Button</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="input" typeId="8channelInputModule"/>
 			<channel-group id="button" typeId="8channelButtonModule"/>
@@ -691,6 +725,7 @@
 
 		<label>VMPVP1</label>
 		<description>Doorbird interface module</description>
+		<semantic-equipment-tag>Doorbell</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="input" typeId="8channelInputModule"/>
 			<channel-group id="feedback" typeId="8channelFeedbackModule"/>

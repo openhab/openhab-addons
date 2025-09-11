@@ -87,7 +87,7 @@ public class EmotivaUdpReceivingService {
         if (receivingPort <= 0) {
             throw new IllegalArgumentException("Invalid receivingPort: " + receivingPort);
         }
-        if (config.ipAddress.trim().isEmpty()) {
+        if (config.ipAddress.isBlank()) {
             throw new IllegalArgumentException("Missing ipAddress");
         }
         this.ipAddress = config.ipAddress;

@@ -13,11 +13,17 @@
 
 		<label>RadonEye RD200</label>
 		<description>Indoor radon monitor</description>
+		<semantic-equipment-tag>AirQualitySensor</semantic-equipment-tag>
 
 		<channels>
 			<channel id="rssi" typeId="rssi"/>
 			<channel id="radon" typeId="radoneye_radon"/>
+			<channel id="decay" typeId="radoneye_decay"/>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<config-description>
 			<parameter name="address" type="text">
@@ -38,9 +44,19 @@
 	</thing-type>
 
 	<channel-type id="radoneye_radon">
-		<item-type>Number:Density</item-type>
+		<item-type>Number:RadiationSpecificActivity</item-type>
 		<label>Radon Current Level</label>
 		<description>Radon gas level</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Radon</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+	<channel-type id="radoneye_decay">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Decay Counter</label>
+		<description>The decay count in the last time frame</description>
+		<state readOnly="true" pattern="%.0f"/>
 	</channel-type>
 </thing:thing-descriptions>

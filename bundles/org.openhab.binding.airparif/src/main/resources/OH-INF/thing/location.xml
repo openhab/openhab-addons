@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="airparif"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="location">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="api"/>
+		</supported-bridge-type-refs>
+
+		<label>Department Report</label>
+		<description>AirParif air quality report for the given location</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
+
+		<channel-groups>
+			<channel-group id="pollens" typeId="dept-pollens"/>
+			<channel-group id="indice" typeId="pollutant-ndx"/>
+			<channel-group id="o3" typeId="pollutant-mpc">
+				<label>Ozone Concentration</label>
+			</channel-group>
+			<channel-group id="no2" typeId="pollutant-mpc">
+				<label>NO2 Concentration</label>
+			</channel-group>
+			<channel-group id="pm25" typeId="pollutant-mpc">
+				<label>PM2.5 Concentration</label>
+			</channel-group>
+			<channel-group id="pm10" typeId="pollutant-mpc">
+				<label>PM10 Concentration</label>
+			</channel-group>
+		</channel-groups>
+
+		<representation-property>department</representation-property>
+
+		<config-description>
+			<parameter name="location" type="text" required="false"
+				pattern="^[-+]?([1-8]?\d(\.\d+)?|90(\.0+)?)[,]\s*[-+]?(180(\.0+)?|((1[0-7]\d)|([1-9]?\d))(\.\d+)?)$">
+				<context>location</context>
+				<label>Location</label>
+			</parameter>
+			<parameter name="department" type="text" required="true">
+				<label>Department</label>
+				<description>Code of the department</description>
+				<options>
+					<option value="75">Paris</option>
+					<option value="77">Seine et Marne</option>
+					<option value="78">Yvelines</option>
+					<option value="91">Essonne</option>
+					<option value="92">Hauts de Seine</option>
+					<option value="93">Seine Saint Denis</option>
+					<option value="94">Val de Marne</option>
+					<option value="95">Val D'Oise</option>
+				</options>
+				<limitToOptions>true</limitToOptions>
+			</parameter>
+
+		</config-description>
+	</thing-type>
+</thing:thing-descriptions>

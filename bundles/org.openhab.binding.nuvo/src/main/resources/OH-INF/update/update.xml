@@ -9,6 +9,15 @@
 				<type>nuvo:source_menu</type>
 			</add-channel>
 		</instruction-set>
+
+		<instruction-set targetVersion="2">
+			<update-channel id="track_length" groupIds="source1,source2,source3,source4,source5,source6">
+				<type>nuvo:track_length</type>
+			</update-channel>
+			<update-channel id="track_position" groupIds="source1,source2,source3,source4,source5,source6">
+				<type>nuvo:track_position</type>
+			</update-channel>
+		</instruction-set>
 	</thing-type>
 
 </update:update-descriptions>

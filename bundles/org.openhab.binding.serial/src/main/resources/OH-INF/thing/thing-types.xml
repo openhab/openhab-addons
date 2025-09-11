@@ -8,6 +8,7 @@
 	<bridge-type id="serialBridge">
 		<label>Serial Bridge</label>
 		<description>Serial port which can send and receive data</description>
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 
 		<channels>
 			<channel id="string" typeId="stringData"/>
@@ -18,7 +19,6 @@
 		<config-description>
 			<parameter name="serialPort" type="text" required="true">
 				<context>serial-port</context>
-				<limitToOptions>false</limitToOptions>
 				<label>Serial Port</label>
 				<description>The serial port to use (e.g. Linux: /dev/ttyUSB0, Windows: COM1)</description>
 			</parameter>
@@ -77,7 +77,108 @@
 			<parameter name="charset" type="text">
 				<advanced>true</advanced>
 				<label>Charset</label>
-				<description>The charset to use for converting between bytes and string (e.g. UTF-8, ISO-8859-1)</description>
+				<description>The charset to use for converting between bytes and string (e.g. UTF-8, ISO-8859-1). Enter 'HEX' to
+					convert binary data into hexadecimal strings, separated by space.</description>
+			</parameter>
+			<parameter name="eolPattern" type="text">
+				<advanced>true</advanced>
+				<label>EOL Pattern</label>
+				<description>Only for Charset = HEX: 'End of line' pattern as regular expression. For example, "0D 10" matches \r\n,
+					"\\bFF" matches 0xFF. Please note that the matched pattern will be part of the result string.</description>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<bridge-type id="tcpBridge">
+		<label>TCP Bridge</label>
+		<description>TCP socket which can send and receive data</description>
+
+		<channels>
+			<channel id="string" typeId="stringData"/>
+			<channel id="binary" typeId="binaryData"/>
+			<channel id="data" typeId="system.rawbutton"/>
+		</channels>
+
+		<config-description>
+			<parameter name="address" type="text" required="true">
+				<context>network-address</context>
+				<label>Address</label>
+				<description>The IP address or hostname</description>
+			</parameter>
+			<parameter name="port" type="integer" min="1" max="65535" required="true">
+				<label>Port</label>
+				<description>TCP port to connect</description>
+				<limitToOptions>false</limitToOptions>
+			</parameter>
+			<parameter name="timeout" type="integer" min="0">
+				<advanced>true</advanced>
+				<label>Socket Timeout</label>
+				<description>Timeout in seconds</description>
+			</parameter>
+			<parameter name="keepAlive" type="boolean">
+				<advanced>true</advanced>
+				<label>Keep-Alive</label>
+				<description>Send keep-alive</description>
+			</parameter>
+			<parameter name="reconnectInterval" type="integer" min="0">
+				<advanced>true</advanced>
+				<label>Reconnect Interval</label>
+				<description>Reconnection interval in seconds after connection failure (0 = disabled)</description>
+				<default>10</default>
+			</parameter>
+			<parameter name="charset" type="text">
+				<advanced>true</advanced>
+				<label>Charset or HEX</label>
+				<description>The charset to use for converting between bytes and string (e.g. UTF-8, ISO-8859-1). Enter 'HEX' to
+					convert binary data into hexadecimal strings, separated by space.</description>
+			</parameter>
+			<parameter name="eolPattern" type="text">
+				<advanced>true</advanced>
+				<label>EOL pattern</label>
+				<description>Only for Charset = HEX: 'End of line' pattern as regular expression. For example, "0D 10" matches \r\n,
+					"\\bFF" matches 0xFF. Please note that the matched pattern will be part of the result string.</description>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<bridge-type id="tcpServerBridge">
+		<label>TCP Server Bridge</label>
+		<description>Like TCP bridge, but listens on a local port for incoming connections</description>
+
+		<config-description>
+			<parameter name="port" type="integer" min="1" max="65535" required="true">
+				<label>Port</label>
+				<description>Listening TCP port</description>
+				<limitToOptions>false</limitToOptions>
+			</parameter>
+			<parameter name="bindAddress" type="text">
+				<context>network-address</context>
+				<limitToOptions>false</limitToOptions>
+				<label>Address</label>
+				<default>0.0.0.0</default>
+				<description>The IP address to bind to (default: 0.0.0.0)</description>
+			</parameter>
+			<parameter name="timeout" type="integer" min="0">
+				<advanced>true</advanced>
+				<label>Socket Timeout</label>
+				<description>Timeout in seconds</description>
+			</parameter>
+			<parameter name="keepAlive" type="boolean">
+				<advanced>true</advanced>
+				<label>Keep-Alive</label>
+				<description>Send keep-alive</description>
+			</parameter>
+			<parameter name="charset" type="text">
+				<advanced>true</advanced>
+				<label>Charset or HEX</label>
+				<description>The charset to use for converting between bytes and string (e.g. UTF-8, ISO-8859-1). Enter 'HEX' to
+					convert binary data into hexadecimal strings, separated by space.</description>
+			</parameter>
+			<parameter name="eolPattern" type="text">
+				<advanced>true</advanced>
+				<label>EOL pattern</label>
+				<description>Only for Charset = HEX: 'End of line' pattern as regular expression. For example, "0D 10" matches \r\n,
+					"\\bFF" matches 0xFF. Please note that the matched pattern will be part of the result string.</description>
 			</parameter>
 		</config-description>
 	</bridge-type>
@@ -85,6 +186,8 @@
 	<thing-type id="serialDevice" extensible="string, number, dimmer, switch, rollershutter">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="serialBridge"/>
+			<bridge-type-ref id="tcpBridge"/>
+			<bridge-type-ref id="tcpServerBridge"/>
 		</supported-bridge-type-refs>
 
 		<label>Serial Device</label>
@@ -135,6 +238,16 @@
 					Multiple transformations can be chained by listing each transformation on a separate line,
 					or by concatenating them with "∩".]]></description>
 			</parameter>
+			<parameter name="refreshValue" type="text">
+				<label>Refresh Value</label>
+				<description>Send this value to receive the current state</description>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" min="0">
+				<label>Refresh Interval</label>
+				<description>Interval for the automatic channel update in seconds. This value is only required if the peer has to
+					send the “Refresh Value” command regularly in order to return the current properties. It is not required if the
+					peer automatically forwards changed values to its clients.</description>
+			</parameter>
 		</config-description>
 	</channel-type>
 
@@ -161,6 +274,16 @@
 					Multiple transformations can be chained by listing each transformation on a separate line,
 					or by concatenating them with "∩".]]></description>
 			</parameter>
+			<parameter name="refreshValue" type="text">
+				<label>Refresh Value</label>
+				<description>Send this value to receive the current state</description>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" min="0">
+				<label>Refresh Interval</label>
+				<description>Interval for the automatic channel update in seconds. This value is only required if the peer has to
+					send the “Refresh Value” command regularly in order to return the current properties. It is not required if the
+					peer automatically forwards changed values to its clients.</description>
+			</parameter>
 		</config-description>
 	</channel-type>
 
@@ -168,6 +291,10 @@
 		<item-type>Dimmer</item-type>
 		<label>Dimmer</label>
 		<description>Channel to receive commands from a Dimmer</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Brightness</tag>
+		</tags>
 		<config-description>
 			<parameter name="stateTransformation" type="text" multiple="true">
 				<label>State Transformation</label>
@@ -203,6 +330,16 @@
 					Multiple transformations can be chained by listing each transformation on a separate line,
 					or by concatenating them with "∩".]]></description>
 			</parameter>
+			<parameter name="refreshValue" type="text">
+				<label>Refresh Value</label>
+				<description>Send this value to receive the current state</description>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" min="0">
+				<label>Refresh Interval</label>
+				<description>Interval for the automatic channel update in seconds. This value is only required if the peer has to
+					send the “Refresh Value” command regularly in order to return the current properties. It is not required if the
+					peer automatically forwards changed values to its clients.</description>
+			</parameter>
 		</config-description>
 	</channel-type>
 
@@ -210,6 +347,10 @@
 		<item-type>Switch</item-type>
 		<label>Switch</label>
 		<description>Channel to receive commands from a Switch</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 		<config-description>
 			<parameter name="stateTransformation" type="text" multiple="true">
 				<label>State Transformation</label>
@@ -233,6 +374,16 @@
 					Multiple transformations can be chained by listing each transformation on a separate line,
 					or by concatenating them with "∩".]]></description>
 			</parameter>
+			<parameter name="refreshValue" type="text">
+				<label>Refresh Value</label>
+				<description>Send this value to receive the current state</description>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" min="0">
+				<label>Refresh Interval</label>
+				<description>Interval for the automatic channel update in seconds. This value is only required if the peer has to
+					send the “Refresh Value” command regularly in order to return the current properties. It is not required if the
+					peer automatically forwards changed values to its clients.</description>
+			</parameter>
 		</config-description>
 	</channel-type>
 
@@ -240,6 +391,10 @@
 		<item-type>Rollershutter</item-type>
 		<label>Rollershutter</label>
 		<description>Channel to receive commands from a Rollershutter</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>OpenLevel</tag>
+		</tags>
 		<config-description>
 			<parameter name="stateTransformation" type="text" multiple="true">
 				<label>State Transformation</label>
@@ -270,6 +425,16 @@
 					<code>JS(device.js)</code>.
 					Multiple transformations can be chained by listing each transformation on a separate line,
 					or by concatenating them with "∩".]]></description>
+			</parameter>
+			<parameter name="refreshValue" type="text">
+				<label>Refresh Value</label>
+				<description>Send this value to receive the current state</description>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" min="0">
+				<label>Refresh Interval</label>
+				<description>Interval for the automatic channel update in seconds. This value is only required if the peer has to
+					send the “Refresh Value” command regularly in order to return the current properties. It is not required if the
+					peer automatically forwards changed values to its clients.</description>
 			</parameter>
 		</config-description>
 	</channel-type>

@@ -1,0 +1,567 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="ecoflow"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-group-type id="delta-status">
+		<label>Status</label>
+		<channels>
+			<channel id="battery-level" typeId="system.battery-level"/>
+			<channel id="input-power" typeId="input-power"/>
+			<channel id="output-power" typeId="output-power"/>
+			<channel id="remaining-charge-time" typeId="remaining-charge-time"/>
+			<channel id="remaining-discharge-time" typeId="remaining-discharge-time"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="delta-battery-1extra">
+		<label>Battery</label>
+		<channels>
+			<channel id="temperature" typeId="battery-temperature"/>
+			<channel id="voltage" typeId="battery-voltage"/>
+			<channel id="current" typeId="battery-current"/>
+			<channel id="charger-type" typeId="battery-charger-type"/>
+			<channel id="charge-limit" typeId="battery-charge-limit"/>
+			<channel id="discharge-limit" typeId="battery-discharge-limit"/>
+			<channel id="extra-battery-power" typeId="extra-battery-power"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="delta-battery-2extra">
+		<label>Battery</label>
+		<channels>
+			<channel id="temperature" typeId="battery-temperature"/>
+			<channel id="voltage" typeId="battery-voltage"/>
+			<channel id="current" typeId="battery-current"/>
+			<channel id="charger-type" typeId="battery-charger-type"/>
+			<channel id="charge-limit" typeId="battery-charge-limit"/>
+			<channel id="discharge-limit" typeId="battery-discharge-limit"/>
+			<channel id="extra-battery-power" typeId="extra-battery-power">
+				<label>Extra Battery 1 Power</label>
+			</channel>
+			<channel id="extra-battery2-power" typeId="extra-battery-power">
+				<label>Extra Battery 2 Power</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="delta-ac-input">
+		<label>AC Input</label>
+		<channels>
+			<channel id="set-charging-power" typeId="ac-set-charging-power"/>
+			<channel id="voltage" typeId="ac-input-voltage"/>
+			<channel id="current" typeId="ac-input-current"/>
+			<channel id="power" typeId="ac-input-power"/>
+			<channel id="frequency" typeId="ac-input-frequency"/>
+			<channel id="total-energy" typeId="ac-input-total-energy"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="delta-ac-output">
+		<label>AC Output</label>
+		<channels>
+			<channel id="enabled" typeId="ac-enabled"/>
+			<channel id="xboost-enabled" typeId="ac-xboost-enabled"/>
+			<channel id="voltage" typeId="ac-output-voltage"/>
+			<channel id="current" typeId="ac-output-current"/>
+			<channel id="power" typeId="ac-output-power"/>
+			<channel id="frequency" typeId="ac-output-frequency"/>
+			<channel id="temperature" typeId="ac-output-temperature"/>
+			<channel id="total-energy" typeId="ac-output-total-energy"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="delta-dc-output">
+		<label>DC Output</label>
+		<channels>
+			<channel id="usb-enabled" typeId="usb-enabled"/>
+			<channel id="12v-enabled" typeId="12v-enabled"/>
+			<channel id="usb1-power" typeId="usb1-power"/>
+			<channel id="usb2-power" typeId="usb2-power"/>
+			<channel id="qc-usb1-power" typeId="qc-usb1-power"/>
+			<channel id="qc-usb2-power" typeId="qc-usb2-power"/>
+			<channel id="usbc1-power" typeId="usbc1-power"/>
+			<channel id="usbc2-power" typeId="usbc2-power"/>
+			<channel id="12v-out-voltage" typeId="12v-output-voltage"/>
+			<channel id="12v-out-current" typeId="12v-output-current"/>
+			<channel id="12v-out-power" typeId="12v-output-power"/>
+			<channel id="total-energy" typeId="dc-output-total-energy"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="delta-solar-input-1pv">
+		<label>Solar Input</label>
+		<channels>
+			<channel id="voltage" typeId="solar-voltage">
+				<label>PV Voltage</label>
+			</channel>
+			<channel id="current" typeId="solar-current">
+				<label>PV Current</label>
+			</channel>
+			<channel id="power" typeId="solar1power">
+				<label>PV Power</label>
+			</channel>
+			<channel id="charge-state" typeId="solar-charge-state">
+				<label>PV Charge State</label>
+			</channel>
+			<channel id="input-type" typeId="solar-input-type">
+				<label>PV Input Type</label>
+			</channel>
+			<channel id="total-energy" typeId="solar-total-energy"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="delta-solar-input-2pv">
+		<label>Solar Input</label>
+		<channels>
+			<channel id="voltage" typeId="solar-voltage">
+				<label>PV1 Voltage</label>
+			</channel>
+			<channel id="current" typeId="solar-current">
+				<label>PV1 Current</label>
+			</channel>
+			<channel id="power" typeId="solar-power">
+				<label>PV1 Power</label>
+			</channel>
+			<channel id="charge-state" typeId="solar-charge-state">
+				<label>PV1 Charge State</label>
+			</channel>
+			<channel id="input-type" typeId="solar-input-type">
+				<label>PV1 Input Type</label>
+			</channel>
+			<channel id="voltage2" typeId="solar-voltage">
+				<label>PV2 Voltage</label>
+			</channel>
+			<channel id="current2" typeId="solar-current">
+				<label>PV2 Current</label>
+			</channel>
+			<channel id="power2" typeId="solar-power">
+				<label>PV2 Power</label>
+			</channel>
+			<channel id="charge-state2" typeId="solar-charge-state">
+				<label>PV2 Charge State</label>
+			</channel>
+			<channel id="input-type2" typeId="solar-input-type">
+				<label>PV2 Input Type</label>
+			</channel>
+			<channel id="total-energy" typeId="solar-total-energy"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="ps-inverter">
+		<label>Inverter</label>
+		<channels>
+			<channel id="status" typeId="ps-inverter-status"/>
+			<channel id="input-voltage" typeId="ac-input-voltage"/>
+			<channel id="input-frequency" typeId="ac-input-frequency"/>
+			<channel id="output-power" typeId="ac-output-power"/>
+			<channel id="output-target-power" typeId="ps-output-target-power"/>
+			<channel id="supply-priority" typeId="ps-supply-priority"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="ps-battery-input">
+		<label>Battery Input</label>
+		<channels>
+			<channel id="voltage" typeId="battery-input-voltage"/>
+			<channel id="current" typeId="battery-input-current"/>
+			<channel id="power" typeId="battery-input-power"/>
+			<channel id="temperature" typeId="battery-temperature"/>
+			<channel id="active" typeId="battery-input-active"/>
+			<channel id="battery-level" typeId="system.battery-level"/>
+			<channel id="charge-limit" typeId="battery-charge-limit"/>
+			<channel id="discharge-limit" typeId="battery-discharge-limit"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="ps-pv1-input">
+		<label>PV Input 1</label>
+		<channels>
+			<channel id="voltage" typeId="solar-voltage">
+				<label>PV Input 1 Voltage</label>
+			</channel>
+			<channel id="voltage-target" typeId="solar-target-voltage">
+				<label>PV Input 1 Target Voltage</label>
+			</channel>
+			<channel id="current" typeId="solar-current">
+				<label>PV Input 1 Current</label>
+			</channel>
+			<channel id="power" typeId="solar-power">
+				<label>PV Input 1 Power</label>
+			</channel>
+			<channel id="mppt-active" typeId="solar-mppt-active">
+				<label>PV Input 1 MPPT Active</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="ps-pv2-input">
+		<label>PV Input 2</label>
+		<channels>
+			<channel id="voltage" typeId="solar-voltage">
+				<label>PV Input 2 Voltage</label>
+			</channel>
+			<channel id="voltage-target" typeId="solar-target-voltage">
+				<label>PV Input 2 Target Voltage</label>
+			</channel>
+			<channel id="current" typeId="solar-current">
+				<label>PV Input 2 Current</label>
+			</channel>
+			<channel id="power" typeId="solar-power">
+				<label>PV Input 2 Power</label>
+			</channel>
+			<channel id="mppt-active" typeId="solar-mppt-active">
+				<label>PV Input 2 MPPT Active</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="input-power">
+		<item-type unitHint="W">Number:Power</item-type>
+		<label>Total Input Power</label>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="output-power">
+		<item-type unitHint="W">Number:Power</item-type>
+		<label>Total Output Power</label>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="remaining-charge-time">
+		<item-type unitHint="min">Number:Time</item-type>
+		<label>Remaining Charge Time</label>
+		<description>Remaining time until battery is fully charged</description>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="remaining-discharge-time">
+		<item-type unitHint="min">Number:Time</item-type>
+		<label>Remaining Discharge Time</label>
+		<description>Remaining time until battery is fully discharged</description>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="battery-temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Battery Temperature</label>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="battery-voltage">
+		<item-type unitHint="V">Number:ElectricPotential</item-type>
+		<label>Battery Voltage</label>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="battery-current">
+		<item-type unitHint="A">Number:ElectricCurrent</item-type>
+		<label>Battery Current</label>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="battery-charger-type">
+		<item-type>String</item-type>
+		<label>Charger Type</label>
+		<state readOnly="true">
+			<options>
+				<option value="ac">AC input</option>
+				<option value="dc">DC input</option>
+				<option value="solar">Solar input</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="battery-charge-limit">
+		<item-type>Dimmer</item-type>
+		<label>Battery Charge Limit</label>
+		<state pattern="%d %%"/>
+	</channel-type>
+
+	<channel-type id="battery-discharge-limit">
+		<item-type>Dimmer</item-type>
+		<label>Battery Discharge Limit</label>
+		<state pattern="%d %%"/>
+	</channel-type>
+
+	<channel-type id="extra-battery-power">
+		<item-type unitHint="W">Number:Power</item-type>
+		<label>Extra Battery Power</label>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="ac-set-charging-power">
+		<item-type unitHint="W">Number:Power</item-type>
+		<label>AC Charging Power</label>
+		<state pattern="%d %unit%" min="0" max="600" step="1"/>
+	</channel-type>
+
+	<channel-type id="ac-input-voltage">
+		<item-type unitHint="V">Number:ElectricPotential</item-type>
+		<label>AC Input Voltage</label>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="ac-input-current">
+		<item-type unitHint="A">Number:ElectricCurrent</item-type>
+		<label>AC Input Current</label>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="ac-input-power">
+		<item-type unitHint="W">Number:Power</item-type>
+		<label>AC Input Power</label>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="ac-input-frequency">
+		<item-type unitHint="Hz">Number:Frequency</item-type>
+		<label>AC Input Frequency</label>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="ac-input-total-energy">
+		<item-type unitHint="Wh">Number:Energy</item-type>
+		<label>AC Input Total Energy</label>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="ac-enabled">
+		<item-type>Switch</item-type>
+		<label>AC Output Enabled</label>
+	</channel-type>
+
+	<channel-type id="ac-xboost-enabled">
+		<item-type>Switch</item-type>
+		<label>X-Boost Enabled</label>
+	</channel-type>
+
+	<channel-type id="ac-output-voltage">
+		<item-type unitHint="V">Number:ElectricPotential</item-type>
+		<label>AC Output Voltage</label>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="ac-output-current">
+		<item-type unitHint="A">Number:ElectricCurrent</item-type>
+		<label>AC Output Current</label>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="ac-output-power">
+		<item-type unitHint="W">Number:Power</item-type>
+		<label>AC Output Power</label>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="ac-output-frequency">
+		<item-type unitHint="Hz">Number:Frequency</item-type>
+		<label>AC Output Frequency</label>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="ac-output-temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>AC Output Temperature</label>
+		<description>Temperature of the device internal inverter</description>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="ac-output-total-energy">
+		<item-type unitHint="Wh">Number:Energy</item-type>
+		<label>AC Output Total Energy</label>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="usb-enabled">
+		<item-type>Switch</item-type>
+		<label>USB Output Enabled</label>
+	</channel-type>
+
+	<channel-type id="12v-enabled">
+		<item-type>Switch</item-type>
+		<label>12V Output Enabled</label>
+	</channel-type>
+
+	<channel-type id="usb1-power">
+		<item-type unitHint="W">Number:Power</item-type>
+		<label>USB1 Power</label>
+		<description>Power output of USB1 port</description>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="usb2-power">
+		<item-type unitHint="W">Number:Power</item-type>
+		<label>USB2 Power</label>
+		<description>Power output of USB2 port</description>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="qc-usb1-power">
+		<item-type unitHint="W">Number:Power</item-type>
+		<label>Quick Charge USB1 Power</label>
+		<description>Power output of quick charge USB1 port</description>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="qc-usb2-power">
+		<item-type unitHint="W">Number:Power</item-type>
+		<label>Quick Charge USB2 Power</label>
+		<description>Power output of quick charge USB2 port</description>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="usbc1-power">
+		<item-type unitHint="W">Number:Power</item-type>
+		<label>USB-C1 Power</label>
+		<description>Power output of USB-C1 port</description>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="usbc2-power">
+		<item-type unitHint="W">Number:Power</item-type>
+		<label>USB-C2 Power</label>
+		<description>Power output of USB-C2 port</description>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="12v-output-voltage">
+		<item-type unitHint="V">Number:ElectricPotential</item-type>
+		<label>12V Output Voltage</label>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="12v-output-current">
+		<item-type unitHint="A">Number:ElectricCurrent</item-type>
+		<label>12V Output Current</label>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="12v-output-power">
+		<item-type unitHint="W">Number:Power</item-type>
+		<label>12V Output Power</label>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="dc-output-total-energy">
+		<item-type unitHint="Wh">Number:Energy</item-type>
+		<label>DC Output Total Energy</label>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="solar-voltage">
+		<item-type unitHint="V">Number:ElectricPotential</item-type>
+		<label>Input Voltage</label>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="solar-current">
+		<item-type unitHint="A">Number:ElectricCurrent</item-type>
+		<label>Input Current</label>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="solar-power">
+		<item-type unitHint="W">Number:Power</item-type>
+		<label>Input Power</label>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="solar-charge-state">
+		<item-type>String</item-type>
+		<label>Charge State</label>
+		<state readOnly="true">
+			<options>
+				<option value="disabled">Disabled</option>
+				<option value="charging">Charging</option>
+				<option value="standby">Standby</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="solar-input-type">
+		<item-type>String</item-type>
+		<label>Input Type</label>
+		<state readOnly="true">
+			<options>
+				<option value="none">@text/ecoflow.solar-input-type.none</option>
+				<option value="dc">@text/ecoflow.solar-input-type.dc</option>
+				<option value="solar">@text/ecoflow.solar-input-type.solar</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="solar-total-energy">
+		<item-type unitHint="Wh">Number:Energy</item-type>
+		<label>Solar Total Energy</label>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="ps-inverter-status">
+		<item-type>String</item-type>
+		<label>Inverter Status</label>
+		<state readOnly="true">
+			<options>
+				<option value="idle">Idle</option>
+				<option value="starting">Starting</option>
+				<option value="synchronized">Synchronized to grid</option>
+				<option value="disconnected">Grid disconnected</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="ps-output-target-power">
+		<item-type unitHint="W">Number:Power</item-type>
+		<label>Output Power Target</label>
+		<state pattern="%d %unit%" min="0" max="800" step="0.1"/>
+	</channel-type>
+
+	<channel-type id="ps-supply-priority">
+		<item-type>String</item-type>
+		<label>Power Priority</label>
+		<state>
+			<options>
+				<option value="prioIsSupply">Prioritize supply to loads</option>
+				<option value="prioIsStorage">Prioritize charging</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="battery-input-voltage">
+		<item-type unitHint="V">Number:ElectricPotential</item-type>
+		<label>Battery Input Voltage</label>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="battery-input-current">
+		<item-type unitHint="A">Number:ElectricCurrent</item-type>
+		<label>Battery Input Current</label>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="battery-input-power">
+		<item-type unitHint="W">Number:Power</item-type>
+		<label>Battery Input Power</label>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="battery-input-active">
+		<item-type>Switch</item-type>
+		<label>Battery Input Active</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="solar-target-voltage">
+		<item-type unitHint="V">Number:ElectricPotential</item-type>
+		<label>Target Voltage</label>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="solar-mppt-active">
+		<item-type>Switch</item-type>
+		<label>MPPT Active</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+</thing:thing-descriptions>

@@ -21,6 +21,8 @@ Please note **this isn't a real-time binding**.
 If a door is opened the state isn't transmitted and changed immediately.
 It's not a flaw in the binding itself because the state in BMW's own MyBMW App is also updated with some delay.
 
+This binding does not support the region: China.
+
 ## Supported Things
 
 ### Bridge
@@ -47,7 +49,7 @@ For hybrid vehicles in addition to _Fuel and Electric Range_ the _Hybrid Range_ 
 
 #### Properties
 
-<img align="right" src="./doc/vehicle-properties.png" width="500" height="350"/>
+<img align="right" src="doc/vehicle-properties.png" alt="Vehicle properties overview" width="500" height="350"/>
 
 For each vehicle properties are available.
 Basic information is given regarding
@@ -82,25 +84,34 @@ Properties will be attached to predefined vehicles if the VIN is matching.
 |-----------------|---------|--------------------------------------------------------------------------------------------------------|
 | userName        | text    | MyBMW Username                                                                                         |
 | password        | text    | MyBMW Password                                                                                         |
-| hcaptchatoken   | text    | HCaptcha-Token for initial login (see https://bimmer-connected.readthedocs.io/en/latest/captcha.html)  |
 | region          | text    | Select region in order to connect to the appropriate BMW server.                                       |
 
-The region Configuration has 3 different options
+The region Configuration has 2 different options
 
 - _NORTH_AMERICA_
-- _CHINA_
 - _ROW_  (Rest of World)
+
+At first initialization, follow the online instructions for login into the BMW API.
 
 #### Advanced Configuration
 
-| Parameter       | Type    | Description                                             |
-|-----------------|---------|---------------------------------------------------------|
-| language        | text    | Channel data can be returned in the desired language    |
+| Parameter       | Type    | Description                                                                                            |
+|-----------------|---------|--------------------------------------------------------------------------------------------------------|
+| language        | text    | Channel data can be returned in the desired language                                                   |
+| hcaptchatoken   | text    | HCaptcha-Token for initial login (see <https://bimmer-connected.readthedocs.io/en/stable/captcha.html>)  |
+| callbackIP      | text    | IP address for openHAB callback URL, defaults to IP of openHAB host                                    |
+| callbackPort    | integer | Port Number for openHAB callback URL, default 8090                                                     |
 
 Language is predefined as _AUTODETECT_.
 Some textual descriptions, date and times are delivered based on your local language.
 You can overwrite this setting with lowercase 2-letter [language code reagrding ISO 639](https://www.oracle.com/java/technologies/javase/jdk8-jre8-suported-locales.html)
 So if want your UI in english language place _en_ as desired language.
+
+The initial login to the BMW API requires a Captcha Token.
+At first configuration, you can set the Captcha Token as a configuration parameter manually.
+
+To set the Captcha Token online, a webpage is presented and a callback to the bridge is created temporarily on the hosts IP address and a default port.
+If the port is already in use, or you have a complex network setup, you may have to override the defaults provided.
 
 ### Thing Configuration
 
@@ -233,7 +244,7 @@ As the replies are formatted as JSON use the [JsonPath Transformation Service](h
 |---------------------|---------------|------------------------------------------------|
 | raw                 | String        | Unfiltered JSON String of vehicle data         |
 
-<img align="right" src="./doc/RawData.png" width="400" height="125"/>
+<img align="right" src="doc/RawData.png" alt="Raw data example" width="400" height="125"/>
 
 Examples:
 
@@ -506,7 +517,7 @@ Possible view ports:
 
 ### Dynamic Data
 
-<img align="right" src="./doc/SessionOptions.png" width="400" height="250"/>
+<img align="right" src="doc/SessionOptions.png" alt="Session options example" width="400" height="250"/>
 
 There are 3 occurrences of dynamic data delivered
 
@@ -564,7 +575,7 @@ As with fingerprint data, personal data is eliminated from logs.
 
 ### Range vs Range Radius
 
-<img align="right" src="./doc/range-radius.png" width="400" height="350"/>
+<img align="right" src="doc/range-radius.png" alt="Range radius example" width="400" height="350"/>
 
 You will observe differences in the vehicle range and range radius values.
 While range is indicating the possible distance to be driven on roads the range radius indicates the reachable range on the map.

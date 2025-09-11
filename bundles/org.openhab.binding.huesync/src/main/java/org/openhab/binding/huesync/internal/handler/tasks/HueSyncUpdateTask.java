@@ -18,6 +18,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.huesync.internal.api.dto.device.HueSyncDevice;
 import org.openhab.binding.huesync.internal.connection.HueSyncDeviceConnection;
+import org.openhab.binding.huesync.internal.types.HueSyncExceptionHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,10 +35,12 @@ public class HueSyncUpdateTask implements Runnable {
     private final HueSyncDeviceConnection connection;
     private final HueSyncDevice deviceInfo;
 
+    private final HueSyncExceptionHandler exceptionHandler;
     private final Consumer<@Nullable HueSyncUpdateTaskResult> action;
 
     public HueSyncUpdateTask(HueSyncDeviceConnection connection, HueSyncDevice deviceInfo,
-            Consumer<@Nullable HueSyncUpdateTaskResult> action) {
+            Consumer<@Nullable HueSyncUpdateTaskResult> action, HueSyncExceptionHandler exceptionHandler) {
+        this.exceptionHandler = exceptionHandler;
         this.connection = connection;
         this.deviceInfo = deviceInfo;
 
@@ -46,24 +49,21 @@ public class HueSyncUpdateTask implements Runnable {
 
     @Override
     public void run() {
+        HueSyncUpdateTaskResult updateInfo = new HueSyncUpdateTaskResult();
+
         try {
-            this.logger.debug("Status update query for {} {}:{}", this.deviceInfo.name, this.deviceInfo.deviceType,
+            this.logger.trace("Status update query for {} {}:{}", this.deviceInfo.name, this.deviceInfo.deviceType,
                     this.deviceInfo.uniqueId);
-
-            if (!this.connection.isRegistered()) {
-                this.action.accept(null);
-            }
-
-            HueSyncUpdateTaskResult updateInfo = new HueSyncUpdateTaskResult();
 
             updateInfo.deviceStatus = this.connection.getDetailedDeviceInfo();
             updateInfo.hdmiStatus = this.connection.getHdmiInfo();
             updateInfo.execution = this.connection.getExecutionInfo();
-
-            this.action.accept(updateInfo);
         } catch (Exception e) {
-            this.logger.debug("{}", e.getMessage());
-            this.action.accept(null);
+            this.logger.warn("{}", e.getMessage());
+
+            this.exceptionHandler.handle(e);
+        } finally {
+            this.action.accept(updateInfo);
         }
     }
 }

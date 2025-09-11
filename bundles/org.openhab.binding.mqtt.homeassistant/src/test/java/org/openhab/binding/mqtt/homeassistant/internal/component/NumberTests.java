@@ -28,11 +28,11 @@ import org.openhab.core.thing.type.AutoUpdatePolicy;
  *
  * @author Cody Cutrer - Initial contribution
  */
+@SuppressWarnings("null")
 @NonNullByDefault
 public class NumberTests extends AbstractComponentTests {
     public static final String CONFIG_TOPIC = "number/0x0000000000000000_number_zigbee2mqtt";
 
-    @SuppressWarnings("null")
     @Test
     public void test() throws InterruptedException {
         var component = discoverComponent(configTopicToMqtt(CONFIG_TOPIC), """
@@ -65,6 +65,8 @@ public class NumberTests extends AbstractComponentTests {
         assertChannel(component, Number.NUMBER_CHANNEL_ID, "homie/bwa/spa/pump1", "homie/bwa/spa/pump1/set",
                 "BWA Link Hot Tub Pump 1", NumberValue.class, null);
 
+        linkAllChannels(component);
+
         publishMessage("homie/bwa/spa/pump1", "1");
         assertState(component, Number.NUMBER_CHANNEL_ID, new DecimalType(1));
         publishMessage("homie/bwa/spa/pump1", "2");
@@ -74,7 +76,6 @@ public class NumberTests extends AbstractComponentTests {
         assertPublished("homie/bwa/spa/pump1/set", "1");
     }
 
-    @SuppressWarnings("null")
     @Test
     public void testInferredOptimistic() throws InterruptedException {
         var component = discoverComponent(configTopicToMqtt(CONFIG_TOPIC), """
@@ -107,7 +108,6 @@ public class NumberTests extends AbstractComponentTests {
                 NumberValue.class, AutoUpdatePolicy.RECOMMEND);
     }
 
-    @SuppressWarnings("null")
     @Test
     public void testForcedOptimistic() throws InterruptedException {
         var component = discoverComponent(configTopicToMqtt(CONFIG_TOPIC), """

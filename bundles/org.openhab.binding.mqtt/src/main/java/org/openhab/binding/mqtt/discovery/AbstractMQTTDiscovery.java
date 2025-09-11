@@ -139,7 +139,7 @@ public abstract class AbstractMQTTDiscovery extends AbstractDiscoveryService imp
     @Override
     protected void startBackgroundDiscovery() {
         // Remove results that are restored after a restart
-        removeOlderResults(Instant.now().toEpochMilli());
+        removeOlderResults(Instant.now());
         subscribe();
     }
 

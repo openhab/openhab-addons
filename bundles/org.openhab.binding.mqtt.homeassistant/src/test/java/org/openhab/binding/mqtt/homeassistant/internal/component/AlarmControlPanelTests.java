@@ -27,11 +27,11 @@ import org.openhab.core.library.types.StringType;
  *
  * @author Anton Kharuzhy - Initial contribution
  */
+@SuppressWarnings("null")
 @NonNullByDefault
 public class AlarmControlPanelTests extends AbstractComponentTests {
     public static final String CONFIG_TOPIC = "alarm_control_panel/0x0000000000000000_alarm_control_panel_zigbee2mqtt";
 
-    @SuppressWarnings("null")
     @Test
     public void testAlarmControlPanel() {
         // @formatter:off
@@ -71,16 +71,18 @@ public class AlarmControlPanelTests extends AbstractComponentTests {
         assertChannel(component, AlarmControlPanel.STATE_CHANNEL_ID, "zigbee2mqtt/alarm/state",
                 "zigbee2mqtt/alarm/set/state", "alarm", TextValue.class);
 
+        linkAllChannels(component);
+
         publishMessage("zigbee2mqtt/alarm/state", "armed_home");
         assertState(component, AlarmControlPanel.STATE_CHANNEL_ID, new StringType("armed_home"));
         publishMessage("zigbee2mqtt/alarm/state", "armed_away");
         assertState(component, AlarmControlPanel.STATE_CHANNEL_ID, new StringType("armed_away"));
 
-        component.getChannel(AlarmControlPanel.STATE_CHANNEL_ID).getState().publishValue(new StringType("DISARM_"));
+        component.getChannel(AlarmControlPanel.STATE_CHANNEL_ID).getState().publishValue(new StringType("DISARM"));
         assertPublished("zigbee2mqtt/alarm/set/state", "DISARM_");
-        component.getChannel(AlarmControlPanel.STATE_CHANNEL_ID).getState().publishValue(new StringType("ARM_AWAY_"));
+        component.getChannel(AlarmControlPanel.STATE_CHANNEL_ID).getState().publishValue(new StringType("ARM_AWAY"));
         assertPublished("zigbee2mqtt/alarm/set/state", "ARM_AWAY_");
-        component.getChannel(AlarmControlPanel.STATE_CHANNEL_ID).getState().publishValue(new StringType("ARM_HOME_"));
+        component.getChannel(AlarmControlPanel.STATE_CHANNEL_ID).getState().publishValue(new StringType("ARM_HOME"));
         assertPublished("zigbee2mqtt/alarm/set/state", "ARM_HOME_");
     }
 

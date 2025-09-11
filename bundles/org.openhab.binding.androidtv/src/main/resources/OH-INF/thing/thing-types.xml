@@ -8,7 +8,7 @@
 
 		<label>ShieldTV</label>
 		<description>Nvidia ShieldTV</description>
-
+		<semantic-equipment-tag>Television</semantic-equipment-tag>
 		<channels>
 			<channel id="debug" typeId="debug"/>
 			<channel id="keypress" typeId="keypress"/>
@@ -98,7 +98,7 @@
 
 		<label>GoogleTV</label>
 		<description>GoogleTV</description>
-
+		<semantic-equipment-tag>Television</semantic-equipment-tag>
 		<channels>
 			<channel id="debug" typeId="debug"/>
 			<channel id="keypress" typeId="keypress"/>
@@ -170,7 +170,7 @@
 	<thing-type id="philipstv">
 		<label>Philips TV</label>
 		<description>A Philips TV device</description>
-
+		<semantic-equipment-tag>Television</semantic-equipment-tag>
 		<channels>
 			<channel id="debug" typeId="debug"/>
 			<channel id="keypress" typeId="keypress"/>
@@ -283,6 +283,10 @@
 		<item-type>String</item-type>
 		<label>App</label>
 		<description>App Control</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>App</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="appname">
@@ -331,6 +335,10 @@
 		<item-type>Player</item-type>
 		<label>Player</label>
 		<description>Player Control</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>MediaControl</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="tvChannel" advanced="true">
@@ -339,6 +347,10 @@
 		<description>Name of the currently running TV Channel. Changing this to a value from the List, switches the
 			channel.
 		</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Channel</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="searchContent" advanced="true">
@@ -352,6 +364,10 @@
 		<label>Ambilight Power</label>
 		<description>Ambilight power. Turns ambilight on or off.</description>
 		<category>Ambilight</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Light</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="ambilightHuePower">
@@ -359,6 +375,10 @@
 		<label>Ambilight + Hue Power</label>
 		<description>Ambilight + Hue power. Turns ambilight with connected Philips Hue Lamps on or off.</description>
 		<category>Ambilight</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Light</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="ambilightLoungePower">
@@ -366,6 +386,10 @@
 		<label>Ambilight Lounge Power</label>
 		<description>Ambilight lounge power. Turns ambilight lounge on or off.</description>
 		<category>Ambilight</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Light</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="ambilightStyle" advanced="true">
@@ -374,6 +398,10 @@
 		<description>Current ambilight style. Changing this to a value from the List, switches the ambilight style.
 		</description>
 		<category>Ambilight</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="FOLLOW_VIDEO STANDARD">FOLLOW_VIDEO STANDARD</option>
@@ -409,6 +437,10 @@
 		<label>All Ambilight</label>
 		<description>Sets the Ambilight color for all sides.</description>
 		<category>Ambilight</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Color</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="ambilightLeftColor" advanced="true">
@@ -416,6 +448,10 @@
 		<label>Left Ambilight</label>
 		<description>Sets the Ambilight color for the left side.</description>
 		<category>Ambilight</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Color</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="ambilightRightColor" advanced="true">
@@ -423,6 +459,10 @@
 		<label>Right Ambilight</label>
 		<description>Sets the Ambilight color for the right side.</description>
 		<category>Ambilight</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Color</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="ambilightTopColor" advanced="true">
@@ -430,6 +470,10 @@
 		<label>Top Ambilight</label>
 		<description>Sets the Ambilight color for the top.</description>
 		<category>Ambilight</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Color</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="ambilightBottomColor" advanced="true">
@@ -437,6 +481,10 @@
 		<label>Bottom Ambilight</label>
 		<description>Sets the Ambilight color for the bottom.</description>
 		<category>Ambilight</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Color</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="brightness" advanced="true">
@@ -444,6 +492,10 @@
 		<label>Brightness</label>
 		<description>Brightness of the TV picture.</description>
 		<category>Tv Picture</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Brightness</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="contrast" advanced="true">

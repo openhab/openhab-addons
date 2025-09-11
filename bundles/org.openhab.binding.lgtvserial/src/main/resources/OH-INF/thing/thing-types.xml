@@ -11,7 +11,7 @@
 		<label>Generic LG TV</label>
 		<description>Generic LG television connected through a serial interface. This thing should be used only when there is
 			no proper thing defined for your TV model as it has most existing channels for most known commands.</description>
-
+		<semantic-equipment-tag>Television</semantic-equipment-tag>
 		<channels>
 			<channel id="3d" typeId="3d"/>
 			<channel id="3d-extended" typeId="3d-extended"/>

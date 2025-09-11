@@ -18,6 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
@@ -32,19 +33,19 @@ import org.openhab.core.config.core.Configuration;
  *
  * @author Cody Cutrer - Initial contribution
  */
+@SuppressWarnings("null")
 @NonNullByDefault
 public class DeviceTriggerTests extends AbstractComponentTests {
     public static final String CONFIG_TOPIC_1 = "device_automation/0x8cf681fffe2fd2a6/press";
     public static final String CONFIG_TOPIC_2 = "device_automation/0x8cf681fffe2fd2a6/release";
 
-    @SuppressWarnings("null")
     @Test
     public void test() throws InterruptedException {
         var component = discoverComponent(configTopicToMqtt(CONFIG_TOPIC_1), """
                 {
                     "automation_type": "trigger",
                     "device": {
-                        "configuration_url": "#/device/0x8cf681fffe2fd2a6/info",
+                        "configuration_url": "http://localhost/#/device/0x8cf681fffe2fd2a6/info",
                         "identifiers": [
                             "zigbee2mqtt_0x8cf681fffe2fd2a6"
                         ],
@@ -61,10 +62,9 @@ public class DeviceTriggerTests extends AbstractComponentTests {
                     """);
 
         assertThat(component.channels.size(), is(1));
-        assertThat(component.getName(), is("MQTT Device Trigger"));
+        assertThat(component.getName(), is("Device Trigger"));
 
-        assertChannel(component, "on", "zigbee2mqtt/Charge Now Button/action", "", "MQTT Device Trigger",
-                TextValue.class);
+        assertChannel(component, "on", "zigbee2mqtt/Charge Now Button/action", "", "Trigger", TextValue.class);
 
         publishMessage("zigbee2mqtt/Charge Now Button/action", "on");
         assertTriggered(component, "on", "on");
@@ -73,14 +73,13 @@ public class DeviceTriggerTests extends AbstractComponentTests {
         assertNotTriggered(component, "on", "off");
     }
 
-    @SuppressWarnings("null")
     @Test
     public void testMerge() throws InterruptedException {
         var component1 = (DeviceTrigger) discoverComponent(configTopicToMqtt(CONFIG_TOPIC_1), """
                 {
                     "automation_type": "trigger",
                     "device": {
-                        "configuration_url": "#/device/0x8cf681fffe2fd2a6/info",
+                        "configuration_url": "http://localhost/#/device/0x8cf681fffe2fd2a6/info",
                         "identifiers": [
                             "zigbee2mqtt_0x8cf681fffe2fd2a6"
                         ],
@@ -95,11 +94,11 @@ public class DeviceTriggerTests extends AbstractComponentTests {
                     "type": "button_long_press"
                 }
                     """);
-        var component2 = (DeviceTrigger) discoverComponent(configTopicToMqtt(CONFIG_TOPIC_2), """
+        discoverComponent(configTopicToMqtt(CONFIG_TOPIC_2), """
                 {
                     "automation_type": "trigger",
                     "device": {
-                        "configuration_url": "#/device/0x8cf681fffe2fd2a6/info",
+                        "configuration_url": "http://localhost/#/device/0x8cf681fffe2fd2a6/info",
                         "identifiers": [
                             "zigbee2mqtt_0x8cf681fffe2fd2a6"
                         ],
@@ -119,11 +118,11 @@ public class DeviceTriggerTests extends AbstractComponentTests {
 
         ComponentChannel channel = Objects.requireNonNull(component1.getChannel("turn_on"));
         TextValue value = (TextValue) channel.getState().getCache();
-        Set<String> payloads = value.getStates();
+        Map<String, String> payloads = value.getStates();
         assertNotNull(payloads);
         assertThat(payloads.size(), is(2));
-        assertThat(payloads.contains("press"), is(true));
-        assertThat(payloads.contains("release"), is(true));
+        assertThat(payloads.containsKey("press"), is(true));
+        assertThat(payloads.containsKey("release"), is(true));
         Configuration channelConfig = channel.getChannel().getConfiguration();
         Object config = channelConfig.get("config");
         assertNotNull(config);

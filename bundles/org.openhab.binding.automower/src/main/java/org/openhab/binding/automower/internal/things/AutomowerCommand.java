@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.automower.internal.AutomowerBindingConstants;
 import org.openhab.core.thing.ChannelUID;
 
 /**
@@ -25,12 +26,14 @@ import org.openhab.core.thing.ChannelUID;
  */
 @NonNullByDefault
 public enum AutomowerCommand {
-    START("Start", "start"),
-    RESUME_SCHEDULE("ResumeSchedule", "resume_schedule"),
-    PAUSE("Pause", "pause"),
-    PARK("Park", "park"),
-    PARK_UNTIL_NEXT_SCHEDULE("ParkUntilNextSchedule", "park_until_next_schedule"),
-    PARK_UNTIL_FURTHER_NOTICE("ParkUntilFurtherNotice", "park_until_further_notice");
+    START("Start", AutomowerBindingConstants.CHANNEL_COMMAND_START),
+    START_IN_WORK_AREA("StartInWorkArea", AutomowerBindingConstants.CHANNEL_COMMAND_START_IN_WORK_AREA),
+    RESUME_SCHEDULE("ResumeSchedule", AutomowerBindingConstants.CHANNEL_COMMAND_RESUME_SCHEDULE),
+    PAUSE("Pause", AutomowerBindingConstants.CHANNEL_COMMAND_PAUSE),
+    PARK("Park", AutomowerBindingConstants.CHANNEL_COMMAND_PARK),
+    PARK_UNTIL_NEXT_SCHEDULE("ParkUntilNextSchedule",
+            AutomowerBindingConstants.CHANNEL_COMMAND_PARK_UNTIL_NEXT_SCHEDULE),
+    PARK_UNTIL_FURTHER_NOTICE("ParkUntilFurtherNotice", AutomowerBindingConstants.CHANNEL_COMMAND_PARK_UNTIL_NOTICE);
 
     private static final Map<String, AutomowerCommand> CHANNEL_TO_CMD_MAP = new HashMap<>();
 

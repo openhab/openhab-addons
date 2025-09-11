@@ -1,0 +1,95 @@
+# This workflow can be used to trigger a rebuild of checks for a certain PR.
+#
+# Automatic triggering is based on PR labeled event.
+# The workflow will check if the new label is "rebuild".
+# It triggers up to 3 check runs taken from the PR and triggers all their jobs again, independent
+# of the previous status. (3 is an arbitrary number, it was just necessary to have more than one in
+# case there are different relevant workflows, e.g. build and codeql. This could be limited to
+# checks marked as "required" or "failed", but it seems better to trigger all).
+# The label "rebuild" is removed after the rebuild is triggered.
+#
+# It can be triggered manually, referencing a PR number (this is mainly for testing purposes).
+name: Rebuild PR
+
+on:
+  pull_request_target:
+    types: [labeled]
+  workflow_dispatch:
+    inputs:
+      pr:
+        description: 'PR number to rebuild'
+        required: false
+        default: '0'
+      label:
+        description: 'Label to trigger rebuild'
+        required: false
+        default: 'rebuild'
+
+# grant permission
+# - actions:write to allow rerun
+# - PR:write to allow removing the label
+# - checks:write to allow setting build status
+permissions:
+  actions: write
+  checks: write
+  pull-requests: write
+env:
+  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  PR_NUMBER: ${{ github.event.number || inputs.pr }}
+  LABEL: ${{ github.event.label.name || inputs.label }}
+  BASE: ${{ github.event.pull_request.base.repo.full_name || github.event.repository.full_name }}
+
+jobs:
+  rebuild:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Info
+      env:
+        GITHUB: ${{ toJson(github) }}
+      run: |
+        echo "$GITHUB"
+
+    - name: Checkout
+      if: ${{ github.head_ref == '' && env.LABEL == 'rebuild' }}
+      uses: actions/checkout@v5
+      with:
+        persist-credentials: false
+
+    - name: Checkout merge
+      if: ${{ github.head_ref != '' && env.LABEL == 'rebuild' }}
+      uses: actions/checkout@v5
+      with:
+        ref: refs/pull/${{github.event.pull_request.number}}/merge
+        persist-credentials: false
+
+    - name: List Jobs
+      if: ${{ env.LABEL == 'rebuild' }}
+      run: |
+        echo "Label: ${{ env.LABEL }}"
+        echo "PR: ${{ env.PR_NUMBER }}"
+        NUMBER=$(gh pr checks ${{ env.PR_NUMBER }} -R ${{ env.BASE }}|grep -v "^rebuild"| sed -E 's#.*/([0-9]+)/job/([0-9]+)#\1#'|grep -ve '[[:alpha:]]'|sort -nu|head -n3|xargs|tr '\n' ' ')
+        echo "Number of last 3 check jobs: $NUMBER"
+        echo "NUMBER=$NUMBER">>$GITHUB_ENV
+
+    - name: Trigger Rebuild
+      if: ${{ env.LABEL == 'rebuild' }}
+      env:
+        PR: ${{ env.PR_NUMBER }}
+        NUMBER: ${{ env.NUMBER }}
+      run: |
+        if [ -z "$NUMBER" ]; then
+          echo "Error: Previous check run not found, cannot rebuild"
+          exit 1
+        fi
+        for i in $(echo $NUMBER|tr ' ' '\n'); do
+          echo   "Rebuilding PR #$i"
+          gh run rerun $i || true
+        done
+
+    - name: Remove Label
+      if: ${{ always() && env.LABEL == 'rebuild' }}
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        PR: ${{ env.PR_NUMBER }}
+      run: |
+        gh pr edit $PR --remove-label rebuild

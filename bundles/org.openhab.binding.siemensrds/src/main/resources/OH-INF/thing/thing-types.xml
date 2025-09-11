@@ -8,6 +8,7 @@
 
 		<label>Siemens Climatix IC Account</label>
 		<description>The Siemens Climatix IC cloud server account for accessing RDS Smart Thermostats</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 
 		<properties>
 			<property name="vendor">Siemens</property>
@@ -50,6 +51,7 @@
 
 		<label>RDS Thermostat</label>
 		<description>Siemens RDS Smart Thermostat</description>
+		<semantic-equipment-tag>Thermostat</semantic-equipment-tag>
 
 		<channels>
 			<channel id="roomTemperature" typeId="temperature">
@@ -129,6 +131,10 @@
 		<label>Temperature</label>
 		<description>Measured temperature value</description>
 		<category>temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -137,6 +143,10 @@
 		<label>Target Temperature</label>
 		<description>Target temperature setting</description>
 		<category>temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="false" pattern="%.1f %unit%" min="5" max="30" step="0.5"/>
 	</channel-type>
 
@@ -145,6 +155,10 @@
 		<label>Thermostat Output State</label>
 		<description>The output state of the the thermostat (Heating, Cooling)</description>
 		<category>fire</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -153,6 +167,10 @@
 		<label>Humidity</label>
 		<description>Measured humidity value</description>
 		<category>humidity</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Humidity</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %%"/>
 	</channel-type>
 
@@ -161,6 +179,10 @@
 		<label>Air Quality</label>
 		<description>Room Air Quality</description>
 		<category>qualityofservice</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>AirQuality</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -169,6 +191,9 @@
 		<label>Energy Savings Level</label>
 		<description>Energy savings level (Green Leaf)</description>
 		<category>qualityofservice</category>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -176,6 +201,10 @@
 		<item-type>Switch</item-type>
 		<label>Thermostat Auto Mode</label>
 		<description>The thermostat is in Automatic Mode (Off = Manual Mode)</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="false"/>
 	</channel-type>
 
@@ -184,6 +213,10 @@
 		<label>Occupancy Mode Present</label>
 		<description>The thermostat is in Present Occupancy Mode (Off = Away Mode)</description>
 		<category>presence</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="false"/>
 	</channel-type>
 
@@ -191,6 +224,10 @@
 		<item-type>Switch</item-type>
 		<label>Hotwater Auto Mode</label>
 		<description>The domestic water heating is in Automatic Mode (Off = Manual Mode)</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="false"/>
 	</channel-type>
 
@@ -198,6 +235,10 @@
 		<item-type>Switch</item-type>
 		<label>Hotwater Output State</label>
 		<description>The On/Off state of the domestic water heating</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Heating</tag>
+		</tags>
 		<state readOnly="false"/>
 	</channel-type>
 

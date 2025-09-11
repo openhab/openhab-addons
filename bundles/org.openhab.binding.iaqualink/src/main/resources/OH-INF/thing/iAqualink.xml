@@ -7,6 +7,7 @@
 		<label>iAquaLink Pool Controller</label>
 		<description>An iAquaLink pool control thing represents an iAquaLink pool controller for Jandy/Zodiac systems
 		</description>
+		<semantic-equipment-tag>SwimmingPool</semantic-equipment-tag>
 		<channels>
 			<channel id="status" typeId="status"/>
 			<channel id="system_type" typeId="system_type"/>
@@ -144,12 +145,20 @@
 		<item-type>Switch</item-type>
 		<label>Auxiliary Switch</label>
 		<description>The current state of auxiliary channel</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="aux-dimmer">
 		<item-type>Dimmer</item-type>
 		<label>Auxiliary Dimmer</label>
 		<description>The current state of auxiliary channel</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Brightness</tag>
+		</tags>
 		<state step="25"></state>
 	</channel-type>
 
@@ -157,6 +166,10 @@
 		<item-type>String</item-type>
 		<label>Jandy Color Lighting</label>
 		<description>Jandy Color Lighting Channel</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Light</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="off">Off</option>
@@ -180,6 +193,10 @@
 		<item-type>String</item-type>
 		<label>Pentair SAm/SAL Lighting</label>
 		<description>Pentair SAm/SAL Lighting Channel</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Light</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="off">Off</option>
@@ -202,6 +219,10 @@
 		<item-type>String</item-type>
 		<label>Jandy Led Water Colors Lighting</label>
 		<description>Jandy Led Water Colors Lighting Channel</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Light</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="off">Off</option>
@@ -228,6 +249,10 @@
 		<item-type>String</item-type>
 		<label>Pentair intelliBrite Lighting</label>
 		<description>Pentair intelliBrite Lighting Channel</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Light</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="off">Off</option>
@@ -254,6 +279,10 @@
 		<item-type>String</item-type>
 		<label>Hayward Universal Lighting</label>
 		<description>Hayward Universal Lighting Channel</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Light</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="off">Off</option>
@@ -303,6 +332,10 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Setpoint</label>
 		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%"/>
 
 	</channel-type>
@@ -311,6 +344,10 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 
 	</channel-type>

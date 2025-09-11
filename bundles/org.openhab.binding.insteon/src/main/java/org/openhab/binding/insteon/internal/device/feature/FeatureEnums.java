@@ -340,9 +340,9 @@ public class FeatureEnums {
 
     public static enum ThermostatSystemMode {
         OFF(0x09, 0x00),
-        AUTO(0x06, 0x01),
-        HEAT(0x04, 0x02),
-        COOL(0x05, 0x03),
+        HEAT(0x04, 0x01),
+        COOL(0x05, 0x02),
+        AUTO(0x06, 0x03),
         PROGRAM(0x0A, 0x04);
 
         private static final Map<Integer, ThermostatSystemMode> VALUE_MAP = Arrays.stream(values())
@@ -385,9 +385,9 @@ public class FeatureEnums {
 
     public static enum VenstarSystemMode {
         OFF(0x09, 0x00),
-        AUTO(0x06, 0x01),
-        HEAT(0x04, 0x02),
-        COOL(0x05, 0x03),
+        HEAT(0x04, 0x01),
+        COOL(0x05, 0x02),
+        AUTO(0x06, 0x03),
         PROGRAM_HEAT(0x0A, 0x04),
         PROGRAM_COOL(0x0B, 0x05),
         PROGRAM_AUTO(0x0C, 0x06);
@@ -475,6 +475,32 @@ public class FeatureEnums {
                 throw new IllegalArgumentException("unexpected thermostat time format");
             }
             return format;
+        }
+    }
+
+    public static enum X10Event {
+        ON,
+        OFF,
+        BRIGHT,
+        DIM;
+
+        public static X10Event valueOf(int cmd) throws IllegalArgumentException {
+            switch (cmd) {
+                case 0x02:
+                case 0x11:
+                    return X10Event.ON;
+                case 0x03:
+                case 0x13:
+                    return X10Event.OFF;
+                case 0x05:
+                case 0x15:
+                    return X10Event.BRIGHT;
+                case 0x04:
+                case 0x16:
+                    return X10Event.DIM;
+                default:
+                    throw new IllegalArgumentException("unexpected x10 event");
+            }
         }
     }
 

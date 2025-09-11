@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.mqtt.homeassistant.internal.handler.HomeAssistantThingHandler;
 
 /**
  * The {@link HomeAssistantThingHandler} manages Things that are responsible for
@@ -71,7 +70,6 @@ public class HandlerConfiguration {
     }
 
     public HandlerConfiguration(String basetopic, List<String> topics) {
-        super();
         this.basetopic = basetopic;
         this.topics = topics;
     }

@@ -7,6 +7,7 @@
 	<bridge-type id="bridge">
 		<label>Luxom Bridge</label>
 		<description>This bridge represents a Luxom IP-interface (for example a DS-65L).</description>
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 		<config-description>
 			<parameter name="ipAddress" type="text" required="true">
 				<context>network-address</context>
@@ -35,6 +36,7 @@
 		</supported-bridge-type-refs>
 		<label>Switch</label>
 		<description>Switch type action in Luxom</description>
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 		<channels>
 			<channel id="switch" typeId="switchState"/>
 		</channels>
@@ -54,6 +56,7 @@
 		</supported-bridge-type-refs>
 		<label>Dimmer</label>
 		<description>Dimmer type action in Luxom</description>
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 		<channels>
 			<channel id="brightness" typeId="system.brightness"/>
 		</channels>
@@ -92,6 +95,10 @@
 		<label>Switch</label>
 		<description>Switch control for action in Luxom.</description>
 		<category>Switch</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 </thing:thing-descriptions>

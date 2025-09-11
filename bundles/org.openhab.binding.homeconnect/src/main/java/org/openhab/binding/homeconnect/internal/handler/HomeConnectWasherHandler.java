@@ -54,6 +54,7 @@ public class HomeConnectWasherHandler extends AbstractHomeConnectThingHandler {
     @Override
     protected void configureChannelUpdateHandlers(Map<String, ChannelUpdateHandler> handlers) {
         // register default update handlers
+        handlers.put(CHANNEL_POWER_STATE, defaultPowerStateChannelUpdateHandler());
         handlers.put(CHANNEL_DOOR_STATE, defaultDoorStateChannelUpdateHandler());
         handlers.put(CHANNEL_OPERATION_STATE, defaultOperationStateChannelUpdateHandler());
         handlers.put(CHANNEL_REMOTE_CONTROL_ACTIVE_STATE, defaultRemoteControlActiveStateChannelUpdateHandler());
@@ -99,6 +100,7 @@ public class HomeConnectWasherHandler extends AbstractHomeConnectThingHandler {
     @Override
     protected void configureEventHandlers(Map<String, EventHandler> handlers) {
         // register default event handlers
+        handlers.put(EVENT_POWER_STATE, defaultPowerStateEventHandler());
         handlers.put(EVENT_DOOR_STATE, defaultDoorStateEventHandler());
         handlers.put(EVENT_REMOTE_CONTROL_ACTIVE, updateRemoteControlActiveAndProgramOptionsStateEventHandler());
         handlers.put(EVENT_REMOTE_CONTROL_START_ALLOWED,
@@ -186,6 +188,9 @@ public class HomeConnectWasherHandler extends AbstractHomeConnectThingHandler {
             final HomeConnectApiClient apiClient)
             throws CommunicationException, AuthorizationException, ApplianceOfflineException {
         super.handleCommand(channelUID, command, apiClient);
+
+        handlePowerCommand(channelUID, command, apiClient, STATE_POWER_OFF);
+
         String operationState = getOperationState();
 
         // only handle these commands if operation state allows it

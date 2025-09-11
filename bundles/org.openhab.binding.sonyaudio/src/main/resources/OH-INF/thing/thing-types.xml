@@ -9,6 +9,10 @@
 		<label>Power</label>
 		<description>Power on/off your device</description>
 		<category>Switch</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="volume">
@@ -16,6 +20,10 @@
 		<label>Volume</label>
 		<description>Set the volume level</description>
 		<category>SoundVolume</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>SoundVolume</tag>
+		</tags>
 		<state min="0" max="100" step="1" pattern="%d %%"></state>
 	</channel-type>
 
@@ -23,5 +31,9 @@
 		<item-type>Switch</item-type>
 		<label>Mute</label>
 		<description>Enable/Disable Mute on the AVR</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>SoundVolume</tag>
+		</tags>
 	</channel-type>
 </thing:thing-descriptions>

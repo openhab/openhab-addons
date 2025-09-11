@@ -7,6 +7,7 @@
 	<thing-type id="bulb">
 		<label>Wifi RGBW Bulb</label>
 		<description>A dimmable light with changeable colors.</description>
+		<semantic-equipment-tag>LightSource</semantic-equipment-tag>
 
 		<channels>
 			<channel id="color" typeId="color"/>

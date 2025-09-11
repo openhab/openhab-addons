@@ -34,7 +34,8 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class TeslascopeWebTargets {
     private static final int TIMEOUT_MS = 30000;
-    private static final String BASE_URI = "https://teslascope.com/api/vehicle/";
+    private static final String BASE_URI = "https://teslascope.com/api/";
+    private static final String BASE_VEHICLE_URI = BASE_URI + "vehicle/";
     private final Logger logger = LoggerFactory.getLogger(TeslascopeWebTargets.class);
     private HttpClient httpClient;
 
@@ -42,14 +43,25 @@ public class TeslascopeWebTargets {
         this.httpClient = httpClient;
     }
 
+    public String getVehicleList(String apiKey)
+            throws TeslascopeCommunicationException, TeslascopeAuthenticationException {
+        return invoke(BASE_URI + "vehicles?api_key=" + apiKey);
+    }
+
     public String getDetailedInformation(String publicID, String apiKey)
             throws TeslascopeCommunicationException, TeslascopeAuthenticationException {
-        return invoke(BASE_URI + publicID + "/detailed?api_key=" + apiKey);
+        return invoke(BASE_VEHICLE_URI + publicID + "/detailed?api_key=" + apiKey);
     }
 
     public void sendCommand(String publicID, String apiKey, String command)
             throws TeslascopeCommunicationException, TeslascopeAuthenticationException {
-        invoke(BASE_URI + publicID + "/command/" + command + "?api_key=" + apiKey);
+        invoke(BASE_VEHICLE_URI + publicID + "/command/" + command + "?api_key=" + apiKey);
+        return;
+    }
+
+    public void sendCommand(String publicID, String apiKey, String command, String params)
+            throws TeslascopeCommunicationException, TeslascopeAuthenticationException {
+        invoke(BASE_VEHICLE_URI + publicID + "/command/" + command + "?api_key=" + apiKey + params);
         return;
     }
 

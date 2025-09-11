@@ -7,6 +7,7 @@
 	<bridge-type id="melcloudaccount">
 		<label>MELCloud Account</label>
 		<description>MELCloud cloud service account</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 
 		<config-description>
 			<parameter name="username" type="text" required="true">

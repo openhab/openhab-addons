@@ -41,6 +41,8 @@ public class BoschSHCBindingConstants {
     public static final ThingTypeUID THING_TYPE_TWINGUARD = new ThingTypeUID(BINDING_ID, "twinguard");
     public static final ThingTypeUID THING_TYPE_WINDOW_CONTACT = new ThingTypeUID(BINDING_ID, "window-contact");
     public static final ThingTypeUID THING_TYPE_WINDOW_CONTACT_2 = new ThingTypeUID(BINDING_ID, "window-contact-2");
+    public static final ThingTypeUID THING_TYPE_WINDOW_CONTACT_2_PLUS = new ThingTypeUID(BINDING_ID,
+            "window-contact-2-plus");
     public static final ThingTypeUID THING_TYPE_MOTION_DETECTOR = new ThingTypeUID(BINDING_ID, "motion-detector");
     public static final ThingTypeUID THING_TYPE_SHUTTER_CONTROL = new ThingTypeUID(BINDING_ID, "shutter-control");
     public static final ThingTypeUID THING_TYPE_SHUTTER_CONTROL_2 = new ThingTypeUID(BINDING_ID, "shutter-control-2");
@@ -116,6 +118,10 @@ public class BoschSHCBindingConstants {
     public static final String CHANNEL_IMPULSE_SWITCH = "impulse-switch";
     public static final String CHANNEL_IMPULSE_LENGTH = "impulse-length";
     public static final String CHANNEL_INSTANT_OF_LAST_IMPULSE = "instant-of-last-impulse";
+    public static final String CHANNEL_ALARM = "alarm";
+    public static final String CHANNEL_VIBRATION_SENSOR_ENABLED = "vibration-sensor-enabled";
+    public static final String CHANNEL_VIBRATION_SENSOR_SENSITIVITY = "vibration-sensor-sensitivity";
+    public static final String CHANNEL_VIBRATION_SENSOR_STATE = "vibration-sensor-state";
     // numbered channels
     // the rationale for introducing numbered channels was discussed in
     // https://github.com/openhab/openhab-addons/pull/16400
@@ -128,4 +134,8 @@ public class BoschSHCBindingConstants {
 
     // static device/service names
     public static final String SERVICE_INTRUSION_DETECTION = "intrusionDetectionSystem";
+
+    // thing properties
+    public static final String PROPERTY_LOCATION_LEGACY = "Location";
+    public static final String PROPERTY_LOCATION = "location";
 }

@@ -9,9 +9,7 @@
 				<type>radiothermostat:message</type>
 			</add-channel>
 		</instruction-set>
-	</thing-type>
 
-	<thing-type uid="radiothermostat:rtherm">
 		<instruction-set targetVersion="2">
 			<add-channel id="next_temp">
 				<type>radiothermostat:next_temp</type>
@@ -19,6 +17,30 @@
 			<add-channel id="next_time">
 				<type>radiothermostat:next_time</type>
 			</add-channel>
+		</instruction-set>
+
+		<instruction-set targetVersion="3">
+			<update-channel id="temperature">
+				<type>radiothermostat:temperature</type>
+			</update-channel>
+			<update-channel id="humidity">
+				<type>radiothermostat:humidity</type>
+			</update-channel>
+			<update-channel id="mode">
+				<type>radiothermostat:mode</type>
+			</update-channel>
+			<update-channel id="fan_mode">
+				<type>radiothermostat:fan-mode</type>
+			</update-channel>
+			<update-channel id="set_point">
+				<type>radiothermostat:temperature-setpoint</type>
+			</update-channel>
+			<update-channel id="status">
+				<type>radiothermostat:status</type>
+			</update-channel>
+			<update-channel id="fan_status">
+				<type>radiothermostat:fan-status</type>
+			</update-channel>
 		</instruction-set>
 	</thing-type>
 

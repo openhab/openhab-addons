@@ -1,0 +1,83 @@
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
+// AUTO-GENERATED, DO NOT EDIT!
+
+package org.openhab.binding.matter.internal.client.dto.cluster.gen;
+
+/**
+ * Matter Semantic-Tag definitions.
+ *
+ * @author Dan Cunningham - Initial contribution
+ */
+public class SemanticTags {
+
+    /**
+     * Enumeration of all Tag namespaces defined by the Matter specification.
+     */
+    public enum Namespace {
+{{#each namespaces}}
+        {{asUpperSnakeCase namespace}}({{id}}, {{asUpperCamelCase namespace}}Tag.values()){{#unless (isLastElement @index ../namespaces.length)}},{{else}};{{/unless}}
+{{/each}}
+
+        private final int id;
+        private final BaseCluster.MatterEnum[] tags;
+
+        Namespace(int id, BaseCluster.MatterEnum[] tags) {
+            this.id = id;
+            this.tags = tags;
+        }
+
+        /**
+         * @return numeric namespace identifier as defined by the Matter specification
+         */
+        public int getId() {
+            return id;
+        }
+
+        /**
+         * @return array with all tags that belong to this namespace
+         */
+        public BaseCluster.MatterEnum[] getTags() {
+            return tags;
+        }
+    }
+
+{{#each namespaces}}
+    /**
+     * Tags for the "{{namespace}}" namespace.
+     */
+    public enum {{asUpperCamelCase namespace}}Tag implements BaseCluster.MatterEnum {
+{{#each tags}}
+        {{asEnumField name}}({{id}}, "{{label}}"){{#unless (isLastElement @index ../tags.length)}},{{else}};{{/unless}}
+{{/each}}
+        private final Integer value;
+        private final String label;
+
+        {{asUpperCamelCase namespace}}Tag(Integer value, String label) {
+            this.value = value;
+            this.label = label;
+        }
+
+        @Override
+        public Integer getValue() {
+            return value;
+        }
+
+        @Override
+        public String getLabel() {
+            return label;
+        }
+    }
+{{/each}}
+} 

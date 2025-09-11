@@ -8,6 +8,7 @@
 
 		<label>Energi Data Service</label>
 		<description>This Thing represents the Energi Data Service API.</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="electricity" typeId="electricity"/>

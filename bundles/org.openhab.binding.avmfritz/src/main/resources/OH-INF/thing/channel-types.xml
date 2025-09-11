@@ -53,6 +53,10 @@
 		<label>Mode</label>
 		<description>States the mode of the device (MANUAL/AUTOMATIC/VACATION).</description>
 		<category>Heating</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state pattern="%s" readOnly="true">
 			<options>
 				<option value="MANUAL">Manual</option>
@@ -161,6 +165,10 @@
 		<label>Eco Temperature</label>
 		<description>Thermostat Eco temperature.</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -169,6 +177,10 @@
 		<label>Comfort Temperature</label>
 		<description>Thermostat Comfort temperature.</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -177,6 +189,10 @@
 		<label>Radiator Mode</label>
 		<description>States the mode of the radiator (ON/OFF/COMFORT/ECO/BOOST/WINDOW_OPEN).</description>
 		<category>Heating</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state pattern="%s">
 			<options>
 				<option value="ON">On</option>
@@ -210,6 +226,10 @@
 		<label>Contact State</label>
 		<description>Contact state information (OPEN/CLOSED).</description>
 		<category>Contact</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state pattern="%s" readOnly="true"/>
 	</channel-type>
 
@@ -217,6 +237,10 @@
 		<item-type>Switch</item-type>
 		<label>Obstruction Alarm</label>
 		<description>Obstruction alarm of the blinds. The blinds were stopped and moved a bit in the opposite direction.</description>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Opening</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -224,6 +248,10 @@
 		<item-type>Switch</item-type>
 		<label>Temperature Alarm</label>
 		<description>Temperature alarm of the blinds. Indicates overheating of the motor.</description>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -232,6 +260,10 @@
 		<label>Last Change</label>
 		<description>States the last time the button was pressed.</description>
 		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
 	</channel-type>
 
@@ -239,6 +271,10 @@
 		<item-type>Rollershutter</item-type>
 		<label>Rollershutter Control</label>
 		<description>Controls the rollershutter and states its opening level in percent</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>OpenLevel</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="color-temperature-abs" advanced="true">

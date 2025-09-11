@@ -12,38 +12,36 @@
  */
 package org.openhab.binding.mqtt.homeassistant.internal.config.dto;
 
-import org.eclipse.jdt.annotation.Nullable;
+import java.util.Map;
 
-import com.google.gson.annotations.SerializedName;
+import org.eclipse.jdt.annotation.Nullable;
+import org.graalvm.polyglot.Value;
 
 /**
  * MQTT topic subscribed to receive availability (online/offline) updates. Must not be used together with
  * availability_topic
  *
  * @author Anton Kharuzhy - Initial contribution
+ * @author Cody Cutrer - Rewrite for Python-based configuration
  */
-public class Availability {
-    @SerializedName("payload_available")
-    protected String payloadAvailable = "online";
-    @SerializedName("payload_not_available")
-    protected String payloadNotAvailable = "offline";
-    @SerializedName("value_template")
-    protected @Nullable String valueTemplate;
-    protected String topic;
+public class Availability extends AbstractConfiguration {
+    public Availability(Map<String, @Nullable Object> config) {
+        super(config);
+    }
 
     public String getPayloadAvailable() {
-        return payloadAvailable;
+        return getString("payload_available");
     }
 
     public String getPayloadNotAvailable() {
-        return payloadNotAvailable;
+        return getString("payload_not_available");
     }
 
     public String getTopic() {
-        return topic;
+        return getString("topic");
     }
 
-    public @Nullable String getValueTemplate() {
-        return valueTemplate;
+    public @Nullable Value getValueTemplate() {
+        return getOptionalValue("value_template");
     }
 }

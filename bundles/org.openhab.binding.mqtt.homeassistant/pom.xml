@@ -1,18 +1,24 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
     <groupId>org.openhab.addons.bundles</groupId>
     <artifactId>org.openhab.addons.reactor.bundles</artifactId>
-    <version>5.0.0-SNAPSHOT</version>
+    <version>5.1.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>org.openhab.binding.mqtt.homeassistant</artifactId>
 
   <name>openHAB Add-ons :: Bundles :: MQTT HomeAssistant Convention</name>
+
+  <properties>
+    <graalpy.version>24.2.1</graalpy.version>
+    <!-- define a property to overwrite it on Windows, as venv has a different structure -->
+    <graalpy.executable>bin/python3</graalpy.executable>
+  </properties>
 
   <dependencies>
     <dependency>
@@ -27,42 +33,173 @@
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
+
+    <!-- Graal Polyglot Framework -->
     <dependency>
-      <groupId>com.google.guava</groupId>
-      <artifactId>guava</artifactId>
-      <version>33.3.0-jre</version>
+      <groupId>org.openhab.osgiify</groupId>
+      <artifactId>org.graalvm.polyglot.polyglot</artifactId>
+      <version>${graalpy.version}</version>
+      <!-- provided as OSGi bundle at runtime, available only at compile time -->
+      <scope>provided</scope>
+    </dependency>
+    <!-- Graal Python engine.
+     Note this is _not_ the OSGiified bundle - this exact one needs to be available
+     for graalpy-maven-plugin below.
+     -->
+    <dependency>
+      <groupId>org.graalvm.polyglot</groupId>
+      <artifactId>python-community</artifactId>
+      <version>${graalpy.version}</version>
+      <type>pom</type>
+      <!-- provided as OSGi bundle at runtime, available only at compile time -->
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.openhab.osgiify</groupId>
+      <artifactId>org.graalvm.python.python-embedding</artifactId>
+      <version>${graalpy.version}</version>
+      <!-- provided as OSGi bundle at runtime, available only at compile time -->
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.bouncycastle</groupId>
+      <artifactId>bcprov-jdk18on</artifactId>
+      <version>1.81</version>
       <scope>test</scope>
     </dependency>
-
-    <dependency>
-      <groupId>org.openhab.osgiify</groupId>
-      <artifactId>com.hubspot.jinjava.jinjava</artifactId>
-      <version>2.7.4</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.openhab.osgiify</groupId>
-      <artifactId>com.google.re2j.re2j</artifactId>
-      <version>1.2</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>ch.obermuhlner</groupId>
-      <artifactId>big-math</artifactId>
-      <version>2.3.2</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.fasterxml.jackson.datatype</groupId>
-      <artifactId>jackson-datatype-jdk8</artifactId>
-      <version>${jackson.version}</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.openhab.osgiify</groupId>
-      <artifactId>com.hubspot.immutables.immutables-exceptions</artifactId>
-      <version>1.9</version>
-      <scope>compile</scope>
-    </dependency>
   </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>unpack-bouncycastle</id>
+            <goals>
+              <goal>unpack-dependencies</goal>
+            </goals>
+            <phase>process-test-classes</phase>
+            <configuration>
+              <includeArtifactIds>bcprov-jdk18on</includeArtifactIds>
+              <!--
+               For unexplained reasons, when running tests bcprov loads in such a way that signatures can't be verified,
+               and Java raises a security exception when Python tries to load it. This is not a problem when loading
+               as an OSGi bundle inside openHAB. So unpack it locally, remove the signatures, and in the surefire configuration
+               below override the classpath to use the unpacked version.
+               -->
+              <excludes>META-INF/*.SF,META-INF/*.RSA,META-INF/*.DSA</excludes>
+              <outputDirectory>${project.build.directory}/unsigned</outputDirectory>
+              <type>jar</type>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>3.5.3</version>
+        <configuration>
+          <additionalClasspathElements>
+            <additionalClasspathElement>${project.build.directory}/unsigned</additionalClasspathElement>
+          </additionalClasspathElements>
+          <argLine>-noverify</argLine>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-resources-plugin</artifactId>
+        <version>3.3.1</version>
+        <executions>
+          <execution>
+            <id>copy-homeassistant-python</id>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <phase>generate-resources</phase>
+            <configuration>
+              <outputDirectory>${project.build.directory}/classes/org.graalvm.python.vfs/src</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>src/main/python</directory>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.graalvm.python</groupId>
+        <artifactId>graalpy-maven-plugin</artifactId>
+        <version>${graalpy.version}</version>
+        <executions>
+          <execution>
+            <id>install-python-packages</id>
+            <goals>
+              <goal>process-graalpy-resources</goal>
+            </goals>
+            <phase>generate-resources</phase>
+            <configuration>
+              <packages>
+                <package>awesomeversion==24.6.0</package>
+                <package>Jinja2==3.1.6</package>
+                <package>python-slugify==8.0.4</package>
+                <package>voluptuous==0.15.2</package>
+              </packages>
+            </configuration>
+          </execution>
+          <!-- yes, this is the same as above, but it needs run again to regenerate the filelist with our .pyc files -->
+          <execution>
+            <id>generate-python-filelist</id>
+            <goals>
+              <goal>process-graalpy-resources</goal>
+            </goals>
+            <phase>process-resources</phase>
+            <configuration>
+              <packages>
+                <package>awesomeversion==24.6.0</package>
+                <package>Jinja2==3.1.6</package>
+                <package>python-slugify==8.0.4</package>
+                <package>voluptuous==0.15.2</package>
+              </packages>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <version>3.5.1</version>
+        <executions>
+          <execution>
+            <id>compile-python</id>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+            <phase>generate-resources</phase>
+            <configuration>
+              <executable>${project.build.directory}/classes/org.graalvm.python.vfs/venv/${graalpy.executable}</executable>
+              <arguments>
+                <argument>-m</argument>
+                <argument>compileall</argument>
+                <argument>${project.build.directory}/classes/org.graalvm.python.vfs/src</argument>
+              </arguments>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+  <profiles>
+    <profile>
+      <activation>
+        <os>
+          <family>windows</family>
+        </os>
+      </activation>
+      <properties>
+        <graalpy.executable>Scripts/python</graalpy.executable>
+      </properties>
+    </profile>
+  </profiles>
 </project>

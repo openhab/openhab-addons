@@ -6,6 +6,7 @@
 	<thing-type id="jandy">
 		<label>Jandy Pool Controller</label>
 		<description>A Jandy pool control thing represents an Autelis pool controller for Jandy systems</description>
+		<semantic-equipment-tag>SwimmingPool</semantic-equipment-tag>
 		<channels>
 			<channel id="system-runstate" typeId="system-runstate"/>
 			<channel id="system-model" typeId="system-model"/>
@@ -254,6 +255,10 @@
 		<item-type>Number</item-type>
 		<label>Operation Mode</label>
 		<description>The current state of the Aqualink® controller</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="0">Auto</option>
@@ -266,6 +271,10 @@
 		<item-type>Number</item-type>
 		<label>Battery Voltage</label>
 		<description>The voltage of the Aqualink® controller's battery</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
 		<state readOnly="true">
 		</state>
 	</channel-type>
@@ -273,6 +282,10 @@
 		<item-type>Number</item-type>
 		<label>Battery State</label>
 		<description>The current state of the Aqualink® controller's battery</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>LowBattery</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="0">Normal</option>
@@ -333,12 +346,20 @@
 		<label>Setpoint</label>
 		<description>The current setpoint</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="temp-temperature">
 		<item-type>Number</item-type>
 		<label>Temperature</label>
 		<description>The current temperature. Note: Only accurate when pool is running</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true">
 		</state>
 	</channel-type>
@@ -347,6 +368,10 @@
 		<label>Air Temperature</label>
 		<description>The current air temperature</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true">
 		</state>
 	</channel-type>

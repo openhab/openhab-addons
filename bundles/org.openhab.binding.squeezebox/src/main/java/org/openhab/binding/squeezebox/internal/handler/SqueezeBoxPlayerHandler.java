@@ -26,7 +26,8 @@ import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.squeezebox.internal.SqueezeBoxStateDescriptionOptionsProvider;
 import org.openhab.binding.squeezebox.internal.config.SqueezeBoxPlayerConfig;
 import org.openhab.binding.squeezebox.internal.model.Favorite;
@@ -72,6 +73,7 @@ import org.slf4j.LoggerFactory;
  * @author Mark Hilbush - Convert sound notification volume from channel to config parameter
  * @author Mark Hilbush - Add like/unlike functionality
  */
+@NonNullByDefault
 public class SqueezeBoxPlayerHandler extends BaseThingHandler implements SqueezeBoxPlayerEventListener {
     private final Logger logger = LoggerFactory.getLogger(SqueezeBoxPlayerHandler.class);
 
@@ -86,17 +88,17 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
     /**
      * Keeps current track time
      */
-    private ScheduledFuture<?> timeCounterJob;
+    private @Nullable ScheduledFuture<?> timeCounterJob;
 
     /**
      * Local reference to our bridge
      */
-    private SqueezeBoxServerHandler squeezeBoxServerHandler;
+    private @Nullable SqueezeBoxServerHandler squeezeBoxServerHandler;
 
     /**
      * Our mac address, needed everywhere
      */
-    private String mac;
+    private String mac = "";
 
     /**
      * The server sends us the current time on play/pause/stop events, we
@@ -113,26 +115,27 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
     /**
      * Separate volume level for notifications
      */
-    private Integer notificationSoundVolume = null;
+    private @Nullable Integer notificationSoundVolume = null;
 
-    private String callbackUrl;
+    private @Nullable String callbackUrl;
 
     private SqueezeBoxStateDescriptionOptionsProvider stateDescriptionProvider;
 
-    private static final ExpiringCacheMap<String, RawType> IMAGE_CACHE = new ExpiringCacheMap<>(
+    private static final ExpiringCacheMap<String, @Nullable RawType> IMAGE_CACHE = new ExpiringCacheMap<>(
             TimeUnit.MINUTES.toMillis(15)); // 15min
 
-    private String likeCommand;
-    private String unlikeCommand;
+    private @Nullable String likeCommand;
+    private @Nullable String unlikeCommand;
     private boolean connected = false;
 
     /**
      * Creates SqueezeBox Player Handler
      *
      * @param thing
+     * @param callbackUrl
      * @param stateDescriptionProvider
      */
-    public SqueezeBoxPlayerHandler(@NonNull Thing thing, String callbackUrl,
+    public SqueezeBoxPlayerHandler(Thing thing, @Nullable String callbackUrl,
             SqueezeBoxStateDescriptionOptionsProvider stateDescriptionProvider) {
         super(thing);
         this.callbackUrl = callbackUrl;
@@ -142,9 +145,15 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
     @Override
     public void initialize() {
         mac = getConfig().as(SqueezeBoxPlayerConfig.class).mac;
+        if (mac.isBlank()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/offline.conf-error.mac-not-set");
+            return;
+        }
         timeCounter();
         updateThingStatus();
-        logger.debug("player thing {} initialized with mac {}", getThing().getUID(), mac);
+        logger.debug("Player thing {} initialized with mac {}", getThing().getUID(), mac);
+        SqueezeBoxServerHandler squeezeBoxServerHandler = this.squeezeBoxServerHandler;
         if (squeezeBoxServerHandler != null) {
             // ensure we get an up-to-date connection state
             squeezeBoxServerHandler.requestPlayers();
@@ -165,32 +174,36 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
             if (bridgeStatus == ThingStatus.OFFLINE) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
             } else if (!this.connected) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE);
+                updateStatus(ThingStatus.OFFLINE);
             } else if (bridgeStatus == ThingStatus.ONLINE && getThing().getStatus() != ThingStatus.ONLINE) {
-                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
+                updateStatus(ThingStatus.ONLINE);
             }
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Bridge not found");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/offline.conf-error.bridge-not-found");
         }
     }
 
     @Override
     public void dispose() {
         // stop our duration counter
+        ScheduledFuture<?> timeCounterJob = this.timeCounterJob;
         if (timeCounterJob != null && !timeCounterJob.isCancelled()) {
             timeCounterJob.cancel(true);
-            timeCounterJob = null;
+            this.timeCounterJob = null;
         }
 
+        SqueezeBoxServerHandler squeezeBoxServerHandler = this.squeezeBoxServerHandler;
         if (squeezeBoxServerHandler != null) {
             squeezeBoxServerHandler.removePlayerCache(mac);
         }
-        logger.debug("player thing {} disposed for mac {}", getThing().getUID(), mac);
+        logger.debug("Player thing {} disposed for mac {}", getThing().getUID(), mac);
         super.dispose();
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        SqueezeBoxServerHandler squeezeBoxServerHandler = this.squeezeBoxServerHandler;
         if (squeezeBoxServerHandler == null) {
             logger.debug("Player {} has no server configured, ignoring command: {}", getThing().getUID(), command);
             return;
@@ -318,9 +331,11 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
                 squeezeBoxServerHandler.playFavorite(mac, command.toString());
                 break;
             case CHANNEL_RATE:
-                if (command.equals(OnOffType.ON)) {
+                String likeCommand = this.likeCommand;
+                String unlikeCommand = this.unlikeCommand;
+                if (command.equals(OnOffType.ON) && likeCommand != null) {
                     squeezeBoxServerHandler.rate(mac, likeCommand);
-                } else if (command.equals(OnOffType.OFF)) {
+                } else if (command.equals(OnOffType.OFF) && unlikeCommand != null) {
                     squeezeBoxServerHandler.rate(mac, unlikeCommand);
                 }
                 break;
@@ -341,7 +356,30 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
 
     @Override
     public void playerAdded(SqueezeBoxPlayer player) {
-        // Player properties are saved in SqueezeBoxPlayerDiscoveryParticipant
+        if (!isMe(player.macAddress)) {
+            return;
+        }
+
+        Map<String, String> properties = editProperties();
+
+        String model = player.model;
+        if (model != null) {
+            properties.put(Thing.PROPERTY_MODEL_ID, model);
+        }
+        String name = player.name;
+        if (name != null) {
+            properties.put(PROPERTY_NAME, name);
+        }
+        String uuid = player.uuid;
+        if (uuid != null) {
+            properties.put(PROPERTY_UID, uuid);
+        }
+        String ipAddr = player.ipAddr;
+        if (ipAddr != null) {
+            properties.put(PROPERTY_IP, ipAddr);
+        }
+
+        updateProperties(properties);
     }
 
     @Override
@@ -481,26 +519,28 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
      * @return A RawType object containing the image, null if the content type could not be found or the content type is
      *         not an image.
      */
-    private RawType downloadImage(String mac, String url) {
+    private @Nullable RawType downloadImage(String mac, String url) {
         // Only get the image if this is my PlayerHandler instance
         if (isMe(mac)) {
-            if (url != null && !url.isEmpty()) {
-                String sanitizedUrl = sanitizeUrl(url);
+            if (!url.isEmpty()) {
                 RawType image = IMAGE_CACHE.putIfAbsentAndGet(url, () -> {
-                    logger.debug("Trying to download the content of URL {}", sanitizedUrl);
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("Trying to download the content of URL {}", sanitizeUrl(url));
+                    }
                     try {
                         return HttpUtil.downloadImage(url);
                     } catch (IllegalArgumentException e) {
-                        logger.debug("IllegalArgumentException when downloading image from {}", sanitizedUrl, e);
+                        if (logger.isDebugEnabled()) {
+                            logger.debug("IllegalArgumentException when downloading image from {}", sanitizeUrl(url),
+                                    e);
+                        }
                         return null;
                     }
                 });
-                if (image == null) {
-                    logger.debug("Failed to download the content of URL {}", sanitizedUrl);
-                    return null;
-                } else {
-                    return image;
+                if (image == null && logger.isDebugEnabled()) {
+                    logger.debug("Failed to download the content of URL {}", sanitizeUrl(url));
                 }
+                return image;
             }
         }
         return null;
@@ -529,7 +569,7 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
     /**
      * Wrap the given RawType and return it as {@link State} or return {@link UnDefType#UNDEF} if the RawType is null.
      */
-    private State createImage(RawType image) {
+    private State createImage(@Nullable RawType image) {
         if (image == null) {
             return UnDefType.UNDEF;
         } else {
@@ -560,7 +600,7 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
     }
 
     @Override
-    public void buttonsChangeEvent(String mac, String likeCommand, String unlikeCommand) {
+    public void buttonsChangeEvent(String mac, @Nullable String likeCommand, @Nullable String unlikeCommand) {
         if (isMe(mac)) {
             this.likeCommand = likeCommand;
             this.unlikeCommand = unlikeCommand;
@@ -649,7 +689,7 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
         return cachedStateAsInt(CHANNEL_CURRENT_PLAYLIST_REPEAT);
     }
 
-    private boolean cachedStateAsBoolean(String key, @NonNull State activeState) {
+    private boolean cachedStateAsBoolean(String key, State activeState) {
         return activeState.equals(stateMap.get(key));
     }
 
@@ -686,8 +726,8 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
      *
      * @return
      */
-    public SqueezeBoxServerHandler getSqueezeBoxServerHandler() {
-        return this.squeezeBoxServerHandler;
+    public @Nullable SqueezeBoxServerHandler getSqueezeBoxServerHandler() {
+        return squeezeBoxServerHandler;
     }
 
     /**
@@ -696,7 +736,7 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
      * @return
      */
     public String getMac() {
-        return this.mac;
+        return mac;
     }
 
     /*
@@ -716,6 +756,7 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
     public PercentType getNotificationSoundVolume() {
         // Get the notification sound volume from this player thing's configuration
         Integer configNotificationSoundVolume = getConfigAs(SqueezeBoxPlayerConfig.class).notificationVolume;
+        Integer notificationSoundVolume = this.notificationSoundVolume;
 
         // Determine which volume to use
         Integer currentNotificationSoundVolume;
@@ -733,9 +774,7 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
      * Used by the AudioSink to set the volume level that should be used to play the notification
      */
     public void setNotificationSoundVolume(PercentType newNotificationSoundVolume) {
-        if (newNotificationSoundVolume != null) {
-            notificationSoundVolume = Integer.valueOf(newNotificationSoundVolume.intValue());
-        }
+        notificationSoundVolume = Integer.valueOf(newNotificationSoundVolume.intValue());
     }
 
     /*
@@ -744,6 +783,11 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
     public void playNotificationSoundURI(StringType uri) {
         logger.debug("Play notification sound on player {} at URI {}", mac, uri);
 
+        SqueezeBoxServerHandler squeezeBoxServerHandler = this.squeezeBoxServerHandler;
+        if (squeezeBoxServerHandler == null) {
+            logger.warn("Server handler is null");
+            return;
+        }
         try (SqueezeBoxNotificationPlayer notificationPlayer = new SqueezeBoxNotificationPlayer(this,
                 squeezeBoxServerHandler, uri)) {
             notificationPlayer.play();
@@ -759,7 +803,7 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
     /*
      * Return the IP and port of the OH2 web server
      */
-    public String getHostAndPort() {
+    public @Nullable String getHostAndPort() {
         return callbackUrl;
     }
 }

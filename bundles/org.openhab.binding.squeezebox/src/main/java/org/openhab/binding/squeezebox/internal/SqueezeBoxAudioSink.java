@@ -17,11 +17,11 @@ import java.io.InputStream;
 import java.util.Locale;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.squeezebox.internal.handler.SqueezeBoxPlayerHandler;
 import org.openhab.core.audio.AudioFormat;
 import org.openhab.core.audio.AudioHTTPServer;
-import org.openhab.core.audio.AudioSink;
 import org.openhab.core.audio.AudioSinkSync;
 import org.openhab.core.audio.AudioStream;
 import org.openhab.core.audio.FileAudioStream;
@@ -36,11 +36,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This makes a SqueezeBox Player serve as an {@link AudioSink}-
+ * This makes a SqueezeBox Player serve as an {@link org.openhab.core.audio.AudioSink}
  *
  * @author Mark Hilbush - Initial contribution
  * @author Mark Hilbush - Add callbackUrl
  */
+@NonNullByDefault
 public class SqueezeBoxAudioSink extends AudioSinkSync {
     private final Logger logger = LoggerFactory.getLogger(SqueezeBoxAudioSink.class);
 
@@ -50,13 +51,13 @@ public class SqueezeBoxAudioSink extends AudioSinkSync {
     // Needed because Squeezebox does multiple requests for the stream
     private static final int STREAM_TIMEOUT = 10;
 
-    private String callbackUrl;
+    private @Nullable String callbackUrl;
 
     private AudioHTTPServer audioHTTPServer;
     private SqueezeBoxPlayerHandler playerHandler;
 
     public SqueezeBoxAudioSink(SqueezeBoxPlayerHandler playerHandler, AudioHTTPServer audioHTTPServer,
-            String callbackUrl) {
+            @Nullable String callbackUrl) {
         this.playerHandler = playerHandler;
         this.audioHTTPServer = audioHTTPServer;
         this.callbackUrl = callbackUrl;
@@ -71,12 +72,12 @@ public class SqueezeBoxAudioSink extends AudioSinkSync {
     }
 
     @Override
-    public String getLabel(Locale locale) {
+    public @Nullable String getLabel(@Nullable Locale locale) {
         return playerHandler.getThing().getLabel();
     }
 
     @Override
-    public void processSynchronously(AudioStream audioStream)
+    public void processSynchronously(@Nullable AudioStream audioStream)
             throws UnsupportedAudioFormatException, UnsupportedAudioStreamException {
         if (audioStream == null) {
             return;
@@ -105,6 +106,7 @@ public class SqueezeBoxAudioSink extends AudioSinkSync {
 
                 // Form the URL for streaming the notification from the OH web server
                 // Use the callback URL if it is set in the binding configuration
+                String callbackUrl = this.callbackUrl;
                 String host = callbackUrl == null || callbackUrl.isEmpty() ? playerHandler.getHostAndPort()
                         : callbackUrl;
                 if (host == null) {

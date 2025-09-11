@@ -17,6 +17,10 @@
 		<label>Current Head</label>
 		<description>Current head</description>
 		<category>Water</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Water</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
@@ -32,6 +36,18 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
+	<channel-type id="grundfos-motor-speed">
+		<item-type unitHint="rpm">Number:Frequency</item-type>
+		<label>Motor Speed</label>
+		<description>Current rotation of the pump motor</description>
+		<category>Fan</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Frequency</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f rpm"/>
+	</channel-type>
+
 	<thing-type id="mi401">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="roaming"/>
@@ -42,6 +58,7 @@
 		<label>Grundfos Alpha Reader MI401</label>
 		<description>A Grundfos Alpha Reader MI401</description>
 		<category>Pump</category>
+		<semantic-equipment-tag>Pump</semantic-equipment-tag>
 
 		<channels>
 			<channel id="rssi" typeId="rssi"/>
@@ -51,12 +68,66 @@
 			<channel id="battery-level" typeId="system.battery-level"/>
 		</channels>
 
+		<properties>
+			<property name="vendor">Grundfos</property>
+		</properties>
+
+		<representation-property>address</representation-property>
+
 		<config-description>
 			<parameter name="address" type="text">
 				<label>Address</label>
 				<description>Bluetooth address in XX:XX:XX:XX:XX:XX format</description>
 			</parameter>
 		</config-description>
-
 	</thing-type>
+
+	<thing-type id="alpha3">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="roaming"/>
+			<bridge-type-ref id="bluegiga"/>
+			<bridge-type-ref id="bluez"/>
+		</supported-bridge-type-refs>
+
+		<label>Grundfos Alpha3</label>
+		<description>A Grundfos Alpha3 circulator pump</description>
+		<category>Pump</category>
+		<semantic-equipment-tag>Pump</semantic-equipment-tag>
+
+		<channels>
+			<channel id="rssi" typeId="rssi"/>
+			<channel id="flow-rate" typeId="grundfos-flow"/>
+			<channel id="pump-head" typeId="grundfos-head"/>
+			<channel id="voltage-ac" typeId="system.electric-voltage">
+				<label>AC Voltage</label>
+				<description>Current AC pump voltage</description>
+			</channel>
+			<channel id="power" typeId="system.electric-power">
+				<label>Power Consumption</label>
+				<description>Current pump power consumption</description>
+			</channel>
+			<channel id="motor-speed" typeId="grundfos-motor-speed"/>
+		</channels>
+
+		<properties>
+			<property name="vendor">Grundfos</property>
+		</properties>
+
+		<representation-property>address</representation-property>
+
+		<config-description>
+			<parameter name="address" type="text">
+				<label>Address</label>
+				<description>Bluetooth address in XX:XX:XX:XX:XX:XX format</description>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" min="5" required="false" unit="s">
+				<default>30</default>
+				<label>Refresh Interval</label>
+				<description>Number of seconds between fetching values from the pump. Default is 30</description>
+				<advanced>true</advanced>
+				<unitLabel>seconds</unitLabel>
+			</parameter>
+		</config-description>
+	</thing-type>
+
 </thing:thing-descriptions>

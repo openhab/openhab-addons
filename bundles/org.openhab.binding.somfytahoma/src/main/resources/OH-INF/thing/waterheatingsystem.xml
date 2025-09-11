@@ -9,6 +9,7 @@
 			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 		<label>Somfy Water Heating System</label>
+		<semantic-equipment-tag>WaterHeater</semantic-equipment-tag>
 		<channels>
 			<channel id="target_temperature" typeId="temperature"></channel>
 			<channel id="middlewater_temperature" typeId="middlewater_temperature"></channel>

@@ -19,7 +19,8 @@ The following table lists the thing types of the supported LIFX devices:
 | LIFX A21 1600lm              | colorlight    |
 | LIFX BR30                    | colorlight    |
 | LIFX Candle                  | colorlight    |
-| LIFX Ceiling                 | colorlight    |
+| LIFX Ceiling 13x26"          | colorlight    |
+| LIFX Ceiling 15"             | colorlight    |
 | LIFX Downlight               | colorlight    |
 | LIFX GU10                    | colorlight    |
 | LIFX Mini Color              | colorlight    |
@@ -36,6 +37,7 @@ The following table lists the thing types of the supported LIFX devices:
 | LIFX Beam                    | colormzlight  |
 | LIFX Neon                    | colormzlight  |
 | LIFX Outdoor Neon            | colormzlight  |
+| LIFX Outdoor Permanent       | colormzlight  |
 | LIFX String                  | colormzlight  |
 | LIFX Z                       | colormzlight  |
 |                              |               |

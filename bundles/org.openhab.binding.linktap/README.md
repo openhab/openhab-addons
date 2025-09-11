@@ -7,7 +7,7 @@ E.g. behind a router**
 
 The method of interaction this binding supports is:
 
-**Program and execution of the watering plan within the application**
+## Program and execution of the watering plan within the application
 
 The currently supported capabilities include where supported by the gateway / device:
 
@@ -70,14 +70,15 @@ If the gateway cannot publish to openHAB, then the gateway is checked every 2 mi
 
 ### Gateway Configuration
 
-| Name                  | Type   | Description                                                                                                                                                               | Recommended Values | Required | Advanced |
-|-----------------------|--------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------|----------|----------|
-| host                  | String | The hostname / IP address of the gateway device                                                                                                                           |                    | Yes      | No       |
-| username              | String | The username if set for the gateway device                                                                                                                                |                    | No       | No       |
-| password              | String | The password if set for the gateway device                                                                                                                                |                    | No       | No       |
-| enableMDNS            | Switch | On connection whether the mDNS responder should be enabled on the gateway device                                                                                          | true               | No       | Yes      |
-| enforceProtocolLimits | Switch | If true data outside of the allowed ranges against the protocol will be logged and not sent                                                                               | true               | No       | Yes      |
-| enableJSONComms       | Switch | false by default for backwards compatibility, if using up to date firmware with no other local network applications set this to true, for more efficient communications   | true               | No       | Yes      |
+| Name                   | Type    | Description                                                                                                                                                             | Recommended Values | Required | Advanced |
+|------------------------|---------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------|----------|----------|
+| host                   | text    | The hostname / IP address of the gateway device                                                                                                                         |                    | Yes      | No       |
+| username               | text    | The username if set for the gateway device                                                                                                                              |                    | No       | No       |
+| password               | text    | The password if set for the gateway device                                                                                                                              |                    | No       | No       |
+| enableMDNS             | boolean | On connection whether the mDNS responder should be enabled on the gateway device                                                                                        | true               | No       | Yes      |
+| enforceProtocolLimits  | boolean | If true data outside of the allowed ranges against the protocol will be logged and not sent                                                                             | true               | No       | Yes      |
+| enableJSONComms        | boolean | false by default for backwards compatibility, if using up to date firmware with no other local network applications set this to true, for more efficient communications | true               | No       | Yes      |
+| gatewayResponseTimeout | integer | For slow or heavily loaded systems this may need increasing, if communication errors are seen (seconds allowed for responses from the gateway)                          | 3                  | No       | Yes      |
 
 **NOTE** When enableMDNS is enabled, upon connection to the gateway option "Enable mDNS responder" is switched on.
 
@@ -153,7 +154,7 @@ There are 4 different areas of channels:
 - **Device Model**: Q1
 
 ```java
-Bridge linktap:gateway:home "LinkTap GW02" [ host="192.168.0.21", enableMDNS=true, enableJSONComms=false, enforceProtocolLimits=true ] {
+Bridge linktap:gateway:home "LinkTap GW02" [ host="192.168.0.21", enableMDNS=true, enableJSONComms=false, enforceProtocolLimits=true, gatewayResponseTimeout=3 ] {
   Thing device TapValve1 "Outdoor Tap 1"  [ id="D71BC52E985B1200_1", name="ValveLinker_1", enableAlerts=true ]
   Thing device TapValve2 "Outdoor Tap 2"  [ id="D71BC52E985B1200_2", name="ValveLinker_2", enableAlerts=true ]
   Thing device TapValve3 "Outdoor Tap 3"  [ id="D71BC52E985B1200_3", name="ValveLinker_3", enableAlerts=true ]
@@ -164,8 +165,8 @@ Bridge linktap:gateway:home "LinkTap GW02" [ host="192.168.0.21", enableMDNS=tru
 ### Item Configuration
 
 ```java
-Number:Dimensionless   	   Tap1BatteryLevel       "Tap 1 - Battery Level"                 <batterylevel>     ["Point"] { channel="linktap:device:home:tapValve1:battery",unit="%%" }
-Number:Dimensionless   	   Tap1SignalLevel        "Tap 1 - Signal Level"                  <qualityofservice> ["Point"] { channel="linktap:device:home:tapValve1:signal",unit="%%" }
+Number:Dimensionless       Tap1BatteryLevel       "Tap 1 - Battery Level"                 <batterylevel>     ["Point"] { channel="linktap:device:home:tapValve1:battery",unit="%%" }
+Number:Dimensionless       Tap1SignalLevel        "Tap 1 - Signal Level"                  <qualityofservice> ["Point"] { channel="linktap:device:home:tapValve1:signal",unit="%%" }
 Switch                     Tap1RfLinked           "Tap 1 - RF Linked"                     <switch>           ["Point"] { channel="linktap:device:home:tapValve1:rf-linked"}
 Switch                     Tap1FlmLinked          "Tap 1 - FLM Linked"                    <switch>           ["Point"] { channel="linktap:device:home:tapValve1:flm-linked"}
 Switch                     Tap1WaterCutAlert      "Tap 1 - Water Cut Alert"               <alarm>            ["Point"] { channel="linktap:device:home:tapValve1:water-cut" }
@@ -221,7 +222,7 @@ Text item=Tap1WateringPlanId
 #### Other Models
 
 Please check the [Link-Tap](https://www.link-tap.com/) website.
-Presently at this location [here](https://www.link-tap.com/#!/wireless-water-timer) is a chart that shows the features available for the products.
+Presently at this location, the [Link-Tap wireless water timer product chart](https://www.link-tap.com/#!/wireless-water-timer) shows the features available for the products.
 If a product such as the G1S is used, it will not support flow based commands or readings.
 In this case exclude the volume based Items and Sitemap entries.
 
@@ -231,4 +232,3 @@ Flow data would as expected not be updated.
 ## Thanks To
 
 A note goes out to Bill at Link-Tap who has been extremely responsive in providing specifications, and quick fixes for a single issue noticed, as well as answering many questions about the behaviours of untested devices.
-

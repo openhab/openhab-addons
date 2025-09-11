@@ -14,6 +14,10 @@
 		<item-type>DateTime</item-type>
 		<label>Date/Time Value</label>
 		<description>Current date and/or time</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<config-description-ref uri="thing-type:mqtt:string_channel"/>
 	</channel-type>
 
@@ -29,6 +33,10 @@
 		<item-type>Location</item-type>
 		<label>Location</label>
 		<description>GPS coordinates as Latitude,Longitude,Altitude</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>GeoLocation</tag>
+		</tags>
 		<config-description-ref uri="thing-type:mqtt:string_channel"/>
 	</channel-type>
 
@@ -41,42 +49,69 @@
 	<channel-type id="dimmer">
 		<item-type>Dimmer</item-type>
 		<label>Dimmer</label>
+		<tags>
+			<tag>Control</tag>
+		</tags>
 		<config-description-ref uri="thing-type:mqtt:dimmer_channel"></config-description-ref>
 	</channel-type>
 
 	<channel-type id="switch">
 		<item-type>Switch</item-type>
 		<label>On/Off Switch</label>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 		<config-description-ref uri="thing-type:mqtt:switch_channel"></config-description-ref>
 	</channel-type>
 
 	<channel-type id="contact">
 		<item-type>Contact</item-type>
 		<label>Open/Close Contact</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<config-description-ref uri="thing-type:mqtt:switch_channel"></config-description-ref>
 	</channel-type>
 
 	<channel-type id="rollershutter">
 		<item-type>Rollershutter</item-type>
 		<label>Rollershutter</label>
+		<tags>
+			<tag>Control</tag>
+			<tag>OpenLevel</tag>
+		</tags>
 		<config-description-ref uri="thing-type:mqtt:rollershutter_channel"></config-description-ref>
 	</channel-type>
 
 	<channel-type id="colorRGB">
 		<item-type>Color</item-type>
 		<label>Color Value (Red,Green,Blue)</label>
+		<tags>
+			<tag>Control</tag>
+			<tag>Color</tag>
+		</tags>
 		<config-description-ref uri="thing-type:mqtt:color_channel"></config-description-ref>
 	</channel-type>
 
 	<channel-type id="colorHSB">
 		<item-type>Color</item-type>
 		<label>Color Value (Hue,Saturation,Brightness)</label>
+		<tags>
+			<tag>Control</tag>
+			<tag>Color</tag>
+		</tags>
 		<config-description-ref uri="thing-type:mqtt:color_channel"></config-description-ref>
 	</channel-type>
 
 	<channel-type id="color">
 		<item-type>Color</item-type>
 		<label>Color Value (HSB, RGB or CIE xyY)</label>
+		<tags>
+			<tag>Control</tag>
+			<tag>Color</tag>
+		</tags>
 		<config-description-ref uri="thing-type:mqtt:color_channel"></config-description-ref>
 	</channel-type>
 

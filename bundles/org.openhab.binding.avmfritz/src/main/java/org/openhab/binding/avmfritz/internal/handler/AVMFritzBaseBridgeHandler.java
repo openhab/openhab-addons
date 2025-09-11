@@ -65,6 +65,7 @@ import org.slf4j.LoggerFactory;
  * @author Christoph Weitkamp - Added support for AVM FRITZ!DECT 300 and Comet DECT
  * @author Christoph Weitkamp - Added support for groups
  * @author Ulrich Mertin - Added support for HAN-FUN blinds
+ * @author Andrew Fiddian-Green - Added support for HAN-FUN sensor and 'host' (Gerät)
  */
 @NonNullByDefault
 public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
@@ -268,23 +269,21 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
     public void onDeviceListAdded(List<AVMFritzBaseModel> deviceList) {
         final Map<String, AVMFritzBaseModel> deviceIdentifierMap = deviceList.stream()
                 .collect(Collectors.toMap(it -> it.getIdentifier(), Function.identity()));
-        getThing().getThings().forEach(childThing -> {
-            final AVMFritzBaseThingHandler childHandler = (AVMFritzBaseThingHandler) childThing.getHandler();
-            if (childHandler != null) {
-                final AVMFritzBaseModel device = deviceIdentifierMap.get(childHandler.getIdentifier());
-                if (device != null) {
-                    deviceList.remove(device);
-                    listeners.forEach(listener -> listener.onDeviceUpdated(childThing.getUID(), device));
-                } else {
-                    listeners.forEach(listener -> listener.onDeviceGone(childThing.getUID()));
-                }
-            } else {
-                logger.debug("Handler missing for thing '{}'", childThing.getUID());
-            }
-        });
-        deviceList.forEach(device -> {
-            listeners.forEach(listener -> listener.onDeviceAdded(device));
-        });
+
+        listeners.stream().filter(listener -> listener instanceof AVMFritzBaseThingHandler)
+                .map(listener -> (AVMFritzBaseThingHandler) listener).forEach(handler -> {
+                    if (deviceIdentifierMap.get(handler.getIdentifier()) instanceof AVMFritzBaseModel device) {
+                        device.isLinked = true;
+                        scheduler.submit(() -> handler.onDeviceUpdated(handler.getThing().getUID(), device));
+                    } else {
+                        scheduler.submit(() -> handler.onDeviceGone(handler.getThing().getUID()));
+                    }
+                });
+
+        deviceIdentifierMap.values().stream().filter(device -> !device.isLinked)
+                .forEach(device -> listeners.stream().filter(listener -> listener instanceof AVMFritzDiscoveryService)
+                        .map(listener -> (AVMFritzDiscoveryService) listener)
+                        .forEach(service -> scheduler.submit(() -> service.onDeviceAdded(device))));
     }
 
     /**
@@ -303,6 +302,7 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
         String thingName = getThingName(device);
 
         if (thingTypeUID != null && (SUPPORTED_BUTTON_THING_TYPES_UIDS.contains(thingTypeUID)
+                || SUPPORTED_LIGHTING_THING_TYPES.contains(thingTypeUID)
                 || SUPPORTED_HEATING_THING_TYPES.contains(thingTypeUID)
                 || SUPPORTED_DEVICE_THING_TYPES_UIDS.contains(thingTypeUID))) {
             return new ThingUID(thingTypeUID, bridgeUID, thingName);
@@ -343,8 +343,17 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
             } else if (interfaces.contains(HAN_FUN_INTERFACE_ON_OFF)) {
                 return DEVICE_HAN_FUN_ON_OFF;
             }
+            if (device.isHumiditySensor() || device.isTemperatureSensor()) {
+                return DEVICE_HAN_FUN_SENSOR;
+            }
+        } else if (device instanceof DeviceModel && device.isHANFUNDevice()
+                && (device.isHANFUNBattery() || (device.getBattery() != null) || (device.getBatterylow() != null))) {
+            // offer the host device as a potential thing -- but only if it should support battery channels
+            return DEVICE_HAN_FUN_HOST;
         }
-        return device.getProductName().replaceAll(INVALID_PATTERN, "_");
+        String productName = device.getProductName().replaceAll(INVALID_PATTERN, "_");
+        String productAlias = ALIAS_PRODUCT_NAME_MAP.get(productName.toUpperCase());
+        return productAlias != null ? productAlias : productName;
     }
 
     /**

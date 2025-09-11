@@ -41,16 +41,6 @@ public class ModemDBChange extends DatabaseChange<ModemDBRecord> {
     }
 
     /**
-     * Factory method for creating a new ModemDBChange for add
-     *
-     * @param record the record to add
-     * @return the modem db change
-     */
-    public static ModemDBChange forAdd(ModemDBRecord record) {
-        return new ModemDBChange(record, ChangeType.ADD);
-    }
-
-    /**
      * Factory method for creating a new ModemDBChange for modify
      *
      * @param record the record to modify
@@ -58,7 +48,7 @@ public class ModemDBChange extends DatabaseChange<ModemDBRecord> {
      * @return the modem db change
      */
     public static ModemDBChange forModify(ModemDBRecord record, byte[] data) {
-        return new ModemDBChange(ModemDBRecord.withNewData(data, record), ChangeType.MODIFY);
+        return new ModemDBChange(record.withNewData(data), ChangeType.MODIFY);
     }
 
     /**

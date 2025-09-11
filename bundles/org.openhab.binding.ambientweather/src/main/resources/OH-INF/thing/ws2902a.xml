@@ -12,6 +12,7 @@
 
 		<label>WS-2902A</label>
 		<description>Ambient Weather Station WS-2902A</description>
+		<semantic-equipment-tag>WeatherStation</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="station" typeId="station">
 				<label>Weather Station</label>

@@ -19,6 +19,7 @@ import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.graalvm.polyglot.Value;
 import org.openhab.binding.mqtt.generic.ChannelStateUpdateListener;
 import org.openhab.binding.mqtt.generic.values.OnOffValue;
 import org.openhab.binding.mqtt.generic.values.PercentageValue;
@@ -52,13 +53,16 @@ import org.slf4j.LoggerFactory;
  * @author Cody Cutrer - Initial contribution
  */
 @NonNullByDefault
-public class TemplateSchemaLight extends AbstractRawSchemaLight {
+public class TemplateSchemaLight extends AbstractRawSchemaLight<TemplateSchemaLight.Configuration> {
     private final Logger logger = LoggerFactory.getLogger(TemplateSchemaLight.class);
-    private final HomeAssistantChannelTransformation transformation;
+
+    private @Nullable HomeAssistantChannelTransformation commandOnTransformation, commandOffTransformation,
+            stateTransformation, brightnessTransformation, redTransformation, greenTransformation, blueTransformation,
+            effectTransformation, colorTempTransformation;
 
     private static class TemplateVariables {
         public static final String STATE = "state";
-        public static final String TRANSITION = "transition";
+        // public static final String TRANSITION = "transition"; TODO
         public static final String BRIGHTNESS = "brightness";
         public static final String COLOR_TEMP = "color_temp";
         public static final String RED = "red";
@@ -66,32 +70,94 @@ public class TemplateSchemaLight extends AbstractRawSchemaLight {
         public static final String BLUE = "blue";
         public static final String HUE = "hue";
         public static final String SAT = "sat";
-        public static final String FLASH = "flash";
+        // public static final String FLASH = "flash"; TODO
         public static final String EFFECT = "effect";
     }
 
-    public TemplateSchemaLight(ComponentFactory.ComponentConfiguration builder) {
-        super(builder);
-        transformation = new HomeAssistantChannelTransformation(getJinjava(), this, "");
+    public static class Configuration extends Light.LightConfiguration {
+        private final @Nullable Value brightnessTemplate;
+
+        public Configuration(Map<String, @Nullable Object> config) {
+            super(config, "MQTT Template Light");
+            brightnessTemplate = getOptionalValue("brightness_template");
+        }
+
+        @Nullable
+        Value getBlueTemplate() {
+            return getOptionalValue("blue_template");
+        }
+
+        @Nullable
+        Value getBrightnessTemplate() {
+            return brightnessTemplate;
+        }
+
+        @Nullable
+        Value getColorTempTemplate() {
+            return getOptionalValue("color_temp_template");
+        }
+
+        @Nullable
+        Value getCommandOffTemplate() {
+            return getOptionalValue("command_off_template");
+        }
+
+        @Nullable
+        Value getCommandOnTemplate() {
+            return getOptionalValue("command_on_template");
+        }
+
+        @Nullable
+        Value getEffectTemplate() {
+            return getOptionalValue("effect_template");
+        }
+
+        @Nullable
+        Value getGreenTemplate() {
+            return getOptionalValue("green_template");
+        }
+
+        @Nullable
+        Value getRedTemplate() {
+            return getOptionalValue("red_template");
+        }
+
+        @Nullable
+        Value getStateTemplate() {
+            return getOptionalValue("state_template");
+        }
+    }
+
+    public TemplateSchemaLight(ComponentFactory.ComponentContext builder, Map<String, @Nullable Object> config) {
+        super(builder, new Configuration(config));
     }
 
     @Override
     protected void buildChannels() {
+        OnOffValue onOffValue = this.onOffValue = new OnOffValue("on", "off");
         AutoUpdatePolicy autoUpdatePolicy = optimistic ? AutoUpdatePolicy.RECOMMEND : null;
-        if (channelConfiguration.commandOnTemplate == null || channelConfiguration.commandOffTemplate == null) {
+        Value commandOnTemplate = config.getCommandOnTemplate(), commandOffTemplate = config.getCommandOffTemplate();
+        if (commandOnTemplate == null || commandOffTemplate == null) {
             throw new UnsupportedComponentException("Template schema light component '" + getHaID()
                     + "' does not define command_on_template or command_off_template!");
         }
 
-        onOffValue = new OnOffValue("on", "off");
         brightnessValue = new PercentageValue(null, new BigDecimal(255), null, null, null, FORMAT_INTEGER);
+        commandOnTransformation = new HomeAssistantChannelTransformation(getPython(), this, commandOnTemplate, true);
+        commandOffTransformation = new HomeAssistantChannelTransformation(getPython(), this, commandOffTemplate, true);
 
-        if (channelConfiguration.redTemplate != null && channelConfiguration.greenTemplate != null
-                && channelConfiguration.blueTemplate != null) {
+        Value redTemplate = config.getRedTemplate(), greenTemplate = config.getGreenTemplate(),
+                blueTemplate = config.getBlueTemplate(), brightnessTemplate = config.getBrightnessTemplate();
+        if (redTemplate != null && greenTemplate != null && blueTemplate != null) {
+            redTransformation = new HomeAssistantChannelTransformation(getPython(), this, redTemplate, false);
+            greenTransformation = new HomeAssistantChannelTransformation(getPython(), this, greenTemplate, false);
+            blueTransformation = new HomeAssistantChannelTransformation(getPython(), this, blueTemplate, false);
             colorChannel = buildChannel(COLOR_CHANNEL_ID, ComponentChannelType.COLOR, colorValue, "Color", this)
                     .commandTopic(DUMMY_TOPIC, true, 1).commandFilter(command -> handleCommand(command))
                     .withAutoUpdatePolicy(autoUpdatePolicy).build();
-        } else if (channelConfiguration.brightnessTemplate != null) {
+        } else if (brightnessTemplate != null) {
+            brightnessTransformation = new HomeAssistantChannelTransformation(getPython(), this, brightnessTemplate,
+                    false);
             brightnessChannel = buildChannel(BRIGHTNESS_CHANNEL_ID, ComponentChannelType.DIMMER, brightnessValue,
                     "Brightness", this).commandTopic(DUMMY_TOPIC, true, 1)
                     .commandFilter(command -> handleCommand(command)).withAutoUpdatePolicy(autoUpdatePolicy).build();
@@ -101,16 +167,28 @@ public class TemplateSchemaLight extends AbstractRawSchemaLight {
                     .withAutoUpdatePolicy(autoUpdatePolicy).build();
         }
 
-        if (channelConfiguration.colorTempTemplate != null) {
+        Value colorTempTemplate = config.getColorTempTemplate();
+        if (colorTempTemplate != null) {
+            colorTempTransformation = new HomeAssistantChannelTransformation(getPython(), this, colorTempTemplate,
+                    false);
+
             buildChannel(COLOR_TEMP_CHANNEL_ID, ComponentChannelType.NUMBER, colorTempValue, "Color Temperature", this)
                     .commandTopic(DUMMY_TOPIC, true, 1).commandFilter(command -> handleColorTempCommand(command))
                     .withAutoUpdatePolicy(autoUpdatePolicy).build();
         }
-        TextValue localEffectValue = effectValue;
-        if (channelConfiguration.effectTemplate != null && localEffectValue != null) {
-            buildChannel(EFFECT_CHANNEL_ID, ComponentChannelType.STRING, localEffectValue, "Effect", this)
+        TextValue effectValue = this.effectValue;
+        Value effectTemplate = config.getEffectTemplate();
+        if (effectTemplate != null && effectValue != null) {
+            effectTransformation = new HomeAssistantChannelTransformation(getPython(), this, effectTemplate, false);
+
+            buildChannel(EFFECT_CHANNEL_ID, ComponentChannelType.STRING, effectValue, "Effect", this)
                     .commandTopic(DUMMY_TOPIC, true, 1).commandFilter(command -> handleEffectCommand(command))
                     .withAutoUpdatePolicy(autoUpdatePolicy).build();
+        }
+
+        Value stateTemplate = config.getStateTemplate();
+        if (stateTemplate != null) {
+            stateTransformation = new HomeAssistantChannelTransformation(getPython(), this, stateTemplate, false);
         }
     }
 
@@ -119,16 +197,15 @@ public class TemplateSchemaLight extends AbstractRawSchemaLight {
     @Override
     protected void publishState(HSBType state) {
         Map<String, @Nullable Object> binding = new HashMap<>();
-        String template;
+        HomeAssistantChannelTransformation transformation;
 
-        logger.trace("Publishing new state {} of light {} to MQTT.", state, getName());
         if (state.getBrightness().equals(PercentType.ZERO)) {
-            template = Objects.requireNonNull(channelConfiguration.commandOffTemplate);
+            transformation = Objects.requireNonNull(commandOffTransformation);
             binding.put(TemplateVariables.STATE, "off");
         } else {
-            template = Objects.requireNonNull(channelConfiguration.commandOnTemplate);
+            transformation = Objects.requireNonNull(commandOnTransformation);
             binding.put(TemplateVariables.STATE, "on");
-            if (channelConfiguration.brightnessTemplate != null) {
+            if (config.getBrightnessTemplate() != null) {
                 binding.put(TemplateVariables.BRIGHTNESS,
                         state.getBrightness().toBigDecimal().multiply(factor).intValue());
             }
@@ -142,14 +219,14 @@ public class TemplateSchemaLight extends AbstractRawSchemaLight {
             }
         }
 
-        publishState(binding, template);
+        publishState(binding, transformation);
     }
 
     private boolean handleColorTempCommand(Command command) {
         if (command instanceof DecimalType) {
             command = new QuantityType<>(((DecimalType) command).toBigDecimal(), Units.MIRED);
         }
-        if (command instanceof QuantityType quantity) {
+        if (command instanceof QuantityType<?> quantity) {
             QuantityType<?> mireds = quantity.toInvertibleUnit(Units.MIRED);
             if (mireds == null) {
                 logger.warn("Unable to convert {} to mireds", command);
@@ -161,7 +238,7 @@ public class TemplateSchemaLight extends AbstractRawSchemaLight {
             binding.put(TemplateVariables.STATE, "on");
             binding.put(TemplateVariables.COLOR_TEMP, mireds.toBigDecimal().intValue());
 
-            publishState(binding, Objects.requireNonNull(channelConfiguration.commandOnTemplate));
+            publishState(binding, Objects.requireNonNull(commandOnTransformation));
         }
         return false;
     }
@@ -176,14 +253,15 @@ public class TemplateSchemaLight extends AbstractRawSchemaLight {
         binding.put(TemplateVariables.STATE, "on");
         binding.put(TemplateVariables.EFFECT, command.toString());
 
-        publishState(binding, Objects.requireNonNull(channelConfiguration.commandOnTemplate));
+        publishState(binding, Objects.requireNonNull(commandOnTransformation));
         return false;
     }
 
-    private void publishState(Map<String, @Nullable Object> binding, String template) {
+    private void publishState(Map<String, @Nullable Object> binding,
+            HomeAssistantChannelTransformation transformation) {
         String command;
 
-        command = transform(template, binding);
+        command = transform(transformation, binding);
         if (command == null) {
             return;
         }
@@ -195,12 +273,13 @@ public class TemplateSchemaLight extends AbstractRawSchemaLight {
     @Override
     public void updateChannelState(ChannelUID channel, State state) {
         ChannelStateUpdateListener listener = this.channelStateUpdateListener;
+        OnOffValue onOffValue = Objects.requireNonNull(this.onOffValue);
 
         String value;
 
-        String template = channelConfiguration.stateTemplate;
-        if (template != null) {
-            value = transform(template, state.toString());
+        HomeAssistantChannelTransformation stateTransformation = this.stateTransformation;
+        if (stateTransformation != null) {
+            value = transform(stateTransformation, state.toString());
             if (value == null || value.isEmpty()) {
                 onOffValue.update(UnDefType.NULL);
             } else if ("on".equals(value)) {
@@ -217,14 +296,15 @@ public class TemplateSchemaLight extends AbstractRawSchemaLight {
                 brightnessValue.update(
                         (PercentType) Objects.requireNonNull(onOffValue.getChannelState().as(PercentType.class)));
             }
-            if (colorValue.getChannelState() instanceof UnDefType) {
-                colorValue.update((OnOffType) onOffValue.getChannelState());
+            if (colorValue.getChannelState() instanceof UnDefType
+                    && onOffValue.getChannelState() instanceof OnOffType onOffState) {
+                colorValue.update(onOffState);
             }
         }
 
-        template = channelConfiguration.brightnessTemplate;
-        if (template != null) {
-            Integer brightness = getColorChannelValue(template, state.toString());
+        HomeAssistantChannelTransformation brightnessTransformation = this.brightnessTransformation;
+        if (brightnessTransformation != null) {
+            Integer brightness = getColorChannelValue(brightnessTransformation, state.toString());
             if (brightness == null) {
                 brightnessValue.update(UnDefType.NULL);
                 colorValue.update(UnDefType.NULL);
@@ -241,33 +321,34 @@ public class TemplateSchemaLight extends AbstractRawSchemaLight {
         }
 
         @Nullable
-        String redTemplate, greenTemplate, blueTemplate;
-        if ((redTemplate = channelConfiguration.redTemplate) != null
-                && (greenTemplate = channelConfiguration.greenTemplate) != null
-                && (blueTemplate = channelConfiguration.blueTemplate) != null) {
-            Integer red = getColorChannelValue(redTemplate, state.toString());
-            Integer green = getColorChannelValue(greenTemplate, state.toString());
-            Integer blue = getColorChannelValue(blueTemplate, state.toString());
+        HomeAssistantChannelTransformation redTransformation, greenTransformation, blueTransformation;
+        if ((redTransformation = this.redTransformation) != null
+                && (greenTransformation = this.greenTransformation) != null
+                && (blueTransformation = this.blueTransformation) != null) {
+            Integer red = getColorChannelValue(redTransformation, state.toString());
+            Integer green = getColorChannelValue(greenTransformation, state.toString());
+            Integer blue = getColorChannelValue(blueTransformation, state.toString());
             if (red == null || green == null || blue == null) {
                 colorValue.update(UnDefType.NULL);
             } else {
                 colorValue.update(HSBType.fromRGB(red, green, blue));
             }
         }
-        ComponentChannel localBrightnessChannel = brightnessChannel;
-        ComponentChannel localColorChannel = colorChannel;
-        if (localColorChannel != null) {
-            listener.updateChannelState(localColorChannel.getChannel().getUID(), colorValue.getChannelState());
-        } else if (localBrightnessChannel != null) {
-            listener.updateChannelState(localBrightnessChannel.getChannel().getUID(),
-                    brightnessValue.getChannelState());
+        ComponentChannel brightnessChannel = this.brightnessChannel;
+        ComponentChannel colorChannel = this.colorChannel;
+        if (colorChannel != null) {
+            listener.updateChannelState(colorChannel.getChannel().getUID(), colorValue.getChannelState());
+        } else if (brightnessChannel != null) {
+            listener.updateChannelState(brightnessChannel.getChannel().getUID(), brightnessValue.getChannelState());
         } else {
-            listener.updateChannelState(onOffChannel.getChannel().getUID(), onOffValue.getChannelState());
+            listener.updateChannelState(Objects.requireNonNull(onOffChannel).getChannel().getUID(),
+                    onOffValue.getChannelState());
         }
 
-        template = channelConfiguration.effectTemplate;
-        if (template != null) {
-            value = transform(template, state.toString());
+        HomeAssistantChannelTransformation effectTransformation = this.effectTransformation;
+        TextValue effectValue = this.effectValue;
+        if (effectTransformation != null && effectValue != null) {
+            value = transform(effectTransformation, state.toString());
             if (value == null || value.isEmpty()) {
                 effectValue.update(UnDefType.NULL);
             } else {
@@ -276,20 +357,20 @@ public class TemplateSchemaLight extends AbstractRawSchemaLight {
             listener.updateChannelState(buildChannelUID(EFFECT_CHANNEL_ID), effectValue.getChannelState());
         }
 
-        template = channelConfiguration.colorTempTemplate;
-        if (template != null) {
-            Integer mireds = getColorChannelValue(template, state.toString());
+        HomeAssistantChannelTransformation colorTempTransformation = this.colorTempTransformation;
+        if (colorTempTransformation != null) {
+            Integer mireds = getColorChannelValue(colorTempTransformation, state.toString());
             if (mireds == null) {
                 colorTempValue.update(UnDefType.NULL);
             } else {
-                colorTempValue.update(new QuantityType(mireds, Units.MIRED));
+                colorTempValue.update(QuantityType.valueOf(mireds, Units.MIRED));
             }
             listener.updateChannelState(buildChannelUID(COLOR_TEMP_CHANNEL_ID), colorTempValue.getChannelState());
         }
     }
 
-    private @Nullable Integer getColorChannelValue(String template, String value) {
-        Object result = transform(template, value);
+    private @Nullable Integer getColorChannelValue(HomeAssistantChannelTransformation transformation, String value) {
+        Object result = transform(transformation, value);
         if (result == null) {
             return null;
         }
@@ -301,17 +382,21 @@ public class TemplateSchemaLight extends AbstractRawSchemaLight {
         try {
             return Integer.parseInt(result.toString());
         } catch (NumberFormatException e) {
-            logger.warn("Applying template {} for component {} failed: {}", template, getHaID().toShortTopic(),
-                    e.getMessage());
+            logger.warn("Applying template for component {} failed: {}", getHaID().toShortTopic(), e.getMessage());
             return null;
         }
     }
 
-    private @Nullable String transform(String template, Map<String, @Nullable Object> binding) {
-        return transformation.apply(template, binding).orElse(null);
+    private @Nullable String transform(HomeAssistantChannelTransformation transformation,
+            Map<String, @Nullable Object> variables) {
+        Object result = transformation.transform("", variables);
+        if (result == null) {
+            return null;
+        }
+        return result.toString();
     }
 
-    private @Nullable String transform(String template, String value) {
-        return transformation.apply(template, value).orElse(null);
+    private @Nullable String transform(HomeAssistantChannelTransformation transformation, String value) {
+        return transformation.apply(value).orElse(null);
     }
 }

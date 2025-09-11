@@ -8,6 +8,10 @@
 		<item-type>Switch</item-type>
 		<label>Nightmode</label>
 		<description>Switch to night mode, a very dimmed brightness mode</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="ON">Nightmode</option>
@@ -19,6 +23,10 @@
 		<item-type>Switch</item-type>
 		<label>Whitemode</label>
 		<description>Switch to white mode, which basically sets the saturation to 0 (turns off the color leds)</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="ON">Whitemode</option>
@@ -47,7 +55,7 @@
 		<category>ColorLight</category>
 		<tags>
 			<tag>Control</tag>
-			<tag>Light</tag>
+			<tag>Color</tag>
 		</tags>
 	</channel-type>
 
@@ -58,7 +66,7 @@
 		<category>Light</category>
 		<tags>
 			<tag>Control</tag>
-			<tag>Light</tag>
+			<tag>Brightness</tag>
 		</tags>
 		<state min="0" max="100" step="1" pattern="%d"></state>
 	</channel-type>
@@ -77,6 +85,10 @@
 			support 64 steps
 		</description>
 		<category>Light</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>ColorTemperature</tag>
+		</tags>
 		<state min="0" max="100" step="1" pattern="%d"></state>
 	</channel-type>
 
@@ -84,6 +96,10 @@
 		<item-type>Dimmer</item-type>
 		<label>Animation Speed</label>
 		<description>The speed of some animations can be increased or decreased</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Speed</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="animation_mode_relative">
@@ -99,6 +115,10 @@
 		<label>Animation Mode</label>
 		<description>Animation mode of your LED. RGBWW leds support 9 animation modes.</description>
 		<category>Light</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="1">Animation 1</option>

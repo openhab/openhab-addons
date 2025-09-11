@@ -8,7 +8,8 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
-		<label>Somfy Light Switch</label>
+		<label>Somfy Exterior Heating System</label>
+		<semantic-equipment-tag>HVAC</semantic-equipment-tag>
 		<channels>
 			<channel id="heating_level" typeId="heating_level"></channel>
 		</channels>

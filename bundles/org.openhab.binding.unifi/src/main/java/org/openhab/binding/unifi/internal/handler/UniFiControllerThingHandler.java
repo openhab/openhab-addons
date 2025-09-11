@@ -88,7 +88,7 @@ public class UniFiControllerThingHandler extends BaseBridgeHandler {
         config = getConfigAs(UniFiControllerThingConfig.class);
         logger.debug("Initializing the UniFi Controller Handler with config = {}", config);
         final UniFiController uc = new UniFiController(httpClient, config.getHost(), config.getPort(),
-                config.getUsername(), config.getPassword(), config.isUniFiOS());
+                config.getUsername(), config.getPassword(), config.isUniFiOS(), config.getTimeoutSeconds());
 
         controller = uc;
         updateStatus(UNKNOWN);

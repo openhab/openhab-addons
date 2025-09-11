@@ -24,6 +24,11 @@
 			<description>Specifies the net base price per kWh</description>
 			<default>0</default>
 		</parameter>
+		<parameter name="serviceFee" type="decimal" min="0" max="100">
+			<label>Service Fee</label>
+			<description>Specifies the service fee in percent.</description>
+			<default>0</default>
+		</parameter>
 	</config-description>
 
 	<config-description uri="thing-type:awattar:bestprice">

@@ -91,7 +91,7 @@ public class WLedBridgeHandler extends BaseBridgeHandler {
                 localAPI.savePreset(position, presetName);
             }
         } catch (ApiException e) {
-            logger.debug("Error occured when trying to save a preset:{}", e.getMessage());
+            logger.debug("Error occurred when trying to save a preset:{}", e.getMessage());
         }
     }
 
@@ -184,7 +184,7 @@ public class WLedBridgeHandler extends BaseBridgeHandler {
                     localApi.setUdpSend(OnOffType.ON.equals(command));
                     break;
                 case CHANNEL_SYNC_RECEIVE:
-                    localApi.setUdpRecieve(OnOffType.ON.equals(command));
+                    localApi.setUdpReceive(OnOffType.ON.equals(command));
                     break;
                 case CHANNEL_LIVE_OVERRIDE:
                     localApi.setLiveOverride(command.toString());
@@ -221,7 +221,7 @@ public class WLedBridgeHandler extends BaseBridgeHandler {
                     break;
             }
         } catch (ApiException e) {
-            logger.debug("Exception occured when Channel:{}, Command:{}, Error:{}", channelUID.getId(), command,
+            logger.debug("Exception occurred when Channel:{}, Command:{}, Error:{}", channelUID.getId(), command,
                     e.getMessage());
         }
     }

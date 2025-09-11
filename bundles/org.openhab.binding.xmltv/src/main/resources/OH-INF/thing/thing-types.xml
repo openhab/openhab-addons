@@ -132,6 +132,10 @@
 		<item-type>DateTime</item-type>
 		<label>Start Time</label>
 		<description>Program Start Time</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true" pattern="%1$tF %1$tR"/>
 	</channel-type>
 
@@ -139,6 +143,10 @@
 		<item-type>DateTime</item-type>
 		<label>End Time</label>
 		<description>Program End Time</description>
+		<tags>
+			<tag>Forecast</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true" pattern="%1$tF %1$tR"/>
 	</channel-type>
 
@@ -146,6 +154,10 @@
 		<item-type>Number:Time</item-type>
 		<label>Current Time</label>
 		<description>Current time of currently playing program.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -167,6 +179,10 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Progress</label>
 		<description>Relative progression of the current program.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Progress</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 

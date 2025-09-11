@@ -12,19 +12,21 @@
  */
 package org.openhab.binding.mqtt.homeassistant.internal.component;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.graalvm.polyglot.Value;
 import org.openhab.binding.mqtt.generic.values.RollershutterValue;
 import org.openhab.binding.mqtt.generic.values.TextValue;
 import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannel;
 import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannelType;
-import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
+import org.openhab.binding.mqtt.homeassistant.internal.config.dto.EntityConfiguration;
 import org.openhab.core.library.types.StopMoveType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.types.UpDownType;
 import org.openhab.core.thing.type.AutoUpdatePolicy;
-
-import com.google.gson.annotations.SerializedName;
 
 /**
  * A MQTT Cover component, following the https://www.home-assistant.io/integrations/cover.mqtt specification.
@@ -37,115 +39,179 @@ import com.google.gson.annotations.SerializedName;
  * @author Cody Cutrer - Add support for position and discrete state strings
  */
 @NonNullByDefault
-public class Cover extends AbstractComponent<Cover.ChannelConfiguration> {
+public class Cover extends AbstractComponent<Cover.Configuration> {
     public static final String COVER_CHANNEL_ID = "cover";
     public static final String STATE_CHANNEL_ID = "state";
 
-    /**
-     * Configuration class for MQTT component
-     */
-    static class ChannelConfiguration extends AbstractChannelConfiguration {
-        ChannelConfiguration() {
-            super("MQTT Cover");
+    public static final String PAYLOAD_OPEN = "OPEN";
+    public static final String PAYLOAD_CLOSE = "CLOSE";
+    public static final String PAYLOAD_STOP = "STOP";
+
+    public static final String STATE_CLOSED = "closed";
+    public static final String STATE_CLOSING = "closing";
+    public static final String STATE_OPEN = "open";
+    public static final String STATE_OPENING = "opening";
+    public static final String STATE_STOPPED = "stopped";
+
+    private static final Map<String, String> STATE_LABELS = Map.of(STATE_CLOSED, "@text/state.cover.closed",
+            STATE_CLOSING, "@text/state.cover.closing", STATE_OPEN, "@text/state.cover.open", STATE_OPENING,
+            "@text/state.cover.opening", STATE_STOPPED, "@text/state.cover.stopped");
+
+    public static class Configuration extends EntityConfiguration {
+        private final boolean retain, optimistic;
+
+        public Configuration(Map<String, @Nullable Object> config) {
+            super(config, "MQTT Cover");
+            retain = getBoolean("retain");
+            optimistic = getBoolean("optimistic");
         }
 
-        protected @Nullable Boolean optimistic;
+        @Nullable
+        String getCommandTopic() {
+            return getOptionalString("command_topic");
+        }
 
-        @SerializedName("state_topic")
-        protected @Nullable String stateTopic;
-        @SerializedName("command_topic")
-        protected @Nullable String commandTopic;
-        @SerializedName("payload_open")
-        protected String payloadOpen = "OPEN";
-        @SerializedName("payload_close")
-        protected String payloadClose = "CLOSE";
-        @SerializedName("payload_stop")
-        protected String payloadStop = "STOP";
-        @SerializedName("position_closed")
-        protected int positionClosed = 0;
-        @SerializedName("position_open")
-        protected int positionOpen = 100;
-        @SerializedName("position_template")
-        protected @Nullable String positionTemplate;
-        @SerializedName("position_topic")
-        protected @Nullable String positionTopic;
-        @SerializedName("set_position_template")
-        protected @Nullable String setPositionTemplate;
-        @SerializedName("set_position_topic")
-        protected @Nullable String setPositionTopic;
-        @SerializedName("state_closed")
-        protected String stateClosed = "closed";
-        @SerializedName("state_closing")
-        protected String stateClosing = "closing";
-        @SerializedName("state_open")
-        protected String stateOpen = "open";
-        @SerializedName("state_opening")
-        protected String stateOpening = "opening";
-        @SerializedName("state_stopped")
-        protected String stateStopped = "stopped";
+        @Nullable
+        String getPositionTopic() {
+            return getOptionalString("position_topic");
+        }
+
+        boolean isOptimistic() {
+            return optimistic;
+        }
+
+        String getPayloadClose() {
+            return getString("payload_close");
+        }
+
+        String getPayloadOpen() {
+            return getString("payload_open");
+        }
+
+        String getPayloadStop() {
+            return getString("payload_stop");
+        }
+
+        int getPositionClosed() {
+            return getInt("position_closed");
+        }
+
+        int getPositionOpen() {
+            return getInt("position_open");
+        }
+
+        boolean isRetain() {
+            return retain;
+        }
+
+        @Nullable
+        Value getSetPositionTemplate() {
+            return getOptionalValue("set_position_template");
+        }
+
+        @Nullable
+        String getSetPositionTopic() {
+            return getOptionalString("set_position_topic");
+        }
+
+        String getStateClosed() {
+            return getString("state_closed");
+        }
+
+        String getStateClosing() {
+            return getString("state_closing");
+        }
+
+        String getStateOpen() {
+            return getString("state_open");
+        }
+
+        String getStateOpening() {
+            return getString("state_opening");
+        }
+
+        String getStateStopped() {
+            return getString("state_stopped");
+        }
+
+        @Nullable
+        String getStateTopic() {
+            return getOptionalString("state_topic");
+        }
+
+        @Nullable
+        Value getValueTemplate() {
+            return getOptionalValue("value_template");
+        }
+
+        @Nullable
+        Value getPositionTemplate() {
+            return getOptionalValue("position_template");
+        }
     }
 
-    @Nullable
-    ComponentChannel stateChannel = null;
-
-    public Cover(ComponentFactory.ComponentConfiguration componentConfiguration) {
-        super(componentConfiguration, ChannelConfiguration.class);
+    public Cover(ComponentFactory.ComponentContext componentContext) {
+        super(componentContext, Configuration.class);
 
         boolean optimistic = false;
-        Boolean localOptimistic = channelConfiguration.optimistic;
-        if (localOptimistic != null && localOptimistic == true
-                || channelConfiguration.stateTopic == null && channelConfiguration.positionTopic == null) {
+        String stateTopic = config.getStateTopic();
+        String positionTopic = config.getPositionTopic();
+        if (stateTopic == null && positionTopic == null) {
             optimistic = true;
         }
-        String stateTopic = channelConfiguration.stateTopic;
 
         // State can indicate additional information than just
         // the current position, so expose it as a separate channel
         if (stateTopic != null) {
-            TextValue value = new TextValue(new String[] { channelConfiguration.stateClosed,
-                    channelConfiguration.stateClosing, channelConfiguration.stateOpen,
-                    channelConfiguration.stateOpening, channelConfiguration.stateStopped });
+            Map<String, String> states = new LinkedHashMap<>();
+            states.put(config.getStateClosed(), STATE_CLOSED);
+            states.put(config.getStateClosing(), STATE_CLOSING);
+            states.put(config.getStateOpen(), STATE_OPEN);
+            states.put(config.getStateOpening(), STATE_OPENING);
+            states.put(config.getStateStopped(), STATE_STOPPED);
+            TextValue value = new TextValue(states, Map.of(), STATE_LABELS, Map.of());
             buildChannel(STATE_CHANNEL_ID, ComponentChannelType.STRING, value, "State",
-                    componentConfiguration.getUpdateListener()).stateTopic(stateTopic).isAdvanced(true).build();
+                    componentContext.getUpdateListener()).stateTopic(stateTopic).isAdvanced(true).build();
         }
 
-        if (channelConfiguration.commandTopic != null) {
+        String commandTopic = config.getCommandTopic();
+        String payloadOpen = config.getPayloadOpen();
+        String payloadClose = config.getPayloadClose();
+        ComponentChannel stateChannel;
+        if (commandTopic != null) {
             hiddenChannels.add(stateChannel = buildChannel(STATE_CHANNEL_ID, ComponentChannelType.STRING,
-                    new TextValue(), "State", componentConfiguration.getUpdateListener())
-                    .commandTopic(channelConfiguration.commandTopic, channelConfiguration.isRetain(),
-                            channelConfiguration.getQos())
-                    .build(false));
+                    new TextValue(), "State", componentContext.getUpdateListener())
+                    .commandTopic(commandTopic, config.isRetain(), config.getQos()).build(false));
         } else {
+            stateChannel = null;
             // no command topic. we need to make sure we send
             // integers for open and close
-            channelConfiguration.payloadOpen = String.valueOf(channelConfiguration.positionOpen);
-            channelConfiguration.payloadClose = String.valueOf(channelConfiguration.positionClosed);
+            payloadOpen = String.valueOf(config.getPositionOpen());
+            payloadClose = String.valueOf(config.getPositionClosed());
         }
 
         // We will either have positionTopic or stateTopic.
         // positionTopic is more useful, but if we only have stateTopic,
         // still build a Rollershutter channel so that UP/DOWN/STOP
         // commands can be sent
-        String rollershutterStateTopic = channelConfiguration.positionTopic;
-        String stateTemplate = channelConfiguration.positionTemplate;
+        String rollershutterStateTopic = config.getPositionTopic();
+        Value stateTemplate = config.getPositionTemplate();
         if (rollershutterStateTopic == null) {
             rollershutterStateTopic = stateTopic;
-            stateTemplate = channelConfiguration.getValueTemplate();
+            stateTemplate = config.getValueTemplate();
         }
-        String rollershutterCommandTopic = channelConfiguration.setPositionTopic;
+        String rollershutterCommandTopic = config.getSetPositionTopic();
         if (rollershutterCommandTopic == null) {
-            rollershutterCommandTopic = channelConfiguration.commandTopic;
+            rollershutterCommandTopic = config.getCommandTopic();
         }
 
-        boolean inverted = channelConfiguration.positionOpen > channelConfiguration.positionClosed;
-        final RollershutterValue value = new RollershutterValue(channelConfiguration.payloadOpen,
-                channelConfiguration.payloadClose, channelConfiguration.payloadStop, channelConfiguration.stateOpen,
-                channelConfiguration.stateClosed, inverted, channelConfiguration.setPositionTopic == null);
+        boolean inverted = config.getPositionOpen() > config.getPositionClosed();
+        final RollershutterValue value = new RollershutterValue(payloadOpen, payloadClose, config.getPayloadStop(),
+                config.getStateOpen(), config.getStateClosed(), inverted, config.getSetPositionTopic() == null);
 
         buildChannel(COVER_CHANNEL_ID, ComponentChannelType.ROLLERSHUTTER, value, "Cover",
-                componentConfiguration.getUpdateListener()).stateTopic(rollershutterStateTopic, stateTemplate)
-                .commandTopic(rollershutterCommandTopic, channelConfiguration.isRetain(), channelConfiguration.getQos())
-                .commandFilter(command -> {
+                componentContext.getUpdateListener()).stateTopic(rollershutterStateTopic, stateTemplate)
+                .commandTopic(rollershutterCommandTopic, config.isRetain(), config.getQos()).commandFilter(command -> {
                     if (stateChannel == null) {
                         return true;
                     }

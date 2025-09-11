@@ -12,20 +12,18 @@
  */
 package org.openhab.binding.mqtt.homeassistant.internal.component;
 
-import java.util.List;
-import java.util.Set;
+import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.graalvm.polyglot.Value;
 import org.openhab.binding.mqtt.generic.values.TextValue;
 import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannel;
 import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannelType;
-import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
+import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractComponentConfiguration;
 import org.openhab.binding.mqtt.homeassistant.internal.exception.ConfigurationException;
-import org.openhab.core.config.core.Configuration;
-
-import com.google.gson.annotations.SerializedName;
 
 /**
  * A MQTT Device Trigger, following the https://www.home-assistant.io/integrations/device_trigger.mqtt/ specification.
@@ -33,62 +31,87 @@ import com.google.gson.annotations.SerializedName;
  * @author Cody Cutrer - Initial contribution
  */
 @NonNullByDefault
-public class DeviceTrigger extends AbstractComponent<DeviceTrigger.ChannelConfiguration> {
-    /**
-     * Configuration class for MQTT component
-     */
-    public static class ChannelConfiguration extends AbstractChannelConfiguration {
-        ChannelConfiguration() {
-            super("MQTT Device Trigger");
+public class DeviceTrigger extends AbstractComponent<DeviceTrigger.Configuration> {
+    public static class Configuration extends AbstractComponentConfiguration {
+        private final String subtype, topic, type;
+        private final @Nullable String payload;
+        private final @Nullable Value valueTemplate;
+
+        public Configuration(Map<String, @Nullable Object> config) {
+            super(config, "Device Trigger"); // Technically device triggers don't have a name
+            subtype = getString("subtype");
+            topic = getString("topic");
+            type = getString("type");
+            payload = getOptionalString("payload");
+            valueTemplate = getOptionalValue("value_template");
         }
 
-        @SerializedName("automation_type")
-        protected String automationType = "trigger";
-        protected String topic = "";
-        protected String type = "";
-        protected String subtype = "";
+        String getAutomationType() {
+            return getString("automation_type");
+        }
 
-        protected @Nullable String payload;
+        @Nullable
+        String getPayload() {
+            return payload;
+        }
 
-        public String getTopic() {
+        String getSubtype() {
+            return subtype;
+        }
+
+        String getTopic() {
             return topic;
         }
 
-        public String getSubtype() {
-            return subtype;
+        String getType() {
+            return type;
+        }
+
+        @Nullable
+        Value getValueTemplate() {
+            return valueTemplate;
         }
     }
 
-    public DeviceTrigger(ComponentFactory.ComponentConfiguration componentConfiguration) {
-        super(componentConfiguration, ChannelConfiguration.class);
+    public DeviceTrigger(ComponentFactory.ComponentContext componentContext) {
+        super(componentContext, Configuration.class);
 
-        if (!"trigger".equals(channelConfiguration.automationType)) {
+        if (!"trigger".equals(config.getAutomationType())) {
             throw new ConfigurationException("Component:DeviceTrigger must have automation_type 'trigger'");
-        }
-        if (channelConfiguration.type.isBlank()) {
-            throw new ConfigurationException("Component:DeviceTrigger must have a type");
-        }
-        if (channelConfiguration.subtype.isBlank()) {
-            throw new ConfigurationException("Component:DeviceTrigger must have a subtype");
         }
 
         // Name the channel after the subtype, not the component ID
         // So that we only end up with a single channel for all possible events
         // for a single button (subtype is the button, type is type of press)
-        componentId = channelConfiguration.subtype;
+        componentId = config.getSubtype();
         groupId = null;
 
         TextValue value;
-        String payload = channelConfiguration.payload;
+        String payload = config.getPayload();
         if (payload != null) {
             value = new TextValue(new String[] { payload });
         } else {
             value = new TextValue();
         }
 
-        buildChannel(channelConfiguration.type, ComponentChannelType.TRIGGER, value, getName(),
-                componentConfiguration.getUpdateListener())
-                .stateTopic(channelConfiguration.topic, channelConfiguration.getValueTemplate()).trigger(true).build();
+        buildChannel(config.getType(), ComponentChannelType.TRIGGER, value, "Trigger",
+                componentContext.getUpdateListener()).stateTopic(config.getTopic(), config.getValueTemplate())
+                .trigger(true).build();
+    }
+
+    @Override
+    public boolean mergeable(AbstractComponent<?> other) {
+        if (other instanceof DeviceTrigger newTrigger && newTrigger.getConfig().getSubtype().equals(config.getSubtype())
+                && newTrigger.getConfig().getTopic().equals(config.getTopic())
+                && getHaID().nodeID.equals(newTrigger.getHaID().nodeID)) {
+            Value newTriggerValueTemplate = newTrigger.getConfig().getValueTemplate();
+            Value oldTriggerValueTemplate = config.getValueTemplate();
+            if ((newTriggerValueTemplate == null && oldTriggerValueTemplate == null) || (newTriggerValueTemplate != null
+                    && oldTriggerValueTemplate != null && newTriggerValueTemplate.equals(oldTriggerValueTemplate))) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -97,52 +120,31 @@ public class DeviceTrigger extends AbstractComponent<DeviceTrigger.ChannelConfig
      * 
      * @return if the component was stopped, and thus needs restarted
      */
+    @Override
+    public boolean merge(AbstractComponent<?> other) {
+        DeviceTrigger newTrigger = (DeviceTrigger) other;
+        ComponentChannel channel = Objects.requireNonNull(channels.get(componentId));
+        org.openhab.core.config.core.Configuration newConfiguration = mergeChannelConfiguration(channel, newTrigger);
 
-    public boolean merge(DeviceTrigger other) {
-        ComponentChannel channel = channels.get(componentId);
         TextValue value = (TextValue) channel.getState().getCache();
-        Set<String> payloads = value.getStates();
-        // Append objectid/config to channel configuration
-        Configuration currentConfiguration = channel.getChannel().getConfiguration();
-        Configuration newConfiguration = new Configuration();
-        newConfiguration.put("component", currentConfiguration.get("component"));
-        newConfiguration.put("nodeid", currentConfiguration.get("nodeid"));
-        Object objectIdObject = currentConfiguration.get("objectid");
-        if (objectIdObject instanceof String objectIdString) {
-            if (!objectIdString.equals(other.getHaID().objectID)) {
-                newConfiguration.put("objectid", List.of(objectIdString, other.getHaID().objectID));
-            }
-        } else if (objectIdObject instanceof List<?> objectIdList) {
-            newConfiguration.put("objectid", Stream.concat(objectIdList.stream(), Stream.of(other.getHaID().objectID))
-                    .sorted().distinct().toList());
-        }
-        Object configObject = currentConfiguration.get("config");
-        if (configObject instanceof String configString) {
-            if (!configString.equals(other.getChannelConfigurationJson())) {
-                newConfiguration.put("config", List.of(configString, other.getChannelConfigurationJson()));
-            }
-        } else if (configObject instanceof List<?> configList) {
-            newConfiguration.put("config",
-                    Stream.concat(configList.stream(), Stream.of(other.getChannelConfigurationJson())).sorted()
-                            .distinct().toList());
-        }
+        Map<String, String> payloads = value.getStates();
 
         // Append payload to allowed values
-        String otherPayload = other.getChannelConfiguration().payload;
+        String otherPayload = newTrigger.getConfig().getPayload();
         if (payloads == null || otherPayload == null) {
             // Need to accept anything
             value = new TextValue();
         } else {
-            String[] newValues = Stream.concat(payloads.stream(), Stream.of(otherPayload)).distinct()
+            String[] newValues = Stream.concat(payloads.keySet().stream(), Stream.of(otherPayload)).distinct()
                     .toArray(String[]::new);
             value = new TextValue(newValues);
         }
 
         // Recreate the channel
         stop();
-        buildChannel(channelConfiguration.type, ComponentChannelType.TRIGGER, value, componentId,
-                componentConfiguration.getUpdateListener()).withConfiguration(newConfiguration)
-                .stateTopic(channelConfiguration.topic, channelConfiguration.getValueTemplate()).trigger(true).build();
+        buildChannel(config.getType(), ComponentChannelType.TRIGGER, value, componentId,
+                componentContext.getUpdateListener()).withConfiguration(newConfiguration)
+                .stateTopic(config.getTopic(), config.getValueTemplate()).trigger(true).build();
         return true;
     }
 }

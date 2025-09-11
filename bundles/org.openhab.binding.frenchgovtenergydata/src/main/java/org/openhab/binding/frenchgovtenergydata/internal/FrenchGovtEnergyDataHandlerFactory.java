@@ -20,6 +20,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.frenchgovtenergydata.internal.handler.BaseTariffHandler;
 import org.openhab.binding.frenchgovtenergydata.internal.handler.HpHcTariffHandler;
+import org.openhab.binding.frenchgovtenergydata.internal.handler.TempoTariffHandler;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
@@ -36,7 +37,8 @@ import org.osgi.service.component.annotations.Component;
 @Component(configurationPid = "binding.frenchgovtenergydata", service = ThingHandlerFactory.class)
 public class FrenchGovtEnergyDataHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_BASE, THING_TYPE_HPHC);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_BASE, THING_TYPE_HPHC,
+            THING_TYPE_TEMPO);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -47,7 +49,14 @@ public class FrenchGovtEnergyDataHandlerFactory extends BaseThingHandlerFactory 
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        return THING_TYPE_BASE.equals(thingTypeUID) ? new BaseTariffHandler(thing)
-                : THING_TYPE_HPHC.equals(thingTypeUID) ? new HpHcTariffHandler(thing) : null;
+        if (THING_TYPE_BASE.equals(thingTypeUID)) {
+            return new BaseTariffHandler(thing);
+        } else if (THING_TYPE_HPHC.equals(thingTypeUID)) {
+            return new HpHcTariffHandler(thing);
+        } else if (THING_TYPE_TEMPO.equals(thingTypeUID)) {
+            return new TempoTariffHandler(thing);
+        }
+
+        return null;
     }
 }

@@ -7,6 +7,7 @@
 	<bridge-type id="ipbridge">
 		<label>Lutron IP Access Point</label>
 		<description>Lutron controller using Lutron Integration Protocol (LIP) over TCP/IP</description>
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 		<properties>
 			<property name="vendor">Lutron</property>
 		</properties>
@@ -135,6 +136,7 @@
 		<label>Lutron Dimmer</label>
 		<description>Controls dimmable loads</description>
 		<category>Lightbulb</category>
+		<semantic-equipment-tag>LightSource</semantic-equipment-tag>
 
 		<channels>
 			<channel id="lightlevel" typeId="lightDimmer"/>
@@ -181,7 +183,7 @@
 
 		<label>Fan Speed Controller</label>
 		<description>Controls ceiling fans</description>
-
+		<semantic-equipment-tag>Fan</semantic-equipment-tag>
 		<channels>
 			<channel id="fanspeed" typeId="fanControl"/>
 			<channel id="fanlevel" typeId="lightDimmer"/>
@@ -206,7 +208,7 @@
 		<label>Lutron Shade</label>
 		<description>Controls roller shades, drapes, and motor controllers</description>
 		<category>Blinds</category>
-
+		<semantic-equipment-tag>Blinds</semantic-equipment-tag>
 		<channels>
 			<channel id="shadelevel" typeId="shadeControl"/>
 		</channels>
@@ -229,7 +231,7 @@
 		<label>Lutron Blind</label>
 		<description>Controls venetian and horizontal sheer blinds</description>
 		<category>Blinds</category>
-
+		<semantic-equipment-tag>Blinds</semantic-equipment-tag>
 		<channels>
 			<channel id="blindliftlevel" typeId="blindLift"/>
 			<channel id="blindtiltlevel" typeId="blindTilt"/>
@@ -263,7 +265,7 @@
 		<label>Lutron Switch</label>
 		<description>On/off switch</description>
 		<category>WallSwitch</category>
-
+		<semantic-equipment-tag>WallSwitch</semantic-equipment-tag>
 		<channels>
 			<channel id="switchstatus" typeId="switchState"/>
 		</channels>
@@ -372,7 +374,7 @@
 		<label>Radio Powr Savr Sensor</label>
 		<description>Motion sensor to detect occupancy status</description>
 		<category>MotionDetector</category>
-
+		<semantic-equipment-tag>OccupancySensor</semantic-equipment-tag>
 		<channels>
 			<channel id="occupancystatus" typeId="occupiedState"/>
 		</channels>
@@ -416,7 +418,7 @@
 		<label>Occupancy Group</label>
 		<description>Shows state of occupancy sensor group</description>
 		<category>MotionDetector</category>
-
+		<semantic-equipment-tag>OccupancySensor</semantic-equipment-tag>
 		<channels>
 			<channel id="groupstate" typeId="groupState"/>
 		</channels>
@@ -438,7 +440,7 @@
 
 		<label>seeTouch Keypad</label>
 		<description>Lutron seeTouch/Hybrid seeTouch wall keypad</description>
-
+		<semantic-equipment-tag>Keypad</semantic-equipment-tag>
 		<representation-property>integrationId</representation-property>
 
 		<config-description>
@@ -494,7 +496,7 @@
 
 		<label>Tabletop seeTouch Keypad</label>
 		<description>Lutron wireless tabletop keypad</description>
-
+		<semantic-equipment-tag>Keypad</semantic-equipment-tag>
 		<representation-property>integrationId</representation-property>
 
 		<config-description>
@@ -531,7 +533,7 @@
 
 		<label>International seeTouch Keypad</label>
 		<description>Lutron International seeTouch keypad (HomeWorks QS Only)</description>
-
+		<semantic-equipment-tag>Keypad</semantic-equipment-tag>
 		<representation-property>integrationId</representation-property>
 
 		<config-description>
@@ -570,7 +572,7 @@
 
 		<label>Palladiom Keypad</label>
 		<description>Lutron Palladiom keypad (HomeWorks QS Only)</description>
-
+		<semantic-equipment-tag>Keypad</semantic-equipment-tag>
 		<representation-property>integrationId</representation-property>
 
 		<config-description>
@@ -613,7 +615,7 @@
 
 		<label>Pico Keypad</label>
 		<description>Lutron wireless Pico keypad</description>
-
+		<semantic-equipment-tag>Keypad</semantic-equipment-tag>
 		<representation-property>integrationId</representation-property>
 
 		<config-description>
@@ -649,7 +651,7 @@
 
 		<label>GRAFIK Eye QS Keypad</label>
 		<description>Lutron GRAFIK Eye QS for RadioRA 2/HomeWorks QS</description>
-
+		<semantic-equipment-tag>Keypad</semantic-equipment-tag>
 		<representation-property>integrationId</representation-property>
 
 		<config-description>
@@ -683,7 +685,7 @@
 
 		<label>VCRX</label>
 		<description>Lutron visor control receiver</description>
-
+		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
 		<representation-property>integrationId</representation-property>
 
 		<config-description>
@@ -730,7 +732,7 @@
 
 		<label>Virtual Keypad</label>
 		<description>Virtual integration keypad on repeater</description>
-
+		<semantic-equipment-tag>Keypad</semantic-equipment-tag>
 		<representation-property>integrationId</representation-property>
 
 		<config-description>
@@ -843,7 +845,7 @@
 	<bridge-type id="prgbridge">
 		<label>Lutron GRX-PRG or GRX-CI-PRG Bridge</label>
 		<description>Ethernet access point to Lutron GRAFIK Eye 3x/4x Systems</description>
-
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 		<channels>
 			<channel id="buttonpress" typeId="buttonpress"/>
 			<channel id="zonelowerstop" typeId="button">
@@ -918,7 +920,7 @@
 
 		<label>GRAFIK Eye</label>
 		<description>Controls a GRAFIK Eye</description>
-
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 		<channels>
 			<channel id="scene" typeId="scene"/>
 			<channel id="scenelock" typeId="scenelock"/>
@@ -1145,7 +1147,7 @@
 		<label>Lutron Dimmer (Legacy HomeWorks)</label>
 		<description>Controls dimmable loads for legacy HomeWorks systems</description>
 		<category>Lightbulb</category>
-
+		<semantic-equipment-tag>LightSource</semantic-equipment-tag>
 		<channels>
 			<channel id="lightlevel" typeId="lightDimmer"/>
 		</channels>
@@ -1193,7 +1195,7 @@
 		<label>Lutron Dimmer (Legacy RadioRA)</label>
 		<description>Controls dimmable loads for legacy RadioRA systems</description>
 		<category>Lightbulb</category>
-
+		<semantic-equipment-tag>LightSource</semantic-equipment-tag>
 		<channels>
 			<channel id="lightlevel" typeId="lightDimmer"/>
 		</channels>
@@ -1226,7 +1228,7 @@
 		<label>Lutron Switch (Legacy RadioRA)</label>
 		<description>On/off switch for Legacy RadioRA systems</description>
 		<category>WallSwitch</category>
-
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 		<channels>
 			<channel id="switchstatus" typeId="switchState"/>
 		</channels>
@@ -1250,7 +1252,7 @@
 		</supported-bridge-type-refs>
 		<label>Phantom Button (Legacy RadioRA)</label>
 		<description>Phantom Button for Legacy RadioRA systems</description>
-
+		<semantic-equipment-tag>Button</semantic-equipment-tag>
 		<channels>
 			<channel id="switchstatus" typeId="switchState"/>
 		</channels>
@@ -1273,6 +1275,10 @@
 		<label>Light Level</label>
 		<description>Increase/decrease the light level</description>
 		<category>Light</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Brightness</tag>
+		</tags>
 		<state min="0" max="100" pattern="%d %%"/>
 	</channel-type>
 
@@ -1281,6 +1287,10 @@
 		<label>Shade Level</label>
 		<description>Raise/lower the shade level</description>
 		<category>Rollershutter</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>OpenLevel</tag>
+		</tags>
 		<state min="0" max="100" pattern="%d %%"/>
 	</channel-type>
 
@@ -1289,6 +1299,10 @@
 		<label>Blind Level</label>
 		<description>Raise/lower the blind level</description>
 		<category>Rollershutter</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>OpenLevel</tag>
+		</tags>
 		<state min="0" max="100" pattern="%d %%"/>
 	</channel-type>
 
@@ -1297,6 +1311,10 @@
 		<label>Blind Tilt</label>
 		<description>Tilt the blinds up/down</description>
 		<category>Rollershutter</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Tilt</tag>
+		</tags>
 		<state min="0" max="50" pattern="%d %%"/>
 	</channel-type>
 
@@ -1305,6 +1323,10 @@
 		<label>Switch State</label>
 		<description>On/off status of the switch</description>
 		<category>Switch</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="occupiedState">
@@ -1312,12 +1334,20 @@
 		<label>Occupied State</label>
 		<description>Occupancy status</description>
 		<category>Motion</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Presence</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="fanControl">
 		<item-type>String</item-type>
 		<label>Fan Speed</label>
+		<tags>
+			<tag>Control</tag>
+			<tag>Speed</tag>
+		</tags>
 		<state readOnly="false">
 			<options>
 				<option value="OFF">Off</option>
@@ -1333,6 +1363,10 @@
 		<item-type>String</item-type>
 		<label>Occupancy State</label>
 		<category>Motion</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Presence</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="OCCUPIED">Occupied</option>
@@ -1404,6 +1438,10 @@
 		<label>Sunrise/Sunset</label>
 		<description>Today's sunrise/sunset time</description>
 		<category>Schedule</category>
+		<tags>
+			<tag>Calculation</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -1527,6 +1565,10 @@
 		<label>Zone Intensity</label>
 		<description>Specifies the intensity of the zone</description>
 		<category>Zone</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Brightness</tag>
+		</tags>
 		<state min="0" max="100"/>
 	</channel-type>
 

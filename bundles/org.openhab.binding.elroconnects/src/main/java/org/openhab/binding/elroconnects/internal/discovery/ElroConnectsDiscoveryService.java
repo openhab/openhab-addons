@@ -111,7 +111,7 @@ public class ElroConnectsDiscoveryService extends AbstractThingHandlerDiscoveryS
     @Override
     public void dispose() {
         super.dispose();
-        removeOlderResults(Instant.now().toEpochMilli());
+        removeOlderResults(Instant.now());
     }
 
     @Override

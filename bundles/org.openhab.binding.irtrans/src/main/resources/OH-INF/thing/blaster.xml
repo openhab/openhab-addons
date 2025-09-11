@@ -12,6 +12,7 @@
 
 		<label>Blaster</label>
 		<description>This is an infrared transmitter that can send infrared commands</description>
+		<semantic-equipment-tag>RemoteControl</semantic-equipment-tag>
 
 		<channels>
 			<channel id="io" typeId="io"/>

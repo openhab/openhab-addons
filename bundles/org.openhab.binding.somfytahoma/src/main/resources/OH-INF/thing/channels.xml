@@ -8,18 +8,30 @@
 		<item-type>Rollershutter</item-type>
 		<label>Control (silent)</label>
 		<description>Device control (UP, DOWN, MY/STOP, closure 0-100%) (only for IO devices)</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>OpenLevel</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="control">
 		<item-type>Rollershutter</item-type>
 		<label>Control</label>
 		<description>Device control (UP, DOWN, MY/STOP, closure 0-100%)</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>OpenLevel</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="orientation">
 		<item-type>Dimmer</item-type>
 		<label>Orientation</label>
 		<description>Orientation of the device slats</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Tilt</tag>
+		</tags>
 		<state max="100" min="0" step="1" pattern="%d %%" readOnly="false"/>
 	</channel-type>
 
@@ -27,6 +39,10 @@
 		<item-type>Contact</item-type>
 		<label>Contact</label>
 		<description>A contact having OPEN/CLOSE state</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -41,6 +57,10 @@
 		<item-type>Number:Illuminance</item-type>
 		<label>Luminance</label>
 		<description>A light sensor luminance in lux</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Illuminance</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -48,6 +68,10 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>CO2 concentration</label>
 		<description>A CO2 sensor carbon dioxide concentration in ppm</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>CO2</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -55,6 +79,10 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Noise</label>
 		<description>A noise sensor noise in decibel</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Noise</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -62,6 +90,9 @@
 		<item-type>String</item-type>
 		<label>Command</label>
 		<description>A channel used for sending commands to Somfy Alarm device</description>
+		<tags>
+			<tag>Alarm</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="on">ARM</option>
@@ -76,6 +107,9 @@
 		<item-type>String</item-type>
 		<label>Command</label>
 		<description>A channel used for sending commands to Somfy Myfox Alarm device</description>
+		<tags>
+			<tag>Alarm</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="arm">ARM</option>
@@ -89,6 +123,9 @@
 		<item-type>String</item-type>
 		<label>Intrusion Control</label>
 		<description>A channel used for Alarm external intrusion controlling</description>
+		<tags>
+			<tag>Alarm</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="detected">DETECTED</option>
@@ -103,6 +140,9 @@
 		<item-type>String</item-type>
 		<label>Alarm State</label>
 		<description>A state of the Somfy Alarm</description>
+		<tags>
+			<tag>Alarm</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -117,6 +157,9 @@
 		<item-type>String</item-type>
 		<label>Alarm Intrusion State</label>
 		<description>An intrusion state of the Somfy Alarm</description>
+		<tags>
+			<tag>Alarm</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -131,6 +174,10 @@
 		<item-type>String</item-type>
 		<label>Battery Status State</label>
 		<description>Battery Status State</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>LowBattery</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -138,6 +185,10 @@
 		<item-type>String</item-type>
 		<label>Battery State</label>
 		<description>Battery Condition State (full, low, normal, verylow)</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>LowBattery</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -145,6 +196,10 @@
 		<item-type>Number</item-type>
 		<label>Lighting Led Pod Mod State</label>
 		<description>Lighting Led Pod Mod State</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state pattern="%.2f" readOnly="true"/>
 	</channel-type>
 
@@ -152,6 +207,10 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Current Temperature</label>
 		<description>The current temperature of the heating system</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -159,6 +218,10 @@
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Relative Humidity</label>
 		<description>The current relative humidity</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Humidity</tag>
+		</tags>
 		<state readOnly="true" min="0" max="100" pattern="%f.1 %unit%"/>
 	</channel-type>
 
@@ -173,6 +236,10 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Target Temperature</label>
 		<description>The target temperature of the heating system</description>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -182,6 +249,10 @@
 		<description>A channel used for getting/setting the target heating level (on/off, frostprotection, confort,
 			eco)
 		</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Heating</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="frostprotection">FROSTPROTECTION</option>
@@ -196,6 +267,10 @@
 		<item-type>String</item-type>
 		<label>Gate Command</label>
 		<description>A channel used for getting/setting the gate position (open, close, pedestrian, stop)</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>OpenLevel</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="open">OPEN</option>
@@ -210,6 +285,10 @@
 		<item-type>String</item-type>
 		<label>Gate Status</label>
 		<description>A channel used for getting the gate state (open, closed, pedestrian)</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -217,6 +296,10 @@
 		<item-type>Dimmer</item-type>
 		<label>Position</label>
 		<description>Position of the gate</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>OpenLevel</tag>
+		</tags>
 		<state max="100" min="0" step="1" pattern="%d %%" readOnly="false"/>
 	</channel-type>
 
@@ -224,18 +307,30 @@
 		<item-type>Switch</item-type>
 		<label>Open/Close</label>
 		<description>A channel for controlling door OPEN/CLOSE state</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>OpenState</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="lock">
 		<item-type>Switch</item-type>
 		<label>Lock</label>
 		<description>A lock having ON/OFF state (unlocked/locked)</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="handle_state">
 		<item-type>String</item-type>
 		<label>Handle State</label>
 		<description>A state of the Somfy Window Handle</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Position</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -243,6 +338,10 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
 		<description>The temperature value of the sensor</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -250,6 +349,10 @@
 		<item-type>Number:Energy</item-type>
 		<label>Energy Consumption</label>
 		<description>The energy consumption reported by the sensor</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -319,12 +422,20 @@
 		<item-type>Switch</item-type>
 		<label>Myfox Shutter</label>
 		<description>A channel for controlling the shutter</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>OpenState</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="heating_mode">
 		<item-type>String</item-type>
 		<label>Heating Mode</label>
 		<description>Heating mode of the Somfy thermostat</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Heating</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -332,6 +443,10 @@
 		<item-type>String</item-type>
 		<label>Derogation Heating Mode</label>
 		<description>Derogation heating mode of the Somfy thermostat/valve</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Heating</tag>
+		</tags>
 		<command>
 			<options>
 				<option value="auto">Program</option>
@@ -355,6 +470,9 @@
 		<item-type>String</item-type>
 		<label>Sensor Defect State</label>
 		<description>State of the Somfy sensor (dead, lowBattery, noDefect...)</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -362,6 +480,9 @@
 		<item-type>String</item-type>
 		<label>Sensor Part Battery State</label>
 		<description>State of the sensor part of the Somfy sensor</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -369,6 +490,9 @@
 		<item-type>String</item-type>
 		<label>Radio Part Battery State</label>
 		<description>State of the radio part of the Somfy sensor</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -376,12 +500,20 @@
 		<item-type>String</item-type>
 		<label>Set Closure And Orientation</label>
 		<description>A channel for setting closure and orientation of the blind</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Position</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="light_intensity">
 		<item-type>Dimmer</item-type>
 		<label>Light Intensity</label>
 		<description>The intensity of the light</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Brightness</tag>
+		</tags>
 		<state max="100" min="0" step="1" pattern="%d %%"/>
 	</channel-type>
 
@@ -389,6 +521,10 @@
 		<item-type>Dimmer</item-type>
 		<label>Heating Level</label>
 		<description>The level of the heating</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Heating</tag>
+		</tags>
 		<state max="100" min="0" step="1" pattern="%d %%"/>
 	</channel-type>
 
@@ -396,6 +532,10 @@
 		<item-type>String</item-type>
 		<label>Current Heating Mode</label>
 		<description>Current heating mode of the Somfy thermostatic valve</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -403,6 +543,10 @@
 		<item-type>Contact</item-type>
 		<label>Valve Open/Closed state</label>
 		<description>Current open/closed state of the Somfy thermostatic valve</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -410,6 +554,10 @@
 		<item-type>String</item-type>
 		<label>Operating mode</label>
 		<description>Operating mode of the Somfy thermostatic valve</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -424,6 +572,10 @@
 		<item-type>Contact</item-type>
 		<label>Slats</label>
 		<description>Slats having OPEN/CLOSED state</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Tilt</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -431,6 +583,10 @@
 		<item-type>String</item-type>
 		<label>Command</label>
 		<description>A channel used for sending commands to Somfy Bioclimatic Pergola device</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Tilt</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="closeSlats">Close slats</option>
@@ -444,6 +600,10 @@
 		<item-type>Number</item-type>
 		<label>RSSI</label>
 		<description>Relative received signal strength state</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>RSSI</tag>
+		</tags>
 		<state pattern="%.1f" readOnly="true"/>
 	</channel-type>
 
@@ -451,6 +611,10 @@
 		<item-type>Number</item-type>
 		<label>Boost Mode Duration</label>
 		<description>Duration for Boost Mode</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state min="0" max="7" step="1" pattern="%d"/>
 	</channel-type>
 
@@ -458,6 +622,10 @@
 		<item-type>Number</item-type>
 		<label>Away Mode Duration</label>
 		<description>Duration for Away Mode</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state min="0" max="7" step="1" pattern="%d"/>
 	</channel-type>
 
@@ -493,6 +661,10 @@
 		<item-type>String</item-type>
 		<label>Mode</label>
 		<description>Describes the water heater mode</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="manualEcoActive">Manual - Eco</option>
@@ -513,6 +685,10 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Middle Water Temperature</label>
 		<description>Describes the temperature at the middle sensor</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -520,18 +696,30 @@
 		<item-type>Switch</item-type>
 		<label>Boost</label>
 		<description>Boost Mode (ON or OFF)</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="away_mode">
 		<item-type>Switch</item-type>
 		<label>Away</label>
 		<description>Away Mode (ON or OFF)</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="zone_mode">
 		<item-type>String</item-type>
 		<label>Zone Mode</label>
 		<description>Zone mode control</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="auto">Auto</option>
@@ -580,6 +768,10 @@
 		<item-type>String</item-type>
 		<label>Yutaki Mode</label>
 		<description>Yutaki mode state</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="comfort">Comfort</option>
@@ -592,12 +784,20 @@
 		<item-type>Switch</item-type>
 		<label>Holiday Mode</label>
 		<description>Holiday mode control</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="dhw">
 		<item-type>String</item-type>
 		<label>DHW Control</label>
 		<description>Domestic hot water control</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Heating</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="run">Run</option>
@@ -610,6 +810,10 @@
 		<item-type>String</item-type>
 		<label>Anti Legionella</label>
 		<description>Anti legionella control</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="run">Run</option>
@@ -622,6 +826,10 @@
 		<item-type>Number:Temperature</item-type>
 		<label>DHW Temperature Setting</label>
 		<description>DHW temperature setting control</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%d %unit%"/>
 	</channel-type>
 
@@ -629,6 +837,10 @@
 		<item-type>Number:Temperature</item-type>
 		<label>DHW Temperature</label>
 		<description>DHW temperature state</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -649,6 +861,10 @@
 		<item-type>String</item-type>
 		<label>Boost Mode</label>
 		<description>Boost mode state</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="enabled">Enabled</option>
@@ -661,6 +877,10 @@
 		<item-type>String</item-type>
 		<label>Auto/Manu Mode</label>
 		<description>Auto/Manu mode control</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="auto">Auto</option>
@@ -685,6 +905,10 @@
 		<item-type>String</item-type>
 		<label>Unit Mode Status</label>
 		<description>Unit mode status state</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="cool">Cool</option>
@@ -697,6 +921,10 @@
 		<item-type>String</item-type>
 		<label>Unit Mode</label>
 		<description>Unit mode control</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="cool">Cool</option>
@@ -733,6 +961,10 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Eco Mode Target Offset</label>
 		<description>Eco mode target offset control</description>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%d %unit%"></state>
 	</channel-type>
 
@@ -740,6 +972,10 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Eco Mode Offset</label>
 		<description>Eco mode offset state</description>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%d %unit%" readOnly="true"></state>
 	</channel-type>
 
@@ -747,6 +983,9 @@
 		<item-type>String</item-type>
 		<label>Communication Alarm Bit Status</label>
 		<description>Communication alarm bit status state</description>
+		<tags>
+			<tag>Alarm</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="alarm">Alarm</option>
@@ -779,6 +1018,10 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Water Inlet Temperature</label>
 		<description>Water inlet temperature state</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%d %unit%" readOnly="true"></state>
 	</channel-type>
 
@@ -786,6 +1029,10 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Water Outlet Temperature</label>
 		<description>Water outlet temperature state</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%d %unit%" readOnly="true"></state>
 	</channel-type>
 
@@ -793,6 +1040,10 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Water Outlet Hp Temperature</label>
 		<description>Water outlet hp temperature state</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%d %unit%" readOnly="true"></state>
 	</channel-type>
 
@@ -800,6 +1051,10 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Liquid Temperature THMI</label>
 		<description>Liquid temperature THMI state</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%d %unit%" readOnly="true"></state>
 	</channel-type>
 
@@ -807,6 +1062,10 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Liquid Temperature</label>
 		<description>Liquid temperature state</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%d %unit%" readOnly="true"></state>
 	</channel-type>
 
@@ -814,6 +1073,10 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Anti Legionella Temperature</label>
 		<description>Anti legionella temperature control</description>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%d %unit%"></state>
 	</channel-type>
 
@@ -828,6 +1091,10 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Water Temperature Setting</label>
 		<description>Water temperature setting state</description>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%d %unit%" readOnly="true"></state>
 	</channel-type>
 
@@ -835,6 +1102,10 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Zone 1 Thermostat Setting</label>
 		<description>Thermostat setting control for the zone 1</description>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%d %unit%"></state>
 	</channel-type>
 
@@ -842,6 +1113,10 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Zone 1 Water Heating Setting Temperature</label>
 		<description>Water heating setting temperature control for the zone 1</description>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%d %unit%"></state>
 	</channel-type>
 
@@ -849,6 +1124,10 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Zone 1 Room Ambient Temperature</label>
 		<description>Room ambient temperature control for the zone 1</description>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%d %unit%"></state>
 	</channel-type>
 
@@ -856,6 +1135,10 @@
 		<item-type>String</item-type>
 		<label>Yutaki Operating Mode</label>
 		<description>Yutaki operating mode state</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="auto">Auto</option>
@@ -877,6 +1160,10 @@
 		<item-type>String</item-type>
 		<label>DHW Mode</label>
 		<description>DHW mode control</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="standard">Standard</option>
@@ -889,6 +1176,10 @@
 		<item-type>Number</item-type>
 		<label>Tilt</label>
 		<description>Venetian blind tilt (-5..5)</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Tilt</tag>
+		</tags>
 		<state min="-5" max="5" step="1" pattern="%d" readOnly="false"/>
 	</channel-type>
 

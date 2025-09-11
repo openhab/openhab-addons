@@ -8,7 +8,7 @@
 	<thing-type id="Beam" listed="false">
 		<label>Beam</label>
 		<description>Represents SONOS Beam soundbar</description>
-
+		<semantic-equipment-tag>Speaker</semantic-equipment-tag>
 		<channels>
 			<channel id="add" typeId="add"/>
 			<channel id="alarm" typeId="alarm"/>

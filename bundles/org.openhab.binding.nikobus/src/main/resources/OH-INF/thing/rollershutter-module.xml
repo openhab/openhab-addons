@@ -11,6 +11,7 @@
 
 		<label>Rollershutter Module</label>
 		<description>Nikobus Rollershutter module</description>
+		<semantic-equipment-tag>Blinds</semantic-equipment-tag>
 
 		<channels>
 			<channel id="output-1" typeId="rollershutter-output">
@@ -40,6 +41,10 @@
 		<item-type>Rollershutter</item-type>
 		<label>Output</label>
 		<description>Rollershutter Module's Output</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>OpenLevel</tag>
+		</tags>
 		<config-description-ref uri="channel-type:nikobus:rollershutter-output"/>
 	</channel-type>
 

@@ -18,14 +18,14 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.mqtt.generic.AvailabilityTracker;
 import org.openhab.binding.mqtt.generic.ChannelStateUpdateListener;
 import org.openhab.binding.mqtt.homeassistant.internal.HaID;
-import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
+import org.openhab.binding.mqtt.homeassistant.internal.HomeAssistantChannelLinkageChecker;
+import org.openhab.binding.mqtt.homeassistant.internal.HomeAssistantPythonBridge;
 import org.openhab.binding.mqtt.homeassistant.internal.exception.ConfigurationException;
 import org.openhab.binding.mqtt.homeassistant.internal.exception.UnsupportedComponentException;
 import org.openhab.core.i18n.UnitProvider;
 import org.openhab.core.thing.ThingUID;
 
 import com.google.gson.Gson;
-import com.hubspot.jinjava.Jinjava;
 
 /**
  * A factory to create HomeAssistant MQTT components. Those components are specified at:
@@ -47,72 +47,74 @@ public class ComponentFactory {
      * @return A HA MQTT Component
      */
     public static AbstractComponent<?> createComponent(ThingUID thingUID, HaID haID, String channelConfigurationJSON,
-            ChannelStateUpdateListener updateListener, AvailabilityTracker tracker, ScheduledExecutorService scheduler,
-            Gson gson, Jinjava jinjava, UnitProvider unitProvider) throws ConfigurationException {
-        ComponentConfiguration componentConfiguration = new ComponentConfiguration(thingUID, haID,
-                channelConfigurationJSON, gson, jinjava, updateListener, tracker, scheduler, unitProvider);
+            ChannelStateUpdateListener updateListener, HomeAssistantChannelLinkageChecker linkageChecker,
+            AvailabilityTracker tracker, ScheduledExecutorService scheduler, Gson gson,
+            HomeAssistantPythonBridge python, UnitProvider unitProvider) throws ConfigurationException {
+        ComponentContext componentContext = new ComponentContext(thingUID, haID, channelConfigurationJSON, gson, python,
+                updateListener, linkageChecker, tracker, scheduler, unitProvider);
         switch (haID.component) {
             case "alarm_control_panel":
-                return new AlarmControlPanel(componentConfiguration);
+                return new AlarmControlPanel(componentContext);
             case "binary_sensor":
-                return new BinarySensor(componentConfiguration);
+                return new BinarySensor(componentContext);
             case "button":
-                return new Button(componentConfiguration);
+                return new Button(componentContext);
             case "camera":
-                return new Camera(componentConfiguration);
+                return new Camera(componentContext);
             case "climate":
-                return new Climate(componentConfiguration);
+                return new Climate(componentContext);
             case "cover":
-                return new Cover(componentConfiguration);
+                return new Cover(componentContext);
             case "device_automation":
-                return new DeviceTrigger(componentConfiguration);
+                return new DeviceTrigger(componentContext);
             case "device_tracker":
-                return new DeviceTracker(componentConfiguration);
+                return new DeviceTracker(componentContext);
             case "event":
-                return new Event(componentConfiguration);
+                return new Event(componentContext);
             case "fan":
-                return new Fan(componentConfiguration);
+                return new Fan(componentContext);
             case "humidifier":
-                return new Humidifier(componentConfiguration);
+                return new Humidifier(componentContext);
             case "light":
-                return Light.create(componentConfiguration);
+                return Light.create(componentContext);
             case "lock":
-                return new Lock(componentConfiguration);
+                return new Lock(componentContext);
             case "number":
-                return new Number(componentConfiguration);
+                return new Number(componentContext);
             case "scene":
-                return new Scene(componentConfiguration);
+                return new Scene(componentContext);
             case "select":
-                return new Select(componentConfiguration);
+                return new Select(componentContext);
             case "sensor":
-                return new Sensor(componentConfiguration);
+                return new Sensor(componentContext);
             case "switch":
-                return new Switch(componentConfiguration);
+                return new Switch(componentContext);
             case "tag":
-                return new Tag(componentConfiguration);
+                return new Tag(componentContext);
             case "text":
-                return new Text(componentConfiguration);
+                return new Text(componentContext);
             case "update":
-                return new Update(componentConfiguration);
+                return new Update(componentContext);
             case "vacuum":
-                return new Vacuum(componentConfiguration);
+                return new Vacuum(componentContext);
             case "valve":
-                return new Valve(componentConfiguration);
+                return new Valve(componentContext);
             case "water_heater":
-                return new WaterHeater(componentConfiguration);
+                return new WaterHeater(componentContext);
             default:
                 throw new UnsupportedComponentException("Component '" + haID + "' is unsupported!");
         }
     }
 
-    protected static class ComponentConfiguration {
+    protected static class ComponentContext {
         private final ThingUID thingUID;
         private final HaID haID;
         private final String configJSON;
         private final ChannelStateUpdateListener updateListener;
+        private final HomeAssistantChannelLinkageChecker linkageChecker;
         private final AvailabilityTracker tracker;
         private final Gson gson;
-        private final Jinjava jinjava;
+        private final HomeAssistantPythonBridge python;
         private final ScheduledExecutorService scheduler;
         private final UnitProvider unitProvider;
 
@@ -122,17 +124,18 @@ public class ComponentFactory {
          * @param thingUID A ThingUID
          * @param haID A HomeAssistant topic ID
          * @param configJSON The configuration string
-         * @param gson A Gson instance
          */
-        protected ComponentConfiguration(ThingUID thingUID, HaID haID, String configJSON, Gson gson, Jinjava jinjava,
-                ChannelStateUpdateListener updateListener, AvailabilityTracker tracker,
+        protected ComponentContext(ThingUID thingUID, HaID haID, String configJSON, Gson gson,
+                HomeAssistantPythonBridge python, ChannelStateUpdateListener updateListener,
+                HomeAssistantChannelLinkageChecker linkageChecker, AvailabilityTracker tracker,
                 ScheduledExecutorService scheduler, UnitProvider unitProvider) {
             this.thingUID = thingUID;
             this.haID = haID;
             this.configJSON = configJSON;
             this.gson = gson;
-            this.jinjava = jinjava;
+            this.python = python;
             this.updateListener = updateListener;
+            this.linkageChecker = linkageChecker;
             this.tracker = tracker;
             this.scheduler = scheduler;
             this.unitProvider = unitProvider;
@@ -154,12 +157,16 @@ public class ComponentFactory {
             return updateListener;
         }
 
+        public HomeAssistantChannelLinkageChecker getLinkageChecker() {
+            return linkageChecker;
+        }
+
         public Gson getGson() {
             return gson;
         }
 
-        public Jinjava getJinjava() {
-            return jinjava;
+        public HomeAssistantPythonBridge getPython() {
+            return python;
         }
 
         public UnitProvider getUnitProvider() {
@@ -172,10 +179,6 @@ public class ComponentFactory {
 
         public ScheduledExecutorService getScheduler() {
             return scheduler;
-        }
-
-        public <C extends AbstractChannelConfiguration> C getConfig(Class<C> clazz) {
-            return AbstractChannelConfiguration.fromString(configJSON, gson, clazz);
         }
     }
 }

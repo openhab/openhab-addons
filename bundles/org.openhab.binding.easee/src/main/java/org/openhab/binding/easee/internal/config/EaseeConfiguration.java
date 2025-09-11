@@ -28,7 +28,10 @@ public class EaseeConfiguration {
 
     private Integer asyncTimeout = 120;
     private Integer syncTimeout = 120;
-    private Integer dataPollingInterval = 120;
+    private Integer dataPollingInterval = 60;
+    private Integer sessionDataPollingInterval = 360;
+    private Integer webRequestInitialDelay = 10;
+    private Integer webRequestInterval = 2;
 
     public String getUsername() {
         return username;
@@ -78,13 +81,39 @@ public class EaseeConfiguration {
         this.dataPollingInterval = dataPollingInterval;
     }
 
+    public Integer getSessionDataPollingInterval() {
+        return sessionDataPollingInterval;
+    }
+
+    public void setSessionDataPollingInterval(Integer sessionDataPollingInterval) {
+        this.sessionDataPollingInterval = sessionDataPollingInterval;
+    }
+
+    public Integer getWebRequestInitialDelay() {
+        return webRequestInitialDelay;
+    }
+
+    public void setWebRequestInitialDelay(Integer webRequestInitialDelay) {
+        this.webRequestInitialDelay = webRequestInitialDelay;
+    }
+
+    public Integer getWebRequestInterval() {
+        return webRequestInterval;
+    }
+
+    public void setWebRequestInterval(Integer webRequestInterval) {
+        this.webRequestInterval = webRequestInterval;
+    }
+
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
         builder.append("EaseeConfiguration [username=").append(username).append(", password=").append(password)
                 .append(", siteId=").append(siteId).append(", asyncTimeout=").append(asyncTimeout)
                 .append(", syncTimeout=").append(syncTimeout).append(", dataPollingInterval=")
-                .append(dataPollingInterval).append("]");
+                .append(dataPollingInterval).append(", sessionDataPollingInterval=").append(sessionDataPollingInterval)
+                .append(", webRequestInitialDelay=").append(webRequestInitialDelay).append(", webRequestInterval=")
+                .append(webRequestInterval).append("]");
         return builder.toString();
     }
 }

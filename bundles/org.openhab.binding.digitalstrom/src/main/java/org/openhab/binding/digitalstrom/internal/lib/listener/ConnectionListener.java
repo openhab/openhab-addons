@@ -31,7 +31,7 @@ public interface ConnectionListener {
      */
     final String CONNECTION_LOST = "connLost";
     /**
-     * State, if a ssl handshake problem occured while communicating with the digitalSTROM-Server.
+     * State, if a ssl handshake problem occurred while communicating with the digitalSTROM-Server.
      */
     final String SSL_HANDSHAKE_ERROR = "sslHandshakeError";
     /**

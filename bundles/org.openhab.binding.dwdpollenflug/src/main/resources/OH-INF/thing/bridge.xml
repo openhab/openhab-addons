@@ -7,6 +7,7 @@
 	<bridge-type id="bridge">
 		<label>DWD Pollen Count Index (Bridge)</label>
 		<description>Bridge for accessing pollen count index data of the DWD</description>
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="updates" typeId="updates"/>
@@ -46,6 +47,10 @@
 	<channel-type id="update">
 		<item-type>DateTime</item-type>
 		<label>Update Time</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>

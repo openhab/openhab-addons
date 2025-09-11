@@ -7,7 +7,7 @@
 	<thing-type id="wifiled">
 		<label>WiFi LED</label>
 		<description>WiFi LED Device</description>
-
+		<semantic-equipment-tag>LightSource</semantic-equipment-tag>
 		<channels>
 			<channel id="power" typeId="power"/>
 			<channel id="color" typeId="color"/>
@@ -74,19 +74,35 @@
 		<item-type>Switch</item-type>
 		<label>Power</label>
 		<description>Power state</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Light</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="color">
 		<item-type>Color</item-type>
 		<label>Color</label>
 		<category>ColorLight</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Color</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="white">
 		<item-type>Dimmer</item-type>
 		<label>White</label>
+		<tags>
+			<tag>Control</tag>
+			<tag>Brightness</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="white2">
 		<item-type>Dimmer</item-type>
 		<label>White 2</label>
+		<tags>
+			<tag>Control</tag>
+			<tag>Brightness</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="program" advanced="true">
 		<item-type>String</item-type>

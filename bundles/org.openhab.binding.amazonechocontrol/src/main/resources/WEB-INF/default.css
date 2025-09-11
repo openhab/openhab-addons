@@ -1,0 +1,93 @@
+:root {
+    --aec-text-color: #202070;
+    --aec-background-color: #f0f7ff;
+    --aec-border: 1px solid black;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 3mm;
+    color: var(--aec-text-color);
+    background: var(--aec-background-color);
+    line-height: 1.5em;
+    margin: .75em;
+    padding: .75em;
+
+}
+
+code {
+    font-family: monospace;
+    font-size: 0.9em;
+    font-weight: normal;
+}
+
+h1 {
+    padding: .75em;
+    background: var(--aec-text-color);
+    color: var(--aec-background-color);
+    border-radius: 5px;
+}
+
+h2 {
+    padding:.75em;
+    background: lightblue;
+    color: black;
+    border-radius: 5px;
+}
+
+h3 {
+    padding: .75em;
+    text-align: right;
+}
+
+a, a:visited {
+    color: var(--aec-text-color);
+    margin-left: 0.5em;
+    margin-right: 0.5em;
+    white-space: nowrap;
+}
+td>a, td>a:visited {
+    margin-right: 0;
+    margin-left: 0;
+}
+
+th, td {
+    text-align: left;
+    border: 1px solid black;
+    padding: .5em;
+}
+
+.table-bordered {
+    border: var(--aec-border);
+    border-collapse: collapse;
+    padding: 0.5em;
+    margin: .75em;
+    font-size: 1.2em;
+    border-radius: 5px;
+    border-style: hidden;
+    box-shadow: 0 0 0 1px black;
+}
+
+.status {
+    float: right;
+    border-radius: 8px;
+    display: inline-block;
+    margin-left: 2em;
+    padding: 3px;
+    font-size: .9em;
+    width: 4.5em;
+    text-align: center;
+    color:white;
+}
+
+.OFFLINE {
+    background-color: red;
+}
+
+.ONLINE {
+    background-color: green;
+}
+
+.UNKNOWN {
+    background-color: grey;
+}

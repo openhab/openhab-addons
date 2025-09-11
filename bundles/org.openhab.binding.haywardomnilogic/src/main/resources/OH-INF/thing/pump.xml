@@ -10,6 +10,7 @@
 		</supported-bridge-type-refs>
 
 		<label>Pump</label>
+		<semantic-equipment-tag>Pump</semantic-equipment-tag>
 		<channels>
 			<channel id="pumpEnable" typeId="system.power"/>
 			<channel id="pumpSpeedPercent" typeId="pumpSpeedPercent"/>
@@ -42,19 +43,31 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Pump Speed</label>
 		<description>Pump speed in percentage</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Speed</tag>
+		</tags>
 		<state min="0" max="100" step="1" pattern="%d %%" readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="pumpSpeedRpm">
-		<item-type>Number:Frequency</item-type>
+		<item-type unitHint="rpm">Number:Frequency</item-type>
 		<label>Pump Speed</label>
 		<description>Pump speed in rpm</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Frequency</tag>
+		</tags>
 		<state min="0" max="3600" step="200" pattern="%d rpm" readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="pumpSpeedSelect">
 		<item-type>String</item-type>
 		<label>Pump Speed States</label>
+		<tags>
+			<tag>Control</tag>
+			<tag>Speed</tag>
+		</tags>
 		<state readOnly="false">
 			<options>
 				<option value="0">Off</option>

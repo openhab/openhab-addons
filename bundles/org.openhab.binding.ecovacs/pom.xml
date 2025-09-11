@@ -1,32 +1,46 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
     <groupId>org.openhab.addons.bundles</groupId>
     <artifactId>org.openhab.addons.reactor.bundles</artifactId>
-    <version>5.0.0-SNAPSHOT</version>
+    <version>5.1.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>org.openhab.binding.ecovacs</artifactId>
 
   <name>openHAB Add-ons :: Bundles :: Ecovacs Binding</name>
   <properties>
-    <smack.version>4.3.3</smack.version>
+    <smack.version>4.5.0-beta6</smack.version>
   </properties>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.jxmpp</groupId>
+        <artifactId>jxmpp-core</artifactId>
+        <version>1.1.0</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jxmpp</groupId>
+        <artifactId>jxmpp-jid</artifactId>
+        <version>1.1.0</version>
+      </dependency>
+      <dependency>
+        <groupId>org.minidns</groupId>
+        <artifactId>minidns-core</artifactId>
+        <version>1.1.1</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
 
   <dependencies>
     <dependency>
       <groupId>org.igniterealtime.smack</groupId>
-      <artifactId>smack-tcp</artifactId>
-      <version>${smack.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.igniterealtime.smack</groupId>
-      <artifactId>smack-im</artifactId>
+      <artifactId>smack-java11</artifactId>
       <version>${smack.version}</version>
       <scope>provided</scope>
     </dependency>
@@ -38,7 +52,19 @@
     </dependency>
     <dependency>
       <groupId>org.igniterealtime.smack</groupId>
-      <artifactId>smack-java7</artifactId>
+      <artifactId>smack-im</artifactId>
+      <version>${smack.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.igniterealtime.smack</groupId>
+      <artifactId>smack-tcp</artifactId>
+      <version>${smack.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.igniterealtime.smack</groupId>
+      <artifactId>smack-experimental</artifactId>
       <version>${smack.version}</version>
       <scope>provided</scope>
     </dependency>
@@ -46,6 +72,7 @@
       <groupId>org.igniterealtime.smack</groupId>
       <artifactId>smack-resolver-javax</artifactId>
       <version>${smack.version}</version>
+      <scope>provided</scope>
     </dependency>
   </dependencies>
 </project>

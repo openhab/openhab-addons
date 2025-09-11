@@ -8,6 +8,7 @@
 		<label>Shelly Plus RGBW</label>
 		<description>@text/thing-type.shelly.shellyplusrgbw.description</description>
 		<category>ColorLight</category>
+		<semantic-equipment-tag>Lightbulb</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="control" typeId="rgbwpmColorControl"/>
 			<channel-group id="color" typeId="colorSettingsRGBWpm"/>
@@ -16,7 +17,7 @@
 		</channel-groups>
 
 		<representation-property>serviceName</representation-property>
-		<config-description-ref uri="thing-type:shelly:rgbw2"/>
+		<config-description-ref uri="thing-type:shelly:rgbw-gen2"/>
 	</thing-type>
 
 	<channel-group-type id="rgbwpmColorControl">

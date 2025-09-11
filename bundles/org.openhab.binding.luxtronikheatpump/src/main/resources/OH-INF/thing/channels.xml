@@ -8,6 +8,10 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Flow Temp. Heating Circuit</label>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -15,6 +19,10 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Return Temp. Heating Circuit</label>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -22,6 +30,10 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Return Temp. Target Heating Circuit</label>
 		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -29,6 +41,10 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Return Temp. in Buffer Tank</label>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -43,6 +59,10 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Outside Temperature</label>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -50,6 +70,10 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Avg. 24h-Temp. Outside (Limiting)</label>
 		<category>Temperature</category>
+		<tags>
+			<tag>Calculation</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -57,6 +81,10 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Hot Water Actual Temp.</label>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -1358,6 +1386,10 @@
 		<item-type>Number:Energy</item-type>
 		<label>Heat Meter Heating</label>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -1365,6 +1397,10 @@
 		<item-type>Number:Energy</item-type>
 		<label>Heat Meter Domestic Water</label>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -1372,6 +1408,10 @@
 		<item-type>Number:Energy</item-type>
 		<label>Heat Meter Swimming Pool</label>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -1379,6 +1419,10 @@
 		<item-type>Number:Energy</item-type>
 		<label>Total Heat Meter (since Reset)</label>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -1582,6 +1626,12 @@
 		<label>Fan Speed</label>
 		<category>Frequency</category>
 		<state pattern="%.1f rpm" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="inputUtilityLock2" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Input "Utility Lock 2"</label>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="temperatureSafetyLimitFloorHeating" advanced="true">
@@ -1945,9 +1995,76 @@
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
+	<channel-type id="temperatureVapourisation" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature Vapourisation</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="temperatureLiquefaction" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature Liquefaction</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
 	<channel-type id="frequencyCompressorTarget" advanced="true">
 		<item-type>Number:Frequency</item-type>
 		<label>Compressor Target Frequency</label>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="frequencyCompressorMin" advanced="true">
+		<item-type>Number:Frequency</item-type>
+		<label>Compressor Min Frequency</label>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="frequencyCompressorMax" advanced="true">
+		<item-type>Number:Frequency</item-type>
+		<label>Compressor Max Frequency</label>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="temperatureVBOTarget" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature VBO Target</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="temperatureVBO" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature VBO</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="controlSignalHeatingCirculationPump" advanced="true">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Control Signal HUP</label>
+		<state pattern="%.1f %%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="temperatureHeatingCirculationPumpTarget" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature HUP Target</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="temperatureHeatingCirculationPump" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature HUP</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="temperatureHotGasMax" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Hot Gas Temp. Max</label>
+		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
@@ -1963,12 +2080,30 @@
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
+	<channel-type id="outputControlSignalCooling" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Output "Control Signal Cooling"</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="timeCoolingRelease" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Release Cooling Time</label>
+		<category>Time</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="powerConsumption" advanced="true">
+		<item-type>Number:Power</item-type>
+		<label>Power Consumption</label>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
 	<channel-type id="unknown" advanced="true">
 		<item-type>Number</item-type>
 		<label>Unknown Channel</label>
 		<state readOnly="true"/>
 	</channel-type>
-
 
 	<channel-type id="temperatureHeatingParallelShift">
 		<item-type>Number:Temperature</item-type>
@@ -1981,6 +2116,10 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Coverage Hot Water Temp.</label>
 		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%" min="30" max="65" step="0.5"></state>
 	</channel-type>
 
@@ -2056,6 +2195,10 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Hot Water Target Temp.</label>
 		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%" min="30" max="65" step="0.5"></state>
 	</channel-type>
 
@@ -2081,6 +2224,10 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Comfort Cooling AT Release</label>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%"></state>
 	</channel-type>
 
@@ -2088,6 +2235,10 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Comfort Cooling AT Release Target</label>
 		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%"></state>
 	</channel-type>
 

@@ -9,7 +9,7 @@
 		<!-- Label without column (:) because of device pairing name restrictions -->
 		<label>PLAY 1</label>
 		<description>Represents SONOS PLAY:1 speaker</description>
-
+		<semantic-equipment-tag>Speaker</semantic-equipment-tag>
 		<channels>
 			<channel id="add" typeId="add"/>
 			<channel id="alarm" typeId="alarm"/>

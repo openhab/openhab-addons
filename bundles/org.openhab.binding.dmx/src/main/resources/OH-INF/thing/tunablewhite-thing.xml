@@ -11,6 +11,7 @@
 		</supported-bridge-type-refs>
 		<label>DMX Tunable White Dimmer</label>
 		<description>A tunable white capable dimmer</description>
+		<semantic-equipment-tag>LightSource</semantic-equipment-tag>
 		<channels>
 			<channel id="brightness" typeId="brightness"/>
 			<channel id="brightness_cw" typeId="brightness"/>

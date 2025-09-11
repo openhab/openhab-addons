@@ -12,6 +12,7 @@
 		<label>@text/thing-type.mielecloud.dishwasher.label</label>
 		<description>@text/thing-type.mielecloud.dishwasher.description</description>
 		<category>WhiteGood</category>
+		<semantic-equipment-tag>Dishwasher</semantic-equipment-tag>
 
 		<channels>
 			<channel id="remote_control_can_be_started" typeId="remote_control_can_be_started"/>

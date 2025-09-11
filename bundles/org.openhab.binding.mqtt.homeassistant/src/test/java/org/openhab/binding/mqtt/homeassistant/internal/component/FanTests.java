@@ -36,11 +36,11 @@ import org.openhab.core.types.UnDefType;
  *
  * @author Anton Kharuzhy - Initial contribution
  */
+@SuppressWarnings("null")
 @NonNullByDefault
 public class FanTests extends AbstractComponentTests {
     public static final String CONFIG_TOPIC = "fan/0x0000000000000000_fan_zigbee2mqtt";
 
-    @SuppressWarnings("null")
     @Test
     public void test() throws InterruptedException {
         // @formatter:off
@@ -73,8 +73,10 @@ public class FanTests extends AbstractComponentTests {
         assertThat(component.channels.size(), is(1));
         assertThat(component.getName(), is("fan"));
 
-        assertChannel(component, Fan.SWITCH_CHANNEL_ID, "zigbee2mqtt/fan/state", "zigbee2mqtt/fan/set/state",
-                "On/Off State", OnOffValue.class, null);
+        assertChannel(component, Fan.SWITCH_CHANNEL_ID, "zigbee2mqtt/fan/state", "zigbee2mqtt/fan/set/state", "fan",
+                OnOffValue.class, null);
+
+        linkAllChannels(component);
 
         publishMessage("zigbee2mqtt/fan/state", "ON_");
         assertState(component, Fan.SWITCH_CHANNEL_ID, OnOffType.ON);
@@ -91,7 +93,6 @@ public class FanTests extends AbstractComponentTests {
         assertPublished("zigbee2mqtt/fan/set/state", "ON_");
     }
 
-    @SuppressWarnings("null")
     @Test
     public void testPercentageWithTemplates() throws InterruptedException {
         var component = discoverComponent(configTopicToMqtt(CONFIG_TOPIC),
@@ -127,8 +128,10 @@ public class FanTests extends AbstractComponentTests {
         assertThat(component.channels.size(), is(1));
         assertThat(component.getName(), is("fan"));
 
-        assertChannel(component, Fan.SPEED_CHANNEL_ID, "zigbee2mqtt/fan", "zigbee2mqtt/fan/set/fan_mode", "Speed",
+        assertChannel(component, Fan.SPEED_CHANNEL_ID, "zigbee2mqtt/fan", "zigbee2mqtt/fan/set/fan_mode", "fan",
                 PercentageValue.class, null);
+
+        linkAllChannels(component);
 
         publishMessage("zigbee2mqtt/fan", "{ \"fan_state\": \"OFF\", \"fan_mode\": \"high\"}");
         assertState(component, Fan.SPEED_CHANNEL_ID, PercentType.ZERO);
@@ -155,7 +158,6 @@ public class FanTests extends AbstractComponentTests {
         assertPublished("zigbee2mqtt/fan/set/fan_mode", "medium");
     }
 
-    @SuppressWarnings("null")
     @Test
     public void testInferredOptimistic() throws InterruptedException {
         // @formatter:off
@@ -187,11 +189,10 @@ public class FanTests extends AbstractComponentTests {
         assertThat(component.channels.size(), is(1));
         assertThat(component.getName(), is("fan"));
 
-        assertChannel(component, Fan.SWITCH_CHANNEL_ID, "", "zigbee2mqtt/fan/set/state", "On/Off State",
-                OnOffValue.class, AutoUpdatePolicy.RECOMMEND);
+        assertChannel(component, Fan.SWITCH_CHANNEL_ID, "", "zigbee2mqtt/fan/set/state", "fan", OnOffValue.class,
+                AutoUpdatePolicy.RECOMMEND);
     }
 
-    @SuppressWarnings("null")
     @Test
     public void testForcedOptimistic() throws InterruptedException {
         // @formatter:off
@@ -225,11 +226,10 @@ public class FanTests extends AbstractComponentTests {
         assertThat(component.channels.size(), is(1));
         assertThat(component.getName(), is("fan"));
 
-        assertChannel(component, Fan.SWITCH_CHANNEL_ID, "zigbee2mqtt/fan/state", "zigbee2mqtt/fan/set/state",
-                "On/Off State", OnOffValue.class, AutoUpdatePolicy.RECOMMEND);
+        assertChannel(component, Fan.SWITCH_CHANNEL_ID, "zigbee2mqtt/fan/state", "zigbee2mqtt/fan/set/state", "fan",
+                OnOffValue.class, AutoUpdatePolicy.RECOMMEND);
     }
 
-    @SuppressWarnings("null")
     @Test
     public void testInferredOptimisticWithPosition() throws InterruptedException {
         // @formatter:off
@@ -262,11 +262,10 @@ public class FanTests extends AbstractComponentTests {
         assertThat(component.channels.size(), is(1));
         assertThat(component.getName(), is("fan"));
 
-        assertChannel(component, Fan.SPEED_CHANNEL_ID, "", "bedroom_fan/speed/percentage", "Speed",
-                PercentageValue.class, AutoUpdatePolicy.RECOMMEND);
+        assertChannel(component, Fan.SPEED_CHANNEL_ID, "", "bedroom_fan/speed/percentage", "fan", PercentageValue.class,
+                AutoUpdatePolicy.RECOMMEND);
     }
 
-    @SuppressWarnings("null")
     @Test
     public void testCommandTemplate() throws InterruptedException {
         var component = discoverComponent(configTopicToMqtt(CONFIG_TOPIC), """
@@ -296,11 +295,12 @@ public class FanTests extends AbstractComponentTests {
 
         assertThat(component.channels.size(), is(1));
 
+        linkAllChannels(component);
+
         component.getChannel(Fan.SWITCH_CHANNEL_ID).getState().publishValue(OnOffType.OFF);
         assertPublished("zigbee2mqtt/fan/set/state", "set to OFF_");
     }
 
-    @SuppressWarnings("null")
     @Test
     public void testComplex() throws InterruptedException {
         var component = discoverComponent(configTopicToMqtt(CONFIG_TOPIC), """
@@ -359,6 +359,8 @@ public class FanTests extends AbstractComponentTests {
                 "Direction", TextValue.class);
         assertChannel(component, Fan.PRESET_MODE_CHANNEL_ID, "bedroom_fan/preset/preset_mode_state",
                 "bedroom_fan/preset/preset_mode", "Preset Mode", TextValue.class);
+
+        linkAllChannels(component);
 
         publishMessage("bedroom_fan/on/state", "true");
         assertState(component, Fan.SPEED_CHANNEL_ID, PercentType.HUNDRED);

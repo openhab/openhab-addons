@@ -56,12 +56,12 @@ public class EtherRainCommunication {
 
     private static final int BROADCAST_TIMEOUT = 80;
 
-    private static final String RESPONSE_STATUS_PATTERN = "^\\s*(un|ma|ac|os|cs|rz|ri|rn):\\s*([a-zA-Z0-9\\.]*)(\\s*<br>)?";
-    private static final String BROADCAST_RESPONSE_DISCOVER_PATTERN = "eviro t=(\\S*) n=(\\S*) p=(\\S*) a=(\\S*)";
+    private static final String RESPONSE_STATUS_STRING = "^\\s*(un|ma|ac|os|cs|rz|ri|rn):\\s*([a-zA-Z0-9\\.]*)(\\s*<br>)?";
+    private static final String BROADCAST_RESPONSE_DISCOVER_STRING = "eviro t=(\\S*) n=(\\S*) p=(\\S*) a=(\\S*)";
 
-    private static final Pattern broadcastResponseDiscoverPattern = Pattern
-            .compile(BROADCAST_RESPONSE_DISCOVER_PATTERN);
-    private static final Pattern responseStatusPattern = Pattern.compile(RESPONSE_STATUS_PATTERN);
+    private static final Pattern BROADCAST_RESPONSE_DISCOVER_PATTERN = Pattern
+            .compile(BROADCAST_RESPONSE_DISCOVER_STRING);
+    private static final Pattern RESPONSE_STATUS_PATTERN = Pattern.compile(RESPONSE_STATUS_STRING);
 
     private final Logger logger = LoggerFactory.getLogger(EtherRainCommunication.class);
     private final HttpClient httpClient;
@@ -94,7 +94,7 @@ public class EtherRainCommunication {
 
         for (String line : responseList) {
 
-            Matcher m = responseStatusPattern.matcher(line);
+            Matcher m = RESPONSE_STATUS_PATTERN.matcher(line);
 
             if (m.matches()) {
                 String command = m.replaceAll("$1");
@@ -239,7 +239,7 @@ public class EtherRainCommunication {
 
                 String addressBC = receivePacket.getAddress().getHostAddress();
 
-                Matcher matcher = broadcastResponseDiscoverPattern.matcher(message);
+                Matcher matcher = BROADCAST_RESPONSE_DISCOVER_PATTERN.matcher(message);
                 String deviceTypeBC = matcher.replaceAll("$1");
                 String unqiueNameBC = matcher.replaceAll("$2");
                 int portBC = Integer.parseInt(matcher.replaceAll("$3"));

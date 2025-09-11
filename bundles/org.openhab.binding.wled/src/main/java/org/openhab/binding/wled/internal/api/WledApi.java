@@ -80,7 +80,7 @@ public interface WledApi {
 
     void setUdpSend(boolean bool) throws ApiException;
 
-    void setUdpRecieve(boolean bool) throws ApiException;
+    void setUdpReceive(boolean bool) throws ApiException;
 
     void setTransitionTime(BigDecimal time) throws ApiException;
 
@@ -93,6 +93,8 @@ public interface WledApi {
     void setTertiaryColor(HSBType hsbType, int segmentIndex) throws ApiException;
 
     void setWhiteOnly(PercentType percentType, int segmentIndex) throws ApiException;
+
+    void setLegacyWhite(String whiteChannel, PercentType brightness, int segmentIndex) throws ApiException;
 
     void setMirror(boolean bool, int segmentIndex) throws ApiException;
 

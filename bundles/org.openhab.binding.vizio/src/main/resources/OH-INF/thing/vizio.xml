@@ -10,6 +10,7 @@
 		<description>
 			A Vizio SmartCast TV
 		</description>
+		<semantic-equipment-tag>Television</semantic-equipment-tag>
 
 		<channels>
 			<channel id="power" typeId="system.power"/>
@@ -23,6 +24,7 @@
 
 		<properties>
 			<property name="modelId">unknown</property>
+			<property name="thingTypeVersion">1</property>
 		</properties>
 
 		<representation-property>uuid</representation-property>
@@ -59,12 +61,20 @@
 		<item-type>String</item-type>
 		<label>Source Input</label>
 		<description>Select the Source Input for the TV</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>MediaControl</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="activeApp">
 		<item-type>String</item-type>
 		<label>Active App</label>
 		<description>The currently running App on the TV</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>App</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="control">
@@ -72,12 +82,20 @@
 		<label>Control</label>
 		<description>Transport Controls e.g. Play/Pause/Next/Previous/FForward/Rewind</description>
 		<category>Player</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>MediaControl</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="buttonTv">
 		<item-type>String</item-type>
 		<label>Remote Button</label>
 		<description>A Remote Button press to send to the TV</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>MediaControl</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="PowerOn">Power On</option>

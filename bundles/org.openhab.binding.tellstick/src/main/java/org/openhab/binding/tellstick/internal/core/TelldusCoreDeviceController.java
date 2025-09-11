@@ -18,6 +18,8 @@ import java.util.Collections;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.tellstick.internal.TelldusBindingException;
 import org.openhab.binding.tellstick.internal.handler.TelldusDeviceController;
 import org.openhab.core.library.types.IncreaseDecreaseType;
@@ -45,6 +47,7 @@ import org.tellstick.device.iface.SwitchableDevice;
  *
  * @author Jarle Hjortland, Elias Gabrielsson - Initial contribution
  */
+@NonNullByDefault
 public class TelldusCoreDeviceController implements DeviceChangeListener, SensorListener, TelldusDeviceController {
     private final Logger logger = LoggerFactory.getLogger(TelldusCoreDeviceController.class);
     private long lastSend = 0;
@@ -82,7 +85,7 @@ public class TelldusCoreDeviceController implements DeviceChangeListener, Sensor
     }
 
     @Override
-    public State calcState(Device dev) {
+    public @Nullable State calcState(Device dev) {
         TellstickDevice device = (TellstickDevice) dev;
         State st = null;
         switch (device.getStatus()) {
@@ -137,12 +140,12 @@ public class TelldusCoreDeviceController implements DeviceChangeListener, Sensor
     }
 
     @Override
-    public void onRequest(TellstickSensorEvent newDevices) {
+    public void onRequest(@NonNullByDefault({}) TellstickSensorEvent newDevices) {
         setLastSend(newDevices.getTimestamp());
     }
 
     @Override
-    public void onRequest(TellstickDeviceEvent newDevices) {
+    public void onRequest(@NonNullByDefault({}) TellstickDeviceEvent newDevices) {
         setLastSend(newDevices.getTimestamp());
     }
 
@@ -179,10 +182,12 @@ public class TelldusCoreDeviceController implements DeviceChangeListener, Sensor
     }
 
     private void increaseDecrease(Device dev, IncreaseDecreaseType increaseDecreaseType) throws TellstickException {
-        String strValue = ((TellstickDevice) dev).getData();
         double value = 0;
-        if (strValue != null) {
-            value = Double.valueOf(strValue);
+        if (dev instanceof TellstickDevice device) {
+            String strValue = device.getData();
+            if (strValue != null) {
+                value = Double.valueOf(strValue);
+            }
         }
         int percent = (int) Math.round((value / 255) * 100);
         if (IncreaseDecreaseType.INCREASE == increaseDecreaseType) {

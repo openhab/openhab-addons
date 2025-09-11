@@ -11,6 +11,7 @@
 
 		<label>Paradox Panel</label>
 		<description>Paradox panel various information</description>
+		<semantic-equipment-tag>AlarmSystem</semantic-equipment-tag>
 
 		<channels>
 			<channel id="state" typeId="panelState"/>
@@ -68,12 +69,20 @@
 		<item-type>Number:ElectricPotential</item-type>
 		<label>Voltage</label>
 		<description>Voltage</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
 		<state readOnly="true" pattern="%f %unit%"/>
 	</channel-type>
 	<channel-type id="panelTime">
 		<item-type>DateTime</item-type>
 		<label>Date</label>
 		<description>The current date and time on the panel</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 

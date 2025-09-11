@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form with hCaptcha</title>
+</head>
+<body>
+    <p></p>
+    <div id="captchaResponse">
+        <p id="redirectInfo" style="display: none;"></p>
+        <div style="text-align: center;">
+            <form id="captcha_form" action="#" method="post">
+                <!-- hCaptcha widget -->
+                <div class="h-captcha" data-sitekey="dc24de9a-9844-438b-b542-60067ff4dbe9"></div><br>
+                <button type="submit" class="btn">Submit</button>
+            </form>
+            <!-- hCaptcha script -->
+            <script src="https://hcaptcha.com/1/api.js" async defer></script>
+        </div>
+    </div>
+    <p></p>
+    <script>
+    const currentUrl = new URL(window.location.href);
+
+    document.getElementById('captcha_form').addEventListener('submit', function(event) {
+        event.preventDefault(); // Prevent the default form submission
+
+        const hCaptchaResponse = document.querySelector('[name="h-captcha-response"]').value;
+        const responseElement = document.getElementById('captchaResponse');
+        
+        if (hCaptchaResponse) {
+            fetch(currentUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'text/html;charset=UTF-8',
+                },
+                body: hCaptchaResponse,
+            }).then(success => {
+                window.close();
+            }).catch(error => {
+                responseElement.innerHTML = 'Error setting captcha token: ' + error;
+            });
+        } else {
+            responseElement.innerHTML = 'No captcha token received';
+        }
+    });
+    </script>
+</body>
+</html>

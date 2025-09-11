@@ -5,29 +5,67 @@
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0
 		https://openhab.org/schemas/config-description-1.0.0.xsd">
 	<config-description uri="automation:jsscripting">
-		<parameter name="injectionEnabled" type="boolean" required="true">
-			<label>Use Built-in Global Variables</label>
+		<parameter-group name="environment">
+			<label>JavaScript Environment</label>
+			<description>This group defines JavaScript's environment.</description>
+		</parameter-group>
+
+		<parameter-group name="system">
+			<label>System Behaviour</label>
+			<description>This group defines JavaScript's system behaviour.</description>
+		</parameter-group>
+
+		<parameter name="injectionEnabledV2" type="integer" required="true" min="0" max="2" groupName="environment">
+			<label>Inject Global Variables from Helper Library</label>
 			<description><![CDATA[
-			Import all variables from the openHAB JavaScript library into all rules for common services like items, things, actions, log, etc... <br>
-			If disabled, the openHAB JavaScript library can be imported manually using "<i>require('openhab')</i>"
+			Import all variables from the openHAB JavaScript library for common services like items, things, actions, log, etc... <br>
+			If disabled, the openHAB JavaScript library can be imported manually using <code>require('openhab')</code>.
 			]]></description>
 			<options>
-				<option value="true">Use Built-in Variables</option>
-				<option value="false">Do Not Use Built-in Variables</option>
+				<option value="3">Auto injection for all scripts, including file-based scripts and transformations</option>
+				<option value="2">Auto injection for UI-based scripts and transformations</option>
+				<option value="1">Auto injection only for UI-based scripts (recommended)</option>
+				<option value="0">Disable auto-injection and import manually instead</option>
 			</options>
-			<default>true</default>
+			<default>3</default>
 		</parameter>
-		<parameter name="injectionCachingEnabled" type="boolean" required="true">
+		<parameter name="wrapperEnabled" type="boolean" required="true" groupName="environment">
+			<label>Wrap UI-based scripts in Self-Executing Function</label>
+			<description><![CDATA[
+			Wrapping UI-based scripts in a self-executing function allows the use of the <code>let</code> and <code>const</code> variable declarations,
+			as well as the use of <code>function</code> and <code>class</code> declarations.<br>
+			With this option enabled, you can also use <code>return</code> statements in your scripts to abort execution at any point.
+			]]></description>
+			<default>true</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="eventConversionEnabled" type="boolean" required="true" groupName="environment">
+			<label>Convert Event from Java to JavaScript type in UI-based scripts</label>
+			<description><![CDATA[
+            Converting the event data from Java to JavaScript types in UI-based scripts allows working with event data in a native JS way without special handling for Java types.<br>
+            With this option enabled, the event data available in UI-based scripts is all JS types and the same as in file-based scripts.<br>
+            Please note that this option <strong>requires both auto-injection & wrapper enabled</strong> and only applies to UI-based scripts and does not affect file-based scripts.
+            ]]></description>
+			<default>true</default>
+			<advanced>true</advanced>
+		</parameter>
+
+		<parameter name="injectionCachingEnabled" type="boolean" required="true" groupName="system">
 			<label>Cache openHAB JavaScript Library Injection</label>
 			<description><![CDATA[
 			Cache the openHAB JavaScript library injection for optimal performance.<br>
 			Disable this option to allow loading the library from the local user configuration directory "automation/js/node_modules". Disabling caching may increase script loading times, especially on less powerful systems.
 			]]></description>
-			<options>
-				<option value="true">Cache Library Injection</option>
-				<option value="false">Do Not Cache Library Injection</option>
-			</options>
 			<default>true</default>
+		</parameter>
+		<parameter name="dependencyTrackingEnabled" type="boolean" required="true" groupName="system">
+			<label>Enable Dependency Tracking</label>
+			<description>Dependency tracking allows your scripts to automatically reload when one of its dependencies is updated.
+				You may want to disable dependency tracking if you plan on editing or updating a shared library, but don't want all
+				your scripts to reload until you can test it. Please note that changing this setting only applies to scripts loaded
+				after the change.</description>
+			<default>true</default>
+			<advanced>true</advanced>
 		</parameter>
 	</config-description>
 </config-description:config-descriptions>

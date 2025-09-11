@@ -12,7 +12,7 @@
 		<label>Wall Mounted Room Thermostat (WRT)</label>
 		<description>A wall thermostat, that supports setting the temperature and measuring the current temperature and
 			humidity.</description>
-
+		<semantic-equipment-tag>Thermostat</semantic-equipment-tag>
 		<channels>
 			<channel id="targetTemperature" typeId="thermostatActuatorPointTemperature"/>
 			<channel id="currentTemperature" typeId="temperatureSensorTemperature"/>

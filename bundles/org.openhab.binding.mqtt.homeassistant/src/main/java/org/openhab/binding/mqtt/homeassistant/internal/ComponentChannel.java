@@ -34,7 +34,6 @@ import org.openhab.core.thing.type.AutoUpdatePolicy;
 import org.openhab.core.thing.type.ChannelDefinition;
 import org.openhab.core.thing.type.ChannelDefinitionBuilder;
 import org.openhab.core.thing.type.ChannelKind;
-import org.openhab.core.thing.type.ChannelType;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.CommandDescription;
@@ -65,7 +64,6 @@ public class ComponentChannel {
 
     private ComponentChannel(ChannelState channelState, Channel channel, @Nullable StateDescription stateDescription,
             @Nullable CommandDescription commandDescription, ChannelStateUpdateListener channelStateUpdateListener) {
-        super();
         this.channelState = channelState;
         this.channel = channel;
         this.stateDescription = stateDescription;
@@ -77,12 +75,15 @@ public class ComponentChannel {
         return channel;
     }
 
-    public void resetUID(ChannelUID channelUID) {
+    public void resetUID(ChannelUID channelUID, String name) {
         channel = ChannelBuilder.create(channelUID, channel.getAcceptedItemType()).withType(channel.getChannelTypeUID())
-                .withKind(channel.getKind()).withLabel(Objects.requireNonNull(channel.getLabel()))
-                .withConfiguration(channel.getConfiguration()).withAutoUpdatePolicy(channel.getAutoUpdatePolicy())
-                .build();
+                .withKind(channel.getKind()).withLabel(name).withConfiguration(channel.getConfiguration())
+                .withAutoUpdatePolicy(channel.getAutoUpdatePolicy()).build();
         channelState.setChannelUID(channelUID);
+    }
+
+    public void resetUID(ChannelUID channelUID) {
+        resetUID(channelUID, Objects.requireNonNull(channel.getLabel()));
     }
 
     public void resetConfiguration(Configuration configuration) {
@@ -136,6 +137,7 @@ public class ComponentChannel {
 
         private @Nullable String stateTopic;
         private @Nullable String commandTopic;
+        private boolean parseCommandValueAsInteger;
         private boolean retain;
         private boolean trigger;
         private boolean isAdvanced;
@@ -143,8 +145,8 @@ public class ComponentChannel {
         private @Nullable Integer qos;
         private @Nullable Predicate<Command> commandFilter;
 
-        private @Nullable String templateIn;
-        private @Nullable String templateOut;
+        private org.graalvm.polyglot.@Nullable Value templateIn;
+        private org.graalvm.polyglot.@Nullable Value templateOut;
 
         private @Nullable Configuration configuration;
 
@@ -166,11 +168,11 @@ public class ComponentChannel {
             return this;
         }
 
-        public Builder stateTopic(@Nullable String stateTopic, @Nullable String... templates) {
+        public Builder stateTopic(@Nullable String stateTopic, org.graalvm.polyglot.@Nullable Value... templates) {
             this.stateTopic = stateTopic;
             if (stateTopic != null && !stateTopic.isBlank()) {
-                for (String template : templates) {
-                    if (template != null && !template.isBlank()) {
+                for (org.graalvm.polyglot.Value template : templates) {
+                    if (template != null) {
                         this.templateIn = template;
                         break;
                     }
@@ -196,13 +198,19 @@ public class ComponentChannel {
             return commandTopic(commandTopic, retain, qos, null);
         }
 
-        public Builder commandTopic(@Nullable String commandTopic, boolean retain, int qos, @Nullable String template) {
+        public Builder commandTopic(@Nullable String commandTopic, boolean retain, int qos,
+                org.graalvm.polyglot.@Nullable Value template) {
             this.commandTopic = commandTopic;
             this.retain = retain;
             this.qos = qos;
-            if (commandTopic != null && !commandTopic.isBlank()) {
+            if (commandTopic != null) {
                 this.templateOut = template;
             }
+            return this;
+        }
+
+        public Builder parseCommandValueAsInteger(boolean parseCommandValueAsInteger) {
+            this.parseCommandValueAsInteger = parseCommandValueAsInteger;
             return this;
         }
 
@@ -263,15 +271,15 @@ public class ComponentChannel {
                     .withStateTopic(stateTopic).withCommandTopic(commandTopic).makeTrigger(trigger)
                     .withFormatter(format);
 
-            String localTemplateIn = templateIn;
+            org.graalvm.polyglot.Value localTemplateIn = templateIn;
             if (localTemplateIn != null) {
-                incomingTransformation = new HomeAssistantChannelTransformation(component.getJinjava(), component,
-                        localTemplateIn);
+                incomingTransformation = new HomeAssistantChannelTransformation(component.getPython(), component,
+                        localTemplateIn, false);
             }
-            String localTemplateOut = templateOut;
+            org.graalvm.polyglot.Value localTemplateOut = templateOut;
             if (localTemplateOut != null) {
-                outgoingTransformation = new HomeAssistantChannelTransformation(component.getJinjava(), component,
-                        localTemplateOut);
+                outgoingTransformation = new HomeAssistantChannelTransformation(component.getPython(), component,
+                        localTemplateOut, true, parseCommandValueAsInteger);
             }
 
             channelState = new HomeAssistantChannelState(channelConfigBuilder.build(), channelUID, valueState,

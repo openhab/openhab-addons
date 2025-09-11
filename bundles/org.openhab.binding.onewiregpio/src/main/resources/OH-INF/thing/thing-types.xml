@@ -7,6 +7,7 @@
 	<thing-type id="sensor">
 		<label>Temperature Sensor</label>
 		<description>OneWire GPIO Temperature sensor</description>
+		<semantic-equipment-tag>TemperatureSensor</semantic-equipment-tag>
 
 		<channels>
 			<channel id="temperature" typeId="temperature"/>
@@ -36,6 +37,10 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
 		<description>Indicates the temperature read from one wire gpio sensor</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.3f %unit%"/>
 	</channel-type>
 

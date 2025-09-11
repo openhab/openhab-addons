@@ -11,7 +11,7 @@
 
 		<label>Generation Meter</label>
 		<description>The Generation Meter from the LIVISI PowerControlSolar product, that measures the generated energy.</description>
-
+		<semantic-equipment-tag>ElectricMeter</semantic-equipment-tag>
 		<channels>
 			<channel id="powerGenerationWatt" typeId="powerGenerationWatt"/>
 			<channel id="totalEnergyGeneration" typeId="totalEnergyGeneration"/>

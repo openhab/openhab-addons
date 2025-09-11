@@ -28,6 +28,7 @@ import org.openhab.core.items.ItemRegistry;
 import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.DefaultSystemChannelTypeProvider;
+import org.openhab.core.thing.link.ItemChannelLinkRegistry;
 import org.openhab.core.thing.profiles.Profile;
 import org.openhab.core.thing.profiles.ProfileAdvisor;
 import org.openhab.core.thing.profiles.ProfileCallback;
@@ -44,6 +45,7 @@ import org.openhab.transform.basicprofiles.internal.profiles.DebounceCountingSta
 import org.openhab.transform.basicprofiles.internal.profiles.DebounceTimeStateProfile;
 import org.openhab.transform.basicprofiles.internal.profiles.GenericCommandTriggerProfile;
 import org.openhab.transform.basicprofiles.internal.profiles.GenericToggleSwitchTriggerProfile;
+import org.openhab.transform.basicprofiles.internal.profiles.InactivityProfile;
 import org.openhab.transform.basicprofiles.internal.profiles.InvertStateProfile;
 import org.openhab.transform.basicprofiles.internal.profiles.RoundStateProfile;
 import org.openhab.transform.basicprofiles.internal.profiles.StateFilterProfile;
@@ -72,6 +74,7 @@ public class BasicProfilesFactory implements ProfileFactory, ProfileTypeProvider
     public static final ProfileTypeUID THRESHOLD_UID = new ProfileTypeUID(SCOPE, "threshold");
     public static final ProfileTypeUID TIME_RANGE_COMMAND_UID = new ProfileTypeUID(SCOPE, "time-range-command");
     public static final ProfileTypeUID STATE_FILTER_UID = new ProfileTypeUID(SCOPE, "state-filter");
+    public static final ProfileTypeUID INACTIVITY_UID = new ProfileTypeUID(SCOPE, "inactivity");
 
     private static final ProfileType PROFILE_TYPE_GENERIC_COMMAND = ProfileTypeBuilder
             .newTrigger(GENERIC_COMMAND_UID, "Generic Command") //
@@ -108,28 +111,34 @@ public class BasicProfilesFactory implements ProfileFactory, ProfileTypeProvider
     private static final ProfileType PROFILE_STATE_FILTER = ProfileTypeBuilder
             .newState(STATE_FILTER_UID, "State Filter").build();
 
+    private static final ProfileType PROFILE_TYPE_INACTIVITY = ProfileTypeBuilder
+            .newState(INACTIVITY_UID, "No Input Activity").withSupportedItemTypes(CoreItemFactory.SWITCH).build();
+
     private static final Set<ProfileTypeUID> SUPPORTED_PROFILE_TYPE_UIDS = Set.of(GENERIC_COMMAND_UID,
             GENERIC_TOGGLE_SWITCH_UID, DEBOUNCE_COUNTING_UID, DEBOUNCE_TIME_UID, INVERT_UID, ROUND_UID, THRESHOLD_UID,
-            TIME_RANGE_COMMAND_UID, STATE_FILTER_UID);
+            TIME_RANGE_COMMAND_UID, STATE_FILTER_UID, INACTIVITY_UID);
     private static final Set<ProfileType> SUPPORTED_PROFILE_TYPES = Set.of(PROFILE_TYPE_GENERIC_COMMAND,
             PROFILE_TYPE_GENERIC_TOGGLE_SWITCH, PROFILE_TYPE_DEBOUNCE_COUNTING, PROFILE_TYPE_DEBOUNCE_TIME,
             PROFILE_TYPE_INVERT, PROFILE_TYPE_ROUND, PROFILE_TYPE_THRESHOLD, PROFILE_TYPE_TIME_RANGE_COMMAND,
-            PROFILE_STATE_FILTER);
+            PROFILE_STATE_FILTER, PROFILE_TYPE_INACTIVITY);
 
     private final Map<LocalizedKey, ProfileType> localizedProfileTypeCache = new ConcurrentHashMap<>();
 
     private final ProfileTypeI18nLocalizationService profileTypeI18nLocalizationService;
+    @Nullable
     private final Bundle bundle;
     private final ItemRegistry itemRegistry;
+    private final ItemChannelLinkRegistry linkRegistry;
     private final TimeZoneProvider timeZoneProvider;
 
     @Activate
     public BasicProfilesFactory(final @Reference ProfileTypeI18nLocalizationService profileTypeI18nLocalizationService,
             final @Reference BundleResolver bundleResolver, @Reference ItemRegistry itemRegistry,
-            @Reference TimeZoneProvider timeZoneProvider) {
+            @Reference ItemChannelLinkRegistry linkRegistry, @Reference TimeZoneProvider timeZoneProvider) {
         this.profileTypeI18nLocalizationService = profileTypeI18nLocalizationService;
         this.bundle = bundleResolver.resolveBundle(BasicProfilesFactory.class);
         this.itemRegistry = itemRegistry;
+        this.linkRegistry = linkRegistry;
         this.timeZoneProvider = timeZoneProvider;
     }
 
@@ -154,6 +163,8 @@ public class BasicProfilesFactory implements ProfileFactory, ProfileTypeProvider
             return new TimeRangeCommandProfile(callback, context, timeZoneProvider);
         } else if (STATE_FILTER_UID.equals(profileTypeUID)) {
             return new StateFilterProfile(callback, context, itemRegistry);
+        } else if (INACTIVITY_UID.equals(profileTypeUID)) {
+            return new InactivityProfile(callback, context, linkRegistry);
         }
         return null;
     }

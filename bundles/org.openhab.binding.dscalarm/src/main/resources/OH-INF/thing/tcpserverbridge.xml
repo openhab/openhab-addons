@@ -9,6 +9,7 @@
 		<description>This bridge represents a TCP Server
 			Ethernet interface.
 		</description>
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 
 		<channels>
 			<channel id="bridge_reset" typeId="reset">

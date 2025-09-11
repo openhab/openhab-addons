@@ -108,82 +108,63 @@ public class HaasSohnpelletstoveHandler extends BaseThingHandler {
         }
     }
 
-    /**
-     * Calls the service to update the oven data
-     *
-     * @param postdata
-     */
-    private boolean updateOvenData(@Nullable String postdata) {
-        Helper message = new Helper();
-        if (serviceCommunication.updateOvenData(postdata, message, this.getThing().getUID().toString())) {
-            updateStatus(ThingStatus.ONLINE);
-            return true;
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                    message.getStatusDesription());
-            return false;
-        }
-    }
-
     @Override
     public void initialize() {
         logger.debug("Initializing haassohnpelletstove handler for thing {}", getThing().getUID());
         config = getConfigAs(HaasSohnpelletstoveConfiguration.class);
-        boolean validConfig = true;
-        String errors = "";
-        String statusDescr = null;
-        if (config.refreshRate < 0 && config.refreshRate > 999) {
-            errors += " Parameter 'refresh Rate' greater then 0 and less then 1000.";
-            statusDescr = "Parameter 'refresh Rate' greater then 0 and less then 1000.";
-            validConfig = false;
+        if (config.refreshRate < 1 || config.refreshRate > 1000) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Parameter 'refresh Rate' must be in the range 1-1000!");
+            return;
         }
-        if (config.hostIP == null) {
-            errors += " Parameter 'hostIP' must be configured.";
-            statusDescr = "IP Address must be configured!";
-            validConfig = false;
+        if (config.hostIP.isBlank()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "IP Address must be configured!");
+            return;
         }
-        if (config.hostPIN == null) {
-            errors += " Parameter 'hostPin' must be configured.";
-            statusDescr = "PIN must be configured!";
-            validConfig = false;
+
+        if (config.hostPIN.isBlank()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Parameter 'hostPin' must be configured!");
+            return;
         }
-        errors = errors.trim();
-        Helper message = new Helper();
-        message.setStatusDescription(statusDescr);
-        if (validConfig) {
-            serviceCommunication.setConfig(config);
-            if (serviceCommunication.refreshOvenConnection(message, this.getThing().getUID().toString())) {
-                if (updateOvenData(null)) {
-                    updateStatus(ThingStatus.ONLINE);
-                    updateLinkedChannels();
+
+        serviceCommunication.setConfig(config);
+        updateStatus(ThingStatus.UNKNOWN);
+        scheduler.submit(() -> {
+            if (updateOvenData(null)) {
+                for (Channel channel : getThing().getChannels()) {
+                    if (isLinked(channel.getUID().getId())) {
+                        channelLinked(channel.getUID());
+                    }
                 }
-            } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, message.getStatusDesription());
             }
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, message.getStatusDesription());
-        }
+        });
     }
 
-    private void updateLinkedChannels() {
-        verifyLinkedChannel(CHANNELISTEMP);
-        verifyLinkedChannel(CHANNELMODE);
-        verifyLinkedChannel(CHANNELPOWER);
-        verifyLinkedChannel(CHANNELSPTEMP);
-        verifyLinkedChannel(CHANNELECOMODE);
-        verifyLinkedChannel(CHANNELIGNITIONS);
-        verifyLinkedChannel(CHANNELMAINTENANCEIN);
-        verifyLinkedChannel(CHANNELCLEANINGIN);
-        verifyLinkedChannel(CHANNELCONSUMPTION);
-        verifyLinkedChannel(CHANNELONTIME);
-        if (!linkedChannels.isEmpty()) {
-            updateOvenData(null);
-            for (Channel channel : getThing().getChannels()) {
-                updateChannel(channel.getUID().getId());
-            }
-            startAutomaticRefresh();
-            automaticRefreshing = true;
+    /**
+     * Calls the service to update the oven data
+     *
+     * @return true if the update succeeded, false otherwise
+     */
+    private boolean updateOvenData(@Nullable String postdata) {
+        String error = "";
+        if (postdata != null) {
+            error = serviceCommunication.updateOvenData(postdata);
+        } else {
+            error = serviceCommunication.refreshOvenConnection();
         }
+        if (error.isEmpty()) {
+            if (ThingStatus.OFFLINE.equals(getThing().getStatus())) {
+                updateStatus(ThingStatus.UNKNOWN);
+            }
+            if (!ThingStatus.ONLINE.equals(getThing().getStatus())) {
+                updateStatus(ThingStatus.ONLINE);
+            }
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, error);
+            return false;
+        }
+        return error.isEmpty();
     }
 
     private void verifyLinkedChannel(String channelID) {
@@ -195,14 +176,24 @@ public class HaasSohnpelletstoveHandler extends BaseThingHandler {
     @Override
     public void dispose() {
         stopScheduler();
+        linkedChannels.clear();
+        automaticRefreshing = false;
     }
 
     private void stopScheduler() {
         ScheduledFuture<?> job = refreshJob;
-        if (job != null) {
-            job.cancel(true);
+        if (job == null || job.isCancelled()) {
+            refreshJob = scheduler.scheduleWithFixedDelay(this::refreshChannels, 0, config.refreshRate,
+                    TimeUnit.SECONDS);
         }
-        refreshJob = null;
+    }
+
+    private void refreshChannels() {
+        if (updateOvenData(null)) {
+            for (Channel channel : getThing().getChannels()) {
+                updateChannel(channel.getUID().getId());
+            }
+        }
     }
 
     /**
@@ -217,9 +208,10 @@ public class HaasSohnpelletstoveHandler extends BaseThingHandler {
     }
 
     private void run() {
-        updateOvenData(null);
-        for (Channel channel : getThing().getChannels()) {
-            updateChannel(channel.getUID().getId());
+        if (updateOvenData(null)) {
+            for (Channel channel : getThing().getChannels()) {
+                updateChannel(channel.getUID().getId());
+            }
         }
     }
 

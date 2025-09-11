@@ -8,6 +8,7 @@
 	<bridge-type id="heathub">
 		<label>HeatHub</label>
 		<description>A Drayton Wiser HeatHub acting as a bridge to Thermostats and TRVs</description>
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 
 		<representation-property>networkAddress</representation-property>
 
@@ -42,6 +43,7 @@
 
 		<label>Boiler Controller</label>
 		<description>The controller attached to the boiler</description>
+		<semantic-equipment-tag>Boiler</semantic-equipment-tag>
 
 		<channels>
 			<channel id="heatingOverride" typeId="heatingOverride-channel"/>
@@ -79,6 +81,7 @@
 
 		<label>Hot Water</label>
 		<description>The hot water heating system</description>
+		<semantic-equipment-tag>WaterHeater</semantic-equipment-tag>
 
 		<channels>
 			<channel id="hotWaterOverride" typeId="hotWaterOverride-channel"/>
@@ -108,6 +111,7 @@
 
 		<label>Room</label>
 		<description>A Room that contains a thermostat and/or TRV</description>
+		<semantic-equipment-tag>Thermostat</semantic-equipment-tag>
 
 		<channels>
 			<channel id="currentTemperature" typeId="currentTemperature-channel"/>
@@ -145,6 +149,7 @@
 
 		<label>Thermostat</label>
 		<description>Wireless Thermostat device</description>
+		<semantic-equipment-tag>Thermostat</semantic-equipment-tag>
 
 		<channels>
 			<channel id="currentTemperature" typeId="currentTemperature-channel"/>
@@ -182,6 +187,7 @@
 
 		<label>iTRV</label>
 		<description>Thermostatic Radiator Valve</description>
+		<semantic-equipment-tag>RadiatorControl</semantic-equipment-tag>
 
 		<channels>
 			<channel id="currentTemperature" typeId="currentTemperature-channel"/>
@@ -219,6 +225,7 @@
 
 		<label>Smart Plug</label>
 		<description>Remote controlled Plug Socket</description>
+		<semantic-equipment-tag>PowerOutlet</semantic-equipment-tag>
 
 		<channels>
 			<channel id="plugOutputState" typeId="plugOutputState-channel"/>
@@ -251,6 +258,10 @@
 		<label>Temperature</label>
 		<description>Current temperature</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -259,6 +270,10 @@
 		<label>Humidity</label>
 		<description>Current relative humidity</description>
 		<category>Humidity</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Humidity</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
@@ -267,6 +282,10 @@
 		<label>Set Point</label>
 		<description>Current set point</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="false" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -274,6 +293,10 @@
 		<item-type>Number:ElectricPotential</item-type>
 		<label>Battery Voltage</label>
 		<description>Current Battery Voltage for the device</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -288,6 +311,10 @@
 		<item-type>Switch</item-type>
 		<label>Currently Requesting Heat</label>
 		<description>Is this room requesting heat</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Heating</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -295,6 +322,10 @@
 		<item-type>Switch</item-type>
 		<label>Heating Override</label>
 		<description>The heating override button has been pressed</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Heating</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -302,6 +333,10 @@
 		<item-type>Switch</item-type>
 		<label>Hot Water Override</label>
 		<description>The hot water override button has been pressed</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Heating</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -309,6 +344,10 @@
 		<item-type unitHint="dBm">Number:Power</item-type>
 		<label>Signal RSSI</label>
 		<description>The reported network signal RSSI</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>RSSI</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -316,6 +355,10 @@
 		<item-type>Number</item-type>
 		<label>Signal LQI</label>
 		<description>The reported network signal LQI</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>SignalStrength</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -323,6 +366,10 @@
 		<item-type>String</item-type>
 		<label>Signal Strength (Wiser)</label>
 		<description>The reported network signal strength</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>SignalStrength</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -351,6 +398,10 @@
 		<item-type>Switch</item-type>
 		<label>Away Mode Active</label>
 		<description>Away mode has been activated</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="awayModeSetPoint-channel" advanced="true">
@@ -358,6 +409,10 @@
 		<label>Away Mode Set Point</label>
 		<description>Away Mode Set Point</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="false" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -365,12 +420,20 @@
 		<item-type>Switch</item-type>
 		<label>Eco Mode Enabled</label>
 		<description>Eco Mode activation state (EcoIQ)</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="manualModeState-channel">
 		<item-type>Switch</item-type>
 		<label>Manual Mode Enabled</label>
 		<description>Manual Mode activation state</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="zigbeeConnected-channel" advanced="true">
@@ -384,12 +447,20 @@
 		<item-type>Switch</item-type>
 		<label>Set Point</label>
 		<description>Hot water heating set point switch</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="boostDuration-channel">
 		<item-type>Number</item-type>
 		<label>Boost Duration</label>
 		<description>Duration in hours to boost hot water for</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state pattern="%.1f h" min="0" max="3" step="0.5"/>
 	</channel-type>
 
@@ -397,6 +468,10 @@
 		<item-type>Switch</item-type>
 		<label>Is Boosted</label>
 		<description>Is the hot water currently being boosted</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Heating</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -404,6 +479,10 @@
 		<item-type>Number:Time</item-type>
 		<label>Boost Remaining</label>
 		<description>How long until the boost deactivates</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Progress</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0f min"/>
 	</channel-type>
 
@@ -411,12 +490,20 @@
 		<item-type>Switch</item-type>
 		<label>Open Window Detection</label>
 		<description>Is window detection turned on</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Enabled</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="windowState-channel">
 		<item-type>Contact</item-type>
 		<label>Window State</label>
 		<description>Is the window open or closed</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="deviceLocked-channel" advanced="true">
@@ -429,24 +516,40 @@
 		<item-type>Switch</item-type>
 		<label>Plug State</label>
 		<description>Is the smart plug switched on or off</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="plugAwayAction-channel">
 		<item-type>Switch</item-type>
 		<label>Plug Off in Away Mode</label>
 		<description>Should the smart plug switch off when in away mode</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="comfortModeState-channel">
 		<item-type>Switch</item-type>
 		<label>Comfort Mode Active</label>
 		<description>Should the room pre-heat to achieve the desired temperature</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="plugInstantaneousPower-channel">
 		<item-type>Number:Power</item-type>
 		<label>Plug Instantaneous Power</label>
 		<description>Current Power being drawn through the plug</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -454,6 +557,10 @@
 		<item-type>Number:Energy</item-type>
 		<label>Plug Energy Delivered</label>
 		<description>Cumulative energy drawn through the plug</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 

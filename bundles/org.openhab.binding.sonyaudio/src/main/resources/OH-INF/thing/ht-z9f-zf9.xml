@@ -9,6 +9,10 @@
 		<item-type>String</item-type>
 		<label>Input Source</label>
 		<description>Select the input source of the receiver</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>MediaControl</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="btaudio">Bluetooth Audio</option>
@@ -27,6 +31,10 @@
 		<item-type>String</item-type>
 		<label>Sound Field</label>
 		<description>Select the Sound Field for the receiver</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>MediaControl</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="auto">Auto Sound</option>
@@ -44,12 +52,17 @@
 		<item-type>Switch</item-type>
 		<label>Night Mode</label>
 		<description>Enable/Disable Night Mode</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<!-- HT-z9f Thing Type -->
 	<thing-type id="HT-Z9F">
 		<label>SONY Soundbar HT-Z9F</label>
 		<description>SONY Soundbar HT-Z9F</description>
+		<semantic-equipment-tag>Speaker</semantic-equipment-tag>
 		<channels>
 			<channel id="power" typeId="power"/>
 			<channel id="input" typeId="input-z9f-zf9"/>
@@ -64,6 +77,7 @@
 	<thing-type id="HT-ZF9">
 		<label>SONY Soundbar HT-ZF9</label>
 		<description>SONY Soundbar HT-ZF9</description>
+		<semantic-equipment-tag>Speaker</semantic-equipment-tag>
 		<channels>
 			<channel id="power" typeId="power"/>
 			<channel id="input" typeId="input-z9f-zf9"/>

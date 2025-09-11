@@ -13,6 +13,8 @@
 package org.openhab.binding.boschshc.internal.devices.lightcontrol;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.openhab.binding.boschshc.internal.devices.AbstractPowerSwitchHandlerWithPowerMeterTest;
 import org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants;
 import org.openhab.core.thing.ThingTypeUID;
@@ -24,6 +26,7 @@ import org.openhab.core.thing.ThingTypeUID;
  *
  */
 @NonNullByDefault
+@ExtendWith(MockitoExtension.class)
 class LightControlHandlerTest extends AbstractPowerSwitchHandlerWithPowerMeterTest<LightControlHandler> {
 
     @Override

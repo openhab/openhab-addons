@@ -44,6 +44,35 @@
 				<type>tasmotaplug:energy-total-start</type>
 			</add-channel>
 		</instruction-set>
+
+		<instruction-set targetVersion="2">
+			<update-channel id="energy-total-start">
+				<type>tasmotaplug:energy-total-start</type>
+			</update-channel>
+		</instruction-set>
+
+		<instruction-set targetVersion="3">
+			<add-channel id="pulse-time">
+				<type>tasmotaplug:pulse-time</type>
+				<label>Pulse Time</label>
+				<description>Set PulseTime for relay 1 in 0.1 second increments</description>
+			</add-channel>
+			<add-channel id="pulse-time2">
+				<type>tasmotaplug:pulse-time</type>
+				<label>Pulse Time 2</label>
+				<description>Set PulseTime for relay 2 in 0.1 second increments</description>
+			</add-channel>
+			<add-channel id="pulse-time3">
+				<type>tasmotaplug:pulse-time</type>
+				<label>Pulse Time 3</label>
+				<description>Set PulseTime for relay 3 in 0.1 second increments</description>
+			</add-channel>
+			<add-channel id="pulse-time4">
+				<type>tasmotaplug:pulse-time</type>
+				<label>Pulse Time 4</label>
+				<description>Set PulseTime for relay 4 in 0.1 second increments</description>
+			</add-channel>
+		</instruction-set>
 	</thing-type>
 
 </update:update-descriptions>

@@ -19,7 +19,13 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.electroluxappliance.internal.dto.ActionDeserializer;
+import org.openhab.binding.electroluxappliance.internal.dto.ApplianceInfoDTO;
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
+import org.openhab.core.storage.Storage;
+import org.openhab.core.storage.StorageService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -29,10 +35,9 @@ import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 /**
  * The {@link ElectroluxApplianceHandlerFactory} is responsible for creating things and thing
@@ -45,15 +50,23 @@ import com.google.gson.Gson;
 public class ElectroluxApplianceHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_ELECTROLUX_AIR_PURIFIER,
-            THING_TYPE_ELECTROLUX_WASHING_MACHINE, THING_TYPE_BRIDGE);
+            THING_TYPE_ELECTROLUX_WASHING_MACHINE, THING_TYPE_ELECTROLUX_PORTABLE_AIR_CONDITIONER, THING_TYPE_BRIDGE);
     private final Gson gson;
     private HttpClient httpClient;
-    private final Logger logger = LoggerFactory.getLogger(ElectroluxApplianceHandlerFactory.class);
+    private final TranslationProvider translationProvider;
+    private final LocaleProvider localeProvider;
+    private final StorageService storageService;
 
     @Activate
-    public ElectroluxApplianceHandlerFactory(@Reference HttpClientFactory httpClientFactory) {
+    public ElectroluxApplianceHandlerFactory(@Reference HttpClientFactory httpClientFactory,
+            @Reference TranslationProvider translationProvider, @Reference LocaleProvider localeProvider,
+            @Reference StorageService storageService) {
         this.httpClient = httpClientFactory.getCommonHttpClient();
-        this.gson = new Gson();
+        this.gson = new GsonBuilder().registerTypeAdapter(ApplianceInfoDTO.Action.class, new ActionDeserializer())
+                .create();
+        this.translationProvider = translationProvider;
+        this.localeProvider = localeProvider;
+        this.storageService = storageService;
     }
 
     @Override
@@ -65,12 +78,18 @@ public class ElectroluxApplianceHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
+        final Storage<String> storage = storageService.getStorage(thing.getUID().toString(),
+                String.class.getClassLoader());
+
         if (THING_TYPE_ELECTROLUX_AIR_PURIFIER.equals(thingTypeUID)) {
-            return new ElectroluxAirPurifierHandler(thing);
+            return new ElectroluxAirPurifierHandler(thing, translationProvider, localeProvider);
         } else if (THING_TYPE_ELECTROLUX_WASHING_MACHINE.equals(thingTypeUID)) {
-            return new ElectroluxWashingMachineHandler(thing);
+            return new ElectroluxWashingMachineHandler(thing, translationProvider, localeProvider);
+        } else if (THING_TYPE_ELECTROLUX_PORTABLE_AIR_CONDITIONER.equals(thingTypeUID)) {
+            return new ElectroluxPortableAirConditionerHandler(thing, translationProvider, localeProvider, storage);
         } else if (THING_TYPE_BRIDGE.equals(thingTypeUID)) {
-            return new ElectroluxApplianceBridgeHandler((Bridge) thing, httpClient, gson);
+            return new ElectroluxApplianceBridgeHandler((Bridge) thing, httpClient, gson, translationProvider,
+                    localeProvider, storage);
         }
         return null;
     }

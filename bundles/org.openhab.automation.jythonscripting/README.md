@@ -2,6 +2,10 @@
 
 This add-on provides [Jython](https://www.jython.org/) 2.7 that can be used as a scripting language within automation rules and which eliminates the need to download Jython and create `EXTRA_JAVA_OPTS` entries for `bootclasspath`, `python.home` and `python.path`.
 
+::: tip Note
+There is a newer GraalVM based [Python Automation add-on](/addons/automation/pythonscripting/) that supports Python 3.x.
+:::
+
 The `python.home` system property is set to the path of the add-on.
 
 The `python.path` system property is set to `$OPENHAB_CONF/automation/jython/lib`, but any existing `python.path` will be appended to it.

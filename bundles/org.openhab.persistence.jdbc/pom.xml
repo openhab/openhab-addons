@@ -1,13 +1,13 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
     <groupId>org.openhab.addons.bundles</groupId>
     <artifactId>org.openhab.addons.reactor.bundles</artifactId>
-    <version>5.0.0-SNAPSHOT</version>
+    <version>5.1.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>org.openhab.persistence.jdbc</artifactId>
@@ -15,23 +15,23 @@
   <name>openHAB Add-ons :: Bundles :: Persistence Service :: JDBC</name>
 
   <properties>
-    <bnd.importpackage>!org.osgi.service.jdbc.*,!sun.security.*,!org.apache.lucene.*,!org.apache.logging.log4j,!waffle.windows.auth.*,!org.hibernate.*,!org.jboss.*,!org.codehaus.groovy.*,!com.codahale.metrics.*,!com.google.protobuf.*,!com.ibm.icu.*,!com.ibm.jvm.*,!com.mchange.*,!com.sun.*,!com.vividsolutions.*,!io.prometheus.*,com.mysql.*;resolution:=optional,org.apache.derby.*;resolution:=optional,org.h2.*;resolution:=optional,org.hsqldb;resolution:=optional,org.hsqldb.jdbc;resolution:=optional,org.mariadb.*;resolution:=optional,org.postgresql.*;resolution:=optional,org.sqlite;resolution:=optional,org.sqlite.jdbc4;resolution:=optional,oracle.*;resolution:=optional,javassist*;resolution:=optional</bnd.importpackage>
+    <bnd.importpackage>!org.osgi.service.jdbc.*,!sun.security.*,!org.apache.lucene.*,!org.apache.logging.log4j,!waffle.windows.auth.*,!org.hibernate.*,!org.jboss.*,!org.codehaus.groovy.*,!com.codahale.metrics.*,!com.google.protobuf.*,!com.ibm.db2.jcc,!com.ibm.icu.*,!com.ibm.jvm.*,!com.mchange.*,!com.sun.*,!com.vividsolutions.*,!io.prometheus.*,com.mysql.*;resolution:=optional,org.apache.derby.*;resolution:=optional,org.h2.*;resolution:=optional,org.hsqldb;resolution:=optional,org.hsqldb.jdbc;resolution:=optional,org.mariadb.*;resolution:=optional,org.postgresql.*;resolution:=optional,org.sqlite;resolution:=optional,org.sqlite.jdbc4;resolution:=optional,oracle.*;resolution:=optional,javassist*;resolution:=optional</bnd.importpackage>
     <dep.noembedding>derby,h2,hsqldb,mariadb-java-client,mysql-connector-j,postgresql,sqlite-jdbc,com.oracle.database.jdbc.ojdbc11</dep.noembedding>
 
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <hikari.version>2.4.7</hikari.version>
+    <hikari.version>5.1.0</hikari.version>
     <dbutils.version>1.6</dbutils.version>
-    <yank.version>3.4.0</yank.version>
+    <yank.version>3.5.0</yank.version>
 
     <!-- JDBC database driver versions -->
-    <derby.version>10.14.2.0</derby.version>
-    <h2.version>2.2.224</h2.version>
-    <hsqldb.version>2.3.3</hsqldb.version>
-    <mariadb.version>3.0.8</mariadb.version>
-    <mysql.version>8.2.0</mysql.version>
-    <postgresql.version>42.4.4</postgresql.version>
-    <sqlite.version>3.42.0.0</sqlite.version>
+    <derby.version>10.17.1.0</derby.version>
+    <h2.version>2.3.232</h2.version>
+    <hsqldb.version>2.7.4</hsqldb.version>
+    <mariadb.version>3.5.5</mariadb.version>
+    <mysql.version>9.4.0</mysql.version>
+    <postgresql.version>42.7.7</postgresql.version>
+    <sqlite.version>3.50.3.0</sqlite.version>
     <oracle.version>23.5.0.2407</oracle.version>
   </properties>
 
@@ -62,6 +62,11 @@
     <dependency>
       <groupId>org.apache.derby</groupId>
       <artifactId>derby</artifactId>
+      <version>${derby.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.derby</groupId>
+      <artifactId>derbytools</artifactId>
       <version>${derby.version}</version>
     </dependency>
     <dependency>

@@ -6,28 +6,31 @@
 
 	<!-- Automower Bridge Thing Type -->
 	<bridge-type id="bridge">
-		<label>Automower Connect Bridge</label>
-		<description>The bridge to communicate with the Automower Connect API</description>
+		<label>Automower® Connect Bridge</label>
+		<description>The bridge to communicate with the Automower® Connect API</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
+
 
 		<config-description>
 			<parameter name="appKey" type="text" required="true">
 				<label>Application Key</label>
-				<description>The Application Key is required to communicate with the Automower Connect API at
-					https://developer.husqvarnagroup.cloud/. It can be obtained by
-					registering an Application on the Husqvarna Website.
-					This application also needs to be connected to the
-					"Authentication API" and the "Automower Connect API"</description>
+				<description>The Application Key is required to communicate with the Automower® Connect API.
+					It can be obtained by
+					registering an Application on https://developer.husqvarnagroup.cloud/.
+					This application needs to be connected to the
+					"Authentication API" and the "Automower® Connect
+					API". https://developer.husqvarnagroup.cloud/docs/getting-started
+				</description>
 			</parameter>
 			<parameter name="appSecret" type="text" required="true">
 				<label>Application Secret</label>
-				<description>The Application Secret is required to communicate with the Automower Connect API at
-					https://developer.husqvarnagroup.cloud/. It can be obtained by
-					registering an Application on the Husqvarna Website.</description>
+				<description>The Application Secret is required to communicate with the Automower® Connect API. See "Application
+					Key" for further details</description>
 			</parameter>
 			<parameter name="pollingInterval" type="integer" required="false" unit="s">
 				<label>Polling Interval</label>
-				<default>3600</default>
-				<description>How often the available automowers should be queried in seconds</description>
+				<default>300</default>
+				<description>How often the current Automower® states should be polled using REST API</description>
 			</parameter>
 		</config-description>
 
@@ -39,112 +42,191 @@
 			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 
-		<label>Automower</label>
+		<label>Automower®</label>
 		<description>An automatic lawn mower</description>
+		<semantic-equipment-tag>LawnMower</semantic-equipment-tag>
 
-		<channels>
-			<!-- Status -->
-			<channel id="name" typeId="nameType"/>
-			<channel id="mode" typeId="modeType"/>
-			<channel id="activity" typeId="activityType"/>
-			<channel id="state" typeId="stateType"/>
-			<channel id="last-update" typeId="lastUpdateType"/>
-			<channel id="battery" typeId="system.battery-level"/>
-			<channel id="error-code" typeId="errorCodeType"/>
-			<channel id="error-timestamp" typeId="errorTimestampType"/>
-			<channel id="planner-next-start" typeId="plannerNextStartTimestampType"/>
-			<channel id="planner-override-action" typeId="plannerOverrideActionType"/>
-			<channel id="calendar-tasks" typeId="calendarTasksType"/>
-			<!-- Commands -->
-			<channel id="start" typeId="start"/>
-			<channel id="resume_schedule" typeId="resumeSchedule"/>
-			<channel id="pause" typeId="pause"/>
-			<channel id="park" typeId="park"/>
-			<channel id="park_until_next_schedule" typeId="parkUntilNextSchedule"/>
-			<channel id="park_until_further_notice" typeId="parkUntilFurtherNotice"/>
-
-			<!-- Positions -->
-			<channel id="last-position" typeId="positionType">
-				<description>Last Position</description>
-			</channel>
-			<channel id="position01" typeId="positionType"/>
-			<channel id="position02" typeId="positionType"/>
-			<channel id="position03" typeId="positionType"/>
-			<channel id="position04" typeId="positionType"/>
-			<channel id="position05" typeId="positionType"/>
-			<channel id="position06" typeId="positionType"/>
-			<channel id="position07" typeId="positionType"/>
-			<channel id="position08" typeId="positionType"/>
-			<channel id="position09" typeId="positionType"/>
-			<channel id="position10" typeId="positionType"/>
-			<channel id="position11" typeId="positionType"/>
-			<channel id="position12" typeId="positionType"/>
-			<channel id="position13" typeId="positionType"/>
-			<channel id="position14" typeId="positionType"/>
-			<channel id="position15" typeId="positionType"/>
-			<channel id="position16" typeId="positionType"/>
-			<channel id="position17" typeId="positionType"/>
-			<channel id="position18" typeId="positionType"/>
-			<channel id="position19" typeId="positionType"/>
-			<channel id="position20" typeId="positionType"/>
-			<channel id="position21" typeId="positionType"/>
-			<channel id="position22" typeId="positionType"/>
-			<channel id="position23" typeId="positionType"/>
-			<channel id="position24" typeId="positionType"/>
-			<channel id="position25" typeId="positionType"/>
-			<channel id="position26" typeId="positionType"/>
-			<channel id="position27" typeId="positionType"/>
-			<channel id="position28" typeId="positionType"/>
-			<channel id="position29" typeId="positionType"/>
-			<channel id="position30" typeId="positionType"/>
-			<channel id="position31" typeId="positionType"/>
-			<channel id="position32" typeId="positionType"/>
-			<channel id="position33" typeId="positionType"/>
-			<channel id="position34" typeId="positionType"/>
-			<channel id="position35" typeId="positionType"/>
-			<channel id="position36" typeId="positionType"/>
-			<channel id="position37" typeId="positionType"/>
-			<channel id="position38" typeId="positionType"/>
-			<channel id="position39" typeId="positionType"/>
-			<channel id="position40" typeId="positionType"/>
-			<channel id="position41" typeId="positionType"/>
-			<channel id="position42" typeId="positionType"/>
-			<channel id="position43" typeId="positionType"/>
-			<channel id="position44" typeId="positionType"/>
-			<channel id="position45" typeId="positionType"/>
-			<channel id="position46" typeId="positionType"/>
-			<channel id="position47" typeId="positionType"/>
-			<channel id="position48" typeId="positionType"/>
-			<channel id="position49" typeId="positionType"/>
-			<channel id="position50" typeId="positionType"/>
-		</channels>
+		<channel-groups>
+			<channel-group id="status" typeId="statusType"/>
+			<channel-group id="setting" typeId="settingsType"/>
+			<channel-group id="statistic" typeId="statisticsType"/>
+			<channel-group id="calendartask" typeId="calendarTasksType"/>
+			<channel-group id="stayoutzone" typeId="stayoutZonesType"/>
+			<channel-group id="workarea" typeId="workAreasType"/>
+			<channel-group id="command" typeId="commandsType"/>
+			<channel-group id="message" typeId="messagesType"/>
+		</channel-groups>
 
 		<properties>
 			<property name="mowerId">N/A</property>
 			<property name="mowerName">N/A</property>
 			<property name="mowerModel">N/A</property>
 			<property name="mowerSerialNumber">N/A</property>
+			<property name="mowerCanConfirmError">N/A</property>
+			<property name="mowerHasHeadlights">N/A</property>
+			<property name="mowerHasPosition">N/A</property>
+			<property name="mowerHasStayOutZones">N/A</property>
+			<property name="mowerHasWorkAreas">N/A</property>
+			<property name="thingTypeVersion">2</property>
 		</properties>
 
 		<config-description>
 			<parameter name="mowerId" type="text" required="true">
-				<label>Automower Id</label>
-				<description>The Id of an automower as used by the Automower Connect Api to identify a mower</description>
+				<label>Automower® Id</label>
+				<description>The Id of an Automower® as used by the Automower® Connect API to identify a Automower®. This is
+					automatically filled when the thing is discovered.</description>
 			</parameter>
-			<parameter name="pollingInterval" type="integer" required="false" unit="s">
-				<label>Polling Interval</label>
-				<default>600</default>
-				<description>How often the current automower state should be polled in seconds</description>
+			<parameter name="mowerZoneId" type="text" required="false">
+				<label>TimeZone</label>
+				<description>Time zone of the Automower® (e.g. Europe/Berlin). Default is the time zone configured in openHAB</description>
 			</parameter>
 		</config-description>
-
 	</thing-type>
 
+	<channel-group-type id="statusType">
+		<label>Status</label>
+		<channels>
+			<!-- Status -->
+			<channel id="name" typeId="nameType"/>
+			<channel id="mode" typeId="modeType"/>
+			<channel id="activity" typeId="activityType"/>
+			<channel id="inactive-reason" typeId="inactiveReasonType"/>
+			<channel id="state" typeId="stateType"/>
+			<!-- channels created on demand
+				<channel id="work-area-id" typeId="workAreaIdType"/>
+				<channel id="work-area" typeId="workAreaType"/>
+			-->
+			<channel id="last-update" typeId="lastUpdateType"/>
+			<channel id="last-poll-update" typeId="lastPollUpdateType"/>
+			<channel id="poll-update" typeId="pollUpdateType"/>
+			<channel id="battery" typeId="system.battery-level"/>
+			<channel id="error-code" typeId="errorCodeType"/>
+			<channel id="error-message" typeId="errorMessageType"/>
+			<channel id="error-timestamp" typeId="errorTimestampType"/>
+			<!-- channel created on demand
+				<channel id="error-confirmable" typeId="errorConfirmableType"/>
+			-->
+			<channel id="next-start" typeId="nextStartType"/>
+			<channel id="override-action" typeId="overrideActionType"/>
+			<channel id="restricted-reason" typeId="restrictedReasonType"/>
+			<channel id="external-reason" typeId="externalReasonType"/>
+			<!-- channels created on demand
+				<channel id="position" typeId="positionType"/>
+			-->
+		</channels>
+	</channel-group-type>
+
+	<!-- Settings -->
+	<channel-group-type id="settingsType">
+		<label>Settings</label>
+		<channels>
+			<channel id="cutting-height" typeId="settingCuttingHeightType"/>
+			<!-- channel created on demand
+				<channel id="headlight-mode" typeId="settingHeadlightModeType"/>
+			-->
+		</channels>
+	</channel-group-type>
+
+	<!-- Statistics -->
+	<channel-group-type id="statisticsType">
+		<label>Statistics</label>
+		<channels>
+			<channel id="cutting-blade-usage-time" typeId="statCuttingBladeUsageTimeType"/>
+			<channel id="down-time" typeId="statDownTimeType"/>
+			<channel id="number-of-charging-cycles" typeId="statNumberOfChargingCyclesType"/>
+			<channel id="number-of-collisions" typeId="statNumberOfCollisionsType"/>
+			<channel id="total-charging-time" typeId="statTotalChargingTimeType"/>
+			<channel id="total-cutting-time" typeId="statTotalCuttingTimeType"/>
+			<channel id="total-cutting-percent" typeId="statTotalCuttingPercentType"/>
+			<channel id="total-drive-distance" typeId="statTotalDriveDistanceType"/>
+			<channel id="total-running-time" typeId="statTotalRunningTimeType"/>
+			<channel id="total-searching-time" typeId="statTotalSearchingTimeType"/>
+			<channel id="total-searching-percent" typeId="statTotalSearchingPercentType"/>
+			<channel id="up-time" typeId="statUpTimeType"/>
+		</channels>
+	</channel-group-type>
+
+	<!-- Calendar Tasks -->
+	<channel-group-type id="calendarTasksType">
+		<label>Calendar Tasks</label>
+		<!-- channels created on demand
+			<channels>
+			<channel id="<xx>-start" typeId="calendarTaskStartType"/>
+			<channel id="<xx>-duration" typeId="calendarTaskDurationType"/>
+			<channel id="<xx>-monday" typeId="calendarTaskMondayType"/>
+			<channel id="<xx>-tuesday" typeId="calendarTaskTuesdayType"/>
+			<channel id="<xx>-wednesday" typeId="calendarTaskWednesdayType"/>
+			<channel id="<xx>-thursday" typeId="calendarTaskThursdayType"/>
+			<channel id="<xx>-friday" typeId="calendarTaskFridayType"/>
+			<channel id="<xx>-saturday" typeId="calendarTaskSaturdayType"/>
+			<channel id="<xx>-sunday" typeId="calendarTaskSundayType"/>
+			<channel id="<xx>-workAreaId" typeId="calendarTaskWorkAreaIdType"/>
+			<channel id="<xx>-workArea" typeId="workareaNameType"/>
+			...
+			</channels>
+		-->
+	</channel-group-type>
+
+	<!-- Stayout Zones -->
+	<channel-group-type id="stayoutZonesType">
+		<label>Stayout Zones</label>
+		<!-- channels created on demand
+			<channels>
+			<channel id="dirty" typeId="zoneDirtyType"/>
+			<channel id="<xx>-id" typeId="zoneIdType"/>
+			<channel id="<xx>-name" typeId="zoneNameType"/>
+			<channel id="<xx>-enabled" typeId="zoneEnabledType"/>
+			...
+			</channels>
+		-->
+	</channel-group-type>
+
+	<!-- Work Areas -->
+	<channel-group-type id="workAreasType">
+		<label>Work Areas</label>
+		<!-- channels created on demand
+			<channels>
+			<channel id="<xx>-id" typeId="workareaIdType"/>
+			<channel id="<xx>-name" typeId="workareaNameType"/>
+			<channel id="<xx>-cutting-height" typeId="workareaCuttingHeightType"/>
+			<channel id="<xx>-enabled" typeId="workareaEnabledType"/>
+			<channel id="<xx>-progress" typeId="workareaProgressType"/>
+			<channel id="<xx>-last-time-completed" typeId="workareaLastTimeCompletedType"/>
+			...
+			</channels>
+		-->
+	</channel-group-type>
+
+	<!-- Messages -->
+	<channel-group-type id="messagesType">
+		<label>Messages</label>
+		<channels>
+			<channel id="msg-timestamp" typeId="messageTimeType"/>
+			<channel id="msg-code" typeId="messageCodeType"/>
+			<channel id="msg-text" typeId="messageType"/>
+			<channel id="msg-severity" typeId="messageSeverityType"/>
+			<channel id="msg-gps-position" typeId="messagePositionType"/>
+		</channels>
+	</channel-group-type>
+
+	<!-- Commands -->
+	<channel-group-type id="commandsType">
+		<label>Commands</label>
+		<channels>
+			<channel id="start" typeId="start"/>
+			<channel id="start_in_work_area" typeId="startInWorkArea"/>
+			<channel id="resume_schedule" typeId="resumeSchedule"/>
+			<channel id="pause" typeId="pause"/>
+			<channel id="park" typeId="park"/>
+			<channel id="park_until_next_schedule" typeId="parkUntilNextSchedule"/>
+			<channel id="park_until_further_notice" typeId="parkUntilFurtherNotice"/>
+		</channels>
+	</channel-group-type>
 
 	<channel-type id="nameType">
 		<item-type>String</item-type>
-		<label>Automower Name</label>
-		<description>The channel providing the automower name</description>
+		<label>Automower® Name</label>
+		<description>The name of the Automower®</description>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -170,13 +252,26 @@
 		<state readOnly="true">
 			<options>
 				<option value="UNKNOWN">Unknown</option>
-				<option value="NOT_APPLICABLE">N/A</option>
+				<option value="NOT_APPLICABLE">Not Applicable</option>
 				<option value="MOWING">Mowing</option>
 				<option value="GOING_HOME">Returning to charging station</option>
 				<option value="CHARGING">Charging</option>
 				<option value="LEAVING">Leaving charging station</option>
 				<option value="PARKED_IN_CS">Parked in charging station</option>
 				<option value="STOPPED_IN_GARDEN">Stopped in garden</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="inactiveReasonType">
+		<item-type>String</item-type>
+		<label>Inactive Reason</label>
+		<description>The current reason for being inactive</description>
+		<state readOnly="true">
+			<options>
+				<option value="NONE">No inactive reason</option>
+				<option value="PLANNING">The Automower® is planning a path or a Work Area</option>
+				<option value="SEARCHING_FOR_SATELLITES">Waiting for fix when using EPOS</option>
 			</options>
 		</state>
 	</channel-type>
@@ -192,14 +287,18 @@
 				<option value="PAUSED">Paused by user</option>
 				<option value="IN_OPERATION">Working</option>
 				<option value="WAIT_UPDATING">Downloading new firmware</option>
-				<option value="WAIT_POWER_UP">Booting mower</option>
-				<option value="RESTRICTED_NONE">Waiting</option>
+				<option value="WAIT_POWER_UP">Booting Automower®</option>
+				<option value="RESTRICTED_NONE">No restricted reason</option>
 				<option value="RESTRICTED_WEEK_SCHEDULE">Restricted by week schedule</option>
 				<option value="RESTRICTED_PARK_OVERRIDE">Forced to park</option>
 				<option value="RESTRICTED_SENSOR">Restricted by sensor</option>
 				<option value="RESTRICTED_DAILY_LIMIT">Restricted by daily limit</option>
+				<option value="RESTRICTED_FOTA">Restricted by FOTA transfer</option>
+				<option value="RESTRICTED_FROST">Restricted by frost sensor</option>
+				<option value="RESTRICTED_ALL_WORK_AREAS_COMPLETED">Restricted: All Work Areas completed</option>
+				<option value="RESTRICTED_EXTERNAL">Restricted by external reason</option>
 				<option value="OFF">Off</option>
-				<option value="STOPPED">Stopped- Manual intervention required</option>
+				<option value="STOPPED">Stopped: Manual intervention required</option>
 				<option value="ERROR">Error</option>
 				<option value="FATAL_ERROR">Fatal error</option>
 				<option value="ERROR_AT_POWER_UP">Boot error</option>
@@ -207,99 +306,429 @@
 		</state>
 	</channel-type>
 
+	<channel-type id="workAreaIdType" advanced="true">
+		<item-type>Number</item-type>
+		<label>Work Area Id</label>
+		<description>Id of the active Work Area</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="workAreaType">
+		<item-type>String</item-type>
+		<label>Work Area Name</label>
+		<description>Name of the active Work Area</description>
+		<state readOnly="true"/>
+	</channel-type>
+
 	<channel-type id="lastUpdateType">
 		<item-type>DateTime</item-type>
 		<label>Last Update</label>
-		<description>The time when the mower sent the last update</description>
+		<description>The time when the Automower® sent the last update</description>
 		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="lastPollUpdateType" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Last Poll Update</label>
+		<description>The time when the binding polled the last update from the cloud</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="pollUpdateType" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Poll Update</label>
+		<description>Poll Automower® status update from the cloud</description>
 	</channel-type>
 
 	<channel-type id="batteryType">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Battery</label>
-		<description>The battery level of the mower at the time of last update</description>
+		<description>The battery state of charge in percent</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %%"/>
 	</channel-type>
 
-	<channel-type id="errorCodeType">
+	<channel-type id="errorCodeType" advanced="true">
 		<item-type>Number</item-type>
 		<label>Error Code</label>
-		<description>The error code at the time of last update</description>
-		<state readOnly="true"/>
+		<description>The current error code</description>
+	</channel-type>
+
+	<channel-type id="errorMessageType">
+		<item-type>String</item-type>
+		<label>Error Message</label>
+		<description>The current error message</description>
 	</channel-type>
 
 	<channel-type id="errorTimestampType">
 		<item-type>DateTime</item-type>
 		<label>Error Time</label>
-		<description>The time when the error occurred</description>
+		<description>The time when the current error occurred</description>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="plannerNextStartTimestampType">
+	<channel-type id="errorConfirmableType" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Error Confirmable</label>
+		<description>If the Automower® has an error, this attribute states if the error is confirmable</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="nextStartType">
 		<item-type>DateTime</item-type>
-		<label>Next Auto Start</label>
-		<description>The channel providing the time for the next auto start. If the mower is charging then the value is the
-			estimated time when it will be leaving the charging station. If the mower is about to start now, the value is NULL.</description>
+		<label>Next Start</label>
+		<description>The time for the next scheduled start.
+			If the Automower® is charging then the value is the estimated time
+			when it will be leaving the charging station.
+			If the Automower® is about to start now, the value is NULL</description>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="plannerOverrideActionType">
+	<channel-type id="overrideActionType">
 		<item-type>String</item-type>
 		<label>Override Action</label>
-		<description>The channel providing an action that overrides current planner operation.</description>
+		<description>The action that overrides the current planner operation</description>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="calendarTasksType">
+	<channel-type id="restrictedReasonType" advanced="true">
 		<item-type>String</item-type>
-		<label>Planner Info JSON</label>
-		<description>The channel providing a JSON with the information about the planner tasks.</description>
+		<label>Restricted Reason</label>
+		<description>The reason that restrics the current planner operation</description>
+		<state readOnly="true">
+			<options>
+				<option value="NONE">No restricted reason</option>
+				<option value="WEEK_SCHEDULE">Restricted by week schedule</option>
+				<option value="PARK_OVERRIDE">Forced to park</option>
+				<option value="SENSOR">Restricted by sensor</option>
+				<option value="DAILY_LIMIT">Restricted by daily limit</option>
+				<option value="FOTA">Restricted by FOTA transfer</option>
+				<option value="FROST">Restricted by frost sensor</option>
+				<option value="ALL_WORK_AREAS_COMPLETED">Restricted: All Work Areas completed</option>
+				<option value="EXTERNAL">Restricted by external reason</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="externalReasonType" advanced="true">
+		<item-type>Number</item-type>
+		<label>External Reason</label>
+		<description>An external reason set by i.e. Google Assistant or Amazon Alexa that restrics the current planner
+			operation</description>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="positionType">
+	<channel-type id="positionType" advanced="false">
 		<item-type>Location</item-type>
-		<label>GPS Position</label>
-		<description>The channel providing a waypoint of the mower's activity.</description>
+		<label>Last GPS Position</label>
+		<description>Last GPS position of the Automower®</description>
 		<state readOnly="true"/>
 	</channel-type>
 
+	<channel-type id="settingCuttingHeightType">
+		<item-type>Number</item-type>
+		<label>Cutting Height</label>
+		<description>Prescaled cutting height, range: 1-9</description>
+	</channel-type>
+
+	<channel-type id="settingHeadlightModeType">
+		<item-type>String</item-type>
+		<label>Headlight Mode</label>
+	</channel-type>
+
+	<channel-type id="statCuttingBladeUsageTimeType">
+		<item-type>Number:Time</item-type>
+		<label>Cutting Blade Usage Time</label>
+		<description>The time since the last reset of the cutting blade usage counter</description>
+		<state pattern="%.1f h"/>
+	</channel-type>
+
+	<channel-type id="statDownTimeType" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Down Time</label>
+		<description>The time the Automower® has been disconnected from the cloud</description>
+		<state readOnly="true" pattern="%1$tdd:%1$tHh:%1$tMm:%1$tSs"/>
+	</channel-type>
+
+	<channel-type id="statNumberOfChargingCyclesType">
+		<item-type>Number</item-type>
+		<label>Number of Charging Cycles</label>
+		<description>Number of charging cycles</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="statNumberOfCollisionsType">
+		<item-type>Number</item-type>
+		<label>Number of Collisions</label>
+		<description>Total number of collisions</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="statTotalChargingTimeType">
+		<item-type>Number:Time</item-type>
+		<label>Total Charging Time</label>
+		<description>Total charging time</description>
+		<state readOnly="true" pattern="%.1f h"/>
+	</channel-type>
+
+	<channel-type id="statTotalCuttingTimeType">
+		<item-type>Number:Time</item-type>
+		<label>Total Cutting Time</label>
+		<description>Total cutting time</description>
+		<state readOnly="true" pattern="%.1f h"/>
+	</channel-type>
+
+	<channel-type id="statTotalCuttingPercentType">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Relative Total Cutting Time</label>
+		<description>Total cutting time in percent</description>
+		<state readOnly="true" pattern="%.1f %%"/>
+	</channel-type>
+
+	<channel-type id="statTotalDriveDistanceType">
+		<item-type>Number:Length</item-type>
+		<label>Total Drive Distance</label>
+		<description>Total driven distance</description>
+		<state readOnly="true" pattern="%.1f km"/>
+	</channel-type>
+
+	<channel-type id="statTotalRunningTimeType">
+		<item-type>Number:Time</item-type>
+		<label>Total Running Time</label>
+		<description>The total running time (the wheel motors have been running)</description>
+		<state readOnly="true" pattern="%.1f h"/>
+	</channel-type>
+
+	<channel-type id="statTotalSearchingTimeType">
+		<item-type>Number:Time</item-type>
+		<label>Total Searching Time</label>
+		<description>The total searching time</description>
+		<state readOnly="true" pattern="%.1f h"/>
+	</channel-type>
+
+	<channel-type id="statTotalSearchingPercentType">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Relative Total Searching Time</label>
+		<description>The total searching time in percent</description>
+		<state readOnly="true" pattern="%.1f %%"/>
+	</channel-type>
+
+	<channel-type id="statUpTimeType" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Up Time</label>
+		<description>The time the Automower® has been connected to the cloud</description>
+		<state readOnly="true" pattern="%1$tdd:%1$tHh:%1$tMm:%1$tSs"/>
+	</channel-type>
+
+	<!-- Calendar Tasks -->
+	<channel-type id="calendarTaskStartType" advanced="true">
+		<item-type unitHint="min">Number:Time</item-type>
+		<label>Start Time</label>
+		<description>Start time relative to midnight</description>
+		<state pattern="%1$tHh:%1$tMm"/>
+	</channel-type>
+	<channel-type id="calendarTaskDurationType" advanced="true">
+		<item-type unitHint="min">Number:Time</item-type>
+		<label>Duration</label>
+		<description>Duration time</description>
+		<state pattern="%1$tHh:%1$tMm"/>
+	</channel-type>
+	<channel-type id="calendarTaskMondayType" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Enabled on Mondays</label>
+		<description>Enabled on Mondays</description>
+	</channel-type>
+	<channel-type id="calendarTaskTuesdayType" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Enabled on Tuesdays</label>
+		<description>Enabled on Tuesdays</description>
+	</channel-type>
+	<channel-type id="calendarTaskWednesdayType" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Enabled on Wednesdays</label>
+		<description>Enabled on Wednesdays</description>
+	</channel-type>
+	<channel-type id="calendarTaskThursdayType" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Enabled on Thursdays</label>
+		<description>Enabled on Thursdays</description>
+	</channel-type>
+	<channel-type id="calendarTaskFridayType" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Enabled on Fridays</label>
+		<description>Enabled on Fridays</description>
+	</channel-type>
+	<channel-type id="calendarTaskSaturdayType" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Enabled on Saturdays</label>
+		<description>Enabled on Saturdays</description>
+	</channel-type>
+	<channel-type id="calendarTaskSundayType" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Enabled on Sundays</label>
+		<description>Enabled on Sundays</description>
+	</channel-type>
+	<channel-type id="calendarTaskWorkAreaIdType" advanced="true">
+		<item-type>Number</item-type>
+		<label>Work Area Id of Calendar</label>
+		<description>Work Area Id mapped to this calendar</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<!-- Stayout Zones -->
+	<channel-type id="zoneDirtyType" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Stayout Zones Dirty Flag</label>
+		<description>If the stay-out zones are synchronized with the Husqvarna cloud. If the map is dirty you can not enable
+			or disable a stay-out zone</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="zoneIdType" advanced="true">
+		<item-type>String</item-type>
+		<label>Stayout Zone Id</label>
+		<description>Id of the stay-out zone</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="zoneNameType" advanced="true">
+		<item-type>String</item-type>
+		<label>Stayout Zone Name</label>
+		<description>The name of the stay-out zone</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="zoneEnabledType" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Stayout Zone Enabled</label>
+		<description>If the stay-out zone is enabled, the Automower® will not access the zone</description>
+	</channel-type>
+
+	<!-- Work Areas -->
+	<channel-type id="workareaIdType" advanced="true">
+		<item-type>Number</item-type>
+		<label>Work Area Id</label>
+		<description>Id of the Work Area</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="workareaNameType" advanced="true">
+		<item-type>String</item-type>
+		<label>Work Area Name</label>
+		<description>Name of the Work Area</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="workareaCuttingHeightType" advanced="true">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Cutting Height</label>
+		<description>Cutting height of the Work Area, range: 0-100</description>
+		<state pattern="%d %%"/>
+	</channel-type>
+
+	<channel-type id="workareaEnabledType" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Work Area Enabled</label>
+		<description>If the Work Area is enabled or disabled</description>
+	</channel-type>
+
+	<channel-type id="workareaProgressType" advanced="true">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Work Area Progress</label>
+		<description>The progress on a Work Area. EPOS Automower® and systematic mowing Work Areas only</description>
+		<state readOnly="true" pattern="%d %%"/>
+	</channel-type>
+
+	<channel-type id="workareaLastTimeCompletedType" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Last Time Completed</label>
+		<description>Timestamp when the Work Area was last completed. EPOS Automower® and systematic mowing Work Areas only</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<!-- Messages -->
+	<channel-type id="messageTimeType" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Last Error Time</label>
+		<description>The time when the last error occurred</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="messageCodeType" advanced="true">
+		<item-type>Number</item-type>
+		<label>Last Error Code</label>
+		<description>The last error code</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="messageType" advanced="true">
+		<item-type>String</item-type>
+		<label>Last Error Message</label>
+		<description>The last error message</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="messageSeverityType" advanced="true">
+		<item-type>String</item-type>
+		<label>Message Severity</label>
+		<description>The severity of the last error</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="messagePositionType" advanced="true">
+		<item-type>Location</item-type>
+		<label>Message GPS Position</label>
+		<description>GPS position of the last event (if available)</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<!-- Commands -->
 	<channel-type id="start">
 		<item-type>Number</item-type>
 		<label>Start with Duration</label>
-		<description>Start for a duration in minutes</description>
+		<description>Start the Automower® for the given duration, overriding the schedule</description>
 		<state pattern="%d min" min="1" max="1440" step="1"/>
+	</channel-type>
+
+	<channel-type id="startInWorkArea">
+		<item-type>Number</item-type>
+		<label>Start in Work Area</label>
+		<description>Start the Automower® in the given Work Area, overriding the schedule. The Automower® will continue
+			forever</description>
+		<state pattern="%d"/>
 	</channel-type>
 
 	<channel-type id="resumeSchedule">
 		<item-type>Switch</item-type>
 		<label>Resume Schedule</label>
-		<description>Resume schedule</description>
+		<description>Resume the schedule of the Automower®</description>
 	</channel-type>
 
 	<channel-type id="pause">
 		<item-type>Switch</item-type>
 		<label>Pause</label>
-		<description>Pause the mower now until manual resume</description>
+		<description>Pause the Automower® at the current location until manual resume</description>
 	</channel-type>
 
 	<channel-type id="park">
 		<item-type>Number</item-type>
 		<label>Park with Duration</label>
-		<description>Park for a duration in minutes</description>
+		<description>Park the Automower® for the given duration, overriding the schedule</description>
 		<state pattern="%d min" min="1" max="1440" step="1"/>
 	</channel-type>
 
 	<channel-type id="parkUntilNextSchedule">
 		<item-type>Switch</item-type>
 		<label>Park Until Next Schedule</label>
-		<description>Park until next schedule</description>
+		<description>Park the Automower®, fully charge it and start afterwards according to the schedule</description>
 	</channel-type>
 
 	<channel-type id="parkUntilFurtherNotice">
 		<item-type>Switch</item-type>
 		<label>Park and Pause the Schedule</label>
-		<description>Park and pause the mower schedule until manual resume</description>
+		<description>Park the Automower® until it is started again by the start action/command or the schedule gets resumed</description>
 	</channel-type>
-
 </thing:thing-descriptions>

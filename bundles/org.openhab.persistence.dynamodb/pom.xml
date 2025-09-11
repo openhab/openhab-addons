@@ -1,13 +1,13 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
     <groupId>org.openhab.addons.bundles</groupId>
     <artifactId>org.openhab.addons.reactor.bundles</artifactId>
-    <version>5.0.0-SNAPSHOT</version>
+    <version>5.1.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>org.openhab.persistence.dynamodb</artifactId>
@@ -23,41 +23,8 @@
     <dep.noembedding>netty-common,netty-transport,netty-transport-native-epoll,netty-transport-native-unix-common,netty-buffer,netty-resolver,netty-codec,netty-codec-http,netty-codec-http2,netty-handler</dep.noembedding>
     <!-- slf4j version matching the version specified in openhab-core/pom.xml -->
     <slf4j.version>1.7.32</slf4j.version>
-    <jetty.version>9.4.54.v20240208</jetty.version>
+    <jetty.version>9.4.57.v20241219</jetty.version>
   </properties>
-
-  <!--Custom repository for DynamoDBLocal -->
-  <repositories>
-    <repository>
-      <id>dynamodb-local-repo</id>
-      <name>DynamoDB Local Release Repository</name>
-      <url>https://s3-us-west-2.amazonaws.com/dynamodb-local/release</url>
-    </repository>
-  </repositories>
-
-  <build>
-    <plugins>
-      <!-- Copy sqlite native libraries for tests -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-dependency-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>copy</id>
-            <phase>test-compile</phase>
-            <goals>
-              <goal>copy-dependencies</goal>
-            </goals>
-            <configuration>
-              <includeScope>test</includeScope>
-              <includeTypes>so,dll,dylib</includeTypes>
-              <outputDirectory>${project.basedir}/src/test/resources/native-libs</outputDirectory>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
-  </build>
 
   <!-- Let's ensure the correct versions with dependencyManagement.
 
@@ -121,8 +88,8 @@
       <dependency>
         <groupId>io.netty</groupId>
         <artifactId>netty-transport-native-epoll</artifactId>
-        <classifier>linux-x86_64</classifier>
         <version>${netty.version}</version>
+        <classifier>linux-x86_64</classifier>
       </dependency>
       <dependency>
         <groupId>io.netty</groupId>
@@ -149,43 +116,43 @@
     <dependency>
       <groupId>com.almworks.sqlite4java</groupId>
       <artifactId>sqlite4java-win32-x86</artifactId>
-      <type>dll</type>
       <version>[1.0, 2.0)</version>
+      <type>dll</type>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>com.almworks.sqlite4java</groupId>
       <artifactId>sqlite4java-win32-x64</artifactId>
-      <type>dll</type>
       <version>[1.0, 2.0)</version>
+      <type>dll</type>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>com.almworks.sqlite4java</groupId>
       <artifactId>libsqlite4java-osx</artifactId>
-      <type>dylib</type>
       <version>[1.0, 2.0)</version>
+      <type>dylib</type>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>com.almworks.sqlite4java</groupId>
       <artifactId>libsqlite4java-linux-i386</artifactId>
-      <type>so</type>
       <version>[1.0, 2.0)</version>
+      <type>so</type>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>com.almworks.sqlite4java</groupId>
       <artifactId>libsqlite4java-linux-amd64</artifactId>
-      <type>so</type>
       <version>[1.0, 2.0)</version>
+      <type>so</type>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>io.github.ganadist.sqlite4java</groupId>
       <artifactId>libsqlite4java-osx-aarch64</artifactId>
-      <type>dylib</type>
       <version>[1.0, 2.0)</version>
+      <type>dylib</type>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -309,4 +276,37 @@
       <version>1.0.1</version>
     </dependency>
   </dependencies>
+
+  <!--Custom repository for DynamoDBLocal -->
+  <repositories>
+    <repository>
+      <id>dynamodb-local-repo</id>
+      <name>DynamoDB Local Release Repository</name>
+      <url>https://s3-us-west-2.amazonaws.com/dynamodb-local/release</url>
+    </repository>
+  </repositories>
+
+  <build>
+    <plugins>
+      <!-- Copy sqlite native libraries for tests -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy</id>
+            <goals>
+              <goal>copy-dependencies</goal>
+            </goals>
+            <phase>test-compile</phase>
+            <configuration>
+              <includeScope>test</includeScope>
+              <includeTypes>so,dll,dylib</includeTypes>
+              <outputDirectory>${project.basedir}/src/test/resources/native-libs</outputDirectory>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
 </project>

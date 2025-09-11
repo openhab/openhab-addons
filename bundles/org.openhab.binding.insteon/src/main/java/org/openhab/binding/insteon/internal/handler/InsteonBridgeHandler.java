@@ -14,7 +14,7 @@ package org.openhab.binding.insteon.internal.handler;
 
 import static org.openhab.binding.insteon.internal.InsteonBindingConstants.*;
 
-import java.util.Optional;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
@@ -33,6 +33,7 @@ import org.openhab.binding.insteon.internal.device.InsteonAddress;
 import org.openhab.binding.insteon.internal.device.InsteonModem;
 import org.openhab.binding.insteon.internal.device.ProductData;
 import org.openhab.binding.insteon.internal.discovery.InsteonDiscoveryService;
+import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.io.transport.serial.SerialPortManager;
 import org.openhab.core.storage.Storage;
 import org.openhab.core.storage.StorageService;
@@ -57,6 +58,9 @@ public class InsteonBridgeHandler extends InsteonBaseThingHandler implements Bri
     private static final int DEVICE_STATISTICS_INTERVAL = 600; // seconds
     private static final int RETRY_INTERVAL = 30; // seconds
     private static final int START_DELAY = 5; // seconds
+
+    private final ScheduledExecutorService insteonScheduler = ThreadPoolManager
+            .getScheduledPool(BINDING_ID + "-" + getThingId());
 
     private @Nullable InsteonModem modem;
     private @Nullable InsteonDiscoveryService discoveryService;
@@ -94,8 +98,20 @@ public class InsteonBridgeHandler extends InsteonBaseThingHandler implements Bri
     }
 
     public @Nullable ProductData getProductData(DeviceAddress address) {
-        return Optional.ofNullable(getDeviceCache(address)).map(DeviceCache::getProductData)
-                .orElse(Optional.ofNullable(modem).map(modem -> modem.getProductData(address)).orElse(null));
+        DeviceCache deviceCache = getDeviceCache(address);
+        if (deviceCache != null) {
+            ProductData productData = deviceCache.getProductData();
+            if (productData != null) {
+                return productData;
+            }
+        }
+
+        InsteonModem modem = getModem();
+        if (modem != null) {
+            return modem.getProductData(address);
+        }
+
+        return null;
     }
 
     protected InsteonBridgeConfiguration getBridgeConfig() {
@@ -113,6 +129,10 @@ public class InsteonBridgeHandler extends InsteonBaseThingHandler implements Bri
 
     public int getDevicePollInterval() {
         return getBridgeConfig().getDevicePollInterval();
+    }
+
+    public int getDeviceResponseTimeout() {
+        return getBridgeConfig().getDeviceResponseTimeout();
     }
 
     public boolean isDeviceDiscoveryEnabled() {
@@ -167,7 +187,7 @@ public class InsteonBridgeHandler extends InsteonBaseThingHandler implements Bri
             legacyHandler.disable();
         }
 
-        InsteonModem modem = InsteonModem.makeModem(this, config, httpClient, scheduler, serialPortManager);
+        InsteonModem modem = InsteonModem.makeModem(this, config, httpClient, insteonScheduler, serialPortManager);
         this.modem = modem;
 
         if (isInitialized()) {
@@ -314,8 +334,9 @@ public class InsteonBridgeHandler extends InsteonBaseThingHandler implements Bri
                 return;
             }
 
-            cancelJob(reconnectJob, false);
             updateStatus();
+
+            cancelJob(reconnectJob, false);
         }, 0, RETRY_INTERVAL, TimeUnit.SECONDS);
     }
 
@@ -327,10 +348,7 @@ public class InsteonBridgeHandler extends InsteonBaseThingHandler implements Bri
 
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.DUTY_CYCLE, "Resetting bridge.");
 
-            resetJob = scheduler.schedule(() -> {
-                initialize();
-                cancelJob(resetJob, false);
-            }, delay, TimeUnit.SECONDS);
+            resetJob = scheduler.schedule(this::initialize, delay, TimeUnit.SECONDS);
         });
     }
 
@@ -340,8 +358,6 @@ public class InsteonBridgeHandler extends InsteonBaseThingHandler implements Bri
      * @param modem the discovered modem
      */
     public void modemDiscovered(InsteonModem modem) {
-        modem.setPollInterval(getDevicePollInterval());
-
         initializeChannels(modem);
         updateProperties(modem);
         loadDeviceCache(modem);

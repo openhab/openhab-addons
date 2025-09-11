@@ -19,9 +19,9 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import javax.ws.rs.HttpMethod;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -78,7 +78,7 @@ public class StatusFileInterpreter {
 
     public void read() {
         try {
-            String statusPage = HttpUtil.executeUrl("GET", url, 5000);
+            String statusPage = HttpUtil.executeUrl(HttpMethod.GET, url, 5000);
             InputStream inputStream = new ByteArrayInputStream(statusPage.getBytes());
             Document document = builder.parse(inputStream);
             document.getDocumentElement().normalize();
@@ -92,13 +92,13 @@ public class StatusFileInterpreter {
 
     private void pushDatas() {
         getRoot().ifPresent(root -> {
-            PortDefinition.asStream().forEach(portDefinition -> {
-                List<Node> xmlNodes = getMatchingNodes(root.getChildNodes(), portDefinition.getNodeName());
+            PortDefinition.AS_SET.forEach(portDefinition -> {
+                List<Node> xmlNodes = getMatchingNodes(root.getChildNodes(), portDefinition.nodeName);
                 xmlNodes.forEach(xmlNode -> {
-                    String sPortNum = xmlNode.getNodeName().replace(portDefinition.getNodeName(), "");
+                    String sPortNum = xmlNode.getNodeName().replace(portDefinition.nodeName, "");
                     int portNum = Integer.parseInt(sPortNum) + 1;
                     double value = Double.parseDouble(xmlNode.getTextContent().replace("dn", "1").replace("up", "0"));
-                    listener.dataReceived(String.format("%s%d", portDefinition.getPortName(), portNum), value);
+                    listener.dataReceived("%s%d".formatted(portDefinition.portName, portNum), value);
                 });
             });
         });
@@ -113,12 +113,12 @@ public class StatusFileInterpreter {
     private List<Node> getMatchingNodes(NodeList nodeList, String criteria) {
         return IntStream.range(0, nodeList.getLength()).boxed().map(nodeList::item)
                 .filter(node -> node.getNodeName().startsWith(criteria)).sorted(Comparator.comparing(Node::getNodeName))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public int getMaxNumberofNodeType(PortDefinition portDefinition) {
-        return getRoot().map(root -> getMatchingNodes(root.getChildNodes(), portDefinition.getNodeName()).size())
-                .orElse(0);
+        return Objects.requireNonNull(getRoot()
+                .map(root -> getMatchingNodes(root.getChildNodes(), portDefinition.nodeName).size()).orElse(0));
     }
 
     private Optional<Element> getRoot() {

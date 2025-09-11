@@ -55,6 +55,7 @@ import org.openhab.binding.ecovacs.internal.api.commands.GoChargingCommand;
 import org.openhab.binding.ecovacs.internal.api.commands.PauseCleaningCommand;
 import org.openhab.binding.ecovacs.internal.api.commands.PlaySoundCommand;
 import org.openhab.binding.ecovacs.internal.api.commands.ResumeCleaningCommand;
+import org.openhab.binding.ecovacs.internal.api.commands.SceneCleaningCommand;
 import org.openhab.binding.ecovacs.internal.api.commands.SetContinuousCleaningCommand;
 import org.openhab.binding.ecovacs.internal.api.commands.SetDefaultCleanPassesCommand;
 import org.openhab.binding.ecovacs.internal.api.commands.SetDustbinAutoEmptyCommand;
@@ -530,6 +531,7 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
         } catch (ConfigurationException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getRawMessage());
         } catch (EcovacsApiException e) {
+            logger.debug("API Exception: {}", e.getMessage(), e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
@@ -673,7 +675,8 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
             // Some devices already report charging state while returning to charging station, make sure to not report
             // charging in that case. The same applies for models with pad washing/drying station, as those states imply
             // the device being charging.
-            if (cleanMode != CleanMode.RETURNING && cleanMode != CleanMode.WASHING && cleanMode != CleanMode.DRYING) {
+            if (cleanMode != CleanMode.RETURNING && cleanMode != CleanMode.WASHING && cleanMode != CleanMode.DRYING
+                    && cleanMode != CleanMode.EMPTYING) {
                 return "charging";
             }
         }
@@ -693,21 +696,15 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
         if (charging) {
             return CMD_CHARGE;
         }
-        switch (cleanMode) {
-            case AUTO:
-                return CMD_AUTO_CLEAN;
-            case SPOT_AREA:
-                return CMD_SPOT_AREA;
-            case PAUSE:
-                return CMD_PAUSE;
-            case STOP:
-                return CMD_STOP;
-            case RETURNING:
-                return CMD_CHARGE;
-            default:
-                break;
-        }
-        return null;
+        return switch (cleanMode) {
+            case AUTO -> CMD_AUTO_CLEAN;
+            case SPOT_AREA -> CMD_SPOT_AREA;
+            case SCENE_CLEAN -> CMD_SCENE_CLEAN;
+            case PAUSE -> CMD_PAUSE;
+            case STOP -> CMD_STOP;
+            case RETURNING -> CMD_CHARGE;
+            default -> null;
+        };
     }
 
     private State stringToState(@Nullable String value) {
@@ -755,7 +752,7 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
                             device.hasCapability(DeviceCapability.FREE_CLEAN_FOR_SPOT_AREA));
                 }
             } else {
-                logger.info("{}: spotArea command needs to have the form spotArea:<room1>[;<room2>][;<...roomX>][:x2]",
+                logger.warn("{}: spotArea command needs to have the form spotArea:<room1>[;<room2>][;<...roomX>][:x2]",
                         serialNumber);
             }
         }
@@ -769,8 +766,18 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
                     return new CustomAreaCleaningCommand(String.join(",", splittedAreaDef), passes);
                 }
             }
-            logger.info("{}: customArea command needs to have the form customArea:<x1>;<y1>;<x2>;<y2>[:x2]",
+            logger.warn("{}: customArea command needs to have the form customArea:<x1>;<y1>;<x2>;<y2>[:x2]",
                     serialNumber);
+        }
+        if (command.startsWith(CMD_SCENE_CLEAN) && device.hasCapability(DeviceCapability.SCENARIO_CLEANING)) {
+            String[] splitted = command.split(":");
+            if (splitted.length == 2) {
+                String scenarioId = splitted[1];
+                // Setting passes > 1 does not seem to have any effect (tested on T30).
+                return new SceneCleaningCommand(scenarioId, 1);
+            }
+            logger.warn("{}: {} command needs to have the form {}:<scenarioId>", serialNumber, CMD_SCENE_CLEAN,
+                    CMD_SCENE_CLEAN);
         }
 
         return null;

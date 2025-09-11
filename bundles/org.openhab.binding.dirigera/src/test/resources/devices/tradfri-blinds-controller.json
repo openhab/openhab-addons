@@ -1,0 +1,48 @@
+ {
+	"id": "9f96eced-7674-4b9f-bbf9-b9575d888638_1",
+	"type": "controller",
+	"deviceType": "blindsController",
+	"createdAt": "2022-11-01T22:43:56.000Z",
+	"isReachable": true,
+	"lastSeen": "2022-11-17T21:48:45.000Z",
+	"attributes": {
+		"customName": "Office Blinder Remote ",
+		"model": "TRADFRI open/close remote",
+		"manufacturer": "IKEA of Sweden",
+		"firmwareVersion": "24.4.5",
+		"hardwareVersion": "1",
+		"serialNumber": "5C0272FFFE6C613C",
+		"productCode": "E1766",
+		"batteryPercentage": 65,
+		"isOn": false,
+		"lightLevel": 1,
+		"blindsCurrentLevel": 0,
+		"blindsState": "",
+		"permittingJoin": false,
+		"otaStatus": "upToDate",
+		"otaState": "readyToCheck",
+		"otaProgress": 0,
+		"otaPolicy": "autoUpdate",
+		"otaScheduleStart": "00:00",
+		"otaScheduleEnd": "00:00"
+	},
+	"capabilities": {
+		"canSend": [
+			"isOn",
+			"lightLevel",
+			"blindsState"
+		],
+		"canReceive": [
+			"customName"
+		]
+	},
+	"room": {
+		"id": "36e2e693-a042-4119-84ec-42d45a347534",
+		"name": "Office",
+		"color": "ikea_blue_no_63",
+		"icon": "rooms_display"
+	},
+	"deviceSet": [],
+	"remoteLinks": [],
+	"isHidden": false
+}

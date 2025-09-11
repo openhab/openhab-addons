@@ -18,6 +18,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * The {@link HomeWizardConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Daniël van Os - Initial contribution
+ * @author Gearrel Welvaart - Added API version
+ *
  */
 @NonNullByDefault
 public class HomeWizardConfiguration {
@@ -31,4 +33,14 @@ public class HomeWizardConfiguration {
      * Refresh delay in seconds
      */
     public Integer refreshDelay = 5;
+
+    /**
+     * The API version to be used
+     */
+    public Integer apiVersion = 1;
+
+    /**
+     * Bearer token for API v2
+     */
+    public String bearerToken = "";
 }

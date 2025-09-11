@@ -12,13 +12,16 @@
  */
 package org.openhab.binding.mqtt.homeassistant.internal.component;
 
+import java.util.List;
+import java.util.Map;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.graalvm.polyglot.Value;
 import org.openhab.binding.mqtt.generic.values.TextValue;
 import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannelType;
-import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
-
-import com.google.gson.annotations.SerializedName;
+import org.openhab.binding.mqtt.homeassistant.internal.config.dto.EntityConfiguration;
+import org.openhab.binding.mqtt.homeassistant.internal.config.dto.RWConfiguration;
 
 /**
  * A MQTT select, following the https://www.home-assistant.io/components/select.mqtt/ specification.
@@ -26,40 +29,38 @@ import com.google.gson.annotations.SerializedName;
  * @author Cody Cutrer - Initial contribution
  */
 @NonNullByDefault
-public class Select extends AbstractComponent<Select.ChannelConfiguration> {
+public class Select extends AbstractComponent<Select.Configuration> {
     public static final String SELECT_CHANNEL_ID = "select";
 
-    /**
-     * Configuration class for MQTT component
-     */
-    static class ChannelConfiguration extends AbstractChannelConfiguration {
-        ChannelConfiguration() {
-            super("MQTT Select");
+    public static class Configuration extends EntityConfiguration implements RWConfiguration {
+        public Configuration(Map<String, @Nullable Object> config) {
+            super(config, "MQTT Select");
         }
 
-        protected @Nullable Boolean optimistic;
+        @Nullable
+        Value getCommandTemplate() {
+            return getOptionalValue("command_template");
+        }
 
-        @SerializedName("command_template")
-        protected @Nullable String commandTemplate;
-        @SerializedName("command_topic")
-        protected @Nullable String commandTopic;
-        @SerializedName("state_topic")
-        protected String stateTopic = "";
+        List<String> getOptions() {
+            return getStringList("options");
+        }
 
-        protected String[] options = new String[0];
+        @Nullable
+        Value getValueTemplate() {
+            return getOptionalValue("value_template");
+        }
     }
 
-    public Select(ComponentFactory.ComponentConfiguration componentConfiguration) {
-        super(componentConfiguration, ChannelConfiguration.class);
+    public Select(ComponentFactory.ComponentContext componentContext) {
+        super(componentContext, Configuration.class);
 
-        TextValue value = new TextValue(channelConfiguration.options);
+        TextValue value = new TextValue(config.getOptions().toArray(new String[0]));
 
-        buildChannel(SELECT_CHANNEL_ID, ComponentChannelType.STRING, value, getName(),
-                componentConfiguration.getUpdateListener())
-                .stateTopic(channelConfiguration.stateTopic, channelConfiguration.getValueTemplate())
-                .commandTopic(channelConfiguration.commandTopic, channelConfiguration.isRetain(),
-                        channelConfiguration.getQos(), channelConfiguration.commandTemplate)
-                .inferOptimistic(channelConfiguration.optimistic).build();
+        buildChannel(SELECT_CHANNEL_ID, ComponentChannelType.STRING, value, "Select",
+                componentContext.getUpdateListener()).stateTopic(config.getStateTopic(), config.getValueTemplate())
+                .commandTopic(config.getCommandTopic(), config.isRetain(), config.getQos(), config.getCommandTemplate())
+                .inferOptimistic(config.isOptimistic()).build();
 
         finalizeChannels();
     }

@@ -8,7 +8,7 @@
 		<label>HS200</label>
 		<description>TP-Link HS200 Smart Wi-Fi Switch</description>
 		<category>WallSwitch</category>
-
+		<semantic-equipment-tag>WallSwitch</semantic-equipment-tag>
 		<channels>
 			<channel id="switch" typeId="system.power"/>
 			<channel id="led" typeId="led"/>

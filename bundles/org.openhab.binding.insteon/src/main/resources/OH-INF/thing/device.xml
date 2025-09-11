@@ -13,7 +13,7 @@
 
 		<label>Insteon Device</label>
 		<description>An Insteon device such as a switch, dimmer, keypad, sensor, etc.</description>
-
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 		<representation-property>address</representation-property>
 
 		<config-description>

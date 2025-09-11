@@ -20,6 +20,7 @@
 	<thing-type id="shelly1l">
 		<label>Shelly 1L</label>
 		<description>@text/thing-type.shelly.shelly1l.description</description>
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="relay" typeId="relayChannel"/>
 			<channel-group id="meter" typeId="meter"/>
@@ -34,6 +35,7 @@
 	<thing-type id="shelly1pm">
 		<label>Shelly 1PM</label>
 		<description>@text/thing-type.shelly.shelly1pm.description</description>
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="relay" typeId="relayChannel"/>
 			<channel-group id="meter" typeId="meter"/>
@@ -48,6 +50,7 @@
 	<thing-type id="shellyem">
 		<label>Shelly EM</label>
 		<description>@text/thing-type.shelly.shellyem.description</description>
+		<semantic-equipment-tag>ElectricMeter</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="meter1" typeId="meter">
 				<label>@text/channel-group-type.shelly.meter1.label</label>
@@ -67,6 +70,7 @@
 	<thing-type id="shellyem3">
 		<label>Shelly EM3</label>
 		<description>@text/thing-type.shelly.shellyem3.description</description>
+		<semantic-equipment-tag>ElectricMeter</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="meter1" typeId="meter">
 				<label>@text/channel-group-type.shelly.meter1.label</label>
@@ -89,7 +93,7 @@
 	<thing-type id="shelly2-relay">
 		<label>Shelly 2 Relay</label>
 		<description>@text/thing-type.shelly.shelly2-relay.description</description>
-
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="relay1" typeId="relayChannel">
 				<label>@text/channel-group-type.shelly.relayChannel1.label</label>
@@ -109,6 +113,7 @@
 		<label>Shelly 2 Roller</label>
 		<description>@text/thing-type.shelly.shelly2-roller.description</description>
 		<category>Rollershutter</category>
+		<semantic-equipment-tag>WindowCovering</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="roller" typeId="rollerControl"/>
 			<channel-group id="meter" typeId="meter"/>
@@ -122,6 +127,7 @@
 	<thing-type id="shelly25-relay">
 		<label>Shelly 2.5 Relay</label>
 		<description>@text/thing-type.shelly.shelly25-relay.description</description>
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="relay1" typeId="relayChannel">
 				<label>@text/channel-group-type.shelly.relayChannel1.label</label>
@@ -146,6 +152,7 @@
 		<label>Shelly 2.5 Roller</label>
 		<description>@text/thing-type.shelly.shelly25-roller.description</description>
 		<category>Rollershutter</category>
+		<semantic-equipment-tag>WindowCovering</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="roller" typeId="rollerControl"/>
 			<channel-group id="meter" typeId="meter"/>
@@ -159,7 +166,7 @@
 	<thing-type id="shelly4pro">
 		<label>Shelly 4 Pro Relay</label>
 		<description>@text/thing-type.shelly.shelly4pro.description</description>
-
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="relay1" typeId="relayChannel">
 				<label>@text/channel-group-type.shelly.relayChannel1.label</label>
@@ -196,6 +203,7 @@
 		<label>Shelly Plug</label>
 		<description>@text/thing-type.shelly.shellyplug.description</description>
 		<category>PowerOutlet</category>
+		<semantic-equipment-tag>PowerOutlet</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="relay" typeId="relayChannelPlug"/>
 			<channel-group id="meter" typeId="meter"/>
@@ -210,6 +218,7 @@
 		<label>Shelly Plug-S</label>
 		<description>@text/thing-type.shelly.shellyplugs.description</description>
 		<category>PowerOutlet</category>
+		<semantic-equipment-tag>PowerOutlet</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="relay" typeId="relayChannelPlug"/>
 			<channel-group id="meter" typeId="meter"/>
@@ -224,6 +233,7 @@
 		<label>Shelly Plug US</label>
 		<description>@text/thing-type.shelly.shellyplugu1.description</description>
 		<category>PowerOutlet</category>
+		<semantic-equipment-tag>PowerOutlet</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="relay" typeId="relayChannelPlug"/>
 			<channel-group id="meter" typeId="meter"/>
@@ -256,6 +266,7 @@
 	<thing-type id="shellydimmer">
 		<label>Shelly Dimmer</label>
 		<description>@text/thing-type.shelly.shellydimmer.description</description>
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="relay" typeId="dimmerChannel"/>
 			<channel-group id="meter" typeId="meter"/>
@@ -269,6 +280,7 @@
 	<thing-type id="shellydimmer2">
 		<label>Shelly Dimmer 2</label>
 		<description>@text/thing-type.shelly.shellydimmer2.description</description>
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="relay" typeId="dimmerChannel"/>
 			<channel-group id="meter" typeId="meter"/>
@@ -377,6 +389,10 @@
 		<label>@text/channel-type.shelly.rollerShutter.label</label>
 		<description>@text/channel-type.shelly.rollerShutter.description</description>
 		<category>Blinds</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>OpenLevel</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="rollerPosition" advanced="true">
@@ -384,8 +400,8 @@
 		<label>@text/channel-type.shelly.rollerPosition.label</label>
 		<description>@text/channel-type.shelly.rollerPosition.description</description>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Level</tag>
+			<tag>Control</tag>
+			<tag>OpenLevel</tag>
 		</tags>
 		<state readOnly="false" min="0" max="100" pattern="%.0f %%"/>
 	</channel-type>
@@ -474,6 +490,10 @@
 		<label>@text/channel-type.shelly.dimmerBrightness.label</label>
 		<description>@text/channel-type.shelly.dimmerBrightness.description</description>
 		<category>Light</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Brightness</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="meterWatts">
@@ -545,6 +565,10 @@
 		<item-type>Number:Power</item-type>
 		<label>@text/channel-type.shelly.meterReactive.label</label>
 		<description>@text/channel-type.shelly.meterReactive.description</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.3f %unit%">
 		</state>
 	</channel-type>
@@ -566,6 +590,10 @@
 		<item-type>Number:Energy</item-type>
 		<label>@text/channel-type.shelly.meterTotal.label</label>
 		<description>@text/channel-type.shelly.meterTotal.description</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%.3f %unit%">
 		</state>
 	</channel-type>
@@ -609,6 +637,14 @@
 		</state>
 	</channel-type>
 
+	<channel-type id="meterFrequency" advanced="true">
+		<item-type>Number:Frequency</item-type>
+		<label>@text/channel-type.shelly.meterFrequency.label</label>
+		<description>@text/channel-type.shelly.meterFrequency.description</description>
+		<state readOnly="true" pattern="%.3f %unit%">
+		</state>
+	</channel-type>
+
 	<channel-type id="meterPowerFactor">
 		<item-type>Number</item-type>
 		<label>@text/channel-type.shelly.meterPowerFactor.label</label>
@@ -630,7 +666,7 @@
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<tag>Current</tag>
 		</tags>
 		<state readOnly="true" pattern="%.3f %unit%">
 		</state>
@@ -643,7 +679,7 @@
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<tag>Current</tag>
 		</tags>
 		<state readOnly="true" pattern="%.3f %unit%">
 		</state>
@@ -656,7 +692,7 @@
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
-			<tag>Energy</tag>
+			<tag>Current</tag>
 		</tags>
 		<state readOnly="true" pattern="%.3f %unit%">
 		</state>
@@ -674,6 +710,7 @@
 		<description>@text/channel-type.shelly.timestamp.description</description>
 		<category>Time</category>
 		<tags>
+			<tag>Status</tag>
 			<tag>Timestamp</tag>
 		</tags>
 		<state readOnly="true">
@@ -697,9 +734,6 @@
 		<label>@text/channel-type.shelly.lastUpdate.label</label>
 		<description>@text/channel-type.shelly.lastUpdate.description</description>
 		<category>Time</category>
-		<tags>
-			<tag>Timestamp</tag>
-		</tags>
 		<state readOnly="true">
 		</state>
 	</channel-type>

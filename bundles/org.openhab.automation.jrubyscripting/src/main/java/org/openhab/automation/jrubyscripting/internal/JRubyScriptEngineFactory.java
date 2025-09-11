@@ -49,10 +49,13 @@ import org.osgi.service.component.annotations.ReferencePolicy;
  * @author Jimmy Tanagra - Add require injection
  */
 @NonNullByDefault
-@Component(service = ScriptEngineFactory.class, configurationPid = "org.openhab.automation.jrubyscripting", property = Constants.SERVICE_PID
-        + "=org.openhab.automation.jrubyscripting")
-@ConfigurableService(category = "automation", label = "JRuby Scripting", description_uri = "automation:jrubyscripting")
+@Component(service = { ScriptEngineFactory.class, JRubyScriptEngineFactory.class }, //
+        configurationPid = "org.openhab.automation.jrubyscripting", //
+        property = Constants.SERVICE_PID + "=org.openhab.automation.jrubyscripting")
+@ConfigurableService(category = "automation", label = "JRuby Scripting", description_uri = JRubyScriptEngineFactory.CONFIG_DESCRIPTION_URI)
 public class JRubyScriptEngineFactory extends AbstractScriptEngineFactory {
+    public static final String CONFIG_DESCRIPTION_URI = "automation:jrubyscripting";
+
     private final JRubyScriptEngineConfiguration configuration = new JRubyScriptEngineConfiguration();
 
     private final javax.script.ScriptEngineFactory factory = new org.jruby.embed.jsr223.JRubyEngineFactory();
@@ -132,11 +135,11 @@ public class JRubyScriptEngineFactory extends AbstractScriptEngineFactory {
             scriptEngine.put("$dependencyListener", jrubyDependencyTracker.getTracker(wrapper.getScriptIdentifier()));
         }
 
-        // scopeValues is called twice. The first call only passed 'se'. The second call
-        // passed the rest of the
-        // presets, including 'ir'. We wait for the second call before running the
-        // require statements.
+        // scopeValues is called twice. The first call only passed 'se'.
+        // The second call passed the rest of the presets, including 'ir'.
+        // We wait for the second call before running the require statements.
         if (scopeValues.containsKey("ir")) {
+            configuration.bundlerSetup(scriptEngine);
             configuration.injectRequire(scriptEngine);
         }
     }
@@ -190,8 +193,8 @@ public class JRubyScriptEngineFactory extends AbstractScriptEngineFactory {
         return false;
     }
 
-    public String getGemHome() {
-        return configuration.getSpecificGemHome();
+    public JRubyScriptEngineConfiguration getConfiguration() {
+        return configuration;
     }
 
     public boolean isFileInGemHome(String file) {

@@ -67,6 +67,9 @@ public class DeviceTrackerTests extends AbstractComponentTests {
                 "", "Location Name", TextValue.class);
         assertChannel(component, DeviceTracker.HOME_CHANNEL_ID, "", "", "At Home", OnOffValue.class);
         assertChannel(component, DeviceTracker.SOURCE_TYPE_CHANNEL_ID, "", "", "Source Type", TextValue.class);
+
+        linkAllChannels(component);
+
         assertState(component, DeviceTracker.SOURCE_TYPE_CHANNEL_ID, new StringType("bluetooth_le"));
 
         publishMessage("home/TheengsGateway/BTtoMQTT/112233445566", """
@@ -98,12 +101,15 @@ public class DeviceTrackerTests extends AbstractComponentTests {
                 }
                 """);
 
-        assertThat(component.channels.size(), is(2));
+        assertThat(component.channels.size(), is(3));
         assertThat(component.getName(), is("tracker"));
 
         assertChannel(component, DeviceTracker.LOCATION_NAME_CHANNEL_ID, "devices/112233445566", "", "Location Name",
                 TextValue.class);
         assertChannel(component, DeviceTracker.HOME_CHANNEL_ID, "", "", "At Home", OnOffValue.class);
+        assertChannel(component, DeviceTracker.SOURCE_TYPE_CHANNEL_ID, "", "", "Source Type", TextValue.class);
+
+        linkAllChannels(component);
 
         publishMessage("devices/112233445566", "home");
         assertState(component, DeviceTracker.LOCATION_NAME_CHANNEL_ID, new StringType("home"));
@@ -129,7 +135,7 @@ public class DeviceTrackerTests extends AbstractComponentTests {
                 }
                 """);
 
-        assertThat(component.channels.size(), is(5));
+        assertThat(component.channels.size(), is(6));
         assertThat(component.getName(), is("tracker"));
 
         assertChannel(component, DeviceTracker.LOCATION_NAME_CHANNEL_ID, "devices/112233445566", "", "Location Name",
@@ -137,8 +143,11 @@ public class DeviceTrackerTests extends AbstractComponentTests {
         assertChannel(component, DeviceTracker.HOME_CHANNEL_ID, "", "", "At Home", OnOffValue.class);
         assertChannel(component, DeviceTracker.LOCATION_CHANNEL_ID, "", "", "Location", LocationValue.class);
         assertChannel(component, DeviceTracker.GPS_ACCURACY_CHANNEL_ID, "", "", "GPS Accuracy", NumberValue.class);
+        assertChannel(component, DeviceTracker.SOURCE_TYPE_CHANNEL_ID, "", "", "Source Type", TextValue.class);
         assertChannel(component, DeviceTracker.JSON_ATTRIBUTES_CHANNEL_ID, "devices/112233445566/json", "",
                 "JSON Attributes", TextValue.class);
+
+        linkAllChannels(component);
 
         publishMessage("devices/112233445566", "home");
         assertState(component, DeviceTracker.LOCATION_NAME_CHANNEL_ID, new StringType("home"));
@@ -191,7 +200,7 @@ public class DeviceTrackerTests extends AbstractComponentTests {
         assertState(component, DeviceTracker.HOME_CHANNEL_ID, UnDefType.UNDEF);
         assertState(component, DeviceTracker.LOCATION_CHANNEL_ID,
                 new PointType(new DecimalType(45.6), new DecimalType(91.2)));
-        assertState(component, DeviceTracker.GPS_ACCURACY_CHANNEL_ID, new QuantityType<>(5.5, SIUnits.METRE));
+        assertState(component, DeviceTracker.GPS_ACCURACY_CHANNEL_ID, QuantityType.valueOf(5.5, SIUnits.METRE));
         publishMessage("devices/112233445566/json", """
                 {
                    "latitude": 45.7,
@@ -219,13 +228,16 @@ public class DeviceTrackerTests extends AbstractComponentTests {
                 }
                 """);
 
-        assertThat(component.channels.size(), is(3));
+        assertThat(component.channels.size(), is(4));
         assertThat(component.getName(), is("tracker"));
 
         assertChannel(component, DeviceTracker.LOCATION_CHANNEL_ID, "", "", "Location", LocationValue.class);
         assertChannel(component, DeviceTracker.GPS_ACCURACY_CHANNEL_ID, "", "", "GPS Accuracy", NumberValue.class);
+        assertChannel(component, DeviceTracker.SOURCE_TYPE_CHANNEL_ID, "", "", "Source Type", TextValue.class);
         assertChannel(component, DeviceTracker.JSON_ATTRIBUTES_CHANNEL_ID, "devices/112233445566/json", "",
                 "JSON Attributes", TextValue.class);
+
+        linkAllChannels(component);
 
         publishMessage("devices/112233445566/json", "not JSON");
         assertState(component, DeviceTracker.LOCATION_CHANNEL_ID, UnDefType.NULL);
@@ -255,7 +267,7 @@ public class DeviceTrackerTests extends AbstractComponentTests {
                 """);
         assertState(component, DeviceTracker.LOCATION_CHANNEL_ID,
                 new PointType(new DecimalType(45.6), new DecimalType(91.2)));
-        assertState(component, DeviceTracker.GPS_ACCURACY_CHANNEL_ID, new QuantityType<>(5.5, SIUnits.METRE));
+        assertState(component, DeviceTracker.GPS_ACCURACY_CHANNEL_ID, QuantityType.valueOf(5.5, SIUnits.METRE));
         publishMessage("devices/112233445566/json", """
                 {
                    "latitude": 45.7,

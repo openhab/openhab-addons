@@ -165,7 +165,7 @@
 		<vendor>Insteon</vendor>
 		<device-type>DimmableLightingControl_InLineLinc</device-type>
 	</product>
-	<product devCat="0x01" subCat="0x03" firstRecord="0x00FF">
+	<product devCat="0x01" subCat="0x03">
 		<description>ICON Dimmer Switch</description>
 		<model>2876DB</model>
 		<vendor>Insteon</vendor>
@@ -189,7 +189,7 @@
 		<vendor>Insteon</vendor>
 		<device-type>DimmableLightingControl_LampLinc</device-type>
 	</product>
-	<product devCat="0x01" subCat="0x07" firstRecord="0x00FF">
+	<product devCat="0x01" subCat="0x07">
 		<description>ICON LampLinc</description>
 		<model>2856D2B</model>
 		<vendor>Insteon</vendor>
@@ -207,7 +207,7 @@
 		<vendor>Insteon</vendor>
 		<device-type>DimmableLightingControl_KeypadButton6</device-type>
 	</product>
-	<product devCat="0x01" subCat="0x0A" firstRecord="0x00FF">
+	<product devCat="0x01" subCat="0x0A">
 		<description>ICON In-Wall Controller</description>
 		<model>2886D</model>
 		<vendor>Insteon</vendor>
@@ -267,7 +267,7 @@
 		<vendor>Insteon</vendor>
 		<device-type>DimmableLightingControl_ToggleLinc</device-type>
 	</product>
-	<product devCat="0x01" subCat="0x18" productKey="0x00003F" firstRecord="0x00FF">
+	<product devCat="0x01" subCat="0x18" productKey="0x00003F">
 		<description>ICON SwitchLinc Dimmer In-Line Companion</description>
 		<model>2474D</model>
 		<vendor>Insteon</vendor>
@@ -623,13 +623,13 @@
 		<vendor>Insteon</vendor>
 		<device-type>SwitchedLightingControl_SwitchLinc</device-type>
 	</product>
-	<product devCat="0x02" subCat="0x0B" firstRecord="0x00FF">
+	<product devCat="0x02" subCat="0x0B">
 		<description>ICON On/Off Switch</description>
 		<model>2876SB</model>
 		<vendor>Insteon</vendor>
 		<device-type>SwitchedLightingControl_SwitchLinc</device-type>
 	</product>
-	<product devCat="0x02" subCat="0x0C" firstRecord="0x00FF">
+	<product devCat="0x02" subCat="0x0C">
 		<description>ICON Appliance Module</description>
 		<model>2856S3B</model>
 		<vendor>Insteon</vendor>
@@ -672,7 +672,7 @@
 		<device-type>SwitchedLightingControl_InLineLinc</device-type>
 	</product>
 	<product devCat="0x02" subCat="0x13" productKey="0x000033">
-		<description>Icon SwitchLinc Relay (Lixar)</description>
+		<description>ICON SwitchLinc Relay (Lixar)</description>
 		<model>2676R-B</model>
 		<vendor>Insteon</vendor>
 		<device-type>SwitchedLightingControl_SwitchLinc</device-type>
@@ -968,6 +968,7 @@
 		<description>X10 RF Transceiver</description>
 		<model>EZX10RF</model>
 		<vendor>Compacta</vendor>
+		<device-type>NetworkBridge_X10</device-type>
 	</product>
 	<product devCat="0x03" subCat="0x0E" productKey="0x00002C">
 		<description>X10 Translator</description>
@@ -1053,16 +1054,19 @@
 		<description>USB Adapter</description>
 		<model>2448A7</model>
 		<vendor>Insteon</vendor>
+		<device-type>NetworkBridge_PLM</device-type>
 	</product>
 	<product devCat="0x03" subCat="0x20" productKey="0x00007E">
 		<description>USB Adapter</description>
 		<model>2448A7</model>
 		<vendor>Insteon</vendor>
+		<device-type>NetworkBridge_PLM</device-type>
 	</product>
 	<product devCat="0x03" subCat="0x21" productKey="0x00008E">
 		<description>USB Adapter (HouseLinc)</description>
 		<model>2448A7H</model>
 		<vendor>Insteon</vendor>
+		<device-type>NetworkBridge_PLM</device-type>
 	</product>
 	<product devCat="0x03" subCat="0x22" productKey="0x00008F">
 		<description>Central Controller Interface</description>
@@ -1073,6 +1077,7 @@
 		<description>USB Adapter (HouseLinc)</description>
 		<model>2448A7H</model>
 		<vendor>Insteon</vendor>
+		<device-type>NetworkBridge_PLM</device-type>
 	</product>
 	<product devCat="0x03" subCat="0x24" productKey="0x0000A2">
 		<description>TouchLinc</description>

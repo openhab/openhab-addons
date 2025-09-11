@@ -17,8 +17,10 @@ import java.util.function.Consumer;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.huesync.internal.api.dto.device.HueSyncDevice;
 import org.openhab.binding.huesync.internal.api.dto.registration.HueSyncRegistration;
+import org.openhab.binding.huesync.internal.config.HueSyncConfiguration;
 import org.openhab.binding.huesync.internal.connection.HueSyncDeviceConnection;
-import org.openhab.binding.huesync.internal.exceptions.HueSyncConnectionException;
+import org.openhab.binding.huesync.internal.exceptions.HueSyncTaskException;
+import org.openhab.binding.huesync.internal.types.HueSyncExceptionHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,6 +28,7 @@ import org.slf4j.LoggerFactory;
  * Task to handle device registration.
  * 
  * @author Patrik Gfeller - Initial contribution
+ * @author Patrik Gfeller - Issue #18376, Fix/improve log message and exception handling
  */
 @NonNullByDefault
 public class HueSyncRegistrationTask implements Runnable {
@@ -33,36 +36,52 @@ public class HueSyncRegistrationTask implements Runnable {
 
     private final HueSyncDeviceConnection connection;
     private final HueSyncDevice deviceInfo;
-    private final Consumer<HueSyncRegistration> action;
+    private final HueSyncExceptionHandler exceptionHandler;
+    private final Consumer<HueSyncRegistration> registrationAccepted;
+    private final HueSyncConfiguration configuration;
 
     public HueSyncRegistrationTask(HueSyncDeviceConnection connection, HueSyncDevice deviceInfo,
-            Consumer<HueSyncRegistration> action) {
+            HueSyncConfiguration configuration, Consumer<HueSyncRegistration> registrationAccepted,
+            HueSyncExceptionHandler exceptionHandler) {
+        this.exceptionHandler = exceptionHandler;
         this.connection = connection;
         this.deviceInfo = deviceInfo;
-        this.action = action;
+        this.registrationAccepted = registrationAccepted;
+        this.configuration = configuration;
     }
 
     @Override
     public void run() {
         try {
             String id = this.deviceInfo.uniqueId;
+            HueSyncRegistration registration;
 
-            if (this.connection.isRegistered() || id == null) {
+            if (this.connection.isRegistered()) {
+                this.logger.debug("API token for {} already configured", this.deviceInfo.name);
+
+                registration = new HueSyncRegistration();
+                registration.registrationId = this.configuration.registrationId;
+                registration.accessToken = this.configuration.apiAccessToken;
+
+                this.registrationAccepted.accept(registration);
                 return;
             }
 
             this.logger.debug("Listening for device registration - {} {}:{}", this.deviceInfo.name,
                     this.deviceInfo.deviceType, id);
 
-            HueSyncRegistration registration = this.connection.registerDevice(id);
+            if (id == null) {
+                throw new HueSyncTaskException("Device information id must not be null");
+            }
+
+            registration = this.connection.registerDevice(id);
 
             if (registration != null) {
                 this.logger.debug("API token for {} received", this.deviceInfo.name);
-
-                this.action.accept(registration);
+                this.registrationAccepted.accept(registration);
             }
-        } catch (HueSyncConnectionException e) {
-            this.logger.warn("{}", e.getMessage());
+        } catch (Exception e) {
+            this.exceptionHandler.handle(e);
         }
     }
 }

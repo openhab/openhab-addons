@@ -9,6 +9,7 @@
 		</supported-bridge-type-refs>
 		<label>Multisensor BAE0910</label>
 		<description>1-wire multisensor (BAE0910-based)</description>
+		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
 		<properties>
 			<property name="sensorCount">1</property>
 		</properties>
@@ -81,6 +82,10 @@
 		<item-type>Number:Frequency</item-type>
 		<label>Frequency</label>
 		<description>Frequency of PWM output in Hz</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Frequency</tag>
+		</tags>
 		<config-description>
 			<parameter name="prescaler" type="integer">
 				<label>Range</label>
@@ -114,6 +119,10 @@
 		<item-type>Switch</item-type>
 		<label>PIO</label>
 		<description>Programmable I/O channel</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 		<config-description>
 			<parameter name="mode" type="text">
 				<label>Mode</label>
@@ -139,16 +148,28 @@
 	<channel-type id="bae-do">
 		<item-type>Switch</item-type>
 		<label>Digital Out</label>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="bae-di">
 		<item-type>Switch</item-type>
 		<label>Digital In</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 	<!-- Analog In (ADC) -->
 	<channel-type id="bae-analog">
 		<item-type>Number:ElectricPotential</item-type>
 		<label>Analog Input</label>
 		<description>Analog input (ADC)</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 		<config-description>
 			<parameter name="hires" type="boolean">

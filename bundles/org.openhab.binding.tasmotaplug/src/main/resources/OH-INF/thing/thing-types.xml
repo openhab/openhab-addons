@@ -10,7 +10,7 @@
 		<description>
 			Tasmota Smart Plug
 		</description>
-
+		<semantic-equipment-tag>PowerOutlet</semantic-equipment-tag>
 		<channels>
 			<channel id="power" typeId="system.power">
 				<label>Power</label>
@@ -27,6 +27,23 @@
 			<channel id="power4" typeId="system.power">
 				<label>Power 4</label>
 				<description>Controls the smart plug relay for the 4th channel</description>
+			</channel>
+
+			<channel id="pulse-time" typeId="pulse-time">
+				<label>Pulse Time</label>
+				<description>Set PulseTime for relay 1 in 0.1 second increments</description>
+			</channel>
+			<channel id="pulse-time2" typeId="pulse-time">
+				<label>Pulse Time 2</label>
+				<description>Set PulseTime for relay 2 in 0.1 second increments</description>
+			</channel>
+			<channel id="pulse-time3" typeId="pulse-time">
+				<label>Pulse Time 3</label>
+				<description>Set PulseTime for relay 3 in 0.1 second increments</description>
+			</channel>
+			<channel id="pulse-time4" typeId="pulse-time">
+				<label>Pulse Time 4</label>
+				<description>Set PulseTime for relay 4 in 0.1 second increments</description>
 			</channel>
 
 			<!-- Energy Monitor Channels -->
@@ -58,7 +75,7 @@
 		</channels>
 
 		<properties>
-			<property name="thingTypeVersion">1</property>
+			<property name="thingTypeVersion">3</property>
 		</properties>
 
 		<config-description>
@@ -93,10 +110,21 @@
 
 	</thing-type>
 
+	<channel-type id="pulse-time">
+		<item-type>Number</item-type>
+		<label>Pulse Time</label>
+		<description>Set PulseTime for relay&lt;x&gt; in 0.1 second increments</description>
+		<state min="1" max="64900" step="1" pattern="%d"/>
+	</channel-type>
+
 	<channel-type id="volt-ampere">
 		<item-type>Number:Power</item-type>
 		<label>Apparent Power</label>
 		<description>Apparent Power (VA)</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -104,6 +132,10 @@
 		<item-type>Number:Power</item-type>
 		<label>Reactive Power</label>
 		<description>Reactive Power (VAr)</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -111,6 +143,10 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Power Factor</label>
 		<description>Power Factor (PF)</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -120,6 +156,7 @@
 		<description>The date/time when the energy total measurement started</description>
 		<category>Time</category>
 		<tags>
+			<tag>Status</tag>
 			<tag>Timestamp</tag>
 		</tags>
 		<state readOnly="true"/>

@@ -162,7 +162,7 @@
 
 		<label>@text/thing-type.lacrosse.label</label>
 		<description>@text/thing-type.lacrosse.description</description>
-
+		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
 		<channels>
 			<channel id="temperature" typeId="temperature"/>
 			<channel id="humidity" typeId="humidity"/>
@@ -221,7 +221,7 @@
 
 		<label>@text/thing-type.ec3k.label</label>
 		<description>@text/thing-type.ec3k.description</description>
-
+		<semantic-equipment-tag>PowerOutlet</semantic-equipment-tag>
 		<channels>
 			<channel id="currentPower" typeId="current-power"/>
 			<channel id="maxPower" typeId="max-power"/>
@@ -266,7 +266,7 @@
 
 		<label>@text/thing-type.pca301.label</label>
 		<description>@text/thing-type.pca301.description</description>
-
+		<semantic-equipment-tag>PowerOutlet</semantic-equipment-tag>
 		<channels>
 			<channel id="switchingState" typeId="switching-state"/>
 			<channel id="currentPower" typeId="current-power"/>
@@ -302,7 +302,7 @@
 
 		<label>@text/thing-type.emt7110.label</label>
 		<description>@text/thing-type.emt7110.description</description>
-
+		<semantic-equipment-tag>PowerOutlet</semantic-equipment-tag>
 		<channels>
 			<channel id="currentPower" typeId="current-power"/>
 			<channel id="consumptionTotal" typeId="consumption-total"/>
@@ -334,7 +334,7 @@
 
 		<label>@text/thing-type.revolt.label</label>
 		<description>@text/thing-type.revolt.description</description>
-
+		<semantic-equipment-tag>ElectricMeter</semantic-equipment-tag>
 		<channels>
 			<channel id="currentPower" typeId="current-power"/>
 			<channel id="consumptionTotal" typeId="consumption-total"/>
@@ -368,7 +368,7 @@
 
 		<label>@text/thing-type.tx22.label</label>
 		<description>@text/thing-type.tx22.description</description>
-
+		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
 		<channels>
 			<channel id="temperature" typeId="temperature"/>
 			<channel id="humidity" typeId="humidity"/>
@@ -408,7 +408,7 @@
 
 		<label>@text/thing-type.lgw.label</label>
 		<description>@text/thing-type.lgw.description</description>
-
+		<semantic-equipment-tag>TemperatureSensor</semantic-equipment-tag>
 		<channels>
 			<channel id="temperature" typeId="temperature"/>
 		</channels>
@@ -431,6 +431,10 @@
 		<label>@text/channel-type.wind-angle.label</label>
 		<description>@text/channel-type.wind-angle.description</description>
 		<category>Wind</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Wind</tag>
+		</tags>
 		<state min="0" max="360" step="1" readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -439,6 +443,10 @@
 		<label>@text/channel-type.wind-strength.label</label>
 		<description>@text/channel-type.wind-strength.description</description>
 		<category>Wind</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Wind</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -447,6 +455,10 @@
 		<label>@text/channel-type.rain.label</label>
 		<description>@text/channel-type.rain.description</description>
 		<category>Rain</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Rain</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
@@ -455,6 +467,10 @@
 		<label>@text/channel-type.pressure.label</label>
 		<description>@text/channel-type.pressure.description</description>
 		<category>Pressure</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Pressure</tag>
+		</tags>
 		<state readOnly="true" pattern="%.3f %unit%"/>
 	</channel-type>
 
@@ -463,6 +479,10 @@
 		<item-type>Number:Power</item-type>
 		<label>@text/channel-type.current-power.label</label>
 		<description>@text/channel-type.current-power.description</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -471,6 +491,10 @@
 		<item-type>Number:Power</item-type>
 		<label>@text/channel-type.max-power.label</label>
 		<description>@text/channel-type.max-power.description</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -479,6 +503,10 @@
 		<item-type>Number:Energy</item-type>
 		<label>@text/channel-type.consumption-total.label</label>
 		<description>@text/channel-type.consumption-total.description</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -512,6 +540,10 @@
 		<label>@text/channel-type.temperature.label</label>
 		<description>@text/channel-type.temperature.description</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -521,6 +553,10 @@
 		<label>@text/channel-type.humidity.label</label>
 		<description>@text/channel-type.humidity.description</description>
 		<category>Humidity</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Humidity</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -529,6 +565,10 @@
 		<item-type>Switch</item-type>
 		<label>@text/channel-type.battery-new.label</label>
 		<description>@text/channel-type.battery-new.description</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>LowBattery</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -537,6 +577,10 @@
 		<item-type>Switch</item-type>
 		<label>@text/channel-type.switching-state.label</label>
 		<description>@text/channel-type.switching-state.description</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 
 	<!-- Revolt Current Type -->
@@ -544,6 +588,10 @@
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>@text/channel-type.electric-current.label</label>
 		<description>@text/channel-type.electric-current.description</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
 	</channel-type>
 
 	<!-- Revolt Apparent Power Type -->
@@ -558,6 +606,10 @@
 		<item-type>Number:ElectricPotential</item-type>
 		<label>@text/channel-type.electric-potential.label</label>
 		<description>@text/channel-type.electric-potential.description</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
 	</channel-type>
 
 	<!-- Revolt Frequency Type -->
@@ -565,5 +617,9 @@
 		<item-type>Number:Frequency</item-type>
 		<label>@text/channel-type.power-frequency.label</label>
 		<description>@text/channel-type.power-frequency.description</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Frequency</tag>
+		</tags>
 	</channel-type>
 </thing:thing-descriptions>

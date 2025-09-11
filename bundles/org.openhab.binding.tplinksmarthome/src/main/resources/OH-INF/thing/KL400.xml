@@ -8,7 +8,7 @@
 		<label>KL400</label>
 		<description>TP-Link KL400 Kasa Smart Light Strip, Multicolour</description>
 		<category>Lightbulb</category>
-
+		<semantic-equipment-tag>LightStrip</semantic-equipment-tag>
 		<channels>
 			<channel id="color" typeId="system.color"/>
 			<channel id="colorTemperature" typeId="system.color-temperature"/>

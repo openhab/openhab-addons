@@ -10,6 +10,7 @@
 		</supported-bridge-type-refs>
 		<label>Zone</label>
 		<description>Zone</description>
+		<semantic-equipment-tag>AlarmZone</semantic-equipment-tag>
 		<channels>
 			<channel typeId="status" id="status"/>
 			<channel typeId="extended_status" id="extended_status"/>
@@ -25,6 +26,10 @@
 		<item-type>Contact</item-type>
 		<label>Zone Status</label>
 		<description>Zone Status (Open/Closed)</description>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="CLOSED">Closed</option>
@@ -51,6 +56,10 @@
 		<item-type>Contact</item-type>
 		<label>Alarm Triggered</label>
 		<description>Indicates if zone is in alarm</description>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Presence</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="CLOSED">No</option>
@@ -63,6 +72,10 @@
 		<item-type>Contact</item-type>
 		<label>Fire Alarm Triggered</label>
 		<description>Indicates if zone is in fire alarm</description>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Smoke</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="CLOSED">No</option>
@@ -75,6 +88,10 @@
 		<item-type>Contact</item-type>
 		<label>Supervision Lost</label>
 		<description>Indicates if zone has lost a supervision</description>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Tampered</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="CLOSED">No</option>
@@ -87,6 +104,10 @@
 		<item-type>Contact</item-type>
 		<label>Low Battery Warning</label>
 		<description>Indicates if zone is low on battery</description>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>LowBattery</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="CLOSED">No</option>

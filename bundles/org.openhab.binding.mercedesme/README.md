@@ -2,18 +2,6 @@
 
 This binding provides access to your Mercedes Benz vehicle like _Mercedes Me_ Smartphone App.
 
-## Installation Instructions
-
-First time users shall follow the following sequence
-
-1. Setup and configure [Bridge](#bridge-configuration)
-2. Follow the [Bridge Authorization](#bridge-authorization) process
-3. [Discovery](#discovery) shall find now vehicles associated to your account
-4. Add your vehicle from discovery and [configure](#thing-configuration) it with correct VIN
-5. Connect your desired items in UI or [text-configuration](#full-example)
-6. Optional: you can [Discover your Vehicle](#discover-your-vehicle) more deeply
-7. In case of problems check [Troubleshooting](#troubleshooting) section
-
 ## Supported Things
 
 | Type            | ID            | Description                                     |
@@ -27,7 +15,7 @@ First time users shall follow the following sequence
 
 The Mercedes Me binding is based on the API of the Smartphone App.
 You have an account which is associated to one or more vehicles.
-Setup the Mercedes Me Account Bridge with your email address.
+Setup the Mercedes Me Account Bridge with your email address and password.
 After successful authorization your associated vehicles are found automatically.
 There's no manual discovery!
 
@@ -35,14 +23,13 @@ There's no manual discovery!
 
 Bridge needs configuration in order to connect properly to your Mercedes Me account.
 
-| Name            | Type    | Description                             | Default     | Required | Advanced |
-|-----------------|---------|-----------------------------------------|-------------|----------|----------|
-| email           | text    | Mercedes Me registered email Address    | N/A         | yes      | no       |
-| pin             | text    | Mercedes Me Smartphone App PIN          | N/A         | no       | no       |
-| region          | text    | Your region                             | EU          | yes      | no       |
-| refreshInterval | integer | API refresh interval                    | 15          | yes      | no       |
-| callbackIP      | text    | IP Address of openHAB Device            | N/A         | yes      | yes      |
-| callbackPort    | integer | Port Number of openHAB Device           | N/A         | yes      | yes      |
+| Name              | Type    | Description                                 | Default                   | Required |
+|-------------------|---------|---------------------------------------------|---------------------------|----------|
+| email             | text    | Email address for MercedesMe account        | N/A                       | yes      |
+| password          | text    | Password for MercedesMe account             | N/A                       | yes      |
+| pin               | text    | Mercedes Me Smartphone App PIN              | N/A                       | no       |
+| region            | text    | Your region                                 | EU                        | yes      |
+| refreshInterval   | integer | API refresh interval                        | 15                        | yes      |
 
 Set `region` to your location
 
@@ -52,7 +39,7 @@ Set `region` to your location
 - `CN` : China
 
 Set `pin` to your Mercedes Me App PIN.
-Parameter is *not required*.
+Parameter is _not required_.
 Note `pin` is needed for some commands which are affecting **vehicle safety**.
 Commands like _unlock doors_ will result into an _unsafe state_: your vehicle is unlocked and is accessible to everybody.
 
@@ -62,46 +49,6 @@ Commands protected by PIN
 - Unlock Doors
 - Open / Ventilate Windows
 - Open / Lift Sunroof
-
-IP `callbackIP` and port `callbackPort` will be auto-detected.
-If you're running on server with more than one network interface please select manually.
-
-### Bridge Authorization
-
-Authorization is needed to activate the Bridge which is connected to your Mercedes Me Account.
-The Bridge will indicate in the status headline if authorization is needed including the URL which needs to be opened in your browser.
-
-Three steps are needed
-
-1. Open the mentioned URL like 192.168.x.x:8090/mb-auth
-Opening this URL will request a PIN  which will be send to your configured email.
-Check your Mail Account if you received the PIN.
-Click on _Continue_ to proceed with Step 2.
-
-2. Enter your PIN in the shown field.
-Leave GUID as identifier as it is.
-Click on _Submit_ button.
-
-3. Confirmation shall be shown that authorization was successful.
-
-In case of non successful authorization check your log for errors.
-Below screenshots are illustrating the authorization flow.
-
-### After Bridge Setup
-
-<img src="./doc/OH-Step0.png" width="500" height="240"/>
-
-### Authorization Step 1
-
-<img src="./doc/OH-Step1.png" width="500" height="200"/>
-
-### Authorization Step 2
-
-<img src="./doc/OH-Step2.png" width="500" height="200"/>
-
-### Authorization Step 3
-
-<img src="./doc/OH-Step3.png" width="400" height="130"/>
 
 ## Thing Configuration
 
@@ -418,7 +365,7 @@ States and controls are depending on your vehicle capabilities.
 | coolant-fluid       | Switch               |  Coolant Fluid Low Warning      |     | X      | X          |
 | engine              | Switch               |  Engine Warning                 |     | X      | X          |
 | tires-rdk           | Number               |  Tire Pressure Warnings         | X   | X      | X          |
-| service-days        | Number               |  Next Service in *x* days       | X   | X      | X          |
+| service-days        | Number               |  Next Service in _x_ days       | X   | X      | X          |
 
 #### Starter Battery Mapping
 
@@ -444,23 +391,24 @@ Group name: `range`
 
 All channels read-only.
 
-| Channel          | Type                 |  Description                    | bev | hybrid | combustion |
-|------------------|----------------------|---------------------------------|-----|--------|------------|
-| mileage          | Number:Length        |  Total Mileage                  | X   | X      | X          |
-| home-distance    | Number:Length        |  Distance to Home               | X   | X      | X          |
-| soc              | Number:Dimensionless |  Battery State of Charge        | X   | X      |            |
-| charged          | Number:Energy        |  Charged Battery Energy         | X   | X      |            |
-| uncharged        | Number:Energy        |  Uncharged Battery Energy       | X   | X      |            |
-| range-electric   | Number:Length        |  Electric Range                 | X   | X      |            |
-| radius-electric  | Number:Length        |  Electric Radius for Map        | X   | X      |            |
-| fuel-level       | Number:Dimensionless |  Fuel Level in Percent          |     | X      | X          |
-| fuel-remain      | Number:Volume        |  Remaining Fuel                 |     | X      | X          |
-| fuel-open        | Number:Volume        |  Open Fuel Capacity             |     | X      | X          |
-| range-fuel       | Number:Length        |  Fuel Range                     |     | X      | X          |
-| radius-fuel      | Number:Length        |  Fuel Radius for Map            |     | X      | X          |
-| range-hybrid     | Number:Length        |  Hybrid Range                   |     | X      |            |
-| radius-hybrid    | Number:Length        |  Hybrid Radius for Map          |     | X      |            |
-| adblue-level     | Number:Dimensionless |  AdBlue tank level in percent   |     |        | X          |
+| Channel               | Type                 |  Description                    | bev | hybrid | combustion |
+|-----------------------|----------------------|---------------------------------|-----|--------|------------|
+| mileage               | Number:Length        |  Total Mileage                  | X   | X      | X          |
+| home-distance         | Number:Length        |  Distance to Home               | X   | X      | X          |
+| soc                   | Number:Dimensionless |  Battery State of Charge        | X   | X      |            |
+| charged               | Number:Energy        |  Charged Battery Energy         | X   | X      |            |
+| uncharged             | Number:Energy        |  Uncharged Battery Energy       | X   | X      |            |
+| energy-to-max-soc     | Number:Energy        |  Energy to Maximum SoC          | X   | X      |            |
+| range-electric        | Number:Length        |  Electric Range                 | X   | X      |            |
+| radius-electric       | Number:Length        |  Electric Radius for Map        | X   | X      |            |
+| fuel-level            | Number:Dimensionless |  Fuel Level in Percent          |     | X      | X          |
+| fuel-remain           | Number:Volume        |  Remaining Fuel                 |     | X      | X          |
+| fuel-open             | Number:Volume        |  Open Fuel Capacity             |     | X      | X          |
+| range-fuel            | Number:Length        |  Fuel Range                     |     | X      | X          |
+| radius-fuel           | Number:Length        |  Fuel Radius for Map            |     | X      | X          |
+| range-hybrid          | Number:Length        |  Hybrid Range                   |     | X      |            |
+| radius-hybrid         | Number:Length        |  Hybrid Radius for Map          |     | X      |            |
+| adblue-level          | Number:Dimensionless |  AdBlue tank level in percent   |     |        | X          |
 
 Channels with `radius` are just giving a _guess_ which radius can be reached in a map display.
 
@@ -484,7 +432,7 @@ States and controls are depending on your vehicle capabilities.
 | power               | Number:Power         |  Current Charging Power                | X    |       |
 | end-time            | DateTime             |  Estimated Charging End                | X    |       |
 | program             | Number               |  Selected Charge Program               | X    | X     |
-| max-soc             | Number:Dimensionless |  Charge Target SoC                     | X    | X     |
+| max-soc             | Number:Dimensionless |  Maximum State of Charge               | X    | X     |
 | auto-unlock         | Switch               |  Auto Unlock Coupler after charging    | X    | X     |
 
 #### Charge Flap Mapping
@@ -589,7 +537,7 @@ In your Mercedes Me App front page
 - Last Entry `Settings`
 - First Entry `Units`
 
-<img src="./doc/ElectricConsumptionUnits.png" width="300" height="300"/>
+<img src="./doc/ElectricConsumptionUnits.png" alt="Electric Consumption Units" width="300" height="300"/>
 
 #### Trip Duration
 
@@ -611,10 +559,10 @@ All channels `read-only`
 
 The Mercedes ECO Score is aimed to improve your driving behavior.
 
-- Acceleration Score: smooth acceleration e.g. use *eco driving setting*
-- Coasting Score: ideally use only *recuperation* instead of brake
-- Constant Score: drive at constant speed e.g. use *cruise control*
-- Bonus Range: assumed bonus range vs. a *very sportive driver*
+- Acceleration Score: smooth acceleration e.g. use _eco driving setting_
+- Coasting Score: ideally use only _recuperation_ instead of brake
+- Constant Score: drive at constant speed e.g. use _cruise control_
+- Bonus Range: assumed bonus range vs. a _very sportive driver_
 
 ### Position
 
@@ -756,7 +704,7 @@ This POI can be used as navigation destination.
 | street      | String        | POI street name         |           |
 | postalCode  | String        | POI postal code         |           |
 
-**Example Eiffel Tower**
+#### Example Eiffel Tower
 
 Required information
 
@@ -779,7 +727,7 @@ During discovery the capabilities of your vehicle are identified.
 They are stored in `Vehicle Properties` as shown below.
 You can check in beforehand if features like _Charge Program Configuration_ or _HVAC Configuration_ are supported or not.
 
-<img src="./doc/OH-capabilities.png" width="500" height="280"/>
+<img src="./doc/OH-capabilities.png" alt="Screenshot showing vehicle capabilities in openHAB" width="500" height="280"/>
 
 If you want to dive deeper see [Troubleshooting](#troubleshooting) `feature-capabilities` and `command-capabilities` to evaluate the exact capabilities.
 
@@ -814,7 +762,7 @@ Keep these 3 channels disconnected during normal operation.
 ### Things file
 
 ```java
-Bridge mercedesme:account:4711   "Mercedes Me John Doe" [ email="YOUR_MAIL_ADDRESS", region="EU", pin=9876, refreshInterval=15] {
+Bridge mercedesme:account:4711   "Mercedes Me John Doe" [ email="YOUR_MAIL_ADDRESS", region="EU", pin=9876, refreshToken="abc", refreshInterval=15] {
          Thing bev eqa           "Mercedes EQA"        [ vin="VEHICLE_VIN", batteryCapacity=66.5]
 }
 ```
@@ -913,4 +861,3 @@ rule "Send POI"
         mercedesmeActions.sendPoi(title,lat,lon)
 end
 ```
-

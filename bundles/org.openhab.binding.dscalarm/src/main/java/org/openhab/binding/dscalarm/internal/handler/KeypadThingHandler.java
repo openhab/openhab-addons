@@ -139,7 +139,7 @@ public class KeypadThingHandler extends DSCAlarmBaseThingHandler {
                         .getDSCAlarmCodeValue(dscAlarmMessage.getMessageInfo(DSCAlarmMessageInfoType.CODE));
                 String dscAlarmMessageData = dscAlarmMessage.getMessageInfo(DSCAlarmMessageInfoType.DATA);
 
-                logger.debug("dscAlarmEventRecieved(): Thing - {}   Command - {}", thing.getUID(), dscAlarmCode);
+                logger.debug("dscAlarmEventReceived(): Thing - {}   Command - {}", thing.getUID(), dscAlarmCode);
 
                 switch (dscAlarmCode) {
                     case KeypadLEDState: /* 510 */

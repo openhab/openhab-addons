@@ -30,7 +30,6 @@ import com.google.gson.Gson;
 @NonNullByDefault
 public class GetMoppingWaterAmountCommand extends IotDeviceCommand<MoppingWaterAmount> {
     public GetMoppingWaterAmountCommand() {
-        super();
     }
 
     @Override

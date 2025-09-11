@@ -16,18 +16,21 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.insteon.internal.InsteonBindingConstants;
 import org.openhab.binding.insteon.internal.InsteonLegacyBinding;
 import org.openhab.binding.insteon.internal.config.InsteonBridgeConfiguration;
 import org.openhab.binding.insteon.internal.config.InsteonLegacyNetworkConfiguration;
 import org.openhab.binding.insteon.internal.device.DeviceAddress;
 import org.openhab.binding.insteon.internal.device.InsteonAddress;
 import org.openhab.binding.insteon.internal.discovery.InsteonLegacyDiscoveryService;
+import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.io.console.Console;
 import org.openhab.core.io.transport.serial.SerialPortManager;
 import org.openhab.core.thing.Bridge;
@@ -60,6 +63,9 @@ public class InsteonLegacyNetworkHandler extends BaseBridgeHandler {
     private static final int SETTLE_TIME_IN_SECONDS = 5;
 
     private final Logger logger = LoggerFactory.getLogger(InsteonLegacyNetworkHandler.class);
+
+    private final ScheduledExecutorService insteonScheduler = ThreadPoolManager
+            .getScheduledPool(InsteonBindingConstants.BINDING_ID + "-" + getThing().getUID().getId());
 
     private @Nullable InsteonLegacyBinding insteonBinding;
     private @Nullable InsteonLegacyDiscoveryService insteonDiscoveryService;
@@ -108,7 +114,7 @@ public class InsteonLegacyNetworkHandler extends BaseBridgeHandler {
             return;
         }
 
-        insteonBinding = new InsteonLegacyBinding(this, config, httpClient, scheduler, serialPortManager);
+        insteonBinding = new InsteonLegacyBinding(this, config, httpClient, insteonScheduler, serialPortManager);
         updateStatus(ThingStatus.UNKNOWN);
 
         // hold off on starting to poll until devices that already are defined as things are added.

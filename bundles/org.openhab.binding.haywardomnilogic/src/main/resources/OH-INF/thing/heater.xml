@@ -10,6 +10,7 @@
 		</supported-bridge-type-refs>
 
 		<label>Heater</label>
+		<semantic-equipment-tag>WaterHeater</semantic-equipment-tag>
 		<channels>
 			<channel id="heaterState" typeId="state"/>
 			<channel id="heaterEnable" typeId="enable"/>
@@ -27,6 +28,10 @@
 	<channel-type id="state">
 		<item-type>String</item-type>
 		<label>Heater State</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="0">Off</option>
@@ -39,6 +44,10 @@
 	<channel-type id="enable">
 		<item-type>Switch</item-type>
 		<label>Heater Enable</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 

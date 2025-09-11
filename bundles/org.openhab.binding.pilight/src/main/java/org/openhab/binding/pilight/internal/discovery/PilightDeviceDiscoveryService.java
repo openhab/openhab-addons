@@ -149,7 +149,7 @@ public class PilightDeviceDiscoveryService extends AbstractThingHandlerDiscovery
 
     @Override
     public void initialize() {
-        removeOlderResults(Instant.now().toEpochMilli(), thingHandler.getThing().getUID());
+        removeOlderResults(Instant.now(), thingHandler.getThing().getUID());
         thingHandler.registerDiscoveryListener(this);
 
         super.initialize();
@@ -160,7 +160,7 @@ public class PilightDeviceDiscoveryService extends AbstractThingHandlerDiscovery
     @Override
     public void dispose() {
         super.dispose();
-        removeOlderResults(Instant.now().toEpochMilli(), thingHandler.getThing().getUID());
+        removeOlderResults(Instant.now(), thingHandler.getThing().getUID());
         thingHandler.unregisterDiscoveryListener();
     }
 

@@ -51,6 +51,10 @@
 		<item-type>Number:Intensity</item-type>
 		<label>UV Intensity</label>
 		<description>Current UV intensity.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Ultraviolet</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f µW/cm²"></state>
 	</channel-type>
 
@@ -70,6 +74,10 @@
 		<item-type>Number:Illuminance</item-type>
 		<label>Illuminance</label>
 		<description>Current illuminance.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Illuminance</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f lx"></state>
 	</channel-type>
 
@@ -125,6 +133,10 @@
 		<item-type>Number:Density</item-type>
 		<label>Particulate Matter - PM2.5</label>
 		<description>Current density of particles less than 2.5 µm in diameter.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>ParticulateMatter</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f µg/m³">
 		</state>
 	</channel-type>
@@ -145,6 +157,10 @@
 		<item-type>Number:Density</item-type>
 		<label>Particulate Matter - PM10</label>
 		<description>Current density of particles less than 10 µm in diameter.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>ParticulateMatter</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f µg/m³">
 		</state>
 	</channel-type>

@@ -8,30 +8,50 @@
 		<item-type>Number:Volume</item-type>
 		<label>Gas Delivery 24 Hour</label>
 		<description>The total amount of gas used in the past 24 hour.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Gas</tag>
+		</tags>
 		<state pattern="%.3f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="gasCompensatedDelivery24HType">
 		<item-type>Number:Volume</item-type>
 		<label>Compensated Gas Delivery 24 Hour</label>
 		<description>The total compensated amount of gas used in the past 24 hour.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Gas</tag>
+		</tags>
 		<state pattern="%.3f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="gasDeliveryType">
 		<item-type>Number:Volume</item-type>
 		<label>Gas Delivery</label>
 		<description>The total amount used in the past period.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Gas</tag>
+		</tags>
 		<state pattern="%.3f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="gasLastDeliveryType">
 		<item-type>Number:Volume</item-type>
 		<label>Gas Delivery</label>
 		<description>Last value of not temperature corrected gas volume.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Gas</tag>
+		</tags>
 		<state pattern="%.3f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="gasLastTimestampType">
 		<item-type>DateTime</item-type>
 		<label>Timestamp</label>
 		<description>Timestamp of the last gas meter capture time.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="gasValvePositionType">

@@ -1,0 +1,172 @@
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
+// AUTO-GENERATED, DO NOT EDIT!
+
+package org.openhab.binding.matter.internal.client.dto.cluster.gen;
+
+import java.math.BigInteger;
+import java.util.List;
+import java.util.Map;
+
+import org.eclipse.jdt.annotation.NonNull;
+
+import com.google.gson.Gson;
+
+/**
+ * {{asUpperCamelCase name}}
+ *
+ * @author Dan Cunningham - Initial contribution
+ */
+
+ public class BaseCluster {
+ 
+    protected static final Gson GSON = new Gson();
+    public BigInteger nodeId;
+    public int endpointId;
+    public int id;
+    public String name;
+
+    public interface MatterEnum {
+        Integer getValue();
+
+        String getLabel();
+
+        public static <E extends MatterEnum> E fromValue(Class<E> enumClass, int value) {
+            E[] constants = enumClass.getEnumConstants();
+            if (constants != null) {
+                for (E enumConstant : constants) {
+                    if (enumConstant != null) {
+                        if (enumConstant.getValue().equals(value)) {
+                            return enumConstant;
+                        }
+                    }
+                }
+            }
+            throw new IllegalArgumentException("Unknown value: " + value);
+        }
+    }
+
+    public BaseCluster(BigInteger nodeId, int endpointId, int clusterId, String clusterName) {
+        this.nodeId = nodeId;
+        this.endpointId = endpointId;
+        this.id = clusterId;
+        this.name = clusterName;
+    }
+
+    public static class OctetString {
+        public byte[] value;
+
+        public OctetString(byte[] value) {
+            this.value = value;
+        }
+
+        public OctetString(String hexString) {
+            int length = hexString.length();
+            value = new byte[length / 2];
+            for (int i = 0; i < length; i += 2) {
+                value[i / 2] = (byte) ((Character.digit(hexString.charAt(i), 16) << 4)
+                        + Character.digit(hexString.charAt(i + 1), 16));
+            }
+        }
+
+        public @NonNull String toHexString() {
+            StringBuilder hexString = new StringBuilder();
+            for (byte b : value) {
+                String hex = Integer.toHexString(0xFF & b);
+                if (hex.length() == 1) {
+                    hexString.append('0');
+                }
+                hexString.append(hex);
+            }
+            return hexString.toString();
+        }
+
+        public @NonNull String toString() {
+            return toHexString();
+        }
+    }
+
+{{#each structs}}
+{{#if (isFirstElement @index)}}
+    //Structs
+{{/if}}
+     public static class {{asUpperCamelCase name}} {
+{{#each children}}
+        public {{{asUpperCamelCase mappedType}}} {{asLowerCamelCase name}}; // {{type}}
+{{/each}}
+        public {{asUpperCamelCase name}}({{#each children}}{{{asUpperCamelCase mappedType}}} {{asLowerCamelCase name}}{{#unless (isLastElement @index ../children.length)}}, {{/unless}}{{/each}}) {
+{{#each children}}
+            this.{{asLowerCamelCase name}} = {{asLowerCamelCase name}};
+{{/each}}
+        }
+     }
+{{/each}}
+
+
+{{#each enums}}
+{{#if (isFirstElement @index)}}
+    //Enums
+{{/if}}
+    public enum {{asUpperCamelCase name}} implements MatterEnum {
+{{#if (isEmpty children)}}
+        DEFAULT(0, "Default");
+{{else}}
+{{#each children}}
+        {{asEnumField name}}({{id}}, "{{name}}"){{#unless (isLastElement @index ../children.length)}},{{else}};{{/unless}}
+{{/each}}
+{{/if}}
+        public final Integer value;
+        public final String label;
+        private {{asUpperCamelCase name}}(Integer value, String label){
+            this.value = value;
+            this.label = label;
+        }
+        
+        @Override
+        public Integer getValue() {
+            return value;
+        }
+
+        @Override
+        public String getLabel() {
+            return label;
+        }
+    }
+
+{{/each}}
+
+{{#each maps}}
+{{#if (isFirstElement @index)}}
+    // Bitmaps
+{{/if}}
+    public static class {{asUpperCamelCase name}} {
+{{#if (isEmpty children)}}
+        public List<Boolean> map;
+        public {{asUpperCamelCase name}}(List<Boolean> map){
+            this.map = map;
+{{else}}
+{{#each children}}
+        public boolean {{asLowerCamelCase name}};
+{{/each}}
+        public {{asUpperCamelCase name}}({{#each children}}boolean {{asLowerCamelCase name}}{{#unless (isLastElement @index ../children.length)}}, {{/unless}}{{/each}}){
+{{#each children}}
+            this.{{asLowerCamelCase name}} = {{asLowerCamelCase name}};
+{{/each}}
+{{/if}}
+        }
+    }
+{{/each}}
+
+ }
+ 

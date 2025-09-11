@@ -1,0 +1,29 @@
+{
+    "name": "code-gen",
+    "version": "0.1.0",
+    "description": "",
+    "scripts": {
+        "clean": "tsc --clean",
+        "build": "tsc --build",
+        "build-clean": "tsc --build --clean",
+        "start": "ts-node src/app.ts",
+        "test": "ts-node src/test.ts",
+        "format": "prettier --write \"src/**/*.ts\""
+    },
+    "devDependencies": {
+        "ts-loader": "^9.4.4",
+        "ts-node": "^10.9.2",
+        "typescript": "^5.2.2",
+        "prettier": "^3.5.3",
+        "prettier-plugin-organize-imports": "^4.1.0"
+    },
+    "dependencies": {
+        "@matter/main": "v0.15.2",
+        "handlebars": "^4.7.8"
+    },
+    "files": [
+        "dist/**/*",
+        "src/**/*",
+        "README.md"
+    ]
+}

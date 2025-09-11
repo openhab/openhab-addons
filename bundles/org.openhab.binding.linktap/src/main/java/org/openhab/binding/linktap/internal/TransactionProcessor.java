@@ -62,7 +62,7 @@ public final class TransactionProcessor {
     // As the Gateway is an embedded device,
 
     private static final WebServerApi API = WebServerApi.getInstance();
-    private static final int MAX_COMMAND_RETRIES = 3;
+    static final int MAX_COMMAND_RETRIES = 3;
     private static final TransactionProcessor INSTANCE = new TransactionProcessor();
 
     private final Logger logger = LoggerFactory.getLogger(TransactionProcessor.class);
@@ -207,6 +207,14 @@ public final class TransactionProcessor {
             try {
                 return sendSingleRequest(handler, request);
             } catch (TransientCommunicationIssueException tcie) {
+                // Only retry a water timer status read once, with a 3 second delay
+                if (request.command == CMD_UPDATE_WATER_TIMER_STATUS) {
+                    if (retry > 1) {
+                        return "";
+                    } else {
+                        retry = 3;
+                    }
+                }
                 --triesLeft;
                 try {
                     Thread.sleep(1000L * retry);
@@ -231,7 +239,7 @@ public final class TransactionProcessor {
             final String payloadJson = GSON.toJson(request);
             logger.debug("{} = APP -> GW Request {} -> Payload {}", uid, targetHost, payloadJson);
 
-            String response = API.sendRequest(targetHost, GSON.toJson(request));
+            String response = API.sendRequest(targetHost, handler.getResponseTimeout(), GSON.toJson(request));
             logger.debug("{} = APP -> GW Response {} -> Payload {}", uid, targetHost, response.trim());
             GatewayDeviceResponse gatewayFrame = GSON.fromJson(response, GatewayDeviceResponse.class);
 
@@ -286,7 +294,7 @@ public final class TransactionProcessor {
                         case RET_GATEWAY_BUSY:
                         case RET_GW_INTERNAL_ERR:
                             logger.trace("The request can be re-tried");
-                            break;
+                            throw new TransientCommunicationIssueException(GATEWAY_BUSY);
                         case RET_CONFLICT_WATER_PLAN:
                             logger.trace("Gateway rejected command due to water plan conflict");
                             break;

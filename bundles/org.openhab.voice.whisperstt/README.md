@@ -5,6 +5,8 @@ It also uses [libfvad](https://github.com/dpirch/libfvad) for voice activity det
 
 [Whisper.cpp](https://github.com/ggerganov/whisper.cpp) is a high-optimized lightweight c++ implementation of [whisper](https://github.com/openai/whisper) that allows to easily integrate it in different platforms and applications.
 
+Alternatively, if you do not want to perform speech-to-text on the computer hosting openHAB, this add-on can consume an OpenAI/Whisper compatible transcription API.
+
 Whisper enables speech recognition for multiple languages and dialects:
 
 english, chinese, german, spanish, russian, korean, french, japanese, portuguese, turkish, polish, catalan, dutch, arabic, swedish,
@@ -15,9 +17,11 @@ marathi, punjabi, sinhala, khmer, shona, yoruba, somali, afrikaans, occitan, geo
 uzbek, faroese, haitian, pashto, turkmen, nynorsk, maltese, sanskrit, luxembourgish, myanmar, tibetan, tagalog, malagasy, assamese, tatar, lingala,
 hausa, bashkir, javanese and sundanese.
 
-## Supported platforms
+## Local mode (offline)
 
-This add-on uses some native binaries to work.
+### Supported platforms
+
+This add-on uses some native binaries to work when performing offline recognition.
 You can find here the used [whisper.cpp Java wrapper](https://github.com/GiviMAD/whisper-jni) and [libfvad Java wrapper](https://github.com/GiviMAD/libfvad-jni).
 
 The following platforms are supported:
@@ -28,7 +32,7 @@ The following platforms are supported:
 
 The native binaries for those platforms are included in this add-on provided with the openHAB distribution.
 
-## CPU compatibility
+### CPU compatibility
 
 To use this binding it's recommended to use a device at least as powerful as the RaspberryPI 5 with a modern CPU.
 The execution times on Raspberry PI 4 are x2, so just the tiny model can be run on under 5 seconds.
@@ -40,18 +44,18 @@ You can check those flags on Windows using a program like `CPU-Z`.
 If you are going to use the binding in a `arm64` host the CPU should support the flags: `fphp`.
 You can check those flags on linux using the terminal with `lscpu`.
 
-## Transcription time
+### Transcription time
 
 On a Raspberry PI 5, the approximate transcription times are:
 
 | model      | exec time |
-| ---------- | --------: |
+|------------|----------:|
 | tiny.bin   |      1.5s |
 | base.bin   |        3s |
 | small.bin  |      8.5s |
 | medium.bin |       17s |
 
-## Configuring the model
+### Configuring the model
 
 Before you can use this service you should configure your model.
 
@@ -64,7 +68,7 @@ You should place the downloaded .bin model in '\<openHAB userdata\>/whisper/' so
 
 Remember to check that you have enough RAM to load the model, estimated RAM consumption can be checked on the huggingface link.
 
-## Using alternative whisper.cpp library
+### Using alternative whisper.cpp library
 
 It's possible to use your own build of the whisper.cpp shared library with this add-on.
 
@@ -76,7 +80,7 @@ In the [Whisper.cpp](https://github.com/ggerganov/whisper.cpp) README you can fi
 
 Note: You need to restart openHAB to reload the library.
 
-## Grammar
+### Grammar
 
 The whisper.cpp library allows to define a grammar to alter the transcription results without fine-tuning the model.
 
@@ -99,6 +103,14 @@ tv_channel ::= ("set ")? "tv channel to " [0-9]+
 
 You can provide the grammar and enable its usage using the binding configuration.
 
+## API mode
+
+You can also use this add-on with a remote API that is compatible with the 'transcription' API from OpenAI. Online services exposing such an API may require an API key (paid services, such as OpenAI).
+
+You can host you own compatible service elsewhere on your network, with third-party software such as faster-whisper-server.
+
+Please note that API mode also uses libvfad for voice activity detection, and that grammar parameters are not available.
+
 ## Configuration
 
 Use your favorite configuration UI to edit the Whisper settings:
@@ -107,6 +119,7 @@ Use your favorite configuration UI to edit the Whisper settings:
 
 General options.
 
+- **Mode : LOCAL or API** - Choose either local computation or remote API use.
 - **Model Name** - Model name. The 'ggml-' prefix and '.bin' extension are optional here but required on the filename. (ex: tiny.en -> ggml-tiny.en.bin)
 - **Preload Model** - Keep whisper model loaded.
 - **Single Utterance Mode** - When enabled recognition stops listening after a single utterance.
@@ -139,6 +152,13 @@ Configure whisper options.
 - **Initial Prompt** - Initial prompt for whisper.
 - **OpenVINO Device** - Initialize OpenVINO encoder. (built-in binaries do not support OpenVINO, this has no effect)
 - **Use GPU** - Enables GPU usage. (built-in binaries do not support GPU usage, this has no effect)
+- **Language** - If specified, speed up recognition by avoiding auto-detection. Default to system locale.
+
+### API Configuration
+
+- **API key** - Optional use of an API key for online services requiring it.
+- **API url** - You may use your own service and define its URL here. Default set to OpenAI transcription API.
+- **API model name** - Your hosted service may have other models. Default to OpenAI only model 'whisper-1'.
 
 ### Grammar Configuration
 
@@ -190,7 +210,7 @@ timer ::= [0-9]+
 - **Record Sample Format** - Change the record sample format. (allows i16 or f32)
 - **Enable Whisper Log** - Emit whisper.cpp library logs as add-on debug logs.
 
-You can find [here](https://github.com/givimad/whisper-finetune-oh) information on how to fine-tune a model using the generated records.
+You can find information on how to fine-tune a model using the generated records at [givimad’s GitHub repository](https://github.com/givimad/whisper-finetune-oh).
 
 ### Configuration via a text file
 
@@ -199,7 +219,9 @@ In case you would like to set up the service via a text file, create a new file 
 Its contents should look similar to:
 
 ```ini
+org.openhab.voice.whisperstt:mode=LOCAL
 org.openhab.voice.whisperstt:modelName=tiny
+org.openhab.voice.whisperstt:language=en
 org.openhab.voice.whisperstt:initSilenceSeconds=0.3
 org.openhab.voice.whisperstt:removeSilence=true
 org.openhab.voice.whisperstt:stepSeconds=0.3
@@ -229,6 +251,9 @@ org.openhab.voice.whisperstt:useGPU=false
 org.openhab.voice.whisperstt:useGrammar=false
 org.openhab.voice.whisperstt:grammarPenalty=80.0
 org.openhab.voice.whisperstt:grammarLines=
+org.openhab.voice.whisperstt:apiKey=mykeyaaaa
+org.openhab.voice.whisperstt:apiUrl=https://api.openai.com/v1/audio/transcriptions
+org.openhab.voice.whisperstt:apiModelName=whisper-1
 ```
 
 ### Default Speech-to-Text Configuration

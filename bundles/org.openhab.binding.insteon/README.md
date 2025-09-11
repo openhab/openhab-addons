@@ -12,13 +12,14 @@ Relevant messages from the Insteon network (like notifications about switches be
 The binding also supports sending and receiving of legacy X10 messages.
 
 The openHAB binding supports configuring most of the device local settings, linking a device to the modem, managing link database records and scenes along with monitoring inbound/outbound messages.
-Other tools can be used to managed Insteon devices, such as the [Insteon Terminal](https://github.com/pfrommerd/insteon-terminal) open source project, or the [HouseLinc](https://www.insteon.com/houselinc) software from Insteon can also be used for configuration, but it wipes the modem link database clean on its initial use, requiring to re-link the modem to all devices.
+Other tools can be used to manage Insteon devices, such as the [Insteon Terminal](https://github.com/pfrommerd/insteon-terminal) open source project, or the [HouseLinc](https://www.insteon.com/houselinc) software from Insteon can also be used for configuration, but it wipes the modem link database clean on its initial use, requiring to re-link the modem to all devices.
 
 At startup, the binding will download the modem database along with each configured device all-link database if not previously downloaded and currently awake.
 Therefore, the initialization on the first start may take some additional time to complete depending on the number of devices configured.
-The modem and device link databases are only downloaded once unless the binding receives an indication that a database was updated or marked to be refreshed via the [openHAB console](#console-commands).
+The modem and device link databases information is then cached and updated accordingly based on relevant messages the binding receives.
+To force a database redownload, use the [openHAB console](#console-commands).
 
-**Important note as of openHAB 4.3.0**
+## Important Note for openHAB 4.3.0
 
 The binding has been rewritten to simplify the user experience by retrieving all the configuration directly from the device when possible, and improving the way the Insteon things are configured in MainUI.
 If switching from a previous release, you will need to reconfigure your Insteon environment with the new bridges, things and channels to take advantage of these enhancements.
@@ -55,7 +56,7 @@ For the legacy bridge configuration, only missing device are discovered.
 The naming convention for devices is **_Vendor_ _Model_ _Description_** if its product data is retrievable, otherwise **Insteon Device AA.BB.CC**, where `AA.BB.CC` is the Insteon device address.
 For scenes, it is **Insteon Scene 42**, where `42` is the scene group number.
 The device auto-discovery is enabled by default while disabled for scenes.
-X10 devices are not auto discovered.
+X10 devices are not auto-discovered.
 
 ## Thing Configuration
 
@@ -64,41 +65,44 @@ The default poll interval of 300 seconds has been tested and found to be a good 
 
 ### `hub1`
 
-| Parameter                   | Default | Required | Description                                                            |
-| --------------------------- | :-----: | :------: | ---------------------------------------------------------------------- |
-| hostname                    |         |   Yes    | Network address of the hub.                                            |
-| port                        |  9761   |    No    | Network port of the hub.                                               |
-| devicePollIntervalInSeconds |   300   |    No    | Device poll interval in seconds.                                       |
-| deviceDiscoveryEnabled      |  true   |    No    | Discover Insteon devices found in the hub database but not configured. |
-| sceneDiscoveryEnabled       |  false  |    No    | Discover Insteon scenes found in the hub database but not configured.  |
-| deviceSyncEnabled           |  false  |    No    | Synchronize related devices based on their all-link database.          |
+| Parameter                      | Default | Required | Description                                                               |
+| ------------------------------ | :-----: | :------: | ------------------------------------------------------------------------- |
+| hostname                       |         |   Yes    | Network address of the hub.                                               |
+| port                           |  9761   |    No    | Network port of the hub.                                                  |
+| devicePollIntervalInSeconds    |   300   |    No    | Device poll interval in seconds.                                          |
+| deviceResponseTimeoutInMinutes |   30    |    No    | Device response timeout in minutes before a device is considered offline. |
+| deviceDiscoveryEnabled         |  true   |    No    | Discover Insteon devices found in the hub database but not configured.    |
+| sceneDiscoveryEnabled          |  false  |    No    | Discover Insteon scenes found in the hub database but not configured.     |
+| deviceSyncEnabled              |  false  |    No    | Synchronize related devices based on their all-link database.             |
 
 >NOTE: Use this bridge to connect to a networked PLM via ser2net.
 
 ### `hub2`
 
-| Parameter                     | Default | Required | Description                                                            |
-| ----------------------------- | :-----: | :------: | ---------------------------------------------------------------------- |
-| hostname                      |         |   Yes    | Network address of the hub.                                            |
-| port                          |  25105  |    No    | Network port of the hub.                                               |
-| username                      |         |   Yes    | Username to access the hub.                                            |
-| password                      |         |   Yes    | Password to access the hub.                                            |
-| hubPollIntervalInMilliseconds |  1000   |    No    | Hub poll interval in milliseconds.                                     |
-| devicePollIntervalInSeconds   |   300   |    No    | Device poll interval in seconds.                                       |
-| deviceDiscoveryEnabled        |  true   |    No    | Discover Insteon devices found in the hub database but not configured. |
-| sceneDiscoveryEnabled         |  false  |    No    | Discover Insteon scenes found in the hub database but not configured.  |
-| deviceSyncEnabled             |  false  |    No    | Synchronize related devices based on their all-link database.          |
+| Parameter                      | Default | Required | Description                                                               |
+| ------------------------------ | :-----: | :------: | ------------------------------------------------------------------------- |
+| hostname                       |         |   Yes    | Network address of the hub.                                               |
+| port                           |  25105  |    No    | Network port of the hub.                                                  |
+| username                       |         |   Yes    | Username to access the hub.                                               |
+| password                       |         |   Yes    | Password to access the hub.                                               |
+| hubPollIntervalInMilliseconds  |  1000   |    No    | Hub poll interval in milliseconds.                                        |
+| devicePollIntervalInSeconds    |   300   |    No    | Device poll interval in seconds.                                          |
+| deviceResponseTimeoutInMinutes |   30    |    No    | Device response timeout in minutes before a device is considered offline. |
+| deviceDiscoveryEnabled         |  true   |    No    | Discover Insteon devices found in the hub database but not configured.    |
+| sceneDiscoveryEnabled          |  false  |    No    | Discover Insteon scenes found in the hub database but not configured.     |
+| deviceSyncEnabled              |  false  |    No    | Synchronize related devices based on their all-link database.             |
 
 ### `plm`
 
-| Parameter                   | Default | Required | Description                                                              |
-| --------------------------- | :-----: | :------: | ------------------------------------------------------------------------ |
-| serialPort                  |         |   Yes    | Serial port connected to the modem. Example: `/dev/ttyS0` or `COM1`      |
-| baudRate                    |  19200  |    No    | Serial port baud rate connected to the modem.                            |
-| devicePollIntervalInSeconds |   300   |    No    | Device poll interval in seconds.                                         |
-| deviceDiscoveryEnabled      |  true   |    No    | Discover Insteon devices found in the modem database but not configured. |
-| sceneDiscoveryEnabled       |  false  |    No    | Discover Insteon scenes found in the modem database but not configured.  |
-| deviceSyncEnabled           |  false  |    No    | Synchronize related devices based on their all-link database.            |
+| Parameter                      | Default | Required | Description                                                               |
+| ------------------------------ | :-----: | :------: | ------------------------------------------------------------------------- |
+| serialPort                     |         |   Yes    | Serial port connected to the modem. Example: `/dev/ttyS0` or `COM1`       |
+| baudRate                       |  19200  |    No    | Serial port baud rate connected to the modem.                             |
+| devicePollIntervalInSeconds    |   300   |    No    | Device poll interval in seconds.                                          |
+| deviceResponseTimeoutInMinutes |   30    |    No    | Device response timeout in minutes before a device is considered offline. |
+| deviceDiscoveryEnabled         |  true   |    No    | Discover Insteon devices found in the modem database but not configured.  |
+| sceneDiscoveryEnabled          |  false  |    No    | Discover Insteon scenes found in the modem database but not configured.   |
+| deviceSyncEnabled              |  false  |    No    | Synchronize related devices based on their all-link database.             |
 
 ### `device`
 
@@ -108,14 +112,14 @@ The default poll interval of 300 seconds has been tested and found to be a good 
 
 The device type is automatically determined by the binding using the device product data.
 For a [battery powered device](#battery-powered-devices) that was never configured previously, it may take until the next time that device sends a broadcast message to be modeled properly.
-To speed up the process for this case, it is recommended to force the device to become awake after the associated bridge is online.
-Likewise, for a device that wasn't accessible during the binding initialization phase, press on its SET button once powered on to notify the binding that it is available.
+To speed up the process for this case, it is recommended to force the device to become awake after the associated bridge is online by pressing on its SET button.
+Likewise, for a wired device that wasn't connected during the first binding initialization, press on its on/off button once powered on to notify the binding that it is available.
 
 ### `scene`
 
 | Parameter | Required | Description                                                                                                                |
 | --------- | :------: | -------------------------------------------------------------------------------------------------------------------------- |
-| group     |   Yes    | Insteon scene group number between 2 and 254. It can be found in the scene detailed information in the Insteon mobile app. |
+| group     |   Yes    | Insteon scene group number between 0 and 255. It can be found in the scene detailed information in the Insteon mobile app. |
 
 ### `x10`
 
@@ -133,6 +137,7 @@ Likewise, for a device that wasn't accessible during the binding initialization 
   | X10_Switch  | X10 Switch  |
   | X10_Dimmer  | X10 Dimmer  |
   | X10_Sensor  | X10 Sensor  |
+
 </details>
 
 ### `network`
@@ -153,8 +158,9 @@ Likewise, for a device that wasn't accessible during the binding initialization 
   | --------------------- | --------------------------------------------------------------------------------------------------------------- |
   | Hub (2245-222)        | `/hub2/my_user_name:my_password@192.168.1.100:25105,poll_time=1000`                                             |
   | Legacy Hub (2242-222) | `/hub/192.168.1.100:9761`                                                                                       |
-  | PLM                   | `/dev/ttyS0` or `/dev/ttyUSB0` (Linux)<br>`COM1` (Windows)<br>`/tcp/192.168.1.100:9761` (Networked via ser2net) |
+  | PLM                   | `/dev/ttyS0` or `/dev/ttyUSB0` (Linux), `COM1` (Windows), `/tcp/192.168.1.100:9761` (Networked via ser2net) |
   | Smartenit ZBPLM       | `/dev/ttyUSB0,baudRate=115200` (Linux)                                                                          |
+
 </details>
 
 ### `legacy-device`
@@ -298,8 +304,9 @@ In order to determine which channels a device supports, check the device in the 
 | program-lock          | Switch               |     R/W     | Local Programming Lock       |
 | pump                  | Switch               |     R/W     | Pump Control                 |
 | ramp-rate             | Number:Time          |     R/W     | Ramp Rate                    |
-| relay-mode            | String               |     R/W     | Output Relay Mode            |
-| relay-sensor-follow   | Switch               |     R/W     | Output Relay Sensor Follow   |
+| relay-mode            | String               |     R/W     | Relay Mode                   |
+| relay-sensor-follow   | Switch               |     R/W     | Relay Sensor Follow          |
+| relay-sensor-inverted | Switch               |     R/W     | Relay Sensor Inverted        |
 | resume-dim            | Switch               |     R/W     | Resume Dim Level             |
 | reverse-direction     | Switch               |     R/W     | Reverse Motor Direction      |
 | rollershutter         | Rollershutter        |     R/W     | Rollershutter                |
@@ -351,8 +358,24 @@ In order to determine which channels a device supports, check the device in the 
 | event-button-bottom | Event Button Bottom |
 | event-button-top    | Event Button Top    |
 | im-event-button     | Event Button        |
+| x10-event1          | X10 Event 1         |
+| x10-event2          | X10 Event 2         |
+| x10-event3          | X10 Event 3         |
+| x10-event4          | X10 Event 4         |
+| x10-event5          | X10 Event 5         |
+| x10-event6          | X10 Event 6         |
+| x10-event7          | X10 Event 7         |
+| x10-event8          | X10 Event 8         |
+| x10-event9          | X10 Event 9         |
+| x10-event10         | X10 Event 10        |
+| x10-event11         | X10 Event 11        |
+| x10-event12         | X10 Event 12        |
+| x10-event13         | X10 Event 13        |
+| x10-event14         | X10 Event 14        |
+| x10-event15         | X10 Event 15        |
+| x10-event16         | X10 Event 16        |
 
-The supported triggered events for Insteon Device things:
+The button events for supported Insteon devices:
 
 | Event                | Description                           |
 | -------------------- | ------------------------------------- |
@@ -364,13 +387,22 @@ The supported triggered events for Insteon Device things:
 | `HELD_DOWN`          | Button Held Down (Manual Change Down) |
 | `RELEASED`           | Button Released (Manual Change Stop)  |
 
-And for Insteon Hub and PLM things:
+And for Insteon Hubs and PLMs:
 
 | Event      | Description     |
 | ---------- | --------------- |
 | `PRESSED`  | Button Pressed  |
 | `HELD`     | Button Held     |
 | `RELEASED` | Button Released |
+
+The events for the Insteon X10 RF Transceiver (EZX10RF):
+
+| Event    | Description |
+| -------- | ----------- |
+| `ON`     | On          |
+| `OFF`    | Off         |
+| `BRIGHT` | Bright      |
+| `DIM`    | Dim         |
 
 ### Legacy Channels
 
@@ -552,6 +584,81 @@ Usage: openhab:insteon debug - Insteon debug commands
 
 </details>
 
+### Modem Commands
+
+```shell
+openhab> insteon modem
+Usage: openhab:insteon modem listAll - list configured Insteon modem bridges with related channels and status
+Usage: openhab:insteon modem listDatabase [--records] - list all-link database summary or records and pending changes for the Insteon modem
+Usage: openhab:insteon modem listFeatures - list features for the Insteon modem
+Usage: openhab:insteon modem listProductData - list product data for the Insteon modem
+Usage: openhab:insteon modem reloadDatabase - reload all-link database from the Insteon modem
+Usage: openhab:insteon modem backupDatabase - backup all-link database from the Insteon modem to a file
+Usage: openhab:insteon modem restoreDatabase <filename> --confirm - restore all-link database to the Insteon modem from a specific file
+Usage: openhab:insteon modem addDatabaseController <address> <group> [<devCat> <subCat> <firmware>] - add a controller record to all-link database for the Insteon modem
+Usage: openhab:insteon modem addDatabaseResponder <address> <group> - add a responder record to all-link database for the Insteon modem
+Usage: openhab:insteon modem deleteDatabaseRecord <address> <group> - delete a controller/responder record from all-link database for the Insteon modem
+Usage: openhab:insteon modem applyDatabaseChanges --confirm - apply all-link database pending changes for the Insteon modem
+Usage: openhab:insteon modem clearDatabaseChanges - clear all-link database pending changes for the Insteon modem
+Usage: openhab:insteon modem addDevice [<address>] - add an Insteon device to the modem, optionally providing its address
+Usage: openhab:insteon modem removeDevice <address> [--force] - remove an Insteon device from the modem
+Usage: openhab:insteon modem reset --confirm - reset the Insteon modem to factory defaults
+Usage: openhab:insteon modem switch <thingId> - switch Insteon modem bridge to use if more than one configured and enabled
+```
+
+### Device Commands
+
+```shell
+openhab> insteon device
+Usage: openhab:insteon device listAll - list configured Insteon/X10 devices with related channels and status
+Usage: openhab:insteon device listDatabase <thingId> - list all-link database records and pending changes for a configured Insteon device
+Usage: openhab:insteon device listFeatures <thingId> - list features for a configured Insteon/X10 device
+Usage: openhab:insteon device listProductData <thingId> - list product data for a configured Insteon/X10 device
+Usage: openhab:insteon device listMissingLinks --all|<thingId> - list missing links for a specific or all configured Insteon devices
+Usage: openhab:insteon device addMissingLinks --all|<thingId> - add missing links for a specific or all configured Insteon devices
+Usage: openhab:insteon device addDatabaseController <thingId> <address> <group> <data1> <data2> <data3> - add a controller record to all-link database for a configured Insteon device
+Usage: openhab:insteon device addDatabaseResponder <thingId> <address> <group> <data1> <data2> <data3> - add a responder record to all-link database for a configured Insteon device
+Usage: openhab:insteon device deleteDatabaseController <thingId> <address> <group> <data3> - delete a controller record from all-link database for a configured Insteon device
+Usage: openhab:insteon device deleteDatabaseResponder <thingId> <address> <group> <data3> - delete a responder record from all-link database for a configured Insteon device
+Usage: openhab:insteon device applyDatabaseChanges <thingId> --confirm - apply all-link database pending changes for a configured Insteon device
+Usage: openhab:insteon device clearDatabaseChanges <thingId> - clear all-link database pending changes for a configured Insteon device
+Usage: openhab:insteon device setButtonRadioGroup <thingId> <button1> <button2> [<button3> ... <button7>] - set a button radio group for a configured Insteon KeypadLinc device
+Usage: openhab:insteon device clearButtonRadioGroup <thingId> <button1> <button2> [<button3> ... <button7>] - clear a button radio group for a configured Insteon KeypadLinc device
+Usage: openhab:insteon device refresh --all|<thingId> - refresh data for a specific or all configured Insteon devices
+```
+
+### Scene Commands
+
+```shell
+openhab> insteon scene
+Usage: openhab:insteon scene listAll - list configured Insteon scenes with related channels and status
+Usage: openhab:insteon scene listDetails <thingId> - list details for a configured Insteon scene
+Usage: openhab:insteon scene addDevice --new|<scene> <device> <feature> <onLevel> [<rampRate>] - add an Insteon device feature to a new or configured Insteon scene
+Usage: openhab:insteon scene removeDevice <scene> <device> <feature> - remove an Insteon device feature from a configured Insteon scene
+```
+
+### Channel Commands
+
+```shell
+openhab> insteon channel
+Usage: openhab:insteon channel listAll - list available channel ids with configuration and link state
+```
+
+### Debug Commands
+
+```shell
+openhab> insteon debug
+Usage: openhab:insteon debug listMonitored - list monitored Insteon/X10 device(s)
+Usage: openhab:insteon debug startMonitoring --all|<address> - start logging message events for Insteon/X10 device(s) in separate file(s)
+Usage: openhab:insteon debug stopMonitoring --all|<address> - stop logging message events for Insteon/X10 device(s) in separate file(s)
+Usage: openhab:insteon debug sendBroadcastMessage <group> <cmd1> <cmd2> - send an Insteon broadcast message to a group
+Usage: openhab:insteon debug sendStandardMessage <address> <cmd1> <cmd2> - send an Insteon standard message to a device
+Usage: openhab:insteon debug sendExtendedMessage <address> <cmd1> <cmd2> [<data1> ... <data13>] - send an Insteon extended message with standard crc to a device
+Usage: openhab:insteon debug sendExtended2Message <address> <cmd1> <cmd2> [<data1> ... <data12>] - send an Insteon extended message with a two-byte crc to a device
+Usage: openhab:insteon debug sendX10Message <address> <cmd> - send an X10 message to a device
+Usage: openhab:insteon debug sendIMMessage <name> [<data1> <data2> ...] - send an IM message to the modem
+```
+
 ## Insteon Groups and Scenes
 
 How do Insteon devices tell other devices on the network that their state has changed? They send out a broadcast message, labeled with a specific _group_ number.
@@ -569,7 +676,7 @@ By default, the binding only sends direct messages to the intended device to upd
 Whenever the bridge related device synchronization parameter `deviceSyncEnabled` is set to `true`, broadcast messages for supported Insteon commands (e.g. on/off, bright/dim, manual change) are sent to all responders of a given group, updating all related devices in one request.
 If no broadcast group is determined or for Insteon commands that don't support broadcasting (e.g. percent), direct messages are sent to each related device instead, to adjust their level based on their all-link database.
 
-## Insteon Binding Process
+## Insteon Linking Process
 
 Before Insteon devices communicate with one another, they must be linked.
 During the linking process, one of the devices will be the "Controller", the other the "Responder".
@@ -760,7 +867,7 @@ end
 <details>
   <summary>Legacy</summary>
 
-##### Items
+##### Legacy Items
 
   Here is a simple example, just using the load (main) switch:
 
@@ -774,7 +881,7 @@ end
   Switch keypadSwitchD            "keypad button D"    { channel="insteon:device:home:AABBCC:keypadButtonD"}
   ```
 
-##### Things
+##### Legacy Things
 
   The value after group must either be a number or string.
   The hexadecimal value 0xf3 can either converted to a numeric value 243 or the string value "0xf3".
@@ -791,7 +898,7 @@ end
   }
   ```
 
-##### Sitemap
+##### Legacy Sitemap
 
   The following sitemap will bring the items to life in the GUI:
 
@@ -872,7 +979,7 @@ The modem's link database (see [Insteon Terminal](https://github.com/pfrommerd/i
 
 The mini remote buttons cannot be modeled as items since they don't have a state or can receive commands. However, button triggered events can be monitored through rules that can set off subsequent actions:
 
-##### Rules
+#### Rules
 
 ```java
 rule "Mini Remote Button A Pressed On"
@@ -887,7 +994,7 @@ end
 
 Link such that the modem is a responder to the motion sensor.
 
-##### Items
+#### Items
 
 ```java
 Switch               motionSensor             "motion sensor [MAP(motion.map):%s]" { channel="insteon:device:home:aabbcc:motion"}
@@ -966,7 +1073,7 @@ The battery and light level are only updated when either there is motion, light 
 Similar in operation to the motion sensor above.
 Link such that the modem is a responder to the motion sensor.
 
-##### Items
+#### Items
 
 ```java
 Contact              doorSensor             "door sensor [MAP(contact.map):%s]" { channel="insteon:device:home:aabbcc:contact" }
@@ -995,9 +1102,9 @@ Note that battery level is only updated when the sensor is triggered or through 
 
 ### Locks
 
-It is important to sync with the lock contorller within 5 feet to avoid bad connection and link twice for both ON and OFF functionality.
+It is important to sync with the lock controller within 5 feet to avoid poor connection and link twice for both ON and OFF functionality.
 
-##### Items
+#### Items
 
 ```java
 Switch doorLock "Front Door [MAP(lock.map):%s]"  { channel="insteon:device:home:aabbcc:lock" }
@@ -1022,20 +1129,32 @@ OFF=unlocked
 
 ### I/O Linc (garage door openers)
 
-The I/O Linc devices are really two devices in one: a relay and a contact.
+The I/O Linc devices are really two devices in one: an output relay and an input contact sensor.
 To control the relay, link the modem as a controller using the set buttons as described in the instructions.
-To get the status of the contact, the modem must also be linked as a responder to the I/O Linc.
-The I/O Linc has a feature to invert the contact or match the contact when it sends commands to any linked responders.
-This is based on the status of the contact when it is linked, and was intended for controlling other devices with the contact.
-The binding expects the contact to be inverted to work properly.
-Ensure the contact is OFF (status LED is dark/garage door open) when linking the modem as a responder to the I/O Linc in order for it to function properly.
+To get the state of the relay and sensor, the modem must also be linked as a responder to the I/O Linc.
+The contact state is based on the sensor state at the time it is linked.
+To invert the state, either relink the modem as a responder with the sensor state inverted, or toggle the channel `relay-sensor-inverted`.
+By default, the device is inverted where an on command is sent when the sensor is closed, and off when open.
+For a garage door opener, ensure the input sensor is closed (status LED off) during the linking process.
 
-##### Items
+#### Items
 
 ```java
-Switch  garageDoorOpener  "door opener"                        { channel="insteon:device:home:aabbcc:switch" }
-Contact garageDoorContact "door contact [MAP(contact.map):%s]" { channel="insteon:device:home:aabbcc:contact" }
+Switch  garageDoorOpener                 "door opener"                        { channel="insteon:device:home:aabbcc:switch" }
+Contact garageDoorContact                "door contact [MAP(contact.map):%s]" { channel="insteon:device:home:aabbcc:contact" }
+String  garageDoorRelayMode              "door relay mode"                    { channel="insteon:device:home:aabbcc:relay-mode" }
+Switch  garageDoorRelaySensorInverted    "door relay sensor inverted"         { channel="insteon:device:home:aabbcc:relay-sensor-inverted" }
 ```
+
+<details>
+  <summary>Legacy</summary>
+
+  ```java
+  Switch  garageDoorOpener  "door opener"                        { channel="insteon:device:home:AABBCC:switch" }
+  Contact garageDoorContact "door contact [MAP(contact.map):%s]" { channel="insteon:device:home:AABBCC:contact" }
+  ```
+
+</details>
 
 and create a file "contact.map" in the transforms directory with these entries:
 
@@ -1045,16 +1164,11 @@ CLOSED=closed
 -=unknown
 ```
 
-> NOTE: If the I/O Linc contact status appears delayed, or returns the wrong value when the sensor changes states, the contact was likely ON (status LED lit) when the modem was linked as a responder.
-Examples of this behavior would include: The status remaining CLOSED for up to 3 minutes after the door is opened, or the status remains OPEN for up to three minutes after the garage is opened and immediately closed again.
-To resolve this behavior the I/O Linc will need to be unlinked and then re-linked to the modem with the contact OFF (stats LED off).
-That would be with the door open when using the Insteon garage kit.
-
 ### Fan Controllers
 
 Here is an example configuration for a FanLinc module, which has a dimmable light and a variable speed fan:
 
-##### Items
+#### Items
 
 ```java
 Dimmer fanLincDimmer "dimmer [%d %%]" { channel="insteon:device:home:aabbcc:dimmer" }
@@ -1071,7 +1185,7 @@ String fanLincFan    "fan speed"      { channel="insteon:device:home:aabbcc:fan-
 
 </details>
 
-##### Sitemap
+#### Sitemap
 
 ```perl
 Slider item=fanLincDimmer switchSupport
@@ -1086,7 +1200,7 @@ Additionally, the device can be reset.
 
 See the example below:
 
-##### Items
+#### Items
 
 ```java
 Number:Power  iMeterPower   "power [%d W]"       { channel="insteon:device:home:aabbcc:power-usage" }
@@ -1113,7 +1227,7 @@ The channels to change the alert delay and duration are only used for the siren 
 
 Here is an example configuration for a siren module:
 
-##### Items
+#### Items
 
 ```java
 Switch siren                   "siren"                 { channel="insteon:device:home:aabbcc:siren" }
@@ -1123,7 +1237,7 @@ Number:Time sirenAlertDuration "alert duration [%d s]" { channel="insteon:device
 String sirenAlertType          "alert type [%s]"       { channel="insteon:device:home:aabbcc:alert-type" }
 ```
 
-##### Sitemap
+#### Sitemap
 
 ```perl
 Switch   item=siren
@@ -1139,7 +1253,7 @@ The smoke bridge monitors First Alert ONELINK smoke and carbon monoxide detector
 
 Here is an example configuration for a smoke bridge:
 
-##### Items
+#### Items
 
 ```java
 Switch smokeAlarm          "smoke alarm"           { channel="insteon:device:home:aabbcc:smoke-alarm" }
@@ -1156,7 +1270,7 @@ When pump control is enabled, the 8th valve will remain on and cannot be control
 Each sprinkler program can be turned on/off by using `PLAY` and `PAUSE` commands.
 To skip forward or back to the next or previous valve in the program, use `NEXT` and `PREVIOUS` commands.
 
-##### Items
+#### Items
 
 ```java
 Switch valve1   "valve 1"   { channel="insteon:device:home:aabbcc:valve1" }
@@ -1179,7 +1293,7 @@ Player program4 "program 4" { channel="insteon:device:home:aabbcc:program4" }
 The thermostat (2441TH) is one of the most complex Insteon devices available.
 To ensure all links are configured between the modem and device, and the status reporting is enabled, use the `insteon device addMissingLinks` console command.
 
-##### Items
+#### Items
 
 ```java
 Number:Temperature   thermostatCoolSetpoint "cool setpoint [%.1f °F]" { channel="insteon:device:home:aabbcc:cool-setpoint" }
@@ -1229,7 +1343,7 @@ String               thermostatTimeFormat         "time format [%s]"            
 
 </details>
 
-##### Sitemap
+#### Sitemap
 
 For the thermostat to display in the GUI, add this to the sitemap file:
 
@@ -1319,7 +1433,7 @@ An `ON` state indicates that all the device states associated to a scene are mat
   Since it is a broadcast message, the corresponding item does _not_ take the address of any device, but of the modem itself.
   The format is `broadcastOnOff#X` where X is the group that you want to be able to broadcast messages to:
 
-### Things
+### Legacy Things
 
   ```java
   Bridge insteon:network:home [port="/dev/ttyUSB0"] {
@@ -1338,7 +1452,7 @@ An `ON` state indicates that all the device states associated to a scene are mat
   }
   ```
 
-### Items
+### Legacy Items
 
   ```java
   Switch  broadcastOnOff "group on/off"  { channel="insteon:device:home:AABBCC:broadcastOnOff#2" }
@@ -1397,15 +1511,24 @@ It shouldn't be used in most cases except during initial device configuration.
 Same goes with commands, the binding will queue up commands requested on these devices and send them during the awake time window.
 Only one command per channel is queued, this mean that subsequent requests will overwrite previous ones.
 
-### Heartbeat Timeout Monitor
+### Heartbeat Timeout
 
-Sensor devices that supports heartbeat have a timeout monitor.
-If no broadcast message is received within a specific interval, the associated thing status will go offline until the binding receives a broadcast message from that device.
-The heartbeat interval on most sensor devices is hard coded as 24 hours but some have the ability to change that interval through the `heartbeat-interval` channel.
-It is enabled by default on devices that supports that feature and will be disabled on devices that have the ability to turn off their heartbeat through the `heartbeat-on-off` channel.
-It is important that the heartbeat group (typically 4) is linked properly to the modem by using the `insteon device addMissingLinks` console command.
-Otherwise, if the link is missing, the timeout monitor will be disabled.
-If necessary, the heartbeat timeout monitor can be manually reset by disabling and re-enabling the associated device thing.
+Sensor devices that support heartbeats have a timeout.
+If a broadcast message is not received within a specific interval, the associated thing's status will change to offline.
+This status persists until the binding receives a broadcast message from that device.
+While most sensor devices have a hardcoded heartbeat interval of 24 hours, some allow modification via the `heartbeat-interval` channel.
+This timeout feature is enabled by default on supporting devices and disabled on devices that can have their heartbeat turned off using the `heartbeat-on-off` channel.
+Proper linking of the heartbeat group (typically group 4) to the modem is crucial; use the `insteon device addMissingLinks` console command to ensure this.
+If the link is missing, the timeout feature will be disabled.
+The heartbeat timeout can be manually reset, if necessary, by disabling and then re-enabling the associated device thing.
+
+### Response Timeout
+
+Non-battery powered devices have a response timeout.
+If a successful response message is not received within a specific interval, the associated thing's status will change to offline.
+While the device is offline, the binding will ignore commands sent to it.
+This status persists until a valid response is received.
+The response timeout can be increased from 30 minutes (default) up to 6 hours by updating the associated bridge parameter `deviceResponseTimeoutInMinutes`.
 
 ## Related Devices
 
@@ -1500,8 +1623,15 @@ This will automatically disable the legacy network bridge with the same configur
 - For battery powered devices, press on their SET button to speed up the discovery process.
 Otherwise you may have to wait until the next time these devices send a heartbeat message which can take up to 24 hours.
 
+- For wired devices that weren't available during the first binding initialization, once connected, press on their on/off button.
+This will notify the binding to retrieve the product information from these devices.
+
 - For scenes, you can either enable scene discovery and add the discovered things, or just manually add specific scene things based on your existing environment.
 Enabling scene discovery might generate a considerable amount of things in your inbox depending on the number of scenes configured in your modem.
+
+- If some unknown devices are showing in your inbox, it could be due corrupt messages the binding received during the modem database download phase.
+Since the modem database is cached after the first download, it will need to be reloaded using the `insteon modem reloadDatabase` console command.
+Otherwise, these devices will keep appearing in your inbox.
 
 - If you have rules to send commands to synchronize the state between related devices, you can enable the device synchronization feature on the bridge instead.
 This will synchronize related devices automatically based on their all-link database.

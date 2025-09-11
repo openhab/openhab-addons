@@ -15,6 +15,7 @@ package org.openhab.binding.mqtt.homeassistant.internal.discovery;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -32,6 +33,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.openhab.binding.mqtt.generic.MqttChannelTypeProvider;
 import org.openhab.binding.mqtt.homeassistant.internal.AbstractHomeAssistantTests;
 import org.openhab.binding.mqtt.homeassistant.internal.HandlerConfiguration;
+import org.openhab.binding.mqtt.homeassistant.internal.HomeAssistantPythonBridge;
 import org.openhab.core.config.discovery.DiscoveryListener;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryService;
@@ -44,7 +46,7 @@ import org.openhab.core.thing.ThingUID;
  *
  * @author Anton Kharuzhy - Initial contribution
  */
-@SuppressWarnings({ "unchecked" })
+@SuppressWarnings({ "unchecked", "null" })
 @ExtendWith(MockitoExtension.class)
 @NonNullByDefault
 public class HomeAssistantDiscoveryTests extends AbstractHomeAssistantTests {
@@ -52,7 +54,7 @@ public class HomeAssistantDiscoveryTests extends AbstractHomeAssistantTests {
 
     @BeforeEach
     public void beforeEach() {
-        discovery = new TestHomeAssistantDiscovery(channelTypeProvider);
+        discovery = new TestHomeAssistantDiscovery(channelTypeProvider, PYTHON);
     }
 
     @Test
@@ -147,7 +149,7 @@ public class HomeAssistantDiscoveryTests extends AbstractHomeAssistantTests {
                 getResourceAsByteArray("component/configTS0601AutoLock.json"));
 
         // Then one thing found
-        assert latch.await(3, TimeUnit.SECONDS);
+        assert latch.await(4, TimeUnit.SECONDS);
         var discoveryResults = discoveryListener.getDiscoveryResults();
         assertThat(discoveryResults.size(), is(1));
         var result = discoveryResults.get(0);
@@ -182,8 +184,8 @@ public class HomeAssistantDiscoveryTests extends AbstractHomeAssistantTests {
     }
 
     private static class TestHomeAssistantDiscovery extends HomeAssistantDiscovery {
-        public TestHomeAssistantDiscovery(MqttChannelTypeProvider typeProvider) {
-            super(null);
+        public TestHomeAssistantDiscovery(MqttChannelTypeProvider typeProvider, HomeAssistantPythonBridge python) {
+            super(null, python);
             this.typeProvider = typeProvider;
         }
     }
@@ -205,7 +207,7 @@ public class HomeAssistantDiscoveryTests extends AbstractHomeAssistantTests {
         }
 
         @Override
-        public @Nullable Collection<ThingUID> removeOlderResults(DiscoveryService source, long timestamp,
+        public @Nullable Collection<ThingUID> removeOlderResults(DiscoveryService source, Instant timestamp,
                 @Nullable Collection<ThingTypeUID> thingTypeUIDs, @Nullable ThingUID bridgeUID) {
             return Collections.emptyList();
         }

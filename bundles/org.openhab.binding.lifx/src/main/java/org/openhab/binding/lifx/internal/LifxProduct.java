@@ -160,22 +160,36 @@ public enum LifxProduct {
     PRODUCT_173(173, "LIFX Round Path", new Features(TR_1500_9000, COLOR, MATRIX)),
     PRODUCT_174(174, "LIFX Square Path", new Features(TR_1500_9000, COLOR, MATRIX)),
     PRODUCT_175(175, "LIFX PAR38", new Features(TR_1500_9000, COLOR)),
-    PRODUCT_176(176, "LIFX Ceiling", new Features(TR_1500_9000, COLOR, MATRIX)),
-    PRODUCT_177(177, "LIFX Ceiling", new Features(TR_1500_9000, COLOR, MATRIX)),
+    PRODUCT_176(176, "LIFX Ceiling 15\"", new Features(TR_1500_9000, COLOR, MATRIX)),
+    PRODUCT_177(177, "LIFX Ceiling 15\"", new Features(TR_1500_9000, COLOR, MATRIX)),
+    PRODUCT_178(178, "LIFX Downlight", new Features(TR_1500_9000, COLOR)),
+    PRODUCT_179(179, "LIFX Downlight", new Features(TR_1500_9000, COLOR)),
+    PRODUCT_180(180, "LIFX Downlight", new Features(TR_1500_9000, COLOR)),
     PRODUCT_181(181, "LIFX Color", new Features(TR_1500_9000, COLOR)),
     PRODUCT_182(182, "LIFX Color", new Features(TR_1500_9000, COLOR)),
     PRODUCT_185(185, "LIFX Candle", new Features(TR_1500_9000, COLOR, MATRIX)),
     PRODUCT_186(186, "LIFX Candle", new Features(TR_1500_9000, COLOR, MATRIX)),
     PRODUCT_187(187, "LIFX Candle", new Features(TR_1500_9000, COLOR, MATRIX)),
     PRODUCT_188(188, "LIFX Candle", new Features(TR_1500_9000, COLOR, MATRIX)),
+    PRODUCT_201(201, "LIFX Ceiling 13x26\"", new Features(TR_1500_9000, COLOR, MATRIX)),
+    PRODUCT_202(202, "LIFX Ceiling 13x26\"", new Features(TR_1500_9000, COLOR, MATRIX)),
     PRODUCT_203(203, "LIFX String", new Features(TR_1500_9000, COLOR, EXTENDED_MULTIZONE, MULTIZONE)),
     PRODUCT_204(204, "LIFX String", new Features(TR_1500_9000, COLOR, EXTENDED_MULTIZONE, MULTIZONE)),
     PRODUCT_205(205, "LIFX Neon", new Features(TR_1500_9000, COLOR, EXTENDED_MULTIZONE, MULTIZONE)),
     PRODUCT_206(206, "LIFX Neon", new Features(TR_1500_9000, COLOR, EXTENDED_MULTIZONE, MULTIZONE)),
+    PRODUCT_213(213, "LIFX Outdoor Permanent", new Features(TR_1500_9000, COLOR, EXTENDED_MULTIZONE, MULTIZONE)),
+    PRODUCT_214(214, "LIFX Outdoor Permanent", new Features(TR_1500_9000, COLOR, EXTENDED_MULTIZONE, MULTIZONE)),
     PRODUCT_215(215, "LIFX B10 Candle", new Features(TR_1500_9000, COLOR, MATRIX)),
     PRODUCT_216(216, "LIFX B10 Candle", new Features(TR_1500_9000, COLOR, MATRIX)),
     PRODUCT_217(217, "LIFX T10 Candle", new Features(TR_1500_9000, COLOR, MATRIX)),
-    PRODUCT_218(218, "LIFX T10 Candle", new Features(TR_1500_9000, COLOR, MATRIX));
+    PRODUCT_218(218, "LIFX T10 Candle", new Features(TR_1500_9000, COLOR, MATRIX)),
+    PRODUCT_219(219, "LIFX Luna", new Features(TR_1500_9000, COLOR, MATRIX)),
+    PRODUCT_220(220, "LIFX Luna", new Features(TR_1500_9000, COLOR, MATRIX)),
+    PRODUCT_221(221, "LIFX Round Spot", new Features(TR_1500_9000, COLOR, MATRIX)),
+    PRODUCT_222(222, "LIFX Round Path", new Features(TR_1500_9000, COLOR, MATRIX)),
+    PRODUCT_223(223, "LIFX Downlight", new Features(TR_1500_9000, COLOR)),
+    PRODUCT_224(224, "LIFX Downlight", new Features(TR_1500_9000, COLOR)),
+    PRODUCT_225(225, "LIFX PAR38", new Features(TR_1500_9000, COLOR));
 
     /**
      * Enumerates the product features.
@@ -289,7 +303,7 @@ public enum LifxProduct {
         }
 
         /**
-         * The maxiumum color temperature in degrees Kelvin.
+         * The maximum color temperature in degrees Kelvin.
          *
          * @return maximum color temperature (K)
          */
@@ -361,11 +375,11 @@ public enum LifxProduct {
     private final Features features;
     private final List<Upgrade> upgrades;
 
-    private LifxProduct(long id, String name, Features features, Upgrade... upgrades) {
+    LifxProduct(long id, String name, Features features, Upgrade... upgrades) {
         this(LIFX, id, name, features, upgrades);
     }
 
-    private LifxProduct(Vendor vendor, long id, String name, Features features, Upgrade... upgrades) {
+    LifxProduct(Vendor vendor, long id, String name, Features features, Upgrade... upgrades) {
         this.vendor = vendor;
         this.id = id;
         this.name = name;
@@ -411,8 +425,8 @@ public enum LifxProduct {
         }
 
         String[] majorMinorVersion = version.split("\\.");
-        long major = Long.valueOf(majorMinorVersion[0]);
-        long minor = Long.valueOf(majorMinorVersion[1]);
+        long major = Long.parseLong(majorMinorVersion[0]);
+        long minor = Long.parseLong(majorMinorVersion[1]);
 
         TemperatureRange temperatureRange = features.temperatureRange;
         Set<Feature> features = new HashSet<>(this.features.features);

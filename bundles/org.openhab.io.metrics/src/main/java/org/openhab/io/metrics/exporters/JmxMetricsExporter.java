@@ -57,7 +57,6 @@ public class JmxMetricsExporter extends MetricsExporter {
     private JmxConfig getJmxConfig() {
         return new JmxConfig() {
             @Override
-            @io.micrometer.core.lang.Nullable
             @Nullable
             public String get(@Nullable String k) {
                 return null; // accept the rest of the defaults

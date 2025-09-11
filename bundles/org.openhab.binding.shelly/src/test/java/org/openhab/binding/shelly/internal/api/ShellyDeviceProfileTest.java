@@ -14,14 +14,24 @@ package org.openhab.binding.shelly.internal.api;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.openhab.binding.shelly.internal.discovery.ShellyThingCreator.*;
+import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
+import static org.openhab.binding.shelly.internal.ShellyDevices.*;
 
+import java.util.ArrayList;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsDevice;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsGlobal;
+import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellySettingsRgbwLight;
+import org.openhab.core.thing.ThingTypeUID;
+
+import com.google.gson.Gson;
 
 /**
  * Tests for {@link ShellyDeviceProfile}.
@@ -30,88 +40,159 @@ import org.junit.jupiter.params.provider.MethodSource;
  */
 @NonNullByDefault
 public class ShellyDeviceProfileTest {
+    private final Gson gson = new Gson();
 
     @ParameterizedTest
     @MethodSource("provideTestCasesForApiDetermination")
-    void determineApi(String thingTypeId, boolean expectedIsGeneration2, boolean expectedIsBlu) {
-        boolean actualIsGeneration2 = ShellyDeviceProfile.isGeneration2(thingTypeId);
+    void determineApi(ThingTypeUID thingTypeUid, boolean expectedIsGeneration2, boolean expectedIsBlu) {
+        boolean actualIsGeneration2 = ShellyDeviceProfile.isGeneration2(thingTypeUid);
         assertThat(actualIsGeneration2, is(equalTo(expectedIsGeneration2)));
 
-        boolean actualIsBlue = ShellyDeviceProfile.isBluSeries(thingTypeId);
+        boolean actualIsBlue = ShellyDeviceProfile.isBluSeries(thingTypeUid);
         assertThat(actualIsBlue, is(equalTo(expectedIsBlu)));
     }
 
     private static Stream<Arguments> provideTestCasesForApiDetermination() {
         return Stream.of( //
-                // Shelly BLU
-                Arguments.of(THING_TYPE_SHELLYBLUBUTTON_STR, true, true), //
-                Arguments.of(THING_TYPE_SHELLYBLUDW_STR, true, true), //
-                Arguments.of(THING_TYPE_SHELLYBLUMOTION_STR, true, true), //
-                Arguments.of(THING_TYPE_SHELLYBLUHT_STR, true, true), //
-                Arguments.of(THING_TYPE_SHELLYBLUGW_STR, true, false), //
-                // Shelly Bulb
-                Arguments.of(THING_TYPE_SHELLYBULB_STR, false, false), //
                 // Generation 1
-                Arguments.of(THING_TYPE_SHELLYDUO_STR, false, false), //
-                Arguments.of(THING_TYPE_SHELLYDUORGBW_STR, false, false), //
-                Arguments.of(THING_TYPE_SHELLYVINTAGE_STR, false, false), //
-                Arguments.of("shellyrgbw2-color", false, false), //
-                Arguments.of("shellyrgbw2-white", false, false), //
-                Arguments.of(THING_TYPE_SHELLY1_STR, false, false), //
-                Arguments.of(THING_TYPE_SHELLY1L_STR, false, false), //
-                Arguments.of(THING_TYPE_SHELLY1PM_STR, false, false), //
-                Arguments.of(THING_TYPE_SHELLYEM_STR, false, false), //
-                Arguments.of(THING_TYPE_SHELLY3EM_STR, false, false), //
-                Arguments.of(THING_TYPE_SHELLY2_RELAY_STR, false, false), //
-                Arguments.of(THING_TYPE_SHELLY2_ROLLER_STR, false, false), //
-                Arguments.of(THING_TYPE_SHELLY25_RELAY_STR, false, false), //
-                Arguments.of(THING_TYPE_SHELLY25_ROLLER_STR, false, false), //
-                Arguments.of(THING_TYPE_SHELLY4PRO_STR, false, false), //
-                Arguments.of(THING_TYPE_SHELLYPLUG_STR, false, false), //
-                Arguments.of(THING_TYPE_SHELLYPLUGS_STR, false, false), //
-                Arguments.of(THING_TYPE_SHELLYPLUGU1_STR, false, false), //
-                Arguments.of(THING_TYPE_SHELLYUNI_STR, false, false), //
-                Arguments.of(THING_TYPE_SHELLYDIMMER_STR, false, false), //
-                Arguments.of(THING_TYPE_SHELLYDIMMER2_STR, false, false), //
-                Arguments.of(THING_TYPE_SHELLYIX3_STR, false, false), //
-                Arguments.of(THING_TYPE_SHELLYHT_STR, false, false), //
-                Arguments.of(THING_TYPE_SHELLYSMOKE_STR, false, false), //
-                Arguments.of(THING_TYPE_SHELLYGAS_STR, false, false), //
-                Arguments.of(THING_TYPE_SHELLYFLOOD_STR, false, false), //
-                Arguments.of(THING_TYPE_SHELLYDOORWIN_STR, false, false), //
-                Arguments.of(THING_TYPE_SHELLYDOORWIN2_STR, false, false), //
-                Arguments.of(THING_TYPE_SHELLYSENSE_STR, false, false), //
-                Arguments.of(THING_TYPE_SHELLYBUTTON1_STR, false, false), //
-                Arguments.of(THING_TYPE_SHELLYBUTTON2_STR, false, false), //
-                Arguments.of(THING_TYPE_SHELLYMOTION_STR, false, false), //
-                Arguments.of(THING_TYPE_SHELLYTRV_STR, false, false), //
-                // Generation 2 Plus series
-                Arguments.of(THING_TYPE_SHELLYPLUS1_STR, true, false), //
-                Arguments.of(THING_TYPE_SHELLYPLUS1PM_STR, true, false), //
-                Arguments.of(THING_TYPE_SHELLYPLUS2PM_RELAY_STR, true, false), //
-                Arguments.of(THING_TYPE_SHELLYPLUS2PM_ROLLER_STR, true, false), //
-                Arguments.of(THING_TYPE_SHELLYPLUSPLUGS_STR, true, false), //
-                Arguments.of(THING_TYPE_SHELLYPLUSI4_STR, true, false), //
-                Arguments.of(THING_TYPE_SHELLYPLUSI4DC_STR, true, false), //
-                Arguments.of(THING_TYPE_SHELLY1MINI_STR, true, false), //
-                Arguments.of(THING_TYPE_SHELLYPMMINI_STR, true, false), //
-                Arguments.of(THING_TYPE_SHELLY1PMMINI_STR, true, false), //
-                // Generation 2 Pro series
-                Arguments.of(THING_TYPE_SHELLYPRO1_STR, true, false), //
-                Arguments.of(THING_TYPE_SHELLYPRO1PM_STR, true, false), //
-                Arguments.of(THING_TYPE_SHELLYPRO2_RELAY_STR, true, false), //
-                Arguments.of(THING_TYPE_SHELLYPRO2PM_RELAY_STR, true, false), //
-                Arguments.of(THING_TYPE_SHELLYPRO2PM_ROLLER_STR, true, false), //
-                Arguments.of(THING_TYPE_SHELLYPRO3_STR, true, false), //
-                Arguments.of(THING_TYPE_SHELLYPRO3EM_STR, true, false), //
-                Arguments.of(THING_TYPE_SHELLYPROEM50_STR, true, false), //
-                Arguments.of(THING_TYPE_SHELLYPRO4PM_STR, true, false), //
-                Arguments.of(THING_TYPE_SHELLYPLUSDIMMERUS_STR, true, false), //
-                Arguments.of(THING_TYPE_SHELLYPLUSDIMMER10V_STR, true, false), //
-                Arguments.of(THING_TYPE_SHELLYPLUSHTG3_STR, true, false), //
-                Arguments.of(THING_TYPE_SHELLYPLUSSMOKE_STR, true, false), //
-                Arguments.of(THING_TYPE_SHELLYPLUSWALLDISPLAY_STR, true, false), //
-                Arguments.of(THING_TYPE_SHELLYPROTECTED_STR, false, false), //
-                Arguments.of(THING_TYPE_SHELLYUNKNOWN_STR, false, false));
+                Arguments.of(THING_TYPE_SHELLYBULB, false, false), //
+                Arguments.of(THING_TYPE_SHELLYDUO, false, false), //
+                Arguments.of(THING_TYPE_SHELLYDUORGBW, false, false), //
+                Arguments.of(THING_TYPE_SHELLYVINTAGE, false, false), //
+                Arguments.of(THING_TYPE_SHELLYRGBW2_COLOR, false, false), //
+                Arguments.of(THING_TYPE_SHELLYRGBW2_WHITE, false, false), //
+                Arguments.of(THING_TYPE_SHELLY1, false, false), //
+                Arguments.of(THING_TYPE_SHELLY1L, false, false), //
+                Arguments.of(THING_TYPE_SHELLY1PM, false, false), //
+                Arguments.of(THING_TYPE_SHELLYEM, false, false), //
+                Arguments.of(THING_TYPE_SHELLY3EM, false, false), //
+                Arguments.of(THING_TYPE_SHELLY2_RELAY, false, false), //
+                Arguments.of(THING_TYPE_SHELLY2_ROLLER, false, false), //
+                Arguments.of(THING_TYPE_SHELLY25_RELAY, false, false), //
+                Arguments.of(THING_TYPE_SHELLY25_ROLLER, false, false), //
+                Arguments.of(THING_TYPE_SHELLY4PRO, false, false), //
+                Arguments.of(THING_TYPE_SHELLYPLUG, false, false), //
+                Arguments.of(THING_TYPE_SHELLYPLUGS, false, false), //
+                Arguments.of(THING_TYPE_SHELLYPLUGU1, false, false), //
+                Arguments.of(THING_TYPE_SHELLYUNI, false, false), //
+                Arguments.of(THING_TYPE_SHELLYDIMMER, false, false), //
+                Arguments.of(THING_TYPE_SHELLYDIMMER2, false, false), //
+                Arguments.of(THING_TYPE_SHELLYIX3, false, false), //
+                Arguments.of(THING_TYPE_SHELLYHT, false, false), //
+                Arguments.of(THING_TYPE_SHELLYGAS, false, false), //
+                Arguments.of(THING_TYPE_SHELLYFLOOD, false, false), //
+                Arguments.of(THING_TYPE_SHELLYDOORWIN, false, false), //
+                Arguments.of(THING_TYPE_SHELLYDOORWIN2, false, false), //
+                Arguments.of(THING_TYPE_SHELLYSENSE, false, false), //
+                Arguments.of(THING_TYPE_SHELLYBUTTON1, false, false), //
+                Arguments.of(THING_TYPE_SHELLYBUTTON2, false, false), //
+                Arguments.of(THING_TYPE_SHELLYMOTION, false, false), //
+                Arguments.of(THING_TYPE_SHELLYTRV, false, false), //
+                Arguments.of(THING_TYPE_SHELLYEYE, false, false), //
+
+                // Shelly Plus
+                Arguments.of(THING_TYPE_SHELLYPLUS1, true, false), //
+                Arguments.of(THING_TYPE_SHELLYPLUS1PM, true, false), //
+                Arguments.of(THING_TYPE_SHELLYPLUS2PM_RELAY, true, false), //
+                Arguments.of(THING_TYPE_SHELLYPLUS2PM_ROLLER, true, false), //
+                Arguments.of(THING_TYPE_SHELLYPLUSPLUGS, true, false), //
+                Arguments.of(THING_TYPE_SHELLYPLUSPLUGUS, true, false), //
+                Arguments.of(THING_TYPE_SHELLYPLUSI4, true, false), //
+                Arguments.of(THING_TYPE_SHELLYPLUSI4DC, true, false), //
+                Arguments.of(THING_TYPE_SHELLYPLUSEM, true, false), //
+                Arguments.of(THING_TYPE_SHELLYPLUS3EM63, true, false), //
+                Arguments.of(THING_TYPE_SHELLYPLUSDIMMER, true, false), //
+                Arguments.of(THING_TYPE_SHELLYPLUSDIMMERUS, true, false), //
+                Arguments.of(THING_TYPE_SHELLYPLUSDIMMER10V, true, false), //
+                Arguments.of(THING_TYPE_SHELLYPLUSHT, true, false), //
+                Arguments.of(THING_TYPE_SHELLYPLUSSMOKE, true, false), //
+                Arguments.of(THING_TYPE_SHELLYPLUSWALLDISPLAY, true, false), //
+                Arguments.of(THING_TYPE_SHELLYPLUSBLUGW, true, false), //
+
+                // Shelly Mini series
+                Arguments.of(THING_TYPE_SHELLYMINI_1, true, false), //
+                Arguments.of(THING_TYPE_SHELLYMINI_1PM, true, false), //
+                Arguments.of(THING_TYPE_SHELLYMINI_PM, true, false), //
+                Arguments.of(THING_TYPE_SHELLYMINI_EM, true, false), //
+
+                // Shelly BLU
+                Arguments.of(THING_TYPE_SHELLYBLUBUTTON1, true, true), //
+                Arguments.of(THING_TYPE_SHELLYBLUWALLSWITCH4, true, true), //
+                Arguments.of(THING_TYPE_SHELLYBLURCBUTTON4, true, true), //
+                Arguments.of(THING_TYPE_SHELLYBLUHT, true, true), //
+                Arguments.of(THING_TYPE_SHELLYBLUDW, true, true), //
+                Arguments.of(THING_TYPE_SHELLYBLUMOTION, true, true), //
+                Arguments.of(THING_TYPE_SHELLYBLUDISTANCE, true, true), //
+                Arguments.of(THING_TYPE_SHELLYBLUREMOTE, true, true), //
+
+                // Shelly Pro series
+                Arguments.of(THING_TYPE_SHELLYPRO1, true, false), //
+                Arguments.of(THING_TYPE_SHELLYPRO1PM, true, false), //
+                Arguments.of(THING_TYPE_SHELLYPRO2, true, false), //
+                Arguments.of(THING_TYPE_SHELLYPRO2PM_RELAY, true, false), //
+                Arguments.of(THING_TYPE_SHELLYPRO2PM_ROLLER, true, false), //
+                Arguments.of(THING_TYPE_SHELLYPRO3, true, false), //
+                Arguments.of(THING_TYPE_SHELLYPRO3EM, true, false), //
+                Arguments.of(THING_TYPE_SHELLYPROEM50, true, false), //
+                Arguments.of(THING_TYPE_SHELLYPRO4PM, true, false), //
+                Arguments.of(THING_TYPE_SHELLYPRO3EM, true, false), //
+                Arguments.of(THING_TYPE_SHELLYPRO3EM63, true, false), //
+                Arguments.of(THING_TYPE_SHELLYPRO3EM400, true, false), //
+
+                Arguments.of(THING_TYPE_SHELLYPROTECTED, false, false), // password protected device
+                Arguments.of(THING_TYPE_SHELLYUNKNOWN, false, false)); // unknown device
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideTestCasesForGetControlGroup")
+    void getControlGroup(ThingTypeUID thingTypeUID, String mode, int numRollers, int numOutputs, int numLights,
+            int index, String expectedControlGroup) throws ShellyApiException {
+        ShellyDeviceProfile deviceProfile = new ShellyDeviceProfile();
+        ShellySettingsGlobal settingsGlobal = new ShellySettingsGlobal();
+        ShellySettingsDevice settingsDevice = new ShellySettingsDevice();
+
+        settingsGlobal.mode = mode;
+        settingsGlobal.relays = new ArrayList<>();
+        settingsGlobal.lights = IntStream.range(0, numLights).mapToObj(i -> new ShellySettingsRgbwLight())
+                .collect(Collectors.toCollection(ArrayList::new));
+        settingsDevice.numRollers = numRollers;
+        settingsDevice.numOutputs = numOutputs;
+        deviceProfile.initialize(thingTypeUID, gson.toJson(settingsGlobal), settingsDevice);
+
+        String actualControlGroup = deviceProfile.getControlGroup(index);
+        assertThat("Thing type: " + thingTypeUID + ", mode: " + mode + ", numRollers: " + numRollers + ", numOutputs: "
+                + numOutputs, actualControlGroup, is(equalTo(expectedControlGroup)));
+    }
+
+    private static Stream<Arguments> provideTestCasesForGetControlGroup() {
+        return Stream.of( //
+                Arguments.of(THING_TYPE_SHELLYPLUSDIMMERUS, "", 0, 0, 0, 0, CHANNEL_GROUP_DIMMER_CONTROL),
+                Arguments.of(THING_TYPE_SHELLYPLUSDIMMER10V, "", 0, 0, 0, 0, CHANNEL_GROUP_DIMMER_CONTROL),
+                Arguments.of(THING_TYPE_SHELLYDIMMER, "", 0, 0, 0, 0, CHANNEL_GROUP_DIMMER_CONTROL),
+                Arguments.of(THING_TYPE_SHELLYDIMMER2, "", 0, 0, 0, 1, CHANNEL_GROUP_DIMMER_CONTROL),
+                Arguments.of(THING_TYPE_SHELLY2_ROLLER, "roller", 0, 0, 0, 3, CHANNEL_GROUP_ROL_CONTROL),
+                Arguments.of(THING_TYPE_SHELLY2_ROLLER, "Roller", 1, 0, 0, 3, CHANNEL_GROUP_ROL_CONTROL),
+                Arguments.of(THING_TYPE_SHELLY2_ROLLER, "roller", 2, 0, 0, 3, CHANNEL_GROUP_ROL_CONTROL + "4"),
+                Arguments.of(THING_TYPE_SHELLY25_RELAY, "", 0, 0, 0, 3, CHANNEL_GROUP_STATUS + "4"),
+                Arguments.of(THING_TYPE_SHELLY25_RELAY, "", 0, 1, 0, 3, CHANNEL_GROUP_RELAY_CONTROL),
+                Arguments.of(THING_TYPE_SHELLY25_RELAY, "", 0, 2, 0, 3, CHANNEL_GROUP_RELAY_CONTROL + "4"),
+                Arguments.of(THING_TYPE_SHELLYRGBW2_COLOR, "", 0, 0, 0, 3, CHANNEL_GROUP_LIGHT_CONTROL),
+                Arguments.of(THING_TYPE_SHELLYRGBW2_WHITE, "", 0, 0, 0, 3, CHANNEL_GROUP_LIGHT_CONTROL),
+                Arguments.of(THING_TYPE_SHELLYPLUSRGBWPM, "", 0, 0, 1, 3, CHANNEL_GROUP_LIGHT_CONTROL),
+                Arguments.of(THING_TYPE_SHELLYPLUSRGBWPM, "", 0, 0, 2, 3, CHANNEL_GROUP_LIGHT_CHANNEL + "4"),
+                Arguments.of(THING_TYPE_SHELLYBULB, "", 0, 0, 2, 3, CHANNEL_GROUP_LIGHT_CONTROL),
+                Arguments.of(THING_TYPE_SHELLYBUTTON1, "", 0, 0, 0, 5, CHANNEL_GROUP_STATUS),
+                Arguments.of(THING_TYPE_SHELLYBUTTON2, "", 0, 0, 0, 5, CHANNEL_GROUP_STATUS),
+                Arguments.of(THING_TYPE_SHELLYBLUBUTTON1, "", 0, 0, 0, 5, CHANNEL_GROUP_STATUS),
+                Arguments.of(THING_TYPE_SHELLYHT, "", 0, 0, 0, 5, CHANNEL_GROUP_SENSOR),
+                Arguments.of(THING_TYPE_SHELLYFLOOD, "", 0, 0, 0, 5, CHANNEL_GROUP_SENSOR),
+                Arguments.of(THING_TYPE_SHELLYDOORWIN, "", 0, 0, 0, 5, CHANNEL_GROUP_SENSOR),
+                Arguments.of(THING_TYPE_SHELLYSMOKE, "", 0, 0, 0, 5, CHANNEL_GROUP_SENSOR),
+                Arguments.of(THING_TYPE_SHELLYGAS, "", 0, 0, 0, 5, CHANNEL_GROUP_SENSOR),
+                Arguments.of(THING_TYPE_SHELLYUNI, "", 0, 0, 0, 5, CHANNEL_GROUP_SENSOR),
+                Arguments.of(THING_TYPE_SHELLYMOTION, "", 0, 0, 0, 5, CHANNEL_GROUP_SENSOR),
+                Arguments.of(THING_TYPE_SHELLYSENSE, "", 0, 0, 0, 5, CHANNEL_GROUP_SENSOR),
+                Arguments.of(THING_TYPE_SHELLYTRV, "", 0, 0, 0, 5, CHANNEL_GROUP_SENSOR),
+                Arguments.of(THING_TYPE_SHELLYPLUSWALLDISPLAY, "", 0, 0, 0, 5, CHANNEL_GROUP_SENSOR));
     }
 }

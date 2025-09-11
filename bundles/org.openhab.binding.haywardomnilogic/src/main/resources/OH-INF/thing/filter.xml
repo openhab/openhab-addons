@@ -10,6 +10,7 @@
 		</supported-bridge-type-refs>
 
 		<label>Filter</label>
+		<semantic-equipment-tag>WaterFilter</semantic-equipment-tag>
 		<channels>
 			<channel id="filterEnable" typeId="system.power"/>
 			<channel id="filterValvePosition" typeId="valvePosition"/>
@@ -43,6 +44,10 @@
 	<channel-type id="valvePosition">
 		<item-type>String</item-type>
 		<label>Valve Position</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="0">Off</option>
@@ -57,19 +62,31 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Filter Speed</label>
 		<description>Filter speed in percentage</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Speed</tag>
+		</tags>
 		<state min="0" max="100" step="5" pattern="%d %%" readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="filterSpeedRpm">
-		<item-type>Number:Frequency</item-type>
+		<item-type unitHint="rpm">Number:Frequency</item-type>
 		<label>Filter Speed</label>
 		<description>Filter speed in rpm</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Speed</tag>
+		</tags>
 		<state min="0" max="3600" step="200" pattern="%d rpm" readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="filterSpeedSelect">
 		<item-type>String</item-type>
 		<label>Filter Speed States</label>
+		<tags>
+			<tag>Control</tag>
+			<tag>Speed</tag>
+		</tags>
 		<state readOnly="false">
 			<options>
 				<option value="0">Off</option>

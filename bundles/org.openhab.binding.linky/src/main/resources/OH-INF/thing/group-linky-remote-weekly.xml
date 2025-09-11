@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="linky"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-group-type id="weekly">
+		<label>Weekly Consumption</label>
+		<channels>
+			<channel id="thisWeek" typeId="consumption">
+				<label>This Week Consumption</label>
+				<description>The energy consumption for the current Week</description>
+			</channel>
+			<channel id="lastWeek" typeId="consumption">
+				<label>Last Week Consumption</label>
+				<description>The energy consumption for the previous Week</description>
+			</channel>
+			<channel id="week-2" typeId="consumption">
+				<label>Week -2 Consumption</label>
+				<description>The energy consumption for the Week -2</description>
+			</channel>
+			<channel id="consumption" typeId="consumption">
+				<label>Consumption</label>
+				<description>The energy consumption</description>
+			</channel>
+			<channel id="max-power" typeId="power">
+				<label>Peak Value</label>
+				<description>Maximum power usage value</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+</thing:thing-descriptions>

@@ -19,6 +19,75 @@
 			</update-channel>
 		</instruction-set>
 
+		<instruction-set targetVersion="3">
+			<add-channel id="defrost" groupIds="recuperator">
+				<type>danfossairunit:defrost</type>
+			</add-channel>
+		</instruction-set>
+
+		<instruction-set targetVersion="4">
+			<update-channel id="mode" groupIds="main">
+				<type>danfossairunit:mode</type>
+			</update-channel>
+
+			<update-channel id="manual_fan_step" groupIds="main">
+				<type>danfossairunit:manual-fan-step</type>
+			</update-channel>
+
+			<update-channel id="boost" groupIds="main">
+				<type>danfossairunit:boost</type>
+			</update-channel>
+
+			<update-channel id="night_cooling" groupIds="main">
+				<type>danfossairunit:night-cooling</type>
+			</update-channel>
+
+			<update-channel id="room_temp" groupIds="temps">
+				<type>system:indoor-temperature</type>
+				<label>Room Temperature</label>
+				<description>Temperature of the air in the room of the Air Dial</description>
+			</update-channel>
+
+			<update-channel id="room_temp_calculated" groupIds="temps">
+				<type>danfossairunit:calculated-temperature</type>
+			</update-channel>
+
+			<update-channel id="bypass" groupIds="recuperator">
+				<type>danfossairunit:bypass</type>
+			</update-channel>
+
+			<update-channel id="supply_temp" groupIds="recuperator">
+				<type>system:indoor-temperature</type>
+				<label>Supply Air Temperature</label>
+				<description>Temperature of air which is passed to the rooms</description>
+			</update-channel>
+
+			<update-channel id="extract_temp" groupIds="recuperator">
+				<type>system:indoor-temperature</type>
+				<label>Extract Air Temperature</label>
+				<description>Temperature of the air as extracted from the rooms</description>
+			</update-channel>
+
+			<update-channel id="exhaust_temp" groupIds="recuperator">
+				<type>system:outdoor-temperature</type>
+				<label>Exhaust Air Temperature</label>
+				<description>Temperature of the air when pushed outside</description>
+			</update-channel>
+
+			<update-channel id="filter_life" groupIds="service">
+				<type>danfossairunit:filter-life</type>
+			</update-channel>
+		</instruction-set>
+
+		<instruction-set targetVersion="5">
+			<add-channel id="power_cycles" groupIds="operation">
+				<type>danfossairunit:power-cycles</type>
+			</add-channel>
+			<add-channel id="operating_hours" groupIds="operation">
+				<type>danfossairunit:operating-hours</type>
+			</add-channel>
+		</instruction-set>
+
 	</thing-type>
 
 </update:update-descriptions>

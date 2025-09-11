@@ -12,7 +12,7 @@
 
 		<label>Dimmer</label>
 		<description>An OpenWebNet BUS/SCS dimmer for the dimmer control of 1 light. BTicino models: yyyy/zzzz/etc.</description>
-
+		<semantic-equipment-tag>LightSource</semantic-equipment-tag>
 		<channels>
 			<channel id="brightness" typeId="brightness"/>
 		</channels>

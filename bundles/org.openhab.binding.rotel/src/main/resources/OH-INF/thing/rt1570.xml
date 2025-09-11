@@ -8,6 +8,7 @@
 	<thing-type id="rt1570">
 		<label>RT-1570 Tuner</label>
 		<description>Connection to the Rotel RT-1570 tuner</description>
+		<semantic-equipment-tag>Receiver</semantic-equipment-tag>
 
 		<channels>
 			<channel id="power" typeId="system.power"/>

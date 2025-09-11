@@ -9,6 +9,7 @@
 			<bridge-type-ref id="bridge"></bridge-type-ref>
 		</supported-bridge-type-refs>
 		<label>TouchWand Binary Sensor Unit</label>
+		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
 		<channels>
 			<channel id="isOpen" typeId="isOpen"/>
 			<channel id="motion" typeId="motion"/>
@@ -19,18 +20,30 @@
 		<item-type>Contact</item-type>
 		<label>Open Status</label>
 		<category>Contact</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="motion">
 		<item-type>Switch</item-type>
 		<label>Motion Detected</label>
 		<category>Motion</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Motion</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="smoke">
 		<item-type>Switch</item-type>
 		<label>Smoke Detected</label>
 		<category>Smoke</category>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Smoke</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 </thing:thing-descriptions>

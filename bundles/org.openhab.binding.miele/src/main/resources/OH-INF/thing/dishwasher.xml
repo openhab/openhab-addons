@@ -12,6 +12,7 @@
 
 		<label>Dishwasher</label>
 		<description>This is a Miele@home compatible dishwasher</description>
+		<semantic-equipment-tag>Dishwasher</semantic-equipment-tag>
 
 		<channels>
 			<channel id="state" typeId="state"/>

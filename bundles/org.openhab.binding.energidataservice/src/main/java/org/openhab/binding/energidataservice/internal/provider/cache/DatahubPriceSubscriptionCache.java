@@ -45,13 +45,13 @@ public class DatahubPriceSubscriptionCache
     }
 
     public DatahubPriceSubscriptionCache(Clock clock) {
-        super(clock, MAX_CACHE_SIZE);
+        super(clock);
     }
 
     /**
      * Replace current "raw"/unprocessed tariff records in cache.
      * Map of hourly tariffs will be updated automatically.
-     * 
+     *
      * @param records The records as received from Energi Data Service.
      */
     @Override
@@ -78,7 +78,7 @@ public class DatahubPriceSubscriptionCache
 
     /**
      * Check if we have "raw" tariff records cached which are valid tomorrow.
-     * 
+     *
      * @return true if tariff records for tomorrow are cached
      */
     public boolean areTariffsValidTomorrow() {

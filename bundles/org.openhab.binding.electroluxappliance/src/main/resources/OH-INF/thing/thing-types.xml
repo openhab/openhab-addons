@@ -7,6 +7,7 @@
 	<bridge-type id="api">
 		<label>Electrolux Group API</label>
 		<description>This bridge represents the web API connector.</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 
 		<properties>
 			<property name="vendor">Electrolux</property>
@@ -36,7 +37,7 @@
 
 		<label>Air Purifier</label>
 		<description>This thing represents the Electrolux Air Purifier.</description>
-
+		<semantic-equipment-tag>AirFilter</semantic-equipment-tag>
 		<channels>
 			<channel id="temperature" typeId="temperature"/>
 			<channel id="humidity" typeId="humidity"/>
@@ -77,7 +78,7 @@
 
 		<label>Washing Machine</label>
 		<description>This thing represents the Electrolux Washing Machine.</description>
-
+		<semantic-equipment-tag>WashingMachine</semantic-equipment-tag>
 		<channels>
 			<channel id="door-state" typeId="door-state"/>
 			<channel id="door-lock" typeId="door-lock"/>
@@ -115,6 +116,51 @@
 
 	</thing-type>
 
+	<thing-type id="portable-air-conditioner">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="api"/>
+		</supported-bridge-type-refs>
+
+		<label>Air Conditioner</label>
+		<description>This thing represents the Electrolux Portable Air Conditioner.</description>
+		<semantic-equipment-tag>AirConditioner</semantic-equipment-tag>
+		<channels>
+			<channel id="appliance-running" typeId="appliance-running"/>
+			<channel id="ambient-temperature" typeId="ambient-temperature"/>
+			<channel id="target-temperature" typeId="target-temperature"/>
+			<channel id="sleep-mode" typeId="sleep-mode"/>
+			<channel id="fan-swing" typeId="fan-swing"/>
+			<channel id="child-ui-lock" typeId="child-ui-lock"/>
+			<channel id="fan-mode" typeId="fan-mode"/>
+			<channel id="mode" typeId="mode"/>
+			<channel id="network-quality-indicator" typeId="network-quality-indicator"/>
+			<channel id="network-rssi" typeId="network-rssi"/>
+			<channel id="compressor-state" typeId="compressor-state"/>
+			<channel id="fourway-valve-state" typeId="fourway-valve-state"/>
+			<channel id="evap-defrost-state" typeId="evap-defrost-state"/>
+			<channel id="off-timer-active" typeId="off-timer-active"/>
+			<channel id="off-timer-duration" typeId="off-timer-duration"/>
+			<channel id="off-timer-time" typeId="off-timer-time"/>
+			<channel id="on-timer-active" typeId="on-timer-active"/>
+			<channel id="on-timer-duration" typeId="on-timer-duration"/>
+			<channel id="on-timer-time" typeId="on-timer-time"/>
+			<channel id="filter-state" typeId="filter-state"/>
+		</channels>
+
+		<properties>
+			<property name="vendor">Electrolux</property>
+		</properties>
+
+		<representation-property>serialNumber</representation-property>
+
+		<config-description>
+			<parameter name="serialNumber" type="text" required="true">
+				<label>Serial Number</label>
+				<description>The appliance serial number.</description>
+			</parameter>
+		</config-description>
+
+	</thing-type>
 
 	<channel-type id="status">
 		<item-type>String</item-type>
@@ -128,6 +174,10 @@
 		<label>Temperature</label>
 		<description>The measured temperature.</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%">
 		</state>
 	</channel-type>
@@ -137,6 +187,10 @@
 		<label>Humidity</label>
 		<description>The measured humidity.</description>
 		<category>Humidity</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Humidity</tag>
+		</tags>
 		<state readOnly="true" min="0" max="100" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -144,6 +198,10 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>TVOC</label>
 		<description>The total Volatile Organic Compounds.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>VOC</tag>
+		</tags>
 		<state readOnly="true" pattern="%d ppb"/>
 	</channel-type>
 
@@ -152,6 +210,10 @@
 		<item-type>Number:Density</item-type>
 		<label>PM1</label>
 		<description>The Particulate Matter 1 (0.001mm).</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>ParticulateMatter</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -159,6 +221,10 @@
 		<item-type>Number:Density</item-type>
 		<label>PM2.5</label>
 		<description>The Particulate Matter 2.5 (0.0025mm).</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>ParticulateMatter</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -166,6 +232,10 @@
 		<item-type>Number:Density</item-type>
 		<label>PM10</label>
 		<description>The Particulate Matter 10 (0.01mm).</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>ParticulateMatter</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -173,6 +243,10 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>CO2</label>
 		<description>The measured CarbonDioxide.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>CO2</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -187,6 +261,10 @@
 		<item-type>Number</item-type>
 		<label>Fan Speed Setting</label>
 		<description>The fan speed setting.</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Speed</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="1">Level 1</option>
@@ -206,6 +284,10 @@
 		<item-type>String</item-type>
 		<label>Work Mode Setting</label>
 		<description>The work mode setting.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="PowerOff">Power Off</option>
@@ -219,6 +301,10 @@
 		<item-type>Switch</item-type>
 		<label>Ionizer Status</label>
 		<description>The ionizer status On/Off.</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="ui-light">
@@ -231,12 +317,20 @@
 		<item-type>Switch</item-type>
 		<label>Safety Lock</label>
 		<description>The safety lock status.</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>LockState</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="door-lock">
 		<item-type>Contact</item-type>
 		<label>Door Lock</label>
 		<description>The door lock status Open/Closed.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>LockState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -244,6 +338,10 @@
 		<item-type>Contact</item-type>
 		<label>Door State</label>
 		<description>The door status Open/Closed.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -251,6 +349,10 @@
 		<item-type unitHint="s">Number:Time</item-type>
 		<label>Time To Delayed Start</label>
 		<description>The time remaining until the delayed start.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Progress</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -258,6 +360,10 @@
 		<item-type unitHint="s">Number:Time</item-type>
 		<label>Time To End</label>
 		<description>The time remaining until the program will end.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Progress</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -272,6 +378,10 @@
 		<item-type unitHint="s">Number:Time</item-type>
 		<label>Appliance Total Working Time</label>
 		<description>The appliance total working time.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -300,6 +410,10 @@
 		<item-type unitHint="l">Number:Volume</item-type>
 		<label>Water Usage</label>
 		<description>The water usage in litres.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Water</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -314,6 +428,10 @@
 		<item-type>String</item-type>
 		<label>Cycle Phase</label>
 		<description>The washing cycle phase.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="UNAVAILABLE">Unavailable</option>
@@ -333,6 +451,10 @@
 		<item-type>String</item-type>
 		<label>Appliance State</label>
 		<description>The appliance state.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="ALARM">Alarm</option>
@@ -351,6 +473,10 @@
 		<item-type>String</item-type>
 		<label>Appliance Mode</label>
 		<description>The appliance mode.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="DEMO">Demo</option>
@@ -365,6 +491,10 @@
 		<item-type>String</item-type>
 		<label>Washing Temperature </label>
 		<description>The user configured washing temperature.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="20_CELSIUS">20°C</option>
@@ -383,6 +513,10 @@
 		<item-type>String</item-type>
 		<label>Spin Speed</label>
 		<description>The spin speed.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Speed</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="DISABLED">Disabled</option>
@@ -402,6 +536,10 @@
 		<item-type>String</item-type>
 		<label>Steam Value</label>
 		<description>The user configured steam value.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="STEAM_OFF">Steam off</option>
@@ -416,6 +554,10 @@
 		<item-type>String</item-type>
 		<label>Programs Order</label>
 		<description>The user configured washing program.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="MACHINE_SETTINGS_HIDDEN_TEST">Machine settings hidden test</option>
@@ -443,6 +585,261 @@
 				<option value="COTTON_PR_WORKINGCLOTHES">Cotton working clothes</option>
 				<option value="SYNTHETIC_PR_MICROFIBRE">Synthetic microfibre</option>
 				<option value="DELICATE_PR_BABY">Delicate baby</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="appliance-running">
+		<item-type>Switch</item-type>
+		<label>Powered On</label>
+		<description>The device's state running state.</description>
+		<category>Switch</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="ambient-temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Ambient Temperature</label>
+		<description>The measured ambient temperature.</description>
+		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f %unit%">
+		</state>
+	</channel-type>
+
+	<channel-type id="target-temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Target Temperature</label>
+		<description>The target set-point temperature.</description>
+		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state min="16" max="32" step="1" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="sleep-mode">
+		<item-type>Switch</item-type>
+		<label>Sleep Mode</label>
+		<description>Whether sleep mode is active.</description>
+		<category>Switch</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="fan-swing">
+		<item-type>Switch</item-type>
+		<label>Fan Swing</label>
+		<description>Whether fan swing is active.</description>
+		<category>Flow</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="child-ui-lock">
+		<item-type>Switch</item-type>
+		<label>Child Lock</label>
+		<description>Whether child lock is active.</description>
+		<category>Lock</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>LockState</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="fan-mode">
+		<item-type>String</item-type>
+		<label>Fan Speed</label>
+		<description>The fan speed mode.</description>
+		<category>Flow</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Airflow</tag>
+		</tags>
+		<state>
+			<options>
+				<option value="AUTO">Auto</option>
+				<option value="HIGH">High</option>
+				<option value="MIDDLE">Middle</option>
+				<option value="LOW">Low</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="mode">
+		<item-type>String</item-type>
+		<label>Mode</label>
+		<description>The operating mode.</description>
+		<category>Settings</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
+		<state>
+			<options>
+				<option value="AUTO">Auto</option>
+				<option value="COOL">Cool</option>
+				<option value="DRY">Dry</option>
+				<option value="FANONLY">Fan Only</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="network-quality-indicator">
+		<item-type>String</item-type>
+		<label>Network Quality</label>
+		<description>Indicator for the network quality.</description>
+		<category>Network</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>SignalStrength</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="EXCELLENT">Excellent</option>
+				<option value="VERY_GOOD">Very Good</option>
+				<option value="GOOD">Good</option>
+				<option value="POOR">Poor</option>
+				<option value="VERY_POOR">Very Poor</option>
+				<option value="UNDEFINED">Undefined</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="network-rssi" advanced="true">
+		<item-type unitHint="dBm">Number:Power</item-type>
+		<label>RSSI</label>
+		<description>WiFi Received Signal Strength Indicator.</description>
+		<category>QualityOfService</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>RSSI</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f %unit%"></state>
+	</channel-type>
+
+	<channel-type id="compressor-state" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Compressor Running</label>
+		<description>Is the compressor running.</description>
+		<category>Switch</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Power</tag>
+		</tags>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="fourway-valve-state" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Four Way Valve State</label>
+		<description>The state of the four way valve.</description>
+		<category>Switch</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="evap-defrost-state" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Evap Defrost State</label>
+		<description>The state of the evap defrost.</description>
+		<category>Switch</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="off-timer-active" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Timer Off Activate</label>
+		<description>Whether a timer is active to turn off the appliance.</description>
+		<category>Switch</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="off-timer-duration" advanced="true">
+		<item-type unitHint="s">Number:Time</item-type>
+		<label>Timer Off Duration</label>
+		<description>Off timer duration applied when enabled.</description>
+		<category>Settings</category>
+		<state min="0" max="86400" step="1800" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="off-timer-time" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Auto Off Time</label>
+		<description>The time when the auto off timer will be reached.</description>
+		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
+		<state readOnly="true" pattern="%1$tF %1$tR"/>
+	</channel-type>
+
+	<channel-type id="on-timer-active" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Timer On Activate</label>
+		<description>Whether a timer is active to turn on the appliance.</description>
+		<category>Switch</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="on-timer-duration" advanced="true">
+		<item-type unitHint="s">Number:Time</item-type>
+		<label>Timer On Duration</label>
+		<description>On timer duration applied when enabled.</description>
+		<category>Settings</category>
+		<state min="0" max="86400" step="1800" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="on-timer-time" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Auto On Time</label>
+		<description>The time when the auto on timer will be reached.</description>
+		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
+		<state readOnly="true" pattern="%1$tF %1$tR"/>
+	</channel-type>
+
+	<channel-type id="filter-state">
+		<item-type>String</item-type>
+		<label>Filter State</label>
+		<description>The air filters state.</description>
+		<category>text</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="GOOD">Good</option>
+				<option value="CLEAN">Dirty</option>
 			</options>
 		</state>
 	</channel-type>

@@ -13,16 +13,14 @@
 package org.openhab.binding.mqtt.homeassistant.internal.discovery;
 
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -36,8 +34,8 @@ import org.openhab.binding.mqtt.homeassistant.generic.internal.MqttBindingConsta
 import org.openhab.binding.mqtt.homeassistant.internal.HaID;
 import org.openhab.binding.mqtt.homeassistant.internal.HandlerConfiguration;
 import org.openhab.binding.mqtt.homeassistant.internal.HomeAssistantConfiguration;
-import org.openhab.binding.mqtt.homeassistant.internal.config.ChannelConfigurationTypeAdapterFactory;
-import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
+import org.openhab.binding.mqtt.homeassistant.internal.HomeAssistantPythonBridge;
+import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractComponentConfiguration;
 import org.openhab.binding.mqtt.homeassistant.internal.exception.ConfigurationException;
 import org.openhab.core.config.core.ConfigurableService;
 import org.openhab.core.config.core.Configuration;
@@ -56,9 +54,6 @@ import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
 /**
  * The {@link HomeAssistantDiscovery} is responsible for discovering device nodes that follow the
  * Home Assistant MQTT discovery convention (https://www.home-assistant.io/docs/mqtt/discovery/).
@@ -74,15 +69,18 @@ public class HomeAssistantDiscovery extends AbstractMQTTDiscovery {
     private HomeAssistantConfiguration configuration;
     protected final Map<String, Set<HaID>> componentsPerThingID = new HashMap<>();
     protected final Map<String, ThingUID> thingIDPerTopic = new HashMap<>();
-    protected final Map<String, DiscoveryResult> results = new HashMap<>();
     protected final Map<String, DiscoveryResult> allResults = new HashMap<>();
+    private Set<ThingUID> dirtyResults = new HashSet<>();
+    private final Object discoveryStateLock = new Object();
 
     private @Nullable ScheduledFuture<?> future;
-    private final Gson gson;
+    private final HomeAssistantPythonBridge python;
 
     static final String BASE_TOPIC = "homeassistant";
     static final String BIRTH_TOPIC = "homeassistant/status";
     static final String ONLINE_STATUS = "online";
+    private volatile long lastEventTime = 0;
+    private final static long DISCOVERY_TIMEOUT_MS = 2000;
 
     @NonNullByDefault({})
     protected MqttChannelTypeProvider typeProvider;
@@ -91,10 +89,11 @@ public class HomeAssistantDiscovery extends AbstractMQTTDiscovery {
     protected MQTTTopicDiscoveryService mqttTopicDiscovery;
 
     @Activate
-    public HomeAssistantDiscovery(@Nullable Map<String, Object> properties) {
+    public HomeAssistantDiscovery(@Nullable Map<String, Object> properties,
+            @Reference HomeAssistantPythonBridge python) {
         super(null, 3, true, BASE_TOPIC + "/#");
-        this.gson = new GsonBuilder().registerTypeAdapterFactory(new ChannelConfigurationTypeAdapterFactory()).create();
         configuration = (new Configuration(properties)).as(HomeAssistantConfiguration.class);
+        this.python = python;
     }
 
     @Reference
@@ -134,7 +133,6 @@ public class HomeAssistantDiscovery extends AbstractMQTTDiscovery {
     @Override
     public void receivedMessage(ThingUID bridgeUID, MqttBrokerConnection connection, String topic, byte[] payload) {
         resetTimeout();
-
         // For HomeAssistant we need to subscribe to a wildcard topic, because topics can either be:
         // homeassistant/<component>/<node_id>/<object_id>/config OR
         // homeassistant/<component>/<object_id>/config.
@@ -151,20 +149,23 @@ public class HomeAssistantDiscovery extends AbstractMQTTDiscovery {
         HaID haID = new HaID(topic);
 
         try {
-            AbstractChannelConfiguration config = AbstractChannelConfiguration
-                    .fromString(new String(payload, StandardCharsets.UTF_8), gson);
+            AbstractComponentConfiguration config = AbstractComponentConfiguration.create(python, haID.component,
+                    new String(payload, StandardCharsets.UTF_8));
 
             final String thingID = config.getThingId(haID.objectID);
             final ThingUID thingUID = new ThingUID(MqttBindingConstants.HOMEASSISTANT_MQTT_THING, bridgeUID, thingID);
 
-            synchronized (results) {
+            // Build properties and DiscoveryResult outside the lock
+            Map<String, Object> properties = new HashMap<>();
+            properties = config.appendToProperties(properties);
+            properties.put("deviceId", thingID);
+
+            DiscoveryResult result = buildResult(thingID, thingUID, config.getThingName(), haID, properties, bridgeUID);
+
+            // Now only mutate shared state under the lock
+            synchronized (discoveryStateLock) {
                 thingIDPerTopic.put(topic, thingUID);
-
-                Map<String, Object> properties = new HashMap<>();
-                properties = config.appendToProperties(properties);
-                properties.put("deviceId", thingID);
-
-                buildResult(thingID, thingUID, config.getThingName(), haID, properties, bridgeUID);
+                applyResult(thingID, haID, result);
             }
         } catch (ConfigurationException e) {
             logger.warn("HomeAssistant discover error: invalid configuration of thing {} component {}: {}",
@@ -195,54 +196,85 @@ public class HomeAssistantDiscovery extends AbstractMQTTDiscovery {
     }
 
     private void resetPublishTimer() {
-        // Reset the found-component timer.
-        // We will collect components for the thing label description for another 2 seconds.
-        final ScheduledFuture<?> future = this.future;
-        if (future != null) {
-            future.cancel(false);
+        lastEventTime = System.currentTimeMillis();
+        if (future == null || future.isDone()) {
+            future = scheduler.schedule(this::checkAndPublish, DISCOVERY_TIMEOUT_MS, TimeUnit.MILLISECONDS);
         }
-        this.future = scheduler.schedule(this::publishResults, 2, TimeUnit.SECONDS);
     }
 
-    private void buildResult(String thingID, ThingUID thingUID, String thingName, HaID haID,
-            Map<String, Object> properties, ThingUID bridgeUID) {
-        // We need to keep track of already found component topics for a specific thing
-        final List<HaID> components;
-        {
-            Set<HaID> componentsUnordered = componentsPerThingID.computeIfAbsent(thingID, key -> new HashSet<>());
+    private void checkAndPublish() {
+        long now = System.currentTimeMillis();
+        long elapsed = now - lastEventTime;
 
-            // Invariant. For compiler, computeIfAbsent above returns always
-            // non-null
-            Objects.requireNonNull(componentsUnordered);
-            componentsUnordered.add(haID);
-
-            components = componentsUnordered.stream().collect(Collectors.toList());
-            // We sort the components for consistent jsondb serialization order of 'topics' thing property
-            // Sorting key is HaID::toString, i.e. using the full topic string
-            components.sort(Comparator.comparing(HaID::toString));
+        if (elapsed >= DISCOVERY_TIMEOUT_MS) {
+            publishResults(); // process the accumulated results
+            future = null; // allow new scheduling
+        } else {
+            // reschedule only for the remaining time
+            future = scheduler.schedule(this::checkAndPublish, DISCOVERY_TIMEOUT_MS - elapsed, TimeUnit.MILLISECONDS);
         }
+    }
 
-        final List<String> topics = components.stream().map(HaID::toShortTopic).collect(Collectors.toList());
+    /**
+     * Builds a {@link DiscoveryResult} for a given Thing. Responsibilities of this method:
+     * <ul>
+     * <li>Maintain a consistent, ordered set of components ({@link HaID}) per Thing ID.
+     * A {@link TreeSet} is used to guarantee stable ordering of components.</li>
+     * <li>Convert components into a list of "short topics", which are passed into the
+     * {@link HandlerConfiguration} for handler initialization.</li>
+     * <li>Assemble a new {@link DiscoveryResult} with the given properties, label,
+     * and bridge reference.</li>
+     * </ul>
+     * Ordering note: this method is the only place where the ordered list of components
+     * and topics is constructed. Callers (such as {@code applyResult}) must treat the
+     * returned {@link DiscoveryResult} as authoritative for ordering.
+     *
+     * @param thingID the stable ID of the discovered Thing
+     * @param thingUID the unique identifier for the Thing
+     * @param thingName human-readable label for the Thing
+     * @param haID the Home Assistant component identifier for this discovery event
+     * @param properties current Thing properties, to be extended with handler configuration
+     * @param bridgeUID UID of the bridge Thing (MQTT broker)
+     * @return a complete and ordered {@link DiscoveryResult} representing the Thing
+     */
+    private DiscoveryResult buildResult(String thingID, ThingUID thingUID, String thingName, HaID haID,
+            Map<String, Object> properties, ThingUID bridgeUID) {
+        // Use a TreeSet to keep components sorted automatically
+        Set<HaID> componentsSet = componentsPerThingID.computeIfAbsent(thingID,
+                key -> new TreeSet<>(Comparator.comparing(HaID::toString)));
 
+        componentsSet.add(haID);
+
+        // Convert components to short topics
+        List<String> topics = componentsSet.stream().map(HaID::toShortTopic).toList();
+
+        // Append handler configuration
         HandlerConfiguration handlerConfig = new HandlerConfiguration(haID.baseTopic, topics);
         properties = handlerConfig.appendToProperties(properties);
 
-        DiscoveryResult result = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
-                .withRepresentationProperty("deviceId").withBridge(bridgeUID).withLabel(thingName).build();
-        // Because we need the new properties map with the updated "components" list
-        results.put(thingUID.toString(), result);
-        allResults.put(thingUID.toString(), result);
+        return DiscoveryResultBuilder.create(thingUID).withProperties(properties).withRepresentationProperty("deviceId")
+                .withBridge(bridgeUID).withLabel(thingName).build();
+    }
+
+    /**
+     * Stores the newly built DiscoveryResult and marks it dirty.
+     */
+    private void applyResult(String thingID, HaID haID, DiscoveryResult result) {
+        allResults.put(result.getThingUID().toString(), result);
+        dirtyResults.add(result.getThingUID());
     }
 
     protected void publishResults() {
-        Collection<DiscoveryResult> localResults;
-
-        synchronized (results) {
-            localResults = new ArrayList<>(results.values());
-            results.clear();
+        Set<ThingUID> toPublish;
+        synchronized (discoveryStateLock) {
+            toPublish = dirtyResults;
+            dirtyResults = new HashSet<>();
         }
-        for (DiscoveryResult result : localResults) {
-            thingDiscovered(result);
+        for (ThingUID uid : toPublish) {
+            DiscoveryResult result = allResults.get(uid.toString());
+            if (result != null) {
+                thingDiscovered(result);
+            }
         }
     }
 
@@ -251,32 +283,54 @@ public class HomeAssistantDiscovery extends AbstractMQTTDiscovery {
         if (!topic.endsWith("/config")) {
             return;
         }
-        synchronized (results) {
-            ThingUID thingUID = thingIDPerTopic.remove(topic);
-            if (thingUID != null) {
-                final String thingID = thingUID.getId();
+        ThingUID thingUID;
+        HaID haID = new HaID(topic);
+        String thingID;
 
-                HaID haID = new HaID(topic);
+        // Step 1: remove the topic mapping (under lock)
+        synchronized (discoveryStateLock) {
+            thingUID = thingIDPerTopic.remove(topic);
+        }
+        if (thingUID == null) {
+            return;
+        }
 
-                Set<HaID> components = componentsPerThingID.getOrDefault(thingID, Collections.emptySet());
-                components.remove(haID);
-                if (components.isEmpty()) {
-                    allResults.remove(thingUID.toString());
-                    results.remove(thingUID.toString());
-                    thingRemoved(thingUID);
-                } else {
-                    resetPublishTimer();
+        thingID = thingUID.getId();
 
-                    DiscoveryResult existingThing = allResults.get(thingUID.toString());
-                    if (existingThing == null) {
-                        logger.warn("Could not find discovery result for removed component {}; this is a bug",
-                                thingUID);
-                        return;
-                    }
-                    Map<String, Object> properties = new HashMap<>(existingThing.getProperties());
-                    buildResult(thingID, thingUID, existingThing.getLabel(), haID, properties, bridgeUID);
-                }
+        // Step 2: decide what to do about components (under lock)
+        boolean removedLastComponent;
+        DiscoveryResult existingThing;
+        synchronized (discoveryStateLock) {
+            Set<HaID> components = componentsPerThingID.getOrDefault(thingID, Collections.emptySet());
+            components.remove(haID);
+            removedLastComponent = components.isEmpty();
+            existingThing = allResults.get(thingUID.toString());
+
+            if (removedLastComponent) {
+                componentsPerThingID.remove(thingID);
+                allResults.remove(thingUID.toString());
+                dirtyResults.remove(thingUID);
+                thingRemoved(thingUID);
             }
+        }
+
+        if (removedLastComponent) {
+            return;
+        }
+
+        // Step 3: heavy work outside lock
+        if (existingThing == null) {
+            logger.warn("Could not find discovery result for removed component {}; this is a bug", thingUID);
+            return;
+        }
+
+        resetPublishTimer();
+        Map<String, Object> properties = new HashMap<>(existingThing.getProperties());
+        DiscoveryResult result = buildResult(thingID, thingUID, existingThing.getLabel(), haID, properties, bridgeUID);
+
+        // Step 4: commit new result under lock
+        synchronized (discoveryStateLock) {
+            applyResult(thingID, haID, result);
         }
     }
 }

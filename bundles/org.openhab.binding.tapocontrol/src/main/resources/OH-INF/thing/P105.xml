@@ -12,6 +12,7 @@
 
 		<label>P105 SmartPlug</label>
 		<description>Tapo Mini Smart Wifi Plug</description>
+		<semantic-equipment-tag>PowerOutlet</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="actuator" typeId="smartPlug"/>
 			<channel-group id="device" typeId="deviceState"/>

@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.mybmw.internal.dto.charge.ChargingSessionsContainer;
 import org.openhab.binding.mybmw.internal.dto.charge.ChargingStatisticsContainer;
@@ -29,9 +30,9 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
 /**
- * 
+ *
  * deserialization of a JSON string to a Java Object
- * 
+ *
  * @author Martin Grassl - initial contribution
  */
 @NonNullByDefault
@@ -91,7 +92,7 @@ public interface JsonStringDeserializer {
         }
     }
 
-    public static <T> T deserializeString(String toBeDeserialized, Class<T> deserializedClass) {
+    public static <T> T deserializeString(String toBeDeserialized, Class<@NonNull T> deserializedClass) {
         return GSON.fromJson(toBeDeserialized, deserializedClass);
     }
 }

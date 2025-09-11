@@ -1,18 +1,43 @@
-# GrundfosAlpha Binding
+# Bluetooth Grundfos Alpha Adapter
 
-This adds support for reading out the data of Grundfos Alpha Pumps with a [Grundfos Alpha Reader](https://product-selection.grundfos.com/products/alpha-reader)
+This binding adds support for reading out the data of Grundfos Alpha pumps with a [Grundfos Alpha Reader](https://product-selection.grundfos.com/products/alpha-reader) or [Alpha3 pump](https://product-selection.grundfos.com/products/alpha/alpha3) with built-in Bluetooth.
 
-The reverse engineering of the protocol was taken from [https://github.com/JsBergbau/AlphaDecoder](https://github.com/JsBergbau/AlphaDecoder).
+The reverse engineering of the Alpha Reader protocol was taken from [https://github.com/JsBergbau/AlphaDecoder](https://github.com/JsBergbau/AlphaDecoder).
 
 ## Supported Things
 
+- `alpha3`: The Grundfos Alpha3 pump
 - `mi401`: The Grundfos MI401 ALPHA Reader
 
 ## Discovery
 
-All readers are auto-detected as soon as Bluetooth is configured in openHAB and the MI401 device is powered on.
+All pumps and readers are auto-detected as soon as Bluetooth is configured in openHAB and the devices are powered on.
 
 ## Thing Configuration
+
+### `alpha3` Thing Configuration
+
+| Name            | Type    | Description                                             | Default | Required | Advanced |
+|-----------------|---------|---------------------------------------------------------|---------|----------|----------|
+| address         | text    | Bluetooth address in XX:XX:XX:XX:XX:XX format           | N/A     | yes      | no       |
+| refreshInterval | integer | Number of seconds between fetching values from the pump | 30      | no       | yes      |
+
+### Pairing
+
+After creating the Thing, the binding will attempt to connect to the pump.
+To start the pairing process, press the blue LED button on the pump.
+When the LED stops blinking and stays lit, the connection has been established, and the Thing should appear online.
+
+However, the pump may still not be bonded correctly, which could prevent the binding from reconnecting after a disconnection.
+On Linux, you can take additional steps to fix this issue by manually pairing the pump:
+
+```shell
+bluetoothctl pair XX:XX:XX:XX:XX:XX
+Attempting to pair with XX:XX:XX:XX:XX:XX
+[CHG] Device XX:XX:XX:XX:XX:XX Bonded: yes
+[CHG] Device XX:XX:XX:XX:XX:XX Paired: yes
+Pairing successful
+```
 
 ### `mi401` Thing Configuration
 
@@ -22,9 +47,22 @@ All readers are auto-detected as soon as Bluetooth is configured in openHAB and 
 
 ## Channels
 
+### `alpha3` Channels
+
 | Channel          | Type                      | Read/Write | Description                        |
 |------------------|---------------------------|------------|------------------------------------|
-| rssi             | Number                    | R          | Received Signal Strength Indicator |
+| rssi             | Number:Power              | R          | Received Signal Strength Indicator |
+| flow-rate        | Number:VolumetricFlowRate | R          | The flow rate of the pump          |
+| pump-head        | Number:Length             | R          | The water head above the pump      |
+| voltage-ac       | Number:ElectricPotential  | R          | Current AC pump voltage            |
+| power            | Number:Power              | R          | Current pump power consumption     |
+| motor-speed      | Number:Frequency          | R          | Current rotation of the pump motor |
+
+### `mi401` Channels
+
+| Channel          | Type                      | Read/Write | Description                        |
+|------------------|---------------------------|------------|------------------------------------|
+| rssi             | Number:Power              | R          | Received Signal Strength Indicator |
 | flow-rate        | Number:VolumetricFlowRate | R          | The flow rate of the pump          |
 | pump-head        | Number:Length             | R          | The water head above the pump      |
 | pump-temperature | Number:Temperature        | R          | The temperature of the pump        |

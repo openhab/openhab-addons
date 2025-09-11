@@ -8,6 +8,7 @@
 	<thing-type id="ra12">
 		<label>RA-12 Integrated Amplifier</label>
 		<description>Connection to the Rotel RA-12 integrated amplifier</description>
+		<semantic-equipment-tag>AudioVisual</semantic-equipment-tag>
 
 		<channels>
 			<channel id="power" typeId="system.power"/>

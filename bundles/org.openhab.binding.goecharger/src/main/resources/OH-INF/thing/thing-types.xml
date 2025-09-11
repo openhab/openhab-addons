@@ -7,7 +7,7 @@
 	<thing-type id="goe">
 		<label>Go-eCharger</label>
 		<description>Go-eCharger thing that represents the wallbox configuration and readings</description>
-
+		<semantic-equipment-tag>EVSE</semantic-equipment-tag>
 		<channels>
 			<channel id="awattarMaxPrice" typeId="awp"/>
 			<channel id="maxCurrent" typeId="current"/>
@@ -43,10 +43,18 @@
 		</properties>
 
 		<config-description>
-			<parameter name="ip" type="text" required="true">
+			<parameter name="ip" type="text" required="false">
 				<label>IP Address</label>
 				<description>The IP address of the Go-eCharger</description>
 				<context>network-address</context>
+			</parameter>
+			<parameter name="serial" type="text" required="false">
+				<label>Serial Number</label>
+				<description>The serial number of the Go-eCharger</description>
+			</parameter>
+			<parameter name="token" type="text" required="false">
+				<label>Cloud Access Token</label>
+				<description>The access token for the Go-eCharger Cloud API</description>
 			</parameter>
 			<parameter name="apiVersion" type="integer" required="false" min="1" max="2">
 				<label>API version</label>
@@ -102,6 +110,9 @@
 		<item-type>String</item-type>
 		<label>Error Code</label>
 		<description>Error code of Go-eCharger</description>
+		<tags>
+			<tag>Alarm</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="NONE">None</option>
@@ -115,60 +126,100 @@
 		<item-type>Number:ElectricPotential</item-type>
 		<label>Voltage L1</label>
 		<description>Voltage on L1</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="vl2">
 		<item-type>Number:ElectricPotential</item-type>
 		<label>Voltage L2</label>
 		<description>Voltage on L2</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="vl3">
 		<item-type>Number:ElectricPotential</item-type>
 		<label>Voltage L3</label>
 		<description>Voltage on L3</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="cl1">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Current L1</label>
 		<description>Current on L1</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="cl2">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Current L2</label>
 		<description>Current on L2</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="cl3">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Current L3</label>
 		<description>Current on L3</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="pl1">
 		<item-type>Number:Power</item-type>
 		<label>Power L1</label>
 		<description>Power on L1</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="pl2">
 		<item-type>Number:Power</item-type>
 		<label>Power L2</label>
 		<description>Power on L2</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="pl3">
 		<item-type>Number:Power</item-type>
 		<label>Power L3</label>
 		<description>Power on L3</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="pAll">
 		<item-type>Number:Power</item-type>
 		<label>Power All</label>
 		<description>Power All</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="pha">
@@ -198,12 +249,20 @@
 		<item-type>Number:Energy</item-type>
 		<label>Current Session Charged Energy</label>
 		<description>Amount of energy that has been charged in this session</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="eto">
 		<item-type>Number:Energy</item-type>
 		<label>Total Charged Energy</label>
 		<description>Amount of energy that has been charged since installation</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="trx">
@@ -229,6 +288,10 @@
 		<label>Temperature type 2 port</label>
 		<description>Temperature of the Go-eCharger on the type 2 port</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="tmp">
@@ -236,6 +299,10 @@
 		<label>Temperature circuit board</label>
 		<description>Temperature of the Go-eCharger on circuit board</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="fmw">

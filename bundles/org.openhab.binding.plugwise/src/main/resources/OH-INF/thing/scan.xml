@@ -10,6 +10,7 @@
 		</supported-bridge-type-refs>
 		<label>Plugwise Scan</label>
 		<description>A wireless motion (PIR) and light sensor</description>
+		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
 		<channels>
 			<channel id="triggered" typeId="triggered"/>
 			<channel id="lastseen" typeId="lastseen"/>

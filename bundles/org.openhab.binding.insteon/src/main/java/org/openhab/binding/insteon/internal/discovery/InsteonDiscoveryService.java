@@ -85,7 +85,7 @@ public class InsteonDiscoveryService extends AbstractDiscoveryService {
         } else if (!modem.getDB().isComplete()) {
             logger.debug("modem database not complete, scanning aborted.");
         } else {
-            long startTime = Instant.now().toEpochMilli();
+            Instant startTime = Instant.now();
 
             if (handler.isDeviceDiscoveryEnabled()) {
                 modem.getDB().getDevices().stream().filter(address -> !modem.hasDevice(address)).forEach(address -> {

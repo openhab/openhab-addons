@@ -24,7 +24,7 @@ Or you can connect it for example to a Raspberry Pi and use [ser2net Linux tool]
 Monoprice 10761 & 39261 or Dayton Audio DAX66 amplifiers use the `amplifier` thing id. Up to 18 zones with 3 linked amps and 6 source inputs are supported.
 Note: Compatible clones from McLELLAND, Factor, Soundavo, etc. should work as well.
 
-***The following thing types were implemented via available documentation only and have not been tested. Please open an issue for any bugs found when using these thing types.***
+**_The following thing types were implemented via available documentation only and have not been tested. Please open an issue for any bugs found when using these thing types._**
 
 Monoprice 44519 4 zone variants use the `monoprice4` thing id. Up to 12 zones with 3 linked amps and 6 source inputs are supported.
 
@@ -115,7 +115,7 @@ Note that `dnd`, `page` and `keypad` are not available on all thing types.
 
 ## Full Example
 
-monoprice.things:
+### `monoprice.things` Example
 
 ```java
 // Monoprice 10761, 39261 / DAX66 (serial port connection)
@@ -139,7 +139,7 @@ monopriceaudio:xantech:myamp "Xantech WHA" [ serialPort="COM5", pollingInterval=
 // Note that host and port can be used with any of the thing types to connect as serial over IP
 ```
 
-monoprice.items:
+### `monoprice.items` Example
 
 ```java
 // substitute 'amplifier' for the appropriate thing id if using 44519, 31028, DAX88 or Xantech amplifier
@@ -163,7 +163,7 @@ Switch z1_keypad "Keypad Connected: [%s]" { channel="monopriceaudio:amplifier:my
 // repeat for total number of zones used (substitute z1 and zone1)
 ```
 
-monoprice.sitemap:
+### `monoprice.sitemap` Example
 
 ```perl
 sitemap monoprice label="Audio Control" {

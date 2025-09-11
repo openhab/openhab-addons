@@ -25,7 +25,6 @@ import org.openhab.core.common.registry.RegistryChangeListener;
 import org.openhab.core.items.Item;
 import org.openhab.core.items.ItemNotFoundException;
 import org.openhab.core.items.ItemRegistry;
-import org.openhab.core.items.RegistryHook;
 
 /**
  * @author David Graeff - Initial contribution
@@ -149,13 +148,5 @@ public class DummyItemRegistry implements ItemRegistry {
             }
         }
         return put;
-    }
-
-    @Override
-    public void addRegistryHook(RegistryHook<Item> hook) {
-    }
-
-    @Override
-    public void removeRegistryHook(RegistryHook<Item> hook) {
     }
 }

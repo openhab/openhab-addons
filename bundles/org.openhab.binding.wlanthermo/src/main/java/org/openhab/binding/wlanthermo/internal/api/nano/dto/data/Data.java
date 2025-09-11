@@ -45,7 +45,6 @@ public class Data {
     }
 
     public Data(System system, List<Channel> channel, Pitmaster pitmaster) {
-        super();
         this.system = system;
         this.channel = channel;
         this.pitmaster = pitmaster;

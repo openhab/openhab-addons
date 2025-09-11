@@ -7,6 +7,7 @@
 	<thing-type id="group">
 		<label>Group Multiple Cameras</label>
 		<description>Show multiple cameras as a single rotating feed</description>
+
 		<channels>
 			<channel id="startStream" typeId="startStream"/>
 			<channel id="mjpegUrl" typeId="mjpegUrl"/>
@@ -97,9 +98,11 @@
 	<thing-type id="generic">
 		<label>RTSP/HTTP IP Camera</label>
 		<description>Use when your camera is not ONVIF compatible.</description>
+		<semantic-equipment-tag>Camera</semantic-equipment-tag>
 		<channels>
 			<channel id="startStream" typeId="startStream"/>
 			<channel id="pollImage" typeId="pollImage"/>
+			<channel id="createSnapshots" typeId="createSnapshots"/>
 			<channel id="image" typeId="image"/>
 			<channel id="recordingGif" typeId="recordingGif"/>
 			<channel id="gifHistory" typeId="gifHistory"/>
@@ -118,6 +121,9 @@
 			<channel id="imageUrl" typeId="imageUrl"/>
 			<channel id="hlsUrl" typeId="hlsUrl"/>
 		</channels>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 		<config-description>
 
 			<parameter-group name="Settings">
@@ -322,9 +328,11 @@
 	<thing-type id="onvif">
 		<label>ONVIF IP Camera</label>
 		<description>Use when the binding does not list your brand of ONVIF camera.</description>
+		<semantic-equipment-tag>Camera</semantic-equipment-tag>
 		<channels>
 			<channel id="startStream" typeId="startStream"/>
 			<channel id="pollImage" typeId="pollImage"/>
+			<channel id="createSnapshots" typeId="createSnapshots"/>
 			<channel id="image" typeId="image"/>
 			<channel id="recordingGif" typeId="recordingGif"/>
 			<channel id="gifHistory" typeId="gifHistory"/>
@@ -364,6 +372,11 @@
 			<channel id="imageUrl" typeId="imageUrl"/>
 			<channel id="hlsUrl" typeId="hlsUrl"/>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
 		<config-description>
 
 			<parameter-group name="Settings">
@@ -612,9 +625,11 @@
 	<thing-type id="amcrest">
 		<label>Amcrest Camera with API</label>
 		<description>Use for older Amcrest Cameras, that wont work as dahua thing type.</description>
+		<semantic-equipment-tag>Camera</semantic-equipment-tag>
 		<channels>
 			<channel id="startStream" typeId="startStream"/>
 			<channel id="pollImage" typeId="pollImage"/>
+			<channel id="createSnapshots" typeId="createSnapshots"/>
 			<channel id="image" typeId="image"/>
 			<channel id="recordingGif" typeId="recordingGif"/>
 			<channel id="gifHistory" typeId="gifHistory"/>
@@ -643,6 +658,9 @@
 			<channel id="hlsUrl" typeId="hlsUrl"/>
 			<channel id="enablePrivacyMode" typeId="enablePrivacyMode"/>
 		</channels>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 		<config-description>
 
 			<parameter-group name="Settings">
@@ -887,9 +905,11 @@
 	<thing-type id="dahua">
 		<label>Dahua Camera with API</label>
 		<description>Use for all current Dahua cameras, as they support an API as well as ONVIF.</description>
+		<semantic-equipment-tag>Camera</semantic-equipment-tag>
 		<channels>
 			<channel id="startStream" typeId="startStream"/>
 			<channel id="pollImage" typeId="pollImage"/>
+			<channel id="createSnapshots" typeId="createSnapshots"/>
 			<channel id="image" typeId="image"/>
 			<channel id="recordingGif" typeId="recordingGif"/>
 			<channel id="gifHistory" typeId="gifHistory"/>
@@ -948,7 +968,7 @@
 		</channels>
 
 		<properties>
-			<property name="thingTypeVersion">2</property>
+			<property name="thingTypeVersion">3</property>
 		</properties>
 
 		<config-description>
@@ -1195,9 +1215,11 @@
 	<thing-type id="doorbird">
 		<label>Doorbird Camera with API</label>
 		<description>Use for all current Doorbird Cameras, as they support an API as well as ONVIF.</description>
+		<semantic-equipment-tag>Camera</semantic-equipment-tag>
 		<channels>
 			<channel id="startStream" typeId="startStream"/>
 			<channel id="pollImage" typeId="pollImage"/>
+			<channel id="createSnapshots" typeId="createSnapshots"/>
 			<channel id="image" typeId="image"/>
 			<channel id="recordingGif" typeId="recordingGif"/>
 			<channel id="gifHistory" typeId="gifHistory"/>
@@ -1221,6 +1243,9 @@
 			<channel id="imageUrl" typeId="imageUrl"/>
 			<channel id="hlsUrl" typeId="hlsUrl"/>
 		</channels>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 		<config-description>
 
 			<parameter-group name="Settings">
@@ -1456,9 +1481,11 @@
 	<thing-type id="foscam">
 		<label>Foscam Camera with API</label>
 		<description>Use for all current HD FOSCAM Cameras as they support an API as well as ONVIF.</description>
+		<semantic-equipment-tag>Camera</semantic-equipment-tag>
 		<channels>
 			<channel id="startStream" typeId="startStream"/>
 			<channel id="pollImage" typeId="pollImage"/>
+			<channel id="createSnapshots" typeId="createSnapshots"/>
 			<channel id="image" typeId="image"/>
 			<channel id="recordingGif" typeId="recordingGif"/>
 			<channel id="gifHistory" typeId="gifHistory"/>
@@ -1491,7 +1518,7 @@
 			<channel id="animalAlarm" typeId="animalAlarm"/>
 		</channels>
 		<properties>
-			<property name="thingTypeVersion">1</property>
+			<property name="thingTypeVersion">2</property>
 		</properties>
 		<config-description>
 
@@ -1742,9 +1769,11 @@
 	<thing-type id="hikvision">
 		<label>Hikvision Camera with API</label>
 		<description>Use for all current Hikvision Cameras as they support an API as well as ONVIF.</description>
+		<semantic-equipment-tag>Camera</semantic-equipment-tag>
 		<channels>
 			<channel id="startStream" typeId="startStream"/>
 			<channel id="pollImage" typeId="pollImage"/>
+			<channel id="createSnapshots" typeId="createSnapshots"/>
 			<channel id="image" typeId="image"/>
 			<channel id="recordingGif" typeId="recordingGif"/>
 			<channel id="gifHistory" typeId="gifHistory"/>
@@ -1785,6 +1814,10 @@
 			<channel id="imageUrl" typeId="imageUrl"/>
 			<channel id="hlsUrl" typeId="hlsUrl"/>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 		<config-description>
 
 			<parameter-group name="Settings">
@@ -2029,9 +2062,11 @@
 	<thing-type id="instar">
 		<label>Instar Camera with API</label>
 		<description>Use for all current INSTAR HD Cameras, as they support an API as well as ONVIF.</description>
+		<semantic-equipment-tag>Camera</semantic-equipment-tag>
 		<channels>
 			<channel id="startStream" typeId="startStream"/>
 			<channel id="pollImage" typeId="pollImage"/>
+			<channel id="createSnapshots" typeId="createSnapshots"/>
 			<channel id="image" typeId="image"/>
 			<channel id="recordingGif" typeId="recordingGif"/>
 			<channel id="gifHistory" typeId="gifHistory"/>
@@ -2066,6 +2101,9 @@
 			<channel id="imageUrl" typeId="imageUrl"/>
 			<channel id="hlsUrl" typeId="hlsUrl"/>
 		</channels>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 		<config-description>
 
 			<parameter-group name="Settings">
@@ -2300,9 +2338,11 @@
 	<thing-type id="reolink">
 		<label>Reolink Camera with API</label>
 		<description>Use for all Reolink cameras, as they support an API as well as ONVIF.</description>
+		<semantic-equipment-tag>Camera</semantic-equipment-tag>
 		<channels>
 			<channel id="startStream" typeId="startStream"/>
 			<channel id="pollImage" typeId="pollImage"/>
+			<channel id="createSnapshots" typeId="createSnapshots"/>
 			<channel id="image" typeId="image"/>
 			<channel id="recordingGif" typeId="recordingGif"/>
 			<channel id="gifHistory" typeId="gifHistory"/>
@@ -2348,7 +2388,7 @@
 		</channels>
 
 		<properties>
-			<property name="thingTypeVersion">2</property>
+			<property name="thingTypeVersion">3</property>
 		</properties>
 
 		<config-description>
@@ -2620,14 +2660,20 @@
 		<category>Camera</category>
 	</channel-type>
 
+	<channel-type id="createSnapshots" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Create Snapshots</label>
+		<description>This can be used to start and stop FFmpeg from creating snapshots from your RTSP source using your
+			openHAB CPU.</description>
+	</channel-type>
+
 	<channel-type id="pollImage" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Poll Image</label>
-		<description>This can be used to trigger snapshot updates when an external PIR, button or other form of sensor turns
-			this channel ON.</description>
+		<description>This can be used to update the image channel when this channel is ON.</description>
 	</channel-type>
 
-	<channel-type id="recordingGif">
+	<channel-type id="recordingGif" advanced="true">
 		<item-type>Number</item-type>
 		<label>GIF Recording</label>
 		<description>Indicates how long the recording will occur for and when the file is created, the channel will
@@ -2659,13 +2705,13 @@
 		<state min="0" max="10800" step="1" pattern="%.1f Seconds" readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="mp4History" advanced="true">
+	<channel-type id="mp4History">
 		<item-type>String</item-type>
 		<label>MP4 History</label>
 		<description>A history of the last mp4 recordings created in a CSV formatted string.</description>
 	</channel-type>
 
-	<channel-type id="mp4HistoryLength" advanced="true">
+	<channel-type id="mp4HistoryLength">
 		<item-type>Number</item-type>
 		<label>MP4 History Length</label>
 		<description>How many mp4 recordings are stored in the history.</description>
@@ -2743,6 +2789,10 @@
 		<label>Motion Alarm</label>
 		<description>Motion has been detected.</description>
 		<category>Motion</category>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Motion</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -2772,6 +2822,10 @@
 		<label>Cell Motion Alarm</label>
 		<description>Cell based motion has been detected.</description>
 		<category>Motion</category>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Motion</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -2844,6 +2898,10 @@
 		<label>Line Crossing Alarm</label>
 		<description>Motion has been detected.</description>
 		<category>Motion</category>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Motion</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -2939,11 +2997,15 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="enableMotionAlarm">
+	<channel-type id="enableMotionAlarm" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Enable Motion Alarm</label>
 		<description>By using this feature you can stop the camera from sending e-mails when you are actually home.</description>
 		<category>Motion</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Enabled</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="externalMotion" advanced="true">
@@ -2961,11 +3023,15 @@
 		<category>Motion</category>
 	</channel-type>
 
-	<channel-type id="enableLineCrossingAlarm">
+	<channel-type id="enableLineCrossingAlarm" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Enable Line Crossing Alarm</label>
 		<description>By using this feature you can stop the camera from sending e-mails when you are actually home.</description>
 		<category>Motion</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Enabled</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="enableAudioAlarm" advanced="true">
@@ -2997,10 +3063,14 @@
 		<category>Alarm</category>
 	</channel-type>
 
-	<channel-type id="startStream">
+	<channel-type id="startStream" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Start HLS Stream</label>
 		<description>Lower the delay to start casting the camera by creating the files non stop in case they are needed.</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="enableLED" advanced="true">

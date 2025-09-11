@@ -8,7 +8,7 @@
 		<label>EP40</label>
 		<description>TP-Link EP40 Kasa Smart Wi-Fi Outdoor Plug</description>
 		<category>PowerOutlet</category>
-
+		<semantic-equipment-tag>PowerOutlet</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="groupSwitch" typeId="switch-group"/>
 			<channel-group id="outlet1" typeId="switch-outlet">

@@ -19,7 +19,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.function.Function;
@@ -37,6 +36,7 @@ import org.openhab.binding.insteon.internal.device.feature.MessageHandler;
 import org.openhab.binding.insteon.internal.device.feature.PollHandler;
 import org.openhab.binding.insteon.internal.transport.message.FieldException;
 import org.openhab.binding.insteon.internal.transport.message.Msg;
+import org.openhab.binding.insteon.internal.transport.message.Priority;
 import org.openhab.binding.insteon.internal.utils.ParameterParser;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
@@ -165,11 +165,13 @@ public class DeviceFeature {
     }
 
     public double getLastMsgValueAsDouble(double defaultValue) {
-        return Optional.ofNullable(getLastMsgValue()).map(Double::doubleValue).orElse(defaultValue);
+        Double lastMsgValue = getLastMsgValue();
+        return lastMsgValue != null ? lastMsgValue.doubleValue() : defaultValue;
     }
 
     public int getLastMsgValueAsInteger(int defaultValue) {
-        return Optional.ofNullable(getLastMsgValue()).map(Double::intValue).orElse(defaultValue);
+        Double lastMsgValue = getLastMsgValue();
+        return lastMsgValue != null ? lastMsgValue.intValue() : defaultValue;
     }
 
     public synchronized @Nullable Msg getQueryMessage() {
@@ -236,13 +238,13 @@ public class DeviceFeature {
 
     public int getComponentId() {
         int componentId = 0;
-        if (device instanceof InsteonDevice insteonDevice) {
-            // use feature group as component id if device has more than one controller or responder feature,
-            // othewise use the component id of the link db first record
-            if (insteonDevice.getControllerOrResponderFeatures().size() > 1) {
+        if (device instanceof InsteonDevice insteonDevice && isControllerOrResponderFeature()) {
+            // use feature group as component id if device has more than one controller or responder feature group,
+            // set to 1 if device link db has a matching record, otherwise fall back to 0
+            if (insteonDevice.getControllerOrResponderFeatureGroups().size() > 1) {
                 componentId = getGroup();
-            } else {
-                componentId = insteonDevice.getLinkDB().getFirstRecordComponentId();
+            } else if (insteonDevice.getLinkDB().hasComponentIdRecord(1, isControllerFeature())) {
+                componentId = 1;
             }
         }
         return componentId;
@@ -284,7 +286,7 @@ public class DeviceFeature {
 
     public boolean isPollable() {
         PollHandler pollHandler = getPollHandler();
-        return pollHandler != null && pollHandler.makeMsg() != null;
+        return pollHandler != null && pollHandler.getMessage() != null;
     }
 
     public @Nullable DeviceFeature getGroupFeature() {
@@ -519,18 +521,18 @@ public class DeviceFeature {
     }
 
     /**
-     * Makes a poll message using the configured poll message handler
+     * Returns poll message using the configured poll handler
      *
      * @return the poll message
      */
-    public @Nullable Msg makePollMsg() {
+    public @Nullable Msg getPollMessage() {
         PollHandler pollHandler = getPollHandler();
         if (pollHandler == null) {
             return null;
         }
         logger.trace("{}:{} making poll msg using handler {}", device.getAddress(), name,
                 pollHandler.getClass().getSimpleName());
-        return pollHandler.makeMsg();
+        return pollHandler.getMessage();
     }
 
     /**
@@ -577,13 +579,13 @@ public class DeviceFeature {
             delay = getPollDelay();
         }
         // trigger feature poll if pollable
-        if (doPoll(delay) != null) {
+        if (poll(delay, Priority.TRIGGER_POLL) != null) {
             logger.trace("{}:{} triggered poll on this feature", device.getAddress(), name);
             return;
         }
         // trigger group feature poll if defined and pollable, as fallback
         DeviceFeature groupFeature = getGroupFeature();
-        if (groupFeature != null && groupFeature.doPoll(delay) != null) {
+        if (groupFeature != null && groupFeature.poll(delay, Priority.TRIGGER_POLL) != null) {
             logger.trace("{}:{} triggered poll on group feature {}", device.getAddress(), name, groupFeature.getName());
             return;
         }
@@ -614,14 +616,26 @@ public class DeviceFeature {
     }
 
     /**
-     * Executes the polling of this feature
+     * Polls this feature with standard priority
      *
      * @param delay scheduling delay (in milliseconds)
      * @return poll message
      */
-    public @Nullable Msg doPoll(long delay) {
-        Msg msg = makePollMsg();
+    public @Nullable Msg poll(long delay) {
+        return poll(delay, Priority.STANDARD_POLL);
+    }
+
+    /**
+     * Polls this feature with a specific priority
+     *
+     * @param delay scheduling delay (in milliseconds)
+     * @param priority priority of the poll message
+     * @return poll message
+     */
+    public @Nullable Msg poll(long delay, Priority priority) {
+        Msg msg = getPollMessage();
         if (msg != null) {
+            msg.setPriority(priority);
             device.sendMessage(msg, this, delay);
         }
         return msg;

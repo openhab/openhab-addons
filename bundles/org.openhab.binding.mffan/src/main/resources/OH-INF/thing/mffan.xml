@@ -8,6 +8,7 @@
 
 		<label>Modern Forms Fan</label>
 		<description>Modern Forms and WAC Lighting Smart Ceiling Fans</description>
+		<semantic-equipment-tag>CeilingFan</semantic-equipment-tag>
 
 		<channels>
 			<channel id="fan-on" typeId="fan-on"/>
@@ -38,11 +39,19 @@
 		<item-type>Switch</item-type>
 		<label>Fan</label>
 		<description>Fan on/off.</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="fan-speed">
 		<item-type>String</item-type>
 		<label>Fan Speed</label>
 		<description>The fan's rotational rate.</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Speed</tag>
+		</tags>
 		<state readOnly="false" pattern="Fan %s">
 			<options>
 				<option value="1">Speed 1</option>
@@ -58,6 +67,10 @@
 		<item-type>String</item-type>
 		<label>Fan Direction</label>
 		<description>The fan's direction of rotation: Forward (Summer), Reverse (Winter).</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="false" pattern="Direction %s">
 			<options>
 				<option value="forward">Forward</option>
@@ -69,11 +82,19 @@
 		<item-type>Switch</item-type>
 		<label>Wind</label>
 		<description>Wind (sometimes referred to as "Breeze Mode") on/off.</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="wind-level">
 		<item-type>String</item-type>
 		<label>Wind Level</label>
 		<description>The amount of the wind being produced.</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="false" pattern="Wind %s">
 			<options>
 				<option value="1">Level 1</option>
@@ -86,11 +107,19 @@
 		<item-type>Switch</item-type>
 		<label>Light</label>
 		<description>Light on/off.</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Light</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="light-intensity">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Light Intensity</label>
 		<description>The light intensity.</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Brightness</tag>
+		</tags>
 		<state readOnly="false" min="1" max="100" step="1" pattern="%d %unit%"/>
 	</channel-type>
 

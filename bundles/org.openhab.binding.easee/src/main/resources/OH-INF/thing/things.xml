@@ -6,6 +6,7 @@
 	<bridge-type id="site">
 		<label>Easee Site</label>
 		<description>Cloud connection to an Easee site.</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 		<config-description-ref uri="thing-type:easee:site"/>
 	</bridge-type>
 	<thing-type id="mastercharger">
@@ -14,6 +15,8 @@
 		</supported-bridge-type-refs>
 		<label>Easee Master Charger</label>
 		<description>Cloud connected Easee Master Charger which also controls the circuit.</description>
+		<semantic-equipment-tag>EVSE</semantic-equipment-tag>
+
 		<channel-groups>
 			<channel-group typeId="charger-state" id="state"/>
 			<channel-group typeId="charger-config" id="config"/>
@@ -33,6 +36,8 @@
 		</supported-bridge-type-refs>
 		<label>Easee Charger</label>
 		<description>Cloud connected Easee Charger.</description>
+		<semantic-equipment-tag>EVSE</semantic-equipment-tag>
+
 		<channel-groups>
 			<channel-group typeId="charger-state" id="state"/>
 			<channel-group typeId="charger-config" id="config"/>

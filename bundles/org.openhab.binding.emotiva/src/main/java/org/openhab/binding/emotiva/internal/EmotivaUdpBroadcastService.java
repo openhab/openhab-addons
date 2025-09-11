@@ -62,7 +62,7 @@ public class EmotivaUdpBroadcastService {
     private final String broadcastAddress;
 
     public EmotivaUdpBroadcastService(String broadcastAddress) throws IllegalArgumentException, JAXBException {
-        if (broadcastAddress.trim().isEmpty()) {
+        if (broadcastAddress.isBlank()) {
             throw new IllegalArgumentException("Missing broadcast address");
         }
         this.broadcastAddress = broadcastAddress;

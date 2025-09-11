@@ -13,6 +13,7 @@
 package org.openhab.binding.bluetooth.bluez.internal;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -136,6 +137,12 @@ public class BlueZPropertiesChangedHandler extends AbstractPropertiesChangedHand
         });
     }
 
+    private void onRSSIUpdate(String dbusPath, Variant<?> variant) {
+        if (variant.getValue() instanceof Short rssi) {
+            notifyListeners(new RssiEvent(dbusPath, rssi));
+        }
+    }
+
     private void onDiscoveringUpdate(String dbusPath, Variant<?> variant) {
         if (variant.getValue() instanceof Boolean discovered) {
             notifyListeners(new AdapterDiscoveringChangedEvent(dbusPath, discovered));
@@ -178,8 +185,9 @@ public class BlueZPropertiesChangedHandler extends AbstractPropertiesChangedHand
 
             map.forEach((key, value) -> {
                 if (key instanceof UInt16 iKey && value instanceof Variant<?> vValue
-                        && vValue.getValue() instanceof byte[] bValue) {
-                    eventData.put(iKey.shortValue(), bValue);
+                        && vValue.getValue() instanceof List<?> byteList && !byteList.isEmpty()
+                        && byteList.get(0) instanceof Byte) {
+                    eventData.put(iKey.shortValue(), toByteArray(byteList));
                 }
             });
 
@@ -195,8 +203,9 @@ public class BlueZPropertiesChangedHandler extends AbstractPropertiesChangedHand
 
             map.forEach((key, value) -> {
                 if (key instanceof String sKey && value instanceof Variant<?> vValue
-                        && vValue.getValue() instanceof byte[] bValue) {
-                    serviceData.put(sKey, bValue);
+                        && vValue.getValue() instanceof List<?> byteList && !byteList.isEmpty()
+                        && byteList.get(0) instanceof Byte) {
+                    serviceData.put(sKey, toByteArray(byteList));
                 }
             });
 
@@ -207,14 +216,17 @@ public class BlueZPropertiesChangedHandler extends AbstractPropertiesChangedHand
     }
 
     private void onValueUpdate(String dbusPath, Variant<?> variant) {
-        if (variant.getValue() instanceof byte[] bytes) {
-            notifyListeners(new CharacteristicUpdateEvent(dbusPath, bytes));
+        if (variant.getValue() instanceof List<?> byteList && !byteList.isEmpty() && byteList.get(0) instanceof Byte) {
+            notifyListeners(new CharacteristicUpdateEvent(dbusPath, toByteArray(byteList)));
         }
     }
 
-    private void onRSSIUpdate(String dbusPath, Variant<?> variant) {
-        if (variant.getValue() instanceof Short rssi) {
-            notifyListeners(new RssiEvent(dbusPath, rssi));
+    private static byte[] toByteArray(List<?> list) {
+        byte[] bytes = new byte[list.size()];
+        for (int i = 0; i < list.size(); i++) {
+            Object element = list.get(i);
+            bytes[i] = (element instanceof Byte b) ? b : 0;
         }
+        return bytes;
     }
 }

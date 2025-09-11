@@ -8,7 +8,7 @@
 
 		<label>Local Connect Charger</label>
 		<description>The charger representation that supports local connections via HTTP</description>
-
+		<semantic-equipment-tag>EVSE</semantic-equipment-tag>
 		<channels>
 			<channel id="eq-single-session" typeId="system.electric-energy">
 				<label>Energy This Session</label>

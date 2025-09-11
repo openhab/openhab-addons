@@ -8,8 +8,8 @@ Binding for Bosch Smart Home devices.
     - [In-Wall Switch](#in-wall-switch)
     - [Compact Smart Plug](#compact-smart-plug)
     - [Twinguard Smoke Detector](#twinguard-smoke-detector)
-    - [Door/Window Contact](#door-window-contact)
-    - [Door/Window Contact II](#door-window-contact-ii)
+    - [Door/Window Contact](#doorwindow-contact)
+    - [Door/Window Contact II](#doorwindow-contact-ii)
     - [Light Control II](#light-control-ii)
     - [Motion Detector](#motion-detector)
     - [Shutter Control](#shutter-control)
@@ -121,7 +121,7 @@ Detects open windows and doors.
 
 Detects open windows and doors and features an additional button.
 
-**Thing Type ID**: `window-contact`
+**Thing Type ID**: `window-contact-2`
 
 | Channel Type ID | Item Type | Writable | Description                  |
 | ----------------| --------- | :------: | ---------------------------- |
@@ -130,6 +130,23 @@ Detects open windows and doors and features an additional button.
 | low-battery     | Switch    | &#9744;  | Indicates whether the battery is low (`ON`) or OK (`OFF`). |
 | bypass          | Switch    | &#9744;  | Indicates whether the device is currently bypassed. Possible values are `ON`,`OFF` and `UNDEF` if the bypass state cannot be determined. |
 | signal-strength | Number    | &#9744;  | Communication quality between the device and the Smart Home Controller. Possible values range between 0 (unknown) and 4 (best signal strength). |
+
+### Door/Window Contact II Plus
+
+Detects open windows and doors, provides a configurable button and a vibration sensor.
+
+**Thing Type ID**: `window-contact-2-plus`
+
+| Channel Type ID              | Item Type | Writable | Description                                                                                                                                                                                                                 |
+| -----------------------------| --------- | :------: | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| contact                      | Contact   | &#9744;  | Contact state of the device.                                                                                                                                                                                                |
+| battery-level                | Number    | &#9744;  | Current battery level percentage as integer number. Bosch-specific battery levels are mapped to numbers as follows: `OK`: 100, `LOW_BATTERY`: 10, `CRITICAL_LOW`: 1, `CRITICALLY_LOW_BATTERY`: 1, `NOT_AVAILABLE`: `UNDEF`. |
+| low-battery                  | Switch    | &#9744;  | Indicates whether the battery is low (`ON`) or OK (`OFF`).                                                                                                                                                                  |
+| bypass                       | Switch    | &#9744;  | Indicates whether the device is currently bypassed. Possible values are `ON`,`OFF` and `UNDEF` if the bypass state cannot be determined.                                                                                    |
+| signal-strength              | Number    | &#9744;  | Communication quality between the device and the Smart Home Controller. Possible values range between 0 (unknown) and 4 (best signal strength).                                                                             |
+| vibration-sensor-enabled     | Switch    | &#9745;  | Channel to enable or disable the vibration sensor.                                                                                                                                                                          |
+| vibration-sensor-sensitivity | String    | &#9745;  | The sensitivity of the vibration sensor. Possible values are `VERY_HIGH`, `HIGH`, `MEDIUM`, `LOW` and `VERY_LOW`.                                                                                                           |
+| vibration-sensor-state       | String    | &#9744;  | Indicates whether vibrations were detected by the sensor. Possible values are `NO_VIBRATION`, `VIBRATION_DETECTED` and `UNKNOWN`.                                                                                           |
 
 ### Light Control II
 
@@ -284,11 +301,11 @@ A smart bulb connected to the bridge via Zigbee such as a Ledvance Smart+ bulb.
 
 **Thing Type ID**: `smart-bulb`
 
-| Channel Type ID | Item Type | Writable | Description                                                    |
-| ----------------| --------- | :------: | -------------------------------------------------------------- |
-| power-switch    | Switch    | &#9745;  | Switches the light on or off.                                  |
-| brightness      | Dimmer    | &#9745;  | Regulates the brightness on a percentage scale from 0 to 100%. |
-| color           | Color     | &#9745;  | The color of the emitted light.                                |
+| Channel Type ID  | Item Type | Writable | Description                                                    |
+| ---------------- | --------- | :------: | -------------------------------------------------------------- |
+| power-switch     | Switch    | &#9745;  | Switches the light on or off.                                  |
+| brightness       | Dimmer    | &#9745;  | Regulates the brightness on a percentage scale from 0 to 100%. |
+| color            | Color     | &#9745;  | The color of the emitted light.                                |
 
 ### Smoke Detector
 
@@ -296,22 +313,26 @@ The smoke detector warns you in case of fire.
 
 **Thing Type ID**: `smoke-detector`
 
-| Channel Type ID    | Item Type            | Writable | Description                                                                                       |
-| ------------------ | -------------------- | :------: | ------------------------------------------------------------------------------------------------- |
-| smoke-check        | String               | &#9745;  | State of the smoke check. Also used to request a new smoke check.                                 |
+| Channel Type ID  | Item Type | Writable | Description                                                                                                                                                                                                                             |
+| ---------------- | --------- | :------: | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| alarm            | String    | &#9745;  | Alarm state of the smoke detector. Possible values to read are: `IDLE_OFF`, `PRIMARY_ALARM`, `SECONDARY_ALARM` and `INTRUSION_ALARM`. Possible values to write are: `INTRUSION_ALARM_ON_REQUESTED` and `INTRUSION_ALARM_OFF_REQUESTED`. |
+| smoke-check      | String    | &#9745;  | State of the smoke check. Also used to request a new smoke check.                                                                                                                                                                       |
+| battery-level    | Number    | &#9744;  | Current battery level percentage as integer number. Bosch-specific battery levels are mapped to numbers as follows: `OK`: 100, `LOW_BATTERY`: 10, `CRITICAL_LOW`: 1, `CRITICALLY_LOW_BATTERY`: 1, `NOT_AVAILABLE`: `UNDEF`.             |
+| low-battery      | Switch    | &#9744;  | Indicates whether the battery is low (`ON`) or OK (`OFF`).                                                                                                                                                                              |
 
 ### Smoke Detector II
 
 The smoke detector warns you in case of fire.
 
-**Thing Type ID**: `smoke-detector`
+**Thing Type ID**: `smoke-detector-2`
 
-| Channel Type ID   | Item Type   | Writable | Description                                                                                                                                                                                                                 |
-|-------------------|-------------| :------: |-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| smoke-check       | String      | &#9745;  | State of the smoke check. Also used to request a new smoke check.                                                                                                                                                           |
-| battery-level     | Number      | &#9744;  | Current battery level percentage as integer number. Bosch-specific battery levels are mapped to numbers as follows: `OK`: 100, `LOW_BATTERY`: 10, `CRITICAL_LOW`: 1, `CRITICALLY_LOW_BATTERY`: 1, `NOT_AVAILABLE`: `UNDEF`. |
-| low-battery       | Switch      | &#9744;  | Indicates whether the battery is low (`ON`) or OK (`OFF`).                                                                                                                                                                  |
-| signal-strength   | Number      | &#9744;  | Communication quality between the device and the Smart Home Controller. Possible values range between 0 (unknown) and 4 (best signal strength).                                                                             |
+| Channel Type ID | Item Type | Writable | Description                                                                                                                                                                                                                             |
+| --------------- | --------- | :------: | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| alarm           | String    | &#9745;  | Alarm state of the smoke detector. Possible values to read are: `IDLE_OFF`, `PRIMARY_ALARM`, `SECONDARY_ALARM` and `INTRUSION_ALARM`. Possible values to write are: `INTRUSION_ALARM_ON_REQUESTED` and `INTRUSION_ALARM_OFF_REQUESTED`. |
+| smoke-check     | String    | &#9745;  | State of the smoke check. Also used to request a new smoke check.                                                                                                                                                                       |
+| battery-level   | Number    | &#9744;  | Current battery level percentage as integer number. Bosch-specific battery levels are mapped to numbers as follows: `OK`: 100, `LOW_BATTERY`: 10, `CRITICAL_LOW`: 1, `CRITICALLY_LOW_BATTERY`: 1, `NOT_AVAILABLE`: `UNDEF`.             |
+| low-battery     | Switch    | &#9744;  | Indicates whether the battery is low (`ON`) or OK (`OFF`).                                                                                                                                                                              |
+| signal-strength | Number    | &#9744;  | Communication quality between the device and the Smart Home Controller. Possible values range between 0 (unknown) and 4 (best signal strength).                                                                                         |
 
 ### User-defined States
 
@@ -388,7 +409,10 @@ The system password is set by you during your initial registration steps in the 
 A keystore file with a self-signed certificate is created automatically.
 This certificate is used for pairing between the Bridge and the Bosch Smart Home Controller.
 
-_Press and hold the Bosch Smart Home Controller Bridge button until the LED starts blinking after you save your settings for pairing_.
+On the Smart Home Controller Bridge, paring mode must be enabled after the `shc` Thing was created:
+
+- Smart Home Controller: _Press and hold the button until the LED starts blinking to enable pairing mode_.
+- Smart Home Controller II: _Press the button briefly to enable pairing mode_.
 
 ## Getting the device IDs
 

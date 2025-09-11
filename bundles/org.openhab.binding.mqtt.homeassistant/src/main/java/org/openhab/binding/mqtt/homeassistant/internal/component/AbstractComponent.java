@@ -38,11 +38,13 @@ import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannel;
 import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannelType;
 import org.openhab.binding.mqtt.homeassistant.internal.HaID;
 import org.openhab.binding.mqtt.homeassistant.internal.HomeAssistantChannelTransformation;
-import org.openhab.binding.mqtt.homeassistant.internal.component.ComponentFactory.ComponentConfiguration;
-import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
+import org.openhab.binding.mqtt.homeassistant.internal.HomeAssistantPythonBridge;
+import org.openhab.binding.mqtt.homeassistant.internal.component.ComponentFactory.ComponentContext;
+import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractComponentConfiguration;
 import org.openhab.binding.mqtt.homeassistant.internal.config.dto.Availability;
 import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AvailabilityMode;
-import org.openhab.binding.mqtt.homeassistant.internal.config.dto.Device;
+import org.openhab.binding.mqtt.homeassistant.internal.config.dto.EntityConfiguration;
+import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.SIUnits;
@@ -55,30 +57,33 @@ import org.openhab.core.thing.type.ChannelGroupDefinition;
 import org.openhab.core.thing.type.ChannelGroupType;
 import org.openhab.core.thing.type.ChannelGroupTypeBuilder;
 import org.openhab.core.thing.type.ChannelGroupTypeUID;
+import org.openhab.core.thing.type.ChannelKind;
 import org.openhab.core.types.CommandDescription;
 import org.openhab.core.types.StateDescription;
-
-import com.google.gson.Gson;
-import com.google.gson.annotations.SerializedName;
-import com.hubspot.jinjava.Jinjava;
 
 /**
  * A HomeAssistant component is comparable to a channel group.
  * It has a name and consists of multiple channels.
  *
  * @author David Graeff - Initial contribution
- * @param <C> Config class derived from {@link AbstractChannelConfiguration}
+ * @param <C> Config class derived from {@link AbstractComponentConfiguration}
  */
 @NonNullByDefault
-public abstract class AbstractComponent<C extends AbstractChannelConfiguration> {
+public abstract class AbstractComponent<C extends AbstractComponentConfiguration> {
     public enum TemperatureUnit {
-        @SerializedName("C")
         CELSIUS(SIUnits.CELSIUS, new BigDecimal("0.1")),
-        @SerializedName("F")
         FAHRENHEIT(ImperialUnits.FAHRENHEIT, BigDecimal.ONE);
 
         private final Unit<Temperature> unit;
         private final BigDecimal defaultPrecision;
+
+        public static TemperatureUnit fromString(String unit) {
+            if ("°F".equals(unit)) {
+                return FAHRENHEIT;
+            } else {
+                return CELSIUS;
+            }
+        }
 
         TemperatureUnit(Unit<Temperature> unit, BigDecimal defaultPrecision) {
             this.unit = unit;
@@ -96,9 +101,10 @@ public abstract class AbstractComponent<C extends AbstractChannelConfiguration> 
 
     public static final String JSON_ATTRIBUTES_CHANNEL_ID = "json-attributes";
 
+    protected static final String FORMAT_INTEGER = "%.0f";
+
     // Component location fields
-    protected final ComponentConfiguration componentConfiguration;
-    protected final HaID haID;
+    protected final ComponentContext componentContext;
 
     // Channels and configuration
     protected final Map<String, ComponentChannel> channels = new TreeMap<>();
@@ -107,8 +113,7 @@ public abstract class AbstractComponent<C extends AbstractChannelConfiguration> 
     // The hash code ({@link String#hashCode()}) of the configuration string
     // Used to determine if a component has changed.
     protected final int configHash;
-    protected final String channelConfigurationJson;
-    protected final C channelConfiguration;
+    protected final C config;
 
     protected boolean configSeen;
     protected final String uniqueId;
@@ -118,70 +123,83 @@ public abstract class AbstractComponent<C extends AbstractChannelConfiguration> 
     /**
      * Creates component based on generic configuration and component configuration type.
      *
-     * @param componentConfiguration generic componentConfiguration with not parsed JSON config
+     * @param componentContext generic componentContext with not parsed JSON config
      * @param clazz target configuration type
      * @param singleChannelComponent if this component only ever has one channel, so should never be in a group
      */
-    public AbstractComponent(ComponentFactory.ComponentConfiguration componentConfiguration, Class<C> clazz) {
-        this.componentConfiguration = componentConfiguration;
+    public AbstractComponent(ComponentFactory.ComponentContext componentContext, Class<C> clazz) {
+        this(componentContext, AbstractComponentConfiguration.create(componentContext.getPython(),
+                componentContext.getHaID().component, componentContext.getConfigJSON(), clazz));
+    }
 
-        this.channelConfigurationJson = componentConfiguration.getConfigJSON();
-        this.channelConfiguration = componentConfiguration.getConfig(clazz);
-        this.configHash = channelConfigurationJson.hashCode();
+    /**
+     * Creates component based on generic configuration and component configuration type.
+     *
+     * @param componentContext generic componentContext with not parsed JSON config
+     * @param clazz target configuration type
+     * @param singleChannelComponent if this component only ever has one channel, so should never be in a group
+     */
+    public AbstractComponent(ComponentFactory.ComponentContext componentContext, C config) {
+        this.componentContext = componentContext;
 
-        this.haID = componentConfiguration.getHaID();
+        this.config = config;
+        this.configHash = componentContext.getConfigJSON().hashCode();
 
-        String name = channelConfiguration.getName();
         // try for a simple component/group ID first; if there are conflicts
         // (components of different types, but the same object id)
         // we'll resolve them later
+        HaID haID = componentContext.getHaID();
         groupId = componentId = haID.objectID.replace('-', '_');
-        uniqueId = haID.component + "_" + haID.getGroupId(channelConfiguration.getUniqueId());
+        uniqueId = haID.component + "_" + haID.getGroupId(config.getUniqueId());
 
         this.configSeen = false;
 
-        final List<Availability> availabilities = channelConfiguration.getAvailability();
+        final List<Availability> availabilities = config.getAvailability();
         if (availabilities != null) {
-            AvailabilityMode mode = channelConfiguration.getAvailabilityMode();
+            String mode = config.getAvailabilityMode();
             AvailabilityTracker.AvailabilityMode availabilityTrackerMode = switch (mode) {
-                case ALL -> AvailabilityTracker.AvailabilityMode.ALL;
-                case ANY -> AvailabilityTracker.AvailabilityMode.ANY;
-                case LATEST -> AvailabilityTracker.AvailabilityMode.LATEST;
+                case AvailabilityMode.ALL -> AvailabilityTracker.AvailabilityMode.ALL;
+                case AvailabilityMode.ANY -> AvailabilityTracker.AvailabilityMode.ANY;
+                case AvailabilityMode.LATEST -> AvailabilityTracker.AvailabilityMode.LATEST;
+                default -> AvailabilityTracker.AvailabilityMode.LATEST;
             };
-            componentConfiguration.getTracker().setAvailabilityMode(availabilityTrackerMode);
+            componentContext.getTracker().setAvailabilityMode(availabilityTrackerMode);
             for (Availability availability : availabilities) {
-                String availabilityTemplate = availability.getValueTemplate();
+                org.graalvm.polyglot.Value availabilityTemplate = availability.getValueTemplate();
                 ChannelTransformation transformation = null;
                 if (availabilityTemplate != null) {
-                    transformation = new HomeAssistantChannelTransformation(getJinjava(), this, availabilityTemplate);
+                    transformation = new HomeAssistantChannelTransformation(getPython(), this, availabilityTemplate,
+                            false);
                 }
-                componentConfiguration.getTracker().addAvailabilityTopic(availability.getTopic(),
+                componentContext.getTracker().addAvailabilityTopic(availability.getTopic(),
                         availability.getPayloadAvailable(), availability.getPayloadNotAvailable(), transformation);
             }
         } else {
-            String availabilityTopic = this.channelConfiguration.getAvailabilityTopic();
+            String availabilityTopic = this.config.getAvailabilityTopic();
             if (availabilityTopic != null) {
-                String availabilityTemplate = this.channelConfiguration.getAvailabilityTemplate();
+                org.graalvm.polyglot.Value availabilityTemplate = this.config.getAvailabilityTemplate();
                 ChannelTransformation transformation = null;
                 if (availabilityTemplate != null) {
-                    transformation = new HomeAssistantChannelTransformation(getJinjava(), this, availabilityTemplate);
+                    transformation = new HomeAssistantChannelTransformation(getPython(), this, availabilityTemplate,
+                            false);
                 }
-                componentConfiguration.getTracker().addAvailabilityTopic(availabilityTopic,
-                        this.channelConfiguration.getPayloadAvailable(),
-                        this.channelConfiguration.getPayloadNotAvailable(), transformation);
+                componentContext.getTracker().addAvailabilityTopic(availabilityTopic, this.config.getPayloadAvailable(),
+                        this.config.getPayloadNotAvailable(), transformation);
             }
         }
     }
 
     protected void addJsonAttributesChannel() {
-        if (channelConfiguration.getJsonAttributesTopic() != null) {
-            ChannelStateUpdateListener listener = (this instanceof ChannelStateUpdateListener localThis) ? localThis
-                    : componentConfiguration.getUpdateListener();
-            buildChannel(JSON_ATTRIBUTES_CHANNEL_ID, ComponentChannelType.STRING, new TextValue(), "JSON Attributes",
-                    listener)
-                    .stateTopic(channelConfiguration.getJsonAttributesTopic(),
-                            channelConfiguration.getJsonAttributesTemplate())
-                    .withAutoUpdatePolicy(AutoUpdatePolicy.VETO).isAdvanced(true).build();
+        if (config instanceof EntityConfiguration entityConfig) {
+            String jsonAttributesTopic = entityConfig.getJsonAttributesTopic();
+            if (jsonAttributesTopic != null) {
+                ChannelStateUpdateListener listener = (this instanceof ChannelStateUpdateListener localThis) ? localThis
+                        : componentContext.getUpdateListener();
+                buildChannel(JSON_ATTRIBUTES_CHANNEL_ID, ComponentChannelType.STRING, new TextValue(),
+                        "JSON Attributes", listener)
+                        .stateTopic(jsonAttributesTopic, entityConfig.getJsonAttributesTemplate())
+                        .withAutoUpdatePolicy(AutoUpdatePolicy.VETO).isAdvanced(true).build();
+            }
         }
     }
 
@@ -189,7 +207,7 @@ public abstract class AbstractComponent<C extends AbstractChannelConfiguration> 
         addJsonAttributesChannel();
         if (channels.size() == 1) {
             groupId = null;
-            channels.values().forEach(c -> c.resetUID(buildChannelUID(componentId)));
+            channels.values().forEach(c -> c.resetUID(buildChannelUID(componentId), getName()));
         } else {
             // only the first channel needs to persist the configuration
             channels.values().stream().skip(1).forEach(c -> {
@@ -199,6 +217,7 @@ public abstract class AbstractComponent<C extends AbstractChannelConfiguration> 
     }
 
     public void resolveConflict() {
+        HaID haID = componentContext.getHaID();
         if (channels.size() == 1) {
             componentId = componentId + "_" + haID.component;
             channels.values().forEach(c -> c.resetUID(buildChannelUID(componentId)));
@@ -232,8 +251,14 @@ public abstract class AbstractComponent<C extends AbstractChannelConfiguration> 
      */
     public CompletableFuture<@Nullable Void> start(MqttBrokerConnection connection, ScheduledExecutorService scheduler,
             int timeout) {
-        return Stream.concat(channels.values().stream(), hiddenChannels.stream())
-                .map(v -> v.start(connection, scheduler, timeout)) //
+        // Hidden channels (used by a component to simulate other channels or non-channel behavior),
+        // triggers channels (which can be used by rules without ever being linked),
+        // and linked channels are started.
+        // Therefore, unlinked channels are not started.
+        return Stream.concat(channels.values().stream().filter(c -> {
+            return c.getChannel().getKind().equals(ChannelKind.TRIGGER)
+                    || componentContext.getLinkageChecker().isChannelLinked(c.getChannel().getUID());
+        }), hiddenChannels.stream()).map(v -> v.start(connection, scheduler, timeout)) //
                 .reduce(CompletableFuture.completedFuture(null), (f, v) -> f.thenCompose(b -> v));
     }
 
@@ -271,9 +296,9 @@ public abstract class AbstractComponent<C extends AbstractChannelConfiguration> 
     public ChannelUID buildChannelUID(String channelID) {
         final String localGroupID = groupId;
         if (localGroupID != null) {
-            return new ChannelUID(componentConfiguration.getThingUID(), localGroupID, channelID);
+            return new ChannelUID(componentContext.getThingUID(), localGroupID, channelID);
         }
-        return new ChannelUID(componentConfiguration.getThingUID(), channelID);
+        return new ChannelUID(componentContext.getThingUID(), channelID);
     }
 
     public String getComponentId() {
@@ -288,19 +313,7 @@ public abstract class AbstractComponent<C extends AbstractChannelConfiguration> 
      * Component (Channel Group) name.
      */
     public String getName() {
-        String result = channelConfiguration.getName();
-        if (result != null && result.isBlank()) {
-            result = null;
-        }
-
-        Device device = channelConfiguration.getDevice();
-        if (result == null && device != null) {
-            result = device.getName();
-        }
-        if (result == null || result.isBlank()) {
-            result = haID.objectID;
-        }
-        return result;
+        return config.getName();
     }
 
     /**
@@ -383,30 +396,81 @@ public abstract class AbstractComponent<C extends AbstractChannelConfiguration> 
     }
 
     public HaID getHaID() {
-        return haID;
+        return componentContext.getHaID();
     }
 
     public String getChannelConfigurationJson() {
-        return channelConfigurationJson;
+        return componentContext.getConfigJSON();
     }
 
     public boolean isEnabledByDefault() {
-        return channelConfiguration.isEnabledByDefault();
+        return config.isEnabledByDefault();
     }
 
-    public Gson getGson() {
-        return componentConfiguration.getGson();
+    public HomeAssistantPythonBridge getPython() {
+        return componentContext.getPython();
     }
 
-    public Jinjava getJinjava() {
-        return componentConfiguration.getJinjava();
-    }
-
-    public C getChannelConfiguration() {
-        return channelConfiguration;
+    public C getConfig() {
+        return config;
     }
 
     private ChannelGroupTypeUID getChannelGroupTypeUID(String prefix) {
         return new ChannelGroupTypeUID(MqttBindingConstants.BINDING_ID, prefix + "_" + uniqueId);
+    }
+
+    public boolean mergeable(AbstractComponent<?> other) {
+        return false;
+    }
+
+    protected Configuration mergeChannelConfiguration(ComponentChannel channel, AbstractComponent<C> other) {
+        Configuration currentConfiguration = channel.getChannel().getConfiguration();
+        Configuration newConfiguration = new Configuration();
+        newConfiguration.put("component", currentConfiguration.get("component"));
+        newConfiguration.put("nodeid", currentConfiguration.get("nodeid"));
+        Object objectIdObject = currentConfiguration.get("objectid");
+        if (objectIdObject instanceof String objectIdString) {
+            if (!objectIdString.equals(other.getHaID().objectID)) {
+                newConfiguration.put("objectid", List.of(objectIdString, other.getHaID().objectID));
+            }
+        } else if (objectIdObject instanceof List<?> objectIdList) {
+            newConfiguration.put("objectid", Stream.concat(objectIdList.stream(), Stream.of(other.getHaID().objectID))
+                    .sorted().distinct().toList());
+        }
+        Object configObject = currentConfiguration.get("config");
+        if (configObject instanceof String configString) {
+            if (!configString.equals(other.getChannelConfigurationJson())) {
+                newConfiguration.put("config", List.of(configString, other.getChannelConfigurationJson()));
+            }
+        } else if (configObject instanceof List<?> configList) {
+            newConfiguration.put("config",
+                    Stream.concat(configList.stream(), Stream.of(other.getChannelConfigurationJson())).sorted()
+                            .distinct().toList());
+        }
+        return newConfiguration;
+    }
+
+    /**
+     * Take another component of the same type, and merge it so that only one (set of)
+     * channel(s) exist on the Thing.
+     *
+     * @return if the component was stopped, and thus needs restarted
+     */
+    public boolean merge(AbstractComponent<?> other) {
+        return false;
+    }
+
+    protected TemperatureUnit getTemperatureUnit(@Nullable String configTemperatureUnit) {
+        TemperatureUnit temperatureUnit;
+        if (configTemperatureUnit == null) {
+            if (ImperialUnits.FAHRENHEIT.equals(componentContext.getUnitProvider().getUnit(Temperature.class))) {
+                temperatureUnit = TemperatureUnit.FAHRENHEIT;
+            } else {
+                temperatureUnit = TemperatureUnit.CELSIUS;
+            }
+        } else {
+            temperatureUnit = TemperatureUnit.fromString(configTemperatureUnit);
+        }
+        return temperatureUnit;
     }
 }

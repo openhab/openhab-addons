@@ -21,6 +21,7 @@ import java.util.ArrayList;
  */
 public class PrmDetail {
     public record Adresse(String ligne2, String ligne3, String ligne4, String ligne5, String ligne6) {
+
     }
 
     public record DicEntry(String code, String libelle) {

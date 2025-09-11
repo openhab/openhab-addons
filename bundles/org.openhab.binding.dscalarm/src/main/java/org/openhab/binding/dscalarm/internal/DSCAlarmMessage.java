@@ -79,187 +79,180 @@ public class DSCAlarmMessage {
      * Processes the incoming DSC Alarm message and extracts the information.
      */
     private void processDSCAlarmMessage() {
-        DSCAlarmCode dscAlarmCode;
-
-        if (message.length() > 3) {
-            try {
-                if (message.length() >= 8 && message.charAt(2) == ':' && message.charAt(5) == ':') {
-                    timeStamp = message.substring(0, 8);
-                    message = message.substring(9, message.length() - 2);
-                } else {
-                    message = message.substring(0, message.length() - 2);
-                }
-
-                codeReceived = message.substring(0, 3);
-
-                if (message.length() >= 4) {
-                    data = message.substring(3);
-                }
-            } catch (Exception e) {
-                logger.warn("processDSCAlarmMessage(): Error processing message: ({}) ", message, e);
-                return;
-            }
-
-            dscAlarmCode = DSCAlarmCode.getDSCAlarmCodeValue(codeReceived);
-
-            if (dscAlarmCode != null) {
-                name = dscAlarmCode.getName();
-                description = dscAlarmCode.getDescription();
-
-                MessageParameters messageParms = DSCALARM_MESSAGE_PARAMETERS.get(dscAlarmCode);
-
-                if (messageParms != null) {
-                    boolean hasPartition = messageParms.hasPartition();
-                    boolean hasZone = messageParms.hasZone();
-
-                    if (hasPartition) {
-                        partition = message.substring(3, 4);
-                    }
-
-                    if (hasZone) {
-                        if (hasPartition) {
-                            zone = message.substring(4);
-                        } else {
-                            zone = message.substring(3);
-                        }
-                    }
-
-                    messageType = messageParms.getType();
-                }
-
-                switch (dscAlarmCode) {
-                    case SystemError: /* 502 */
-                        int systemErrorCode = 0;
-                        systemErrorCode = Integer.parseInt(data);
-                        switch (systemErrorCode) {
-                            case 1:
-                                error = "Receive Buffer Overrun";
-                                break;
-                            case 2:
-                                error = "Receive Buffer Overflow";
-                                break;
-                            case 3:
-                                error = "Transmit Buffer Overflow";
-                                break;
-                            case 10:
-                                error = "Keybus Transmit Buffer Overrun";
-                                break;
-                            case 11:
-                                error = "Keybus Transmit Time Timeout";
-                                break;
-                            case 12:
-                                error = "Keybus Transmit Mode Timeout";
-                                break;
-                            case 13:
-                                error = "Keybus Transmit Keystring Timeout";
-                                break;
-                            case 14:
-                                error = "Keybus Interface Not Functioning";
-                                break;
-                            case 15:
-                                error = "Keybus Busy - Attempting to Disarm or Arm with user code";
-                                break;
-                            case 16:
-                                error = "Keybus Busy – Lockout";
-                                break;
-                            case 17:
-                                error = "Keybus Busy – Installers Mode";
-                                break;
-                            case 18:
-                                error = "Keybus Busy - General Busy";
-                                break;
-                            case 20:
-                                error = "API Command Syntax Error";
-                                break;
-                            case 21:
-                                error = "API Command Partition Error - Requested Partition is out of bounds";
-                                break;
-                            case 22:
-                                error = "API Command Not Supported";
-                                break;
-                            case 23:
-                                error = "API System Not Armed - Sent in response to a disarm command";
-                                break;
-                            case 24:
-                                error = "API System Not Ready to Arm - System is either not-secure, in exit-delay, or already armed";
-                                break;
-                            case 25:
-                                error = "API Command Invalid Length";
-                                break;
-                            case 26:
-                                error = "API User Code not Required";
-                                break;
-                            case 27:
-                                error = "API Invalid Characters in Command - No alpha characters are allowed except for checksum";
-                                break;
-                            case 28:
-                                error = "API Virtual Keypad is Disabled";
-                                break;
-                            case 29:
-                                error = "API Not Valid Parameter";
-                                break;
-                            case 30:
-                                error = "API Keypad Does Not Come Out of Blank Mode";
-                                break;
-                            case 31:
-                                error = "API IT-100 is Already in Thermostat Menu";
-                                break;
-                            case 32:
-                                error = "API IT-100 is NOT in Thermostat Menu";
-                                break;
-                            case 33:
-                                error = "API No Response From Thermostat or Escort Module";
-                                break;
-                            case 0:
-                            default:
-                                error = "No Error";
-                                break;
-                        }
-                        break;
-
-                    case PartitionArmed: /* 652 */
-                        mode = message.substring(4);
-                        if ("0".equals(mode)) {
-                            name += " (Away)";
-                        } else if ("1".equals(mode)) {
-                            name += " (Stay)";
-                        } else if ("2".equals(mode)) {
-                            name += " (ZEA)";
-                        } else if ("3".equals(mode)) {
-                            name += " (ZES)";
-                        }
-                        messageType = DSCAlarmMessageType.PARTITION_EVENT;
-                        break;
-                    case UserClosing: /* 700 */
-                        user = message.substring(4);
-                        name = name.concat(": " + user);
-                        description = codeReceived + ": Partition " + partition + " has been armed by user " + user
-                                + ".";
-                        messageType = DSCAlarmMessageType.PARTITION_EVENT;
-                        break;
-                    case UserOpening: /* 750 */
-                        user = message.substring(4);
-                        name = name.concat(": " + user);
-                        description = codeReceived + ": Partition " + partition + " has been disarmed by user " + user
-                                + ".";
-                        messageType = DSCAlarmMessageType.PARTITION_EVENT;
-                        break;
-
-                    default:
-                        break;
-                }
-
-                logger.debug(
-                        "parseAPIMessage(): Message Received ({}) - Code: {}, Name: {}, Description: {}, Data: {}\r\n",
-                        message, codeReceived, name, description, data);
-            }
-        } else {
+        if (message.length() <= 3) {
             codeReceived = "-1";
             data = "";
-            dscAlarmCode = DSCAlarmCode.getDSCAlarmCodeValue(codeReceived);
+            DSCAlarmCode dscAlarmCode = DSCAlarmCode.UnknownCode;
             name = dscAlarmCode.getName();
             description = dscAlarmCode.getDescription();
             logger.debug("parseAPIMessage(): Invalid Message Received");
+            return;
+        }
+
+        try {
+            if (message.length() >= 8 && message.charAt(2) == ':' && message.charAt(5) == ':') {
+                timeStamp = message.substring(0, 8);
+                message = message.substring(9, message.length() - 2);
+            } else {
+                message = message.substring(0, message.length() - 2);
+            }
+
+            codeReceived = message.substring(0, 3);
+
+            if (message.length() >= 4) {
+                data = message.substring(3);
+            }
+        } catch (Exception e) {
+            logger.warn("processDSCAlarmMessage(): Error processing message: ({}) ", message, e);
+            return;
+        }
+
+        DSCAlarmCode dscAlarmCode = DSCAlarmCode.getDSCAlarmCodeValue(codeReceived);
+
+        if (dscAlarmCode != null) {
+            name = dscAlarmCode.getName();
+            description = dscAlarmCode.getDescription();
+
+            MessageParameters messageParams = DSCALARM_MESSAGE_PARAMETERS.get(dscAlarmCode);
+
+            if (messageParams != null) {
+                boolean hasPartition = messageParams.hasPartition();
+                boolean hasZone = messageParams.hasZone();
+
+                if (hasPartition) {
+                    partition = message.substring(3, 4);
+                }
+
+                if (hasZone) {
+                    int zoneIndex = hasPartition ? 4 : 3;
+                    zone = message.substring(zoneIndex);
+                }
+
+                messageType = messageParams.getType();
+            }
+
+            switch (dscAlarmCode) {
+                case SystemError: /* 502 */
+                    int systemErrorCode = 0;
+                    systemErrorCode = Integer.parseInt(data);
+                    switch (systemErrorCode) {
+                        case 1:
+                            error = "Receive Buffer Overrun";
+                            break;
+                        case 2:
+                            error = "Receive Buffer Overflow";
+                            break;
+                        case 3:
+                            error = "Transmit Buffer Overflow";
+                            break;
+                        case 10:
+                            error = "Keybus Transmit Buffer Overrun";
+                            break;
+                        case 11:
+                            error = "Keybus Transmit Time Timeout";
+                            break;
+                        case 12:
+                            error = "Keybus Transmit Mode Timeout";
+                            break;
+                        case 13:
+                            error = "Keybus Transmit Keystring Timeout";
+                            break;
+                        case 14:
+                            error = "Keybus Interface Not Functioning";
+                            break;
+                        case 15:
+                            error = "Keybus Busy - Attempting to Disarm or Arm with user code";
+                            break;
+                        case 16:
+                            error = "Keybus Busy – Lockout";
+                            break;
+                        case 17:
+                            error = "Keybus Busy – Installers Mode";
+                            break;
+                        case 18:
+                            error = "Keybus Busy - General Busy";
+                            break;
+                        case 20:
+                            error = "API Command Syntax Error";
+                            break;
+                        case 21:
+                            error = "API Command Partition Error - Requested Partition is out of bounds";
+                            break;
+                        case 22:
+                            error = "API Command Not Supported";
+                            break;
+                        case 23:
+                            error = "API System Not Armed - Sent in response to a disarm command";
+                            break;
+                        case 24:
+                            error = "API System Not Ready to Arm - System is either not-secure, in exit-delay, or already armed";
+                            break;
+                        case 25:
+                            error = "API Command Invalid Length";
+                            break;
+                        case 26:
+                            error = "API User Code not Required";
+                            break;
+                        case 27:
+                            error = "API Invalid Characters in Command - No alpha characters are allowed except for checksum";
+                            break;
+                        case 28:
+                            error = "API Virtual Keypad is Disabled";
+                            break;
+                        case 29:
+                            error = "API Not Valid Parameter";
+                            break;
+                        case 30:
+                            error = "API Keypad Does Not Come Out of Blank Mode";
+                            break;
+                        case 31:
+                            error = "API IT-100 is Already in Thermostat Menu";
+                            break;
+                        case 32:
+                            error = "API IT-100 is NOT in Thermostat Menu";
+                            break;
+                        case 33:
+                            error = "API No Response From Thermostat or Escort Module";
+                            break;
+                        case 0:
+                        default:
+                            error = "No Error";
+                            break;
+                    }
+                    break;
+                case PartitionArmed: /* 652 */
+                    mode = message.substring(4);
+                    if ("0".equals(mode)) {
+                        name += " (Away)";
+                    } else if ("1".equals(mode)) {
+                        name += " (Stay)";
+                    } else if ("2".equals(mode)) {
+                        name += " (ZEA)";
+                    } else if ("3".equals(mode)) {
+                        name += " (ZES)";
+                    }
+                    messageType = DSCAlarmMessageType.PARTITION_EVENT;
+                    break;
+                case UserClosing: /* 700 */
+                    user = message.substring(4);
+                    name = name.concat(": " + user);
+                    description = codeReceived + ": Partition " + partition + " has been armed by user " + user + ".";
+                    messageType = DSCAlarmMessageType.PARTITION_EVENT;
+                    break;
+                case UserOpening: /* 750 */
+                    user = message.substring(4);
+                    name = name.concat(": " + user);
+                    description = codeReceived + ": Partition " + partition + " has been disarmed by user " + user
+                            + ".";
+                    messageType = DSCAlarmMessageType.PARTITION_EVENT;
+                    break;
+
+                default:
+                    break;
+            }
+
+            logger.debug("parseAPIMessage(): Message Received ({}) - Code: {}, Name: {}, Description: {}, Data: {}\r\n",
+                    message, codeReceived, name, description, data);
         }
     }
 
@@ -451,6 +444,8 @@ public class DSCAlarmMessage {
                 new MessageParameters(DSCAlarmMessageType.ZONE_EVENT, false, true));
         DSCALARM_MESSAGE_PARAMETERS.put(DSCAlarmCode.EnvisalinkZoneTimerDump,
                 new MessageParameters(DSCAlarmMessageType.PANEL_EVENT, false, false));
+        DSCALARM_MESSAGE_PARAMETERS.put(DSCAlarmCode.BypassedZonesBitfield,
+                new MessageParameters(DSCAlarmMessageType.ZONE_EVENT, false, false));
         DSCALARM_MESSAGE_PARAMETERS.put(DSCAlarmCode.DuressAlarm,
                 new MessageParameters(DSCAlarmMessageType.PANEL_EVENT, false, false));
         DSCALARM_MESSAGE_PARAMETERS.put(DSCAlarmCode.FireKeyAlarm,

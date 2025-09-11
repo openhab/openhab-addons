@@ -77,7 +77,6 @@ public abstract class MeterDevice<T> {
 
     public MeterDevice(Supplier<SerialPortManager> serialPortManagerSupplier, String deviceId, String serialPort,
             byte @Nullable [] initMessage, int baudrate, int baudrateChangeDelay, ProtocolMode protocolMode) {
-        super();
         this.deviceId = deviceId;
         this.valueCache = new HashMap<>();
         this.valueChangeListeners = new CopyOnWriteArrayList<>();
@@ -182,7 +181,7 @@ public abstract class MeterDevice<T> {
                     connector.openConnection();
                 }).doOnError(ex -> {
                     if (ex instanceof TimeoutException) {
-                        logger.debug("Timeout occured for {}; {}", getDeviceId(), ex.getMessage());
+                        logger.debug("Timeout occurred for {}; {}", getDeviceId(), ex.getMessage());
                     } else {
                         logger.debug("Failed to read: {}. Closing connection and trying again in {} seconds...; {}",
                                 ex.getMessage(), RETRY_DELAY, getDeviceId(), ex);

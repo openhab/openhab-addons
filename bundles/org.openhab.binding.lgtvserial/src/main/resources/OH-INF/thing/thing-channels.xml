@@ -6,14 +6,22 @@
 
 	<channel-type id="3d">
 		<item-type>String</item-type>
-		<label>3d</label>
-		<description>Change the 3d mode, if your TV supports it</description>
+		<label>3D</label>
+		<description>Change the 3D mode, if your TV supports it</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>MediaControl</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="3d-extended">
 		<item-type>String</item-type>
-		<label>3d Extended</label>
-		<description>Change the 3d option, if your TV supports it</description>
+		<label>3D Extended</label>
+		<description>Change the 3D option, if your TV supports it</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>MediaControl</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="aspect-ratio">
@@ -51,18 +59,30 @@
 		<item-type>Switch</item-type>
 		<label>Auto Sleep</label>
 		<description>Set Auto Sleep</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="auto-volume">
 		<item-type>Switch</item-type>
 		<label>Auto Volume</label>
 		<description>Automatically adjust the volume level</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="backlight">
 		<item-type>Dimmer</item-type>
 		<label>Backlight</label>
 		<description>Display backlight brightness</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Brightness</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="balance">
@@ -81,6 +101,10 @@
 		<item-type>Dimmer</item-type>
 		<label>Brightness</label>
 		<description>Adjust screen brightness</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Brightness</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="contrast">
@@ -93,12 +117,20 @@
 		<item-type>Dimmer</item-type>
 		<label>Color</label>
 		<description>Adjust screen color</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Color</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="color-temperature">
 		<item-type>String</item-type>
 		<label>Color Temperature</label>
 		<description>Color temperature of the display</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>ColorTemperature</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="0">Cool</option>
@@ -112,12 +144,20 @@
 		<item-type>Dimmer</item-type>
 		<label>Color Temperature</label>
 		<description>Color temperature of the display (between 0 and 100)</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>ColorTemperature</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="dpm">
 		<item-type>Switch</item-type>
 		<label>DPM Select</label>
 		<description>Set the DPM (Display Power Management) function</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="elapsed-time">
@@ -146,6 +186,9 @@
 		<item-type>String</item-type>
 		<label>Fan Fault</label>
 		<description>Check the fan fault of the TV</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="0">Fan fault</option>
@@ -159,6 +202,10 @@
 		<item-type>Dimmer</item-type>
 		<label>H Position</label>
 		<description>Set the horizontal position</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Position</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="input">
@@ -290,6 +337,10 @@
 		<item-type>String</item-type>
 		<label>Lamp Fault</label>
 		<description>Check the lamp fault of the TV</description>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Light</tag>
+		</tags>
 		<state readOnly="true">
 			<options>
 				<option value="0">Fan fault</option>
@@ -302,6 +353,10 @@
 		<item-type>Switch</item-type>
 		<label>Natural Mode</label>
 		<description>To assign the Tile Natural mode for Tiling function</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="osd-language">
@@ -334,6 +389,10 @@
 		<item-type>String</item-type>
 		<label>Picture Mode</label>
 		<description>To adjust picture mode</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="00">Vivid</option>
@@ -351,18 +410,30 @@
 		<item-type>Switch</item-type>
 		<label>Power</label>
 		<description>Power on/off</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="power-indicator">
 		<item-type>Switch</item-type>
 		<label>Power Indicator</label>
 		<description>To set the LED for Power Indicator</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Light</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="power-saving">
 		<item-type>String</item-type>
 		<label>Power Saving</label>
 		<description>Set the Power saving mode</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Power</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="00">Off</option>
@@ -376,13 +447,17 @@
 	<channel-type id="raw" advanced="true">
 		<item-type>String</item-type>
 		<label>Raw</label>
-		<description>Send raw command over the serial power directly to TV(s)</description>
+		<description>Send raw command over the serial port directly to the device(s)</description>
 	</channel-type>
 
 	<channel-type id="screen-mute">
 		<item-type>String</item-type>
 		<label>Screen Mute</label>
 		<description>Select screen mute on/off</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="00">Screen mute off (Picture on), Video-out Mute off</option>
@@ -430,6 +505,10 @@
 		<item-type>String</item-type>
 		<label>Sound Mode</label>
 		<description>To adjust sound mode</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="00">Clear Voice</option>
@@ -454,6 +533,10 @@
 		<item-type>Switch</item-type>
 		<label>Speaker</label>
 		<description>Turn the speaker on or off</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>SoundVolume</tag>
+		</tags>
 	</channel-type>
 
 	<!-- Definition of the M6503C definition as this is the only one we've seen so far -->
@@ -461,6 +544,10 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature Value</label>
 		<description>Read the inside temperature value</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -468,7 +555,7 @@
 	<channel-type id="tile">
 		<item-type>String</item-type>
 		<label>Tile Mode</label>
-		<description>Change a tile mode</description>
+		<description>Change the tile mode</description>
 		<state>
 			<options>
 				<option value="00">Tile mode off</option>
@@ -505,6 +592,10 @@
 		<item-type>Dimmer</item-type>
 		<label>Horizontal Position</label>
 		<description>Set the horizontal position</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Position</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="tile-h-size">
@@ -525,6 +616,10 @@
 		<item-type>Dimmer</item-type>
 		<label>Vertical Position</label>
 		<description>Set the vertical position</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Position</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="tile-v-size">
@@ -549,6 +644,10 @@
 		<item-type>Dimmer</item-type>
 		<label>V Position</label>
 		<description>Set the vertical position</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Position</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="volume">
@@ -556,6 +655,10 @@
 		<label>Volume</label>
 		<description>Volume control (%)</description>
 		<category>SoundVolume</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>SoundVolume</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="volume-mute">
@@ -563,6 +666,10 @@
 		<label>Mute</label>
 		<description>Mute on/off</description>
 		<category>Mute</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>SoundVolume</tag>
+		</tags>
 	</channel-type>
 
 </thing:thing-descriptions>

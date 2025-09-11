@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="homewizard"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="hwe-bat">
+		<label>HomeWizard Plug-In Battery</label>
+		<description>This thing provides the measurement data that is available through the API of a HomeWizard Plug-In
+			Battery.</description>
+		<semantic-equipment-tag>Battery</semantic-equipment-tag>
+		<channel-groups>
+			<channel-group id="energy" typeId="bat-energy-group"/>
+		</channel-groups>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
+		<config-description-ref uri="thing-type:homewizard:device"/>
+	</thing-type>
+
+	<channel-group-type id="bat-energy-group">
+		<label>Recent Measurements</label>
+		<channels>
+			<channel id="power" typeId="hw-power"/>
+			<channel id="voltage_l1" typeId="hw-voltage"/>
+			<channel id="current" typeId="hw-current"/>
+			<channel id="energy_import" typeId="hw-energy-import"/>
+			<channel id="energy_export" typeId="hw-energy-export"/>
+			<channel id="frequency" typeId="hw-frequency"/>
+			<channel id="state_of_charge" typeId="bat-state-of-charge"/>
+			<channel id="cycles" typeId="bat-cycles"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="bat-state-of-charge">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>State of Charge</label>
+		<description>
+			This channel provides access to the current state of charge in percent.
+		</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="bat-cycles">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Number of Cycles</label>
+		<description>
+			This channel provides access to the number of battery cycles.
+		</description>
+		<state readOnly="true" pattern="%.0f"/>
+	</channel-type>
+
+</thing:thing-descriptions>

@@ -47,6 +47,10 @@
 		<item-type>String</item-type>
 		<label>Status</label>
 		<description>FPP Player Status</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>MediaControl</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="mode" advanced="true">
@@ -65,24 +69,40 @@
 		<item-type>String</item-type>
 		<label>Current Song</label>
 		<description>FPP Current Song</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="current-playlist">
 		<item-type>String</item-type>
 		<label>Current Playlist</label>
 		<description>FPP Current Playlist</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="seconds-played" advanced="true">
 		<item-type>Number:Time</item-type>
 		<label>Seconds Played</label>
 		<description>FPP Seconds Played</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Progress</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f sec"/>
 	</channel-type>
 	<channel-type id="seconds-remaining" advanced="true">
 		<item-type>Number:Time</item-type>
 		<label>Seconds Remaining</label>
 		<description>FPP Seconds Remaining</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Progress</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f sec"/>
 	</channel-type>
 	<channel-type id="uptime" advanced="true">
@@ -95,16 +115,24 @@
 		<item-type>Player</item-type>
 		<label>Player</label>
 		<description>FPP Player Control</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>MediaControl</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="volume">
 		<item-type>Dimmer</item-type>
 		<label>Volume</label>
 		<description>FPP Volume of the Output</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>SoundVolume</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="bridging-enabled" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Bridging</label>
-		<description>FPP Recieving Bridge Data</description>
+		<description>FPP Receiving Bridge Data</description>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="multisync-enabled" advanced="true">

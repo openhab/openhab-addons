@@ -178,7 +178,7 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
                     // Catch "software caused connection abort"
                     return false;
                 } catch (Exception e) {
-                    logger.warn("error occured while trying to connect", e);
+                    logger.warn("error occurred while trying to connect", e);
                 }
             } else {
                 logger.debug("Device was already connected");
@@ -205,22 +205,15 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
         return false;
     }
 
-    private void ensureConnected() {
-        BluetoothDevice dev = device;
-        if (dev == null || Boolean.FALSE.equals(dev.isConnected())) {
-            throw new IllegalStateException("DBusBlueZ device is not set or not connected");
-        }
-    }
-
     private @Nullable BluetoothGattCharacteristic getDBusBlueZCharacteristicByUUID(String uuid) {
         BluetoothDevice dev = device;
         if (dev == null) {
             return null;
         }
         for (BluetoothGattService service : dev.getGattServices()) {
-            for (BluetoothGattCharacteristic c : service.getGattCharacteristics()) {
-                if (c.getUuid().equalsIgnoreCase(uuid)) {
-                    return c;
+            for (BluetoothGattCharacteristic characteristic : service.getGattCharacteristics()) {
+                if (characteristic != null && uuid.equalsIgnoreCase(characteristic.getUuid())) {
+                    return characteristic;
                 }
             }
         }
@@ -235,25 +228,8 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
         for (BluetoothGattService service : dev.getGattServices()) {
             if (dBusPath.startsWith(service.getDbusPath())) {
                 for (BluetoothGattCharacteristic characteristic : service.getGattCharacteristics()) {
-                    if (dBusPath.startsWith(characteristic.getDbusPath())) {
+                    if (characteristic != null && dBusPath.startsWith(characteristic.getDbusPath())) {
                         return characteristic;
-                    }
-                }
-            }
-        }
-        return null;
-    }
-
-    private @Nullable BluetoothGattDescriptor getDBusBlueZDescriptorByUUID(String uuid) {
-        BluetoothDevice dev = device;
-        if (dev == null) {
-            return null;
-        }
-        for (BluetoothGattService service : dev.getGattServices()) {
-            for (BluetoothGattCharacteristic c : service.getGattCharacteristics()) {
-                for (BluetoothGattDescriptor d : c.getGattDescriptors()) {
-                    if (d.getUuid().equalsIgnoreCase(uuid)) {
-                        return d;
                     }
                 }
             }

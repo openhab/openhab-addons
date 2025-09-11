@@ -35,36 +35,45 @@ Channels above the number specified are automatically removed.
 Therefore `numChannels` cannot be changed upward after Thing creation.
 If the number of channels must be increased, delete the Thing and re-create it with the correct number.
 
-| Channel ID           | Item Type                | Description                                     |
-|----------------------|--------------------------|-------------------------------------------------|
-| power                | Switch                   | Turns the smart plug relay #1 ON or OFF         |
-| power2               | Switch                   | Turns the smart plug relay #2 ON or OFF         |
-| power3               | Switch                   | Turns the smart plug relay #3 ON or OFF         |
-| power4               | Switch                   | Turns the smart plug relay #4 ON or OFF         |
-| voltage              | Number:ElectricPotential | Channel for output voltage measurement          |
-| current              | Number:ElectricCurrent   | Channel for output current measurement          |
-| watts                | Number:Power             | Channel for output power measurement            |
-| volt-ampere          | Number:Power             | Channel for output VA measurement               |
-| volt-ampere-reactive | Number:Power             | Channel for output VAr measurement              |
-| power-factor         | Number:Dimensionless     | Channel for output power factor measurement     |
-| energy-today         | Number:Energy            | Channel for output energy today measurement     |
-| energy-yesterday     | Number:Energy            | Channel for output energy yesterday measurement |
-| energy-total         | Number:Energy            | Channel for output energy total measurement     |
-| energy-total-start   | DateTime                 | Channel for output energy total start date/time |
+The pulse-time channels set the duration to keep Relay\<x\> ON when Power\<x\> ON command is issued. After this amount of time, the power will be turned OFF.
+The number represents an interval in 0.1 second increments; a setting of 0 will disable the pulse timer.
+Add 100 to desired interval in seconds, e.g., PulseTime 113 = 13 seconds and PulseTime 460 = 6 minutes (i.e., 360 seconds).
+
+| Channel ID           | Item Type                | Description                                         |
+|----------------------|--------------------------|-----------------------------------------------------|
+| power                | Switch                   | Turns the smart plug relay #1 ON or OFF             |
+| power2               | Switch                   | Turns the smart plug relay #2 ON or OFF             |
+| power3               | Switch                   | Turns the smart plug relay #3 ON or OFF             |
+| power4               | Switch                   | Turns the smart plug relay #4 ON or OFF             |
+| pulse-time           | Number                   | Set PulseTime for relay #1 in 0.1 second increments |
+| pulse-time2          | Number                   | Set PulseTime for relay #2 in 0.1 second increments |
+| pulse-time3          | Number                   | Set PulseTime for relay #3 in 0.1 second increments |
+| pulse-time4          | Number                   | Set PulseTime for relay #4 in 0.1 second increments |
+| voltage              | Number:ElectricPotential | Channel for output voltage measurement              |
+| current              | Number:ElectricCurrent   | Channel for output current measurement              |
+| watts                | Number:Power             | Channel for output power measurement                |
+| volt-ampere          | Number:Power             | Channel for output VA measurement                   |
+| volt-ampere-reactive | Number:Power             | Channel for output VAr measurement                  |
+| power-factor         | Number:Dimensionless     | Channel for output power factor measurement         |
+| energy-today         | Number:Energy            | Channel for output energy today measurement         |
+| energy-yesterday     | Number:Energy            | Channel for output energy yesterday measurement     |
+| energy-total         | Number:Energy            | Channel for output energy total measurement         |
+| energy-total-start   | DateTime                 | Channel for output energy total start date/time     |
 
 ## Full Example
 
-tasmotaplug.things:
+### `tasmotaplug.things` Example
 
 ```java
 tasmotaplug:plug:plug1 "Plug 1" [ hostName="192.168.10.1", refresh=30 ]
 tasmotaplug:plug:plug2 "Plug 2" [ hostName="myplug2", refresh=30 ]
 ```
 
-tasmotaplug.items:
+### `tasmotaplug.items` Example
 
 ```java
 Switch Plug1 "Plug 1 Power"                   { channel="tasmotaplug:plug:plug1:power" }
+Number Plug1Pulse "Plug 1 PulseTime"          { channel="tasmotaplug:plug:plug1:pulse-time" }
 Number:ElectricPotential Voltage              { channel="tasmotaplug:plug:plug1:voltage" }
 Number:ElectricCurrent Current                { channel="tasmotaplug:plug:plug1:current" }
 Number:Power Watts                            { channel="tasmotaplug:plug:plug1:watts" }
@@ -80,14 +89,20 @@ Switch Plug2a "4ch Power 1" { channel="tasmotaplug:plug:plug2:power" }
 Switch Plug2b "4ch Power 2" { channel="tasmotaplug:plug:plug2:power2" }
 Switch Plug2c "4ch Power 3" { channel="tasmotaplug:plug:plug2:power3" }
 Switch Plug2d "4ch Power 4" { channel="tasmotaplug:plug:plug2:power4" }
+
+Number Plug2aPulse "4ch PulseTime 1"          { channel="tasmotaplug:plug:plug2:pulse-time" }
+Number Plug2bPulse "4ch PulseTime 2"          { channel="tasmotaplug:plug:plug2:pulse-time2" }
+Number Plug2cPulse "4ch PulseTime 3"          { channel="tasmotaplug:plug:plug2:pulse-time3" }
+Number Plug2dPulse "4ch PulseTime 4"          { channel="tasmotaplug:plug:plug2:pulse-time4" }
 ```
 
-tasmotaplug.sitemap:
+### `tasmotaplug.sitemap` Example
 
 ```perl
 sitemap tasmotaplug label="My Tasmota Plugs" {
     Frame label="Plugs" {
         Switch item=Plug1
+        Setpoint item=Plug1Pulse minValue=0 maxValue=64900 step=1
 
         // Energy monitoring
         Text item=Voltage
@@ -101,10 +116,16 @@ sitemap tasmotaplug label="My Tasmota Plugs" {
         Text item=EnergyTotal
         Text item=EnergyTotalStart
 
+        // 4 channel plug example
         Switch item=Plug2a
         Switch item=Plug2b
         Switch item=Plug2c
         Switch item=Plug2d
+
+        Setpoint item=Plug2aPulse minValue=0 maxValue=64900 step=1
+        Setpoint item=Plug2bPulse minValue=0 maxValue=64900 step=1
+        Setpoint item=Plug2cPulse minValue=0 maxValue=64900 step=1
+        Setpoint item=Plug2dPulse minValue=0 maxValue=64900 step=1
     }
 }
 ```

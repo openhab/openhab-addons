@@ -7,7 +7,7 @@
 	<thing-type id="sagercaster">
 		<label>@text/sagercasterLabel</label>
 		<description>@text/sagercasterDescription</description>
-
+		<semantic-equipment-tag>WeatherStation</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="input" typeId="input"/>
 			<channel-group id="output" typeId="output"/>
@@ -126,6 +126,10 @@
 	<channel-type id="velocity">
 		<item-type>String</item-type>
 		<label>@text/windVelocity</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>Speed</tag>
+		</tags>
 		<state readOnly="true" pattern="%s">
 			<options>
 				<option value="N">@text/velocityN</option>
@@ -144,6 +148,10 @@
 		<item-type>String</item-type>
 		<label>@text/windDirectionLabel</label>
 		<category>Wind</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Wind</tag>
+		</tags>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
@@ -181,6 +189,10 @@
 		<label>@text/timestampChannelLabel</label>
 		<description>@text/timestampChannelDescription</description>
 		<category>Time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 

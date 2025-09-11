@@ -7,6 +7,7 @@
 	<thing-type id="PS3">
 		<label>PlayStation 3</label>
 		<description>Sony PlayStation 3 console.</description>
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 
 		<channels>
 			<channel id="power" typeId="power-channel"/>
@@ -23,6 +24,7 @@
 	<thing-type id="PS4">
 		<label>PlayStation 4</label>
 		<description>Sony PlayStation 4 console.</description>
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 
 		<channels>
 			<channel id="power" typeId="power-channel"/>
@@ -47,17 +49,29 @@
 		<item-type>Switch</item-type>
 		<label>PlayStation 3 Power</label>
 		<description>Shows if PlayStation 3 is On or Off.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="power-channel">
 		<item-type>Switch</item-type>
 		<label>PlayStation 4 Power</label>
 		<description>Shows if PlayStation 4 is On or in Standby/Off.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="application-channel">
 		<item-type>String</item-type>
 		<label>Application</label>
 		<description>Name of the Currently Running Application.</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>App</tag>
+		</tags>
 		<state pattern="%s" readOnly="true"/>
 	</channel-type>
 	<channel-type id="applicationId-channel">

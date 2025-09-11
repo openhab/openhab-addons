@@ -7,7 +7,7 @@
 	<thing-type id="Humidifier">
 		<label>Holmes Humidifier</label>
 		<description>Holmes Smart Humidifier with WeMo</description>
-
+		<semantic-equipment-tag>Humidifier</semantic-equipment-tag>
 		<channels>
 			<channel id="humidifierMode" typeId="humidifierMode"/>
 			<channel id="desiredHumidity" typeId="desiredHumidity"/>

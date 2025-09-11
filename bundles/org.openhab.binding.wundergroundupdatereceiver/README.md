@@ -66,7 +66,7 @@ Additionally there is a receipt timestamp and a trigger channel.
 | UV                | uv                           | Number:Dimensionless | UV Index                       | UV index.                                                                              | Sun         |
 | humidity          | humidity                     | Number:Dimensionless | Humidity                       | Humidity in %.                                                                         | Humidity    |
 | indoorhumidity    | indoor-humidity              | Number:Dimensionless | Indoor Humidity                | Indoor humidity in %.                                                                  | Humidity    |
-| baromin           |
+| baromin           | barometric-pressure          | Number:Pressure      | Barometric Pressure            | Barometric pressure.                                                                   | Pressure    |
 
 #### Advanced channel-types
 
@@ -172,7 +172,7 @@ None of the current channels take config.
 
 ```java
 Number:Speed WuBinding_WeatherStation_WindSpeed "Current Wind Speed [%.2f %unit%]" <wind> { channel="wundergroundupdatereceiver:wundergroundUpdateReceiver:ATHINGID:windspeedmph" }
-DateTime WuBinding_LastRecieved "Last Recieved Time [%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS]" <time> { channel="wundergroundupdatereceiver:wundergroundUpdateReceiver:ATHINGID:last-received-datetime" }
+DateTime WuBinding_LastReceived "Last Received Time [%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS]" <time> { channel="wundergroundupdatereceiver:wundergroundUpdateReceiver:ATHINGID:last-received-datetime" }
 ```
 
 The binding tries to post received values as the item types described in the channel types table, so attaching a channel that takes a given type to an item of a different type has undefined behaviour.

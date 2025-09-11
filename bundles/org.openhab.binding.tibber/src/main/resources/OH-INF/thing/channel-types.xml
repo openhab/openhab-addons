@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="tibber"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<!-- https://community.openhab.org/t/using-the-new-currency-units-of-measurement-in-4-1/152338/ -->
+	<channel-type id="price">
+		<item-type>Number:EnergyPrice</item-type>
+		<label>Current Total Price</label>
+		<description>Total Price + Tax</description>
+		<category>Price</category>
+		<state readOnly="true" pattern="%.3f %unit%"></state>
+	</channel-type>
+	<channel-type id="advanced-price" advanced="true">
+		<item-type>Number:EnergyPrice</item-type>
+		<label>Current Total Price</label>
+		<description>Total Price + Tax</description>
+		<category>Price</category>
+		<state readOnly="true" pattern="%.3f %unit%"></state>
+	</channel-type>
+	<channel-type id="price-level">
+		<item-type>Number</item-type>
+		<label>Price Level</label>
+		<description>Current price level</description>
+		<tags>
+			<tag>Calculation</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="-2">Very Cheap</option>
+				<option value="-1">Cheap</option>
+				<option value="0">Normal</option>
+				<option value="1">Expensive</option>
+				<option value="2">Very Expensive</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="cost">
+		<item-type>Number:Currency</item-type>
+		<label>Total Cost</label>
+		<state readOnly="true" pattern="%.2f %unit%"></state>
+	</channel-type>
+	<channel-type id="energy-detailed">
+		<item-type>Number:Energy</item-type>
+		<label>Total Consumption</label>
+		<description>Consumption at given time interval (e.g. hourly, daily, last meter reading, accumulated since midnight)</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state readOnly="true" pattern="%.3f %unit%"></state>
+	</channel-type>
+	<channel-type id="energy">
+		<item-type unitHint="kWh">Number:Energy</item-type>
+		<label>Total Consumption</label>
+		<description>Consumption at given time interval (e.g. hourly, daily, last meter reading, accumulated since midnight)</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f %unit%"></state>
+	</channel-type>
+	<channel-type id="power">
+		<item-type>Number:Power</item-type>
+		<label>Power Consumption/Production</label>
+		<description>Power consumption/production for given time interval</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f %unit%"></state>
+	</channel-type>
+	<channel-type id="voltage">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Voltage</label>
+		<description>Voltage on the given phase</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f %unit%"></state>
+	</channel-type>
+	<channel-type id="current">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Current</label>
+		<description>Current on the given phase</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f %unit%"></state>
+	</channel-type>
+</thing:thing-descriptions>

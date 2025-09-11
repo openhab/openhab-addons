@@ -18,8 +18,8 @@ Also check out the [Shelly Manager](doc/ShellyManager.md), which
 
 - provides detailed information on your Shellys
 - helps to diagnose WiFi issues or device instabilities
-- includes some common actions and
-- simplifies firmware updates.
+- includes some statistical data and common actions
+- simplifies firmware updates
 
 [Shelly Manager](doc/ShellyManager.md) could also act as a firmware upgrade proxy - the device doesn't need to connect directly to the Internet, instead openHAB services as a download proxy, which improves device security.
 
@@ -28,8 +28,8 @@ Also check out the [Shelly Manager](doc/ShellyManager.md), which
 The binding supports both hardware generations
 
 - Generation 1: The original Shelly devices like the Shelly 1, Shelly 2.5, Shelly Flood etc.
-- Generation 2+3: Plus / Pro series of devices
-- Shelly Plus Mini: Shelly Plus devices in compact format (Gen 2+3)
+- Generation 2+3+4: Plus / Pro series of devices
+- Shelly Plus Mini: Shelly Plus devices in compact format (Gen 2+3+4)
 - Shelly BLU: Bluetooth based series of devices
 
 The binding provides the same feature set across all devices as good as possible and depending on device specific features.
@@ -78,37 +78,48 @@ See section [Discovery](#discovery) for details.
 | shellysense       | Shelly Motion and IR Controller                        | SHSEN-1             |
 | shellytrv         | Shelly TRV                                             | SHTRV-01            |
 
-### Generation 2 Plus series
+### Shelly Plus series (Generation 2+3+4)
 
-| thing-type           | Model                                                    | Vendor ID                    |
-|----------------------|----------------------------------------------------------|------------------------------|
-| shellyplus1          | Shelly Plus 1 with 1x relay                              | SNSW-001X16EU, S3SW-001X16EU |
-| shellyplus1pm        | Shelly Plus 1PM with 1x relay + power meter              | SNSW-001P16EU, S3SW-001P16EU |
-| shellyplus2pm-relay  | Shelly Plus 2PM with 2x relay + power meter, relay mode  | SNSW-002P16EU, SNSW-102P16EU |
-| shellyplus2pm-roller | Shelly Plus 2PM with 2x relay + power meter, roller mode | SNSW-002P16EU, SNSW-102P16EU |
-| shellyplusplug       | Shelly Plus Plug                                         | SNPL-00112EU                 |
-| shellyplusplug       | Shelly Plus Plug-IT                                      | SNPL-00110IT                 |
-| shellyplusplug       | Shelly Plus Plug-UK                                      | SNPL-00112UK                 |
-| shellyplusplugus     | Shelly Plus Plug-US                                      | SNPL-00116US                 |
-| shellyplusi4         | Shelly Plus i4 with 4x AC input                          | SNSN-0024X, S3SN-0024X       |
-| shellyplusi4dc       | Shelly Plus i4 with 4x DC input                          | SNSN-0D24X                   |
-| shellyplus10v        | Shelly Plus Dimmer 0/10V (Gen 2) or 0/1/10V (Gen 3)      | SNDM-00100WW, S3DM-0010WW    |
-| shellyplusuni        | Shelly Plus UNI                                          | SNSN-0043X                   |
-| shellyplusht         | Shelly Plus HT with temperature + humidity sensor        | SNSN-0013A                   |
-| shellyhtg3           | Shelly Plus HT Gen 3 with temperature + humidity sensor  | S3SN-0U12A                   |
-| shellyplussmoke      | Shelly Plus Smoke sensor                                 | SNSN-0031Z                   |
-| shellypluswdus       | Shelly Plus Wall Dimmer US                               | SNDM-0013US                  |
-| shellyplusrgbwpm     | Shelly Plus RGBW PM                                      | SNDC-0D4P10WW                |
-| shellywalldisplay    | Shelly Plus Wall Display                                 | SAWD-0A1XX10EU1              |
-| shellyblugw          | SHelly BLU Gateway                                       | SNGW-BT01                    |
+| thing-type           | Model                                                    | Vendor ID                                                                 |
+|----------------------|----------------------------------------------------------|---------------------------------------------------------------------------|
+| shellyplus1          | Shelly Plus 1 with 1x relay                              | SNSW-001X16EU, S3SW-001X16EU, S3SW-001X16EU, S4SW-001X16EU                |
+| shellyplus1l         | Shelly Plus 1L with 1x relay                             | S3SW-0A1X1EUL                                                             |
+| shellyplus1pm        | Shelly Plus 1PM with 1x relay + power meter              | SNSW-001P16EU, S3SW-001P16EU, S4SW-001P16EU                               |
+| shellyplus2l         | Shelly Plus 2L with 2x relay                             | S3SW-0A2X4EUL                                                             |
+| shellyplus2pm-relay  | Shelly Plus 2PM with 2x relay + power meter, relay mode  | SNSW-002P16EU, SNSW-102P16EU, S3SW-002P16EU, SNSW-002P15UL, S4SW-002P16EU |
+| shellyplus2pm-roller | Shelly Plus 2PM with 2x relay + power meter, roller mode | SNSW-002P16EU, SNSW-102P16EU, S3SW-002P16EU, SNSW-002P15UL, S4SW-002P16EU |
+| shellyplusshutter    | Shelly Plus Shutter for 1x roller                        | S3SH-0A2P4EU                                                              |
+| shellyplusem         | Shelly Plus EM                                           | S3EM-002CXCEU                                                             |
+| shellyplus3em63      | Shelly Plus 3EM-63                                       | S3EM-002CXCEU                                                             |
+| shellyplusplug       | Shelly Plug-S                                            | SNPL-00112EU, SNPL-10112EU, S3PL-00112EU                                  |
+| shellyplusplug       | Shelly Plug-IT                                           | SNPL-00110IT                                                              |
+| shellyplusplug       | Shelly Plug-UK                                           | SNPL-00112UK                                                              |
+| shellyplusplug       | Shelly Plug-S Gen 3, Shelly AZ Plug                      | S3PL-00112EU                                                              |
+| shellyplusplug       | Shelly AZ Plug                                           | S3PL-10112EU                                                              |
+| shellyplusplug       | Shelly Outdoor Plug-S                                    | S3PL-20112EU                                                              |
+| shellyplusplugus     | Shelly Plug-US                                           | SNPL-00116US                                                              |
+| shellyplusstrip      | Shelly Plus Power Strip 4                                | S4PL-00416EU                                                              |
+| shellyplusi4         | Shelly Plus i4 with 4x AC input                          | SNSN-0024X, S3SN-0024X                                                    |
+| shellyplusi4dc       | Shelly Plus i4 with 4x DC input                          | SNSN-0D24X                                                                |
+| shellyplus10v        | Shelly Plus Dimmer 0/10V (Gen 2) or 0/1/10V (Gen 3)      | SNDM-00100WW, S3DM-0010WW                                                 |
+| shellyplusuni        | Shelly Plus UNI                                          | SNSN-0043X                                                                |
+| shellyplusht         | Shelly Plus HT with temperature + humidity sensor        | SNSN-0013A, S3SN-0U12A                                                    |
+| shellyplussmoke      | Shelly Plus Smoke sensor                                 | SNSN-0031Z                                                                |
+| shellypluswdus       | Shelly Plus Wall Dimmer US                               | SNDM-0013US                                                               |
+| shellyplusdimmer     | Shelly Plus Dimmer Gen 3                                 | S3DM-0A101WWL                                                             |
+| shellyplusrgbwpm     | Shelly Plus RGBW PM                                      | SNDC-0D4P10WW                                                             |
+| shellywalldisplay    | Shelly Plus Wall Display                                 | SAWD-0A1XX10EU1                                                           |
+| shellyblugw          | Shelly BLU Gateway                                       | SNGW-BT01                                                                 |
+| shellyblugw3         | Shelly BLU Gateway 3                                     | S3GW-1DBT001                                                              |
 
-### Shelly Plus Mini series (Generation 2+3)
+### Shelly Plus Mini series (Generation 2+3+4)
 
- | thing-type           | Model                                                    | Vendor ID                      |
- | -------------------- | -------------------------------------------------------- | ------------------------------ |
- | shelly1mini          | Shelly Plus 1 Mini with 1x relay                         | SNSW-001X8EU, S3SW-001X8EU     |
- | shelly1pmmini        | Shelly Plus 1PM Mini with 1x relay + power meter         | SNSW-001P8EU, S3SW-001P8EU     |
- | shellypmmini         | Shelly Plus PM Mini with 1x power meter                  | SNPM-001PCEU16, S3PM-001PCEU16 |
+| thing-type           | Model                                                    | Vendor ID                                     |
+| -------------------- | -------------------------------------------------------- | --------------------------------------------- |
+| shelly1mini          | Shelly Plus 1 Mini with 1x relay                         | SNSW-001X8EU, S3SW-001X8EU, S4SW-001X8EU      |
+| shelly1pmmini        | Shelly Plus 1PM Mini with 1x relay + power meter         | SNSW-001P8EU, S3SW-001P8EU, S4SW-001P8EU      |
+| shellypmmini         | Shelly Plus PM Mini with 1x power meter                  | SNPM-001PCEU16, S3PM-001PCEU16                |
+| shellyemmini         | Shelly Plus EM Mini with 1x power meter                  | S4EM-001PXCEU16                               |
 
 ### Shelly Pro Series (Generation 2+3)
 
@@ -116,22 +127,31 @@ See section [Discovery](#discovery) for details.
 | ------------------- | -------------------------------------------------------- | ---------------------------------------------- |
 | shellypro1          | Shelly Pro 1 with 1x relay                               | SPSW-001XE16EU, SPSW-101XE16EU, SPSW-201XE16EU |
 | shellypro1pm        | Shelly Pro 1 PM with 1x relay + power meter              | SPSW-001PE16EU, SPSW-101PE16EU, SPSW-201PE16EU |
+| shellypro1cb        | Shelly Pro 1 Circuit Breaker with 1x relay + volt meter  | SPCB-01VENEU                                   |
 | shellypro2-relay    | Shelly Pro 2 with 2x relay, relay mode                   | SPSW-002XE16EU, SPSW-102XE16EU, SPSW-202XE16EU |
 | shellypro2pm-relay  | Shelly Pro 2 PM with 2x relay + power meter, relay mode  | SPSW-002PE16EU, SPSW-102PE16EU, SPSW-202PE16EU |
 | shellypro2pm-roller | Shelly Pro 2 PM with 2x relay + power meter, roller mode | SPSW-002PE16EU, SPSW-102PE16EU, SPSW-202PE16EU |
 | shellypro3          | Shelly Pro 3 with 3x relay (dry contacts)                | SPSW-003XE16EU                                 |
-| shellypro3em        | Shelly Pro 3 with 3 integrated power meters              | SPEM-003CEBEU                                  |
-| shellyproem50       | Shelly Pro EM50 with 3 integrated power meters           | SPEM-002CEBEU50                                |
-| shellypro4pm        | Shelly Pro 4 PM with 4x relay + power meter              | SPSW-004PE16EU, SPSW-104PE16EU                 |
+| shellypro4pm        | Shelly Pro 4 PM with 4x relay + power meter              | SHPSW04P, SPSW-004PE16EU, SPSW-104PE16EU       |
+| shellyproem50       | Shelly Pro EM-50 - 2 channel, single phase energy meter  | SPEM-002CEBEU50                                |
+| shellypro3em        | Shelly Pro 3EM - 3-phase energy meter                    | SPEM-003CEBEU, SPEM-003CEBEU120                |
+| shellypro3em3ct63   | Shelly Pro 3EM-3CT63 - single or three-phase energy meter| SPEM-003CEBEU63                                |
+| shellypro3em400     | Shelly Pro 3EM-400 - 3-phase energy meter                | SPEM-003CEBEU400                               |
 
 ### Shelly BLU
 
-| thing-type        | Model                                                  | Vendor ID |
-| ----------------- | ------------------------------------------------------ | --------- |
-| shellyblubutton   | Shelly BLU Button 1                                    | SBBT      |
-| shellybludw       | Shelly BLU Door/Windows                                | SBDW      |
-| shellyblumotion   | Shelly BLU Motion                                      | SBMO      |
-| shellybluht       | Shelly BLU H&T                                         | SBMO      |
+| thing-type           | Model                                                  | Vendor ID               |
+| -------------------- | ------------------------------------------------------ | ----------------------- |
+| shellyblubutton      | Shelly BLU Button 1, Shelly BLU Tough                  | SBBT-002C               |
+| shellyblubutton      | Shelly BLU Tough ZB                                    | SBBT-102C               |
+| shellybluwallswitch4 | Shelly BLU Wallswitch 4                                | SBBT-EU5027             |
+| shellyblurcbutton4   | Shelly BLU RC Button 4                                 | SBBT-004CUS             |
+| shellybluht          | Shelly BLU H&T                                         | SBHT-003C               |
+| shellybluht          | Shelly BLU H&T ZB                                      | SBHT-203C               |
+| shellybludw          | Shelly BLU Door/Windows                                | SBDW-002C               |
+| shellyblumotion      | Shelly BLU Motion                                      | SBMO-003Z               |
+| shellybludistance    | Shelly BLU Distance                                    | SBDI-003E               |
+| shellybluremote      | Shelly BLU Remote Control                              | SBRC-005B               |
 
 ### Special Thing Types
 
@@ -345,7 +365,7 @@ You could also create a rule to catch those status changes or device alarms (see
 | eventsRoller       | true: register event "trigger" when the roller updates status | no        | true for roller devices                            |
 | favoriteUP         | 0-4: Favorite id for UP (see Roller Favorites)                | no        | 0 = no favorite id                                 |
 | favoriteDOWN       | 0-4: Favorite id for DOWN (see Roller Favorites)              | no        | 0 = no favorite id                                 |
-| enableBluGateway   | true: Active BLU gateway support (install script)             | no        | false                                              ]
+| enableBluGateway   | true: Activate BLU gateway support (install script)           | no        | false                                              |
 
 ### General Notes
 
@@ -405,7 +425,7 @@ Depending on the firmware release the Shelly devices supports 2 different mechan
     Version 1.8 introduces CoIoT version 2, which fixes various issues with version 1 and provides almost all relevant status updates.
 
     If there is no specific reason you should enable CoIoT.
-    Check section Network Settings [here](doc/AdvancedUsers.md) for more information.
+    Check section [Network Settings](doc/AdvancedUsers.md) for more information.
 
     Enable the autoCoIoT option in the binding configuration or eventsCoIoT in the Thing configuration to activate CoIoT.
 
@@ -434,6 +454,7 @@ The following trigger types are sent:
 | LONG_PRESSED       | The button was pressed for a longer time (lastEvent=L)              |
 | SHORT_LONG_PRESSED | A short followed by a long button push (lastEvent=SL)               |
 | LONG_SHORT_PRESSED | A long followed by a short button push (lastEvent=LS)               |
+| HOLDING            | Button held for at least 3 sec                                      |
 
 Check the channel definitions for the various devices to see if the device supports those events.
 You could use the Shelly App to set the timing for those events.
@@ -544,6 +565,7 @@ In this case the is no real measurement based on power consumption, but the Shel
 | meter   | currentWatts | Number   | yes       | Current power consumption in Watts                                              |
 |         | lastPower1   | Number   | yes       | The average power for the previous minute                                       |
 |         | totalKWH     | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart) |
+|         | frequency    | Number   | yes       | Measure frequency (Hz) - Gen4 only                                              |
 |         |              |          |           |                                                                                 |
 |         | lastUpdate   | DateTime | yes       | Timestamp of the last measurement                                               |
 | sensors | temperature1 | Number   | yes       | Temperature value of external sensor #1 (if connected to temp/hum addon)        |
@@ -1125,7 +1147,7 @@ You should calibrate the valve using the device Web UI or Shelly App before star
 
 ## Shelly Plus Series
 
-### Shelly Plus 1 (thing-type: shellyplus1)
+### Shelly Plus 1 (thing-type: shellyplus1, shellyplus1l)
 
 | Group | Channel     | Type    | read-only | Description                                                                       |
 | ----- | ----------- | ------- | --------- | --------------------------------------------------------------------------------- |
@@ -1208,6 +1230,25 @@ If the Shelly Add-On is installed:
 |        | totalKWH     | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
 |        | lastUpdate   | DateTime | yes       | Timestamp of the last measurement                                                 |
 
+### Shelly Plus 2L (thing-type: shellyplus2l)
+
+| Group  | Channel      | Type     | read-only | Description                                                                       |
+| ------ | ------------ | -------- | --------- | --------------------------------------------------------------------------------- |
+| relay1 | output       | Switch   | r/w       | Relay #1: Controls the relay's output channel (on/off)                            |
+|        | outputName   | String   | yes       | Logical name of this relay output as configured in the Shelly App                 |
+|        | input        | Switch   | yes       | ON: Input/Button is powered, see General Notes on Channels                        |
+|        | autoOn       | Number   | r/w       | Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds |
+|        | autoOff      | Number   | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds |
+|        | timerActive  | Switch   | yes       | Relay #1: ON: An auto-on/off timer is active                                      |
+|        | button       | Trigger  | yes       | Event trigger, see section Button Events                                          |
+| relay2 | output       | Switch   | r/w       | Relay #2: Controls the relay's output channel (on/off)                            |
+|        | outputName   | String   | yes       | Logical name of this relay output as configured in the Shelly App                 |
+|        | input        | Switch   | yes       | ON: Input/Button is powered, see General Notes on Channels                        |
+|        | autoOn       | Number   | r/w       | Relay #2: Sets a  timer to turn the device ON after every OFF command; in seconds |
+|        | autoOff      | Number   | r/w       | Relay #2: Sets a  timer to turn the device OFF after every ON command; in seconds |
+|        | timerActive  | Switch   | yes       | Relay #2: ON: An auto-on/off timer is active                                      |
+|        | button       | Trigger  | yes       | Event trigger, see section Button Events                                          |
+
 ### Shelly Plus 2PM - roller mode (thing-type: shellyplus2pm-roller)
 
 | Group  | Channel    | Type          | read-only | Description                                                                          |
@@ -1224,7 +1265,23 @@ If the Shelly Add-On is installed:
 The roller positioning calibration has to be performed using the Shelly Web UI or App before the position can be set in percent.
 Refer to [Smartify Roller Shutters with openHAB and Shelly](doc/UseCaseSmartRoller.md) for more information on roller integration.
 
-### Shelly Plus Plug-S/IT/UK/US (thing-type: shellyplusplug)
+### Shelly Plus Shutter (thing-type: shellyplusshutter)
+
+| Group  | Channel    | Type          | read-only | Description                                                                          |
+| ------ | ---------- | ------------- | --------- | ------------------------------------------------------------------------------------ |
+| roller | control    | Rollershutter | r/w       | can be open (0%), stop, or close (100%); could also handle ON (open) and OFF (close) |
+|        | rollerPos  | Dimmer        | r/w       | Roller position: 100%=open...0%=closed; gets updated when the roller stopped         |
+|        | input      | Switch        | yes       | ON: Input/Button is powered, see General Notes on Channels                           |
+|        | state      | String        | yes       | Roller state: open/close/stop                                                        |
+|        | stopReason | String        | yes       | Last stop reasons: normal, safety_switch or obstacle                                 |
+|        | safety     | Switch        | yes       | Indicates status of the Safety Switch, ON=problem detected, powered off              |
+|        | event      | Trigger       | yes       | Roller event/trigger with payload ROLLER_OPEN / ROLLER_CLOSE / ROLLER_STOP           |
+| meter  |            |               |           | See group meter description                                                          |
+
+The roller positioning calibration has to be performed using the Shelly Web UI or App before the position can be set in percent.
+Refer to [Smartify Roller Shutters with openHAB and Shelly](doc/UseCaseSmartRoller.md) for more information on roller integration.
+
+### Shelly Plus Plug-S/IT/UK/US (thing-type: shellyplusplug, shellyplusplugus)
 
 | Group | Channel      | Type     | read-only | Description                                                                       |
 | ----- | ------------ | -------- | --------- | --------------------------------------------------------------------------------- |
@@ -1240,7 +1297,93 @@ Refer to [Smartify Roller Shutters with openHAB and Shelly](doc/UseCaseSmartRoll
 |       | totalKWH     | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
 |       | lastUpdate   | DateTime | yes       | Timestamp of the last measurement                                                 |
 
-### Shelly Plus Dimmer 10v (thing-type: shellyplus10v)
+### Shelly Plus Power Strip 4 (thing-type: shellyplusstrip)
+
+| Group  | Channel     | Type    | read-only | Description                                                                         |
+| ------ | ----------- | ------- | --------- | ----------------------------------------------------------------------------------- |
+| relay1 |             |         | r/w       | Relay #1 with control options and status values                                     |
+| relay2 |             |         | r/w       | Relay #2 with control options and status values                                     |
+| relay3 |             |         | r/w       | Relay #3 with control options and status values                                     |
+| relay4 |             |         | r/w       | Relay #4 with control options and status values                                     |
+| meter1 |             |         | r/w       | Power Meter #1 with measurement values                                              |
+| meter2 |             |         | r/w       | Power Meter #1 with measurement values                                              |
+| meter3 |             |         | r/w       | Power Meter #1 with measurement values                                              |
+| meter4 |             |         | r/w       | Power Meter #1 with measurement values                                              |
+
+### Shelly Plus EM (thing-type: shellyplusem)
+
+| Group  | Channel       | Type     | read-only | Description                                                                       |
+| ------ | ------------- | -------- | --------- | --------------------------------------------------------------------------------- |
+| relay  | output        | Switch   | r/w       | Controls the relay's output channel (on/off)                                      |
+|        | outputName    | String   | yes       | Logical name of this relay output as configured in the Shelly App                 |
+|        | input         | Switch   | yes       | ON: Input/Button is powered, see general notes on channels                        |
+|        | button        | Trigger  | yes       | Event trigger, see section Button Events                                          |
+|        | lastEvent     | String   | yes       | Last event type (S/SS/SSS/L)                                                      |
+|        | eventCount    | Number   | yes       | Counter gets incremented every time the device issues a button event.             |
+|        | autoOn        | Number   | r/w       | Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds |
+|        | autoOff       | Number   | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds |
+|        | timerActive   | Switch   | yes       | Relay #1: ON: An auto-on/off timer is active                                      |
+| meter1 | currentWatts  | Number   | yes       | Current power consumption in Watts                                                |
+|        | totalKWH      | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
+|        | returnedKWH   | Number   | yes       | Total returned energy, kwh                                                        |
+|        | reactiveWatts | Number   | yes       | Instantaneous reactive power, Watts                                               |
+|        | voltage       | Number   | yes       | RMS voltage, Volts                                                                |
+|        | powerFactor   | Number   | yes       | Power Factor in percent                                                           |
+|        | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                 |
+| meter2 | currentWatts  | Number   | yes       | Current power consumption in Watts                                                |
+|        | totalKWH      | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
+|        | returnedKWH   | Number   | yes       | Total returned energy, kwh                                                        |
+|        | reactiveWatts | Number   | yes       | Instantaneous reactive power, Watts                                               |
+|        | voltage       | Number   | yes       | RMS voltage, Volts                                                                |
+|        | powerFactor   | Number   | yes       | Power Factor in percent                                                           |
+|        | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                 |
+
+### Shelly Plus 3EM-63 (thing-type: shellyplus3em63)
+
+| Group  | Channel       | Type     | read-only | Description                                                                       |
+| ------ | ------------- | -------- | --------- | --------------------------------------------------------------------------------- |
+| relay  | output        | Switch   | r/w       | Controls the relay's output channel (on/off)                                      |
+|        | outputName    | String   | yes       | Logical name of this relay output as configured in the Shelly App                 |
+|        | input         | Switch   | yes       | ON: Input/Button is powered, see general notes on channels                        |
+|        | button        | Trigger  | yes       | Event trigger, see section Button Events                                          |
+|        | lastEvent     | String   | yes       | Last event type (S/SS/SSS/L)                                                      |
+|        | eventCount    | Number   | yes       | Counter gets incremented every time the device issues a button event.             |
+|        | autoOn        | Number   | r/w       | Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds |
+|        | autoOff       | Number   | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds |
+|        | timerActive   | Switch   | yes       | Relay #1: ON: An auto-on/off timer is active                                      |
+| meter1 | currentWatts  | Number   | yes       | Current power consumption in Watts                                                |
+|        | totalKWH      | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
+|        | returnedKWH   | Number   | yes       | Total returned energy, kwh                                                        |
+|        | reactiveWatts | Number   | yes       | Instantaneous reactive power, Watts                                               |
+|        | voltage       | Number   | yes       | RMS voltage, Volts                                                                |
+|        | current       | Number   | yes       | Current in A                                                                      |
+|        | powerFactor   | Number   | yes       | Power Factor in percent                                                           |
+|        | resetTotals   | Switch   | yes       | ON: Resets total values for the power meter                                       |
+|        | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                 |
+| meter2 | currentWatts  | Number   | yes       | Current power consumption in Watts                                                |
+|        | totalKWH      | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
+|        | returnedKWH   | Number   | yes       | Total returned energy, kwh                                                        |
+|        | reactiveWatts | Number   | yes       | Instantaneous reactive power, Watts                                               |
+|        | voltage       | Number   | yes       | RMS voltage, Volts                                                                |
+|        | current       | Number   | yes       | Current in A                                                                      |
+|        | powerFactor   | Number   | yes       | Power Factor in percent                                                           |
+|        | resetTotals   | Switch   | yes       | ON: Resets total values for the power meter                                       |
+|        | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                 |
+| meter3 | currentWatts  | Number   | yes       | Current power consumption in Watts                                                |
+|        | totalKWH      | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
+|        | returnedKWH   | Number   | yes       | Total returned energy, kwh                                                        |
+|        | reactiveWatts | Number   | yes       | Instantaneous reactive power, Watts                                               |
+|        | voltage       | Number   | yes       | RMS voltage, Volts                                                                |
+|        | current       | Number   | yes       | Current in A                                                                      |
+|        | powerFactor   | Number   | yes       | Power Factor in percent                                                           |
+|        | resetTotals   | Switch   | yes       | ON: Resets total values for the power meter                                       |
+|        | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                 |
+| nmeter | ncurrent      | Number   | yes       | Current current based on N clamp (requires calibration)                           |
+|        | ixsum         | Number   | yes       | Measured current over all phases                                                  |
+|        | nmismatch     | Switch   | yes       | ON: abs(ncurrent-ixsum) is greater than nmTreshhold                               |
+|        | nmTreshhold   | Number   | yes       | Treshhod (delta) before  nMismatch goes ON                                        |
+
+### Shelly Plus Dimmer / 10V (thing-type: shellyplusdimmer, shellyplus10v)
 
 | Group | Channel      | Type     | read-only | Description                                                                       |
 | ----- | ------------ | -------- | --------- | --------------------------------------------------------------------------------- |
@@ -1282,7 +1425,7 @@ Using the Thing configuration option `brightnessAutoOn` you could decide if the 
 
 Channels lastEvent and eventCount are only available if input type is set to momentary button
 
-### Shelly Plus HT (thing-type: shellyplusht), Plus HT Gen 3 (thing-type: shellyhtg3)
+### Shelly Plus HT (thing-type: shellyplusht)
 
 | Group   | Channel      | Type     | read-only | Description                                             |
 | ------- | ------------ | -------- | --------- | ------------------------------------------------------- |
@@ -1342,6 +1485,7 @@ Channels lastEvent and eventCount are only available if input type is set to mom
 |       | lastPower1   | Number   | yes       | Energy consumption for a round minute, 1 minute  ago                              |
 |       | totalKWH     | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
 |       | lastUpdate   | DateTime | yes       | Timestamp of the last measurement                                                 |
+|       | frequency    | Number   | yes       | Measure frequency (Hz) - Gen4 only                                                |
 
 ### Shelly Plus PM Mini (thing-type: shellypmmini)
 
@@ -1351,6 +1495,37 @@ Channels lastEvent and eventCount are only available if input type is set to mom
 |       | lastPower1   | Number   | yes       | Energy consumption for a round minute, 1 minute  ago                              |
 |       | totalKWH     | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
 |       | lastUpdate   | DateTime | yes       | Timestamp of the last measurement                                                 |
+|       | frequency    | Number   | yes       | Measure frequency (Hz) - Gen4 only                                                |
+
+### Shelly Plus EM (thing-type: shellyemmini)
+
+| Group  | Channel       | Type     | read-only | Description                                                                       |
+| ------ | ------------- | -------- | --------- | --------------------------------------------------------------------------------- |
+| relay  | output        | Switch   | r/w       | Controls the relay's output channel (on/off)                                      |
+|        | outputName    | String   | yes       | Logical name of this relay output as configured in the Shelly App                 |
+|        | input         | Switch   | yes       | ON: Input/Button is powered, see general notes on channels                        |
+|        | button        | Trigger  | yes       | Event trigger, see section Button Events                                          |
+|        | lastEvent     | String   | yes       | Last event type (S/SS/SSS/L)                                                      |
+|        | eventCount    | Number   | yes       | Counter gets incremented every time the device issues a button event.             |
+|        | autoOn        | Number   | r/w       | Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds |
+|        | autoOff       | Number   | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds |
+|        | timerActive   | Switch   | yes       | Relay #1: ON: An auto-on/off timer is active                                      |
+| meter1 | currentWatts  | Number   | yes       | Current power consumption in Watts                                                |
+|        | totalKWH      | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
+|        | returnedKWH   | Number   | yes       | Total returned energy, kwh                                                        |
+|        | reactiveWatts | Number   | yes       | Instantaneous reactive power, Watts                                               |
+|        | voltage       | Number   | yes       | RMS voltage, Volts                                                                |
+|        | powerFactor   | Number   | yes       | Power Factor in percent                                                           |
+|        | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                 |
+|        | frequency     | Number   | yes       | Measure frequency (Hz)                                                            |
+| meter2 | currentWatts  | Number   | yes       | Current power consumption in Watts                                                |
+|        | totalKWH      | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
+|        | returnedKWH   | Number   | yes       | Total returned energy, kwh                                                        |
+|        | reactiveWatts | Number   | yes       | Instantaneous reactive power, Watts                                               |
+|        | voltage       | Number   | yes       | RMS voltage, Volts                                                                |
+|        | powerFactor   | Number   | yes       | Power Factor in percent                                                           |
+|        | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                 |
+|        | frequency     | Number   | yes       | Measure frequency (Hz)                                                            |
 
 ## Shelly Pro Series
 
@@ -1371,6 +1546,10 @@ Channels lastEvent and eventCount are only available if input type is set to mom
 |       | autoOn      | Number  | r/w       | Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds |
 |       | autoOff     | Number  | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds |
 |       | timerActive | Switch  | yes       | Relay #1: ON: An auto-on/off timer is active                                      |
+
+## Shelly BLU Gateway, BLU Gateway 3 (thing-type: shellyblugw)
+
+There are no additional channels besides the device group.
 
 ### Shelly Pro 1 PM (thing-type: shellypro1pm)
 
@@ -1393,6 +1572,14 @@ Channels lastEvent and eventCount are only available if input type is set to mom
 |       | lastPower1   | Number   | yes       | Energy consumption for a round minute, 1 minute  ago                              |
 |       | totalKWH     | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
 |       | lastUpdate   | DateTime | yes       | Timestamp of the last measurement                                                 |
+
+### Shelly Pro 1CB (thing-type: shellypro1cb)
+
+| Group | Channel      | Type     | read-only | Description                                                                      |
+| ----- | ------------ | -------- | --------- | -------------------------------------------------------------------------------- |
+| relay | output       | Switch   | r/w       | Controls the relay's output channel (on/off)                                     |
+|       | outputName   | String   | yes       | Logical name of this relay output as configured in the Shelly App                |
+| meter | voltage      | Number   | yes       | RMS voltage, Volts                                                               |
 
 ### Shelly Pro 2 (thing-type: shellypro2-relay)
 
@@ -1510,17 +1697,48 @@ Channels lastEvent and eventCount are only available if input type is set to mom
 |        | resetTotals   | Switch   | yes       | ON: Resets total values for the power meter                                       |
 |        | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                 |
 
-### Shelly Pro 4PM (thing-type: shelly4pro)
+### Shelly Pro EM-50 (thing-type: shellyproem50)
 
-| Group  | Channel     | Type    | read-only | Description                                                                       |
-| ------ | ----------- | ------- | --------- | --------------------------------------------------------------------------------- |
-| relay1 | output      | Switch  | r/w       | Relay #1: Controls the relay's output channel (on/off)                            |
-|        | outputName  | String  | yes       | Logical name of this relay output as configured in the Shelly App                 |
-|        | input       | Switch  | yes       | ON: Input/Button is powered, see General Notes on Channels                        |
-|        | autoOn      | Number  | r/w       | Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds |
-|        | autoOff     | Number  | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds |
-|        | timerActive | Switch  | yes       | Relay #1: ON: An auto-on/off timer is active                                      |
-|        | button      | Trigger | yes       | Event trigger, see section Button Events                                          |
+| Group  | Channel       | Type     | read-only | Description                                                                       |
+| ------ | ------------- | -------- | --------- | --------------------------------------------------------------------------------- |
+| meter1 | currentWatts  | Number   | yes       | Current power consumption in Watts                                                |
+|        | totalKWH      | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
+|        | returnedKWH   | Number   | yes       | Total returned energy, kwh                                                        |
+|        | reactiveWatts | Number   | yes       | Instantaneous reactive power, Watts                                               |
+|        | voltage       | Number   | yes       | RMS voltage, Volts                                                                |
+|        | current       | Number   | yes       | Current in A                                                                      |
+|        | powerFactor   | Number   | yes       | Power Factor in percent                                                           |
+|        | resetTotals   | Switch   | yes       | ON: Resets total values for the power meter                                       |
+|        | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                 |
+| meter2 | currentWatts  | Number   | yes       | Current power consumption in Watts                                                |
+|        | totalKWH      | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
+|        | returnedKWH   | Number   | yes       | Total returned energy, kwh                                                        |
+|        | reactiveWatts | Number   | yes       | Instantaneous reactive power, Watts                                               |
+|        | voltage       | Number   | yes       | RMS voltage, Volts                                                                |
+|        | current       | Number   | yes       | Current in A                                                                      |
+|        | powerFactor   | Number   | yes       | Power Factor in percent                                                           |
+|        | resetTotals   | Switch   | yes       | ON: Resets total values for the power meter                                       |
+|        | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                 |
+| relay  | output        | Switch   | r/w       | Relay #1: Controls the relay's output channel (on/off)                            |
+|        | outputName    | String   | yes       | Logical name of this relay output as configured in the Shelly App                 |
+|        | input         | Switch   | yes       | ON: Input/Button is powered, see General Notes on Channels                        |
+|        | autoOn        | Number   | r/w       | Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds |
+|        | autoOff       | Number   | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds |
+|        | timerActive   | Switch   | yes       | Relay #1: ON: An auto-on/off timer is active                                      |
+|        | button        | Trigger  | yes       | Event trigger, see section Button Events                                          |
+
+## Shelly Pro 4PM (thing-type: shelly4pro)
+
+| Group  | Channel     | Type    | read-only | Description                                                                         |
+| ------ | ----------- | ------- | --------- | ----------------------------------------------------------------------------------- |
+| relay1 |             |         | r/w       | Relay #1 with control options and status values                                     |
+| relay2 |             |         | r/w       | Relay #2 with control options and status values                                     |
+| relay3 |             |         | r/w       | Relay #3 with control options and status values                                     |
+| relay4 |             |         | r/w       | Relay #4 with control options and status values                                     |
+| meter1 |             |         | r/w       | Power Meter #1 with measurement values                                              |
+| meter2 |             |         | r/w       | Power Meter #2 with measurement values                                              |
+| meter3 |             |         | r/w       | Power Meter #3 with measurement values                                              |
+| meter4 |             |         | r/w       | Power Meter #4 with measurement values                                              |
 
 ## Shelly BLU Devices
 
@@ -1538,6 +1756,59 @@ See notes on discovery of Shelly BLU devices above.
 |         | lowBattery    | Switch   | yes       | Low battery alert (< 20%)                                                           |
 | device  | gatewayDevice | String   | yes       | Shelly forwarded last status update (BLU gateway), could vary from packet to packet |
 
+# Shelly BLU Wall Switch 4 (thing-type: shellybluwallswitch4)
+
+See notes on discovery of Shelly BLU devices above.
+
+| Group   | Channel       | Type     | read-only | Description                                                                         |
+| ------- | ------------- | -------- | --------- | ----------------------------------------------------------------------------------- |
+| status1 | lastEvent     | String   | yes       | Last event type (S/SS/SSS/L/H) for button 1                                         |
+|         | eventCount    | Number   | yes       | Counter gets incremented every time the device issues a button event.               |
+|         | button        | Trigger  | yes       | Event trigger with payload, see SHORT_PRESSED or LONG_PRESSED                       |
+|         | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                   |
+| status2 | lastEvent     | String   | yes       | Last event type (S/SS/SSS/L/H) for button 2                                         |
+|         | eventCount    | Number   | yes       | Counter gets incremented every time the device issues a button event.               |
+|         | button        | Trigger  | yes       | Event trigger with payload, see SHORT_PRESSED or LONG_PRESSED                       |
+|         | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                   |
+| status3 | lastEvent     | String   | yes       | Last event type (S/SS/SSS/L/H) for button 3                                         |
+|         | eventCount    | Number   | yes       | Counter gets incremented every time the device issues a button event.               |
+|         | button        | Trigger  | yes       | Event trigger with payload, see SHORT_PRESSED or LONG_PRESSED                       |
+|         | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                   |
+| status4 | lastEvent     | String   | yes       | Last event type (S/SS/SSS/L/H) for button 4                                         |
+|         | eventCount    | Number   | yes       | Counter gets incremented every time the device issues a button event.               |
+|         | button        | Trigger  | yes       | Event trigger with payload, see SHORT_PRESSED or LONG_PRESSED                       |
+|         | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                   |
+| battery | batteryLevel  | Number   | yes       | Battery Level in %                                                                  |
+|         | lowBattery    | Switch   | yes       | Low battery alert (< 20%)                                                           |
+| device  | gatewayDevice | String   | yes       | Shelly forwarded last status update (BLU gateway), could vary from packet to packet |
+
+# Shelly BLU RC Button 4 (thing-type: shellyblurcbutton4)
+
+See notes on discovery of Shelly BLU devices above.
+
+| Group   | Channel       | Type     | read-only | Description                                                                         |
+| ------- | ------------- | -------- | --------- | ----------------------------------------------------------------------------------- |
+| status1 | lastEvent     | String   | yes       | Last event type (S/SS/SSS/L/H) for button 1                                         |
+|         | eventCount    | Number   | yes       | Counter gets incremented every time the device issues a button event.               |
+|         | button        | Trigger  | yes       | Event trigger with payload, see SHORT_PRESSED or LONG_PRESSED                       |
+|         | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                   |
+| status2 | lastEvent     | String   | yes       | Last event type (S/SS/SSS/L/H) for button 2                                         |
+|         | eventCount    | Number   | yes       | Counter gets incremented every time the device issues a button event.               |
+|         | button        | Trigger  | yes       | Event trigger with payload, see SHORT_PRESSED or LONG_PRESSED                       |
+|         | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                   |
+| status3 | lastEvent     | String   | yes       | Last event type (S/SS/SSS/L/H) for button 3                                         |
+|         | eventCount    | Number   | yes       | Counter gets incremented every time the device issues a button event.               |
+|         | button        | Trigger  | yes       | Event trigger with payload, see SHORT_PRESSED or LONG_PRESSED                       |
+|         | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                   |
+| status4 | lastEvent     | String   | yes       | Last event type (S/SS/SSS/L/H) for button 4                                         |
+|         | eventCount    | Number   | yes       | Counter gets incremented every time the device issues a button event.               |
+|         | button        | Trigger  | yes       | Event trigger with payload, see SHORT_PRESSED or LONG_PRESSED                       |
+|         | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                   |
+| battery | batteryLevel  | Number   | yes       | Battery Level in %                                                                  |
+|         | lowBattery    | Switch   | yes       | Low battery alert (< 20%)                                                           |
+| device  | gatewayDevice | String   | yes       | Shelly forwarded last status update (BLU gateway), could vary from packet to packet |
+
+
 ### Shelly BLU Door/Window Sensor (thing-type: shellybludw)
 
 See notes on discovery of Shelly BLU devices above.
@@ -1547,6 +1818,8 @@ See notes on discovery of Shelly BLU devices above.
 | sensors | state         | Contact  | yes       | OPEN: Contact is open, CLOSED: Contact is closed                                    |
 |         | lux           | Number   | yes       | Brightness in Lux                                                                   |
 |         | tilt          | Number   | yes       | Tilt in ° (angle), -1 indicates that the sensor is not calibrated                   |
+|         | eventCount    | Number   | yes       | Counter gets incremented every time the device issues a button event.               |
+|         | button        | Trigger  | yes       | Event trigger with payload, see SHORT_PRESSED or LONG_PRESSED                       |
 |         | lastUpdate    | DateTime | yes       | Timestamp of the last update (any sensor value changed)                             |
 | battery | batteryLevel  | Number   | yes       | Battery Level in %                                                                  |
 |         | lowBattery    | Switch   | yes       | Low battery alert (< 20%)                                                           |
@@ -1571,13 +1844,48 @@ See notes on discovery of Shelly BLU devices above.
 | ------- | ------------- | -------- | --------- | ------------------------------------------------------- |
 | sensors | temperature   | Number   | yes       | Temperature, unit is reported by tempUnit               |
 |         | humidity      | Number   | yes       | Relative humidity in %                                  |
+|         | eventCount    | Number   | yes       | Counter gets incremented every time the device issues a button event.               |
+|         | button        | Trigger  | yes       | Event trigger with payload, see SHORT_PRESSED or LONG_PRESSED                       |
 |         | lastUpdate    | DateTime | yes       | Timestamp of the last update (any sensor value changed) |
 | battery | batteryLevel  | Number   | yes       | Battery Level in %                                      |
 |         | lowBattery    | Switch   | yes       | Low battery alert (< 20%)                               |
 
-## Shelly BLU Gateway (thing-type: shellyblugw)
+### Shelly BLU Distance(thing-type: shellybludistance)
 
-There are no additional channels beside the device group.
+See notes on discovery of Shelly BLU devices above.
+
+| Group   | Channel       | Type     | read-only | Description                                                                         |
+| ------- | ------------- | -------- | --------- | ----------------------------------------------------------------------------------- |
+| sensors | distance      | Number   | yes       | Distance in mm                                                                      |
+|         | vibration     | Switch   | yes       | ON: Vibration detected                                                              |
+| battery | batteryLevel  | Number   | yes       | Battery Level in %                                                                  |
+|         | lowBattery    | Switch   | yes       | Low battery alert (< 20%)                                                           |
+| device  | gatewayDevice | String   | yes       | Shelly forwarded last status update (BLU gateway), could vary from packet to packet |
+
+### Shelly BLU Remote (thing-type: shellybluremote)
+
+See notes on discovery of Shelly BLU devices above.
+
+| Group   | Channel       | Type     | read-only | Description                                                                         |
+| ------- | ------------- | -------- | --------- | ----------------------------------------------------------------------------------- |
+| sensors | channel       | Number   | yes       | Selected channel                                                                    |
+|         | steps         | Number   | yes       | Number of steps the wheel was moved                                                 |
+|         | rotationX     | Number   | yes       | Rotation X axis                                                                     |
+|         | rotationY     | Number   | yes       | Rotation Y axis                                                                     |
+|         | rotationZ     | Number   | yes       | Rotation Z axis                                                                     |
+|         | direction     | Number   | yes       | up / down                                                                           |
+|         | lastUpdate    | DateTime | yes       | Timestamp of the last update (any sensor value changed)                             |
+| status1 | button        | Trigger  | yes       | Event trigger with payload, see SHORT_PRESSED or LONG_PRESSED                       |
+|         | lastEvent     | String   | yes       | Last event type (S/SS/SSS/L/H) for button 1                                         |
+|         | eventCount    | Number   | yes       | Counter gets incremented every time the device issues a button event.               |
+| status2 | button        | Trigger  | yes       | Event trigger with payload, see SHORT_PRESSED or LONG_PRESSED                       |
+|         | lastEvent     | String   | yes       | Last event type (S/SS/SSS/L/H) for button 1                                         |
+|         | eventCount    | Number   | yes       | Counter gets incremented every time the device issues a button event.               |
+| battery | batteryLevel  | Number   | yes       | Battery Level in %                                                                  |
+|         | lowBattery    | Switch   | yes       | Low battery alert (< 20%)                                                           |
+| device  | gatewayDevice | String   | yes       | Shelly forwarded last status update (BLU gateway), could vary from packet to packet |
+
+
 
 ## Shelly Wall Displays
 

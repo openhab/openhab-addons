@@ -7,6 +7,7 @@
 	<bridge-type id="controller">
 		<label>CoolMasterNet Controller</label>
 		<description>A CoolMasterNet Controller (connected to one or more HVAC systems)</description>
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 
 		<config-description>
 			<parameter name="host" type="text" required="true">
@@ -38,7 +39,7 @@
 
 		<label>HVAC System</label>
 		<description>HVAC System connected to a controller (unique UID)</description>
-
+		<semantic-equipment-tag>HVAC</semantic-equipment-tag>
 		<channels>
 			<channel id="on" typeId="power"/>
 			<channel id="mode" typeId="hvac_mode"/>
@@ -63,12 +64,20 @@
 		<label>Power</label>
 		<description>Is the HVAC unit powered on?</description>
 		<category>Switch</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="hvac_mode">
 		<item-type>String</item-type>
 		<label>Mode</label>
 		<description>HVAC unit operation mode</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state>
 			<options>
 				<!-- Note: The value fields here map directly to coolmasternet commands -->
@@ -86,6 +95,10 @@
 		<label>Set Temperature</label>
 		<description>Temperature thermostat setpoint</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%d %unit%" min="10" max="40" step="1"/>
 	</channel-type>
 
@@ -94,12 +107,20 @@
 		<label>Current Temperature</label>
 		<description>Current system ambient temperature</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%d %unit%" min="10" max="40" step="1" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="fan_speed">
 		<item-type>String</item-type>
 		<label>Fan Speed</label>
+		<tags>
+			<tag>Control</tag>
+			<tag>Speed</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="l">Low</option>
@@ -114,6 +135,10 @@
 	<channel-type id="louvre_angle">
 		<item-type>String</item-type>
 		<label>Louvre Position</label>
+		<tags>
+			<tag>Control</tag>
+			<tag>Position</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="0">No Control</option>

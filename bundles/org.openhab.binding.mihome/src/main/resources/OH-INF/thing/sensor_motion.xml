@@ -11,6 +11,7 @@
 		<label>Xiaomi Mi Motion Sensor</label>
 		<description>Sensor that detects movement. Also called Occupancy Sensor or Human Body Sensor. After it detects motion,
 			it goes to sleep for 1 minute.</description>
+		<semantic-equipment-tag>MotionDetector</semantic-equipment-tag>
 		<channels>
 			<channel id="motion" typeId="motion"/>
 			<channel id="motionOffTimer" typeId="motionOffTimer"/>

@@ -11,14 +11,14 @@ The following databases are currently supported and tested:
 
 | Database                                     | Tested Driver / Version                                                                                                                     |
 | -------------------------------------------- |---------------------------------------------------------------------------------------------------------------------------------------------|
-| [Apache Derby](https://db.apache.org/derby/) | [derby-10.14.2.0.jar](https://mvnrepository.com/artifact/org.apache.derby/derby)                                                            |
-| [H2](https://www.h2database.com/)            | [h2-2.2.224.jar](https://mvnrepository.com/artifact/com.h2database/h2)                                                                      |
-| [HSQLDB](http://hsqldb.org/)                 | [hsqldb-2.3.3.jar](https://mvnrepository.com/artifact/org.hsqldb/hsqldb)                                                                    |
-| [MariaDB](https://mariadb.org/)              | [mariadb-java-client-3.0.8.jar](https://mvnrepository.com/artifact/org.mariadb.jdbc/mariadb-java-client)                                    |
-| [MySQL](https://www.mysql.com/)              | [mysql-connector-j-8.2.0.jar](https://mvnrepository.com/artifact/com.mysql/mysql-connector-j)                                               |
-| [PostgreSQL](https://www.postgresql.org/)    | [postgresql-42.4.4.jar](https://mvnrepository.com/artifact/org.postgresql/postgresql)                                                       |
-| [SQLite](https://www.sqlite.org/)            | [sqlite-jdbc-3.42.0.0.jar](https://mvnrepository.com/artifact/org.xerial/sqlite-jdbc)                                                       |
-| [TimescaleDB](https://www.timescale.com/)    | [postgresql-42.4.4.jar](https://mvnrepository.com/artifact/org.postgresql/postgresql)                                                       |
+| [Apache Derby](https://db.apache.org/derby/) | [derby-10.17.1.0.jar](https://mvnrepository.com/artifact/org.apache.derby/derby)                                                            |
+| [H2](https://www.h2database.com/)            | [h2-2.3.232.jar](https://mvnrepository.com/artifact/com.h2database/h2)                                                                      |
+| [HSQLDB](http://hsqldb.org/)                 | [hsqldb-2.7.4.jar](https://mvnrepository.com/artifact/org.hsqldb/hsqldb)                                                                    |
+| [MariaDB](https://mariadb.org/)              | [mariadb-java-client-3.5.5.jar](https://mvnrepository.com/artifact/org.mariadb.jdbc/mariadb-java-client)                                    |
+| [MySQL](https://www.mysql.com/)              | [mysql-connector-j-9.4.0.jar](https://mvnrepository.com/artifact/com.mysql/mysql-connector-j)                                               |
+| [PostgreSQL](https://www.postgresql.org/)    | [postgresql-42.7.7.jar](https://mvnrepository.com/artifact/org.postgresql/postgresql)                                                       |
+| [SQLite](https://www.sqlite.org/)            | [sqlite-jdbc-3.50.3.0.jar](https://mvnrepository.com/artifact/org.xerial/sqlite-jdbc)                                                       |
+| [TimescaleDB](https://www.timescale.com/)    | [postgresql-42.7.7.jar](https://mvnrepository.com/artifact/org.postgresql/postgresql)                                                       |
 | [OracleDB](https://www.oracle.com/database/) | [com.oracle.database.jdbc.ojdbc11-23.5.0.2407.jar](https://mvnrepository.com/artifact/org.openhab.osgiify/com.oracle.database.jdbc.ojdbc11) |
 
 ## Table of Contents
@@ -26,15 +26,15 @@ The following databases are currently supported and tested:
 <!-- MarkdownTOC -->
 
 - [Configuration](#configuration)
-	- [Minimal Configuration](#minimal-configuration)
-	- [Migration from MySQL to JDBC Persistence Services](#migration-from-mysql-to-jdbc-persistence-services)
+  - [Minimal Configuration](#minimal-configuration)
+  - [Migration from MySQL to JDBC Persistence Services](#migration-from-mysql-to-jdbc-persistence-services)
 - [Technical Notes](#technical-notes)
-	- [Database Table Schema](#database-table-schema)
-	- [Number Precision](#number-precision)
-	- [Rounding results](#rounding-results)
-	- [Maintenance](#maintenance)
-	- [For Developers](#for-developers)
-	- [Performance Tests](#performance-tests)
+  - [Database Table Schema](#database-table-schema)
+  - [Number Precision](#number-precision)
+  - [Rounding results](#rounding-results)
+  - [Maintenance](#maintenance)
+  - [For Developers](#for-developers)
+  - [Performance Tests](#performance-tests)
 
 <!-- /MarkdownTOC -->
 
@@ -98,7 +98,7 @@ url=jdbc:postgresql://192.168.0.1:5432/testPostgresql
 Oracle connectivity has been tested on an Oracle Always Free Tier Autonomous DB 19c.
 
 You need to configure your database connection to not use an Oracle Wallet, but use the Java Key Store (JKS).
-To connect to an Oracle Autonomous Database, use the instructions at https://www.oracle.com/database/technologies/java-connectivity-to-atp.html#pre-requisites-tab, under Java Key Stores (JKS).
+To connect to an Oracle Autonomous Database, use the instructions at <https://www.oracle.com/database/technologies/java-connectivity-to-atp.html#pre-requisites-tab>, under Java Key Stores (JKS).
 
 Your services/jdbc.cfg should contain the following minimal configuration for connecting to an Oracle Autonomous Database:
 
@@ -117,6 +117,8 @@ The user default schema will be used.
 
 Default data types for an Oracle DB are different from the general defaults:
 
+| Type                        | Oracle DB Type         |
+|-----------------------------|------------------------|
 | sqltype.COLOR               | `VARCHAR2(70)`         |
 | sqltype.CONTACT             | `VARCHAR2(6)`          |
 | sqltype.DATETIME            | `TIMESTAMP`            |
@@ -169,7 +171,7 @@ The service will create a mapping table to link each item to a table, and a sepa
 The item data tables include time and data values.
 The SQL data type used depends on the openHAB item type, and allows the item state to be recovered back into openHAB in the same way it was stored.
 
-With this *per-item* layout, the scalability and easy maintenance of the database is ensured, even if large amounts of data must be managed.
+With this _per-item_ layout, the scalability and easy maintenance of the database is ensured, even if large amounts of data must be managed.
 To rename existing tables, use the parameters `tableNamePrefix`, `tableUseRealItemNames`, `tableIdDigitCount` and `tableCaseSensitiveItemNames` in the configuration.
 
 Please be aware that changing the name of `itemsManageTable` is not supported by the migration.

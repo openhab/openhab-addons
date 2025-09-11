@@ -7,6 +7,7 @@
 	<thing-type id="projector-serial">
 		<label>Epson Projector - Serial</label>
 		<description>An Epson projector which supports the ESC/VP21 protocol via a serial port connection</description>
+		<semantic-equipment-tag>Projector</semantic-equipment-tag>
 
 		<channels>
 			<channel id="power" typeId="system.power"/>
@@ -38,6 +39,10 @@
 			<channel id="errcode" typeId="errcode"/>
 			<channel id="errmessage" typeId="errmessage"/>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<config-description>
 			<parameter name="serialPort" type="text" required="true">
@@ -74,6 +79,7 @@
 		<label>Epson Projector - TCP/IP</label>
 		<description>An Epson projector which supports the ESC/VP21 protocol via the built-in ethernet port or a serial over
 			IP connection</description>
+		<semantic-equipment-tag>Projector</semantic-equipment-tag>
 
 		<channels>
 			<channel id="power" typeId="system.power"/>
@@ -105,6 +111,10 @@
 			<channel id="errcode" typeId="errcode"/>
 			<channel id="errmessage" typeId="errmessage"/>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<representation-property>macAddress</representation-property>
 
@@ -147,12 +157,20 @@
 		<item-type>String</item-type>
 		<label>Power State</label>
 		<description>Retrieves the Textual Power State of the Projector</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="lamptime">
 		<item-type>Number</item-type>
 		<label>Lamp Time</label>
 		<description>Retrieves the number of hours the lamp has been used</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Duration</tag>
+		</tags>
 		<state readOnly="true" pattern="%d h"/>
 	</channel-type>
 	<channel-type id="keycode" advanced="true">
@@ -182,6 +200,10 @@
 		<item-type>Switch</item-type>
 		<label>Freeze Image</label>
 		<description>Turn the Freeze Screen Mode On or Off</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="aspectratio">
 		<item-type>String</item-type>
@@ -209,6 +231,10 @@
 		<item-type>String</item-type>
 		<label>Luminance</label>
 		<description>Retrieve or Set the Lamp Mode</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="NORMAL">NORMAL</option>
@@ -275,6 +301,10 @@
 		<item-type>String</item-type>
 		<label>Color Mode</label>
 		<description>Retrieve or Set the Color Mode</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Color</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="DYNAMIC">DYNAMIC</option>
@@ -336,6 +366,10 @@
 		<item-type>Switch</item-type>
 		<label>AV Mute</label>
 		<description>Turn the AV Mute On or Off</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="horizontalreverse" advanced="true">
 		<item-type>Switch</item-type>

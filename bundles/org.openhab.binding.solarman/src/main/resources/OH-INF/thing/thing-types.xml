@@ -9,7 +9,7 @@
 		<label>Solarman Logger</label>
 		<description>This thing allows communication with Solarman (IGEN-Tech) v5 based solar inverter data loggers over the
 			local network. Compatible with inverters from manufacturers such as Deye, Sofar, Solis, ZCS Azzurro, and KStar.</description>
-
+		<semantic-equipment-tag>Inverter</semantic-equipment-tag>
 		<config-description>
 			<parameter name="hostname" type="text" required="true">
 				<context>network-address</context>

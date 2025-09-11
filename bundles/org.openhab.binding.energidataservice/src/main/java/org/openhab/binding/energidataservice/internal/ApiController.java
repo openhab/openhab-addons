@@ -46,6 +46,8 @@ import org.openhab.binding.energidataservice.internal.api.dto.CO2EmissionRecord;
 import org.openhab.binding.energidataservice.internal.api.dto.CO2EmissionRecords;
 import org.openhab.binding.energidataservice.internal.api.dto.DatahubPricelistRecord;
 import org.openhab.binding.energidataservice.internal.api.dto.DatahubPricelistRecords;
+import org.openhab.binding.energidataservice.internal.api.dto.DayAheadPriceRecord;
+import org.openhab.binding.energidataservice.internal.api.dto.DayAheadPriceRecords;
 import org.openhab.binding.energidataservice.internal.api.dto.ElspotpriceRecord;
 import org.openhab.binding.energidataservice.internal.api.dto.ElspotpriceRecords;
 import org.openhab.binding.energidataservice.internal.api.serialization.InstantDeserializer;
@@ -132,6 +134,50 @@ public class ApiController {
             }
 
             return Arrays.stream(records.records()).filter(Objects::nonNull).toArray(ElspotpriceRecord[]::new);
+        } catch (JsonSyntaxException e) {
+            throw new DataServiceException("Error parsing response", e);
+        } catch (TimeoutException | ExecutionException e) {
+            throw new DataServiceException(e);
+        }
+    }
+
+    /**
+     * Retrieve day-ahead prices for requested area and in requested {@link Currency}.
+     *
+     * @param priceArea Usually DK1 or DK2
+     * @param currency DKK or EUR
+     * @param start Specifies the start point of the period for the data request
+     * @param properties Map of properties which will be updated with metadata from headers
+     * @return Records with pairs of time start and price in requested currency.
+     * @throws InterruptedException
+     * @throws DataServiceException
+     */
+    public DayAheadPriceRecord[] getDayAheadPrices(String priceArea, Currency currency, DateQueryParameter start,
+            DateQueryParameter end, Map<String, String> properties) throws InterruptedException, DataServiceException {
+        if (!SUPPORTED_CURRENCIES.contains(currency)) {
+            throw new IllegalArgumentException("Invalid currency " + currency.getCurrencyCode());
+        }
+
+        Request request = httpClient.newRequest(ENDPOINT + DATASET_PATH + Dataset.DayAheadPrices)
+                .timeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS) //
+                .param("start", start.toString()) //
+                .param("filter", "{\"" + FILTER_KEY_PRICE_AREA + "\":\"" + priceArea + "\"}") //
+                .param("columns", "TimeUTC,DayAheadPrice" + currency) //
+                .agent(userAgentSupplier.get()) //
+                .method(HttpMethod.GET);
+
+        if (!end.isEmpty()) {
+            request = request.param("end", end.toString());
+        }
+
+        try {
+            String responseContent = sendRequest(request, properties);
+            DayAheadPriceRecords records = gson.fromJson(responseContent, DayAheadPriceRecords.class);
+            if (records == null || Objects.isNull(records.records())) {
+                throw new DataServiceException("Error parsing response");
+            }
+
+            return Arrays.stream(records.records()).filter(Objects::nonNull).toArray(DayAheadPriceRecord[]::new);
         } catch (JsonSyntaxException e) {
             throw new DataServiceException("Error parsing response", e);
         } catch (TimeoutException | ExecutionException e) {

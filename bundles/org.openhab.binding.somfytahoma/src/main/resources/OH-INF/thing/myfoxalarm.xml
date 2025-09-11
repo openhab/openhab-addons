@@ -9,6 +9,7 @@
 			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 		<label>Somfy Myfox Alarm</label>
+		<semantic-equipment-tag>AlarmDevice</semantic-equipment-tag>
 		<channels>
 			<channel id="cloud_status" typeId="cloud_status"></channel>
 			<channel id="myfox_alarm_command" typeId="myfox_alarm_command"></channel>

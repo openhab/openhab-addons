@@ -19,6 +19,7 @@ import java.util.UUID;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Thing;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,7 +34,7 @@ import org.slf4j.LoggerFactory;
 public class RadoneyeHandler extends AbstractRadoneyeHandler {
 
     private static final UUID SERVICE_UUID_V1 = UUID.fromString("00001523-1212-efde-1523-785feabcd123");
-    private static final UUID SERVICE_UUID_V2 = UUID.fromString("00001524-0000-1000-8000-00805f9b34fb");
+    private static final UUID SERVICE_UUID_V2 = UUID.fromString("00001523-0000-1000-8000-00805f9b34fb");
     private static final UUID TRIGGER_UID_V1 = UUID.fromString("00001524-1212-efde-1523-785feabcd123");
     private static final UUID TRIGGER_UID_V2 = UUID.fromString("00001524-0000-1000-8000-00805f9b34fb");
     private static final UUID DATA_UUID_V1 = UUID.fromString("00001525-1212-efde-1523-785feabcd123");
@@ -48,18 +49,37 @@ public class RadoneyeHandler extends AbstractRadoneyeHandler {
     private final Logger logger = LoggerFactory.getLogger(RadoneyeHandler.class);
 
     @Override
-    protected void updateChannels(int[] is) {
+    protected void updateChannels(byte[] is) {
         Map<String, Number> data;
         try {
+            logger.debug("Try to parse input from device: {}", is);
             data = RadoneyeDataParser.parseRd200Data(getFwVersion(), is);
             logger.debug("Parsed data: {}", data);
             Number radon = data.get(RadoneyeDataParser.RADON);
             logger.debug("Parsed data radon number: {}", radon);
             if (radon != null) {
-                updateState(CHANNEL_ID_RADON, new QuantityType<>(radon, BECQUEREL_PER_CUBIC_METRE));
+                updateState(CHANNEL_ID_RADON, new QuantityType<>(radon, Units.BECQUEREL_PER_CUBIC_METRE));
+            }
+            Number decay = data.get(RadoneyeDataParser.DECAY);
+            logger.debug("Parsed data decay count: {}", decay);
+            if (decay != null) {
+                updateState(CHANNEL_ID_DECAY, new QuantityType<>(decay, Units.ONE));
             }
         } catch (RadoneyeParserException e) {
             logger.error("Failed to parse data received from Radoneye sensor: {}", e.getMessage());
+        }
+    }
+
+    @Override
+    protected UUID getServiceUUID() {
+        int fwVersion = getFwVersion();
+        switch (fwVersion) {
+            case 1:
+                return SERVICE_UUID_V1;
+            case 2:
+                return SERVICE_UUID_V2;
+            default:
+                throw new UnsupportedOperationException("fwVersion: " + fwVersion + " is not implemented");
         }
     }
 

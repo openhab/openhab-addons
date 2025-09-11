@@ -103,6 +103,7 @@
 		<description>@text/channel-type.shelly.heartBeat.description</description>
 		<category>Time</category>
 		<tags>
+			<tag>Status</tag>
 			<tag>Timestamp</tag>
 		</tags>
 		<state readOnly="true">
@@ -154,4 +155,11 @@
 		</state>
 	</channel-type>
 
+	<channel-type id="deviceFirmware" advanced="true">
+		<item-type>String</item-type>
+		<label>@text/channel-type.shelly.deviceFirmware.label</label>
+		<description>@text/channel-type.shelly.firmware.description</description>
+		<state pattern="%s" readOnly="true">
+		</state>
+	</channel-type>
 </thing:thing-descriptions>

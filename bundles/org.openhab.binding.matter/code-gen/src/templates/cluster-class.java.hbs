@@ -1,0 +1,187 @@
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+
+// AUTO-GENERATED, DO NOT EDIT!
+
+package org.openhab.binding.matter.internal.client.dto.cluster.gen;
+
+import java.math.BigInteger;
+import java.util.List;
+import java.util.Map;
+import java.util.LinkedHashMap;
+
+import org.eclipse.jdt.annotation.NonNull;
+
+import org.openhab.binding.matter.internal.client.dto.cluster.ClusterCommand;
+
+/**
+ * {{asUpperCamelCase name}}
+ *
+ * @author Dan Cunningham - Initial contribution
+ */
+public {{#if id}}{{else}}abstract {{/if}}class {{asUpperCamelCase name}}Cluster extends {{#if type}}{{asUpperCamelCase type}}Cluster{{else}}BaseCluster{{/if}} {
+
+    {{#if id}}public static final int CLUSTER_ID = {{asHex id 4}};{{else}}{{/if}}
+    public static final String CLUSTER_NAME = "{{asUpperCamelCase name}}";
+    public static final String CLUSTER_PREFIX = "{{asLowerCamelCase name}}";
+{{#each attributes }}
+{{#if (isDepreciated this)}}
+{{else}}
+    public static final String ATTRIBUTE_{{asUpperSnakeCase name}} = "{{asLowerCamelCase name}}";
+{{/if}}
+{{/each}}
+
+{{#each attributes }}
+{{#if (isDepreciated this)}}
+{{else}}
+{{#if details}}
+    /**
+    * {{details}}
+    */
+{{/if}}
+    public {{{asUpperCamelCase mappedType}}} {{asLowerCamelCase name}}; // {{id}} {{type}} {{access}}
+{{/if}}
+{{/each}}
+{{#each structs}}
+{{#if (isFirstElement @index)}}
+
+    //Structs
+{{/if}}
+{{#if details}}
+    /**
+    * {{details}}
+    */
+{{/if}}
+     public static class {{asUpperCamelCase name}} {
+{{#each children}}
+{{#if details}}
+        /**
+        * {{details}}
+        */
+{{/if}}
+        public {{{mappedType}}} {{asLowerCamelCase name}}; {{#if type}}// {{type}}{{/if}}
+{{/each}}
+        public {{asUpperCamelCase name}}({{#each children}}{{{mappedType}}} {{asLowerCamelCase name}}{{#unless (isLastElement @index ../children.length)}}, {{/unless}}{{/each}}) {
+{{#each children}}
+            this.{{asLowerCamelCase name}} = {{asLowerCamelCase name}};
+{{/each}}
+        }
+     }
+{{/each}}
+
+
+{{#each enums}}
+{{#if (isFirstElement @index)}}
+    //Enums
+{{/if}}
+{{#if details}}
+    /**
+    * {{details}}
+    */
+{{/if}}
+    public enum {{asUpperCamelCase name}} implements MatterEnum {
+{{#if (isEmpty children)}}
+        DEFAULT(0, "Default");
+{{else}}
+{{#each children}}
+        {{asEnumField name}}({{id}}, "{{asSpacedTitleCase name}}"){{#unless (isLastElement @index ../children.length)}},{{else}};{{/unless}}
+{{/each}}
+{{/if}}
+        public final Integer value;
+        public final String label;
+        private {{asUpperCamelCase name}}(Integer value, String label){
+            this.value = value;
+            this.label = label;
+        }
+
+        @Override
+        public Integer getValue() {
+            return value;
+        }
+
+        @Override
+        public String getLabel() {
+            return label;
+        }
+    }
+{{/each}}
+
+{{#each maps}}
+{{#if (isFirstElement @index)}}
+    // Bitmaps
+{{/if}}
+{{#if details}}
+    /**
+    * {{details}}
+    */
+{{/if}}
+    public static class {{asUpperCamelCase name}} {
+{{#each children}}
+{{#if details}}
+        /**
+        * {{description}}
+        * {{details}}
+        */
+{{/if}}
+        public {{toBitmapType constraint}} {{toBitmapChildName this ../type}};
+{{/each}}
+        public {{asUpperCamelCase name}}({{#each children}}{{toBitmapType constraint}} {{toBitmapChildName this ../type}}{{#unless (isLastElement @index ../children.length)}}, {{/unless}}{{/each}}){
+{{#each children}}
+            this.{{toBitmapChildName this ../type}} = {{toBitmapChildName this ../type}};
+{{/each}}
+        }
+    }
+{{/each}}
+{{#if id}}
+    public {{asUpperCamelCase name}}Cluster(BigInteger nodeId, int endpointId) {
+        super(nodeId, endpointId, {{id}}, "{{asUpperCamelCase name}}");
+    }
+{{/if}}
+    protected {{asUpperCamelCase name}}Cluster(BigInteger nodeId, int endpointId, int clusterId, String clusterName) {
+        super(nodeId, endpointId, clusterId, clusterName);
+    }
+{{#each commands }}
+{{#if (isFirstElement @index)}}
+    //commands
+{{/if}}
+{{#if details}}
+    /**
+    * {{details}}
+    */
+{{/if}}
+    public static ClusterCommand {{asLowerCamelCase name}}({{#each children}}{{#unless (isDepreciated this)}}{{{mappedType}}} {{asLowerCamelCase name}}{{/unless}}{{#unless (isLastElement @index ../children.length)}}, {{/unless}}{{/each}}) {
+{{#each children}}
+{{#if (isFirstElement @index)}}
+        Map<String, Object> map = new LinkedHashMap<>();
+{{/if}}
+{{#unless (isDepreciated this)}}
+        if ({{asLowerCamelCase name}} != null) {
+            map.put("{{asLowerCamelCase name}}", {{asLowerCamelCase name}});
+        }
+{{/unless}}
+{{/each}}
+        return new ClusterCommand("{{asLowerCamelCase name}}"{{#if children}}, map{{/if}});
+    }
+{{/each}}
+    @Override
+    public @NonNull String toString() {
+        String str = "";
+{{#each attributes }}
+{{#if (isDepreciated this)}}
+{{else}}
+        str += "{{asLowerCamelCase name}} : " + {{asLowerCamelCase name}} + "\n";
+{{/if}}
+{{/each}}
+        return str;
+    }
+}

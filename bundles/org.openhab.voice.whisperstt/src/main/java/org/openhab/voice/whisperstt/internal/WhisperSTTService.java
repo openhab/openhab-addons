@@ -12,12 +12,10 @@
  */
 package org.openhab.voice.whisperstt.internal;
 
-import static org.openhab.voice.whisperstt.internal.WhisperSTTConstants.SERVICE_CATEGORY;
-import static org.openhab.voice.whisperstt.internal.WhisperSTTConstants.SERVICE_ID;
-import static org.openhab.voice.whisperstt.internal.WhisperSTTConstants.SERVICE_NAME;
-import static org.openhab.voice.whisperstt.internal.WhisperSTTConstants.SERVICE_PID;
+import static org.openhab.voice.whisperstt.internal.WhisperSTTConstants.*;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -32,7 +30,9 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.sound.sampled.AudioFileFormat;
@@ -41,6 +41,13 @@ import javax.sound.sampled.AudioSystem;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.util.InputStreamContentProvider;
+import org.eclipse.jetty.client.util.MultiPartContentProvider;
+import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.core.OpenHAB;
 import org.openhab.core.audio.AudioFormat;
 import org.openhab.core.audio.AudioStream;
@@ -48,6 +55,7 @@ import org.openhab.core.audio.utils.AudioWaveUtils;
 import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.config.core.ConfigurableService;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.io.rest.LocaleService;
 import org.openhab.core.voice.RecognitionStartEvent;
 import org.openhab.core.voice.RecognitionStopEvent;
@@ -57,6 +65,7 @@ import org.openhab.core.voice.STTService;
 import org.openhab.core.voice.STTServiceHandle;
 import org.openhab.core.voice.SpeechRecognitionErrorEvent;
 import org.openhab.core.voice.SpeechRecognitionEvent;
+import org.openhab.voice.whisperstt.internal.WhisperSTTConfiguration.Mode;
 import org.openhab.voice.whisperstt.internal.utils.VAD;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Activate;
@@ -96,10 +105,13 @@ public class WhisperSTTService implements STTService {
     private @Nullable WhisperContext context;
     private @Nullable WhisperGrammar grammar;
     private @Nullable WhisperJNI whisper;
+    private boolean isWhisperLibAlreadyLoaded = false;
+    private final HttpClientFactory httpClientFactory;
 
     @Activate
-    public WhisperSTTService(@Reference LocaleService localeService) {
+    public WhisperSTTService(@Reference LocaleService localeService, @Reference HttpClientFactory httpClientFactory) {
         this.localeService = localeService;
+        this.httpClientFactory = httpClientFactory;
     }
 
     @Activate
@@ -108,13 +120,21 @@ public class WhisperSTTService implements STTService {
             if (!Files.exists(WHISPER_FOLDER)) {
                 Files.createDirectory(WHISPER_FOLDER);
             }
-            WhisperJNI.loadLibrary(getLoadOptions());
+            this.config = new Configuration(config).as(WhisperSTTConfiguration.class);
+            loadWhisperLibraryIfNeeded();
             VoiceActivityDetector.loadLibrary();
             whisper = new WhisperJNI();
         } catch (IOException | RuntimeException e) {
             logger.warn("Unable to register native library: {}", e.getMessage());
         }
         configChange(config);
+    }
+
+    private void loadWhisperLibraryIfNeeded() throws IOException {
+        if (config.mode == Mode.LOCAL && !isWhisperLibAlreadyLoaded) {
+            WhisperJNI.loadLibrary(getLoadOptions());
+            isWhisperLibAlreadyLoaded = true;
+        }
     }
 
     private WhisperJNI.LoadOptions getLoadOptions() {
@@ -167,14 +187,27 @@ public class WhisperSTTService implements STTService {
 
     private void configChange(Map<String, Object> config) {
         this.config = new Configuration(config).as(WhisperSTTConfiguration.class);
-        WhisperJNI.setLibraryLogger(this.config.enableWhisperLog ? this::onWhisperLog : null);
         WhisperGrammar grammar = this.grammar;
         if (grammar != null) {
             grammar.close();
             this.grammar = null;
         }
+
+        // API mode
+        if (this.config.mode == Mode.API) {
+            try {
+                unloadContext();
+            } catch (IOException e) {
+                logger.warn("IOException unloading model: {}", e.getMessage());
+            }
+            return;
+        }
+
+        // Local mode
         WhisperJNI whisper;
         try {
+            loadWhisperLibraryIfNeeded();
+            WhisperJNI.setLibraryLogger(this.config.enableWhisperLog ? this::onWhisperLog : null);
             whisper = getWhisper();
         } catch (IOException ignored) {
             logger.warn("library not loaded, the add-on will not work");
@@ -228,9 +261,17 @@ public class WhisperSTTService implements STTService {
 
     @Override
     public Set<Locale> getSupportedLocales() {
-        // as it is not possible to determine the language of the model that was downloaded and setup by the user, it is
-        // assumed the language of the model is matching the locale of the openHAB server
-        return Set.of(localeService.getLocale(null));
+        // Attempt to create a locale from the configured language
+        String language = config.language;
+        Locale modelLocale = localeService.getLocale(null);
+        if (!language.isBlank()) {
+            try {
+                modelLocale = Locale.forLanguageTag(language);
+            } catch (IllegalArgumentException e) {
+                logger.warn("Invalid language '{}', defaulting to server locale", language);
+            }
+        }
+        return Set.of(modelLocale);
     }
 
     @Override
@@ -246,33 +287,18 @@ public class WhisperSTTService implements STTService {
     public STTServiceHandle recognize(STTListener sttListener, AudioStream audioStream, Locale locale, Set<String> set)
             throws STTException {
         AtomicBoolean aborted = new AtomicBoolean(false);
-        WhisperContext ctx = null;
-        WhisperState state = null;
         try {
-            var whisper = getWhisper();
-            ctx = getContext();
-            logger.debug("Creating whisper state...");
-            state = whisper.initState(ctx);
-            logger.debug("Whisper state created");
             logger.debug("Creating VAD instance...");
-            final int nSamplesStep = (int) (config.stepSeconds * (float) WHISPER_SAMPLE_RATE);
+            final int nSamplesStep = (int) (config.stepSeconds * WHISPER_SAMPLE_RATE);
             VAD vad = new VAD(VoiceActivityDetector.Mode.valueOf(config.vadMode), WHISPER_SAMPLE_RATE, nSamplesStep,
                     config.vadStep, config.vadSensitivity);
             logger.debug("VAD instance created");
             sttListener.sttEventReceived(new RecognitionStartEvent());
-            backgroundRecognize(whisper, ctx, state, nSamplesStep, locale, sttListener, audioStream, vad, aborted);
+            backgroundRecognize(nSamplesStep, locale, sttListener, audioStream, vad, aborted);
         } catch (IOException e) {
-            if (ctx != null && !config.preloadModel) {
-                ctx.close();
-            }
-            if (state != null) {
-                state.close();
-            }
             throw new STTException("Exception during initialization", e);
         }
-        return () -> {
-            aborted.set(true);
-        };
+        return () -> aborted.set(true);
     }
 
     private WhisperJNI getWhisper() throws IOException {
@@ -339,9 +365,8 @@ public class WhisperSTTService implements STTService {
         }
     }
 
-    private void backgroundRecognize(WhisperJNI whisper, WhisperContext ctx, WhisperState state, final int nSamplesStep,
-            Locale locale, STTListener sttListener, AudioStream audioStream, VAD vad, AtomicBoolean aborted) {
-        var releaseContext = !config.preloadModel;
+    private void backgroundRecognize(final int nSamplesStep, Locale locale, STTListener sttListener,
+            AudioStream audioStream, VAD vad, AtomicBoolean aborted) {
         final int nSamplesMax = config.maxSeconds * WHISPER_SAMPLE_RATE;
         final int nSamplesMin = (int) (config.minSeconds * (float) WHISPER_SAMPLE_RATE);
         final int nInitSilenceSamples = (int) (config.initSilenceSeconds * (float) WHISPER_SAMPLE_RATE);
@@ -353,21 +378,17 @@ public class WhisperSTTService implements STTService {
         logger.debug("Max silence samples {}", nMaxSilenceSamples);
         // used to store the step samples in libfvad wanted format 16-bit int
         final short[] stepAudioSamples = new short[nSamplesStep];
-        // used to store the full samples in whisper wanted format 32-bit float
-        final float[] audioSamples = new float[nSamplesMax];
+        // used to store the full retained samples for whisper
+        final short[] audioSamples = new short[nSamplesMax];
         executor.submit(() -> {
             int audioSamplesOffset = 0;
             int silenceSamplesCounter = 0;
             int nProcessedSamples = 0;
-            int numBytesRead;
             boolean voiceDetected = false;
             String transcription = "";
-            String tempTranscription = "";
-            VAD.@Nullable VADResult lastVADResult;
             VAD.@Nullable VADResult firstConsecutiveSilenceVADResult = null;
             try {
-                try (state; //
-                        audioStream; //
+                try (audioStream; //
                         vad) {
                     if (AudioFormat.CONTAINER_WAVE.equals(audioStream.getFormat().getContainer())) {
                         AudioWaveUtils.removeFMT(audioStream);
@@ -376,10 +397,9 @@ public class WhisperSTTService implements STTService {
                             .order(ByteOrder.LITTLE_ENDIAN);
                     // init remaining to full capacity
                     int remaining = captureBuffer.capacity();
-                    WhisperFullParams params = getWhisperFullParams(ctx, locale);
                     while (!aborted.get()) {
                         // read until no remaining so we get the complete step samples
-                        numBytesRead = audioStream.read(captureBuffer.array(), captureBuffer.capacity() - remaining,
+                        int numBytesRead = audioStream.read(captureBuffer.array(), captureBuffer.capacity() - remaining,
                                 remaining);
                         if (aborted.get() || numBytesRead == -1) {
                             break;
@@ -395,17 +415,15 @@ public class WhisperSTTService implements STTService {
                         while (shortBuffer.hasRemaining()) {
                             var position = shortBuffer.position();
                             short i16BitSample = shortBuffer.get();
-                            float f32BitSample = Float.min(1f,
-                                    Float.max((float) i16BitSample / ((float) Short.MAX_VALUE), -1f));
                             stepAudioSamples[position] = i16BitSample;
-                            audioSamples[audioSamplesOffset++] = f32BitSample;
+                            audioSamples[audioSamplesOffset++] = i16BitSample;
                             nProcessedSamples++;
                         }
                         // run vad
                         if (nProcessedSamples + nSamplesStep > nSamplesMax - nSamplesStep) {
                             logger.debug("VAD: Skipping, max length reached");
                         } else {
-                            lastVADResult = vad.analyze(stepAudioSamples);
+                            VAD.@Nullable VADResult lastVADResult = vad.analyze(stepAudioSamples);
                             if (lastVADResult.isVoice()) {
                                 voiceDetected = true;
                                 logger.debug("VAD: voice detected");
@@ -484,53 +502,32 @@ public class WhisperSTTService implements STTService {
                                 }
                             }
                         }
-                        // run whisper
-                        logger.debug("running whisper with {} seconds of audio...",
-                                Math.round((((float) audioSamplesOffset) / (float) WHISPER_SAMPLE_RATE) * 100f) / 100f);
-                        long execStartTime = System.currentTimeMillis();
-                        var result = whisper.fullWithState(ctx, state, params, audioSamples, audioSamplesOffset);
-                        logger.debug("whisper ended in {}ms with result code {}",
-                                System.currentTimeMillis() - execStartTime, result);
-                        // process result
-                        if (result != 0) {
-                            emitSpeechRecognitionError(sttListener);
-                            break;
-                        }
-                        int nSegments = whisper.fullNSegmentsFromState(state);
-                        logger.debug("Available transcription segments {}", nSegments);
-                        if (nSegments == 1) {
-                            tempTranscription = whisper.fullGetSegmentTextFromState(state, 0);
+                        // run whisper, either locally or by remote API
+                        String tempTranscription = (switch (config.mode) {
+                            case LOCAL -> recognizeLocal(audioSamplesOffset, audioSamples, locale.getLanguage());
+                            case API -> recognizeAPI(audioSamplesOffset, audioSamples, locale.getLanguage());
+                        });
+
+                        if (tempTranscription != null && !tempTranscription.isBlank()) {
                             if (config.createWAVRecord) {
                                 createAudioFile(audioSamples, audioSamplesOffset, tempTranscription,
                                         locale.getLanguage());
                             }
+                            transcription += tempTranscription;
                             if (config.singleUtteranceMode) {
                                 logger.debug("single utterance mode, ending transcription");
-                                transcription = tempTranscription;
                                 break;
-                            } else {
-                                // start a new transcription segment
-                                transcription += tempTranscription;
-                                tempTranscription = "";
                             }
-                        } else if (nSegments == 0 && config.singleUtteranceMode) {
-                            logger.debug("Single utterance mode and no results, ending transcription");
-                            break;
-                        } else if (nSegments > 1) {
-                            // non reachable
-                            logger.warn("Whisper should be configured in single segment mode {}", nSegments);
+                        } else {
                             break;
                         }
+
                         // reset state to start with next segment
                         voiceDetected = false;
                         silenceSamplesCounter = 0;
                         audioSamplesOffset = 0;
                         logger.debug("Partial transcription: {}", tempTranscription);
                         logger.debug("Transcription: {}", transcription);
-                    }
-                } finally {
-                    if (releaseContext) {
-                        ctx.close();
                     }
                 }
                 // emit result
@@ -543,7 +540,7 @@ public class WhisperSTTService implements STTService {
                         emitSpeechRecognitionNoResultsError(sttListener);
                     }
                 }
-            } catch (IOException e) {
+            } catch (STTException | IOException e) {
                 logger.warn("Error running speech to text: {}", e.getMessage());
                 emitSpeechRecognitionError(sttListener);
             } catch (UnsatisfiedLinkError e) {
@@ -553,7 +550,118 @@ public class WhisperSTTService implements STTService {
         });
     }
 
-    private WhisperFullParams getWhisperFullParams(WhisperContext context, Locale locale) throws IOException {
+    @Nullable
+    private String recognizeLocal(int audioSamplesOffset, short[] audioSamples, String language) throws STTException {
+        logger.debug("running whisper with {} seconds of audio...",
+                Math.round((((float) audioSamplesOffset) / (float) WHISPER_SAMPLE_RATE) * 100f) / 100f);
+        var releaseContext = !config.preloadModel;
+
+        WhisperJNI whisper = null;
+        WhisperContext ctx = null;
+        WhisperState state = null;
+        try {
+            whisper = getWhisper();
+            ctx = getContext();
+            logger.debug("Creating whisper state...");
+            state = whisper.initState(ctx);
+            logger.debug("Whisper state created");
+            WhisperFullParams params = getWhisperFullParams(ctx, language);
+
+            // convert to local whisper format (float)
+            float[] floatArray = new float[audioSamples.length];
+            for (int i = 0; i < audioSamples.length; i++) {
+                floatArray[i] = Float.min(1f, Float.max((float) audioSamples[i] / ((float) Short.MAX_VALUE), -1f));
+            }
+
+            long execStartTime = System.currentTimeMillis();
+            var result = whisper.fullWithState(ctx, state, params, floatArray, audioSamplesOffset);
+            logger.debug("whisper ended in {}ms with result code {}", System.currentTimeMillis() - execStartTime,
+                    result);
+            // process result
+            if (result != 0) {
+                throw new STTException("Cannot use whisper locally, result code: " + result);
+            }
+            int nSegments = whisper.fullNSegmentsFromState(state);
+            logger.debug("Available transcription segments {}", nSegments);
+            if (nSegments == 1) {
+                return whisper.fullGetSegmentTextFromState(state, 0);
+            } else if (nSegments == 0 && config.singleUtteranceMode) {
+                logger.debug("Single utterance mode and no results, ending transcription");
+                return null;
+            } else {
+                // non reachable
+                logger.warn("Whisper should be configured in single segment mode {}", nSegments);
+                return null;
+            }
+        } catch (IOException e) {
+            if (state != null) {
+                state.close();
+            }
+            throw new STTException("Cannot use whisper locally", e);
+        } finally {
+            if (releaseContext && ctx != null) {
+                ctx.close();
+            }
+        }
+    }
+
+    private String recognizeAPI(int audioSamplesOffset, short[] audioStream, String language) throws STTException {
+        // convert to byte array, Each short has 2 bytes
+        int size = audioSamplesOffset * 2;
+        ByteBuffer byteArrayBuffer = ByteBuffer.allocate(size).order(ByteOrder.LITTLE_ENDIAN);
+        for (int i = 0; i < audioSamplesOffset; i++) {
+            byteArrayBuffer.putShort(audioStream[i]);
+        }
+        javax.sound.sampled.AudioFormat jAudioFormat = new javax.sound.sampled.AudioFormat(
+                javax.sound.sampled.AudioFormat.Encoding.PCM_SIGNED, WHISPER_SAMPLE_RATE, 16, 1, 2, WHISPER_SAMPLE_RATE,
+                false);
+        byte[] byteArray = byteArrayBuffer.array();
+
+        try {
+            AudioInputStream audioInputStream = new AudioInputStream(new ByteArrayInputStream(byteArray), jAudioFormat,
+                    audioSamplesOffset);
+
+            // write stream as a WAV file, in a byte array stream :
+            ByteArrayInputStream byteArrayInputStream = null;
+            try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+                AudioSystem.write(audioInputStream, AudioFileFormat.Type.WAVE, baos);
+                byteArrayInputStream = new ByteArrayInputStream(baos.toByteArray());
+            }
+
+            // prepare HTTP request
+            HttpClient commonHttpClient = httpClientFactory.getCommonHttpClient();
+            MultiPartContentProvider multiPartContentProvider = new MultiPartContentProvider();
+            multiPartContentProvider.addFilePart("file", "audio.wav",
+                    new InputStreamContentProvider(byteArrayInputStream), null);
+            multiPartContentProvider.addFieldPart("model", new StringContentProvider(this.config.apiModelName), null);
+            multiPartContentProvider.addFieldPart("response_format", new StringContentProvider("text"), null);
+            multiPartContentProvider.addFieldPart("temperature",
+                    new StringContentProvider(Float.toString(this.config.temperature)), null);
+            if (!language.isBlank()) {
+                multiPartContentProvider.addFieldPart("language", new StringContentProvider(language), null);
+            }
+            Request request = commonHttpClient.newRequest(config.apiUrl).method(HttpMethod.POST)
+                    .content(multiPartContentProvider);
+            if (!config.apiKey.isBlank()) {
+                request = request.header("Authorization", "Bearer " + config.apiKey);
+            }
+            // execute the request
+            ContentResponse response = request.send();
+
+            // check the HTTP status code from the response
+            int statusCode = response.getStatus();
+            if (statusCode < 200 || statusCode >= 300) {
+                logger.debug("HTTP error: Received status code {}, full error is {}", statusCode,
+                        response.getContentAsString());
+                throw new STTException("Failed to retrieve transcription: HTTP status code " + statusCode);
+            }
+            return response.getContentAsString();
+        } catch (InterruptedException | TimeoutException | ExecutionException | IOException e) {
+            throw new STTException("Exception during attempt to get speech recognition result from api", e);
+        }
+    }
+
+    private WhisperFullParams getWhisperFullParams(WhisperContext context, String language) throws IOException {
         WhisperSamplingStrategy strategy = WhisperSamplingStrategy.valueOf(config.samplingStrategy);
         var params = new WhisperFullParams(strategy);
         params.temperature = config.temperature;
@@ -570,7 +678,7 @@ public class WhisperSTTService implements STTService {
             params.grammarPenalty = config.grammarPenalty;
         }
         // there is no single language models other than the english ones
-        params.language = getWhisper().isMultilingual(context) ? locale.getLanguage() : "en";
+        params.language = getWhisper().isMultilingual(context) ? language : "en";
         // implementation assumes this options
         params.translate = false;
         params.detectLanguage = false;
@@ -605,7 +713,7 @@ public class WhisperSTTService implements STTService {
         }
     }
 
-    private void createAudioFile(float[] samples, int size, String transcription, String language) {
+    private void createAudioFile(short[] samples, int size, String transcription, String language) {
         createSamplesDir();
         javax.sound.sampled.AudioFormat jAudioFormat;
         ByteBuffer byteBuffer;
@@ -615,7 +723,7 @@ public class WhisperSTTService implements STTService {
                     WHISPER_SAMPLE_RATE, 16, 1, 2, WHISPER_SAMPLE_RATE, false);
             byteBuffer = ByteBuffer.allocate(size * 2).order(ByteOrder.LITTLE_ENDIAN);
             for (int i = 0; i < size; i++) {
-                byteBuffer.putShort((short) (samples[i] * (float) Short.MAX_VALUE));
+                byteBuffer.putShort(samples[i]);
             }
         } else {
             logger.debug("Saving audio file with sample format f32");
@@ -623,7 +731,7 @@ public class WhisperSTTService implements STTService {
                     WHISPER_SAMPLE_RATE, 32, 1, 4, WHISPER_SAMPLE_RATE, false);
             byteBuffer = ByteBuffer.allocate(size * 4).order(ByteOrder.LITTLE_ENDIAN);
             for (int i = 0; i < size; i++) {
-                byteBuffer.putFloat(samples[i]);
+                byteBuffer.putFloat(Float.min(1f, Float.max((float) samples[i] / ((float) Short.MAX_VALUE), -1f)));
             }
         }
         AudioInputStream audioInputStreamTemp = new AudioInputStream(new ByteArrayInputStream(byteBuffer.array()),

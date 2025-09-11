@@ -6,6 +6,7 @@
 
 	<thing-type id="f1x55-udp">
 		<label>UDP Connected Nibe F1155 and F1255 Heat Pumps</label>
+		<semantic-equipment-tag>HeatPump</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group typeId="f1x55-sensor-group-channels" id="sensor"/>

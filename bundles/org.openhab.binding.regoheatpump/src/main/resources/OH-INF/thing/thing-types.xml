@@ -8,6 +8,7 @@
 	<thing-type id="ipRego6xx">
 		<label>Heat Pump</label>
 		<description>Manage Rego 6xx based heat pump over TCP/IP</description>
+		<semantic-equipment-tag>HeatPump</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="sensorValues" typeId="sensorValues"/>
@@ -42,6 +43,7 @@
 	<thing-type id="serialRego6xx">
 		<label>Heat Pump</label>
 		<description>Manage Rego 6xx based heat pump over serial port</description>
+		<semantic-equipment-tag>HeatPump</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="sensorValues" typeId="sensorValues"/>
@@ -72,6 +74,7 @@
 	<thing-type id="ipHusdata">
 		<label>Husdata Interface</label>
 		<description>Access heat pump over Husdata interface connected via TCP/IP</description>
+		<semantic-equipment-tag>HeatPump</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="sensorValues" typeId="sensorValues"/>
@@ -98,6 +101,7 @@
 	<thing-type id="serialHusdata">
 		<label>Husdata Interface</label>
 		<description>Access heat pump over Husdata interface connected via serial port</description>
+		<semantic-equipment-tag>HeatPump</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="sensorValues" typeId="sensorValues"/>
@@ -234,6 +238,10 @@
 		<label>Radiator Return</label>
 		<description>Temperature of the water that returns to the heat pump from the radiators</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -242,6 +250,10 @@
 		<label>Outdoor</label>
 		<description>The outdoor temperature. Determines how much heating the heat pump should produce</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -250,6 +262,10 @@
 		<label>Hot Water</label>
 		<description>Temperature in the hot water cylinder</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -258,6 +274,10 @@
 		<label>Radiator Forward</label>
 		<description>Temperature on the flow water in the circuit</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -266,6 +286,10 @@
 		<label>Indoor</label>
 		<description>Present temperature in the room where the sensor is fitted</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -274,6 +298,10 @@
 		<label>Compressor</label>
 		<description>Compressor’s working temperature</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -282,6 +310,10 @@
 		<label>Heat Fluid Out</label>
 		<description>Temperature of the radiator water as it leaves the heat pump</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -290,6 +322,10 @@
 		<label>Heat Fluid In</label>
 		<description>Temperature of the water that is led into the heat pump</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -298,6 +334,10 @@
 		<label>Cold Fluid In</label>
 		<description>Temperature of the heat transfer fluid that is led into the heat pump from the bore hole or the ground</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -306,6 +346,10 @@
 		<label>Cold Fluid Out</label>
 		<description>Temperature of the heat transfer fluid that is led out of the heat pump to the bore hole or the ground</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -314,14 +358,22 @@
 		<label>External Hot Water</label>
 		<description>Temperature in the external hot water cylinder</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="lastErrorType">
 		<item-type>String</item-type>
 		<label>Last Error Type</label>
-		<description>Information about the alarm type that occured last</description>
+		<description>Information about the alarm type that occurred last</description>
 		<category>Error</category>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true" pattern="%s">
 			<options>
 				<option value="0">Sensor radiator return (GT1)</option>
@@ -453,6 +505,9 @@
 		<item-type>Switch</item-type>
 		<label>Alarm</label>
 		<category>Siren</category>
+		<tags>
+			<tag>Alarm</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -461,6 +516,10 @@
 		<label>Radiator Return Target</label>
 		<description>Calculated desired radiator return temperature</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -485,6 +544,10 @@
 		<label>Hot Water Target</label>
 		<description>Desired radiator return temperature</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state min="35" max="54" step="0.1" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -517,6 +580,10 @@
 		<label>Radiator Forward Target</label>
 		<description>Calculated desired radiator forward temperature</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -555,6 +622,10 @@
 		<label>Indoor Target</label>
 		<description>Desired temperature in the room where the sensor is fitted</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state step="0.1" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -692,6 +763,10 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Pool</label>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 

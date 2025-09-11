@@ -17,10 +17,13 @@ import static org.eclipse.jetty.http.HttpMethod.POST;
 import static org.eclipse.jetty.http.HttpMethod.PUT;
 
 import java.lang.reflect.Type;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
@@ -54,6 +57,7 @@ import org.openhab.binding.boschshc.internal.exceptions.PairingFailedException;
 import org.openhab.binding.boschshc.internal.serialization.GsonUtils;
 import org.openhab.binding.boschshc.internal.services.dto.BoschSHCServiceState;
 import org.openhab.binding.boschshc.internal.services.dto.JsonRestExceptionResponse;
+import org.openhab.core.cache.ExpiringCache;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
@@ -86,9 +90,15 @@ import com.google.gson.reflect.TypeToken;
 @NonNullByDefault
 public class BridgeHandler extends BaseBridgeHandler {
 
+    private final Logger logger = LoggerFactory.getLogger(BridgeHandler.class);
+
+    public static final String THING_PROPERTY_SHC_GENERATION = "shcGeneration";
+    public static final String THING_PROPERTY_API_VERSIONS = "apiVersions";
+    public static final String CONFIGURATION_PARAMETER_IP_ADDRESS = "ipAddress";
+
     private static final String HTTP_CLIENT_NOT_INITIALIZED = "HttpClient not initialized";
 
-    private final Logger logger = LoggerFactory.getLogger(BridgeHandler.class);
+    private static final Duration ROOM_CACHE_DURATION = Duration.ofMinutes(2);
 
     /**
      * Handler to do long polling.
@@ -107,12 +117,21 @@ public class BridgeHandler extends BaseBridgeHandler {
 
     /**
      * SHC thing/device discovery service instance.
-     * Registered and unregistered if service is actived/deactived.
+     * Registered and unregistered if service is activated/deactivated.
      * Used to scan for things after bridge is paired with SHC.
      */
     private @Nullable ThingDiscoveryService thingDiscoveryService;
 
     private final ScenarioHandler scenarioHandler;
+
+    private ExpiringCache<List<Room>> roomCache = new ExpiringCache<>(ROOM_CACHE_DURATION, () -> {
+        try {
+            return getRooms();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            return null;
+        }
+    });
 
     public BridgeHandler(Bridge bridge) {
         super(bridge);
@@ -273,6 +292,8 @@ public class BridgeHandler extends BaseBridgeHandler {
                 return;
             }
 
+            updateThingProperties();
+
             // do thing discovery after pairing
             final ThingDiscoveryService discovery = thingDiscoveryService;
             if (discovery != null) {
@@ -286,6 +307,23 @@ public class BridgeHandler extends BaseBridgeHandler {
         } catch (InterruptedException e) {
             this.updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.UNKNOWN.NONE, "@text/offline.interrupted");
             Thread.currentThread().interrupt();
+        }
+    }
+
+    private void updateThingProperties() {
+        try {
+            PublicInformation publicInformation = getPublicInformation();
+            @Nullable
+            Map<String, String> properties = new HashMap<>();
+            properties.put(Thing.PROPERTY_MAC_ADDRESS, publicInformation.macAddress);
+            properties.put(THING_PROPERTY_SHC_GENERATION, publicInformation.shcGeneration);
+            properties.put(THING_PROPERTY_API_VERSIONS, publicInformation.getApiVersionsAsCommaSeparatedList());
+            updateProperties(properties);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            logger.warn("Thread was interrupted while retrieving public information to update thing properties.", e);
+        } catch (BoschSHCException | ExecutionException | TimeoutException e) {
+            logger.warn("Error while retrieving public information to update thing properties.", e);
         }
     }
 
@@ -435,6 +473,24 @@ public class BridgeHandler extends BaseBridgeHandler {
         } else {
             return emptyRooms;
         }
+    }
+
+    public @Nullable List<Room> getRoomsWithCache() {
+        return roomCache.getValue();
+    }
+
+    public @Nullable String resolveRoomId(@Nullable String roomId) {
+        if (roomId == null) {
+            return null;
+        }
+
+        @Nullable
+        List<Room> rooms = getRoomsWithCache();
+        if (rooms != null) {
+            return rooms.stream().filter(r -> r.id.equals(roomId)).map(r -> r.name).findAny().orElse(null);
+        }
+
+        return null;
     }
 
     /**

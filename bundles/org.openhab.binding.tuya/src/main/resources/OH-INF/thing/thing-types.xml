@@ -1,0 +1,289 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="tuya"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Cloud project -->
+	<thing-type id="project">
+		<label>Tuya Cloud Project</label>
+		<description>This thing represents a single cloud project. Needed for discovery.</description>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
+		<config-description>
+			<parameter name="username" type="text" required="true">
+				<label>Username</label>
+				<description>Username in Tuya Smart/Smart Life app.</description>
+			</parameter>
+			<parameter name="password" type="text" required="true">
+				<context>password</context>
+				<label>Password</label>
+				<description>Password in Tuya Smart/Smart Life app.</description>
+			</parameter>
+			<parameter name="accessId" type="text" required="true">
+				<label>Access-ID</label>
+				<description>Access ID/Client ID of the Cloud project.</description>
+			</parameter>
+			<parameter name="accessSecret" type="text" required="true">
+				<context>password</context>
+				<label>Access Secret</label>
+				<description>Access Secret/Client Secret of the Cloud project.</description>
+			</parameter>
+			<parameter name="countryCode" type="integer" required="true">
+				<label>Country Code</label>
+				<description>The (telephone) country code used when registering in the app.</description>
+			</parameter>
+			<parameter name="schema" type="text" required="true">
+				<label>App Type</label>
+				<description>The app type (Tuya Smart or SmartLife).</description>
+				<options>
+					<option value="tuyaSmart">Tuya Smart</option>
+					<option value="smartLife">Smart Life</option>
+				</options>
+				<limitToOptions>true</limitToOptions>
+			</parameter>
+			<parameter name="dataCenter" type="text" required="true">
+				<label>Data Center</label>
+				<description>The data center for your Tuya account</description>
+				<options>
+					<option value="https://openapi.tuyacn.com">China</option>
+					<option value="https://openapi.tuyaus.com">Western America</option>
+					<option value="https://openapi-ueaz.tuyaus.com">Eastern America (Azure/MS)</option>
+					<option value="https://openapi.tuyaeu.com">Central Europe</option>
+					<option value="https://openapi-weaz.tuyaeu.com">Western Europe (Azure/MS)</option>
+					<option value="https://openapi.tuyain.com">India</option>
+					<option value="https://openapi-sg.iotbing.com">Singapore</option>
+				</options>
+				<limitToOptions>true</limitToOptions>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- Generic Tuya device -->
+	<thing-type id="tuyaDevice" extensible="color,switch,dimmer,number,string,ir-code">
+		<label>Generic Tuya Device</label>
+		<description>A generic Tuya device. Can be extended with channels.</description>
+
+		<config-description>
+			<parameter name="deviceId" type="text" required="true">
+				<label>Device ID</label>
+			</parameter>
+			<parameter name="localKey" type="text" required="true">
+				<label>Device Local Key</label>
+				<context>password</context>
+			</parameter>
+			<parameter name="productId" type="text" required="true">
+				<label>Product ID</label>
+			</parameter>
+			<parameter name="ip" type="text">
+				<label>IP Address</label>
+				<description>Auto-detected if device is on same subnet or broadcast forwarding configured.</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="protocol" type="text">
+				<label>Protocol Version</label>
+				<options>
+					<option value="3.1">3.1</option>
+					<option value="3.3">3.3</option>
+					<option value="3.4">3.4</option>
+					<option value="3.5">3.5</option>
+				</options>
+				<limitToOptions>true</limitToOptions>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="pollingInterval" type="integer" min="10" unit="s">
+				<label>Polling Interval</label>
+				<options>
+					<option value="0">disabled</option>
+				</options>
+				<default>0</default>
+				<limitToOptions>false</limitToOptions>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="color">
+		<item-type>Color</item-type>
+		<label>Color</label>
+
+		<category>ColorLight</category>
+
+		<tags>
+			<tag>Control</tag>
+			<tag>Color</tag>
+		</tags>
+		<config-description>
+			<parameter name="dp" type="integer" required="true">
+				<label>Color DP</label>
+			</parameter>
+			<parameter name="dp2" type="integer">
+				<label>Switch DP</label>
+			</parameter>
+		</config-description>
+	</channel-type>
+
+	<channel-type id="switch">
+		<item-type>Switch</item-type>
+		<label>Switch</label>
+
+		<category>Switch</category>
+
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
+		<config-description>
+			<parameter name="dp" type="integer" required="true">
+				<label>DP</label>
+			</parameter>
+		</config-description>
+	</channel-type>
+
+
+	<channel-type id="dimmer">
+		<item-type>Dimmer</item-type>
+		<label>Dimmer</label>
+
+		<category>Light</category>
+
+		<tags>
+			<tag>Control</tag>
+			<tag>Brightness</tag>
+		</tags>
+		<config-description>
+			<parameter name="dp" type="integer" required="true">
+				<label>Value DP</label>
+			</parameter>
+			<parameter name="dp2" type="integer">
+				<label>Switch DP</label>
+				<description>Set only on brightness channels.</description>
+			</parameter>
+			<parameter name="min" type="integer">
+				<label>Minimum</label>
+			</parameter>
+			<parameter name="max" type="integer">
+				<label>Maximum</label>
+			</parameter>
+			<parameter name="reversed" type="boolean">
+				<label>Reversed</label>
+				<description>Changes the direction of the scale (e.g. 0 becomes 100, 100 becomes 0).</description>
+				<default>false</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</channel-type>
+
+	<channel-type id="number">
+		<item-type>Number</item-type>
+		<label>Number</label>
+
+		<category>Number</category>
+
+		<config-description>
+			<parameter name="dp" type="integer" required="true">
+				<label>DP</label>
+			</parameter>
+			<parameter name="min" type="integer">
+				<label>Minimum</label>
+			</parameter>
+			<parameter name="max" type="integer">
+				<label>Maximum</label>
+			</parameter>
+			<parameter name="sendAsString" type="boolean">
+				<label>Send As String</label>
+				<description>Send the value as string instead of number.</description>
+				<default>false</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</channel-type>
+
+	<channel-type id="quantity">
+		<item-type>Number</item-type>
+		<label>Number</label>
+
+		<category>Number</category>
+
+		<state pattern="%.3f %unit%"></state>
+
+		<config-description>
+			<parameter name="dp" type="integer" required="true">
+				<label>DP</label>
+			</parameter>
+			<parameter name="min" type="integer">
+				<label>Minimum</label>
+			</parameter>
+			<parameter name="max" type="integer">
+				<label>Maximum</label>
+			</parameter>
+			<parameter name="sendAsString" type="boolean">
+				<label>Send As String</label>
+				<description>Send the value as string instead of number.</description>
+				<default>false</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</channel-type>
+
+	<channel-type id="string">
+		<item-type>String</item-type>
+		<label>String</label>
+
+		<config-description>
+			<parameter name="dp" type="integer" required="true">
+				<label>DP</label>
+			</parameter>
+			<parameter name="range" type="text">
+				<label>Range</label>
+			</parameter>
+		</config-description>
+	</channel-type>
+
+	<channel-type id="ir-code">
+		<item-type>String</item-type>
+		<label>IR Code</label>
+		<description>Supported codes: tuya base64 codes diy mode, nec-format codes, samsung-format codes</description>
+
+		<config-description>
+			<parameter name="irType" type="text" required="true">
+				<label>IR Code format</label>
+				<options>
+					<option value="base64">Tuya DIY-mode</option>
+					<option value="tuya-head">Tuya Codes Library (check Advanced options)</option>
+					<option value="nec">NEC</option>
+					<option value="samsung">Samsung</option>
+				</options>
+				<limitToOptions>true</limitToOptions>
+			</parameter>
+			<parameter name="activeListen" type="boolean" required="false">
+				<label>Active Listening</label>
+				<description>Device will be always in learning mode. After send command with key code device stays in the learning
+					mode</description>
+			</parameter>
+			<parameter name="irCode" type="text" required="false">
+				<label>IR Code</label>
+				<description>Only for Tuya Codes Library: Decoding parameter</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="irSendDelay" type="integer" required="false">
+				<label>Send delay</label>
+				<description>Only for Tuya Codes Library: Send delay</description>
+				<default>300</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="irCodeType" type="integer" required="false">
+				<label>Type</label>
+				<description>Only for Tuya Codes Library: Code library label</description>
+				<default>0</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="dp" type="integer" required="false">
+				<label>DP Study Key</label>
+				<description>DP number for study key. Uses for receive key code in learning mode</description>
+				<default>2</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</channel-type>
+
+</thing:thing-descriptions>

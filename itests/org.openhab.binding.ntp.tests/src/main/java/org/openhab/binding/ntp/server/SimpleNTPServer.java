@@ -67,7 +67,7 @@ public class SimpleNTPServer {
                 try {
                     socket = new DatagramSocket(port);
                 } catch (SocketException e) {
-                    logger.error("Occured an error {}. Couldn't open a socket on this port:", port, e);
+                    logger.error("Occurred an error {}. Couldn't open a socket on this port:", port, e);
                 }
                 while (isRunning) {
                     try {

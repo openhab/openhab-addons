@@ -1,0 +1,56 @@
+{
+	"id": "a8319695-0729-428c-9465-aadc0b738995",
+	"type": "airPurifier",
+	"deviceType": "airPurifier",
+	"createdAt": "2022-11-05T22:40:42.000Z",
+	"isReachable": true,
+	"lastSeen": "2022-11-16T17:46:45.000Z",
+	"attributes": {
+		"customName": "Luftrenare hall",
+		"model": "STARKVIND Air purifier",
+		"manufacturer": "IKEA of Sweden",
+		"firmwareVersion": "1.1.001",
+		"hardwareVersion": "1",
+		"serialNumber": "XXXXXXXXXXXX",
+		"productCode": "E2007",
+		"fanMode": "auto",
+		"fanModeSequence": "lowMediumHighAuto",
+		"motorState": 10,
+		"motorRuntime": 472283,
+		"filterElapsedTime": 193540,
+		"filterAlarmStatus": false,
+		"filterLifetime": 259200,
+		"childLock": false,
+		"statusLight": true,
+		"currentPM25": 8,
+		"identifyStarted": "2000-01-01T00:00:00.000Z",
+		"identifyPeriod": 0,
+		"permittingJoin": false,
+		"otaStatus": "upToDate",
+		"otaState": "readyToCheck",
+		"otaProgress": 0,
+		"otaPolicy": "autoUpdate",
+		"otaScheduleStart": "00:00",
+		"otaScheduleEnd": "00:00"
+	},
+	"capabilities": {
+		"canSend": [],
+		"canReceive": [
+			"customName",
+			"fanMode",
+			"fanModeSequence",
+			"motorState",
+			"childLock",
+			"statusLight"
+		]
+	},
+	"room": {
+		"id": "a7301b11-95f6-4ee3-a764-22d4ea52d161",
+		"name": "Hall",
+		"color": "ikea_orange_no_11",
+		"icon": "rooms_coat_hanger"
+	},
+	"deviceSet": [],
+	"remoteLinks": [],
+	"isHidden": false
+}

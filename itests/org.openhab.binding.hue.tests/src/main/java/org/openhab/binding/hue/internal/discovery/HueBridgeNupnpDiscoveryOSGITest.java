@@ -20,6 +20,7 @@ import static org.openhab.binding.hue.internal.HueBindingConstants.*;
 import static org.openhab.core.config.discovery.inbox.InboxPredicates.forThingTypeUID;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -160,7 +161,7 @@ public class HueBridgeNupnpDiscoveryOSGITest extends JavaOSGiTest {
             }
 
             @Override
-            public @Nullable Collection<ThingUID> removeOlderResults(DiscoveryService source, long timestamp,
+            public @Nullable Collection<ThingUID> removeOlderResults(DiscoveryService source, Instant timestamp,
                     @Nullable Collection<ThingTypeUID> thingTypeUIDs, @Nullable ThingUID bridgeUID) {
                 return null;
             }
@@ -212,7 +213,7 @@ public class HueBridgeNupnpDiscoveryOSGITest extends JavaOSGiTest {
             }
 
             @Override
-            public @Nullable Collection<ThingUID> removeOlderResults(DiscoveryService source, long timestamp,
+            public @Nullable Collection<ThingUID> removeOlderResults(DiscoveryService source, Instant timestamp,
                     @Nullable Collection<ThingTypeUID> thingTypeUIDs, @Nullable ThingUID bridgeUID) {
                 return null;
             }

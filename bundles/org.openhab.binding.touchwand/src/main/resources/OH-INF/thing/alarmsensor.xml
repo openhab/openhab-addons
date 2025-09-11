@@ -8,6 +8,7 @@
 			<bridge-type-ref id="bridge"></bridge-type-ref>
 		</supported-bridge-type-refs>
 		<label>TouchWand Alarm Sensor Unit</label>
+		<semantic-equipment-tag>AlarmDevice</semantic-equipment-tag>
 		<channels>
 			<channel id="battery_level" typeId="system.battery-level"/>
 			<channel id="battery_low" typeId="system.low-battery"/>
@@ -21,12 +22,20 @@
 	<channel-type id="leak">
 		<item-type>Switch</item-type>
 		<label>Leak Detected</label>
+		<tags>
+			<tag>Alarm</tag>
+			<tag>Water</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="temperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true">
 		</state>
 	</channel-type>
@@ -36,18 +45,30 @@
 		<description>
 			This channel shows the brightness of the environment in Lux.
 		</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Illuminance</tag>
+		</tags>
 		<state pattern="%d %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="isOpen">
 		<item-type>Contact</item-type>
 		<label>Open Status</label>
 		<category>Contact</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>OpenState</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="motion">
 		<item-type>Switch</item-type>
 		<label>Motion Status</label>
 		<category>Motion</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Motion</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 </thing:thing-descriptions>

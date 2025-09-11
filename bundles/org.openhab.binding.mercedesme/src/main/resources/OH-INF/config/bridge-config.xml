@@ -10,6 +10,11 @@
 			<description>EMail address for MercedesMe account</description>
 			<context>email</context>
 		</parameter>
+		<parameter name="password" type="text" required="true">
+			<label>Password</label>
+			<description>Password for MercedesMe account</description>
+			<context>password</context>
+		</parameter>
 		<parameter name="region" type="text" required="true">
 			<label>Region</label>
 			<options>
@@ -28,16 +33,6 @@
 			<label>Refresh Interval</label>
 			<description>Refresh Interval in Minutes</description>
 			<default>15</default>
-		</parameter>
-		<parameter name="callbackIP" type="text">
-			<label>Callback IP Address</label>
-			<description>IP address for openHAB callback URL</description>
-			<advanced>true</advanced>
-		</parameter>
-		<parameter name="callbackPort" type="integer">
-			<label>Callback Port Number</label>
-			<description>Port Number for openHAB callback URL</description>
-			<advanced>true</advanced>
 		</parameter>
 	</config-description>
 </config-description:config-descriptions>

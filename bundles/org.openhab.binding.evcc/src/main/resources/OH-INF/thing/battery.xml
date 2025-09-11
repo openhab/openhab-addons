@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="evcc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<thing-type id="battery" listed="false">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="server"/>
+		</supported-bridge-type-refs>
+
+		<label>Battery</label>
+		<description>A battery configured in your evcc instance</description>
+	</thing-type>
+	<channel-type id="battery-capacity">
+		<item-type unitHint="kWh">Number:Energy</item-type>
+		<label>Battery Capacity</label>
+		<description>Capacity of this battery</description>
+		<category>Energy</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="battery-controllable">
+		<item-type>Switch</item-type>
+		<label>Battery Controllable</label>
+		<description>Indicates whether this battery is controllable or not</description>
+		<category>Switch</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="ON">Controllable</option>
+				<option value="OFF">Not Controllable</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="battery-power">
+		<item-type unitHint="W">Number:Power</item-type>
+		<label>Battery Power</label>
+		<description>Current power from this battery</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="battery-soc">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Battery SoC</label>
+		<description>Current state of charge of this battery</description>
+		<category>BatteryLevel</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="battery-title">
+		<item-type>String</item-type>
+		<label>Title</label>
+		<description>Battery name displayed in the UI</description>
+		<category>Settings</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+</thing:thing-descriptions>

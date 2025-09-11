@@ -7,7 +7,7 @@
 	<thing-type id="kecontact">
 		<label>KeContact EV Charging Station</label>
 		<description>A KeContact EV Charging Station</description>
-
+		<semantic-equipment-tag>EVSE</semantic-equipment-tag>
 		<channels>
 			<channel id="enabledsystem" typeId="enabledsystem"/>
 			<channel id="enableduser" typeId="enableduser"/>
@@ -112,6 +112,10 @@
 		<item-type>Switch</item-type>
 		<label>Vehicle Plugged</label>
 		<description>State of the vehicle plug, e.g. ON if plugged in, OFF if unplugged</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Enabled</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="locked" advanced="true">
@@ -124,12 +128,20 @@
 		<item-type>Switch</item-type>
 		<label>Enabled (System)</label>
 		<description>Activation state of the wallbox (System)</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="enableduser">
 		<item-type>Switch</item-type>
 		<label>Enabled (User)</label>
 		<description>Activation state of the wallbox (User)</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="false"></state>
 	</channel-type>
 	<channel-type id="x1" advanced="true">
@@ -148,12 +160,20 @@
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Preset Current</label>
 		<description>Preset Current</description>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Current</tag>
+		</tags>
 		<state pattern="%.3f %unit%" readOnly="false"></state>
 	</channel-type>
 	<channel-type id="current" advanced="true">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Current</label>
 		<description>Current</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
 		<state pattern="%.3f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="maxcurrent" advanced="true">
@@ -196,12 +216,20 @@
 		<item-type>Number:ElectricPotential</item-type>
 		<label>Voltage</label>
 		<description>Voltage</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
 		<state pattern="%d %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="power">
 		<item-type>Number:Power</item-type>
 		<label>Power</label>
 		<description>Active Power</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state pattern="%.3f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="powerfactor" advanced="true">
@@ -214,18 +242,30 @@
 		<item-type>Number:Energy</item-type>
 		<label>Energy Session</label>
 		<description>Power consumption</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="totalenergy" advanced="true">
 		<item-type>Number:Energy</item-type>
 		<label>Energy Total</label>
 		<description>Total energy consumption is added up after each completed charging session</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="display" advanced="true">
 		<item-type>String</item-type>
 		<label>Display</label>
 		<description>Text to show on the P30 Series C or X display</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="false"></state>
 	</channel-type>
 	<channel-type id="authreq" advanced="true">

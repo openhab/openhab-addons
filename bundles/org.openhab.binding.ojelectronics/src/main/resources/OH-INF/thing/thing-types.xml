@@ -48,6 +48,7 @@
 		<label>OWD5/MWD5 Thermostat</label>
 		<description>OWD5/MWD5 Thermostat</description>
 		<category>RadiatorControl</category>
+		<semantic-equipment-tag>RadiatorControl</semantic-equipment-tag>
 		<channels>
 			<channel id="floorTemperature" typeId="floorTemperature"/>
 			<channel id="roomTemperature" typeId="roomTemperature"/>
@@ -80,6 +81,10 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Floor Temperature</label>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="groupName">
@@ -100,12 +105,20 @@
 	<channel-type id="heating">
 		<item-type>Contact</item-type>
 		<label>Heating</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>Heating</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="roomTemperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Room Temperature</label>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="thermostatName">
@@ -116,6 +129,10 @@
 	<channel-type id="regulationMode">
 		<item-type>String</item-type>
 		<label>Regulation Mode</label>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="auto">Auto</option>
@@ -132,6 +149,10 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Comfort Set Point Temperature</label>
 		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="comfortEndTime">
@@ -146,11 +167,19 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Manual Set Point Temperature</label>
 		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="vacationEnabled">
 		<item-type>Switch</item-type>
 		<label>Vacation Mode Enabled</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="vacationBeginDay">

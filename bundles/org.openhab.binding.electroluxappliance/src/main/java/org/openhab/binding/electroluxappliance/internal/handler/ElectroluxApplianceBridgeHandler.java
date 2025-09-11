@@ -16,6 +16,7 @@ import static org.openhab.binding.electroluxappliance.internal.ElectroluxApplian
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
@@ -31,6 +32,9 @@ import org.openhab.binding.electroluxappliance.internal.discovery.ElectroluxAppl
 import org.openhab.binding.electroluxappliance.internal.dto.ApplianceDTO;
 import org.openhab.binding.electroluxappliance.internal.listener.TokenUpdateListener;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TranslationProvider;
+import org.openhab.core.storage.Storage;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
@@ -40,6 +44,9 @@ import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,6 +64,8 @@ public class ElectroluxApplianceBridgeHandler extends BaseBridgeHandler implemen
     private final Logger logger = LoggerFactory.getLogger(ElectroluxApplianceBridgeHandler.class);
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_BRIDGE);
+    public static final String CURRENT_AUTH_TOKEN_STORAGE_KEY = "currentConfigToken";
+    public static final String REFRESH_AUTH_TOKEN_STORAGE_KEY = "refreshToken";
 
     private int refreshTimeInSeconds = 300;
     private boolean isCommunicationError = false;
@@ -64,32 +73,55 @@ public class ElectroluxApplianceBridgeHandler extends BaseBridgeHandler implemen
     private final Gson gson;
     private final HttpClient httpClient;
     private final Map<String, ApplianceDTO> electroluxApplianceThings = new ConcurrentHashMap<>();
+    private final TranslationProvider translationProvider;
+    private final LocaleProvider localeProvider;
+    private final Bundle bundle;
+    private final Storage<String> storage;
 
     private @Nullable ElectroluxGroupAPI api;
     private @Nullable ScheduledFuture<?> refreshJob;
     private @Nullable ScheduledFuture<?> instantUpdate;
 
-    public ElectroluxApplianceBridgeHandler(Bridge bridge, HttpClient httpClient, Gson gson) {
+    public ElectroluxApplianceBridgeHandler(Bridge bridge, HttpClient httpClient, Gson gson,
+            @Reference TranslationProvider translationProvider, @Reference LocaleProvider localeProvider,
+            @Reference Storage<String> storage) {
         super(bridge);
         this.httpClient = httpClient;
         this.gson = gson;
+        this.localeProvider = localeProvider;
+        this.translationProvider = translationProvider;
+        this.bundle = FrameworkUtil.getBundle(getClass());
+        this.storage = storage;
     }
 
     @Override
     public void initialize() {
         ElectroluxApplianceBridgeConfiguration config = getConfigAs(ElectroluxApplianceBridgeConfiguration.class);
 
+        // If the saved token was saved with the match config.refreshToken from the config restore it for use
+        @Nullable
+        String storedRefreshToken = storage.get(CURRENT_AUTH_TOKEN_STORAGE_KEY);
+        if (storedRefreshToken != null && config.refreshToken.equals(storedRefreshToken)) {
+            final @Nullable String savedToken = storage.get(REFRESH_AUTH_TOKEN_STORAGE_KEY);
+            if (savedToken != null) {
+                onTokenUpdated(savedToken);
+            }
+        } else {
+            storage.put(CURRENT_AUTH_TOKEN_STORAGE_KEY, config.refreshToken);
+            storage.put(REFRESH_AUTH_TOKEN_STORAGE_KEY, config.refreshToken);
+        }
+
         refreshTimeInSeconds = config.refresh;
 
         if (config.apiKey.isBlank() || config.refreshToken.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Configuration of API key, access and refresh token is mandatory");
+                    getLocalizedText("error.electroluxappliance.bridge.missing-configuration-data"));
         } else if (refreshTimeInSeconds < 10) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Refresh time cannot be less than 10!");
+                    getLocalizedText("error.electroluxappliance.bridge.refresh-too-short", 10));
         } else {
             try {
-                this.api = new ElectroluxGroupAPI(config, gson, httpClient, this);
+                this.api = new ElectroluxGroupAPI(config, gson, httpClient, this, translationProvider, localeProvider);
                 scheduler.execute(() -> {
                     updateStatus(ThingStatus.UNKNOWN);
                     startAutomaticRefresh();
@@ -100,6 +132,11 @@ public class ElectroluxApplianceBridgeHandler extends BaseBridgeHandler implemen
         }
     }
 
+    public String getLocalizedText(String key, @Nullable Object @Nullable... arguments) {
+        String result = translationProvider.getText(bundle, key, key, localeProvider.getLocale(), arguments);
+        return Objects.nonNull(result) ? result : key;
+    }
+
     @Override
     public void onTokenUpdated(@Nullable String newRefreshToken) {
         // Create a new configuration object with the updated tokens
@@ -107,6 +144,7 @@ public class ElectroluxApplianceBridgeHandler extends BaseBridgeHandler implemen
         configuration.put("refreshToken", newRefreshToken);
         // Update the configuration
         updateConfiguration(configuration);
+        storage.put("refreshToken", newRefreshToken);
     }
 
     public Map<String, ApplianceDTO> getElectroluxApplianceThings() {
@@ -128,8 +166,9 @@ public class ElectroluxApplianceBridgeHandler extends BaseBridgeHandler implemen
     }
 
     private boolean refreshAndUpdateStatus() {
-        if (api != null) {
-            if (api.refresh(electroluxApplianceThings, isCommunicationError)) {
+        final ElectroluxGroupAPI apiRef = api;
+        if (apiRef != null) {
+            if (apiRef.refresh(electroluxApplianceThings, isCommunicationError)) {
                 getThing().getThings().stream().forEach(thing -> {
                     ElectroluxApplianceHandler handler = (ElectroluxApplianceHandler) thing.getHandler();
                     if (handler != null) {

@@ -13,6 +13,7 @@
 			and motion data. Used to monitor the door and windows with status, important items alarmed, and can also monitor
 			user's bed activity, to help determine the quality of sleep. Installation: Click the reset button on the sensor in
 			the selected sensor installation location.</description>
+		<semantic-equipment-tag>VibrationSensor</semantic-equipment-tag>
 		<channels>
 			<channel id="action" typeId="vibrationAction"></channel>
 			<channel id="lastAction" typeId="lastAction"></channel>
@@ -42,6 +43,10 @@
 	<channel-type id="tiltAngle">
 		<item-type>Number</item-type>
 		<label>Tilt Angle</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Tilt</tag>
+		</tags>
 		<state step="1" pattern="%d deg" readOnly="true">
 		</state>
 	</channel-type>

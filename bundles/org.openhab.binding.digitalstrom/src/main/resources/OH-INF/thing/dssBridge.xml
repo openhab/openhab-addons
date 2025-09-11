@@ -8,6 +8,7 @@
 	<bridge-type id="dssBridge">
 		<label>@text/dSS_label</label>
 		<description>@text/dSS_desc</description>
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 		<channels>
 			<channel typeId="total_consumption_wh" id="total_consumption_wh"/>
 			<channel typeId="total_energy_wh" id="total_energy_wh"/>

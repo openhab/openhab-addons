@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.tellstick.internal.handler;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.types.Command;
 import org.tellstick.device.iface.Device;
@@ -21,6 +23,7 @@ import org.tellstick.device.iface.Device;
  *
  * @author Jarle Hjortland - Initial contribution
  */
+@NonNullByDefault
 public interface TelldusBridgeHandler {
 
     /**
@@ -46,6 +49,7 @@ public interface TelldusBridgeHandler {
      * @param serialNumber
      * @return
      */
+    @Nullable
     Device getDevice(String serialNumber);
 
     /**
@@ -54,6 +58,7 @@ public interface TelldusBridgeHandler {
      * @param deviceUUId
      * @return
      */
+    @Nullable
     Device getSensor(String deviceUUId);
 
     /**
@@ -67,6 +72,7 @@ public interface TelldusBridgeHandler {
      *
      * @return
      */
+    @Nullable
     TelldusDeviceController getController();
 
     /**

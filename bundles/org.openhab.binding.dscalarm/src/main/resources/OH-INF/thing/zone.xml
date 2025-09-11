@@ -13,6 +13,7 @@
 
 		<label>DSC Alarm Zone</label>
 		<description>Represents a physical device such as a door, window, or motion sensor.</description>
+		<semantic-equipment-tag>AlarmZone</semantic-equipment-tag>
 
 		<channels>
 			<channel id="zone_status" typeId="zone_status">

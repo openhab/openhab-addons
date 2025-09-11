@@ -9,6 +9,7 @@
 		</supported-bridge-type-refs>
 		<label>Multisensor (T, TC, TH, TL, TV, Generic)</label>
 		<description>A 1-wire multisensor (DS1923/DS2438-based)</description>
+		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
 		<config-description-ref uri="thing-type:onewire:mstxconfig"/>
 	</thing-type>
 	<thing-type id="bms">
@@ -17,6 +18,7 @@
 		</supported-bridge-type-refs>
 		<label>Multisensor BMS</label>
 		<description>1-wire multisensor (DS2438-based)</description>
+		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
 		<config-description>
 			<parameter name="id" type="text" required="true">
 				<label>TH(S) Sensor ID</label>
@@ -45,6 +47,7 @@
 		</supported-bridge-type-refs>
 		<label>Multisensor AMS</label>
 		<description>1-wire multisensor (DS2438-based)</description>
+		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
 		<config-description>
 			<parameter name="id" type="text" required="true">
 				<label>TH(S) Sensor ID</label>
@@ -79,6 +82,7 @@
 		</supported-bridge-type-refs>
 		<label>Multisensor EDS</label>
 		<description>A 1-wire multisensor (EDS00xx-based)</description>
+		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
 		<properties>
 			<property name="sensorCount">1</property>
 		</properties>

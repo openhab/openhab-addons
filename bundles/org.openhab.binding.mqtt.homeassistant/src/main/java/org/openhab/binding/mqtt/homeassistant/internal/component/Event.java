@@ -12,20 +12,21 @@
  */
 package org.openhab.binding.mqtt.homeassistant.internal.component;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.graalvm.polyglot.Value;
 import org.openhab.binding.mqtt.generic.ChannelStateUpdateListener;
 import org.openhab.binding.mqtt.generic.values.TextValue;
 import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannelType;
 import org.openhab.binding.mqtt.homeassistant.internal.HomeAssistantChannelTransformation;
-import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
+import org.openhab.binding.mqtt.homeassistant.internal.config.dto.EntityConfiguration;
+import org.openhab.binding.mqtt.homeassistant.internal.config.dto.ROConfiguration;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
-
-import com.google.gson.annotations.SerializedName;
 
 /**
  * A MQTT Event, following the https://www.home-assistant.io/integrations/event.mqttspecification.
@@ -33,35 +34,36 @@ import com.google.gson.annotations.SerializedName;
  * @author Cody Cutrer - Initial contribution
  */
 @NonNullByDefault
-public class Event extends AbstractComponent<Event.ChannelConfiguration> implements ChannelStateUpdateListener {
+public class Event extends AbstractComponent<Event.Configuration> implements ChannelStateUpdateListener {
     public static final String EVENT_TYPE_CHANNEL_ID = "event-type";
     private static final String EVENT_TYPE_TRANFORMATION = "{{ value_json.event_type }}";
 
     /**
      * Configuration class for MQTT component
      */
-    public static class ChannelConfiguration extends AbstractChannelConfiguration {
-        ChannelConfiguration() {
-            super("MQTT Event");
+    public static class Configuration extends EntityConfiguration implements ROConfiguration {
+        private final List<String> eventTypes;
+
+        public Configuration(Map<String, @Nullable Object> config) {
+            super(config, "MQTT Event");
+            eventTypes = getStringList("event_types");
         }
 
-        @SerializedName("state_topic")
-        protected String stateTopic = "";
-
-        @SerializedName("event_types")
-        protected List<String> eventTypes = new ArrayList();
+        List<String> getEventTypes() {
+            return eventTypes;
+        }
     }
 
     private final HomeAssistantChannelTransformation transformation;
 
-    public Event(ComponentFactory.ComponentConfiguration componentConfiguration) {
-        super(componentConfiguration, ChannelConfiguration.class);
+    public Event(ComponentFactory.ComponentContext componentContext) {
+        super(componentContext, Configuration.class);
 
-        transformation = new HomeAssistantChannelTransformation(getJinjava(), this, "");
+        Value template = componentContext.getPython().newRawTemplate(EVENT_TYPE_TRANFORMATION);
+        transformation = new HomeAssistantChannelTransformation(getPython(), this, template, false);
 
-        buildChannel(EVENT_TYPE_CHANNEL_ID, ComponentChannelType.TRIGGER, new TextValue(), getName(), this)
-                .stateTopic(channelConfiguration.stateTopic, channelConfiguration.getValueTemplate()).trigger(true)
-                .build();
+        buildChannel(EVENT_TYPE_CHANNEL_ID, ComponentChannelType.TRIGGER, new TextValue(), "Event", this)
+                .stateTopic(config.getStateTopic(), config.getValueTemplate()).trigger(true).build();
 
         finalizeChannels();
     }
@@ -69,36 +71,36 @@ public class Event extends AbstractComponent<Event.ChannelConfiguration> impleme
     // Overridden to use create it as a trigger channel
     @Override
     protected void addJsonAttributesChannel() {
-        if (channelConfiguration.getJsonAttributesTopic() != null) {
+        String jsonAttributesTopic = config.getJsonAttributesTopic();
+        if (jsonAttributesTopic != null) {
             // It's unclear from the documentation if the JSON attributes value is expected
             // to be the same as the main topic, and thus would always have an event_type
             // attribute (and thus could possibly be shared with multiple components).
             // If that were the case, we would need to intercept events, and check that they
-            // had an event_type that is in channelConfiguration.eventTypes. If/when that
+            // had an event_type that is in config.eventTypes. If/when that
             // becomes an issue, change `channelStateUpdateListener` to `this`, and handle
             // the filtering below.
-            buildChannel(JSON_ATTRIBUTES_CHANNEL_ID, ComponentChannelType.TRIGGER, new TextValue(), getName(),
-                    componentConfiguration.getUpdateListener())
-                    .stateTopic(channelConfiguration.getJsonAttributesTopic(),
-                            channelConfiguration.getJsonAttributesTemplate())
-                    .isAdvanced(true).trigger(true).build();
+            buildChannel(JSON_ATTRIBUTES_CHANNEL_ID, ComponentChannelType.TRIGGER, new TextValue(), "JSON Attributes",
+                    componentContext.getUpdateListener())
+                    .stateTopic(jsonAttributesTopic, config.getJsonAttributesTemplate()).isAdvanced(true).trigger(true)
+                    .build();
         }
     }
 
     @Override
     public void triggerChannel(ChannelUID channel, String event) {
-        String eventType = transformation.apply(EVENT_TYPE_TRANFORMATION, event).orElse(null);
+        String eventType = transformation.apply(event).orElse(null);
         if (eventType == null) {
             // Warning logged from inside the transformation
             return;
         }
         // The TextValue allows anything, because it receives the full JSON, and
         // we don't check the actual event_type against valid event_types until here
-        if (!channelConfiguration.eventTypes.contains(eventType)) {
+        if (!config.getEventTypes().contains(eventType)) {
             return;
         }
 
-        componentConfiguration.getUpdateListener().triggerChannel(channel, eventType);
+        componentContext.getUpdateListener().triggerChannel(channel, eventType);
     }
 
     @Override

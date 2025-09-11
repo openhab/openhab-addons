@@ -7,7 +7,7 @@
 	<thing-type id="player">
 		<label>Volumio Device</label>
 		<description>A Volumio device</description>
-
+		<semantic-equipment-tag>MediaPlayer</semantic-equipment-tag>
 		<channels>
 			<channel id="title" typeId="title"/>
 			<channel id="artist" typeId="artist"/>
@@ -99,6 +99,10 @@
 		<item-type>String</item-type>
 		<label>Current Album</label>
 		<description>Name of the album currently playing</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -107,6 +111,10 @@
 		<label>Volume</label>
 		<description>Set or get the master volume</description>
 		<category>SoundVolume</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>SoundVolume</tag>
+		</tags>
 		<state max="100" min="0" step="10"/>
 	</channel-type>
 
@@ -115,12 +123,20 @@
 		<label>Media Control</label>
 		<description>Control the state of the Volumio Player</description>
 		<category>MediaControl</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>MediaControl</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="album-art" advanced="true">
 		<item-type>Image</item-type>
 		<label>Cover Art</label>
 		<description>Cover Art for the currently played track</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 

@@ -11,6 +11,7 @@
 		Independent mode - does not require Internet connectivity (see <b>connectionMode</b> setting for more options).
 		]]></description>
 		<category>HVAC</category>
+		<semantic-equipment-tag>AirConditioner</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="ac-controls" typeId="ac-controls-group"/>
@@ -182,6 +183,7 @@
 		<br/><i>Requires Internet connectivity for <b>both</b> openHAB and the HVAC device separately.</i>
 		]]></description>
 		<category>HVAC</category>
+		<semantic-equipment-tag>AirConditioner</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="ac-controls" typeId="ac-controls-group"/>
 			<channel-group id="modes" typeId="modes-group"/>
@@ -316,7 +318,7 @@
 		<category>Climate</category>
 		<tags>
 			<tag>Control</tag>
-			<tag>Climate</tag>
+			<tag>Mode</tag>
 		</tags>
 		<state readOnly="false">
 			<options>
@@ -355,6 +357,10 @@
 		<item-type>String</item-type>
 		<label>Fan Speed</label>
 		<category>Fan</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Speed</tag>
+		</tags>
 		<state readOnly="false">
 			<options>
 				<option value="AUTO">AUTO</option>
@@ -432,6 +438,10 @@
 		<item-type>String</item-type>
 		<label>Extended Mode</label>
 		<category>Heating</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="false">
 			<options>
 				<option value="COOL">Cool</option>
@@ -447,6 +457,10 @@
 		<item-type>String</item-type>
 		<label>Airflow Direction</label>
 		<category>Flow</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Airflow</tag>
+		</tags>
 		<state readOnly="false">
 			<options>
 				<option value="AUTO">Swing</option>
@@ -491,10 +505,6 @@
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Power Limit In Eco Mode</label>
 		<category>Price</category>
-		<tags>
-			<tag>Setpoint</tag>
-			<tag>Level</tag>
-		</tags>
 		<state readOnly="false" min="30" max="99" step="1" pattern="%.0f %unit%"/>
 	</channel-type>
 

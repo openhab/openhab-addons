@@ -11,6 +11,7 @@
 		<label>Xiaomi Mi Smart Cube</label>
 		<description>Multifunctional controller equipped with an accelerometer and a gyroscope. Triggers the following
 			actions: move, rotate right, rotate left, flip 90, flip 180, tap twice, shake air, free fall, alert.</description>
+		<semantic-equipment-tag>RemoteControl</semantic-equipment-tag>
 		<channels>
 			<channel id="action" typeId="cubeAction"></channel>
 			<channel id="lastAction" typeId="lastAction"></channel>

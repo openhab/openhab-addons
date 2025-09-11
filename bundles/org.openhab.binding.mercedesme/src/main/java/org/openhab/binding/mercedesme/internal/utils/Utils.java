@@ -12,18 +12,15 @@
  */
 package org.openhab.binding.mercedesme.internal.utils;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -37,7 +34,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.openhab.binding.mercedesme.internal.Constants;
 import org.openhab.binding.mercedesme.internal.MercedesMeHandlerFactory;
-import org.openhab.binding.mercedesme.internal.server.AuthService;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TimeZoneProvider;
@@ -72,20 +68,17 @@ import com.google.protobuf.Descriptors.FieldDescriptor;
 @NonNullByDefault
 public class Utils {
     private static final Logger LOGGER = LoggerFactory.getLogger(Utils.class);
-    private static final List<Integer> PORTS = new ArrayList<>();
     private static final List<CommandOption> FAHRENHEIT_COMMAND_OPTIONS = new ArrayList<>();
     private static final List<CommandOption> CELSIUS_COMMAND_OPTIONS = new ArrayList<>();
-
     private static final int R = 6371; // Radius of the earth
-    private static int port = 8090;
-    private static TimeZoneProvider timeZoneProvider = new TimeZoneProvider() {
+
+    public static TimeZoneProvider timeZoneProvider = new TimeZoneProvider() {
         @Override
         public ZoneId getTimeZone() {
             return ZoneId.systemDefault();
         }
     };
-    private static LocaleProvider localeProvider = new LocaleProvider() {
-
+    public static LocaleProvider localeProvider = new LocaleProvider() {
         @Override
         public Locale getLocale() {
             return Locale.getDefault();
@@ -94,10 +87,13 @@ public class Utils {
     public static final Gson GSON = new Gson();
     public static final Map<String, Integer> ZONE_HASHMAP = new HashMap<>();
     public static final Map<String, Integer> PROGRAM_HASHMAP = new HashMap<>();
+    public static final AccessTokenResponse INVALID_TOKEN = new AccessTokenResponse();
 
     public static void initialize(TimeZoneProvider tzp, LocaleProvider lp) {
         timeZoneProvider = tzp;
         localeProvider = lp;
+        INVALID_TOKEN.setAccessToken(Constants.NOT_SET);
+        INVALID_TOKEN.setRefreshToken(Constants.NOT_SET);
     }
 
     /**
@@ -126,56 +122,18 @@ public class Utils {
     }
 
     /**
-     * Get free port without other Thread interference from other AccountHandlers
-     *
-     * @return number of free port
-     */
-    public static synchronized int getFreePort() {
-        while (PORTS.contains(port)) {
-            port++;
-        }
-        PORTS.add(port);
-        return port;
-    }
-
-    /**
-     * Register port for an AccountHandler
-     */
-    public static synchronized void addPort(int portNr) {
-        if (PORTS.contains(portNr) && portNr != 99999) {
-            LOGGER.warn("Port {} already occupied", portNr);
-        }
-        PORTS.add(portNr);
-    }
-
-    /**
-     * Unregister port for an AccountHandler
-     */
-    public static synchronized void removePort(int portNr) {
-        PORTS.remove(Integer.valueOf(portNr));
-    }
-
-    public static String getCallbackAddress(String callbackIP, int callbackPort) {
-        return "http://" + callbackIP + Constants.COLON + callbackPort + Constants.CALLBACK_ENDPOINT;
-    }
-
-    /**
      * Calculate REST API server address according to region
      *
      * @param region - configured region
      * @return base REST server address
      */
     public static String getRestAPIServer(String region) {
-        switch (region) {
-            case Constants.REGION_APAC:
-                return Constants.REST_API_BASE_PA;
-            case Constants.REGION_CHINA:
-                return Constants.REST_API_BASE_CN;
-            case Constants.REGION_NORAM:
-                return Constants.REST_API_BASE_NA;
-            default:
-                return Constants.REST_API_BASE;
-        }
+        return switch (region) {
+            case Constants.REGION_APAC -> Constants.REST_API_BASE_PA;
+            case Constants.REGION_CHINA -> Constants.REST_API_BASE_CN;
+            case Constants.REGION_NORAM -> Constants.REST_API_BASE_NA;
+            default -> Constants.REST_API_BASE;
+        };
     }
 
     /**
@@ -185,16 +143,27 @@ public class Utils {
      * @return base login server address
      */
     public static String getLoginServer(String region) {
-        switch (region) {
-            case Constants.REGION_APAC:
-                return Constants.LOGIN_BASE_URI_PA;
-            case Constants.REGION_CHINA:
-                return Constants.LOGIN_BASE_URI_CN;
-            case Constants.REGION_NORAM:
-                return Constants.LOGIN_BASE_URI_NA;
-            default:
-                return Constants.LOGIN_BASE_URI;
-        }
+        return switch (region) {
+            case Constants.REGION_APAC -> Constants.LOGIN_BASE_URI_PA;
+            case Constants.REGION_CHINA -> Constants.LOGIN_BASE_URI_CN;
+            case Constants.REGION_NORAM -> Constants.LOGIN_BASE_URI_NA;
+            default -> Constants.LOGIN_BASE_URI;
+        };
+    }
+
+    /**
+     * Calculate Widget API server address according to region
+     *
+     * @param region - configured region
+     * @return widget login server address
+     */
+    public static String getWidgetServer(String region) {
+        return switch (region) {
+            case Constants.REGION_APAC -> Constants.WIDGET_API_BASE_PA;
+            case Constants.REGION_CHINA -> Constants.WIDGET_API_BASE_CN;
+            case Constants.REGION_NORAM -> Constants.WIDGET_API_BASE_NA;
+            default -> Constants.WIDGET_API_BASE;
+        };
     }
 
     /**
@@ -204,16 +173,12 @@ public class Utils {
      * @return websocket base server address
      */
     public static String getWebsocketServer(String region) {
-        switch (region) {
-            case Constants.REGION_APAC:
-                return Constants.WEBSOCKET_API_BASE_PA;
-            case Constants.REGION_CHINA:
-                return Constants.WEBSOCKET_API_BASE_CN;
-            case Constants.REGION_NORAM:
-                return Constants.WEBSOCKET_API_BASE_PA;
-            default:
-                return Constants.WEBSOCKET_API_BASE;
-        }
+        return switch (region) {
+            case Constants.REGION_APAC -> Constants.WEBSOCKET_API_BASE_PA;
+            case Constants.REGION_CHINA -> Constants.WEBSOCKET_API_BASE_CN;
+            case Constants.REGION_NORAM -> Constants.WEBSOCKET_API_BASE_PA;
+            default -> Constants.WEBSOCKET_API_BASE;
+        };
     }
 
     /**
@@ -223,16 +188,12 @@ public class Utils {
      * @return application name as String
      */
     public static String getApplication(String region) {
-        switch (region) {
-            case Constants.REGION_APAC:
-                return Constants.X_APPLICATIONNAME_AP;
-            case Constants.REGION_CHINA:
-                return Constants.X_APPLICATIONNAME_CN;
-            case Constants.REGION_NORAM:
-                return Constants.X_APPLICATIONNAME_US;
-            default:
-                return Constants.X_APPLICATIONNAME;
-        }
+        return switch (region) {
+            case Constants.REGION_APAC -> Constants.X_APPLICATIONNAME_AP;
+            case Constants.REGION_CHINA -> Constants.X_APPLICATIONNAME_CN;
+            case Constants.REGION_NORAM -> Constants.X_APPLICATIONNAME_US;
+            default -> Constants.X_APPLICATIONNAME;
+        };
     }
 
     /**
@@ -242,16 +203,12 @@ public class Utils {
      * @return application version as String
      */
     public static String getRisApplicationVersion(String region) {
-        switch (region) {
-            case Constants.REGION_APAC:
-                return Constants.RIS_APPLICATION_VERSION_PA;
-            case Constants.REGION_CHINA:
-                return Constants.RIS_APPLICATION_VERSION_CN;
-            case Constants.REGION_NORAM:
-                return Constants.RIS_APPLICATION_VERSION_NA;
-            default:
-                return Constants.RIS_APPLICATION_VERSION;
-        }
+        return switch (region) {
+            case Constants.REGION_APAC -> Constants.RIS_APPLICATION_VERSION_PA;
+            case Constants.REGION_CHINA -> Constants.RIS_APPLICATION_VERSION_CN;
+            case Constants.REGION_NORAM -> Constants.RIS_APPLICATION_VERSION_NA;
+            default -> Constants.RIS_APPLICATION_VERSION;
+        };
     }
 
     /**
@@ -261,14 +218,11 @@ public class Utils {
      * @return user agent as String
      */
     public static String getUserAgent(String region) {
-        switch (region) {
-            case Constants.REGION_APAC:
-                return Constants.WEBSOCKET_USER_AGENT_PA;
-            case Constants.REGION_CHINA:
-                return Constants.WEBSOCKET_USER_AGENT_CN;
-            default:
-                return Constants.WEBSOCKET_USER_AGENT;
-        }
+        return switch (region) {
+            case Constants.REGION_APAC -> Constants.WEBSOCKET_USER_AGENT_PA;
+            case Constants.REGION_CHINA -> Constants.WEBSOCKET_USER_AGENT_CN;
+            default -> Constants.WEBSOCKET_USER_AGENT;
+        };
     }
 
     /**
@@ -278,47 +232,10 @@ public class Utils {
      * @return SDK version as String
      */
     public static String getRisSDKVersion(String region) {
-        switch (region) {
-            case Constants.REGION_CHINA:
-                return Constants.RIS_SDK_VERSION_CN;
-            default:
-                return Constants.RIS_SDK_VERSION;
-        }
-    }
-
-    /**
-     * Calculate authorization config URL as pre-configuration prior to authorization call
-     *
-     * @param region - configured region
-     * @return authorization config URL as String
-     */
-    public static String getAuthConfigURL(String region) {
-        return getRestAPIServer(region) + "/v1/config";
-    }
-
-    /**
-     * Calculate login app id according to region
-     *
-     * @param region - configured region
-     * @return login app id as String
-     */
-    public static String getLoginAppId(String region) {
-        switch (region) {
-            case Constants.REGION_CHINA:
-                return Constants.LOGIN_APP_ID_CN;
-            default:
-                return Constants.LOGIN_APP_ID;
-        }
-    }
-
-    /**
-     * Calculate authorization URL for authorization call
-     *
-     * @param region - configured region
-     * @return authorization URL as String
-     */
-    public static String getAuthURL(String region) {
-        return getRestAPIServer(region) + "/v1/login";
+        return switch (region) {
+            case Constants.REGION_CHINA -> Constants.RIS_SDK_VERSION_CN;
+            default -> Constants.RIS_SDK_VERSION;
+        };
     }
 
     /**
@@ -329,43 +246,6 @@ public class Utils {
      */
     public static String getTokenUrl(String region) {
         return getLoginServer(region) + "/as/token.oauth2";
-    }
-
-    /**
-     * Decode String as Base64 from stored AccessTokenResponse
-     *
-     * @param token - Base64 String from storage
-     * @return AccessTokenResponse decoded from String, invalid token otherwise
-     */
-    public static AccessTokenResponse fromString(String token) {
-        try {
-            byte[] data = Base64.getDecoder().decode(token);
-            ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(data));
-            Object o = ois.readObject();
-            ois.close();
-            return (AccessTokenResponse) o;
-        } catch (IOException | ClassNotFoundException e) {
-            LOGGER.warn("Error converting string to token {}", e.getMessage());
-        }
-        return AuthService.INVALID_TOKEN;
-    }
-
-    /**
-     * Encode AccessTokenResponse as Base64 String for storage
-     *
-     * @param token - AccessTokenResponse to convert
-     */
-    public static String toString(AccessTokenResponse token) {
-        try {
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            ObjectOutputStream oos = new ObjectOutputStream(baos);
-            oos.writeObject(token);
-            oos.close();
-            return Base64.getEncoder().encodeToString(baos.toByteArray());
-        } catch (IOException e) {
-            LOGGER.warn("Error converting token to string {}", e.getMessage());
-        }
-        return Constants.NOT_SET;
     }
 
     /**
@@ -713,5 +593,23 @@ public class Utils {
         } else {
             return new ArrayList<CommandOption>();
         }
+    }
+
+    /**
+     * Splits a URL query into a Map of key-value pairs
+     *
+     * @param url - URL to split
+     * @return Map with key-value pairs from query
+     * @throws UnsupportedEncodingException if decoding fails
+     */
+    public static Map<String, String> getQueryParams(String query) throws UnsupportedEncodingException {
+        Map<String, String> queryPairs = new LinkedHashMap<>();
+        String[] pairs = query.split("&");
+        for (String pair : pairs) {
+            int idx = pair.indexOf("=");
+            queryPairs.put(URLDecoder.decode(pair.substring(0, idx), "UTF-8"),
+                    URLDecoder.decode(pair.substring(idx + 1), "UTF-8"));
+        }
+        return queryPairs;
     }
 }

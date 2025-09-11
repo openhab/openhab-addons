@@ -7,6 +7,7 @@
 	<bridge-type id="hub">
 		<label>PowerView Hub</label>
 		<description>Hunter Douglas (Luxaflex) PowerView Hub</description>
+		<semantic-equipment-tag>NetworkAppliance</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="scenes" typeId="scenes"/>

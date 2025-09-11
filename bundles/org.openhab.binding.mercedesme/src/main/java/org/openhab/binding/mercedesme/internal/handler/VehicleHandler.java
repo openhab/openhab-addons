@@ -24,8 +24,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.measure.Unit;
 import javax.measure.quantity.Length;
@@ -98,6 +98,7 @@ import com.daimler.mbcarkit.proto.VehicleCommands.ZEVPreconditioningStart;
 import com.daimler.mbcarkit.proto.VehicleCommands.ZEVPreconditioningStop;
 import com.daimler.mbcarkit.proto.VehicleCommands.ZEVPreconditioningType;
 import com.daimler.mbcarkit.proto.VehicleEvents;
+import com.daimler.mbcarkit.proto.VehicleEvents.ChargeProgram;
 import com.daimler.mbcarkit.proto.VehicleEvents.ChargeProgramParameters;
 import com.daimler.mbcarkit.proto.VehicleEvents.ChargeProgramsValue;
 import com.daimler.mbcarkit.proto.VehicleEvents.TemperaturePointsValue;
@@ -139,8 +140,9 @@ public class VehicleHandler extends BaseThingHandler {
     private boolean updateRunning = false;
 
     Map<String, ChannelStateMap> eventStorage = new HashMap<>();
-    Optional<AccountHandler> accountHandler = Optional.empty();
-    Optional<VehicleConfiguration> config = Optional.empty();
+    VehicleConfiguration config = new VehicleConfiguration();
+    @Nullable
+    AccountHandler accountHandler;
 
     public VehicleHandler(Thing thing, LocationProvider lp, MercedesMeCommandOptionProvider cop,
             MercedesMeStateOptionProvider sop) {
@@ -153,21 +155,20 @@ public class VehicleHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        config = Optional.of(getConfigAs(VehicleConfiguration.class));
+        config = getConfigAs(VehicleConfiguration.class);
         Bridge bridge = getBridge();
         if (bridge != null) {
             updateStatus(ThingStatus.UNKNOWN);
             BridgeHandler handler = bridge.getHandler();
-            if (handler != null) {
+            if (handler instanceof AccountHandler accountHandler) {
                 setCommandStateOptions();
-                accountHandler = Optional.of((AccountHandler) handler);
-                accountHandler.get().registerVin(config.get().vin, this);
+                this.accountHandler = accountHandler;
+                accountHandler.registerVin(config.vin, this);
             } else {
                 throw new IllegalStateException("BridgeHandler is null");
             }
         } else {
-            String textKey = Constants.STATUS_TEXT_PREFIX + "vehicle" + Constants.STATUS_BRIDGE_MISSING;
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, textKey);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, STATUS_BRIDGE_MISSING);
         }
     }
 
@@ -182,9 +183,10 @@ public class VehicleHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
-        accountHandler.ifPresent(ah -> {
-            ah.unregisterVin(config.get().vin);
-        });
+        AccountHandler localAccountHandler = accountHandler;
+        if (localAccountHandler != null) {
+            localAccountHandler.unregisterVin(config.vin);
+        }
         eventQueue.clear();
         super.dispose();
     }
@@ -197,26 +199,25 @@ public class VehicleHandler extends BaseThingHandler {
         logger.trace("Received command {} {} for {}", command.getClass(), command, channelUID);
 
         if (command instanceof RefreshType) {
-            if (MB_KEY_FEATURE_CAPABILITIES.equals(channelUID.getIdWithoutGroup())
-                    || MB_KEY_COMMAND_CAPABILITIES.equals(channelUID.getIdWithoutGroup())) {
-                accountHandler.ifPresent(ah -> {
-                    ah.getVehicleCapabilities(config.get().vin);
-                });
-            } else {
-                // deliver from event storage
-                ChannelStateMap csm = eventStorage.get(channelUID.getId());
-                if (csm != null) {
-                    updateChannel(csm);
-                }
+            // deliver from event storage
+            ChannelStateMap csm = eventStorage.get(channelUID.getId());
+            if (csm != null) {
+                updateChannel(csm);
             }
             // ensure unit update
             unitStorage.remove(channelUID.getIdWithoutGroup());
             return;
         }
-        var crBuilder = CommandRequest.newBuilder().setVin(config.get().vin).setRequestId(UUID.randomUUID().toString());
+
+        AccountHandler localAccountHandler = accountHandler;
+        if (localAccountHandler == null) {
+            logger.info("Sending command not possible without active account");
+            return;
+        }
+        var crBuilder = CommandRequest.newBuilder().setVin(config.vin).setRequestId(UUID.randomUUID().toString());
         String group = channelUID.getGroupId();
         String channel = channelUID.getIdWithoutGroup();
-        String pin = accountHandler.get().config.get().pin;
+        String pin = localAccountHandler.config.pin;
         if (group == null) {
             logger.trace("No command {} found for {}", command, channel);
             return;
@@ -237,11 +238,11 @@ public class VehicleHandler extends BaseThingHandler {
                             }
                             EngineStart eStart = EngineStart.newBuilder().setPin(pin).build();
                             CommandRequest cr = crBuilder.setEngineStart(eStart).build();
-                            accountHandler.get().sendCommand(createCM(cr));
+                            localAccountHandler.sendCommand(createCM(cr));
                         } else if (commandValue == 0) {
                             EngineStop eStop = EngineStop.newBuilder().build();
                             CommandRequest cr = crBuilder.setEngineStop(eStop).build();
-                            accountHandler.get().sendCommand(createCM(cr));
+                            localAccountHandler.sendCommand(createCM(cr));
                         }
                         break;
                     case OH_CHANNEL_WINDOWS:
@@ -258,12 +259,12 @@ public class VehicleHandler extends BaseThingHandler {
                                 }
                                 WindowsVentilate wv = WindowsVentilate.newBuilder().setPin(pin).build();
                                 cr = crBuilder.setWindowsVentilate(wv).build();
-                                accountHandler.get().sendCommand(createCM(cr));
+                                localAccountHandler.sendCommand(createCM(cr));
                                 break;
                             case 1:
                                 WindowsClose wc = WindowsClose.newBuilder().build();
                                 cr = crBuilder.setWindowsClose(wc).build();
-                                accountHandler.get().sendCommand(createCM(cr));
+                                localAccountHandler.sendCommand(createCM(cr));
                                 break;
                             case 2:
                                 if (Constants.NOT_SET.equals(pin)) {
@@ -272,7 +273,7 @@ public class VehicleHandler extends BaseThingHandler {
                                 }
                                 WindowsOpen wo = WindowsOpen.newBuilder().setPin(pin).build();
                                 cr = crBuilder.setWindowsOpen(wo).build();
-                                accountHandler.get().sendCommand(createCM(cr));
+                                localAccountHandler.sendCommand(createCM(cr));
                                 break;
                             default:
                                 logger.trace("No Windows movement known for {}", command);
@@ -288,7 +289,7 @@ public class VehicleHandler extends BaseThingHandler {
                             case 0:
                                 DoorsLock dl = DoorsLock.newBuilder().build();
                                 cr = crBuilder.setDoorsLock(dl).build();
-                                accountHandler.get().sendCommand(createCM(cr));
+                                localAccountHandler.sendCommand(createCM(cr));
                                 break;
                             case 1:
                                 if (Constants.NOT_SET.equals(pin)) {
@@ -297,7 +298,7 @@ public class VehicleHandler extends BaseThingHandler {
                                 }
                                 DoorsUnlock du = DoorsUnlock.newBuilder().setPin(pin).build();
                                 cr = crBuilder.setDoorsUnlock(du).build();
-                                accountHandler.get().sendCommand(createCM(cr));
+                                localAccountHandler.sendCommand(createCM(cr));
                                 break;
                             default:
                                 logger.trace("No lock command mapped to {}", command);
@@ -328,7 +329,7 @@ public class VehicleHandler extends BaseThingHandler {
                                                     .setTemperatureInCelsius(targetTempCelsius.intValue()).build())
                                     .build();
                             CommandRequest cr = crBuilder.setTemperatureConfigure(tc).build();
-                            accountHandler.get().sendCommand(createCM(cr));
+                            localAccountHandler.sendCommand(createCM(cr));
                         } else {
                             logger.trace("Temperature {} shall be QuantityType with degree Celsius or Fahrenheit",
                                     command);
@@ -343,12 +344,12 @@ public class VehicleHandler extends BaseThingHandler {
                             ZEVPreconditioningStart precondStart = ZEVPreconditioningStart.newBuilder()
                                     .setType(ZEVPreconditioningType.NOW).build();
                             CommandRequest cr = crBuilder.setZevPreconditioningStart(precondStart).build();
-                            accountHandler.get().sendCommand(createCM(cr));
+                            localAccountHandler.sendCommand(createCM(cr));
                         } else {
                             ZEVPreconditioningStop precondStop = ZEVPreconditioningStop.newBuilder()
                                     .setType(ZEVPreconditioningType.NOW).build();
                             CommandRequest cr = crBuilder.setZevPreconditioningStop(precondStop).build();
-                            accountHandler.get().sendCommand(createCM(cr));
+                            localAccountHandler.sendCommand(createCM(cr));
                         }
                         break;
                     case OH_CHANNEL_FRONT_LEFT:
@@ -365,11 +366,11 @@ public class VehicleHandler extends BaseThingHandler {
                         if (OnOffType.ON.equals(command)) {
                             AuxheatStart auxHeatStart = AuxheatStart.newBuilder().build();
                             CommandRequest cr = crBuilder.setAuxheatStart(auxHeatStart).build();
-                            accountHandler.get().sendCommand(createCM(cr));
+                            localAccountHandler.sendCommand(createCM(cr));
                         } else {
                             AuxheatStop auxHeatStop = AuxheatStop.newBuilder().build();
                             CommandRequest cr = crBuilder.setAuxheatStop(auxHeatStop).build();
-                            accountHandler.get().sendCommand(createCM(cr));
+                            localAccountHandler.sendCommand(createCM(cr));
                         }
                         break;
                     case OH_CHANNEL_ZONE:
@@ -406,13 +407,13 @@ public class VehicleHandler extends BaseThingHandler {
                                 sps = SigPosStart.newBuilder().setSigposType(SigposType.LIGHT_ONLY)
                                         .setLightType(LightType.DIPPED_HEAD_LIGHT).setSigposDuration(10).build();
                                 cr = crBuilder.setSigposStart(sps).build();
-                                accountHandler.get().sendCommand(createCM(cr));
+                                localAccountHandler.sendCommand(createCM(cr));
                                 break;
                             case 1: // horn
                                 sps = SigPosStart.newBuilder().setSigposType(SigposType.HORN_ONLY).setHornRepeat(3)
                                         .setHornType(HornType.HORN_LOW_VOLUME).build();
                                 cr = crBuilder.setSigposStart(sps).build();
-                                accountHandler.get().sendCommand(createCM(cr));
+                                localAccountHandler.sendCommand(createCM(cr));
                                 break;
                             default:
                                 logger.trace("No Positioning known for {}", command);
@@ -471,7 +472,7 @@ public class VehicleHandler extends BaseThingHandler {
                                 .setChargeProgramValue(selectedChargeProgram).setMaxSoc(maxSocValue)
                                 .setAutoUnlock(autoUnlockValue).build();
                         CommandRequest cr = crBuilder.setChargeProgramConfigure(cpc).build();
-                        accountHandler.get().sendCommand(createCM(cr));
+                        localAccountHandler.sendCommand(createCM(cr));
                     }
                 }
                 break; // charge group
@@ -487,7 +488,7 @@ public class VehicleHandler extends BaseThingHandler {
                             case 0:
                                 SunroofClose sc = SunroofClose.newBuilder().build();
                                 cr = crBuilder.setSunroofClose(sc).build();
-                                accountHandler.get().sendCommand(createCM(cr));
+                                localAccountHandler.sendCommand(createCM(cr));
                                 break;
                             case 1:
                                 if (Constants.NOT_SET.equals(pin)) {
@@ -496,7 +497,7 @@ public class VehicleHandler extends BaseThingHandler {
                                 }
                                 SunroofOpen so = SunroofOpen.newBuilder().setPin(pin).build();
                                 cr = crBuilder.setSunroofOpen(so).build();
-                                accountHandler.get().sendCommand(createCM(cr));
+                                localAccountHandler.sendCommand(createCM(cr));
                                 break;
                             case 2:
                                 if (Constants.NOT_SET.equals(pin)) {
@@ -504,7 +505,7 @@ public class VehicleHandler extends BaseThingHandler {
                                 }
                                 SunroofLift sl = SunroofLift.newBuilder().setPin(pin).build();
                                 cr = crBuilder.setSunroofLift(sl).build();
-                                accountHandler.get().sendCommand(createCM(cr));
+                                localAccountHandler.sendCommand(createCM(cr));
                                 break;
                             default:
                                 logger.trace("No Sunroof movement known for {}", command);
@@ -551,10 +552,13 @@ public class VehicleHandler extends BaseThingHandler {
                 }
             });
             ZEVPreconditioningConfigureSeats seats = builder.build();
-            CommandRequest cr = CommandRequest.newBuilder().setVin(config.get().vin)
+            CommandRequest cr = CommandRequest.newBuilder().setVin(config.vin)
                     .setRequestId(UUID.randomUUID().toString()).setZevPreconditionConfigureSeats(seats).build();
             ClientMessage cm = ClientMessage.newBuilder().setCommandRequest(cr).build();
-            accountHandler.get().sendCommand(cm);
+            AccountHandler localAccountHandler = accountHandler;
+            if (localAccountHandler != null) {
+                localAccountHandler.sendCommand(cm);
+            }
         }
     }
 
@@ -649,6 +653,8 @@ public class VehicleHandler extends BaseThingHandler {
                 StringType.valueOf(combinedProto));
         updateChannel(dataUpdateMap);
 
+        // check if soc or soc-max value changed
+        final AtomicBoolean socChanged = new AtomicBoolean(false);
         Map<String, VehicleAttributeStatus> atts = update.getAttributesMap();
         /**
          * handle "simple" values
@@ -699,35 +705,16 @@ public class VehicleHandler extends BaseThingHandler {
                         break;
                     case OH_CHANNEL_SOC:
                         if (!Constants.COMBUSTION.equals(vehicleType)) {
-                            if (config.get().batteryCapacity > 0) {
-                                float socValue = ((QuantityType<?>) csm.getState()).floatValue();
-                                float batteryCapacity = config.get().batteryCapacity;
-                                float chargedValue = Math.round(socValue * 1000 * batteryCapacity / 1000) / (float) 100;
-                                ChannelStateMap charged = new ChannelStateMap(OH_CHANNEL_CHARGED, GROUP_RANGE,
-                                        QuantityType.valueOf(chargedValue, Units.KILOWATT_HOUR));
-                                updateChannel(charged);
-                                float unchargedValue = Math.round((100 - socValue) * 1000 * batteryCapacity / 1000)
-                                        / (float) 100;
-                                ChannelStateMap uncharged = new ChannelStateMap(OH_CHANNEL_UNCHARGED, GROUP_RANGE,
-                                        QuantityType.valueOf(unchargedValue, Units.KILOWATT_HOUR));
-                                updateChannel(uncharged);
-                            } else {
-                                ChannelStateMap charged = new ChannelStateMap(OH_CHANNEL_CHARGED, GROUP_RANGE,
-                                        QuantityType.valueOf(0, Units.KILOWATT_HOUR));
-                                updateChannel(charged);
-                                ChannelStateMap uncharged = new ChannelStateMap(OH_CHANNEL_UNCHARGED, GROUP_RANGE,
-                                        QuantityType.valueOf(0, Units.KILOWATT_HOUR));
-                                updateChannel(uncharged);
-                            }
+                            socChanged.set(true);
                         } else {
                             block = true;
                         }
                         break;
                     case OH_CHANNEL_FUEL_LEVEL:
                         if (!Constants.BEV.equals(vehicleType)) {
-                            if (config.get().fuelCapacity > 0) {
+                            if (config.fuelCapacity > 0) {
                                 float fuelLevelValue = ((QuantityType<?>) csm.getState()).floatValue();
-                                float fuelCapacity = config.get().fuelCapacity;
+                                float fuelCapacity = config.fuelCapacity;
                                 float litersInTank = Math.round(fuelLevelValue * 1000 * fuelCapacity / 1000)
                                         / (float) 100;
                                 ChannelStateMap tankFilled = new ChannelStateMap(OH_CHANNEL_TANK_REMAIN, GROUP_RANGE,
@@ -889,7 +876,7 @@ public class VehicleHandler extends BaseThingHandler {
         }
 
         /**
-         * handle Charge Program
+         * handle Charge Program values
          */
         if (Constants.BEV.equals(thing.getThingTypeUID().getId())
                 || Constants.HYBRID.equals(thing.getThingTypeUID().getId())) {
@@ -919,20 +906,6 @@ public class VehicleHandler extends BaseThingHandler {
                     ChannelUID cuid = new ChannelUID(thing.getUID(), GROUP_CHARGE, OH_CHANNEL_PROGRAM);
                     mmcop.setCommandOptions(cuid, commandOptions);
                     mmsop.setStateOptions(cuid, stateOptions);
-                    vas = atts.get(MB_KEY_SELECTED_CHARGE_PROGRAM);
-                    if (vas != null) {
-                        selectedChargeProgram = (int) vas.getIntValue();
-                        ChargeProgramParameters cpp = cpv.getChargeProgramParameters(selectedChargeProgram);
-                        ChannelStateMap programMap = new ChannelStateMap(OH_CHANNEL_PROGRAM, GROUP_CHARGE,
-                                DecimalType.valueOf(Integer.toString(selectedChargeProgram)));
-                        updateChannel(programMap);
-                        ChannelStateMap maxSocMap = new ChannelStateMap(OH_CHANNEL_MAX_SOC, GROUP_CHARGE,
-                                QuantityType.valueOf((double) cpp.getMaxSoc(), Units.PERCENT));
-                        updateChannel(maxSocMap);
-                        ChannelStateMap autoUnlockMap = new ChannelStateMap(OH_CHANNEL_AUTO_UNLOCK, GROUP_CHARGE,
-                                OnOffType.from(cpp.getAutoUnlock()));
-                        updateChannel(autoUnlockMap);
-                    }
                 } else {
                     logger.trace("No Charge Program property available for {}", thing.getThingTypeUID());
                 }
@@ -940,6 +913,42 @@ public class VehicleHandler extends BaseThingHandler {
                 if (fullUpdate) {
                     logger.trace("No Charge Programs found");
                 }
+            }
+
+            /**
+             * handle Charge Program index
+             */
+            vas = atts.get(MB_KEY_SELECTED_CHARGE_PROGRAM);
+            if (vas != null) {
+                selectedChargeProgram = (int) vas.getIntValue();
+            } else {
+                if (fullUpdate) {
+                    selectedChargeProgram = ChargeProgram.DEFAULT_CHARGE_PROGRAM_VALUE;
+                }
+            }
+            if (selectedChargeProgram != -1 && !chargeGroupValueStorage.isEmpty()) {
+                if (chargeGroupValueStorage.has(Integer.toString(selectedChargeProgram))) {
+                    ChannelStateMap programMap = new ChannelStateMap(OH_CHANNEL_PROGRAM, GROUP_CHARGE,
+                            new DecimalType(selectedChargeProgram));
+                    updateChannel(programMap);
+                    JSONObject chargeProgramValues = chargeGroupValueStorage
+                            .getJSONObject(Integer.toString(selectedChargeProgram));
+                    int maxSocToSelect = chargeProgramValues.getInt(Constants.MAX_SOC_KEY);
+                    ChannelStateMap maxSocMap = new ChannelStateMap(OH_CHANNEL_MAX_SOC, GROUP_CHARGE,
+                            QuantityType.valueOf(maxSocToSelect, Units.PERCENT));
+                    updateChannel(maxSocMap);
+                    socChanged.set(true);
+                    boolean autoUnlockToSelect = chargeProgramValues.getBoolean(Constants.AUTO_UNLOCK_KEY);
+                    ChannelStateMap autoUnlockMap = new ChannelStateMap(OH_CHANNEL_AUTO_UNLOCK, GROUP_CHARGE,
+                            OnOffType.from(autoUnlockToSelect));
+                    updateChannel(autoUnlockMap);
+                } else {
+                    logger.trace("Charge Program index {} not found in {}", selectedChargeProgram,
+                            chargeGroupValueStorage);
+                }
+            } else {
+                logger.trace("Either Charge Program index {} not valid or charge programs not supported {} ",
+                        selectedChargeProgram, chargeGroupValueStorage);
             }
         }
 
@@ -973,10 +982,54 @@ public class VehicleHandler extends BaseThingHandler {
             }
         }
 
+        // after update check energy values
+        if (socChanged.get()) {
+            energyUpdate();
+        }
         /**
          * Check if Websocket shall be kept alive
          */
-        accountHandler.get().keepAlive(ignitionState == 4 || chargingState);
+        AccountHandler localAccountHandler = accountHandler;
+        if (localAccountHandler != null) {
+            localAccountHandler.keepAlive(config.vin, ignitionState == 4 || chargingState);
+        }
+    }
+
+    private void energyUpdate() {
+        ChannelStateMap socMap = eventStorage.get(GROUP_RANGE + "#" + OH_CHANNEL_SOC);
+        ChannelStateMap socMaxMap = eventStorage.get(GROUP_CHARGE + "#" + OH_CHANNEL_MAX_SOC);
+        if (config.batteryCapacity > 0 && socMap != null) {
+            float socValue = ((QuantityType<?>) socMap.getState()).floatValue();
+            float batteryCapacity = config.batteryCapacity;
+            float chargedValue = Math.round(socValue * batteryCapacity) / 100f;
+            ChannelStateMap charged = new ChannelStateMap(OH_CHANNEL_CHARGED, GROUP_RANGE,
+                    QuantityType.valueOf(chargedValue, Units.KILOWATT_HOUR));
+            updateChannel(charged);
+            float unchargedValue = Math.round((100 - socValue) * batteryCapacity) / 100f;
+            ChannelStateMap uncharged = new ChannelStateMap(OH_CHANNEL_UNCHARGED, GROUP_RANGE,
+                    QuantityType.valueOf(unchargedValue, Units.KILOWATT_HOUR));
+            updateChannel(uncharged);
+            if (socMaxMap != null) {
+                float socMaxValue = ((QuantityType<?>) socMaxMap.getState()).floatValue();
+                float percentToMax = socMaxValue > socValue ? socMaxValue - socValue : 0;
+                float energyToMaxValue = Math.round(percentToMax * batteryCapacity) / 100f;
+                ChannelStateMap energyToMax = new ChannelStateMap(OH_CHANNEL_ENERGY_TO_MAX_SOC, GROUP_RANGE,
+                        QuantityType.valueOf(energyToMaxValue, Units.KILOWATT_HOUR));
+                updateChannel(energyToMax);
+            } else {
+                ChannelStateMap energyToMax = new ChannelStateMap(OH_CHANNEL_ENERGY_TO_MAX_SOC, GROUP_RANGE,
+                        UnDefType.NULL);
+                updateChannel(energyToMax);
+            }
+        } else {
+            ChannelStateMap charged = new ChannelStateMap(OH_CHANNEL_CHARGED, GROUP_RANGE, UnDefType.NULL);
+            updateChannel(charged);
+            ChannelStateMap uncharged = new ChannelStateMap(OH_CHANNEL_UNCHARGED, GROUP_RANGE, UnDefType.NULL);
+            updateChannel(uncharged);
+            ChannelStateMap energyToMax = new ChannelStateMap(OH_CHANNEL_ENERGY_TO_MAX_SOC, GROUP_RANGE,
+                    UnDefType.NULL);
+            updateChannel(energyToMax);
+        }
     }
 
     /**
@@ -1022,14 +1075,14 @@ public class VehicleHandler extends BaseThingHandler {
         /**
          * Check correct channel patterns
          */
-        if (csm.hasUomObserver()) {
-            UOMObserver deliveredObserver = csm.getUomObserver();
+        UOMObserver deliveredObserver = csm.getUomObserver();
+        if (deliveredObserver != null) {
             UOMObserver storedObserver = unitStorage.get(channel);
-            boolean change = true;
+            boolean change = storedObserver == null;
             if (storedObserver != null) {
                 change = !storedObserver.equals(deliveredObserver);
             }
-            // Channel adaptions for items with configurable units
+            // Channel adaption for items with configurable units
             String pattern = deliveredObserver.getPattern(csm.getGroup(), csm.getChannel());
             if (pattern != null) {
                 if (pattern.startsWith("%") && change) {
@@ -1077,37 +1130,6 @@ public class VehicleHandler extends BaseThingHandler {
         }
     }
 
-    @Override
-    public void updateStatus(ThingStatus ts, ThingStatusDetail tsd, @Nullable String details) {
-        super.updateStatus(ts, tsd, details);
-    }
-
-    @Override
-    public void updateStatus(ThingStatus ts) {
-        if (ThingStatus.ONLINE.equals(ts) && !ThingStatus.ONLINE.equals(thing.getStatus())) {
-            if (accountHandler.isPresent()) {
-                accountHandler.get().getVehicleCapabilities(config.get().vin);
-            }
-        }
-        super.updateStatus(ts);
-    }
-
-    public void setFeatureCapabilities(@Nullable String capabilities) {
-        if (capabilities != null) {
-            ChannelStateMap csm = new ChannelStateMap(MB_KEY_FEATURE_CAPABILITIES, GROUP_VEHICLE,
-                    StringType.valueOf(capabilities));
-            updateChannel(csm);
-        }
-    }
-
-    public void setCommandCapabilities(@Nullable String capabilities) {
-        if (capabilities != null) {
-            ChannelStateMap csm = new ChannelStateMap(MB_KEY_COMMAND_CAPABILITIES, GROUP_VEHICLE,
-                    StringType.valueOf(capabilities));
-            updateChannel(csm);
-        }
-    }
-
     private void setCommandStateOptions() {
         List<StateOption> commandTypeOptions = new ArrayList<>();
         CommandType[] ctValues = CommandType.values();
@@ -1138,6 +1160,11 @@ public class VehicleHandler extends BaseThingHandler {
     }
 
     public void sendPoi(JSONObject poi) {
-        accountHandler.get().sendPoi(config.get().vin, poi);
+        AccountHandler localAccountHandler = accountHandler;
+        if (localAccountHandler == null) {
+            logger.info("Sending POI not possible without active account");
+            return;
+        }
+        localAccountHandler.sendPoi(config.vin, poi);
     }
 }

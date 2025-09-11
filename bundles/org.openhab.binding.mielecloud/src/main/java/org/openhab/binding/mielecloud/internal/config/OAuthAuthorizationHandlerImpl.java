@@ -76,8 +76,8 @@ public final class OAuthAuthorizationHandlerImpl implements OAuthAuthorizationHa
             throw new OngoingAuthorizationException("There is already an ongoing authorization!", timerExpiryTimestamp);
         }
 
-        this.oauthClientService = oauthFactory.createOAuthClientService(email, TOKEN_URL, AUTHORIZATION_URL, clientId,
-                clientSecret, null, false);
+        this.oauthClientService = oauthFactory.createOAuthClientService(bridgeUid.getAsString(), TOKEN_URL,
+                AUTHORIZATION_URL, clientId, clientSecret, null, false);
         this.bridgeUid = bridgeUid;
         this.email = email;
         redirectUri = null;
@@ -136,6 +136,12 @@ public final class OAuthAuthorizationHandlerImpl implements OAuthAuthorizationHa
 
             // Although this method is called "get" it actually fetches and stores the token response as a side effect.
             oauthClientService.getAccessTokenResponseByAuthorizationCode(authorizationCode, redirectUri);
+
+            // Remove any legacy OAuth service handle.
+            String email = this.email;
+            if (email != null) {
+                oauthFactory.deleteServiceAndAccessToken(email);
+            }
         } catch (IOException e) {
             throw new OAuthException("Network error while retrieving token response: " + e.getMessage(), e);
         } catch (OAuthResponseException e) {

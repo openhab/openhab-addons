@@ -48,9 +48,9 @@ public abstract class D2_01 extends _VLDMessage {
 
     protected static final byte CMD_ACTUATOR_SET_STATUS = 0x01;
     protected static final byte CMD_ACTUATOR_STATUS_QUERY = 0x03;
-    protected static final byte CMD_ACTUATOR_STATUS_RESPONE = 0x04;
+    protected static final byte CMD_ACTUATOR_STATUS_RESPONSE = 0x04;
     protected static final byte CMD_ACTUATOR_MEASUREMENT_QUERY = 0x06;
-    protected static final byte CMD_ACTUATOR_MEASUREMENT_RESPONE = 0x07;
+    protected static final byte CMD_ACTUATOR_MEASUREMENT_RESPONSE = 0x07;
 
     protected static final byte ALL_CHANNELS_MASK = 0x1e;
     protected static final byte CHANNEL_A_MASK = 0x00;
@@ -61,7 +61,6 @@ public abstract class D2_01 extends _VLDMessage {
     protected static final byte STATUS_DIMMING_100 = 0x64;
 
     public D2_01() {
-        super();
     }
 
     public D2_01(ERP1Message packet) {
@@ -85,7 +84,7 @@ public abstract class D2_01 extends _VLDMessage {
     }
 
     protected State getSwitchingData() {
-        if (getCMD() == CMD_ACTUATOR_STATUS_RESPONE) {
+        if (getCMD() == CMD_ACTUATOR_STATUS_RESPONSE) {
             return OnOffType.from((bytes[bytes.length - 1] & OUTPUT_VALUE_MASK) != STATUS_SWITCHING_OFF);
         }
 
@@ -97,7 +96,8 @@ public abstract class D2_01 extends _VLDMessage {
     }
 
     protected State getSwitchingData(byte channel) {
-        if (getCMD() == CMD_ACTUATOR_STATUS_RESPONE && (getChannel() == channel || getChannel() == ALL_CHANNELS_MASK)) {
+        if (getCMD() == CMD_ACTUATOR_STATUS_RESPONSE
+                && (getChannel() == channel || getChannel() == ALL_CHANNELS_MASK)) {
             return OnOffType.from((bytes[bytes.length - 1] & OUTPUT_VALUE_MASK) != STATUS_SWITCHING_OFF);
         }
 
@@ -126,7 +126,7 @@ public abstract class D2_01 extends _VLDMessage {
     }
 
     protected State getDimmingData() {
-        if (getCMD() == CMD_ACTUATOR_STATUS_RESPONE) {
+        if (getCMD() == CMD_ACTUATOR_STATUS_RESPONSE) {
             return new PercentType((bytes[bytes.length - 1] & OUTPUT_VALUE_MASK));
         }
 
@@ -142,7 +142,7 @@ public abstract class D2_01 extends _VLDMessage {
     }
 
     protected State getEnergyMeasurementData() {
-        if (getCMD() == CMD_ACTUATOR_MEASUREMENT_RESPONE) {
+        if (getCMD() == CMD_ACTUATOR_MEASUREMENT_RESPONSE) {
             float factor = 1;
 
             switch (bytes[1] >>> 5) {
@@ -169,7 +169,7 @@ public abstract class D2_01 extends _VLDMessage {
     }
 
     protected State getPowerMeasurementData() {
-        if (getCMD() == CMD_ACTUATOR_MEASUREMENT_RESPONE) {
+        if (getCMD() == CMD_ACTUATOR_MEASUREMENT_RESPONSE) {
             float factor = 1;
 
             switch (bytes[1] >>> 5) {

@@ -1,13 +1,13 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
     <groupId>org.openhab.addons.bundles</groupId>
     <artifactId>org.openhab.addons.reactor.bundles</artifactId>
-    <version>5.0.0-SNAPSHOT</version>
+    <version>5.1.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>org.openhab.voice.marytts</artifactId>
@@ -17,30 +17,6 @@
   <properties>
     <bnd.importpackage>com.twmacinta.util;resolution:=optional,gnu.trove;resolution:=optional,Jampack;resolution:=optional,net.didion.jwnl*;resolution:=optional,org.apache.http*;resolution:=optional,org.apache.xerces.impl*;resolution:=optional,org.hsqldb;resolution:=optional,org.jdesktop.layout*;resolution:=optional;sun.nio.ch.*</bnd.importpackage>
   </properties>
-
-  <build>
-    <pluginManagement>
-      <plugins>
-        <plugin>
-          <groupId>biz.aQute.bnd</groupId>
-          <artifactId>bnd-maven-plugin</artifactId>
-          <configuration>
-            <bnd><![CDATA[${oh.bndDefaults}
-Require-Capability:
-    osgi.extender:=
-      filter:="(osgi.extender=osgi.serviceloader.processor)",
-    osgi.serviceloader:=
-      filter:="(osgi.serviceloader=marytts.config.MaryConfig)";
-      cardinality:=multiple
-SPI-Provider: marytts.config.MaryConfig
-SPI-Consumer: java.util.ServiceLoader#load(java.lang.Class[marytts.config.MaryConfig])
-]]>
-            </bnd>
-          </configuration>
-        </plugin>
-      </plugins>
-    </pluginManagement>
-  </build>
 
   <dependencies>
     <dependency>
@@ -146,5 +122,28 @@ SPI-Consumer: java.util.ServiceLoader#load(java.lang.Class[marytts.config.MaryCo
       <scope>compile</scope>
     </dependency>
   </dependencies>
+
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>biz.aQute.bnd</groupId>
+          <artifactId>bnd-maven-plugin</artifactId>
+          <configuration>
+            <bnd><![CDATA[${oh.bndDefaults}
+Require-Capability:
+    osgi.extender:=
+      filter:="(osgi.extender=osgi.serviceloader.processor)",
+    osgi.serviceloader:=
+      filter:="(osgi.serviceloader=marytts.config.MaryConfig)";
+      cardinality:=multiple
+SPI-Provider: marytts.config.MaryConfig
+SPI-Consumer: java.util.ServiceLoader#load(java.lang.Class[marytts.config.MaryConfig])
+]]></bnd>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
 
 </project>

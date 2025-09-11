@@ -12,6 +12,7 @@
 
 		<label>L930 LightStrip</label>
 		<description>Tapo Smart Multicolor LED-Lightstrip with ZoneControl</description>
+		<semantic-equipment-tag>LightStrip</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="actuator" typeId="lightStrip"/>
 			<channel-group id="effects" typeId="lightEffectL930"/>
@@ -36,6 +37,10 @@
 		<item-type>String</item-type>
 		<label>Light Effect Theme</label>
 		<description>Name of lightning effect</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state readOnly="false">
 			<options>
 				<option value="off">None (No FX)</option>

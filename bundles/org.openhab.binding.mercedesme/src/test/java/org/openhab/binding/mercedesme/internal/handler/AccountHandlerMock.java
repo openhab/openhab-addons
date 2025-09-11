@@ -15,27 +15,27 @@ package org.openhab.binding.mercedesme.internal.handler;
 import static org.mockito.Mockito.mock;
 
 import java.util.Locale;
-import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.websocket.api.Session;
 import org.json.JSONObject;
+import org.openhab.binding.mercedesme.StatusTests;
 import org.openhab.binding.mercedesme.internal.Constants;
+import org.openhab.binding.mercedesme.internal.api.WebsocketMock;
 import org.openhab.binding.mercedesme.internal.config.AccountConfiguration;
 import org.openhab.binding.mercedesme.internal.discovery.MercedesMeDiscoveryService;
 import org.openhab.core.i18n.LocaleProvider;
-import org.openhab.core.net.NetworkAddressService;
 import org.openhab.core.storage.Storage;
-import org.openhab.core.storage.StorageService;
 import org.openhab.core.test.storage.VolatileStorageService;
 import org.openhab.core.thing.Bridge;
 
 import com.daimler.mbcarkit.proto.Client.ClientMessage;
 
 /**
- * {@link AccountHandlerMock} to retrieve and collect commands from {@link VehicleHandler}
+ * {@link AccountHandlerMock} to retrieve and collect commands from
+ * {@link VehicleHandler}
  *
  * @author Bernd Weymann - Initial contribution
  */
@@ -54,26 +54,33 @@ public class AccountHandlerMock extends AccountHandler {
 
     public AccountHandlerMock() {
         super(mock(Bridge.class), mock(MercedesMeDiscoveryService.class), mock(HttpClient.class),
-                mock(LocaleProvider.class), mock(StorageService.class), mock(NetworkAddressService.class));
-        config = Optional.of(new AccountConfiguration());
+                mock(LocaleProvider.class), new VolatileStorageService());
+        config = new AccountConfiguration();
+        api = new WebsocketMock(this, mock(HttpClient.class), config, mock(LocaleProvider.class),
+                new VolatileStorageService().getStorage(""));
     }
 
-    public AccountHandlerMock(Bridge b, @Nullable String storedObject) {
-        super(b, mock(MercedesMeDiscoveryService.class), mock(HttpClient.class), localeProvider, storageService,
-                mock(NetworkAddressService.class));
+    public AccountHandlerMock(Bridge b, @Nullable String storedObject, HttpClient httpClient) {
+        super(b, mock(MercedesMeDiscoveryService.class), httpClient, localeProvider, storageService);
         if (storedObject != null) {
             Storage<String> storage = storageService.getStorage(Constants.BINDING_ID);
-            storage.put("a@b.c", storedObject);
+            storage.put(StatusTests.JUNIT_EMAIL, storedObject);
         }
-        config = Optional.of(new AccountConfiguration());
+        config = new AccountConfiguration();
+        api = new WebsocketMock(this, mock(HttpClient.class), config, mock(LocaleProvider.class),
+                new VolatileStorageService().getStorage(""));
+    }
+
+    @Override
+    public void initialize() {
+        super.initialize();
+        // initialize the mock API
+        api = new WebsocketMock(this, mock(HttpClient.class), config, mock(LocaleProvider.class),
+                new VolatileStorageService().getStorage(""));
     }
 
     @Override
     public void registerVin(String vin, VehicleHandler handler) {
-    }
-
-    @Override
-    public void getVehicleCapabilities(String vin) {
     }
 
     @Override
@@ -92,6 +99,6 @@ public class AccountHandlerMock extends AccountHandler {
     }
 
     public void connect() {
-        super.ws.onConnect(mock(Session.class));
+        super.api.onConnect(mock(Session.class));
     }
 }
