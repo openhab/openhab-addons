@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.homekit.internal;
+package org.openhab.binding.homekit.internal.network;
 
 import java.nio.charset.StandardCharsets;
 

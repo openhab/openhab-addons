@@ -12,21 +12,16 @@
  */
 package org.openhab.binding.homekit.internal.handler;
 
+import static org.openhab.binding.homekit.internal.HomekitBindingConstants.*;
+
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.http.HttpHeader;
-import org.eclipse.jetty.http.HttpMethod;
-import org.openhab.binding.homekit.internal.SecureSession;
-import org.openhab.binding.homekit.internal.discovery.HomekitDeviceDiscoveryService;
-import org.openhab.binding.homekit.internal.dto.HomekitAccessories;
-import org.openhab.binding.homekit.internal.dto.HomekitAccessory;
+import org.openhab.binding.homekit.internal.discovery.AccessoryDiscoveryService;
+import org.openhab.binding.homekit.internal.dto.Accessories;
+import org.openhab.binding.homekit.internal.dto.Accessory;
+import org.openhab.binding.homekit.internal.network.SecureSession;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -38,13 +33,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
 
 /**
  * Handler for HomeKit bridge devices.
  * It marshals the communications with multiple HomeKit child accessories within a HomeKit bridge server.
  * It uses the /accessories endpoint to discover embedded accessories and their services.
- * It notifies the {@link HomekitDeviceDiscoveryService} when accessories are discovered.
+ * It notifies the {@link AccessoryDiscoveryService} when accessories are discovered.
  * It does not currently handle commands for channels, that is left to the child accessory handlers.
  * It extends {@link HomekitBaseServerHandler} to handle pairing and secure session setup.
  *
@@ -56,10 +50,11 @@ public class HomekitBridgeHandler extends HomekitBaseServerHandler implements Br
     private final Logger logger = LoggerFactory.getLogger(HomekitBridgeHandler.class);
 
     private static final Gson GSON = new Gson();
-    private final HomekitDeviceDiscoveryService discoveryService;
+
+    private final AccessoryDiscoveryService discoveryService;
 
     public HomekitBridgeHandler(Bridge bridge, HttpClientFactory httpClientFactory,
-            HomekitDeviceDiscoveryService discoveryService) {
+            AccessoryDiscoveryService discoveryService) {
         super(bridge, httpClientFactory);
         this.discoveryService = discoveryService;
     }
@@ -87,7 +82,7 @@ public class HomekitBridgeHandler extends HomekitBaseServerHandler implements Br
     public void initialize() {
         super.initialize();
         scheduler.submit(() -> {
-            List<HomekitAccessory> accessories = getAccessories();
+            List<Accessory> accessories = getAccessories();
             discoveryService.devicesDiscovered(thing, accessories);
         });
     }
@@ -111,27 +106,20 @@ public class HomekitBridgeHandler extends HomekitBaseServerHandler implements Br
      * @return list of accessories (may be empty)
      * @see <a href="https://datatracker.ietf.org/doc/html/draft-ietf-homekit-http">HomeKit HTTP</a>
      */
-    private List<HomekitAccessory> getAccessories() {
+    private List<Accessory> getAccessories() {
         SecureSession session = this.session;
         if (session != null) {
-            Request request = httpClient.newRequest(baseUrl + "/accessories") //
-                    .timeout(5, TimeUnit.SECONDS) //
-                    .method(HttpMethod.GET) //
-                    .header(HttpHeader.ACCEPT, "application/json");
             try {
-                ContentResponse response = request.send();
-                if (response.getStatus() == 200) {
-                    byte[] decrypted = session.decrypt(response.getContent());
-                    HomekitAccessories result = GSON.fromJson(new String(decrypted, StandardCharsets.UTF_8),
-                            HomekitAccessories.class);
-                    if (result != null && result.accessories != null) {
-                        return result.accessories;
-                    }
+                byte[] encrypted = httpTransport.get(baseUrl, ENDPOINT_ACCESSORIES, CONTENT_TYPE_HAP);
+                byte[] decrypted = session.decrypt(encrypted);
+                Accessories result = GSON.fromJson(new String(decrypted, StandardCharsets.UTF_8),
+                        Accessories.class);
+                if (result != null && result.accessories != null) {
+                    return result.accessories;
                 }
-            } catch (TimeoutException | ExecutionException | InterruptedException | JsonSyntaxException e) {
+            } catch (Exception e) {
             }
         }
         return List.of();
     }
-
 }

@@ -20,6 +20,7 @@ import javax.jmdns.ServiceInfo;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.homekit.internal.enums.AccessoryType;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.mdns.MDNSDiscoveryParticipant;
@@ -90,12 +91,14 @@ public class HomekitMdnsDiscoveryParticipant implements MDNSDiscoveryParticipant
         String macAddress = service.getPropertyString("id");
         if (macAddress != null) {
             String deviceCategory = service.getPropertyString("ci"); // HomeKit device category
-            if (deviceCategory != null) {
-                if ("2".equals(deviceCategory)) {
+            try {
+                AccessoryType category = AccessoryType.from(deviceCategory);
+                if (AccessoryType.BRIDGE.equals(category)) {
                     return new ThingUID(THING_TYPE_BRIDGE, macAddress.replace(":", "-").toLowerCase());
                 } else {
                     return new ThingUID(THING_TYPE_DEVICE, macAddress.replace(":", "-").toLowerCase());
                 }
+            } catch (IllegalArgumentException e) {
             }
         }
         logger.warn("Discovered HomeKit device without valid properties - ignoring");

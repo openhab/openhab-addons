@@ -16,19 +16,25 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.homekit.internal.enums.AccessoryType;
 
 /**
- * HomeKit characteristic DTO.
- * Used to deserialize individual characteristics from the /accessories endpoint of a HomeKit bridge.
- * Each characteristic has a type, instance ID (iid), value, permissions (perms), and format.
+ * HomeKit accessory DTO
+ * Used to deserialize individual accessories from the /accessories endpoint of a HomeKit bridge.
+ * Each accessory has an accessory ID (aid) and a list of services.
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-public class HomekitCharacteristic {
-    public @Nullable String type; // e.g. public.hap.characteristic.on
-    public @Nullable Integer iid; // e.g. 10
-    public @Nullable String value; // e.g. true
-    public @Nullable List<String> perms; // e.g. ["read", "write", "events"]
-    public @Nullable String format; // e.g. "bool"
+public class Accessory {
+    public @Nullable Integer aid; // e.g. 1
+    public @Nullable List<Service> services;
+
+    public AccessoryType getAccessoryType() {
+        Integer aid = this.aid;
+        if (aid == null) {
+            return AccessoryType.OTHER;
+        }
+        return AccessoryType.from(aid);
+    }
 }

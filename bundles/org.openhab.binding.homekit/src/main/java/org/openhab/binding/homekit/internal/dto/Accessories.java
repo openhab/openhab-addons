@@ -18,15 +18,13 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * HomeKit service DTO.
- * Used to deserialize individual services from the /accessories endpoint of a HomeKit bridge.
- * Each service has a type, instance ID (iid), and a list of characteristics.
+ * HomeKit accessories DTO.
+ * Used to deserialize the JSON response from the /accessories endpoint of a HomeKit bridge.
+ * Contains a list of HomeKitAccessory objects.
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-public class HomekitService {
-    public @Nullable String type; // e.g. public.hap.service.lightbulb
-    public @Nullable Integer iid; // e.g. 10
-    public @Nullable List<HomekitCharacteristic> characteristics;
+public class Accessories {
+    public @Nullable List<Accessory> accessories;
 }

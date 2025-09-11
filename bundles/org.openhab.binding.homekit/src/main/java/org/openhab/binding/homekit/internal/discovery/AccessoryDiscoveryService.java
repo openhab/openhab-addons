@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.homekit.internal.dto.HomekitAccessory;
+import org.openhab.binding.homekit.internal.dto.Accessory;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
@@ -35,18 +35,18 @@ import org.osgi.service.component.annotations.Component;
  */
 @NonNullByDefault
 @Component(service = DiscoveryService.class)
-public class HomekitDeviceDiscoveryService extends AbstractDiscoveryService {
+public class AccessoryDiscoveryService extends AbstractDiscoveryService {
 
-    protected HomekitDeviceDiscoveryService() {
+    protected AccessoryDiscoveryService() {
         super(Set.of(THING_TYPE_DEVICE), 10, false);
     }
 
     @Override
     protected void startScan() {
-        // no scanning is done; it relies on being informed of new accessories
+        // no scanning is done; we rely on being informed of new accessories
     }
 
-    public void devicesDiscovered(Thing bridge, List<HomekitAccessory> accessories) {
+    public void devicesDiscovered(Thing bridge, List<Accessory> accessories) {
         accessories.forEach(accessory -> {
             if (accessory.aid != null && accessory.services != null) {
                 accessory.services.forEach(service -> {

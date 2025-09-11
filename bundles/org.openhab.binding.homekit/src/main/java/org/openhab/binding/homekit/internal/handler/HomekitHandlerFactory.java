@@ -18,7 +18,7 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.homekit.internal.discovery.HomekitDeviceDiscoveryService;
+import org.openhab.binding.homekit.internal.discovery.AccessoryDiscoveryService;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -32,7 +32,7 @@ import org.osgi.service.component.annotations.Reference;
 
 /**
  * Creates things and thing handlers. Supports HomeKit bridges and accessories.
- * Passes on a {@link HomekitDeviceDiscoveryService} so that created things can to manage discovery of accessories.
+ * Passes on a {@link AccessoryDiscoveryService} so that created things can to manage discovery of accessories.
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
@@ -42,11 +42,11 @@ public class HomekitHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_BRIDGE, THING_TYPE_DEVICE);
 
-    private final HomekitDeviceDiscoveryService discoveryService;
+    private final AccessoryDiscoveryService discoveryService;
     private final HttpClientFactory httpClientFactory;
 
     @Activate
-    public HomekitHandlerFactory(@Reference HomekitDeviceDiscoveryService discoveryService,
+    public HomekitHandlerFactory(@Reference AccessoryDiscoveryService discoveryService,
             @Reference HttpClientFactory httpClientFactory) {
         this.discoveryService = discoveryService;
         this.httpClientFactory = httpClientFactory;

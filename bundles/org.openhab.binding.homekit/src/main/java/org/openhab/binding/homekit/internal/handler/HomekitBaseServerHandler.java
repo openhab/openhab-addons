@@ -12,13 +12,14 @@
  */
 package org.openhab.binding.homekit.internal.handler;
 
+import static org.openhab.binding.homekit.internal.HomekitBindingConstants.*;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpClient;
-import org.openhab.binding.homekit.internal.PairingManager;
-import org.openhab.binding.homekit.internal.SecureClient;
-import org.openhab.binding.homekit.internal.SecureSession;
-import org.openhab.binding.homekit.internal.SessionKeys;
+import org.openhab.binding.homekit.internal.network.CharacteristicsManager;
+import org.openhab.binding.homekit.internal.network.HttpTransport;
+import org.openhab.binding.homekit.internal.network.PairingManager;
+import org.openhab.binding.homekit.internal.network.SecureSession;
+import org.openhab.binding.homekit.internal.network.SessionKeys;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -44,24 +45,24 @@ public class HomekitBaseServerHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(HomekitBaseServerHandler.class);
 
-    protected final HttpClient httpClient;
+    protected final HttpTransport httpTransport;
 
-    protected @Nullable SecureClient client;
-    protected @Nullable SessionKeys keys;
-    protected @Nullable SecureSession session;
-    protected @Nullable String baseUrl;
-    protected @Nullable String setupCode;
+    protected @NonNullByDefault({}) CharacteristicsManager client;
+    protected @NonNullByDefault({}) SessionKeys keys;
+    protected @NonNullByDefault({}) SecureSession session;
+    protected @NonNullByDefault({}) String baseUrl;
+    protected @NonNullByDefault({}) String pairingCode;
 
     public HomekitBaseServerHandler(Thing thing, HttpClientFactory httpClientFactory) {
         super(thing);
-        this.httpClient = httpClientFactory.getCommonHttpClient();
+        this.httpTransport = new HttpTransport(httpClientFactory.getCommonHttpClient());
     }
 
     @Override
     public void initialize() {
         Bridge bridge = getBridge();
         if (bridge != null && bridge.getHandler() instanceof HomekitBridgeHandler bridgeHandler) {
-            // accessory is part of a bridge, so use the bridge's pairing and session
+            // accessory is hosted by a bridge, so use the bridge's pairing and session
             this.keys = bridgeHandler.keys;
             this.session = bridgeHandler.session;
             this.client = bridgeHandler.client;
@@ -71,13 +72,13 @@ public class HomekitBaseServerHandler extends BaseThingHandler {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Bridge is not connected");
             }
         } else {
-            // standalone accessory or brige accessory, do pairing and session setup here
-            this.baseUrl = "https://" + getConfig().get("ipV4Address").toString();
-            this.setupCode = getConfig().get("setupCode").toString();
+            // standalone accessory or brige accessory, so do pairing and session setup here
+            this.baseUrl = "http://" + getConfig().get(IP_V4_ADDRESS).toString();
+            this.pairingCode = getConfig().get(PAIRING_CODE).toString();
             try {
-                this.keys = new PairingManager(httpClient, setupCode).pair(baseUrl);
+                this.keys = new PairingManager(httpTransport, pairingCode).pair(baseUrl);
                 this.session = new SecureSession(keys);
-                this.client = new SecureClient(httpClient, session, baseUrl);
+                this.client = new CharacteristicsManager(httpTransport, session, baseUrl);
                 updateStatus(ThingStatus.ONLINE);
             } catch (Exception e) {
                 logger.error("Failed to initialize HomeKit client", e);

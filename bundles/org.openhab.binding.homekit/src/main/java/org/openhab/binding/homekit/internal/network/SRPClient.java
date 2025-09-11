@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.homekit.internal;
+package org.openhab.binding.homekit.internal.network;
 
 import java.io.ByteArrayOutputStream;
 import java.math.BigInteger;
@@ -47,15 +47,16 @@ public class SRPClient {
     private static final BigInteger N = new BigInteger(N_HEX);
     private static final BigInteger g = BigInteger.valueOf(5);
 
-    private final String setupCode;
+    private final String pairingCode;
+
     private BigInteger a; // private ephemeral
     private BigInteger A; // public ephemeral
     private BigInteger B; // server public
-    private byte[] salt;
+    private byte[] salt; // from server
     private byte[] K; // shared session key
 
-    public SRPClient(String setupCode) {
-        this.setupCode = setupCode;
+    public SRPClient(String pairingCode) {
+        this.pairingCode = pairingCode;
     }
 
     /**
@@ -82,7 +83,7 @@ public class SRPClient {
      */
     public Map<Integer, byte[]> generateClientProof() throws Exception {
         MessageDigest digest = MessageDigest.getInstance("SHA-512");
-        byte[] xH = digest.digest((new String(salt) + setupCode).getBytes());
+        byte[] xH = digest.digest((new String(salt) + pairingCode).getBytes());
         BigInteger x = new BigInteger(1, xH);
 
         BigInteger u = computeU(A, B);
@@ -131,7 +132,7 @@ public class SRPClient {
         byte[] nonce = tlv6.get(0x05);
         byte[] encrypted = tlv6.get(0x06);
         byte[] decrypted = ChaCha20.decrypt(K, nonce, encrypted);
-        // TODO Parse TLV8 and validate accessory identity
+        // TODO parse decrypted TLV8 and specificall validate accessory identity
     }
 
     /**

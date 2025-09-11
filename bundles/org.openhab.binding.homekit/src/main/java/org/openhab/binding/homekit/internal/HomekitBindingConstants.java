@@ -23,10 +23,21 @@ import org.openhab.core.thing.ThingTypeUID;
 @NonNullByDefault
 public class HomekitBindingConstants {
 
-    private static final String BINDING_ID = "homekit";
+    public static final String BINDING_ID = "homekit";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "bridge");
     public static final ThingTypeUID THING_TYPE_DEVICE = new ThingTypeUID(BINDING_ID, "device");
+
+    // configuration parameters
+    public static final String PAIRING_CODE = "pairingCode";
+    public static final String IP_V4_ADDRESS = "ipV4Address";
+
+    // HomeKit HTTP endpoints and content types
+    public static final String ENDPOINT_PAIRING = "pair-setup";
+    public static final String ENDPOINT_ACCESSORIES = "accessories";
+    public static final String ENDPOINT_CHARACTERISTICS = "characteristics";
+    public static final String CONTENT_TYPE_PAIRING = "application/pairing+tlv8";
+    public static final String CONTENT_TYPE_HAP = "application/hap+json";
 
 }

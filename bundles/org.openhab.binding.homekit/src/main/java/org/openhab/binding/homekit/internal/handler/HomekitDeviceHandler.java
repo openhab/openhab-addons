@@ -15,7 +15,7 @@ package org.openhab.binding.homekit.internal.handler;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.homekit.internal.SecureClient;
+import org.openhab.binding.homekit.internal.network.CharacteristicsManager;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
@@ -56,14 +56,14 @@ public class HomekitDeviceHandler extends HomekitBaseServerHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        SecureClient accessoryClient = this.client;
+        CharacteristicsManager accessoryClient = this.client;
         if (accessoryClient != null) {
             String channelId = channelUID.getId();
             try {
                 switch (channelId) {
                     case "power":
                         boolean value = command.equals(OnOffType.ON);
-                        accessoryClient.writeCharacteristic("1", "10", value); // Example AID/IID
+                        // accessoryClient.writeCharacteristic("1", "10", value); // Example AID/IID
                         break;
                     // TODO Add more channels here
                     default:
@@ -80,16 +80,16 @@ public class HomekitDeviceHandler extends HomekitBaseServerHandler {
      * This method is called periodically by a scheduled executor.
      */
     private void poll() {
-        SecureClient accessoryClient = this.client;
+        CharacteristicsManager accessoryClient = this.client;
         if (accessoryClient != null) {
             try {
-                String power = accessoryClient.readCharacteristic("1", "10"); // TODO example AID/IID
+                // String power = accessoryClient.readCharacteristic("1", "10"); // TODO example AID/IID
                 // Parse powerState and update channel state accordingly
-                if ("true".equals(power)) {
-                    updateState(new ChannelUID(getThing().getUID(), "power"), OnOffType.ON);
-                } else {
-                    updateState(new ChannelUID(getThing().getUID(), "power"), OnOffType.OFF);
-                }
+                // if ("true".equals(power)) {
+                // updateState(new ChannelUID(getThing().getUID(), "power"), OnOffType.ON);
+                // } else {
+                // updateState(new ChannelUID(getThing().getUID(), "power"), OnOffType.OFF);
+                // }
             } catch (Exception e) {
                 logger.error("Failed to poll accessory state", e);
             }
