@@ -63,7 +63,6 @@ import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
@@ -77,7 +76,6 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
 
     private final Logger logger = LoggerFactory.getLogger(EvccBaseThingHandler.class);
     private final ChannelTypeRegistry channelTypeRegistry;
-    private final Gson gson = new Gson();
     protected @Nullable EvccBridgeHandler bridgeHandler;
     protected boolean isInitialized = false;
     protected String endpoint = "";
@@ -287,19 +285,9 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
                 if (response.getStatus() == 200) {
                     logger.debug("Sending command was successful");
                 } else {
-                    @Nullable
-                    JsonObject responseJson = gson.fromJson(response.getContentAsString(), JsonObject.class);
-                    Optional.ofNullable(responseJson).ifPresent(json -> {
-                        if (json.has("error")) {
-                            logger.debug("Sending command was unsuccessful, got this error:\n {}",
-                                    json.get("error").getAsString());
-                            updateStatus(getThing().getStatus(), ThingStatusDetail.COMMUNICATION_ERROR,
-                                    json.get("error").getAsString());
-                        } else {
-                            updateStatus(getThing().getStatus(), ThingStatusDetail.COMMUNICATION_ERROR);
-                            logger.warn("evcc API error: HTTP {}", response.getStatus());
-                        }
-                    });
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                    logger.debug("Sending command was unsuccessful, got this error:\n {}",
+                            response.getContentAsString());
                 }
             } catch (Exception e) {
                 logger.warn("evcc bridge couldn't call the API", e);
