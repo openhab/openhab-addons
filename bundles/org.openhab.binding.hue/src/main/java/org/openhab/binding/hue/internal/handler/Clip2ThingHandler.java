@@ -788,7 +788,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
         Alerts alerts = resource.getAlerts();
         if (Objects.nonNull(alerts)) {
             List<StateOption> stateOptions = alerts.getActionValues().stream().map(action -> action.name())
-                    .map(actionId -> new StateOption(actionId, actionId)).collect(Collectors.toList());
+                    .map(actionId -> new StateOption(actionId, actionId)).toList();
             if (!stateOptions.isEmpty()) {
                 stateDescriptionProvider.setStateOptions(new ChannelUID(thing.getUID(), CHANNEL_2_ALERT), stateOptions);
                 logger.debug("{} -> updateAlerts() found {} associated alerts", resourceId, stateOptions.size());
@@ -889,8 +889,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
 
                 // get list of unused channels
                 List<Channel> unusedChannels = thing.getChannels().stream()
-                        .filter(channel -> !supportedChannelIdSet.contains(channel.getUID().getId()))
-                        .collect(Collectors.toList());
+                        .filter(channel -> !supportedChannelIdSet.contains(channel.getUID().getId())).toList();
 
                 // remove any unused channels
                 if (!unusedChannels.isEmpty()) {
@@ -1104,7 +1103,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 .map(effect -> {
                     String effectName = EffectType.of(effect).name();
                     return new StateOption(effectName, effectName);
-                }).distinct().collect(Collectors.toList());
+                }).distinct().toList();
         if (!stateOptions.isEmpty()) {
             stateDescriptionProvider.setStateOptions(new ChannelUID(thing.getUID(), CHANNEL_2_EFFECT), stateOptions);
             logger.debug("{} -> updateEffects() found {} effects", resourceId, stateOptions.size());
@@ -1261,7 +1260,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
      */
     private void updateSceneChannelStateDescription() {
         stateDescriptionProvider.setStateOptions(new ChannelUID(thing.getUID(), CHANNEL_2_SCENE),
-                sceneResourceEntries.keySet().stream().map(n -> new StateOption(n, n)).collect(Collectors.toList()));
+                sceneResourceEntries.keySet().stream().map(n -> new StateOption(n, n)).toList());
     }
 
     /**
@@ -1407,7 +1406,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 legacyLinkedChannelUIDs.addAll(legacyThing.getChannels().stream().map(Channel::getUID)
                         .filter(uid -> REPLICATE_CHANNEL_ID_MAP.containsKey(uid.getId())
                                 && itemChannelLinkRegistry.isLinked(uid))
-                        .collect(Collectors.toList()));
+                        .toList());
 
                 Map<String, String> newProperties = new HashMap<>(properties);
                 newProperties.remove(PROPERTY_LEGACY_THING_UID);

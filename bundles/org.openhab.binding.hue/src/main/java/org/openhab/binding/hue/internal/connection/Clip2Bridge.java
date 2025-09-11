@@ -40,7 +40,6 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-import java.util.stream.Collectors;
 
 import javax.ws.rs.core.MediaType;
 
@@ -294,7 +293,7 @@ public class Clip2Bridge implements Closeable {
                 eventData.append(frame.getData());
                 BufferedReader reader = new BufferedReader(eventData.contentStreamReader());
                 @SuppressWarnings("null")
-                List<String> receivedLines = reader.lines().collect(Collectors.toList());
+                List<String> receivedLines = reader.lines().toList();
 
                 // a blank line marks the end of an SSE message
                 boolean endOfMessage = !receivedLines.isEmpty()

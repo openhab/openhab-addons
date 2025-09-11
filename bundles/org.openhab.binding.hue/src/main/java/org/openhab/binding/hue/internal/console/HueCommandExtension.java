@@ -21,7 +21,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -246,7 +245,7 @@ public class HueCommandExtension extends AbstractConsoleCommandExtension impleme
                     .filter(t -> THING_TYPE_BRIDGE.equals(t.getThingTypeUID())
                             || THING_TYPE_BRIDGE_API2.equals(t.getThingTypeUID())
                             || THING_TYPE_GROUP.equals(t.getThingTypeUID()))
-                    .map(t -> t.getUID().getAsString()).collect(Collectors.toList()), true)
+                    .map(t -> t.getUID().getAsString()).toList(), true)
                     .complete(args, cursorArgumentIndex, cursorPosition, candidates);
         } else if (cursorArgumentIndex == 1) {
             Thing thing = getThing(args[0]);
