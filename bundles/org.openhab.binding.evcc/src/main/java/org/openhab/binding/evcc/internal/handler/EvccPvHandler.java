@@ -46,26 +46,26 @@ public class EvccPvHandler extends EvccBaseThingHandler {
     public void initialize() {
         super.initialize();
         Optional.ofNullable(bridgeHandler).ifPresent(handler -> {
-            JsonObject stateOpt = handler.getCachedEvccState();
+            JsonObject stateOpt = handler.getCachedEvccState().deepCopy();
             if (stateOpt.isEmpty()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
                 return;
             }
 
-            JsonObject state = stateOpt.getAsJsonArray(JSON_MEMBER_PV).get(index).getAsJsonObject();
+            JsonObject state = stateOpt.getAsJsonArray(JSON_KEY_PV).get(index).getAsJsonObject();
             commonInitialize(state);
         });
     }
 
     @Override
-    public void updateFromEvccState(JsonObject state) {
-        state = state.getAsJsonArray(JSON_MEMBER_PV).get(index).getAsJsonObject();
-        super.updateFromEvccState(state);
+    public void prepareApiResponseForChannelStateUpdate(JsonObject state) {
+        state = state.getAsJsonArray(JSON_KEY_PV).get(index).getAsJsonObject();
+        updateStatesFromApiResponse(state);
     }
 
     @Override
     public JsonObject getStateFromCachedState(JsonObject state) {
-        return state.has(JSON_MEMBER_PV) ? state.getAsJsonArray(JSON_MEMBER_PV).get(index).getAsJsonObject()
+        return state.has(JSON_KEY_PV) ? state.getAsJsonArray(JSON_KEY_PV).get(index).getAsJsonObject()
                 : new JsonObject();
     }
 }
