@@ -23,6 +23,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.astro.internal.model.Moon;
 import org.openhab.binding.astro.internal.model.ZodiacSign;
+import org.openhab.binding.astro.internal.util.DateTimeUtils;
 
 /***
  * Specific unit tests to check if {@link MoonCalc} generates correct data for
@@ -186,6 +187,6 @@ public class MoonCalcTest {
         Calendar result = new GregorianCalendar(zone, Locale.ROOT);
         result.set(year, month, dayOfMonth, hourOfDay, minute);
 
-        return result;
+        return DateTimeUtils.truncateToMinute(result);
     }
 }

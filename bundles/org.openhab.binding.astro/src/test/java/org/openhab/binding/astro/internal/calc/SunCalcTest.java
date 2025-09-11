@@ -24,6 +24,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.astro.internal.model.Sun;
 import org.openhab.binding.astro.internal.model.SunPhaseName;
+import org.openhab.binding.astro.internal.util.DateTimeUtils;
 
 /***
  * Specific unit tests to check if {@link SunCalc} generates correct data for
@@ -311,6 +312,7 @@ public class SunCalcTest {
         // SunCalc.ranges was not sorted, causing unexpected output in corner cases.
         TimeZone tZone = TimeZone.getTimeZone("Europe/London");
         Calendar tDate = SunCalcTest.newCalendar(2020, Calendar.MAY, 13, 5, 13, tZone);
+        tDate.set(Calendar.SECOND, 4);
 
         Sun sun = sunCalc.getSunInfo(tDate, 53.524695, -2.4, 0.0, true, TIME_ZONE, Locale.ROOT);
         assertEquals(SunPhaseName.SUN_RISE, sun.getPhase().getName());
@@ -352,7 +354,7 @@ public class SunCalcTest {
         Calendar result = new GregorianCalendar(zone, Locale.ROOT);
         result.set(year, month, dayOfMonth, hourOfDay, minute);
 
-        return result;
+        return DateTimeUtils.truncateToMinute(result);
     }
 
     @Test

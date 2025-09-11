@@ -51,7 +51,7 @@ public class DateTimeUtils {
     /**
      * Truncates the time from the calendar object.
      */
-    private static Calendar truncateToMinute(Calendar calendar) {
+    public static Calendar truncateToMinute(Calendar calendar) {
         Calendar cal = truncateToSecond(calendar);
         cal.set(Calendar.SECOND, 0);
         return cal;
@@ -150,12 +150,13 @@ public class DateTimeUtils {
         Calendar cal = (Calendar) calendar.clone();
         int hour = 0;
         int minute = 0;
-        if (time == 24.0) {
-            cal.add(Calendar.DAY_OF_MONTH, 1);
-        } else {
-            hour = (int) time;
-            minute = (int) ((time * 100) - (hour * 100));
+        int days = (int) time / 24;
+        double remains = time % 24;
+        if (days != 0) {
+            cal.add(Calendar.DAY_OF_MONTH, days);
         }
+        hour = (int) remains;
+        minute = (int) ((remains * 100) - (hour * 100));
         cal.set(Calendar.HOUR_OF_DAY, hour);
         cal.set(Calendar.MINUTE, minute);
         return truncateToMinute(cal);
@@ -188,7 +189,7 @@ public class DateTimeUtils {
                 next = calendar;
             }
         }
-        if (next == null) {
+        if (next == null && firstSeasonOfYear != null) {
             final Calendar nextYearSeason = (Calendar) firstSeasonOfYear.clone();
 
             nextYearSeason.add(Calendar.YEAR, 1);
@@ -225,11 +226,11 @@ public class DateTimeUtils {
             cCal.add(Calendar.MINUTE, config.offset);
         }
 
-        Calendar cEarliest = getAdjustedEarliest(cCal, config);
+        Calendar cEarliest = getAdjustedEarliest(cal, config);
         if (cCal.before(cEarliest)) {
             return cEarliest;
         }
-        Calendar cLatest = getAdjustedLatest(cCal, config);
+        Calendar cLatest = getAdjustedLatest(cal, config);
         if (cCal.after(cLatest)) {
             return cLatest;
         }
