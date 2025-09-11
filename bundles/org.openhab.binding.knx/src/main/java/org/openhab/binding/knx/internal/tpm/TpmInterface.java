@@ -17,6 +17,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serial;
 import java.io.Serializable;
 import java.time.Duration;
 import java.time.Instant;
@@ -76,6 +77,7 @@ public enum TpmInterface {
     private @Nullable StartAuthSessionResponse policySession;
 
     public record SecuredPassword(String secret, String encIdentity, String integrityHMAC) implements Serializable {
+        @Serial
         private static final long serialVersionUID = 238409238L;
     }
 
