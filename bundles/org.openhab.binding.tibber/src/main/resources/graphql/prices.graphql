@@ -2,7 +2,7 @@
   viewer {
     home(id: \"%s\") {
       currentSubscription {
-        priceInfo {
+        priceInfo(resolution: QUARTER_HOURLY) {
           tomorrow {
             startsAt
             total
