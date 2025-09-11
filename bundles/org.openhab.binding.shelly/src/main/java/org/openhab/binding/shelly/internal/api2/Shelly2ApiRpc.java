@@ -207,6 +207,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         profile.settings.relays = !profile.isCB ? fillRelaySettings(profile, dc) : fillBreakerSettings(profile, dc);
         profile.settings.inputs = fillInputSettings(profile, dc);
         profile.settings.rollers = fillRollerSettings(profile, dc);
+        profile.settings.lights = fillLightSettings(profile, dc);
         profile.isCB = dc.cb0 != null || dc.cb1 != null || dc.cb2 != null || dc.cb3 != null;
 
         profile.isEMeter = true;
@@ -264,6 +265,15 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                 ShellyInputState input = new ShellyInputState(i);
                 profile.status.inputs.add(input);
                 relayStatus.inputs.add(input);
+            }
+        }
+
+        if (profile.isLight) {
+            profile.status.lights = new ArrayList<>();
+            lightStatus.lights = new ArrayList<>();
+            for (int i = 0; i < profile.settings.lights.size(); i++) {
+                profile.status.lights.add(new ShellySettingsLight());
+                lightStatus.lights.add(new ShellyStatusLightChannel());
             }
         }
 
@@ -813,7 +823,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         info.mac = getString(device.mac);
         info.auth = getBool(device.auth);
         info.gen = getInteger(device.gen);
-        info.mode = mapValue(MAP_PROFILE, getString(device.profile));
+        info.mode = mapValue(MAP_DEVICE_PROFILE, getString(device.profile));
         return info;
     }
 
@@ -957,22 +967,23 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     public ShellyStatusLight getLightStatus() throws ShellyApiException {
         ShellyDeviceProfile profile = getProfile();
         if (profile.isRGBW2) {
-            Shelly2RGBWStatus ls = apiRequest(
-                    new Shelly2RpcRequest().withMethod(SHELLYRPC_METHOD_RGBW_STATUS).withId(0),
-                    Shelly2RGBWStatus.class);
-            ShellyStatusLightChannel lightChannel = new ShellyStatusLightChannel();
-            lightChannel.red = ls.rgb[0];
-            lightChannel.green = ls.rgb[1];
-            lightChannel.blue = ls.rgb[2];
-            lightChannel.white = ls.white;
-            lightChannel.brightness = ls.brightness.intValue();
+            for (int id = 0; id < lightStatus.lights.size(); id++) {
+                Shelly2RGBWStatus ls = apiRequest(
+                        new Shelly2RpcRequest().withMethod(SHELLYRPC_METHOD_RGBW_STATUS).withId(id),
+                        Shelly2RGBWStatus.class);
 
-            ShellyStatusLight status = new ShellyStatusLight();
-            status.lights = new ArrayList<>();
-            status.lights.add(lightChannel);
-            status.ison = ls.output;
-
-            return status;
+                ShellyStatusLightChannel lightChannel = lightStatus.lights.get(id);
+                lightChannel.red = ls.rgb[0];
+                lightChannel.green = ls.rgb[1];
+                lightChannel.blue = ls.rgb[2];
+                lightChannel.white = ls.white;
+                lightChannel.brightness = ls.brightness.intValue();
+                ShellyStatusLight status = new ShellyStatusLight();
+                lightStatus.lights.set(id, lightChannel);
+                lightStatus.ison = ls.output;
+            }
+            profile.status.meters = lightStatus.meters;
+            return lightStatus;
         }
 
         throw new ShellyApiException("API call not implemented");
