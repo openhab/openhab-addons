@@ -12,7 +12,10 @@
  */
 package org.openhab.binding.homekit.internal.network;
 
+import java.io.IOException;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
@@ -45,16 +48,21 @@ public class HttpTransport {
      * @param contentType the expected content type of the response
      *
      * @return the response body
-     * @throws Exception if an error occurs during the request
+     *
+     * @throws ExecutionException
+     * @throws TimeoutException
+     * @throws InterruptedException
+     * @throws IOException
      */
-    public byte[] get(String baseUrl, String endpoint, String contentType) throws Exception {
+    public byte[] get(String baseUrl, String endpoint, String contentType)
+            throws IOException, InterruptedException, TimeoutException, ExecutionException {
         String url = baseUrl + "/" + endpoint;
         Request request = httpClient.newRequest(url).timeout(5, TimeUnit.SECONDS).method(HttpMethod.GET)
                 .header(HttpHeader.ACCEPT, contentType);
 
         ContentResponse response = request.send();
         if (response.getStatus() != 200) {
-            throw new RuntimeException("GET %s HTTP %d".formatted(url, response.getStatus()));
+            throw new IOException("GET %s HTTP %d".formatted(url, response.getStatus()));
         }
 
         return response.getContent();
@@ -69,16 +77,21 @@ public class HttpTransport {
      * @param content the request body
      *
      * @return the response body
-     * @throws Exception if an error occurs during the request
+     *
+     * @throws ExecutionException
+     * @throws TimeoutException
+     * @throws InterruptedException
+     * @throws IOException
      */
-    public byte[] post(String baseUrl, String endpoint, String contentType, byte[] content) throws Exception {
+    public byte[] post(String baseUrl, String endpoint, String contentType, byte[] content)
+            throws IOException, InterruptedException, TimeoutException, ExecutionException {
         String url = baseUrl + "/" + endpoint;
         Request request = httpClient.newRequest(url).timeout(5, TimeUnit.SECONDS).method(HttpMethod.POST)
                 .header(HttpHeader.CONTENT_TYPE, contentType).content(new BytesContentProvider(content));
 
         ContentResponse response = request.send();
         if (response.getStatus() != 200) {
-            throw new RuntimeException("POST %s HTTP %d".formatted(url, response.getStatus()));
+            throw new IOException("POST %s HTTP %d".formatted(url, response.getStatus()));
         }
 
         return response.getContent();
@@ -93,9 +106,14 @@ public class HttpTransport {
      * @param content the request body
      *
      * @return the response body
-     * @throws Exception if an error occurs during the request
+     *
+     * @throws ExecutionException
+     * @throws TimeoutException
+     * @throws InterruptedException
+     * @throws IOException
      */
-    public byte[] put(String baseUrl, String endpoint, String contentType, byte[] content) throws Exception {
+    public byte[] put(String baseUrl, String endpoint, String contentType, byte[] content)
+            throws IOException, InterruptedException, TimeoutException, ExecutionException {
         String url = baseUrl + "/" + endpoint;
         Request request = httpClient.newRequest(url).timeout(5, TimeUnit.SECONDS).method(HttpMethod.POST)
                 .header(HttpHeader.ACCEPT, contentType).header(HttpHeader.CONTENT_TYPE, contentType)
@@ -103,7 +121,7 @@ public class HttpTransport {
 
         ContentResponse response = request.send();
         if (response.getStatus() != 200) {
-            throw new RuntimeException("PUT %s error: HTTP %d".formatted(url, response.getStatus()));
+            throw new IOException("PUT %s error: HTTP %d".formatted(url, response.getStatus()));
         }
 
         return response.getContent();

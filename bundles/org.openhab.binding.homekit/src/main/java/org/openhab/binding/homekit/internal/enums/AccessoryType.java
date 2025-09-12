@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.homekit.internal.enums;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Enumeration of HomeKit accessory categories with their corresponding numeric IDs and labels.
  * This enum provides a mapping between category IDs used in HomeKit and human-readable labels.
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
+@NonNullByDefault
 public enum AccessoryType {
     // TODO manually check the Homekit specification pdf to ensure all types are covered
     OTHER(1, "Other"),

@@ -17,6 +17,10 @@ import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.SecureRandom;
 import java.util.Map;
+import java.util.Objects;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.jose4j.jwt.GeneralJwtException;
 
 /**
  * Implements the client side of the Secure Remote Password (SRP) protocol for HomeKit pairing.
@@ -25,6 +29,7 @@ import java.util.Map;
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
+@NonNullByDefault
 public class SRPClient {
 
     // HomeKit 3072-bit prime from RFC 5054
@@ -49,11 +54,11 @@ public class SRPClient {
 
     private final String pairingCode;
 
-    private BigInteger a; // private ephemeral
-    private BigInteger A; // public ephemeral
-    private BigInteger B; // server public
-    private byte[] salt; // from server
-    private byte[] K; // shared session key
+    private @NonNullByDefault({}) BigInteger a; // private ephemeral
+    private @NonNullByDefault({}) BigInteger A; // public ephemeral
+    private @NonNullByDefault({}) BigInteger B; // server public
+    private @NonNullByDefault({}) byte[] salt; // from server
+    private @NonNullByDefault({}) byte[] K; // shared session key
 
     public SRPClient(String pairingCode) {
         this.pairingCode = pairingCode;
@@ -129,18 +134,20 @@ public class SRPClient {
      * @throws Exception If an error occurs during decryption or verification.
      */
     public void verifyAccessoryIdentifiers(Map<Integer, byte[]> tlv6) throws Exception {
-        byte[] nonce = tlv6.get(0x05);
-        byte[] encrypted = tlv6.get(0x06);
+        byte[] encrypted = Objects.requireNonNull(tlv6.get(0x06));
+        byte[] nonce = Objects.requireNonNull(tlv6.get(0x05));
+        @SuppressWarnings("unused")
+        // TODO parse decrypted TLV8 and specifically validate accessory identity
         byte[] decrypted = ChaCha20.decrypt(K, nonce, encrypted);
-        // TODO parse decrypted TLV8 and specificall validate accessory identity
     }
 
     /**
      * Derives session keys for encrypting and decrypting messages between the HomeKit controller and accessory.
      *
      * @return An instance of SessionKeys containing the derived read and write keys.
+     * @throws GeneralJwtException
      */
-    public SessionKeys deriveSessionKeys() {
+    public SessionKeys deriveSessionKeys() throws GeneralJwtException {
         return new SessionKeys(K);
     }
 

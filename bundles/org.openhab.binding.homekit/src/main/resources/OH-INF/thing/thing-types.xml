@@ -12,13 +12,13 @@
 				<context>network-address</context>
 				<label>IP Address</label>
 				<description>IP v4 address of the HomeKit accessory device</description>
-                <advanced>true</advanced>
+				<advanced>true</advanced>
 			</parameter>
 			<parameter name="pairingCode" type="text" required="false">
 				<context>password</context>
 				<label>Password</label>
 				<description>Password to access the device</description>
-                <advanced>true</advanced>
+				<advanced>true</advanced>
 			</parameter>
 			<parameter name="refreshInterval" type="integer" unit="s" min="10" required="false">
 				<label>Refresh Interval</label>
@@ -29,27 +29,27 @@
 		</config-description>
 	</thing-type>
 
-    <thing-type id="bridge">
-        <label>HomeKit Bridge</label>
-        <description>HomeKit Accessory Bridge</description>
-        <config-description>
-            <parameter name="ipV4Address" type="text" required="true">
-                <context>network-address</context>
-                <label>IP Address</label>
-                <description>IP v4 address of the HomeKit accessory device</description>
-            </parameter>
-            <parameter name="pairingCode" type="text" required="true">
-                <context>password</context>
-                <label>Password</label>
-                <description>Password to access the device</description>
-            </parameter>
-            <parameter name="refreshInterval" type="integer" unit="s" min="10" required="false">
-                <label>Refresh Interval</label>
-                <description>Interval the device is polled in sec.</description>
-                <default>60</default>
-                <advanced>true</advanced>
-            </parameter>
-        </config-description>
-    </thing-type>
+	<thing-type id="bridge">
+		<label>HomeKit Bridge</label>
+		<description>HomeKit Accessory Bridge</description>
+		<config-description>
+			<parameter name="ipV4Address" type="text" required="true">
+				<context>network-address</context>
+				<label>IP Address</label>
+				<description>IP v4 address of the HomeKit accessory device</description>
+			</parameter>
+			<parameter name="pairingCode" type="text" required="true">
+				<context>password</context>
+				<label>Password</label>
+				<description>Password to access the device</description>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" unit="s" min="10" required="false">
+				<label>Refresh Interval</label>
+				<description>Interval the device is polled in sec.</description>
+				<default>60</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
 
 </thing:thing-descriptions>

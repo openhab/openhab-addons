@@ -17,12 +17,9 @@ import org.openhab.binding.homekit.internal.discovery.AccessoryDiscoveryService;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.BridgeHandler;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.builder.BridgeBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Handler for HomeKit bridge devices.
@@ -37,7 +34,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class HomekitBridgeHandler extends HomekitBaseServerHandler implements BridgeHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(HomekitBridgeHandler.class);
+    // private final Logger logger = LoggerFactory.getLogger(HomekitBridgeHandler.class);
     protected final AccessoryDiscoveryService discoveryService;
 
     public HomekitBridgeHandler(Bridge bridge, HttpClientFactory httpClientFactory,
@@ -52,8 +49,8 @@ public class HomekitBridgeHandler extends HomekitBaseServerHandler implements Br
     }
 
     /**
-     * Creates a bridge builder, which allows to modify the bridge. The method
-     * {@link BaseThingHandler#updateThing(Thing)} must be called to persist the changes.
+     * Creates a bridge builder, which allows to modify the bridge. The 'updateThing(Thing)' method
+     * must be called to persist the changes.
      *
      * @return {@link BridgeBuilder} which builds an exact copy of the bridge
      */

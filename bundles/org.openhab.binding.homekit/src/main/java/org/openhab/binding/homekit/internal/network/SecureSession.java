@@ -12,7 +12,10 @@
  */
 package org.openhab.binding.homekit.internal.network;
 
+import java.security.GeneralSecurityException;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * Manages a secure session using ChaCha20 encryption for a HomeKit accessory.
@@ -21,6 +24,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
+@NonNullByDefault
 public class SecureSession {
 
     private final byte[] writeKey;
@@ -38,8 +42,9 @@ public class SecureSession {
      *
      * @param plaintext The plaintext to encrypt.
      * @return The encrypted ciphertext.
+     * @throws GeneralSecurityException
      */
-    public byte[] encrypt(byte[] plaintext) {
+    public byte[] encrypt(byte[] plaintext) throws GeneralSecurityException {
         byte[] nonce = generateNonce(writeCounter.getAndIncrement());
         return ChaCha20.encrypt(writeKey, nonce, plaintext);
     }
@@ -49,8 +54,9 @@ public class SecureSession {
      *
      * @param ciphertext The ciphertext to decrypt.
      * @return The decrypted plaintext.
+     * @throws GeneralSecurityException
      */
-    public byte[] decrypt(byte[] ciphertext) {
+    public byte[] decrypt(byte[] ciphertext) throws GeneralSecurityException {
         byte[] nonce = generateNonce(readCounter.getAndIncrement());
         return ChaCha20.decrypt(readKey, nonce, ciphertext);
     }

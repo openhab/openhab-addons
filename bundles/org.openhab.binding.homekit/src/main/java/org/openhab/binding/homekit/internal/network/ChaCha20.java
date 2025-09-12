@@ -12,9 +12,12 @@
  */
 package org.openhab.binding.homekit.internal.network;
 
+import java.security.GeneralSecurityException;
+
 import org.bouncycastle.crypto.modes.ChaCha20Poly1305;
 import org.bouncycastle.crypto.params.AEADParameters;
 import org.bouncycastle.crypto.params.KeyParameter;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * ChaCha20 encryption and decryption utility class.
@@ -26,6 +29,7 @@ import org.bouncycastle.crypto.params.KeyParameter;
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
+@NonNullByDefault
 public class ChaCha20 {
 
     /**
@@ -35,8 +39,9 @@ public class ChaCha20 {
      * @param nonce 12-byte nonce
      * @param plaintext data to encrypt
      * @return encrypted data (ciphertext + authentication tag)
+     * @throws GeneralSecurityException
      */
-    public static byte[] encrypt(byte[] key, byte[] nonce, byte[] plaintext) {
+    public static byte[] encrypt(byte[] key, byte[] nonce, byte[] plaintext) throws GeneralSecurityException {
         try {
             ChaCha20Poly1305 cipher = new ChaCha20Poly1305();
             AEADParameters params = new AEADParameters(new KeyParameter(key), 128, nonce, null);
@@ -47,7 +52,7 @@ public class ChaCha20 {
             cipher.doFinal(out, len);
             return out;
         } catch (Exception e) {
-            throw new RuntimeException("Encryption failed", e);
+            throw new GeneralSecurityException("Encryption failed", e);
         }
     }
 
@@ -58,8 +63,9 @@ public class ChaCha20 {
      * @param nonce 12-byte nonce
      * @param ciphertext data to decrypt (ciphertext + authentication tag)
      * @return decrypted data (plaintext)
+     * @throws GeneralSecurityException
      */
-    public static byte[] decrypt(byte[] key, byte[] nonce, byte[] ciphertext) {
+    public static byte[] decrypt(byte[] key, byte[] nonce, byte[] ciphertext) throws GeneralSecurityException {
         try {
             ChaCha20Poly1305 cipher = new ChaCha20Poly1305();
             AEADParameters params = new AEADParameters(new KeyParameter(key), 128, nonce, null);
@@ -70,7 +76,7 @@ public class ChaCha20 {
             cipher.doFinal(out, len);
             return out;
         } catch (Exception e) {
-            throw new RuntimeException("Decryption failed", e);
+            throw new GeneralSecurityException("Decryption failed", e);
         }
     }
 }

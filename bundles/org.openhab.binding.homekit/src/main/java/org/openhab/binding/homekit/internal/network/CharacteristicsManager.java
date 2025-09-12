@@ -16,12 +16,15 @@ import static org.openhab.binding.homekit.internal.HomekitBindingConstants.*;
 
 import java.nio.charset.StandardCharsets;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * HTTP client methods for reading and writing HomeKit accessory characteristics over a secure session.
  * It handles encryption and decryption of requests and responses.
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
+@NonNullByDefault
 public class CharacteristicsManager {
 
     private static final String JSON_TEMPLATE = "{\"%s\":[{\"aid\":%s,\"iid\":%s,\"value\":%s}]}";

@@ -14,7 +14,12 @@ package org.openhab.binding.homekit.internal.network;
 
 import static org.openhab.binding.homekit.internal.HomekitBindingConstants.*;
 
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * Handles the 6-step pairing process with a HomeKit accessory.
@@ -25,6 +30,7 @@ import java.util.Map;
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
+@NonNullByDefault
 public class PairingManager {
 
     private final SRPClient srpClient;
@@ -47,7 +53,7 @@ public class PairingManager {
 
         // Step 2: M2 — Receive SRP salt and public key
         Map<Integer, byte[]> tlv2 = TLV8Codec.decode(resp1);
-        srpClient.processChallenge(tlv2.get(0x03), tlv2.get(0x04)); // salt, server public key
+        srpClient.processChallenge(Objects.requireNonNull(tlv2.get(0x03)), Objects.requireNonNull(tlv2.get(0x04)));
 
         // Step 3: M3 — Send SRP public key and proof
         Map<Integer, byte[]> m3 = srpClient.generateClientProof();
@@ -55,7 +61,7 @@ public class PairingManager {
 
         // Step 4: M4 — Verify server proof
         Map<Integer, byte[]> tlv4 = TLV8Codec.decode(resp3);
-        srpClient.verifyServerProof(tlv4.get(0x04));
+        srpClient.verifyServerProof(Objects.requireNonNull(tlv4.get(0x04)));
 
         // Step 5: M5 — Exchange encrypted identifiers
         Map<Integer, byte[]> m5 = srpClient.generateEncryptedIdentifiers();
@@ -67,5 +73,29 @@ public class PairingManager {
 
         // Derive session keys
         return srpClient.deriveSessionKeys();
+    }
+
+    public void removePairing(String baseUrl, String pairingIdentifier, SecureSession secureSession) throws Exception {
+        // Step 1: Construct TLV for remove pairing (State = 0x01, Method = 0x04)
+        Map<Integer, byte[]> tlv = new HashMap<>();
+        tlv.put(0x00, new byte[] { 0x01 }); // State
+        tlv.put(0x01, new byte[] { 0x04 }); // Method: Remove pairing
+        tlv.put(0x03, pairingIdentifier.getBytes(StandardCharsets.UTF_8)); // Identifier to remove
+
+        byte[] plaintext = TLV8Codec.encode(tlv);
+
+        // Step 2: Encrypt with session keys
+        byte[] encrypted = secureSession.encrypt(plaintext);
+
+        // Step 3: Send remove pairing request
+        byte[] response = httpTransport.post(baseUrl, ENDPOINT_PAIRING, CONTENT_TYPE_PAIRING, encrypted);
+
+        // Step 4: Decrypt and verify response
+        byte[] decrypted = secureSession.decrypt(response);
+        Map<Integer, byte[]> tlvResp = TLV8Codec.decode(decrypted);
+
+        if (Objects.requireNonNull(tlvResp.get(0x00))[0] != 0x02) {
+            throw new IllegalStateException("Unexpected response state during pairing removal");
+        }
     }
 }

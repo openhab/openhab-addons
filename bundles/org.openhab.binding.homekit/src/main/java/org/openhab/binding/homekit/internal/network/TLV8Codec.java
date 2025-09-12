@@ -17,6 +17,8 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Utility class for encoding and decoding TLV8 (Type-Length-Value) data.
  * TLV8 is used in HomeKit for structured data exchange.
@@ -24,6 +26,7 @@ import java.util.Map;
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
+@NonNullByDefault
 public class TLV8Codec {
 
     public static final int MAX_TLV_LENGTH = 255;
@@ -69,7 +72,10 @@ public class TLV8Codec {
             byte[] chunk = Arrays.copyOfRange(data, index, index + length);
             index += length;
 
-            tempMap.computeIfAbsent(type, k -> new ByteArrayOutputStream()).writeBytes(chunk);
+            ByteArrayOutputStream stream = tempMap.computeIfAbsent(type, k -> new ByteArrayOutputStream());
+            if (stream != null) {
+                stream.writeBytes(chunk);
+            }
         }
 
         Map<Integer, byte[]> result = new LinkedHashMap<>();

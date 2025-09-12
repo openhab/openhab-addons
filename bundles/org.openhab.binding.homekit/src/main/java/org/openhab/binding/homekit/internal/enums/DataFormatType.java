@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.homekit.internal.enums;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Enumeration of HomeKit characteristic data types.
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
+@NonNullByDefault
 public enum DataFormatType {
     BOOL,
     UINT8,

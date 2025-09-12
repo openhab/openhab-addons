@@ -39,5 +39,4 @@ public class HomekitBindingConstants {
     public static final String ENDPOINT_CHARACTERISTICS = "characteristics";
     public static final String CONTENT_TYPE_PAIRING = "application/pairing+tlv8";
     public static final String CONTENT_TYPE_HAP = "application/hap+json";
-
 }

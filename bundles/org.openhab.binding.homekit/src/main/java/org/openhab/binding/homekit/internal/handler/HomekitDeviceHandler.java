@@ -17,7 +17,6 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.homekit.internal.network.CharacteristicsManager;
 import org.openhab.core.io.net.http.HttpClientFactory;
-import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
@@ -47,7 +46,7 @@ public class HomekitDeviceHandler extends HomekitBaseServerHandler {
         try {
             int intervalSeconds = Integer.parseInt(interval);
             if (intervalSeconds > 0) {
-                scheduler.scheduleAtFixedRate(this::poll, 0, intervalSeconds, TimeUnit.SECONDS);
+                scheduler.scheduleWithFixedDelay(this::poll, 0, intervalSeconds, TimeUnit.SECONDS);
             }
         } catch (NumberFormatException e) {
             logger.warn("Invalid polling interval configuration: {}", interval);
@@ -62,7 +61,7 @@ public class HomekitDeviceHandler extends HomekitBaseServerHandler {
             try {
                 switch (channelId) {
                     case "power":
-                        boolean value = command.equals(OnOffType.ON);
+                        // boolean value = command.equals(OnOffType.ON);
                         // accessoryClient.writeCharacteristic("1", "10", value); // Example AID/IID
                         break;
                     // TODO Add more channels here
