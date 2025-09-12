@@ -16,8 +16,7 @@ import org.openhab.binding.sbus.BindingConstants;
 import org.openhab.binding.sbus.internal.SbusService;
 import org.openhab.binding.sbus.internal.config.SbusChannelConfig;
 import org.openhab.binding.sbus.internal.config.SbusDeviceConfig;
-import org.openhab.core.i18n.LocaleProvider;
-import org.openhab.core.i18n.TranslationProvider;
+
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.StopMoveType;
@@ -28,8 +27,7 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.FrameworkUtil;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,8 +50,8 @@ public class SbusSwitchHandler extends AbstractSbusHandler {
 
     private final Logger logger = LoggerFactory.getLogger(SbusSwitchHandler.class);
 
-    public SbusSwitchHandler(Thing thing, TranslationProvider translationProvider, LocaleProvider localeProvider) {
-        super(thing, translationProvider, localeProvider);
+    public SbusSwitchHandler(Thing thing) {
+        super(thing);
     }
 
     @Override
@@ -63,9 +61,7 @@ public class SbusSwitchHandler extends AbstractSbusHandler {
             // Channels are already defined in thing-types.xml, just validate their configuration
             SbusChannelConfig channelConfig = channel.getConfiguration().as(SbusChannelConfig.class);
             if (channelConfig.channelNumber <= 0) {
-                Bundle bundle = FrameworkUtil.getBundle(getClass());
-                logger.warn("{}", translationProvider.getText(bundle, "error.channel.invalid-number",
-                        channel.getUID().toString(), localeProvider.getLocale()));
+                logger.warn("{}", "@text/error.channel.invalid-number [\"" + channel.getUID().toString() + "\"]");
             }
         }
     }
@@ -88,9 +84,8 @@ public class SbusSwitchHandler extends AbstractSbusHandler {
             updateChannelStatesFromStatus(statuses);
             updateStatus(ThingStatus.ONLINE);
         } catch (Exception e) {
-            Bundle bundle = FrameworkUtil.getBundle(getClass());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    translationProvider.getText(bundle, "error.device.read-state", null, localeProvider.getLocale()));
+                    "@text/error.device.read-state");
         }
     }
 
@@ -106,9 +101,7 @@ public class SbusSwitchHandler extends AbstractSbusHandler {
             if (channelConfig.channelNumber > 0 && channelConfig.channelNumber <= statuses.length) {
                 var channelTypeUID = channel.getChannelTypeUID();
                 if (channelTypeUID == null) {
-                    Bundle bundle = FrameworkUtil.getBundle(getClass());
-                    logger.warn("{}", translationProvider.getText(bundle, "error.channel.no-type",
-                            channel.getUID().toString(), localeProvider.getLocale()));
+                    logger.warn("{}", "@text/error.channel.no-type [\"" + channel.getUID().toString() + "\"]");
                     continue;
                 }
                 String channelTypeId = channelTypeUID.getId();
@@ -141,9 +134,7 @@ public class SbusSwitchHandler extends AbstractSbusHandler {
             if (channel != null) {
                 SbusChannelConfig channelConfig = channel.getConfiguration().as(SbusChannelConfig.class);
                 if (channelConfig.channelNumber <= 0) {
-                    Bundle bundle = FrameworkUtil.getBundle(getClass());
-                    logger.warn("{}", translationProvider.getText(bundle, "error.channel.invalid-number",
-                            channelUID.toString(), localeProvider.getLocale()));
+                    logger.warn("{}", "@text/error.channel.invalid-number [\"" + channelUID.toString() + "\"]");
                     return;
                 }
 
@@ -160,10 +151,7 @@ public class SbusSwitchHandler extends AbstractSbusHandler {
                 }
             }
         } catch (Exception e) {
-            Bundle bundle = FrameworkUtil.getBundle(getClass());
-            logger.warn("{}",
-                    translationProvider.getText(bundle, "error.device.send-command", null, localeProvider.getLocale()),
-                    e);
+            logger.warn("{}", "@text/error.device.send-command", e);
         }
     }
 

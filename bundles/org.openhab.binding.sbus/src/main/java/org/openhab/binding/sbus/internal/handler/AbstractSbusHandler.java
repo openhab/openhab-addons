@@ -21,8 +21,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.sbus.internal.SbusService;
 import org.openhab.binding.sbus.internal.config.SbusDeviceConfig;
 import org.openhab.core.config.core.Configuration;
-import org.openhab.core.i18n.LocaleProvider;
-import org.openhab.core.i18n.TranslationProvider;
+
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -33,8 +32,7 @@ import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.type.ChannelTypeUID;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.FrameworkUtil;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,13 +50,8 @@ public abstract class AbstractSbusHandler extends BaseThingHandler implements Sb
     protected final Logger logger = LoggerFactory.getLogger(getClass());
     protected @Nullable SbusService sbusAdapter;
     protected @Nullable ScheduledFuture<?> pollingJob;
-    protected final TranslationProvider translationProvider;
-    protected final LocaleProvider localeProvider;
-
-    public AbstractSbusHandler(Thing thing, TranslationProvider translationProvider, LocaleProvider localeProvider) {
+    public AbstractSbusHandler(Thing thing) {
         super(thing);
-        this.translationProvider = translationProvider;
-        this.localeProvider = localeProvider;
     }
 
     @Override
@@ -69,9 +62,8 @@ public abstract class AbstractSbusHandler extends BaseThingHandler implements Sb
 
         Bridge bridge = getBridge();
         if (bridge == null) {
-            Bundle bundle = FrameworkUtil.getBundle(getClass());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    translationProvider.getText(bundle, "error.device.no-bridge", null, localeProvider.getLocale()));
+                    "@text/error.device.no-bridge");
             return;
         }
 
@@ -83,9 +75,8 @@ public abstract class AbstractSbusHandler extends BaseThingHandler implements Sb
 
         sbusAdapter = bridgeHandler.getSbusConnection();
         if (sbusAdapter == null) {
-            Bundle bundle = FrameworkUtil.getBundle(getClass());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED, translationProvider
-                    .getText(bundle, "error.device.bridge-not-initialized", null, localeProvider.getLocale()));
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED,
+                    "@text/error.device.bridge-not-initialized");
             return;
         }
 
@@ -143,9 +134,7 @@ public abstract class AbstractSbusHandler extends BaseThingHandler implements Sb
                 try {
                     pollDevice();
                 } catch (Exception e) {
-                    Bundle bundle = FrameworkUtil.getBundle(getClass());
-                    logger.warn("{}", translationProvider.getText(bundle, "error.device.polling", null,
-                            localeProvider.getLocale()), e);
+                    logger.warn("{}", "@text/error.device.polling", e);
                 }
             }, 0, config.refresh, TimeUnit.SECONDS);
         } else if (config.refresh == 0) {
@@ -154,9 +143,7 @@ public abstract class AbstractSbusHandler extends BaseThingHandler implements Sb
                 try {
                     pollDevice();
                 } catch (Exception e) {
-                    Bundle bundle = FrameworkUtil.getBundle(getClass());
-                    logger.warn("{}", translationProvider.getText(bundle, "error.device.polling", null,
-                            localeProvider.getLocale()), e);
+                    logger.warn("{}", "@text/error.device.polling", e);
                 }
             }, 0, TimeUnit.SECONDS);
         }

@@ -16,16 +16,14 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.openhab.binding.sbus.BindingConstants;
 import org.openhab.binding.sbus.internal.SbusService;
 import org.openhab.binding.sbus.internal.config.SbusDeviceConfig;
-import org.openhab.core.i18n.LocaleProvider;
-import org.openhab.core.i18n.TranslationProvider;
+
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.FrameworkUtil;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,8 +44,8 @@ public class SbusLuxSensorHandler extends AbstractSbusHandler {
 
     private final Logger logger = LoggerFactory.getLogger(SbusLuxSensorHandler.class);
 
-    public SbusLuxSensorHandler(Thing thing, TranslationProvider translationProvider, LocaleProvider localeProvider) {
-        super(thing, translationProvider, localeProvider);
+    public SbusLuxSensorHandler(Thing thing) {
+        super(thing);
     }
 
     @Override
@@ -60,9 +58,8 @@ public class SbusLuxSensorHandler extends AbstractSbusHandler {
     protected void pollDevice() {
         final SbusService adapter = super.sbusAdapter;
         if (adapter == null) {
-            Bundle bundle = FrameworkUtil.getBundle(getClass());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, translationProvider.getText(bundle,
-                    "error.device.adapter-not-initialized", null, localeProvider.getLocale()));
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/error.device.adapter-not-initialized");
             return;
         }
 
@@ -74,9 +71,8 @@ public class SbusLuxSensorHandler extends AbstractSbusHandler {
             updateChannelStatesFromResponse(response);
             updateStatus(ThingStatus.ONLINE);
         } catch (Exception e) {
-            Bundle bundle = FrameworkUtil.getBundle(getClass());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, translationProvider.getText(bundle,
-                    "error.device.communication", null, localeProvider.getLocale()));
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/error.device.communication");
             logger.warn("Error polling lux sensor device {}: {}", getThing().getUID(), e.getMessage());
         }
     }
@@ -147,9 +143,8 @@ public class SbusLuxSensorHandler extends AbstractSbusHandler {
                 // Process motion sensor status report (0x02CA broadcast)
                 updateChannelStatesFromReport(report);
                 logger.debug("Processed async motion sensor status report for lux handler {}", getThing().getUID());
-            } else if (response instanceof ReadNineInOneStatusResponse) {
+            } else if (response instanceof ReadNineInOneStatusResponse statusResponse) {
                 // Process 9-in-1 status response (0xDB01)
-                ReadNineInOneStatusResponse statusResponse = (ReadNineInOneStatusResponse) response;
                 updateChannelStatesFromResponse(statusResponse);
                 logger.debug("Processed async 9-in-1 status response for lux handler {}", getThing().getUID());
             }

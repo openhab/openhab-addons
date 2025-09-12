@@ -16,8 +16,7 @@ import org.openhab.binding.sbus.BindingConstants;
 import org.openhab.binding.sbus.internal.SbusService;
 import org.openhab.binding.sbus.internal.config.SbusChannelConfig;
 import org.openhab.binding.sbus.internal.config.SbusDeviceConfig;
-import org.openhab.core.i18n.LocaleProvider;
-import org.openhab.core.i18n.TranslationProvider;
+
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
@@ -28,8 +27,7 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
 import org.openhab.core.util.ColorUtil;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.FrameworkUtil;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,8 +53,8 @@ public class SbusRgbwHandler extends AbstractSbusHandler {
 
     private final Logger logger = LoggerFactory.getLogger(SbusRgbwHandler.class);
 
-    public SbusRgbwHandler(Thing thing, TranslationProvider translationProvider, LocaleProvider localeProvider) {
-        super(thing, translationProvider, localeProvider);
+    public SbusRgbwHandler(Thing thing) {
+        super(thing);
     }
 
     @Override
@@ -68,17 +66,13 @@ public class SbusRgbwHandler extends AbstractSbusHandler {
             SbusChannelConfig channelConfig = channel.getConfiguration().as(SbusChannelConfig.class);
             var channelTypeUID = channel.getChannelTypeUID();
             if (channelTypeUID == null) {
-                Bundle bundle = FrameworkUtil.getBundle(getClass());
-                logger.warn("{}", translationProvider.getText(bundle, "error.channel.no-type",
-                        channel.getUID().toString(), localeProvider.getLocale()));
+                logger.warn("{}", "@text/error.channel.no-type [\"" + channel.getUID().toString() + "\"]");
                 continue;
             }
             String channelTypeId = channelTypeUID.getId();
             if (BindingConstants.CHANNEL_TYPE_COLOR.equals(channelTypeId)) {
                 if (channelConfig.channelNumber <= 0) {
-                    Bundle bundle = FrameworkUtil.getBundle(getClass());
-                    logger.warn("{}", translationProvider.getText(bundle, "error.channel.invalid-number",
-                            channel.getUID().toString(), localeProvider.getLocale()));
+                    logger.warn("{}", "@text/error.channel.invalid-number [\"" + channel.getUID().toString() + "\"]");
                 }
             }
             if (BindingConstants.CHANNEL_TYPE_SWITCH.equals(channelTypeId)) {
@@ -89,9 +83,8 @@ public class SbusRgbwHandler extends AbstractSbusHandler {
             }
         }
         if (switchChannelCount > 1) {
-            Bundle bundle = FrameworkUtil.getBundle(getClass());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, translationProvider.getText(bundle,
-                    "error.rgbw.too-many-switches", getThing().getUID().toString(), localeProvider.getLocale()));
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/error.rgbw.too-many-switches [\"" + getThing().getUID().toString() + "\"]");
             return;
         }
     }
@@ -155,9 +148,8 @@ public class SbusRgbwHandler extends AbstractSbusHandler {
 
             updateStatus(ThingStatus.ONLINE);
         } catch (Exception e) {
-            Bundle bundle = FrameworkUtil.getBundle(getClass());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    translationProvider.getText(bundle, "error.device.read-state", null, localeProvider.getLocale()));
+                    "@text/error.device.read-state");
         }
     }
 
@@ -176,9 +168,7 @@ public class SbusRgbwHandler extends AbstractSbusHandler {
             if (channel != null) {
                 var channelTypeUID = channel.getChannelTypeUID();
                 if (channelTypeUID == null) {
-                    Bundle bundle = FrameworkUtil.getBundle(getClass());
-                    logger.warn("{}", translationProvider.getText(bundle, "error.channel.no-type",
-                            channel.getUID().toString(), localeProvider.getLocale()));
+                    logger.warn("{}", "@text/error.channel.no-type [\"" + channel.getUID().toString() + "\"]");
                     return;
                 }
                 String channelTypeId = channelTypeUID.getId();
@@ -220,9 +210,8 @@ public class SbusRgbwHandler extends AbstractSbusHandler {
                 }
             }
         } catch (Exception e) {
-            Bundle bundle = FrameworkUtil.getBundle(getClass());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    translationProvider.getText(bundle, "error.device.send-command", null, localeProvider.getLocale()));
+                    "@text/error.device.send-command");
         }
     }
 
