@@ -110,7 +110,7 @@ public class MerossBridgeHandler extends BaseBridgeHandler {
                 discoveryService.discoverDevices();
             }
             merossHttpConnector.logout();
-        } catch (ConnectException | MerossApiException | MqttException e) {
+        } catch (ConnectException | MerossApiException | MqttException | InterruptedException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
@@ -147,9 +147,10 @@ public class MerossBridgeHandler extends BaseBridgeHandler {
      * Initializes the mqtt connector
      *
      * @throws MqttException
+     * @throws InterruptedException
      *
      */
-    private void initializeMerossMqttConnector() throws MqttException {
+    private void initializeMerossMqttConnector() throws MqttException, InterruptedException {
         String clientId = MqttMessageBuilder.buildClientId();
         MqttMessageBuilder.setClientId(clientId);
         CloudCredentials credentials = this.credentials;
