@@ -407,7 +407,6 @@ public class ZwaveJSNodeHandlerTest {
                 "store_4.json");
 
         ZwaveJSBridgeHandler bridgeHandler = nodeHandler.getBridgeHandler();
-        ZwaveJSBridgeHandler spyBridgeHandler = spy(bridgeHandler);
 
         doReturn(bridgeHandler).when(nodeHandler).getBridgeHandler();
 
