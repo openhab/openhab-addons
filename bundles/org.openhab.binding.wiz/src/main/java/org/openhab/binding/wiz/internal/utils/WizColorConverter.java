@@ -71,8 +71,8 @@ public class WizColorConverter {
      * @param int white - the value of the white component (0-255)
      * @param int dimming - the brightness of the bulb, independent of the RGB color (0-100)
      *
-     * NOTE: This method must be kept in sync with hsbToRgbw in order for the
-     * color representation to remain accurate between conversions in both directions.
+     *            NOTE: This method must be kept in sync with hsbToRgbw in order for the
+     *            color representation to remain accurate between conversions in both directions.
      *
      * @return a {@link HSBType} with the color components
      */
