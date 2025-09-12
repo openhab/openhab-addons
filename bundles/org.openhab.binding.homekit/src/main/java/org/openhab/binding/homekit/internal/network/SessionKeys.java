@@ -13,12 +13,12 @@
 package org.openhab.binding.homekit.internal.network;
 
 import java.nio.charset.StandardCharsets;
+import java.security.GeneralSecurityException;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.jose4j.jwt.GeneralJwtException;
 
 /**
  * Derives session keys for encrypting and decrypting messages between a HomeKit controller and accessory.
@@ -35,13 +35,13 @@ public class SessionKeys {
     public final byte[] writeKey; // Controller → Accessory
     public final byte[] readKey; // Accessory → Controller
 
-    public SessionKeys(byte[] sharedSecret) throws GeneralJwtException {
+    public SessionKeys(byte[] sharedSecret) throws GeneralSecurityException {
         byte[] salt = "Control-Salt".getBytes(StandardCharsets.UTF_8);
         this.writeKey = hkdf(sharedSecret, salt, "Control-Write-Encryption-Key".getBytes(StandardCharsets.UTF_8), 32);
         this.readKey = hkdf(sharedSecret, salt, "Control-Read-Encryption-Key".getBytes(StandardCharsets.UTF_8), 32);
     }
 
-    private byte[] hkdf(byte[] ikm, byte[] salt, byte[] info, int length) throws GeneralJwtException {
+    private byte[] hkdf(byte[] ikm, byte[] salt, byte[] info, int length) throws GeneralSecurityException {
         try {
             Mac mac = Mac.getInstance(HMAC_ALGO);
             mac.init(new SecretKeySpec(salt, HMAC_ALGO));
@@ -56,7 +56,7 @@ public class SessionKeys {
             System.arraycopy(okm, 0, result, 0, length);
             return result;
         } catch (Exception e) {
-            throw new GeneralJwtException("HKDF derivation failed", e);
+            throw new GeneralSecurityException("HKDF derivation failed", e);
         }
     }
 }

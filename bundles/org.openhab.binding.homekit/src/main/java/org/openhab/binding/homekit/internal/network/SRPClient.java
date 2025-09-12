@@ -14,13 +14,13 @@ package org.openhab.binding.homekit.internal.network;
 
 import java.io.ByteArrayOutputStream;
 import java.math.BigInteger;
+import java.security.GeneralSecurityException;
 import java.security.MessageDigest;
 import java.security.SecureRandom;
 import java.util.Map;
 import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.jose4j.jwt.GeneralJwtException;
 
 /**
  * Implements the client side of the Secure Remote Password (SRP) protocol for HomeKit pairing.
@@ -145,9 +145,9 @@ public class SRPClient {
      * Derives session keys for encrypting and decrypting messages between the HomeKit controller and accessory.
      *
      * @return An instance of SessionKeys containing the derived read and write keys.
-     * @throws GeneralJwtException
+     * @throws GeneralSecurityException
      */
-    public SessionKeys deriveSessionKeys() throws GeneralJwtException {
+    public SessionKeys deriveSessionKeys() throws GeneralSecurityException {
         return new SessionKeys(K);
     }
 
