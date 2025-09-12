@@ -26,16 +26,16 @@ Moreover, the devices should be in an online status
 
 ## Bridge Configuration
 
-| Name     | Type | Description                                              | Default                    | Required | Advanced |
-|----------|------|----------------------------------------------------------|----------------------------|----------|----------|
+| Name     | Type | Description                                              | Default                      | Required | Advanced |
+|----------|------|----------------------------------------------------------|------------------------------|----------|----------|
 | hostname | text | Meross Hostname or IP address (for Europe located users) | <https://iotx-eu.meross.com> | yes      | yes      |
-| email    | text | Email of your Meross Account                             | N/A                        | yes      | no       |
-| password | text | Password of your Meross Account                          | N/A                        | yes      | no       |
+| email    | text | Email of your Meross Account                             | N/A                          | yes      | no       |
+| password | text | Password of your Meross Account                          | N/A                          | yes      | no       |
 
 ### Other host locations
 
-| Location     | Hostname                   |
-|--------------|----------------------------|
+| Location     | Hostname                     |
+|--------------|------------------------------|
 | Asia-Pacific | <https://iotx-ap.meross.com> |
 | US           | <https://iotx-us.meross.com> |
 

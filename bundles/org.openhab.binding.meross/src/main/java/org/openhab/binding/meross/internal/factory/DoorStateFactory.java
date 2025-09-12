@@ -40,8 +40,8 @@ public class DoorStateFactory extends ModeFactory {
     @Override
     public State state(int merossState) {
         return switch (merossState) {
-            case 0 -> OpenClosedType.CLOSED;
-            case 1 -> OpenClosedType.OPEN;
+            case 0 -> OpenClosedType.OPEN;
+            case 1 -> OpenClosedType.CLOSED;
             default -> UnDefType.UNDEF;
         };
     }

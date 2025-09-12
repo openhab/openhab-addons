@@ -15,6 +15,7 @@ package org.openhab.binding.meross.internal.handler;
 import static org.openhab.binding.meross.internal.MerossBindingConstants.CHANNEL_LIGHT_POWER;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.meross.internal.MerossBindingConstants;
 import org.openhab.binding.meross.internal.api.MerossEnum.Namespace;
 import org.openhab.binding.meross.internal.api.MerossManager;
@@ -37,29 +38,43 @@ import org.slf4j.LoggerFactory;
  *
  * @author Giovanni Fabiani - Initial contribution
  * @author Mark Herwege - Extract common methods to abstract base class
+ * @author Mark Herwege - Implement refresh
  */
 @NonNullByDefault
 public class MerossLightHandler extends MerossDeviceHandler {
 
     private final Logger logger = LoggerFactory.getLogger(MerossLightHandler.class);
 
-    public MerossLightHandler(Thing thing) {
-        super(thing);
+    public MerossLightHandler(Thing thing, HttpClient httpClient) {
+        super(thing, httpClient);
     }
 
     @Override
     public void initialize() {
+        // The following code is to update older light configurations:
         // This code moves from a "lightName" configuration parameter to a "name" configuration parameter
+        // It also sets the uuid configuration representation configuration property from the deviceUUID property
         MerossLightConfiguration config = getConfigAs(MerossLightConfiguration.class);
+        boolean configChanged = false;
+        Configuration configuration = editConfiguration();
         String lightName = config.lightName;
         if (config.name.isEmpty() && (lightName != null)) {
             config.name = lightName;
-            Configuration configuration = editConfiguration();
             configuration.put(MerossBindingConstants.PROPERTY_DEVICE_NAME, config.lightName);
             configuration.put(MerossBindingConstants.PROPERTY_LIGHT_DEVICE_NAME, null);
-            updateConfiguration(configuration);
+            configChanged = true;
         }
-        this.config = config;
+        String deviceUUID = thing.getProperties().get("deviceUUID");
+        if (config.uuid.isEmpty() && deviceUUID != null && !deviceUUID.isEmpty()) {
+            config.uuid = deviceUUID;
+            configuration.put(MerossBindingConstants.PROPERTY_DEVICE_UUID, deviceUUID);
+            updateProperty("deviceUUID", null);
+            configChanged = true;
+        }
+        if (configChanged) {
+            updateConfiguration(configuration);
+            this.config = config;
+        }
 
         initializeDevice();
     }
@@ -76,21 +91,31 @@ public class MerossLightHandler extends MerossDeviceHandler {
         }
 
         if (channelUID.getId().equals(CHANNEL_LIGHT_POWER)) {
-            if (command instanceof OnOffType) {
-                try {
-                    if (OnOffType.ON.equals(command)) {
-                        manager.sendCommand(0, Namespace.CONTROL_TOGGLEX, OnOffType.ON.name());
-                    } else if (OnOffType.OFF.equals(command)) {
-                        manager.sendCommand(0, Namespace.CONTROL_TOGGLEX, OnOffType.OFF.name());
-                    }
-                } catch (MqttException e) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "Cannot send command" + e.getMessage());
+            try {
+                switch (command) {
+                    case OnOffType onOffType:
+                        if (OnOffType.ON.equals(onOffType)) {
+                            manager.sendCommand(0, Namespace.CONTROL_TOGGLEX, OnOffType.ON.name());
+                        } else if (OnOffType.OFF.equals(onOffType)) {
+                            manager.sendCommand(0, Namespace.CONTROL_TOGGLEX, OnOffType.OFF.name());
+                        }
+                        break;
+                    case RefreshType refreshType:
+                        if (ipAddress == null) {
+                            logger.debug("Not connected locally, refresh not supported");
+                        } else {
+                            manager.refresh(Namespace.CONTROL_TOGGLEX);
+                        }
+                        break;
+                    default:
+                        logger.debug("Unsupported command {} for channel {}", command, channelUID);
+                        break;
                 }
-            } else if (command instanceof RefreshType) {
-                logger.debug("Refresh command not supported");
-            } else {
-                logger.debug("Unsupported command {} for channel {}", command, channelUID);
+            } catch (MqttException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Cannot send command, " + e.getMessage());
+            } catch (InterruptedException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Connection interrupted");
             }
         } else {
             logger.debug("Unsupported channelUID {}", channelUID);
@@ -98,7 +123,10 @@ public class MerossLightHandler extends MerossDeviceHandler {
     }
 
     @Override
-    public void updateState(int deviceChannel, State state) {
+    public void updateState(Namespace namespace, int deviceChannel, State state) {
+        if (namespace != Namespace.CONTROL_TOGGLEX) {
+            return;
+        }
         updateState(CHANNEL_LIGHT_POWER, state);
     }
 }

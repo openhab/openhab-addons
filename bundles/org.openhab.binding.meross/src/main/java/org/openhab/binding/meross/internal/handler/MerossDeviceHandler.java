@@ -12,12 +12,20 @@
  */
 package org.openhab.binding.meross.internal.handler;
 
+import static org.openhab.binding.meross.internal.MerossBindingConstants.PROPERTY_IP_ADDRESS;
+
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.meross.internal.api.MerossEnum;
+import org.openhab.binding.meross.internal.api.MerossEnum.Namespace;
 import org.openhab.binding.meross.internal.api.MerossManager;
 import org.openhab.binding.meross.internal.api.MerossMqttConnector;
 import org.openhab.binding.meross.internal.config.MerossDeviceConfiguration;
+import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.transport.mqtt.MqttException;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -26,6 +34,8 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.State;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link MerossDeviceHandler} is the abstract base class for Meross device handlers
@@ -39,8 +49,15 @@ public abstract class MerossDeviceHandler extends BaseThingHandler {
     protected @Nullable MerossBridgeHandler merossBridgeHandler;
     protected @Nullable MerossManager manager;
 
-    public MerossDeviceHandler(Thing thing) {
+    private HttpClient httpClient;
+
+    protected @Nullable String ipAddress;
+
+    private final Logger logger = LoggerFactory.getLogger(MerossDeviceHandler.class);
+
+    public MerossDeviceHandler(Thing thing, HttpClient httpClient) {
         super(thing);
+        this.httpClient = httpClient;
     }
 
     public void initializeDevice() {
@@ -66,19 +83,28 @@ public abstract class MerossDeviceHandler extends BaseThingHandler {
                 config.name = label;
             }
         }
-        String deviceUUID = merossBridgeHandler.getDevUUIDByDevName(config.name);
+        String ipAddress = config.ipAddress;
+        if (ipAddress != null) {
+            try {
+                InetAddress.getByName(ipAddress);
+                this.ipAddress = ipAddress;
+            } catch (UnknownHostException e) {
+                logger.debug("Invalid IP address configuration {}", ipAddress);
+            }
+        }
+        String deviceUUID = config.uuid;
         if (deviceUUID.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "No device found with name " + config.name);
+                    "No device found with name " + config.name + ", UUID not set");
             return;
         }
         scheduler.submit(() -> {
             MerossManager manager = this.manager;
-            manager = manager != null ? manager : new MerossManager(mqttConnector, deviceUUID, this);
+            manager = manager != null ? manager : new MerossManager(httpClient, mqttConnector, deviceUUID, this);
             this.manager = manager;
             try {
                 manager.initialize();
-            } catch (MqttException e) {
+            } catch (MqttException | InterruptedException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Communication error for device with name " + config.name);
             }
@@ -119,5 +145,29 @@ public abstract class MerossDeviceHandler extends BaseThingHandler {
         }
     }
 
-    public abstract void updateState(int deviceChannel, State state);
+    public void setIpAddress(String ipAddress) {
+        if (ipAddress.equals(this.ipAddress)) {
+            return;
+        }
+        this.ipAddress = ipAddress;
+
+        // Check if a valid address
+        try {
+            InetAddress.getByName(ipAddress);
+        } catch (UnknownHostException e) {
+            logger.debug("Trying to set invalid IP address {}", ipAddress);
+            this.ipAddress = null;
+            return;
+        }
+        // Keep the ip address for the next start of the binding
+        Configuration configuration = editConfiguration();
+        configuration.put(PROPERTY_IP_ADDRESS, this.ipAddress);
+        updateConfiguration(configuration);
+    }
+
+    public @Nullable String getIpAddress() {
+        return ipAddress;
+    }
+
+    public abstract void updateState(Namespace namespace, int deviceChannel, State state);
 }

@@ -186,4 +186,9 @@ public class MerossEnum {
             return value;
         }
     }
+
+    public enum HttpConnectionType {
+        LOCAL,
+        CLOUD
+    }
 }

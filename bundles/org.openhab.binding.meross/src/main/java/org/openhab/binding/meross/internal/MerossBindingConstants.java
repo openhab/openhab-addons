@@ -31,7 +31,7 @@ import org.openhab.core.thing.ThingTypeUID;
 @NonNullByDefault
 public class MerossBindingConstants {
 
-    private static final String BINDING_ID = "meross";
+    static final String BINDING_ID = "meross";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_GATEWAY = new ThingTypeUID(BINDING_ID, "gateway");
@@ -50,8 +50,10 @@ public class MerossBindingConstants {
     public static final Set<ThingTypeUID> DISCOVERABLE_THING_TYPES_UIDS = Set
             .copyOf(Stream.of(LIGHT_THING_TYPES, DOOR_THING_TYPES).flatMap(Set::stream).collect(Collectors.toSet()));
 
-    public static final String PROPERTY_LIGHT_DEVICE_NAME = "lightName";
+    public static final String PROPERTY_LIGHT_DEVICE_NAME = "lightName"; // Deprecated, name used instead
     public static final String PROPERTY_DEVICE_NAME = "name";
+    public static final String PROPERTY_IP_ADDRESS = "ipAddress";
+    public static final String PROPERTY_DEVICE_UUID = "uuid";
 
     // List of all known Meross light hardware types
     public static final Set<String> DISCOVERABLE_LIGHT_HARDWARE_TYPES = Set.of("msl", "mss");

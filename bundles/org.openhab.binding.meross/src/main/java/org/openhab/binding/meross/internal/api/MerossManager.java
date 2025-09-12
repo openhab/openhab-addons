@@ -12,15 +12,23 @@
  */
 package org.openhab.binding.meross.internal.api;
 
+import java.io.IOException;
+import java.lang.reflect.Type;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.meross.internal.api.MerossEnum.Namespace;
 import org.openhab.binding.meross.internal.command.Command;
 import org.openhab.binding.meross.internal.dto.MqttMessageBuilder;
@@ -33,10 +41,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 
 /**
@@ -44,48 +52,143 @@ import com.google.gson.reflect.TypeToken;
  * appliances
  *
  * @author Giovanni Fabiani - Initial contribution
- * @author Mark Herwege - Use mqtt transport
+ * @author Mark Herwege - Single manager per device
+ * @author Mark Herwege - Use mqtt transport, receive mqtt push messages
+ * @author Mark Herwege - Response parsing
+ * @author Mark Herwege - Local http connection
  */
 @NonNullByDefault
 public class MerossManager implements MqttMessageSubscriber {
     private final Logger logger = LoggerFactory.getLogger(MerossManager.class);
 
+    private HttpClient httpClient;
     private MerossMqttConnector mqttConnector;
+    private @Nullable MerossHttpConnector httpConnector;
     private String deviceUUID;
     private MerossDeviceHandler callback;
-    private @Nullable InetAddress ipAddress;
 
     private String deviceRequestTopic;
 
+    private @Nullable CompletableFuture<Boolean> ipInitialized;
+
     private Set<String> abilities = Set.of();
 
-    public MerossManager(MerossMqttConnector mqttConnector, String deviceUUID, MerossDeviceHandler callback) {
+    private static final Gson GSON = new Gson();
+    private static final Type ABILITIES_TYPE = new TypeToken<Map<String, Object>>() {
+    }.getType();
+
+    public MerossManager(HttpClient httpClient, MerossMqttConnector mqttConnector, String deviceUUID,
+            MerossDeviceHandler callback) {
         this.deviceUUID = deviceUUID;
         this.deviceRequestTopic = MqttMessageBuilder.buildDeviceRequestTopic(deviceUUID);
         this.callback = callback;
+        this.httpClient = httpClient;
         this.mqttConnector = mqttConnector;
-        mqttConnector.addDeviceRequestTopicSubscriber(this, deviceUUID);
+        mqttConnector.addClientUserTopicSubscriber(this);
+        mqttConnector.addClientResponseTopicSubscriber(this);
+    }
+
+    private void setHttpConnector() {
+        String ipAddress = callback.getIpAddress();
+        if (ipAddress != null) {
+            // Check if a valid address, return if not
+            try {
+                InetAddress.getByName(ipAddress);
+            } catch (UnknownHostException e) {
+                httpConnector = null;
+                return;
+            }
+            httpConnector = new MerossHttpConnector.Builder().httpClient(httpClient)
+                    .setApiBaseUrl("http://" + ipAddress + "/config").build();
+        }
     }
 
     public void dispose() {
         mqttConnector.removeDeviceRequestTopicSubscriber(this, deviceUUID);
     }
 
-    public void initialize() throws MqttException {
-        getSystemAll();
-        getAbilities();
+    public void initialize() throws MqttException, InterruptedException {
+        // if there is an IP adress configured, we can build the httpConnector straight away
+        setHttpConnector();
+
+        try {
+            getSystemAll().handle((result, ex) -> {
+                if (ex != null) {
+                    Throwable cause = ex instanceof CompletionException ? ex.getCause() : ex;
+                    if (cause instanceof TimeoutException) {
+                        try {
+                            // We give it a chance to retrieve the IP address from the cloud MQTT broker if talking to
+                            // the cloud. We can safely continue on timeout and only use cloud communication. The device
+                            // IP will not have been set, so we will not be able to use local communication if it wasn't
+                            // already set in the thing configuration.
+                            getAbilities();
+                        } catch (MqttException | InterruptedException me) {
+                            throw new CompletionException(me);
+                        }
+                        return null;
+                    } else {
+                        throw new CompletionException(cause);
+                    }
+                } else {
+                    try {
+                        getAbilities();
+                    } catch (MqttException | InterruptedException e) {
+                        throw new CompletionException(e);
+                    }
+                    return null;
+                }
+            }).get();
+        } catch (ExecutionException e) {
+            if (e.getCause() instanceof MqttException me) {
+                throw me;
+            } else if (e.getCause() instanceof InterruptedException ie) {
+                throw ie;
+            }
+            throw new MqttException(e);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new InterruptedException();
+        }
     }
 
-    private void getSystemAll() throws MqttException {
-        byte[] systemAllMessage = MqttMessageBuilder.buildMqttMessage("GET", MerossEnum.Namespace.SYSTEM_ALL.value(),
+    private void publishMessage(String topic, byte[] message) throws MqttException, InterruptedException {
+        logger.trace("Publishing topic {}, message {}", topic, new String(message, StandardCharsets.UTF_8));
+
+        MerossHttpConnector httpConnector = this.httpConnector;
+        if (httpConnector != null) {
+            logger.trace("Publishing to local http...");
+            try {
+                String response = httpConnector.postResponse(message);
+                processMessage(topic, response.getBytes());
+                return;
+            } catch (IOException e) {
+                logger.debug("Error communicating to device with IP address {} in LAN, trying cloud",
+                        callback.getIpAddress());
+                logger.trace("Error: ", e);
+            }
+        }
+        logger.trace("Publishing to mqtt...");
+        mqttConnector.publishMqttMessage(topic, message);
+    }
+
+    private CompletableFuture<Boolean> getSystemAll() throws MqttException, InterruptedException {
+        byte[] message = MqttMessageBuilder.buildMqttMessage("GET", MerossEnum.Namespace.SYSTEM_ALL.value(), deviceUUID,
+                Collections.emptyMap());
+        CompletableFuture<Boolean> ipInitialized = new CompletableFuture<Boolean>();
+        publishMessage(deviceRequestTopic, message);
+        ipInitialized.orTimeout(5, TimeUnit.SECONDS);
+        this.ipInitialized = ipInitialized;
+        if (callback.getIpAddress() != null) {
+            // If there is already an IP address configured, we don't have to wait to get it
+            ipInitialized.complete(true);
+        }
+        return ipInitialized;
+    }
+
+    private void getAbilities() throws MqttException, InterruptedException {
+        byte[] message = MqttMessageBuilder.buildMqttMessage("GET", MerossEnum.Namespace.SYSTEM_ABILITY.value(),
                 deviceUUID, Collections.emptyMap());
-        mqttConnector.publishMqttMessage(deviceRequestTopic, systemAllMessage);
-    }
-
-    private void getAbilities() throws MqttException {
-        byte[] systemAbilityMessage = MqttMessageBuilder.buildMqttMessage("GET",
-                MerossEnum.Namespace.SYSTEM_ABILITY.value(), deviceUUID, Collections.emptyMap());
-        mqttConnector.publishMqttMessage(deviceRequestTopic, systemAbilityMessage);
+        publishMessage(deviceRequestTopic, message);
     }
 
     /**
@@ -93,9 +196,10 @@ public class MerossManager implements MqttMessageSubscriber {
      * @param commandNamespace The command type
      * @param commandMode The command Mode
      * @throws MqttException
+     * @throws InterruptedException
      */
-
-    public void sendCommand(int deviceChannel, Namespace commandNamespace, String commandMode) throws MqttException {
+    public void sendCommand(int deviceChannel, Namespace commandNamespace, String commandMode)
+            throws MqttException, InterruptedException {
         ModeFactory modeFactory = TypeFactory.getFactory(commandNamespace);
 
         if (!abilities.isEmpty()) {
@@ -108,123 +212,143 @@ public class MerossManager implements MqttMessageSubscriber {
         Command command = modeFactory.commandMode(commandMode, deviceChannel);
         byte[] commandMessage = command.command(deviceUUID);
 
-        mqttConnector.publishMqttMessage(deviceRequestTopic, commandMessage);
+        publishMessage(deviceRequestTopic, commandMessage);
+    }
+
+    /**
+     * @param namespace
+     * @throws MqttException
+     * @throws InterruptedException
+     */
+    public void refresh(Namespace namespace) throws MqttException, InterruptedException {
+        byte[] message = MqttMessageBuilder.buildMqttMessage("GET", namespace.value(), deviceUUID,
+                Collections.emptyMap());
+        publishMessage(deviceRequestTopic, message);
     }
 
     @Override
-    public void processMessage(String topic, byte[] mqttPayload) {
-        String mqttPayloadString = new String(mqttPayload, StandardCharsets.UTF_8);
-        JsonObject jsonObject = JsonParser.parseString(mqttPayloadString).getAsJsonObject();
+    public void processMessage(String topic, byte[] message) {
+        try {
+            String mqttPayload = new String(message, StandardCharsets.UTF_8);
+            logger.trace("Processing topic {}, message {}", topic, mqttPayload);
+            JsonObject jsonObject = JsonParser.parseString(mqttPayload).getAsJsonObject();
 
-        String method = null;
-        Namespace namespace = null;
-        if (jsonObject.has("header") && !jsonObject.get("header").isJsonNull()) {
-            JsonObject header = jsonObject.getAsJsonObject("header");
-            if (header.has("method") && !header.get("method").isJsonNull() && header.has("namespace")
-                    && !header.get("namespace").isJsonNull()) {
-                method = header.getAsJsonObject("method").getAsString();
-                String ability = header.getAsJsonObject("namespace").getAsString();
-                namespace = Namespace.getNamespaceByAbilityValue(ability);
+            String method = null;
+            Namespace namespace = null;
+            if (jsonObject.has("header") && !jsonObject.get("header").isJsonNull()) {
+                JsonObject header = jsonObject.getAsJsonObject("header");
+                if (header.has("method") && header.get("method").isJsonPrimitive() && header.has("namespace")
+                        && header.get("namespace").isJsonPrimitive()) {
+                    method = header.get("method").getAsString();
+                    String namespaceString = header.get("namespace").getAsString();
+                    namespace = Namespace.getNamespaceByAbilityValue(namespaceString);
+                }
             }
-        }
-        if (method == null || namespace == null) {
-            return;
-        }
+            if (method == null || namespace == null) {
+                return;
+            }
 
-        JsonObject payload;
-        if (jsonObject.has("payload") && !jsonObject.get("payload").isJsonNull()) {
-            payload = jsonObject.getAsJsonObject("payload");
-        } else {
-            return;
-        }
+            JsonObject payload;
+            if (jsonObject.has("payload") && !jsonObject.get("payload").isJsonNull()) {
+                payload = jsonObject.getAsJsonObject("payload");
+            } else {
+                return;
+            }
 
-        if ("GETACK".equals(method)) {
-            switch (namespace) {
-                case Namespace.SYSTEM_ALL:
-                    JsonObject all;
-                    if (payload.has("all") && !payload.get("all").isJsonNull()) {
-                        all = payload.getAsJsonObject("all");
-                    } else {
-                        return;
-                    }
-                    if (all.has("system") && !all.get("system").isJsonNull()) {
-                        JsonObject system = all.getAsJsonObject("system");
+            if ("GETACK".equals(method)) {
+                switch (namespace) {
+                    case Namespace.SYSTEM_ALL:
+                        JsonObject all;
+                        if (payload.has("all") && !payload.get("all").isJsonNull()) {
+                            all = payload.getAsJsonObject("all");
+                        } else {
+                            return;
+                        }
+                        if (all.has("system") && !all.get("system").isJsonNull()) {
+                            JsonObject system = all.getAsJsonObject("system");
 
-                        // Get the local ip address of the device if available, so we can use local http calls
-                        if (system.has("firmware") && !system.get("firmware").isJsonNull()) {
-                            JsonObject firmware = system.getAsJsonObject("firmware");
-                            if (firmware.has("innerIp") && !firmware.get("innerIp").isJsonNull()) {
-                                String ipString = firmware.get("innerIp").getAsString();
-                                try {
-                                    ipAddress = InetAddress.getByName(ipString);
-                                } catch (UnknownHostException e) {
-                                    ipAddress = null;
+                            // Get the local ip address of the device if available, so we can use local http calls
+                            if (system.has("firmware") && !system.get("firmware").isJsonNull()) {
+                                JsonObject firmware = system.getAsJsonObject("firmware");
+                                if (firmware.has("innerIp") && firmware.get("innerIp").isJsonPrimitive()) {
+                                    String innerIp = firmware.get("innerIp").getAsString();
+                                    callback.setIpAddress(innerIp);
+                                    setHttpConnector();
+                                    CompletableFuture<Boolean> initialized = this.ipInitialized;
+                                    if (initialized != null) {
+                                        initialized.complete(true);
+                                    }
+                                }
+                            }
+                            if (system.has("online") && !system.get("online").isJsonNull()) {
+                                JsonObject online = system.getAsJsonObject("online");
+                                if (online.has("status") && online.get("status").isJsonPrimitive()) {
+                                    int status = online.get("status").getAsInt();
+                                    callback.setTingStatusFromMerossStatus(status);
                                 }
                             }
                         }
-                        if (system.has("online") && !system.get("online").isJsonNull()) {
-                            JsonObject online = system.getAsJsonObject("online");
-                            if (online.has("status") && !system.get("status").isJsonNull()) {
-                                int status = system.get("status").getAsInt();
-                                callback.setTingStatusFromMerossStatus(status);
+
+                        if (all.has("digest") && !all.get("digest").isJsonNull()) {
+                            JsonObject digest = all.getAsJsonObject("digest");
+                            if (digest.has("togglex") && !digest.get("togglex").isJsonNull()) {
+                                processUpdateMessage(Namespace.CONTROL_TOGGLEX, digest.get("togglex"));
+                            }
+                            if (digest.has("garageDoor") && !digest.get("garageDoor").isJsonNull()) {
+                                processUpdateMessage(Namespace.GARAGE_DOOR_STATE, digest.get("garageDoor"));
                             }
                         }
-                    }
-
-                    if (all.has("digest") && !all.get("digest").isJsonNull()) {
-                        JsonObject digest = all.getAsJsonObject("digest");
-                        if (digest.has("togglex") && !digest.get("togglex").isJsonNull()) {
-                            JsonArray entries = digest.getAsJsonArray("togglex");
-                            entries.forEach(entry -> {
-                                processUpdateMessage(Namespace.CONTROL_TOGGLEX, entry.getAsJsonObject());
-                            });
+                        break;
+                    case Namespace.SYSTEM_ABILITY:
+                        if (payload.has("ability") && !payload.get("ability").isJsonNull()) {
+                            JsonElement ability = payload.get("ability").getAsJsonObject();
+                            Map<String, Object> abilities = GSON.fromJson(ability, ABILITIES_TYPE);
+                            this.abilities = abilities != null ? abilities.keySet() : Collections.emptySet();
                         }
-                        if (digest.has("garageDoor") && !digest.get("garageDoor").isJsonNull()) {
-                            JsonArray entries = digest.getAsJsonArray("garageDoor");
-                            entries.forEach(entry -> {
-                                processUpdateMessage(Namespace.GARAGE_DOOR_STATE, entry.getAsJsonObject());
-                            });
-                        }
-                    }
-                    break;
-                case Namespace.SYSTEM_ABILITY:
-                    if (payload.has("ability") && !payload.get("ability").isJsonNull()) {
-                        JsonElement ability = payload.get("ability");
-                        TypeToken<Map<String, Map<String, String>>> type = new TypeToken<>() {
-                        };
-                        Map<String, Map<String, String>> abilities = new Gson().fromJson(ability, type);
-                        this.abilities = abilities.keySet();
-                    }
-                    break;
-                default:
+                        break;
+                    default:
+                        logger.debug("Ability {} not implemented", namespace.value());
+                        break;
+                }
+            } else if ("SETACK".equals(method) || "PUSH".equals(method)) {
+                JsonElement update = switch (namespace) {
+                    case Namespace.CONTROL_TOGGLEX -> payload.get("togglex");
+                    case Namespace.GARAGE_DOOR_STATE -> payload.get("state");
+                    default -> null;
+                };
+                if (update == null) {
                     logger.debug("Ability {} not implemented", namespace.value());
-                    break;
+                    return;
+                }
+                processUpdateMessage(namespace, update);
+            } else {
+                logger.debug("Processing method {} not implemented", method);
             }
-        } else if ("SETACK".equals(method)) {
-            JsonObject update = switch (namespace) {
-                case Namespace.CONTROL_TOGGLEX -> payload.get("togglex").getAsJsonObject();
-                case Namespace.GARAGE_DOOR_STATE -> payload.get("state").getAsJsonObject();
-                default -> null;
-            };
-            if (update == null) {
-                logger.debug("Ability {} not implemented", namespace.value());
-                return;
-            }
-            processUpdateMessage(namespace, update);
-        } else {
-            logger.debug("Processing method {} not implemented", method);
+        } catch (JsonSyntaxException | IllegalStateException | UnsupportedOperationException | ClassCastException e) {
+            logger.debug("Error parsing response: ", e);
         }
     }
 
-    private void processUpdateMessage(Namespace namespace, JsonObject update) {
+    private void processUpdateMessage(Namespace namespace, JsonElement update) {
+        if (update.isJsonObject()) {
+            processUpdateMessageElement(namespace, update);
+        } else if (update.isJsonArray()) {
+            update.getAsJsonArray().forEach(entry -> {
+                processUpdateMessageElement(namespace, entry);
+            });
+        }
+    }
+
+    private void processUpdateMessageElement(Namespace namespace, JsonElement updateElement) {
         ModeFactory modeFactory = TypeFactory.getFactory(namespace);
         int merossState;
         int deviceChannel = 0;
+        JsonObject update = updateElement.getAsJsonObject();
         switch (namespace) {
             case Namespace.CONTROL_TOGGLEX:
-                if (update.has("onoff") && !update.get("onoff").isJsonNull()) {
+                if (update.has("onoff") && update.get("onoff").isJsonPrimitive()) {
                     merossState = update.get("onoff").getAsInt();
-                    if (update.has("channel") && !update.get("channel").isJsonNull()) {
+                    if (update.has("channel") && update.get("channel").isJsonPrimitive()) {
                         deviceChannel = update.get("channel").getAsInt();
                     }
                 } else {
@@ -232,9 +356,9 @@ public class MerossManager implements MqttMessageSubscriber {
                 }
                 break;
             case Namespace.GARAGE_DOOR_STATE:
-                if (update.has("open") && !update.get("open").isJsonNull()) {
+                if (update.has("open") && update.get("open").isJsonPrimitive()) {
                     merossState = update.get("open").getAsInt();
-                    if (update.has("channel") && !update.get("channel").isJsonNull()) {
+                    if (update.has("channel") && update.get("channel").isJsonPrimitive()) {
                         deviceChannel = update.get("channel").getAsInt();
                     }
                 } else {
@@ -245,6 +369,6 @@ public class MerossManager implements MqttMessageSubscriber {
                 logger.debug("Ability {} not implemented", namespace.value());
                 return;
         }
-        callback.updateState(deviceChannel, modeFactory.state(merossState));
+        callback.updateState(namespace, deviceChannel, modeFactory.state(merossState));
     }
 }

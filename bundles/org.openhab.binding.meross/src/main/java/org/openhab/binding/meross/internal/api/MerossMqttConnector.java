@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.meross.internal.api;
 
-import java.nio.charset.StandardCharsets;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -21,7 +20,6 @@ import java.util.concurrent.TimeoutException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.meross.internal.dto.MqttMessageBuilder;
-import org.openhab.core.io.transport.mqtt.MqttActionCallback;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection.MqttVersion;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection.Protocol;
@@ -39,7 +37,7 @@ import org.slf4j.LoggerFactory;
  * @author Mark Herwege - Subscribe to messages asynchronously
  */
 @NonNullByDefault
-public class MerossMqttConnector implements MqttConnectionObserver, MqttActionCallback {
+public class MerossMqttConnector implements MqttConnectionObserver {
 
     private static final int SECURE_WEB_SOCKET_PORT = 443;
     private static final int RECEPTION_TIMEOUT_SECONDS = 5;
@@ -76,8 +74,9 @@ public class MerossMqttConnector implements MqttConnectionObserver, MqttActionCa
      * Start the MQTT connection
      *
      * @throws MqttException
+     * @throws InterruptedException
      */
-    synchronized public void startConnection() throws MqttException {
+    synchronized public void startConnection() throws MqttException, InterruptedException {
         MqttBrokerConnection mqttConnection = this.mqttConnection;
         if (mqttConnection == null) {
             logger.debug("MQTT broker connection not initialized");
@@ -90,8 +89,12 @@ public class MerossMqttConnector implements MqttConnectionObserver, MqttActionCa
             try {
                 future.get(RECEPTION_TIMEOUT_SECONDS, TimeUnit.SECONDS);
                 logger.debug("finished stopping connection");
-            } catch (InterruptedException | ExecutionException | TimeoutException ignore) {
-                logger.debug("error stopping connection");
+            } catch (InterruptedException e) {
+                if (Thread.interrupted()) {
+                    throw new InterruptedException();
+                }
+            } catch (ExecutionException | TimeoutException ignore) {
+                // ignore
             }
             stoppedFuture = null;
         }
@@ -105,6 +108,9 @@ public class MerossMqttConnector implements MqttConnectionObserver, MqttActionCa
             }
         } catch (InterruptedException e) {
             logger.debug("connection interrupted exception");
+            if (Thread.interrupted()) {
+                throw new InterruptedException();
+            }
             throw new MqttException("Connection interrupted exception");
         } catch (ExecutionException e) {
             logger.debug("connection execution exception", e.getCause());
@@ -133,22 +139,24 @@ public class MerossMqttConnector implements MqttConnectionObserver, MqttActionCa
     /**
      * @param message The mqtt message
      * @param requestTopic The request topic
+     * @throws InterruptedException
      */
-    synchronized void publishMqttMessage(String requestTopic, byte[] message) throws MqttException {
+    synchronized void publishMqttMessage(String requestTopic, byte[] message)
+            throws MqttException, InterruptedException {
         MqttBrokerConnection mqttConnection = this.mqttConnection;
         if (mqttConnection == null) {
             logger.debug("MQTT broker connection not initialized");
             return;
         }
 
-        logger.trace("MQTT publishing to topic {}, message {}", requestTopic,
-                new String(message, StandardCharsets.UTF_8));
-
         try {
             connected.get(RECEPTION_TIMEOUT_SECONDS, TimeUnit.SECONDS);
             mqttConnection.publish(requestTopic, message, QOS_AT_MOST_ONCE, false);
         } catch (InterruptedException e) {
             logger.debug("connection interrupted exception");
+            if (Thread.interrupted()) {
+                throw new InterruptedException();
+            }
             throw new MqttException("Connection interrupted exception");
         } catch (ExecutionException e) {
             logger.debug("connection execution exception", e.getCause());
@@ -201,16 +209,6 @@ public class MerossMqttConnector implements MqttConnectionObserver, MqttActionCa
         }
 
         mqttConnection.unsubscribe(topic, subscriber);
-    }
-
-    @Override
-    public void onSuccess(String topic) {
-        logger.debug("publish succeeded {}", topic);
-    }
-
-    @Override
-    public void onFailure(String topic, Throwable error) {
-        logger.debug("publish failed {}, {}", topic, error.getMessage(), error);
     }
 
     @Override

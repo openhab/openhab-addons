@@ -15,6 +15,7 @@ package org.openhab.binding.meross.internal.handler;
 import static org.openhab.binding.meross.internal.MerossBindingConstants.CHANNEL_DOOR_STATE;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.meross.internal.api.MerossEnum.Namespace;
 import org.openhab.binding.meross.internal.api.MerossManager;
 import org.openhab.binding.meross.internal.config.MerossDoorConfiguration;
@@ -40,8 +41,8 @@ public class MerossDoorHandler extends MerossDeviceHandler {
 
     private final Logger logger = LoggerFactory.getLogger(MerossDoorHandler.class);
 
-    public MerossDoorHandler(Thing thing) {
-        super(thing);
+    public MerossDoorHandler(Thing thing, HttpClient httpClient) {
+        super(thing, httpClient);
     }
 
     @Override
@@ -70,21 +71,31 @@ public class MerossDoorHandler extends MerossDeviceHandler {
                 return;
             }
 
-            if (command instanceof UpDownType) {
-                try {
-                    if (UpDownType.UP.equals(command)) {
-                        manager.sendCommand(channel, Namespace.GARAGE_DOOR_STATE, UpDownType.UP.name());
-                    } else if (UpDownType.DOWN.equals(command)) {
-                        manager.sendCommand(channel, Namespace.GARAGE_DOOR_STATE, UpDownType.DOWN.name());
-                    }
-                } catch (MqttException e) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "Cannot send command" + e.getMessage());
+            try {
+                switch (command) {
+                    case UpDownType upDownType:
+                        if (UpDownType.UP.equals(upDownType)) {
+                            manager.sendCommand(channel, Namespace.GARAGE_DOOR_STATE, UpDownType.UP.name());
+                        } else if (UpDownType.DOWN.equals(upDownType)) {
+                            manager.sendCommand(channel, Namespace.GARAGE_DOOR_STATE, UpDownType.DOWN.name());
+                        }
+                        break;
+                    case RefreshType refreshType:
+                        if (ipAddress == null) {
+                            logger.debug("Not connected locally, refresh not supported");
+                        } else {
+                            manager.refresh(Namespace.GARAGE_DOOR_STATE);
+                        }
+                        break;
+                    default:
+                        logger.debug("Unsupported command {} for channel {}", command, channelUID);
+                        break;
                 }
-            } else if (command instanceof RefreshType) {
-                logger.debug("Refresh command not supported");
-            } else {
-                logger.debug("Unsupported command {} for channel {}", command, channelUID);
+            } catch (MqttException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Cannot send command, " + e.getMessage());
+            } catch (InterruptedException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Connection interrupted");
             }
         } else {
             logger.debug("Unsupported channelUID {}", channelUID);
@@ -92,7 +103,10 @@ public class MerossDoorHandler extends MerossDeviceHandler {
     }
 
     @Override
-    public void updateState(int deviceChannel, State state) {
+    public void updateState(Namespace namespace, int deviceChannel, State state) {
+        if (namespace != Namespace.GARAGE_DOOR_STATE) {
+            return;
+        }
         String channelId = CHANNEL_DOOR_STATE + "_" + Integer.toString(deviceChannel);
         if (thing.getChannel(channelId) == null && deviceChannel == 0) {
             channelId = CHANNEL_DOOR_STATE;

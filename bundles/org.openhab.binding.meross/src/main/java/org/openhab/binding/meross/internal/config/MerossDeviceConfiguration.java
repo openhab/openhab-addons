@@ -13,6 +13,7 @@
 package org.openhab.binding.meross.internal.config;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link MerossDeviceConfiguration} class is an abstract base class with common configuration parameters.
@@ -23,4 +24,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public abstract class MerossDeviceConfiguration {
     public String name = "";
+    public String uuid = "";
+    public @Nullable String ipAddress;
 }

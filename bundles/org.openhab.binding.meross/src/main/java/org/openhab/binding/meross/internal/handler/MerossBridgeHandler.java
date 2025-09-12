@@ -20,13 +20,14 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.meross.internal.api.MerossCloudHttpConnector;
 import org.openhab.binding.meross.internal.api.MerossHttpConnector;
 import org.openhab.binding.meross.internal.api.MerossMqttConnector;
 import org.openhab.binding.meross.internal.config.MerossBridgeConfiguration;
 import org.openhab.binding.meross.internal.discovery.MerossDiscoveryService;
 import org.openhab.binding.meross.internal.dto.CloudCredentials;
 import org.openhab.binding.meross.internal.dto.Device;
-import org.openhab.binding.meross.internal.dto.HttpConnectorBuilder;
 import org.openhab.binding.meross.internal.dto.MqttMessageBuilder;
 import org.openhab.binding.meross.internal.exception.MerossApiException;
 import org.openhab.core.io.transport.mqtt.MqttException;
@@ -48,22 +49,25 @@ import org.slf4j.LoggerFactory;
  * @author Giovanni Fabiani - Initial contribution
  * @author Mark Herwege - Refactor initialization
  * @author Mark Herwege - Refactor discovery
+ * @author Mark Herwege - Use common http client
  */
 @NonNullByDefault
 public class MerossBridgeHandler extends BaseBridgeHandler {
 
     private MerossBridgeConfiguration config = new MerossBridgeConfiguration();
-    private @NonNullByDefault({}) MerossHttpConnector merossHttpConnector;
+    private @NonNullByDefault({}) MerossCloudHttpConnector merossHttpConnector;
     private @NonNullByDefault({}) MerossMqttConnector merossMqttConnector;
     private @Nullable MerossDiscoveryService discoveryService;
+    private final HttpClient httpClient;
 
     private @Nullable CloudCredentials credentials;
     private List<Device> devices = List.of();
 
     private final Logger logger = LoggerFactory.getLogger(MerossBridgeHandler.class);
 
-    public MerossBridgeHandler(Thing thing) {
+    public MerossBridgeHandler(Thing thing, HttpClient httpClient) {
         super((Bridge) thing);
+        this.httpClient = httpClient;
     }
 
     @Override
@@ -75,8 +79,9 @@ public class MerossBridgeHandler extends BaseBridgeHandler {
             return;
         }
 
-        merossHttpConnector = HttpConnectorBuilder.newBuilder().setApiBaseUrl(config.hostName)
-                .setUserEmail(config.userEmail).setUserPassword(config.userPassword).build();
+        merossHttpConnector = (MerossCloudHttpConnector) new MerossHttpConnector.Builder().httpClient(httpClient)
+                .setApiBaseUrl(config.hostName).setUserEmail(config.userEmail).setUserPassword(config.userPassword)
+                .build();
         scheduler.submit(() -> fetchAndInitialize());
     }
 
@@ -132,10 +137,6 @@ public class MerossBridgeHandler extends BaseBridgeHandler {
             return devices;
         }
         return List.of();
-    }
-
-    public @Nullable MerossHttpConnector getMerossHttpConnector() {
-        return merossHttpConnector;
     }
 
     public @Nullable MerossMqttConnector getMerossMqttConnector() {

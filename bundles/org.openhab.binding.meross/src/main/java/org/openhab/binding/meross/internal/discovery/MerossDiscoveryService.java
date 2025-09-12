@@ -40,14 +40,19 @@ import org.slf4j.LoggerFactory;
  *
  * @author Giovanni Fabiani - Initial contribution
  * @author Mark Herwege - Added garage door support
- * @author Mark Herwege - Discovery on bridge initialization
+ * @author Mark Herwege - Discovery on bridge initialization, allow manual scan
+ * @author Mark Herwege - Device uuid config parameter and representation property
  */
 @NonNullByDefault
 @Component(scope = ServiceScope.PROTOTYPE, service = MerossDiscoveryService.class)
 public class MerossDiscoveryService extends AbstractThingHandlerDiscoveryService<MerossBridgeHandler> {
-    public static final String DEVICE_UUID = "deviceUUID";
+
     public static final String DEVICE_TYPE = "deviceType";
+    public static final String DEVICE_SUB_TYPE = "subType";
     public static final String FIRMWARE_VERSION = "firmwareVersion";
+    public static final String HARDWARE_VERSION = "hardwareVersion";
+    public static final String REGION = "region";
+
     private final Logger logger = LoggerFactory.getLogger(MerossDiscoveryService.class);
     private static final int DISCOVER_TIMEOUT_SECONDS = 10;
     private @Nullable ScheduledFuture<?> scanTask;
@@ -129,12 +134,15 @@ public class MerossDiscoveryService extends AbstractThingHandlerDiscoveryService
                 ThingUID deviceThing = new ThingUID(thingTypeUID, thingHandler.getThing().getUID(), device.uuid());
                 Map<String, Object> deviceProperties = new HashMap<>();
                 deviceProperties.put(MerossBindingConstants.PROPERTY_DEVICE_NAME, device.devName());
-                deviceProperties.put(DEVICE_UUID, device.uuid());
+                deviceProperties.put(MerossBindingConstants.PROPERTY_DEVICE_UUID, device.uuid());
                 deviceProperties.put(DEVICE_TYPE, device.deviceType());
-                deviceProperties.put(FIRMWARE_VERSION, device.firmwareVersion());
+                deviceProperties.put(DEVICE_SUB_TYPE, device.deviceType());
+                deviceProperties.put(FIRMWARE_VERSION, device.subType());
+                deviceProperties.put(HARDWARE_VERSION, device.hardwareVersion());
+                deviceProperties.put(REGION, device.region());
                 thingDiscovered(DiscoveryResultBuilder.create(deviceThing).withLabel(device.devName())
                         .withProperties(deviceProperties)
-                        .withRepresentationProperty(MerossBindingConstants.PROPERTY_DEVICE_NAME).withBridge(bridgeUID)
+                        .withRepresentationProperty(MerossBindingConstants.PROPERTY_DEVICE_UUID).withBridge(bridgeUID)
                         .build());
             });
         }

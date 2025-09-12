@@ -16,15 +16,19 @@ import static org.openhab.binding.meross.internal.MerossBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.meross.internal.handler.MerossBridgeHandler;
 import org.openhab.binding.meross.internal.handler.MerossDoorHandler;
 import org.openhab.binding.meross.internal.handler.MerossLightHandler;
+import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * The {@link MerossHandlerFactory} is responsible for creating things and thing
@@ -32,10 +36,18 @@ import org.osgi.service.component.annotations.Component;
  *
  * @author Giovanni Fabiani - Initial contribution
  * @author Mark Herwege - Added garage door support
+ * @author Mark Herwege - Use common http client
  */
 @NonNullByDefault
 @Component(configurationPid = "binding.meross", service = ThingHandlerFactory.class)
 public class MerossHandlerFactory extends BaseThingHandlerFactory {
+
+    private final HttpClient httpClient;
+
+    @Activate
+    public MerossHandlerFactory(final @Reference HttpClientFactory httpClientFactory) {
+        this.httpClient = httpClientFactory.getCommonHttpClient();
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -46,11 +58,11 @@ public class MerossHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (THING_TYPE_GATEWAY.equals(thingTypeUID)) {
-            return new MerossBridgeHandler(thing);
+            return new MerossBridgeHandler(thing, httpClient);
         } else if (LIGHT_THING_TYPES.contains(thingTypeUID)) {
-            return new MerossLightHandler(thing);
+            return new MerossLightHandler(thing, httpClient);
         } else if (DOOR_THING_TYPES.contains(thingTypeUID)) {
-            return new MerossDoorHandler(thing);
+            return new MerossDoorHandler(thing, httpClient);
         }
         return null;
     }
