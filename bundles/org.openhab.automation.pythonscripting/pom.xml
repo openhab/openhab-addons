@@ -93,6 +93,13 @@
           <pmdFilter>${project.basedir}/suppressions.properties</pmdFilter>
         </configuration>
       </plugin>
+      <!-- workaround for failing clean of checked out git repo breaking the Windows build, #19250 -->
+      <plugin>
+        <artifactId>maven-clean-plugin</artifactId>
+        <configuration>
+          <force>true</force>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 </project>
