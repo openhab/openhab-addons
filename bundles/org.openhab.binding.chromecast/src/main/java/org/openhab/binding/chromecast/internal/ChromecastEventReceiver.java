@@ -12,17 +12,17 @@
  */
 package org.openhab.binding.chromecast.internal;
 
+import java.util.List;
+
+import org.digitalmediaserver.cast.CastEvent;
+import org.digitalmediaserver.cast.CastEvent.CastEventListener;
+import org.digitalmediaserver.cast.MediaStatus;
+import org.digitalmediaserver.cast.StandardResponse.MediaStatusResponse;
+import org.digitalmediaserver.cast.StandardResponse.ReceiverStatusResponse;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import su.litvak.chromecast.api.v2.ChromeCastConnectionEvent;
-import su.litvak.chromecast.api.v2.ChromeCastConnectionEventListener;
-import su.litvak.chromecast.api.v2.ChromeCastSpontaneousEvent;
-import su.litvak.chromecast.api.v2.ChromeCastSpontaneousEventListener;
-import su.litvak.chromecast.api.v2.MediaStatus;
-import su.litvak.chromecast.api.v2.Status;
 
 /**
  * Responsible for listening to events from the Chromecast.
@@ -30,7 +30,7 @@ import su.litvak.chromecast.api.v2.Status;
  * @author Jason Holmes - Initial contribution
  */
 @NonNullByDefault
-public class ChromecastEventReceiver implements ChromeCastSpontaneousEventListener, ChromeCastConnectionEventListener {
+public class ChromecastEventReceiver implements CastEventListener {
     private final Logger logger = LoggerFactory.getLogger(ChromecastEventReceiver.class);
 
     private final ChromecastScheduler scheduler;
@@ -42,40 +42,48 @@ public class ChromecastEventReceiver implements ChromeCastSpontaneousEventListen
     }
 
     @Override
-    public void connectionEventReceived(final @NonNullByDefault({}) ChromeCastConnectionEvent event) {
-        if (event.isConnected()) {
-            statusUpdater.updateStatus(ThingStatus.ONLINE);
-            scheduler.scheduleRefresh();
-        } else {
-            scheduler.cancelRefresh();
-            statusUpdater.updateStatus(ThingStatus.OFFLINE);
-            // We might have just had a connection problem, let's try to reconnect.
-            scheduler.scheduleConnect();
-        }
-    }
-
-    @Override
-    public void spontaneousEventReceived(final @NonNullByDefault({}) ChromeCastSpontaneousEvent event) {
-        logger.trace("Received an {} event (class={})", event.getType(), event.getData());
-
-        switch (event.getType()) {
+    public void onEvent(@NonNullByDefault({}) CastEvent<?> event) {
+        switch (event.getEventType()) {
+            case CONNECTED:
+                Boolean isConnected = (Boolean) event.getData();
+                if (isConnected == null || !isConnected) {
+                    // scheduler.cancelRefresh();
+                    statusUpdater.updateStatus(ThingStatus.OFFLINE);
+                    // We might have just had a connection problem, let's try to reconnect.
+                    scheduler.scheduleConnect();
+                } else {
+                    statusUpdater.updateStatus(ThingStatus.ONLINE);
+                    // scheduler.scheduleRefresh();
+                }
             case CLOSE:
                 statusUpdater.updateMediaStatus(null);
                 break;
             case MEDIA_STATUS:
-                statusUpdater.updateMediaStatus(event.getData(MediaStatus.class));
+                List<MediaStatus> statuses = event.getData(MediaStatusResponse.class).getStatuses();
+                if (statuses != null && statuses.size() > 1) {
+                    logger.warn("Received multiple media statuses, this is not supported. Statuses: {}", statuses);
+                } else if (statuses != null && !statuses.isEmpty()) {
+                    statusUpdater.updateMediaStatus(statuses.getFirst());
+                } else {
+                    statusUpdater.updateMediaStatus(null);
+                }
                 break;
-            case STATUS:
-                statusUpdater.processStatusUpdate(event.getData(Status.class));
-                break;
-            case APPEVENT:
-                logger.debug("Received an 'APPEVENT' event, ignoring");
+            case RECEIVER_STATUS:
+                statusUpdater.processStatusUpdate(event.getData(ReceiverStatusResponse.class).getStatus());
                 break;
             case UNKNOWN:
-                logger.debug("Received an 'UNKNOWN' event (class={})", event.getType().getDataClass());
+                logger.debug("Received an 'UNKNOWN' event (class={})", event.getEventType().getDataClass());
                 break;
+            case APPLICATION_AVAILABILITY:
+            case CUSTOM_MESSAGE:
+            case DEVICE_ADDED:
+            case DEVICE_REMOVED:
+            case DEVICE_UPDATED:
+            case ERROR_RESPONSE:
+            case LAUNCH_ERROR:
+            case MULTIZONE_STATUS:
             default:
-                logger.debug("Unhandled event type: {}", event.getType());
+                logger.debug("Unhandled event type: {} with data {}:", event.getEventType(), event.getData());
                 break;
         }
     }

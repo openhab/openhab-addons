@@ -20,9 +20,9 @@
 
   <dependencies>
     <dependency>
-      <groupId>de.sfuhrm</groupId>
-      <artifactId>chromecast-java-api-v2</artifactId>
-      <version>0.12.3</version>
+      <groupId>org.digitalmediaserver</groupId>
+      <artifactId>cast-api</artifactId>
+      <version>0.1.2-SNAPSHOT</version>
       <scope>compile</scope>
       <exclusions>
         <exclusion>
@@ -32,9 +32,15 @@
       </exclusions>
     </dependency>
     <dependency>
+      <groupId>com.google.code.findbugs</groupId>
+      <artifactId>annotations</artifactId>
+      <version>3.0.1</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
       <groupId>com.google.protobuf</groupId>
-      <artifactId>protobuf-javalite</artifactId>
-      <version>3.25.5</version>
+      <artifactId>protobuf-java</artifactId>
+      <version>2.6.0</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
@@ -56,5 +62,19 @@
       <scope>compile</scope>
     </dependency>
   </dependencies>
+
+  <repositories>
+    <repository>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+      <id>central-portal-snapshots</id>
+      <name>Central Portal Snapshots</name>
+      <url>https://central.sonatype.com/repository/maven-snapshots/</url>
+    </repository>
+  </repositories>
 
 </project>
