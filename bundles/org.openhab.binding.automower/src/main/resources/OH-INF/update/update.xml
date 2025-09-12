@@ -505,5 +505,109 @@
 				<type>automower:startInWorkArea</type>
 			</add-channel>
 		</instruction-set>
+
+		<instruction-set targetVersion="3">
+			<!-- Status -->
+			<update-channel id="name" groupIds="status">
+				<type>automower:name-type</type>
+			</update-channel>
+			<update-channel id="mode" groupIds="status">
+				<type>automower:mode-type</type>
+			</update-channel>
+			<update-channel id="activity" groupIds="status">
+				<type>automower:activity-type</type>
+			</update-channel>
+			<update-channel id="inactive-reason" groupIds="status">
+				<type>automower:inactive-reason-type</type>
+			</update-channel>
+			<update-channel id="state" groupIds="status">
+				<type>automower:state-type</type>
+			</update-channel>
+			<update-channel id="last-update" groupIds="status">
+				<type>automower:last-update-type</type>
+			</update-channel>
+			<update-channel id="last-poll-update" groupIds="status">
+				<type>automower:last-poll-update-type</type>
+			</update-channel>
+			<update-channel id="poll-update" groupIds="status">
+				<type>automower:poll-update-type</type>
+			</update-channel>
+			<update-channel id="error-code" groupIds="status">
+				<type>automower:error-code-type</type>
+			</update-channel>
+			<update-channel id="error-message" groupIds="status">
+				<type>automower:error-message-type</type>
+			</update-channel>
+			<update-channel id="error-timestamp" groupIds="status">
+				<type>automower:error-timestamp-type</type>
+			</update-channel>
+			<update-channel id="next-start" groupIds="status">
+				<type>automower:next-start-type</type>
+			</update-channel>
+			<update-channel id="override-action" groupIds="status">
+				<type>automower:override-action-type</type>
+			</update-channel>
+			<update-channel id="restricted-reason" groupIds="status">
+				<type>automower:restricted-reason-type</type>
+			</update-channel>
+			<update-channel id="external-reason" groupIds="status">
+				<type>automower:external-reason-type</type>
+			</update-channel>
+			<!-- Settings -->
+			<update-channel id="cutting-height" groupIds="setting">
+				<type>automower:setting-cutting-height-type</type>
+			</update-channel>
+			<!-- Statistics -->
+			<update-channel id="cutting-blade-usage-time" groupIds="statistic">
+				<type>automower:stat-cutting-blade-usage-time-type</type>
+			</update-channel>
+			<update-channel id="down-time" groupIds="statistic">
+				<type>automower:stat-down-time-type</type>
+			</update-channel>
+			<update-channel id="number-of-charging-cycles" groupIds="statistic">
+				<type>automower:stat-number-of-charging-cycles-type</type>
+			</update-channel>
+			<update-channel id="number-of-collisions" groupIds="statistic">
+				<type>automower:stat-number-of-collisions-type</type>
+			</update-channel>
+			<update-channel id="total-charging-time" groupIds="statistic">
+				<type>automower:stat-total-charging-time-type</type>
+			</update-channel>
+			<update-channel id="total-cutting-time" groupIds="statistic">
+				<type>automower:stat-total-cutting-time-type</type>
+			</update-channel>
+			<update-channel id="total-cutting-percent" groupIds="statistic">
+				<type>automower:stat-total-cutting-percent-type</type>
+			</update-channel>
+			<update-channel id="total-drive-distance" groupIds="statistic">
+				<type>automower:stat-total-drive-distance-type</type>
+			</update-channel>
+			<update-channel id="total-running-time" groupIds="statistic">
+				<type>automower:stat-total-running-time-type</type>
+			</update-channel>
+			<update-channel id="total-searching-time" groupIds="statistic">
+				<type>automower:stat-total-searching-time-type</type>
+			</update-channel>
+			<update-channel id="total-searching-percent" groupIds="statistic">
+				<type>automower:stat-total-searching-percent-type</type>
+			</update-channel>
+			<update-channel id="up-time" groupIds="statistic">
+				<type>automower:stat-up-time-type</type>
+			</update-channel>
+
+			<!-- Commands -->
+			<update-channel id="start-in-work-area" groupIds="command">
+				<type>automower:start-in-work-area</type>
+			</update-channel>
+			<update-channel id="resume-schedule" groupIds="command">
+				<type>automower:resume-schedule</type>
+			</update-channel>
+			<update-channel id="park-until-next-schedule" groupIds="command">
+				<type>automower:park-until-next-schedule</type>
+			</update-channel>
+			<update-channel id="park-until-further-notice" groupIds="command">
+				<type>automower:park-until-further-notice</type>
+			</update-channel>
+		</instruction-set>
 	</thing-type>
 </update:update-descriptions>

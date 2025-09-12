@@ -25,6 +25,8 @@ import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.automower.internal.bridge.AutomowerBridgeHandler;
 import org.openhab.binding.automower.internal.discovery.AutomowerDiscoveryService;
 import org.openhab.binding.automower.internal.things.AutomowerHandler;
+import org.openhab.binding.automower.internal.things.AutomowerStayoutZoneHandler;
+import org.openhab.binding.automower.internal.things.AutomowerWorkAreaHandler;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.i18n.TimeZoneProvider;
@@ -46,17 +48,21 @@ import org.osgi.service.component.annotations.Reference;
  * handlers.
  *
  * @author Markus Pfleger - Initial contribution
+ * @author MikeTheTux - API Extension, WSS Support, Refactoring
  */
 @NonNullByDefault
 @Component(configurationPid = "binding.automower", service = ThingHandlerFactory.class)
 public class AutomowerHandlerFactory extends BaseThingHandlerFactory {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.unmodifiableSet(Stream
-            .of(AutomowerBridgeHandler.SUPPORTED_THING_TYPES.stream(), AutomowerHandler.SUPPORTED_THING_TYPES.stream())
+            .of(AutomowerBridgeHandler.SUPPORTED_THING_TYPES.stream(), AutomowerHandler.SUPPORTED_THING_TYPES.stream(),
+                    AutomowerStayoutZoneHandler.SUPPORTED_THING_TYPES.stream(),
+                    AutomowerWorkAreaHandler.SUPPORTED_THING_TYPES.stream())
             .flatMap(Function.identity()).collect(Collectors.toSet()));
 
     private final OAuthFactory oAuthFactory;
     protected final @NonNullByDefault({}) HttpClient httpClient;
     private @Nullable ServiceRegistration<?> automowerDiscoveryServiceRegistration;
+    private @Nullable AutomowerDiscoveryService discoveryService;
     private final TimeZoneProvider timeZoneProvider;
     private final WebSocketFactory webSocketFactory;
 
@@ -81,10 +87,12 @@ public class AutomowerHandlerFactory extends BaseThingHandlerFactory {
                     webSocketFactory.getCommonWebSocketClient());
             registerAutomowerDiscoveryService(handler);
             return handler;
-        }
-
-        if (AutomowerHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
+        } else if (AutomowerHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
             return new AutomowerHandler(thing, timeZoneProvider);
+        } else if (AutomowerStayoutZoneHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
+            return new AutomowerStayoutZoneHandler(thing);
+        } else if (AutomowerWorkAreaHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
+            return new AutomowerWorkAreaHandler(thing);
         }
 
         return null;
@@ -93,10 +101,7 @@ public class AutomowerHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected synchronized void removeHandler(ThingHandler thingHandler) {
         if (thingHandler instanceof AutomowerBridgeHandler) {
-            ServiceRegistration<?> automowerDiscoveryServiceRegistration = this.automowerDiscoveryServiceRegistration;
-            if (automowerDiscoveryServiceRegistration != null) {
-                automowerDiscoveryServiceRegistration.unregister();
-            }
+            unregisterAutomowerDiscoveryService();
         }
     }
 
@@ -104,5 +109,20 @@ public class AutomowerHandlerFactory extends BaseThingHandlerFactory {
         AutomowerDiscoveryService discoveryService = new AutomowerDiscoveryService(handler);
         this.automowerDiscoveryServiceRegistration = bundleContext.registerService(DiscoveryService.class.getName(),
                 discoveryService, new Hashtable<>());
+        discoveryService.startBackgroundDiscovery();
+        this.discoveryService = discoveryService;
+    }
+
+    private void unregisterAutomowerDiscoveryService() {
+        AutomowerDiscoveryService discoveryService = this.discoveryService;
+        if (discoveryService != null) {
+            discoveryService.stopBackgroundDiscovery();
+            this.discoveryService = null;
+        }
+        ServiceRegistration<?> automowerDiscoveryServiceRegistration = this.automowerDiscoveryServiceRegistration;
+        if (automowerDiscoveryServiceRegistration != null) {
+            automowerDiscoveryServiceRegistration.unregister();
+            this.automowerDiscoveryServiceRegistration = null;
+        }
     }
 }

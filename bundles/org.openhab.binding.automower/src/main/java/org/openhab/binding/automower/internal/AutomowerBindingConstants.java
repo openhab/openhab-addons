@@ -27,15 +27,16 @@ import org.openhab.core.thing.type.ChannelTypeUID;
  *
  * @author Markus Pfleger - Initial contribution
  * @author Marcin Czeczko - Added support for planner and calendar data
+ * @author MikeTheTux - API Extension, WSS Support, Refactoring
  */
 @NonNullByDefault
 public class AutomowerBindingConstants {
     private static final String BINDING_ID = "automower";
 
     public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "bridge");
-
-    // generic thing types
     public static final ThingTypeUID THING_TYPE_AUTOMOWER = new ThingTypeUID(BINDING_ID, "automower");
+    public static final ThingTypeUID THING_TYPE_STAYOUTZONE = new ThingTypeUID(BINDING_ID, "stay-out-zone");
+    public static final ThingTypeUID THING_TYPE_WORKAREA = new ThingTypeUID(BINDING_ID, "work-area");
 
     // List of all status Channel ids
     public static final String GROUP_STATUS = "status#";
@@ -86,7 +87,7 @@ public class AutomowerBindingConstants {
     public static final String CHANNEL_STATISTIC_UP_TIME = GROUP_STATISTIC + "up-time";
 
     // Calendar Task Channel ids
-    public static final String GROUP_CALENDARTASK = "calendartask#";
+    public static final String GROUP_CALENDARTASK = "calendar-task#";
 
     public static final String CHANNEL_CALENDARTASK_START = "task-start";
     public static final String CHANNEL_CALENDARTASK_DURATION = "task-duration";
@@ -97,54 +98,27 @@ public class AutomowerBindingConstants {
     public static final String CHANNEL_CALENDARTASK_FRIDAY = "task-friday";
     public static final String CHANNEL_CALENDARTASK_SATURDAY = "task-saturday";
     public static final String CHANNEL_CALENDARTASK_SUNDAY = "task-sunday";
-    public static final String CHANNEL_CALENDARTASK_WORKAREAID = "task-workareaid";
-    public static final String CHANNEL_CALENDARTASK_WORKAREA = "task-workarea";
 
     public static final ArrayList<String> CHANNEL_CALENDARTASK = new ArrayList<>(
             List.of(CHANNEL_CALENDARTASK_START, CHANNEL_CALENDARTASK_DURATION, CHANNEL_CALENDARTASK_MONDAY,
                     CHANNEL_CALENDARTASK_TUEDAY, CHANNEL_CALENDARTASK_WEDNESDAY, CHANNEL_CALENDARTASK_THURSRAY,
-                    CHANNEL_CALENDARTASK_FRIDAY, CHANNEL_CALENDARTASK_SATURDAY, CHANNEL_CALENDARTASK_SUNDAY,
-                    CHANNEL_CALENDARTASK_WORKAREAID, CHANNEL_CALENDARTASK_WORKAREA));
+                    CHANNEL_CALENDARTASK_FRIDAY, CHANNEL_CALENDARTASK_SATURDAY, CHANNEL_CALENDARTASK_SUNDAY));
 
     public static final ArrayList<ChannelTypeUID> CHANNEL_TYPE_CALENDARTASK = new ArrayList<>(
-            List.of(new ChannelTypeUID(BINDING_ID, "calendarTaskStartType"),
-                    new ChannelTypeUID(BINDING_ID, "calendarTaskDurationType"),
-                    new ChannelTypeUID(BINDING_ID, "calendarTaskMondayType"),
-                    new ChannelTypeUID(BINDING_ID, "calendarTaskTuesdayType"),
-                    new ChannelTypeUID(BINDING_ID, "calendarTaskWednesdayType"),
-                    new ChannelTypeUID(BINDING_ID, "calendarTaskThursdayType"),
-                    new ChannelTypeUID(BINDING_ID, "calendarTaskFridayType"),
-                    new ChannelTypeUID(BINDING_ID, "calendarTaskSaturdayType"),
-                    new ChannelTypeUID(BINDING_ID, "calendarTaskSundayType"),
-                    new ChannelTypeUID(BINDING_ID, "calendarTaskWorkAreaIdType"),
-                    new ChannelTypeUID(BINDING_ID, "workareaNameType")));
+            List.of(new ChannelTypeUID(BINDING_ID, "calendar-task-start-type"),
+                    new ChannelTypeUID(BINDING_ID, "calendar-task-duration-type"),
+                    new ChannelTypeUID(BINDING_ID, "calendar-task-monday-type"),
+                    new ChannelTypeUID(BINDING_ID, "calendar-task-tuesday-type"),
+                    new ChannelTypeUID(BINDING_ID, "calendar-task-wednesday-type"),
+                    new ChannelTypeUID(BINDING_ID, "calendar-task-thursday-type"),
+                    new ChannelTypeUID(BINDING_ID, "calendar-task-friday-type"),
+                    new ChannelTypeUID(BINDING_ID, "calendar-task-saturday-type"),
+                    new ChannelTypeUID(BINDING_ID, "calendar-task-sunday-type")));
 
     // Stayout Zones Channel ids
-    public static final String GROUP_STAYOUTZONE = "stayoutzone#";
+    public static final String GROUP_STAYOUTZONE = "stay-out-zone#";
 
     public static final String CHANNEL_STAYOUTZONE_DIRTY = GROUP_STAYOUTZONE + "dirty";
-    public static final String CHANNEL_STAYOUTZONE_ENABLED = "zone-enabled";
-    public static final ArrayList<String> CHANNEL_STAYOUTZONE = new ArrayList<>(
-            List.of("zone-id", "zone-name", CHANNEL_STAYOUTZONE_ENABLED));
-
-    public static final ArrayList<ChannelTypeUID> CHANNEL_TYPE_STAYOUTZONE = new ArrayList<>(
-            List.of(new ChannelTypeUID(BINDING_ID, "zoneIdType"), new ChannelTypeUID(BINDING_ID, "zoneNameType"),
-                    new ChannelTypeUID(BINDING_ID, "zoneEnabledType")));
-
-    // Work Areas Channel ids
-    public static final String GROUP_WORKAREA = "workarea#";
-
-    public static final String CHANNEL_WORKAREA_CUTTING_HEIGHT = "area-cutting-height";
-    public static final String CHANNEL_WORKAREA_ENABLED = "area-enabled";
-    public static final ArrayList<String> CHANNEL_WORKAREA = new ArrayList<>(List.of("area-id", "area-name",
-            CHANNEL_WORKAREA_CUTTING_HEIGHT, CHANNEL_WORKAREA_ENABLED, "area-progress", "area-last-time-completed"));
-
-    public static final ArrayList<ChannelTypeUID> CHANNEL_TYPE_WORKAREA = new ArrayList<>(List.of(
-            new ChannelTypeUID(BINDING_ID, "workareaIdType"), new ChannelTypeUID(BINDING_ID, "workareaNameType"),
-            new ChannelTypeUID(BINDING_ID, "workareaCuttingHeightType"),
-            new ChannelTypeUID(BINDING_ID, "workareaEnabledType"),
-            new ChannelTypeUID(BINDING_ID, "workareaProgressType"),
-            new ChannelTypeUID(BINDING_ID, "workareaLastTimeCompletedType")));
 
     // Messages Channel ids
     public static final String GROUP_MESSAGE = "message#";
@@ -168,6 +142,8 @@ public class AutomowerBindingConstants {
 
     // Automower properties
     public static final String AUTOMOWER_ID = "mowerId";
+    public static final String AUTOMOWER_STAYOUTZONE_ID = "stayoutzoneId";
+    public static final String AUTOMOWER_WORKAREA_ID = "workareaId";
     public static final String AUTOMOWER_NAME = "mowerName";
     public static final String AUTOMOWER_MODEL = "mowerModel";
     public static final String AUTOMOWER_SERIAL_NUMBER = "mowerSerialNumber";
@@ -179,17 +155,31 @@ public class AutomowerBindingConstants {
 
     // Channel Types of dynamic channels
     public static final ChannelTypeUID CHANNEL_TYPE_STATUS_WORK_AREA_ID = new ChannelTypeUID(BINDING_ID,
-            "workAreaIdType");
-    public static final ChannelTypeUID CHANNEL_TYPE_STATUS_WORK_AREA = new ChannelTypeUID(BINDING_ID, "workAreaType");
+            "work-area-id-type");
+    public static final ChannelTypeUID CHANNEL_TYPE_STATUS_WORK_AREA = new ChannelTypeUID(BINDING_ID, "work-area-type");
     public static final ChannelTypeUID CHANNEL_TYPE_STATUS_ERROR_CONFIRMABLE = new ChannelTypeUID(BINDING_ID,
-            "errorConfirmableType");
-    public static final ChannelTypeUID CHANNEL_TYPE_STATUS_POSITION = new ChannelTypeUID(BINDING_ID, "positionType");
+            "error-confirmable-type");
+    public static final ChannelTypeUID CHANNEL_TYPE_STATUS_POSITION = new ChannelTypeUID(BINDING_ID, "position-type");
     public static final ChannelTypeUID CHANNEL_TYPE_SETTING_HEADLIGHT_MODE = new ChannelTypeUID(BINDING_ID,
-            "settingHeadlightModeType");
+            "setting-headlight-mode-type");
 
     public static final ChannelTypeUID CHANNEL_TYPE_STAYOUTZONES_DIRTY = new ChannelTypeUID(BINDING_ID,
-            "zoneDirtyType");
+            "zone-dirty-type");
 
+    // Stayout Zone Channel ids
+    public static final String CHANNEL_STAYOUTZONE_NAME = "name";
+    public static final String CHANNEL_STAYOUTZONE_ENABLED = "enabled";
+
+    // Work Area Channel ids
+    public static final String GROUP_WORKAREA = "work-area#";
+
+    public static final String CHANNEL_WORKAREA_NAME = GROUP_WORKAREA + "name";
+    public static final String CHANNEL_WORKAREA_CUTTING_HEIGHT = GROUP_WORKAREA + "cutting-height";
+    public static final String CHANNEL_WORKAREA_ENABLED = GROUP_WORKAREA + "enabled";
+    public static final String CHANNEL_WORKAREA_PROGRESS = GROUP_WORKAREA + "progress";
+    public static final String CHANNEL_WORKAREA_LAST_TIME_COMPLETED = GROUP_WORKAREA + "last-time-completed";
+
+    // Error codes and messages
     public static final Map<Integer, String> ERROR = new HashMap<>() {
         private static final long serialVersionUID = 1L;
         {
