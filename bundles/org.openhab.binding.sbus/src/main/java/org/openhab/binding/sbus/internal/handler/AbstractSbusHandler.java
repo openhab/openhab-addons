@@ -21,7 +21,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.sbus.internal.SbusService;
 import org.openhab.binding.sbus.internal.config.SbusDeviceConfig;
 import org.openhab.core.config.core.Configuration;
-
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -32,7 +31,6 @@ import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.type.ChannelTypeUID;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,6 +48,7 @@ public abstract class AbstractSbusHandler extends BaseThingHandler implements Sb
     protected final Logger logger = LoggerFactory.getLogger(getClass());
     protected @Nullable SbusService sbusAdapter;
     protected @Nullable ScheduledFuture<?> pollingJob;
+
     public AbstractSbusHandler(Thing thing) {
         super(thing);
     }
@@ -62,8 +61,7 @@ public abstract class AbstractSbusHandler extends BaseThingHandler implements Sb
 
         Bridge bridge = getBridge();
         if (bridge == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/error.device.no-bridge");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.device.no-bridge");
             return;
         }
 

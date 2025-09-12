@@ -15,7 +15,6 @@ package org.openhab.binding.sbus.internal.handler;
 import org.openhab.binding.sbus.internal.SbusService;
 import org.openhab.binding.sbus.internal.config.SbusChannelConfig;
 import org.openhab.binding.sbus.internal.config.SbusDeviceConfig;
-
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -23,7 +22,6 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -75,8 +73,7 @@ public class SbusContactHandler extends AbstractSbusHandler {
             updateChannelStatesFromStatuses(contactStates);
             updateStatus(ThingStatus.ONLINE);
         } catch (Exception e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/error.device.read-state");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/error.device.read-state");
         }
     }
 

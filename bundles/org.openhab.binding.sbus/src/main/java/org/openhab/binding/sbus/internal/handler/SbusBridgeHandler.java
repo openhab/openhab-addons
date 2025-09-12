@@ -17,14 +17,12 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.sbus.internal.SbusService;
 import org.openhab.binding.sbus.internal.SbusServiceImpl;
 import org.openhab.binding.sbus.internal.config.SbusBridgeConfig;
-
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.types.Command;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,6 +36,7 @@ public class SbusBridgeHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(SbusBridgeHandler.class);
     private @Nullable SbusService sbusService;
+
     /**
      * Constructs a new SbusBridgeHandler.
      *
