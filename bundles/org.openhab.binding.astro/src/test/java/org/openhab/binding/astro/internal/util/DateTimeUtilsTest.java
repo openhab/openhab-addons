@@ -16,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.Locale;
 import java.util.TimeZone;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -75,8 +76,8 @@ public class DateTimeUtilsTest {
         Calendar truncated = DateTimeUtils.truncateToMidnight(cal);
         assertEquals(truncated, target);
         Calendar endOfDay = DateTimeUtils.endOfDayDate(cal);
-        Calendar target2 = new GregorianCalendar(2021, 9, 30, 23, 59, 59);
-        target2.setTimeZone(TIME_ZONE);
+        Calendar target2 = newCalendar(2021, 9, 30, 23, 59, TIME_ZONE);
+        target2.set(Calendar.SECOND, 59);
         target2.set(Calendar.MILLISECOND, 999);
         assertEquals(endOfDay, target2);
     }
@@ -89,8 +90,9 @@ public class DateTimeUtilsTest {
     }
 
     private static Calendar newCalendar(int year, int month, int dayOfMonth, int hourOfDay, int minute, TimeZone zone) {
-        Calendar result = new GregorianCalendar(year, month, dayOfMonth, hourOfDay, minute);
-        result.setTimeZone(zone);
+        Calendar result = new GregorianCalendar(zone, Locale.ROOT);
+        result.set(Calendar.MILLISECOND, 0);
+        result.set(year, month, dayOfMonth, hourOfDay, minute, 0);
 
         return result;
     }
