@@ -1,0 +1,433 @@
+[
+  {
+    "000138176237": {
+      "ident": {
+        "type": {
+          "key_localized": "Gerätetyp",
+          "value_raw": 12,
+          "value_localized": "Backofen"
+        },
+        "deviceName": "",
+        "protocolVersion": 4,
+        "deviceIdentLabel": {
+          "fabNumber": "000138176237",
+          "fabIndex": "00",
+          "techType": "H7464BP",
+          "matNumber": "11105720",
+          "swids": [
+            "5738",
+            "20553",
+            "25229",
+            "6050",
+            "25300",
+            "25307",
+            "25247",
+            "20436",
+            "25223",
+            "5651",
+            "20366",
+            "20462"
+          ]
+        },
+        "xkmIdentLabel": {
+          "techType": "EK057S",
+          "releaseVersion": "09.14"
+        }
+      },
+      "state": {
+        "ProgramID": {
+          "value_raw": 1,
+          "value_localized": "Auftauen",
+          "key_localized": "Programmbezeichnung"
+        },
+        "status": {
+          "value_raw": 6,
+          "value_localized": "Pause",
+          "key_localized": "Status"
+        },
+        "programType": {
+          "value_raw": 1,
+          "value_localized": "Programm",
+          "key_localized": "Programmart"
+        },
+        "programPhase": {
+          "value_raw": 0,
+          "value_localized": "",
+          "key_localized": "Programmphase"
+        },
+        "remainingTime": [
+          0,
+          0
+        ],
+        "startTime": [
+          0,
+          0
+        ],
+        "targetTemperature": [
+          {
+            "value_raw": 2500,
+            "value_localized": 25.0,
+            "unit": "Celsius"
+          },
+          {
+            "value_raw": -32768,
+            "value_localized": null,
+            "unit": "Celsius"
+          },
+          {
+            "value_raw": -32768,
+            "value_localized": null,
+            "unit": "Celsius"
+          }
+        ],
+        "coreTargetTemperature": [
+          {
+            "value_raw": -32768,
+            "value_localized": null,
+            "unit": "Celsius"
+          }
+        ],
+        "temperature": [
+          {
+            "value_raw": 2996,
+            "value_localized": 29.96,
+            "unit": "Celsius"
+          },
+          {
+            "value_raw": -32768,
+            "value_localized": null,
+            "unit": "Celsius"
+          },
+          {
+            "value_raw": -32768,
+            "value_localized": null,
+            "unit": "Celsius"
+          }
+        ],
+        "coreTemperature": [
+          {
+            "value_raw": -32768,
+            "value_localized": null,
+            "unit": "Celsius"
+          }
+        ],
+        "signalInfo": false,
+        "signalFailure": false,
+        "signalDoor": false,
+        "remoteEnable": {
+          "fullRemoteControl": true,
+          "smartGrid": false,
+          "mobileStart": false
+        },
+        "ambientLight": null,
+        "light": 2,
+        "elapsedTime": [
+          0,
+          0
+        ],
+        "spinningSpeed": {
+          "unit": "U/min",
+          "value_raw": null,
+          "value_localized": null,
+          "key_localized": "Schleuderdrehzahl"
+        },
+        "dryingStep": {
+          "value_raw": null,
+          "value_localized": "",
+          "key_localized": "Trockenstufe"
+        },
+        "ventilationStep": {
+          "value_raw": null,
+          "value_localized": "",
+          "key_localized": "Lüfterstufe"
+        },
+        "plateStep": [],
+        "ecoFeedback": null,
+        "batteryLevel": null
+      }
+    }
+  },
+  {
+    "000105727902": {
+      "ident": {
+        "type": {
+          "key_localized": "Gerätetyp",
+          "value_raw": 7,
+          "value_localized": "Geschirrspüler"
+        },
+        "deviceName": "",
+        "protocolVersion": 4,
+        "deviceIdentLabel": {
+          "fabNumber": "000105727902",
+          "fabIndex": "65",
+          "techType": "G7310",
+          "matNumber": "10992560",
+          "swids": [
+            "5418",
+            "20492",
+            "25166",
+            "25293",
+            "25386",
+            "4928",
+            "20475",
+            "25266",
+            "4875",
+            "20366",
+            "20462"
+          ]
+        },
+        "xkmIdentLabel": {
+          "techType": "EK057",
+          "releaseVersion": "08.32"
+        }
+      },
+      "state": {
+        "ProgramID": {
+          "value_raw": 0,
+          "value_localized": "",
+          "key_localized": "Programmbezeichnung"
+        },
+        "status": {
+          "value_raw": 1,
+          "value_localized": "Aus",
+          "key_localized": "Status"
+        },
+        "programType": {
+          "value_raw": 0,
+          "value_localized": "",
+          "key_localized": "Programmart"
+        },
+        "programPhase": {
+          "value_raw": 0,
+          "value_localized": "",
+          "key_localized": "Programmphase"
+        },
+        "remainingTime": [
+          0,
+          0
+        ],
+        "startTime": [
+          0,
+          0
+        ],
+        "targetTemperature": [
+          {
+            "value_raw": -32768,
+            "value_localized": null,
+            "unit": "Celsius"
+          },
+          {
+            "value_raw": -32768,
+            "value_localized": null,
+            "unit": "Celsius"
+          },
+          {
+            "value_raw": -32768,
+            "value_localized": null,
+            "unit": "Celsius"
+          }
+        ],
+        "coreTargetTemperature": [
+          {
+            "value_raw": -32768,
+            "value_localized": null,
+            "unit": "Celsius"
+          }
+        ],
+        "temperature": [
+          {
+            "value_raw": -32768,
+            "value_localized": null,
+            "unit": "Celsius"
+          },
+          {
+            "value_raw": -32768,
+            "value_localized": null,
+            "unit": "Celsius"
+          },
+          {
+            "value_raw": -32768,
+            "value_localized": null,
+            "unit": "Celsius"
+          }
+        ],
+        "coreTemperature": [
+          {
+            "value_raw": -32768,
+            "value_localized": null,
+            "unit": "Celsius"
+          }
+        ],
+        "signalInfo": false,
+        "signalFailure": false,
+        "signalDoor": false,
+        "remoteEnable": {
+          "fullRemoteControl": true,
+          "smartGrid": false,
+          "mobileStart": false
+        },
+        "ambientLight": null,
+        "light": null,
+        "elapsedTime": [
+          0,
+          0
+        ],
+        "spinningSpeed": {
+          "unit": "U/min",
+          "value_raw": null,
+          "value_localized": null,
+          "key_localized": "Schleuderdrehzahl"
+        },
+        "dryingStep": {
+          "value_raw": null,
+          "value_localized": "",
+          "key_localized": "Trockenstufe"
+        },
+        "ventilationStep": {
+          "value_raw": null,
+          "value_localized": "",
+          "key_localized": "Lüfterstufe"
+        },
+        "plateStep": [],
+        "ecoFeedback": null,
+        "batteryLevel": null
+      }
+    }
+  },
+  {
+    "000175731769": {
+      "ident": {
+        "type": {
+          "key_localized": "Gerätetyp",
+          "value_raw": 27,
+          "value_localized": "Kochfeld"
+        },
+        "deviceName": "",
+        "protocolVersion": 2,
+        "deviceIdentLabel": {
+          "fabNumber": "000175731769",
+          "fabIndex": "00",
+          "techType": "KM7464",
+          "matNumber": "11022920",
+          "swids": [
+            "4692",
+            "20398",
+            "25249"
+          ]
+        },
+        "xkmIdentLabel": {
+          "techType": "EK039W",
+          "releaseVersion": "02.80"
+        }
+      },
+      "state": {
+        "ProgramID": {
+          "value_raw": 0,
+          "value_localized": "",
+          "key_localized": "Programmbezeichnung"
+        },
+        "status": {
+          "value_raw": 1,
+          "value_localized": "Aus",
+          "key_localized": "Status"
+        },
+        "programType": {
+          "value_raw": 0,
+          "value_localized": "",
+          "key_localized": "Programmart"
+        },
+        "programPhase": {
+          "value_raw": 0,
+          "value_localized": "",
+          "key_localized": "Programmphase"
+        },
+        "remainingTime": [
+          0,
+          0
+        ],
+        "startTime": [
+          0,
+          0
+        ],
+        "targetTemperature": [
+          {
+            "value_raw": -32768,
+            "value_localized": null,
+            "unit": "Celsius"
+          },
+          {
+            "value_raw": -32768,
+            "value_localized": null,
+            "unit": "Celsius"
+          },
+          {
+            "value_raw": -32768,
+            "value_localized": null,
+            "unit": "Celsius"
+          }
+        ],
+        "coreTargetTemperature": [
+          {
+            "value_raw": -32768,
+            "value_localized": null,
+            "unit": "Celsius"
+          }
+        ],
+        "temperature": [
+          {
+            "value_raw": -32768,
+            "value_localized": null,
+            "unit": "Celsius"
+          },
+          {
+            "value_raw": -32768,
+            "value_localized": null,
+            "unit": "Celsius"
+          },
+          {
+            "value_raw": -32768,
+            "value_localized": null,
+            "unit": "Celsius"
+          }
+        ],
+        "coreTemperature": [
+          {
+            "value_raw": -32768,
+            "value_localized": null,
+            "unit": "Celsius"
+          }
+        ],
+        "signalInfo": false,
+        "signalFailure": false,
+        "signalDoor": false,
+        "remoteEnable": {
+          "fullRemoteControl": false,
+          "smartGrid": false,
+          "mobileStart": false
+        },
+        "ambientLight": null,
+        "light": null,
+        "elapsedTime": [],
+        "spinningSpeed": {
+          "unit": "U/min",
+          "value_raw": null,
+          "value_localized": null,
+          "key_localized": "Schleuderdrehzahl"
+        },
+        "dryingStep": {
+          "value_raw": null,
+          "value_localized": "",
+          "key_localized": "Trockenstufe"
+        },
+        "ventilationStep": {
+          "value_raw": null,
+          "value_localized": "",
+          "key_localized": "Lüfterstufe"
+        },
+        "plateStep": [],
+        "ecoFeedback": null,
+        "batteryLevel": null
+      }
+    }
+  }
+]
