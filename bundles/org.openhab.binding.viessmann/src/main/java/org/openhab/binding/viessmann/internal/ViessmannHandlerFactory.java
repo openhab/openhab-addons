@@ -120,7 +120,7 @@ public class ViessmannHandlerFactory extends BaseThingHandlerFactory {
     }
 
     private @Nullable String createCallbackUrl() {
-        if (callbackUrl != null) {
+        if (callbackUrl != null && !callbackUrl.isBlank()) {
             return callbackUrl;
         } else {
             // we do not use SSL as it can cause certificate validation issues.

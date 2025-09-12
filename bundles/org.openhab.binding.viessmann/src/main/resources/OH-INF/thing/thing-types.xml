@@ -27,6 +27,7 @@
 			<parameter name="user" type="text" required="true">
 				<label>E-Mail Address</label>
 				<description>The E-Mail address for which the application key has been issued</description>
+				<context>email</context>
 			</parameter>
 			<parameter name="password" type="text" required="true">
 				<label>Password</label>
@@ -154,6 +155,7 @@
 			<parameter name="user" type="text" required="true">
 				<label>E-Mail Address</label>
 				<description>The E-Mail address for which the application key has been issued</description>
+				<context>email</context>
 			</parameter>
 			<parameter name="password" type="text" required="true">
 				<label>Password</label>
@@ -310,7 +312,7 @@
 		<label>Volume</label>
 		<category>Number</category>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Status</tag>
 		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -320,7 +322,7 @@
 		<label>Number</label>
 		<category>Number</category>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Status</tag>
 		</tags>
 		<state pattern="%.1f" readOnly="true"/>
 	</channel-type>
@@ -330,7 +332,7 @@
 		<label>Number</label>
 		<category>Number</category>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Status</tag>
 		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
@@ -340,7 +342,7 @@
 		<label>Minutes</label>
 		<category>Time</category>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Status</tag>
 			<tag>Duration</tag>
 		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
@@ -351,7 +353,7 @@
 		<label>Hours</label>
 		<category>Time</category>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Status</tag>
 			<tag>Duration</tag>
 		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
@@ -362,8 +364,7 @@
 		<label>Percentage</label>
 		<category>Number</category>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Level</tag>
+			<tag>Status</tag>
 		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
@@ -414,20 +415,12 @@
 		<item-type>Switch</item-type>
 		<label>Switch</label>
 		<category>Switch</category>
-		<tags>
-			<tag>Control</tag>
-			<tag>Switch</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="type-boolean-read-only">
 		<item-type>Switch</item-type>
 		<label>Status</label>
 		<category>Switch</category>
-		<tags>
-			<tag>Status</tag>
-			<tag>Switch</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -435,18 +428,12 @@
 		<item-type>Switch</item-type>
 		<label>Run Device Query</label>
 		<category>Switch</category>
-		<tags>
-			<tag>Control</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="run-error-query-once" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Run Error Query</label>
 		<category>Error</category>
-		<tags>
-			<tag>Control</tag>
-		</tags>
 	</channel-type>
 
 	<channel-type id="error-is-active">
@@ -455,7 +442,9 @@
 		<category>Error</category>
 		<tags>
 			<tag>Status</tag>
+			<tag>Info</tag>
 		</tags>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="last-error-message">
@@ -464,8 +453,9 @@
 		<category>Text</category>
 		<tags>
 			<tag>Status</tag>
+			<tag>Info</tag>
 		</tags>
-		<state readOnly="false"/>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="type-set-mode">
@@ -474,6 +464,7 @@
 		<category>heating</category>
 		<tags>
 			<tag>Control</tag>
+			<tag>Mode</tag>
 		</tags>
 		<state readOnly="false"/>
 	</channel-type>

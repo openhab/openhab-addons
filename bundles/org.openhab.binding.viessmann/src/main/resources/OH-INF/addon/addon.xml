@@ -7,4 +7,6 @@
 	<name>Viessmann Binding</name>
 	<description>This is the binding for Viessmann.</description>
 
+	<connection>cloud</connection>
+
 </addon:addon>
