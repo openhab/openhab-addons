@@ -14,6 +14,7 @@ package org.openhab.binding.allplay.internal.handler;
 
 import static org.openhab.binding.allplay.internal.AllPlayBindingConstants.*;
 
+import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
@@ -535,7 +536,7 @@ public class AllPlayHandler extends BaseThingHandler
     }
 
     private byte[] getRawDataFromUrl(String urlString) throws Exception {
-        URL url = new URL(urlString);
+        URL url = new URI(urlString).toURL();
         URLConnection connection = url.openConnection();
         return connection.getInputStream().readAllBytes();
     }
