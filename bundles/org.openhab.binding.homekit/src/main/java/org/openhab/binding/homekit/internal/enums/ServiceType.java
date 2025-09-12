@@ -56,21 +56,22 @@ public enum ServiceType {
         this.type = type;
     }
 
-    public int getId() {
-        return id;
+    /**
+     * Returns the name of the enum constant in `First Letter Capitals`.
+     */
+    @Override
+    public String toString() {
+        String[] parts = name().toLowerCase().split("_");
+        StringBuilder builder = new StringBuilder(parts[0]);
+        for (int i = 1; i < parts.length; i++) {
+            builder.append(Character.toUpperCase(parts[i].charAt(0))).append(parts[i].substring(1));
+        }
+        return builder.toString();
     }
 
-    public String getType() {
-        return type;
-    }
-
-    public String getShortType() {
+    public String getTypeSuffix() {
         int lastIndex = type.lastIndexOf(".");
         return type.substring(lastIndex + 1);
-    }
-
-    public static ServiceType from(String id) throws NumberFormatException {
-        return from(Integer.parseInt(id));
     }
 
     public static ServiceType from(int id) throws IllegalArgumentException {

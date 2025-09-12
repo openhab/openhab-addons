@@ -23,8 +23,8 @@ public enum AccessoryType {
     OTHER(1, "Other"),
     BRIDGE(2, "Bridge"),
     FAN(3, "Fan"),
-    GARAGE(4, "Garage"),
-    LIGHTBULB(5, "Light Bulb"),
+    GARAGE_DOOR(4, "Garage Door"),
+    LIGHTING(5, "Lighting"),
     DOOR_LOCK(6, "Door Lock"),
     OUTLET(7, "Outlet"),
     SWITCH(8, "Switch"),
@@ -35,7 +35,7 @@ public enum AccessoryType {
     WINDOW(13, "Window"),
     WINDOW_COVERING(14, "Window Covering"),
     PROGRAMMABLE_SWITCH(15, "Programmable Switch"),
-    RANGE_EXTENDER(16, "Range Extender"),
+    RESERVED(16, "Reserved"),
     IP_CAMERA(17, "IP Camera"),
     VIDEO_DOORBELL(18, "Video Doorbell"),
     AIR_PURIFIER(19, "Air Purifier"),
@@ -48,9 +48,9 @@ public enum AccessoryType {
     AIRPORT(27, "AirPort"),
     SPRINKLER(28, "Sprinkler"),
     FAUCET(29, "Faucet"),
-    SHOWER_HEAD(30, "Shower Head"),
+    SHOWER_HEAD(30, "Shower"),
     TELEVISION(31, "Television"),
-    TARGET_CONTROLLER(32, "Target Controller");
+    REMOTE(32, "Remote");
 
     private final int id;
     private final String label;
@@ -60,16 +60,9 @@ public enum AccessoryType {
         this.label = label;
     }
 
-    public int getId() {
-        return id;
-    }
-
-    public String getLabel() {
+    @Override
+    public String toString() {
         return label;
-    }
-
-    public static AccessoryType from(String id) throws NumberFormatException {
-        return from(Integer.parseInt(id));
     }
 
     public static AccessoryType from(int id) throws IllegalArgumentException {
@@ -78,6 +71,6 @@ public enum AccessoryType {
                 return value;
             }
         }
-        throw new IllegalArgumentException("Unknown ID: " + id);
+        return OTHER;
     }
 }

@@ -10,17 +10,26 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.homekit.internal.dto;
-
-import java.util.List;
+package org.openhab.binding.homekit.internal.enums;
 
 /**
- * HomeKit accessories DTO.
- * Used to deserialize the JSON response from the /accessories endpoint of a HomeKit bridge.
- * Contains a list of HomeKitAccessory objects.
+ * Enumeration of HomeKit characteristic data types.
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
-public class Accessories {
-    public List<Accessory> accessories;
+public enum DataFormatType {
+    BOOL,
+    UINT8,
+    UINT16,
+    UINT32,
+    UINT64,
+    INT,
+    FLOAT,
+    STRING,
+    TLV8,
+    DATA;
+
+    public static DataFormatType from(String dataFormat) throws IllegalArgumentException {
+        return valueOf(dataFormat.toUpperCase());
+    }
 }

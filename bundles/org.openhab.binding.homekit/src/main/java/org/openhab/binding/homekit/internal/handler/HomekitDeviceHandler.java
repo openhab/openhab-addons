@@ -56,8 +56,8 @@ public class HomekitDeviceHandler extends HomekitBaseServerHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        CharacteristicsManager accessoryClient = this.client;
-        if (accessoryClient != null) {
+        CharacteristicsManager charactersticsManager = this.charactersticsManager;
+        if (charactersticsManager != null) {
             String channelId = channelUID.getId();
             try {
                 switch (channelId) {
@@ -80,8 +80,8 @@ public class HomekitDeviceHandler extends HomekitBaseServerHandler {
      * This method is called periodically by a scheduled executor.
      */
     private void poll() {
-        CharacteristicsManager accessoryClient = this.client;
-        if (accessoryClient != null) {
+        CharacteristicsManager charactersticsManager = this.charactersticsManager;
+        if (charactersticsManager != null) {
             try {
                 // String power = accessoryClient.readCharacteristic("1", "10"); // TODO example AID/IID
                 // Parse powerState and update channel state accordingly
@@ -94,5 +94,24 @@ public class HomekitDeviceHandler extends HomekitBaseServerHandler {
                 logger.error("Failed to poll accessory state", e);
             }
         }
+    }
+
+    @Override
+    protected void getAccessories() {
+        if (!isChildAccessory) {
+            // child accessories shall not fetch accessories again
+            super.getAccessories();
+        }
+        createChannels();
+    }
+
+    /**
+     * Creates channels for the accessory based on its services and characteristics.
+     * Only parses the one relevant accessory in the list, as this handler is for a single accessory.
+     * Iterates through that accessory's services and characteristics to create appropriate channels.
+     * Each service creates a channel group, and each characteristic creates a channel within that group.
+     */
+    private void createChannels() {
+        // TODO Auto-generated method stub
     }
 }

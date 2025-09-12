@@ -90,13 +90,13 @@ public class HomekitMdnsDiscoveryParticipant implements MDNSDiscoveryParticipant
     public @Nullable ThingUID getThingUID(ServiceInfo service) {
         String macAddress = service.getPropertyString("id");
         if (macAddress != null) {
-            String deviceCategory = service.getPropertyString("ci"); // HomeKit device category
+            macAddress = macAddress.replace(":", "-").toLowerCase();
+            String accessoryType = service.getPropertyString("ci"); // HomeKit accessory type
             try {
-                AccessoryType category = AccessoryType.from(deviceCategory);
-                if (AccessoryType.BRIDGE.equals(category)) {
-                    return new ThingUID(THING_TYPE_BRIDGE, macAddress.replace(":", "-").toLowerCase());
+                if (AccessoryType.BRIDGE.equals(AccessoryType.from(Integer.parseInt(accessoryType)))) {
+                    return new ThingUID(THING_TYPE_BRIDGE, macAddress);
                 } else {
-                    return new ThingUID(THING_TYPE_DEVICE, macAddress.replace(":", "-").toLowerCase());
+                    return new ThingUID(THING_TYPE_DEVICE, macAddress);
                 }
             } catch (IllegalArgumentException e) {
             }

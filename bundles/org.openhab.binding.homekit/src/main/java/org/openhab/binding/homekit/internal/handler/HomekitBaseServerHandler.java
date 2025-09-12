@@ -14,7 +14,13 @@ package org.openhab.binding.homekit.internal.handler;
 
 import static org.openhab.binding.homekit.internal.HomekitBindingConstants.*;
 
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.homekit.internal.dto.Accessories;
+import org.openhab.binding.homekit.internal.dto.Accessory;
 import org.openhab.binding.homekit.internal.network.CharacteristicsManager;
 import org.openhab.binding.homekit.internal.network.HttpTransport;
 import org.openhab.binding.homekit.internal.network.PairingManager;
@@ -31,6 +37,8 @@ import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.Gson;
+
 /**
  * Handles I/O with HomeKit server devices -- either simple accessories or bridge accessories that
  * contain child accessories. If the handler is for a HomeKit bridge or a stand alone HomeKit accessory
@@ -45,9 +53,13 @@ public class HomekitBaseServerHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(HomekitBaseServerHandler.class);
 
+    protected static final Gson GSON = new Gson();
     protected final HttpTransport httpTransport;
+    protected final List<Accessory> accessories = new ArrayList<>();
 
-    protected @NonNullByDefault({}) CharacteristicsManager client;
+    protected boolean isChildAccessory = false;
+
+    protected @NonNullByDefault({}) CharacteristicsManager charactersticsManager;
     protected @NonNullByDefault({}) SessionKeys keys;
     protected @NonNullByDefault({}) SecureSession session;
     protected @NonNullByDefault({}) String baseUrl;
@@ -63,22 +75,25 @@ public class HomekitBaseServerHandler extends BaseThingHandler {
         Bridge bridge = getBridge();
         if (bridge != null && bridge.getHandler() instanceof HomekitBridgeHandler bridgeHandler) {
             // accessory is hosted by a bridge, so use the bridge's pairing and session
+            this.isChildAccessory = true;
             this.keys = bridgeHandler.keys;
             this.session = bridgeHandler.session;
-            this.client = bridgeHandler.client;
-            if (this.client != null) {
+            this.charactersticsManager = bridgeHandler.charactersticsManager;
+            if (this.charactersticsManager != null) {
                 updateStatus(ThingStatus.ONLINE);
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Bridge is not connected");
             }
         } else {
             // standalone accessory or brige accessory, so do pairing and session setup here
+            this.isChildAccessory = false;
             this.baseUrl = "http://" + getConfig().get(IP_V4_ADDRESS).toString();
             this.pairingCode = getConfig().get(PAIRING_CODE).toString();
             try {
                 this.keys = new PairingManager(httpTransport, pairingCode).pair(baseUrl);
                 this.session = new SecureSession(keys);
-                this.client = new CharacteristicsManager(httpTransport, session, baseUrl);
+                this.charactersticsManager = new CharacteristicsManager(httpTransport, session, baseUrl);
+                scheduler.submit(() -> getAccessories());
                 updateStatus(ThingStatus.ONLINE);
             } catch (Exception e) {
                 logger.error("Failed to initialize HomeKit client", e);
@@ -90,5 +105,30 @@ public class HomekitBaseServerHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         // override in subclass
+    }
+
+    /**
+     * Get information about embedded accessories and their respective channels.
+     * Uses the /accessories endpoint.
+     * Returns an empty list if there was a problem.
+     * Requires a valid secure session.
+     *
+     * @return list of accessories (may be empty)
+     * @see <a href="https://datatracker.ietf.org/doc/html/draft-ietf-homekit-http">HomeKit HTTP</a>
+     */
+    protected void getAccessories() {
+        SecureSession session = this.session;
+        if (session != null) {
+            try {
+                byte[] encrypted = httpTransport.get(baseUrl, ENDPOINT_ACCESSORIES, CONTENT_TYPE_HAP);
+                byte[] decrypted = session.decrypt(encrypted);
+                Accessories result = GSON.fromJson(new String(decrypted, StandardCharsets.UTF_8), Accessories.class);
+                if (result != null && result.accessories instanceof List<Accessory> accessoryList) {
+                    accessories.clear();
+                    accessories.addAll(accessoryList);
+                }
+            } catch (Exception e) {
+            }
+        }
     }
 }

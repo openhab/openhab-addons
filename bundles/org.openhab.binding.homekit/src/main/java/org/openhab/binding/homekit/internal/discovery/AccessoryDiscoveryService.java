@@ -37,7 +37,7 @@ import org.osgi.service.component.annotations.Component;
 @Component(service = DiscoveryService.class)
 public class AccessoryDiscoveryService extends AbstractDiscoveryService {
 
-    protected AccessoryDiscoveryService() {
+    public AccessoryDiscoveryService() {
         super(Set.of(THING_TYPE_DEVICE), 10, false);
     }
 
@@ -48,14 +48,14 @@ public class AccessoryDiscoveryService extends AbstractDiscoveryService {
 
     public void devicesDiscovered(Thing bridge, List<Accessory> accessories) {
         accessories.forEach(accessory -> {
-            if (accessory.aid != null && accessory.services != null) {
+            if (accessory.accessoryId != null && accessory.services != null) {
                 accessory.services.forEach(service -> {
-                    if (service.type != null && service.iid != null) {
-                        String id = "%d-%d".formatted(accessory.aid, service.iid);
+                    if (service.instanceId != null) {
+                        String id = "%d-%d".formatted(accessory.accessoryId, service.instanceId);
                         ThingUID uid = new ThingUID(THING_TYPE_DEVICE, bridge.getUID(), id);
                         thingDiscovered(DiscoveryResultBuilder.create(uid) //
                                 .withBridge(bridge.getUID()) //
-                                .withLabel(service.type) //
+                                .withLabel(service.toString()) //
                                 .withProperty("uid", uid.toString()) //
                                 .withRepresentationProperty("uid").build());
                     }

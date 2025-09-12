@@ -14,18 +14,18 @@ package org.openhab.binding.homekit.internal.dto;
 
 import static org.openhab.binding.homekit.internal.HomekitBindingConstants.BINDING_ID;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homekit.internal.enums.ServiceType;
+import org.openhab.binding.homekit.internal.provider.HomekitStorageBasedTypeProvider;
 import org.openhab.core.thing.type.ChannelDefinition;
-import org.openhab.core.thing.type.ChannelDefinitionBuilder;
+import org.openhab.core.thing.type.ChannelGroupDefinition;
 import org.openhab.core.thing.type.ChannelGroupType;
 import org.openhab.core.thing.type.ChannelGroupTypeBuilder;
 import org.openhab.core.thing.type.ChannelGroupTypeUID;
-import org.openhab.core.thing.type.ChannelType;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -36,44 +36,55 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
-@NonNullByDefault
 public class Service {
-    public @Nullable @SerializedName("type") String serviceId; // e.g. '96' = 'public.hap.service.battery'
-    public @Nullable @SerializedName("iid") Integer instanceId; // e.g. 10
-    public @Nullable List<Characteristic> characteristics;
+    public @SerializedName("type") String serviceId; // e.g. '96' => 'public.hap.service.battery'
+    public @SerializedName("iid") Integer instanceId; // e.g. 10
+    public List<Characteristic> characteristics;
 
-    public ServiceType getServiceType() {
-        Integer iid = this.iid;
-        if (iid == null) {
-            return ServiceType.UNKNOWN;
-        }
-        return ServiceType.from(iid);
+    /**
+     * The hash only includes the invariant fields as needed to define a fully unique channel group type.
+     * The instanceId is excluded as it depends on the accessory instance.
+     * The characteristics are included as they define the channels within the channel group.
+     *
+     * @return hash code
+     */
+    @Override
+    public int hashCode() {
+        return Objects.hash(serviceId, instanceId, characteristics);
     }
 
-    public @Nullable ChannelGroupType getChannelType() {
-        String serviceId = this.serviceId;
-        List<Characteristic> characteristics = this.characteristics;
-        if (serviceId == null || characteristics == null) {
+    /**
+     * Builds a {@link ChannelGroupDefinition} and {@link ChannelGroupType} based on the service properties.
+     * Registers the {@link ChannelGroupType} with the provided {@link HomekitStorageBasedTypeProvider}.
+     * Returns null if the service type is unknown or if no valid channel definitions can be created.
+     *
+     * @param typeProvider the HomekitStorageBasedTypeProvider to register the channel group type with
+     * @return the created ChannelGroupDefinition or null if creation failed
+     */
+    public @Nullable ChannelGroupDefinition buildAndRegisterChannelGroupDefinition(
+            HomekitStorageBasedTypeProvider typeProvider) {
+        ServiceType serviceType = ServiceType.from(Integer.parseInt(serviceId));
+        try {
+            serviceType = ServiceType.from(Integer.parseInt(serviceId));
+        } catch (IllegalArgumentException e) {
             return null;
         }
 
-        ServiceType serviceType = ServiceType.from(serviceId);
+        List<@NonNull ChannelDefinition> channelDefinitions = characteristics.stream()
+                .map(c -> c.buildAndRegisterChannelDefinition(typeProvider)).filter(Objects::nonNull).toList();
 
-        String label = "label"; // TODO determine label based on characType
-        String category = "sensor"; // TODO determine category based on characType
-
-        List<ChannelDefinition> channelDefinitions = new ArrayList<>();
-        for (Characteristic characteristic : characteristics) {
-            ChannelType ct = characteristic.getChannelType();
-            if (ct == null) {
-                continue;
-            }
-            channelDefinitions.add(new ChannelDefinitionBuilder(ct.getUID().getId(), ct.getUID())
-                    .withLabel(ct.getLabel()).withDescription(ct.getDescription()).build());
+        if (channelDefinitions.isEmpty()) {
+            return null;
         }
 
-        return ChannelGroupTypeBuilder.instance(new ChannelGroupTypeUID(BINDING_ID, serviceId), label)
-                .withChannelDefinitions(channelDefinitions).withCategory(category).build();
-    }
+        ChannelGroupTypeUID uid = new ChannelGroupTypeUID(BINDING_ID, Integer.toHexString(hashCode()));
+        ChannelGroupType type = ChannelGroupTypeBuilder.instance(uid, serviceId) //
+                .withDescription(serviceType.toString()) //
+                .withChannelDefinitions(channelDefinitions) //
+                .build();
 
+        typeProvider.putChannelGroupType(type);
+
+        return new ChannelGroupDefinition(Integer.toString(instanceId), uid, serviceType.getTypeSuffix(), null);
+    }
 }

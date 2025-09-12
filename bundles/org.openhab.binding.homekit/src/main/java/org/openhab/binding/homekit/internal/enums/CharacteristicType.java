@@ -1,14 +1,5 @@
 package org.openhab.binding.homekit.internal.enums;
 
-import static org.openhab.binding.homekit.internal.HomekitBindingConstants.BINDING_ID;
-
-import org.openhab.core.library.CoreItemFactory;
-import org.openhab.core.semantics.model.DefaultSemanticTags.Point;
-import org.openhab.core.semantics.model.DefaultSemanticTags.Property;
-import org.openhab.core.thing.type.ChannelType;
-import org.openhab.core.thing.type.ChannelTypeBuilder;
-import org.openhab.core.thing.type.ChannelTypeUID;
-
 public enum CharacteristicType {
     //@formatter:off
     ACCESSORY_PROPERTIES(0xA6, "public.hap.characteristic.accessory-properties"),
@@ -152,15 +143,20 @@ public enum CharacteristicType {
         this.type = type;
     }
 
-    public int getId() {
-        return id;
+    /**
+     * Returns the name of the enum constant in `First Letter Capitals`.
+     */
+    @Override
+    public String toString() {
+        String[] parts = name().toLowerCase().split("_");
+        StringBuilder builder = new StringBuilder(parts[0]);
+        for (int i = 1; i < parts.length; i++) {
+            builder.append(Character.toUpperCase(parts[i].charAt(0))).append(parts[i].substring(1));
+        }
+        return builder.toString();
     }
 
-    public String getType() {
-        return type;
-    }
-
-    public String getShortType() {
+    public String getTypeSuffix() {
         int lastIndex = type.lastIndexOf(".");
         return type.substring(lastIndex + 1);
     }
@@ -172,24 +168,5 @@ public enum CharacteristicType {
             }
         }
         throw new IllegalArgumentException("Unknown ID: " + id);
-    }
-
-    public static CharacteristicType from(String type) throws IllegalArgumentException {
-        for (CharacteristicType value : values()) {
-            if (value.type.equals(type)) {
-                return value;
-            }
-        }
-        throw new IllegalArgumentException("Unknown Type: " + type);
-    }
-
-    public ChannelType getChannelType() {
-        String channelTypeId = "typeId"; // TODO provide a unique channel type ID based on characteristic
-        String label = "label"; // TODO provide a meaningful label based on characteristic
-        String itemType = CoreItemFactory.SWITCH; // TODO determine the appropriate item type based on characteristic
-        String category = "sensor"; // Default category, adjust as needed
-        return ChannelTypeBuilder.state(new ChannelTypeUID(BINDING_ID, channelTypeId), label, itemType)
-                .withTags(Point.STATUS, Property.AIR_QUALITY) // Adjust tags as appropriate
-                .withCategory(category).build();
     }
 }

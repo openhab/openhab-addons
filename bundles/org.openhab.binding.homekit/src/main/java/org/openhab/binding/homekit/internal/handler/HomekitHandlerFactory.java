@@ -14,11 +14,13 @@ package org.openhab.binding.homekit.internal.handler;
 
 import static org.openhab.binding.homekit.internal.HomekitBindingConstants.*;
 
+import java.util.Hashtable;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homekit.internal.discovery.AccessoryDiscoveryService;
+import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -26,6 +28,8 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
+import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -42,14 +46,20 @@ public class HomekitHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_BRIDGE, THING_TYPE_DEVICE);
 
-    private final AccessoryDiscoveryService discoveryService;
     private final HttpClientFactory httpClientFactory;
 
+    private @Nullable ServiceRegistration<?> discoveryServiceRegistration;
+    private @Nullable AccessoryDiscoveryService discoveryService;
+
     @Activate
-    public HomekitHandlerFactory(@Reference AccessoryDiscoveryService discoveryService,
-            @Reference HttpClientFactory httpClientFactory) {
-        this.discoveryService = discoveryService;
+    public HomekitHandlerFactory(@Reference HttpClientFactory httpClientFactory) {
         this.httpClientFactory = httpClientFactory;
+    }
+
+    @Override
+    protected void deactivate(ComponentContext componentContext) {
+        unregisterDiscoveryService();
+        super.deactivate(componentContext);
     }
 
     @Override
@@ -61,10 +71,41 @@ public class HomekitHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (THING_TYPE_BRIDGE.equals(thingTypeUID)) {
-            return new HomekitBridgeHandler((Bridge) thing, httpClientFactory, discoveryService);
+            return new HomekitBridgeHandler((Bridge) thing, httpClientFactory, registerDiscoveryService());
         } else if (THING_TYPE_DEVICE.equals(thingTypeUID)) {
             return new HomekitDeviceHandler(thing, httpClientFactory);
         }
         return null;
+    }
+
+    /**
+     * Registers the AccessoryDiscoveryService if not already registered and returns it.
+     *
+     * @return the registered AccessoryDiscoveryService
+     */
+    private AccessoryDiscoveryService registerDiscoveryService() {
+        AccessoryDiscoveryService service = this.discoveryService;
+        if (service == null) {
+            service = new AccessoryDiscoveryService();
+            this.discoveryService = service;
+        }
+        ServiceRegistration<?> registration = this.discoveryServiceRegistration;
+        if (registration == null) {
+            registration = bundleContext.registerService(DiscoveryService.class.getName(), service, new Hashtable<>());
+            this.discoveryServiceRegistration = registration;
+        }
+        return service;
+    }
+
+    /**
+     * Unregisters the AccessoryDiscoveryService if it is registered.
+     */
+    private void unregisterDiscoveryService() {
+        ServiceRegistration<?> registration = this.discoveryServiceRegistration;
+        if (registration != null) {
+            registration.unregister();
+        }
+        this.discoveryService = null;
+        this.discoveryServiceRegistration = null;
     }
 }
