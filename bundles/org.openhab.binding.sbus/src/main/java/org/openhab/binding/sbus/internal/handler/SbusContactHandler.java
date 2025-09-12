@@ -131,9 +131,8 @@ public class SbusContactHandler extends AbstractSbusHandler {
     @Override
     protected void processAsyncMessage(SbusResponse response) {
         try {
-            if (response instanceof ReadStatusChannelsResponse) {
+            if (response instanceof ReadStatusChannelsResponse statusResponse) {
                 // Process status channel response using existing logic
-                ReadStatusChannelsResponse statusResponse = (ReadStatusChannelsResponse) response;
                 boolean[] statuses = extractContactStatuses(statusResponse);
 
                 // Update channel states based on async message
