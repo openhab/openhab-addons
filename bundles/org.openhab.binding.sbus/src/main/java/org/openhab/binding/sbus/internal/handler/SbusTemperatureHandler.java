@@ -136,7 +136,7 @@ public class SbusTemperatureHandler extends AbstractSbusHandler {
         // Execute transaction and parse response
         SbusResponse response = adapter.executeTransaction(request);
         if (!(response instanceof ReadTemperatureResponse)) {
-            throw new Exception("Unexpected response type: " + response.getClass().getSimpleName());
+            throw new IllegalStateException("Unexpected response type: " + response.getClass().getSimpleName());
         }
 
         ReadTemperatureResponse tempResponse = (ReadTemperatureResponse) response;

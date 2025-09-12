@@ -126,7 +126,7 @@ public class SbusMotionSensorHandler extends AbstractSbusHandler {
 
         SbusResponse response = adapter.executeTransaction(request);
         if (!(response instanceof ReadNineInOneStatusResponse)) {
-            throw new Exception("Unexpected response type: " + response.getClass().getSimpleName());
+            throw new IllegalStateException("Unexpected response type: " + response.getClass().getSimpleName());
         }
 
         return (ReadNineInOneStatusResponse) response;

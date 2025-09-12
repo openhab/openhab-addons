@@ -103,7 +103,7 @@ public class SbusContactHandler extends AbstractSbusHandler {
         // Execute transaction and parse response
         SbusResponse response = adapter.executeTransaction(request);
         if (!(response instanceof ReadDryChannelsResponse statusResponse)) {
-            throw new Exception("Unexpected response type: " + response.getClass().getSimpleName());
+            throw new IllegalStateException("Unexpected response type: " + response.getClass().getSimpleName());
         }
 
         InputRegister[] registers = statusResponse.getRegisters();

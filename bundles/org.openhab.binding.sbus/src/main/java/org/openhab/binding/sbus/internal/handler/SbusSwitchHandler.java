@@ -189,7 +189,7 @@ public class SbusSwitchHandler extends AbstractSbusHandler {
         // Execute transaction and parse response
         SbusResponse response = adapter.executeTransaction(request);
         if (!(response instanceof ReadStatusChannelsResponse)) {
-            throw new Exception("Unexpected response type: " + response.getClass().getSimpleName());
+            throw new IllegalStateException("Unexpected response type: " + response.getClass().getSimpleName());
         }
 
         ReadStatusChannelsResponse statusResponse = (ReadStatusChannelsResponse) response;

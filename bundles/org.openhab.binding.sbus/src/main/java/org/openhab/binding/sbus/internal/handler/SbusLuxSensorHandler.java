@@ -126,7 +126,7 @@ public class SbusLuxSensorHandler extends AbstractSbusHandler {
 
         SbusResponse response = adapter.executeTransaction(request);
         if (!(response instanceof ReadNineInOneStatusResponse statusResponse)) {
-            throw new Exception("Unexpected response type: " + response.getClass().getSimpleName());
+            throw new IllegalStateException("Unexpected response type: " + response.getClass().getSimpleName());
         }
 
         return statusResponse;
