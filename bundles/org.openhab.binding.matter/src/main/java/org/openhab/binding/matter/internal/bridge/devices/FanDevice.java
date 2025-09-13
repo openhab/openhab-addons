@@ -355,12 +355,7 @@ public class FanDevice extends BaseDevice {
         private final Map<String, FanControlCluster.FanModeEnum> customToEnumMap = new HashMap<>();
 
         public FanModeMapper() {
-            Map<String, Object> mappings = new HashMap<>();
-            FanControlCluster.FanModeEnum[] modes = FanControlCluster.FanModeEnum.values();
-            for (FanControlCluster.FanModeEnum mode : modes) {
-                mappings.put(mode.name(), mode.getValue());
-            }
-            initializeMappings(mappings);
+            initializeMappings(Map.of());
         }
 
         public FanModeMapper(Map<String, Object> mappings) {
@@ -368,22 +363,16 @@ public class FanDevice extends BaseDevice {
         }
 
         private void initializeMappings(Map<String, Object> mappings) {
-            if (mappings.isEmpty()) {
-                return;
+            Map<String, Object> allMappings = new HashMap<>(mappings);
+            FanControlCluster.FanModeEnum[] modes = FanControlCluster.FanModeEnum.values();
+            for (FanControlCluster.FanModeEnum mode : modes) {
+                allMappings.putIfAbsent(mode.name(), mode.getValue());
             }
-
-            // don't bother mapping if there's no OFF
-            if (!mappings.containsKey("OFF")) {
-                return;
-            }
-
             intToCustomMap.clear();
             customToEnumMap.clear();
-            for (Map.Entry<String, Object> entry : mappings.entrySet()) {
+            for (Map.Entry<String, Object> entry : allMappings.entrySet()) {
                 String customKey = entry.getKey().trim();
-                Object valueObj = entry.getValue();
-                String customValue = valueObj.toString().trim();
-
+                String customValue = entry.getValue().toString().trim();
                 try {
                     FanControlCluster.FanModeEnum mode = FanControlCluster.FanModeEnum.valueOf(customKey);
                     intToCustomMap.put(mode.value, customValue);
