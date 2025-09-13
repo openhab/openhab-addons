@@ -63,7 +63,7 @@ public class RvcOperationalStateConverter extends GenericConverter<RvcOperationa
         List<StateOption> options = new ArrayList<>();
         for (RvcOperationalStateCluster.OperationalStateEnum e : RvcOperationalStateCluster.OperationalStateEnum
                 .values()) {
-            options.add(new StateOption(e.value.toString(), e.label));
+            options.add(new StateOption(e.getValue().toString(), e.getLabel()));
         }
         StateDescription sd = StateDescriptionFragmentBuilder.create().withOptions(options).build()
                 .toStateDescription();
@@ -93,7 +93,7 @@ public class RvcOperationalStateConverter extends GenericConverter<RvcOperationa
         switch (message.path.attributeName) {
             case OperationalStateCluster.ATTRIBUTE_OPERATIONAL_STATE:
                 if (message.value instanceof RvcOperationalStateCluster.OperationalStateEnum state) {
-                    updateState(CHANNEL_ID_RVCOPERATIONALSTATE_STATE, new DecimalType(state.value));
+                    updateState(CHANNEL_ID_RVCOPERATIONALSTATE_STATE, new DecimalType(state.getValue()));
                 } else if (message.value instanceof Number number) {
                     updateState(CHANNEL_ID_RVCOPERATIONALSTATE_STATE, new DecimalType(number.intValue()));
                 }
@@ -106,7 +106,7 @@ public class RvcOperationalStateConverter extends GenericConverter<RvcOperationa
     public void initState() {
         updateState(CHANNEL_ID_RVCOPERATIONALSTATE_STATE,
                 initializingCluster.operationalState != null
-                        ? new DecimalType(initializingCluster.operationalState.value)
+                        ? new DecimalType(initializingCluster.operationalState.getValue())
                         : UnDefType.NULL);
     }
 }

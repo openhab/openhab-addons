@@ -155,8 +155,8 @@ public class RvcCleanModeCluster extends BaseCluster {
     public enum ModeChangeStatus implements MatterEnum {
         CLEANING_IN_PROGRESS(64, "Cleaning In Progress");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private ModeChangeStatus(Integer value, String label) {
             this.value = value;
@@ -189,8 +189,8 @@ public class RvcCleanModeCluster extends BaseCluster {
         VACUUM(16385, "Vacuum"),
         MOP(16386, "Mop");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private ModeTag(Integer value, String label) {
             this.value = value;

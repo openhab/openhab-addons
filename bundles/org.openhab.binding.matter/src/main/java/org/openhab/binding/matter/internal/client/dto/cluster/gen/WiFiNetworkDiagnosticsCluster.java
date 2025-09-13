@@ -175,8 +175,8 @@ public class WiFiNetworkDiagnosticsCluster extends BaseCluster {
         WPA2(4, "Wpa 2"),
         WPA3(5, "Wpa 3");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private SecurityTypeEnum(Integer value, String label) {
             this.value = value;
@@ -203,8 +203,8 @@ public class WiFiNetworkDiagnosticsCluster extends BaseCluster {
         AX(5, "Ax"),
         AH(6, "Ah");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private WiFiVersionEnum(Integer value, String label) {
             this.value = value;
@@ -228,8 +228,8 @@ public class WiFiNetworkDiagnosticsCluster extends BaseCluster {
         AUTHENTICATION_FAILED(2, "Authentication Failed"),
         SSID_NOT_FOUND(3, "Ssid Not Found");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private AssociationFailureCauseEnum(Integer value, String label) {
             this.value = value;
@@ -251,8 +251,8 @@ public class WiFiNetworkDiagnosticsCluster extends BaseCluster {
         CONNECTED(0, "Connected"),
         NOT_CONNECTED(1, "Not Connected");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private ConnectionStatusEnum(Integer value, String label) {
             this.value = value;

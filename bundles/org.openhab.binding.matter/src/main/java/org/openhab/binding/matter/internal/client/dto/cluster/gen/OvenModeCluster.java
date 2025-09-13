@@ -127,8 +127,8 @@ public class OvenModeCluster extends BaseCluster {
         GENERIC_FAILURE(2, "Generic Failure"),
         INVALID_IN_MODE(3, "Invalid In Mode");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private ModeChangeStatus(Integer value, String label) {
             this.value = value;
@@ -168,8 +168,8 @@ public class OvenModeCluster extends BaseCluster {
         PROOFING(16392, "Proofing"),
         STEAM(16393, "Steam");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private ModeTag(Integer value, String label) {
             this.value = value;

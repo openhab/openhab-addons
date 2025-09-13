@@ -741,8 +741,8 @@ public class ThreadNetworkDiagnosticsCluster extends BaseCluster {
         HARDWARE_FAILURE(2, "Hardware Failure"),
         NETWORK_JAMMED(3, "Network Jammed");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private NetworkFaultEnum(Integer value, String label) {
             this.value = value;
@@ -764,8 +764,8 @@ public class ThreadNetworkDiagnosticsCluster extends BaseCluster {
         CONNECTED(0, "Connected"),
         NOT_CONNECTED(1, "Not Connected");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private ConnectionStatusEnum(Integer value, String label) {
             this.value = value;
@@ -792,8 +792,8 @@ public class ThreadNetworkDiagnosticsCluster extends BaseCluster {
         ROUTER(5, "Router"),
         LEADER(6, "Leader");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private RoutingRoleEnum(Integer value, String label) {
             this.value = value;

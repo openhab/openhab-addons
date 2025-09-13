@@ -390,8 +390,8 @@ public class ChannelCluster extends BaseCluster {
     public enum LineupInfoTypeEnum implements MatterEnum {
         MSO(0, "Mso");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private LineupInfoTypeEnum(Integer value, String label) {
             this.value = value;
@@ -414,8 +414,8 @@ public class ChannelCluster extends BaseCluster {
         MULTIPLE_MATCHES(1, "Multiple Matches"),
         NO_MATCHES(2, "No Matches");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private StatusEnum(Integer value, String label) {
             this.value = value;
@@ -439,8 +439,8 @@ public class ChannelCluster extends BaseCluster {
         TERRESTRIAL(2, "Terrestrial"),
         OTT(3, "Ott");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private ChannelTypeEnum(Integer value, String label) {
             this.value = value;

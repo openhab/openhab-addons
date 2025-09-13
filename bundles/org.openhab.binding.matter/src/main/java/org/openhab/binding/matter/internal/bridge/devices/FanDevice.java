@@ -121,8 +121,8 @@ public class FanDevice extends BaseDevice {
                             FanControlCluster.ATTRIBUTE_FAN_MODE);
                     try {
                         String mappedMode = fanModeMapper
-                                .toCustomValue(level > 0 ? FanControlCluster.FanModeEnum.ON.value
-                                        : FanControlCluster.FanModeEnum.OFF.value);
+                                .toCustomValue(level > 0 ? FanControlCluster.FanModeEnum.ON.getValue()
+                                        : FanControlCluster.FanModeEnum.OFF.getValue());
                         if (genericItem instanceof NumberItem numberItem) {
                             numberItem.send(new DecimalType(mappedMode));
                         } else if (genericItem instanceof StringItem stringItem) {
@@ -261,13 +261,13 @@ public class FanDevice extends BaseDevice {
                         break;
                     case FanControlCluster.ATTRIBUTE_FAN_MODE:
                         if (state instanceof OnOffType onOffType) {
-                            int mode = onOffType == OnOffType.ON ? FanControlCluster.FanModeEnum.ON.value
-                                    : FanControlCluster.FanModeEnum.OFF.value;
+                            int mode = onOffType == OnOffType.ON ? FanControlCluster.FanModeEnum.ON.getValue()
+                                    : FanControlCluster.FanModeEnum.OFF.getValue();
                             states.add(new AttributeState(clusterName, attributeName, mode));
                             lastMode = mode;
                         } else {
                             try {
-                                int mode = fanModeMapper.fromCustomValue(state.toString()).value;
+                                int mode = fanModeMapper.fromCustomValue(state.toString()).getValue();
                                 states.add(new AttributeState(clusterName, attributeName, mode));
                                 lastMode = mode;
                             } catch (FanModeMappingException e) {
@@ -316,11 +316,12 @@ public class FanDevice extends BaseDevice {
         if (mode == null) {
             if (onOff != null) {
                 attributeMap.put(FanControlCluster.CLUSTER_PREFIX + "." + FanControlCluster.ATTRIBUTE_FAN_MODE,
-                        onOff == OnOffType.ON ? FanControlCluster.FanModeEnum.ON.value
-                                : FanControlCluster.FanModeEnum.OFF.value);
+                        onOff == OnOffType.ON ? FanControlCluster.FanModeEnum.ON.getValue()
+                                : FanControlCluster.FanModeEnum.OFF.getValue());
             } else if (speed != null) {
                 attributeMap.put(FanControlCluster.CLUSTER_PREFIX + "." + FanControlCluster.ATTRIBUTE_FAN_MODE,
-                        speed == 0 ? FanControlCluster.FanModeEnum.OFF.value : FanControlCluster.FanModeEnum.ON.value);
+                        speed == 0 ? FanControlCluster.FanModeEnum.OFF.getValue()
+                                : FanControlCluster.FanModeEnum.ON.getValue());
             }
         }
         return attributeMap;
@@ -375,7 +376,7 @@ public class FanDevice extends BaseDevice {
                 String customValue = entry.getValue().toString().trim();
                 try {
                     FanControlCluster.FanModeEnum mode = FanControlCluster.FanModeEnum.valueOf(customKey);
-                    intToCustomMap.put(mode.value, customValue);
+                    intToCustomMap.put(mode.getValue(), customValue);
                     customToEnumMap.put(customValue, mode);
                 } catch (IllegalArgumentException e) {
                     // ignore unknown values

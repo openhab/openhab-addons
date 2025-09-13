@@ -158,8 +158,8 @@ public class LevelControlCluster extends BaseCluster {
         UP(0, "Up"),
         DOWN(1, "Down");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private MoveModeEnum(Integer value, String label) {
             this.value = value;
@@ -181,8 +181,8 @@ public class LevelControlCluster extends BaseCluster {
         UP(0, "Up"),
         DOWN(1, "Down");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private StepModeEnum(Integer value, String label) {
             this.value = value;

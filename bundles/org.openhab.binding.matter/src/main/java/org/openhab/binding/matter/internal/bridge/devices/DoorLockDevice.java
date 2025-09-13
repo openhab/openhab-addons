@@ -67,8 +67,9 @@ public class DoorLockDevice extends BaseDevice {
         Map<String, Object> attributeMap = primaryMetadata.getAttributeOptions();
         attributeMap.put(DoorLockCluster.CLUSTER_PREFIX + "." + DoorLockCluster.ATTRIBUTE_LOCK_STATE,
                 Optional.ofNullable(primaryItem.getStateAs(OnOffType.class))
-                        .orElseGet(() -> OnOffType.OFF) == OnOffType.ON ? DoorLockCluster.LockStateEnum.LOCKED.value
-                                : DoorLockCluster.LockStateEnum.UNLOCKED.value);
+                        .orElseGet(() -> OnOffType.OFF) == OnOffType.ON
+                                ? DoorLockCluster.LockStateEnum.LOCKED.getValue()
+                                : DoorLockCluster.LockStateEnum.UNLOCKED.getValue());
         return new MatterDeviceOptions(attributeMap, primaryMetadata.label);
     }
 
@@ -81,8 +82,8 @@ public class DoorLockDevice extends BaseDevice {
     public void updateState(Item item, State state) {
         if (state instanceof OnOffType onOffType) {
             setEndpointState(DoorLockCluster.CLUSTER_PREFIX, DoorLockCluster.ATTRIBUTE_LOCK_STATE,
-                    onOffType == OnOffType.ON ? DoorLockCluster.LockStateEnum.LOCKED.value
-                            : DoorLockCluster.LockStateEnum.UNLOCKED.value);
+                    onOffType == OnOffType.ON ? DoorLockCluster.LockStateEnum.LOCKED.getValue()
+                            : DoorLockCluster.LockStateEnum.UNLOCKED.getValue());
         }
     }
 }

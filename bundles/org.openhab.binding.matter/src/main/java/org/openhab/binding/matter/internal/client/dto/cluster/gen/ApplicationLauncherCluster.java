@@ -100,8 +100,8 @@ public class ApplicationLauncherCluster extends BaseCluster {
         DOWNLOADING(4, "Downloading"),
         INSTALLING(5, "Installing");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private StatusEnum(Integer value, String label) {
             this.value = value;

@@ -183,8 +183,8 @@ public class ValveConfigurationAndControlCluster extends BaseCluster {
         OPEN(1, "Open"),
         TRANSITIONING(2, "Transitioning");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private ValveStateEnum(Integer value, String label) {
             this.value = value;
@@ -205,8 +205,8 @@ public class ValveConfigurationAndControlCluster extends BaseCluster {
     public enum StatusCodeEnum implements MatterEnum {
         FAILURE_DUE_TO_FAULT(2, "Failure Due To Fault");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private StatusCodeEnum(Integer value, String label) {
             this.value = value;
