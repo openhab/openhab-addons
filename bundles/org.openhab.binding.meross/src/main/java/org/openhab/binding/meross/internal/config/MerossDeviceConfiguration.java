@@ -10,17 +10,20 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.meross.internal.command;
+package org.openhab.binding.meross.internal.config;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * The {@link Command} interface is responsible for implementing command type
+ * The {@link MerossDeviceConfiguration} class is an abstract base class with common configuration parameters.
  *
- *
- * @author Giovanni Fabiani - Initial contribution
+ * @author Mark Herwege - Initial contribution
  */
+
 @NonNullByDefault
-public interface Command {
-    byte[] command(String deviceUUID);
+public abstract class MerossDeviceConfiguration {
+    public String name = "";
+    public String uuid = "";
+    public @Nullable String ipAddress;
 }

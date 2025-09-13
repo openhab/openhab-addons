@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.meross.internal.discovery;
 
+import java.net.ConnectException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +29,7 @@ import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
+import org.openhab.core.thing.binding.ThingHandler;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
@@ -37,13 +39,20 @@ import org.slf4j.LoggerFactory;
  * The {@link MerossDiscoveryService} class is responsible for performing device discovery
  *
  * @author Giovanni Fabiani - Initial contribution
+ * @author Mark Herwege - Added garage door support
+ * @author Mark Herwege - Discovery on bridge initialization, allow manual scan
+ * @author Mark Herwege - Device uuid config parameter and representation property
  */
 @NonNullByDefault
 @Component(scope = ServiceScope.PROTOTYPE, service = MerossDiscoveryService.class)
 public class MerossDiscoveryService extends AbstractThingHandlerDiscoveryService<MerossBridgeHandler> {
-    public static final String DEVICE_UUID = "deviceUUID";
+
     public static final String DEVICE_TYPE = "deviceType";
+    public static final String DEVICE_SUB_TYPE = "subType";
     public static final String FIRMWARE_VERSION = "firmwareVersion";
+    public static final String HARDWARE_VERSION = "hardwareVersion";
+    public static final String REGION = "region";
+
     private final Logger logger = LoggerFactory.getLogger(MerossDiscoveryService.class);
     private static final int DISCOVER_TIMEOUT_SECONDS = 10;
     private @Nullable ScheduledFuture<?> scanTask;
@@ -55,7 +64,8 @@ public class MerossDiscoveryService extends AbstractThingHandlerDiscoveryService
 
     @Override
     public void startBackgroundDiscovery() {
-        discoverDevices();
+        // Don't allow automatic background discovery to avoid excessive cloud traffic and being blocked by Meross.
+        // Discovery will happen on bridge initialization and when manually triggered.
     }
 
     @Override
@@ -77,22 +87,46 @@ public class MerossDiscoveryService extends AbstractThingHandlerDiscoveryService
         }
     }
 
-    public void discoverDevices() {
-        List<Device> devices = null;
-        if (thingHandler.getMerossHttpConnector() != null) {
-            var merossHttpConnector = thingHandler.getMerossHttpConnector();
-            if (merossHttpConnector != null) {
-                devices = merossHttpConnector.readDevices();
-            }
+    @Override
+    public void setThingHandler(ThingHandler handler) {
+        super.setThingHandler(handler);
+        if (handler instanceof MerossBridgeHandler bridgeHandler) {
+            bridgeHandler.setDiscoveryService(this);
         }
-        if (devices == null || devices.isEmpty()) {
+    }
+
+    public void discoverDevices() {
+        List<Device> devices;
+        try {
+            devices = thingHandler.discoverDevices();
+        } catch (ConnectException e) {
+            logger.debug("Connection error, could not retrieve devices");
+            return;
+        }
+        if (devices.isEmpty()) {
             logger.debug("No device found");
         } else {
             ThingUID bridgeUID = thingHandler.getThing().getUID();
             devices.forEach(device -> {
+                String deviceType = device.deviceType();
                 ThingTypeUID thingTypeUID;
-                if (isLightType(device.deviceType())) {
+                if (isLightType(deviceType)) {
                     thingTypeUID = MerossBindingConstants.THING_TYPE_LIGHT;
+                } else if (isDoorType(deviceType)) {
+                    switch (deviceType) {
+                        case MerossBindingConstants.MSG100:
+                            thingTypeUID = MerossBindingConstants.THING_TYPE_DOOR;
+                            break;
+                        case MerossBindingConstants.MSG200:
+                            thingTypeUID = MerossBindingConstants.THING_TYPE_TRIPLE_DOOR;
+                            break;
+                        default:
+                            logger.debug("Device type {} not recognized, default to single garage door opener",
+                                    deviceType);
+                            thingTypeUID = MerossBindingConstants.THING_TYPE_DOOR;
+                            break;
+                    }
+                    ;
                 } else {
                     logger.debug("Unsupported device found: name {} : type {}", device.devName(), device.deviceType());
                     return;
@@ -100,12 +134,15 @@ public class MerossDiscoveryService extends AbstractThingHandlerDiscoveryService
                 ThingUID deviceThing = new ThingUID(thingTypeUID, thingHandler.getThing().getUID(), device.uuid());
                 Map<String, Object> deviceProperties = new HashMap<>();
                 deviceProperties.put(MerossBindingConstants.PROPERTY_DEVICE_NAME, device.devName());
-                deviceProperties.put(DEVICE_UUID, device.uuid());
+                deviceProperties.put(MerossBindingConstants.PROPERTY_DEVICE_UUID, device.uuid());
                 deviceProperties.put(DEVICE_TYPE, device.deviceType());
-                deviceProperties.put(FIRMWARE_VERSION, device.firmwareVersion());
+                deviceProperties.put(DEVICE_SUB_TYPE, device.deviceType());
+                deviceProperties.put(FIRMWARE_VERSION, device.subType());
+                deviceProperties.put(HARDWARE_VERSION, device.hardwareVersion());
+                deviceProperties.put(REGION, device.region());
                 thingDiscovered(DiscoveryResultBuilder.create(deviceThing).withLabel(device.devName())
                         .withProperties(deviceProperties)
-                        .withRepresentationProperty(MerossBindingConstants.PROPERTY_DEVICE_NAME).withBridge(bridgeUID)
+                        .withRepresentationProperty(MerossBindingConstants.PROPERTY_DEVICE_UUID).withBridge(bridgeUID)
                         .build());
             });
         }
@@ -114,6 +151,12 @@ public class MerossDiscoveryService extends AbstractThingHandlerDiscoveryService
     public boolean isLightType(String typeName) {
         String targetString = typeName.substring(0, 3);
         Set<String> types = MerossBindingConstants.DISCOVERABLE_LIGHT_HARDWARE_TYPES;
+        return types.stream().anyMatch(type -> type.equals(targetString));
+    }
+
+    public boolean isDoorType(String typeName) {
+        String targetString = typeName.substring(0, 3);
+        Set<String> types = MerossBindingConstants.DISCOVERABLE_DOOR_HARDWARE_TYPES;
         return types.stream().anyMatch(type -> type.equals(targetString));
     }
 }
