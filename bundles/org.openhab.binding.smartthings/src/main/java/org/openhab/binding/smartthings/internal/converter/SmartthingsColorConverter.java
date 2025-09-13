@@ -16,8 +16,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.smartthings.internal.dto.SmartthingsStateData;
+import org.openhab.binding.smartthings.internal.type.SmartthingsTypeRegistry;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -41,13 +40,42 @@ public class SmartthingsColorConverter extends SmartthingsConverter {
 
     private final Logger logger = LoggerFactory.getLogger(SmartthingsColorConverter.class);
 
-    public SmartthingsColorConverter(Thing thing) {
-        super(thing);
+    public SmartthingsColorConverter(SmartthingsTypeRegistry typeRegistry) {
+        super(typeRegistry);
     }
 
     @Override
-    public String convertToSmartthings(ChannelUID channelUid, Command command) {
-        return defaultConvertToSmartthings(channelUid, command);
+    public void convertToSmartthingsInternal(Thing thing, ChannelUID channelUid, Command command) {
+        String jsonMsg;
+
+        if (command instanceof HSBType hsbCommand) {
+            double hue = hsbCommand.getHue().doubleValue() / 3.60;
+            double sat = hsbCommand.getSaturation().doubleValue();
+            int level = hsbCommand.getBrightness().intValue();
+
+            String componentKey = "main";
+            String capaKey = "colorControl";
+            String cmdName = "setColor";
+            Object[] arguments = new Object[1];
+            ColorObject colorObj = new ColorObject();
+            colorObj.hue = hue;
+            colorObj.saturation = sat;
+            arguments[0] = colorObj;
+
+            this.pushCommand(componentKey, capaKey, cmdName, arguments);
+
+            // setLevel is not working correctly on colorControl object
+            // call setLevel of switchLevel instead
+            arguments = new Object[1];
+            arguments[0] = level;
+            this.pushCommand(componentKey, "switchLevel", "setLevel", arguments);
+
+        }
+    }
+
+    private class ColorObject {
+        public Double hue = 0.0;
+        public Double saturation = 0.0;
     }
 
     /*
@@ -57,16 +85,15 @@ public class SmartthingsColorConverter extends SmartthingsConverter {
      * org.openhab.binding.smartthings.internal.SmartthingsStateData)
      */
     @Override
-    public State convertToOpenHab(@Nullable String acceptedChannelType, SmartthingsStateData dataFromSmartthings) {
+    public State convertToOpenHabInternal(Thing thing, ChannelUID channelUid, Object dataFromSmartthings) {
         // The color value from Smartthings will look like "#123456" which is the RGB color
         // This needs to be converted into HSB type
-        String value = dataFromSmartthings.value;
-        if (value == null) {
-            logger.warn("Failed to convert color {} because Smartthings returned a null value.",
-                    dataFromSmartthings.deviceDisplayName);
+        if (dataFromSmartthings == null) {
+            logger.warn("Failed to convert color because Smartthings returned a null value.");
             return UnDefType.UNDEF;
         }
 
+        String value = (String) dataFromSmartthings;
         // First verify the format the string is valid
         Matcher matcher = rgbInputPattern.matcher(value);
         if (!matcher.matches()) {
