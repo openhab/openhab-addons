@@ -10,30 +10,31 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.sbus.handler.config;
+package org.openhab.binding.sbus.internal.config;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
+import ro.ciprianpascu.sbus.Sbus;
+
 /**
- * The {@link SbusChannelConfig} class contains fields mapping channel configuration parameters.
+ * The {@link SbusDeviceConfig} class contains fields mapping thing configuration parameters.
  *
  * @author Ciprian Pascu - Initial contribution
  */
 @NonNullByDefault
-public class SbusChannelConfig {
+public class SbusDeviceConfig {
     /**
-     * The physical channel number on the Sbus device.
+     * The ID of the Sbus device
      */
-    public int channelNumber;
+    public int id = Sbus.DEFAULT_UNIT_ID;
 
     /**
-     * The paired channel number for OpenClosedType channels.
-     * When the main channel is opened, this channel will be closed and vice versa.
+     * The subnet ID for Sbus communication
      */
-    public int pairedChannelNumber;
+    public int subnetId = Sbus.DEFAULT_SUBNET_ID;
 
     /**
-     * Timer in seconds to automatically turn off the switch (-1 = disabled).
+     * Refresh interval in seconds
      */
-    public int timer = 0;
+    public int refresh = 30; // Default value from thing-types.xml
 }
