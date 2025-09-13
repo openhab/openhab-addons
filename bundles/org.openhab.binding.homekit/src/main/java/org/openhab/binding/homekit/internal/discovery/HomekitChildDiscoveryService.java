@@ -12,9 +12,9 @@
  */
 package org.openhab.binding.homekit.internal.discovery;
 
-import static org.openhab.binding.homekit.internal.HomekitBindingConstants.THING_TYPE_DEVICE;
+import static org.openhab.binding.homekit.internal.HomekitBindingConstants.*;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -35,9 +35,9 @@ import org.osgi.service.component.annotations.Component;
  */
 @NonNullByDefault
 @Component(service = DiscoveryService.class)
-public class AccessoryDiscoveryService extends AbstractDiscoveryService {
+public class HomekitChildDiscoveryService extends AbstractDiscoveryService {
 
-    public AccessoryDiscoveryService() {
+    public HomekitChildDiscoveryService() {
         super(Set.of(THING_TYPE_DEVICE), 10, false);
     }
 
@@ -46,20 +46,17 @@ public class AccessoryDiscoveryService extends AbstractDiscoveryService {
         // no scanning is done; we rely on being informed of new accessories
     }
 
-    public void devicesDiscovered(Thing bridge, List<Accessory> accessories) {
+    public void devicesDiscovered(Thing bridge, Collection<Accessory> accessories) {
         accessories.forEach(accessory -> {
             if (accessory.accessoryId != null && accessory.services != null) {
-                accessory.services.forEach(service -> {
-                    if (service.instanceId != null) {
-                        String id = "%d-%d".formatted(accessory.accessoryId, service.instanceId);
-                        ThingUID uid = new ThingUID(THING_TYPE_DEVICE, bridge.getUID(), id);
-                        thingDiscovered(DiscoveryResultBuilder.create(uid) //
-                                .withBridge(bridge.getUID()) //
-                                .withLabel(service.toString()) //
-                                .withProperty("uid", uid.toString()) //
-                                .withRepresentationProperty("uid").build());
-                    }
-                });
+                ThingUID uid = new ThingUID(THING_TYPE_DEVICE, bridge.getUID(),
+                        CHILD_FMT.formatted(accessory.accessoryId)); // accessory ID is unique per bridge
+
+                thingDiscovered(DiscoveryResultBuilder.create(uid) //
+                        .withBridge(bridge.getUID()) //
+                        .withLabel(CHILD_LABEL_FMT.formatted(accessory.accessoryId, bridge.getLabel())) //
+                        .withProperty(PROPERTY_UID, uid.toString()) //
+                        .withRepresentationProperty(PROPERTY_UID).build());
             }
         });
     }

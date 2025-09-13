@@ -75,12 +75,12 @@ public class HomekitMdnsDiscoveryParticipant implements MDNSDiscoveryParticipant
             String protocolVersion = service.getPropertyString("pv"); // HomeKit protocol version
 
             return DiscoveryResultBuilder.create(uid) //
-                    .withLabel("%s on (%s)".formatted(modelName, ipV4Address)) //
+                    .withLabel(THING_LABEL_FMT.formatted(modelName, ipV4Address)) //
+                    .withProperty(CONFIG_IP_V4_ADDRESS, ipV4Address) //
                     .withProperty(Thing.PROPERTY_MODEL_ID, modelName) //
                     .withProperty(Thing.PROPERTY_MAC_ADDRESS, macAddress) //
-                    .withProperty("protocolVersion", protocolVersion) //
-                    .withProperty("ipV4Address", ipV4Address) //
-                    .withProperty("deviceCategory", deviceCategory) //
+                    .withProperty(PROPERTY_PROTOCOL_VERSION, protocolVersion) //
+                    .withProperty(PROPERTY_DEVICE_CATEGORY, deviceCategory) //
                     .withRepresentationProperty(Thing.PROPERTY_MAC_ADDRESS).build();
         }
         return null;
@@ -90,13 +90,13 @@ public class HomekitMdnsDiscoveryParticipant implements MDNSDiscoveryParticipant
     public @Nullable ThingUID getThingUID(ServiceInfo service) {
         String macAddress = service.getPropertyString("id");
         if (macAddress != null) {
-            macAddress = macAddress.replace(":", "-").toLowerCase();
+            String id = macAddress.replace(":", "").replace("-", "").toLowerCase(); // e.g. "a1b2c3d4e5f6"
             String accessoryType = service.getPropertyString("ci"); // HomeKit accessory type
             try {
                 if (AccessoryType.BRIDGE.equals(AccessoryType.from(Integer.parseInt(accessoryType)))) {
-                    return new ThingUID(THING_TYPE_BRIDGE, macAddress);
+                    return new ThingUID(THING_TYPE_BRIDGE, id);
                 } else {
-                    return new ThingUID(THING_TYPE_DEVICE, macAddress);
+                    return new ThingUID(THING_TYPE_DEVICE, id);
                 }
             } catch (IllegalArgumentException e) {
             }

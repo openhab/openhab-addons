@@ -15,17 +15,21 @@ package org.openhab.binding.homekit.internal.provider;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.storage.StorageService;
 import org.openhab.core.thing.binding.AbstractStorageBasedTypeProvider;
+import org.openhab.core.thing.type.ChannelGroupTypeProvider;
+import org.openhab.core.thing.type.ChannelTypeProvider;
+import org.osgi.service.component.annotations.Component;
 
 /**
- * The {@link HomekitStorageBasedTypeProvider} is responsible for loading and storing HomeKit specific channel and
+ * The {@link HomekitTypeProvider} is responsible for loading and storing HomeKit specific channel and
  * channel group types.
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-public class HomekitStorageBasedTypeProvider extends AbstractStorageBasedTypeProvider {
+@Component(service = { HomekitTypeProvider.class, ChannelTypeProvider.class, ChannelGroupTypeProvider.class })
+public class HomekitTypeProvider extends AbstractStorageBasedTypeProvider {
 
-    protected HomekitStorageBasedTypeProvider(StorageService storageService) {
+    protected HomekitTypeProvider(StorageService storageService) {
         super(storageService);
     }
 }

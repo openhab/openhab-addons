@@ -13,11 +13,15 @@
 package org.openhab.binding.homekit.internal.dto;
 
 import java.util.List;
+import java.util.Objects;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homekit.internal.enums.AccessoryType;
+import org.openhab.binding.homekit.internal.provider.HomekitTypeProvider;
 import org.openhab.core.semantics.SemanticTag;
 import org.openhab.core.semantics.model.DefaultSemanticTags.Equipment;
+import org.openhab.core.thing.type.ChannelGroupDefinition;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -28,9 +32,10 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
+@NonNullByDefault
 public class Accessory {
-    public @SerializedName("aid") Integer accessoryId; // e.g. 1
-    public List<Service> services;
+    public @NonNullByDefault({}) @SerializedName("aid") Integer accessoryId; // e.g. 1
+    public @NonNullByDefault({}) List<Service> services;
 
     @Override
     public String toString() {
@@ -115,5 +120,17 @@ public class Accessory {
             case RESERVED:
         }
         return null;
+    }
+
+    /**
+     * Builds and registers channel group definitions for all services of this accessory.
+     * Services that do not map to a channel group definition are ignored.
+     *
+     * @param typeProvider the HomeKit type provider used to look up channel group definitions
+     * @return a list of channel group definitions for the services of this accessory
+     */
+    public List<ChannelGroupDefinition> buildAndRegisterChannelGroupDefinitions(HomekitTypeProvider typeProvider) {
+        return services.stream().map(s -> s.buildAndRegisterChannelGroupDefinition(typeProvider))
+                .filter(Objects::nonNull).toList();
     }
 }

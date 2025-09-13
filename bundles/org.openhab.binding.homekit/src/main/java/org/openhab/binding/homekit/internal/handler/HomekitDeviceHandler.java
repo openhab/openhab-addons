@@ -12,13 +12,25 @@
  */
 package org.openhab.binding.homekit.internal.handler;
 
+import static org.openhab.binding.homekit.internal.HomekitBindingConstants.*;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.homekit.internal.dto.Accessory;
 import org.openhab.binding.homekit.internal.network.CharacteristicsManager;
+import org.openhab.binding.homekit.internal.provider.HomekitTypeProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
+import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.binding.builder.ChannelBuilder;
+import org.openhab.core.thing.binding.builder.ThingBuilder;
+import org.openhab.core.thing.type.ChannelGroupType;
+import org.openhab.core.thing.type.ChannelType;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,15 +46,17 @@ import org.slf4j.LoggerFactory;
 public class HomekitDeviceHandler extends HomekitBaseServerHandler {
 
     private final Logger logger = LoggerFactory.getLogger(HomekitDeviceHandler.class);
+    private final HomekitTypeProvider typeProvider;
 
-    public HomekitDeviceHandler(Thing thing, HttpClientFactory httpClientFactory) {
+    public HomekitDeviceHandler(Thing thing, HttpClientFactory httpClientFactory, HomekitTypeProvider typeProvider) {
         super(thing, httpClientFactory);
+        this.typeProvider = typeProvider;
     }
 
     @Override
     public void initialize() {
         super.initialize();
-        String interval = getConfig().get("pollingInterval").toString();
+        String interval = getConfig().get(CONFIG_POLLING_INTERVAL).toString();
         try {
             int intervalSeconds = Integer.parseInt(interval);
             if (intervalSeconds > 0) {
@@ -106,11 +120,54 @@ public class HomekitDeviceHandler extends HomekitBaseServerHandler {
 
     /**
      * Creates channels for the accessory based on its services and characteristics.
-     * Only parses the one relevant accessory in the list, as this handler is for a single accessory.
+     * Only parses the one relevant accessory in the list, as each handler is for a single accessory.
      * Iterates through that accessory's services and characteristics to create appropriate channels.
-     * Each service creates a channel group, and each characteristic creates a channel within that group.
+     * Each service creates a channel group, and each characteristic creates a channel within it.
      */
     private void createChannels() {
-        // TODO Auto-generated method stub
+        if (accessories.isEmpty()) {
+            return;
+        }
+        String uidProperty = thing.getProperties().get(PROPERTY_UID);
+        if (uidProperty == null) {
+            return;
+        }
+        int accessoryIdIndex = uidProperty.lastIndexOf("-");
+        if (accessoryIdIndex < 0) {
+            return;
+        }
+        Integer accessoryId;
+        try {
+            accessoryId = Integer.parseInt(uidProperty.substring(accessoryIdIndex + 1));
+        } catch (NumberFormatException e) {
+            return;
+        }
+        Accessory accessory = accessories.get(accessoryId);
+        if (accessory == null) {
+            return;
+        }
+
+        // create the channels
+        List<Channel> channels = new ArrayList<>();
+        accessory.buildAndRegisterChannelGroupDefinitions(typeProvider).forEach(groupDef -> {
+            ChannelGroupType groupType = typeProvider.getChannelGroupType(groupDef.getTypeUID(), null);
+            if (groupType != null) {
+                groupType.getChannelDefinitions().forEach(channelDef -> {
+                    ChannelType channelType = typeProvider.getChannelType(channelDef.getChannelTypeUID(), null);
+                    if (channelType != null) {
+                        ChannelUID channelUID = new ChannelUID(thing.getUID(), groupDef.getId(), channelDef.getId());
+                        ChannelBuilder builder = ChannelBuilder.create(channelUID).withType(channelType.getUID());
+                        Optional.ofNullable(channelDef.getLabel()).ifPresent(builder::withLabel);
+                        Optional.ofNullable(channelDef.getDescription()).ifPresent(builder::withDescription);
+                        channels.add(builder.build());
+                    }
+                });
+            }
+        });
+
+        // update thing with new channels
+        ThingBuilder builder = editThing().withChannels(channels);
+        Optional.ofNullable(accessory.getSemanticEquipmentTag()).ifPresent(builder::withSemanticEquipmentTag);
+        updateThing(builder.build());
     }
 }

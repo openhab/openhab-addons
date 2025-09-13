@@ -15,8 +15,12 @@ package org.openhab.binding.homekit.internal.handler;
 import static org.openhab.binding.homekit.internal.HomekitBindingConstants.*;
 
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.homekit.internal.dto.Accessories;
@@ -55,7 +59,7 @@ public class HomekitBaseServerHandler extends BaseThingHandler {
 
     protected static final Gson GSON = new Gson();
     protected final HttpTransport httpTransport;
-    protected final List<Accessory> accessories = new ArrayList<>();
+    protected final Map<Integer, Accessory> accessories = new HashMap<>();
 
     protected boolean isChildAccessory = false;
 
@@ -87,8 +91,8 @@ public class HomekitBaseServerHandler extends BaseThingHandler {
         } else {
             // standalone accessory or brige accessory, so do pairing and session setup here
             this.isChildAccessory = false;
-            this.baseUrl = "http://" + getConfig().get(IP_V4_ADDRESS).toString();
-            this.pairingCode = getConfig().get(PAIRING_CODE).toString();
+            this.baseUrl = "http://" + getConfig().get(CONFIG_IP_V4_ADDRESS).toString();
+            this.pairingCode = getConfig().get(CONFIG_PAIRING_CODE).toString();
             try {
                 this.keys = new PairingManager(httpTransport, pairingCode).pair(baseUrl);
                 this.session = new SecureSession(keys);
@@ -125,7 +129,8 @@ public class HomekitBaseServerHandler extends BaseThingHandler {
                 Accessories result = GSON.fromJson(new String(decrypted, StandardCharsets.UTF_8), Accessories.class);
                 if (result != null && result.accessories instanceof List<Accessory> accessoryList) {
                     accessories.clear();
-                    accessories.addAll(accessoryList);
+                    accessories.putAll(accessoryList.stream().filter(a -> Objects.nonNull(a.accessoryId))
+                            .collect(Collectors.toMap(a -> a.accessoryId, Function.identity())));
                 }
             } catch (Exception e) {
             }

@@ -29,11 +29,28 @@ public class HomekitBindingConstants {
     public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "bridge");
     public static final ThingTypeUID THING_TYPE_DEVICE = new ThingTypeUID(BINDING_ID, "device");
 
-    // configuration parameters
-    public static final String PAIRING_CODE = "pairingCode";
-    public static final String IP_V4_ADDRESS = "ipV4Address";
+    // labels
+    public static final String THING_LABEL_FMT = "Model %s on %s";
+    public static final String CHILD_LABEL_FMT = "Accessory %d on %s";
+    public static final String GROUP_TYPE_LABEL = "Channel group type";
+    public static final String CHANNEL_TYPE_LABEL = "Channel type";
 
-    // HomeKit HTTP endpoints and content types
+    // UID id formats
+    public static final String CHILD_FMT = "child-%x"; // e.g. child-123abc;
+    public static final String GROUP_TYPE_FMT = "group-%x"; // e.g. group-123abc;
+    public static final String CHANNEL_TYPE_FMT = "channel-%x"; // e.g. channel-123abc;
+
+    // configuration parameters
+    public static final String CONFIG_PAIRING_CODE = "pairingCode";
+    public static final String CONFIG_IP_V4_ADDRESS = "ipV4Address";
+    public static final String CONFIG_POLLING_INTERVAL = "pollingInterval";
+
+    // properties
+    public static final String PROPERTY_UID = "uid";
+    public static final String PROPERTY_PROTOCOL_VERSION = "protocolVersion";
+    public static final String PROPERTY_DEVICE_CATEGORY = "deviceCategory";
+
+    // HomeKit HTTP URI endpoints and content types
     public static final String ENDPOINT_PAIRING = "pair-setup";
     public static final String ENDPOINT_ACCESSORIES = "accessories";
     public static final String ENDPOINT_CHARACTERISTICS = "characteristics";

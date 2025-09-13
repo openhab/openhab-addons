@@ -13,7 +13,7 @@
 package org.openhab.binding.homekit.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.homekit.internal.discovery.AccessoryDiscoveryService;
+import org.openhab.binding.homekit.internal.discovery.HomekitChildDiscoveryService;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -25,7 +25,7 @@ import org.openhab.core.thing.binding.builder.BridgeBuilder;
  * Handler for HomeKit bridge devices.
  * It marshals the communications with multiple HomeKit child accessories within a HomeKit bridge server.
  * It uses the /accessories endpoint to discover embedded accessories and their services.
- * It notifies the {@link AccessoryDiscoveryService} when accessories are discovered.
+ * It notifies the {@link HomekitChildDiscoveryService} when accessories are discovered.
  * It does not currently handle commands for channels, that is left to the child accessory handlers.
  * It extends {@link HomekitBaseServerHandler} to handle pairing and secure session setup.
  *
@@ -35,10 +35,10 @@ import org.openhab.core.thing.binding.builder.BridgeBuilder;
 public class HomekitBridgeHandler extends HomekitBaseServerHandler implements BridgeHandler {
 
     // private final Logger logger = LoggerFactory.getLogger(HomekitBridgeHandler.class);
-    protected final AccessoryDiscoveryService discoveryService;
+    protected final HomekitChildDiscoveryService discoveryService;
 
     public HomekitBridgeHandler(Bridge bridge, HttpClientFactory httpClientFactory,
-            AccessoryDiscoveryService discoveryService) {
+            HomekitChildDiscoveryService discoveryService) {
         super(bridge, httpClientFactory);
         this.discoveryService = discoveryService;
     }
@@ -81,7 +81,7 @@ public class HomekitBridgeHandler extends HomekitBaseServerHandler implements Br
     protected void getAccessories() {
         super.getAccessories();
         if (!accessories.isEmpty()) {
-            discoveryService.devicesDiscovered(thing, accessories);
+            discoveryService.devicesDiscovered(thing, accessories.values());
         }
     }
 }
