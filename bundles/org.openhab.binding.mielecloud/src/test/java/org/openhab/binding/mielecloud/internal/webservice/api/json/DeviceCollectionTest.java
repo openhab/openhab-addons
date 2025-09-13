@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
@@ -159,6 +160,19 @@ public class DeviceCollectionTest {
         assertThrows(MieleSyntaxException.class, () -> {
             DeviceCollection.fromJson(invalidJson);
         });
+    }
+
+    @Test
+    public void testCreateDeviceCollectionWithNewListOfMapsStructure() throws IOException {
+        // given:
+        String json = getResourceAsString(
+                "/org/openhab/binding/mielecloud/internal/webservice/api/json/deviceCollectionWithNewListOfMapStructure.json");
+
+        // when:
+        DeviceCollection collection = DeviceCollection.fromJson(json);
+
+        // then
+        assertEquals(collection.getDeviceIdentifiers(), Set.of("000138176237", "000105727902", "000175731769"));
     }
 
     @Test

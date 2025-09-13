@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.mielecloud.internal.webservice.api.json;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -32,6 +34,8 @@ import com.google.gson.reflect.TypeToken;
 public class DeviceCollection {
     private static final java.lang.reflect.Type STRING_DEVICE_MAP_TYPE = new TypeToken<Map<String, Device>>() {
     }.getType();
+    private static final java.lang.reflect.Type LIST_OF_STRING_DEVICE_MAP_TYPE = new TypeToken<List<Map<String, Device>>>() {
+    }.getType();
 
     private final Map<String, Device> devices;
 
@@ -47,14 +51,35 @@ public class DeviceCollection {
      * @throws MieleSyntaxException if parsing the data from {@code json} fails.
      */
     public static DeviceCollection fromJson(String json) {
+        MieleSyntaxException exception = null;
+
         try {
             Map<String, Device> devices = new Gson().fromJson(json, STRING_DEVICE_MAP_TYPE);
             if (devices == null) {
-                throw new MieleSyntaxException("Failed to parse Json.");
+                exception = new MieleSyntaxException("Failed to parse Json.");
+            } else {
+                return new DeviceCollection(devices);
             }
-            return new DeviceCollection(devices);
         } catch (JsonSyntaxException e) {
-            throw new MieleSyntaxException("Failed to parse Json.", e);
+            exception = new MieleSyntaxException("Failed to parse Json.", e);
+        }
+
+        // In September 2025 the Miele API suddenly started returning a list of mapped devices. As
+        // we don't know whether this is intended we also try to parse this representation.
+        try {
+            List<Map<String, Device>> devices = new Gson().fromJson(json, LIST_OF_STRING_DEVICE_MAP_TYPE);
+            if (devices == null) {
+                // Prefer to throw the original exception as it corresponds to the documented behavior.
+                throw exception;
+            }
+
+            return new DeviceCollection(devices.stream().reduce(new HashMap<>(), (a, b) -> {
+                a.putAll(b);
+                return a;
+            }));
+        } catch (JsonSyntaxException e) {
+            // Prefer to throw the original exception as it corresponds to the documented behavior.
+            throw exception;
         }
     }
 
