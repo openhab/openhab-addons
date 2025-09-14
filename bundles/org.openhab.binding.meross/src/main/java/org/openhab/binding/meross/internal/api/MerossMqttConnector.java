@@ -20,6 +20,7 @@ import java.util.concurrent.TimeoutException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.meross.internal.dto.MqttMessageBuilder;
+import org.openhab.binding.meross.internal.handler.MerossBridgeHandler;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection.MqttVersion;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection.Protocol;
@@ -27,6 +28,8 @@ import org.openhab.core.io.transport.mqtt.MqttConnectionObserver;
 import org.openhab.core.io.transport.mqtt.MqttConnectionState;
 import org.openhab.core.io.transport.mqtt.MqttException;
 import org.openhab.core.io.transport.mqtt.MqttMessageSubscriber;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,11 +50,15 @@ public class MerossMqttConnector implements MqttConnectionObserver {
 
     private final Logger logger = LoggerFactory.getLogger(MerossMqttConnector.class);
 
+    private MerossBridgeHandler callback;
+
     private @Nullable MqttBrokerConnection mqttConnection;
     private @Nullable CompletableFuture<Boolean> stoppedFuture;
     private CompletableFuture<Boolean> connected = new CompletableFuture<>();
 
-    public MerossMqttConnector() {
+    public MerossMqttConnector(MerossBridgeHandler callback) {
+        this.callback = callback;
+
         String brokerAddress = MqttMessageBuilder.brokerAddress;
         String clientId = MqttMessageBuilder.clientId;
         String userId = MqttMessageBuilder.userId;
@@ -219,7 +226,13 @@ public class MerossMqttConnector implements MqttConnectionObserver {
                 break;
             default:
                 if (connected.isDone()) {
+                    // Connection was lost, try again
                     connected = new CompletableFuture<>();
+                    try {
+                        startConnection();
+                    } catch (MqttException | InterruptedException e) {
+                        callback.updateBridgeStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                    }
                 }
                 break;
         }

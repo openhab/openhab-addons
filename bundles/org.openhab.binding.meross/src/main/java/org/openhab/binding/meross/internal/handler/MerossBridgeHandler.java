@@ -167,7 +167,7 @@ public class MerossBridgeHandler extends BaseBridgeHandler {
             if (merossMqttConnector != null) {
                 merossMqttConnector.stopConnection();
             }
-            merossMqttConnector = new MerossMqttConnector();
+            merossMqttConnector = new MerossMqttConnector(this);
             merossMqttConnector.startConnection();
         }
     }
@@ -183,5 +183,9 @@ public class MerossBridgeHandler extends BaseBridgeHandler {
             return uuid.get();
         }
         return "";
+    }
+
+    public void updateBridgeStatus(ThingStatus thingStatus, ThingStatusDetail thingStatusDetail) {
+        updateStatus(thingStatus, thingStatusDetail);
     }
 }
