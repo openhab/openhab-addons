@@ -83,6 +83,8 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
     private static final int REFRESH_HOUR_OF_DAY = 1;
     private static final int REFRESH_MINUTE_OF_DAY = RANDOM_NUMBERS.nextInt(60);
     private static final int REFRESH_INTERVAL_IN_MIN = 120;
+    // private static final int NUMBER_OF_DATA_DAY = 1095;
+    private static final int NUMBER_OF_DATA_DAY = 90;
 
     private final TimeZoneProvider timeZoneProvider;
     private final Logger logger = LoggerFactory.getLogger(ThingLinkyRemoteHandler.class);
@@ -122,7 +124,7 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
         this.dailyConsumption = new ExpiringDayCache<>("dailyConsumption", REFRESH_HOUR_OF_DAY, REFRESH_MINUTE_OF_DAY,
                 () -> {
                     LocalDate today = LocalDate.now();
-                    MeterReading meterReading = getConsumptionData(today.minusDays(1095), today);
+                    MeterReading meterReading = getConsumptionData(today.minusDays(NUMBER_OF_DATA_DAY), today);
                     meterReading = getMeterReadingAfterChecks(meterReading);
                     if (meterReading != null) {
                         logData(meterReading.baseValue, "Day", DateTimeFormatter.ISO_LOCAL_DATE, Target.ALL);
@@ -133,7 +135,7 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
 
         this.dailyIndex = new ExpiringDayCache<>("dailyIndex", REFRESH_HOUR_OF_DAY, REFRESH_MINUTE_OF_DAY, () -> {
             LocalDate today = LocalDate.now();
-            MeterReading meterReading = getConsumptionIndex(today.minusDays(1095), today);
+            MeterReading meterReading = getConsumptionIndex(today.minusDays(NUMBER_OF_DATA_DAY), today);
             meterReading = getMeterReadingAfterChecks(meterReading);
             if (meterReading != null) {
                 logData(meterReading.baseValue, "Day", DateTimeFormatter.ISO_LOCAL_DATE, Target.ALL);
@@ -151,7 +153,7 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
         this.dailyConsumptionMaxPower = new ExpiringDayCache<>("dailyConsumptionMaxPower", REFRESH_HOUR_OF_DAY,
                 REFRESH_MINUTE_OF_DAY, () -> {
                     LocalDate today = LocalDate.now();
-                    MeterReading meterReading = getPowerData(today.minusDays(1095), today);
+                    MeterReading meterReading = getPowerData(today.minusDays(NUMBER_OF_DATA_DAY), today);
                     meterReading = getMeterReadingAfterChecks(meterReading);
                     if (meterReading != null) {
                         logData(meterReading.baseValue, "Day (peak)", DateTimeFormatter.ISO_LOCAL_DATE, Target.ALL);
@@ -901,7 +903,7 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
             IntervalReading[] iv = meterReading.baseValue;
 
             logData(iv, "Last day", DateTimeFormatter.ISO_LOCAL_DATE, Target.LAST);
-            return iv != null && iv.length != 0 && iv[iv.length - 1] != null && !iv[iv.length - 1].value.isNaN();
+            return iv != null && iv.length != 0 && iv[iv.length - 1] != null;
         }
 
         return false;

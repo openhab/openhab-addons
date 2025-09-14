@@ -67,48 +67,24 @@ public class MeterReading {
             for (int i = 0; i < size; i++) {
                 Data dataObj = agregat.datas.get(i);
                 result[i] = new IntervalReading();
-                result[i].value = Double.valueOf(dataObj.valeur);
+                result[i].value = dataObj.valeur;
                 result[i].date = dataObj.dateDebut;
             }
         } else {
-            Double lastVal = 0.0;
-            Double[] lastValFournisseur = new Double[6];
-            lastValFournisseur[0] = 0.0;
-            lastValFournisseur[1] = 0.0;
-            lastValFournisseur[2] = 0.0;
-            lastValFournisseur[3] = 0.0;
-            lastValFournisseur[4] = 0.0;
-            lastValFournisseur[5] = 0.0;
+            double lastVal = 0.0;
+            double[] lastValFournisseur = new double[6];
 
             for (int i = 0; i < size; i++) {
                 Data dataObj = agregat.datas.get(i);
-                Double value = Double.valueOf(dataObj.valeur);
-                Double[] valueFournisseur = new Double[6];
-                valueFournisseur[0] = 0.0;
-                valueFournisseur[1] = 0.0;
-                valueFournisseur[2] = 0.0;
-                valueFournisseur[3] = 0.0;
-                valueFournisseur[4] = 0.0;
-                valueFournisseur[5] = 0.0;
+                double value = dataObj.valeur;
+                double[] valueFournisseur = new double[6];
 
                 if (i > 0) {
                     result[i - 1] = new IntervalReading();
                     result[i - 1].value = value - lastVal;
                     result[i - 1].date = dataObj.dateDebut;
-                    result[i - 1].valueFromFournisseur = new Double[6];
-                    result[i - 1].valueFromDistributeur = new Double[4];
-
-                    result[i - 1].valueFromFournisseur[0] = 0.0;
-                    result[i - 1].valueFromFournisseur[1] = 0.0;
-                    result[i - 1].valueFromFournisseur[2] = 0.0;
-                    result[i - 1].valueFromFournisseur[3] = 0.0;
-                    result[i - 1].valueFromFournisseur[4] = 0.0;
-                    result[i - 1].valueFromFournisseur[5] = 0.0;
-
-                    result[i - 1].valueFromDistributeur[0] = 0.0;
-                    result[i - 1].valueFromDistributeur[1] = 0.0;
-                    result[i - 1].valueFromDistributeur[2] = 0.0;
-                    result[i - 1].valueFromDistributeur[3] = 0.0;
+                    result[i - 1].valueFromFournisseur = new double[6];
+                    result[i - 1].valueFromDistributeur = new double[4];
 
                     if (dataObj.classesTemporellesFournisseur != null) {
                         for (ClassesTemporelles ct : dataObj.classesTemporellesFournisseur) {
@@ -145,7 +121,7 @@ public class MeterReading {
                                 continue;
                             }
 
-                            valueFournisseur[idxFournisseur] = Double.valueOf(ct.valeur);
+                            valueFournisseur[idxFournisseur] = ct.valeur;
                             result[i - 1].valueFromFournisseur[idxFournisseur] = (valueFournisseur[idxFournisseur]
                                     - lastValFournisseur[idxFournisseur]);
 
