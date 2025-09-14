@@ -58,7 +58,12 @@ public class PairingSetupService {
         // M2 — Receive salt & accessory SRP public key
         Map<Integer, byte[]> tlv2 = Tlv8Codec.decode(resp1);
         Validator.validate(PairingMethod.SETUP, tlv2);
-        srpClient.processChallenge(tlv2.get(TlvType.SALT.key), tlv2.get(TlvType.PUBLIC_KEY.key));
+        byte[] salt = tlv2.get(TlvType.SALT.key);
+        byte[] key = tlv2.get(TlvType.PUBLIC_KEY.key);
+        if (salt == null || key == null) {
+            throw new IllegalArgumentException("Missing salt public key TLV in M2 response");
+        }
+        srpClient.processChallenge(salt, key);
 
         // M3 — Send client SRP public key & proof
         Map<Integer, byte[]> tlv3 = Map.of( //
@@ -71,7 +76,11 @@ public class PairingSetupService {
         // M4 — Verify accessory SRP proof
         Map<Integer, byte[]> tlv4 = Tlv8Codec.decode(resp3);
         Validator.validate(PairingMethod.SETUP, tlv4);
-        srpClient.verifyServerProof(tlv4.get(TlvType.PROOF.key));
+        byte[] proof = tlv4.get(TlvType.PROOF.key);
+        if (proof == null) {
+            throw new IllegalArgumentException("Missing proof TLV in M4 response");
+        }
+        srpClient.verifyServerProof(proof);
 
         // M5 — Exchange encrypted identifiers
         Map<Integer, byte[]> tlv5 = Map.of( //
@@ -83,7 +92,11 @@ public class PairingSetupService {
         // M6 — Final confirmation & accessory credentials
         Map<Integer, byte[]> tlv6 = Tlv8Codec.decode(resp5);
         Validator.validate(PairingMethod.SETUP, tlv6);
-        srpClient.verifyAccessoryIdentifiers(tlv6.get(TlvType.ENCRYPTED_DATA.key));
+        byte[] data = tlv6.get(TlvType.ENCRYPTED_DATA.key);
+        if (data == null) {
+            throw new IllegalArgumentException("Missing data TLV in M6 response");
+        }
+        srpClient.verifyAccessoryIdentifiers(data);
 
         // Derive and return session keys
         return srpClient.deriveSessionKeys();

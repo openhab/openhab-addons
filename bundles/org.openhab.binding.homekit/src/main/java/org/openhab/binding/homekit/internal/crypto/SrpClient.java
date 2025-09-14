@@ -79,16 +79,16 @@ public class SrpClient {
     private @Nullable BigInteger k = null; // SRP multiplier
     private @Nullable BigInteger u = null; // scrambling parameter
     private @Nullable BigInteger S = null; // shared secret
-    private byte[] K = new byte[0]; // session key (H(S))
-    private byte[] M1 = new byte[0]; // client proof
-    private byte[] salt = new byte[0]; // server salt
+    private byte @Nullable [] K = null; // session key (H(S))
+    private byte @Nullable [] M1 = null; // client proof
+    private byte @Nullable [] salt = null; // server salt
 
     // Curve25519 key‐pair for identifier exchange
     private final AsymmetricCipherKeyPair x25519KeyPair;
 
     // Accessory credentials after M6
     private @Nullable String accessoryIdentifier;
-    private byte[] accessoryPublicKey = new byte[0];
+    private byte @Nullable [] accessoryPublicKey = null;
 
     public SrpClient(String accessoryPairingCode) {
         this.accessoryPairingCode = accessoryPairingCode;
@@ -135,7 +135,7 @@ public class SrpClient {
      * M3 — Client proof M1 = H( H(N)^H(g) || H(username) || salt || A || B || K ).
      */
     public byte[] getClientProof() throws Exception {
-        if (M1.length == 0) {
+        if (M1 != null) {
             MessageDigest sha512 = MessageDigest.getInstance("SHA-512");
 
             // u = H(A || B)
@@ -176,7 +176,8 @@ public class SrpClient {
             sha512.update(K);
             this.M1 = sha512.digest();
         }
-        return M1;
+        byte @Nullable [] M1 = this.M1;
+        return M1 != null ? M1 : new byte[0];
     }
 
     /**
@@ -263,7 +264,7 @@ public class SrpClient {
         return accessoryIdentifier;
     }
 
-    public byte[] getAccessoryPublicKey() {
+    public byte @Nullable [] getAccessoryPublicKey() {
         return accessoryPublicKey;
     }
 }
