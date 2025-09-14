@@ -52,7 +52,7 @@ public class SbusContactHandler extends AbstractSbusHandler {
             // Channels are already defined in thing-types.xml, just validate their configuration
             SbusChannelConfig channelConfig = channel.getConfiguration().as(SbusChannelConfig.class);
             if (channelConfig.channelNumber <= 0) {
-                logger.warn("{}", "@text/error.channel.invalid-number [\"" + channel.getUID().toString() + "\"]");
+                logger.warn("Channel {} has invalid channel number configuration", channel.getUID());
             }
         }
     }
@@ -80,7 +80,7 @@ public class SbusContactHandler extends AbstractSbusHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         // Contact sensors are read-only
-        logger.debug("{}", "@text/info.contact.readonly");
+        logger.debug("Contact device is read-only, ignoring command");
     }
 
     // SBUS Protocol Adaptation Methods

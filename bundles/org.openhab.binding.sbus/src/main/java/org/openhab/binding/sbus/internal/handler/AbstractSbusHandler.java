@@ -132,7 +132,7 @@ public abstract class AbstractSbusHandler extends BaseThingHandler implements Sb
                 try {
                     pollDevice();
                 } catch (Exception e) {
-                    logger.warn("{}", "@text/error.device.polling", e);
+                    logger.warn("Error polling Sbus device", e);
                 }
             }, 0, config.refresh, TimeUnit.SECONDS);
         } else if (config.refresh == 0) {
@@ -141,7 +141,7 @@ public abstract class AbstractSbusHandler extends BaseThingHandler implements Sb
                 try {
                     pollDevice();
                 } catch (Exception e) {
-                    logger.warn("{}", "@text/error.device.polling", e);
+                    logger.warn("Error polling Sbus device", e);
                 }
             }, 0, TimeUnit.SECONDS);
         }

@@ -36,7 +36,7 @@ public interface SbusService {
      * @return The SBUS response received
      * @throws Exception If the transaction fails or times out
      */
-    SbusResponse executeTransaction(SbusRequest request) throws Exception;
+    SbusResponse executeTransaction(SbusRequest request) throws IllegalStateException;
 
     /**
      * Adds a message listener for unsolicited SBUS messages.
@@ -46,7 +46,7 @@ public interface SbusService {
      * @param listener the listener to add for unsolicited messages
      * @throws Exception if the connection is not established
      */
-    void addMessageListener(SbusMessageListener listener) throws Exception;
+    void addMessageListener(SbusMessageListener listener) throws IllegalStateException;
 
     /**
      * Removes a previously registered message listener.
@@ -64,7 +64,7 @@ public interface SbusService {
      * @param timeout the timeout in milliseconds to wait for response after sending a request
      * @throws Exception if initialization fails
      */
-    void initialize(String host, int port, int timeout) throws Exception;
+    void initialize(String host, int port, int timeout) throws IllegalStateException;
 
     /**
      * Closes the service and releases resources.

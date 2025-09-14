@@ -35,7 +35,7 @@ public class SbusServiceImpl implements SbusService {
     private @Nullable SbusAdapter adapter;
 
     @Override
-    public void initialize(String host, int port, int timeout) throws Exception {
+    public void initialize(String host, int port, int timeout) throws IllegalStateException {
         try {
             adapter = new SbusAdapter(host, port, timeout);
             logger.debug("SBUS adapter initialized for {}:{} with timeout {}ms", host, port, timeout);
@@ -45,7 +45,7 @@ public class SbusServiceImpl implements SbusService {
     }
 
     @Override
-    public SbusResponse executeTransaction(SbusRequest request) throws Exception {
+    public SbusResponse executeTransaction(SbusRequest request) throws IllegalStateException {
         SbusAdapter sbusAdapter = getAdapter();
         try {
             return sbusAdapter.executeTransaction(request);
@@ -55,7 +55,7 @@ public class SbusServiceImpl implements SbusService {
     }
 
     @Override
-    public void addMessageListener(SbusMessageListener listener) throws Exception {
+    public void addMessageListener(SbusMessageListener listener) throws IllegalStateException {
         SbusAdapter sbusAdapter = getAdapter();
         sbusAdapter.addMessageListener(listener);
     }
@@ -76,7 +76,7 @@ public class SbusServiceImpl implements SbusService {
         }
     }
 
-    private SbusAdapter getAdapter() throws Exception {
+    private SbusAdapter getAdapter() throws IllegalStateException {
         SbusAdapter sbusAdapter = adapter;
         if (sbusAdapter == null) {
             throw new IllegalStateException("SBUS adapter not initialized. Call initialize() first.");

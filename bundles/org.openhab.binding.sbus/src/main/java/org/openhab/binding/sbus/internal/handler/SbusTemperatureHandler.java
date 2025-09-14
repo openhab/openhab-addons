@@ -110,7 +110,7 @@ public class SbusTemperatureHandler extends AbstractSbusHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         // Temperature sensors are read-only
-        logger.debug("{}", "@text/info.temperature.readonly");
+        logger.debug("Temperature device is read-only, ignoring command");
     }
 
     // SBUS Protocol Adaptation Methods

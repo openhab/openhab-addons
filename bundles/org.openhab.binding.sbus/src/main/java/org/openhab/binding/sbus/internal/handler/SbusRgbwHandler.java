@@ -64,13 +64,13 @@ public class SbusRgbwHandler extends AbstractSbusHandler {
             SbusChannelConfig channelConfig = channel.getConfiguration().as(SbusChannelConfig.class);
             var channelTypeUID = channel.getChannelTypeUID();
             if (channelTypeUID == null) {
-                logger.warn("{}", "@text/error.channel.no-type [\"" + channel.getUID().toString() + "\"]");
+                logger.warn("Channel {} has no channel type", channel.getUID());
                 continue;
             }
             String channelTypeId = channelTypeUID.getId();
             if (BindingConstants.CHANNEL_TYPE_COLOR.equals(channelTypeId)) {
                 if (channelConfig.channelNumber <= 0) {
-                    logger.warn("{}", "@text/error.channel.invalid-number [\"" + channel.getUID().toString() + "\"]");
+                    logger.warn("Channel {} has invalid channel number configuration", channel.getUID());
                 }
             }
             if (BindingConstants.CHANNEL_TYPE_SWITCH.equals(channelTypeId)) {
@@ -165,7 +165,7 @@ public class SbusRgbwHandler extends AbstractSbusHandler {
             if (channel != null) {
                 var channelTypeUID = channel.getChannelTypeUID();
                 if (channelTypeUID == null) {
-                    logger.warn("{}", "@text/error.channel.no-type [\"" + channel.getUID().toString() + "\"]");
+                    logger.warn("Channel {} has no channel type", channel.getUID());
                     return;
                 }
                 String channelTypeId = channelTypeUID.getId();

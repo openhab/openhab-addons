@@ -59,7 +59,7 @@ public class SbusSwitchHandler extends AbstractSbusHandler {
             // Channels are already defined in thing-types.xml, just validate their configuration
             SbusChannelConfig channelConfig = channel.getConfiguration().as(SbusChannelConfig.class);
             if (channelConfig.channelNumber <= 0) {
-                logger.warn("{}", "@text/error.channel.invalid-number [\"" + channel.getUID().toString() + "\"]");
+                logger.warn("Channel {} has invalid channel number configuration", channel.getUID());
             }
         }
     }
@@ -98,7 +98,7 @@ public class SbusSwitchHandler extends AbstractSbusHandler {
             if (channelConfig.channelNumber > 0 && channelConfig.channelNumber <= statuses.length) {
                 var channelTypeUID = channel.getChannelTypeUID();
                 if (channelTypeUID == null) {
-                    logger.warn("{}", "@text/error.channel.no-type [\"" + channel.getUID().toString() + "\"]");
+                    logger.warn("Channel {} has no channel type", channel.getUID());
                     continue;
                 }
                 String channelTypeId = channelTypeUID.getId();
@@ -131,7 +131,7 @@ public class SbusSwitchHandler extends AbstractSbusHandler {
             if (channel != null) {
                 SbusChannelConfig channelConfig = channel.getConfiguration().as(SbusChannelConfig.class);
                 if (channelConfig.channelNumber <= 0) {
-                    logger.warn("{}", "@text/error.channel.invalid-number [\"" + channelUID.toString() + "\"]");
+                    logger.warn("Channel {} has invalid channel number configuration", channelUID);
                     return;
                 }
 
@@ -148,7 +148,7 @@ public class SbusSwitchHandler extends AbstractSbusHandler {
                 }
             }
         } catch (Exception e) {
-            logger.warn("{}", "@text/error.device.send-command", e);
+            logger.warn("Error sending command to device", e);
         }
     }
 
