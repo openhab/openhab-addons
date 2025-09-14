@@ -31,6 +31,11 @@ public class ConsumptionReport {
         public LocalDateTime dateDebut;
         public LocalDateTime dateFin;
         public Double valeur;
+        @SerializedName("classesTemporellesFournisseur")
+        public ClassesTemporelles[] classesTemporellesSupplier;
+        @SerializedName("classesTemporellesDistributeur")
+        public ClassesTemporelles[] classesTemporellesDistributor;
+        public Calendrier[] calendrier;
     }
 
     public class Aggregate {

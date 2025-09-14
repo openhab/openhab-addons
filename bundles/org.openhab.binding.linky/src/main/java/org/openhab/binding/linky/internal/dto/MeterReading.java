@@ -44,30 +44,76 @@ public class MeterReading {
     public IntervalReading[] monthValue;
     public IntervalReading[] yearValue;
 
-    public static MeterReading convertFromComsumptionReport(ConsumptionReport comsumptionReport) {
+    public static MeterReading convertFromComsumptionReport(ConsumptionReport comsumptionReport, boolean useIndex) {
         MeterReading result = new MeterReading();
         result.readingType = new ReadingType();
 
         if (comsumptionReport.consumptions.aggregats != null) {
             if (comsumptionReport.consumptions.aggregats.days != null) {
-                result.baseValue = fromAgregat(comsumptionReport.consumptions.aggregats.days);
+                result.baseValue = fromAgregat(comsumptionReport.consumptions.aggregats.days, useIndex);
             } else if (comsumptionReport.consumptions.aggregats.heure != null) {
-                result.baseValue = fromAgregat(comsumptionReport.consumptions.aggregats.heure);
+                result.baseValue = fromAgregat(comsumptionReport.consumptions.aggregats.heure, useIndex);
             }
         }
 
         return result;
     }
 
-    public static IntervalReading[] fromAgregat(ConsumptionReport.Aggregate agregat) {
+    public static IntervalReading[] fromAgregat(ConsumptionReport.Aggregate agregat, boolean useIndex) {
         int size = agregat.datas.size();
         IntervalReading[] result = new IntervalReading[size];
 
-        for (int i = 0; i < size; i++) {
-            Data dataObj = agregat.datas.get(i);
-            result[i] = new IntervalReading();
-            result[i].value = Double.valueOf(dataObj.valeur);
-            result[i].date = dataObj.dateDebut;
+        if (!useIndex) {
+            for (int i = 0; i < size; i++) {
+                Data dataObj = agregat.datas.get(i);
+                result[i] = new IntervalReading();
+                result[i].value = dataObj.valeur;
+                result[i].date = dataObj.dateDebut;
+            }
+        } else {
+            double lastVal = 0.0;
+            double[] lastValueSupplier = new double[6];
+            double[] lastValueDistributor = new double[6];
+
+            for (int i = 0; i < size; i++) {
+                Data dataObj = agregat.datas.get(i);
+                double value = dataObj.valeur;
+
+                if (i > 0) {
+                    result[i - 1] = new IntervalReading();
+                    result[i - 1].value = value - lastVal;
+                    result[i - 1].date = dataObj.dateDebut;
+                    result[i - 1].valueSupplier = new double[10];
+                    result[i - 1].valueDistributor = new double[4];
+                    result[i - 1].supplierLabel = new String[10];
+                    result[i - 1].distributorLabel = new String[4];
+
+                    if (dataObj.classesTemporellesSupplier != null) {
+                        for (int idxSupplier = 0; idxSupplier < dataObj.classesTemporellesSupplier.length; idxSupplier++) {
+                            ClassesTemporelles ct = dataObj.classesTemporellesSupplier[idxSupplier];
+
+                            result[i - 1].valueSupplier[idxSupplier] = (ct.valeur - lastValueSupplier[idxSupplier]);
+                            result[i - 1].supplierLabel[idxSupplier] = ct.libelle;
+
+                            lastValueSupplier[idxSupplier] = ct.valeur;
+                        }
+                    }
+
+                    if (dataObj.classesTemporellesDistributor != null) {
+                        for (int idxDistributor = 0; idxDistributor < dataObj.classesTemporellesDistributor.length; idxDistributor++) {
+                            ClassesTemporelles ct = dataObj.classesTemporellesDistributor[idxDistributor];
+
+                            result[i - 1].valueDistributor[idxDistributor] = (ct.valeur
+                                    - lastValueDistributor[idxDistributor]);
+                            result[i - 1].distributorLabel[idxDistributor] = ct.libelle;
+
+                            lastValueDistributor[idxDistributor] = ct.valeur;
+                        }
+                    }
+                }
+                lastVal = value;
+            }
+
         }
 
         return result;

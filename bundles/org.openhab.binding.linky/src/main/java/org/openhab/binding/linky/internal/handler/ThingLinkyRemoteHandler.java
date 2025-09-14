@@ -83,12 +83,15 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
     private static final int REFRESH_HOUR_OF_DAY = 1;
     private static final int REFRESH_MINUTE_OF_DAY = RANDOM_NUMBERS.nextInt(60);
     private static final int REFRESH_INTERVAL_IN_MIN = 120;
+    // private static final int NUMBER_OF_DATA_DAY = 1095;
+    private static final int NUMBER_OF_DATA_DAY = 90;
 
     private final TimeZoneProvider timeZoneProvider;
     private final Logger logger = LoggerFactory.getLogger(ThingLinkyRemoteHandler.class);
 
     private final ExpiringDayCache<MetaData> metaData;
     private final ExpiringDayCache<MeterReading> dailyConsumption;
+    private final ExpiringDayCache<MeterReading> dailyIndex;
     private final ExpiringDayCache<MeterReading> dailyConsumptionMaxPower;
     private final ExpiringDayCache<MeterReading> loadCurveConsumption;
 
@@ -98,6 +101,7 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
     private double divider = 1.00;
 
     public String userId = "";
+    public String segment = "";
 
     private @Nullable ScheduledFuture<?> pollingJob = null;
 
@@ -120,7 +124,7 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
         this.dailyConsumption = new ExpiringDayCache<>("dailyConsumption", REFRESH_HOUR_OF_DAY, REFRESH_MINUTE_OF_DAY,
                 () -> {
                     LocalDate today = LocalDate.now();
-                    MeterReading meterReading = getConsumptionData(today.minusDays(1095), today);
+                    MeterReading meterReading = getConsumptionData(today.minusDays(NUMBER_OF_DATA_DAY), today);
                     meterReading = getMeterReadingAfterChecks(meterReading);
                     if (meterReading != null) {
                         logData(meterReading.baseValue, "Day", DateTimeFormatter.ISO_LOCAL_DATE, Target.ALL);
@@ -128,6 +132,17 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
                     }
                     return meterReading;
                 });
+
+        this.dailyIndex = new ExpiringDayCache<>("dailyIndex", REFRESH_HOUR_OF_DAY, REFRESH_MINUTE_OF_DAY, () -> {
+            LocalDate today = LocalDate.now();
+            MeterReading meterReading = getConsumptionIndex(today.minusDays(NUMBER_OF_DATA_DAY), today);
+            meterReading = getMeterReadingAfterChecks(meterReading);
+            if (meterReading != null) {
+                logData(meterReading.baseValue, "Day", DateTimeFormatter.ISO_LOCAL_DATE, Target.ALL);
+                logData(meterReading.weekValue, "Week", DateTimeFormatter.ISO_LOCAL_DATE_TIME, Target.ALL);
+            }
+            return meterReading;
+        });
 
         // We request data for yesterday and the day before yesterday
         // even if the data for the day before yesterday
@@ -138,7 +153,7 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
         this.dailyConsumptionMaxPower = new ExpiringDayCache<>("dailyConsumptionMaxPower", REFRESH_HOUR_OF_DAY,
                 REFRESH_MINUTE_OF_DAY, () -> {
                     LocalDate today = LocalDate.now();
-                    MeterReading meterReading = getPowerData(today.minusDays(1095), today);
+                    MeterReading meterReading = getPowerData(today.minusDays(NUMBER_OF_DATA_DAY), today);
                     meterReading = getMeterReadingAfterChecks(meterReading);
                     if (meterReading != null) {
                         logData(meterReading.baseValue, "Day (peak)", DateTimeFormatter.ISO_LOCAL_DATE, Target.ALL);
@@ -271,7 +286,18 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
             if (values.identity.internId == null) {
                 values.identity.internId = values.identity.firstname + " " + values.identity.lastname;
             }
+
             userId = values.identity.internId;
+
+            Bridge bridge = getBridge();
+            BridgeRemoteBaseHandler bridgeHandler = null;
+            if (bridge != null) {
+                bridgeHandler = (BridgeRemoteBaseHandler) bridge.getHandler();
+            }
+
+            if (bridgeHandler instanceof BridgeRemoteEnedisWebHandler) {
+                userId = ((BridgeRemoteEnedisWebHandler) bridgeHandler).getIdPersonne();
+            }
 
             addProps(props, USER_ID, userId);
 
@@ -279,7 +305,8 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
 
             addProps(props, PROPERTY_IDENTITY, title + " " + firstName + " " + lastName);
 
-            addProps(props, PROPERTY_CONTRACT_SEGMENT, values.contract.segment);
+            segment = values.contract.segment;
+            addProps(props, PROPERTY_CONTRACT_SEGMENT, segment);
             addProps(props, PROPERTY_CONTRACT_CONTRACT_STATUS, values.contract.contractStatus);
             addProps(props, PROPERTY_CONTRACT_CONTRACT_TYPE, values.contract.contractType);
             addProps(props, PROPERTY_CONTRACT_DISTRIBUTION_TARIFF, values.contract.distributionTariff);
@@ -368,6 +395,7 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
         }
 
         updateEnergyData();
+        updateEnergyIndex();
         updatePowerData();
         updateLoadCurveData();
     }
@@ -392,16 +420,16 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
                 updateState(LINKY_REMOTE_DAILY_GROUP, CHANNEL_PEAK_POWER_TS_DAY_MINUS_3,
                         new DateTimeType(values.baseValue[dSize - 3].date.atZone(zoneId)));
 
-                updateTimeSeries(LINKY_REMOTE_DAILY_GROUP, CHANNEL_MAX_POWER, values.baseValue,
+                updateTimeSeries(LINKY_REMOTE_DAILY_GROUP, CHANNEL_MAX_POWER, values.baseValue, -1,
                         MetricPrefix.KILO(Units.VOLT_AMPERE));
 
-                updateTimeSeries(LINKY_REMOTE_WEEKLY_GROUP, CHANNEL_MAX_POWER, values.weekValue,
+                updateTimeSeries(LINKY_REMOTE_WEEKLY_GROUP, CHANNEL_MAX_POWER, values.weekValue, -1,
                         MetricPrefix.KILO(Units.VOLT_AMPERE));
 
-                updateTimeSeries(LINKY_REMOTE_MONTHLY_GROUP, CHANNEL_MAX_POWER, values.monthValue,
+                updateTimeSeries(LINKY_REMOTE_MONTHLY_GROUP, CHANNEL_MAX_POWER, values.monthValue, -1,
                         MetricPrefix.KILO(Units.VOLT_AMPERE));
 
-                updateTimeSeries(LINKY_REMOTE_YEARLY_GROUP, CHANNEL_MAX_POWER, values.yearValue,
+                updateTimeSeries(LINKY_REMOTE_YEARLY_GROUP, CHANNEL_MAX_POWER, values.yearValue, -1,
                         MetricPrefix.KILO(Units.VOLT_AMPERE));
             }, () -> {
                 updateKwhChannel(LINKY_REMOTE_DAILY_GROUP, CHANNEL_PEAK_POWER_DAY_MINUS_1, Double.NaN);
@@ -456,10 +484,11 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
                         values.yearValue[idxCurrentYear - 2].value);
             }
 
-            updateTimeSeries(LINKY_REMOTE_DAILY_GROUP, CHANNEL_CONSUMPTION, values.baseValue, Units.KILOWATT_HOUR);
-            updateTimeSeries(LINKY_REMOTE_WEEKLY_GROUP, CHANNEL_CONSUMPTION, values.weekValue, Units.KILOWATT_HOUR);
-            updateTimeSeries(LINKY_REMOTE_MONTHLY_GROUP, CHANNEL_CONSUMPTION, values.monthValue, Units.KILOWATT_HOUR);
-            updateTimeSeries(LINKY_REMOTE_YEARLY_GROUP, CHANNEL_CONSUMPTION, values.yearValue, Units.KILOWATT_HOUR);
+            updateTimeSeries(LINKY_REMOTE_DAILY_GROUP, CHANNEL_CONSUMPTION, values.baseValue, -1, Units.KILOWATT_HOUR);
+            updateTimeSeries(LINKY_REMOTE_WEEKLY_GROUP, CHANNEL_CONSUMPTION, values.weekValue, -1, Units.KILOWATT_HOUR);
+            updateTimeSeries(LINKY_REMOTE_MONTHLY_GROUP, CHANNEL_CONSUMPTION, values.monthValue, -1,
+                    Units.KILOWATT_HOUR);
+            updateTimeSeries(LINKY_REMOTE_YEARLY_GROUP, CHANNEL_CONSUMPTION, values.yearValue, -1, Units.KILOWATT_HOUR);
         }, () -> {
             updateKwhChannel(LINKY_REMOTE_DAILY_GROUP, CHANNEL_DAY_MINUS_1, Double.NaN);
             updateKwhChannel(LINKY_REMOTE_DAILY_GROUP, CHANNEL_DAY_MINUS_2, Double.NaN);
@@ -480,12 +509,87 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
     }
 
     /**
+     * Request new daily/weekly data and updates channels
+     */
+    private synchronized void updateEnergyIndex() {
+        dailyIndex.getValue().ifPresentOrElse(values -> {
+            int dSize = values.baseValue.length;
+
+            updateTimeSeries(LINKY_REMOTE_DAILY_GROUP, CHANNEL_CONSUMPTION_IDX0, values.baseValue, 0,
+                    Units.KILOWATT_HOUR);
+            updateTimeSeries(LINKY_REMOTE_DAILY_GROUP, CHANNEL_CONSUMPTION_IDX1, values.baseValue, 1,
+                    Units.KILOWATT_HOUR);
+
+            /*
+             * updateKwhChannel(LINKY_REMOTE_DAILY_GROUP, CHANNEL_DAY_MINUS_1, values.baseValue[dSize - 1].value);
+             * updateKwhChannel(LINKY_REMOTE_DAILY_GROUP, CHANNEL_DAY_MINUS_2, values.baseValue[dSize - 2].value);
+             * updateKwhChannel(LINKY_REMOTE_DAILY_GROUP, CHANNEL_DAY_MINUS_3, values.baseValue[dSize - 3].value);
+             *
+             * int idxCurrentYear = values.yearValue.length - 1;
+             * int idxCurrentWeek = values.weekValue.length - 1;
+             * int idxCurrentMonth = values.monthValue.length - 1;
+             *
+             * updateKwhChannel(LINKY_REMOTE_WEEKLY_GROUP, CHANNEL_WEEK_MINUS_0,
+             * values.weekValue[idxCurrentWeek].value);
+             * updateKwhChannel(LINKY_REMOTE_WEEKLY_GROUP, CHANNEL_WEEK_MINUS_1,
+             * values.weekValue[idxCurrentWeek - 1].value);
+             * if (idxCurrentWeek - 2 >= 0) {
+             * updateKwhChannel(LINKY_REMOTE_WEEKLY_GROUP, CHANNEL_WEEK_MINUS_2,
+             * values.weekValue[idxCurrentWeek - 2].value);
+             * }
+             *
+             * updateKwhChannel(LINKY_REMOTE_MONTHLY_GROUP, CHANNEL_MONTH_MINUS_0,
+             * values.monthValue[idxCurrentMonth].value);
+             * updateKwhChannel(LINKY_REMOTE_MONTHLY_GROUP, CHANNEL_MONTH_MINUS_1,
+             * values.monthValue[idxCurrentMonth - 1].value);
+             * if (idxCurrentMonth - 2 >= 0) {
+             * updateKwhChannel(LINKY_REMOTE_MONTHLY_GROUP, CHANNEL_MONTH_MINUS_2,
+             * values.monthValue[idxCurrentMonth - 2].value);
+             * }
+             *
+             * updateKwhChannel(LINKY_REMOTE_YEARLY_GROUP, CHANNEL_YEAR_MINUS_0,
+             * values.yearValue[idxCurrentYear].value);
+             * updateKwhChannel(LINKY_REMOTE_YEARLY_GROUP, CHANNEL_YEAR_MINUS_1,
+             * values.yearValue[idxCurrentYear - 1].value);
+             * if (idxCurrentYear - 2 >= 0) {
+             * updateKwhChannel(LINKY_REMOTE_YEARLY_GROUP, CHANNEL_YEAR_MINUS_2,
+             * values.yearValue[idxCurrentYear - 2].value);
+             * }
+             *
+             * updateTimeSeries(LINKY_REMOTE_DAILY_GROUP, CHANNEL_CONSUMPTION, values.baseValue, Units.KILOWATT_HOUR);
+             * updateTimeSeries(LINKY_REMOTE_WEEKLY_GROUP, CHANNEL_CONSUMPTION, values.weekValue, Units.KILOWATT_HOUR);
+             * updateTimeSeries(LINKY_REMOTE_MONTHLY_GROUP, CHANNEL_CONSUMPTION, values.monthValue,
+             * Units.KILOWATT_HOUR);
+             * updateTimeSeries(LINKY_REMOTE_YEARLY_GROUP, CHANNEL_CONSUMPTION, values.yearValue, Units.KILOWATT_HOUR);
+             */
+        }, () -> {
+            /*
+             * updateKwhChannel(LINKY_REMOTE_DAILY_GROUP, CHANNEL_DAY_MINUS_1, Double.NaN);
+             * updateKwhChannel(LINKY_REMOTE_DAILY_GROUP, CHANNEL_DAY_MINUS_2, Double.NaN);
+             * updateKwhChannel(LINKY_REMOTE_DAILY_GROUP, CHANNEL_DAY_MINUS_3, Double.NaN);
+             *
+             * updateKwhChannel(LINKY_REMOTE_WEEKLY_GROUP, CHANNEL_WEEK_MINUS_0, Double.NaN);
+             * updateKwhChannel(LINKY_REMOTE_WEEKLY_GROUP, CHANNEL_WEEK_MINUS_1, Double.NaN);
+             * updateKwhChannel(LINKY_REMOTE_WEEKLY_GROUP, CHANNEL_WEEK_MINUS_2, Double.NaN);
+             *
+             * updateKwhChannel(LINKY_REMOTE_MONTHLY_GROUP, CHANNEL_MONTH_MINUS_0, Double.NaN);
+             * updateKwhChannel(LINKY_REMOTE_MONTHLY_GROUP, CHANNEL_MONTH_MINUS_1, Double.NaN);
+             * updateKwhChannel(LINKY_REMOTE_MONTHLY_GROUP, CHANNEL_MONTH_MINUS_2, Double.NaN);
+             *
+             * updateKwhChannel(LINKY_REMOTE_YEARLY_GROUP, CHANNEL_YEAR_MINUS_0, Double.NaN);
+             * updateKwhChannel(LINKY_REMOTE_YEARLY_GROUP, CHANNEL_YEAR_MINUS_1, Double.NaN);
+             * updateKwhChannel(LINKY_REMOTE_YEARLY_GROUP, CHANNEL_YEAR_MINUS_2, Double.NaN);
+             */
+        });
+    }
+
+    /**
      * Request new loadCurve data and updates channels
      */
     private synchronized void updateLoadCurveData() {
         if (isLinked(LINKY_REMOTE_LOAD_CURVE_GROUP, CHANNEL_POWER)) {
             loadCurveConsumption.getValue().ifPresentOrElse(values -> {
-                updateTimeSeries(LINKY_REMOTE_LOAD_CURVE_GROUP, CHANNEL_POWER, values.baseValue,
+                updateTimeSeries(LINKY_REMOTE_LOAD_CURVE_GROUP, CHANNEL_POWER, values.baseValue, -1,
                         MetricPrefix.KILO(Units.VOLT_AMPERE));
             }, () -> {
             });
@@ -493,11 +597,14 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
     }
 
     private synchronized <T extends Quantity<T>> void updateTimeSeries(String groupId, String channelId,
-            IntervalReading[] iv, Unit<T> unit) {
+            IntervalReading[] iv, int idx, Unit<T> unit) {
         TimeSeries timeSeries = new TimeSeries(Policy.REPLACE);
 
         for (int i = 0; i < iv.length; i++) {
             try {
+                if (iv[i] == null) {
+                    continue;
+                }
                 if (iv[i].date == null) {
                     continue;
                 }
@@ -507,7 +614,13 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
                 if (Double.isNaN(iv[i].value)) {
                     continue;
                 }
-                timeSeries.add(timestamp, new QuantityType<>(iv[i].value, unit));
+                if (idx != -1) {
+                    if (iv[i + 1] != null) {
+                        timeSeries.add(timestamp, new QuantityType<>(iv[i + 1].valueSupplier[idx], unit));
+                    }
+                } else {
+                    timeSeries.add(timestamp, new QuantityType<>(iv[i].value, unit));
+                }
             } catch (Exception ex) {
                 logger.error("error occurs durring updatePowerTimeSeries for {} : {}", config.prmId, ex.getMessage(),
                         ex);
@@ -601,7 +714,24 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
         EnedisHttpApi api = this.enedisApi;
         if (api != null) {
             try {
-                return api.getEnergyData(this, this.userId, config.prmId, from, to);
+                return api.getEnergyData(this, this.userId, config.prmId, segment, from, to);
+            } catch (LinkyException e) {
+                logger.debug("Exception when getting consumption data for {} : {}", config.prmId, e.getMessage(), e);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
+            }
+        }
+
+        return null;
+    }
+
+    private @Nullable MeterReading getConsumptionIndex(LocalDate from, LocalDate to) {
+        logger.debug("getConsumptionIndex for {} from {} to {}", config.prmId,
+                from.format(DateTimeFormatter.ISO_LOCAL_DATE), to.format(DateTimeFormatter.ISO_LOCAL_DATE));
+
+        EnedisHttpApi api = this.enedisApi;
+        if (api != null) {
+            try {
+                return api.getEnergyIndex(this, this.userId, config.prmId, segment, from, to);
             } catch (LinkyException e) {
                 logger.debug("Exception when getting consumption data for {} : {}", config.prmId, e.getMessage(), e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
@@ -618,7 +748,7 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
         EnedisHttpApi api = this.enedisApi;
         if (api != null) {
             try {
-                return api.getLoadCurveData(this, this.userId, config.prmId, from, to);
+                return api.getLoadCurveData(this, this.userId, config.prmId, segment, from, to);
             } catch (LinkyException e) {
                 logger.debug("Exception when getting consumption data: {}", e.getMessage(), e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
@@ -635,7 +765,7 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
         EnedisHttpApi api = this.enedisApi;
         if (api != null) {
             try {
-                return api.getPowerData(this, this.userId, config.prmId, from, to);
+                return api.getPowerData(this, this.userId, config.prmId, segment, from, to);
             } catch (LinkyException e) {
                 logger.debug("Exception when getting power data: {}", e.getMessage(), e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
@@ -682,7 +812,8 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
 
         if (!isDataLastDayAvailable(meterReading)) {
             logger.debug("Data including yesterday are not yet available");
-            return null;
+            return meterReading;
+            // return null;
         }
 
         if (meterReading != null) {
@@ -772,7 +903,7 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
             IntervalReading[] iv = meterReading.baseValue;
 
             logData(iv, "Last day", DateTimeFormatter.ISO_LOCAL_DATE, Target.LAST);
-            return iv.length != 0 && !iv[iv.length - 1].value.isNaN();
+            return iv != null && iv.length != 0 && iv[iv.length - 1] != null;
         }
 
         return false;
