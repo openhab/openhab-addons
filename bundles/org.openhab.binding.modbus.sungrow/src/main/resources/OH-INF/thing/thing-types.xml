@@ -30,7 +30,6 @@
 	<channel-group-type id="sg-overview">
 		<label>Overview</label>
 		<channels>
-			<channel id="sg-device-type" typeId="sg-device-type"/>
 			<channel id="sg-running-state" typeId="sg-running-state"/>
 			<channel id="sg-total-active-power" typeId="sg-total-active-power"/>
 			<channel id="sg-total-dc-power" typeId="sg-total-dc-power"/>
@@ -45,7 +44,6 @@
 			<channel id="sg-total-pv-generation" typeId="sg-total-pv-generation"/>
 			<channel id="sg-power-factor" typeId="sg-power-factor"/>
 			<channel id="sg-internal-temperature" typeId="sg-internal-temperature"/>
-			<channel id="sg-nominal-output-power" typeId="sg-nominal-output-power"/>
 		</channels>
 	</channel-group-type>
 
@@ -108,7 +106,6 @@
 			<channel id="sg-daily-export-power-from-pv" typeId="sg-daily-export-power-from-pv"/>
 			<channel id="sg-total-export-energy-from-pv" typeId="sg-total-export-energy-from-pv"/>
 			<channel id="sg-export-power" typeId="sg-export-power"/>
-			<channel id="sg-output-type" typeId="sg-output-type"/>
 			<channel id="sg-daily-output-energy" typeId="sg-daily-output-energy"/>
 			<channel id="sg-total-output-energy" typeId="sg-total-output-energy"/>
 			<channel id="sg-grid-frequency" typeId="sg-grid-frequency"/>
