@@ -89,9 +89,8 @@ public enum ServiceType {
         return builder.toString();
     }
 
-    public String getTypeSuffix() {
-        int lastIndex = type.lastIndexOf(".");
-        return type.substring(lastIndex + 1);
+    public String getChannelTypeId() {
+        return type.replace("-", "_").replace(".", "-"); // covert to OH channel type format
     }
 
     public static ServiceType from(int id) throws IllegalArgumentException {

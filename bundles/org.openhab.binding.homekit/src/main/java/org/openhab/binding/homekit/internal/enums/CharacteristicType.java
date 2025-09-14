@@ -176,9 +176,8 @@ public enum CharacteristicType {
         return builder.toString();
     }
 
-    public String getTypeSuffix() {
-        int lastIndex = type.lastIndexOf(".");
-        return type.substring(lastIndex + 1);
+    public String getGroupTypeId() {
+        return type.replace("-", "_").replace(".", "-"); // convert to OH channel-group-type format
     }
 
     public static CharacteristicType from(int id) throws IllegalArgumentException {

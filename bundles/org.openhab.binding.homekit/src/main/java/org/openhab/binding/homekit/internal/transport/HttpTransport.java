@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.homekit.internal.network;
+package org.openhab.binding.homekit.internal.transport;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;

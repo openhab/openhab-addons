@@ -10,12 +10,12 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.homekit.internal.network;
+package org.openhab.binding.homekit.internal.session;
 
-import java.security.GeneralSecurityException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.homekit.internal.crypto.CryptoUtils;
 
 /**
  * Manages a secure session using ChaCha20 encryption for a HomeKit accessory.
@@ -33,8 +33,8 @@ public class SecureSession {
     private final AtomicInteger readCounter = new AtomicInteger(0);
 
     public SecureSession(SessionKeys keys) {
-        this.writeKey = keys.writeKey;
-        this.readKey = keys.readKey;
+        this.writeKey = keys.getWriteKey();
+        this.readKey = keys.getReadKey();
     }
 
     /**
@@ -42,11 +42,11 @@ public class SecureSession {
      *
      * @param plaintext The plaintext to encrypt.
      * @return The encrypted ciphertext.
-     * @throws GeneralSecurityException
+     * @throws Exception
      */
-    public byte[] encrypt(byte[] plaintext) throws GeneralSecurityException {
+    public byte[] encrypt(byte[] plaintext) throws Exception {
         byte[] nonce = generateNonce(writeCounter.getAndIncrement());
-        return ChaCha20.encrypt(writeKey, nonce, plaintext);
+        return CryptoUtils.encrypt(writeKey, nonce, plaintext);
     }
 
     /**
@@ -54,11 +54,11 @@ public class SecureSession {
      *
      * @param ciphertext The ciphertext to decrypt.
      * @return The decrypted plaintext.
-     * @throws GeneralSecurityException
+     * @throws Exception
      */
-    public byte[] decrypt(byte[] ciphertext) throws GeneralSecurityException {
+    public byte[] decrypt(byte[] ciphertext) throws Exception {
         byte[] nonce = generateNonce(readCounter.getAndIncrement());
-        return ChaCha20.decrypt(readKey, nonce, ciphertext);
+        return CryptoUtils.decrypt(readKey, nonce, ciphertext);
     }
 
     /**

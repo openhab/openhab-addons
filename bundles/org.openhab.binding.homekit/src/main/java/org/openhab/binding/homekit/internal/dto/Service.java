@@ -20,7 +20,7 @@ import java.util.Objects;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homekit.internal.enums.ServiceType;
-import org.openhab.binding.homekit.internal.provider.HomekitTypeProvider;
+import org.openhab.binding.homekit.internal.persistance.HomekitTypeProvider;
 import org.openhab.core.thing.type.ChannelDefinition;
 import org.openhab.core.thing.type.ChannelGroupDefinition;
 import org.openhab.core.thing.type.ChannelGroupType;
@@ -43,20 +43,9 @@ public class Service {
     public @NonNullByDefault({}) List<Characteristic> characteristics;
 
     /**
-     * The hash only includes the invariant fields as needed to define a fully unique channel group type.
-     * The instanceId is excluded as it depends on the accessory instance.
-     * The characteristics are included as they define the channels within the channel group.
-     *
-     * @return hash code
-     */
-    @Override
-    public int hashCode() {
-        return Objects.hash(serviceId, instanceId, characteristics);
-    }
-
-    /**
-     * Builds a {@link ChannelGroupDefinition} and {@link ChannelGroupType} based on the service properties.
-     * Registers the {@link ChannelGroupType} with the provided {@link HomekitTypeProvider}.
+     * Builds a ChannelGroupDefinition and a ChannelGroupType based on the service properties.
+     * Registers the ChannelGroupType with the provided HomekitTypeProvider.
+     * Returns a ChannelGroupDefinition that is specific instance of ChannelGroupType.
      * Returns null if the service type is unknown or if no valid channel definitions can be created.
      *
      * @param typeProvider the HomekitStorageBasedTypeProvider to register the channel group type with
@@ -77,14 +66,14 @@ public class Service {
             return null;
         }
 
-        ChannelGroupTypeUID uid = new ChannelGroupTypeUID(BINDING_ID, GROUP_TYPE_FMT.formatted(hashCode()));
-        ChannelGroupType type = ChannelGroupTypeBuilder.instance(uid, GROUP_TYPE_LABEL) //
+        ChannelGroupTypeUID groupTypeUID = new ChannelGroupTypeUID(BINDING_ID, serviceType.getChannelTypeId());
+        ChannelGroupType groupType = ChannelGroupTypeBuilder.instance(groupTypeUID, GROUP_TYPE_LABEL) //
                 .withDescription(serviceType.toString()) //
                 .withChannelDefinitions(channelDefinitions) //
                 .build();
 
-        typeProvider.putChannelGroupType(type);
-
-        return new ChannelGroupDefinition(Integer.toString(instanceId), uid, serviceType.getTypeSuffix(), null);
+        // persist the group _type_, and return the definition of a specific _instance_ of that type
+        typeProvider.putChannelGroupType(groupType);
+        return new ChannelGroupDefinition(Integer.toString(instanceId), groupTypeUID, serviceType.toString(), null);
     }
 }

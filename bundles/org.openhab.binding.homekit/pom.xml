@@ -19,7 +19,7 @@
       <groupId>org.bouncycastle</groupId>
       <artifactId>bcprov-jdk18on</artifactId>
       <!-- or latest -->
-      <version>1.78</version>
+      <version>1.81</version>
     </dependency>
   </dependencies>
 

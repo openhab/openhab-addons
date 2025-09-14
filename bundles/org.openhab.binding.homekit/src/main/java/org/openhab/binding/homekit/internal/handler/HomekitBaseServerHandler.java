@@ -25,11 +25,11 @@ import java.util.stream.Collectors;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.homekit.internal.dto.Accessories;
 import org.openhab.binding.homekit.internal.dto.Accessory;
-import org.openhab.binding.homekit.internal.network.CharacteristicsManager;
-import org.openhab.binding.homekit.internal.network.HttpTransport;
-import org.openhab.binding.homekit.internal.network.PairingManager;
-import org.openhab.binding.homekit.internal.network.SecureSession;
-import org.openhab.binding.homekit.internal.network.SessionKeys;
+import org.openhab.binding.homekit.internal.services.CharacteristicReadWriteService;
+import org.openhab.binding.homekit.internal.services.PairingSetupService;
+import org.openhab.binding.homekit.internal.session.SecureSession;
+import org.openhab.binding.homekit.internal.session.SessionKeys;
+import org.openhab.binding.homekit.internal.transport.HttpTransport;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -63,7 +63,7 @@ public class HomekitBaseServerHandler extends BaseThingHandler {
 
     protected boolean isChildAccessory = false;
 
-    protected @NonNullByDefault({}) CharacteristicsManager charactersticsManager;
+    protected @NonNullByDefault({}) CharacteristicReadWriteService charactersticsManager;
     protected @NonNullByDefault({}) SessionKeys keys;
     protected @NonNullByDefault({}) SecureSession session;
     protected @NonNullByDefault({}) String baseUrl;
@@ -94,9 +94,9 @@ public class HomekitBaseServerHandler extends BaseThingHandler {
             this.baseUrl = "http://" + getConfig().get(CONFIG_IP_V4_ADDRESS).toString();
             this.pairingCode = getConfig().get(CONFIG_PAIRING_CODE).toString();
             try {
-                this.keys = new PairingManager(httpTransport, pairingCode).pair(baseUrl);
+                this.keys = new PairingSetupService(httpTransport, pairingCode).pair(baseUrl);
                 this.session = new SecureSession(keys);
-                this.charactersticsManager = new CharacteristicsManager(httpTransport, session, baseUrl);
+                this.charactersticsManager = new CharacteristicReadWriteService(httpTransport, session, baseUrl);
                 scheduler.submit(() -> getAccessories());
                 updateStatus(ThingStatus.ONLINE);
             } catch (Exception e) {

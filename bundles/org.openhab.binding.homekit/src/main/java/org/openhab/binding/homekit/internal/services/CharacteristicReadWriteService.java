@@ -10,13 +10,15 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.homekit.internal.network;
+package org.openhab.binding.homekit.internal.services;
 
 import static org.openhab.binding.homekit.internal.HomekitBindingConstants.*;
 
 import java.nio.charset.StandardCharsets;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.homekit.internal.session.SecureSession;
+import org.openhab.binding.homekit.internal.transport.HttpTransport;
 
 /**
  * HTTP client methods for reading and writing HomeKit accessory characteristics over a secure session.
@@ -25,7 +27,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-public class CharacteristicsManager {
+public class CharacteristicReadWriteService {
 
     private static final String JSON_TEMPLATE = "{\"%s\":[{\"aid\":%s,\"iid\":%s,\"value\":%s}]}";
 
@@ -33,7 +35,7 @@ public class CharacteristicsManager {
     private final HttpTransport httpTransport;
     private final String baseUrl;
 
-    public CharacteristicsManager(HttpTransport httpTransport, SecureSession session, String baseUrl) {
+    public CharacteristicReadWriteService(HttpTransport httpTransport, SecureSession session, String baseUrl) {
         this.httpTransport = httpTransport;
         this.session = session;
         this.baseUrl = baseUrl;

@@ -21,8 +21,8 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.homekit.internal.dto.Accessory;
-import org.openhab.binding.homekit.internal.network.CharacteristicsManager;
-import org.openhab.binding.homekit.internal.provider.HomekitTypeProvider;
+import org.openhab.binding.homekit.internal.persistance.HomekitTypeProvider;
+import org.openhab.binding.homekit.internal.services.CharacteristicReadWriteService;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -69,7 +69,7 @@ public class HomekitDeviceHandler extends HomekitBaseServerHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        CharacteristicsManager charactersticsManager = this.charactersticsManager;
+        CharacteristicReadWriteService charactersticsManager = this.charactersticsManager;
         if (charactersticsManager != null) {
             String channelId = channelUID.getId();
             try {
@@ -93,7 +93,7 @@ public class HomekitDeviceHandler extends HomekitBaseServerHandler {
      * This method is called periodically by a scheduled executor.
      */
     private void poll() {
-        CharacteristicsManager charactersticsManager = this.charactersticsManager;
+        CharacteristicReadWriteService charactersticsManager = this.charactersticsManager;
         if (charactersticsManager != null) {
             try {
                 // String power = accessoryClient.readCharacteristic("1", "10"); // TODO example AID/IID

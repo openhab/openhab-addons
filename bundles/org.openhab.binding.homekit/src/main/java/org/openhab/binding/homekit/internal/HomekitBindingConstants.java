@@ -37,8 +37,6 @@ public class HomekitBindingConstants {
 
     // UID id formats
     public static final String CHILD_FMT = "child-%x"; // e.g. child-123abc;
-    public static final String GROUP_TYPE_FMT = "group-%x"; // e.g. group-123abc;
-    public static final String CHANNEL_TYPE_FMT = "channel-%x"; // e.g. channel-123abc;
 
     // configuration parameters
     public static final String CONFIG_PAIRING_CODE = "pairingCode";

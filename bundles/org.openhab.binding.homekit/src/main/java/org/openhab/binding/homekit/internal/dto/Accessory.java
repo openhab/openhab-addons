@@ -18,7 +18,7 @@ import java.util.Objects;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homekit.internal.enums.AccessoryType;
-import org.openhab.binding.homekit.internal.provider.HomekitTypeProvider;
+import org.openhab.binding.homekit.internal.persistance.HomekitTypeProvider;
 import org.openhab.core.semantics.SemanticTag;
 import org.openhab.core.semantics.model.DefaultSemanticTags.Equipment;
 import org.openhab.core.thing.type.ChannelGroupDefinition;
@@ -124,10 +124,13 @@ public class Accessory {
 
     /**
      * Builds and registers channel group definitions for all services of this accessory.
-     * Services that do not map to a channel group definition are ignored.
+     * Each child service registers a ChannelGroupType and returns a ChannelGroupDefinition thereof.
+     * Each grandchild category registers a ChannelType and returns a ChannelDefinition thereof.
+     * Child services that do not map to a channel group definition are ignored.
+     * Grandchild categories that do not map to a channel definition are ignored.
      *
-     * @param typeProvider the HomeKit type provider used to look up channel group definitions
-     * @return a list of channel group definitions for the services of this accessory
+     * @param typeProvider the HomeKit type provider used to look up channel group definitions.
+     * @return a list of channel group definition instances for the services of this accessory.
      */
     public List<ChannelGroupDefinition> buildAndRegisterChannelGroupDefinitions(HomekitTypeProvider typeProvider) {
         return services.stream().map(s -> s.buildAndRegisterChannelGroupDefinition(typeProvider))

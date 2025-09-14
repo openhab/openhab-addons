@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.homekit.internal.network;
+package org.openhab.binding.homekit.internal.crypto;
 
 import java.io.ByteArrayOutputStream;
 import java.util.Arrays;
@@ -21,13 +21,11 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * Utility class for encoding and decoding TLV8 (Type-Length-Value) data.
- * TLV8 is used in HomeKit for structured data exchange.
- * Handles splitting and combining values that exceed the maximum length of 255 bytes.
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-public class TLV8Codec {
+public class Tlv8Codec {
 
     public static final int MAX_TLV_LENGTH = 255;
 
