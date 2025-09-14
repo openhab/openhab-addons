@@ -72,65 +72,46 @@ public class MeterReading {
             }
         } else {
             double lastVal = 0.0;
-            double[] lastValFournisseur = new double[6];
+            double[] lastValueSupplier = new double[6];
+            double[] lastValueDistributor = new double[6];
 
             for (int i = 0; i < size; i++) {
                 Data dataObj = agregat.datas.get(i);
                 double value = dataObj.valeur;
-                double[] valueFournisseur = new double[6];
 
                 if (i > 0) {
                     result[i - 1] = new IntervalReading();
                     result[i - 1].value = value - lastVal;
                     result[i - 1].date = dataObj.dateDebut;
-                    result[i - 1].valueFromFournisseur = new double[6];
-                    result[i - 1].valueFromDistributeur = new double[4];
+                    result[i - 1].valueSupplier = new double[10];
+                    result[i - 1].valueDistributor = new double[4];
+                    result[i - 1].supplierLabel = new String[10];
+                    result[i - 1].distributorLabel = new String[4];
 
-                    if (dataObj.classesTemporellesFournisseur != null) {
-                        for (ClassesTemporelles ct : dataObj.classesTemporellesFournisseur) {
-                            int idxFournisseur = -1;
-                            if ("Base".equals(ct.libelle)) {
-                                idxFournisseur = 0;
-                            } else if ("Blanc Heures Creuses".equals(ct.libelle)) {
-                                idxFournisseur = 3;
-                            } else if ("Blanc Heures Pleines".equals(ct.libelle)) {
-                                idxFournisseur = 2;
-                            } else if ("Bleu Heures Creuses".equals(ct.libelle)) {
-                                idxFournisseur = 1;
-                            } else if ("Bleu Heures Pleines".equals(ct.libelle)) {
-                                idxFournisseur = 0;
-                            } else if ("Rouge Heures Creuses".equals(ct.libelle)) {
-                                idxFournisseur = 5;
-                            } else if ("Rouge Heures Pleines".equals(ct.libelle)) {
-                                idxFournisseur = 4;
-                            } else if ("Heures Pleines".equals(ct.libelle)) {
-                                idxFournisseur = 0;
-                            } else if ("Heures Creuses".equals(ct.libelle)) {
-                                idxFournisseur = 1;
-                            } else if ("Heures Creuses Hiver / Saison Haute".equals(ct.libelle)) {
-                                idxFournisseur = 4;
-                            } else if ("Heures Creuses Saison Basse".equals(ct.libelle)) {
-                                idxFournisseur = 4;
-                            } else if ("Heures Pleines Hiver / Saison Haute".equals(ct.libelle)) {
-                                idxFournisseur = 4;
-                            } else if ("Heures Pleines Saison Basse".equals(ct.libelle)) {
-                                idxFournisseur = 4;
-                            }
+                    if (dataObj.classesTemporellesSupplier != null) {
+                        for (int idxSupplier = 0; idxSupplier < dataObj.classesTemporellesSupplier.length; idxSupplier++) {
+                            ClassesTemporelles ct = dataObj.classesTemporellesSupplier[idxSupplier];
 
-                            if (idxFournisseur == -1) {
-                                continue;
-                            }
+                            result[i - 1].valueSupplier[idxSupplier] = (ct.valeur - lastValueSupplier[idxSupplier]);
+                            result[i - 1].supplierLabel[idxSupplier] = ct.libelle;
 
-                            valueFournisseur[idxFournisseur] = ct.valeur;
-                            result[i - 1].valueFromFournisseur[idxFournisseur] = (valueFournisseur[idxFournisseur]
-                                    - lastValFournisseur[idxFournisseur]);
-
+                            lastValueSupplier[idxSupplier] = ct.valeur;
                         }
                     }
 
+                    if (dataObj.classesTemporellesDistributor != null) {
+                        for (int idxDistributor = 0; idxDistributor < dataObj.classesTemporellesDistributor.length; idxDistributor++) {
+                            ClassesTemporelles ct = dataObj.classesTemporellesDistributor[idxDistributor];
+
+                            result[i - 1].valueDistributor[idxDistributor] = (ct.valeur
+                                    - lastValueDistributor[idxDistributor]);
+                            result[i - 1].distributorLabel[idxDistributor] = ct.libelle;
+
+                            lastValueDistributor[idxDistributor] = ct.valeur;
+                        }
+                    }
                 }
                 lastVal = value;
-                lastValFournisseur = valueFournisseur;
             }
 
         }

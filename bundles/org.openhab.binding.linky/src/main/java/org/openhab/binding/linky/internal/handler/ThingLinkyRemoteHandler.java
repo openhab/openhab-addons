@@ -616,7 +616,7 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
                 }
                 if (idx != -1) {
                     if (iv[i + 1] != null) {
-                        timeSeries.add(timestamp, new QuantityType<>(iv[i + 1].valueFromFournisseur[idx], unit));
+                        timeSeries.add(timestamp, new QuantityType<>(iv[i + 1].valueSupplier[idx], unit));
                     }
                 } else {
                     timeSeries.add(timestamp, new QuantityType<>(iv[i].value, unit));

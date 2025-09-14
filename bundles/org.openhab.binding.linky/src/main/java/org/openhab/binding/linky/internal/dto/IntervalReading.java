@@ -23,7 +23,9 @@ import java.time.LocalDateTime;
 
 public class IntervalReading {
     public Double value = 0.0;
-    public double[] valueFromFournisseur;
-    public double[] valueFromDistributeur;
+    public double[] valueSupplier;
+    public double[] valueDistributor;
+    public String[] supplierLabel;
+    public String[] distributorLabel;
     public LocalDateTime date;
 }
