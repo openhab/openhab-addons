@@ -42,12 +42,6 @@ import org.openhab.core.types.State;
 public enum SungrowInverterRegisters {
 
     // the following register numbers are 1-based. They need to be converted before sending them on the wire.
-
-    DEVICE_TYPE(5000, UINT16, ConversionConstants.ONE, stringStateFactory(DeviceTypeMapper.instance()), "overview"),
-    NOMINAL_OUTPUT_POWER(5001, UINT16, ConversionConstants.MULTI_BY_HUNDRED, quantityStateFactory(Units.WATT),
-            "overview"),
-    OUTPUT_TYPE(5002, UINT16, ConversionConstants.ONE, stringStateFactory(OutputTypeMapper.instance()),
-            "grid-information"),
     DAILY_OUTPUT_ENERGY(5003, UINT16, ConversionConstants.DIV_BY_TEN, quantityStateFactory(Units.KILOWATT_HOUR),
             "overview"),
     TOTAL_OUTPUT_ENERGY(5004, UINT32_SWAP, ConversionConstants.DIV_BY_TEN, quantityStateFactory(Units.KILOWATT_HOUR),
