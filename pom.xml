@@ -73,6 +73,7 @@
     <jackson.version>2.19.2</jackson.version>
     <jna.version>5.17.0</jna.version>
     <karaf.version>4.4.8</karaf.version>
+    <mockito.version>5.19.0</mockito.version>
     <netty.version>4.1.126.Final</netty.version>
     <graalpy.version>24.2.1</graalpy.version>
     <okhttp3.version>4.12.0</okhttp3.version>
@@ -415,7 +416,9 @@ Import-Package: \\
           <version>3.5.3</version>
           <configuration>
             <argLine>--add-opens java.base/java.lang=ALL-UNNAMED
-              --add-opens java.base/java.util=ALL-UNNAMED</argLine>
+              --add-opens java.base/java.util=ALL-UNNAMED
+              -javaagent:${settings.localRepository}/org/mockito/mockito-core/${mockito.version}/mockito-core-${mockito.version}.jar
+              -Xshare:off</argLine>
             <systemPropertyVariables>
               <junit.jupiter.execution.timeout.default>15 m</junit.jupiter.execution.timeout.default>
               <openhab.conf>${project.build.directory}/openhab/conf</openhab.conf>
