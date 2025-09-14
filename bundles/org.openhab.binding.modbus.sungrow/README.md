@@ -13,6 +13,7 @@ As defined within the spec mentioned above the following inverters are supported
 - SH5-25T
 
 Some values may not work, depending on
+
 - the model type of your inverter
 - the firmware version of your inverter
 - the connection type (internal LAN vs. WiNet-S Communication Module)
