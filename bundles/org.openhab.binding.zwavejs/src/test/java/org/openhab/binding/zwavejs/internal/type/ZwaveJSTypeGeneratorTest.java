@@ -357,6 +357,23 @@ public class ZwaveJSTypeGeneratorTest {
     }
 
     @Test
+    public void testNode186NotificationChannelDetection() throws IOException {
+        Channel channel = getChannel("store_4.json", 186, "notification-virtual");
+        ChannelType type = channelTypeProvider.getChannelType(Objects.requireNonNull(channel.getChannelTypeUID()),
+                null);
+        Configuration configuration = channel.getConfiguration();
+
+        assertNotNull(type);
+        assertEquals("zwavejs:test-bridge:test-thing:notification-virtual", channel.getUID().getAsString());
+        assertEquals("String", type.getItemType());
+        assertEquals("Raw Notification", channel.getLabel());
+        assertNull(configuration.get(BindingConstants.CONFIG_CHANNEL_WRITE_PROPERTY_STR));
+
+        StateDescription statePattern = type.getState();
+        assertNull(statePattern);
+    }
+
+    @Test
     public void testGenCTNode186WeirdType() throws IOException {
         Channel channel = getChannel("store_4.json", 186, "door-lock-inside-handles-can-open-door");
         ChannelType type = channelTypeProvider.getChannelType(Objects.requireNonNull(channel.getChannelTypeUID()),

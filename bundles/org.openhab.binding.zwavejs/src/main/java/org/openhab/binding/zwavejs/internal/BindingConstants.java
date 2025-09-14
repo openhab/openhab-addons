@@ -91,4 +91,9 @@ public class BindingConstants {
     public static final String VIRTUAL_ROLLERSHUTTER_PROPERTY = "virtual";
     public static final String VIRTUAL_ROLLERSHUTTER_CHANNEL_ID = String.format("%s-%s",
             VIRTUAL_COMMAND_CLASS_ROLLERSHUTTER, VIRTUAL_ROLLERSHUTTER_PROPERTY);
+
+    public static final String VIRTUAL_COMMAND_CLASS_NOTIFICATION = "notification";
+    public static final String VIRTUAL_NOTIFICATION_PROPERTY = "virtual";
+    public static final String VIRTUAL_NOTIFICATION_CHANNEL_ID = String.format("%s-%s",
+            VIRTUAL_COMMAND_CLASS_NOTIFICATION, VIRTUAL_NOTIFICATION_PROPERTY);
 }

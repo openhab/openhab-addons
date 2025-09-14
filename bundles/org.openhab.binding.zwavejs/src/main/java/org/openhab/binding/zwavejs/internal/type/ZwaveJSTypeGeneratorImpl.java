@@ -13,6 +13,8 @@
 package org.openhab.binding.zwavejs.internal.type;
 
 import static org.openhab.binding.zwavejs.internal.BindingConstants.*;
+import static org.openhab.binding.zwavejs.internal.CommandClassConstants.COMMAND_CLASS_ALARM;
+import static org.openhab.binding.zwavejs.internal.CommandClassConstants.COMMAND_CLASS_DOOR_LOCK;
 import static org.openhab.binding.zwavejs.internal.CommandClassConstants.COMMAND_CLASS_SWITCH_COLOR;
 
 import java.net.URI;
@@ -24,6 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -82,7 +85,6 @@ import org.slf4j.LoggerFactory;
 @Component
 @NonNullByDefault
 public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
-
     private static final Object CHANNEL_TYPE_VERSION = "6"; // when static configuration is changed, the version must be
                                                             // changed as well to force new channel type generation
     private static final Map<String, SemanticTag> ITEM_TYPES_TO_PROPERTY_TAGS = new HashMap<>();
@@ -182,6 +184,9 @@ public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
         // add a color temperature channel if necessary
         addColorTemperatureChannel(thingUID, node, result);
 
+        // add raw notification channel if necessary
+        addRawNotificationChannel(thingUID, node, result);
+
         logger.debug("Node {}. Generated {} channels and {} configDescriptions with URI {}", node.nodeId,
                 result.channels.size(), configDescriptions.size(), uri);
 
@@ -189,6 +194,68 @@ public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
                 .addConfigDescription(ConfigDescriptionBuilder.create(uri).withParameters(configDescriptions).build());
 
         return result;
+    }
+
+    private void addRawNotificationChannel(ThingUID thingUID, Node node, ZwaveJSTypeGeneratorResult result) {
+        // loop all channels to find endpoints with a notification CC or a door lock CC
+        Map<Integer, List<Integer>> grouped = result.channels.values().stream()
+                .map(channel -> channel.getConfiguration().as(ZwaveJSChannelConfiguration.class))
+                .filter(config -> COMMAND_CLASS_ALARM == config.commandClassId
+                        || COMMAND_CLASS_DOOR_LOCK == config.commandClassId)
+                .collect(Collectors.groupingBy(config -> config.endpoint,
+                        Collectors.mapping(config -> config.commandClassId, Collectors.toList())));
+
+        // 2. Find endpoints with both Notification and Door Lock CCs
+        List<Integer> endpoints = grouped.entrySet().stream()
+                .filter(entry -> entry.getValue().contains(COMMAND_CLASS_ALARM)
+                        && entry.getValue().contains(COMMAND_CLASS_DOOR_LOCK))
+                .map(Map.Entry::getKey).toList();
+
+        // 2. Extract channel creation logic to a helper
+        for (Integer endpoint : endpoints) {
+            createRawNotificationChannel(thingUID, node, result, endpoint);
+        }
+    }
+
+    private void createRawNotificationChannel(ThingUID thingUID, Node node, ZwaveJSTypeGeneratorResult result,
+            int endpoint) {
+        Value value = new Value();
+        value.endpoint = endpoint;
+        value.commandClass = COMMAND_CLASS_ALARM;
+        value.commandClassName = VIRTUAL_COMMAND_CLASS_NOTIFICATION;
+        value.propertyKey = VIRTUAL_NOTIFICATION_PROPERTY;
+        value.property = VIRTUAL_NOTIFICATION_PROPERTY;
+        value.metadata = new Metadata();
+        value.metadata.type = MetadataType.STRING;
+        value.metadata.writeable = false;
+        value.metadata.label = "Raw Notification";
+        value.metadata.description = "Notification channel that updates on alarm events";
+        value.metadata.readable = true;
+
+        ChannelMetadata details = new ChannelMetadata(node.nodeId, value);
+        if (!result.channels.containsKey(details.id)) {
+            logger.trace("Node {} building channel with Id: {}", details.nodeId, details.id);
+            logger.trace(" >> {}", details);
+
+            ChannelTypeUID channelTypeUID = generateChannelTypeUID(details);
+            ChannelType type = getOrGenerate(channelTypeUID, details);
+            if (type == null) {
+                return;
+            }
+            Configuration config = buildChannelConfiguration(details);
+
+            Channel channel = ChannelBuilder.create(new ChannelUID(thingUID, details.id), CoreItemFactory.STRING)
+                    .withType(type.getUID()) //
+                    .withDefaultTags(type.getTags()) //
+                    .withKind(type.getKind()) //
+                    .withLabel(details.label) //
+                    .withDescription(Objects.requireNonNull(details.description)) //
+                    .withAutoUpdatePolicy(type.getAutoUpdatePolicy()) //
+                    .withConfiguration(config) //
+                    .build();
+
+            result.channels.put(details.id, channel);
+        }
     }
 
     private ConfigDescriptionParameter createConfigDescription(ConfigMetadata details) {
@@ -482,23 +549,12 @@ public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
                 || keyWords.isEmpty()) {
             return false;
         }
-        label = label != null ? label.toLowerCase() : "";
-        description = description != null ? description.toLowerCase() : "";
-        for (String keyWord : keyWords) {
-            String keyWordLowercase = keyWord.toLowerCase();
-            if (label.contains(keyWordLowercase) || description.contains(keyWordLowercase)) {
-                return true;
-            }
-            if (label.endsWith(keyWordLowercase.stripTrailing())
-                    || description.endsWith(keyWordLowercase.stripTrailing())) {
-                return true;
-            }
-            if (label.startsWith(keyWordLowercase.stripLeading())
-                    || description.startsWith(keyWordLowercase.stripLeading())) {
-                return true;
-            }
-        }
-        return false;
+        String labelLower = label != null ? label.toLowerCase() : "";
+        String descLower = description != null ? description.toLowerCase() : "";
+        return keyWords.stream().map(String::toLowerCase)
+                .anyMatch(kw -> labelLower.contains(kw) || descLower.contains(kw)
+                        || labelLower.endsWith(kw.stripTrailing()) || descLower.endsWith(kw.stripTrailing())
+                        || labelLower.startsWith(kw.stripLeading()) || descLower.startsWith(kw.stripLeading()));
     }
 
     /**
