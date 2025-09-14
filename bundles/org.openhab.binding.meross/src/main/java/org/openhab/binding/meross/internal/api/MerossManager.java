@@ -284,7 +284,7 @@ public class MerossManager implements MqttMessageSubscriber {
                                 JsonObject online = system.getAsJsonObject("online");
                                 if (online.has("status") && online.get("status").isJsonPrimitive()) {
                                     int status = online.get("status").getAsInt();
-                                    callback.setTingStatusFromMerossStatus(status);
+                                    callback.setThingStatusFromMerossStatus(status);
                                 }
                             }
                         }

@@ -61,7 +61,7 @@ public class MerossDoorHandler extends MerossDeviceHandler {
             String channelId = channelUID.getId().substring(CHANNEL_DOOR_STATE.lastIndexOf("_") + 1);
             int channel = 0;
             try {
-                channel = Integer.valueOf(channelId);
+                channel = Integer.parseInt(channelId);
             } catch (NumberFormatException e) {
                 // Ignore and default to channel 0, this is because only a single channel is available
             }
@@ -107,7 +107,7 @@ public class MerossDoorHandler extends MerossDeviceHandler {
         if (namespace != Namespace.GARAGE_DOOR_STATE) {
             return;
         }
-        String channelId = CHANNEL_DOOR_STATE + "_" + Integer.toString(deviceChannel);
+        String channelId = CHANNEL_DOOR_STATE + "_" + String.valueOf(deviceChannel);
         if (thing.getChannel(channelId) == null && deviceChannel == 0) {
             channelId = CHANNEL_DOOR_STATE;
         }

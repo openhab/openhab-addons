@@ -126,7 +126,6 @@ public class MerossDiscoveryService extends AbstractThingHandlerDiscoveryService
                             thingTypeUID = MerossBindingConstants.THING_TYPE_DOOR;
                             break;
                     }
-                    ;
                 } else {
                     logger.debug("Unsupported device found: name {} : type {}", device.devName(), device.deviceType());
                     return;

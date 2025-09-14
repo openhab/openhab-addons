@@ -33,6 +33,7 @@ public class TogglexCommand {
         protected int deviceChannel;
 
         protected Base(int deviceChannel, int onOffValue) {
+            this.deviceChannel = deviceChannel;
             this.onOffValue = onOffValue;
         }
 

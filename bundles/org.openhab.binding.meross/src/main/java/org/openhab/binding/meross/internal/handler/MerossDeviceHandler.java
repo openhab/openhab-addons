@@ -134,7 +134,7 @@ public abstract class MerossDeviceHandler extends BaseThingHandler {
         }
     }
 
-    public void setTingStatusFromMerossStatus(int status) {
+    public void setThingStatusFromMerossStatus(int status) {
         if (status == MerossEnum.OnlineStatus.UNKNOWN.value() || status == MerossEnum.OnlineStatus.NOT_ONLINE.value()
                 || status == MerossEnum.OnlineStatus.UPGRADING.value()) {
             updateStatus(ThingStatus.UNKNOWN);
