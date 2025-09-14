@@ -17,13 +17,15 @@ import static org.openhab.core.thing.ThingStatusDetail.COMMUNICATION_ERROR;
 
 import java.io.IOException;
 
-import org.digitalmediaserver.cast.Application;
 import org.digitalmediaserver.cast.CastDevice;
-import org.digitalmediaserver.cast.Media.MediaBuilder;
-import org.digitalmediaserver.cast.Media.StreamType;
-import org.digitalmediaserver.cast.MediaStatus;
-import org.digitalmediaserver.cast.ReceiverStatus;
 import org.digitalmediaserver.cast.Session;
+import org.digitalmediaserver.cast.message.entity.Application;
+import org.digitalmediaserver.cast.message.entity.Media.MediaBuilder;
+import org.digitalmediaserver.cast.message.entity.MediaStatus;
+import org.digitalmediaserver.cast.message.entity.ReceiverStatus;
+import org.digitalmediaserver.cast.message.enumeration.IdleReason;
+import org.digitalmediaserver.cast.message.enumeration.PlayerState;
+import org.digitalmediaserver.cast.message.enumeration.StreamType;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.library.types.IncreaseDecreaseType;
@@ -129,9 +131,9 @@ public class ChromecastCommander {
                 MediaStatus mediaStatus = session.getMediaStatus();
                 statusUpdater.updateMediaStatus(mediaStatus);
 
-                if (mediaStatus != null && mediaStatus.getPlayerState() == MediaStatus.PlayerState.IDLE
+                if (mediaStatus != null && mediaStatus.getPlayerState() == PlayerState.IDLE
                         && mediaStatus.getIdleReason() != null
-                        && mediaStatus.getIdleReason() != MediaStatus.IdleReason.INTERRUPTED) {
+                        && mediaStatus.getIdleReason() != IdleReason.INTERRUPTED) {
                     closeApp(MEDIA_PLAYER);
                 }
             }
@@ -182,7 +184,7 @@ public class ChromecastCommander {
             }
 
             if (command instanceof PlayPauseType playPauseCommand) {
-                if (mediaStatus == null || mediaStatus.getPlayerState() == MediaStatus.PlayerState.IDLE) {
+                if (mediaStatus == null || mediaStatus.getPlayerState() == PlayerState.IDLE) {
                     logger.debug("{} command ignored because media is not loaded", command);
                     return;
                 }
@@ -298,7 +300,7 @@ public class ChromecastCommander {
                 // resume current track.
                 Session session = chromeCast.startSession(SOURCE, chromeCast.getRunningApplication());
                 MediaStatus ms = session.getMediaStatus();
-                if (ms != null && MediaStatus.PlayerState.PAUSED == ms.getPlayerState()
+                if (ms != null && PlayerState.PAUSED == ms.getPlayerState()
                         && url.equals(ms.getMedia().getUrl())) {
                     logger.debug("Current stream paused, resuming");
                     session.play(ms.getMediaSessionId(), false);

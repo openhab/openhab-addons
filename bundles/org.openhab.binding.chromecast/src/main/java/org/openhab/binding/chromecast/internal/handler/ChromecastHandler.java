@@ -21,8 +21,8 @@ import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
 
 import org.digitalmediaserver.cast.CastDevice;
-import org.digitalmediaserver.cast.CastEvent;
-import org.digitalmediaserver.cast.CastEvent.CastEventType;
+import org.digitalmediaserver.cast.event.CastEvent;
+import org.digitalmediaserver.cast.event.CastEvent.CastEventType;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.chromecast.internal.ChromecastCommander;

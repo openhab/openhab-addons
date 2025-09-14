@@ -14,11 +14,11 @@ package org.openhab.binding.chromecast.internal;
 
 import java.util.List;
 
-import org.digitalmediaserver.cast.CastEvent;
-import org.digitalmediaserver.cast.CastEvent.CastEventListener;
-import org.digitalmediaserver.cast.MediaStatus;
-import org.digitalmediaserver.cast.StandardResponse.MediaStatusResponse;
-import org.digitalmediaserver.cast.StandardResponse.ReceiverStatusResponse;
+import org.digitalmediaserver.cast.event.CastEvent;
+import org.digitalmediaserver.cast.event.CastEvent.CastEventListener;
+import org.digitalmediaserver.cast.message.entity.MediaStatus;
+import org.digitalmediaserver.cast.message.response.MediaStatusResponse;
+import org.digitalmediaserver.cast.message.response.ReceiverStatusResponse;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingStatus;
 import org.slf4j.Logger;
@@ -59,17 +59,19 @@ public class ChromecastEventReceiver implements CastEventListener {
                 statusUpdater.updateMediaStatus(null);
                 break;
             case MEDIA_STATUS:
-                List<MediaStatus> statuses = event.getData(MediaStatusResponse.class).getStatuses();
-                if (statuses != null && statuses.size() > 1) {
-                    logger.warn("Received multiple media statuses, this is not supported. Statuses: {}", statuses);
-                } else if (statuses != null && !statuses.isEmpty()) {
-                    statusUpdater.updateMediaStatus(statuses.getFirst());
-                } else {
+                MediaStatusResponse mediaStatusResponse = event.getData(MediaStatusResponse.class);
+                List<MediaStatus> mediaStatuses = mediaStatusResponse == null ? null : mediaStatusResponse.getStatuses();
+                if (mediaStatuses == null) {
                     statusUpdater.updateMediaStatus(null);
+                } else {
+                    for (MediaStatus mediaStatus : mediaStatuses) {
+                        statusUpdater.updateMediaStatus(mediaStatus);
+                    }
                 }
                 break;
             case RECEIVER_STATUS:
-                statusUpdater.processStatusUpdate(event.getData(ReceiverStatusResponse.class).getStatus());
+                ReceiverStatusResponse receiverStatusResponse = event.getData(ReceiverStatusResponse.class);
+                statusUpdater.processStatusUpdate(receiverStatusResponse == null ? null : receiverStatusResponse.getStatus());
                 break;
             case UNKNOWN:
                 logger.debug("Received an 'UNKNOWN' event (class={})", event.getEventType().getDataClass());
