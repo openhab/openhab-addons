@@ -12,19 +12,15 @@
  */
 package org.openhab.binding.modbus.sungrow.internal.mapper.impl;
 
-import java.math.BigDecimal;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.modbus.sungrow.internal.mapper.ToStringMapper;
 
 /**
- * This mapper implements {@link ToStringMapper} and maps the integer codes of the sungrow modbus register to the human
- * readable output types.
+ * Maps the integer codes of the sungrow modbus register to the human readable output types.
  *
  * @author Tim Scholand - Initial contribution
  */
 @NonNullByDefault
-public class OutputTypeMapper implements ToStringMapper {
+public class OutputTypeMapper {
 
     private static final OutputTypeMapper INSTANCE = new OutputTypeMapper();
 
@@ -39,13 +35,15 @@ public class OutputTypeMapper implements ToStringMapper {
         // use instance()
     }
 
-    @Override
-    public String map(BigDecimal value) {
-        return switch (value.intValue()) {
+    /**
+     * Maps value to string.
+     */
+    public String map(int value) {
+        return switch (value) {
             case 0 -> "SINGLE";
             case 1 -> "3P4L";
             case 2 -> "3P3L";
-            default -> "UNKNOWN: " + value.toPlainString();
+            default -> "UNKNOWN: " + value;
         };
     }
 }

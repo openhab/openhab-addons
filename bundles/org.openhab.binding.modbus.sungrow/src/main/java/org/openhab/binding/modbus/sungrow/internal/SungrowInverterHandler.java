@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.modbus.sungrow.internal;
 
-import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
@@ -206,11 +205,11 @@ public class SungrowInverterHandler extends BaseModbusThingHandler {
                     StandardCharsets.UTF_8);
             getThing().setProperty("Serial Number", serialNumber);
             int deviceTypeCode = ModbusBitUtilities.extractUInt16(registers.getBytes(), 20);
-            getThing().setProperty("Device Type", DeviceTypeMapper.instance().map(new BigDecimal(deviceTypeCode)));
+            getThing().setProperty("Device Type", DeviceTypeMapper.instance().map(deviceTypeCode));
             int outputPower = ModbusBitUtilities.extractUInt16(registers.getBytes(), 22);
             getThing().setProperty("Nominal Output Power", outputPower * 100 + " W");
             int outputType = ModbusBitUtilities.extractUInt16(registers.getBytes(), 24);
-            getThing().setProperty("Output Type", OutputTypeMapper.instance().map(new BigDecimal(outputType)));
+            getThing().setProperty("Output Type", OutputTypeMapper.instance().map(outputType));
         });
     }
 
