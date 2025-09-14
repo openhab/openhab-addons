@@ -12,19 +12,15 @@
  */
 package org.openhab.binding.modbus.sungrow.internal.mapper.impl;
 
-import java.math.BigDecimal;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.modbus.sungrow.internal.mapper.ToStringMapper;
 
 /**
- * This mapper implements {@link ToStringMapper} and maps the hex codes of the sungrow modbus register to the human
- * readable device names.
+ * Maps the hex codes of the sungrow modbus register to the human readable device names.
  *
  * @author Tim Scholand - Initial contribution
  */
 @NonNullByDefault
-public class DeviceTypeMapper implements ToStringMapper {
+public class DeviceTypeMapper {
 
     private static final DeviceTypeMapper INSTANCE = new DeviceTypeMapper();
 
@@ -39,9 +35,11 @@ public class DeviceTypeMapper implements ToStringMapper {
         // use instance()
     }
 
-    @Override
-    public String map(BigDecimal value) {
-        return switch (value.intValue()) {
+    /**
+     * Maps value to string.
+     */
+    public String map(int value) {
+        return switch (value) {
             case 0xD17 -> "SH3.0RS";
             case 0xD0D -> "SH3.6RS";
             case 0xD18 -> "SH4.0RS";
@@ -73,7 +71,7 @@ public class DeviceTypeMapper implements ToStringMapper {
             case 0xE25 -> "SH15T-V11";
             case 0xE26 -> "SH20T-V11";
             case 0xE28 -> "SH25T-V11";
-            default -> "UNKNOWN: " + String.format("0x%03X", value.intValue());
+            default -> "UNKNOWN: " + String.format("0x%03X", value);
         };
     }
 }

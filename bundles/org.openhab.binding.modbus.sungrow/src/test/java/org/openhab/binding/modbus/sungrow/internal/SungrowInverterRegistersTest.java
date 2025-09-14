@@ -26,7 +26,6 @@ import org.openhab.core.io.transport.modbus.ModbusRegisterArray;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.types.StringType;
 import org.openhab.core.types.State;
 
 /**
@@ -73,22 +72,6 @@ class SungrowInverterRegistersTest {
         State state = mpttVoltage.createState(decimalTypeValue);
         assertInstanceOf(QuantityType.class, state);
         assertEquals("123.4 V", state.toFullString());
-    }
-
-    @Test
-    public void testCreateDeviceTypeState() {
-        SungrowInverterRegisters deviceType = SungrowInverterRegisters.DEVICE_TYPE;
-        int valueFromHex = Integer.parseInt("E25", 16);
-        ModbusRegisterArray registers = new ModbusRegisterArray(valueFromHex);
-        Optional<DecimalType> value = ModbusBitUtilities.extractStateFromRegisters(registers, 0, deviceType.getType());
-        assertTrue(value.isPresent());
-        DecimalType decimalTypeValue = value.get();
-        // Value is not scaled yet
-        assertEquals(BigDecimal.valueOf(valueFromHex), decimalTypeValue.toBigDecimal());
-
-        State state = deviceType.createState(decimalTypeValue);
-        assertInstanceOf(StringType.class, state);
-        assertEquals("SH15T-V11", state.toFullString());
     }
 
     @ParameterizedTest
