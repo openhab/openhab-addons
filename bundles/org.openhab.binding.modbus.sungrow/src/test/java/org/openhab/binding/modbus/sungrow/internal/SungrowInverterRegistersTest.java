@@ -92,8 +92,8 @@ class SungrowInverterRegistersTest {
     }
 
     private static State getPowerFlowState(SungrowInverterRegisters register) {
-        final String POWERFLOW_STATE = "10010011";
-        int valueFromHex = Integer.parseInt(POWERFLOW_STATE, 2); // the second bit from the right is bit with index 1
+        final String stateValue = "10010011";
+        int valueFromHex = Integer.parseInt(stateValue, 2); // the second bit from the right is bit with index 1
         ModbusRegisterArray registers = new ModbusRegisterArray(valueFromHex);
         Optional<DecimalType> value = ModbusBitUtilities.extractStateFromRegisters(registers, 0, register.getType());
         assertTrue(value.isPresent());
