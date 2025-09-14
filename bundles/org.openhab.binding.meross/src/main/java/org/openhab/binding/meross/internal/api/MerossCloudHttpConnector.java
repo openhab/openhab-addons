@@ -32,6 +32,7 @@ import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
+import org.openhab.binding.meross.internal.ContentAnonymizer;
 import org.openhab.binding.meross.internal.dto.CloudCredentials;
 import org.openhab.binding.meross.internal.dto.Device;
 import org.openhab.binding.meross.internal.exception.MerossApiException;
@@ -190,7 +191,7 @@ public class MerossCloudHttpConnector extends MerossHttpConnector {
             ContentResponse response = postResponse(createContent(Map.of()), apiBaseUrl,
                     MerossEnum.HttpEndpoint.DEV_LIST.value());
             String devicesResponse = response.getContentAsString();
-            logger.trace("Get devices response: {}", devicesResponse);
+            logger.trace("Get devices response: {}", ContentAnonymizer.anonymizeMessage(devicesResponse));
             JsonElement jsonElement = JsonParser.parseString(devicesResponse);
             JsonElement data = jsonElement.getAsJsonObject().get("data");
             List<Device> devices = null;

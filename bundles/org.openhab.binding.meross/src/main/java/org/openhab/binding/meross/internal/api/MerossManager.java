@@ -29,6 +29,7 @@ import java.util.concurrent.TimeoutException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.meross.internal.ContentAnonymizer;
 import org.openhab.binding.meross.internal.api.MerossEnum.Namespace;
 import org.openhab.binding.meross.internal.command.Command;
 import org.openhab.binding.meross.internal.dto.MqttMessageBuilder;
@@ -152,7 +153,8 @@ public class MerossManager implements MqttMessageSubscriber {
     }
 
     private void publishMessage(String topic, byte[] message) throws MqttException, InterruptedException {
-        logger.trace("Publishing topic {}, message {}", topic, new String(message, StandardCharsets.UTF_8));
+        logger.trace("Publishing topic {}, message {}", ContentAnonymizer.anonymizeTopic(topic),
+                ContentAnonymizer.anonymizeMessage(new String(message, StandardCharsets.UTF_8)));
 
         MerossHttpConnector httpConnector = this.httpConnector;
         if (httpConnector != null) {
@@ -230,7 +232,8 @@ public class MerossManager implements MqttMessageSubscriber {
     public void processMessage(String topic, byte[] message) {
         try {
             String mqttPayload = new String(message, StandardCharsets.UTF_8);
-            logger.trace("Processing topic {}, message {}", topic, mqttPayload);
+            logger.trace("Processing topic {}, message {}", ContentAnonymizer.anonymizeTopic(topic),
+                    ContentAnonymizer.anonymizeMessage(mqttPayload));
             JsonObject jsonObject = JsonParser.parseString(mqttPayload).getAsJsonObject();
 
             String method = null;
