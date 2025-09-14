@@ -22,5 +22,4 @@ package org.openhab.binding.linky.internal.dto;
 public class ClassesTemporelles {
     public String libelle;
     public Double valeur = 0.0;
-
 }

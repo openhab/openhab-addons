@@ -22,5 +22,4 @@ package org.openhab.binding.linky.internal.dto;
 public class Calendrier {
     public String idCalendrier;
     public String libelleCalendrier;
-
 }
