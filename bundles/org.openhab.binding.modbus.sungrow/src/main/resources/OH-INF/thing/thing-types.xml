@@ -580,16 +580,16 @@
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
-    <channel-type id="sg-battery-power-signed">
-        <item-type>Number:Power</item-type>
-        <label>Battery Power signed</label>
-        <category>Energy</category>
-        <tags>
-            <tag>Measurement</tag>
-            <tag>Power</tag>
-        </tags>
-        <state pattern="%.2f %unit%" readOnly="true"/>
-    </channel-type>
+	<channel-type id="sg-battery-power-signed">
+		<item-type>Number:Power</item-type>
+		<label>Battery Power signed</label>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
 	<channel-type id="sg-battery-capacity-high-precision" advanced="true">
 		<item-type>Number:Energy</item-type>
 		<label>Battery Capacity HP</label>

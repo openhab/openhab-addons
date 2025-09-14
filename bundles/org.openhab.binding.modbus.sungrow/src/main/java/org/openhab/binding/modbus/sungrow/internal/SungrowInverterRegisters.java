@@ -21,9 +21,7 @@ import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.modbus.sungrow.internal.mapper.ToStringMapper;
-import org.openhab.binding.modbus.sungrow.internal.mapper.impl.DeviceTypeMapper;
 import org.openhab.binding.modbus.sungrow.internal.mapper.impl.DrmStateMapper;
-import org.openhab.binding.modbus.sungrow.internal.mapper.impl.OutputTypeMapper;
 import org.openhab.binding.modbus.sungrow.internal.mapper.impl.RunningStateMapper;
 import org.openhab.core.io.transport.modbus.ModbusConstants.ValueType;
 import org.openhab.core.library.types.DecimalType;
@@ -147,7 +145,8 @@ public enum SungrowInverterRegisters {
     BATTERY_CURRENT(13021, UINT16, ConversionConstants.DIV_BY_TEN, quantityStateFactory(Units.AMPERE),
             "battery-information"),
     BATTERY_POWER(13022, UINT16, ConversionConstants.ONE, quantityStateFactory(Units.WATT), "battery-information"),
-    BATTERY_POWER_SIGNED(13022, INT16, ConversionConstants.ONE, quantityStateFactory(Units.WATT), "battery-information"),
+    BATTERY_POWER_SIGNED(13022, INT16, ConversionConstants.ONE, quantityStateFactory(Units.WATT),
+            "battery-information"),
     BATTERY_LEVEL(13023, UINT16, ConversionConstants.DIV_BY_TEN, quantityStateFactory(Units.PERCENT),
             "battery-information"),
     BATTERY_HEALTHY(13024, UINT16, ConversionConstants.DIV_BY_TEN, quantityStateFactory(Units.PERCENT),
