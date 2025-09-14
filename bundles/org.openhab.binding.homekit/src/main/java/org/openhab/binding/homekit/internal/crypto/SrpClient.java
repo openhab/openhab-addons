@@ -135,7 +135,7 @@ public class SrpClient {
      * M3 — Client proof M1 = H( H(N)^H(g) || H(username) || salt || A || B || K ).
      */
     public byte[] getClientProof() throws Exception {
-        if (M1 != null) {
+        if (M1 == null) {
             MessageDigest sha512 = MessageDigest.getInstance("SHA-512");
 
             // u = H(A || B)

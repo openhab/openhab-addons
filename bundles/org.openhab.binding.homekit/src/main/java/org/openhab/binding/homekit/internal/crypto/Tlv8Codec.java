@@ -64,7 +64,7 @@ public class Tlv8Codec {
             int length = data[index++] & 0xFF;
 
             if (index + length > data.length) {
-                throw new IllegalArgumentException("Invalid TLV8 length");
+                throw new SecurityException("Invalid TLV8 length");
             }
 
             byte[] chunk = Arrays.copyOfRange(data, index, index + length);

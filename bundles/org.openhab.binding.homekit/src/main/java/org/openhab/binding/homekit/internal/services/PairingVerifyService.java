@@ -137,30 +137,30 @@ public class PairingVerifyService {
         /**
          * Validates the TLV map for the specification required pairing state.
          *
-         * @throws IllegalArgumentException if required keys are missing or state is invalid
+         * @throws SecurityException if required keys are missing or state is invalid
          */
-        public static void validate(PairingMethod method, Map<Integer, byte[]> tlv) throws IllegalArgumentException {
+        public static void validate(PairingMethod method, Map<Integer, byte[]> tlv) throws SecurityException {
             if (tlv.containsKey(TlvType.ERROR.key)) {
-                throw new IllegalArgumentException(
+                throw new SecurityException(
                         "Pairing method '%s' action failed with unknown error".formatted(method.name()));
             }
 
             byte[] stateBytes = tlv.get(TlvType.STATE.key);
             if (stateBytes == null || stateBytes.length != 1) {
-                throw new IllegalArgumentException("Missing or invalid 'STATE' TLV (0x06)");
+                throw new SecurityException("Missing or invalid 'STATE' TLV (0x06)");
             }
 
             PairingState state = PairingState.from(stateBytes[0]);
             Set<Integer> expectedKeys = SPECIFICATION_REQUIRED_KEYS.get(state);
 
             if (expectedKeys == null) {
-                throw new IllegalArgumentException(
+                throw new SecurityException(
                         "Pairing method '%s' unexpected state '%s'".formatted(method.name(), state.name()));
             }
 
             for (Integer key : expectedKeys) {
                 if (!tlv.containsKey(key)) {
-                    throw new IllegalArgumentException("Pairing method '%s' state '%s' required TLV '0x%02x' missing."
+                    throw new SecurityException("Pairing method '%s' state '%s' required TLV '0x%02x' missing."
                             .formatted(method.name(), state.name(), key));
                 }
             }
