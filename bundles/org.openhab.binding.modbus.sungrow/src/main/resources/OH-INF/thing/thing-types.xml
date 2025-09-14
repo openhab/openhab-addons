@@ -81,6 +81,7 @@
 			<channel id="sg-battery-voltage" typeId="sg-battery-voltage"/>
 			<channel id="sg-battery-current" typeId="sg-battery-current"/>
 			<channel id="sg-battery-power" typeId="sg-battery-power"/>
+			<channel id="sg-battery-power-signed" typeId="sg-battery-power-signed"/>
 			<channel id="sg-battery-power-wide-range" typeId="sg-battery-power-wide-range"/>
 			<channel id="sg-battery-level" typeId="sg-battery-level"/>
 			<channel id="sg-battery-healthy" typeId="sg-battery-healthy"/>
@@ -579,6 +580,16 @@
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
+    <channel-type id="sg-battery-power-signed">
+        <item-type>Number:Power</item-type>
+        <label>Battery Power signed</label>
+        <category>Energy</category>
+        <tags>
+            <tag>Measurement</tag>
+            <tag>Power</tag>
+        </tags>
+        <state pattern="%.2f %unit%" readOnly="true"/>
+    </channel-type>
 	<channel-type id="sg-battery-capacity-high-precision" advanced="true">
 		<item-type>Number:Energy</item-type>
 		<label>Battery Capacity HP</label>

@@ -52,84 +52,85 @@ You just have to select the configured bridge and optional configure the polling
 
 The `sungrow-inverter` thing has channels that serve the current state of the Sungrow inverter, as you are used to from the iSolarCloud Website and App.
 
-| Channel Type ID                               | Item Type                | Description                               | Advanced    | Channel Group       |
-|-----------------------------------------------|--------------------------|-------------------------------------------|-------------|---------------------|
-| sg-running-state                              | String                   | Running State                             | no          | Overview            |
-| sg-internal-temperature                       | Number:Temperature       | Internal Temperature                      | yes         | Overview            |
-| sg-total-dc-power                             | Number:Power             | Total DC Power                            | no          | Overview            |
-| sg-phase-a-voltage                            | Number:ElectricPotential | Phase A Voltage                           | yes         | Overview            |
-| sg-phase-b-voltage                            | Number:ElectricPotential | Phase B Voltage                           | yes         | Overview            |
-| sg-phase-c-voltage                            | Number:ElectricPotential | Phase C Voltage                           | yes         | Overview            |
-| sg-daily-pv-generation                        | Number:Energy            | Daily PV Generation                       | no          | Overview            |
-| sg-total-pv-generation                        | Number:Energy            | Total PV Generation                       | no          | Overview            |
-| sg-reactive-power                             | Number:Power             | Reactive Power                            | yes         | Overview            |
-| sg-power-factor                               | Number:Dimensionless     | Power Factor                              | yes         | Overview            |
-| sg-phase-a-current                            | Number:ElectricCurrent   | Phase A Current                           | yes         | Overview            |
-| sg-phase-b-current                            | Number:ElectricCurrent   | Phase B Current                           | yes         | Overview            |
-| sg-phase-c-current                            | Number:ElectricCurrent   | Phase C Current                           | yes         | Overview            |
-| sg-total-active-power                         | Number:Power             | Total Active Power                        | no          | Overview            |
-| sg-mppt1-voltage                              | Number:ElectricPotential | MPPT1 Voltage                             | yes         | MPPT Information    |
-| sg-mppt1-current                              | Number:ElectricCurrent   | MPPT1 Current                             | yes         | MPPT Information    |
-| sg-mppt2-voltage                              | Number:ElectricPotential | MPPT2 Voltage                             | yes         | MPPT Information    |
-| sg-mppt2-current                              | Number:ElectricCurrent   | MPPT2 Current                             | yes         | MPPT Information    |
-| sg-mppt3-voltage                              | Number:ElectricPotential | MPPT3 Voltage                             | yes         | MPPT Information    |
-| sg-mppt3-current                              | Number:ElectricCurrent   | MPPT3 Current                             | yes         | MPPT Information    |
-| sg-mppt4-voltage                              | Number:ElectricPotential | MPPT4 Voltage                             | yes         | MPPT Information    |
-| sg-mppt5-current                              | Number:ElectricCurrent   | MPPT4 Current                             | yes         | MPPT Information    |
-| sg-daily-battery-charge                       | Number:Energy            | Daily Battery Charge                      | no          | Battery Information |
-| sg-total-battery-charge                       | Number:Energy            | Total Battery Charge                      | no          | Battery Information |
-| sg-battery-voltage                            | Number:ElectricPotential | Battery Voltage                           | yes         | Battery Information |
-| sg-battery-current                            | Number:ElectricCurrent   | Battery Current                           | yes         | Battery Information |
-| sg-battery-power                              | Number:Power             | Battery Power                             | no          | Battery Information |
-| sg-battery-power-wide-range                   | Number:Power             | Battery Power Wide Range                  | yes         | Battery Information |
-| sg-battery-level                              | Number:Dimensionless     | Battery Level                             | no          | Battery Information |
-| sg-battery-healthy                            | Number:Dimensionless     | Battery Healthy                           | no          | Battery Information |
-| sg-battery-temperature                        | Number:Temperature       | Battery Temperature                       | no          | Battery Information |
-| sg-daily-battery-discharge-energy             | Number:Energy            | Daily Battery Discharge Energy            | no          | Battery Information |
-| sg-total-battery-discharge-energy             | Number:Energy            | Total Battery Discharge Energy            | no          | Battery Information |
-| sg-battery-capacity                           | Number:Energy            | Battery Capacity                          | no          | Battery Information |
-| sg-battery-capacity-high-precision            | Number:Energy            | Battery Capacity High Precision           | no          | Battery Information |
-| sg-daily-charge-energy                        | Number:Energy            | Daily Charge Energy                       | no          | Battery Information |
-| sg-total-charge-energy                        | Number:Energy            | Total Charge Energy                       | no          | Battery Information |
-| sg-grid-frequency                             | Number:Frequency         | Grid Frequency                            | yes         | Grid Information    |
-| sg-grid-frequency-high-precision              | Number:Frequency         | Grid Frequency High Precision             | yes         | Grid Information    |
-| sg-daily-import-energy                        | Number:Energy            | Daily Import Energy                       | no          | Grid Information    |
-| sg-total-import-energy                        | Number:Energy            | Total Import Energy                       | no          | Grid Information    |
-| sg-daily-export-energy                        | Number:Energy            | Daily Export Energy                       | no          | Grid Information    |
-| sg-total-export-energy                        | Number:Energy            | Total Export Energy                       | no          | Grid Information    |
-| sg-daily-export-power-from-pv                 | Number:Power             | Daily Export Power from PV                | no          | Grid Information    |
-| sg-total-export-energy-from-pv                | Number:Energy            | Total Export Energy from PV               | no          | Grid Information    |
-| sg-export-power                               | Number:Power             | Export Power                              | no          | Grid Information    |
-| sg-daily-output-energy                        | Number:Power             | Daily Output Energy                       | yes         | Grid Information    |
-| sg-total-output-energy                        | Number:Power             | Total Output Energy                       | yes         | Grid Information    |
-| sg-drm-state                                  | String                   | DRM State                                 | yes         | Grid Information    |
-| sg-load-power                                 | Number:Power             | Load Power                                | no          | Load Information    |
-| sg-daily-direct-energy-consumption            | Number:Energy            | Daily Direct Energy Consumption           | no          | Load Information    |
-| sg-total-direct-energy-consumption            | Number:Energy            | Total Direct Energy Consumption           | no          | Load Information    |
-| sg-self-consumption-today                     | Number:Dimensionless     | Self Consumption Today                    | no          | Load Information    |
-| sg-phase-a-backup-current                     | Number:ElectricCurrent   | Phase A Backup Current                    | yes         | Backup Information    |
-| sg-phase-b-backup-current                     | Number:ElectricCurrent   | Phase B Backup Current                    | yes         | Backup Information    |
-| sg-phase-c-backup-current                     | Number:ElectricCurrent   | Phase C Backup Current                    | yes         | Backup Information    |
-| sg-phase-a-backup-power                       | Number:Power             | Phase A Backup Power                      | yes         | Backup Information    |
-| sg-phase-b-backup-power                       | Number:Power             | Phase B Backup Power                      | yes         | Backup Information    |
-| sg-phase-c-backup-power                       | Number:Power             | Phase C Backup Power                      | yes         | Backup Information    |
-| sg-phase-a-backup-voltage                     | Number:ElectricPotential | Phase A Backup Voltage                    | yes         | Backup Information    |
-| sg-phase-b-backup-voltage                     | Number:ElectricPotential | Phase B Backup Voltage                    | yes         | Backup Information    |
-| sg-phase-c-backup-voltage                     | Number:ElectricPotential | Phase C Backup Voltage                    | yes         | Backup Information    |
-| sg-total-backup-power                         | Number:Power             | Backup Total Power                        | yes         | Backup Information    |
-| sg-backup-frequency                           | Number:Frequency         | Backup Frequency                          | yes         | Backup Information    |
-| sg-export-limit-min                           | Number:Energy            | Export Limit Min                          | yes         | Settings Information    |
-| sg-export-limit-max                           | Number:Energy            | Export Limit Max                          | yes         | Settings Information    |
-| sg-bdc-rated-power                            | Number:Power             | BDC Rated Power                           | yes         | Settings Information    |
-| sg-max-charging-current-bms                   | Number:Energy            | Max. Charging Current                     | yes         | Settings Information    |
-| sg-max-discharging-current-bms                | Number:Energy            | Max. Discharging Current                  | yes         | Settings Information    |
-| sg-power-flow-status-pv-power                 | Switch                   | Power generated from PV                   | yes         | Power Flow Information    |
-| sg-power-flow-status-battery-charging         | Switch                   | Battery charging                          | yes         | Power Flow Information    |
-| sg-power-flow-status-battery-discharging      | Switch                   | Battery discharging                       | yes         | Power Flow Information    |
-| sg-power-flow-status-positive-load-power      | Switch                   | OFF: Load is reactive, ON: Load is active | yes         | Power Flow Information    |
-| sg-power-flow-status-feed-in-power            | Switch                   | Feed in power to grid                     | yes         | Power Flow Information    |
-| sg-power-flow-status-import-from-grid         | Switch                   | Import power from grid                    | yes         | Power Flow Information    |
-| sg-power-flow-status-negative-load-power      | Switch                   | Power generated from Load                 | yes         | Power Flow Information    |
+| Channel Type ID                          | Item Type                | Description                               | Advanced    | Channel Group       |
+|------------------------------------------|--------------------------|-------------------------------------------|-------------|---------------------|
+| sg-running-state                         | String                   | Running State                             | no          | Overview            |
+| sg-internal-temperature                  | Number:Temperature       | Internal Temperature                      | yes         | Overview            |
+| sg-total-dc-power                        | Number:Power             | Total DC Power                            | no          | Overview            |
+| sg-phase-a-voltage                       | Number:ElectricPotential | Phase A Voltage                           | yes         | Overview            |
+| sg-phase-b-voltage                       | Number:ElectricPotential | Phase B Voltage                           | yes         | Overview            |
+| sg-phase-c-voltage                       | Number:ElectricPotential | Phase C Voltage                           | yes         | Overview            |
+| sg-daily-pv-generation                   | Number:Energy            | Daily PV Generation                       | no          | Overview            |
+| sg-total-pv-generation                   | Number:Energy            | Total PV Generation                       | no          | Overview            |
+| sg-reactive-power                        | Number:Power             | Reactive Power                            | yes         | Overview            |
+| sg-power-factor                          | Number:Dimensionless     | Power Factor                              | yes         | Overview            |
+| sg-phase-a-current                       | Number:ElectricCurrent   | Phase A Current                           | yes         | Overview            |
+| sg-phase-b-current                       | Number:ElectricCurrent   | Phase B Current                           | yes         | Overview            |
+| sg-phase-c-current                       | Number:ElectricCurrent   | Phase C Current                           | yes         | Overview            |
+| sg-total-active-power                    | Number:Power             | Total Active Power                        | no          | Overview            |
+| sg-mppt1-voltage                         | Number:ElectricPotential | MPPT1 Voltage                             | yes         | MPPT Information    |
+| sg-mppt1-current                         | Number:ElectricCurrent   | MPPT1 Current                             | yes         | MPPT Information    |
+| sg-mppt2-voltage                         | Number:ElectricPotential | MPPT2 Voltage                             | yes         | MPPT Information    |
+| sg-mppt2-current                         | Number:ElectricCurrent   | MPPT2 Current                             | yes         | MPPT Information    |
+| sg-mppt3-voltage                         | Number:ElectricPotential | MPPT3 Voltage                             | yes         | MPPT Information    |
+| sg-mppt3-current                         | Number:ElectricCurrent   | MPPT3 Current                             | yes         | MPPT Information    |
+| sg-mppt4-voltage                         | Number:ElectricPotential | MPPT4 Voltage                             | yes         | MPPT Information    |
+| sg-mppt5-current                         | Number:ElectricCurrent   | MPPT4 Current                             | yes         | MPPT Information    |
+| sg-daily-battery-charge                  | Number:Energy            | Daily Battery Charge                      | no          | Battery Information |
+| sg-total-battery-charge                  | Number:Energy            | Total Battery Charge                      | no          | Battery Information |
+| sg-battery-voltage                       | Number:ElectricPotential | Battery Voltage                           | yes         | Battery Information |
+| sg-battery-current                       | Number:ElectricCurrent   | Battery Current                           | yes         | Battery Information |
+| sg-battery-power                         | Number:Power             | Battery Power                             | no          | Battery Information |
+| sg-battery-power-signed                  | Number:Power             | Battery Power signed                      | no          | Battery Information |
+| sg-battery-power-wide-range              | Number:Power             | Battery Power Wide Range                  | yes         | Battery Information |
+| sg-battery-level                         | Number:Dimensionless     | Battery Level                             | no          | Battery Information |
+| sg-battery-healthy                       | Number:Dimensionless     | Battery Healthy                           | no          | Battery Information |
+| sg-battery-temperature                   | Number:Temperature       | Battery Temperature                       | no          | Battery Information |
+| sg-daily-battery-discharge-energy        | Number:Energy            | Daily Battery Discharge Energy            | no          | Battery Information |
+| sg-total-battery-discharge-energy        | Number:Energy            | Total Battery Discharge Energy            | no          | Battery Information |
+| sg-battery-capacity                      | Number:Energy            | Battery Capacity                          | no          | Battery Information |
+| sg-battery-capacity-high-precision       | Number:Energy            | Battery Capacity High Precision           | no          | Battery Information |
+| sg-daily-charge-energy                   | Number:Energy            | Daily Charge Energy                       | no          | Battery Information |
+| sg-total-charge-energy                   | Number:Energy            | Total Charge Energy                       | no          | Battery Information |
+| sg-grid-frequency                        | Number:Frequency         | Grid Frequency                            | yes         | Grid Information    |
+| sg-grid-frequency-high-precision         | Number:Frequency         | Grid Frequency High Precision             | yes         | Grid Information    |
+| sg-daily-import-energy                   | Number:Energy            | Daily Import Energy                       | no          | Grid Information    |
+| sg-total-import-energy                   | Number:Energy            | Total Import Energy                       | no          | Grid Information    |
+| sg-daily-export-energy                   | Number:Energy            | Daily Export Energy                       | no          | Grid Information    |
+| sg-total-export-energy                   | Number:Energy            | Total Export Energy                       | no          | Grid Information    |
+| sg-daily-export-power-from-pv            | Number:Power             | Daily Export Power from PV                | no          | Grid Information    |
+| sg-total-export-energy-from-pv           | Number:Energy            | Total Export Energy from PV               | no          | Grid Information    |
+| sg-export-power                          | Number:Power             | Export Power                              | no          | Grid Information    |
+| sg-daily-output-energy                   | Number:Power             | Daily Output Energy                       | yes         | Grid Information    |
+| sg-total-output-energy                   | Number:Power             | Total Output Energy                       | yes         | Grid Information    |
+| sg-drm-state                             | String                   | DRM State                                 | yes         | Grid Information    |
+| sg-load-power                            | Number:Power             | Load Power                                | no          | Load Information    |
+| sg-daily-direct-energy-consumption       | Number:Energy            | Daily Direct Energy Consumption           | no          | Load Information    |
+| sg-total-direct-energy-consumption       | Number:Energy            | Total Direct Energy Consumption           | no          | Load Information    |
+| sg-self-consumption-today                | Number:Dimensionless     | Self Consumption Today                    | no          | Load Information    |
+| sg-phase-a-backup-current                | Number:ElectricCurrent   | Phase A Backup Current                    | yes         | Backup Information    |
+| sg-phase-b-backup-current                | Number:ElectricCurrent   | Phase B Backup Current                    | yes         | Backup Information    |
+| sg-phase-c-backup-current                | Number:ElectricCurrent   | Phase C Backup Current                    | yes         | Backup Information    |
+| sg-phase-a-backup-power                  | Number:Power             | Phase A Backup Power                      | yes         | Backup Information    |
+| sg-phase-b-backup-power                  | Number:Power             | Phase B Backup Power                      | yes         | Backup Information    |
+| sg-phase-c-backup-power                  | Number:Power             | Phase C Backup Power                      | yes         | Backup Information    |
+| sg-phase-a-backup-voltage                | Number:ElectricPotential | Phase A Backup Voltage                    | yes         | Backup Information    |
+| sg-phase-b-backup-voltage                | Number:ElectricPotential | Phase B Backup Voltage                    | yes         | Backup Information    |
+| sg-phase-c-backup-voltage                | Number:ElectricPotential | Phase C Backup Voltage                    | yes         | Backup Information    |
+| sg-total-backup-power                    | Number:Power             | Backup Total Power                        | yes         | Backup Information    |
+| sg-backup-frequency                      | Number:Frequency         | Backup Frequency                          | yes         | Backup Information    |
+| sg-export-limit-min                      | Number:Energy            | Export Limit Min                          | yes         | Settings Information    |
+| sg-export-limit-max                      | Number:Energy            | Export Limit Max                          | yes         | Settings Information    |
+| sg-bdc-rated-power                       | Number:Power             | BDC Rated Power                           | yes         | Settings Information    |
+| sg-max-charging-current-bms              | Number:Energy            | Max. Charging Current                     | yes         | Settings Information    |
+| sg-max-discharging-current-bms           | Number:Energy            | Max. Discharging Current                  | yes         | Settings Information    |
+| sg-power-flow-status-pv-power            | Switch                   | Power generated from PV                   | yes         | Power Flow Information    |
+| sg-power-flow-status-battery-charging    | Switch                   | Battery charging                          | yes         | Power Flow Information    |
+| sg-power-flow-status-battery-discharging | Switch                   | Battery discharging                       | yes         | Power Flow Information    |
+| sg-power-flow-status-positive-load-power | Switch                   | OFF: Load is reactive, ON: Load is active | yes         | Power Flow Information    |
+| sg-power-flow-status-feed-in-power       | Switch                   | Feed in power to grid                     | yes         | Power Flow Information    |
+| sg-power-flow-status-import-from-grid    | Switch                   | Import power from grid                    | yes         | Power Flow Information    |
+| sg-power-flow-status-negative-load-power | Switch                   | Power generated from Load                 | yes         | Power Flow Information    |
 
 ## Full Example
 
