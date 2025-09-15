@@ -35,7 +35,7 @@ import org.openhab.binding.meross.internal.command.Command;
 import org.openhab.binding.meross.internal.dto.MqttMessageBuilder;
 import org.openhab.binding.meross.internal.factory.ModeFactory;
 import org.openhab.binding.meross.internal.factory.TypeFactory;
-import org.openhab.binding.meross.internal.handler.MerossDeviceHandler;
+import org.openhab.binding.meross.internal.handler.MerossDeviceHandlerCallback;
 import org.openhab.core.io.transport.mqtt.MqttException;
 import org.openhab.core.io.transport.mqtt.MqttMessageSubscriber;
 import org.slf4j.Logger;
@@ -66,11 +66,14 @@ public class MerossManager implements MqttMessageSubscriber {
     private MerossMqttConnector mqttConnector;
     private @Nullable MerossHttpConnector httpConnector;
     private String deviceUUID;
-    private MerossDeviceHandler callback;
+    private MerossDeviceHandlerCallback callback;
 
     private String deviceRequestTopic;
 
+    private static final int FUTURE_TIMOUT_SEC = 5;
     private @Nullable CompletableFuture<Boolean> ipInitialized;
+    private @Nullable CompletableFuture<String> responseFuture;
+    private @Nullable CompletableFuture<String> abilitiesFuture;
 
     private Set<String> abilities = Set.of();
 
@@ -79,7 +82,7 @@ public class MerossManager implements MqttMessageSubscriber {
     }.getType();
 
     public MerossManager(HttpClient httpClient, MerossMqttConnector mqttConnector, String deviceUUID,
-            MerossDeviceHandler callback) {
+            MerossDeviceHandlerCallback callback) {
         this.deviceUUID = deviceUUID;
         this.deviceRequestTopic = MqttMessageBuilder.buildDeviceRequestTopic(deviceUUID);
         this.callback = callback;
@@ -152,7 +155,7 @@ public class MerossManager implements MqttMessageSubscriber {
         }
     }
 
-    private void publishMessage(String topic, byte[] message) throws MqttException, InterruptedException {
+    private synchronized void publishMessage(String topic, byte[] message) throws MqttException, InterruptedException {
         logger.trace("Publishing topic {}, message {}", ContentAnonymizer.anonymizeTopic(topic),
                 ContentAnonymizer.anonymizeMessage(new String(message, StandardCharsets.UTF_8)));
 
@@ -178,7 +181,7 @@ public class MerossManager implements MqttMessageSubscriber {
                 Collections.emptyMap());
         CompletableFuture<Boolean> ipInitialized = new CompletableFuture<Boolean>();
         publishMessage(deviceRequestTopic, message);
-        ipInitialized.orTimeout(5, TimeUnit.SECONDS);
+        ipInitialized.orTimeout(FUTURE_TIMOUT_SEC, TimeUnit.SECONDS);
         this.ipInitialized = ipInitialized;
         if (callback.getIpAddress() != null) {
             // If there is already an IP address configured, we don't have to wait to get it
@@ -229,7 +232,7 @@ public class MerossManager implements MqttMessageSubscriber {
     }
 
     @Override
-    public void processMessage(String topic, byte[] message) {
+    public synchronized void processMessage(String topic, byte[] message) {
         try {
             String mqttPayload = new String(message, StandardCharsets.UTF_8);
             logger.trace("Processing topic {}, message {}", ContentAnonymizer.anonymizeTopic(topic),
@@ -261,6 +264,7 @@ public class MerossManager implements MqttMessageSubscriber {
             if ("GETACK".equals(method)) {
                 switch (namespace) {
                     case Namespace.SYSTEM_ALL:
+                        setResponse(mqttPayload, namespace);
                         JsonObject all;
                         if (payload.has("all") && !payload.get("all").isJsonNull()) {
                             all = payload.getAsJsonObject("all");
@@ -303,6 +307,7 @@ public class MerossManager implements MqttMessageSubscriber {
                         }
                         break;
                     case Namespace.SYSTEM_ABILITY:
+                        setResponse(mqttPayload, namespace);
                         if (payload.has("ability") && !payload.get("ability").isJsonNull()) {
                             JsonElement ability = payload.get("ability").getAsJsonObject();
                             Map<String, Object> abilities = GSON.fromJson(ability, ABILITIES_TYPE);
@@ -373,5 +378,58 @@ public class MerossManager implements MqttMessageSubscriber {
                 return;
         }
         callback.updateState(namespace, deviceChannel, modeFactory.state(merossState));
+    }
+
+    /**
+     * Method to be used in command extension to get device specifications.
+     *
+     * @return JSON with device specifications
+     * @throws InterruptedException
+     * @throws ExecutionException
+     * @throws TimeoutException
+     * @throws MqttException
+     */
+    public String getDeviceSpecsCommand()
+            throws InterruptedException, ExecutionException, TimeoutException, MqttException {
+        setHttpConnector();
+        String systemAll = getSystemAllCommand();
+        String abilities = getAbilitiesCommand();
+        JsonObject wrapper = new JsonObject();
+        if (systemAll != null) {
+            wrapper.add("systemAll", JsonParser.parseString(systemAll));
+        }
+        if (abilities != null) {
+            wrapper.add("abilities", JsonParser.parseString(abilities));
+        }
+        return wrapper.toString();
+    }
+
+    private @Nullable String getSystemAllCommand()
+            throws InterruptedException, ExecutionException, TimeoutException, MqttException {
+        CompletableFuture<String> responseFuture = new CompletableFuture<>();
+        if (httpConnector == null) {
+            setHttpConnector();
+        }
+        this.responseFuture = responseFuture;
+        getSystemAll();
+        return responseFuture.get(FUTURE_TIMOUT_SEC, TimeUnit.SECONDS);
+    }
+
+    private @Nullable String getAbilitiesCommand()
+            throws InterruptedException, ExecutionException, TimeoutException, MqttException {
+        CompletableFuture<String> responseFuture = new CompletableFuture<>();
+        if (httpConnector == null) {
+            setHttpConnector();
+        }
+        this.responseFuture = responseFuture;
+        getAbilities();
+        return responseFuture.get(FUTURE_TIMOUT_SEC, TimeUnit.SECONDS);
+    }
+
+    private void setResponse(String message, Namespace namespace) {
+        CompletableFuture<String> responseFuture = this.responseFuture;
+        if (responseFuture != null && !responseFuture.isDone()) {
+            responseFuture.complete(message);
+        }
     }
 }

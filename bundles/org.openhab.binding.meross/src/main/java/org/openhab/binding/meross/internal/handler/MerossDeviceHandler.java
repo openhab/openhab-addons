@@ -43,7 +43,7 @@ import org.slf4j.LoggerFactory;
  * @author Mark Herwege - Initial contribution
  */
 @NonNullByDefault
-public abstract class MerossDeviceHandler extends BaseThingHandler {
+public abstract class MerossDeviceHandler extends BaseThingHandler implements MerossDeviceHandlerCallback {
 
     protected @NonNullByDefault({}) MerossDeviceConfiguration config;
     protected @Nullable MerossBridgeHandler merossBridgeHandler;
@@ -165,6 +165,7 @@ public abstract class MerossDeviceHandler extends BaseThingHandler {
         updateConfiguration(configuration);
     }
 
+    @Override
     public @Nullable String getIpAddress() {
         return ipAddress;
     }

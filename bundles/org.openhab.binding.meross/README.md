@@ -60,7 +60,7 @@ You will need to manually scan for new devices.
 | ipAddress | text | The IP address of the device in the local network        | N/A     | yes      | light, door, tripleDoor         | no       |
 
 The unique key to the device is the `uuid` and will be retrieved and set during discovery.
-If you wish to use textual thing configuration, get the ID from the discovered thing.
+If you wish to use textual thing configuration, you get the ID from the discovered thing or through the console `devices` command.
 
 The `ipAddress` will be retrieved during initial configuration with the device.
 Once established, it will be used for local device communication.
@@ -76,6 +76,20 @@ Only power channel is supported:
 | doorState0 | Rollershutter | tripleDoor | x         | Garage door up/down control, first door                      |
 | doorState1 | Rollershutter | tripleDoor | x         | Garage door up/down control, second door                     |
 | doorState2 | Rollershutter | tripleDoor | x         | Garage door up/down control, third door                      |
+
+## Console Commands
+
+A number of commands are supported from the console:
+
+- `meross devices <userEmail>`: get a list of devices and their Meross UUID.
+- `meross fingerprint <userEmail> <devName>`: get a device description in JSON format and write the result to a file.
+
+The arguments are optional and will limit the selection of the returned information.
+
+The `fingerprint` command is especially useful for devices currently not supported by the binding.
+It contains information that will help developing new functionalities.
+Fingerprint information is written in the user's home `meross` directory.
+All personal information is masked.
 
 ## Full Example
 

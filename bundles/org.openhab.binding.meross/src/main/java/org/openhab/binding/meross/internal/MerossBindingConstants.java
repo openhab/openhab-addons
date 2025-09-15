@@ -31,7 +31,7 @@ import org.openhab.core.thing.ThingTypeUID;
 @NonNullByDefault
 public class MerossBindingConstants {
 
-    static final String BINDING_ID = "meross";
+    public static final String BINDING_ID = "meross";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_GATEWAY = new ThingTypeUID(BINDING_ID, "gateway");

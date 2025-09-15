@@ -139,6 +139,10 @@ public class MerossBridgeHandler extends BaseBridgeHandler {
         return List.of();
     }
 
+    public List<Device> getDevices() {
+        return devices;
+    }
+
     public @Nullable MerossMqttConnector getMerossMqttConnector() {
         return merossMqttConnector;
     }
@@ -167,7 +171,7 @@ public class MerossBridgeHandler extends BaseBridgeHandler {
             if (merossMqttConnector != null) {
                 merossMqttConnector.stopConnection();
             }
-            merossMqttConnector = new MerossMqttConnector(this);
+            merossMqttConnector = new MerossMqttConnector(this, scheduler);
             merossMqttConnector.startConnection();
         }
     }
