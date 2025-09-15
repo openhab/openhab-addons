@@ -36,7 +36,6 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.stream.Collectors;
 
 import javax.net.ssl.SSLHandshakeException;
 
@@ -827,7 +826,7 @@ public class HueBridge {
                 })//
                 .filter(scene -> !scene.isRecycle())//
                 .sorted(Comparator.comparing(Scene::extractKeyForComparator))//
-                .collect(Collectors.toList());
+                .toList();
     }
 
     /**
