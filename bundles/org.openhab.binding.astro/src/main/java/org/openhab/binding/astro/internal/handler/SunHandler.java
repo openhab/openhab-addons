@@ -118,7 +118,7 @@ public class SunHandler extends AstroThingHandler {
         Range eventRange = getSunAt(date).getAllRanges().get(sunPhase);
         if (eventRange != null) {
             Calendar cal = begin ? eventRange.getStart() : eventRange.getEnd();
-            return ZonedDateTime.ofInstant(cal.toInstant(), date.getZone());
+            return cal == null ? null : ZonedDateTime.ofInstant(cal.toInstant(), date.getZone());
         } else {
             return null;
         }

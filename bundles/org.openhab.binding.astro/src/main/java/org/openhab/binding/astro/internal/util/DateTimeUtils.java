@@ -17,6 +17,8 @@ import java.util.Locale;
 import java.util.TimeZone;
 import java.util.regex.Pattern;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.astro.internal.config.AstroChannelConfig;
 import org.openhab.binding.astro.internal.model.Range;
 import org.slf4j.Logger;
@@ -27,6 +29,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class DateTimeUtils {
     private static final Logger LOGGER = LoggerFactory.getLogger(DateTimeUtils.class);
     private static final Pattern HHMM_PATTERN = Pattern.compile("^([0-1][0-9]|2[0-3])(:[0-5][0-9])$");
@@ -73,13 +76,13 @@ public class DateTimeUtils {
      */
     public static Range getRange(int startYear, int startMonth, int startDay, int endYear, int endMonth, int endDay,
             TimeZone zone, Locale locale) {
-        Calendar start = Calendar.getInstance(zone, locale);
+        Calendar end = Calendar.getInstance(zone, locale);
+        Calendar start = (Calendar) end.clone();
         start.set(Calendar.YEAR, startYear);
         start.set(Calendar.MONTH, startMonth);
         start.set(Calendar.DAY_OF_MONTH, startDay);
         start = truncateToMidnight(start);
 
-        Calendar end = Calendar.getInstance(zone, locale);
         end.set(Calendar.YEAR, endYear);
         end.set(Calendar.MONTH, endMonth);
         end.set(Calendar.DAY_OF_MONTH, endDay);
@@ -94,6 +97,7 @@ public class DateTimeUtils {
     /**
      * Returns a calendar object from a julian date.
      */
+    @Nullable
     public static Calendar toCalendar(double julianDate, TimeZone zone, Locale locale) {
         if (Double.compare(julianDate, Double.NaN) == 0 || julianDate == 0) {
             return null;
@@ -139,6 +143,7 @@ public class DateTimeUtils {
     /**
      * Converts the time (hour.minute) to a calendar object.
      */
+    @Nullable
     public static Calendar timeToCalendar(Calendar calendar, double time) {
         if (time < 0.0) {
             return null;
@@ -161,7 +166,7 @@ public class DateTimeUtils {
     /**
      * Returns true, if two calendar objects are on the same day ignoring time.
      */
-    public static boolean isSameDay(Calendar cal1, Calendar cal2) {
+    public static boolean isSameDay(@Nullable Calendar cal1, @Nullable Calendar cal2) {
         return cal1 != null && cal2 != null && cal1.get(Calendar.ERA) == cal2.get(Calendar.ERA)
                 && cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR)
                 && cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR);
@@ -171,9 +176,12 @@ public class DateTimeUtils {
      * Returns the next Calendar from today.
      */
     public static Calendar getNextFromToday(TimeZone zone, Locale locale, Calendar... calendars) {
-        return getNext(Calendar.getInstance(zone, locale), calendars);
+        Calendar now = Calendar.getInstance(zone, locale);
+        Calendar result = getNext(now, calendars);
+        return result == null ? now : result;
     }
 
+    @Nullable
     static Calendar getNext(Calendar now, Calendar... calendars) {
         Calendar next = null;
         Calendar firstSeasonOfYear = null;
@@ -205,11 +213,11 @@ public class DateTimeUtils {
     }
 
     public static Calendar getAdjustedEarliest(Calendar cal, AstroChannelConfig config) {
-        return adjustTime(cal, getMinutesFromTime(config.earliest));
+        return config.earliest == null ? cal : adjustTime(cal, getMinutesFromTime(config.earliest));
     }
 
     public static Calendar getAdjustedLatest(Calendar cal, AstroChannelConfig config) {
-        return adjustTime(cal, getMinutesFromTime(config.latest));
+        return config.latest == null ? cal : adjustTime(cal, getMinutesFromTime(config.latest));
     }
 
     /**
@@ -250,7 +258,7 @@ public class DateTimeUtils {
     /**
      * Parses a HH:MM string and returns the minutes.
      */
-    private static int getMinutesFromTime(String configTime) {
+    private static int getMinutesFromTime(@Nullable String configTime) {
         if (configTime != null) {
             String time = configTime.trim();
             if (!time.isEmpty()) {

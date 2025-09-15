@@ -65,19 +65,34 @@ public final class DailyJobMoon extends AbstractJob {
             return;
         }
         Moon moon = (Moon) planet;
-        scheduleEvent(thingUID, handler, moon.getRise().getStart(), EVENT_START, EVENT_CHANNEL_ID_RISE, false, zone,
-                locale);
-        scheduleEvent(thingUID, handler, moon.getSet().getEnd(), EVENT_END, EVENT_CHANNEL_ID_SET, false, zone, locale);
+        Calendar cal = moon.getRise().getStart();
+        if (cal != null) {
+            scheduleEvent(thingUID, handler, cal, EVENT_START, EVENT_CHANNEL_ID_RISE, false, zone, locale);
+        }
+        cal = moon.getSet().getEnd();
+        if (cal != null) {
+            scheduleEvent(thingUID, handler, cal, EVENT_END, EVENT_CHANNEL_ID_SET, false, zone, locale);
+        }
 
         MoonPhase moonPhase = moon.getPhase();
-        scheduleEvent(thingUID, handler, moonPhase.getFirstQuarter(), EVENT_PHASE_FIRST_QUARTER,
-                EVENT_CHANNEL_ID_MOON_PHASE, false, zone, locale);
-        scheduleEvent(thingUID, handler, moonPhase.getThirdQuarter(), EVENT_PHASE_THIRD_QUARTER,
-                EVENT_CHANNEL_ID_MOON_PHASE, false, zone, locale);
-        scheduleEvent(thingUID, handler, moonPhase.getFull(), EVENT_PHASE_FULL, EVENT_CHANNEL_ID_MOON_PHASE, false,
-                zone, locale);
-        scheduleEvent(thingUID, handler, moonPhase.getNew(), EVENT_PHASE_NEW, EVENT_CHANNEL_ID_MOON_PHASE, false, zone,
-                locale);
+        cal = moonPhase.getFirstQuarter();
+        if (cal != null) {
+            scheduleEvent(thingUID, handler, cal, EVENT_PHASE_FIRST_QUARTER, EVENT_CHANNEL_ID_MOON_PHASE, false, zone,
+                    locale);
+        }
+        cal = moonPhase.getThirdQuarter();
+        if (cal != null) {
+            scheduleEvent(thingUID, handler, cal, EVENT_PHASE_THIRD_QUARTER, EVENT_CHANNEL_ID_MOON_PHASE, false, zone,
+                    locale);
+        }
+        cal = moonPhase.getFull();
+        if (cal != null) {
+            scheduleEvent(thingUID, handler, cal, EVENT_PHASE_FULL, EVENT_CHANNEL_ID_MOON_PHASE, false, zone, locale);
+        }
+        cal = moonPhase.getNew();
+        if (cal != null) {
+            scheduleEvent(thingUID, handler, cal, EVENT_PHASE_NEW, EVENT_CHANNEL_ID_MOON_PHASE, false, zone, locale);
+        }
 
         Eclipse eclipse = moon.getEclipse();
         eclipse.getKinds().forEach(eclipseKind -> {
@@ -88,10 +103,14 @@ public final class DailyJobMoon extends AbstractJob {
             }
         });
 
-        scheduleEvent(thingUID, handler, moon.getPerigee().getDate(), EVENT_PERIGEE, EVENT_CHANNEL_ID_PERIGEE, false,
-                zone, locale);
-        scheduleEvent(thingUID, handler, moon.getApogee().getDate(), EVENT_APOGEE, EVENT_CHANNEL_ID_APOGEE, false, zone,
-                locale);
+        cal = moon.getPerigee().getDate();
+        if (cal != null) {
+            scheduleEvent(thingUID, handler, cal, EVENT_PERIGEE, EVENT_CHANNEL_ID_PERIGEE, false, zone, locale);
+        }
+        cal = moon.getApogee().getDate();
+        if (cal != null) {
+            scheduleEvent(thingUID, handler, cal, EVENT_APOGEE, EVENT_CHANNEL_ID_APOGEE, false, zone, locale);
+        }
     }
 
     @Override

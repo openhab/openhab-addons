@@ -81,8 +81,10 @@ public class MoonCalcTest {
 
         // expected result from haevens-above.com is 406,391 km @ 04 March 2019 12:27
         assertEquals(406391, moon.getApogee().getDistance().doubleValue(), ACCURACY_IN_KILOMETRES);
+        Calendar apogeeDate = moon.getApogee().getDate();
+        assertNotNull(apogeeDate);
         assertEquals(MoonCalcTest.newCalendar(2019, Calendar.MARCH, 4, 12, 27, TIME_ZONE).getTimeInMillis(),
-                moon.getApogee().getDate().getTimeInMillis(), ACCURACY_IN_MILLIS);
+                apogeeDate.getTimeInMillis(), ACCURACY_IN_MILLIS);
     }
 
     @Test
@@ -92,26 +94,32 @@ public class MoonCalcTest {
         // expected result from haevens-above.com is 359,377 km @ 19 February 2019 20:44
         assertEquals(359377, moon.getPerigee().getDistance().doubleValue(), ACCURACY_IN_KILOMETRES);
 
+        Calendar perigeeDate = moon.getPerigee().getDate();
+        assertNotNull(perigeeDate);
         assertEquals(MoonCalcTest.newCalendar(2019, Calendar.MARCH, 19, 20, 48, TIME_ZONE).getTimeInMillis(),
-                moon.getPerigee().getDate().getTimeInMillis(), ACCURACY_IN_MILLIS);
+                perigeeDate.getTimeInMillis(), ACCURACY_IN_MILLIS);
     }
 
     @Test
     public void testGetMoonInfoForRiseAccuracy() {
         Moon moon = moonCalc.getMoonInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE, TIME_ZONE, Locale.ROOT);
 
+        Calendar riseStart = moon.getRise().getStart();
+        assertNotNull(riseStart);
         // expected result from haevens-above.com is 03:00
         assertEquals(MoonCalcTest.newCalendar(2019, Calendar.FEBRUARY, 27, 3, 0, TIME_ZONE).getTimeInMillis(),
-                moon.getRise().getStart().getTimeInMillis(), ACCURACY_IN_MILLIS);
+                riseStart.getTimeInMillis(), ACCURACY_IN_MILLIS);
     }
 
     @Test
     public void testGetMoonInfoForSetAccuracy() {
         Moon moon = moonCalc.getMoonInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE, TIME_ZONE, Locale.ROOT);
 
+        Calendar setStart = moon.getSet().getStart();
+        assertNotNull(setStart);
         // expected result from haevens-above.com is 11:35
         assertEquals(MoonCalcTest.newCalendar(2019, Calendar.FEBRUARY, 27, 11, 35, TIME_ZONE).getTimeInMillis(),
-                moon.getSet().getStart().getTimeInMillis(), ACCURACY_IN_MILLIS);
+                setStart.getTimeInMillis(), ACCURACY_IN_MILLIS);
     }
 
     @Test
@@ -150,14 +158,22 @@ public class MoonCalcTest {
         // First quarter 14 March 2019 11:27
         // Full moon 21 March 2019 02:43
         // Last quarter 28 March 2019 05:10
+        Calendar phaseCal = moon.getPhase().getNew();
+        assertNotNull(phaseCal);
         assertEquals(MoonCalcTest.newCalendar(2019, Calendar.MARCH, 06, 17, 04, TIME_ZONE).getTimeInMillis(),
-                moon.getPhase().getNew().getTimeInMillis(), ACCURACY_IN_MILLIS);
+                phaseCal.getTimeInMillis(), ACCURACY_IN_MILLIS);
+        phaseCal = moon.getPhase().getFirstQuarter();
+        assertNotNull(phaseCal);
         assertEquals(MoonCalcTest.newCalendar(2019, Calendar.MARCH, 14, 11, 27, TIME_ZONE).getTimeInMillis(),
-                moon.getPhase().getFirstQuarter().getTimeInMillis(), ACCURACY_IN_MILLIS);
+                phaseCal.getTimeInMillis(), ACCURACY_IN_MILLIS);
+        phaseCal = moon.getPhase().getFull();
+        assertNotNull(phaseCal);
         assertEquals(MoonCalcTest.newCalendar(2019, Calendar.MARCH, 21, 02, 43, TIME_ZONE).getTimeInMillis(),
-                moon.getPhase().getFull().getTimeInMillis(), ACCURACY_IN_MILLIS);
+                phaseCal.getTimeInMillis(), ACCURACY_IN_MILLIS);
+        phaseCal = moon.getPhase().getThirdQuarter();
+        assertNotNull(phaseCal);
         assertEquals(MoonCalcTest.newCalendar(2019, Calendar.MARCH, 28, 05, 10, TIME_ZONE).getTimeInMillis(),
-                moon.getPhase().getThirdQuarter().getTimeInMillis(), ACCURACY_IN_MILLIS);
+                phaseCal.getTimeInMillis(), ACCURACY_IN_MILLIS);
     }
 
     /***

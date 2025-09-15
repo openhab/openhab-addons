@@ -23,6 +23,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TimeZone;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.astro.internal.model.Eclipse;
 import org.openhab.binding.astro.internal.model.EclipseType;
 import org.openhab.binding.astro.internal.model.Position;
@@ -39,6 +41,7 @@ import org.openhab.binding.astro.internal.util.DateTimeUtils;
  * @author Christoph Weitkamp - Introduced UoM
  * @implNote based on the calculations of http://www.suncalc.net
  */
+@NonNullByDefault
 public class SunCalc {
     private static final double J2000 = 2451545.0;
     private static final double SC = 1367; // Solar constant in W/m²
@@ -71,7 +74,8 @@ public class SunCalc {
     /**
      * Calculates the sun position (azimuth and elevation).
      */
-    public void setPositionalInfo(Calendar calendar, double latitude, double longitude, Double altitude, Sun sun) {
+    public void setPositionalInfo(Calendar calendar, double latitude, double longitude, @Nullable Double altitude,
+            Sun sun) {
         double lw = -longitude * DEG2RAD;
         double phi = latitude * DEG2RAD;
 
@@ -98,7 +102,7 @@ public class SunCalc {
     /**
      * Calculates sun radiation data.
      */
-    private void setRadiationInfo(Calendar calendar, double elevation, Double altitude, Sun sun) {
+    private void setRadiationInfo(Calendar calendar, double elevation, @Nullable Double altitude, Sun sun) {
         double sinAlpha = Math.sin(DEG2RAD * elevation);
 
         int dayOfYear = calendar.get(Calendar.DAY_OF_YEAR);
@@ -127,7 +131,7 @@ public class SunCalc {
     /**
      * Returns true, if the sun is up all day (no rise and set).
      */
-    private boolean isSunUpAllDay(Calendar calendar, double latitude, double longitude, Double altitude) {
+    private boolean isSunUpAllDay(Calendar calendar, double latitude, double longitude, @Nullable Double altitude) {
         Calendar cal = DateTimeUtils.truncateToMidnight(calendar);
         Sun sun = new Sun();
         for (int minutes = 0; minutes <= MINUTES_PER_DAY; minutes += CURVE_TIME_INTERVAL) {
@@ -143,13 +147,13 @@ public class SunCalc {
     /**
      * Calculates all sun rise and sets at the specified coordinates.
      */
-    public Sun getSunInfo(Calendar calendar, double latitude, double longitude, Double altitude,
+    public Sun getSunInfo(Calendar calendar, double latitude, double longitude, @Nullable Double altitude,
             boolean useMeteorologicalSeason, TimeZone zone, Locale locale) {
         return getSunInfo(calendar, latitude, longitude, altitude, false, useMeteorologicalSeason, zone, locale);
     }
 
-    private Sun getSunInfo(Calendar calendar, double latitude, double longitude, Double altitude, boolean onlyAstro,
-            boolean useMeteorologicalSeason, TimeZone zone, Locale locale) {
+    private Sun getSunInfo(Calendar calendar, double latitude, double longitude, @Nullable Double altitude,
+            boolean onlyAstro, boolean useMeteorologicalSeason, TimeZone zone, Locale locale) {
         double lw = -longitude * DEG2RAD;
         double phi = latitude * DEG2RAD;
         double j = DateTimeUtils.midnightDateToJulianDate(calendar) + 0.5;
@@ -222,21 +226,24 @@ public class SunCalc {
         Sun sunYesterday = getSunInfo(addDays(calendar, -1), latitude, longitude, altitude, true,
                 useMeteorologicalSeason, zone, locale);
         Range morningNightRange = null;
-        if (sunYesterday.getAstroDusk().getEnd() != null
-                && DateTimeUtils.isSameDay(sunYesterday.getAstroDusk().getEnd(), calendar)) {
-            morningNightRange = new Range(sunYesterday.getAstroDusk().getEnd(), sun.getAstroDawn().getStart());
-        } else if (isSunUpAllDay || sun.getAstroDawn().getStart() == null) {
+        Range range, range2;
+        if ((range = sunYesterday.getAstroDusk()) != null && range.getEnd() != null
+                && DateTimeUtils.isSameDay(range.getEnd(), calendar)) {
+            morningNightRange = new Range(range.getEnd(),
+                    (range2 = sun.getAstroDawn()) == null ? null : range2.getStart());
+        } else if (isSunUpAllDay || (range2 = sun.getAstroDawn()) == null || range2.getStart() == null) {
             morningNightRange = new Range();
         } else {
-            morningNightRange = new Range(DateTimeUtils.truncateToMidnight(calendar), sun.getAstroDawn().getStart());
+            morningNightRange = new Range(DateTimeUtils.truncateToMidnight(calendar),
+                    (range2 = sun.getAstroDawn()) == null ? null : range2.getStart());
         }
         sun.setMorningNight(morningNightRange);
 
         // evening night
         Range eveningNightRange = null;
-        if (sun.getAstroDusk().getEnd() != null && DateTimeUtils.isSameDay(sun.getAstroDusk().getEnd(), calendar)) {
-            eveningNightRange = new Range(sun.getAstroDusk().getEnd(),
-                    DateTimeUtils.truncateToMidnight(addDays(calendar, 1)));
+        if ((range = sun.getAstroDusk()) != null && range.getEnd() != null
+                && DateTimeUtils.isSameDay(range.getEnd(), calendar)) {
+            eveningNightRange = new Range(range.getEnd(), DateTimeUtils.truncateToMidnight(addDays(calendar, 1)));
         } else {
             eveningNightRange = new Range();
         }
@@ -248,7 +255,8 @@ public class SunCalc {
         } else {
             Sun sunTomorrow = getSunInfo(addDays(calendar, 1), latitude, longitude, altitude, true,
                     useMeteorologicalSeason, zone, locale);
-            sun.setNight(new Range(sun.getAstroDusk().getEnd(), sunTomorrow.getAstroDawn().getStart()));
+            sun.setNight(new Range((range = sun.getAstroDusk()) == null ? null : range.getEnd(),
+                    (range2 = sunTomorrow.getAstroDawn()) == null ? null : range2.getStart()));
         }
 
         // eclipse
@@ -257,7 +265,10 @@ public class SunCalc {
 
         eclipse.getKinds().forEach(eclipseKind -> {
             double jdate = mc.getEclipse(calendar, EclipseType.SUN, j, eclipseKind);
-            eclipse.set(eclipseKind, DateTimeUtils.toCalendar(jdate, zone, locale), new Position());
+            Calendar eclipseDate = DateTimeUtils.toCalendar(jdate, zone, locale);
+            if (eclipseDate != null) {
+                eclipse.set(eclipseKind, eclipseDate, new Position());
+            }
         });
 
         SunZodiacCalc zodiacCalc = new SunZodiacCalc(zone, locale);

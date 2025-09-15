@@ -18,6 +18,7 @@ import java.util.Calendar;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.astro.internal.model.Eclipse;
 import org.openhab.binding.astro.internal.model.EclipseKind;
 import org.openhab.binding.astro.internal.model.EclipseType;
@@ -41,6 +42,7 @@ import org.openhab.binding.astro.internal.util.DateTimeUtils;
  *           http://www.computus.de/mondphase/mondphase.htm azimuth/elevation and
  *           zodiac based on http://lexikon.astronomie.info/java/sunmoon/
  */
+@NonNullByDefault
 public class MoonCalc {
     private static final double NEW_MOON = 0;
     private static final double FULL_MOON = 0.5;
@@ -87,7 +89,10 @@ public class MoonCalc {
         Eclipse eclipse = moon.getEclipse();
         eclipse.getKinds().forEach(eclipseKind -> {
             double jdate = getEclipse(calendar, EclipseType.MOON, julianDateMidnight, eclipseKind);
-            eclipse.set(eclipseKind, DateTimeUtils.toCalendar(jdate, zone, locale), new Position());
+            Calendar eclipseDate = DateTimeUtils.toCalendar(jdate, zone, locale);
+            if (eclipseDate != null) {
+                eclipse.set(eclipseKind, eclipseDate, new Position());
+            }
         });
 
         double decimalYear = DateTimeUtils.getDecimalYear(calendar);
@@ -126,10 +131,18 @@ public class MoonCalc {
         double julianDate = DateTimeUtils.dateToJulianDate(calendar);
         double parentNewMoon = getPreviousPhase(calendar, julianDate, NEW_MOON);
         double age = Math.abs(parentNewMoon - julianDate);
+        Calendar parentNewMoonCal = DateTimeUtils.toCalendar(parentNewMoon, zone, locale);
+        if (parentNewMoonCal == null) {
+            return;
+        }
         phase.setAge(age);
 
-        long parentNewMoonMillis = DateTimeUtils.toCalendar(parentNewMoon, zone, locale).getTimeInMillis();
-        long ageRangeTimeMillis = phase.getNew().getTimeInMillis() - parentNewMoonMillis;
+        long parentNewMoonMillis = parentNewMoonCal.getTimeInMillis();
+        Calendar cal = phase.getNew();
+        if (cal == null) {
+            return;
+        }
+        long ageRangeTimeMillis = cal.getTimeInMillis() - parentNewMoonMillis;
         long ageCurrentMillis = System.currentTimeMillis() - parentNewMoonMillis;
         double agePercent = ageRangeTimeMillis != 0 ? ageCurrentMillis * 100.0 / ageRangeTimeMillis : 0;
         phase.setAgePercent(agePercent);

@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.astro.internal.job;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Calendar;
 import java.util.Locale;
@@ -67,8 +67,12 @@ public class JobTest {
         Calendar fixedEnd = DateTimeUtils.getAdjustedLatest(pointInTime, config);
 
         // assert
-        assertEquals(fixedStart.getTime(), startNullResult.getStart().getTime());
-        assertEquals(pointInTime.getTime(), startNullResult.getEnd().getTime());
+        Calendar startNullResultStart = startNullResult.getStart();
+        Calendar startNullResultEnd = startNullResult.getEnd();
+        assertNotNull(startNullResultStart);
+        assertNotNull(startNullResultEnd);
+        assertEquals(fixedStart.getTime(), startNullResultStart.getTime());
+        assertEquals(pointInTime.getTime(), startNullResultEnd.getTime());
         assertEquals(pointInTime, endNullResult.getStart());
         assertEquals(fixedEnd, endNullResult.getEnd());
         assertEquals(fixedStart, bothNullResult.getStart());
@@ -93,8 +97,12 @@ public class JobTest {
         bothNNSouldNotCorrectResult = Job.adjustRangeToConfig(bothNNShouldNotCorrect, config, TIME_ZONE, Locale.ROOT);
 
         // assert again
-        assertEquals(fixedStart.getTime(), startNullResult.getStart().getTime());
-        assertEquals(newPointInTime.getTime(), startNullResult.getEnd().getTime());
+        startNullResultStart = startNullResult.getStart();
+        startNullResultEnd = startNullResult.getEnd();
+        assertNotNull(startNullResultStart);
+        assertNotNull(startNullResultEnd);
+        assertEquals(fixedStart.getTime(), startNullResultStart.getTime());
+        assertEquals(newPointInTime.getTime(), startNullResultEnd.getTime());
         assertEquals(newPointInTime, endNullResult.getStart());
         assertEquals(fixedEnd, endNullResult.getEnd());
         assertEquals(fixedStart, bothNullResult.getStart());
@@ -120,8 +128,12 @@ public class JobTest {
         bothNNSouldNotCorrectResult = Job.adjustRangeToConfig(bothNNShouldNotCorrect, config, TIME_ZONE, Locale.ROOT);
 
         // assert yet again
-        assertEquals(fixedStart.getTime(), startNullResult.getStart().getTime());
-        assertEquals(newPointInTime.getTime(), startNullResult.getEnd().getTime());
+        startNullResultStart = startNullResult.getStart();
+        startNullResultEnd = startNullResult.getEnd();
+        assertNotNull(startNullResultStart);
+        assertNotNull(startNullResultEnd);
+        assertEquals(fixedStart.getTime(), startNullResultStart.getTime());
+        assertEquals(newPointInTime.getTime(), startNullResultEnd.getTime());
         assertEquals(newPointInTime, endNullResult.getStart());
         assertEquals(fixedEnd, endNullResult.getEnd());
         assertEquals(fixedStart, bothNullResult.getStart());

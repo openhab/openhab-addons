@@ -69,16 +69,6 @@ public class SunTest {
     }
 
     @Test
-    public void testGetStateWhenNullPhase() throws Exception {
-        sun.setPhase(null);
-
-        assertNull(sun.getPhase());
-
-        assertThrows(NullPointerException.class, () -> assertEquals(UnDefType.UNDEF,
-                PropertyUtils.getState(new ChannelUID("astro:sun:home:phase#name"), config, sun, TIME_ZONE)));
-    }
-
-    @Test
     public void testGetAllRangesForNight() {
         sun.setNight(new Range());
 

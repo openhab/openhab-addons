@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.astro.internal.util;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -87,6 +87,7 @@ public class DateTimeUtilsTest {
         final Calendar nextSeason = DateTimeUtils.getNext(date, season.getSpring(), season.getSummer(),
                 season.getAutumn(), season.getWinter());
         assertEquals(expectedSeason, nextSeason, "Should return the expected season name.");
+        assertNotNull(nextSeason);
         assertEquals(expectedYear, nextSeason.get(Calendar.YEAR), "Should return the year matching the next season.");
     }
 
