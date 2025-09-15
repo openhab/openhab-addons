@@ -787,7 +787,7 @@ public class WizHandler extends BaseThingHandler {
                     stateDescriptionProvider.setDescription(colorTempChannelUID,
                             Objects.requireNonNull(stateDescription));
 
-                    Map<String, String> thingProperties = new HashMap<String, String>();
+                    Map<String, String> thingProperties = new HashMap<>();
                     thingProperties.put(PROPERTY_MIN_COLOR_TEMPERATURE, String.valueOf(minColorTemp));
                     thingProperties.put(PROPERTY_MAX_COLOR_TEMPERATURE, String.valueOf(maxColorTemp));
                     updateProperties(thingProperties);
