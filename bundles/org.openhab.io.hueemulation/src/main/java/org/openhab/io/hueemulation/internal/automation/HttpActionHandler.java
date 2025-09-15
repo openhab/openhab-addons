@@ -81,7 +81,7 @@ public class HttpActionHandler extends BaseModuleHandler<Action> implements Acti
     }
 
     @Override
-    public @Nullable Map<String, Object> execute(Map<String, Object> context) {
+    public @Nullable Map<String, @Nullable Object> execute(Map<String, Object> context) {
         try {
             Request request = httpClient.newRequest(URI.create(config.url)).method(config.method)
                     .timeout(config.timeout, TimeUnit.SECONDS);
