@@ -717,7 +717,7 @@ public class WizHandler extends BaseThingHandler {
         if (response != null) {
             boolean setSucceeded = response.getResultSuccess();
             if (setSucceeded) {
-                // can't process this response it doens't have a syncstate
+                // can't process this response it doesn't have a syncstate
                 // so request updated state after a short delay to let the device
                 // process the setPilot command, the getPilot response will update
                 // the timestamps
