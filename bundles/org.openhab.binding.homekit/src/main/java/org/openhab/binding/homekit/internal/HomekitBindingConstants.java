@@ -47,6 +47,7 @@ public class HomekitBindingConstants {
     public static final String PROPERTY_UID = "uid";
     public static final String PROPERTY_PROTOCOL_VERSION = "protocolVersion";
     public static final String PROPERTY_DEVICE_CATEGORY = "deviceCategory";
+    public static final String PROPERTY_CONTROLLER_PRIVATE_KEY = "controllerPrivateKey";
 
     // HomeKit HTTP URI endpoints and content types
     public static final String ENDPOINT_PAIRING = "pair-setup";

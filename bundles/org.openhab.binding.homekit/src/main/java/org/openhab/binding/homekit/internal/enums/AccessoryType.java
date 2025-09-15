@@ -63,11 +63,6 @@ public enum AccessoryType {
         this.label = label;
     }
 
-    @Override
-    public String toString() {
-        return label;
-    }
-
     public static AccessoryType from(int id) throws IllegalArgumentException {
         for (AccessoryType value : values()) {
             if (value.id == id) {
@@ -75,5 +70,10 @@ public enum AccessoryType {
             }
         }
         return OTHER;
+    }
+
+    @Override
+    public String toString() {
+        return label;
     }
 }

@@ -71,11 +71,6 @@ public class CryptoUtils {
     }
 
     // Encrypt with ChaCha20-Poly1305
-    public static byte[] encrypt(byte[] key, String nonceStr, byte[] plaintext) throws InvalidCipherTextException {
-        return encrypt(key, nonceStr.getBytes(StandardCharsets.UTF_8), plaintext);
-    }
-
-    // Encrypt with ChaCha20-Poly1305
     public static byte[] encrypt(byte[] key, byte[] nonce, byte[] plaintext) throws InvalidCipherTextException {
         ChaCha20Poly1305 cipher = new ChaCha20Poly1305();
         AEADParameters params = new AEADParameters(new KeyParameter(key), 128, nonce);
@@ -85,11 +80,6 @@ public class CryptoUtils {
         int len = cipher.processBytes(plaintext, 0, plaintext.length, out, 0);
         cipher.doFinal(out, len);
         return out;
-    }
-
-    // Decrypt with ChaCha20-Poly1305
-    public static byte[] decrypt(byte[] key, String nonceStr, byte[] ciphertext) throws InvalidCipherTextException {
-        return decrypt(key, nonceStr.getBytes(StandardCharsets.UTF_8), ciphertext);
     }
 
     // Decrypt with ChaCha20-Poly1305
@@ -131,5 +121,35 @@ public class CryptoUtils {
         if (!valid) {
             throw new SecurityException("Accessory signature verification failed");
         }
+    }
+
+    /**
+     * Generates a 12-byte nonce using the given counter.
+     * The first 4 bytes are zero, and the last 8 bytes are the counter in big-endian format.
+     *
+     * @param counter The counter value.
+     * @return The generated nonce.
+     */
+    public static byte[] generateNonce(int counter) {
+        byte[] nonce = new byte[12];
+        nonce[4] = (byte) ((counter >> 24) & 0xFF);
+        nonce[5] = (byte) ((counter >> 16) & 0xFF);
+        nonce[6] = (byte) ((counter >> 8) & 0xFF);
+        nonce[7] = (byte) (counter & 0xFF);
+        return nonce;
+    }
+
+    /**
+     * Generates a 12-byte nonce using the given label.
+     * The first 4 bytes are zero, and the last 8 bytes come from the label.
+     *
+     * @param counter The counter value.
+     * @return The generated nonce.
+     */
+    public static byte[] generateNonce(String label) {
+        byte[] nonce = new byte[12];
+        byte[] labelBytes = label.getBytes(StandardCharsets.UTF_8);
+        System.arraycopy(labelBytes, 0, nonce, 4, Math.min(labelBytes.length, 8));
+        return nonce;
     }
 }

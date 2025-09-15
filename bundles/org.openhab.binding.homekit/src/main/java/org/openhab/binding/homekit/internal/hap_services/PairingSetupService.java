@@ -10,11 +10,12 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.homekit.internal.services;
+package org.openhab.binding.homekit.internal.hap_services;
 
 import java.util.Map;
 import java.util.Set;
 
+import org.bouncycastle.crypto.params.Ed25519PrivateKeyParameters;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.homekit.internal.crypto.SrpClient;
 import org.openhab.binding.homekit.internal.crypto.Tlv8Codec;
@@ -41,13 +42,18 @@ public class PairingSetupService {
 
     private final HttpTransport httpTransport;
     private final SrpClient srpClient;
+    private final String baseUrl;
+    private final Ed25519PrivateKeyParameters controllerPrivateKey;
 
-    public PairingSetupService(HttpTransport httpTransport, String accessoryPairingCode) {
+    public PairingSetupService(HttpTransport httpTransport, String baseUrl, String accessoryPairingCode,
+            Ed25519PrivateKeyParameters controllerPrivateKey, String controllerUniqueId) {
         this.httpTransport = httpTransport;
-        this.srpClient = new SrpClient(accessoryPairingCode);
+        this.baseUrl = baseUrl;
+        this.srpClient = new SrpClient(accessoryPairingCode, controllerUniqueId);
+        this.controllerPrivateKey = controllerPrivateKey;
     }
 
-    public SessionKeys pair(String baseUrl) throws Exception {
+    public SessionKeys pair() throws Exception {
         // M1 — Start Pair-Setup
         Map<Integer, byte[]> tlv1 = Map.of( //
                 TlvType.STATE.key, new byte[] { PairingState.M1.value }, //
@@ -83,9 +89,9 @@ public class PairingSetupService {
         srpClient.verifyServerProof(proof);
 
         // M5 — Exchange encrypted identifiers
-        Map<Integer, byte[]> tlv5 = Map.of( //
-                TlvType.STATE.key, new byte[] { PairingState.M5.value }, //
-                TlvType.ENCRYPTED_DATA.key, srpClient.getEncryptedIdentifiers());
+        byte[] encryptedIdentifiers = srpClient.getEncryptedIdentifiers(controllerPrivateKey);
+        Map<Integer, byte[]> tlv5 = Map.of(TlvType.STATE.key, new byte[] { PairingState.M5.value },
+                TlvType.ENCRYPTED_DATA.key, encryptedIdentifiers);
         Validator.validate(PairingMethod.SETUP, tlv5);
         byte[] resp5 = httpTransport.post(baseUrl, ENDPOINT_PAIR_SETUP, CONTENT_TYPE_TLV8, Tlv8Codec.encode(tlv5));
 

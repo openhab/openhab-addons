@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.homekit.internal.services;
+package org.openhab.binding.homekit.internal.hap_services;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
@@ -38,40 +38,43 @@ public class PairingVerifyService {
 
     private static final String PAIR_VERIFY_ENCRYPT_INFO = "Pair-Verify-Encrypt-Info";
     private static final String PAIR_VERIFY_ENCRYPT_SALT = "Pair-Verify-Encrypt-Salt";
-    private static final String PV_MSG02 = "PV-Msg02";
-    private static final String PV_MSG03 = "PV-Msg03";
     private static final String CONTENT_TYPE_TLV = "application/pairing+tlv8";
     private static final String ENDPOINT_PAIR_VERIFY = "/pair-verify";
     private static final String CONTROL_WRITE_ENCRYPTION_KEY = "Control-Write-Encryption-Key";
     private static final String CONTROL_READ_ENCRYPTION_KEY = "Control-Read-Encryption-Key";
     private static final String CONTROL_SALT = "Control-Salt";
+    private static final byte[] NONCE_M2 = CryptoUtils.generateNonce("PV-Msg02");
+    private static final byte[] NONCE_M3 = CryptoUtils.generateNonce("PV-Msg03");
 
-    private final HttpTransport http;
+    private final HttpTransport httpTransport;
     private final String baseUrl;
-    private final String accessoryIdentifier;
+    private final byte[] accessoryIdentifier;
     private final Ed25519PrivateKeyParameters controllerPrivateKey;
-    private final AsymmetricCipherKeyPair controllerEphemeralKeyPair;
 
-    public PairingVerifyService(HttpTransport http, String baseUrl, String accessoryIdentifier,
+    public PairingVerifyService(HttpTransport httpTransport, String baseUrl, String accessoryIdentifier,
             Ed25519PrivateKeyParameters controllerPrivateKey) {
-        this.http = http;
+        this.httpTransport = httpTransport;
         this.baseUrl = baseUrl;
-        this.accessoryIdentifier = accessoryIdentifier;
+        this.accessoryIdentifier = accessoryIdentifier.getBytes(StandardCharsets.UTF_8);
         this.controllerPrivateKey = controllerPrivateKey;
-        this.controllerEphemeralKeyPair = CryptoUtils.generateCurve25519KeyPair();
     }
 
     public SessionKeys verify() throws Exception {
-        // M1 — Send controller ephemeral public key
-        byte[] controllerPublicKey = ((X25519PublicKeyParameters) controllerEphemeralKeyPair.getPublic()).getEncoded();
-
+        // M1 — Create controller ephemeral public key and send it to accessory
+        AsymmetricCipherKeyPair controllerEphemeralKeys = CryptoUtils.generateCurve25519KeyPair();
+        byte[] controllerEphemeralPublicKeyBytes;
+        if (controllerEphemeralKeys.getPublic() instanceof X25519PublicKeyParameters x25519) {
+            controllerEphemeralPublicKeyBytes = x25519.getEncoded();
+        } else {
+            throw new IllegalStateException("Generated controller ephemeral public key is not X25519");
+        }
         Map<Integer, byte[]> tlv1 = Map.of( //
                 TlvType.STATE.key, new byte[] { PairingState.M1.value }, //
-                // TLVType.METHOD.key, new byte[] { PairingMethod.VERIFY.value }, // not required in Apple spec
-                TlvType.PUBLIC_KEY.key, controllerPublicKey);
+                // TLVType.METHOD.key, new byte[] { PairingMethod.VERIFY.value }, // not required ??
+                TlvType.PUBLIC_KEY.key, controllerEphemeralPublicKeyBytes);
         Validator.validate(PairingMethod.VERIFY, tlv1);
 
-        byte[] resp1 = http.post(baseUrl, ENDPOINT_PAIR_VERIFY, CONTENT_TYPE_TLV, Tlv8Codec.encode(tlv1));
+        byte[] resp1 = httpTransport.post(baseUrl, ENDPOINT_PAIR_VERIFY, CONTENT_TYPE_TLV, Tlv8Codec.encode(tlv1));
 
         // M2 — Receive accessory ephemeral public key and encrypted TLV
         Map<Integer, byte[]> tlv2 = Tlv8Codec.decode(resp1);
@@ -80,30 +83,29 @@ public class PairingVerifyService {
         byte[] accessoryPublicKeyBytes = tlv2.getOrDefault(TlvType.PUBLIC_KEY.key, new byte[0]);
         byte[] encrypted = tlv2.getOrDefault(TlvType.ENCRYPTED_DATA.key, new byte[0]);
 
-        X25519PublicKeyParameters accessoryEphemeralKey = new X25519PublicKeyParameters(accessoryPublicKeyBytes, 0);
-        byte[] sharedSecret = CryptoUtils.computeSharedSecret(controllerEphemeralKeyPair.getPrivate(),
-                accessoryEphemeralKey);
+        X25519PublicKeyParameters accessoryEphemeralKeys = new X25519PublicKeyParameters(accessoryPublicKeyBytes, 0);
+        byte[] sharedSecret = CryptoUtils.computeSharedSecret(controllerEphemeralKeys.getPrivate(),
+                accessoryEphemeralKeys);
 
         byte[] sessionKey = CryptoUtils.hkdf(sharedSecret, PAIR_VERIFY_ENCRYPT_SALT, PAIR_VERIFY_ENCRYPT_INFO);
-        byte[] decrypted = CryptoUtils.decrypt(sessionKey, PV_MSG02, encrypted);
+        byte[] decrypted = CryptoUtils.decrypt(sessionKey, NONCE_M2, encrypted);
         Map<Integer, byte[]> innerTLV = Tlv8Codec.decode(decrypted);
         CryptoUtils.validateAccessory(innerTLV); // validates identifier + signature
 
         // M3 — Send encrypted controller identifier and signature
-        byte[] verifyPayload = concat(controllerPublicKey, accessoryPublicKeyBytes);
+        byte[] verifyPayload = concat(controllerEphemeralPublicKeyBytes, accessoryPublicKeyBytes);
         byte[] signature = CryptoUtils.signVerifyMessage(controllerPrivateKey, verifyPayload);
-
         byte[] controllerInfo = Tlv8Codec.encode(Map.of( //
-                TlvType.IDENTIFIER.key, accessoryIdentifier.getBytes(StandardCharsets.UTF_8), //
+                TlvType.IDENTIFIER.key, accessoryIdentifier, //
                 TlvType.SIGNATURE.key, signature));
-        byte[] encryptedM3 = CryptoUtils.encrypt(sessionKey, PV_MSG03, controllerInfo);
+        byte[] encryptedM3 = CryptoUtils.encrypt(sessionKey, NONCE_M3, controllerInfo);
 
         Map<Integer, byte[]> tlv3 = Map.of( //
                 TlvType.STATE.key, new byte[] { PairingState.M3.value }, //
                 TlvType.ENCRYPTED_DATA.key, encryptedM3);
         Validator.validate(PairingMethod.VERIFY, tlv3);
 
-        byte[] resp3 = http.post(baseUrl, ENDPOINT_PAIR_VERIFY, CONTENT_TYPE_TLV, Tlv8Codec.encode(tlv3));
+        byte[] resp3 = httpTransport.post(baseUrl, ENDPOINT_PAIR_VERIFY, CONTENT_TYPE_TLV, Tlv8Codec.encode(tlv3));
 
         // M4 — Final confirmation
         Map<Integer, byte[]> tlv4 = Tlv8Codec.decode(resp3);

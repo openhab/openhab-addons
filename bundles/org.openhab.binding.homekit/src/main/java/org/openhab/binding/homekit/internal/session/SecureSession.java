@@ -45,7 +45,7 @@ public class SecureSession {
      * @throws Exception
      */
     public byte[] encrypt(byte[] plaintext) throws Exception {
-        byte[] nonce = generateNonce(writeCounter.getAndIncrement());
+        byte[] nonce = CryptoUtils.generateNonce(writeCounter.getAndIncrement());
         return CryptoUtils.encrypt(writeKey, nonce, plaintext);
     }
 
@@ -57,23 +57,7 @@ public class SecureSession {
      * @throws Exception
      */
     public byte[] decrypt(byte[] ciphertext) throws Exception {
-        byte[] nonce = generateNonce(readCounter.getAndIncrement());
+        byte[] nonce = CryptoUtils.generateNonce(readCounter.getAndIncrement());
         return CryptoUtils.decrypt(readKey, nonce, ciphertext);
-    }
-
-    /**
-     * * Generates a 12-byte nonce using the given counter.
-     * The first 4 bytes are zero, and the last 8 bytes are the counter in big-endian format.
-     *
-     * @param counter The counter value.
-     * @return The generated nonce.
-     */
-    private byte[] generateNonce(int counter) {
-        byte[] nonce = new byte[12];
-        nonce[4] = (byte) ((counter >> 24) & 0xFF);
-        nonce[5] = (byte) ((counter >> 16) & 0xFF);
-        nonce[6] = (byte) ((counter >> 8) & 0xFF);
-        nonce[7] = (byte) (counter & 0xFF);
-        return nonce;
     }
 }

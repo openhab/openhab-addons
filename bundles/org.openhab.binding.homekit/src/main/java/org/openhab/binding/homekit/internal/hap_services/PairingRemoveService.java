@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.homekit.internal.services;
+package org.openhab.binding.homekit.internal.hap_services;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
@@ -32,6 +32,11 @@ import org.openhab.binding.homekit.internal.transport.HttpTransport;
  */
 @NonNullByDefault
 public class PairingRemoveService {
+
+    private static final String CONTENT_TYPE = "application/pairing+tlv8";
+    private static final String ENDPOINT = "/pairings";
+    private static final byte[] NONCE_M5 = CryptoUtils.generateNonce("PV-Msg05");
+    private static final byte[] NONCE_M6 = CryptoUtils.generateNonce("PV-Msg06");
 
     private final HttpTransport http;
     private final String baseUrl;
@@ -56,13 +61,13 @@ public class PairingRemoveService {
         byte[] encoded = Tlv8Codec.encode(tlv1);
 
         // Encrypt payload using write key
-        byte[] encrypted = CryptoUtils.encrypt(sessionKeys.getWriteKey(), "PV-Msg05", encoded);
+        byte[] encrypted = CryptoUtils.encrypt(sessionKeys.getWriteKey(), NONCE_M5, encoded);
 
         // Send to /pairings endpoint
-        byte[] response = http.post(baseUrl, "/pairings", "application/pairing+tlv8", encrypted);
+        byte[] response = http.post(baseUrl, ENDPOINT, CONTENT_TYPE, encrypted);
 
         // M2 Decrypt response using read key
-        byte[] decrypted = CryptoUtils.decrypt(sessionKeys.getReadKey(), "PV-Msg06", response);
+        byte[] decrypted = CryptoUtils.decrypt(sessionKeys.getReadKey(), NONCE_M6, response);
         Map<Integer, byte[]> tlv2 = Tlv8Codec.decode(decrypted);
         Validator.validate(PairingMethod.REMOVE, tlv2);
     }

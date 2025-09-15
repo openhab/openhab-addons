@@ -14,11 +14,10 @@ package org.openhab.binding.homekit.internal.dto;
 
 import static org.openhab.binding.homekit.internal.HomekitBindingConstants.*;
 
-import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
-
-import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -35,11 +34,6 @@ import org.openhab.core.thing.type.ChannelType;
 import org.openhab.core.thing.type.ChannelTypeBuilder;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.thing.type.StateChannelTypeBuilder;
-import org.openhab.core.types.StateDescriptionFragment;
-import org.openhab.core.types.StateDescriptionFragmentBuilder;
-import org.openhab.core.types.util.UnitUtils;
-
-import com.google.gson.annotations.SerializedName;
 
 /**
  * HomeKit characteristic DTO.
@@ -51,17 +45,17 @@ import com.google.gson.annotations.SerializedName;
  */
 @NonNullByDefault
 public class Characteristic {
-    public @NonNullByDefault({}) @SerializedName("type") String characteristicId; // 25 = public.hap.characteristic.on
-    public @NonNullByDefault({}) @SerializedName("format") String dataFormat; // e.g. "bool"
-    public @NonNullByDefault({}) @SerializedName("perms") List<String> permissions; // e.g. ["pr", "pw", "ev"]
-    public @NonNullByDefault({}) @SerializedName("iid") Integer instanceId; // e.g. 10
-    public @NonNullByDefault({}) @SerializedName("unit") String unit; // e.g. "celsius"
-    public @NonNullByDefault({}) @SerializedName("maxValue") Double maxValue; // e.g. 100
-    public @NonNullByDefault({}) @SerializedName("minValue") Double minValue; // e.g. 0
-    public @NonNullByDefault({}) @SerializedName("minStep") Double minStep;
-    public @NonNullByDefault({}) @SerializedName("value") String dataValue; // e.g. true
-    public @NonNullByDefault({}) @SerializedName("description") String description;
-    public @NonNullByDefault({}) @SerializedName("ev") Boolean eventNotification; // e.g. true
+    public @NonNullByDefault({}) String type; // 25 = public.hap.characteristic.on
+    public @NonNullByDefault({}) String format; // e.g. "bool"
+    public @NonNullByDefault({}) List<String> perms; // e.g. ["pr", "pw", "ev"]
+    public @NonNullByDefault({}) Integer iid; // e.g. 10
+    public @NonNullByDefault({}) String unit; // e.g. "celsius"
+    public @NonNullByDefault({}) Double maxValue; // e.g. 100
+    public @NonNullByDefault({}) Double minValue; // e.g. 0
+    public @NonNullByDefault({}) Double minStep;
+    public @NonNullByDefault({}) String value; // e.g. true
+    public @NonNullByDefault({}) String description;
+    public @NonNullByDefault({}) Boolean ev; // e.g. true
 
     /**
      * Builds a ChannelType and a ChannelDefinition based on the characteristic properties.
@@ -75,22 +69,20 @@ public class Characteristic {
      * @return the ChannelDefinition or null if it cannot be mapped
      */
     public @Nullable ChannelDefinition buildAndRegisterChannelDefinition(HomekitTypeProvider typeProvider) {
-        CharacteristicType characteristicType;
-        try {
-            characteristicType = CharacteristicType.from(Integer.parseInt(characteristicId));
-        } catch (IllegalArgumentException e) {
+        CharacteristicType characteristicType = getCharacteristicType();
+        if (characteristicType == null) {
             return null;
         }
 
         DataFormatType dataFormatType;
         try {
-            dataFormatType = DataFormatType.from(dataFormat);
+            dataFormatType = DataFormatType.from(format);
         } catch (IllegalArgumentException e) {
             return null;
         }
 
         // determine channel type and attributes based on characteristic properties
-        boolean isReadOnly = !permissions.contains("pw");
+        boolean isReadOnly = !perms.contains("pw");
         boolean isString = DataFormatType.STRING == dataFormatType;
         boolean isBoolean = DataFormatType.BOOL == dataFormatType;
         boolean isNumber = !isString && !isBoolean;
@@ -547,37 +539,37 @@ public class Characteristic {
             channelType = ChannelTypeBuilder.trigger(uid, CHANNEL_TYPE_LABEL).build();
         }
 
-        // persist the channel _type_, and return the definition of a specific _instance_ of that type
+        // persist the channel _type_
         typeProvider.putChannelType(channelType);
-        return new ChannelDefinitionBuilder(Integer.toString(instanceId), uid).withLabel(characteristicType.toString())
-                .build();
+
+        /*
+         * expose the non ephemeral fields, that are not exposed via normal channel definition attributes,
+         * through properties instead e.g. minValue, maxValue, minStep, format, unit, perms, ev
+         */
+        Map<String, String> properties = new HashMap<>();
+        Optional.ofNullable(minValue).map(v -> v.toString()).ifPresent(s -> properties.put("minValue", s));
+        Optional.ofNullable(maxValue).map(v -> v.toString()).ifPresent(s -> properties.put("maxValue", s));
+        Optional.ofNullable(minStep).map(v -> v.toString()).ifPresent(s -> properties.put("minStep", s));
+        Optional.ofNullable(format).ifPresent(s -> properties.put("format", s));
+        Optional.ofNullable(unit).ifPresent(s -> properties.put("unit", s));
+        Optional.ofNullable(perms).map(l -> String.join(",", l)).ifPresent(s -> properties.put("perms", s));
+        Optional.ofNullable(ev).map(b -> b.toString()).ifPresent(s -> properties.put("ev", s));
+
+        // return the definition of a specific _instance_ of the channel _type_
+        return new ChannelDefinitionBuilder(Integer.toString(iid), uid).withProperties(properties)
+                .withLabel(characteristicType.toString()).build();
     }
 
-    /**
-     * Build StateDescriptionFragment if any relevant properties are present
-     *
-     * @return StateDescriptionFragment or null if not applicable
-     */
-    public @Nullable StateDescriptionFragment getStateDescriptionFragment() {
-        StateDescriptionFragment stateDescr = null;
-        if (minValue != null || maxValue != null || minStep != null || unit != null) {
-            Unit<?> unit = null;
-            String temp = this.unit;
-            if (temp != null) {
-                unit = UnitUtils.parseUnit(temp);
-            }
-            StateDescriptionFragmentBuilder builder = StateDescriptionFragmentBuilder.create();
-            builder.withReadOnly(!permissions.contains("pw"));
-            Optional.ofNullable(minValue).map(v -> BigDecimal.valueOf(v)).ifPresent(builder::withMinimum);
-            Optional.ofNullable(maxValue).map(v -> BigDecimal.valueOf(v)).ifPresent(builder::withMaximum);
-            Optional.ofNullable(minStep).map(s -> BigDecimal.valueOf(s)).ifPresent(builder::withStep);
-            Optional.ofNullable(unit).map(u -> "%.0f " + u.getSymbol()).ifPresent(builder::withPattern);
-            stateDescr = builder.build();
+    public @Nullable CharacteristicType getCharacteristicType() {
+        try {
+            return CharacteristicType.from(Integer.parseInt(type));
+        } catch (IllegalArgumentException e) {
+            return null;
         }
-        return stateDescr;
     }
 
-    public @Nullable String getDescription() {
-        return description;
+    @Override
+    public String toString() {
+        return getCharacteristicType() instanceof CharacteristicType ct ? ct.getType() : "Unknown";
     }
 }

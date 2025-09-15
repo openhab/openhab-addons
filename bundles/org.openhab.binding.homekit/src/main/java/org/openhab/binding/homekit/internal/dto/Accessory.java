@@ -23,8 +23,6 @@ import org.openhab.core.semantics.SemanticTag;
 import org.openhab.core.semantics.model.DefaultSemanticTags.Equipment;
 import org.openhab.core.thing.type.ChannelGroupDefinition;
 
-import com.google.gson.annotations.SerializedName;
-
 /**
  * HomeKit accessory DTO
  * Used to deserialize individual accessories from the /accessories endpoint of a HomeKit bridge.
@@ -34,16 +32,26 @@ import com.google.gson.annotations.SerializedName;
  */
 @NonNullByDefault
 public class Accessory {
-    public @NonNullByDefault({}) @SerializedName("aid") Integer accessoryId; // e.g. 1
+    public @NonNullByDefault({}) Integer aid; // e.g. 1
     public @NonNullByDefault({}) List<Service> services;
 
-    @Override
-    public String toString() {
-        return getAccessoryType().toString();
+    /**
+     * Builds and registers channel group definitions for all services of this accessory.
+     * Each child service registers a ChannelGroupType and returns a ChannelGroupDefinition thereof.
+     * Each grandchild category registers a ChannelType and returns a ChannelDefinition thereof.
+     * Child services that do not map to a channel group definition are ignored.
+     * Grandchild categories that do not map to a channel definition are ignored.
+     *
+     * @param typeProvider the HomeKit type provider used to look up channel group definitions.
+     * @return a list of channel group definition instances for the services of this accessory.
+     */
+    public List<ChannelGroupDefinition> buildAndRegisterChannelGroupDefinitions(HomekitTypeProvider typeProvider) {
+        return services.stream().map(s -> s.buildAndRegisterChannelGroupDefinition(typeProvider))
+                .filter(Objects::nonNull).toList();
     }
 
     public AccessoryType getAccessoryType() {
-        Integer aid = this.accessoryId;
+        Integer aid = this.aid;
         if (aid == null) {
             return AccessoryType.OTHER;
         }
@@ -122,18 +130,8 @@ public class Accessory {
         return null;
     }
 
-    /**
-     * Builds and registers channel group definitions for all services of this accessory.
-     * Each child service registers a ChannelGroupType and returns a ChannelGroupDefinition thereof.
-     * Each grandchild category registers a ChannelType and returns a ChannelDefinition thereof.
-     * Child services that do not map to a channel group definition are ignored.
-     * Grandchild categories that do not map to a channel definition are ignored.
-     *
-     * @param typeProvider the HomeKit type provider used to look up channel group definitions.
-     * @return a list of channel group definition instances for the services of this accessory.
-     */
-    public List<ChannelGroupDefinition> buildAndRegisterChannelGroupDefinitions(HomekitTypeProvider typeProvider) {
-        return services.stream().map(s -> s.buildAndRegisterChannelGroupDefinition(typeProvider))
-                .filter(Objects::nonNull).toList();
+    @Override
+    public String toString() {
+        return getAccessoryType().toString();
     }
 }

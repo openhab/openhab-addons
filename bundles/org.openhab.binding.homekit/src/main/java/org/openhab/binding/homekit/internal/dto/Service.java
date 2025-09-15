@@ -27,8 +27,6 @@ import org.openhab.core.thing.type.ChannelGroupType;
 import org.openhab.core.thing.type.ChannelGroupTypeBuilder;
 import org.openhab.core.thing.type.ChannelGroupTypeUID;
 
-import com.google.gson.annotations.SerializedName;
-
 /**
  * HomeKit service DTO.
  * Used to deserialize individual services from the /accessories endpoint of a HomeKit bridge.
@@ -38,8 +36,8 @@ import com.google.gson.annotations.SerializedName;
  */
 @NonNullByDefault
 public class Service {
-    public @NonNullByDefault({}) @SerializedName("type") String serviceId; // e.g. '96' => 'public.hap.service.battery'
-    public @NonNullByDefault({}) @SerializedName("iid") Integer instanceId; // e.g. 10
+    public @NonNullByDefault({}) String type; // e.g. '96' => 'public.hap.service.battery'
+    public @NonNullByDefault({}) Integer iid; // e.g. 10
     public @NonNullByDefault({}) List<Characteristic> characteristics;
 
     /**
@@ -52,10 +50,8 @@ public class Service {
      * @return the created ChannelGroupDefinition or null if creation failed
      */
     public @Nullable ChannelGroupDefinition buildAndRegisterChannelGroupDefinition(HomekitTypeProvider typeProvider) {
-        ServiceType serviceType = ServiceType.from(Integer.parseInt(serviceId));
-        try {
-            serviceType = ServiceType.from(Integer.parseInt(serviceId));
-        } catch (IllegalArgumentException e) {
+        ServiceType serviceType = getServiceType();
+        if (serviceType == null) {
             return null;
         }
 
@@ -74,6 +70,19 @@ public class Service {
 
         // persist the group _type_, and return the definition of a specific _instance_ of that type
         typeProvider.putChannelGroupType(groupType);
-        return new ChannelGroupDefinition(Integer.toString(instanceId), groupTypeUID, serviceType.toString(), null);
+        return new ChannelGroupDefinition(Integer.toString(iid), groupTypeUID, serviceType.toString(), null);
+    }
+
+    public @Nullable ServiceType getServiceType() {
+        try {
+            return ServiceType.from(Integer.parseInt(type));
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
+    }
+
+    @Override
+    public String toString() {
+        return getServiceType() instanceof ServiceType st ? st.getType() : "Unknown";
     }
 }

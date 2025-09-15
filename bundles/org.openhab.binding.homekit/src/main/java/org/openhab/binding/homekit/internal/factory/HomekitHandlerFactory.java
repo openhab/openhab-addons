@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.homekit.internal.handler;
+package org.openhab.binding.homekit.internal.factory;
 
 import static org.openhab.binding.homekit.internal.HomekitBindingConstants.*;
 
@@ -20,6 +20,8 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homekit.internal.discovery.HomekitChildDiscoveryService;
+import org.openhab.binding.homekit.internal.handler.HomekitBridgeHandler;
+import org.openhab.binding.homekit.internal.handler.HomekitDeviceHandler;
 import org.openhab.binding.homekit.internal.persistance.HomekitTypeProvider;
 import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.io.net.http.HttpClientFactory;

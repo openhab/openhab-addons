@@ -12,18 +12,26 @@
  */
 package org.openhab.binding.homekit.internal.handler;
 
-import static org.openhab.binding.homekit.internal.HomekitBindingConstants.*;
+import static org.openhab.binding.homekit.internal.HomekitBindingConstants.CONFIG_POLLING_INTERVAL;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
+import javax.measure.Unit;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.homekit.internal.dto.Accessory;
+import org.openhab.binding.homekit.internal.enums.DataFormatType;
+import org.openhab.binding.homekit.internal.hap_services.CharacteristicReadWriteService;
 import org.openhab.binding.homekit.internal.persistance.HomekitTypeProvider;
-import org.openhab.binding.homekit.internal.services.CharacteristicReadWriteService;
 import org.openhab.core.io.net.http.HttpClientFactory;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.OpenClosedType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -32,6 +40,7 @@ import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.type.ChannelGroupType;
 import org.openhab.core.thing.type.ChannelType;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.util.UnitUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,23 +77,71 @@ public class HomekitDeviceHandler extends HomekitBaseServerHandler {
     }
 
     @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
-        CharacteristicReadWriteService charactersticsManager = this.charactersticsManager;
-        if (charactersticsManager != null) {
-            String channelId = channelUID.getId();
-            try {
-                switch (channelId) {
-                    case "power":
-                        // boolean value = command.equals(OnOffType.ON);
-                        // accessoryClient.writeCharacteristic("1", "10", value); // Example AID/IID
-                        break;
-                    // TODO Add more channels here
-                    default:
-                        logger.warn("Unhandled channel: {}", channelId);
-                }
-            } catch (Exception e) {
-                logger.error("Failed to send command to accessory", e);
+    public void handleCommand(ChannelUID channelUID, Command commandArg) {
+        Channel channel = thing.getChannel(channelUID);
+        if (channel == null) {
+            logger.warn("Received command for unknown channel: {}", channelUID);
+            return;
+        }
+        CharacteristicReadWriteService writer = this.rwService;
+        if (writer == null) {
+            logger.warn("No writer service available to handle command for channel: {}", channelUID);
+            return;
+        }
+
+        Object command = commandArg;
+        Map<String, String> properties = channel.getProperties();
+
+        // convert QuantityTypes to the characteristic's unit
+        if (command instanceof QuantityType<?> quantity) {
+            Unit<?> unit = UnitUtils.parseUnit(Optional.ofNullable(properties.get("unit")).orElse(null));
+            if (unit != null && !unit.equals(quantity.getUnit()) && quantity.getUnit().isCompatible(unit)) {
+                command = quantity.toUnit(unit);
             }
+        }
+
+        if (command instanceof Number number) {
+            // clamp numbers to characteristic's min/max limits
+            Double min = Optional.ofNullable(properties.get("minValue")).map(s -> Double.valueOf(s)).orElse(null);
+            if (min != null && number.doubleValue() < min.doubleValue()) {
+                command = min;
+            }
+            Double max = Optional.ofNullable(properties.get("maxValue")).map(s -> Double.valueOf(s)).orElse(null);
+            if (max != null && number.doubleValue() > max.doubleValue()) {
+                command = max;
+            }
+
+            // comply with characteristic's data format
+            String format = properties.get("format");
+            if (format != null) {
+                try {
+                    command = switch (DataFormatType.valueOf(format)) {
+                        case UINT8, UINT16, UINT32, UINT64, INT -> Integer.valueOf(number.intValue());
+                        case FLOAT -> Float.valueOf(number.floatValue());
+                        case STRING -> String.valueOf(number);
+                        case BOOL -> Boolean.valueOf(number.intValue() != 0);
+                        default -> command;
+                    };
+                } catch (IllegalArgumentException e) {
+                    logger.warn("Unexpected format for channel {}: {}", channelUID, properties.get("format"));
+                }
+            }
+        }
+
+        // convert on/off to boolean
+        if (command instanceof OnOffType onOff) {
+            command = Boolean.valueOf(onOff == OnOffType.ON);
+        }
+
+        // convert open/closed to boolean
+        if (command instanceof OpenClosedType openClosed) {
+            command = Boolean.valueOf(openClosed == OpenClosedType.OPEN);
+        }
+
+        try {
+            writer.writeCharacteristic(thing.getUID().getId(), channelUID.getId(), Objects.requireNonNull(command));
+        } catch (Exception e) {
+            logger.warn("Failed to send command '{}' as '{}' to accessory", commandArg, command, e);
         }
     }
 
@@ -93,7 +150,7 @@ public class HomekitDeviceHandler extends HomekitBaseServerHandler {
      * This method is called periodically by a scheduled executor.
      */
     private void poll() {
-        CharacteristicReadWriteService charactersticsManager = this.charactersticsManager;
+        CharacteristicReadWriteService charactersticsManager = this.rwService;
         if (charactersticsManager != null) {
             try {
                 // String power = accessoryClient.readCharacteristic("1", "10"); // TODO example AID/IID
@@ -128,18 +185,8 @@ public class HomekitDeviceHandler extends HomekitBaseServerHandler {
         if (accessories.isEmpty()) {
             return;
         }
-        String uidProperty = thing.getProperties().get(PROPERTY_UID);
-        if (uidProperty == null) {
-            return;
-        }
-        int accessoryIdIndex = uidProperty.lastIndexOf("-");
-        if (accessoryIdIndex < 0) {
-            return;
-        }
-        Integer accessoryId;
-        try {
-            accessoryId = Integer.parseInt(uidProperty.substring(accessoryIdIndex + 1));
-        } catch (NumberFormatException e) {
+        Integer accessoryId = getAccessoryId();
+        if (accessoryId == null) {
             return;
         }
         Accessory accessory = accessories.get(accessoryId);
@@ -156,7 +203,8 @@ public class HomekitDeviceHandler extends HomekitBaseServerHandler {
                     ChannelType channelType = typeProvider.getChannelType(channelDef.getChannelTypeUID(), null);
                     if (channelType != null) {
                         ChannelUID channelUID = new ChannelUID(thing.getUID(), groupDef.getId(), channelDef.getId());
-                        ChannelBuilder builder = ChannelBuilder.create(channelUID).withType(channelType.getUID());
+                        ChannelBuilder builder = ChannelBuilder.create(channelUID).withType(channelType.getUID())
+                                .withProperties(channelDef.getProperties());
                         Optional.ofNullable(channelDef.getLabel()).ifPresent(builder::withLabel);
                         Optional.ofNullable(channelDef.getDescription()).ifPresent(builder::withDescription);
                         channels.add(builder.build());
@@ -165,7 +213,7 @@ public class HomekitDeviceHandler extends HomekitBaseServerHandler {
             }
         });
 
-        // update thing with new channels
+        // update thing with the new channels
         ThingBuilder builder = editThing().withChannels(channels);
         Optional.ofNullable(accessory.getSemanticEquipmentTag()).ifPresent(builder::withSemanticEquipmentTag);
         updateThing(builder.build());

@@ -163,6 +163,23 @@ public enum CharacteristicType {
         this.type = type;
     }
 
+    public static CharacteristicType from(int id) throws IllegalArgumentException {
+        for (CharacteristicType value : values()) {
+            if (value.id == id) {
+                return value;
+            }
+        }
+        throw new IllegalArgumentException("Unknown ID: " + id);
+    }
+
+    public String getGroupTypeId() {
+        return type.replace("-", "_").replace(".", "-"); // convert to OH channel-group-type format
+    }
+
+    public String getType() {
+        return type;
+    }
+
     /**
      * Returns the name of the enum constant in `First Letter Capitals`.
      */
@@ -174,18 +191,5 @@ public enum CharacteristicType {
             builder.append(Character.toUpperCase(parts[i].charAt(0))).append(parts[i].substring(1));
         }
         return builder.toString();
-    }
-
-    public String getGroupTypeId() {
-        return type.replace("-", "_").replace(".", "-"); // convert to OH channel-group-type format
-    }
-
-    public static CharacteristicType from(int id) throws IllegalArgumentException {
-        for (CharacteristicType value : values()) {
-            if (value.id == id) {
-                return value;
-            }
-        }
-        throw new IllegalArgumentException("Unknown ID: " + id);
     }
 }

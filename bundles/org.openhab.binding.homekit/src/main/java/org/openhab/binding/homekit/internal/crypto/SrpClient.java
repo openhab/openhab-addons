@@ -18,15 +18,13 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.bouncycastle.crypto.AsymmetricCipherKeyPair;
 import org.bouncycastle.crypto.digests.SHA512Digest;
 import org.bouncycastle.crypto.generators.HKDFBytesGenerator;
-import org.bouncycastle.crypto.generators.X25519KeyPairGenerator;
+import org.bouncycastle.crypto.params.Ed25519PrivateKeyParameters;
 import org.bouncycastle.crypto.params.HKDFParameters;
-import org.bouncycastle.crypto.params.X25519KeyGenerationParameters;
-import org.bouncycastle.crypto.params.X25519PublicKeyParameters;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homekit.internal.enums.TlvType;
@@ -65,11 +63,12 @@ public class SrpClient {
     private static final byte[] PAIR_USER = "Pair-Setup".getBytes(StandardCharsets.UTF_8);
     private static final byte[] PAIR_SALT = "Pair-Setup-Encrypt-Salt".getBytes(StandardCharsets.UTF_8);
     private static final byte[] PAIR_INFO = "Pair-Setup-Encrypt-Info".getBytes(StandardCharsets.UTF_8);
-    private static final byte[] NONCE_M5 = "PS-Msg05".getBytes(StandardCharsets.UTF_8);
-    private static final byte[] NONCE_M6 = "PS-Msg06".getBytes(StandardCharsets.UTF_8);
+    private static final byte[] NONCE_M5 = CryptoUtils.generateNonce("PS-Msg05");
+    private static final byte[] NONCE_M6 = CryptoUtils.generateNonce("PS-Msg06");
 
     private final String accessoryPairingCode;
     private final SecureRandom random = new SecureRandom();
+    private final byte[] controllerIdentifier;
 
     // SRP internals
     private @Nullable BigInteger a = null; // client private exponent
@@ -84,19 +83,15 @@ public class SrpClient {
     private byte @Nullable [] salt = null; // server salt
 
     // Curve25519 key‐pair for identifier exchange
-    private final AsymmetricCipherKeyPair x25519KeyPair;
+    // private final AsymmetricCipherKeyPair x25519KeyPair;
 
     // Accessory credentials after M6
     private @Nullable String accessoryIdentifier;
     private byte @Nullable [] accessoryPublicKey = null;
 
-    public SrpClient(String accessoryPairingCode) {
+    public SrpClient(String accessoryPairingCode, String controllerIdentifier) {
         this.accessoryPairingCode = accessoryPairingCode;
-
-        // Generate Curve25519 key‐pair once
-        X25519KeyPairGenerator gen = new X25519KeyPairGenerator();
-        gen.init(new X25519KeyGenerationParameters(random));
-        this.x25519KeyPair = gen.generateKeyPair();
+        this.controllerIdentifier = controllerIdentifier.getBytes(StandardCharsets.UTF_8);
     }
 
     /**
@@ -198,12 +193,24 @@ public class SrpClient {
     /**
      * M5 — Encrypt controller identifier + Curve25519 public key.
      */
-    public byte[] getEncryptedIdentifiers() throws Exception {
-        Map<Integer, byte[]> tlv = Map.of( //
-                TlvType.IDENTIFIER.key, PAIR_USER, //
-                TlvType.PUBLIC_KEY.key, ((X25519PublicKeyParameters) x25519KeyPair.getPublic()).getEncoded());
-        byte[] plain = Tlv8Codec.encode(tlv);
-        return CryptoUtils.encrypt(deriveSessionKeys().getWriteKey(), plain, NONCE_M5);
+    public byte[] getEncryptedIdentifiers(Ed25519PrivateKeyParameters controllerPrivateKey) throws Exception {
+        // Step 1: Build TLV with controller identifier and public key
+        Map<Integer, byte[]> subTlv = new LinkedHashMap<>();
+        subTlv.put(TlvType.IDENTIFIER.key, controllerIdentifier);
+        subTlv.put(TlvType.PUBLIC_KEY.key, controllerPrivateKey.generatePublicKey().getEncoded());
+
+        // Step 2: Sign the TLV with controller's private key
+        byte[] message = Tlv8Codec.encode(subTlv);
+        byte[] signature = CryptoUtils.signVerifyMessage(controllerPrivateKey, message);
+        subTlv.put(TlvType.SIGNATURE.key, signature);
+
+        // Step 3: Encrypt the signed TLV using SRP-derived session key
+        byte[] plaintext = Tlv8Codec.encode(subTlv);
+        SessionKeys sessionKeys = deriveSessionKeys();
+        byte[] encryptionKey = sessionKeys.getWriteKey();
+
+        byte[] encrypted = CryptoUtils.encrypt(encryptionKey, NONCE_M5, plaintext);
+        return encrypted;
     }
 
     /**

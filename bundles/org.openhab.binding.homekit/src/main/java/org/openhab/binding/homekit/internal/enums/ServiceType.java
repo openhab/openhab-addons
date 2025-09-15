@@ -76,6 +76,23 @@ public enum ServiceType {
         this.type = type;
     }
 
+    public static ServiceType from(int id) throws IllegalArgumentException {
+        for (ServiceType value : values()) {
+            if (value.id == id) {
+                return value;
+            }
+        }
+        throw new IllegalArgumentException("Unknown ID: " + id);
+    }
+
+    public String getChannelTypeId() {
+        return type.replace("-", "_").replace(".", "-"); // convert to OH channel type format
+    }
+
+    public String getType() {
+        return type;
+    }
+
     /**
      * Returns the name of the enum constant in `First Letter Capitals`.
      */
@@ -87,18 +104,5 @@ public enum ServiceType {
             builder.append(Character.toUpperCase(parts[i].charAt(0))).append(parts[i].substring(1));
         }
         return builder.toString();
-    }
-
-    public String getChannelTypeId() {
-        return type.replace("-", "_").replace(".", "-"); // covert to OH channel type format
-    }
-
-    public static ServiceType from(int id) throws IllegalArgumentException {
-        for (ServiceType value : values()) {
-            if (value.id == id) {
-                return value;
-            }
-        }
-        throw new IllegalArgumentException("Unknown ID: " + id);
     }
 }

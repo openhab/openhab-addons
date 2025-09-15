@@ -48,13 +48,17 @@ public class HomekitChildDiscoveryService extends AbstractDiscoveryService {
 
     public void devicesDiscovered(Thing bridge, Collection<Accessory> accessories) {
         accessories.forEach(accessory -> {
-            if (accessory.accessoryId != null && accessory.services != null) {
-                ThingUID uid = new ThingUID(THING_TYPE_DEVICE, bridge.getUID(),
-                        CHILD_FMT.formatted(accessory.accessoryId)); // accessory ID is unique per bridge
+            if (accessory.aid != null && accessory.services != null) {
+                ThingUID uid = new ThingUID(THING_TYPE_DEVICE, bridge.getUID(), CHILD_FMT.formatted(accessory.aid)); // accessory
+                                                                                                                     // ID
+                                                                                                                     // is
+                                                                                                                     // unique
+                                                                                                                     // per
+                                                                                                                     // bridge
 
                 thingDiscovered(DiscoveryResultBuilder.create(uid) //
                         .withBridge(bridge.getUID()) //
-                        .withLabel(CHILD_LABEL_FMT.formatted(accessory.accessoryId, bridge.getLabel())) //
+                        .withLabel(CHILD_LABEL_FMT.formatted(accessory.aid, bridge.getLabel())) //
                         .withProperty(PROPERTY_UID, uid.toString()) //
                         .withRepresentationProperty(PROPERTY_UID).build());
             }
