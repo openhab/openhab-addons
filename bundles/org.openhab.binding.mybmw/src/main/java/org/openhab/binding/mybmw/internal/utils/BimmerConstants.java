@@ -61,7 +61,7 @@ public interface BimmerConstants {
             APP_VERSION_ROW);
     static final String USER_AGENT = "Dart/2.16 (dart:io)";
     // see const.py of bimmer_constants: user-agent; brand; app_version; region
-    static final String X_USER_AGENT = "android(AP2A.240605.024);%s;%s;%s";
+    static final String X_USER_AGENT = "android(AP2A.%s);%s;%s;%s";
 
     static final String AUTHORIZATION_CODE = "authorization_code";
     static final String REFRESH_TOKEN = "refresh_token";
