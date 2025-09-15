@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2010-2025 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
@@ -16,6 +16,7 @@ import static org.openhab.binding.ddwrt.internal.ddwrtBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
@@ -43,7 +44,7 @@ public class ddwrtHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_NETWORK.equals(thingTypeUID)) {
-            return new ddwrtNetworkHandler(thing);
+            return new ddwrtNetworkHandler((Bridge) thing);
         }
 
         return null;
