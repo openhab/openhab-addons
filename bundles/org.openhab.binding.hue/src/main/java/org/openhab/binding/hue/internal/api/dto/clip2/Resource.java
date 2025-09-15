@@ -890,8 +890,8 @@ public class Resource {
     }
 
     public Resource setEnabled(Command command) {
-        if (command instanceof OnOffType) {
-            this.enabled = ((OnOffType) command) == OnOffType.ON;
+        if (command instanceof OnOffType onOffCommand) {
+            this.enabled = onOffCommand == OnOffType.ON;
         }
         return this;
     }
@@ -921,11 +921,9 @@ public class Resource {
      * @return this resource instance.
      */
     public Resource setOnOff(Command command) {
-        if (command instanceof OnOffType) {
-            OnOffType onOff = (OnOffType) command;
-            OnState on = this.on;
-            on = Objects.nonNull(on) ? on : new OnState();
-            on.setOn(OnOffType.ON.equals(onOff));
+        if (command instanceof OnOffType onOffCommand) {
+            OnState on = Objects.requireNonNullElse(this.on, new OnState());
+            on.setOn(OnOffType.ON.equals(onOffCommand));
             this.on = on;
         }
         return this;
@@ -937,20 +935,23 @@ public class Resource {
     }
 
     public Resource setRecallAction(SceneRecallAction recallAction) {
-        Recall recall = this.recall;
-        this.recall = ((Objects.nonNull(recall) ? recall : new Recall())).setAction(recallAction);
+        Recall recall = Objects.requireNonNullElse(this.recall, new Recall());
+        recall.setAction(recallAction);
+        this.recall = recall;
         return this;
     }
 
     public Resource setRecallAction(SmartSceneRecallAction recallAction) {
-        Recall recall = this.recall;
-        this.recall = ((Objects.nonNull(recall) ? recall : new Recall())).setAction(recallAction);
+        Recall recall = Objects.requireNonNullElse(this.recall, new Recall());
+        recall.setAction(recallAction);
+        this.recall = recall;
         return this;
     }
 
     public Resource setRecallDuration(Duration recallDuration) {
-        Recall recall = this.recall;
-        this.recall = ((Objects.nonNull(recall) ? recall : new Recall())).setDuration(recallDuration);
+        Recall recall = Objects.requireNonNullElse(this.recall, new Recall());
+        recall.setDuration(recallDuration);
+        this.recall = recall;
         return this;
     }
 
