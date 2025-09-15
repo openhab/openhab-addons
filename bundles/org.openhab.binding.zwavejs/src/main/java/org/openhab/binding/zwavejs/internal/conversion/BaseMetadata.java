@@ -160,6 +160,14 @@ public abstract class BaseMetadata {
         this.factor = 1.0;
     }
 
+    /**
+     * Determines if the given property name is either the first occurrence of its mapped value
+     * in the {@code CHANNEL_ID_PROPERTY_NAME_REPLACEMENTS} map or if it is not mapped at all.
+     *
+     * @param propertyName the name of the property to check; may be {@code null}.
+     * @return {@code true} if the property name is the first occurrence of its mapped value,
+     *         not mapped, or {@code null}; {@code false} otherwise.
+     */
     public static boolean isFirstOrNotMapped(@Nullable String propertyName) {
         if (propertyName == null || propertyName.contains("unknown")) {
             return true;

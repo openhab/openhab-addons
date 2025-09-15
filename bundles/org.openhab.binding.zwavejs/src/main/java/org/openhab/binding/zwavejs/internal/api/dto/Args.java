@@ -24,4 +24,9 @@ public class Args {
     public Object prevValue;
     public String propertyName;
     public Object propertyKey;
+
+    public int type;
+    public String label;
+    public String eventLabel;
+    public Object parameters;
 }
