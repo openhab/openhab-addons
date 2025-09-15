@@ -17,8 +17,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 
-import tuwien.auto.calimero.KNXException;
-import tuwien.auto.calimero.link.KNXLinkClosedException;
+import io.calimero.KNXException;
+import io.calimero.link.KNXLinkClosedException;
 
 /**
  *

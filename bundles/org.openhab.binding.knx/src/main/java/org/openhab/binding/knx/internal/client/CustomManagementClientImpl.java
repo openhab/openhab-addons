@@ -14,10 +14,10 @@ package org.openhab.binding.knx.internal.client;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
-import tuwien.auto.calimero.link.KNXLinkClosedException;
-import tuwien.auto.calimero.link.KNXNetworkLink;
-import tuwien.auto.calimero.mgmt.ManagementClientImpl;
-import tuwien.auto.calimero.mgmt.SecureManagement;
+import io.calimero.link.KNXLinkClosedException;
+import io.calimero.link.KNXNetworkLink;
+import io.calimero.mgmt.ManagementClientImpl;
+import io.calimero.mgmt.SecureManagement;
 
 /**
  * This class is to provide access to protected constructors in the Calimero library.
