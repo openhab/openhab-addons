@@ -59,7 +59,9 @@ These channels are dynamically added to the Thing during node initialization; th
 
 ## Channel Configuration and Inversion
 
-Channels in the `zwavejs` binding support an **inversion** configuration option. This feature allows you to reverse the logical behavior of a channel, which is particularly useful for devices where the default open/close, on/off, or up/down logic does not align with your installation or preferences. The following devices and parameters support inversion:
+Channels in the `zwavejs` binding support an **inversion** configuration option.
+This feature allows you to reverse the logical behavior of a channel, which is particularly useful for devices where the default open/close, on/off, or up/down logic does not align with your installation or preferences.
+The following devices and parameters support inversion:
 
 - **Switch, Contact, and Dimmer**: These channels have a single configuration parameter, `inverted`, which reverses the logical state.
 - **RollerShutter**: These channels have two configuration parameters:
