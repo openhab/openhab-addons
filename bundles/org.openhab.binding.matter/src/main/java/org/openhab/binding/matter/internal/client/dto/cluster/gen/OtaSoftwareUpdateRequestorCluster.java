@@ -197,8 +197,8 @@ public class OtaSoftwareUpdateRequestorCluster extends BaseCluster {
         UPDATE_AVAILABLE(1, "Update Available"),
         URGENT_UPDATE_AVAILABLE(2, "Urgent Update Available");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private AnnouncementReasonEnum(Integer value, String label) {
             this.value = value;
@@ -227,8 +227,8 @@ public class OtaSoftwareUpdateRequestorCluster extends BaseCluster {
         ROLLING_BACK(7, "Rolling Back"),
         DELAYED_ON_USER_CONSENT(8, "Delayed On User Consent");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private UpdateStateEnum(Integer value, String label) {
             this.value = value;
@@ -253,8 +253,8 @@ public class OtaSoftwareUpdateRequestorCluster extends BaseCluster {
         TIME_OUT(3, "Time Out"),
         DELAY_BY_PROVIDER(4, "Delay By Provider");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private ChangeReasonEnum(Integer value, String label) {
             this.value = value;

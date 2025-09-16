@@ -65,8 +65,8 @@ public class LaundryDryerControlsCluster extends BaseCluster {
         EXTRA(2, "Extra"),
         MAX(3, "Max");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private DrynessLevelEnum(Integer value, String label) {
             this.value = value;

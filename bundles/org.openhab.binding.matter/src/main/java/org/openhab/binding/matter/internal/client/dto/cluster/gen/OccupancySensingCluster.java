@@ -180,8 +180,8 @@ public class OccupancySensingCluster extends BaseCluster {
         PIR_AND_ULTRASONIC(2, "Pir And Ultrasonic"),
         PHYSICAL_CONTACT(3, "Physical Contact");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private OccupancySensorTypeEnum(Integer value, String label) {
             this.value = value;

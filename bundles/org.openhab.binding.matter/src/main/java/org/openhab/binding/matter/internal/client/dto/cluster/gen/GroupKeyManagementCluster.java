@@ -190,8 +190,8 @@ public class GroupKeyManagementCluster extends BaseCluster {
         TRUST_FIRST(0, "Trust First"),
         CACHE_AND_SYNC(1, "Cache And Sync");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private GroupKeySecurityPolicyEnum(Integer value, String label) {
             this.value = value;
@@ -213,8 +213,8 @@ public class GroupKeyManagementCluster extends BaseCluster {
         PER_GROUP_ID(0, "Per Group Id"),
         ALL_NODES(1, "All Nodes");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private GroupKeyMulticastPolicyEnum(Integer value, String label) {
             this.value = value;

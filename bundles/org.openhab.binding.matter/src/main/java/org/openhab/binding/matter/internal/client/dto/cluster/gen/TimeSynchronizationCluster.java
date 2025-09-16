@@ -330,8 +330,8 @@ public class TimeSynchronizationCluster extends BaseCluster {
         MILLISECONDS_GRANULARITY(3, "Milliseconds Granularity"),
         MICROSECONDS_GRANULARITY(4, "Microseconds Granularity");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private GranularityEnum(Integer value, String label) {
             this.value = value;
@@ -368,8 +368,8 @@ public class TimeSynchronizationCluster extends BaseCluster {
         PTP(15, "Ptp"),
         GNSS(16, "Gnss");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private TimeSourceEnum(Integer value, String label) {
             this.value = value;
@@ -397,8 +397,8 @@ public class TimeSynchronizationCluster extends BaseCluster {
         PARTIAL(1, "Partial"),
         NONE(2, "None");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private TimeZoneDatabaseEnum(Integer value, String label) {
             this.value = value;
@@ -419,8 +419,8 @@ public class TimeSynchronizationCluster extends BaseCluster {
     public enum StatusCodeEnum implements MatterEnum {
         TIME_NOT_ACCEPTED(2, "Time Not Accepted");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private StatusCodeEnum(Integer value, String label) {
             this.value = value;

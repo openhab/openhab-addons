@@ -86,22 +86,22 @@ class DoorLockDeviceTest {
     @Test
     void testHandleMatterEventLockState() {
         switchDevice.handleMatterEvent("doorLock", "lockState",
-                Double.valueOf(DoorLockCluster.LockStateEnum.LOCKED.value));
+                Double.valueOf(DoorLockCluster.LockStateEnum.LOCKED.getValue()));
         verify(switchItem).send(OnOffType.ON);
 
         switchDevice.handleMatterEvent("doorLock", "lockState",
-                Double.valueOf(DoorLockCluster.LockStateEnum.UNLOCKED.value));
+                Double.valueOf(DoorLockCluster.LockStateEnum.UNLOCKED.getValue()));
         verify(switchItem).send(OnOffType.OFF);
     }
 
     @Test
     void testHandleMatterEventLockStateGroup() {
         groupDevice.handleMatterEvent("doorLock", "lockState",
-                Double.valueOf(DoorLockCluster.LockStateEnum.LOCKED.value));
+                Double.valueOf(DoorLockCluster.LockStateEnum.LOCKED.getValue()));
         verify(groupItem).send(OnOffType.ON);
 
         groupDevice.handleMatterEvent("doorLock", "lockState",
-                Double.valueOf(DoorLockCluster.LockStateEnum.UNLOCKED.value));
+                Double.valueOf(DoorLockCluster.LockStateEnum.UNLOCKED.getValue()));
         verify(groupItem).send(OnOffType.OFF);
     }
 
@@ -109,11 +109,11 @@ class DoorLockDeviceTest {
     void testUpdateState() {
         switchDevice.updateState(switchItem, OnOffType.ON);
         verify(client).setEndpointState(any(), eq("doorLock"), eq("lockState"),
-                eq(DoorLockCluster.LockStateEnum.LOCKED.value));
+                eq(DoorLockCluster.LockStateEnum.LOCKED.getValue()));
 
         switchDevice.updateState(switchItem, OnOffType.OFF);
         verify(client).setEndpointState(any(), eq("doorLock"), eq("lockState"),
-                eq(DoorLockCluster.LockStateEnum.UNLOCKED.value));
+                eq(DoorLockCluster.LockStateEnum.UNLOCKED.getValue()));
     }
 
     @Test
@@ -123,7 +123,7 @@ class DoorLockDeviceTest {
 
         Map<String, Object> doorLockMap = options.clusters.get("doorLock");
         assertNotNull(doorLockMap);
-        assertEquals(DoorLockCluster.LockStateEnum.LOCKED.value, doorLockMap.get("lockState"));
+        assertEquals(DoorLockCluster.LockStateEnum.LOCKED.getValue(), doorLockMap.get("lockState"));
     }
 
     @Test
@@ -133,6 +133,6 @@ class DoorLockDeviceTest {
 
         Map<String, Object> doorLockMap = options.clusters.get("doorLock");
         assertNotNull(doorLockMap);
-        assertEquals(DoorLockCluster.LockStateEnum.UNLOCKED.value, doorLockMap.get("lockState"));
+        assertEquals(DoorLockCluster.LockStateEnum.UNLOCKED.getValue(), doorLockMap.get("lockState"));
     }
 }
