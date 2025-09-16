@@ -37,7 +37,13 @@ public final class PositionalJob extends AbstractJob {
 
     @Override
     public void run() {
-        handler.publishPositionalInfo();
+        try {
+            handler.publishPositionalInfo();
+        } catch (Exception e) {
+            logger.warn("The publishing of positional info for \"{}\" failed: {}", handler.getThing().getUID(),
+                    e.getMessage());
+            logger.trace("", e);
+        }
     }
 
     @Override

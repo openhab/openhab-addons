@@ -55,121 +55,127 @@ public final class DailyJobSun extends AbstractJob {
 
     @Override
     public void run() {
-        handler.publishDailyInfo();
-        if (logger.isDebugEnabled()) {
-            logger.debug("Scheduled Astro event-jobs for thing {}", handler.getThing().getUID());
-        }
-
-        Planet planet = handler.getPlanet();
-        if (planet == null) {
-            logger.error("Planet not instantiated");
-            return;
-        }
-        Sun sun = (Sun) planet;
-        scheduleRange(handler, sun.getRise(), EVENT_CHANNEL_ID_RISE, zone, locale);
-        scheduleRange(handler, sun.getSet(), EVENT_CHANNEL_ID_SET, zone, locale);
-        Range range = sun.getNoon();
-        if (range != null) {
-            scheduleRange(handler, range, EVENT_CHANNEL_ID_NOON, zone, locale);
-        }
-        range = sun.getNight();
-        if (range != null) {
-            scheduleRange(handler, range, EVENT_CHANNEL_ID_NIGHT, zone, locale);
-        }
-        range = sun.getMorningNight();
-        if (range != null) {
-            scheduleRange(handler, range, EVENT_CHANNEL_ID_MORNING_NIGHT, zone, locale);
-        }
-        range = sun.getAstroDawn();
-        if (range != null) {
-            scheduleRange(handler, range, EVENT_CHANNEL_ID_ASTRO_DAWN, zone, locale);
-        }
-        range = sun.getNauticDawn();
-        if (range != null) {
-            scheduleRange(handler, range, EVENT_CHANNEL_ID_NAUTIC_DAWN, zone, locale);
-        }
-        range = sun.getCivilDawn();
-        if (range != null) {
-            scheduleRange(handler, range, EVENT_CHANNEL_ID_CIVIL_DAWN, zone, locale);
-        }
-        range = sun.getAstroDusk();
-        if (range != null) {
-            scheduleRange(handler, range, EVENT_CHANNEL_ID_ASTRO_DUSK, zone, locale);
-        }
-        range = sun.getNauticDusk();
-        if (range != null) {
-            scheduleRange(handler, range, EVENT_CHANNEL_ID_NAUTIC_DUSK, zone, locale);
-        }
-        range = sun.getCivilDusk();
-        if (range != null) {
-            scheduleRange(handler, range, EVENT_CHANNEL_ID_CIVIL_DUSK, zone, locale);
-        }
-        range = sun.getEveningNight();
-        if (range != null) {
-            scheduleRange(handler, range, EVENT_CHANNEL_ID_EVENING_NIGHT, zone, locale);
-        }
-        range = sun.getDaylight();
-        if (range != null) {
-            scheduleRange(handler, range, EVENT_CHANNEL_ID_DAYLIGHT, zone, locale);
-        }
-
-        Eclipse eclipse = sun.getEclipse();
-        eclipse.getKinds().forEach(eclipseKind -> {
-            Calendar eclipseDate = eclipse.getDate(eclipseKind);
-            if (eclipseDate != null) {
-                scheduleEvent(handler, eclipseDate, eclipseKind.toString(), EVENT_CHANNEL_ID_ECLIPSE, false, zone,
-                        locale);
+        try {
+            handler.publishDailyInfo();
+            if (logger.isDebugEnabled()) {
+                logger.debug("Scheduled Astro event-jobs for thing {}", handler.getThing().getUID());
             }
-        });
 
-        // schedule republish jobs
-        SunZodiac sunZodiac;
-        Calendar cal = (sunZodiac = sun.getZodiac()) == null ? null : sunZodiac.getEnd();
-        if (cal != null) {
-            schedulePublishPlanet(handler, cal, zone, locale);
-        }
-        schedulePublishPlanet(handler, sun.getSeason().getNextSeason(zone, locale), zone, locale);
+            Planet planet = handler.getPlanet();
+            if (planet == null) {
+                logger.error("Planet not instantiated");
+                return;
+            }
+            Sun sun = (Sun) planet;
+            scheduleRange(handler, sun.getRise(), EVENT_CHANNEL_ID_RISE, zone, locale);
+            scheduleRange(handler, sun.getSet(), EVENT_CHANNEL_ID_SET, zone, locale);
+            Range range = sun.getNoon();
+            if (range != null) {
+                scheduleRange(handler, range, EVENT_CHANNEL_ID_NOON, zone, locale);
+            }
+            range = sun.getNight();
+            if (range != null) {
+                scheduleRange(handler, range, EVENT_CHANNEL_ID_NIGHT, zone, locale);
+            }
+            range = sun.getMorningNight();
+            if (range != null) {
+                scheduleRange(handler, range, EVENT_CHANNEL_ID_MORNING_NIGHT, zone, locale);
+            }
+            range = sun.getAstroDawn();
+            if (range != null) {
+                scheduleRange(handler, range, EVENT_CHANNEL_ID_ASTRO_DAWN, zone, locale);
+            }
+            range = sun.getNauticDawn();
+            if (range != null) {
+                scheduleRange(handler, range, EVENT_CHANNEL_ID_NAUTIC_DAWN, zone, locale);
+            }
+            range = sun.getCivilDawn();
+            if (range != null) {
+                scheduleRange(handler, range, EVENT_CHANNEL_ID_CIVIL_DAWN, zone, locale);
+            }
+            range = sun.getAstroDusk();
+            if (range != null) {
+                scheduleRange(handler, range, EVENT_CHANNEL_ID_ASTRO_DUSK, zone, locale);
+            }
+            range = sun.getNauticDusk();
+            if (range != null) {
+                scheduleRange(handler, range, EVENT_CHANNEL_ID_NAUTIC_DUSK, zone, locale);
+            }
+            range = sun.getCivilDusk();
+            if (range != null) {
+                scheduleRange(handler, range, EVENT_CHANNEL_ID_CIVIL_DUSK, zone, locale);
+            }
+            range = sun.getEveningNight();
+            if (range != null) {
+                scheduleRange(handler, range, EVENT_CHANNEL_ID_EVENING_NIGHT, zone, locale);
+            }
+            range = sun.getDaylight();
+            if (range != null) {
+                scheduleRange(handler, range, EVENT_CHANNEL_ID_DAYLIGHT, zone, locale);
+            }
 
-        // schedule phase jobs
-        cal = sun.getRise().getStart();
-        if (cal != null) {
-            scheduleSunPhase(handler, SUN_RISE, cal, zone, locale);
-        }
-        cal = sun.getSet().getStart();
-        if (cal != null) {
-            scheduleSunPhase(handler, SUN_SET, cal, zone, locale);
-        }
-        cal = (range = sun.getNight()) == null ? null : range.getStart();
-        if (cal != null) {
-            scheduleSunPhase(handler, NIGHT, cal, zone, locale);
-        }
-        cal = (range = sun.getDaylight()) == null ? null : range.getStart();
-        if (cal != null) {
-            scheduleSunPhase(handler, DAYLIGHT, cal, zone, locale);
-        }
-        cal = (range = sun.getAstroDawn()) == null ? null : range.getStart();
-        if (cal != null) {
-            scheduleSunPhase(handler, ASTRO_DAWN, cal, zone, locale);
-        }
-        cal = (range = sun.getNauticDawn()) == null ? null : range.getStart();
-        if (cal != null) {
-            scheduleSunPhase(handler, NAUTIC_DAWN, cal, zone, locale);
-        }
-        cal = (range = sun.getCivilDawn()) == null ? null : range.getStart();
-        if (cal != null) {
-            scheduleSunPhase(handler, CIVIL_DAWN, cal, zone, locale);
-        }
-        cal = (range = sun.getAstroDusk()) == null ? null : range.getStart();
-        if (cal != null) {
-            scheduleSunPhase(handler, ASTRO_DUSK, cal, zone, locale);
-        }
-        cal = (range = sun.getNauticDusk()) == null ? null : range.getStart();
-        if (cal != null) {
-            scheduleSunPhase(handler, NAUTIC_DUSK, cal, zone, locale);
-        }
-        cal = (range = sun.getCivilDusk()) == null ? null : range.getStart();
-        if (cal != null) {
-            scheduleSunPhase(handler, CIVIL_DUSK, cal, zone, locale);
+            Eclipse eclipse = sun.getEclipse();
+            eclipse.getKinds().forEach(eclipseKind -> {
+                Calendar eclipseDate = eclipse.getDate(eclipseKind);
+                if (eclipseDate != null) {
+                    scheduleEvent(handler, eclipseDate, eclipseKind.toString(), EVENT_CHANNEL_ID_ECLIPSE, false, zone,
+                            locale);
+                }
+            });
+
+            // schedule republish jobs
+            SunZodiac sunZodiac;
+            Calendar cal = (sunZodiac = sun.getZodiac()) == null ? null : sunZodiac.getEnd();
+            if (cal != null) {
+                schedulePublishPlanet(handler, cal, zone, locale);
+            }
+            schedulePublishPlanet(handler, sun.getSeason().getNextSeason(zone, locale), zone, locale);
+
+            // schedule phase jobs
+            cal = sun.getRise().getStart();
+            if (cal != null) {
+                scheduleSunPhase(handler, SUN_RISE, cal, zone, locale);
+            }
+            cal = sun.getSet().getStart();
+            if (cal != null) {
+                scheduleSunPhase(handler, SUN_SET, cal, zone, locale);
+            }
+            cal = (range = sun.getNight()) == null ? null : range.getStart();
+            if (cal != null) {
+                scheduleSunPhase(handler, NIGHT, cal, zone, locale);
+            }
+            cal = (range = sun.getDaylight()) == null ? null : range.getStart();
+            if (cal != null) {
+                scheduleSunPhase(handler, DAYLIGHT, cal, zone, locale);
+            }
+            cal = (range = sun.getAstroDawn()) == null ? null : range.getStart();
+            if (cal != null) {
+                scheduleSunPhase(handler, ASTRO_DAWN, cal, zone, locale);
+            }
+            cal = (range = sun.getNauticDawn()) == null ? null : range.getStart();
+            if (cal != null) {
+                scheduleSunPhase(handler, NAUTIC_DAWN, cal, zone, locale);
+            }
+            cal = (range = sun.getCivilDawn()) == null ? null : range.getStart();
+            if (cal != null) {
+                scheduleSunPhase(handler, CIVIL_DAWN, cal, zone, locale);
+            }
+            cal = (range = sun.getAstroDusk()) == null ? null : range.getStart();
+            if (cal != null) {
+                scheduleSunPhase(handler, ASTRO_DUSK, cal, zone, locale);
+            }
+            cal = (range = sun.getNauticDusk()) == null ? null : range.getStart();
+            if (cal != null) {
+                scheduleSunPhase(handler, NAUTIC_DUSK, cal, zone, locale);
+            }
+            cal = (range = sun.getCivilDusk()) == null ? null : range.getStart();
+            if (cal != null) {
+                scheduleSunPhase(handler, CIVIL_DUSK, cal, zone, locale);
+            }
+        } catch (Exception e) {
+            logger.warn("The daily sun job execution for \"{}\" failed: {}", handler.getThing().getUID(),
+                    e.getMessage());
+            logger.trace("", e);
         }
     }
 

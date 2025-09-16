@@ -37,7 +37,13 @@ public final class PublishPlanetJob extends AbstractJob {
 
     @Override
     public void run() {
-        handler.publishDailyInfo();
+        try {
+            handler.publishDailyInfo();
+        } catch (Exception e) {
+            logger.warn("The publishing of daily info for \"{}\" failed: {}", handler.getThing().getUID(),
+                    e.getMessage());
+            logger.trace("", e);
+        }
     }
 
     @Override

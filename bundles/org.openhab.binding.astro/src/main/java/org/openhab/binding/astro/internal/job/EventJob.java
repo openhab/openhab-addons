@@ -44,7 +44,13 @@ public final class EventJob extends AbstractJob {
 
     @Override
     public void run() {
-        handler.triggerEvent(channelID, event);
+        try {
+            handler.triggerEvent(channelID, event);
+        } catch (Exception e) {
+            logger.warn("The triggering of event \"{}\" for \"{}\" failed: {}", event, handler.getThing().getUID(),
+                    e.getMessage());
+            logger.trace("", e);
+        }
     }
 
     @Override

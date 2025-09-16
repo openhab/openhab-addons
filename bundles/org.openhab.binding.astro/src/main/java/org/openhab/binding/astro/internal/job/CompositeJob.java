@@ -51,8 +51,9 @@ public final class CompositeJob extends AbstractJob {
         jobs.forEach(j -> {
             try {
                 j.run();
-            } catch (RuntimeException ex) {
-                logger.warn("Job execution failed.", ex);
+            } catch (Exception e) {
+                logger.warn("Job execution of \"{}\" failed: {}", j, e.getMessage());
+                logger.trace("", e);
             }
         });
     }

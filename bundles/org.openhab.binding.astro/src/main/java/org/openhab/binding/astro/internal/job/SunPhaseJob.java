@@ -16,7 +16,6 @@ import static org.openhab.binding.astro.internal.AstroBindingConstants.CHANNEL_I
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.astro.internal.handler.AstroThingHandler;
-import org.openhab.binding.astro.internal.model.Planet;
 import org.openhab.binding.astro.internal.model.Sun;
 import org.openhab.binding.astro.internal.model.SunPhaseName;
 import org.openhab.core.thing.Channel;
@@ -47,15 +46,20 @@ public final class SunPhaseJob extends AbstractJob {
 
     @Override
     public void run() {
-        Channel phaseNameChannel = handler.getThing().getChannel(CHANNEL_ID_SUN_PHASE_NAME);
-        if (phaseNameChannel != null) {
-            Planet planet = handler.getPlanet();
-            if (planet instanceof Sun theSun) {
-                theSun.getPhase().setName(sunPhaseName);
-                handler.publishChannelIfLinked(phaseNameChannel.getUID());
+        try {
+            Channel phaseNameChannel = handler.getThing().getChannel(CHANNEL_ID_SUN_PHASE_NAME);
+            if (phaseNameChannel != null) {
+                if (handler.getPlanet() instanceof Sun theSun) {
+                    theSun.getPhase().setName(sunPhaseName);
+                    handler.publishChannelIfLinked(phaseNameChannel.getUID());
+                }
+            } else {
+                logger.trace("Phase Name Channel for {} is null", handler.getThing().getUID());
             }
-        } else {
-            logger.trace("Phase Name Channel for {} is null", handler.getThing().getUID());
+        } catch (Exception e) {
+            logger.warn("The publishing of the sun phase for \"{}\" failed: {}", handler.getThing().getUID(),
+                    e.getMessage());
+            logger.trace("", e);
         }
     }
 
