@@ -38,14 +38,14 @@ public class PairingRemoveService {
     private static final byte[] NONCE_M5 = CryptoUtils.generateNonce("PV-Msg05");
     private static final byte[] NONCE_M6 = CryptoUtils.generateNonce("PV-Msg06");
 
-    private final HttpTransport http;
+    private final HttpTransport httpTransport;
     private final String baseUrl;
     private final SessionKeys sessionKeys;
     private final String controllerIdentifier;
 
-    public PairingRemoveService(HttpTransport http, String baseUrl, SessionKeys sessionKeys,
+    public PairingRemoveService(HttpTransport httpTransport, String baseUrl, SessionKeys sessionKeys,
             String controllerIdentifier) {
-        this.http = http;
+        this.httpTransport = httpTransport;
         this.baseUrl = baseUrl;
         this.sessionKeys = sessionKeys;
         this.controllerIdentifier = controllerIdentifier;
@@ -64,7 +64,7 @@ public class PairingRemoveService {
         byte[] encrypted = CryptoUtils.encrypt(sessionKeys.getWriteKey(), NONCE_M5, encoded);
 
         // Send to /pairings endpoint
-        byte[] response = http.post(baseUrl, ENDPOINT, CONTENT_TYPE, encrypted);
+        byte[] response = httpTransport.post(baseUrl, ENDPOINT, CONTENT_TYPE, encrypted);
 
         // M2 Decrypt response using read key
         byte[] decrypted = CryptoUtils.decrypt(sessionKeys.getReadKey(), NONCE_M6, response);

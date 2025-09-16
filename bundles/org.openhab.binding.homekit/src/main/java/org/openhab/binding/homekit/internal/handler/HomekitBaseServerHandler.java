@@ -30,6 +30,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homekit.internal.dto.Accessories;
 import org.openhab.binding.homekit.internal.dto.Accessory;
 import org.openhab.binding.homekit.internal.hap_services.CharacteristicReadWriteService;
+import org.openhab.binding.homekit.internal.hap_services.PairingRemoveService;
 import org.openhab.binding.homekit.internal.hap_services.PairingSetupService;
 import org.openhab.binding.homekit.internal.hap_services.PairingVerifyService;
 import org.openhab.binding.homekit.internal.session.SecureSession;
@@ -58,7 +59,7 @@ import com.google.gson.Gson;
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-public class HomekitBaseServerHandler extends BaseThingHandler {
+public abstract class HomekitBaseServerHandler extends BaseThingHandler {
 
     protected static final Gson GSON = new Gson();
 
@@ -74,6 +75,8 @@ public class HomekitBaseServerHandler extends BaseThingHandler {
     protected @NonNullByDefault({}) String baseUrl;
     protected @NonNullByDefault({}) String pairingCode;
     protected @NonNullByDefault({}) Integer accessoryId;
+    protected @NonNullByDefault({}) SessionKeys sessionKeys;
+
     protected @Nullable Ed25519PrivateKeyParameters controllerPrivateKey = null;
 
     public HomekitBaseServerHandler(Thing thing, HttpClientFactory httpClientFactory) {
@@ -131,7 +134,22 @@ public class HomekitBaseServerHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        // override in subclass
+        // this is an abstract thing with no channels, so do nothing
+    }
+
+    @Override
+    public void handleRemoval() {
+        super.handleRemoval();
+        if (!isChildAccessory) {
+            // unpair and clear stored keys if this is NOT a child accessory
+            try {
+                new PairingRemoveService(httpTransport, baseUrl, sessionKeys, thing.getUID().toString()).remove();
+                this.controllerPrivateKey = null;
+                storeControllerPrivateKey();
+            } catch (Exception e) {
+                logger.warn("Failed to remove pairing for accessory {}", accessoryId);
+            }
+        }
     }
 
     @Override
@@ -173,7 +191,7 @@ public class HomekitBaseServerHandler extends BaseThingHandler {
         if (controllerPrivateKey != null) {
             // Perform Pair-Verify with existing key
             try {
-                SessionKeys sessionKeys = new PairingVerifyService(httpTransport, baseUrl, accessoryId.toString(),
+                this.sessionKeys = new PairingVerifyService(httpTransport, baseUrl, accessoryId.toString(),
                         controllerPrivateKey).verify();
 
                 this.session = new SecureSession(sessionKeys);
@@ -197,12 +215,12 @@ public class HomekitBaseServerHandler extends BaseThingHandler {
 
         try {
             // Perform Pair-Setup
-            SessionKeys sessionKeys = new PairingSetupService(httpTransport, baseUrl, pairingCode, controllerPrivateKey,
+            this.sessionKeys = new PairingSetupService(httpTransport, baseUrl, pairingCode, controllerPrivateKey,
                     thing.getUID().toString()).pair();
 
             // Perform Pair-Verify immediately after Pair-Setup
-            sessionKeys = new PairingVerifyService(httpTransport, baseUrl, accessoryId.toString(), controllerPrivateKey)
-                    .verify();
+            this.sessionKeys = new PairingVerifyService(httpTransport, baseUrl, accessoryId.toString(),
+                    controllerPrivateKey).verify();
 
             this.session = new SecureSession(sessionKeys);
             this.rwService = new CharacteristicReadWriteService(httpTransport, session, baseUrl);

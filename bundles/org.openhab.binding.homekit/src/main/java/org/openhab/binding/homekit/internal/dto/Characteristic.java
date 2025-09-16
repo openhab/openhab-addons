@@ -35,6 +35,8 @@ import org.openhab.core.thing.type.ChannelTypeBuilder;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.thing.type.StateChannelTypeBuilder;
 
+import com.google.gson.JsonElement;
+
 /**
  * HomeKit characteristic DTO.
  * Used to deserialize individual characteristics from the /accessories endpoint of a HomeKit bridge.
@@ -53,7 +55,7 @@ public class Characteristic {
     public @NonNullByDefault({}) Double maxValue; // e.g. 100
     public @NonNullByDefault({}) Double minValue; // e.g. 0
     public @NonNullByDefault({}) Double minStep;
-    public @NonNullByDefault({}) String value; // e.g. true
+    public @NonNullByDefault({}) JsonElement value; // e.g. true, 23, "Some String"
     public @NonNullByDefault({}) String description;
     public @NonNullByDefault({}) Boolean ev; // e.g. true
 

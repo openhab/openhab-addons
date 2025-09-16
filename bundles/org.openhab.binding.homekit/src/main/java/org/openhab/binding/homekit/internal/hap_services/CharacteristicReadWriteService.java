@@ -42,15 +42,14 @@ public class CharacteristicReadWriteService {
     }
 
     /**
-     * Reads a characteristic from the accessory.
+     * Reads characteristic(s) from the accessory.
      *
-     * @param aid Accessory ID
-     * @param iid Instance ID
+     * @param query the query string e.g. "1.10,1.11" for aid 1 and iid 10 and 11
      * @return JSON response as String
      * @throws Exception on communication or encryption errors
      */
-    public String readCharacteristic(String aid, String iid) throws Exception {
-        String endpoint = "%s?id=%s.%s".formatted(ENDPOINT_CHARACTERISTICS, aid, iid);
+    public String readCharacteristic(String query) throws Exception {
+        String endpoint = "%s?id=%s".formatted(ENDPOINT_CHARACTERISTICS, query);
         byte[] encrypted = httpTransport.get(baseUrl, endpoint, CONTENT_TYPE_HAP);
         byte[] decrypted = session.decrypt(encrypted);
         return new String(decrypted, StandardCharsets.UTF_8);

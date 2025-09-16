@@ -1,44 +1,28 @@
 # HomeKit Binding
 
-_Give some details about what this binding is meant for - a protocol, system, specific device._
-
-_If possible, provide some resources like pictures (only PNG is supported currently), a video, etc. to give an impression of what can be done with this binding._
-_You can place such resources into a `doc` folder next to this README.md._
-
-_Put each sentence in a separate line to improve readability of diffs._
+This binding allows pairing with HomeKit accessory devices and importing their services as channel groups and their respective service- characteristics as channels.
 
 ## Supported Things
 
-_Please describe the different supported things / devices including their ThingTypeUID within this section._
-_Which different types are supported, which models were tested etc.?_
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
+There are two types of Things supported:
 
-- `bridge`: Short description of the Bridge, if any
-- `sample`: Short description of the Thing with the ThingTypeUID `sample`
+- `device`: This integrates a single HomeKit accessory, whereby its services appear as channel groups the services respective service- characteristics appear as channels.
+- `bridge`: This integrates a HomeKit bridge accessory containing multiple child `device` Things.
+So Things of type `device` either represent a stand-alone accessories or a child of a `bridge` Thing.
+
+Things of type `bridge` and stand-alone `device` Things both communicate directly with their HomeKit device over the LAN.
+Whereas child `device` Things communicate via their respective `bridge` Thing.
 
 ## Discovery
 
-_Describe the available auto-discovery features here._
-_Mention for what it works and what needs to be kept in mind when using it._
+Both `bridge` and stand-alone `device` Things will be auto discovered via mDNS.
+And once a `bridge` Thing has been instantiated, and paired, its child `device` Things will also be auto discovered
 
 ## Binding Configuration
 
-_If your binding requires or supports general configuration settings, please create a folder ```cfg``` and place the configuration file ```<bindingId>.cfg``` inside it._
-_In this section, you should link to this file and provide some information about the options._
-_The file could e.g. look like:_
-
-```
-# Configuration for the HomeKit Binding
-#
-# Default secret key for the pairing of the HomeKit Thing.
-# It has to be between 10-40 (alphanumeric) characters.
-# This may be changed by the user for security reasons.
-secret=openHABSecret
-```
-
-_Note that it is planned to generate some part of this based on the information that is available within ```src/main/resources/OH-INF/binding``` of your binding._
-
-_If your binding does not offer any generic configurations, you can remove this section completely._
+The `bridge` and stand-alone `device` Things need to be paired with their respective HomeKit accessories.
+This requires entering the HomeKit pairing code as a configuration parameter in the binding.
+Note that HomeKit accessories can only be paired with one controller, so if it it already paired with something else, you will need to remove that pairing first.
 
 ## Thing Configuration
 
@@ -47,29 +31,22 @@ _This should be mainly about its mandatory and optional configuration parameters
 
 _Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
 
-### `sample` Thing Configuration
+### `bridge` and stand-alone `device` Thing Configuration
 
-| Name            | Type    | Description                           | Default | Required | Advanced |
-|-----------------|---------|---------------------------------------|---------|----------|----------|
-| hostname        | text    | Hostname or IP address of the device  | N/A     | yes      | no       |
-| password        | text    | Password to access the device         | N/A     | yes      | no       |
-| refreshInterval | integer | Interval the device is polled in sec. | 600     | no       | yes      |
+| Name              | Type    | Description                                       | Default | Required  | Advanced  |
+|-------------------|---------|---------------------------------------------------|---------|-----------|-----------|
+| `ipV4Address`     | text    | IP v4 address of the HomeKit accessory.           | N/A     | see below | see below |
+| `pairingCode`     | text    | Code used for pairing with the HomeKit accessory. | N/A     | see below | see below |
+| `refreshInterval` | integer | Interval at which the accessory is polled in sec. | 60      | no        | yes       |
+
+Things of type `bridge` and stand-alone `device` Things require both an `ipv4Address` and a `pairingCode`.
+The `ipv4Address` is set by the mDNS auto- discovery process.
+However the `pairingCode` must be entered manually.
+Child `device` Things do not require neither an `ipv4Address` nor a `pairingCode`.
 
 ## Channels
 
-_Here you should provide information about available channel types, what their meaning is and how they can be used._
-
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
-
-| Channel | Type   | Read/Write | Description                 |
-|---------|--------|------------|-----------------------------|
-| control | Switch | RW         | This is the control channel |
-
-## Full Example
-
-_Provide a full usage example based on textual configuration files._
-_*.things, *.items examples are mandatory as textual configuration is well used by many users._
-_*.sitemap examples are optional._
+Channels will be auto- created depending on the services and respective service- characteristis of the HomeKit accessory.
 
 ### Thing Configuration
 
