@@ -30,6 +30,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.meross.internal.ContentAnonymizer;
+import org.openhab.binding.meross.internal.api.MerossEnum.HttpConnectionType;
 import org.openhab.binding.meross.internal.api.MerossEnum.Namespace;
 import org.openhab.binding.meross.internal.command.Command;
 import org.openhab.binding.meross.internal.dto.MqttMessageBuilder;
@@ -102,8 +103,8 @@ public class MerossManager implements MqttMessageSubscriber {
                 httpConnector = null;
                 return;
             }
-            httpConnector = new MerossHttpConnector.Builder().httpClient(httpClient)
-                    .setApiBaseUrl("http://" + ipAddress + "/config").build();
+            httpConnector = new MerossHttpConnector.Builder().setHttpConnectionType(HttpConnectionType.LOCAL)
+                    .httpClient(httpClient).setApiBaseUrl("http://" + ipAddress + "/config").build();
         }
     }
 
