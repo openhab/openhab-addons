@@ -40,54 +40,50 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public interface Job extends SchedulerRunnable, Runnable {
 
-    /** Logger Instance */
-    final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+    /** The {@link Logger} Instance */
+    final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     /**
      * Schedules the provided {@link Job} instance
      *
-     * @param thingUID the UID of the Thing instance
      * @param astroHandler the {@link AstroThingHandler} instance
      * @param job the {@link Job} instance to schedule
      * @param eventAt the {@link Calendar} instance denoting scheduled instant
      */
-    static void schedule(String thingUID, AstroThingHandler astroHandler, Job job, Calendar eventAt, TimeZone zone,
-            Locale locale) {
+    static void schedule(AstroThingHandler astroHandler, Job job, Calendar eventAt, TimeZone zone, Locale locale) {
         try {
             Calendar today = Calendar.getInstance(zone, locale);
             if (isSameDay(eventAt, today) && isTimeGreaterEquals(eventAt, today)) {
                 astroHandler.schedule(job, eventAt);
             }
         } catch (Exception ex) {
-            LOGGER.error("{}", ex.getMessage(), ex);
+            logger.error("{}", ex.getMessage(), ex);
         }
     }
 
     /**
      * Schedules an {@link EventJob} instance
      *
-     * @param thingUID the Thing UID
      * @param astroHandler the {@link AstroThingHandler} instance
      * @param eventAt the {@link Calendar} instance denoting scheduled instant
      * @param event the event ID
      * @param channelId the channel ID
      */
-    static void scheduleEvent(String thingUID, AstroThingHandler astroHandler, Calendar eventAt, String event,
-            String channelId, boolean configAlreadyApplied, TimeZone zone, Locale locale) {
-        scheduleEvent(thingUID, astroHandler, eventAt, List.of(event), channelId, configAlreadyApplied, zone, locale);
+    static void scheduleEvent(AstroThingHandler astroHandler, Calendar eventAt, String event, String channelId,
+            boolean configAlreadyApplied, TimeZone zone, Locale locale) {
+        scheduleEvent(astroHandler, eventAt, List.of(event), channelId, configAlreadyApplied, zone, locale);
     }
 
     /**
      * Schedules an {@link EventJob} instance
      *
-     * @param thingUID the Thing UID
      * @param astroHandler the {@link AstroThingHandler} instance
      * @param eventAt the {@link Calendar} instance denoting scheduled instant
      * @param events the event IDs to schedule
      * @param channelId the channel ID
      */
-    static void scheduleEvent(String thingUID, AstroThingHandler astroHandler, Calendar eventAt, List<String> events,
-            String channelId, boolean configAlreadyApplied, TimeZone zone, Locale locale) {
+    static void scheduleEvent(AstroThingHandler astroHandler, Calendar eventAt, List<String> events, String channelId,
+            boolean configAlreadyApplied, TimeZone zone, Locale locale) {
         if (events.isEmpty()) {
             return;
         }
@@ -95,7 +91,7 @@ public interface Job extends SchedulerRunnable, Runnable {
         if (!configAlreadyApplied) {
             final Channel channel = astroHandler.getThing().getChannel(channelId);
             if (channel == null) {
-                LOGGER.warn("Cannot find channel '{}' for thing '{}'.", channelId, astroHandler.getThing().getUID());
+                logger.warn("Cannot find channel '{}' for thing '{}'.", channelId, astroHandler.getThing().getUID());
                 return;
             }
             AstroChannelConfig config = channel.getConfiguration().as(AstroChannelConfig.class);
@@ -103,23 +99,22 @@ public interface Job extends SchedulerRunnable, Runnable {
         } else {
             instant = eventAt;
         }
-        List<Job> jobs = events.stream().map(e -> new EventJob(thingUID, channelId, e)).collect(toList());
-        schedule(thingUID, astroHandler, new CompositeJob(thingUID, jobs), instant, zone, locale);
+        List<Job> jobs = events.stream().map(e -> new EventJob(astroHandler, channelId, e)).collect(toList());
+        schedule(astroHandler, new CompositeJob(astroHandler, jobs), instant, zone, locale);
     }
 
     /**
      * Schedules {@link Channel} events
      *
-     * @param thingUID the Thing UID
      * @param astroHandler the {@link AstroThingHandler} instance
      * @param range the {@link Range} instance
      * @param channelId the channel ID
      */
-    static void scheduleRange(String thingUID, AstroThingHandler astroHandler, Range range, String channelId,
-            TimeZone zone, Locale locale) {
+    static void scheduleRange(AstroThingHandler astroHandler, Range range, String channelId, TimeZone zone,
+            Locale locale) {
         final Channel channel = astroHandler.getThing().getChannel(channelId);
         if (channel == null) {
-            LOGGER.warn("Cannot find channel '{}' for thing '{}'.", channelId, astroHandler.getThing().getUID());
+            logger.warn("Cannot find channel '{}' for thing '{}'.", channelId, astroHandler.getThing().getUID());
             return;
         }
         AstroChannelConfig config = channel.getConfiguration().as(AstroChannelConfig.class);
@@ -129,12 +124,12 @@ public interface Job extends SchedulerRunnable, Runnable {
         Calendar end = adjustedRange.getEnd();
 
         if (start == null || end == null) {
-            LOGGER.debug("event was not scheduled as either start or end was null");
+            logger.debug("event was not scheduled as either start or end was null");
             return;
         }
 
-        scheduleEvent(thingUID, astroHandler, start, EVENT_START, channelId, true, zone, locale);
-        scheduleEvent(thingUID, astroHandler, end, EVENT_END, channelId, true, zone, locale);
+        scheduleEvent(astroHandler, start, EVENT_START, channelId, true, zone, locale);
+        scheduleEvent(astroHandler, end, EVENT_END, channelId, true, zone, locale);
     }
 
     static Range adjustRangeToConfig(Range range, AstroChannelConfig config, TimeZone zone, Locale locale) {
@@ -160,32 +155,29 @@ public interface Job extends SchedulerRunnable, Runnable {
     /**
      * Schedules Planet events
      *
-     * @param thingUID the Thing UID
      * @param astroHandler the {@link AstroThingHandler} instance
      * @param eventAt the {@link Calendar} instance denoting scheduled instant
      */
-    static void schedulePublishPlanet(String thingUID, AstroThingHandler astroHandler, Calendar eventAt, TimeZone zone,
-            Locale locale) {
-        Job publishJob = new PublishPlanetJob(thingUID);
-        schedule(thingUID, astroHandler, publishJob, eventAt, zone, locale);
+    static void schedulePublishPlanet(AstroThingHandler astroHandler, Calendar eventAt, TimeZone zone, Locale locale) {
+        Job publishJob = new PublishPlanetJob(astroHandler);
+        schedule(astroHandler, publishJob, eventAt, zone, locale);
     }
 
     /**
      * Schedules {@link SunPhaseJob}
      *
-     * @param thingUID the Thing UID
      * @param astroHandler the {@link AstroThingHandler} instance
      * @param sunPhaseName {@link SunPhaseName} instance
      * @param eventAt the {@link Calendar} instance denoting scheduled instant
      */
-    static void scheduleSunPhase(String thingUID, AstroThingHandler astroHandler, SunPhaseName sunPhaseName,
-            Calendar eventAt, TimeZone zone, Locale locale) {
-        Job sunPhaseJob = new SunPhaseJob(thingUID, sunPhaseName);
-        schedule(thingUID, astroHandler, sunPhaseJob, eventAt, zone, locale);
+    static void scheduleSunPhase(AstroThingHandler astroHandler, SunPhaseName sunPhaseName, Calendar eventAt,
+            TimeZone zone, Locale locale) {
+        Job sunPhaseJob = new SunPhaseJob(astroHandler, sunPhaseName);
+        schedule(astroHandler, sunPhaseJob, eventAt, zone, locale);
     }
 
     /**
-     * Returns the thing UID that is associated with this {@link Job} (cannot be {@code null})
+     * @return The {@link AstroThingHandler} associated with this {@link Job}.
      */
-    String getThingUID();
+    AstroThingHandler getHandler();
 }

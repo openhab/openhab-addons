@@ -203,7 +203,6 @@ public abstract class AstroThingHandler extends BaseThingHandler {
         try {
             stopJobs();
             if (getThing().getStatus() == ONLINE) {
-                String thingUID = getThing().getUID().toString();
                 TimeZone zone = TimeZone.getTimeZone(timeZoneProvider.getTimeZone());
                 Locale locale = localeProvider.getLocale();
                 // Daily Job
@@ -217,7 +216,7 @@ public abstract class AstroThingHandler extends BaseThingHandler {
                 // Use scheduleAtFixedRate to avoid time drift associated with scheduleWithFixedDelay
                 linkedPositionalChannels = isPositionalChannelLinked();
                 if (linkedPositionalChannels) {
-                    Job positionalJob = new PositionalJob(thingUID);
+                    Job positionalJob = new PositionalJob(this);
                     ScheduledFuture<?> future = scheduler.scheduleAtFixedRate(positionalJob, 0, thingConfig.interval,
                             TimeUnit.SECONDS);
                     scheduledFutures.add(future);

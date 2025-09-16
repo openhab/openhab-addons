@@ -89,7 +89,7 @@ public class MoonHandler extends AstroThingHandler {
 
     @Override
     protected Job getDailyJob(TimeZone zone, Locale locale) {
-        return new DailyJobMoon(thing.getUID().getAsString(), this, zone, locale);
+        return new DailyJobMoon(this, zone, locale);
     }
 
     private Moon getMoonAt(ZonedDateTime date, Locale locale) {

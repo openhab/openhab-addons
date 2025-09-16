@@ -14,8 +14,6 @@ package org.openhab.binding.astro.internal;
 
 import static org.openhab.binding.astro.internal.AstroBindingConstants.*;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -45,7 +43,6 @@ import org.osgi.service.component.annotations.Reference;
 public class AstroHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_SUN, THING_TYPE_MOON);
-    private static final Map<String, AstroThingHandler> ASTRO_THING_HANDLERS = new HashMap<>();
     private final CronScheduler scheduler;
     private final TimeZoneProvider timeZoneProvider;
     private final LocaleProvider localeProvider;
@@ -72,19 +69,6 @@ public class AstroHandlerFactory extends BaseThingHandlerFactory {
         } else if (thingTypeUID.equals(THING_TYPE_MOON)) {
             thingHandler = new MoonHandler(thing, scheduler, timeZoneProvider, localeProvider);
         }
-        if (thingHandler != null) {
-            ASTRO_THING_HANDLERS.put(thing.getUID().toString(), thingHandler);
-        }
         return thingHandler;
-    }
-
-    @Override
-    public void unregisterHandler(Thing thing) {
-        super.unregisterHandler(thing);
-        ASTRO_THING_HANDLERS.remove(thing.getUID().toString());
-    }
-
-    public static @Nullable AstroThingHandler getHandler(String thingUid) {
-        return ASTRO_THING_HANDLERS.get(thingUid);
     }
 }

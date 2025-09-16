@@ -93,7 +93,7 @@ public class SunHandler extends AstroThingHandler {
 
     @Override
     protected Job getDailyJob(TimeZone zone, Locale locale) {
-        return new DailyJobSun(thing.getUID().getAsString(), this, zone, locale);
+        return new DailyJobSun(this, zone, locale);
     }
 
     private Sun getSunAt(ZonedDateTime date) {
