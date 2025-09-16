@@ -106,9 +106,8 @@ public class SrpClient {
                 .digest(concat(BigIntUtils.toUnsignedByteArray(N), BigIntUtils.toUnsignedByteArray(g))));
 
         // Precompute x = H(salt || H(username:pin))
-        byte[] inner = MessageDigest.getInstance("SHA-512")
-                .digest((PAIR_USER + ":" + accessoryPairingCode).getBytes(StandardCharsets.UTF_8));
-
+        byte[] inner = MessageDigest.getInstance("SHA-512").digest(
+                concat(PAIR_USER, concat(new byte[] { ':' }, accessoryPairingCode.getBytes(StandardCharsets.UTF_8))));
         this.x = new BigInteger(1, MessageDigest.getInstance("SHA-512").digest(concat(salt, inner)));
     }
 

@@ -106,6 +106,7 @@ public abstract class HomekitBaseServerHandler extends BaseThingHandler {
                             .collect(Collectors.toMap(a -> a.aid, Function.identity())));
                 }
             } catch (Exception e) {
+                logger.warn("Failed to get accessories: {}", e.getMessage());
             }
         }
     }

@@ -99,6 +99,8 @@ public class HomekitMdnsDiscoveryParticipant implements MDNSDiscoveryParticipant
                     return new ThingUID(THING_TYPE_DEVICE, id);
                 }
             } catch (IllegalArgumentException e) {
+                logger.warn("Failed to parse accessory type '{}' for HomeKit device with MAC '{}'", accessoryType,
+                        macAddress);
             }
         }
         logger.warn("Discovered HomeKit device without valid properties - ignoring");
