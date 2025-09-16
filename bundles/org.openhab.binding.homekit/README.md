@@ -8,7 +8,7 @@ There are two types of Things supported:
 
 - `device`: This integrates a single HomeKit accessory, whereby its services appear as channel groups their respective service- characteristics appear as channels.
 - `bridge`: This integrates a HomeKit bridge accessory containing multiple child `device` Things.
-So Things of type `device` either represent a stand-alone accessories or a child of a `bridge` Thing.
+  So Things of type `device` either represent a stand-alone accessories or a child of a `bridge` Thing.
 
 Things of type `bridge` and stand-alone `device` Things both communicate directly with their HomeKit device over the LAN.
 Whereas child `device` Things communicate via their respective `bridge` Thing.
