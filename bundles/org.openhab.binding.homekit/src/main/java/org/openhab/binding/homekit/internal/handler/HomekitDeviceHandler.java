@@ -28,7 +28,7 @@ import org.openhab.binding.homekit.internal.dto.Characteristic;
 import org.openhab.binding.homekit.internal.dto.Service;
 import org.openhab.binding.homekit.internal.enums.DataFormatType;
 import org.openhab.binding.homekit.internal.hap_services.CharacteristicReadWriteService;
-import org.openhab.binding.homekit.internal.persistance.HomekitTypeProvider;
+import org.openhab.binding.homekit.internal.persistence.HomekitTypeProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.DateTimeType;
@@ -101,14 +101,16 @@ public class HomekitDeviceHandler extends HomekitBaseServerHandler {
             logger.warn("No writer service available to handle command for channel: {}", channelUID);
             return;
         }
+        Object object = null;
         try {
             Integer aid = getAccessoryId();
             if (aid != null) {
-                Object object = convertCommandToObject(command, channel);
+                object = convertCommandToObject(command, channel);
                 writer.writeCharacteristic(aid.toString(), channelUID.getId(), object);
             }
         } catch (Exception e) {
-            logger.warn("Failed to send command '{}' as '{}' to accessory", command, command, e);
+            logger.warn("Failed to send command '{}' as object '{}' to accessory for '{}", command, object, channelUID,
+                    e);
         }
     }
 

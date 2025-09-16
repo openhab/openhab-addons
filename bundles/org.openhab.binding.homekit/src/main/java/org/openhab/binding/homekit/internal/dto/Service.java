@@ -20,7 +20,7 @@ import java.util.Objects;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homekit.internal.enums.ServiceType;
-import org.openhab.binding.homekit.internal.persistance.HomekitTypeProvider;
+import org.openhab.binding.homekit.internal.persistence.HomekitTypeProvider;
 import org.openhab.core.thing.type.ChannelDefinition;
 import org.openhab.core.thing.type.ChannelGroupDefinition;
 import org.openhab.core.thing.type.ChannelGroupType;

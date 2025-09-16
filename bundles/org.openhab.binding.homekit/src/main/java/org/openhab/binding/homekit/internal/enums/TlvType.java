@@ -36,7 +36,7 @@ public enum TlvType {
     FRAGMENT_DATA(0x0C),
     FRAGMENT_LAST(0x0D),
     FLAGS(0x13),
-    SEPERATOR((byte) 0xFF);
+    SEPARATOR((byte) 0xFF);
 
     public final int key;
 

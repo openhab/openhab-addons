@@ -70,7 +70,7 @@ public class PairingVerifyService {
         }
         Map<Integer, byte[]> tlv1 = Map.of( //
                 TlvType.STATE.key, new byte[] { PairingState.M1.value }, //
-                // TLVType.METHOD.key, new byte[] { PairingMethod.VERIFY.value }, // not required ??
+                // Per HAP Section 5.6.2, the METHOD TLV is not required in the M1 message of pair-verify
                 TlvType.PUBLIC_KEY.key, controllerEphemeralPublicKeyBytes);
         Validator.validate(PairingMethod.VERIFY, tlv1);
 

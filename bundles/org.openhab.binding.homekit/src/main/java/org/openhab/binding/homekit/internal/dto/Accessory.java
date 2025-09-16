@@ -18,7 +18,7 @@ import java.util.Objects;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homekit.internal.enums.AccessoryType;
-import org.openhab.binding.homekit.internal.persistance.HomekitTypeProvider;
+import org.openhab.binding.homekit.internal.persistence.HomekitTypeProvider;
 import org.openhab.core.semantics.SemanticTag;
 import org.openhab.core.semantics.model.DefaultSemanticTags.Equipment;
 import org.openhab.core.thing.type.ChannelGroupDefinition;

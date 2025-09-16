@@ -217,7 +217,7 @@ public class SrpClient {
      * M6 — Decrypt and store accessory identifier + Curve25519 public key.
      */
     public void verifyAccessoryIdentifiers(byte[] encryptedData) throws Exception {
-        byte[] decrypted = CryptoUtils.encrypt(deriveSessionKeys().getReadKey(), encryptedData, NONCE_M6);
+        byte[] decrypted = CryptoUtils.decrypt(deriveSessionKeys().getReadKey(), encryptedData, NONCE_M6);
         Map<Integer, byte[]> accTlv = Tlv8Codec.decode(decrypted);
 
         byte[] idBytes = accTlv.get(TlvType.IDENTIFIER.key);

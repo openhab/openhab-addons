@@ -23,7 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homekit.internal.enums.CharacteristicType;
 import org.openhab.binding.homekit.internal.enums.DataFormatType;
-import org.openhab.binding.homekit.internal.persistance.HomekitTypeProvider;
+import org.openhab.binding.homekit.internal.persistence.HomekitTypeProvider;
 import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.semantics.SemanticTag;
 import org.openhab.core.semantics.model.DefaultSemanticTags.Point;

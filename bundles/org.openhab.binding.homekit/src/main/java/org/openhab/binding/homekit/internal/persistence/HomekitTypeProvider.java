@@ -17,7 +17,9 @@ import org.openhab.core.storage.StorageService;
 import org.openhab.core.thing.binding.AbstractStorageBasedTypeProvider;
 import org.openhab.core.thing.type.ChannelGroupTypeProvider;
 import org.openhab.core.thing.type.ChannelTypeProvider;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * The {@link HomekitTypeProvider} is responsible for loading and storing HomeKit specific channel and
@@ -29,7 +31,8 @@ import org.osgi.service.component.annotations.Component;
 @Component(service = { HomekitTypeProvider.class, ChannelTypeProvider.class, ChannelGroupTypeProvider.class })
 public class HomekitTypeProvider extends AbstractStorageBasedTypeProvider {
 
-    protected HomekitTypeProvider(StorageService storageService) {
+    @Activate
+    public HomekitTypeProvider(@Reference StorageService storageService) {
         super(storageService);
     }
 }
