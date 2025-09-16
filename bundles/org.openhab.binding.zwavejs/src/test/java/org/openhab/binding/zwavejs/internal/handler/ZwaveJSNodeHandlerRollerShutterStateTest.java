@@ -15,6 +15,7 @@ package org.openhab.binding.zwavejs.internal.handler;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.zwavejs.internal.api.dto.Args;
@@ -27,10 +28,11 @@ import org.openhab.core.thing.binding.ThingHandlerCallback;
 /**
  * @author Leo Siepel - Initial contribution
  */
+@NonNullByDefault
 public class ZwaveJSNodeHandlerRollerShutterStateTest {
-    private ZwaveJSNodeHandlerMock handler;
-    private RollerShutterCapability capability;
-    private Thing thing;
+    private @NonNullByDefault({}) ZwaveJSNodeHandlerMock handler;
+    private @NonNullByDefault({}) RollerShutterCapability capability;
+    private @NonNullByDefault({}) Thing thing;
 
     // Helper to create a fake Event for a rollershutter channel update
     private static Event createRollerShutterDimmerEvent(String channelId, int value) {
