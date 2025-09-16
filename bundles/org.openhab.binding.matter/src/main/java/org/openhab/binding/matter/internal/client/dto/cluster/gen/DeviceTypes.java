@@ -23,7 +23,6 @@ import java.util.Map;
  *
  * @author Dan Cunningham - Initial contribution
  */
-
 public class DeviceTypes {
 
     public static final Map<Integer, String> DEVICE_MAPPING = new HashMap<>();
