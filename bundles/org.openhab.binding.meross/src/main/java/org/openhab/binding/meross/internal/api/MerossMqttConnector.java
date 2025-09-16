@@ -14,7 +14,6 @@ package org.openhab.binding.meross.internal.api;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -52,15 +51,13 @@ public class MerossMqttConnector implements MqttConnectionObserver {
     private final Logger logger = LoggerFactory.getLogger(MerossMqttConnector.class);
 
     private MerossBridgeHandler callback;
-    private ScheduledExecutorService scheduler;
 
     private @Nullable MqttBrokerConnection mqttConnection;
     private @Nullable CompletableFuture<Boolean> stoppedFuture;
     private CompletableFuture<Boolean> connected = new CompletableFuture<>();
 
-    public MerossMqttConnector(MerossBridgeHandler callback, ScheduledExecutorService scheduler) {
+    public MerossMqttConnector(MerossBridgeHandler callback) {
         this.callback = callback;
-        this.scheduler = scheduler;
 
         String brokerAddress = MqttMessageBuilder.brokerAddress;
         String clientId = MqttMessageBuilder.clientId;

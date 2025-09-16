@@ -171,7 +171,7 @@ public class MerossBridgeHandler extends BaseBridgeHandler {
             if (merossMqttConnector != null) {
                 merossMqttConnector.stopConnection();
             }
-            merossMqttConnector = new MerossMqttConnector(this, scheduler);
+            merossMqttConnector = new MerossMqttConnector(this);
             merossMqttConnector.startConnection();
         }
     }
