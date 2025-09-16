@@ -14,9 +14,11 @@ package org.openhab.binding.meross.internal.factory;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.meross.internal.command.Command;
 import org.openhab.binding.meross.internal.command.DoorStateCommand;
+import org.openhab.binding.meross.internal.command.MerossCommand;
 import org.openhab.core.library.types.OpenClosedType;
+import org.openhab.core.library.types.UpDownType;
+import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 
@@ -28,12 +30,12 @@ import org.openhab.core.types.UnDefType;
 @NonNullByDefault
 public class DoorStateFactory extends ModeFactory {
     @Override
-    public Command commandMode(String mode, @Nullable Integer deviceChannel) {
+    public MerossCommand commandMode(Command command, @Nullable Integer deviceChannel) {
         int channel = deviceChannel != null ? deviceChannel : 0;
-        return switch (mode) {
-            case "UP" -> new DoorStateCommand.Up(channel);
-            case "DOWN" -> new DoorStateCommand.Down(channel);
-            default -> throw new IllegalStateException("Unexpected value: " + mode);
+        return switch (command) {
+            case UpDownType.UP -> new DoorStateCommand.Up(channel);
+            case UpDownType.DOWN -> new DoorStateCommand.Down(channel);
+            default -> throw new IllegalStateException("Unexpected value: " + command.toString());
         };
     }
 

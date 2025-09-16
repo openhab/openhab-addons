@@ -4,16 +4,18 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<thing-type id="door">
+	<thing-type id="msg200">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="gateway"/>
 		</supported-bridge-type-refs>
 
-		<label>Meross Door</label>
-		<description>Meross Garage Door</description>
+		<label>Meross MSG200</label>
+		<description>Meross Triple Garage Door</description>
 
 		<channels>
-			<channel id="doorState" typeId="doorState"/>
+			<channel id="doorState0" typeId="doorState"/>
+			<channel id="doorState1" typeId="doorState"/>
+			<channel id="doorState2" typeId="doorState"/>
 		</channels>
 
 		<config-description>
@@ -32,15 +34,4 @@
 			</parameter>
 		</config-description>
 	</thing-type>
-
-	<channel-type id="doorState">
-		<item-type>Rollershutter</item-type>
-		<label>Garage Door</label>
-		<description>Garage door state</description>
-		<category>garagedoor</category>
-		<tags>
-			<tag>Control</tag>
-			<tag>OpenState</tag>
-		</tags>
-	</channel-type>
 </thing:thing-descriptions>

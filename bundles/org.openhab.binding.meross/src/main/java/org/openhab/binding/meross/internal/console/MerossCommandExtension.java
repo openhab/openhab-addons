@@ -168,7 +168,7 @@ public class MerossCommandExtension extends AbstractConsoleCommandExtension impl
         String path = nextPath(basePath, null);
 
         Map<String, MerossDeviceHandler> deviceHandlers = thingRegistry.stream()
-                .filter(t -> DISCOVERABLE_THING_TYPES_UIDS.contains(t.getThingTypeUID()))
+                .filter(t -> DEVICE_THING_TYPES_UIDS.contains(t.getThingTypeUID()))
                 .map(d -> ((MerossDeviceHandler) d.getHandler())).filter(Objects::nonNull).collect(Collectors
                         .toMap(h -> h.getThing().getConfiguration().get("uuid").toString(), Function.identity()));
 

@@ -16,13 +16,13 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * The {@link MerossDeviceConfiguration} class is an abstract base class with common configuration parameters.
+ * The {@link MerossDeviceConfiguration} class is the base class with common configuration parameters.
  *
  * @author Mark Herwege - Initial contribution
  */
 
 @NonNullByDefault
-public abstract class MerossDeviceConfiguration {
+public class MerossDeviceConfiguration {
     public String name = "";
     public String uuid = "";
     public @Nullable String ipAddress;

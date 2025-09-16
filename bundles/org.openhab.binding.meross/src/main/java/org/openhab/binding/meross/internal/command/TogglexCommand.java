@@ -28,7 +28,7 @@ import org.openhab.binding.meross.internal.dto.MqttMessageBuilder;
 @NonNullByDefault
 public class TogglexCommand {
 
-    abstract static class Base implements Command {
+    abstract static class Base implements MerossCommand {
         protected final int onOffValue;
         protected int deviceChannel;
 

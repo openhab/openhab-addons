@@ -27,7 +27,7 @@ import org.openhab.binding.meross.internal.dto.MqttMessageBuilder;
 @NonNullByDefault
 public class DoorStateCommand {
 
-    abstract static class Base implements Command {
+    abstract static class Base implements MerossCommand {
         protected int deviceChannel;
         protected final int openValue;
 

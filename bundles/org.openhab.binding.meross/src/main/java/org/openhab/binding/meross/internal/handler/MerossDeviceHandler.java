@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.meross.internal.handler;
 
-import static org.openhab.binding.meross.internal.MerossBindingConstants.PROPERTY_IP_ADDRESS;
+import static org.openhab.binding.meross.internal.MerossBindingConstants.*;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -20,30 +20,36 @@ import java.net.UnknownHostException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.meross.internal.MerossBindingConstants;
 import org.openhab.binding.meross.internal.api.MerossEnum;
 import org.openhab.binding.meross.internal.api.MerossEnum.Namespace;
 import org.openhab.binding.meross.internal.api.MerossManager;
 import org.openhab.binding.meross.internal.api.MerossMqttConnector;
 import org.openhab.binding.meross.internal.config.MerossDeviceConfiguration;
+import org.openhab.binding.meross.internal.config.MerossLightConfiguration;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.transport.mqtt.MqttException;
 import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.types.Command;
+import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link MerossDeviceHandler} is the abstract base class for Meross device handlers
+ * The {@link MerossDeviceHandler} is the main class for Meross device handlers
  *
- * @author Mark Herwege - Initial contribution
+ * @author Giovanni Fabiani - Initial contribution
+ * @author Mark Herwege - Converted light handler to more generic device handler
  */
 @NonNullByDefault
-public abstract class MerossDeviceHandler extends BaseThingHandler implements MerossDeviceHandlerCallback {
+public class MerossDeviceHandler extends BaseThingHandler implements MerossDeviceHandlerCallback {
 
     protected @NonNullByDefault({}) MerossDeviceConfiguration config;
     protected @Nullable MerossBridgeHandler merossBridgeHandler;
@@ -60,7 +66,41 @@ public abstract class MerossDeviceHandler extends BaseThingHandler implements Me
         this.httpClient = httpClient;
     }
 
-    public void initializeDevice() {
+    @Override
+    public void initialize() {
+        this.config = getConfigAs(MerossDeviceConfiguration.class);
+
+        // The following code is to update older light configurations:
+        // This code moves from a "lightName" configuration parameter to a "name" configuration parameter
+        // It also sets the uuid configuration representation configuration property from the deviceUUID property
+        if (thing.getThingTypeUID().equals(MerossBindingConstants.THING_TYPE_LIGHT)) {
+            MerossLightConfiguration config = getConfigAs(MerossLightConfiguration.class);
+            boolean configChanged = false;
+            Configuration configuration = editConfiguration();
+            String lightName = config.lightName;
+            if (config.name.isEmpty() && (lightName != null)) {
+                config.name = lightName;
+                configuration.put(MerossBindingConstants.PROPERTY_DEVICE_NAME, config.lightName);
+                configuration.put(MerossBindingConstants.PROPERTY_LIGHT_DEVICE_NAME, null);
+                configChanged = true;
+            }
+            String deviceUUID = thing.getProperties().get("deviceUUID");
+            if (config.uuid.isEmpty() && deviceUUID != null && !deviceUUID.isEmpty()) {
+                config.uuid = deviceUUID;
+                configuration.put(MerossBindingConstants.PROPERTY_DEVICE_UUID, deviceUUID);
+                updateProperty("deviceUUID", null);
+                configChanged = true;
+            }
+            if (configChanged) {
+                updateConfiguration(configuration);
+                this.config = config;
+            }
+        }
+
+        initializeDevice();
+    }
+
+    private void initializeDevice() {
         Bridge bridge = getBridge();
         if (bridge == null || !(bridge.getHandler() instanceof MerossBridgeHandler merossBridgeHandler)) {
             return;
@@ -134,6 +174,7 @@ public abstract class MerossDeviceHandler extends BaseThingHandler implements Me
         }
     }
 
+    @Override
     public void setThingStatusFromMerossStatus(int status) {
         if (status == MerossEnum.OnlineStatus.UNKNOWN.value() || status == MerossEnum.OnlineStatus.NOT_ONLINE.value()
                 || status == MerossEnum.OnlineStatus.UPGRADING.value()) {
@@ -145,6 +186,7 @@ public abstract class MerossDeviceHandler extends BaseThingHandler implements Me
         }
     }
 
+    @Override
     public void setIpAddress(String ipAddress) {
         if (ipAddress.equals(this.ipAddress)) {
             return;
@@ -170,5 +212,69 @@ public abstract class MerossDeviceHandler extends BaseThingHandler implements Me
         return ipAddress;
     }
 
-    public abstract void updateState(Namespace namespace, int deviceChannel, State state);
+    @Override
+    public void handleCommand(ChannelUID channelUID, Command command) {
+        if (thing.getStatus() == ThingStatus.OFFLINE) {
+            return;
+        }
+        MerossManager manager = this.manager;
+        if (manager == null) {
+            logger.debug("Handling command, manager not available");
+            return;
+        }
+
+        String channelGroup = channelUID.getId().split("\\d+")[0]; // Trailing digits represent the channel if there are
+                                                                   // multiple
+        Namespace namespace = CHANNEL_NAMESPACE_MAP.get(channelGroup);
+        if (namespace == null) {
+            logger.debug("Unsupported channelUID {}", channelUID);
+            return;
+        }
+        int channel = getChannel(channelUID, channelGroup);
+
+        try {
+            if (command instanceof RefreshType) {
+                if (ipAddress == null) {
+                    logger.debug("Not connected locally, refresh not supported");
+                } else {
+                    manager.refresh(namespace);
+                }
+                return;
+            }
+
+            manager.sendCommand(channel, namespace, command);
+        } catch (MqttException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Cannot send command, " + e.getMessage());
+        } catch (InterruptedException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Connection interrupted");
+        }
+    }
+
+    private int getChannel(ChannelUID channelUID, String channelGroupUID) {
+        int channel = 0;
+        try {
+            channel = Integer.parseInt(channelUID.getId().substring(channelGroupUID.length()));
+        } catch (IndexOutOfBoundsException | NumberFormatException e) {
+            // Ignore and default to channel 0, this is because only a single channel is available
+        }
+        return channel;
+    }
+
+    @Override
+    public void updateState(Namespace namespace, int deviceChannel, State state) {
+        String channelGroup = NAMESPACE_CHANNEL_MAP.get(namespace);
+        if (channelGroup == null) {
+            return;
+        }
+        String channelId = channelGroup + String.valueOf(deviceChannel);
+        if (thing.getChannel(channelId) == null && deviceChannel == 0) {
+            channelId = channelGroup;
+        }
+        if (thing.getChannel(channelId) == null) {
+            logger.debug("Channel with id {} not supported for thing {}", channelId, thing.getUID().getId());
+            return;
+        }
+        updateState(channelId, state);
+    }
 }

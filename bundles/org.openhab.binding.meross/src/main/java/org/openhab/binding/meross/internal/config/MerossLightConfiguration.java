@@ -23,5 +23,6 @@ import org.eclipse.jdt.annotation.Nullable;
 
 @NonNullByDefault
 public class MerossLightConfiguration extends MerossDeviceConfiguration {
-    public @Nullable String lightName;
+    @Deprecated
+    public @Nullable String lightName; // Deprecated, kept for backward compatibility
 }

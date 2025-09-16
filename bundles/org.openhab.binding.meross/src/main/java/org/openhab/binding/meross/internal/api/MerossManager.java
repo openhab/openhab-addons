@@ -32,13 +32,14 @@ import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.meross.internal.ContentAnonymizer;
 import org.openhab.binding.meross.internal.api.MerossEnum.HttpConnectionType;
 import org.openhab.binding.meross.internal.api.MerossEnum.Namespace;
-import org.openhab.binding.meross.internal.command.Command;
+import org.openhab.binding.meross.internal.command.MerossCommand;
 import org.openhab.binding.meross.internal.dto.MqttMessageBuilder;
 import org.openhab.binding.meross.internal.factory.ModeFactory;
 import org.openhab.binding.meross.internal.factory.TypeFactory;
 import org.openhab.binding.meross.internal.handler.MerossDeviceHandlerCallback;
 import org.openhab.core.io.transport.mqtt.MqttException;
 import org.openhab.core.io.transport.mqtt.MqttMessageSubscriber;
+import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -204,7 +205,7 @@ public class MerossManager implements MqttMessageSubscriber {
      * @throws MqttException
      * @throws InterruptedException
      */
-    public void sendCommand(int deviceChannel, Namespace commandNamespace, String commandMode)
+    public void sendCommand(int deviceChannel, Namespace commandNamespace, Command commandMode)
             throws MqttException, InterruptedException {
         ModeFactory modeFactory = TypeFactory.getFactory(commandNamespace);
 
@@ -215,7 +216,7 @@ public class MerossManager implements MqttMessageSubscriber {
             }
         }
 
-        Command command = modeFactory.commandMode(commandMode, deviceChannel);
+        MerossCommand command = modeFactory.commandMode(commandMode, deviceChannel);
         byte[] commandMessage = command.command(deviceUUID);
 
         publishMessage(deviceRequestTopic, commandMessage);

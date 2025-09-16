@@ -14,7 +14,8 @@ package org.openhab.binding.meross.internal.factory;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.meross.internal.command.Command;
+import org.openhab.binding.meross.internal.command.MerossCommand;
+import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 
 /**
@@ -25,7 +26,7 @@ import org.openhab.core.types.State;
  */
 @NonNullByDefault
 public abstract class ModeFactory {
-    public abstract Command commandMode(String mode, @Nullable Integer deviceChannel);
+    public abstract MerossCommand commandMode(Command command, @Nullable Integer deviceChannel);
 
     public abstract State state(int merossState);
 }

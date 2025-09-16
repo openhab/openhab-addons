@@ -10,16 +10,17 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.meross.internal.config;
+package org.openhab.binding.meross.internal.command;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link MerossDoorConfiguration} class contains fields mapping garage door configuration parameters.
+ * The {@link MerossCommand} interface is responsible for implementing command type
  *
- * @author Mark Herwege - Initial contribution
+ *
+ * @author Giovanni Fabiani - Initial contribution
  */
-
 @NonNullByDefault
-public class MerossDoorConfiguration extends MerossDeviceConfiguration {
+public interface MerossCommand {
+    byte[] command(String deviceUUID);
 }
