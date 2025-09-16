@@ -115,7 +115,7 @@ public class HttpTransport {
     public byte[] put(String baseUrl, String endpoint, String contentType, byte[] content)
             throws IOException, InterruptedException, TimeoutException, ExecutionException {
         String url = baseUrl + "/" + endpoint;
-        Request request = httpClient.newRequest(url).timeout(5, TimeUnit.SECONDS).method(HttpMethod.POST)
+        Request request = httpClient.newRequest(url).timeout(5, TimeUnit.SECONDS).method(HttpMethod.PUT)
                 .header(HttpHeader.ACCEPT, contentType).header(HttpHeader.CONTENT_TYPE, contentType)
                 .content(new BytesContentProvider(content));
 
