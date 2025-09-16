@@ -44,7 +44,7 @@ public class MoonHandler extends AstroThingHandler {
     private final String[] positionalChannelIds = new String[] { "phase#name", "phase#age", "phase#agePercent",
             "phase#ageDegree", "phase#illumination", "position#azimuth", "position#elevation", "zodiac#sign" };
     private final MoonCalc moonCalc = new MoonCalc();
-    private @NonNullByDefault({}) Moon moon;
+    private volatile @Nullable Moon moon;
 
     /**
      * Constructor
@@ -59,13 +59,14 @@ public class MoonHandler extends AstroThingHandler {
         ZoneId zoneId = timeZoneProvider.getTimeZone();
         TimeZone zone = TimeZone.getTimeZone(zoneId);
         Locale locale = localeProvider.getLocale();
-        moon = getMoonAt(ZonedDateTime.now(zoneId), locale);
+        Moon moon = getMoonAt(ZonedDateTime.now(zoneId), locale);
         Double latitude = thingConfig.latitude;
         Double longitude = thingConfig.longitude;
         moonCalc.setPositionalInfo(Calendar.getInstance(zone, locale), latitude != null ? latitude : 0,
                 longitude != null ? longitude : 0, moon, zone, locale);
 
         moon.getEclipse().setElevations(this, timeZoneProvider);
+        this.moon = moon;
 
         publishPlanet();
     }

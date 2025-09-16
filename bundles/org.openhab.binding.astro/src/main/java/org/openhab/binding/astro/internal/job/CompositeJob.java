@@ -39,7 +39,7 @@ public final class CompositeJob extends AbstractJob {
     public CompositeJob(String thingUID, List<Job> jobs) {
         super(thingUID);
 
-        this.jobs = jobs;
+        this.jobs = List.copyOf(jobs);
 
         boolean notMatched = jobs.stream().anyMatch(j -> !j.getThingUID().equals(thingUID));
         checkArgument(!notMatched, "The jobs must associate the same thing UID");

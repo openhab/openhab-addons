@@ -47,7 +47,7 @@ public class SunHandler extends AstroThingHandler {
     private final String[] positionalChannelIds = new String[] { "position#azimuth", "position#elevation",
             "radiation#direct", "radiation#diffuse", "radiation#total" };
     private final SunCalc sunCalc = new SunCalc();
-    private @NonNullByDefault({}) Sun sun;
+    private volatile @Nullable Sun sun;
 
     /**
      * Constructor
@@ -62,7 +62,7 @@ public class SunHandler extends AstroThingHandler {
         ZoneId zoneId = timeZoneProvider.getTimeZone();
         TimeZone zone = TimeZone.getTimeZone(zoneId);
         Locale locale = localeProvider.getLocale();
-        sun = getSunAt(ZonedDateTime.now(zoneId));
+        Sun sun = getSunAt(ZonedDateTime.now(zoneId));
         Double latitude = thingConfig.latitude;
         Double longitude = thingConfig.longitude;
         Double altitude = thingConfig.altitude;
@@ -70,6 +70,7 @@ public class SunHandler extends AstroThingHandler {
                 longitude != null ? longitude : 0, altitude != null ? altitude : 0, sun);
 
         sun.getEclipse().setElevations(this, timeZoneProvider);
+        this.sun = sun;
 
         publishPlanet();
     }

@@ -84,12 +84,15 @@ public abstract class AstroThingHandler extends BaseThingHandler {
 
     private final Lock monitor = new ReentrantLock();
 
+    // All access must be guarded by "monitor"
     private final Set<ScheduledFuture<?>> scheduledFutures = new HashSet<>();
 
+    // All access must be guarded by "monitor"
     private boolean linkedPositionalChannels;
 
     protected AstroThingConfig thingConfig = new AstroThingConfig();
 
+    // All access must be guarded by "monitor"
     private @Nullable ScheduledCompletableFuture<?> dailyJob;
 
     public AstroThingHandler(Thing thing, final CronScheduler scheduler, final TimeZoneProvider timeZoneProvider,
@@ -267,10 +270,16 @@ public abstract class AstroThingHandler extends BaseThingHandler {
      */
     private void linkedChannelChange(ChannelUID channelUID) {
         if (Arrays.asList(getPositionalChannelIds()).contains(channelUID.getId())) {
-            boolean oldValue = linkedPositionalChannels;
-            linkedPositionalChannels = isPositionalChannelLinked();
-            if (oldValue != linkedPositionalChannels) {
-                restartJobs();
+            boolean newValue = isPositionalChannelLinked();
+            monitor.lock();
+            try {
+                boolean oldValue = linkedPositionalChannels;
+                linkedPositionalChannels = newValue;
+                if (oldValue != linkedPositionalChannels) {
+                    restartJobs();
+                }
+            } finally {
+                monitor.unlock();
             }
         }
     }
@@ -322,12 +331,17 @@ public abstract class AstroThingHandler extends BaseThingHandler {
     }
 
     private void tidyScheduledFutures() {
-        for (Iterator<ScheduledFuture<?>> iterator = scheduledFutures.iterator(); iterator.hasNext();) {
-            ScheduledFuture<?> future = iterator.next();
-            if (future.isDone()) {
-                logger.trace("Tidying up done future {}", future);
-                iterator.remove();
+        monitor.lock();
+        try {
+            for (Iterator<ScheduledFuture<?>> iterator = scheduledFutures.iterator(); iterator.hasNext();) {
+                ScheduledFuture<?> future = iterator.next();
+                if (future.isDone()) {
+                    logger.trace("Tidying up done future {}", future);
+                    iterator.remove();
+                }
             }
+        } finally {
+            monitor.unlock();
         }
     }
 
