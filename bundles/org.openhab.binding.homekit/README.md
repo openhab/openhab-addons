@@ -6,7 +6,7 @@ This binding allows pairing with HomeKit accessory devices and importing their s
 
 There are two types of Things supported:
 
-- `device`: This integrates a single HomeKit accessory, whereby its services appear as channel groups the services respective service- characteristics appear as channels.
+- `device`: This integrates a single HomeKit accessory, whereby its services appear as channel groups their respective service- characteristics appear as channels.
 - `bridge`: This integrates a HomeKit bridge accessory containing multiple child `device` Things.
 So Things of type `device` either represent a stand-alone accessories or a child of a `bridge` Thing.
 
@@ -22,7 +22,7 @@ And once a `bridge` Thing has been instantiated, and paired, its child `device` 
 
 The `bridge` and stand-alone `device` Things need to be paired with their respective HomeKit accessories.
 This requires entering the HomeKit pairing code as a configuration parameter in the binding.
-Note that HomeKit accessories can only be paired with one controller, so if it it already paired with something else, you will need to remove that pairing first.
+Note that HomeKit accessories can only be paired with one controller, so if it is already paired with something else, you will need to remove that pairing first.
 
 ## Thing Configuration
 
