@@ -125,11 +125,11 @@ public class SbusMotionSensorHandler extends AbstractSbusHandler {
         request.setUnitID(deviceId);
 
         SbusResponse response = adapter.executeTransaction(request);
-        if (!(response instanceof ReadNineInOneStatusResponse)) {
+        if (!(response instanceof ReadNineInOneStatusResponse statusResponse)) {
             throw new IllegalStateException("Unexpected response type: " + response.getClass().getSimpleName());
         }
 
-        return (ReadNineInOneStatusResponse) response;
+        return statusResponse;
     }
 
     // Async Message Handling
