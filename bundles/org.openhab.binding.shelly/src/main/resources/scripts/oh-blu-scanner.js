@@ -4,10 +4,11 @@
  * Decoding of event data is based on the BTHome standard.
  * 
  * @author Markus Michels - Initial contribution
- * @author Udo Hartmann - Add support for decoding multi button stats
+ * @author Udo Hartmann - Add support for decoding multi button inputs
+ * @author Igor Jasan - Sensor parameter fixing, decoding of dimmer
  */
 
-let ALLTERCO_DEVICE_NAME_PREFIX = ["SBBT", "SBDW", "SBMO", "SBHT"];
+let ALLTERCO_DEVICE_NAME_PREFIX = ["SBBT", "SBDW", "SBMO", "SBHT", "SBDI", "SBRC"];
 let ALLTERCO_MFD_ID_STR = "0ba9";
 let BTHOME_SVC_ID_STR = "fcd2";
 
@@ -294,7 +295,7 @@ function scanCB(ev, res) {
         console.log('New device found: address=', res.addr, ', name=', res.local_name);
         Shelly.emitEvent("oh-blu.scan_result", {"addr":res.addr, "name":res.local_name, "rssi":res.rssi, "tx_power":res.tx_power_level});
         SHELLY_BLU_CACHE[res.addr] = res.local_name;        
-        found = true
+        found = true;
       }
     }
     if (!found) {

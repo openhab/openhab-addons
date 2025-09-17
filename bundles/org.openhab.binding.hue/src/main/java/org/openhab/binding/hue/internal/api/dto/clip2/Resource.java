@@ -33,6 +33,7 @@ import org.openhab.binding.hue.internal.api.dto.clip2.enums.ResourceType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.SceneRecallAction;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.SmartSceneRecallAction;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.SmartSceneState;
+import org.openhab.binding.hue.internal.api.dto.clip2.enums.SoftwareUpdateStatusType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.TamperStateType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.ZigbeeStatus;
 import org.openhab.binding.hue.internal.exceptions.DTOPresentButEmptyException;
@@ -52,6 +53,7 @@ import org.openhab.core.types.UnDefType;
 import org.openhab.core.util.ColorUtil;
 import org.openhab.core.util.ColorUtil.Gamut;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
@@ -68,6 +70,7 @@ import com.google.gson.annotations.SerializedName;
 public class Resource {
 
     public static final MathContext PERCENT_MATH_CONTEXT = new MathContext(4, RoundingMode.HALF_UP);
+    private static final Gson GSON = new Gson();
 
     /**
      * The SSE event mechanism sends resources in a sparse (skeleton) format that only includes state fields whose
@@ -97,7 +100,7 @@ public class Resource {
     private @Nullable Dimming dimming;
     private @Nullable @SerializedName("color_temperature") ColorTemperature colorTemperature;
     private @Nullable ColorXy color;
-    private @Nullable Alerts alert;
+    private @Nullable JsonElement alert;
     private @Nullable Effects effects;
     private @Nullable @SerializedName("timed_effects") TimedEffects timedEffects;
     private @Nullable ResourceReference group;
@@ -117,6 +120,9 @@ public class Resource {
     private @Nullable @SerializedName("tamper_reports") List<TamperReport> tamperReports;
     private @Nullable JsonElement state;
     private @Nullable @SerializedName("script_id") String scriptId;
+    private @Nullable Sound alarm;
+    private @Nullable Sound chime;
+    private @Nullable Mute mute;
 
     /**
      * Constructor
@@ -171,12 +177,22 @@ public class Resource {
         return actions;
     }
 
+    /**
+     * Get the alerts setting. We need to disambiguate between an alert setting and an alerts setting, because
+     * both are represented by the same 'alert' JSON element. If the JSON element contains a 'status' field it is
+     * an alert setting, if it contains an 'action' or 'action_values' field it is an alerts setting.
+     */
     public @Nullable Alerts getAlerts() {
-        return alert;
+        JsonElement alert = this.alert;
+        if (Objects.nonNull(alert) && alert.isJsonObject() && (alert.getAsJsonObject().get("action") != null
+                || alert.getAsJsonObject().get("action_values") != null)) {
+            return GSON.fromJson(alert, Alerts.class);
+        }
+        return null;
     }
 
     public State getAlertState() {
-        Alerts alerts = this.alert;
+        Alerts alerts = getAlerts();
         if (Objects.nonNull(alerts)) {
             if (!alerts.getActionValues().isEmpty()) {
                 ActionType alertType = alerts.getAction();
@@ -695,7 +711,9 @@ public class Resource {
 
     /**
      * Check if the smart scene resource contains a 'state' element. If such an element is present, returns a Boolean
-     * whose value depends on the value of that element, or null if it is not.
+     * whose value depends on the value of that element, or null if it is not. Disambiguate between a software update
+     * status and a smart scene state, because both are represented by the 'state' JSON element. If the resource type
+     * is 'device_software_update' it is a software update status, if it is 'smart_scene' it is a smart scene state.
      *
      * @return true, false, or null.
      */
@@ -827,8 +845,12 @@ public class Resource {
         return Objects.nonNull(metaData) && Objects.nonNull(metaData.getName());
     }
 
+    /**
+     * Set the alerts parameter. Note: this method sets the 'alert' JSON element. The 'alert' JSON element is used for
+     * both alert and alerts settings, so this method should only be used when setting an alerts element.
+     */
     public Resource setAlerts(Alerts alert) {
-        this.alert = alert;
+        this.alert = GSON.toJsonTree(alert);
         return this;
     }
 
@@ -868,8 +890,8 @@ public class Resource {
     }
 
     public Resource setEnabled(Command command) {
-        if (command instanceof OnOffType) {
-            this.enabled = ((OnOffType) command) == OnOffType.ON;
+        if (command instanceof OnOffType onOffCommand) {
+            this.enabled = onOffCommand == OnOffType.ON;
         }
         return this;
     }
@@ -899,11 +921,9 @@ public class Resource {
      * @return this resource instance.
      */
     public Resource setOnOff(Command command) {
-        if (command instanceof OnOffType) {
-            OnOffType onOff = (OnOffType) command;
-            OnState on = this.on;
-            on = Objects.nonNull(on) ? on : new OnState();
-            on.setOn(OnOffType.ON.equals(onOff));
+        if (command instanceof OnOffType onOffCommand) {
+            OnState on = Objects.requireNonNullElse(this.on, new OnState());
+            on.setOn(OnOffType.ON.equals(onOffCommand));
             this.on = on;
         }
         return this;
@@ -915,20 +935,23 @@ public class Resource {
     }
 
     public Resource setRecallAction(SceneRecallAction recallAction) {
-        Recall recall = this.recall;
-        this.recall = ((Objects.nonNull(recall) ? recall : new Recall())).setAction(recallAction);
+        Recall recall = Objects.requireNonNullElse(this.recall, new Recall());
+        recall.setAction(recallAction);
+        this.recall = recall;
         return this;
     }
 
     public Resource setRecallAction(SmartSceneRecallAction recallAction) {
-        Recall recall = this.recall;
-        this.recall = ((Objects.nonNull(recall) ? recall : new Recall())).setAction(recallAction);
+        Recall recall = Objects.requireNonNullElse(this.recall, new Recall());
+        recall.setAction(recallAction);
+        this.recall = recall;
         return this;
     }
 
     public Resource setRecallDuration(Duration recallDuration) {
-        Recall recall = this.recall;
-        this.recall = ((Objects.nonNull(recall) ? recall : new Recall())).setDuration(recallDuration);
+        Recall recall = Objects.requireNonNullElse(this.recall, new Recall());
+        recall.setDuration(recallDuration);
+        this.recall = recall;
         return this;
     }
 
@@ -960,5 +983,96 @@ public class Resource {
         String id = this.id;
         return String.format("id:%s, type:%s", Objects.nonNull(id) ? id : "?" + " ".repeat(35),
                 getType().name().toLowerCase());
+    }
+
+    /**
+     * Get the speaker alarm sound.
+     */
+    public @Nullable Sound getAlarm() {
+        return alarm;
+    }
+
+    /**
+     * Get the speaker alert sound. We need to disambiguate between an alert setting and an alerts setting, because
+     * both are represented by the same 'alert' JSON element. If the JSON element contains a 'status' field it is
+     * an alert setting, if it contains an 'action' or 'action_values' field it is an alerts setting.
+     */
+    public @Nullable Sound getAlert() {
+        JsonElement alert = this.alert;
+        if (Objects.nonNull(alert) && alert.isJsonObject() && alert.getAsJsonObject().get("status") != null) {
+            return GSON.fromJson(alert, Sound.class);
+        }
+        return null;
+    }
+
+    /**
+     * Get the speaker chime sound.
+     */
+    public @Nullable Sound getChime() {
+        return chime;
+    }
+
+    /**
+     * Get the speaker mute state.
+     */
+    public @Nullable Mute getMute() {
+        return mute;
+    }
+
+    /**
+     * Get the software update status if any. Disambiguate between a software update status and a smart scene state,
+     * because both are represented by the 'state' JSON element. If the resource type is 'device_software_update' it
+     * is a software update status, if it is 'smart_scene' it is a smart scene state.
+     */
+    public @Nullable SoftwareUpdateStatusType getSoftwareUpdateStatus() {
+        if (ResourceType.DEVICE_SOFTWARE_UPDATE == getType() && (state instanceof JsonPrimitive statePrimitive)) {
+            String state = statePrimitive.getAsString();
+            if (Objects.nonNull(state)) {
+                return SoftwareUpdateStatusType.of(state);
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Depending on the returned value from getSoftwareUpdateStatus() this method returns a StringType of the status
+     * name, or 'UnDefType.NULL' if there is no such status.
+     */
+    public State getSoftwareUpdateState() {
+        SoftwareUpdateStatusType softwareUpdateStatus = getSoftwareUpdateStatus();
+        return softwareUpdateStatus != null ? new StringType(softwareUpdateStatus.toString()) : UnDefType.NULL;
+    }
+
+    /**
+     * Set the speaker alarm sound.
+     */
+    public Resource setAlarm(@Nullable Sound alarm) {
+        this.alarm = alarm;
+        return this;
+    }
+
+    /**
+     * Set the speaker alert sound. Note: this method sets the 'alert' JSON element. The 'alert' JSON element is
+     * used for both alert and alerts settings, so this method should only be used when setting an alert sound.
+     */
+    public Resource setAlert(Sound alert) {
+        this.alert = GSON.toJsonTree(alert);
+        return this;
+    }
+
+    /**
+     * Set the speaker chime sound.
+     */
+    public Resource setChime(@Nullable Sound chime) {
+        this.chime = chime;
+        return this;
+    }
+
+    /**
+     * Set the speaker mute state.
+     */
+    public Resource setMute(@Nullable Mute mute) {
+        this.mute = mute;
+        return this;
     }
 }

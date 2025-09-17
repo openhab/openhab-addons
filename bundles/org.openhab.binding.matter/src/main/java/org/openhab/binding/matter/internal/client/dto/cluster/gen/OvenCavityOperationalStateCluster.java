@@ -218,8 +218,8 @@ public class OvenCavityOperationalStateCluster extends BaseCluster {
         PAUSED(2, "Paused"),
         ERROR(3, "Error");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private OperationalStateEnum(Integer value, String label) {
             this.value = value;
@@ -259,8 +259,8 @@ public class OvenCavityOperationalStateCluster extends BaseCluster {
         UNABLE_TO_COMPLETE_OPERATION(2, "Unable To Complete Operation"),
         COMMAND_INVALID_IN_STATE(3, "Command Invalid In State");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private ErrorStateEnum(Integer value, String label) {
             this.value = value;

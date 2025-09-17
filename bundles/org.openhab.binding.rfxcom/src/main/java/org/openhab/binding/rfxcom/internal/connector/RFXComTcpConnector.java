@@ -38,7 +38,6 @@ public class RFXComTcpConnector extends RFXComBaseConnector {
     private Thread readerThread;
 
     public RFXComTcpConnector(String readerThreadName) {
-        super();
         this.readerThreadName = readerThreadName;
     }
 

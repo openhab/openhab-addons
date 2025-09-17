@@ -55,7 +55,6 @@ public class VeSyncHandlerFactory extends BaseThingHandlerFactory {
     @Activate
     public VeSyncHandlerFactory(@Reference HttpClientFactory httpClientFactory,
             @Reference TranslationProvider translationProvider, @Reference LocaleProvider localeProvider) {
-        super();
         this.httpClientFactory = httpClientFactory;
         this.translationProvider = translationProvider;
         this.localeProvider = localeProvider;

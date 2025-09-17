@@ -35,7 +35,6 @@ public class SonosResourceMetaData implements Serializable {
     String desc;
 
     public SonosResourceMetaData(String id, String parentId, String title, String upnpClass, String desc) {
-        super();
         this.id = id;
         this.parentId = parentId;
         this.title = title;

@@ -57,7 +57,7 @@ public class AirQualityConverter extends GenericConverter<AirQualityCluster> {
 
         List<StateOption> options = new ArrayList<>();
         for (AirQualityCluster.AirQualityEnum e : AirQualityCluster.AirQualityEnum.values()) {
-            options.add(new StateOption(e.value.toString(), e.label));
+            options.add(new StateOption(e.getValue().toString(), e.getLabel()));
         }
 
         StateDescription stateDescription = StateDescriptionFragmentBuilder.create().withPattern("%d")
@@ -71,7 +71,7 @@ public class AirQualityConverter extends GenericConverter<AirQualityCluster> {
         switch (message.path.attributeName) {
             case AirQualityCluster.ATTRIBUTE_AIR_QUALITY:
                 if (message.value instanceof AirQualityCluster.AirQualityEnum aqEnum) {
-                    updateState(CHANNEL_ID_AIRQUALITY_AIRQUALITY, new DecimalType(aqEnum.value));
+                    updateState(CHANNEL_ID_AIRQUALITY_AIRQUALITY, new DecimalType(aqEnum.getValue()));
                 }
                 break;
             default:
@@ -83,7 +83,7 @@ public class AirQualityConverter extends GenericConverter<AirQualityCluster> {
     @Override
     public void initState() {
         updateState(CHANNEL_ID_AIRQUALITY_AIRQUALITY,
-                initializingCluster.airQuality != null ? new DecimalType(initializingCluster.airQuality.value)
+                initializingCluster.airQuality != null ? new DecimalType(initializingCluster.airQuality.getValue())
                         : UnDefType.NULL);
     }
 }

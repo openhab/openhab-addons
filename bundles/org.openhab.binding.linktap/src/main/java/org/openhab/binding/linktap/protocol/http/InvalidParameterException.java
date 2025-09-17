@@ -29,7 +29,6 @@ public class InvalidParameterException extends I18Exception {
     private static final long serialVersionUID = -7784829499604153947L;
 
     public InvalidParameterException() {
-        super();
     }
 
     public InvalidParameterException(final String message) {

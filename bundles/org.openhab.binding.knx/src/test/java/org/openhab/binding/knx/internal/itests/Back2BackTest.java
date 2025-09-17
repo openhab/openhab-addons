@@ -935,7 +935,6 @@ public class Back2BackTest {
                 new StringType("R increase 7 steps G increase 6 steps B increase 5 steps"));
     }
 
-    @Test
     @AfterAll
     static void checkForMissingMainTypes() {
         // checks if we have itests for all main DPT types supported by Calimero library,

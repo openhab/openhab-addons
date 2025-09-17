@@ -96,8 +96,8 @@ public class MediaInputCluster extends BaseCluster {
         USB(10, "Usb"),
         OTHER(11, "Other");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private InputTypeEnum(Integer value, String label) {
             this.value = value;

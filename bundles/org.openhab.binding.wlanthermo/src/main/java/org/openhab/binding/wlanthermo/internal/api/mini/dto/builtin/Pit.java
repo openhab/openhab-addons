@@ -68,7 +68,6 @@ public class Pit {
      */
     public Pit(Boolean enabled, String timestamp, Double setpoint, Double current, Integer controlOut, Integer ch,
             String type, String openLid) {
-        super();
         this.enabled = enabled;
         this.timestamp = timestamp;
         this.setpoint = setpoint;

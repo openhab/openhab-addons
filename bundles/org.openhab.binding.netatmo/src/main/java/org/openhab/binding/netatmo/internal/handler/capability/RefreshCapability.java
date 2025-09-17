@@ -15,7 +15,6 @@ package org.openhab.binding.netatmo.internal.handler.capability;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -43,7 +42,7 @@ public class RefreshCapability extends Capability {
     private final Logger logger = LoggerFactory.getLogger(RefreshCapability.class);
 
     protected Duration dataValidity = PROBING_INTERVAL;
-    private Optional<ScheduledFuture<?>> refreshJob = Optional.empty();
+    private @Nullable ScheduledFuture<?> refreshJob;
     private boolean expiring = false;
 
     public RefreshCapability(CommonInterface handler) {
@@ -95,11 +94,11 @@ public class RefreshCapability extends Capability {
     }
 
     private void rescheduleJob(Duration delay) {
-        if (refreshJob.isPresent()) {
-            ScheduledFuture<?> job = refreshJob.get();
+        ScheduledFuture<?> refreshJob = this.refreshJob;
+        if (refreshJob != null) {
             Instant now = Instant.now();
             Instant expectedExecution = now.plus(delay);
-            Instant scheduledExecution = now.plusMillis(job.getDelay(TimeUnit.MILLISECONDS));
+            Instant scheduledExecution = now.plusMillis(refreshJob.getDelay(TimeUnit.MILLISECONDS));
             if (Math.abs(ChronoUnit.SECONDS.between(expectedExecution, scheduledExecution)) <= 3) {
                 logger.debug("'{}' refresh as already pending roughly as the same time, will not reschedule", thingUID);
                 return;
@@ -108,11 +107,14 @@ public class RefreshCapability extends Capability {
             }
         }
         logger.debug("'{}' next refresh in {}", thingUID, delay);
-        refreshJob = handler.schedule(this::proceedWithUpdate, delay);
+        handler.schedule(this::proceedWithUpdate, delay).ifPresent(job -> this.refreshJob = job);
     }
 
     private void stopJob() {
-        refreshJob.ifPresent(job -> job.cancel(true));
-        refreshJob = Optional.empty();
+        ScheduledFuture<?> refreshJob = this.refreshJob;
+        if (refreshJob != null) {
+            refreshJob.cancel(true);
+        }
+        this.refreshJob = null;
     }
 }

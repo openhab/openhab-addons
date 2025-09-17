@@ -52,7 +52,6 @@ public class NikoHomeControlHandlerFactory extends BaseThingHandlerFactory {
     @Activate
     public NikoHomeControlHandlerFactory(final @Reference NetworkAddressService networkAddressService,
             final @Reference TimeZoneProvider timeZoneProvider) {
-        super();
         this.networkAddressService = networkAddressService;
         this.timeZoneProvider = timeZoneProvider;
     }

@@ -46,7 +46,6 @@ public class Scene {
      * Default constructor for GSon.
      */
     public Scene() {
-        super();
     }
 
     /**

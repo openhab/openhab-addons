@@ -25,7 +25,6 @@ import com.google.gson.JsonObject;
 @NonNullByDefault
 public class EmptyDustbinCommand extends AbstractNoResponseCommand {
     public EmptyDustbinCommand() {
-        super();
     }
 
     @Override
