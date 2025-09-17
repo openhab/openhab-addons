@@ -214,8 +214,12 @@ public class ZwaveJSBridgeHandler extends BaseBridgeHandler implements ZwaveEven
             event.args.endpoint = Integer.parseInt(parts[1]);
             event.args.commandClass = Integer.parseInt(parts[2]);
             event.args.commandClassName = parts[3];
-            event.args.propertyKey = parts[4];
-            event.args.propertyName = parts[5];
+            if (!"null".equals(parts[4]) && !parts[4].isBlank()) {
+                event.args.propertyKey = parts[4];
+            }
+            if (!"null".equals(parts[5]) && !parts[5].isBlank()) {
+                event.args.propertyName = parts[5];
+            }
             event.nodeId = Integer.parseInt(parts[6]);
         } catch (NumberFormatException e) {
             logger.warn("Error parsing messageId '{}': {}", messageId, e.getMessage());

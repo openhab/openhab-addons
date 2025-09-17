@@ -31,6 +31,7 @@ public class ZwaveJSChannelConfiguration {
     public @Nullable String readProperty;
     public @Nullable Integer writePropertyInt;
     public @Nullable String writePropertyStr;
-    public boolean inverted = false;
+    public boolean inverted = false; // Only usable for invertable channels
+    public boolean isUpDownInverted = false; // Only usable for RollerShutter channels
     public double factor = 1.0;
 }

@@ -81,7 +81,7 @@ public class ZwaveJSBridgeHandlerTest {
 
         try {
             verify(callback).statusUpdated(eq(thing), argThat(arg -> arg.getStatus().equals(ThingStatus.UNKNOWN)));
-            verify(discoveryService, times(25)).addNodeDiscovery(any());
+            verify(discoveryService, times(28)).addNodeDiscovery(any());
         } finally {
             handler.dispose();
         }

@@ -32,10 +32,11 @@ import org.openhab.binding.zwavejs.internal.api.dto.Metadata;
 import org.openhab.binding.zwavejs.internal.api.dto.MetadataType;
 import org.openhab.binding.zwavejs.internal.api.dto.Node;
 import org.openhab.binding.zwavejs.internal.api.dto.Value;
-import org.openhab.binding.zwavejs.internal.config.ColorCapability;
 import org.openhab.binding.zwavejs.internal.config.ZwaveJSChannelConfiguration;
 import org.openhab.binding.zwavejs.internal.conversion.ChannelMetadata;
 import org.openhab.binding.zwavejs.internal.conversion.ConfigMetadata;
+import org.openhab.binding.zwavejs.internal.type.capabilities.ColorCapability;
+import org.openhab.binding.zwavejs.internal.type.capabilities.RollerShutterCapability;
 import org.openhab.core.config.core.ConfigDescriptionBuilder;
 import org.openhab.core.config.core.ConfigDescriptionParameter;
 import org.openhab.core.config.core.ConfigDescriptionParameterBuilder;
@@ -56,7 +57,9 @@ import org.openhab.core.thing.type.ChannelType;
 import org.openhab.core.thing.type.ChannelTypeBuilder;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.thing.type.StateChannelTypeBuilder;
+import org.openhab.core.types.StateDescription;
 import org.openhab.core.types.StateDescriptionFragment;
+import org.openhab.core.types.StateDescriptionFragmentBuilder;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -80,7 +83,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
 
-    private static final Object CHANNEL_TYPE_VERSION = "5"; // when static configuration is changed, the version must be
+    private static final Object CHANNEL_TYPE_VERSION = "6"; // when static configuration is changed, the version must be
                                                             // changed as well to force new channel type generation
     private static final Map<String, SemanticTag> ITEM_TYPES_TO_PROPERTY_TAGS = new HashMap<>();
     static {
@@ -95,6 +98,9 @@ public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
         ITEM_TYPES_TO_PROPERTY_TAGS.put("Number:Temperature", Property.TEMPERATURE);
         ITEM_TYPES_TO_PROPERTY_TAGS.put("Number:Time", Property.DURATION);
     }
+
+    private static final List<String> ROLLER_SHUTTER_KEYWORDS = List.of("shutter", "blind", "curtain", "shade",
+            "awning", "venetian", "drape", "roller", "screen", "covering", "rts");
 
     private final Logger logger = LoggerFactory.getLogger(ZwaveJSTypeGeneratorImpl.class);
     private final ThingRegistry thingRegistry;
@@ -152,6 +158,24 @@ public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
             }
         }
 
+        // Skip adding RollerShutter channels for devices with color capabilities.
+        // This prevents creating unnecessary RollerShutter channels for each color.
+        if (result.colorCapabilities.isEmpty()) {
+            // Map roller shutter capabilities based on node label and description
+            mapRollerShutterCapabilities(result, node.label,
+                    node.deviceConfig != null ? node.deviceConfig.description : null);
+
+            // Mark roller shutter-related channels as advanced
+            result.rollerShutterCapabilities.values().forEach(cap -> {
+                result.channels.computeIfPresent(cap.dimmerChannel.getId(), (id, channel) -> markAdvanced(channel));
+                result.channels.computeIfPresent(cap.upChannel.getId(), (id, channel) -> markAdvanced(channel));
+                result.channels.computeIfPresent(cap.downChannel.getId(), (id, channel) -> markAdvanced(channel));
+            });
+
+            // Add roller shutter channels to the result
+            addRollerShutterChannels(thingUID, node, result);
+        }
+
         // cross link the ColorCapability dimmer channels to Dimmer type channels withing the same endpoint
         mapDimmerChannelsToColorCapabilities(result);
 
@@ -192,6 +216,39 @@ public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
         }
 
         return parameterBuilder.build();
+    }
+
+    private Channel markAdvanced(Channel channel) {
+        ChannelType originalChannelType = Objects.requireNonNull(
+                channelTypeProvider.getChannelType(Objects.requireNonNull(channel.getChannelTypeUID()), null),
+                "Original ChannelType must not be null");
+
+        ChannelTypeUID advancedChannelTypeUID = new ChannelTypeUID(originalChannelType.getUID().getBindingId(),
+                originalChannelType.getUID().getId() + "_advanced");
+
+        ChannelType channelType = channelTypeProvider.getChannelType(advancedChannelTypeUID, null);
+        if (channelType == null) {
+            StateChannelTypeBuilder builder = ChannelTypeBuilder.state(advancedChannelTypeUID,
+                    originalChannelType.getLabel(),
+                    Objects.requireNonNull(originalChannelType.getItemType(), "ItemType must not be null"));
+            if (originalChannelType.getDescription() instanceof String description) {
+                builder.withDescription(description);
+            }
+            if (originalChannelType.getState() instanceof StateDescription stateDescription) {
+                builder.withStateDescriptionFragment(StateDescriptionFragmentBuilder.create(stateDescription).build());
+            }
+            if (originalChannelType.getUnitHint() != null) {
+                builder.withUnitHint(originalChannelType.getUnitHint());
+            }
+            if (originalChannelType.getConfigDescriptionURI() instanceof URI uri) {
+                builder.withConfigDescriptionURI(uri);
+            }
+            builder.withTags(originalChannelType.getTags());
+            channelType = builder.isAdvanced(true).build();
+
+            channelTypeProvider.addChannelType(channelType);
+        }
+        return ChannelBuilder.create(channel).withType(advancedChannelTypeUID).build();
     }
 
     private Map<String, Channel> createChannel(ThingUID thingUID, ZwaveJSTypeGeneratorResult result,
@@ -322,6 +379,7 @@ public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
         parts.append(details.unitSymbol);
         parts.append(details.writable);
         parts.append(details.isAdvanced);
+        parts.append(details.isInvertible());
         StateDescriptionFragment statePattern = details.statePattern;
         if (statePattern != null) {
             parts.append(statePattern.hashCode());
@@ -362,7 +420,9 @@ public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
             builder.withUnitHint(details.unitSymbol);
         }
 
-        if (details.isInvertible()) {
+        if (details.itemType.equals(CoreItemFactory.ROLLERSHUTTER)) {
+            builder.withConfigDescriptionURI(URI.create("channel-type:zwavejs:rollershutter-channel"));
+        } else if (details.isInvertible()) {
             builder.withConfigDescriptionURI(URI.create("channel-type:zwavejs:invertible-channel"));
         } else {
             builder.withConfigDescriptionURI(URI.create("channel-type:zwavejs:base-channel"));
@@ -393,30 +453,49 @@ public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
     }
 
     /**
-     * Helper method for setSemanticTags(). Matches information in the {@link ChannelMetadata} against the given
-     * keywords.
+     * Matches the given list of keywords against the label and description of the provided
+     * {@link ChannelMetadata}. This method delegates the matching logic to the overloaded
+     * {@link #match(List, String, String)} method.
      *
      * @param keyWords the list of keywords to match
-     * @param details the channel metadata to check
-     * @return true if any keyword matches, false otherwise
+     * @param metadata the channel metadata containing the label and description to match against
+     * @return {@code true} if the keywords match the label or description, {@code false} otherwise
      */
-    private static boolean match(List<String> keyWords, ChannelMetadata details) {
-        List<String> sourceTexts = details.description instanceof String description
-                ? List.of(details.label, description)
-                : List.of(details.label);
+    private static boolean match(List<String> keyWords, ChannelMetadata metadata) {
+        return match(keyWords, metadata.label, metadata.description);
+    }
+
+    /**
+     * Checks if any of the given keywords match the provided label or description.
+     * A match is determined if:
+     * - The keyword is contained within the label or description (case-insensitive).
+     * - The label or description ends with the keyword (ignoring trailing whitespace).
+     * - The label or description starts with the keyword (ignoring leading whitespace).
+     *
+     * @param keyWords A list of keywords to search for.
+     * @param label The label to check against the keywords.
+     * @param description An optional description to check against the keywords. Can be null.
+     * @return {@code true} if any keyword matches the label or description, {@code false} otherwise.
+     */
+    private static boolean match(List<String> keyWords, @Nullable String label, @Nullable String description) {
+        if ((label == null || label.isBlank()) && (description == null || description.isBlank())
+                || keyWords.isEmpty()) {
+            return false;
+        }
+        label = label != null ? label.toLowerCase() : "";
+        description = description != null ? description.toLowerCase() : "";
         for (String keyWord : keyWords) {
             String keyWordLowercase = keyWord.toLowerCase();
-            for (String sourceText : sourceTexts) {
-                String sourceTextLowercase = sourceText.toLowerCase();
-                if (sourceTextLowercase.contains(keyWordLowercase)) {
-                    return true;
-                }
-                if (sourceTextLowercase.endsWith(keyWordLowercase.stripTrailing())) {
-                    return true;
-                }
-                if (sourceTextLowercase.startsWith(keyWordLowercase.stripLeading())) {
-                    return true;
-                }
+            if (label.contains(keyWordLowercase) || description.contains(keyWordLowercase)) {
+                return true;
+            }
+            if (label.endsWith(keyWordLowercase.stripTrailing())
+                    || description.endsWith(keyWordLowercase.stripTrailing())) {
+                return true;
+            }
+            if (label.startsWith(keyWordLowercase.stripLeading())
+                    || description.startsWith(keyWordLowercase.stripLeading())) {
+                return true;
             }
         }
         return false;
@@ -624,6 +703,53 @@ public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
         return builder;
     }
 
+    private void addRollerShutterChannels(ThingUID thingUID, Node node, ZwaveJSTypeGeneratorResult result) {
+        result.rollerShutterCapabilities.forEach((endPoint, rollerShutterCapability) -> {
+            Value value = new Value();
+            // populate minimum required fields; the system channel type provides the rest
+            value.endpoint = endPoint;
+            value.commandClass = -1;
+            value.commandClassName = VIRTUAL_COMMAND_CLASS_ROLLERSHUTTER;
+            value.propertyKey = VIRTUAL_ROLLERSHUTTER_PROPERTY;
+            value.property = VIRTUAL_ROLLERSHUTTER_PROPERTY;
+            value.metadata = new Metadata();
+            value.metadata.type = MetadataType.NUMBER;
+            value.metadata.writeable = true;
+            value.metadata.label = "Roller Shutter";
+            value.metadata.description = "Roller Shutter that accepts UP/DOWN/STOP and NUMBER commands";
+            value.metadata.readable = true;
+            value.value = 0;
+
+            ChannelMetadata details = new ChannelMetadata(node.nodeId, value);
+
+            logger.trace("Node {} building channel with Id: {}", details.nodeId, details.id);
+            logger.trace(" >> {}", details);
+
+            ChannelTypeUID channelTypeUID = generateChannelTypeUID(details);
+            ChannelType type = getOrGenerate(channelTypeUID, details);
+            if (type == null) {
+                return;
+            }
+            Configuration config = buildChannelConfiguration(details);
+
+            Channel channel = ChannelBuilder.create(new ChannelUID(thingUID, details.id), CoreItemFactory.ROLLERSHUTTER)
+                    .withType(type.getUID()) //
+                    .withDefaultTags(type.getTags()) //
+                    .withKind(type.getKind()) //
+                    .withLabel(type.getLabel()) //
+                    .withDescription(Objects.requireNonNull(type.getDescription())) //
+                    .withAutoUpdatePolicy(type.getAutoUpdatePolicy()) //
+                    .withConfiguration(config) //
+                    .build();
+
+            result.channels.put(details.id, channel);
+            Object dimmerValue = result.values.get(rollerShutterCapability.dimmerChannel.getId());
+            if (dimmerValue != null) {
+                result.values.put(details.id, dimmerValue);
+            }
+        });
+    }
+
     /**
      * Iterates over the {@link ZwaveJSTypeGeneratorResult}'s map of {@link ColorCapability} to find endpoints which
      * support color temperature, and if found, adds a respective color temperature channel to the
@@ -672,6 +798,58 @@ public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
             result.channels.put(details.id, channel);
             colorCapability.colorTempChannel = channel.getUID();
         });
+    }
+
+    /**
+     * Iterates over the {@link ZwaveJSTypeGeneratorResult}'s map of {@link Channel} to detect RollerShutter
+     * capabilities.
+     * This method identifies channels of type "Dimmer" and associates them with corresponding "Switch" channels
+     * (e.g., "up", "down", "open", "close", "on", "off") within the same endpoint to define roller shutter
+     * capabilities.
+     *
+     * @param result The {@link ZwaveJSTypeGeneratorResult} containing the channels to be processed.
+     * @param nodeLabel The label of the node, used for matching keywords related to roller shutters.
+     * @param nodeDescription An optional description of the node, used for additional keyword matching.
+     */
+    private void mapRollerShutterCapabilities(ZwaveJSTypeGeneratorResult result, String nodeLabel,
+            @Nullable String nodeDescription) {
+        // Categorize channels by endpoint and type
+        result.channels.values().stream().filter(c -> CoreItemFactory.DIMMER.equals(c.getAcceptedItemType())) //
+                .forEach(channel -> {
+                    ZwaveJSChannelConfiguration config = channel.getConfiguration()
+                            .as(ZwaveJSChannelConfiguration.class);
+                    int endpoint = config.endpoint;
+                    // create single array as mutable container for the lambda
+                    ChannelUID[] upChannel = new ChannelUID[1];
+                    ChannelUID[] downChannel = new ChannelUID[1];
+                    // get other channels of type switch within the same endpoint
+                    result.channels.values().stream()
+                            .filter(otherChannel -> CoreItemFactory.SWITCH.equals(otherChannel.getAcceptedItemType())) //
+                            .filter(otherChannel -> {
+                                ZwaveJSChannelConfiguration configSwitch = otherChannel.getConfiguration()
+                                        .as(ZwaveJSChannelConfiguration.class);
+                                return configSwitch.endpoint == endpoint;
+                            }).forEach(otherChannel -> {
+                                if (upChannel[0] != null && downChannel[0] != null) {
+                                    return;
+                                }
+                                String channelId = otherChannel.getUID().getId().toLowerCase();
+                                if ((channelId.contains("-up") || channelId.contains("-open")
+                                        || channelId.contains("-on"))
+                                        && match(ROLLER_SHUTTER_KEYWORDS, nodeLabel, nodeDescription)) {
+                                    upChannel[0] = otherChannel.getUID();
+                                } else if ((channelId.contains("-down") || channelId.contains("-close")
+                                        || channelId.contains("-off"))
+                                        && match(ROLLER_SHUTTER_KEYWORDS, nodeLabel, nodeDescription)) {
+                                    downChannel[0] = otherChannel.getUID();
+                                }
+                            });
+                    if (upChannel[0] != null && downChannel[0] != null) {
+                        RollerShutterCapability capability = new RollerShutterCapability(endpoint, channel.getUID(),
+                                upChannel[0], downChannel[0]);
+                        result.rollerShutterCapabilities.put(endpoint, capability);
+                    }
+                });
     }
 
     /**

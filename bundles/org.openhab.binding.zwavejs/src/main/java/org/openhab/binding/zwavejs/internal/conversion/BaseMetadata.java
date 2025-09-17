@@ -18,6 +18,7 @@ import static org.openhab.binding.zwavejs.internal.CommandClassConstants.*;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -74,9 +75,16 @@ public abstract class BaseMetadata {
             Map.entry("%rH", "%") // ZUI uses %rH for relative humidity, but openHAB expects the % unit.
     );
 
-    private static final Map<String, String> CHANNEL_ID_PROPERTY_NAME_REPLACEMENTS = Map.of("currentValue", "value", //
-            "targetValue", "value", "currentColor", "color", "targetColor", "color", //
-            "targetMode", "mode", "currentMode", "mode"); //
+    private static final Map<String, String> CHANNEL_ID_PROPERTY_NAME_REPLACEMENTS;
+    static {
+        CHANNEL_ID_PROPERTY_NAME_REPLACEMENTS = new LinkedHashMap<>();
+        CHANNEL_ID_PROPERTY_NAME_REPLACEMENTS.put("currentValue", "value");
+        CHANNEL_ID_PROPERTY_NAME_REPLACEMENTS.put("targetValue", "value");
+        CHANNEL_ID_PROPERTY_NAME_REPLACEMENTS.put("currentColor", "color");
+        CHANNEL_ID_PROPERTY_NAME_REPLACEMENTS.put("targetColor", "color");
+        CHANNEL_ID_PROPERTY_NAME_REPLACEMENTS.put("currentMode", "mode");
+        CHANNEL_ID_PROPERTY_NAME_REPLACEMENTS.put("targetMode", "mode");
+    }
     private static final List<Integer> COMMAND_CLASSES_ADVANCED = List.of(44, 117);
     private static final List<Integer> SWITCH_STATES_OFF_CLOSED = List.of(-1, 0, 23);
 
@@ -150,6 +158,21 @@ public abstract class BaseMetadata {
         this.itemType = CoreItemFactory.STRING;
         this.isAdvanced = false;
         this.factor = 1.0;
+    }
+
+    public static boolean isFirstOrNotMapped(@Nullable String propertyName) {
+        if (propertyName == null || propertyName.contains("unknown")) {
+            return true;
+        }
+        String value = CHANNEL_ID_PROPERTY_NAME_REPLACEMENTS.get(propertyName);
+        if (value == null) {
+            return true;
+        }
+        // Find the first key with this value
+        // Find all keys with the same value, preserving insertion order
+        String firstKey = CHANNEL_ID_PROPERTY_NAME_REPLACEMENTS.entrySet().stream()
+                .filter(e -> Objects.equals(e.getValue(), value)).map(Map.Entry::getKey).findFirst().orElse(null);
+        return Objects.equals(firstKey, propertyName);
     }
 
     /*
@@ -310,11 +333,28 @@ public abstract class BaseMetadata {
                 return handleSwitchType(value, inverted);
             case CoreItemFactory.COLOR:
                 return handleColorType(value);
+            case CoreItemFactory.ROLLERSHUTTER:
+                return handleRollershutterType(value, inverted);
             case CoreItemFactory.STRING:
                 return StringType.valueOf(Objects.requireNonNull(value).toString());
             default:
                 logger.warn("Node {}, unexpected item type: {}, please file a bug report", nodeId, itemType);
                 return UnDefType.UNDEF;
+        }
+    }
+
+    private @Nullable State handleRollershutterType(Object value, boolean inverted) {
+        if (value instanceof Number numberValue) {
+            try {
+                return new PercentType(inverted ? 100 - numberValue.intValue() : numberValue.intValue());
+            } catch (IllegalArgumentException e) {
+                logger.warn("Node {}, invalid PercentType value provided: {}", nodeId, numberValue);
+                return UnDefType.UNDEF;
+            }
+        } else {
+            logger.warn("Node {}, unexpected value type for rollershutter: {}, please file a bug report", nodeId,
+                    value.getClass().getName());
+            return UnDefType.UNDEF;
         }
     }
 
@@ -487,6 +527,9 @@ public abstract class BaseMetadata {
 
         switch (type) {
             case NUMBER:
+                if (VIRTUAL_COMMAND_CLASS_ROLLERSHUTTER.equals(commandClassName)) {
+                    return CoreItemFactory.ROLLERSHUTTER;
+                }
                 Unit<?> unit = this.unit;
                 if (unit != null) {
                     String dimension = UnitUtils.getDimensionName(unit);
@@ -497,7 +540,6 @@ public abstract class BaseMetadata {
                     }
                     return CoreItemFactory.NUMBER + ":" + dimension;
                 }
-
                 return CoreItemFactory.NUMBER;
             case BOOLEAN:
                 // switch (or contact ?)
@@ -536,6 +578,9 @@ public abstract class BaseMetadata {
                 pattern = "%1d %%";
                 break;
             case CoreItemFactory.COLOR:
+                break;
+            case CoreItemFactory.ROLLERSHUTTER:
+                pattern = "%1d %%";
                 break;
             case CoreItemFactory.STRING:
             case CoreItemFactory.SWITCH:
