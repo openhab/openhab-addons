@@ -37,15 +37,4 @@
 			</parameter>
 		</config-description>
 	</thing-type>
-
-	<channel-type id="power">
-		<item-type>Switch</item-type>
-		<label>Switch</label>
-		<description>Switch the power ON and OFF</description>
-		<category>Light</category>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Light</tag>
-		</tags>
-	</channel-type>
 </thing:thing-descriptions>

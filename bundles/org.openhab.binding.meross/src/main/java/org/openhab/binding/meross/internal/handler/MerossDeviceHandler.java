@@ -20,13 +20,11 @@ import java.net.UnknownHostException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.openhab.binding.meross.internal.MerossBindingConstants;
 import org.openhab.binding.meross.internal.api.MerossEnum;
 import org.openhab.binding.meross.internal.api.MerossEnum.Namespace;
 import org.openhab.binding.meross.internal.api.MerossManager;
 import org.openhab.binding.meross.internal.api.MerossMqttConnector;
 import org.openhab.binding.meross.internal.config.MerossDeviceConfiguration;
-import org.openhab.binding.meross.internal.config.MerossLightConfiguration;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.transport.mqtt.MqttException;
 import org.openhab.core.thing.Bridge;
@@ -69,34 +67,6 @@ public class MerossDeviceHandler extends BaseThingHandler implements MerossDevic
     @Override
     public void initialize() {
         this.config = getConfigAs(MerossDeviceConfiguration.class);
-
-        // The following code is to update older light configurations:
-        // This code moves from a "lightName" configuration parameter to a "name" configuration parameter
-        // It also sets the uuid configuration representation configuration property from the deviceUUID property
-        if (thing.getThingTypeUID().equals(MerossBindingConstants.THING_TYPE_LIGHT)) {
-            MerossLightConfiguration config = getConfigAs(MerossLightConfiguration.class);
-            boolean configChanged = false;
-            Configuration configuration = editConfiguration();
-            String lightName = config.lightName;
-            if (config.name.isEmpty() && (lightName != null)) {
-                config.name = lightName;
-                configuration.put(MerossBindingConstants.PROPERTY_DEVICE_NAME, config.lightName);
-                configuration.put(MerossBindingConstants.PROPERTY_LIGHT_DEVICE_NAME, null);
-                configChanged = true;
-            }
-            String deviceUUID = thing.getProperties().get("deviceUUID");
-            if (config.uuid.isEmpty() && deviceUUID != null && !deviceUUID.isEmpty()) {
-                config.uuid = deviceUUID;
-                configuration.put(MerossBindingConstants.PROPERTY_DEVICE_UUID, deviceUUID);
-                updateProperty("deviceUUID", null);
-                configChanged = true;
-            }
-            if (configChanged) {
-                updateConfiguration(configuration);
-                this.config = config;
-            }
-        }
-
         initializeDevice();
     }
 

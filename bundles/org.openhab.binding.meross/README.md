@@ -11,8 +11,8 @@ Supported thing types
 
 - `gateway` : Acts as a Bridge to your Meross cloud account.
 - `light` : Represents a light device like a Smart ambient light.
-- `door`: Represents a garage door.
-- `tripleDoor`: Represents a triple garage door.
+- `msg100`: Represents a garage door.
+- `msg200`: Represents a triple garage door.
 
 |   Meross Name       | Type   | Description         | Supported | Tested |
 |---------------------|--------|---------------------|-----------|--------|
@@ -82,7 +82,7 @@ Only power channel is supported:
 A number of commands are supported from the console:
 
 - `meross devices <userEmail>`: get a list of devices and their Meross UUID.
-- `meross fingerprint <userEmail> <devName>`: get a device description in JSON format and write the result to a file.
+- `meross fingerprint <userEmail> <device>`: get a device description in JSON format and write the result to a file.
 
 The arguments are optional and will limit the selection of the returned information.
 

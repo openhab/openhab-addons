@@ -75,7 +75,6 @@ public class MerossManager implements MqttMessageSubscriber {
     private static final int FUTURE_TIMOUT_SEC = 5;
     private @Nullable CompletableFuture<Boolean> ipInitialized;
     private @Nullable CompletableFuture<String> responseFuture;
-    private @Nullable CompletableFuture<String> abilitiesFuture;
 
     private Set<String> abilities = Set.of();
 

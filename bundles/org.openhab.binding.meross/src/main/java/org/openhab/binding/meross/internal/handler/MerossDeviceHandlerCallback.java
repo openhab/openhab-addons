@@ -15,11 +15,12 @@ package org.openhab.binding.meross.internal.handler;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.meross.internal.api.MerossEnum.Namespace;
-import org.openhab.binding.meross.internal.api.MerossManager;
 import org.openhab.core.types.State;
 
 /**
- * {@link MerossDeviceHandlerCallback} lists the methods for callback from the {@link MerossManager}
+ * {@link MerossDeviceHandlerCallback} lists the methods for callback from the
+ * {@link org.openhab.binding.meross.internal.api.MerossManager}. This allows the manager, when receiving messages, to
+ * update the handler.
  *
  * @author Mark Herwege - Initial contribution
  */

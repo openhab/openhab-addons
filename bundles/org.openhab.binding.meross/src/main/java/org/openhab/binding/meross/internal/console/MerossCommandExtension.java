@@ -137,7 +137,7 @@ public class MerossCommandExtension extends AbstractConsoleCommandExtension impl
         String deviceUuid = null;
         if (args.length > 2 && FINGERPRINT.equalsIgnoreCase(args[0])) {
             // Check if argument is a device uuid, if not try device name
-            deviceUuid = handlers.get(0).getDevices().stream().map(Device::uuid).filter(uuid -> uuid == args[2])
+            deviceUuid = handlers.get(0).getDevices().stream().map(Device::uuid).filter(uuid -> uuid.equals(args[2]))
                     .findFirst().orElse(null);
             deviceUuid = deviceUuid != null ? deviceUuid : handlers.get(0).getDevUUIDByDevName(args[2]);
         }

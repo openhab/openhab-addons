@@ -19,6 +19,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.meross.internal.handler.MerossBridgeHandler;
 import org.openhab.binding.meross.internal.handler.MerossDeviceHandler;
+import org.openhab.binding.meross.internal.handler.MerossLightHandler;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -58,6 +59,8 @@ public class MerossHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (THING_TYPE_GATEWAY.equals(thingTypeUID)) {
             return new MerossBridgeHandler(thing, httpClient);
+        } else if (THING_TYPE_LIGHT.equals(thingTypeUID)) {
+            return new MerossLightHandler(thing, httpClient);
         } else if (DEVICE_THING_TYPES_UIDS.contains(thingTypeUID)) {
             return new MerossDeviceHandler(thing, httpClient);
         }

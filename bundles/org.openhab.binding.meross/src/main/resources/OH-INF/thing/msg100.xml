@@ -32,15 +32,4 @@
 			</parameter>
 		</config-description>
 	</thing-type>
-
-	<channel-type id="doorState">
-		<item-type>Rollershutter</item-type>
-		<label>Garage Door</label>
-		<description>Garage door state</description>
-		<category>garagedoor</category>
-		<tags>
-			<tag>Control</tag>
-			<tag>OpenState</tag>
-		</tags>
-	</channel-type>
 </thing:thing-descriptions>
