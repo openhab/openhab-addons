@@ -286,8 +286,8 @@ public class ContentLauncherCluster extends BaseCluster {
         TEXT_TRACK_NOT_AVAILABLE(3, "Text Track Not Available"),
         AUDIO_TRACK_NOT_AVAILABLE(4, "Audio Track Not Available");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private StatusEnum(Integer value, String label) {
             this.value = value;
@@ -324,8 +324,8 @@ public class ContentLauncherCluster extends BaseCluster {
         EPISODE(15, "Episode"),
         ANY(16, "Any");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private ParameterEnum(Integer value, String label) {
             this.value = value;
@@ -347,8 +347,8 @@ public class ContentLauncherCluster extends BaseCluster {
         PIXELS(0, "Pixels"),
         PERCENTAGE(1, "Percentage");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private MetricTypeEnum(Integer value, String label) {
             this.value = value;

@@ -40,7 +40,6 @@ public class F6_10_00 extends _RPSMessage {
     public static final byte TILTED = (byte) 0xD0; // 1101xxxx
 
     public F6_10_00() {
-        super();
     }
 
     public F6_10_00(ERP1Message packet) {

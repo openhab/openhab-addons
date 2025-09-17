@@ -291,8 +291,8 @@ public class ContentControlCluster extends BaseCluster {
         TIME_WINDOW_ALREADY_EXIST(10, "Time Window Already Exist"),
         TIME_WINDOW_NOT_EXIST(11, "Time Window Not Exist");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private StatusCodeEnum(Integer value, String label) {
             this.value = value;

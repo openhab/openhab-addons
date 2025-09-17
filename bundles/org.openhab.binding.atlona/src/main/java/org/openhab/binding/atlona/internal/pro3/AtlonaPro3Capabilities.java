@@ -57,7 +57,6 @@ public class AtlonaPro3Capabilities extends AtlonaCapabilities {
      * @param hdmiPorts a non-null, non-empty set of hdmi ports
      */
     public AtlonaPro3Capabilities(int nbrPowerPorts, int nbrAudioPorts, Set<Integer> hdmiPorts, boolean isUHDModel) {
-        super();
 
         if (hdmiPorts.isEmpty()) {
             throw new IllegalArgumentException("hdmiPorts cannot be empty");

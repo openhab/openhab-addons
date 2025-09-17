@@ -38,7 +38,6 @@ public final class GraalPythonScriptEngineFactory implements ScriptEngineFactory
     private static final String[] EXTENSIONS = { "py" };
 
     public GraalPythonScriptEngineFactory() {
-        super();
         this.userDefinedEngine = null;
 
         defaultEngine = new WeakReference<>(createDefaultEngine());

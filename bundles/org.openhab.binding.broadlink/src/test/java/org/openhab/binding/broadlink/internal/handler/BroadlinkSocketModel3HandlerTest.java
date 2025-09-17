@@ -52,7 +52,6 @@ public class BroadlinkSocketModel3HandlerTest extends AbstractBroadlinkThingHand
     private final BroadlinkSocketModel3Handler model3;
 
     public BroadlinkSocketModel3HandlerTest() {
-        super();
         configureUnderlyingThing(BroadlinkBindingConstants.THING_TYPE_SP3, "sp3-test");
         model3 = new BroadlinkSocketModel3Handler(thing);
     }

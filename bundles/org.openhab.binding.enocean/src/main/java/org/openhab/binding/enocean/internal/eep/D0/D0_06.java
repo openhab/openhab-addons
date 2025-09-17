@@ -34,7 +34,6 @@ import org.openhab.core.types.UnDefType;
 public class D0_06 extends _SIGMessage {
 
     public D0_06() {
-        super();
     }
 
     public D0_06(ERP1Message packet) {

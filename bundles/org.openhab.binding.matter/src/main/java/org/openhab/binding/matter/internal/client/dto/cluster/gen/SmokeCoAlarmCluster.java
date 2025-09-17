@@ -251,8 +251,8 @@ public class SmokeCoAlarmCluster extends BaseCluster {
         WARNING(1, "Warning"),
         CRITICAL(2, "Critical");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private AlarmStateEnum(Integer value, String label) {
             this.value = value;
@@ -275,8 +275,8 @@ public class SmokeCoAlarmCluster extends BaseCluster {
         STANDARD(1, "Standard"),
         LOW(2, "Low");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private SensitivityEnum(Integer value, String label) {
             this.value = value;
@@ -305,8 +305,8 @@ public class SmokeCoAlarmCluster extends BaseCluster {
         INTERCONNECT_SMOKE(7, "Interconnect Smoke"),
         INTERCONNECT_CO(8, "Interconnect Co");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private ExpressedStateEnum(Integer value, String label) {
             this.value = value;
@@ -328,8 +328,8 @@ public class SmokeCoAlarmCluster extends BaseCluster {
         NOT_MUTED(0, "Not Muted"),
         MUTED(1, "Muted");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private MuteStateEnum(Integer value, String label) {
             this.value = value;
@@ -351,8 +351,8 @@ public class SmokeCoAlarmCluster extends BaseCluster {
         NORMAL(0, "Normal"),
         EXPIRED(1, "Expired");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private EndOfServiceEnum(Integer value, String label) {
             this.value = value;
@@ -376,8 +376,8 @@ public class SmokeCoAlarmCluster extends BaseCluster {
         WARNING(2, "Warning"),
         CRITICAL(3, "Critical");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private ContaminationStateEnum(Integer value, String label) {
             this.value = value;

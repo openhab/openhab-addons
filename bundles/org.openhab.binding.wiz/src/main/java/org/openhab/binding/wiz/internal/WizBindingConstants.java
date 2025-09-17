@@ -133,6 +133,8 @@ public class WizBindingConstants {
     public static final String PROPERTY_TYPE_ID = "typeId";
     public static final String PROPERTY_MODULE_NAME = "moduleName";
     public static final String PROPERTY_GROUP_ID = "groupId";
+    public static final String PROPERTY_MIN_COLOR_TEMPERATURE = "minColorTemperature";
+    public static final String PROPERTY_MAX_COLOR_TEMPERATURE = "maxColorTemperature";
 
     public static final String EXPECTED_MODULE_NAME = "ESP01_SHRGB1C_31";
     public static final String LAST_KNOWN_FIRMWARE_VERSION = "1.18.0";

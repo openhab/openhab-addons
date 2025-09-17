@@ -38,7 +38,6 @@ public class FullHueObject extends HueObject {
     private @Nullable String uniqueid;
 
     public FullHueObject() {
-        super();
     }
 
     /**

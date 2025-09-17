@@ -51,8 +51,8 @@ public class JointFabricPkiCluster extends BaseCluster {
         ICA_CSR_SIGNING_FAILED(6, "Ica Csr Signing Failed"),
         ICA_CSR_REQUEST_NO_USER_CONSENT(7, "Ica Csr Request No User Consent");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private IcacsrRequestStatusEnum(Integer value, String label) {
             this.value = value;
@@ -79,8 +79,8 @@ public class JointFabricPkiCluster extends BaseCluster {
         TRANSFER_ANCHOR_STATUS_DATASTORE_BUSY(1, "Transfer Anchor Status Datastore Busy"),
         TRANSFER_ANCHOR_STATUS_NO_USER_CONSENT(2, "Transfer Anchor Status No User Consent");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private TransferAnchorResponseStatusEnum(Integer value, String label) {
             this.value = value;

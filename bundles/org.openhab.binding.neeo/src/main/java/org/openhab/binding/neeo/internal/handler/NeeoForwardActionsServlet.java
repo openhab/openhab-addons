@@ -64,7 +64,6 @@ public class NeeoForwardActionsServlet extends HttpServlet {
      */
     NeeoForwardActionsServlet(ScheduledExecutorService scheduler, Consumer<String> callback,
             @Nullable String forwardChain, HttpClient httpClient) {
-        super();
 
         this.scheduler = scheduler;
         this.callback = callback;

@@ -64,7 +64,6 @@ public class App {
      * @param timestamp
      */
     public App(String tempUnit, Pit pit, Pit pit2, Double cpuLoad, Double cpuTemp, Channel channel, String timestamp) {
-        super();
         this.tempUnit = tempUnit;
         this.pit = pit;
         this.pit2 = pit2;

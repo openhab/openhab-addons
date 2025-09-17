@@ -162,8 +162,8 @@ public class RvcRunModeCluster extends BaseCluster {
         MOP_CLEANING_PAD_MISSING(71, "Mop Cleaning Pad Missing"),
         BATTERY_LOW(72, "Battery Low");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private ModeChangeStatus(Integer value, String label) {
             this.value = value;
@@ -196,8 +196,8 @@ public class RvcRunModeCluster extends BaseCluster {
         CLEANING(16385, "Cleaning"),
         MAPPING(16386, "Mapping");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private ModeTag(Integer value, String label) {
             this.value = value;

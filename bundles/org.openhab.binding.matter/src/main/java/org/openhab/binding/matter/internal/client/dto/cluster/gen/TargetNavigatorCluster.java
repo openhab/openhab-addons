@@ -94,8 +94,8 @@ public class TargetNavigatorCluster extends BaseCluster {
         TARGET_NOT_FOUND(1, "Target Not Found"),
         NOT_ALLOWED(2, "Not Allowed");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private StatusEnum(Integer value, String label) {
             this.value = value;

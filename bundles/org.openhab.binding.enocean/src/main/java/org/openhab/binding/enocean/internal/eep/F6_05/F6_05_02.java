@@ -37,7 +37,6 @@ public class F6_05_02 extends _RPSMessage {
     protected static final byte ENERGY_LOW = 0x30;
 
     public F6_05_02() {
-        super();
     }
 
     public F6_05_02(ERP1Message packet) {

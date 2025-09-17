@@ -133,7 +133,7 @@ class FanControlConverterTest extends BaseMatterConverterTest {
         mockCluster.percentSetting = 50;
         converter.initState();
         verify(mockHandler, times(1)).updateState(eq(1), eq("fancontrol-fanmode"),
-                eq(new DecimalType(mockCluster.fanMode.value)));
+                eq(new DecimalType(mockCluster.fanMode.getValue())));
         verify(mockHandler, times(1)).updateState(eq(1), eq("fancontrol-percent"), eq(new PercentType(50)));
     }
 }

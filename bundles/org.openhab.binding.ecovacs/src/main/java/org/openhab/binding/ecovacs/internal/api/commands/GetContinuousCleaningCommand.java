@@ -31,7 +31,6 @@ import com.google.gson.Gson;
 @NonNullByDefault
 public class GetContinuousCleaningCommand extends IotDeviceCommand<Boolean> {
     public GetContinuousCleaningCommand() {
-        super();
     }
 
     @Override

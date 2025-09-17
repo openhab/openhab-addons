@@ -253,6 +253,7 @@ public class Constants {
     public static final String OH_CHANNEL_SOC = "soc";
     public static final String OH_CHANNEL_UNCHARGED = "uncharged";
     public static final String OH_CHANNEL_CHARGED = "charged";
+    public static final String OH_CHANNEL_ENERGY_TO_MAX_SOC = "energy-to-max-soc";
     public static final String OH_CHANNEL_TANK_OPEN = "tank-open";
     public static final String OH_CHANNEL_TANK_REMAIN = "tank-remain";
     public static final String OH_CHANNEL_HOME_DISTANCE = "home-distance";

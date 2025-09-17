@@ -12,9 +12,18 @@
  */
 package org.openhab.binding.evcc.internal.handler;
 
+import static org.openhab.binding.evcc.internal.EvccBindingConstants.JSON_MEMBER_LOADPOINTS;
+
+import java.util.Map;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.type.ChannelTypeRegistry;
+import org.openhab.core.types.Command;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonObject;
 
@@ -26,6 +35,13 @@ import com.google.gson.JsonObject;
 @NonNullByDefault
 public class EvccHeatingHandler extends EvccLoadpointHandler {
 
+    private final Logger logger = LoggerFactory.getLogger(EvccHeatingHandler.class);
+
+    private static final Map<String, String> JSON_KEYS = Map.ofEntries(
+            Map.entry("effectiveLimitTemperature", "effectiveLimitSoc"),
+            Map.entry("effectivePlanTemperature", "effectivePlanSoc"), Map.entry("limitTemperature", "limitSoc"),
+            Map.entry("vehicleLimitTemperature", "vehicleLimitSoc"), Map.entry("vehicleTemperature", "vehicleSoc"));
+
     public EvccHeatingHandler(Thing thing, ChannelTypeRegistry channelTypeRegistry) {
         super(thing, channelTypeRegistry);
     }
@@ -36,7 +52,40 @@ public class EvccHeatingHandler extends EvccLoadpointHandler {
     }
 
     @Override
+    public void handleCommand(ChannelUID channelUID, Command command) {
+        String key = Utils.getKeyFromChannelUID(channelUID);
+        if (JSON_KEYS.containsKey(key)) {
+            // Replace the temperature key with the original one
+            @Nullable
+            String tmp = JSON_KEYS.get(key);
+            if (null != tmp) {
+                channelUID = new ChannelUID(getThing().getUID(), getThingKey(tmp));
+            } else {
+                logger.debug("Unknown key: {}", key);
+                return;
+            }
+        }
+        super.handleCommand(channelUID, command);
+    }
+
+    @Override
     public void updateFromEvccState(JsonObject state) {
+        updateJSON(state);
         super.updateFromEvccState(state);
+    }
+
+    protected void updateJSON(JsonObject state) {
+        JsonObject heatingState = state.getAsJsonArray(JSON_MEMBER_LOADPOINTS).get(index).getAsJsonObject();
+        renameJsonKeys(heatingState); // rename the json keys
+        state.getAsJsonArray(JSON_MEMBER_LOADPOINTS).set(index, heatingState); // Update the keys in the original JSON
+    }
+
+    private static void renameJsonKeys(JsonObject json) {
+        JSON_KEYS.forEach((newKey, oldKey) -> {
+            if (json.has(oldKey)) {
+                json.add(newKey, json.get(oldKey));
+                json.remove(oldKey);
+            }
+        });
     }
 }

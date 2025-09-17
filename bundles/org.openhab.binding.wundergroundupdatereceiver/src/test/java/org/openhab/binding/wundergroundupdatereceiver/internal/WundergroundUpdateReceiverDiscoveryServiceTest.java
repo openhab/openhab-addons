@@ -522,7 +522,6 @@ class WundergroundUpdateReceiverDiscoveryServiceTest {
         protected final ChannelTypeProvider provider;
 
         AbstractTestChannelTypeRegistry(ChannelTypeProvider mock) {
-            super();
             this.provider = mock;
             when(provider.getChannelType(eq(SOFTWARETYPE_CHANNELTYPEUID), any())).thenReturn(
                     new StateChannelTypeBuilderImpl(SOFTWARETYPE_CHANNELTYPEUID, "Software type", "String").build());

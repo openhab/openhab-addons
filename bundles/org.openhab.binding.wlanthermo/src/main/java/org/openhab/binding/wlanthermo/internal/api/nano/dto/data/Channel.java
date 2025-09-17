@@ -68,7 +68,6 @@ public class Channel {
      */
     public Channel(Integer number, String name, Integer typ, Double temp, Double min, Double max, Integer alarm,
             String color) {
-        super();
         this.number = number;
         this.name = name;
         this.typ = typ;

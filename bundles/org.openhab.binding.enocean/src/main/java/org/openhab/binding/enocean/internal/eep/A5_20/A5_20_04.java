@@ -41,7 +41,6 @@ import org.openhab.core.types.UnDefType;
 public class A5_20_04 extends A5_20 {
 
     public A5_20_04() {
-        super();
     }
 
     public A5_20_04(ERP1Message packet) {
