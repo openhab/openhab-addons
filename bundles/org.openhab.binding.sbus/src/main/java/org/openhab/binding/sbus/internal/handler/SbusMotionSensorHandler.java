@@ -119,7 +119,7 @@ public class SbusMotionSensorHandler extends AbstractSbusHandler {
      * @throws Exception if the SBUS transaction fails
      */
     private ReadNineInOneStatusResponse readNineInOneStatus(SbusService adapter, int subnetId, int deviceId)
-            throws Exception {
+            throws IllegalStateException {
         ReadNineInOneStatusRequest request = new ReadNineInOneStatusRequest();
         request.setSubnetID(subnetId);
         request.setUnitID(deviceId);
