@@ -53,12 +53,10 @@ fi
 LATEST=$(curl -sL https://repo.jellyfin.org/releases/openapi/jellyfin-openapi-stable.json | jq -r .info.version)
 echo -e "ℹ️  - Latest stable Jellyfin API - Version: \033[1m${LATEST}\033[0m"
 
-
-
-# VERSIONS=("10.8.13" "10.10.7")
-# VERSION_ALIAS=("legacy" "current")
-VERSIONS=("10.10.7")
-VERSION_ALIAS=("current")
+VERSIONS=("10.8.13" "10.10.7")
+VERSION_ALIAS=("legacy" "current")
+# VERSIONS=("10.10.7")
+# VERSION_ALIAS=("current")
 
 DOCKER_VOLUME_WORK="/work"
 
@@ -81,7 +79,8 @@ for i in "${VERSIONS[@]}"; do
     FILENAME_YAML=${ROOT}/${OPENAPI_SPECIFICATION_DIR}/yaml/jellyfin-openapi-${i}.yaml
 
     mkdir -p logs/endpoints
-    jq ".paths | to_entries[] | {path: .key, methods: (.value | keys)}" ${FILENAME_JSON} | grep \"path\" >logs/endpoints/${i}-jersey.txt
+    mkdir -p ${ROOT}/${OPENAPI_SPECIFICATION_DIR}/json/
+    mkdir -p ${ROOT}/${OPENAPI_SPECIFICATION_DIR}/yaml/
 
     if [ ! -e "${FILENAME_JSON}" ]; then
         echo "  ⏬ - Downloading OPENAPI definition for Version ${i}"
@@ -92,11 +91,13 @@ for i in "${VERSIONS[@]}"; do
             --no-verbose \
             --output-document=${FILENAME_JSON} \
             ${URL} || {
-            rm ${FILENAME_JSON}
             echo "  ❌ Error: Failed to download API definition from ${URL}"
+            rm ${FILENAME_JSON}
             exit 1
         }
     fi
+
+    jq ".paths | to_entries[] | {path: .key, methods: (.value | keys)}" ${FILENAME_JSON} | grep \"path\" >logs/endpoints/${i}-jersey.txt
 
     if [ ! -e "${FILENAME_YAML}" ]; then
         echo "⚙️: json ➡️  yaml"

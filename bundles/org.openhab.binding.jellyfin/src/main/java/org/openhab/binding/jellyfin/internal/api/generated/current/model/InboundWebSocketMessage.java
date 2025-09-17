@@ -412,13 +412,6 @@ public class InboundWebSocketMessage extends AbstractOpenApiSchema {
         mappings.put("ScheduledTasksInfoStop", ScheduledTasksInfoStopMessage.class);
         mappings.put("SessionsStart", SessionsStartMessage.class);
         mappings.put("SessionsStop", SessionsStopMessage.class);
-        mappings.put("ActivityLogEntryStartMessage", ActivityLogEntryStartMessage.class);
-        mappings.put("ActivityLogEntryStopMessage", ActivityLogEntryStopMessage.class);
-        mappings.put("InboundKeepAliveMessage", InboundKeepAliveMessage.class);
-        mappings.put("ScheduledTasksInfoStartMessage", ScheduledTasksInfoStartMessage.class);
-        mappings.put("ScheduledTasksInfoStopMessage", ScheduledTasksInfoStopMessage.class);
-        mappings.put("SessionsStartMessage", SessionsStartMessage.class);
-        mappings.put("SessionsStopMessage", SessionsStopMessage.class);
         mappings.put("InboundWebSocketMessage", InboundWebSocketMessage.class);
         JSON.registerDiscriminator(InboundWebSocketMessage.class, "MessageType", mappings);
     }

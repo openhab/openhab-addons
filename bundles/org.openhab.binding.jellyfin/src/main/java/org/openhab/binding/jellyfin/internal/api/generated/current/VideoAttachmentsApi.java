@@ -20,6 +20,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
+import java.util.Map;
 import java.util.UUID;
 import java.util.function.Consumer;
 
@@ -28,11 +29,32 @@ import org.openhab.binding.jellyfin.internal.api.generated.ApiException;
 import org.openhab.binding.jellyfin.internal.api.generated.ApiResponse;
 import org.openhab.binding.jellyfin.internal.api.generated.Configuration;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class VideoAttachmentsApi {
+    /**
+     * Utility class for extending HttpRequest.Builder functionality.
+     */
+    private static class HttpRequestBuilderExtensions {
+        /**
+         * Adds additional headers to the provided HttpRequest.Builder. Useful for adding method/endpoint specific
+         * headers.
+         *
+         * @param builder the HttpRequest.Builder to which headers will be added
+         * @param headers a map of header names and values to add; may be null
+         * @return the same HttpRequest.Builder instance with the additional headers set
+         */
+        static HttpRequest.Builder withAdditionalHeaders(HttpRequest.Builder builder, Map<String, String> headers) {
+            if (headers != null) {
+                for (Map.Entry<String, String> entry : headers.entrySet()) {
+                    builder.header(entry.getKey(), entry.getValue());
+                }
+            }
+            return builder;
+        }
+    }
+
     private final HttpClient memberVarHttpClient;
     private final ObjectMapper memberVarObjectMapper;
     private final String memberVarBaseUri;
@@ -69,6 +91,56 @@ public class VideoAttachmentsApi {
     }
 
     /**
+     * Download file from the given response.
+     *
+     * @param response Response
+     * @return File
+     * @throws ApiException If fail to read file content from response and write to disk
+     */
+    public File downloadFileFromResponse(HttpResponse<InputStream> response) throws ApiException {
+        try {
+            File file = prepareDownloadFile(response);
+            java.nio.file.Files.copy(response.body(), file.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+            return file;
+        } catch (IOException e) {
+            throw new ApiException(e);
+        }
+    }
+
+    /**
+     * <p>
+     * Prepare the file for download from the response.
+     * </p>
+     *
+     * @param response a {@link java.net.http.HttpResponse} object.
+     * @return a {@link java.io.File} object.
+     * @throws java.io.IOException if any.
+     */
+    private File prepareDownloadFile(HttpResponse<InputStream> response) throws IOException {
+        String filename = null;
+        java.util.Optional<String> contentDisposition = response.headers().firstValue("Content-Disposition");
+        if (contentDisposition.isPresent() && !"".equals(contentDisposition.get())) {
+            // Get filename from the Content-Disposition header.
+            java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("filename=['\"]?([^'\"\\s]+)['\"]?");
+            java.util.regex.Matcher matcher = pattern.matcher(contentDisposition.get());
+            if (matcher.find())
+                filename = matcher.group(1);
+        }
+        File file = null;
+        if (filename != null) {
+            java.nio.file.Path tempDir = java.nio.file.Files.createTempDirectory("swagger-gen-native");
+            java.nio.file.Path filePath = java.nio.file.Files.createFile(tempDir.resolve(filename));
+            file = filePath.toFile();
+            tempDir.toFile().deleteOnExit(); // best effort cleanup
+            file.deleteOnExit(); // best effort cleanup
+        } else {
+            file = java.nio.file.Files.createTempFile("download-", "").toFile();
+            file.deleteOnExit(); // best effort cleanup
+        }
+        return file;
+    }
+
+    /**
      * Get video attachment.
      * 
      * @param videoId Video ID. (required)
@@ -80,7 +152,23 @@ public class VideoAttachmentsApi {
     public File getAttachment(@org.eclipse.jdt.annotation.Nullable UUID videoId,
             @org.eclipse.jdt.annotation.Nullable String mediaSourceId,
             @org.eclipse.jdt.annotation.Nullable Integer index) throws ApiException {
-        ApiResponse<File> localVarResponse = getAttachmentWithHttpInfo(videoId, mediaSourceId, index);
+        return getAttachment(videoId, mediaSourceId, index, null);
+    }
+
+    /**
+     * Get video attachment.
+     * 
+     * @param videoId Video ID. (required)
+     * @param mediaSourceId Media Source ID. (required)
+     * @param index Attachment Index. (required)
+     * @param headers Optional headers to include in the request
+     * @return File
+     * @throws ApiException if fails to make API call
+     */
+    public File getAttachment(@org.eclipse.jdt.annotation.Nullable UUID videoId,
+            @org.eclipse.jdt.annotation.Nullable String mediaSourceId,
+            @org.eclipse.jdt.annotation.Nullable Integer index, Map<String, String> headers) throws ApiException {
+        ApiResponse<File> localVarResponse = getAttachmentWithHttpInfo(videoId, mediaSourceId, index, headers);
         return localVarResponse.getData();
     }
 
@@ -96,7 +184,24 @@ public class VideoAttachmentsApi {
     public ApiResponse<File> getAttachmentWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID videoId,
             @org.eclipse.jdt.annotation.Nullable String mediaSourceId,
             @org.eclipse.jdt.annotation.Nullable Integer index) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getAttachmentRequestBuilder(videoId, mediaSourceId, index);
+        return getAttachmentWithHttpInfo(videoId, mediaSourceId, index, null);
+    }
+
+    /**
+     * Get video attachment.
+     * 
+     * @param videoId Video ID. (required)
+     * @param mediaSourceId Media Source ID. (required)
+     * @param index Attachment Index. (required)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;File&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<File> getAttachmentWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID videoId,
+            @org.eclipse.jdt.annotation.Nullable String mediaSourceId,
+            @org.eclipse.jdt.annotation.Nullable Integer index, Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = getAttachmentRequestBuilder(videoId, mediaSourceId, index,
+                headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -111,13 +216,13 @@ public class VideoAttachmentsApi {
                     return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
                 }
 
-                String responseBody = new String(localVarResponse.body().readAllBytes());
+                // Handle file downloading.
+                File responseValue = downloadFileFromResponse(localVarResponse);
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {
-                                }));
+                        responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -130,7 +235,7 @@ public class VideoAttachmentsApi {
 
     private HttpRequest.Builder getAttachmentRequestBuilder(@org.eclipse.jdt.annotation.Nullable UUID videoId,
             @org.eclipse.jdt.annotation.Nullable String mediaSourceId,
-            @org.eclipse.jdt.annotation.Nullable Integer index) throws ApiException {
+            @org.eclipse.jdt.annotation.Nullable Integer index, Map<String, String> headers) throws ApiException {
         // verify the required parameter 'videoId' is set
         if (videoId == null) {
             throw new ApiException(400, "Missing the required parameter 'videoId' when calling getAttachment");
@@ -160,6 +265,8 @@ public class VideoAttachmentsApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }

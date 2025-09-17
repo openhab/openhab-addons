@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.jellyfin.internal.api.generated.current;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -22,6 +23,7 @@ import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.StringJoiner;
 import java.util.function.Consumer;
 
@@ -37,6 +39,28 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class ActivityLogApi {
+    /**
+     * Utility class for extending HttpRequest.Builder functionality.
+     */
+    private static class HttpRequestBuilderExtensions {
+        /**
+         * Adds additional headers to the provided HttpRequest.Builder. Useful for adding method/endpoint specific
+         * headers.
+         *
+         * @param builder the HttpRequest.Builder to which headers will be added
+         * @param headers a map of header names and values to add; may be null
+         * @return the same HttpRequest.Builder instance with the additional headers set
+         */
+        static HttpRequest.Builder withAdditionalHeaders(HttpRequest.Builder builder, Map<String, String> headers) {
+            if (headers != null) {
+                for (Map.Entry<String, String> entry : headers.entrySet()) {
+                    builder.header(entry.getKey(), entry.getValue());
+                }
+            }
+            return builder;
+        }
+    }
+
     private final HttpClient memberVarHttpClient;
     private final ObjectMapper memberVarObjectMapper;
     private final String memberVarBaseUri;
@@ -73,6 +97,56 @@ public class ActivityLogApi {
     }
 
     /**
+     * Download file from the given response.
+     *
+     * @param response Response
+     * @return File
+     * @throws ApiException If fail to read file content from response and write to disk
+     */
+    public File downloadFileFromResponse(HttpResponse<InputStream> response) throws ApiException {
+        try {
+            File file = prepareDownloadFile(response);
+            java.nio.file.Files.copy(response.body(), file.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+            return file;
+        } catch (IOException e) {
+            throw new ApiException(e);
+        }
+    }
+
+    /**
+     * <p>
+     * Prepare the file for download from the response.
+     * </p>
+     *
+     * @param response a {@link java.net.http.HttpResponse} object.
+     * @return a {@link java.io.File} object.
+     * @throws java.io.IOException if any.
+     */
+    private File prepareDownloadFile(HttpResponse<InputStream> response) throws IOException {
+        String filename = null;
+        java.util.Optional<String> contentDisposition = response.headers().firstValue("Content-Disposition");
+        if (contentDisposition.isPresent() && !"".equals(contentDisposition.get())) {
+            // Get filename from the Content-Disposition header.
+            java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("filename=['\"]?([^'\"\\s]+)['\"]?");
+            java.util.regex.Matcher matcher = pattern.matcher(contentDisposition.get());
+            if (matcher.find())
+                filename = matcher.group(1);
+        }
+        File file = null;
+        if (filename != null) {
+            java.nio.file.Path tempDir = java.nio.file.Files.createTempDirectory("swagger-gen-native");
+            java.nio.file.Path filePath = java.nio.file.Files.createFile(tempDir.resolve(filename));
+            file = filePath.toFile();
+            tempDir.toFile().deleteOnExit(); // best effort cleanup
+            file.deleteOnExit(); // best effort cleanup
+        } else {
+            file = java.nio.file.Files.createTempFile("download-", "").toFile();
+            file.deleteOnExit(); // best effort cleanup
+        }
+        return file;
+    }
+
+    /**
      * Gets activity log entries.
      * 
      * @param startIndex Optional. The record index to start at. All items with a lower index will be dropped from the
@@ -87,8 +161,27 @@ public class ActivityLogApi {
             @org.eclipse.jdt.annotation.NonNull Integer limit,
             @org.eclipse.jdt.annotation.NonNull OffsetDateTime minDate,
             @org.eclipse.jdt.annotation.NonNull Boolean hasUserId) throws ApiException {
+        return getLogEntries(startIndex, limit, minDate, hasUserId, null);
+    }
+
+    /**
+     * Gets activity log entries.
+     * 
+     * @param startIndex Optional. The record index to start at. All items with a lower index will be dropped from the
+     *            results. (optional)
+     * @param limit Optional. The maximum number of records to return. (optional)
+     * @param minDate Optional. The minimum date. Format &#x3D; ISO. (optional)
+     * @param hasUserId Optional. Filter log entries if it has user id, or not. (optional)
+     * @param headers Optional headers to include in the request
+     * @return ActivityLogEntryQueryResult
+     * @throws ApiException if fails to make API call
+     */
+    public ActivityLogEntryQueryResult getLogEntries(@org.eclipse.jdt.annotation.NonNull Integer startIndex,
+            @org.eclipse.jdt.annotation.NonNull Integer limit,
+            @org.eclipse.jdt.annotation.NonNull OffsetDateTime minDate,
+            @org.eclipse.jdt.annotation.NonNull Boolean hasUserId, Map<String, String> headers) throws ApiException {
         ApiResponse<ActivityLogEntryQueryResult> localVarResponse = getLogEntriesWithHttpInfo(startIndex, limit,
-                minDate, hasUserId);
+                minDate, hasUserId, headers);
         return localVarResponse.getData();
     }
 
@@ -107,7 +200,27 @@ public class ActivityLogApi {
             @org.eclipse.jdt.annotation.NonNull Integer startIndex, @org.eclipse.jdt.annotation.NonNull Integer limit,
             @org.eclipse.jdt.annotation.NonNull OffsetDateTime minDate,
             @org.eclipse.jdt.annotation.NonNull Boolean hasUserId) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getLogEntriesRequestBuilder(startIndex, limit, minDate, hasUserId);
+        return getLogEntriesWithHttpInfo(startIndex, limit, minDate, hasUserId, null);
+    }
+
+    /**
+     * Gets activity log entries.
+     * 
+     * @param startIndex Optional. The record index to start at. All items with a lower index will be dropped from the
+     *            results. (optional)
+     * @param limit Optional. The maximum number of records to return. (optional)
+     * @param minDate Optional. The minimum date. Format &#x3D; ISO. (optional)
+     * @param hasUserId Optional. Filter log entries if it has user id, or not. (optional)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;ActivityLogEntryQueryResult&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<ActivityLogEntryQueryResult> getLogEntriesWithHttpInfo(
+            @org.eclipse.jdt.annotation.NonNull Integer startIndex, @org.eclipse.jdt.annotation.NonNull Integer limit,
+            @org.eclipse.jdt.annotation.NonNull OffsetDateTime minDate,
+            @org.eclipse.jdt.annotation.NonNull Boolean hasUserId, Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = getLogEntriesRequestBuilder(startIndex, limit, minDate, hasUserId,
+                headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -124,14 +237,15 @@ public class ActivityLogApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                ActivityLogEntryQueryResult responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody,
+                                new TypeReference<ActivityLogEntryQueryResult>() {
+                                });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<ActivityLogEntryQueryResult>(localVarResponse.statusCode(),
-                        localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody,
-                                        new TypeReference<ActivityLogEntryQueryResult>() {
-                                        }));
+                        localVarResponse.headers().map(), responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -145,7 +259,7 @@ public class ActivityLogApi {
     private HttpRequest.Builder getLogEntriesRequestBuilder(@org.eclipse.jdt.annotation.NonNull Integer startIndex,
             @org.eclipse.jdt.annotation.NonNull Integer limit,
             @org.eclipse.jdt.annotation.NonNull OffsetDateTime minDate,
-            @org.eclipse.jdt.annotation.NonNull Boolean hasUserId) throws ApiException {
+            @org.eclipse.jdt.annotation.NonNull Boolean hasUserId, Map<String, String> headers) throws ApiException {
 
         HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
 
@@ -181,6 +295,8 @@ public class ActivityLogApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }

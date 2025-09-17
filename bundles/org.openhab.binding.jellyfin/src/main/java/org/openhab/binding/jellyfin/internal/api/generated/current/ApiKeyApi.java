@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.jellyfin.internal.api.generated.current;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -21,6 +22,7 @@ import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.StringJoiner;
 import java.util.function.Consumer;
 
@@ -36,6 +38,28 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class ApiKeyApi {
+    /**
+     * Utility class for extending HttpRequest.Builder functionality.
+     */
+    private static class HttpRequestBuilderExtensions {
+        /**
+         * Adds additional headers to the provided HttpRequest.Builder. Useful for adding method/endpoint specific
+         * headers.
+         *
+         * @param builder the HttpRequest.Builder to which headers will be added
+         * @param headers a map of header names and values to add; may be null
+         * @return the same HttpRequest.Builder instance with the additional headers set
+         */
+        static HttpRequest.Builder withAdditionalHeaders(HttpRequest.Builder builder, Map<String, String> headers) {
+            if (headers != null) {
+                for (Map.Entry<String, String> entry : headers.entrySet()) {
+                    builder.header(entry.getKey(), entry.getValue());
+                }
+            }
+            return builder;
+        }
+    }
+
     private final HttpClient memberVarHttpClient;
     private final ObjectMapper memberVarObjectMapper;
     private final String memberVarBaseUri;
@@ -72,13 +96,75 @@ public class ApiKeyApi {
     }
 
     /**
+     * Download file from the given response.
+     *
+     * @param response Response
+     * @return File
+     * @throws ApiException If fail to read file content from response and write to disk
+     */
+    public File downloadFileFromResponse(HttpResponse<InputStream> response) throws ApiException {
+        try {
+            File file = prepareDownloadFile(response);
+            java.nio.file.Files.copy(response.body(), file.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+            return file;
+        } catch (IOException e) {
+            throw new ApiException(e);
+        }
+    }
+
+    /**
+     * <p>
+     * Prepare the file for download from the response.
+     * </p>
+     *
+     * @param response a {@link java.net.http.HttpResponse} object.
+     * @return a {@link java.io.File} object.
+     * @throws java.io.IOException if any.
+     */
+    private File prepareDownloadFile(HttpResponse<InputStream> response) throws IOException {
+        String filename = null;
+        java.util.Optional<String> contentDisposition = response.headers().firstValue("Content-Disposition");
+        if (contentDisposition.isPresent() && !"".equals(contentDisposition.get())) {
+            // Get filename from the Content-Disposition header.
+            java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("filename=['\"]?([^'\"\\s]+)['\"]?");
+            java.util.regex.Matcher matcher = pattern.matcher(contentDisposition.get());
+            if (matcher.find())
+                filename = matcher.group(1);
+        }
+        File file = null;
+        if (filename != null) {
+            java.nio.file.Path tempDir = java.nio.file.Files.createTempDirectory("swagger-gen-native");
+            java.nio.file.Path filePath = java.nio.file.Files.createFile(tempDir.resolve(filename));
+            file = filePath.toFile();
+            tempDir.toFile().deleteOnExit(); // best effort cleanup
+            file.deleteOnExit(); // best effort cleanup
+        } else {
+            file = java.nio.file.Files.createTempFile("download-", "").toFile();
+            file.deleteOnExit(); // best effort cleanup
+        }
+        return file;
+    }
+
+    /**
      * Create a new api key.
      * 
      * @param app Name of the app using the authentication key. (required)
      * @throws ApiException if fails to make API call
      */
     public void createKey(@org.eclipse.jdt.annotation.Nullable String app) throws ApiException {
-        createKeyWithHttpInfo(app);
+        createKey(app, null);
+    }
+
+    /**
+     * Create a new api key.
+     * 
+     * @param app Name of the app using the authentication key. (required)
+     * @param headers Optional headers to include in the request
+     * @throws ApiException if fails to make API call
+     */
+    public void createKey(@org.eclipse.jdt.annotation.Nullable String app, Map<String, String> headers)
+            throws ApiException {
+        createKeyWithHttpInfo(app, headers);
     }
 
     /**
@@ -90,7 +176,20 @@ public class ApiKeyApi {
      */
     public ApiResponse<Void> createKeyWithHttpInfo(@org.eclipse.jdt.annotation.Nullable String app)
             throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = createKeyRequestBuilder(app);
+        return createKeyWithHttpInfo(app, null);
+    }
+
+    /**
+     * Create a new api key.
+     * 
+     * @param app Name of the app using the authentication key. (required)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<Void> createKeyWithHttpInfo(@org.eclipse.jdt.annotation.Nullable String app,
+            Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = createKeyRequestBuilder(app, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -117,8 +216,8 @@ public class ApiKeyApi {
         }
     }
 
-    private HttpRequest.Builder createKeyRequestBuilder(@org.eclipse.jdt.annotation.Nullable String app)
-            throws ApiException {
+    private HttpRequest.Builder createKeyRequestBuilder(@org.eclipse.jdt.annotation.Nullable String app,
+            Map<String, String> headers) throws ApiException {
         // verify the required parameter 'app' is set
         if (app == null) {
             throw new ApiException(400, "Missing the required parameter 'app' when calling createKey");
@@ -151,6 +250,8 @@ public class ApiKeyApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -164,7 +265,18 @@ public class ApiKeyApi {
      * @throws ApiException if fails to make API call
      */
     public AuthenticationInfoQueryResult getKeys() throws ApiException {
-        ApiResponse<AuthenticationInfoQueryResult> localVarResponse = getKeysWithHttpInfo();
+        return getKeys(null);
+    }
+
+    /**
+     * Get all keys.
+     * 
+     * @param headers Optional headers to include in the request
+     * @return AuthenticationInfoQueryResult
+     * @throws ApiException if fails to make API call
+     */
+    public AuthenticationInfoQueryResult getKeys(Map<String, String> headers) throws ApiException {
+        ApiResponse<AuthenticationInfoQueryResult> localVarResponse = getKeysWithHttpInfo(headers);
         return localVarResponse.getData();
     }
 
@@ -175,7 +287,19 @@ public class ApiKeyApi {
      * @throws ApiException if fails to make API call
      */
     public ApiResponse<AuthenticationInfoQueryResult> getKeysWithHttpInfo() throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getKeysRequestBuilder();
+        return getKeysWithHttpInfo(null);
+    }
+
+    /**
+     * Get all keys.
+     * 
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;AuthenticationInfoQueryResult&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<AuthenticationInfoQueryResult> getKeysWithHttpInfo(Map<String, String> headers)
+            throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = getKeysRequestBuilder(headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -192,14 +316,15 @@ public class ApiKeyApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                AuthenticationInfoQueryResult responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody,
+                                new TypeReference<AuthenticationInfoQueryResult>() {
+                                });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<AuthenticationInfoQueryResult>(localVarResponse.statusCode(),
-                        localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody,
-                                        new TypeReference<AuthenticationInfoQueryResult>() {
-                                        }));
+                        localVarResponse.headers().map(), responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -210,7 +335,7 @@ public class ApiKeyApi {
         }
     }
 
-    private HttpRequest.Builder getKeysRequestBuilder() throws ApiException {
+    private HttpRequest.Builder getKeysRequestBuilder(Map<String, String> headers) throws ApiException {
 
         HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
 
@@ -225,6 +350,8 @@ public class ApiKeyApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -238,7 +365,19 @@ public class ApiKeyApi {
      * @throws ApiException if fails to make API call
      */
     public void revokeKey(@org.eclipse.jdt.annotation.Nullable String key) throws ApiException {
-        revokeKeyWithHttpInfo(key);
+        revokeKey(key, null);
+    }
+
+    /**
+     * Remove an api key.
+     * 
+     * @param key The access token to delete. (required)
+     * @param headers Optional headers to include in the request
+     * @throws ApiException if fails to make API call
+     */
+    public void revokeKey(@org.eclipse.jdt.annotation.Nullable String key, Map<String, String> headers)
+            throws ApiException {
+        revokeKeyWithHttpInfo(key, headers);
     }
 
     /**
@@ -250,7 +389,20 @@ public class ApiKeyApi {
      */
     public ApiResponse<Void> revokeKeyWithHttpInfo(@org.eclipse.jdt.annotation.Nullable String key)
             throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = revokeKeyRequestBuilder(key);
+        return revokeKeyWithHttpInfo(key, null);
+    }
+
+    /**
+     * Remove an api key.
+     * 
+     * @param key The access token to delete. (required)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<Void> revokeKeyWithHttpInfo(@org.eclipse.jdt.annotation.Nullable String key,
+            Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = revokeKeyRequestBuilder(key, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -277,8 +429,8 @@ public class ApiKeyApi {
         }
     }
 
-    private HttpRequest.Builder revokeKeyRequestBuilder(@org.eclipse.jdt.annotation.Nullable String key)
-            throws ApiException {
+    private HttpRequest.Builder revokeKeyRequestBuilder(@org.eclipse.jdt.annotation.Nullable String key,
+            Map<String, String> headers) throws ApiException {
         // verify the required parameter 'key' is set
         if (key == null) {
             throw new ApiException(400, "Missing the required parameter 'key' when calling revokeKey");
@@ -296,6 +448,8 @@ public class ApiKeyApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }

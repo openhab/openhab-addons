@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.jellyfin.internal.api.generated.current;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -21,6 +22,7 @@ import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.StringJoiner;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -38,6 +40,28 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class MoviesApi {
+    /**
+     * Utility class for extending HttpRequest.Builder functionality.
+     */
+    private static class HttpRequestBuilderExtensions {
+        /**
+         * Adds additional headers to the provided HttpRequest.Builder. Useful for adding method/endpoint specific
+         * headers.
+         *
+         * @param builder the HttpRequest.Builder to which headers will be added
+         * @param headers a map of header names and values to add; may be null
+         * @return the same HttpRequest.Builder instance with the additional headers set
+         */
+        static HttpRequest.Builder withAdditionalHeaders(HttpRequest.Builder builder, Map<String, String> headers) {
+            if (headers != null) {
+                for (Map.Entry<String, String> entry : headers.entrySet()) {
+                    builder.header(entry.getKey(), entry.getValue());
+                }
+            }
+            return builder;
+        }
+    }
+
     private final HttpClient memberVarHttpClient;
     private final ObjectMapper memberVarObjectMapper;
     private final String memberVarBaseUri;
@@ -74,6 +98,56 @@ public class MoviesApi {
     }
 
     /**
+     * Download file from the given response.
+     *
+     * @param response Response
+     * @return File
+     * @throws ApiException If fail to read file content from response and write to disk
+     */
+    public File downloadFileFromResponse(HttpResponse<InputStream> response) throws ApiException {
+        try {
+            File file = prepareDownloadFile(response);
+            java.nio.file.Files.copy(response.body(), file.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+            return file;
+        } catch (IOException e) {
+            throw new ApiException(e);
+        }
+    }
+
+    /**
+     * <p>
+     * Prepare the file for download from the response.
+     * </p>
+     *
+     * @param response a {@link java.net.http.HttpResponse} object.
+     * @return a {@link java.io.File} object.
+     * @throws java.io.IOException if any.
+     */
+    private File prepareDownloadFile(HttpResponse<InputStream> response) throws IOException {
+        String filename = null;
+        java.util.Optional<String> contentDisposition = response.headers().firstValue("Content-Disposition");
+        if (contentDisposition.isPresent() && !"".equals(contentDisposition.get())) {
+            // Get filename from the Content-Disposition header.
+            java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("filename=['\"]?([^'\"\\s]+)['\"]?");
+            java.util.regex.Matcher matcher = pattern.matcher(contentDisposition.get());
+            if (matcher.find())
+                filename = matcher.group(1);
+        }
+        File file = null;
+        if (filename != null) {
+            java.nio.file.Path tempDir = java.nio.file.Files.createTempDirectory("swagger-gen-native");
+            java.nio.file.Path filePath = java.nio.file.Files.createFile(tempDir.resolve(filename));
+            file = filePath.toFile();
+            tempDir.toFile().deleteOnExit(); // best effort cleanup
+            file.deleteOnExit(); // best effort cleanup
+        } else {
+            file = java.nio.file.Files.createTempFile("download-", "").toFile();
+            file.deleteOnExit(); // best effort cleanup
+        }
+        return file;
+    }
+
+    /**
      * Gets movie recommendations.
      * 
      * @param userId Optional. Filter by user id, and attach user data. (optional)
@@ -90,8 +164,29 @@ public class MoviesApi {
             @org.eclipse.jdt.annotation.NonNull List<ItemFields> fields,
             @org.eclipse.jdt.annotation.NonNull Integer categoryLimit,
             @org.eclipse.jdt.annotation.NonNull Integer itemLimit) throws ApiException {
+        return getMovieRecommendations(userId, parentId, fields, categoryLimit, itemLimit, null);
+    }
+
+    /**
+     * Gets movie recommendations.
+     * 
+     * @param userId Optional. Filter by user id, and attach user data. (optional)
+     * @param parentId Specify this to localize the search to a specific item or folder. Omit to use the root.
+     *            (optional)
+     * @param fields Optional. The fields to return. (optional)
+     * @param categoryLimit The max number of categories to return. (optional, default to 5)
+     * @param itemLimit The max number of items to return per category. (optional, default to 8)
+     * @param headers Optional headers to include in the request
+     * @return List&lt;RecommendationDto&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public List<RecommendationDto> getMovieRecommendations(@org.eclipse.jdt.annotation.NonNull UUID userId,
+            @org.eclipse.jdt.annotation.NonNull UUID parentId,
+            @org.eclipse.jdt.annotation.NonNull List<ItemFields> fields,
+            @org.eclipse.jdt.annotation.NonNull Integer categoryLimit,
+            @org.eclipse.jdt.annotation.NonNull Integer itemLimit, Map<String, String> headers) throws ApiException {
         ApiResponse<List<RecommendationDto>> localVarResponse = getMovieRecommendationsWithHttpInfo(userId, parentId,
-                fields, categoryLimit, itemLimit);
+                fields, categoryLimit, itemLimit, headers);
         return localVarResponse.getData();
     }
 
@@ -112,8 +207,29 @@ public class MoviesApi {
             @org.eclipse.jdt.annotation.NonNull List<ItemFields> fields,
             @org.eclipse.jdt.annotation.NonNull Integer categoryLimit,
             @org.eclipse.jdt.annotation.NonNull Integer itemLimit) throws ApiException {
+        return getMovieRecommendationsWithHttpInfo(userId, parentId, fields, categoryLimit, itemLimit, null);
+    }
+
+    /**
+     * Gets movie recommendations.
+     * 
+     * @param userId Optional. Filter by user id, and attach user data. (optional)
+     * @param parentId Specify this to localize the search to a specific item or folder. Omit to use the root.
+     *            (optional)
+     * @param fields Optional. The fields to return. (optional)
+     * @param categoryLimit The max number of categories to return. (optional, default to 5)
+     * @param itemLimit The max number of items to return per category. (optional, default to 8)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;List&lt;RecommendationDto&gt;&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<List<RecommendationDto>> getMovieRecommendationsWithHttpInfo(
+            @org.eclipse.jdt.annotation.NonNull UUID userId, @org.eclipse.jdt.annotation.NonNull UUID parentId,
+            @org.eclipse.jdt.annotation.NonNull List<ItemFields> fields,
+            @org.eclipse.jdt.annotation.NonNull Integer categoryLimit,
+            @org.eclipse.jdt.annotation.NonNull Integer itemLimit, Map<String, String> headers) throws ApiException {
         HttpRequest.Builder localVarRequestBuilder = getMovieRecommendationsRequestBuilder(userId, parentId, fields,
-                categoryLimit, itemLimit);
+                categoryLimit, itemLimit, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -130,14 +246,14 @@ public class MoviesApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                List<RecommendationDto> responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<List<RecommendationDto>>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<List<RecommendationDto>>(localVarResponse.statusCode(),
-                        localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody,
-                                        new TypeReference<List<RecommendationDto>>() {
-                                        }));
+                        localVarResponse.headers().map(), responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -152,7 +268,7 @@ public class MoviesApi {
             @org.eclipse.jdt.annotation.NonNull UUID parentId,
             @org.eclipse.jdt.annotation.NonNull List<ItemFields> fields,
             @org.eclipse.jdt.annotation.NonNull Integer categoryLimit,
-            @org.eclipse.jdt.annotation.NonNull Integer itemLimit) throws ApiException {
+            @org.eclipse.jdt.annotation.NonNull Integer itemLimit, Map<String, String> headers) throws ApiException {
 
         HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
 
@@ -190,6 +306,8 @@ public class MoviesApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }

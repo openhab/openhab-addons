@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.jellyfin.internal.api.generated.current;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -21,6 +22,7 @@ import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.StringJoiner;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -43,6 +45,28 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class MusicGenresApi {
+    /**
+     * Utility class for extending HttpRequest.Builder functionality.
+     */
+    private static class HttpRequestBuilderExtensions {
+        /**
+         * Adds additional headers to the provided HttpRequest.Builder. Useful for adding method/endpoint specific
+         * headers.
+         *
+         * @param builder the HttpRequest.Builder to which headers will be added
+         * @param headers a map of header names and values to add; may be null
+         * @return the same HttpRequest.Builder instance with the additional headers set
+         */
+        static HttpRequest.Builder withAdditionalHeaders(HttpRequest.Builder builder, Map<String, String> headers) {
+            if (headers != null) {
+                for (Map.Entry<String, String> entry : headers.entrySet()) {
+                    builder.header(entry.getKey(), entry.getValue());
+                }
+            }
+            return builder;
+        }
+    }
+
     private final HttpClient memberVarHttpClient;
     private final ObjectMapper memberVarObjectMapper;
     private final String memberVarBaseUri;
@@ -79,6 +103,56 @@ public class MusicGenresApi {
     }
 
     /**
+     * Download file from the given response.
+     *
+     * @param response Response
+     * @return File
+     * @throws ApiException If fail to read file content from response and write to disk
+     */
+    public File downloadFileFromResponse(HttpResponse<InputStream> response) throws ApiException {
+        try {
+            File file = prepareDownloadFile(response);
+            java.nio.file.Files.copy(response.body(), file.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+            return file;
+        } catch (IOException e) {
+            throw new ApiException(e);
+        }
+    }
+
+    /**
+     * <p>
+     * Prepare the file for download from the response.
+     * </p>
+     *
+     * @param response a {@link java.net.http.HttpResponse} object.
+     * @return a {@link java.io.File} object.
+     * @throws java.io.IOException if any.
+     */
+    private File prepareDownloadFile(HttpResponse<InputStream> response) throws IOException {
+        String filename = null;
+        java.util.Optional<String> contentDisposition = response.headers().firstValue("Content-Disposition");
+        if (contentDisposition.isPresent() && !"".equals(contentDisposition.get())) {
+            // Get filename from the Content-Disposition header.
+            java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("filename=['\"]?([^'\"\\s]+)['\"]?");
+            java.util.regex.Matcher matcher = pattern.matcher(contentDisposition.get());
+            if (matcher.find())
+                filename = matcher.group(1);
+        }
+        File file = null;
+        if (filename != null) {
+            java.nio.file.Path tempDir = java.nio.file.Files.createTempDirectory("swagger-gen-native");
+            java.nio.file.Path filePath = java.nio.file.Files.createFile(tempDir.resolve(filename));
+            file = filePath.toFile();
+            tempDir.toFile().deleteOnExit(); // best effort cleanup
+            file.deleteOnExit(); // best effort cleanup
+        } else {
+            file = java.nio.file.Files.createTempFile("download-", "").toFile();
+            file.deleteOnExit(); // best effort cleanup
+        }
+        return file;
+    }
+
+    /**
      * Gets a music genre, by name.
      * 
      * @param genreName The genre name. (required)
@@ -88,7 +162,21 @@ public class MusicGenresApi {
      */
     public BaseItemDto getMusicGenre(@org.eclipse.jdt.annotation.Nullable String genreName,
             @org.eclipse.jdt.annotation.NonNull UUID userId) throws ApiException {
-        ApiResponse<BaseItemDto> localVarResponse = getMusicGenreWithHttpInfo(genreName, userId);
+        return getMusicGenre(genreName, userId, null);
+    }
+
+    /**
+     * Gets a music genre, by name.
+     * 
+     * @param genreName The genre name. (required)
+     * @param userId Optional. Filter by user id, and attach user data. (optional)
+     * @param headers Optional headers to include in the request
+     * @return BaseItemDto
+     * @throws ApiException if fails to make API call
+     */
+    public BaseItemDto getMusicGenre(@org.eclipse.jdt.annotation.Nullable String genreName,
+            @org.eclipse.jdt.annotation.NonNull UUID userId, Map<String, String> headers) throws ApiException {
+        ApiResponse<BaseItemDto> localVarResponse = getMusicGenreWithHttpInfo(genreName, userId, headers);
         return localVarResponse.getData();
     }
 
@@ -102,7 +190,21 @@ public class MusicGenresApi {
      */
     public ApiResponse<BaseItemDto> getMusicGenreWithHttpInfo(@org.eclipse.jdt.annotation.Nullable String genreName,
             @org.eclipse.jdt.annotation.NonNull UUID userId) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getMusicGenreRequestBuilder(genreName, userId);
+        return getMusicGenreWithHttpInfo(genreName, userId, null);
+    }
+
+    /**
+     * Gets a music genre, by name.
+     * 
+     * @param genreName The genre name. (required)
+     * @param userId Optional. Filter by user id, and attach user data. (optional)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;BaseItemDto&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<BaseItemDto> getMusicGenreWithHttpInfo(@org.eclipse.jdt.annotation.Nullable String genreName,
+            @org.eclipse.jdt.annotation.NonNull UUID userId, Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = getMusicGenreRequestBuilder(genreName, userId, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -119,12 +221,14 @@ public class MusicGenresApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                BaseItemDto responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<BaseItemDto>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<BaseItemDto>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<BaseItemDto>() {
-                                }));
+                        responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -136,7 +240,7 @@ public class MusicGenresApi {
     }
 
     private HttpRequest.Builder getMusicGenreRequestBuilder(@org.eclipse.jdt.annotation.Nullable String genreName,
-            @org.eclipse.jdt.annotation.NonNull UUID userId) throws ApiException {
+            @org.eclipse.jdt.annotation.NonNull UUID userId, Map<String, String> headers) throws ApiException {
         // verify the required parameter 'genreName' is set
         if (genreName == null) {
             throw new ApiException(400, "Missing the required parameter 'genreName' when calling getMusicGenre");
@@ -171,6 +275,8 @@ public class MusicGenresApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -226,10 +332,66 @@ public class MusicGenresApi {
             @org.eclipse.jdt.annotation.NonNull List<SortOrder> sortOrder,
             @org.eclipse.jdt.annotation.NonNull Boolean enableImages,
             @org.eclipse.jdt.annotation.NonNull Boolean enableTotalRecordCount) throws ApiException {
+        return getMusicGenres(startIndex, limit, searchTerm, parentId, fields, excludeItemTypes, includeItemTypes,
+                isFavorite, imageTypeLimit, enableImageTypes, userId, nameStartsWithOrGreater, nameStartsWith,
+                nameLessThan, sortBy, sortOrder, enableImages, enableTotalRecordCount, null);
+    }
+
+    /**
+     * Gets all music genres from a given item, folder, or the entire library.
+     * 
+     * @param startIndex Optional. The record index to start at. All items with a lower index will be dropped from the
+     *            results. (optional)
+     * @param limit Optional. The maximum number of records to return. (optional)
+     * @param searchTerm The search term. (optional)
+     * @param parentId Specify this to localize the search to a specific item or folder. Omit to use the root.
+     *            (optional)
+     * @param fields Optional. Specify additional fields of information to return in the output. (optional)
+     * @param excludeItemTypes Optional. If specified, results will be filtered out based on item type. This allows
+     *            multiple, comma delimited. (optional)
+     * @param includeItemTypes Optional. If specified, results will be filtered in based on item type. This allows
+     *            multiple, comma delimited. (optional)
+     * @param isFavorite Optional filter by items that are marked as favorite, or not. (optional)
+     * @param imageTypeLimit Optional, the max number of images to return, per image type. (optional)
+     * @param enableImageTypes Optional. The image types to include in the output. (optional)
+     * @param userId User id. (optional)
+     * @param nameStartsWithOrGreater Optional filter by items whose name is sorted equally or greater than a given
+     *            input string. (optional)
+     * @param nameStartsWith Optional filter by items whose name is sorted equally than a given input string. (optional)
+     * @param nameLessThan Optional filter by items whose name is equally or lesser than a given input string.
+     *            (optional)
+     * @param sortBy Optional. Specify one or more sort orders, comma delimited. (optional)
+     * @param sortOrder Sort Order - Ascending,Descending. (optional)
+     * @param enableImages Optional, include image information in output. (optional, default to true)
+     * @param enableTotalRecordCount Optional. Include total record count. (optional, default to true)
+     * @param headers Optional headers to include in the request
+     * @return BaseItemDtoQueryResult
+     * @throws ApiException if fails to make API call
+     * @deprecated
+     */
+    @Deprecated
+    public BaseItemDtoQueryResult getMusicGenres(@org.eclipse.jdt.annotation.NonNull Integer startIndex,
+            @org.eclipse.jdt.annotation.NonNull Integer limit, @org.eclipse.jdt.annotation.NonNull String searchTerm,
+            @org.eclipse.jdt.annotation.NonNull UUID parentId,
+            @org.eclipse.jdt.annotation.NonNull List<ItemFields> fields,
+            @org.eclipse.jdt.annotation.NonNull List<BaseItemKind> excludeItemTypes,
+            @org.eclipse.jdt.annotation.NonNull List<BaseItemKind> includeItemTypes,
+            @org.eclipse.jdt.annotation.NonNull Boolean isFavorite,
+            @org.eclipse.jdt.annotation.NonNull Integer imageTypeLimit,
+            @org.eclipse.jdt.annotation.NonNull List<ImageType> enableImageTypes,
+            @org.eclipse.jdt.annotation.NonNull UUID userId,
+            @org.eclipse.jdt.annotation.NonNull String nameStartsWithOrGreater,
+            @org.eclipse.jdt.annotation.NonNull String nameStartsWith,
+            @org.eclipse.jdt.annotation.NonNull String nameLessThan,
+            @org.eclipse.jdt.annotation.NonNull List<ItemSortBy> sortBy,
+            @org.eclipse.jdt.annotation.NonNull List<SortOrder> sortOrder,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableImages,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableTotalRecordCount, Map<String, String> headers)
+            throws ApiException {
         ApiResponse<BaseItemDtoQueryResult> localVarResponse = getMusicGenresWithHttpInfo(startIndex, limit, searchTerm,
                 parentId, fields, excludeItemTypes, includeItemTypes, isFavorite, imageTypeLimit, enableImageTypes,
                 userId, nameStartsWithOrGreater, nameStartsWith, nameLessThan, sortBy, sortOrder, enableImages,
-                enableTotalRecordCount);
+                enableTotalRecordCount, headers);
         return localVarResponse.getData();
     }
 
@@ -282,10 +444,66 @@ public class MusicGenresApi {
             @org.eclipse.jdt.annotation.NonNull List<SortOrder> sortOrder,
             @org.eclipse.jdt.annotation.NonNull Boolean enableImages,
             @org.eclipse.jdt.annotation.NonNull Boolean enableTotalRecordCount) throws ApiException {
+        return getMusicGenresWithHttpInfo(startIndex, limit, searchTerm, parentId, fields, excludeItemTypes,
+                includeItemTypes, isFavorite, imageTypeLimit, enableImageTypes, userId, nameStartsWithOrGreater,
+                nameStartsWith, nameLessThan, sortBy, sortOrder, enableImages, enableTotalRecordCount, null);
+    }
+
+    /**
+     * Gets all music genres from a given item, folder, or the entire library.
+     * 
+     * @param startIndex Optional. The record index to start at. All items with a lower index will be dropped from the
+     *            results. (optional)
+     * @param limit Optional. The maximum number of records to return. (optional)
+     * @param searchTerm The search term. (optional)
+     * @param parentId Specify this to localize the search to a specific item or folder. Omit to use the root.
+     *            (optional)
+     * @param fields Optional. Specify additional fields of information to return in the output. (optional)
+     * @param excludeItemTypes Optional. If specified, results will be filtered out based on item type. This allows
+     *            multiple, comma delimited. (optional)
+     * @param includeItemTypes Optional. If specified, results will be filtered in based on item type. This allows
+     *            multiple, comma delimited. (optional)
+     * @param isFavorite Optional filter by items that are marked as favorite, or not. (optional)
+     * @param imageTypeLimit Optional, the max number of images to return, per image type. (optional)
+     * @param enableImageTypes Optional. The image types to include in the output. (optional)
+     * @param userId User id. (optional)
+     * @param nameStartsWithOrGreater Optional filter by items whose name is sorted equally or greater than a given
+     *            input string. (optional)
+     * @param nameStartsWith Optional filter by items whose name is sorted equally than a given input string. (optional)
+     * @param nameLessThan Optional filter by items whose name is equally or lesser than a given input string.
+     *            (optional)
+     * @param sortBy Optional. Specify one or more sort orders, comma delimited. (optional)
+     * @param sortOrder Sort Order - Ascending,Descending. (optional)
+     * @param enableImages Optional, include image information in output. (optional, default to true)
+     * @param enableTotalRecordCount Optional. Include total record count. (optional, default to true)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;BaseItemDtoQueryResult&gt;
+     * @throws ApiException if fails to make API call
+     * @deprecated
+     */
+    @Deprecated
+    public ApiResponse<BaseItemDtoQueryResult> getMusicGenresWithHttpInfo(
+            @org.eclipse.jdt.annotation.NonNull Integer startIndex, @org.eclipse.jdt.annotation.NonNull Integer limit,
+            @org.eclipse.jdt.annotation.NonNull String searchTerm, @org.eclipse.jdt.annotation.NonNull UUID parentId,
+            @org.eclipse.jdt.annotation.NonNull List<ItemFields> fields,
+            @org.eclipse.jdt.annotation.NonNull List<BaseItemKind> excludeItemTypes,
+            @org.eclipse.jdt.annotation.NonNull List<BaseItemKind> includeItemTypes,
+            @org.eclipse.jdt.annotation.NonNull Boolean isFavorite,
+            @org.eclipse.jdt.annotation.NonNull Integer imageTypeLimit,
+            @org.eclipse.jdt.annotation.NonNull List<ImageType> enableImageTypes,
+            @org.eclipse.jdt.annotation.NonNull UUID userId,
+            @org.eclipse.jdt.annotation.NonNull String nameStartsWithOrGreater,
+            @org.eclipse.jdt.annotation.NonNull String nameStartsWith,
+            @org.eclipse.jdt.annotation.NonNull String nameLessThan,
+            @org.eclipse.jdt.annotation.NonNull List<ItemSortBy> sortBy,
+            @org.eclipse.jdt.annotation.NonNull List<SortOrder> sortOrder,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableImages,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableTotalRecordCount, Map<String, String> headers)
+            throws ApiException {
         HttpRequest.Builder localVarRequestBuilder = getMusicGenresRequestBuilder(startIndex, limit, searchTerm,
                 parentId, fields, excludeItemTypes, includeItemTypes, isFavorite, imageTypeLimit, enableImageTypes,
                 userId, nameStartsWithOrGreater, nameStartsWith, nameLessThan, sortBy, sortOrder, enableImages,
-                enableTotalRecordCount);
+                enableTotalRecordCount, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -302,14 +520,14 @@ public class MusicGenresApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                BaseItemDtoQueryResult responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<BaseItemDtoQueryResult>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<BaseItemDtoQueryResult>(localVarResponse.statusCode(),
-                        localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody,
-                                        new TypeReference<BaseItemDtoQueryResult>() {
-                                        }));
+                        localVarResponse.headers().map(), responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -336,7 +554,8 @@ public class MusicGenresApi {
             @org.eclipse.jdt.annotation.NonNull List<ItemSortBy> sortBy,
             @org.eclipse.jdt.annotation.NonNull List<SortOrder> sortOrder,
             @org.eclipse.jdt.annotation.NonNull Boolean enableImages,
-            @org.eclipse.jdt.annotation.NonNull Boolean enableTotalRecordCount) throws ApiException {
+            @org.eclipse.jdt.annotation.NonNull Boolean enableTotalRecordCount, Map<String, String> headers)
+            throws ApiException {
 
         HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
 
@@ -400,6 +619,8 @@ public class MusicGenresApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }

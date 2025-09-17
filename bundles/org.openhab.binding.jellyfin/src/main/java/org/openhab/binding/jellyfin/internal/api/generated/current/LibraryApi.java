@@ -22,6 +22,7 @@ import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.StringJoiner;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -48,6 +49,28 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class LibraryApi {
+    /**
+     * Utility class for extending HttpRequest.Builder functionality.
+     */
+    private static class HttpRequestBuilderExtensions {
+        /**
+         * Adds additional headers to the provided HttpRequest.Builder. Useful for adding method/endpoint specific
+         * headers.
+         *
+         * @param builder the HttpRequest.Builder to which headers will be added
+         * @param headers a map of header names and values to add; may be null
+         * @return the same HttpRequest.Builder instance with the additional headers set
+         */
+        static HttpRequest.Builder withAdditionalHeaders(HttpRequest.Builder builder, Map<String, String> headers) {
+            if (headers != null) {
+                for (Map.Entry<String, String> entry : headers.entrySet()) {
+                    builder.header(entry.getKey(), entry.getValue());
+                }
+            }
+            return builder;
+        }
+    }
+
     private final HttpClient memberVarHttpClient;
     private final ObjectMapper memberVarObjectMapper;
     private final String memberVarBaseUri;
@@ -84,13 +107,75 @@ public class LibraryApi {
     }
 
     /**
+     * Download file from the given response.
+     *
+     * @param response Response
+     * @return File
+     * @throws ApiException If fail to read file content from response and write to disk
+     */
+    public File downloadFileFromResponse(HttpResponse<InputStream> response) throws ApiException {
+        try {
+            File file = prepareDownloadFile(response);
+            java.nio.file.Files.copy(response.body(), file.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+            return file;
+        } catch (IOException e) {
+            throw new ApiException(e);
+        }
+    }
+
+    /**
+     * <p>
+     * Prepare the file for download from the response.
+     * </p>
+     *
+     * @param response a {@link java.net.http.HttpResponse} object.
+     * @return a {@link java.io.File} object.
+     * @throws java.io.IOException if any.
+     */
+    private File prepareDownloadFile(HttpResponse<InputStream> response) throws IOException {
+        String filename = null;
+        java.util.Optional<String> contentDisposition = response.headers().firstValue("Content-Disposition");
+        if (contentDisposition.isPresent() && !"".equals(contentDisposition.get())) {
+            // Get filename from the Content-Disposition header.
+            java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("filename=['\"]?([^'\"\\s]+)['\"]?");
+            java.util.regex.Matcher matcher = pattern.matcher(contentDisposition.get());
+            if (matcher.find())
+                filename = matcher.group(1);
+        }
+        File file = null;
+        if (filename != null) {
+            java.nio.file.Path tempDir = java.nio.file.Files.createTempDirectory("swagger-gen-native");
+            java.nio.file.Path filePath = java.nio.file.Files.createFile(tempDir.resolve(filename));
+            file = filePath.toFile();
+            tempDir.toFile().deleteOnExit(); // best effort cleanup
+            file.deleteOnExit(); // best effort cleanup
+        } else {
+            file = java.nio.file.Files.createTempFile("download-", "").toFile();
+            file.deleteOnExit(); // best effort cleanup
+        }
+        return file;
+    }
+
+    /**
      * Deletes an item from the library and filesystem.
      * 
      * @param itemId The item id. (required)
      * @throws ApiException if fails to make API call
      */
     public void deleteItem(@org.eclipse.jdt.annotation.Nullable UUID itemId) throws ApiException {
-        deleteItemWithHttpInfo(itemId);
+        deleteItem(itemId, null);
+    }
+
+    /**
+     * Deletes an item from the library and filesystem.
+     * 
+     * @param itemId The item id. (required)
+     * @param headers Optional headers to include in the request
+     * @throws ApiException if fails to make API call
+     */
+    public void deleteItem(@org.eclipse.jdt.annotation.Nullable UUID itemId, Map<String, String> headers)
+            throws ApiException {
+        deleteItemWithHttpInfo(itemId, headers);
     }
 
     /**
@@ -102,7 +187,20 @@ public class LibraryApi {
      */
     public ApiResponse<Void> deleteItemWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID itemId)
             throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = deleteItemRequestBuilder(itemId);
+        return deleteItemWithHttpInfo(itemId, null);
+    }
+
+    /**
+     * Deletes an item from the library and filesystem.
+     * 
+     * @param itemId The item id. (required)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<Void> deleteItemWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID itemId,
+            Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = deleteItemRequestBuilder(itemId, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -129,8 +227,8 @@ public class LibraryApi {
         }
     }
 
-    private HttpRequest.Builder deleteItemRequestBuilder(@org.eclipse.jdt.annotation.Nullable UUID itemId)
-            throws ApiException {
+    private HttpRequest.Builder deleteItemRequestBuilder(@org.eclipse.jdt.annotation.Nullable UUID itemId,
+            Map<String, String> headers) throws ApiException {
         // verify the required parameter 'itemId' is set
         if (itemId == null) {
             throw new ApiException(400, "Missing the required parameter 'itemId' when calling deleteItem");
@@ -149,6 +247,8 @@ public class LibraryApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -162,7 +262,19 @@ public class LibraryApi {
      * @throws ApiException if fails to make API call
      */
     public void deleteItems(@org.eclipse.jdt.annotation.NonNull List<UUID> ids) throws ApiException {
-        deleteItemsWithHttpInfo(ids);
+        deleteItems(ids, null);
+    }
+
+    /**
+     * Deletes items from the library and filesystem.
+     * 
+     * @param ids The item ids. (optional)
+     * @param headers Optional headers to include in the request
+     * @throws ApiException if fails to make API call
+     */
+    public void deleteItems(@org.eclipse.jdt.annotation.NonNull List<UUID> ids, Map<String, String> headers)
+            throws ApiException {
+        deleteItemsWithHttpInfo(ids, headers);
     }
 
     /**
@@ -174,7 +286,20 @@ public class LibraryApi {
      */
     public ApiResponse<Void> deleteItemsWithHttpInfo(@org.eclipse.jdt.annotation.NonNull List<UUID> ids)
             throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = deleteItemsRequestBuilder(ids);
+        return deleteItemsWithHttpInfo(ids, null);
+    }
+
+    /**
+     * Deletes items from the library and filesystem.
+     * 
+     * @param ids The item ids. (optional)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<Void> deleteItemsWithHttpInfo(@org.eclipse.jdt.annotation.NonNull List<UUID> ids,
+            Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = deleteItemsRequestBuilder(ids, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -201,8 +326,8 @@ public class LibraryApi {
         }
     }
 
-    private HttpRequest.Builder deleteItemsRequestBuilder(@org.eclipse.jdt.annotation.NonNull List<UUID> ids)
-            throws ApiException {
+    private HttpRequest.Builder deleteItemsRequestBuilder(@org.eclipse.jdt.annotation.NonNull List<UUID> ids,
+            Map<String, String> headers) throws ApiException {
 
         HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
 
@@ -232,6 +357,8 @@ public class LibraryApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -248,7 +375,21 @@ public class LibraryApi {
      */
     public List<BaseItemDto> getAncestors(@org.eclipse.jdt.annotation.Nullable UUID itemId,
             @org.eclipse.jdt.annotation.NonNull UUID userId) throws ApiException {
-        ApiResponse<List<BaseItemDto>> localVarResponse = getAncestorsWithHttpInfo(itemId, userId);
+        return getAncestors(itemId, userId, null);
+    }
+
+    /**
+     * Gets all parents of an item.
+     * 
+     * @param itemId The item id. (required)
+     * @param userId Optional. Filter by user id, and attach user data. (optional)
+     * @param headers Optional headers to include in the request
+     * @return List&lt;BaseItemDto&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public List<BaseItemDto> getAncestors(@org.eclipse.jdt.annotation.Nullable UUID itemId,
+            @org.eclipse.jdt.annotation.NonNull UUID userId, Map<String, String> headers) throws ApiException {
+        ApiResponse<List<BaseItemDto>> localVarResponse = getAncestorsWithHttpInfo(itemId, userId, headers);
         return localVarResponse.getData();
     }
 
@@ -262,7 +403,21 @@ public class LibraryApi {
      */
     public ApiResponse<List<BaseItemDto>> getAncestorsWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID itemId,
             @org.eclipse.jdt.annotation.NonNull UUID userId) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getAncestorsRequestBuilder(itemId, userId);
+        return getAncestorsWithHttpInfo(itemId, userId, null);
+    }
+
+    /**
+     * Gets all parents of an item.
+     * 
+     * @param itemId The item id. (required)
+     * @param userId Optional. Filter by user id, and attach user data. (optional)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;List&lt;BaseItemDto&gt;&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<List<BaseItemDto>> getAncestorsWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID itemId,
+            @org.eclipse.jdt.annotation.NonNull UUID userId, Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = getAncestorsRequestBuilder(itemId, userId, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -279,12 +434,14 @@ public class LibraryApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                List<BaseItemDto> responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<List<BaseItemDto>>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<List<BaseItemDto>>(localVarResponse.statusCode(),
-                        localVarResponse.headers().map(), responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<List<BaseItemDto>>() {
-                                }));
+                        localVarResponse.headers().map(), responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -296,7 +453,7 @@ public class LibraryApi {
     }
 
     private HttpRequest.Builder getAncestorsRequestBuilder(@org.eclipse.jdt.annotation.Nullable UUID itemId,
-            @org.eclipse.jdt.annotation.NonNull UUID userId) throws ApiException {
+            @org.eclipse.jdt.annotation.NonNull UUID userId, Map<String, String> headers) throws ApiException {
         // verify the required parameter 'itemId' is set
         if (itemId == null) {
             throw new ApiException(400, "Missing the required parameter 'itemId' when calling getAncestors");
@@ -330,6 +487,8 @@ public class LibraryApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -347,7 +506,22 @@ public class LibraryApi {
     @Deprecated
     public BaseItemDtoQueryResult getCriticReviews(@org.eclipse.jdt.annotation.Nullable String itemId)
             throws ApiException {
-        ApiResponse<BaseItemDtoQueryResult> localVarResponse = getCriticReviewsWithHttpInfo(itemId);
+        return getCriticReviews(itemId, null);
+    }
+
+    /**
+     * Gets critic review for an item.
+     * 
+     * @param itemId (required)
+     * @param headers Optional headers to include in the request
+     * @return BaseItemDtoQueryResult
+     * @throws ApiException if fails to make API call
+     * @deprecated
+     */
+    @Deprecated
+    public BaseItemDtoQueryResult getCriticReviews(@org.eclipse.jdt.annotation.Nullable String itemId,
+            Map<String, String> headers) throws ApiException {
+        ApiResponse<BaseItemDtoQueryResult> localVarResponse = getCriticReviewsWithHttpInfo(itemId, headers);
         return localVarResponse.getData();
     }
 
@@ -362,7 +536,22 @@ public class LibraryApi {
     @Deprecated
     public ApiResponse<BaseItemDtoQueryResult> getCriticReviewsWithHttpInfo(
             @org.eclipse.jdt.annotation.Nullable String itemId) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getCriticReviewsRequestBuilder(itemId);
+        return getCriticReviewsWithHttpInfo(itemId, null);
+    }
+
+    /**
+     * Gets critic review for an item.
+     * 
+     * @param itemId (required)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;BaseItemDtoQueryResult&gt;
+     * @throws ApiException if fails to make API call
+     * @deprecated
+     */
+    @Deprecated
+    public ApiResponse<BaseItemDtoQueryResult> getCriticReviewsWithHttpInfo(
+            @org.eclipse.jdt.annotation.Nullable String itemId, Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = getCriticReviewsRequestBuilder(itemId, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -379,14 +568,14 @@ public class LibraryApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                BaseItemDtoQueryResult responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<BaseItemDtoQueryResult>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<BaseItemDtoQueryResult>(localVarResponse.statusCode(),
-                        localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody,
-                                        new TypeReference<BaseItemDtoQueryResult>() {
-                                        }));
+                        localVarResponse.headers().map(), responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -397,8 +586,8 @@ public class LibraryApi {
         }
     }
 
-    private HttpRequest.Builder getCriticReviewsRequestBuilder(@org.eclipse.jdt.annotation.Nullable String itemId)
-            throws ApiException {
+    private HttpRequest.Builder getCriticReviewsRequestBuilder(@org.eclipse.jdt.annotation.Nullable String itemId,
+            Map<String, String> headers) throws ApiException {
         // verify the required parameter 'itemId' is set
         if (itemId == null) {
             throw new ApiException(400, "Missing the required parameter 'itemId' when calling getCriticReviews");
@@ -418,6 +607,8 @@ public class LibraryApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -432,7 +623,20 @@ public class LibraryApi {
      * @throws ApiException if fails to make API call
      */
     public File getDownload(@org.eclipse.jdt.annotation.Nullable UUID itemId) throws ApiException {
-        ApiResponse<File> localVarResponse = getDownloadWithHttpInfo(itemId);
+        return getDownload(itemId, null);
+    }
+
+    /**
+     * Downloads item media.
+     * 
+     * @param itemId The item id. (required)
+     * @param headers Optional headers to include in the request
+     * @return File
+     * @throws ApiException if fails to make API call
+     */
+    public File getDownload(@org.eclipse.jdt.annotation.Nullable UUID itemId, Map<String, String> headers)
+            throws ApiException {
+        ApiResponse<File> localVarResponse = getDownloadWithHttpInfo(itemId, headers);
         return localVarResponse.getData();
     }
 
@@ -445,7 +649,20 @@ public class LibraryApi {
      */
     public ApiResponse<File> getDownloadWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID itemId)
             throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getDownloadRequestBuilder(itemId);
+        return getDownloadWithHttpInfo(itemId, null);
+    }
+
+    /**
+     * Downloads item media.
+     * 
+     * @param itemId The item id. (required)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;File&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<File> getDownloadWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID itemId,
+            Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = getDownloadRequestBuilder(itemId, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -460,13 +677,13 @@ public class LibraryApi {
                     return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
                 }
 
-                String responseBody = new String(localVarResponse.body().readAllBytes());
+                // Handle file downloading.
+                File responseValue = downloadFileFromResponse(localVarResponse);
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {
-                                }));
+                        responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -477,8 +694,8 @@ public class LibraryApi {
         }
     }
 
-    private HttpRequest.Builder getDownloadRequestBuilder(@org.eclipse.jdt.annotation.Nullable UUID itemId)
-            throws ApiException {
+    private HttpRequest.Builder getDownloadRequestBuilder(@org.eclipse.jdt.annotation.Nullable UUID itemId,
+            Map<String, String> headers) throws ApiException {
         // verify the required parameter 'itemId' is set
         if (itemId == null) {
             throw new ApiException(400, "Missing the required parameter 'itemId' when calling getDownload");
@@ -497,6 +714,8 @@ public class LibraryApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -511,7 +730,20 @@ public class LibraryApi {
      * @throws ApiException if fails to make API call
      */
     public File getFile(@org.eclipse.jdt.annotation.Nullable UUID itemId) throws ApiException {
-        ApiResponse<File> localVarResponse = getFileWithHttpInfo(itemId);
+        return getFile(itemId, null);
+    }
+
+    /**
+     * Get the original file of an item.
+     * 
+     * @param itemId The item id. (required)
+     * @param headers Optional headers to include in the request
+     * @return File
+     * @throws ApiException if fails to make API call
+     */
+    public File getFile(@org.eclipse.jdt.annotation.Nullable UUID itemId, Map<String, String> headers)
+            throws ApiException {
+        ApiResponse<File> localVarResponse = getFileWithHttpInfo(itemId, headers);
         return localVarResponse.getData();
     }
 
@@ -523,7 +755,20 @@ public class LibraryApi {
      * @throws ApiException if fails to make API call
      */
     public ApiResponse<File> getFileWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID itemId) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getFileRequestBuilder(itemId);
+        return getFileWithHttpInfo(itemId, null);
+    }
+
+    /**
+     * Get the original file of an item.
+     * 
+     * @param itemId The item id. (required)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;File&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<File> getFileWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID itemId,
+            Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = getFileRequestBuilder(itemId, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -538,13 +783,13 @@ public class LibraryApi {
                     return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
                 }
 
-                String responseBody = new String(localVarResponse.body().readAllBytes());
+                // Handle file downloading.
+                File responseValue = downloadFileFromResponse(localVarResponse);
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {
-                                }));
+                        responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -555,8 +800,8 @@ public class LibraryApi {
         }
     }
 
-    private HttpRequest.Builder getFileRequestBuilder(@org.eclipse.jdt.annotation.Nullable UUID itemId)
-            throws ApiException {
+    private HttpRequest.Builder getFileRequestBuilder(@org.eclipse.jdt.annotation.Nullable UUID itemId,
+            Map<String, String> headers) throws ApiException {
         // verify the required parameter 'itemId' is set
         if (itemId == null) {
             throw new ApiException(400, "Missing the required parameter 'itemId' when calling getFile");
@@ -575,6 +820,8 @@ public class LibraryApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -591,7 +838,21 @@ public class LibraryApi {
      */
     public ItemCounts getItemCounts(@org.eclipse.jdt.annotation.NonNull UUID userId,
             @org.eclipse.jdt.annotation.NonNull Boolean isFavorite) throws ApiException {
-        ApiResponse<ItemCounts> localVarResponse = getItemCountsWithHttpInfo(userId, isFavorite);
+        return getItemCounts(userId, isFavorite, null);
+    }
+
+    /**
+     * Get item counts.
+     * 
+     * @param userId Optional. Get counts from a specific user&#39;s library. (optional)
+     * @param isFavorite Optional. Get counts of favorite items. (optional)
+     * @param headers Optional headers to include in the request
+     * @return ItemCounts
+     * @throws ApiException if fails to make API call
+     */
+    public ItemCounts getItemCounts(@org.eclipse.jdt.annotation.NonNull UUID userId,
+            @org.eclipse.jdt.annotation.NonNull Boolean isFavorite, Map<String, String> headers) throws ApiException {
+        ApiResponse<ItemCounts> localVarResponse = getItemCountsWithHttpInfo(userId, isFavorite, headers);
         return localVarResponse.getData();
     }
 
@@ -605,7 +866,21 @@ public class LibraryApi {
      */
     public ApiResponse<ItemCounts> getItemCountsWithHttpInfo(@org.eclipse.jdt.annotation.NonNull UUID userId,
             @org.eclipse.jdt.annotation.NonNull Boolean isFavorite) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getItemCountsRequestBuilder(userId, isFavorite);
+        return getItemCountsWithHttpInfo(userId, isFavorite, null);
+    }
+
+    /**
+     * Get item counts.
+     * 
+     * @param userId Optional. Get counts from a specific user&#39;s library. (optional)
+     * @param isFavorite Optional. Get counts of favorite items. (optional)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;ItemCounts&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<ItemCounts> getItemCountsWithHttpInfo(@org.eclipse.jdt.annotation.NonNull UUID userId,
+            @org.eclipse.jdt.annotation.NonNull Boolean isFavorite, Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = getItemCountsRequestBuilder(userId, isFavorite, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -622,12 +897,14 @@ public class LibraryApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                ItemCounts responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<ItemCounts>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<ItemCounts>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<ItemCounts>() {
-                                }));
+                        responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -639,7 +916,7 @@ public class LibraryApi {
     }
 
     private HttpRequest.Builder getItemCountsRequestBuilder(@org.eclipse.jdt.annotation.NonNull UUID userId,
-            @org.eclipse.jdt.annotation.NonNull Boolean isFavorite) throws ApiException {
+            @org.eclipse.jdt.annotation.NonNull Boolean isFavorite, Map<String, String> headers) throws ApiException {
 
         HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
 
@@ -671,6 +948,8 @@ public class LibraryApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -688,8 +967,23 @@ public class LibraryApi {
     public LibraryOptionsResultDto getLibraryOptionsInfo(
             @org.eclipse.jdt.annotation.NonNull CollectionType libraryContentType,
             @org.eclipse.jdt.annotation.NonNull Boolean isNewLibrary) throws ApiException {
+        return getLibraryOptionsInfo(libraryContentType, isNewLibrary, null);
+    }
+
+    /**
+     * Gets the library options info.
+     * 
+     * @param libraryContentType Library content type. (optional)
+     * @param isNewLibrary Whether this is a new library. (optional, default to false)
+     * @param headers Optional headers to include in the request
+     * @return LibraryOptionsResultDto
+     * @throws ApiException if fails to make API call
+     */
+    public LibraryOptionsResultDto getLibraryOptionsInfo(
+            @org.eclipse.jdt.annotation.NonNull CollectionType libraryContentType,
+            @org.eclipse.jdt.annotation.NonNull Boolean isNewLibrary, Map<String, String> headers) throws ApiException {
         ApiResponse<LibraryOptionsResultDto> localVarResponse = getLibraryOptionsInfoWithHttpInfo(libraryContentType,
-                isNewLibrary);
+                isNewLibrary, headers);
         return localVarResponse.getData();
     }
 
@@ -704,8 +998,23 @@ public class LibraryApi {
     public ApiResponse<LibraryOptionsResultDto> getLibraryOptionsInfoWithHttpInfo(
             @org.eclipse.jdt.annotation.NonNull CollectionType libraryContentType,
             @org.eclipse.jdt.annotation.NonNull Boolean isNewLibrary) throws ApiException {
+        return getLibraryOptionsInfoWithHttpInfo(libraryContentType, isNewLibrary, null);
+    }
+
+    /**
+     * Gets the library options info.
+     * 
+     * @param libraryContentType Library content type. (optional)
+     * @param isNewLibrary Whether this is a new library. (optional, default to false)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;LibraryOptionsResultDto&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<LibraryOptionsResultDto> getLibraryOptionsInfoWithHttpInfo(
+            @org.eclipse.jdt.annotation.NonNull CollectionType libraryContentType,
+            @org.eclipse.jdt.annotation.NonNull Boolean isNewLibrary, Map<String, String> headers) throws ApiException {
         HttpRequest.Builder localVarRequestBuilder = getLibraryOptionsInfoRequestBuilder(libraryContentType,
-                isNewLibrary);
+                isNewLibrary, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -722,14 +1031,14 @@ public class LibraryApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                LibraryOptionsResultDto responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<LibraryOptionsResultDto>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<LibraryOptionsResultDto>(localVarResponse.statusCode(),
-                        localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody,
-                                        new TypeReference<LibraryOptionsResultDto>() {
-                                        }));
+                        localVarResponse.headers().map(), responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -742,7 +1051,7 @@ public class LibraryApi {
 
     private HttpRequest.Builder getLibraryOptionsInfoRequestBuilder(
             @org.eclipse.jdt.annotation.NonNull CollectionType libraryContentType,
-            @org.eclipse.jdt.annotation.NonNull Boolean isNewLibrary) throws ApiException {
+            @org.eclipse.jdt.annotation.NonNull Boolean isNewLibrary, Map<String, String> headers) throws ApiException {
 
         HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
 
@@ -774,6 +1083,8 @@ public class LibraryApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -789,7 +1100,20 @@ public class LibraryApi {
      */
     public BaseItemDtoQueryResult getMediaFolders(@org.eclipse.jdt.annotation.NonNull Boolean isHidden)
             throws ApiException {
-        ApiResponse<BaseItemDtoQueryResult> localVarResponse = getMediaFoldersWithHttpInfo(isHidden);
+        return getMediaFolders(isHidden, null);
+    }
+
+    /**
+     * Gets all user media folders.
+     * 
+     * @param isHidden Optional. Filter by folders that are marked hidden, or not. (optional)
+     * @param headers Optional headers to include in the request
+     * @return BaseItemDtoQueryResult
+     * @throws ApiException if fails to make API call
+     */
+    public BaseItemDtoQueryResult getMediaFolders(@org.eclipse.jdt.annotation.NonNull Boolean isHidden,
+            Map<String, String> headers) throws ApiException {
+        ApiResponse<BaseItemDtoQueryResult> localVarResponse = getMediaFoldersWithHttpInfo(isHidden, headers);
         return localVarResponse.getData();
     }
 
@@ -802,7 +1126,20 @@ public class LibraryApi {
      */
     public ApiResponse<BaseItemDtoQueryResult> getMediaFoldersWithHttpInfo(
             @org.eclipse.jdt.annotation.NonNull Boolean isHidden) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getMediaFoldersRequestBuilder(isHidden);
+        return getMediaFoldersWithHttpInfo(isHidden, null);
+    }
+
+    /**
+     * Gets all user media folders.
+     * 
+     * @param isHidden Optional. Filter by folders that are marked hidden, or not. (optional)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;BaseItemDtoQueryResult&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<BaseItemDtoQueryResult> getMediaFoldersWithHttpInfo(
+            @org.eclipse.jdt.annotation.NonNull Boolean isHidden, Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = getMediaFoldersRequestBuilder(isHidden, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -819,14 +1156,14 @@ public class LibraryApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                BaseItemDtoQueryResult responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<BaseItemDtoQueryResult>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<BaseItemDtoQueryResult>(localVarResponse.statusCode(),
-                        localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody,
-                                        new TypeReference<BaseItemDtoQueryResult>() {
-                                        }));
+                        localVarResponse.headers().map(), responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -837,8 +1174,8 @@ public class LibraryApi {
         }
     }
 
-    private HttpRequest.Builder getMediaFoldersRequestBuilder(@org.eclipse.jdt.annotation.NonNull Boolean isHidden)
-            throws ApiException {
+    private HttpRequest.Builder getMediaFoldersRequestBuilder(@org.eclipse.jdt.annotation.NonNull Boolean isHidden,
+            Map<String, String> headers) throws ApiException {
 
         HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
 
@@ -868,6 +1205,8 @@ public class LibraryApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -881,7 +1220,18 @@ public class LibraryApi {
      * @throws ApiException if fails to make API call
      */
     public List<String> getPhysicalPaths() throws ApiException {
-        ApiResponse<List<String>> localVarResponse = getPhysicalPathsWithHttpInfo();
+        return getPhysicalPaths(null);
+    }
+
+    /**
+     * Gets a list of physical paths from virtual folders.
+     * 
+     * @param headers Optional headers to include in the request
+     * @return List&lt;String&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public List<String> getPhysicalPaths(Map<String, String> headers) throws ApiException {
+        ApiResponse<List<String>> localVarResponse = getPhysicalPathsWithHttpInfo(headers);
         return localVarResponse.getData();
     }
 
@@ -892,7 +1242,18 @@ public class LibraryApi {
      * @throws ApiException if fails to make API call
      */
     public ApiResponse<List<String>> getPhysicalPathsWithHttpInfo() throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getPhysicalPathsRequestBuilder();
+        return getPhysicalPathsWithHttpInfo(null);
+    }
+
+    /**
+     * Gets a list of physical paths from virtual folders.
+     * 
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;List&lt;String&gt;&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<List<String>> getPhysicalPathsWithHttpInfo(Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = getPhysicalPathsRequestBuilder(headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -909,12 +1270,14 @@ public class LibraryApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                List<String> responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<List<String>>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<List<String>>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<List<String>>() {
-                                }));
+                        responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -925,7 +1288,7 @@ public class LibraryApi {
         }
     }
 
-    private HttpRequest.Builder getPhysicalPathsRequestBuilder() throws ApiException {
+    private HttpRequest.Builder getPhysicalPathsRequestBuilder(Map<String, String> headers) throws ApiException {
 
         HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
 
@@ -940,6 +1303,8 @@ public class LibraryApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -964,8 +1329,31 @@ public class LibraryApi {
             @org.eclipse.jdt.annotation.NonNull List<UUID> excludeArtistIds,
             @org.eclipse.jdt.annotation.NonNull UUID userId, @org.eclipse.jdt.annotation.NonNull Integer limit,
             @org.eclipse.jdt.annotation.NonNull List<ItemFields> fields) throws ApiException {
+        return getSimilarAlbums(itemId, excludeArtistIds, userId, limit, fields, null);
+    }
+
+    /**
+     * Gets similar items.
+     * 
+     * @param itemId The item id. (required)
+     * @param excludeArtistIds Exclude artist ids. (optional)
+     * @param userId Optional. Filter by user id, and attach user data. (optional)
+     * @param limit Optional. The maximum number of records to return. (optional)
+     * @param fields Optional. Specify additional fields of information to return in the output. This allows multiple,
+     *            comma delimited. Options: Budget, Chapters, DateCreated, Genres, HomePageUrl, IndexOptions,
+     *            MediaStreams, Overview, ParentId, Path, People, ProviderIds, PrimaryImageAspectRatio, Revenue,
+     *            SortName, Studios, Taglines, TrailerUrls. (optional)
+     * @param headers Optional headers to include in the request
+     * @return BaseItemDtoQueryResult
+     * @throws ApiException if fails to make API call
+     */
+    public BaseItemDtoQueryResult getSimilarAlbums(@org.eclipse.jdt.annotation.Nullable UUID itemId,
+            @org.eclipse.jdt.annotation.NonNull List<UUID> excludeArtistIds,
+            @org.eclipse.jdt.annotation.NonNull UUID userId, @org.eclipse.jdt.annotation.NonNull Integer limit,
+            @org.eclipse.jdt.annotation.NonNull List<ItemFields> fields, Map<String, String> headers)
+            throws ApiException {
         ApiResponse<BaseItemDtoQueryResult> localVarResponse = getSimilarAlbumsWithHttpInfo(itemId, excludeArtistIds,
-                userId, limit, fields);
+                userId, limit, fields, headers);
         return localVarResponse.getData();
     }
 
@@ -988,8 +1376,32 @@ public class LibraryApi {
             @org.eclipse.jdt.annotation.NonNull List<UUID> excludeArtistIds,
             @org.eclipse.jdt.annotation.NonNull UUID userId, @org.eclipse.jdt.annotation.NonNull Integer limit,
             @org.eclipse.jdt.annotation.NonNull List<ItemFields> fields) throws ApiException {
+        return getSimilarAlbumsWithHttpInfo(itemId, excludeArtistIds, userId, limit, fields, null);
+    }
+
+    /**
+     * Gets similar items.
+     * 
+     * @param itemId The item id. (required)
+     * @param excludeArtistIds Exclude artist ids. (optional)
+     * @param userId Optional. Filter by user id, and attach user data. (optional)
+     * @param limit Optional. The maximum number of records to return. (optional)
+     * @param fields Optional. Specify additional fields of information to return in the output. This allows multiple,
+     *            comma delimited. Options: Budget, Chapters, DateCreated, Genres, HomePageUrl, IndexOptions,
+     *            MediaStreams, Overview, ParentId, Path, People, ProviderIds, PrimaryImageAspectRatio, Revenue,
+     *            SortName, Studios, Taglines, TrailerUrls. (optional)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;BaseItemDtoQueryResult&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<BaseItemDtoQueryResult> getSimilarAlbumsWithHttpInfo(
+            @org.eclipse.jdt.annotation.Nullable UUID itemId,
+            @org.eclipse.jdt.annotation.NonNull List<UUID> excludeArtistIds,
+            @org.eclipse.jdt.annotation.NonNull UUID userId, @org.eclipse.jdt.annotation.NonNull Integer limit,
+            @org.eclipse.jdt.annotation.NonNull List<ItemFields> fields, Map<String, String> headers)
+            throws ApiException {
         HttpRequest.Builder localVarRequestBuilder = getSimilarAlbumsRequestBuilder(itemId, excludeArtistIds, userId,
-                limit, fields);
+                limit, fields, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -1006,14 +1418,14 @@ public class LibraryApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                BaseItemDtoQueryResult responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<BaseItemDtoQueryResult>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<BaseItemDtoQueryResult>(localVarResponse.statusCode(),
-                        localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody,
-                                        new TypeReference<BaseItemDtoQueryResult>() {
-                                        }));
+                        localVarResponse.headers().map(), responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -1027,7 +1439,8 @@ public class LibraryApi {
     private HttpRequest.Builder getSimilarAlbumsRequestBuilder(@org.eclipse.jdt.annotation.Nullable UUID itemId,
             @org.eclipse.jdt.annotation.NonNull List<UUID> excludeArtistIds,
             @org.eclipse.jdt.annotation.NonNull UUID userId, @org.eclipse.jdt.annotation.NonNull Integer limit,
-            @org.eclipse.jdt.annotation.NonNull List<ItemFields> fields) throws ApiException {
+            @org.eclipse.jdt.annotation.NonNull List<ItemFields> fields, Map<String, String> headers)
+            throws ApiException {
         // verify the required parameter 'itemId' is set
         if (itemId == null) {
             throw new ApiException(400, "Missing the required parameter 'itemId' when calling getSimilarAlbums");
@@ -1067,6 +1480,8 @@ public class LibraryApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -1091,8 +1506,31 @@ public class LibraryApi {
             @org.eclipse.jdt.annotation.NonNull List<UUID> excludeArtistIds,
             @org.eclipse.jdt.annotation.NonNull UUID userId, @org.eclipse.jdt.annotation.NonNull Integer limit,
             @org.eclipse.jdt.annotation.NonNull List<ItemFields> fields) throws ApiException {
+        return getSimilarArtists(itemId, excludeArtistIds, userId, limit, fields, null);
+    }
+
+    /**
+     * Gets similar items.
+     * 
+     * @param itemId The item id. (required)
+     * @param excludeArtistIds Exclude artist ids. (optional)
+     * @param userId Optional. Filter by user id, and attach user data. (optional)
+     * @param limit Optional. The maximum number of records to return. (optional)
+     * @param fields Optional. Specify additional fields of information to return in the output. This allows multiple,
+     *            comma delimited. Options: Budget, Chapters, DateCreated, Genres, HomePageUrl, IndexOptions,
+     *            MediaStreams, Overview, ParentId, Path, People, ProviderIds, PrimaryImageAspectRatio, Revenue,
+     *            SortName, Studios, Taglines, TrailerUrls. (optional)
+     * @param headers Optional headers to include in the request
+     * @return BaseItemDtoQueryResult
+     * @throws ApiException if fails to make API call
+     */
+    public BaseItemDtoQueryResult getSimilarArtists(@org.eclipse.jdt.annotation.Nullable UUID itemId,
+            @org.eclipse.jdt.annotation.NonNull List<UUID> excludeArtistIds,
+            @org.eclipse.jdt.annotation.NonNull UUID userId, @org.eclipse.jdt.annotation.NonNull Integer limit,
+            @org.eclipse.jdt.annotation.NonNull List<ItemFields> fields, Map<String, String> headers)
+            throws ApiException {
         ApiResponse<BaseItemDtoQueryResult> localVarResponse = getSimilarArtistsWithHttpInfo(itemId, excludeArtistIds,
-                userId, limit, fields);
+                userId, limit, fields, headers);
         return localVarResponse.getData();
     }
 
@@ -1115,8 +1553,32 @@ public class LibraryApi {
             @org.eclipse.jdt.annotation.NonNull List<UUID> excludeArtistIds,
             @org.eclipse.jdt.annotation.NonNull UUID userId, @org.eclipse.jdt.annotation.NonNull Integer limit,
             @org.eclipse.jdt.annotation.NonNull List<ItemFields> fields) throws ApiException {
+        return getSimilarArtistsWithHttpInfo(itemId, excludeArtistIds, userId, limit, fields, null);
+    }
+
+    /**
+     * Gets similar items.
+     * 
+     * @param itemId The item id. (required)
+     * @param excludeArtistIds Exclude artist ids. (optional)
+     * @param userId Optional. Filter by user id, and attach user data. (optional)
+     * @param limit Optional. The maximum number of records to return. (optional)
+     * @param fields Optional. Specify additional fields of information to return in the output. This allows multiple,
+     *            comma delimited. Options: Budget, Chapters, DateCreated, Genres, HomePageUrl, IndexOptions,
+     *            MediaStreams, Overview, ParentId, Path, People, ProviderIds, PrimaryImageAspectRatio, Revenue,
+     *            SortName, Studios, Taglines, TrailerUrls. (optional)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;BaseItemDtoQueryResult&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<BaseItemDtoQueryResult> getSimilarArtistsWithHttpInfo(
+            @org.eclipse.jdt.annotation.Nullable UUID itemId,
+            @org.eclipse.jdt.annotation.NonNull List<UUID> excludeArtistIds,
+            @org.eclipse.jdt.annotation.NonNull UUID userId, @org.eclipse.jdt.annotation.NonNull Integer limit,
+            @org.eclipse.jdt.annotation.NonNull List<ItemFields> fields, Map<String, String> headers)
+            throws ApiException {
         HttpRequest.Builder localVarRequestBuilder = getSimilarArtistsRequestBuilder(itemId, excludeArtistIds, userId,
-                limit, fields);
+                limit, fields, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -1133,14 +1595,14 @@ public class LibraryApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                BaseItemDtoQueryResult responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<BaseItemDtoQueryResult>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<BaseItemDtoQueryResult>(localVarResponse.statusCode(),
-                        localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody,
-                                        new TypeReference<BaseItemDtoQueryResult>() {
-                                        }));
+                        localVarResponse.headers().map(), responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -1154,7 +1616,8 @@ public class LibraryApi {
     private HttpRequest.Builder getSimilarArtistsRequestBuilder(@org.eclipse.jdt.annotation.Nullable UUID itemId,
             @org.eclipse.jdt.annotation.NonNull List<UUID> excludeArtistIds,
             @org.eclipse.jdt.annotation.NonNull UUID userId, @org.eclipse.jdt.annotation.NonNull Integer limit,
-            @org.eclipse.jdt.annotation.NonNull List<ItemFields> fields) throws ApiException {
+            @org.eclipse.jdt.annotation.NonNull List<ItemFields> fields, Map<String, String> headers)
+            throws ApiException {
         // verify the required parameter 'itemId' is set
         if (itemId == null) {
             throw new ApiException(400, "Missing the required parameter 'itemId' when calling getSimilarArtists");
@@ -1194,6 +1657,8 @@ public class LibraryApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -1218,8 +1683,31 @@ public class LibraryApi {
             @org.eclipse.jdt.annotation.NonNull List<UUID> excludeArtistIds,
             @org.eclipse.jdt.annotation.NonNull UUID userId, @org.eclipse.jdt.annotation.NonNull Integer limit,
             @org.eclipse.jdt.annotation.NonNull List<ItemFields> fields) throws ApiException {
+        return getSimilarItems(itemId, excludeArtistIds, userId, limit, fields, null);
+    }
+
+    /**
+     * Gets similar items.
+     * 
+     * @param itemId The item id. (required)
+     * @param excludeArtistIds Exclude artist ids. (optional)
+     * @param userId Optional. Filter by user id, and attach user data. (optional)
+     * @param limit Optional. The maximum number of records to return. (optional)
+     * @param fields Optional. Specify additional fields of information to return in the output. This allows multiple,
+     *            comma delimited. Options: Budget, Chapters, DateCreated, Genres, HomePageUrl, IndexOptions,
+     *            MediaStreams, Overview, ParentId, Path, People, ProviderIds, PrimaryImageAspectRatio, Revenue,
+     *            SortName, Studios, Taglines, TrailerUrls. (optional)
+     * @param headers Optional headers to include in the request
+     * @return BaseItemDtoQueryResult
+     * @throws ApiException if fails to make API call
+     */
+    public BaseItemDtoQueryResult getSimilarItems(@org.eclipse.jdt.annotation.Nullable UUID itemId,
+            @org.eclipse.jdt.annotation.NonNull List<UUID> excludeArtistIds,
+            @org.eclipse.jdt.annotation.NonNull UUID userId, @org.eclipse.jdt.annotation.NonNull Integer limit,
+            @org.eclipse.jdt.annotation.NonNull List<ItemFields> fields, Map<String, String> headers)
+            throws ApiException {
         ApiResponse<BaseItemDtoQueryResult> localVarResponse = getSimilarItemsWithHttpInfo(itemId, excludeArtistIds,
-                userId, limit, fields);
+                userId, limit, fields, headers);
         return localVarResponse.getData();
     }
 
@@ -1242,8 +1730,32 @@ public class LibraryApi {
             @org.eclipse.jdt.annotation.NonNull List<UUID> excludeArtistIds,
             @org.eclipse.jdt.annotation.NonNull UUID userId, @org.eclipse.jdt.annotation.NonNull Integer limit,
             @org.eclipse.jdt.annotation.NonNull List<ItemFields> fields) throws ApiException {
+        return getSimilarItemsWithHttpInfo(itemId, excludeArtistIds, userId, limit, fields, null);
+    }
+
+    /**
+     * Gets similar items.
+     * 
+     * @param itemId The item id. (required)
+     * @param excludeArtistIds Exclude artist ids. (optional)
+     * @param userId Optional. Filter by user id, and attach user data. (optional)
+     * @param limit Optional. The maximum number of records to return. (optional)
+     * @param fields Optional. Specify additional fields of information to return in the output. This allows multiple,
+     *            comma delimited. Options: Budget, Chapters, DateCreated, Genres, HomePageUrl, IndexOptions,
+     *            MediaStreams, Overview, ParentId, Path, People, ProviderIds, PrimaryImageAspectRatio, Revenue,
+     *            SortName, Studios, Taglines, TrailerUrls. (optional)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;BaseItemDtoQueryResult&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<BaseItemDtoQueryResult> getSimilarItemsWithHttpInfo(
+            @org.eclipse.jdt.annotation.Nullable UUID itemId,
+            @org.eclipse.jdt.annotation.NonNull List<UUID> excludeArtistIds,
+            @org.eclipse.jdt.annotation.NonNull UUID userId, @org.eclipse.jdt.annotation.NonNull Integer limit,
+            @org.eclipse.jdt.annotation.NonNull List<ItemFields> fields, Map<String, String> headers)
+            throws ApiException {
         HttpRequest.Builder localVarRequestBuilder = getSimilarItemsRequestBuilder(itemId, excludeArtistIds, userId,
-                limit, fields);
+                limit, fields, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -1260,14 +1772,14 @@ public class LibraryApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                BaseItemDtoQueryResult responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<BaseItemDtoQueryResult>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<BaseItemDtoQueryResult>(localVarResponse.statusCode(),
-                        localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody,
-                                        new TypeReference<BaseItemDtoQueryResult>() {
-                                        }));
+                        localVarResponse.headers().map(), responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -1281,7 +1793,8 @@ public class LibraryApi {
     private HttpRequest.Builder getSimilarItemsRequestBuilder(@org.eclipse.jdt.annotation.Nullable UUID itemId,
             @org.eclipse.jdt.annotation.NonNull List<UUID> excludeArtistIds,
             @org.eclipse.jdt.annotation.NonNull UUID userId, @org.eclipse.jdt.annotation.NonNull Integer limit,
-            @org.eclipse.jdt.annotation.NonNull List<ItemFields> fields) throws ApiException {
+            @org.eclipse.jdt.annotation.NonNull List<ItemFields> fields, Map<String, String> headers)
+            throws ApiException {
         // verify the required parameter 'itemId' is set
         if (itemId == null) {
             throw new ApiException(400, "Missing the required parameter 'itemId' when calling getSimilarItems");
@@ -1321,6 +1834,8 @@ public class LibraryApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -1345,8 +1860,31 @@ public class LibraryApi {
             @org.eclipse.jdt.annotation.NonNull List<UUID> excludeArtistIds,
             @org.eclipse.jdt.annotation.NonNull UUID userId, @org.eclipse.jdt.annotation.NonNull Integer limit,
             @org.eclipse.jdt.annotation.NonNull List<ItemFields> fields) throws ApiException {
+        return getSimilarMovies(itemId, excludeArtistIds, userId, limit, fields, null);
+    }
+
+    /**
+     * Gets similar items.
+     * 
+     * @param itemId The item id. (required)
+     * @param excludeArtistIds Exclude artist ids. (optional)
+     * @param userId Optional. Filter by user id, and attach user data. (optional)
+     * @param limit Optional. The maximum number of records to return. (optional)
+     * @param fields Optional. Specify additional fields of information to return in the output. This allows multiple,
+     *            comma delimited. Options: Budget, Chapters, DateCreated, Genres, HomePageUrl, IndexOptions,
+     *            MediaStreams, Overview, ParentId, Path, People, ProviderIds, PrimaryImageAspectRatio, Revenue,
+     *            SortName, Studios, Taglines, TrailerUrls. (optional)
+     * @param headers Optional headers to include in the request
+     * @return BaseItemDtoQueryResult
+     * @throws ApiException if fails to make API call
+     */
+    public BaseItemDtoQueryResult getSimilarMovies(@org.eclipse.jdt.annotation.Nullable UUID itemId,
+            @org.eclipse.jdt.annotation.NonNull List<UUID> excludeArtistIds,
+            @org.eclipse.jdt.annotation.NonNull UUID userId, @org.eclipse.jdt.annotation.NonNull Integer limit,
+            @org.eclipse.jdt.annotation.NonNull List<ItemFields> fields, Map<String, String> headers)
+            throws ApiException {
         ApiResponse<BaseItemDtoQueryResult> localVarResponse = getSimilarMoviesWithHttpInfo(itemId, excludeArtistIds,
-                userId, limit, fields);
+                userId, limit, fields, headers);
         return localVarResponse.getData();
     }
 
@@ -1369,8 +1907,32 @@ public class LibraryApi {
             @org.eclipse.jdt.annotation.NonNull List<UUID> excludeArtistIds,
             @org.eclipse.jdt.annotation.NonNull UUID userId, @org.eclipse.jdt.annotation.NonNull Integer limit,
             @org.eclipse.jdt.annotation.NonNull List<ItemFields> fields) throws ApiException {
+        return getSimilarMoviesWithHttpInfo(itemId, excludeArtistIds, userId, limit, fields, null);
+    }
+
+    /**
+     * Gets similar items.
+     * 
+     * @param itemId The item id. (required)
+     * @param excludeArtistIds Exclude artist ids. (optional)
+     * @param userId Optional. Filter by user id, and attach user data. (optional)
+     * @param limit Optional. The maximum number of records to return. (optional)
+     * @param fields Optional. Specify additional fields of information to return in the output. This allows multiple,
+     *            comma delimited. Options: Budget, Chapters, DateCreated, Genres, HomePageUrl, IndexOptions,
+     *            MediaStreams, Overview, ParentId, Path, People, ProviderIds, PrimaryImageAspectRatio, Revenue,
+     *            SortName, Studios, Taglines, TrailerUrls. (optional)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;BaseItemDtoQueryResult&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<BaseItemDtoQueryResult> getSimilarMoviesWithHttpInfo(
+            @org.eclipse.jdt.annotation.Nullable UUID itemId,
+            @org.eclipse.jdt.annotation.NonNull List<UUID> excludeArtistIds,
+            @org.eclipse.jdt.annotation.NonNull UUID userId, @org.eclipse.jdt.annotation.NonNull Integer limit,
+            @org.eclipse.jdt.annotation.NonNull List<ItemFields> fields, Map<String, String> headers)
+            throws ApiException {
         HttpRequest.Builder localVarRequestBuilder = getSimilarMoviesRequestBuilder(itemId, excludeArtistIds, userId,
-                limit, fields);
+                limit, fields, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -1387,14 +1949,14 @@ public class LibraryApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                BaseItemDtoQueryResult responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<BaseItemDtoQueryResult>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<BaseItemDtoQueryResult>(localVarResponse.statusCode(),
-                        localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody,
-                                        new TypeReference<BaseItemDtoQueryResult>() {
-                                        }));
+                        localVarResponse.headers().map(), responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -1408,7 +1970,8 @@ public class LibraryApi {
     private HttpRequest.Builder getSimilarMoviesRequestBuilder(@org.eclipse.jdt.annotation.Nullable UUID itemId,
             @org.eclipse.jdt.annotation.NonNull List<UUID> excludeArtistIds,
             @org.eclipse.jdt.annotation.NonNull UUID userId, @org.eclipse.jdt.annotation.NonNull Integer limit,
-            @org.eclipse.jdt.annotation.NonNull List<ItemFields> fields) throws ApiException {
+            @org.eclipse.jdt.annotation.NonNull List<ItemFields> fields, Map<String, String> headers)
+            throws ApiException {
         // verify the required parameter 'itemId' is set
         if (itemId == null) {
             throw new ApiException(400, "Missing the required parameter 'itemId' when calling getSimilarMovies");
@@ -1448,6 +2011,8 @@ public class LibraryApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -1472,8 +2037,31 @@ public class LibraryApi {
             @org.eclipse.jdt.annotation.NonNull List<UUID> excludeArtistIds,
             @org.eclipse.jdt.annotation.NonNull UUID userId, @org.eclipse.jdt.annotation.NonNull Integer limit,
             @org.eclipse.jdt.annotation.NonNull List<ItemFields> fields) throws ApiException {
+        return getSimilarShows(itemId, excludeArtistIds, userId, limit, fields, null);
+    }
+
+    /**
+     * Gets similar items.
+     * 
+     * @param itemId The item id. (required)
+     * @param excludeArtistIds Exclude artist ids. (optional)
+     * @param userId Optional. Filter by user id, and attach user data. (optional)
+     * @param limit Optional. The maximum number of records to return. (optional)
+     * @param fields Optional. Specify additional fields of information to return in the output. This allows multiple,
+     *            comma delimited. Options: Budget, Chapters, DateCreated, Genres, HomePageUrl, IndexOptions,
+     *            MediaStreams, Overview, ParentId, Path, People, ProviderIds, PrimaryImageAspectRatio, Revenue,
+     *            SortName, Studios, Taglines, TrailerUrls. (optional)
+     * @param headers Optional headers to include in the request
+     * @return BaseItemDtoQueryResult
+     * @throws ApiException if fails to make API call
+     */
+    public BaseItemDtoQueryResult getSimilarShows(@org.eclipse.jdt.annotation.Nullable UUID itemId,
+            @org.eclipse.jdt.annotation.NonNull List<UUID> excludeArtistIds,
+            @org.eclipse.jdt.annotation.NonNull UUID userId, @org.eclipse.jdt.annotation.NonNull Integer limit,
+            @org.eclipse.jdt.annotation.NonNull List<ItemFields> fields, Map<String, String> headers)
+            throws ApiException {
         ApiResponse<BaseItemDtoQueryResult> localVarResponse = getSimilarShowsWithHttpInfo(itemId, excludeArtistIds,
-                userId, limit, fields);
+                userId, limit, fields, headers);
         return localVarResponse.getData();
     }
 
@@ -1496,8 +2084,32 @@ public class LibraryApi {
             @org.eclipse.jdt.annotation.NonNull List<UUID> excludeArtistIds,
             @org.eclipse.jdt.annotation.NonNull UUID userId, @org.eclipse.jdt.annotation.NonNull Integer limit,
             @org.eclipse.jdt.annotation.NonNull List<ItemFields> fields) throws ApiException {
+        return getSimilarShowsWithHttpInfo(itemId, excludeArtistIds, userId, limit, fields, null);
+    }
+
+    /**
+     * Gets similar items.
+     * 
+     * @param itemId The item id. (required)
+     * @param excludeArtistIds Exclude artist ids. (optional)
+     * @param userId Optional. Filter by user id, and attach user data. (optional)
+     * @param limit Optional. The maximum number of records to return. (optional)
+     * @param fields Optional. Specify additional fields of information to return in the output. This allows multiple,
+     *            comma delimited. Options: Budget, Chapters, DateCreated, Genres, HomePageUrl, IndexOptions,
+     *            MediaStreams, Overview, ParentId, Path, People, ProviderIds, PrimaryImageAspectRatio, Revenue,
+     *            SortName, Studios, Taglines, TrailerUrls. (optional)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;BaseItemDtoQueryResult&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<BaseItemDtoQueryResult> getSimilarShowsWithHttpInfo(
+            @org.eclipse.jdt.annotation.Nullable UUID itemId,
+            @org.eclipse.jdt.annotation.NonNull List<UUID> excludeArtistIds,
+            @org.eclipse.jdt.annotation.NonNull UUID userId, @org.eclipse.jdt.annotation.NonNull Integer limit,
+            @org.eclipse.jdt.annotation.NonNull List<ItemFields> fields, Map<String, String> headers)
+            throws ApiException {
         HttpRequest.Builder localVarRequestBuilder = getSimilarShowsRequestBuilder(itemId, excludeArtistIds, userId,
-                limit, fields);
+                limit, fields, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -1514,14 +2126,14 @@ public class LibraryApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                BaseItemDtoQueryResult responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<BaseItemDtoQueryResult>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<BaseItemDtoQueryResult>(localVarResponse.statusCode(),
-                        localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody,
-                                        new TypeReference<BaseItemDtoQueryResult>() {
-                                        }));
+                        localVarResponse.headers().map(), responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -1535,7 +2147,8 @@ public class LibraryApi {
     private HttpRequest.Builder getSimilarShowsRequestBuilder(@org.eclipse.jdt.annotation.Nullable UUID itemId,
             @org.eclipse.jdt.annotation.NonNull List<UUID> excludeArtistIds,
             @org.eclipse.jdt.annotation.NonNull UUID userId, @org.eclipse.jdt.annotation.NonNull Integer limit,
-            @org.eclipse.jdt.annotation.NonNull List<ItemFields> fields) throws ApiException {
+            @org.eclipse.jdt.annotation.NonNull List<ItemFields> fields, Map<String, String> headers)
+            throws ApiException {
         // verify the required parameter 'itemId' is set
         if (itemId == null) {
             throw new ApiException(400, "Missing the required parameter 'itemId' when calling getSimilarShows");
@@ -1575,6 +2188,8 @@ public class LibraryApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -1599,8 +2214,31 @@ public class LibraryApi {
             @org.eclipse.jdt.annotation.NonNull List<UUID> excludeArtistIds,
             @org.eclipse.jdt.annotation.NonNull UUID userId, @org.eclipse.jdt.annotation.NonNull Integer limit,
             @org.eclipse.jdt.annotation.NonNull List<ItemFields> fields) throws ApiException {
+        return getSimilarTrailers(itemId, excludeArtistIds, userId, limit, fields, null);
+    }
+
+    /**
+     * Gets similar items.
+     * 
+     * @param itemId The item id. (required)
+     * @param excludeArtistIds Exclude artist ids. (optional)
+     * @param userId Optional. Filter by user id, and attach user data. (optional)
+     * @param limit Optional. The maximum number of records to return. (optional)
+     * @param fields Optional. Specify additional fields of information to return in the output. This allows multiple,
+     *            comma delimited. Options: Budget, Chapters, DateCreated, Genres, HomePageUrl, IndexOptions,
+     *            MediaStreams, Overview, ParentId, Path, People, ProviderIds, PrimaryImageAspectRatio, Revenue,
+     *            SortName, Studios, Taglines, TrailerUrls. (optional)
+     * @param headers Optional headers to include in the request
+     * @return BaseItemDtoQueryResult
+     * @throws ApiException if fails to make API call
+     */
+    public BaseItemDtoQueryResult getSimilarTrailers(@org.eclipse.jdt.annotation.Nullable UUID itemId,
+            @org.eclipse.jdt.annotation.NonNull List<UUID> excludeArtistIds,
+            @org.eclipse.jdt.annotation.NonNull UUID userId, @org.eclipse.jdt.annotation.NonNull Integer limit,
+            @org.eclipse.jdt.annotation.NonNull List<ItemFields> fields, Map<String, String> headers)
+            throws ApiException {
         ApiResponse<BaseItemDtoQueryResult> localVarResponse = getSimilarTrailersWithHttpInfo(itemId, excludeArtistIds,
-                userId, limit, fields);
+                userId, limit, fields, headers);
         return localVarResponse.getData();
     }
 
@@ -1623,8 +2261,32 @@ public class LibraryApi {
             @org.eclipse.jdt.annotation.NonNull List<UUID> excludeArtistIds,
             @org.eclipse.jdt.annotation.NonNull UUID userId, @org.eclipse.jdt.annotation.NonNull Integer limit,
             @org.eclipse.jdt.annotation.NonNull List<ItemFields> fields) throws ApiException {
+        return getSimilarTrailersWithHttpInfo(itemId, excludeArtistIds, userId, limit, fields, null);
+    }
+
+    /**
+     * Gets similar items.
+     * 
+     * @param itemId The item id. (required)
+     * @param excludeArtistIds Exclude artist ids. (optional)
+     * @param userId Optional. Filter by user id, and attach user data. (optional)
+     * @param limit Optional. The maximum number of records to return. (optional)
+     * @param fields Optional. Specify additional fields of information to return in the output. This allows multiple,
+     *            comma delimited. Options: Budget, Chapters, DateCreated, Genres, HomePageUrl, IndexOptions,
+     *            MediaStreams, Overview, ParentId, Path, People, ProviderIds, PrimaryImageAspectRatio, Revenue,
+     *            SortName, Studios, Taglines, TrailerUrls. (optional)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;BaseItemDtoQueryResult&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<BaseItemDtoQueryResult> getSimilarTrailersWithHttpInfo(
+            @org.eclipse.jdt.annotation.Nullable UUID itemId,
+            @org.eclipse.jdt.annotation.NonNull List<UUID> excludeArtistIds,
+            @org.eclipse.jdt.annotation.NonNull UUID userId, @org.eclipse.jdt.annotation.NonNull Integer limit,
+            @org.eclipse.jdt.annotation.NonNull List<ItemFields> fields, Map<String, String> headers)
+            throws ApiException {
         HttpRequest.Builder localVarRequestBuilder = getSimilarTrailersRequestBuilder(itemId, excludeArtistIds, userId,
-                limit, fields);
+                limit, fields, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -1641,14 +2303,14 @@ public class LibraryApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                BaseItemDtoQueryResult responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<BaseItemDtoQueryResult>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<BaseItemDtoQueryResult>(localVarResponse.statusCode(),
-                        localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody,
-                                        new TypeReference<BaseItemDtoQueryResult>() {
-                                        }));
+                        localVarResponse.headers().map(), responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -1662,7 +2324,8 @@ public class LibraryApi {
     private HttpRequest.Builder getSimilarTrailersRequestBuilder(@org.eclipse.jdt.annotation.Nullable UUID itemId,
             @org.eclipse.jdt.annotation.NonNull List<UUID> excludeArtistIds,
             @org.eclipse.jdt.annotation.NonNull UUID userId, @org.eclipse.jdt.annotation.NonNull Integer limit,
-            @org.eclipse.jdt.annotation.NonNull List<ItemFields> fields) throws ApiException {
+            @org.eclipse.jdt.annotation.NonNull List<ItemFields> fields, Map<String, String> headers)
+            throws ApiException {
         // verify the required parameter 'itemId' is set
         if (itemId == null) {
             throw new ApiException(400, "Missing the required parameter 'itemId' when calling getSimilarTrailers");
@@ -1702,6 +2365,8 @@ public class LibraryApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -1727,8 +2392,32 @@ public class LibraryApi {
             @org.eclipse.jdt.annotation.NonNull Boolean inheritFromParent,
             @org.eclipse.jdt.annotation.NonNull List<ItemSortBy> sortBy,
             @org.eclipse.jdt.annotation.NonNull List<SortOrder> sortOrder) throws ApiException {
+        return getThemeMedia(itemId, userId, inheritFromParent, sortBy, sortOrder, null);
+    }
+
+    /**
+     * Get theme songs and videos for an item.
+     * 
+     * @param itemId The item id. (required)
+     * @param userId Optional. Filter by user id, and attach user data. (optional)
+     * @param inheritFromParent Optional. Determines whether or not parent items should be searched for theme media.
+     *            (optional, default to false)
+     * @param sortBy Optional. Specify one or more sort orders, comma delimited. Options: Album, AlbumArtist, Artist,
+     *            Budget, CommunityRating, CriticRating, DateCreated, DatePlayed, PlayCount, PremiereDate,
+     *            ProductionYear, SortName, Random, Revenue, Runtime. (optional)
+     * @param sortOrder Optional. Sort Order - Ascending, Descending. (optional)
+     * @param headers Optional headers to include in the request
+     * @return AllThemeMediaResult
+     * @throws ApiException if fails to make API call
+     */
+    public AllThemeMediaResult getThemeMedia(@org.eclipse.jdt.annotation.Nullable UUID itemId,
+            @org.eclipse.jdt.annotation.NonNull UUID userId,
+            @org.eclipse.jdt.annotation.NonNull Boolean inheritFromParent,
+            @org.eclipse.jdt.annotation.NonNull List<ItemSortBy> sortBy,
+            @org.eclipse.jdt.annotation.NonNull List<SortOrder> sortOrder, Map<String, String> headers)
+            throws ApiException {
         ApiResponse<AllThemeMediaResult> localVarResponse = getThemeMediaWithHttpInfo(itemId, userId, inheritFromParent,
-                sortBy, sortOrder);
+                sortBy, sortOrder, headers);
         return localVarResponse.getData();
     }
 
@@ -1751,8 +2440,32 @@ public class LibraryApi {
             @org.eclipse.jdt.annotation.NonNull Boolean inheritFromParent,
             @org.eclipse.jdt.annotation.NonNull List<ItemSortBy> sortBy,
             @org.eclipse.jdt.annotation.NonNull List<SortOrder> sortOrder) throws ApiException {
+        return getThemeMediaWithHttpInfo(itemId, userId, inheritFromParent, sortBy, sortOrder, null);
+    }
+
+    /**
+     * Get theme songs and videos for an item.
+     * 
+     * @param itemId The item id. (required)
+     * @param userId Optional. Filter by user id, and attach user data. (optional)
+     * @param inheritFromParent Optional. Determines whether or not parent items should be searched for theme media.
+     *            (optional, default to false)
+     * @param sortBy Optional. Specify one or more sort orders, comma delimited. Options: Album, AlbumArtist, Artist,
+     *            Budget, CommunityRating, CriticRating, DateCreated, DatePlayed, PlayCount, PremiereDate,
+     *            ProductionYear, SortName, Random, Revenue, Runtime. (optional)
+     * @param sortOrder Optional. Sort Order - Ascending, Descending. (optional)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;AllThemeMediaResult&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<AllThemeMediaResult> getThemeMediaWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID itemId,
+            @org.eclipse.jdt.annotation.NonNull UUID userId,
+            @org.eclipse.jdt.annotation.NonNull Boolean inheritFromParent,
+            @org.eclipse.jdt.annotation.NonNull List<ItemSortBy> sortBy,
+            @org.eclipse.jdt.annotation.NonNull List<SortOrder> sortOrder, Map<String, String> headers)
+            throws ApiException {
         HttpRequest.Builder localVarRequestBuilder = getThemeMediaRequestBuilder(itemId, userId, inheritFromParent,
-                sortBy, sortOrder);
+                sortBy, sortOrder, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -1769,14 +2482,14 @@ public class LibraryApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                AllThemeMediaResult responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<AllThemeMediaResult>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<AllThemeMediaResult>(localVarResponse.statusCode(),
-                        localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody,
-                                        new TypeReference<AllThemeMediaResult>() {
-                                        }));
+                        localVarResponse.headers().map(), responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -1791,7 +2504,8 @@ public class LibraryApi {
             @org.eclipse.jdt.annotation.NonNull UUID userId,
             @org.eclipse.jdt.annotation.NonNull Boolean inheritFromParent,
             @org.eclipse.jdt.annotation.NonNull List<ItemSortBy> sortBy,
-            @org.eclipse.jdt.annotation.NonNull List<SortOrder> sortOrder) throws ApiException {
+            @org.eclipse.jdt.annotation.NonNull List<SortOrder> sortOrder, Map<String, String> headers)
+            throws ApiException {
         // verify the required parameter 'itemId' is set
         if (itemId == null) {
             throw new ApiException(400, "Missing the required parameter 'itemId' when calling getThemeMedia");
@@ -1831,6 +2545,8 @@ public class LibraryApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -1856,8 +2572,32 @@ public class LibraryApi {
             @org.eclipse.jdt.annotation.NonNull Boolean inheritFromParent,
             @org.eclipse.jdt.annotation.NonNull List<ItemSortBy> sortBy,
             @org.eclipse.jdt.annotation.NonNull List<SortOrder> sortOrder) throws ApiException {
+        return getThemeSongs(itemId, userId, inheritFromParent, sortBy, sortOrder, null);
+    }
+
+    /**
+     * Get theme songs for an item.
+     * 
+     * @param itemId The item id. (required)
+     * @param userId Optional. Filter by user id, and attach user data. (optional)
+     * @param inheritFromParent Optional. Determines whether or not parent items should be searched for theme media.
+     *            (optional, default to false)
+     * @param sortBy Optional. Specify one or more sort orders, comma delimited. Options: Album, AlbumArtist, Artist,
+     *            Budget, CommunityRating, CriticRating, DateCreated, DatePlayed, PlayCount, PremiereDate,
+     *            ProductionYear, SortName, Random, Revenue, Runtime. (optional)
+     * @param sortOrder Optional. Sort Order - Ascending, Descending. (optional)
+     * @param headers Optional headers to include in the request
+     * @return ThemeMediaResult
+     * @throws ApiException if fails to make API call
+     */
+    public ThemeMediaResult getThemeSongs(@org.eclipse.jdt.annotation.Nullable UUID itemId,
+            @org.eclipse.jdt.annotation.NonNull UUID userId,
+            @org.eclipse.jdt.annotation.NonNull Boolean inheritFromParent,
+            @org.eclipse.jdt.annotation.NonNull List<ItemSortBy> sortBy,
+            @org.eclipse.jdt.annotation.NonNull List<SortOrder> sortOrder, Map<String, String> headers)
+            throws ApiException {
         ApiResponse<ThemeMediaResult> localVarResponse = getThemeSongsWithHttpInfo(itemId, userId, inheritFromParent,
-                sortBy, sortOrder);
+                sortBy, sortOrder, headers);
         return localVarResponse.getData();
     }
 
@@ -1880,8 +2620,32 @@ public class LibraryApi {
             @org.eclipse.jdt.annotation.NonNull Boolean inheritFromParent,
             @org.eclipse.jdt.annotation.NonNull List<ItemSortBy> sortBy,
             @org.eclipse.jdt.annotation.NonNull List<SortOrder> sortOrder) throws ApiException {
+        return getThemeSongsWithHttpInfo(itemId, userId, inheritFromParent, sortBy, sortOrder, null);
+    }
+
+    /**
+     * Get theme songs for an item.
+     * 
+     * @param itemId The item id. (required)
+     * @param userId Optional. Filter by user id, and attach user data. (optional)
+     * @param inheritFromParent Optional. Determines whether or not parent items should be searched for theme media.
+     *            (optional, default to false)
+     * @param sortBy Optional. Specify one or more sort orders, comma delimited. Options: Album, AlbumArtist, Artist,
+     *            Budget, CommunityRating, CriticRating, DateCreated, DatePlayed, PlayCount, PremiereDate,
+     *            ProductionYear, SortName, Random, Revenue, Runtime. (optional)
+     * @param sortOrder Optional. Sort Order - Ascending, Descending. (optional)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;ThemeMediaResult&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<ThemeMediaResult> getThemeSongsWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID itemId,
+            @org.eclipse.jdt.annotation.NonNull UUID userId,
+            @org.eclipse.jdt.annotation.NonNull Boolean inheritFromParent,
+            @org.eclipse.jdt.annotation.NonNull List<ItemSortBy> sortBy,
+            @org.eclipse.jdt.annotation.NonNull List<SortOrder> sortOrder, Map<String, String> headers)
+            throws ApiException {
         HttpRequest.Builder localVarRequestBuilder = getThemeSongsRequestBuilder(itemId, userId, inheritFromParent,
-                sortBy, sortOrder);
+                sortBy, sortOrder, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -1898,12 +2662,14 @@ public class LibraryApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                ThemeMediaResult responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<ThemeMediaResult>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<ThemeMediaResult>(localVarResponse.statusCode(),
-                        localVarResponse.headers().map(), responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<ThemeMediaResult>() {
-                                }));
+                        localVarResponse.headers().map(), responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -1918,7 +2684,8 @@ public class LibraryApi {
             @org.eclipse.jdt.annotation.NonNull UUID userId,
             @org.eclipse.jdt.annotation.NonNull Boolean inheritFromParent,
             @org.eclipse.jdt.annotation.NonNull List<ItemSortBy> sortBy,
-            @org.eclipse.jdt.annotation.NonNull List<SortOrder> sortOrder) throws ApiException {
+            @org.eclipse.jdt.annotation.NonNull List<SortOrder> sortOrder, Map<String, String> headers)
+            throws ApiException {
         // verify the required parameter 'itemId' is set
         if (itemId == null) {
             throw new ApiException(400, "Missing the required parameter 'itemId' when calling getThemeSongs");
@@ -1958,6 +2725,8 @@ public class LibraryApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -1983,8 +2752,32 @@ public class LibraryApi {
             @org.eclipse.jdt.annotation.NonNull Boolean inheritFromParent,
             @org.eclipse.jdt.annotation.NonNull List<ItemSortBy> sortBy,
             @org.eclipse.jdt.annotation.NonNull List<SortOrder> sortOrder) throws ApiException {
+        return getThemeVideos(itemId, userId, inheritFromParent, sortBy, sortOrder, null);
+    }
+
+    /**
+     * Get theme videos for an item.
+     * 
+     * @param itemId The item id. (required)
+     * @param userId Optional. Filter by user id, and attach user data. (optional)
+     * @param inheritFromParent Optional. Determines whether or not parent items should be searched for theme media.
+     *            (optional, default to false)
+     * @param sortBy Optional. Specify one or more sort orders, comma delimited. Options: Album, AlbumArtist, Artist,
+     *            Budget, CommunityRating, CriticRating, DateCreated, DatePlayed, PlayCount, PremiereDate,
+     *            ProductionYear, SortName, Random, Revenue, Runtime. (optional)
+     * @param sortOrder Optional. Sort Order - Ascending, Descending. (optional)
+     * @param headers Optional headers to include in the request
+     * @return ThemeMediaResult
+     * @throws ApiException if fails to make API call
+     */
+    public ThemeMediaResult getThemeVideos(@org.eclipse.jdt.annotation.Nullable UUID itemId,
+            @org.eclipse.jdt.annotation.NonNull UUID userId,
+            @org.eclipse.jdt.annotation.NonNull Boolean inheritFromParent,
+            @org.eclipse.jdt.annotation.NonNull List<ItemSortBy> sortBy,
+            @org.eclipse.jdt.annotation.NonNull List<SortOrder> sortOrder, Map<String, String> headers)
+            throws ApiException {
         ApiResponse<ThemeMediaResult> localVarResponse = getThemeVideosWithHttpInfo(itemId, userId, inheritFromParent,
-                sortBy, sortOrder);
+                sortBy, sortOrder, headers);
         return localVarResponse.getData();
     }
 
@@ -2007,8 +2800,32 @@ public class LibraryApi {
             @org.eclipse.jdt.annotation.NonNull Boolean inheritFromParent,
             @org.eclipse.jdt.annotation.NonNull List<ItemSortBy> sortBy,
             @org.eclipse.jdt.annotation.NonNull List<SortOrder> sortOrder) throws ApiException {
+        return getThemeVideosWithHttpInfo(itemId, userId, inheritFromParent, sortBy, sortOrder, null);
+    }
+
+    /**
+     * Get theme videos for an item.
+     * 
+     * @param itemId The item id. (required)
+     * @param userId Optional. Filter by user id, and attach user data. (optional)
+     * @param inheritFromParent Optional. Determines whether or not parent items should be searched for theme media.
+     *            (optional, default to false)
+     * @param sortBy Optional. Specify one or more sort orders, comma delimited. Options: Album, AlbumArtist, Artist,
+     *            Budget, CommunityRating, CriticRating, DateCreated, DatePlayed, PlayCount, PremiereDate,
+     *            ProductionYear, SortName, Random, Revenue, Runtime. (optional)
+     * @param sortOrder Optional. Sort Order - Ascending, Descending. (optional)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;ThemeMediaResult&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<ThemeMediaResult> getThemeVideosWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID itemId,
+            @org.eclipse.jdt.annotation.NonNull UUID userId,
+            @org.eclipse.jdt.annotation.NonNull Boolean inheritFromParent,
+            @org.eclipse.jdt.annotation.NonNull List<ItemSortBy> sortBy,
+            @org.eclipse.jdt.annotation.NonNull List<SortOrder> sortOrder, Map<String, String> headers)
+            throws ApiException {
         HttpRequest.Builder localVarRequestBuilder = getThemeVideosRequestBuilder(itemId, userId, inheritFromParent,
-                sortBy, sortOrder);
+                sortBy, sortOrder, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -2025,12 +2842,14 @@ public class LibraryApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                ThemeMediaResult responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<ThemeMediaResult>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<ThemeMediaResult>(localVarResponse.statusCode(),
-                        localVarResponse.headers().map(), responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<ThemeMediaResult>() {
-                                }));
+                        localVarResponse.headers().map(), responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -2045,7 +2864,8 @@ public class LibraryApi {
             @org.eclipse.jdt.annotation.NonNull UUID userId,
             @org.eclipse.jdt.annotation.NonNull Boolean inheritFromParent,
             @org.eclipse.jdt.annotation.NonNull List<ItemSortBy> sortBy,
-            @org.eclipse.jdt.annotation.NonNull List<SortOrder> sortOrder) throws ApiException {
+            @org.eclipse.jdt.annotation.NonNull List<SortOrder> sortOrder, Map<String, String> headers)
+            throws ApiException {
         // verify the required parameter 'itemId' is set
         if (itemId == null) {
             throw new ApiException(400, "Missing the required parameter 'itemId' when calling getThemeVideos");
@@ -2085,6 +2905,8 @@ public class LibraryApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -2100,7 +2922,20 @@ public class LibraryApi {
      */
     public void postAddedMovies(@org.eclipse.jdt.annotation.NonNull String tmdbId,
             @org.eclipse.jdt.annotation.NonNull String imdbId) throws ApiException {
-        postAddedMoviesWithHttpInfo(tmdbId, imdbId);
+        postAddedMovies(tmdbId, imdbId, null);
+    }
+
+    /**
+     * Reports that new movies have been added by an external source.
+     * 
+     * @param tmdbId The tmdbId. (optional)
+     * @param imdbId The imdbId. (optional)
+     * @param headers Optional headers to include in the request
+     * @throws ApiException if fails to make API call
+     */
+    public void postAddedMovies(@org.eclipse.jdt.annotation.NonNull String tmdbId,
+            @org.eclipse.jdt.annotation.NonNull String imdbId, Map<String, String> headers) throws ApiException {
+        postAddedMoviesWithHttpInfo(tmdbId, imdbId, headers);
     }
 
     /**
@@ -2113,7 +2948,21 @@ public class LibraryApi {
      */
     public ApiResponse<Void> postAddedMoviesWithHttpInfo(@org.eclipse.jdt.annotation.NonNull String tmdbId,
             @org.eclipse.jdt.annotation.NonNull String imdbId) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = postAddedMoviesRequestBuilder(tmdbId, imdbId);
+        return postAddedMoviesWithHttpInfo(tmdbId, imdbId, null);
+    }
+
+    /**
+     * Reports that new movies have been added by an external source.
+     * 
+     * @param tmdbId The tmdbId. (optional)
+     * @param imdbId The imdbId. (optional)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<Void> postAddedMoviesWithHttpInfo(@org.eclipse.jdt.annotation.NonNull String tmdbId,
+            @org.eclipse.jdt.annotation.NonNull String imdbId, Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = postAddedMoviesRequestBuilder(tmdbId, imdbId, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -2141,7 +2990,7 @@ public class LibraryApi {
     }
 
     private HttpRequest.Builder postAddedMoviesRequestBuilder(@org.eclipse.jdt.annotation.NonNull String tmdbId,
-            @org.eclipse.jdt.annotation.NonNull String imdbId) throws ApiException {
+            @org.eclipse.jdt.annotation.NonNull String imdbId, Map<String, String> headers) throws ApiException {
 
         HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
 
@@ -2172,6 +3021,8 @@ public class LibraryApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -2185,7 +3036,19 @@ public class LibraryApi {
      * @throws ApiException if fails to make API call
      */
     public void postAddedSeries(@org.eclipse.jdt.annotation.NonNull String tvdbId) throws ApiException {
-        postAddedSeriesWithHttpInfo(tvdbId);
+        postAddedSeries(tvdbId, null);
+    }
+
+    /**
+     * Reports that new episodes of a series have been added by an external source.
+     * 
+     * @param tvdbId The tvdbId. (optional)
+     * @param headers Optional headers to include in the request
+     * @throws ApiException if fails to make API call
+     */
+    public void postAddedSeries(@org.eclipse.jdt.annotation.NonNull String tvdbId, Map<String, String> headers)
+            throws ApiException {
+        postAddedSeriesWithHttpInfo(tvdbId, headers);
     }
 
     /**
@@ -2197,7 +3060,20 @@ public class LibraryApi {
      */
     public ApiResponse<Void> postAddedSeriesWithHttpInfo(@org.eclipse.jdt.annotation.NonNull String tvdbId)
             throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = postAddedSeriesRequestBuilder(tvdbId);
+        return postAddedSeriesWithHttpInfo(tvdbId, null);
+    }
+
+    /**
+     * Reports that new episodes of a series have been added by an external source.
+     * 
+     * @param tvdbId The tvdbId. (optional)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<Void> postAddedSeriesWithHttpInfo(@org.eclipse.jdt.annotation.NonNull String tvdbId,
+            Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = postAddedSeriesRequestBuilder(tvdbId, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -2224,8 +3100,8 @@ public class LibraryApi {
         }
     }
 
-    private HttpRequest.Builder postAddedSeriesRequestBuilder(@org.eclipse.jdt.annotation.NonNull String tvdbId)
-            throws ApiException {
+    private HttpRequest.Builder postAddedSeriesRequestBuilder(@org.eclipse.jdt.annotation.NonNull String tvdbId,
+            Map<String, String> headers) throws ApiException {
 
         HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
 
@@ -2254,6 +3130,8 @@ public class LibraryApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -2268,7 +3146,19 @@ public class LibraryApi {
      */
     public void postUpdatedMedia(@org.eclipse.jdt.annotation.Nullable MediaUpdateInfoDto mediaUpdateInfoDto)
             throws ApiException {
-        postUpdatedMediaWithHttpInfo(mediaUpdateInfoDto);
+        postUpdatedMedia(mediaUpdateInfoDto, null);
+    }
+
+    /**
+     * Reports that new movies have been added by an external source.
+     * 
+     * @param mediaUpdateInfoDto The update paths. (required)
+     * @param headers Optional headers to include in the request
+     * @throws ApiException if fails to make API call
+     */
+    public void postUpdatedMedia(@org.eclipse.jdt.annotation.Nullable MediaUpdateInfoDto mediaUpdateInfoDto,
+            Map<String, String> headers) throws ApiException {
+        postUpdatedMediaWithHttpInfo(mediaUpdateInfoDto, headers);
     }
 
     /**
@@ -2280,7 +3170,21 @@ public class LibraryApi {
      */
     public ApiResponse<Void> postUpdatedMediaWithHttpInfo(
             @org.eclipse.jdt.annotation.Nullable MediaUpdateInfoDto mediaUpdateInfoDto) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = postUpdatedMediaRequestBuilder(mediaUpdateInfoDto);
+        return postUpdatedMediaWithHttpInfo(mediaUpdateInfoDto, null);
+    }
+
+    /**
+     * Reports that new movies have been added by an external source.
+     * 
+     * @param mediaUpdateInfoDto The update paths. (required)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<Void> postUpdatedMediaWithHttpInfo(
+            @org.eclipse.jdt.annotation.Nullable MediaUpdateInfoDto mediaUpdateInfoDto, Map<String, String> headers)
+            throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = postUpdatedMediaRequestBuilder(mediaUpdateInfoDto, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -2308,7 +3212,8 @@ public class LibraryApi {
     }
 
     private HttpRequest.Builder postUpdatedMediaRequestBuilder(
-            @org.eclipse.jdt.annotation.Nullable MediaUpdateInfoDto mediaUpdateInfoDto) throws ApiException {
+            @org.eclipse.jdt.annotation.Nullable MediaUpdateInfoDto mediaUpdateInfoDto, Map<String, String> headers)
+            throws ApiException {
         // verify the required parameter 'mediaUpdateInfoDto' is set
         if (mediaUpdateInfoDto == null) {
             throw new ApiException(400,
@@ -2333,6 +3238,8 @@ public class LibraryApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -2348,7 +3255,20 @@ public class LibraryApi {
      */
     public void postUpdatedMovies(@org.eclipse.jdt.annotation.NonNull String tmdbId,
             @org.eclipse.jdt.annotation.NonNull String imdbId) throws ApiException {
-        postUpdatedMoviesWithHttpInfo(tmdbId, imdbId);
+        postUpdatedMovies(tmdbId, imdbId, null);
+    }
+
+    /**
+     * Reports that new movies have been added by an external source.
+     * 
+     * @param tmdbId The tmdbId. (optional)
+     * @param imdbId The imdbId. (optional)
+     * @param headers Optional headers to include in the request
+     * @throws ApiException if fails to make API call
+     */
+    public void postUpdatedMovies(@org.eclipse.jdt.annotation.NonNull String tmdbId,
+            @org.eclipse.jdt.annotation.NonNull String imdbId, Map<String, String> headers) throws ApiException {
+        postUpdatedMoviesWithHttpInfo(tmdbId, imdbId, headers);
     }
 
     /**
@@ -2361,7 +3281,21 @@ public class LibraryApi {
      */
     public ApiResponse<Void> postUpdatedMoviesWithHttpInfo(@org.eclipse.jdt.annotation.NonNull String tmdbId,
             @org.eclipse.jdt.annotation.NonNull String imdbId) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = postUpdatedMoviesRequestBuilder(tmdbId, imdbId);
+        return postUpdatedMoviesWithHttpInfo(tmdbId, imdbId, null);
+    }
+
+    /**
+     * Reports that new movies have been added by an external source.
+     * 
+     * @param tmdbId The tmdbId. (optional)
+     * @param imdbId The imdbId. (optional)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<Void> postUpdatedMoviesWithHttpInfo(@org.eclipse.jdt.annotation.NonNull String tmdbId,
+            @org.eclipse.jdt.annotation.NonNull String imdbId, Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = postUpdatedMoviesRequestBuilder(tmdbId, imdbId, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -2389,7 +3323,7 @@ public class LibraryApi {
     }
 
     private HttpRequest.Builder postUpdatedMoviesRequestBuilder(@org.eclipse.jdt.annotation.NonNull String tmdbId,
-            @org.eclipse.jdt.annotation.NonNull String imdbId) throws ApiException {
+            @org.eclipse.jdt.annotation.NonNull String imdbId, Map<String, String> headers) throws ApiException {
 
         HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
 
@@ -2420,6 +3354,8 @@ public class LibraryApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -2433,7 +3369,19 @@ public class LibraryApi {
      * @throws ApiException if fails to make API call
      */
     public void postUpdatedSeries(@org.eclipse.jdt.annotation.NonNull String tvdbId) throws ApiException {
-        postUpdatedSeriesWithHttpInfo(tvdbId);
+        postUpdatedSeries(tvdbId, null);
+    }
+
+    /**
+     * Reports that new episodes of a series have been added by an external source.
+     * 
+     * @param tvdbId The tvdbId. (optional)
+     * @param headers Optional headers to include in the request
+     * @throws ApiException if fails to make API call
+     */
+    public void postUpdatedSeries(@org.eclipse.jdt.annotation.NonNull String tvdbId, Map<String, String> headers)
+            throws ApiException {
+        postUpdatedSeriesWithHttpInfo(tvdbId, headers);
     }
 
     /**
@@ -2445,7 +3393,20 @@ public class LibraryApi {
      */
     public ApiResponse<Void> postUpdatedSeriesWithHttpInfo(@org.eclipse.jdt.annotation.NonNull String tvdbId)
             throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = postUpdatedSeriesRequestBuilder(tvdbId);
+        return postUpdatedSeriesWithHttpInfo(tvdbId, null);
+    }
+
+    /**
+     * Reports that new episodes of a series have been added by an external source.
+     * 
+     * @param tvdbId The tvdbId. (optional)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<Void> postUpdatedSeriesWithHttpInfo(@org.eclipse.jdt.annotation.NonNull String tvdbId,
+            Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = postUpdatedSeriesRequestBuilder(tvdbId, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -2472,8 +3433,8 @@ public class LibraryApi {
         }
     }
 
-    private HttpRequest.Builder postUpdatedSeriesRequestBuilder(@org.eclipse.jdt.annotation.NonNull String tvdbId)
-            throws ApiException {
+    private HttpRequest.Builder postUpdatedSeriesRequestBuilder(@org.eclipse.jdt.annotation.NonNull String tvdbId,
+            Map<String, String> headers) throws ApiException {
 
         HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
 
@@ -2502,6 +3463,8 @@ public class LibraryApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -2514,7 +3477,17 @@ public class LibraryApi {
      * @throws ApiException if fails to make API call
      */
     public void refreshLibrary() throws ApiException {
-        refreshLibraryWithHttpInfo();
+        refreshLibrary(null);
+    }
+
+    /**
+     * Starts a library scan.
+     * 
+     * @param headers Optional headers to include in the request
+     * @throws ApiException if fails to make API call
+     */
+    public void refreshLibrary(Map<String, String> headers) throws ApiException {
+        refreshLibraryWithHttpInfo(headers);
     }
 
     /**
@@ -2524,7 +3497,18 @@ public class LibraryApi {
      * @throws ApiException if fails to make API call
      */
     public ApiResponse<Void> refreshLibraryWithHttpInfo() throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = refreshLibraryRequestBuilder();
+        return refreshLibraryWithHttpInfo(null);
+    }
+
+    /**
+     * Starts a library scan.
+     * 
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<Void> refreshLibraryWithHttpInfo(Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = refreshLibraryRequestBuilder(headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -2551,7 +3535,7 @@ public class LibraryApi {
         }
     }
 
-    private HttpRequest.Builder refreshLibraryRequestBuilder() throws ApiException {
+    private HttpRequest.Builder refreshLibraryRequestBuilder(Map<String, String> headers) throws ApiException {
 
         HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
 
@@ -2565,6 +3549,8 @@ public class LibraryApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }

@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.jellyfin.internal.api.generated.current;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -19,6 +20,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
+import java.util.Map;
 import java.util.function.Consumer;
 
 import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
@@ -32,6 +34,28 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class BrandingApi {
+    /**
+     * Utility class for extending HttpRequest.Builder functionality.
+     */
+    private static class HttpRequestBuilderExtensions {
+        /**
+         * Adds additional headers to the provided HttpRequest.Builder. Useful for adding method/endpoint specific
+         * headers.
+         *
+         * @param builder the HttpRequest.Builder to which headers will be added
+         * @param headers a map of header names and values to add; may be null
+         * @return the same HttpRequest.Builder instance with the additional headers set
+         */
+        static HttpRequest.Builder withAdditionalHeaders(HttpRequest.Builder builder, Map<String, String> headers) {
+            if (headers != null) {
+                for (Map.Entry<String, String> entry : headers.entrySet()) {
+                    builder.header(entry.getKey(), entry.getValue());
+                }
+            }
+            return builder;
+        }
+    }
+
     private final HttpClient memberVarHttpClient;
     private final ObjectMapper memberVarObjectMapper;
     private final String memberVarBaseUri;
@@ -68,13 +92,74 @@ public class BrandingApi {
     }
 
     /**
+     * Download file from the given response.
+     *
+     * @param response Response
+     * @return File
+     * @throws ApiException If fail to read file content from response and write to disk
+     */
+    public File downloadFileFromResponse(HttpResponse<InputStream> response) throws ApiException {
+        try {
+            File file = prepareDownloadFile(response);
+            java.nio.file.Files.copy(response.body(), file.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+            return file;
+        } catch (IOException e) {
+            throw new ApiException(e);
+        }
+    }
+
+    /**
+     * <p>
+     * Prepare the file for download from the response.
+     * </p>
+     *
+     * @param response a {@link java.net.http.HttpResponse} object.
+     * @return a {@link java.io.File} object.
+     * @throws java.io.IOException if any.
+     */
+    private File prepareDownloadFile(HttpResponse<InputStream> response) throws IOException {
+        String filename = null;
+        java.util.Optional<String> contentDisposition = response.headers().firstValue("Content-Disposition");
+        if (contentDisposition.isPresent() && !"".equals(contentDisposition.get())) {
+            // Get filename from the Content-Disposition header.
+            java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("filename=['\"]?([^'\"\\s]+)['\"]?");
+            java.util.regex.Matcher matcher = pattern.matcher(contentDisposition.get());
+            if (matcher.find())
+                filename = matcher.group(1);
+        }
+        File file = null;
+        if (filename != null) {
+            java.nio.file.Path tempDir = java.nio.file.Files.createTempDirectory("swagger-gen-native");
+            java.nio.file.Path filePath = java.nio.file.Files.createFile(tempDir.resolve(filename));
+            file = filePath.toFile();
+            tempDir.toFile().deleteOnExit(); // best effort cleanup
+            file.deleteOnExit(); // best effort cleanup
+        } else {
+            file = java.nio.file.Files.createTempFile("download-", "").toFile();
+            file.deleteOnExit(); // best effort cleanup
+        }
+        return file;
+    }
+
+    /**
      * Gets branding css.
      * 
      * @return String
      * @throws ApiException if fails to make API call
      */
     public String getBrandingCss() throws ApiException {
-        ApiResponse<String> localVarResponse = getBrandingCssWithHttpInfo();
+        return getBrandingCss(null);
+    }
+
+    /**
+     * Gets branding css.
+     * 
+     * @param headers Optional headers to include in the request
+     * @return String
+     * @throws ApiException if fails to make API call
+     */
+    public String getBrandingCss(Map<String, String> headers) throws ApiException {
+        ApiResponse<String> localVarResponse = getBrandingCssWithHttpInfo(headers);
         return localVarResponse.getData();
     }
 
@@ -85,7 +170,18 @@ public class BrandingApi {
      * @throws ApiException if fails to make API call
      */
     public ApiResponse<String> getBrandingCssWithHttpInfo() throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getBrandingCssRequestBuilder();
+        return getBrandingCssWithHttpInfo(null);
+    }
+
+    /**
+     * Gets branding css.
+     * 
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;String&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<String> getBrandingCssWithHttpInfo(Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = getBrandingCssRequestBuilder(headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -102,12 +198,14 @@ public class BrandingApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                String responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<String>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<String>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<String>() {
-                                }));
+                        responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -118,7 +216,7 @@ public class BrandingApi {
         }
     }
 
-    private HttpRequest.Builder getBrandingCssRequestBuilder() throws ApiException {
+    private HttpRequest.Builder getBrandingCssRequestBuilder(Map<String, String> headers) throws ApiException {
 
         HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
 
@@ -133,6 +231,8 @@ public class BrandingApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -146,7 +246,18 @@ public class BrandingApi {
      * @throws ApiException if fails to make API call
      */
     public String getBrandingCss2() throws ApiException {
-        ApiResponse<String> localVarResponse = getBrandingCss2WithHttpInfo();
+        return getBrandingCss2(null);
+    }
+
+    /**
+     * Gets branding css.
+     * 
+     * @param headers Optional headers to include in the request
+     * @return String
+     * @throws ApiException if fails to make API call
+     */
+    public String getBrandingCss2(Map<String, String> headers) throws ApiException {
+        ApiResponse<String> localVarResponse = getBrandingCss2WithHttpInfo(headers);
         return localVarResponse.getData();
     }
 
@@ -157,7 +268,18 @@ public class BrandingApi {
      * @throws ApiException if fails to make API call
      */
     public ApiResponse<String> getBrandingCss2WithHttpInfo() throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getBrandingCss2RequestBuilder();
+        return getBrandingCss2WithHttpInfo(null);
+    }
+
+    /**
+     * Gets branding css.
+     * 
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;String&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<String> getBrandingCss2WithHttpInfo(Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = getBrandingCss2RequestBuilder(headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -174,12 +296,14 @@ public class BrandingApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                String responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<String>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<String>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<String>() {
-                                }));
+                        responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -190,7 +314,7 @@ public class BrandingApi {
         }
     }
 
-    private HttpRequest.Builder getBrandingCss2RequestBuilder() throws ApiException {
+    private HttpRequest.Builder getBrandingCss2RequestBuilder(Map<String, String> headers) throws ApiException {
 
         HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
 
@@ -205,6 +329,8 @@ public class BrandingApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -218,7 +344,18 @@ public class BrandingApi {
      * @throws ApiException if fails to make API call
      */
     public BrandingOptions getBrandingOptions() throws ApiException {
-        ApiResponse<BrandingOptions> localVarResponse = getBrandingOptionsWithHttpInfo();
+        return getBrandingOptions(null);
+    }
+
+    /**
+     * Gets branding configuration.
+     * 
+     * @param headers Optional headers to include in the request
+     * @return BrandingOptions
+     * @throws ApiException if fails to make API call
+     */
+    public BrandingOptions getBrandingOptions(Map<String, String> headers) throws ApiException {
+        ApiResponse<BrandingOptions> localVarResponse = getBrandingOptionsWithHttpInfo(headers);
         return localVarResponse.getData();
     }
 
@@ -229,7 +366,19 @@ public class BrandingApi {
      * @throws ApiException if fails to make API call
      */
     public ApiResponse<BrandingOptions> getBrandingOptionsWithHttpInfo() throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getBrandingOptionsRequestBuilder();
+        return getBrandingOptionsWithHttpInfo(null);
+    }
+
+    /**
+     * Gets branding configuration.
+     * 
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;BrandingOptions&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<BrandingOptions> getBrandingOptionsWithHttpInfo(Map<String, String> headers)
+            throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = getBrandingOptionsRequestBuilder(headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -246,12 +395,14 @@ public class BrandingApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                BrandingOptions responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<BrandingOptions>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<BrandingOptions>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<BrandingOptions>() {
-                                }));
+                        responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -262,7 +413,7 @@ public class BrandingApi {
         }
     }
 
-    private HttpRequest.Builder getBrandingOptionsRequestBuilder() throws ApiException {
+    private HttpRequest.Builder getBrandingOptionsRequestBuilder(Map<String, String> headers) throws ApiException {
 
         HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
 
@@ -277,6 +428,8 @@ public class BrandingApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }

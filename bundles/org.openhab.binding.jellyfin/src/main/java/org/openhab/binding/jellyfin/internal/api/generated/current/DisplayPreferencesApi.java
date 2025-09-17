@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.jellyfin.internal.api.generated.current;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -21,6 +22,7 @@ import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.StringJoiner;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -37,6 +39,28 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class DisplayPreferencesApi {
+    /**
+     * Utility class for extending HttpRequest.Builder functionality.
+     */
+    private static class HttpRequestBuilderExtensions {
+        /**
+         * Adds additional headers to the provided HttpRequest.Builder. Useful for adding method/endpoint specific
+         * headers.
+         *
+         * @param builder the HttpRequest.Builder to which headers will be added
+         * @param headers a map of header names and values to add; may be null
+         * @return the same HttpRequest.Builder instance with the additional headers set
+         */
+        static HttpRequest.Builder withAdditionalHeaders(HttpRequest.Builder builder, Map<String, String> headers) {
+            if (headers != null) {
+                for (Map.Entry<String, String> entry : headers.entrySet()) {
+                    builder.header(entry.getKey(), entry.getValue());
+                }
+            }
+            return builder;
+        }
+    }
+
     private final HttpClient memberVarHttpClient;
     private final ObjectMapper memberVarObjectMapper;
     private final String memberVarBaseUri;
@@ -73,6 +97,56 @@ public class DisplayPreferencesApi {
     }
 
     /**
+     * Download file from the given response.
+     *
+     * @param response Response
+     * @return File
+     * @throws ApiException If fail to read file content from response and write to disk
+     */
+    public File downloadFileFromResponse(HttpResponse<InputStream> response) throws ApiException {
+        try {
+            File file = prepareDownloadFile(response);
+            java.nio.file.Files.copy(response.body(), file.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+            return file;
+        } catch (IOException e) {
+            throw new ApiException(e);
+        }
+    }
+
+    /**
+     * <p>
+     * Prepare the file for download from the response.
+     * </p>
+     *
+     * @param response a {@link java.net.http.HttpResponse} object.
+     * @return a {@link java.io.File} object.
+     * @throws java.io.IOException if any.
+     */
+    private File prepareDownloadFile(HttpResponse<InputStream> response) throws IOException {
+        String filename = null;
+        java.util.Optional<String> contentDisposition = response.headers().firstValue("Content-Disposition");
+        if (contentDisposition.isPresent() && !"".equals(contentDisposition.get())) {
+            // Get filename from the Content-Disposition header.
+            java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("filename=['\"]?([^'\"\\s]+)['\"]?");
+            java.util.regex.Matcher matcher = pattern.matcher(contentDisposition.get());
+            if (matcher.find())
+                filename = matcher.group(1);
+        }
+        File file = null;
+        if (filename != null) {
+            java.nio.file.Path tempDir = java.nio.file.Files.createTempDirectory("swagger-gen-native");
+            java.nio.file.Path filePath = java.nio.file.Files.createFile(tempDir.resolve(filename));
+            file = filePath.toFile();
+            tempDir.toFile().deleteOnExit(); // best effort cleanup
+            file.deleteOnExit(); // best effort cleanup
+        } else {
+            file = java.nio.file.Files.createTempFile("download-", "").toFile();
+            file.deleteOnExit(); // best effort cleanup
+        }
+        return file;
+    }
+
+    /**
      * Get Display Preferences.
      * 
      * @param displayPreferencesId Display preferences id. (required)
@@ -84,8 +158,24 @@ public class DisplayPreferencesApi {
     public DisplayPreferencesDto getDisplayPreferences(@org.eclipse.jdt.annotation.Nullable String displayPreferencesId,
             @org.eclipse.jdt.annotation.Nullable String client, @org.eclipse.jdt.annotation.NonNull UUID userId)
             throws ApiException {
+        return getDisplayPreferences(displayPreferencesId, client, userId, null);
+    }
+
+    /**
+     * Get Display Preferences.
+     * 
+     * @param displayPreferencesId Display preferences id. (required)
+     * @param client Client. (required)
+     * @param userId User id. (optional)
+     * @param headers Optional headers to include in the request
+     * @return DisplayPreferencesDto
+     * @throws ApiException if fails to make API call
+     */
+    public DisplayPreferencesDto getDisplayPreferences(@org.eclipse.jdt.annotation.Nullable String displayPreferencesId,
+            @org.eclipse.jdt.annotation.Nullable String client, @org.eclipse.jdt.annotation.NonNull UUID userId,
+            Map<String, String> headers) throws ApiException {
         ApiResponse<DisplayPreferencesDto> localVarResponse = getDisplayPreferencesWithHttpInfo(displayPreferencesId,
-                client, userId);
+                client, userId, headers);
         return localVarResponse.getData();
     }
 
@@ -102,8 +192,25 @@ public class DisplayPreferencesApi {
             @org.eclipse.jdt.annotation.Nullable String displayPreferencesId,
             @org.eclipse.jdt.annotation.Nullable String client, @org.eclipse.jdt.annotation.NonNull UUID userId)
             throws ApiException {
+        return getDisplayPreferencesWithHttpInfo(displayPreferencesId, client, userId, null);
+    }
+
+    /**
+     * Get Display Preferences.
+     * 
+     * @param displayPreferencesId Display preferences id. (required)
+     * @param client Client. (required)
+     * @param userId User id. (optional)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;DisplayPreferencesDto&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<DisplayPreferencesDto> getDisplayPreferencesWithHttpInfo(
+            @org.eclipse.jdt.annotation.Nullable String displayPreferencesId,
+            @org.eclipse.jdt.annotation.Nullable String client, @org.eclipse.jdt.annotation.NonNull UUID userId,
+            Map<String, String> headers) throws ApiException {
         HttpRequest.Builder localVarRequestBuilder = getDisplayPreferencesRequestBuilder(displayPreferencesId, client,
-                userId);
+                userId, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -120,14 +227,14 @@ public class DisplayPreferencesApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                DisplayPreferencesDto responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<DisplayPreferencesDto>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<DisplayPreferencesDto>(localVarResponse.statusCode(),
-                        localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody,
-                                        new TypeReference<DisplayPreferencesDto>() {
-                                        }));
+                        localVarResponse.headers().map(), responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -140,8 +247,8 @@ public class DisplayPreferencesApi {
 
     private HttpRequest.Builder getDisplayPreferencesRequestBuilder(
             @org.eclipse.jdt.annotation.Nullable String displayPreferencesId,
-            @org.eclipse.jdt.annotation.Nullable String client, @org.eclipse.jdt.annotation.NonNull UUID userId)
-            throws ApiException {
+            @org.eclipse.jdt.annotation.Nullable String client, @org.eclipse.jdt.annotation.NonNull UUID userId,
+            Map<String, String> headers) throws ApiException {
         // verify the required parameter 'displayPreferencesId' is set
         if (displayPreferencesId == null) {
             throw new ApiException(400,
@@ -183,6 +290,8 @@ public class DisplayPreferencesApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -202,7 +311,24 @@ public class DisplayPreferencesApi {
             @org.eclipse.jdt.annotation.Nullable String client,
             @org.eclipse.jdt.annotation.Nullable DisplayPreferencesDto displayPreferencesDto,
             @org.eclipse.jdt.annotation.NonNull UUID userId) throws ApiException {
-        updateDisplayPreferencesWithHttpInfo(displayPreferencesId, client, displayPreferencesDto, userId);
+        updateDisplayPreferences(displayPreferencesId, client, displayPreferencesDto, userId, null);
+    }
+
+    /**
+     * Update Display Preferences.
+     * 
+     * @param displayPreferencesId Display preferences id. (required)
+     * @param client Client. (required)
+     * @param displayPreferencesDto New Display Preferences object. (required)
+     * @param userId User Id. (optional)
+     * @param headers Optional headers to include in the request
+     * @throws ApiException if fails to make API call
+     */
+    public void updateDisplayPreferences(@org.eclipse.jdt.annotation.Nullable String displayPreferencesId,
+            @org.eclipse.jdt.annotation.Nullable String client,
+            @org.eclipse.jdt.annotation.Nullable DisplayPreferencesDto displayPreferencesDto,
+            @org.eclipse.jdt.annotation.NonNull UUID userId, Map<String, String> headers) throws ApiException {
+        updateDisplayPreferencesWithHttpInfo(displayPreferencesId, client, displayPreferencesDto, userId, headers);
     }
 
     /**
@@ -220,8 +346,27 @@ public class DisplayPreferencesApi {
             @org.eclipse.jdt.annotation.Nullable String client,
             @org.eclipse.jdt.annotation.Nullable DisplayPreferencesDto displayPreferencesDto,
             @org.eclipse.jdt.annotation.NonNull UUID userId) throws ApiException {
+        return updateDisplayPreferencesWithHttpInfo(displayPreferencesId, client, displayPreferencesDto, userId, null);
+    }
+
+    /**
+     * Update Display Preferences.
+     * 
+     * @param displayPreferencesId Display preferences id. (required)
+     * @param client Client. (required)
+     * @param displayPreferencesDto New Display Preferences object. (required)
+     * @param userId User Id. (optional)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<Void> updateDisplayPreferencesWithHttpInfo(
+            @org.eclipse.jdt.annotation.Nullable String displayPreferencesId,
+            @org.eclipse.jdt.annotation.Nullable String client,
+            @org.eclipse.jdt.annotation.Nullable DisplayPreferencesDto displayPreferencesDto,
+            @org.eclipse.jdt.annotation.NonNull UUID userId, Map<String, String> headers) throws ApiException {
         HttpRequest.Builder localVarRequestBuilder = updateDisplayPreferencesRequestBuilder(displayPreferencesId,
-                client, displayPreferencesDto, userId);
+                client, displayPreferencesDto, userId, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -252,7 +397,7 @@ public class DisplayPreferencesApi {
             @org.eclipse.jdt.annotation.Nullable String displayPreferencesId,
             @org.eclipse.jdt.annotation.Nullable String client,
             @org.eclipse.jdt.annotation.Nullable DisplayPreferencesDto displayPreferencesDto,
-            @org.eclipse.jdt.annotation.NonNull UUID userId) throws ApiException {
+            @org.eclipse.jdt.annotation.NonNull UUID userId, Map<String, String> headers) throws ApiException {
         // verify the required parameter 'displayPreferencesId' is set
         if (displayPreferencesId == null) {
             throw new ApiException(400,
@@ -305,6 +450,8 @@ public class DisplayPreferencesApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }

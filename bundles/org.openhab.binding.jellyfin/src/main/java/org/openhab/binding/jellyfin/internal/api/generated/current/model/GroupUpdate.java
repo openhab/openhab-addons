@@ -284,10 +284,6 @@ public class GroupUpdate extends AbstractOpenApiSchema {
         mappings.put("StateUpdate", GroupStateUpdateGroupUpdate.class);
         mappings.put("UserJoined", StringGroupUpdate.class);
         mappings.put("UserLeft", StringGroupUpdate.class);
-        mappings.put("GroupInfoDtoGroupUpdate", GroupInfoDtoGroupUpdate.class);
-        mappings.put("GroupStateUpdateGroupUpdate", GroupStateUpdateGroupUpdate.class);
-        mappings.put("PlayQueueUpdateGroupUpdate", PlayQueueUpdateGroupUpdate.class);
-        mappings.put("StringGroupUpdate", StringGroupUpdate.class);
         mappings.put("GroupUpdate", GroupUpdate.class);
         JSON.registerDiscriminator(GroupUpdate.class, "Type", mappings);
     }

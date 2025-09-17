@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.jellyfin.internal.api.generated.current;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -19,6 +20,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
+import java.util.Map;
 import java.util.function.Consumer;
 
 import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
@@ -34,6 +36,28 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class StartupApi {
+    /**
+     * Utility class for extending HttpRequest.Builder functionality.
+     */
+    private static class HttpRequestBuilderExtensions {
+        /**
+         * Adds additional headers to the provided HttpRequest.Builder. Useful for adding method/endpoint specific
+         * headers.
+         *
+         * @param builder the HttpRequest.Builder to which headers will be added
+         * @param headers a map of header names and values to add; may be null
+         * @return the same HttpRequest.Builder instance with the additional headers set
+         */
+        static HttpRequest.Builder withAdditionalHeaders(HttpRequest.Builder builder, Map<String, String> headers) {
+            if (headers != null) {
+                for (Map.Entry<String, String> entry : headers.entrySet()) {
+                    builder.header(entry.getKey(), entry.getValue());
+                }
+            }
+            return builder;
+        }
+    }
+
     private final HttpClient memberVarHttpClient;
     private final ObjectMapper memberVarObjectMapper;
     private final String memberVarBaseUri;
@@ -70,12 +94,72 @@ public class StartupApi {
     }
 
     /**
+     * Download file from the given response.
+     *
+     * @param response Response
+     * @return File
+     * @throws ApiException If fail to read file content from response and write to disk
+     */
+    public File downloadFileFromResponse(HttpResponse<InputStream> response) throws ApiException {
+        try {
+            File file = prepareDownloadFile(response);
+            java.nio.file.Files.copy(response.body(), file.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+            return file;
+        } catch (IOException e) {
+            throw new ApiException(e);
+        }
+    }
+
+    /**
+     * <p>
+     * Prepare the file for download from the response.
+     * </p>
+     *
+     * @param response a {@link java.net.http.HttpResponse} object.
+     * @return a {@link java.io.File} object.
+     * @throws java.io.IOException if any.
+     */
+    private File prepareDownloadFile(HttpResponse<InputStream> response) throws IOException {
+        String filename = null;
+        java.util.Optional<String> contentDisposition = response.headers().firstValue("Content-Disposition");
+        if (contentDisposition.isPresent() && !"".equals(contentDisposition.get())) {
+            // Get filename from the Content-Disposition header.
+            java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("filename=['\"]?([^'\"\\s]+)['\"]?");
+            java.util.regex.Matcher matcher = pattern.matcher(contentDisposition.get());
+            if (matcher.find())
+                filename = matcher.group(1);
+        }
+        File file = null;
+        if (filename != null) {
+            java.nio.file.Path tempDir = java.nio.file.Files.createTempDirectory("swagger-gen-native");
+            java.nio.file.Path filePath = java.nio.file.Files.createFile(tempDir.resolve(filename));
+            file = filePath.toFile();
+            tempDir.toFile().deleteOnExit(); // best effort cleanup
+            file.deleteOnExit(); // best effort cleanup
+        } else {
+            file = java.nio.file.Files.createTempFile("download-", "").toFile();
+            file.deleteOnExit(); // best effort cleanup
+        }
+        return file;
+    }
+
+    /**
      * Completes the startup wizard.
      * 
      * @throws ApiException if fails to make API call
      */
     public void completeWizard() throws ApiException {
-        completeWizardWithHttpInfo();
+        completeWizard(null);
+    }
+
+    /**
+     * Completes the startup wizard.
+     * 
+     * @param headers Optional headers to include in the request
+     * @throws ApiException if fails to make API call
+     */
+    public void completeWizard(Map<String, String> headers) throws ApiException {
+        completeWizardWithHttpInfo(headers);
     }
 
     /**
@@ -85,7 +169,18 @@ public class StartupApi {
      * @throws ApiException if fails to make API call
      */
     public ApiResponse<Void> completeWizardWithHttpInfo() throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = completeWizardRequestBuilder();
+        return completeWizardWithHttpInfo(null);
+    }
+
+    /**
+     * Completes the startup wizard.
+     * 
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<Void> completeWizardWithHttpInfo(Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = completeWizardRequestBuilder(headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -112,7 +207,7 @@ public class StartupApi {
         }
     }
 
-    private HttpRequest.Builder completeWizardRequestBuilder() throws ApiException {
+    private HttpRequest.Builder completeWizardRequestBuilder(Map<String, String> headers) throws ApiException {
 
         HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
 
@@ -126,6 +221,8 @@ public class StartupApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -139,7 +236,18 @@ public class StartupApi {
      * @throws ApiException if fails to make API call
      */
     public StartupUserDto getFirstUser() throws ApiException {
-        ApiResponse<StartupUserDto> localVarResponse = getFirstUserWithHttpInfo();
+        return getFirstUser(null);
+    }
+
+    /**
+     * Gets the first user.
+     * 
+     * @param headers Optional headers to include in the request
+     * @return StartupUserDto
+     * @throws ApiException if fails to make API call
+     */
+    public StartupUserDto getFirstUser(Map<String, String> headers) throws ApiException {
+        ApiResponse<StartupUserDto> localVarResponse = getFirstUserWithHttpInfo(headers);
         return localVarResponse.getData();
     }
 
@@ -150,7 +258,18 @@ public class StartupApi {
      * @throws ApiException if fails to make API call
      */
     public ApiResponse<StartupUserDto> getFirstUserWithHttpInfo() throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getFirstUserRequestBuilder();
+        return getFirstUserWithHttpInfo(null);
+    }
+
+    /**
+     * Gets the first user.
+     * 
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;StartupUserDto&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<StartupUserDto> getFirstUserWithHttpInfo(Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = getFirstUserRequestBuilder(headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -167,12 +286,14 @@ public class StartupApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                StartupUserDto responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<StartupUserDto>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<StartupUserDto>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<StartupUserDto>() {
-                                }));
+                        responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -183,7 +304,7 @@ public class StartupApi {
         }
     }
 
-    private HttpRequest.Builder getFirstUserRequestBuilder() throws ApiException {
+    private HttpRequest.Builder getFirstUserRequestBuilder(Map<String, String> headers) throws ApiException {
 
         HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
 
@@ -198,6 +319,8 @@ public class StartupApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -211,7 +334,18 @@ public class StartupApi {
      * @throws ApiException if fails to make API call
      */
     public StartupUserDto getFirstUser2() throws ApiException {
-        ApiResponse<StartupUserDto> localVarResponse = getFirstUser2WithHttpInfo();
+        return getFirstUser2(null);
+    }
+
+    /**
+     * Gets the first user.
+     * 
+     * @param headers Optional headers to include in the request
+     * @return StartupUserDto
+     * @throws ApiException if fails to make API call
+     */
+    public StartupUserDto getFirstUser2(Map<String, String> headers) throws ApiException {
+        ApiResponse<StartupUserDto> localVarResponse = getFirstUser2WithHttpInfo(headers);
         return localVarResponse.getData();
     }
 
@@ -222,7 +356,18 @@ public class StartupApi {
      * @throws ApiException if fails to make API call
      */
     public ApiResponse<StartupUserDto> getFirstUser2WithHttpInfo() throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getFirstUser2RequestBuilder();
+        return getFirstUser2WithHttpInfo(null);
+    }
+
+    /**
+     * Gets the first user.
+     * 
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;StartupUserDto&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<StartupUserDto> getFirstUser2WithHttpInfo(Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = getFirstUser2RequestBuilder(headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -239,12 +384,14 @@ public class StartupApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                StartupUserDto responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<StartupUserDto>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<StartupUserDto>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<StartupUserDto>() {
-                                }));
+                        responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -255,7 +402,7 @@ public class StartupApi {
         }
     }
 
-    private HttpRequest.Builder getFirstUser2RequestBuilder() throws ApiException {
+    private HttpRequest.Builder getFirstUser2RequestBuilder(Map<String, String> headers) throws ApiException {
 
         HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
 
@@ -270,6 +417,8 @@ public class StartupApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -283,7 +432,18 @@ public class StartupApi {
      * @throws ApiException if fails to make API call
      */
     public StartupConfigurationDto getStartupConfiguration() throws ApiException {
-        ApiResponse<StartupConfigurationDto> localVarResponse = getStartupConfigurationWithHttpInfo();
+        return getStartupConfiguration(null);
+    }
+
+    /**
+     * Gets the initial startup wizard configuration.
+     * 
+     * @param headers Optional headers to include in the request
+     * @return StartupConfigurationDto
+     * @throws ApiException if fails to make API call
+     */
+    public StartupConfigurationDto getStartupConfiguration(Map<String, String> headers) throws ApiException {
+        ApiResponse<StartupConfigurationDto> localVarResponse = getStartupConfigurationWithHttpInfo(headers);
         return localVarResponse.getData();
     }
 
@@ -294,7 +454,19 @@ public class StartupApi {
      * @throws ApiException if fails to make API call
      */
     public ApiResponse<StartupConfigurationDto> getStartupConfigurationWithHttpInfo() throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getStartupConfigurationRequestBuilder();
+        return getStartupConfigurationWithHttpInfo(null);
+    }
+
+    /**
+     * Gets the initial startup wizard configuration.
+     * 
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;StartupConfigurationDto&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<StartupConfigurationDto> getStartupConfigurationWithHttpInfo(Map<String, String> headers)
+            throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = getStartupConfigurationRequestBuilder(headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -311,14 +483,14 @@ public class StartupApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                StartupConfigurationDto responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<StartupConfigurationDto>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<StartupConfigurationDto>(localVarResponse.statusCode(),
-                        localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody,
-                                        new TypeReference<StartupConfigurationDto>() {
-                                        }));
+                        localVarResponse.headers().map(), responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -329,7 +501,7 @@ public class StartupApi {
         }
     }
 
-    private HttpRequest.Builder getStartupConfigurationRequestBuilder() throws ApiException {
+    private HttpRequest.Builder getStartupConfigurationRequestBuilder(Map<String, String> headers) throws ApiException {
 
         HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
 
@@ -344,6 +516,8 @@ public class StartupApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -358,7 +532,19 @@ public class StartupApi {
      */
     public void setRemoteAccess(@org.eclipse.jdt.annotation.Nullable StartupRemoteAccessDto startupRemoteAccessDto)
             throws ApiException {
-        setRemoteAccessWithHttpInfo(startupRemoteAccessDto);
+        setRemoteAccess(startupRemoteAccessDto, null);
+    }
+
+    /**
+     * Sets remote access and UPnP.
+     * 
+     * @param startupRemoteAccessDto The startup remote access dto. (required)
+     * @param headers Optional headers to include in the request
+     * @throws ApiException if fails to make API call
+     */
+    public void setRemoteAccess(@org.eclipse.jdt.annotation.Nullable StartupRemoteAccessDto startupRemoteAccessDto,
+            Map<String, String> headers) throws ApiException {
+        setRemoteAccessWithHttpInfo(startupRemoteAccessDto, headers);
     }
 
     /**
@@ -370,7 +556,21 @@ public class StartupApi {
      */
     public ApiResponse<Void> setRemoteAccessWithHttpInfo(
             @org.eclipse.jdt.annotation.Nullable StartupRemoteAccessDto startupRemoteAccessDto) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = setRemoteAccessRequestBuilder(startupRemoteAccessDto);
+        return setRemoteAccessWithHttpInfo(startupRemoteAccessDto, null);
+    }
+
+    /**
+     * Sets remote access and UPnP.
+     * 
+     * @param startupRemoteAccessDto The startup remote access dto. (required)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<Void> setRemoteAccessWithHttpInfo(
+            @org.eclipse.jdt.annotation.Nullable StartupRemoteAccessDto startupRemoteAccessDto,
+            Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = setRemoteAccessRequestBuilder(startupRemoteAccessDto, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -398,7 +598,8 @@ public class StartupApi {
     }
 
     private HttpRequest.Builder setRemoteAccessRequestBuilder(
-            @org.eclipse.jdt.annotation.Nullable StartupRemoteAccessDto startupRemoteAccessDto) throws ApiException {
+            @org.eclipse.jdt.annotation.Nullable StartupRemoteAccessDto startupRemoteAccessDto,
+            Map<String, String> headers) throws ApiException {
         // verify the required parameter 'startupRemoteAccessDto' is set
         if (startupRemoteAccessDto == null) {
             throw new ApiException(400,
@@ -423,6 +624,8 @@ public class StartupApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -437,7 +640,20 @@ public class StartupApi {
      */
     public void updateInitialConfiguration(
             @org.eclipse.jdt.annotation.Nullable StartupConfigurationDto startupConfigurationDto) throws ApiException {
-        updateInitialConfigurationWithHttpInfo(startupConfigurationDto);
+        updateInitialConfiguration(startupConfigurationDto, null);
+    }
+
+    /**
+     * Sets the initial startup wizard configuration.
+     * 
+     * @param startupConfigurationDto The updated startup configuration. (required)
+     * @param headers Optional headers to include in the request
+     * @throws ApiException if fails to make API call
+     */
+    public void updateInitialConfiguration(
+            @org.eclipse.jdt.annotation.Nullable StartupConfigurationDto startupConfigurationDto,
+            Map<String, String> headers) throws ApiException {
+        updateInitialConfigurationWithHttpInfo(startupConfigurationDto, headers);
     }
 
     /**
@@ -449,7 +665,22 @@ public class StartupApi {
      */
     public ApiResponse<Void> updateInitialConfigurationWithHttpInfo(
             @org.eclipse.jdt.annotation.Nullable StartupConfigurationDto startupConfigurationDto) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = updateInitialConfigurationRequestBuilder(startupConfigurationDto);
+        return updateInitialConfigurationWithHttpInfo(startupConfigurationDto, null);
+    }
+
+    /**
+     * Sets the initial startup wizard configuration.
+     * 
+     * @param startupConfigurationDto The updated startup configuration. (required)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<Void> updateInitialConfigurationWithHttpInfo(
+            @org.eclipse.jdt.annotation.Nullable StartupConfigurationDto startupConfigurationDto,
+            Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = updateInitialConfigurationRequestBuilder(startupConfigurationDto,
+                headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -477,7 +708,8 @@ public class StartupApi {
     }
 
     private HttpRequest.Builder updateInitialConfigurationRequestBuilder(
-            @org.eclipse.jdt.annotation.Nullable StartupConfigurationDto startupConfigurationDto) throws ApiException {
+            @org.eclipse.jdt.annotation.Nullable StartupConfigurationDto startupConfigurationDto,
+            Map<String, String> headers) throws ApiException {
         // verify the required parameter 'startupConfigurationDto' is set
         if (startupConfigurationDto == null) {
             throw new ApiException(400,
@@ -502,6 +734,8 @@ public class StartupApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -516,7 +750,19 @@ public class StartupApi {
      */
     public void updateStartupUser(@org.eclipse.jdt.annotation.NonNull StartupUserDto startupUserDto)
             throws ApiException {
-        updateStartupUserWithHttpInfo(startupUserDto);
+        updateStartupUser(startupUserDto, null);
+    }
+
+    /**
+     * Sets the user name and password.
+     * 
+     * @param startupUserDto The DTO containing username and password. (optional)
+     * @param headers Optional headers to include in the request
+     * @throws ApiException if fails to make API call
+     */
+    public void updateStartupUser(@org.eclipse.jdt.annotation.NonNull StartupUserDto startupUserDto,
+            Map<String, String> headers) throws ApiException {
+        updateStartupUserWithHttpInfo(startupUserDto, headers);
     }
 
     /**
@@ -528,7 +774,21 @@ public class StartupApi {
      */
     public ApiResponse<Void> updateStartupUserWithHttpInfo(
             @org.eclipse.jdt.annotation.NonNull StartupUserDto startupUserDto) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = updateStartupUserRequestBuilder(startupUserDto);
+        return updateStartupUserWithHttpInfo(startupUserDto, null);
+    }
+
+    /**
+     * Sets the user name and password.
+     * 
+     * @param startupUserDto The DTO containing username and password. (optional)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<Void> updateStartupUserWithHttpInfo(
+            @org.eclipse.jdt.annotation.NonNull StartupUserDto startupUserDto, Map<String, String> headers)
+            throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = updateStartupUserRequestBuilder(startupUserDto, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -556,7 +816,8 @@ public class StartupApi {
     }
 
     private HttpRequest.Builder updateStartupUserRequestBuilder(
-            @org.eclipse.jdt.annotation.NonNull StartupUserDto startupUserDto) throws ApiException {
+            @org.eclipse.jdt.annotation.NonNull StartupUserDto startupUserDto, Map<String, String> headers)
+            throws ApiException {
 
         HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
 
@@ -576,6 +837,8 @@ public class StartupApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }

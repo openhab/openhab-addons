@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.jellyfin.internal.api.generated.current;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -21,6 +22,7 @@ import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.StringJoiner;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -38,6 +40,28 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class PackageApi {
+    /**
+     * Utility class for extending HttpRequest.Builder functionality.
+     */
+    private static class HttpRequestBuilderExtensions {
+        /**
+         * Adds additional headers to the provided HttpRequest.Builder. Useful for adding method/endpoint specific
+         * headers.
+         *
+         * @param builder the HttpRequest.Builder to which headers will be added
+         * @param headers a map of header names and values to add; may be null
+         * @return the same HttpRequest.Builder instance with the additional headers set
+         */
+        static HttpRequest.Builder withAdditionalHeaders(HttpRequest.Builder builder, Map<String, String> headers) {
+            if (headers != null) {
+                for (Map.Entry<String, String> entry : headers.entrySet()) {
+                    builder.header(entry.getKey(), entry.getValue());
+                }
+            }
+            return builder;
+        }
+    }
+
     private final HttpClient memberVarHttpClient;
     private final ObjectMapper memberVarObjectMapper;
     private final String memberVarBaseUri;
@@ -74,13 +98,75 @@ public class PackageApi {
     }
 
     /**
+     * Download file from the given response.
+     *
+     * @param response Response
+     * @return File
+     * @throws ApiException If fail to read file content from response and write to disk
+     */
+    public File downloadFileFromResponse(HttpResponse<InputStream> response) throws ApiException {
+        try {
+            File file = prepareDownloadFile(response);
+            java.nio.file.Files.copy(response.body(), file.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+            return file;
+        } catch (IOException e) {
+            throw new ApiException(e);
+        }
+    }
+
+    /**
+     * <p>
+     * Prepare the file for download from the response.
+     * </p>
+     *
+     * @param response a {@link java.net.http.HttpResponse} object.
+     * @return a {@link java.io.File} object.
+     * @throws java.io.IOException if any.
+     */
+    private File prepareDownloadFile(HttpResponse<InputStream> response) throws IOException {
+        String filename = null;
+        java.util.Optional<String> contentDisposition = response.headers().firstValue("Content-Disposition");
+        if (contentDisposition.isPresent() && !"".equals(contentDisposition.get())) {
+            // Get filename from the Content-Disposition header.
+            java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("filename=['\"]?([^'\"\\s]+)['\"]?");
+            java.util.regex.Matcher matcher = pattern.matcher(contentDisposition.get());
+            if (matcher.find())
+                filename = matcher.group(1);
+        }
+        File file = null;
+        if (filename != null) {
+            java.nio.file.Path tempDir = java.nio.file.Files.createTempDirectory("swagger-gen-native");
+            java.nio.file.Path filePath = java.nio.file.Files.createFile(tempDir.resolve(filename));
+            file = filePath.toFile();
+            tempDir.toFile().deleteOnExit(); // best effort cleanup
+            file.deleteOnExit(); // best effort cleanup
+        } else {
+            file = java.nio.file.Files.createTempFile("download-", "").toFile();
+            file.deleteOnExit(); // best effort cleanup
+        }
+        return file;
+    }
+
+    /**
      * Cancels a package installation.
      * 
      * @param packageId Installation Id. (required)
      * @throws ApiException if fails to make API call
      */
     public void cancelPackageInstallation(@org.eclipse.jdt.annotation.Nullable UUID packageId) throws ApiException {
-        cancelPackageInstallationWithHttpInfo(packageId);
+        cancelPackageInstallation(packageId, null);
+    }
+
+    /**
+     * Cancels a package installation.
+     * 
+     * @param packageId Installation Id. (required)
+     * @param headers Optional headers to include in the request
+     * @throws ApiException if fails to make API call
+     */
+    public void cancelPackageInstallation(@org.eclipse.jdt.annotation.Nullable UUID packageId,
+            Map<String, String> headers) throws ApiException {
+        cancelPackageInstallationWithHttpInfo(packageId, headers);
     }
 
     /**
@@ -92,7 +178,20 @@ public class PackageApi {
      */
     public ApiResponse<Void> cancelPackageInstallationWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID packageId)
             throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = cancelPackageInstallationRequestBuilder(packageId);
+        return cancelPackageInstallationWithHttpInfo(packageId, null);
+    }
+
+    /**
+     * Cancels a package installation.
+     * 
+     * @param packageId Installation Id. (required)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<Void> cancelPackageInstallationWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID packageId,
+            Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = cancelPackageInstallationRequestBuilder(packageId, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -120,7 +219,7 @@ public class PackageApi {
     }
 
     private HttpRequest.Builder cancelPackageInstallationRequestBuilder(
-            @org.eclipse.jdt.annotation.Nullable UUID packageId) throws ApiException {
+            @org.eclipse.jdt.annotation.Nullable UUID packageId, Map<String, String> headers) throws ApiException {
         // verify the required parameter 'packageId' is set
         if (packageId == null) {
             throw new ApiException(400,
@@ -140,6 +239,8 @@ public class PackageApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -156,7 +257,21 @@ public class PackageApi {
      */
     public PackageInfo getPackageInfo(@org.eclipse.jdt.annotation.Nullable String name,
             @org.eclipse.jdt.annotation.NonNull UUID assemblyGuid) throws ApiException {
-        ApiResponse<PackageInfo> localVarResponse = getPackageInfoWithHttpInfo(name, assemblyGuid);
+        return getPackageInfo(name, assemblyGuid, null);
+    }
+
+    /**
+     * Gets a package by name or assembly GUID.
+     * 
+     * @param name The name of the package. (required)
+     * @param assemblyGuid The GUID of the associated assembly. (optional)
+     * @param headers Optional headers to include in the request
+     * @return PackageInfo
+     * @throws ApiException if fails to make API call
+     */
+    public PackageInfo getPackageInfo(@org.eclipse.jdt.annotation.Nullable String name,
+            @org.eclipse.jdt.annotation.NonNull UUID assemblyGuid, Map<String, String> headers) throws ApiException {
+        ApiResponse<PackageInfo> localVarResponse = getPackageInfoWithHttpInfo(name, assemblyGuid, headers);
         return localVarResponse.getData();
     }
 
@@ -170,7 +285,21 @@ public class PackageApi {
      */
     public ApiResponse<PackageInfo> getPackageInfoWithHttpInfo(@org.eclipse.jdt.annotation.Nullable String name,
             @org.eclipse.jdt.annotation.NonNull UUID assemblyGuid) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getPackageInfoRequestBuilder(name, assemblyGuid);
+        return getPackageInfoWithHttpInfo(name, assemblyGuid, null);
+    }
+
+    /**
+     * Gets a package by name or assembly GUID.
+     * 
+     * @param name The name of the package. (required)
+     * @param assemblyGuid The GUID of the associated assembly. (optional)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;PackageInfo&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<PackageInfo> getPackageInfoWithHttpInfo(@org.eclipse.jdt.annotation.Nullable String name,
+            @org.eclipse.jdt.annotation.NonNull UUID assemblyGuid, Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = getPackageInfoRequestBuilder(name, assemblyGuid, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -187,12 +316,14 @@ public class PackageApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                PackageInfo responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<PackageInfo>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<PackageInfo>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<PackageInfo>() {
-                                }));
+                        responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -204,7 +335,7 @@ public class PackageApi {
     }
 
     private HttpRequest.Builder getPackageInfoRequestBuilder(@org.eclipse.jdt.annotation.Nullable String name,
-            @org.eclipse.jdt.annotation.NonNull UUID assemblyGuid) throws ApiException {
+            @org.eclipse.jdt.annotation.NonNull UUID assemblyGuid, Map<String, String> headers) throws ApiException {
         // verify the required parameter 'name' is set
         if (name == null) {
             throw new ApiException(400, "Missing the required parameter 'name' when calling getPackageInfo");
@@ -238,6 +369,8 @@ public class PackageApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -251,7 +384,18 @@ public class PackageApi {
      * @throws ApiException if fails to make API call
      */
     public List<PackageInfo> getPackages() throws ApiException {
-        ApiResponse<List<PackageInfo>> localVarResponse = getPackagesWithHttpInfo();
+        return getPackages(null);
+    }
+
+    /**
+     * Gets available packages.
+     * 
+     * @param headers Optional headers to include in the request
+     * @return List&lt;PackageInfo&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public List<PackageInfo> getPackages(Map<String, String> headers) throws ApiException {
+        ApiResponse<List<PackageInfo>> localVarResponse = getPackagesWithHttpInfo(headers);
         return localVarResponse.getData();
     }
 
@@ -262,7 +406,18 @@ public class PackageApi {
      * @throws ApiException if fails to make API call
      */
     public ApiResponse<List<PackageInfo>> getPackagesWithHttpInfo() throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getPackagesRequestBuilder();
+        return getPackagesWithHttpInfo(null);
+    }
+
+    /**
+     * Gets available packages.
+     * 
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;List&lt;PackageInfo&gt;&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<List<PackageInfo>> getPackagesWithHttpInfo(Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = getPackagesRequestBuilder(headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -279,12 +434,14 @@ public class PackageApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                List<PackageInfo> responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<List<PackageInfo>>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<List<PackageInfo>>(localVarResponse.statusCode(),
-                        localVarResponse.headers().map(), responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<List<PackageInfo>>() {
-                                }));
+                        localVarResponse.headers().map(), responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -295,7 +452,7 @@ public class PackageApi {
         }
     }
 
-    private HttpRequest.Builder getPackagesRequestBuilder() throws ApiException {
+    private HttpRequest.Builder getPackagesRequestBuilder(Map<String, String> headers) throws ApiException {
 
         HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
 
@@ -310,6 +467,8 @@ public class PackageApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -323,7 +482,18 @@ public class PackageApi {
      * @throws ApiException if fails to make API call
      */
     public List<RepositoryInfo> getRepositories() throws ApiException {
-        ApiResponse<List<RepositoryInfo>> localVarResponse = getRepositoriesWithHttpInfo();
+        return getRepositories(null);
+    }
+
+    /**
+     * Gets all package repositories.
+     * 
+     * @param headers Optional headers to include in the request
+     * @return List&lt;RepositoryInfo&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public List<RepositoryInfo> getRepositories(Map<String, String> headers) throws ApiException {
+        ApiResponse<List<RepositoryInfo>> localVarResponse = getRepositoriesWithHttpInfo(headers);
         return localVarResponse.getData();
     }
 
@@ -334,7 +504,19 @@ public class PackageApi {
      * @throws ApiException if fails to make API call
      */
     public ApiResponse<List<RepositoryInfo>> getRepositoriesWithHttpInfo() throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getRepositoriesRequestBuilder();
+        return getRepositoriesWithHttpInfo(null);
+    }
+
+    /**
+     * Gets all package repositories.
+     * 
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;List&lt;RepositoryInfo&gt;&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<List<RepositoryInfo>> getRepositoriesWithHttpInfo(Map<String, String> headers)
+            throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = getRepositoriesRequestBuilder(headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -351,14 +533,14 @@ public class PackageApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                List<RepositoryInfo> responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<List<RepositoryInfo>>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<List<RepositoryInfo>>(localVarResponse.statusCode(),
-                        localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody,
-                                        new TypeReference<List<RepositoryInfo>>() {
-                                        }));
+                        localVarResponse.headers().map(), responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -369,7 +551,7 @@ public class PackageApi {
         }
     }
 
-    private HttpRequest.Builder getRepositoriesRequestBuilder() throws ApiException {
+    private HttpRequest.Builder getRepositoriesRequestBuilder(Map<String, String> headers) throws ApiException {
 
         HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
 
@@ -384,6 +566,8 @@ public class PackageApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -402,7 +586,23 @@ public class PackageApi {
     public void installPackage(@org.eclipse.jdt.annotation.Nullable String name,
             @org.eclipse.jdt.annotation.NonNull UUID assemblyGuid, @org.eclipse.jdt.annotation.NonNull String version,
             @org.eclipse.jdt.annotation.NonNull String repositoryUrl) throws ApiException {
-        installPackageWithHttpInfo(name, assemblyGuid, version, repositoryUrl);
+        installPackage(name, assemblyGuid, version, repositoryUrl, null);
+    }
+
+    /**
+     * Installs a package.
+     * 
+     * @param name Package name. (required)
+     * @param assemblyGuid GUID of the associated assembly. (optional)
+     * @param version Optional version. Defaults to latest version. (optional)
+     * @param repositoryUrl Optional. Specify the repository to install from. (optional)
+     * @param headers Optional headers to include in the request
+     * @throws ApiException if fails to make API call
+     */
+    public void installPackage(@org.eclipse.jdt.annotation.Nullable String name,
+            @org.eclipse.jdt.annotation.NonNull UUID assemblyGuid, @org.eclipse.jdt.annotation.NonNull String version,
+            @org.eclipse.jdt.annotation.NonNull String repositoryUrl, Map<String, String> headers) throws ApiException {
+        installPackageWithHttpInfo(name, assemblyGuid, version, repositoryUrl, headers);
     }
 
     /**
@@ -418,8 +618,25 @@ public class PackageApi {
     public ApiResponse<Void> installPackageWithHttpInfo(@org.eclipse.jdt.annotation.Nullable String name,
             @org.eclipse.jdt.annotation.NonNull UUID assemblyGuid, @org.eclipse.jdt.annotation.NonNull String version,
             @org.eclipse.jdt.annotation.NonNull String repositoryUrl) throws ApiException {
+        return installPackageWithHttpInfo(name, assemblyGuid, version, repositoryUrl, null);
+    }
+
+    /**
+     * Installs a package.
+     * 
+     * @param name Package name. (required)
+     * @param assemblyGuid GUID of the associated assembly. (optional)
+     * @param version Optional version. Defaults to latest version. (optional)
+     * @param repositoryUrl Optional. Specify the repository to install from. (optional)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<Void> installPackageWithHttpInfo(@org.eclipse.jdt.annotation.Nullable String name,
+            @org.eclipse.jdt.annotation.NonNull UUID assemblyGuid, @org.eclipse.jdt.annotation.NonNull String version,
+            @org.eclipse.jdt.annotation.NonNull String repositoryUrl, Map<String, String> headers) throws ApiException {
         HttpRequest.Builder localVarRequestBuilder = installPackageRequestBuilder(name, assemblyGuid, version,
-                repositoryUrl);
+                repositoryUrl, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -448,7 +665,7 @@ public class PackageApi {
 
     private HttpRequest.Builder installPackageRequestBuilder(@org.eclipse.jdt.annotation.Nullable String name,
             @org.eclipse.jdt.annotation.NonNull UUID assemblyGuid, @org.eclipse.jdt.annotation.NonNull String version,
-            @org.eclipse.jdt.annotation.NonNull String repositoryUrl) throws ApiException {
+            @org.eclipse.jdt.annotation.NonNull String repositoryUrl, Map<String, String> headers) throws ApiException {
         // verify the required parameter 'name' is set
         if (name == null) {
             throw new ApiException(400, "Missing the required parameter 'name' when calling installPackage");
@@ -486,6 +703,8 @@ public class PackageApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -500,7 +719,19 @@ public class PackageApi {
      */
     public void setRepositories(@org.eclipse.jdt.annotation.Nullable List<RepositoryInfo> repositoryInfo)
             throws ApiException {
-        setRepositoriesWithHttpInfo(repositoryInfo);
+        setRepositories(repositoryInfo, null);
+    }
+
+    /**
+     * Sets the enabled and existing package repositories.
+     * 
+     * @param repositoryInfo The list of package repositories. (required)
+     * @param headers Optional headers to include in the request
+     * @throws ApiException if fails to make API call
+     */
+    public void setRepositories(@org.eclipse.jdt.annotation.Nullable List<RepositoryInfo> repositoryInfo,
+            Map<String, String> headers) throws ApiException {
+        setRepositoriesWithHttpInfo(repositoryInfo, headers);
     }
 
     /**
@@ -512,7 +743,21 @@ public class PackageApi {
      */
     public ApiResponse<Void> setRepositoriesWithHttpInfo(
             @org.eclipse.jdt.annotation.Nullable List<RepositoryInfo> repositoryInfo) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = setRepositoriesRequestBuilder(repositoryInfo);
+        return setRepositoriesWithHttpInfo(repositoryInfo, null);
+    }
+
+    /**
+     * Sets the enabled and existing package repositories.
+     * 
+     * @param repositoryInfo The list of package repositories. (required)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<Void> setRepositoriesWithHttpInfo(
+            @org.eclipse.jdt.annotation.Nullable List<RepositoryInfo> repositoryInfo, Map<String, String> headers)
+            throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = setRepositoriesRequestBuilder(repositoryInfo, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -540,7 +785,8 @@ public class PackageApi {
     }
 
     private HttpRequest.Builder setRepositoriesRequestBuilder(
-            @org.eclipse.jdt.annotation.Nullable List<RepositoryInfo> repositoryInfo) throws ApiException {
+            @org.eclipse.jdt.annotation.Nullable List<RepositoryInfo> repositoryInfo, Map<String, String> headers)
+            throws ApiException {
         // verify the required parameter 'repositoryInfo' is set
         if (repositoryInfo == null) {
             throw new ApiException(400, "Missing the required parameter 'repositoryInfo' when calling setRepositories");
@@ -564,6 +810,8 @@ public class PackageApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }

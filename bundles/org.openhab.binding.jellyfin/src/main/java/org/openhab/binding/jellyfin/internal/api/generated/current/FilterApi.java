@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.jellyfin.internal.api.generated.current;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -21,6 +22,7 @@ import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.StringJoiner;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -40,6 +42,28 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class FilterApi {
+    /**
+     * Utility class for extending HttpRequest.Builder functionality.
+     */
+    private static class HttpRequestBuilderExtensions {
+        /**
+         * Adds additional headers to the provided HttpRequest.Builder. Useful for adding method/endpoint specific
+         * headers.
+         *
+         * @param builder the HttpRequest.Builder to which headers will be added
+         * @param headers a map of header names and values to add; may be null
+         * @return the same HttpRequest.Builder instance with the additional headers set
+         */
+        static HttpRequest.Builder withAdditionalHeaders(HttpRequest.Builder builder, Map<String, String> headers) {
+            if (headers != null) {
+                for (Map.Entry<String, String> entry : headers.entrySet()) {
+                    builder.header(entry.getKey(), entry.getValue());
+                }
+            }
+            return builder;
+        }
+    }
+
     private final HttpClient memberVarHttpClient;
     private final ObjectMapper memberVarObjectMapper;
     private final String memberVarBaseUri;
@@ -76,6 +100,56 @@ public class FilterApi {
     }
 
     /**
+     * Download file from the given response.
+     *
+     * @param response Response
+     * @return File
+     * @throws ApiException If fail to read file content from response and write to disk
+     */
+    public File downloadFileFromResponse(HttpResponse<InputStream> response) throws ApiException {
+        try {
+            File file = prepareDownloadFile(response);
+            java.nio.file.Files.copy(response.body(), file.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+            return file;
+        } catch (IOException e) {
+            throw new ApiException(e);
+        }
+    }
+
+    /**
+     * <p>
+     * Prepare the file for download from the response.
+     * </p>
+     *
+     * @param response a {@link java.net.http.HttpResponse} object.
+     * @return a {@link java.io.File} object.
+     * @throws java.io.IOException if any.
+     */
+    private File prepareDownloadFile(HttpResponse<InputStream> response) throws IOException {
+        String filename = null;
+        java.util.Optional<String> contentDisposition = response.headers().firstValue("Content-Disposition");
+        if (contentDisposition.isPresent() && !"".equals(contentDisposition.get())) {
+            // Get filename from the Content-Disposition header.
+            java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("filename=['\"]?([^'\"\\s]+)['\"]?");
+            java.util.regex.Matcher matcher = pattern.matcher(contentDisposition.get());
+            if (matcher.find())
+                filename = matcher.group(1);
+        }
+        File file = null;
+        if (filename != null) {
+            java.nio.file.Path tempDir = java.nio.file.Files.createTempDirectory("swagger-gen-native");
+            java.nio.file.Path filePath = java.nio.file.Files.createFile(tempDir.resolve(filename));
+            file = filePath.toFile();
+            tempDir.toFile().deleteOnExit(); // best effort cleanup
+            file.deleteOnExit(); // best effort cleanup
+        } else {
+            file = java.nio.file.Files.createTempFile("download-", "").toFile();
+            file.deleteOnExit(); // best effort cleanup
+        }
+        return file;
+    }
+
+    /**
      * Gets query filters.
      * 
      * @param userId Optional. User id. (optional)
@@ -100,8 +174,38 @@ public class FilterApi {
             @org.eclipse.jdt.annotation.NonNull Boolean isSports, @org.eclipse.jdt.annotation.NonNull Boolean isKids,
             @org.eclipse.jdt.annotation.NonNull Boolean isNews, @org.eclipse.jdt.annotation.NonNull Boolean isSeries,
             @org.eclipse.jdt.annotation.NonNull Boolean recursive) throws ApiException {
+        return getQueryFilters(userId, parentId, includeItemTypes, isAiring, isMovie, isSports, isKids, isNews,
+                isSeries, recursive, null);
+    }
+
+    /**
+     * Gets query filters.
+     * 
+     * @param userId Optional. User id. (optional)
+     * @param parentId Optional. Specify this to localize the search to a specific item or folder. Omit to use the root.
+     *            (optional)
+     * @param includeItemTypes Optional. If specified, results will be filtered based on item type. This allows
+     *            multiple, comma delimited. (optional)
+     * @param isAiring Optional. Is item airing. (optional)
+     * @param isMovie Optional. Is item movie. (optional)
+     * @param isSports Optional. Is item sports. (optional)
+     * @param isKids Optional. Is item kids. (optional)
+     * @param isNews Optional. Is item news. (optional)
+     * @param isSeries Optional. Is item series. (optional)
+     * @param recursive Optional. Search recursive. (optional)
+     * @param headers Optional headers to include in the request
+     * @return QueryFilters
+     * @throws ApiException if fails to make API call
+     */
+    public QueryFilters getQueryFilters(@org.eclipse.jdt.annotation.NonNull UUID userId,
+            @org.eclipse.jdt.annotation.NonNull UUID parentId,
+            @org.eclipse.jdt.annotation.NonNull List<BaseItemKind> includeItemTypes,
+            @org.eclipse.jdt.annotation.NonNull Boolean isAiring, @org.eclipse.jdt.annotation.NonNull Boolean isMovie,
+            @org.eclipse.jdt.annotation.NonNull Boolean isSports, @org.eclipse.jdt.annotation.NonNull Boolean isKids,
+            @org.eclipse.jdt.annotation.NonNull Boolean isNews, @org.eclipse.jdt.annotation.NonNull Boolean isSeries,
+            @org.eclipse.jdt.annotation.NonNull Boolean recursive, Map<String, String> headers) throws ApiException {
         ApiResponse<QueryFilters> localVarResponse = getQueryFiltersWithHttpInfo(userId, parentId, includeItemTypes,
-                isAiring, isMovie, isSports, isKids, isNews, isSeries, recursive);
+                isAiring, isMovie, isSports, isKids, isNews, isSeries, recursive, headers);
         return localVarResponse.getData();
     }
 
@@ -130,8 +234,38 @@ public class FilterApi {
             @org.eclipse.jdt.annotation.NonNull Boolean isSports, @org.eclipse.jdt.annotation.NonNull Boolean isKids,
             @org.eclipse.jdt.annotation.NonNull Boolean isNews, @org.eclipse.jdt.annotation.NonNull Boolean isSeries,
             @org.eclipse.jdt.annotation.NonNull Boolean recursive) throws ApiException {
+        return getQueryFiltersWithHttpInfo(userId, parentId, includeItemTypes, isAiring, isMovie, isSports, isKids,
+                isNews, isSeries, recursive, null);
+    }
+
+    /**
+     * Gets query filters.
+     * 
+     * @param userId Optional. User id. (optional)
+     * @param parentId Optional. Specify this to localize the search to a specific item or folder. Omit to use the root.
+     *            (optional)
+     * @param includeItemTypes Optional. If specified, results will be filtered based on item type. This allows
+     *            multiple, comma delimited. (optional)
+     * @param isAiring Optional. Is item airing. (optional)
+     * @param isMovie Optional. Is item movie. (optional)
+     * @param isSports Optional. Is item sports. (optional)
+     * @param isKids Optional. Is item kids. (optional)
+     * @param isNews Optional. Is item news. (optional)
+     * @param isSeries Optional. Is item series. (optional)
+     * @param recursive Optional. Search recursive. (optional)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;QueryFilters&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<QueryFilters> getQueryFiltersWithHttpInfo(@org.eclipse.jdt.annotation.NonNull UUID userId,
+            @org.eclipse.jdt.annotation.NonNull UUID parentId,
+            @org.eclipse.jdt.annotation.NonNull List<BaseItemKind> includeItemTypes,
+            @org.eclipse.jdt.annotation.NonNull Boolean isAiring, @org.eclipse.jdt.annotation.NonNull Boolean isMovie,
+            @org.eclipse.jdt.annotation.NonNull Boolean isSports, @org.eclipse.jdt.annotation.NonNull Boolean isKids,
+            @org.eclipse.jdt.annotation.NonNull Boolean isNews, @org.eclipse.jdt.annotation.NonNull Boolean isSeries,
+            @org.eclipse.jdt.annotation.NonNull Boolean recursive, Map<String, String> headers) throws ApiException {
         HttpRequest.Builder localVarRequestBuilder = getQueryFiltersRequestBuilder(userId, parentId, includeItemTypes,
-                isAiring, isMovie, isSports, isKids, isNews, isSeries, recursive);
+                isAiring, isMovie, isSports, isKids, isNews, isSeries, recursive, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -148,12 +282,14 @@ public class FilterApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                QueryFilters responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<QueryFilters>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<QueryFilters>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<QueryFilters>() {
-                                }));
+                        responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -170,7 +306,7 @@ public class FilterApi {
             @org.eclipse.jdt.annotation.NonNull Boolean isAiring, @org.eclipse.jdt.annotation.NonNull Boolean isMovie,
             @org.eclipse.jdt.annotation.NonNull Boolean isSports, @org.eclipse.jdt.annotation.NonNull Boolean isKids,
             @org.eclipse.jdt.annotation.NonNull Boolean isNews, @org.eclipse.jdt.annotation.NonNull Boolean isSeries,
-            @org.eclipse.jdt.annotation.NonNull Boolean recursive) throws ApiException {
+            @org.eclipse.jdt.annotation.NonNull Boolean recursive, Map<String, String> headers) throws ApiException {
 
         HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
 
@@ -218,6 +354,8 @@ public class FilterApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -239,8 +377,28 @@ public class FilterApi {
             @org.eclipse.jdt.annotation.NonNull UUID parentId,
             @org.eclipse.jdt.annotation.NonNull List<BaseItemKind> includeItemTypes,
             @org.eclipse.jdt.annotation.NonNull List<MediaType> mediaTypes) throws ApiException {
+        return getQueryFiltersLegacy(userId, parentId, includeItemTypes, mediaTypes, null);
+    }
+
+    /**
+     * Gets legacy query filters.
+     * 
+     * @param userId Optional. User id. (optional)
+     * @param parentId Optional. Parent id. (optional)
+     * @param includeItemTypes Optional. If specified, results will be filtered based on item type. This allows
+     *            multiple, comma delimited. (optional)
+     * @param mediaTypes Optional. Filter by MediaType. Allows multiple, comma delimited. (optional)
+     * @param headers Optional headers to include in the request
+     * @return QueryFiltersLegacy
+     * @throws ApiException if fails to make API call
+     */
+    public QueryFiltersLegacy getQueryFiltersLegacy(@org.eclipse.jdt.annotation.NonNull UUID userId,
+            @org.eclipse.jdt.annotation.NonNull UUID parentId,
+            @org.eclipse.jdt.annotation.NonNull List<BaseItemKind> includeItemTypes,
+            @org.eclipse.jdt.annotation.NonNull List<MediaType> mediaTypes, Map<String, String> headers)
+            throws ApiException {
         ApiResponse<QueryFiltersLegacy> localVarResponse = getQueryFiltersLegacyWithHttpInfo(userId, parentId,
-                includeItemTypes, mediaTypes);
+                includeItemTypes, mediaTypes, headers);
         return localVarResponse.getData();
     }
 
@@ -259,8 +417,28 @@ public class FilterApi {
             @org.eclipse.jdt.annotation.NonNull UUID userId, @org.eclipse.jdt.annotation.NonNull UUID parentId,
             @org.eclipse.jdt.annotation.NonNull List<BaseItemKind> includeItemTypes,
             @org.eclipse.jdt.annotation.NonNull List<MediaType> mediaTypes) throws ApiException {
+        return getQueryFiltersLegacyWithHttpInfo(userId, parentId, includeItemTypes, mediaTypes, null);
+    }
+
+    /**
+     * Gets legacy query filters.
+     * 
+     * @param userId Optional. User id. (optional)
+     * @param parentId Optional. Parent id. (optional)
+     * @param includeItemTypes Optional. If specified, results will be filtered based on item type. This allows
+     *            multiple, comma delimited. (optional)
+     * @param mediaTypes Optional. Filter by MediaType. Allows multiple, comma delimited. (optional)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;QueryFiltersLegacy&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<QueryFiltersLegacy> getQueryFiltersLegacyWithHttpInfo(
+            @org.eclipse.jdt.annotation.NonNull UUID userId, @org.eclipse.jdt.annotation.NonNull UUID parentId,
+            @org.eclipse.jdt.annotation.NonNull List<BaseItemKind> includeItemTypes,
+            @org.eclipse.jdt.annotation.NonNull List<MediaType> mediaTypes, Map<String, String> headers)
+            throws ApiException {
         HttpRequest.Builder localVarRequestBuilder = getQueryFiltersLegacyRequestBuilder(userId, parentId,
-                includeItemTypes, mediaTypes);
+                includeItemTypes, mediaTypes, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -277,14 +455,14 @@ public class FilterApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                QueryFiltersLegacy responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<QueryFiltersLegacy>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<QueryFiltersLegacy>(localVarResponse.statusCode(),
-                        localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody,
-                                        new TypeReference<QueryFiltersLegacy>() {
-                                        }));
+                        localVarResponse.headers().map(), responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -298,7 +476,8 @@ public class FilterApi {
     private HttpRequest.Builder getQueryFiltersLegacyRequestBuilder(@org.eclipse.jdt.annotation.NonNull UUID userId,
             @org.eclipse.jdt.annotation.NonNull UUID parentId,
             @org.eclipse.jdt.annotation.NonNull List<BaseItemKind> includeItemTypes,
-            @org.eclipse.jdt.annotation.NonNull List<MediaType> mediaTypes) throws ApiException {
+            @org.eclipse.jdt.annotation.NonNull List<MediaType> mediaTypes, Map<String, String> headers)
+            throws ApiException {
 
         HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
 
@@ -334,6 +513,8 @@ public class FilterApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }

@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.jellyfin.internal.api.generated.current;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -21,6 +22,7 @@ import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.StringJoiner;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -42,6 +44,28 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class UserLibraryApi {
+    /**
+     * Utility class for extending HttpRequest.Builder functionality.
+     */
+    private static class HttpRequestBuilderExtensions {
+        /**
+         * Adds additional headers to the provided HttpRequest.Builder. Useful for adding method/endpoint specific
+         * headers.
+         *
+         * @param builder the HttpRequest.Builder to which headers will be added
+         * @param headers a map of header names and values to add; may be null
+         * @return the same HttpRequest.Builder instance with the additional headers set
+         */
+        static HttpRequest.Builder withAdditionalHeaders(HttpRequest.Builder builder, Map<String, String> headers) {
+            if (headers != null) {
+                for (Map.Entry<String, String> entry : headers.entrySet()) {
+                    builder.header(entry.getKey(), entry.getValue());
+                }
+            }
+            return builder;
+        }
+    }
+
     private final HttpClient memberVarHttpClient;
     private final ObjectMapper memberVarObjectMapper;
     private final String memberVarBaseUri;
@@ -78,6 +102,56 @@ public class UserLibraryApi {
     }
 
     /**
+     * Download file from the given response.
+     *
+     * @param response Response
+     * @return File
+     * @throws ApiException If fail to read file content from response and write to disk
+     */
+    public File downloadFileFromResponse(HttpResponse<InputStream> response) throws ApiException {
+        try {
+            File file = prepareDownloadFile(response);
+            java.nio.file.Files.copy(response.body(), file.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+            return file;
+        } catch (IOException e) {
+            throw new ApiException(e);
+        }
+    }
+
+    /**
+     * <p>
+     * Prepare the file for download from the response.
+     * </p>
+     *
+     * @param response a {@link java.net.http.HttpResponse} object.
+     * @return a {@link java.io.File} object.
+     * @throws java.io.IOException if any.
+     */
+    private File prepareDownloadFile(HttpResponse<InputStream> response) throws IOException {
+        String filename = null;
+        java.util.Optional<String> contentDisposition = response.headers().firstValue("Content-Disposition");
+        if (contentDisposition.isPresent() && !"".equals(contentDisposition.get())) {
+            // Get filename from the Content-Disposition header.
+            java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("filename=['\"]?([^'\"\\s]+)['\"]?");
+            java.util.regex.Matcher matcher = pattern.matcher(contentDisposition.get());
+            if (matcher.find())
+                filename = matcher.group(1);
+        }
+        File file = null;
+        if (filename != null) {
+            java.nio.file.Path tempDir = java.nio.file.Files.createTempDirectory("swagger-gen-native");
+            java.nio.file.Path filePath = java.nio.file.Files.createFile(tempDir.resolve(filename));
+            file = filePath.toFile();
+            tempDir.toFile().deleteOnExit(); // best effort cleanup
+            file.deleteOnExit(); // best effort cleanup
+        } else {
+            file = java.nio.file.Files.createTempFile("download-", "").toFile();
+            file.deleteOnExit(); // best effort cleanup
+        }
+        return file;
+    }
+
+    /**
      * Deletes a user&#39;s saved personal rating for an item.
      * 
      * @param itemId Item id. (required)
@@ -87,7 +161,21 @@ public class UserLibraryApi {
      */
     public UserItemDataDto deleteUserItemRating(@org.eclipse.jdt.annotation.Nullable UUID itemId,
             @org.eclipse.jdt.annotation.NonNull UUID userId) throws ApiException {
-        ApiResponse<UserItemDataDto> localVarResponse = deleteUserItemRatingWithHttpInfo(itemId, userId);
+        return deleteUserItemRating(itemId, userId, null);
+    }
+
+    /**
+     * Deletes a user&#39;s saved personal rating for an item.
+     * 
+     * @param itemId Item id. (required)
+     * @param userId User id. (optional)
+     * @param headers Optional headers to include in the request
+     * @return UserItemDataDto
+     * @throws ApiException if fails to make API call
+     */
+    public UserItemDataDto deleteUserItemRating(@org.eclipse.jdt.annotation.Nullable UUID itemId,
+            @org.eclipse.jdt.annotation.NonNull UUID userId, Map<String, String> headers) throws ApiException {
+        ApiResponse<UserItemDataDto> localVarResponse = deleteUserItemRatingWithHttpInfo(itemId, userId, headers);
         return localVarResponse.getData();
     }
 
@@ -102,7 +190,22 @@ public class UserLibraryApi {
     public ApiResponse<UserItemDataDto> deleteUserItemRatingWithHttpInfo(
             @org.eclipse.jdt.annotation.Nullable UUID itemId, @org.eclipse.jdt.annotation.NonNull UUID userId)
             throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = deleteUserItemRatingRequestBuilder(itemId, userId);
+        return deleteUserItemRatingWithHttpInfo(itemId, userId, null);
+    }
+
+    /**
+     * Deletes a user&#39;s saved personal rating for an item.
+     * 
+     * @param itemId Item id. (required)
+     * @param userId User id. (optional)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;UserItemDataDto&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<UserItemDataDto> deleteUserItemRatingWithHttpInfo(
+            @org.eclipse.jdt.annotation.Nullable UUID itemId, @org.eclipse.jdt.annotation.NonNull UUID userId,
+            Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = deleteUserItemRatingRequestBuilder(itemId, userId, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -119,12 +222,14 @@ public class UserLibraryApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                UserItemDataDto responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<UserItemDataDto>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<UserItemDataDto>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<UserItemDataDto>() {
-                                }));
+                        responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -136,7 +241,7 @@ public class UserLibraryApi {
     }
 
     private HttpRequest.Builder deleteUserItemRatingRequestBuilder(@org.eclipse.jdt.annotation.Nullable UUID itemId,
-            @org.eclipse.jdt.annotation.NonNull UUID userId) throws ApiException {
+            @org.eclipse.jdt.annotation.NonNull UUID userId, Map<String, String> headers) throws ApiException {
         // verify the required parameter 'itemId' is set
         if (itemId == null) {
             throw new ApiException(400, "Missing the required parameter 'itemId' when calling deleteUserItemRating");
@@ -170,6 +275,8 @@ public class UserLibraryApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -186,7 +293,21 @@ public class UserLibraryApi {
      */
     public BaseItemDtoQueryResult getIntros(@org.eclipse.jdt.annotation.Nullable UUID itemId,
             @org.eclipse.jdt.annotation.NonNull UUID userId) throws ApiException {
-        ApiResponse<BaseItemDtoQueryResult> localVarResponse = getIntrosWithHttpInfo(itemId, userId);
+        return getIntros(itemId, userId, null);
+    }
+
+    /**
+     * Gets intros to play before the main media item plays.
+     * 
+     * @param itemId Item id. (required)
+     * @param userId User id. (optional)
+     * @param headers Optional headers to include in the request
+     * @return BaseItemDtoQueryResult
+     * @throws ApiException if fails to make API call
+     */
+    public BaseItemDtoQueryResult getIntros(@org.eclipse.jdt.annotation.Nullable UUID itemId,
+            @org.eclipse.jdt.annotation.NonNull UUID userId, Map<String, String> headers) throws ApiException {
+        ApiResponse<BaseItemDtoQueryResult> localVarResponse = getIntrosWithHttpInfo(itemId, userId, headers);
         return localVarResponse.getData();
     }
 
@@ -200,7 +321,21 @@ public class UserLibraryApi {
      */
     public ApiResponse<BaseItemDtoQueryResult> getIntrosWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID itemId,
             @org.eclipse.jdt.annotation.NonNull UUID userId) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getIntrosRequestBuilder(itemId, userId);
+        return getIntrosWithHttpInfo(itemId, userId, null);
+    }
+
+    /**
+     * Gets intros to play before the main media item plays.
+     * 
+     * @param itemId Item id. (required)
+     * @param userId User id. (optional)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;BaseItemDtoQueryResult&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<BaseItemDtoQueryResult> getIntrosWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID itemId,
+            @org.eclipse.jdt.annotation.NonNull UUID userId, Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = getIntrosRequestBuilder(itemId, userId, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -217,14 +352,14 @@ public class UserLibraryApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                BaseItemDtoQueryResult responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<BaseItemDtoQueryResult>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<BaseItemDtoQueryResult>(localVarResponse.statusCode(),
-                        localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody,
-                                        new TypeReference<BaseItemDtoQueryResult>() {
-                                        }));
+                        localVarResponse.headers().map(), responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -236,7 +371,7 @@ public class UserLibraryApi {
     }
 
     private HttpRequest.Builder getIntrosRequestBuilder(@org.eclipse.jdt.annotation.Nullable UUID itemId,
-            @org.eclipse.jdt.annotation.NonNull UUID userId) throws ApiException {
+            @org.eclipse.jdt.annotation.NonNull UUID userId, Map<String, String> headers) throws ApiException {
         // verify the required parameter 'itemId' is set
         if (itemId == null) {
             throw new ApiException(400, "Missing the required parameter 'itemId' when calling getIntros");
@@ -270,6 +405,8 @@ public class UserLibraryApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -286,7 +423,21 @@ public class UserLibraryApi {
      */
     public BaseItemDto getItem(@org.eclipse.jdt.annotation.Nullable UUID itemId,
             @org.eclipse.jdt.annotation.NonNull UUID userId) throws ApiException {
-        ApiResponse<BaseItemDto> localVarResponse = getItemWithHttpInfo(itemId, userId);
+        return getItem(itemId, userId, null);
+    }
+
+    /**
+     * Gets an item from a user&#39;s library.
+     * 
+     * @param itemId Item id. (required)
+     * @param userId User id. (optional)
+     * @param headers Optional headers to include in the request
+     * @return BaseItemDto
+     * @throws ApiException if fails to make API call
+     */
+    public BaseItemDto getItem(@org.eclipse.jdt.annotation.Nullable UUID itemId,
+            @org.eclipse.jdt.annotation.NonNull UUID userId, Map<String, String> headers) throws ApiException {
+        ApiResponse<BaseItemDto> localVarResponse = getItemWithHttpInfo(itemId, userId, headers);
         return localVarResponse.getData();
     }
 
@@ -300,7 +451,21 @@ public class UserLibraryApi {
      */
     public ApiResponse<BaseItemDto> getItemWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID itemId,
             @org.eclipse.jdt.annotation.NonNull UUID userId) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getItemRequestBuilder(itemId, userId);
+        return getItemWithHttpInfo(itemId, userId, null);
+    }
+
+    /**
+     * Gets an item from a user&#39;s library.
+     * 
+     * @param itemId Item id. (required)
+     * @param userId User id. (optional)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;BaseItemDto&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<BaseItemDto> getItemWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID itemId,
+            @org.eclipse.jdt.annotation.NonNull UUID userId, Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = getItemRequestBuilder(itemId, userId, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -317,12 +482,14 @@ public class UserLibraryApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                BaseItemDto responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<BaseItemDto>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<BaseItemDto>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<BaseItemDto>() {
-                                }));
+                        responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -334,7 +501,7 @@ public class UserLibraryApi {
     }
 
     private HttpRequest.Builder getItemRequestBuilder(@org.eclipse.jdt.annotation.Nullable UUID itemId,
-            @org.eclipse.jdt.annotation.NonNull UUID userId) throws ApiException {
+            @org.eclipse.jdt.annotation.NonNull UUID userId, Map<String, String> headers) throws ApiException {
         // verify the required parameter 'itemId' is set
         if (itemId == null) {
             throw new ApiException(400, "Missing the required parameter 'itemId' when calling getItem");
@@ -368,6 +535,8 @@ public class UserLibraryApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -404,9 +573,44 @@ public class UserLibraryApi {
             @org.eclipse.jdt.annotation.NonNull Boolean enableUserData,
             @org.eclipse.jdt.annotation.NonNull Integer limit, @org.eclipse.jdt.annotation.NonNull Boolean groupItems)
             throws ApiException {
+        return getLatestMedia(userId, parentId, fields, includeItemTypes, isPlayed, enableImages, imageTypeLimit,
+                enableImageTypes, enableUserData, limit, groupItems, null);
+    }
+
+    /**
+     * Gets latest media.
+     * 
+     * @param userId User id. (optional)
+     * @param parentId Specify this to localize the search to a specific item or folder. Omit to use the root.
+     *            (optional)
+     * @param fields Optional. Specify additional fields of information to return in the output. (optional)
+     * @param includeItemTypes Optional. If specified, results will be filtered based on item type. This allows
+     *            multiple, comma delimited. (optional)
+     * @param isPlayed Filter by items that are played, or not. (optional)
+     * @param enableImages Optional. include image information in output. (optional)
+     * @param imageTypeLimit Optional. the max number of images to return, per image type. (optional)
+     * @param enableImageTypes Optional. The image types to include in the output. (optional)
+     * @param enableUserData Optional. include user data. (optional)
+     * @param limit Return item limit. (optional, default to 20)
+     * @param groupItems Whether or not to group items into a parent container. (optional, default to true)
+     * @param headers Optional headers to include in the request
+     * @return List&lt;BaseItemDto&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public List<BaseItemDto> getLatestMedia(@org.eclipse.jdt.annotation.NonNull UUID userId,
+            @org.eclipse.jdt.annotation.NonNull UUID parentId,
+            @org.eclipse.jdt.annotation.NonNull List<ItemFields> fields,
+            @org.eclipse.jdt.annotation.NonNull List<BaseItemKind> includeItemTypes,
+            @org.eclipse.jdt.annotation.NonNull Boolean isPlayed,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableImages,
+            @org.eclipse.jdt.annotation.NonNull Integer imageTypeLimit,
+            @org.eclipse.jdt.annotation.NonNull List<ImageType> enableImageTypes,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableUserData,
+            @org.eclipse.jdt.annotation.NonNull Integer limit, @org.eclipse.jdt.annotation.NonNull Boolean groupItems,
+            Map<String, String> headers) throws ApiException {
         ApiResponse<List<BaseItemDto>> localVarResponse = getLatestMediaWithHttpInfo(userId, parentId, fields,
                 includeItemTypes, isPlayed, enableImages, imageTypeLimit, enableImageTypes, enableUserData, limit,
-                groupItems);
+                groupItems, headers);
         return localVarResponse.getData();
     }
 
@@ -440,9 +644,44 @@ public class UserLibraryApi {
             @org.eclipse.jdt.annotation.NonNull Boolean enableUserData,
             @org.eclipse.jdt.annotation.NonNull Integer limit, @org.eclipse.jdt.annotation.NonNull Boolean groupItems)
             throws ApiException {
+        return getLatestMediaWithHttpInfo(userId, parentId, fields, includeItemTypes, isPlayed, enableImages,
+                imageTypeLimit, enableImageTypes, enableUserData, limit, groupItems, null);
+    }
+
+    /**
+     * Gets latest media.
+     * 
+     * @param userId User id. (optional)
+     * @param parentId Specify this to localize the search to a specific item or folder. Omit to use the root.
+     *            (optional)
+     * @param fields Optional. Specify additional fields of information to return in the output. (optional)
+     * @param includeItemTypes Optional. If specified, results will be filtered based on item type. This allows
+     *            multiple, comma delimited. (optional)
+     * @param isPlayed Filter by items that are played, or not. (optional)
+     * @param enableImages Optional. include image information in output. (optional)
+     * @param imageTypeLimit Optional. the max number of images to return, per image type. (optional)
+     * @param enableImageTypes Optional. The image types to include in the output. (optional)
+     * @param enableUserData Optional. include user data. (optional)
+     * @param limit Return item limit. (optional, default to 20)
+     * @param groupItems Whether or not to group items into a parent container. (optional, default to true)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;List&lt;BaseItemDto&gt;&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<List<BaseItemDto>> getLatestMediaWithHttpInfo(@org.eclipse.jdt.annotation.NonNull UUID userId,
+            @org.eclipse.jdt.annotation.NonNull UUID parentId,
+            @org.eclipse.jdt.annotation.NonNull List<ItemFields> fields,
+            @org.eclipse.jdt.annotation.NonNull List<BaseItemKind> includeItemTypes,
+            @org.eclipse.jdt.annotation.NonNull Boolean isPlayed,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableImages,
+            @org.eclipse.jdt.annotation.NonNull Integer imageTypeLimit,
+            @org.eclipse.jdt.annotation.NonNull List<ImageType> enableImageTypes,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableUserData,
+            @org.eclipse.jdt.annotation.NonNull Integer limit, @org.eclipse.jdt.annotation.NonNull Boolean groupItems,
+            Map<String, String> headers) throws ApiException {
         HttpRequest.Builder localVarRequestBuilder = getLatestMediaRequestBuilder(userId, parentId, fields,
                 includeItemTypes, isPlayed, enableImages, imageTypeLimit, enableImageTypes, enableUserData, limit,
-                groupItems);
+                groupItems, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -459,12 +698,14 @@ public class UserLibraryApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                List<BaseItemDto> responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<List<BaseItemDto>>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<List<BaseItemDto>>(localVarResponse.statusCode(),
-                        localVarResponse.headers().map(), responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<List<BaseItemDto>>() {
-                                }));
+                        localVarResponse.headers().map(), responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -484,8 +725,8 @@ public class UserLibraryApi {
             @org.eclipse.jdt.annotation.NonNull Integer imageTypeLimit,
             @org.eclipse.jdt.annotation.NonNull List<ImageType> enableImageTypes,
             @org.eclipse.jdt.annotation.NonNull Boolean enableUserData,
-            @org.eclipse.jdt.annotation.NonNull Integer limit, @org.eclipse.jdt.annotation.NonNull Boolean groupItems)
-            throws ApiException {
+            @org.eclipse.jdt.annotation.NonNull Integer limit, @org.eclipse.jdt.annotation.NonNull Boolean groupItems,
+            Map<String, String> headers) throws ApiException {
 
         HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
 
@@ -535,6 +776,8 @@ public class UserLibraryApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -551,7 +794,21 @@ public class UserLibraryApi {
      */
     public List<BaseItemDto> getLocalTrailers(@org.eclipse.jdt.annotation.Nullable UUID itemId,
             @org.eclipse.jdt.annotation.NonNull UUID userId) throws ApiException {
-        ApiResponse<List<BaseItemDto>> localVarResponse = getLocalTrailersWithHttpInfo(itemId, userId);
+        return getLocalTrailers(itemId, userId, null);
+    }
+
+    /**
+     * Gets local trailers for an item.
+     * 
+     * @param itemId Item id. (required)
+     * @param userId User id. (optional)
+     * @param headers Optional headers to include in the request
+     * @return List&lt;BaseItemDto&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public List<BaseItemDto> getLocalTrailers(@org.eclipse.jdt.annotation.Nullable UUID itemId,
+            @org.eclipse.jdt.annotation.NonNull UUID userId, Map<String, String> headers) throws ApiException {
+        ApiResponse<List<BaseItemDto>> localVarResponse = getLocalTrailersWithHttpInfo(itemId, userId, headers);
         return localVarResponse.getData();
     }
 
@@ -565,7 +822,21 @@ public class UserLibraryApi {
      */
     public ApiResponse<List<BaseItemDto>> getLocalTrailersWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID itemId,
             @org.eclipse.jdt.annotation.NonNull UUID userId) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getLocalTrailersRequestBuilder(itemId, userId);
+        return getLocalTrailersWithHttpInfo(itemId, userId, null);
+    }
+
+    /**
+     * Gets local trailers for an item.
+     * 
+     * @param itemId Item id. (required)
+     * @param userId User id. (optional)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;List&lt;BaseItemDto&gt;&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<List<BaseItemDto>> getLocalTrailersWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID itemId,
+            @org.eclipse.jdt.annotation.NonNull UUID userId, Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = getLocalTrailersRequestBuilder(itemId, userId, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -582,12 +853,14 @@ public class UserLibraryApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                List<BaseItemDto> responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<List<BaseItemDto>>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<List<BaseItemDto>>(localVarResponse.statusCode(),
-                        localVarResponse.headers().map(), responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<List<BaseItemDto>>() {
-                                }));
+                        localVarResponse.headers().map(), responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -599,7 +872,7 @@ public class UserLibraryApi {
     }
 
     private HttpRequest.Builder getLocalTrailersRequestBuilder(@org.eclipse.jdt.annotation.Nullable UUID itemId,
-            @org.eclipse.jdt.annotation.NonNull UUID userId) throws ApiException {
+            @org.eclipse.jdt.annotation.NonNull UUID userId, Map<String, String> headers) throws ApiException {
         // verify the required parameter 'itemId' is set
         if (itemId == null) {
             throw new ApiException(400, "Missing the required parameter 'itemId' when calling getLocalTrailers");
@@ -634,6 +907,8 @@ public class UserLibraryApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -648,7 +923,20 @@ public class UserLibraryApi {
      * @throws ApiException if fails to make API call
      */
     public BaseItemDto getRootFolder(@org.eclipse.jdt.annotation.NonNull UUID userId) throws ApiException {
-        ApiResponse<BaseItemDto> localVarResponse = getRootFolderWithHttpInfo(userId);
+        return getRootFolder(userId, null);
+    }
+
+    /**
+     * Gets the root folder from a user&#39;s library.
+     * 
+     * @param userId User id. (optional)
+     * @param headers Optional headers to include in the request
+     * @return BaseItemDto
+     * @throws ApiException if fails to make API call
+     */
+    public BaseItemDto getRootFolder(@org.eclipse.jdt.annotation.NonNull UUID userId, Map<String, String> headers)
+            throws ApiException {
+        ApiResponse<BaseItemDto> localVarResponse = getRootFolderWithHttpInfo(userId, headers);
         return localVarResponse.getData();
     }
 
@@ -661,7 +949,20 @@ public class UserLibraryApi {
      */
     public ApiResponse<BaseItemDto> getRootFolderWithHttpInfo(@org.eclipse.jdt.annotation.NonNull UUID userId)
             throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getRootFolderRequestBuilder(userId);
+        return getRootFolderWithHttpInfo(userId, null);
+    }
+
+    /**
+     * Gets the root folder from a user&#39;s library.
+     * 
+     * @param userId User id. (optional)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;BaseItemDto&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<BaseItemDto> getRootFolderWithHttpInfo(@org.eclipse.jdt.annotation.NonNull UUID userId,
+            Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = getRootFolderRequestBuilder(userId, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -678,12 +979,14 @@ public class UserLibraryApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                BaseItemDto responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<BaseItemDto>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<BaseItemDto>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<BaseItemDto>() {
-                                }));
+                        responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -694,8 +997,8 @@ public class UserLibraryApi {
         }
     }
 
-    private HttpRequest.Builder getRootFolderRequestBuilder(@org.eclipse.jdt.annotation.NonNull UUID userId)
-            throws ApiException {
+    private HttpRequest.Builder getRootFolderRequestBuilder(@org.eclipse.jdt.annotation.NonNull UUID userId,
+            Map<String, String> headers) throws ApiException {
 
         HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
 
@@ -725,6 +1028,8 @@ public class UserLibraryApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -741,7 +1046,21 @@ public class UserLibraryApi {
      */
     public List<BaseItemDto> getSpecialFeatures(@org.eclipse.jdt.annotation.Nullable UUID itemId,
             @org.eclipse.jdt.annotation.NonNull UUID userId) throws ApiException {
-        ApiResponse<List<BaseItemDto>> localVarResponse = getSpecialFeaturesWithHttpInfo(itemId, userId);
+        return getSpecialFeatures(itemId, userId, null);
+    }
+
+    /**
+     * Gets special features for an item.
+     * 
+     * @param itemId Item id. (required)
+     * @param userId User id. (optional)
+     * @param headers Optional headers to include in the request
+     * @return List&lt;BaseItemDto&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public List<BaseItemDto> getSpecialFeatures(@org.eclipse.jdt.annotation.Nullable UUID itemId,
+            @org.eclipse.jdt.annotation.NonNull UUID userId, Map<String, String> headers) throws ApiException {
+        ApiResponse<List<BaseItemDto>> localVarResponse = getSpecialFeaturesWithHttpInfo(itemId, userId, headers);
         return localVarResponse.getData();
     }
 
@@ -756,7 +1075,22 @@ public class UserLibraryApi {
     public ApiResponse<List<BaseItemDto>> getSpecialFeaturesWithHttpInfo(
             @org.eclipse.jdt.annotation.Nullable UUID itemId, @org.eclipse.jdt.annotation.NonNull UUID userId)
             throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getSpecialFeaturesRequestBuilder(itemId, userId);
+        return getSpecialFeaturesWithHttpInfo(itemId, userId, null);
+    }
+
+    /**
+     * Gets special features for an item.
+     * 
+     * @param itemId Item id. (required)
+     * @param userId User id. (optional)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;List&lt;BaseItemDto&gt;&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<List<BaseItemDto>> getSpecialFeaturesWithHttpInfo(
+            @org.eclipse.jdt.annotation.Nullable UUID itemId, @org.eclipse.jdt.annotation.NonNull UUID userId,
+            Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = getSpecialFeaturesRequestBuilder(itemId, userId, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -773,12 +1107,14 @@ public class UserLibraryApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                List<BaseItemDto> responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<List<BaseItemDto>>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<List<BaseItemDto>>(localVarResponse.statusCode(),
-                        localVarResponse.headers().map(), responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<List<BaseItemDto>>() {
-                                }));
+                        localVarResponse.headers().map(), responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -790,7 +1126,7 @@ public class UserLibraryApi {
     }
 
     private HttpRequest.Builder getSpecialFeaturesRequestBuilder(@org.eclipse.jdt.annotation.Nullable UUID itemId,
-            @org.eclipse.jdt.annotation.NonNull UUID userId) throws ApiException {
+            @org.eclipse.jdt.annotation.NonNull UUID userId, Map<String, String> headers) throws ApiException {
         // verify the required parameter 'itemId' is set
         if (itemId == null) {
             throw new ApiException(400, "Missing the required parameter 'itemId' when calling getSpecialFeatures");
@@ -825,6 +1161,8 @@ public class UserLibraryApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -841,7 +1179,21 @@ public class UserLibraryApi {
      */
     public UserItemDataDto markFavoriteItem(@org.eclipse.jdt.annotation.Nullable UUID itemId,
             @org.eclipse.jdt.annotation.NonNull UUID userId) throws ApiException {
-        ApiResponse<UserItemDataDto> localVarResponse = markFavoriteItemWithHttpInfo(itemId, userId);
+        return markFavoriteItem(itemId, userId, null);
+    }
+
+    /**
+     * Marks an item as a favorite.
+     * 
+     * @param itemId Item id. (required)
+     * @param userId User id. (optional)
+     * @param headers Optional headers to include in the request
+     * @return UserItemDataDto
+     * @throws ApiException if fails to make API call
+     */
+    public UserItemDataDto markFavoriteItem(@org.eclipse.jdt.annotation.Nullable UUID itemId,
+            @org.eclipse.jdt.annotation.NonNull UUID userId, Map<String, String> headers) throws ApiException {
+        ApiResponse<UserItemDataDto> localVarResponse = markFavoriteItemWithHttpInfo(itemId, userId, headers);
         return localVarResponse.getData();
     }
 
@@ -855,7 +1207,21 @@ public class UserLibraryApi {
      */
     public ApiResponse<UserItemDataDto> markFavoriteItemWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID itemId,
             @org.eclipse.jdt.annotation.NonNull UUID userId) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = markFavoriteItemRequestBuilder(itemId, userId);
+        return markFavoriteItemWithHttpInfo(itemId, userId, null);
+    }
+
+    /**
+     * Marks an item as a favorite.
+     * 
+     * @param itemId Item id. (required)
+     * @param userId User id. (optional)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;UserItemDataDto&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<UserItemDataDto> markFavoriteItemWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID itemId,
+            @org.eclipse.jdt.annotation.NonNull UUID userId, Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = markFavoriteItemRequestBuilder(itemId, userId, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -872,12 +1238,14 @@ public class UserLibraryApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                UserItemDataDto responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<UserItemDataDto>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<UserItemDataDto>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<UserItemDataDto>() {
-                                }));
+                        responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -889,7 +1257,7 @@ public class UserLibraryApi {
     }
 
     private HttpRequest.Builder markFavoriteItemRequestBuilder(@org.eclipse.jdt.annotation.Nullable UUID itemId,
-            @org.eclipse.jdt.annotation.NonNull UUID userId) throws ApiException {
+            @org.eclipse.jdt.annotation.NonNull UUID userId, Map<String, String> headers) throws ApiException {
         // verify the required parameter 'itemId' is set
         if (itemId == null) {
             throw new ApiException(400, "Missing the required parameter 'itemId' when calling markFavoriteItem");
@@ -923,6 +1291,8 @@ public class UserLibraryApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -939,7 +1309,21 @@ public class UserLibraryApi {
      */
     public UserItemDataDto unmarkFavoriteItem(@org.eclipse.jdt.annotation.Nullable UUID itemId,
             @org.eclipse.jdt.annotation.NonNull UUID userId) throws ApiException {
-        ApiResponse<UserItemDataDto> localVarResponse = unmarkFavoriteItemWithHttpInfo(itemId, userId);
+        return unmarkFavoriteItem(itemId, userId, null);
+    }
+
+    /**
+     * Unmarks item as a favorite.
+     * 
+     * @param itemId Item id. (required)
+     * @param userId User id. (optional)
+     * @param headers Optional headers to include in the request
+     * @return UserItemDataDto
+     * @throws ApiException if fails to make API call
+     */
+    public UserItemDataDto unmarkFavoriteItem(@org.eclipse.jdt.annotation.Nullable UUID itemId,
+            @org.eclipse.jdt.annotation.NonNull UUID userId, Map<String, String> headers) throws ApiException {
+        ApiResponse<UserItemDataDto> localVarResponse = unmarkFavoriteItemWithHttpInfo(itemId, userId, headers);
         return localVarResponse.getData();
     }
 
@@ -953,7 +1337,21 @@ public class UserLibraryApi {
      */
     public ApiResponse<UserItemDataDto> unmarkFavoriteItemWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID itemId,
             @org.eclipse.jdt.annotation.NonNull UUID userId) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = unmarkFavoriteItemRequestBuilder(itemId, userId);
+        return unmarkFavoriteItemWithHttpInfo(itemId, userId, null);
+    }
+
+    /**
+     * Unmarks item as a favorite.
+     * 
+     * @param itemId Item id. (required)
+     * @param userId User id. (optional)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;UserItemDataDto&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<UserItemDataDto> unmarkFavoriteItemWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID itemId,
+            @org.eclipse.jdt.annotation.NonNull UUID userId, Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = unmarkFavoriteItemRequestBuilder(itemId, userId, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -970,12 +1368,14 @@ public class UserLibraryApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                UserItemDataDto responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<UserItemDataDto>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<UserItemDataDto>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<UserItemDataDto>() {
-                                }));
+                        responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -987,7 +1387,7 @@ public class UserLibraryApi {
     }
 
     private HttpRequest.Builder unmarkFavoriteItemRequestBuilder(@org.eclipse.jdt.annotation.Nullable UUID itemId,
-            @org.eclipse.jdt.annotation.NonNull UUID userId) throws ApiException {
+            @org.eclipse.jdt.annotation.NonNull UUID userId, Map<String, String> headers) throws ApiException {
         // verify the required parameter 'itemId' is set
         if (itemId == null) {
             throw new ApiException(400, "Missing the required parameter 'itemId' when calling unmarkFavoriteItem");
@@ -1021,6 +1421,8 @@ public class UserLibraryApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -1041,7 +1443,26 @@ public class UserLibraryApi {
     public UserItemDataDto updateUserItemRating(@org.eclipse.jdt.annotation.Nullable UUID itemId,
             @org.eclipse.jdt.annotation.NonNull UUID userId, @org.eclipse.jdt.annotation.NonNull Boolean likes)
             throws ApiException {
-        ApiResponse<UserItemDataDto> localVarResponse = updateUserItemRatingWithHttpInfo(itemId, userId, likes);
+        return updateUserItemRating(itemId, userId, likes, null);
+    }
+
+    /**
+     * Updates a user&#39;s rating for an item.
+     * 
+     * @param itemId Item id. (required)
+     * @param userId User id. (optional)
+     * @param likes Whether this
+     *            M:Jellyfin.Api.Controllers.UserLibraryController.UpdateUserItemRating(System.Nullable{System.Guid},System.Guid,System.Nullable{System.Boolean})
+     *            is likes. (optional)
+     * @param headers Optional headers to include in the request
+     * @return UserItemDataDto
+     * @throws ApiException if fails to make API call
+     */
+    public UserItemDataDto updateUserItemRating(@org.eclipse.jdt.annotation.Nullable UUID itemId,
+            @org.eclipse.jdt.annotation.NonNull UUID userId, @org.eclipse.jdt.annotation.NonNull Boolean likes,
+            Map<String, String> headers) throws ApiException {
+        ApiResponse<UserItemDataDto> localVarResponse = updateUserItemRatingWithHttpInfo(itemId, userId, likes,
+                headers);
         return localVarResponse.getData();
     }
 
@@ -1059,7 +1480,25 @@ public class UserLibraryApi {
     public ApiResponse<UserItemDataDto> updateUserItemRatingWithHttpInfo(
             @org.eclipse.jdt.annotation.Nullable UUID itemId, @org.eclipse.jdt.annotation.NonNull UUID userId,
             @org.eclipse.jdt.annotation.NonNull Boolean likes) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = updateUserItemRatingRequestBuilder(itemId, userId, likes);
+        return updateUserItemRatingWithHttpInfo(itemId, userId, likes, null);
+    }
+
+    /**
+     * Updates a user&#39;s rating for an item.
+     * 
+     * @param itemId Item id. (required)
+     * @param userId User id. (optional)
+     * @param likes Whether this
+     *            M:Jellyfin.Api.Controllers.UserLibraryController.UpdateUserItemRating(System.Nullable{System.Guid},System.Guid,System.Nullable{System.Boolean})
+     *            is likes. (optional)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;UserItemDataDto&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<UserItemDataDto> updateUserItemRatingWithHttpInfo(
+            @org.eclipse.jdt.annotation.Nullable UUID itemId, @org.eclipse.jdt.annotation.NonNull UUID userId,
+            @org.eclipse.jdt.annotation.NonNull Boolean likes, Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = updateUserItemRatingRequestBuilder(itemId, userId, likes, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -1076,12 +1515,14 @@ public class UserLibraryApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                UserItemDataDto responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<UserItemDataDto>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<UserItemDataDto>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<UserItemDataDto>() {
-                                }));
+                        responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -1093,8 +1534,8 @@ public class UserLibraryApi {
     }
 
     private HttpRequest.Builder updateUserItemRatingRequestBuilder(@org.eclipse.jdt.annotation.Nullable UUID itemId,
-            @org.eclipse.jdt.annotation.NonNull UUID userId, @org.eclipse.jdt.annotation.NonNull Boolean likes)
-            throws ApiException {
+            @org.eclipse.jdt.annotation.NonNull UUID userId, @org.eclipse.jdt.annotation.NonNull Boolean likes,
+            Map<String, String> headers) throws ApiException {
         // verify the required parameter 'itemId' is set
         if (itemId == null) {
             throw new ApiException(400, "Missing the required parameter 'itemId' when calling updateUserItemRating");
@@ -1130,6 +1571,8 @@ public class UserLibraryApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }

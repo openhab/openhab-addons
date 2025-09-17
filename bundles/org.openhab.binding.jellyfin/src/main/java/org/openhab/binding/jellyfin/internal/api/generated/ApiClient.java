@@ -171,7 +171,7 @@ public class ApiClient {
     public ApiClient() {
         this.builder = createDefaultHttpClientBuilder();
         this.mapper = createDefaultObjectMapper();
-        updateBaseUri(getDefaultBaseUri());
+        updateBaseUri("http://localhost");
         interceptor = null;
         readTimeout = null;
         connectTimeout = null;
@@ -189,7 +189,7 @@ public class ApiClient {
     public ApiClient(HttpClient.Builder builder, ObjectMapper mapper, String baseUri) {
         this.builder = builder;
         this.mapper = mapper;
-        updateBaseUri(baseUri != null ? baseUri : getDefaultBaseUri());
+        updateBaseUri(baseUri != null ? baseUri : "http://localhost");
         interceptor = null;
         readTimeout = null;
         connectTimeout = null;
@@ -211,8 +211,8 @@ public class ApiClient {
         return mapper;
     }
 
-    protected String getDefaultBaseUri() {
-        return "http://localhost";
+    protected final String getDefaultBaseUri() {
+        return basePath;
     }
 
     public static HttpClient.Builder createDefaultHttpClientBuilder() {

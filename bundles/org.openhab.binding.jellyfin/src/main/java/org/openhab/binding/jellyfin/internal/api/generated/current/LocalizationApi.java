@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.jellyfin.internal.api.generated.current;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -20,6 +21,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 
 import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
@@ -36,6 +38,28 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class LocalizationApi {
+    /**
+     * Utility class for extending HttpRequest.Builder functionality.
+     */
+    private static class HttpRequestBuilderExtensions {
+        /**
+         * Adds additional headers to the provided HttpRequest.Builder. Useful for adding method/endpoint specific
+         * headers.
+         *
+         * @param builder the HttpRequest.Builder to which headers will be added
+         * @param headers a map of header names and values to add; may be null
+         * @return the same HttpRequest.Builder instance with the additional headers set
+         */
+        static HttpRequest.Builder withAdditionalHeaders(HttpRequest.Builder builder, Map<String, String> headers) {
+            if (headers != null) {
+                for (Map.Entry<String, String> entry : headers.entrySet()) {
+                    builder.header(entry.getKey(), entry.getValue());
+                }
+            }
+            return builder;
+        }
+    }
+
     private final HttpClient memberVarHttpClient;
     private final ObjectMapper memberVarObjectMapper;
     private final String memberVarBaseUri;
@@ -72,13 +96,74 @@ public class LocalizationApi {
     }
 
     /**
+     * Download file from the given response.
+     *
+     * @param response Response
+     * @return File
+     * @throws ApiException If fail to read file content from response and write to disk
+     */
+    public File downloadFileFromResponse(HttpResponse<InputStream> response) throws ApiException {
+        try {
+            File file = prepareDownloadFile(response);
+            java.nio.file.Files.copy(response.body(), file.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+            return file;
+        } catch (IOException e) {
+            throw new ApiException(e);
+        }
+    }
+
+    /**
+     * <p>
+     * Prepare the file for download from the response.
+     * </p>
+     *
+     * @param response a {@link java.net.http.HttpResponse} object.
+     * @return a {@link java.io.File} object.
+     * @throws java.io.IOException if any.
+     */
+    private File prepareDownloadFile(HttpResponse<InputStream> response) throws IOException {
+        String filename = null;
+        java.util.Optional<String> contentDisposition = response.headers().firstValue("Content-Disposition");
+        if (contentDisposition.isPresent() && !"".equals(contentDisposition.get())) {
+            // Get filename from the Content-Disposition header.
+            java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("filename=['\"]?([^'\"\\s]+)['\"]?");
+            java.util.regex.Matcher matcher = pattern.matcher(contentDisposition.get());
+            if (matcher.find())
+                filename = matcher.group(1);
+        }
+        File file = null;
+        if (filename != null) {
+            java.nio.file.Path tempDir = java.nio.file.Files.createTempDirectory("swagger-gen-native");
+            java.nio.file.Path filePath = java.nio.file.Files.createFile(tempDir.resolve(filename));
+            file = filePath.toFile();
+            tempDir.toFile().deleteOnExit(); // best effort cleanup
+            file.deleteOnExit(); // best effort cleanup
+        } else {
+            file = java.nio.file.Files.createTempFile("download-", "").toFile();
+            file.deleteOnExit(); // best effort cleanup
+        }
+        return file;
+    }
+
+    /**
      * Gets known countries.
      * 
      * @return List&lt;CountryInfo&gt;
      * @throws ApiException if fails to make API call
      */
     public List<CountryInfo> getCountries() throws ApiException {
-        ApiResponse<List<CountryInfo>> localVarResponse = getCountriesWithHttpInfo();
+        return getCountries(null);
+    }
+
+    /**
+     * Gets known countries.
+     * 
+     * @param headers Optional headers to include in the request
+     * @return List&lt;CountryInfo&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public List<CountryInfo> getCountries(Map<String, String> headers) throws ApiException {
+        ApiResponse<List<CountryInfo>> localVarResponse = getCountriesWithHttpInfo(headers);
         return localVarResponse.getData();
     }
 
@@ -89,7 +174,18 @@ public class LocalizationApi {
      * @throws ApiException if fails to make API call
      */
     public ApiResponse<List<CountryInfo>> getCountriesWithHttpInfo() throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getCountriesRequestBuilder();
+        return getCountriesWithHttpInfo(null);
+    }
+
+    /**
+     * Gets known countries.
+     * 
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;List&lt;CountryInfo&gt;&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<List<CountryInfo>> getCountriesWithHttpInfo(Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = getCountriesRequestBuilder(headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -106,12 +202,14 @@ public class LocalizationApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                List<CountryInfo> responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<List<CountryInfo>>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<List<CountryInfo>>(localVarResponse.statusCode(),
-                        localVarResponse.headers().map(), responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<List<CountryInfo>>() {
-                                }));
+                        localVarResponse.headers().map(), responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -122,7 +220,7 @@ public class LocalizationApi {
         }
     }
 
-    private HttpRequest.Builder getCountriesRequestBuilder() throws ApiException {
+    private HttpRequest.Builder getCountriesRequestBuilder(Map<String, String> headers) throws ApiException {
 
         HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
 
@@ -137,6 +235,8 @@ public class LocalizationApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -150,7 +250,18 @@ public class LocalizationApi {
      * @throws ApiException if fails to make API call
      */
     public List<CultureDto> getCultures() throws ApiException {
-        ApiResponse<List<CultureDto>> localVarResponse = getCulturesWithHttpInfo();
+        return getCultures(null);
+    }
+
+    /**
+     * Gets known cultures.
+     * 
+     * @param headers Optional headers to include in the request
+     * @return List&lt;CultureDto&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public List<CultureDto> getCultures(Map<String, String> headers) throws ApiException {
+        ApiResponse<List<CultureDto>> localVarResponse = getCulturesWithHttpInfo(headers);
         return localVarResponse.getData();
     }
 
@@ -161,7 +272,18 @@ public class LocalizationApi {
      * @throws ApiException if fails to make API call
      */
     public ApiResponse<List<CultureDto>> getCulturesWithHttpInfo() throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getCulturesRequestBuilder();
+        return getCulturesWithHttpInfo(null);
+    }
+
+    /**
+     * Gets known cultures.
+     * 
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;List&lt;CultureDto&gt;&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<List<CultureDto>> getCulturesWithHttpInfo(Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = getCulturesRequestBuilder(headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -178,12 +300,14 @@ public class LocalizationApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                List<CultureDto> responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<List<CultureDto>>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<List<CultureDto>>(localVarResponse.statusCode(),
-                        localVarResponse.headers().map(), responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<List<CultureDto>>() {
-                                }));
+                        localVarResponse.headers().map(), responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -194,7 +318,7 @@ public class LocalizationApi {
         }
     }
 
-    private HttpRequest.Builder getCulturesRequestBuilder() throws ApiException {
+    private HttpRequest.Builder getCulturesRequestBuilder(Map<String, String> headers) throws ApiException {
 
         HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
 
@@ -209,6 +333,8 @@ public class LocalizationApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -222,7 +348,18 @@ public class LocalizationApi {
      * @throws ApiException if fails to make API call
      */
     public List<LocalizationOption> getLocalizationOptions() throws ApiException {
-        ApiResponse<List<LocalizationOption>> localVarResponse = getLocalizationOptionsWithHttpInfo();
+        return getLocalizationOptions(null);
+    }
+
+    /**
+     * Gets localization options.
+     * 
+     * @param headers Optional headers to include in the request
+     * @return List&lt;LocalizationOption&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public List<LocalizationOption> getLocalizationOptions(Map<String, String> headers) throws ApiException {
+        ApiResponse<List<LocalizationOption>> localVarResponse = getLocalizationOptionsWithHttpInfo(headers);
         return localVarResponse.getData();
     }
 
@@ -233,7 +370,19 @@ public class LocalizationApi {
      * @throws ApiException if fails to make API call
      */
     public ApiResponse<List<LocalizationOption>> getLocalizationOptionsWithHttpInfo() throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getLocalizationOptionsRequestBuilder();
+        return getLocalizationOptionsWithHttpInfo(null);
+    }
+
+    /**
+     * Gets localization options.
+     * 
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;List&lt;LocalizationOption&gt;&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<List<LocalizationOption>> getLocalizationOptionsWithHttpInfo(Map<String, String> headers)
+            throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = getLocalizationOptionsRequestBuilder(headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -250,14 +399,14 @@ public class LocalizationApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                List<LocalizationOption> responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<List<LocalizationOption>>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<List<LocalizationOption>>(localVarResponse.statusCode(),
-                        localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody,
-                                        new TypeReference<List<LocalizationOption>>() {
-                                        }));
+                        localVarResponse.headers().map(), responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -268,7 +417,7 @@ public class LocalizationApi {
         }
     }
 
-    private HttpRequest.Builder getLocalizationOptionsRequestBuilder() throws ApiException {
+    private HttpRequest.Builder getLocalizationOptionsRequestBuilder(Map<String, String> headers) throws ApiException {
 
         HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
 
@@ -283,6 +432,8 @@ public class LocalizationApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -296,7 +447,18 @@ public class LocalizationApi {
      * @throws ApiException if fails to make API call
      */
     public List<ParentalRating> getParentalRatings() throws ApiException {
-        ApiResponse<List<ParentalRating>> localVarResponse = getParentalRatingsWithHttpInfo();
+        return getParentalRatings(null);
+    }
+
+    /**
+     * Gets known parental ratings.
+     * 
+     * @param headers Optional headers to include in the request
+     * @return List&lt;ParentalRating&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public List<ParentalRating> getParentalRatings(Map<String, String> headers) throws ApiException {
+        ApiResponse<List<ParentalRating>> localVarResponse = getParentalRatingsWithHttpInfo(headers);
         return localVarResponse.getData();
     }
 
@@ -307,7 +469,19 @@ public class LocalizationApi {
      * @throws ApiException if fails to make API call
      */
     public ApiResponse<List<ParentalRating>> getParentalRatingsWithHttpInfo() throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getParentalRatingsRequestBuilder();
+        return getParentalRatingsWithHttpInfo(null);
+    }
+
+    /**
+     * Gets known parental ratings.
+     * 
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;List&lt;ParentalRating&gt;&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<List<ParentalRating>> getParentalRatingsWithHttpInfo(Map<String, String> headers)
+            throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = getParentalRatingsRequestBuilder(headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -324,14 +498,14 @@ public class LocalizationApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                List<ParentalRating> responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<List<ParentalRating>>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<List<ParentalRating>>(localVarResponse.statusCode(),
-                        localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody,
-                                        new TypeReference<List<ParentalRating>>() {
-                                        }));
+                        localVarResponse.headers().map(), responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -342,7 +516,7 @@ public class LocalizationApi {
         }
     }
 
-    private HttpRequest.Builder getParentalRatingsRequestBuilder() throws ApiException {
+    private HttpRequest.Builder getParentalRatingsRequestBuilder(Map<String, String> headers) throws ApiException {
 
         HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
 
@@ -357,6 +531,8 @@ public class LocalizationApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }

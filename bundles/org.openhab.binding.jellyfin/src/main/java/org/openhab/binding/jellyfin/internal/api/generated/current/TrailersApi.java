@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.jellyfin.internal.api.generated.current;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -22,6 +23,7 @@ import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.StringJoiner;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -48,6 +50,28 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class TrailersApi {
+    /**
+     * Utility class for extending HttpRequest.Builder functionality.
+     */
+    private static class HttpRequestBuilderExtensions {
+        /**
+         * Adds additional headers to the provided HttpRequest.Builder. Useful for adding method/endpoint specific
+         * headers.
+         *
+         * @param builder the HttpRequest.Builder to which headers will be added
+         * @param headers a map of header names and values to add; may be null
+         * @return the same HttpRequest.Builder instance with the additional headers set
+         */
+        static HttpRequest.Builder withAdditionalHeaders(HttpRequest.Builder builder, Map<String, String> headers) {
+            if (headers != null) {
+                for (Map.Entry<String, String> entry : headers.entrySet()) {
+                    builder.header(entry.getKey(), entry.getValue());
+                }
+            }
+            return builder;
+        }
+    }
+
     private final HttpClient memberVarHttpClient;
     private final ObjectMapper memberVarObjectMapper;
     private final String memberVarBaseUri;
@@ -81,6 +105,56 @@ public class TrailersApi {
             body = "[no body]";
         }
         return operationId + " call failed with: " + statusCode + " - " + body;
+    }
+
+    /**
+     * Download file from the given response.
+     *
+     * @param response Response
+     * @return File
+     * @throws ApiException If fail to read file content from response and write to disk
+     */
+    public File downloadFileFromResponse(HttpResponse<InputStream> response) throws ApiException {
+        try {
+            File file = prepareDownloadFile(response);
+            java.nio.file.Files.copy(response.body(), file.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+            return file;
+        } catch (IOException e) {
+            throw new ApiException(e);
+        }
+    }
+
+    /**
+     * <p>
+     * Prepare the file for download from the response.
+     * </p>
+     *
+     * @param response a {@link java.net.http.HttpResponse} object.
+     * @return a {@link java.io.File} object.
+     * @throws java.io.IOException if any.
+     */
+    private File prepareDownloadFile(HttpResponse<InputStream> response) throws IOException {
+        String filename = null;
+        java.util.Optional<String> contentDisposition = response.headers().firstValue("Content-Disposition");
+        if (contentDisposition.isPresent() && !"".equals(contentDisposition.get())) {
+            // Get filename from the Content-Disposition header.
+            java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("filename=['\"]?([^'\"\\s]+)['\"]?");
+            java.util.regex.Matcher matcher = pattern.matcher(contentDisposition.get());
+            if (matcher.find())
+                filename = matcher.group(1);
+        }
+        File file = null;
+        if (filename != null) {
+            java.nio.file.Path tempDir = java.nio.file.Files.createTempDirectory("swagger-gen-native");
+            java.nio.file.Path filePath = java.nio.file.Files.createFile(tempDir.resolve(filename));
+            file = filePath.toFile();
+            tempDir.toFile().deleteOnExit(); // best effort cleanup
+            file.deleteOnExit(); // best effort cleanup
+        } else {
+            file = java.nio.file.Files.createTempFile("download-", "").toFile();
+            file.deleteOnExit(); // best effort cleanup
+        }
+        return file;
     }
 
     /**
@@ -283,6 +357,221 @@ public class TrailersApi {
             @org.eclipse.jdt.annotation.NonNull List<UUID> genreIds,
             @org.eclipse.jdt.annotation.NonNull Boolean enableTotalRecordCount,
             @org.eclipse.jdt.annotation.NonNull Boolean enableImages) throws ApiException {
+        return getTrailers(userId, maxOfficialRating, hasThemeSong, hasThemeVideo, hasSubtitles, hasSpecialFeature,
+                hasTrailer, adjacentTo, parentIndexNumber, hasParentalRating, isHd, is4K, locationTypes,
+                excludeLocationTypes, isMissing, isUnaired, minCommunityRating, minCriticRating, minPremiereDate,
+                minDateLastSaved, minDateLastSavedForUser, maxPremiereDate, hasOverview, hasImdbId, hasTmdbId,
+                hasTvdbId, isMovie, isSeries, isNews, isKids, isSports, excludeItemIds, startIndex, limit, recursive,
+                searchTerm, sortOrder, parentId, fields, excludeItemTypes, filters, isFavorite, mediaTypes, imageTypes,
+                sortBy, isPlayed, genres, officialRatings, tags, years, enableUserData, imageTypeLimit,
+                enableImageTypes, person, personIds, personTypes, studios, artists, excludeArtistIds, artistIds,
+                albumArtistIds, contributingArtistIds, albums, albumIds, ids, videoTypes, minOfficialRating, isLocked,
+                isPlaceHolder, hasOfficialRating, collapseBoxSetItems, minWidth, minHeight, maxWidth, maxHeight, is3D,
+                seriesStatus, nameStartsWithOrGreater, nameStartsWith, nameLessThan, studioIds, genreIds,
+                enableTotalRecordCount, enableImages, null);
+    }
+
+    /**
+     * Finds movies and trailers similar to a given trailer.
+     * 
+     * @param userId The user id supplied as query parameter; this is required when not using an API key. (optional)
+     * @param maxOfficialRating Optional filter by maximum official rating (PG, PG-13, TV-MA, etc). (optional)
+     * @param hasThemeSong Optional filter by items with theme songs. (optional)
+     * @param hasThemeVideo Optional filter by items with theme videos. (optional)
+     * @param hasSubtitles Optional filter by items with subtitles. (optional)
+     * @param hasSpecialFeature Optional filter by items with special features. (optional)
+     * @param hasTrailer Optional filter by items with trailers. (optional)
+     * @param adjacentTo Optional. Return items that are siblings of a supplied item. (optional)
+     * @param parentIndexNumber Optional filter by parent index number. (optional)
+     * @param hasParentalRating Optional filter by items that have or do not have a parental rating. (optional)
+     * @param isHd Optional filter by items that are HD or not. (optional)
+     * @param is4K Optional filter by items that are 4K or not. (optional)
+     * @param locationTypes Optional. If specified, results will be filtered based on LocationType. This allows
+     *            multiple, comma delimited. (optional)
+     * @param excludeLocationTypes Optional. If specified, results will be filtered based on the LocationType. This
+     *            allows multiple, comma delimited. (optional)
+     * @param isMissing Optional filter by items that are missing episodes or not. (optional)
+     * @param isUnaired Optional filter by items that are unaired episodes or not. (optional)
+     * @param minCommunityRating Optional filter by minimum community rating. (optional)
+     * @param minCriticRating Optional filter by minimum critic rating. (optional)
+     * @param minPremiereDate Optional. The minimum premiere date. Format &#x3D; ISO. (optional)
+     * @param minDateLastSaved Optional. The minimum last saved date. Format &#x3D; ISO. (optional)
+     * @param minDateLastSavedForUser Optional. The minimum last saved date for the current user. Format &#x3D; ISO.
+     *            (optional)
+     * @param maxPremiereDate Optional. The maximum premiere date. Format &#x3D; ISO. (optional)
+     * @param hasOverview Optional filter by items that have an overview or not. (optional)
+     * @param hasImdbId Optional filter by items that have an IMDb id or not. (optional)
+     * @param hasTmdbId Optional filter by items that have a TMDb id or not. (optional)
+     * @param hasTvdbId Optional filter by items that have a TVDb id or not. (optional)
+     * @param isMovie Optional filter for live tv movies. (optional)
+     * @param isSeries Optional filter for live tv series. (optional)
+     * @param isNews Optional filter for live tv news. (optional)
+     * @param isKids Optional filter for live tv kids. (optional)
+     * @param isSports Optional filter for live tv sports. (optional)
+     * @param excludeItemIds Optional. If specified, results will be filtered by excluding item ids. This allows
+     *            multiple, comma delimited. (optional)
+     * @param startIndex Optional. The record index to start at. All items with a lower index will be dropped from the
+     *            results. (optional)
+     * @param limit Optional. The maximum number of records to return. (optional)
+     * @param recursive When searching within folders, this determines whether or not the search will be recursive.
+     *            true/false. (optional)
+     * @param searchTerm Optional. Filter based on a search term. (optional)
+     * @param sortOrder Sort Order - Ascending, Descending. (optional)
+     * @param parentId Specify this to localize the search to a specific item or folder. Omit to use the root.
+     *            (optional)
+     * @param fields Optional. Specify additional fields of information to return in the output. This allows multiple,
+     *            comma delimited. Options: Budget, Chapters, DateCreated, Genres, HomePageUrl, IndexOptions,
+     *            MediaStreams, Overview, ParentId, Path, People, ProviderIds, PrimaryImageAspectRatio, Revenue,
+     *            SortName, Studios, Taglines. (optional)
+     * @param excludeItemTypes Optional. If specified, results will be filtered based on item type. This allows
+     *            multiple, comma delimited. (optional)
+     * @param filters Optional. Specify additional filters to apply. This allows multiple, comma delimited. Options:
+     *            IsFolder, IsNotFolder, IsUnplayed, IsPlayed, IsFavorite, IsResumable, Likes, Dislikes. (optional)
+     * @param isFavorite Optional filter by items that are marked as favorite, or not. (optional)
+     * @param mediaTypes Optional filter by MediaType. Allows multiple, comma delimited. (optional)
+     * @param imageTypes Optional. If specified, results will be filtered based on those containing image types. This
+     *            allows multiple, comma delimited. (optional)
+     * @param sortBy Optional. Specify one or more sort orders, comma delimited. Options: Album, AlbumArtist, Artist,
+     *            Budget, CommunityRating, CriticRating, DateCreated, DatePlayed, PlayCount, PremiereDate,
+     *            ProductionYear, SortName, Random, Revenue, Runtime. (optional)
+     * @param isPlayed Optional filter by items that are played, or not. (optional)
+     * @param genres Optional. If specified, results will be filtered based on genre. This allows multiple, pipe
+     *            delimited. (optional)
+     * @param officialRatings Optional. If specified, results will be filtered based on OfficialRating. This allows
+     *            multiple, pipe delimited. (optional)
+     * @param tags Optional. If specified, results will be filtered based on tag. This allows multiple, pipe delimited.
+     *            (optional)
+     * @param years Optional. If specified, results will be filtered based on production year. This allows multiple,
+     *            comma delimited. (optional)
+     * @param enableUserData Optional, include user data. (optional)
+     * @param imageTypeLimit Optional, the max number of images to return, per image type. (optional)
+     * @param enableImageTypes Optional. The image types to include in the output. (optional)
+     * @param person Optional. If specified, results will be filtered to include only those containing the specified
+     *            person. (optional)
+     * @param personIds Optional. If specified, results will be filtered to include only those containing the specified
+     *            person id. (optional)
+     * @param personTypes Optional. If specified, along with Person, results will be filtered to include only those
+     *            containing the specified person and PersonType. Allows multiple, comma-delimited. (optional)
+     * @param studios Optional. If specified, results will be filtered based on studio. This allows multiple, pipe
+     *            delimited. (optional)
+     * @param artists Optional. If specified, results will be filtered based on artists. This allows multiple, pipe
+     *            delimited. (optional)
+     * @param excludeArtistIds Optional. If specified, results will be filtered based on artist id. This allows
+     *            multiple, pipe delimited. (optional)
+     * @param artistIds Optional. If specified, results will be filtered to include only those containing the specified
+     *            artist id. (optional)
+     * @param albumArtistIds Optional. If specified, results will be filtered to include only those containing the
+     *            specified album artist id. (optional)
+     * @param contributingArtistIds Optional. If specified, results will be filtered to include only those containing
+     *            the specified contributing artist id. (optional)
+     * @param albums Optional. If specified, results will be filtered based on album. This allows multiple, pipe
+     *            delimited. (optional)
+     * @param albumIds Optional. If specified, results will be filtered based on album id. This allows multiple, pipe
+     *            delimited. (optional)
+     * @param ids Optional. If specific items are needed, specify a list of item id&#39;s to retrieve. This allows
+     *            multiple, comma delimited. (optional)
+     * @param videoTypes Optional filter by VideoType (videofile, dvd, bluray, iso). Allows multiple, comma delimited.
+     *            (optional)
+     * @param minOfficialRating Optional filter by minimum official rating (PG, PG-13, TV-MA, etc). (optional)
+     * @param isLocked Optional filter by items that are locked. (optional)
+     * @param isPlaceHolder Optional filter by items that are placeholders. (optional)
+     * @param hasOfficialRating Optional filter by items that have official ratings. (optional)
+     * @param collapseBoxSetItems Whether or not to hide items behind their boxsets. (optional)
+     * @param minWidth Optional. Filter by the minimum width of the item. (optional)
+     * @param minHeight Optional. Filter by the minimum height of the item. (optional)
+     * @param maxWidth Optional. Filter by the maximum width of the item. (optional)
+     * @param maxHeight Optional. Filter by the maximum height of the item. (optional)
+     * @param is3D Optional filter by items that are 3D, or not. (optional)
+     * @param seriesStatus Optional filter by Series Status. Allows multiple, comma delimited. (optional)
+     * @param nameStartsWithOrGreater Optional filter by items whose name is sorted equally or greater than a given
+     *            input string. (optional)
+     * @param nameStartsWith Optional filter by items whose name is sorted equally than a given input string. (optional)
+     * @param nameLessThan Optional filter by items whose name is equally or lesser than a given input string.
+     *            (optional)
+     * @param studioIds Optional. If specified, results will be filtered based on studio id. This allows multiple, pipe
+     *            delimited. (optional)
+     * @param genreIds Optional. If specified, results will be filtered based on genre id. This allows multiple, pipe
+     *            delimited. (optional)
+     * @param enableTotalRecordCount Optional. Enable the total record count. (optional, default to true)
+     * @param enableImages Optional, include image information in output. (optional, default to true)
+     * @param headers Optional headers to include in the request
+     * @return BaseItemDtoQueryResult
+     * @throws ApiException if fails to make API call
+     */
+    public BaseItemDtoQueryResult getTrailers(@org.eclipse.jdt.annotation.NonNull UUID userId,
+            @org.eclipse.jdt.annotation.NonNull String maxOfficialRating,
+            @org.eclipse.jdt.annotation.NonNull Boolean hasThemeSong,
+            @org.eclipse.jdt.annotation.NonNull Boolean hasThemeVideo,
+            @org.eclipse.jdt.annotation.NonNull Boolean hasSubtitles,
+            @org.eclipse.jdt.annotation.NonNull Boolean hasSpecialFeature,
+            @org.eclipse.jdt.annotation.NonNull Boolean hasTrailer, @org.eclipse.jdt.annotation.NonNull UUID adjacentTo,
+            @org.eclipse.jdt.annotation.NonNull Integer parentIndexNumber,
+            @org.eclipse.jdt.annotation.NonNull Boolean hasParentalRating,
+            @org.eclipse.jdt.annotation.NonNull Boolean isHd, @org.eclipse.jdt.annotation.NonNull Boolean is4K,
+            @org.eclipse.jdt.annotation.NonNull List<LocationType> locationTypes,
+            @org.eclipse.jdt.annotation.NonNull List<LocationType> excludeLocationTypes,
+            @org.eclipse.jdt.annotation.NonNull Boolean isMissing,
+            @org.eclipse.jdt.annotation.NonNull Boolean isUnaired,
+            @org.eclipse.jdt.annotation.NonNull Double minCommunityRating,
+            @org.eclipse.jdt.annotation.NonNull Double minCriticRating,
+            @org.eclipse.jdt.annotation.NonNull OffsetDateTime minPremiereDate,
+            @org.eclipse.jdt.annotation.NonNull OffsetDateTime minDateLastSaved,
+            @org.eclipse.jdt.annotation.NonNull OffsetDateTime minDateLastSavedForUser,
+            @org.eclipse.jdt.annotation.NonNull OffsetDateTime maxPremiereDate,
+            @org.eclipse.jdt.annotation.NonNull Boolean hasOverview,
+            @org.eclipse.jdt.annotation.NonNull Boolean hasImdbId,
+            @org.eclipse.jdt.annotation.NonNull Boolean hasTmdbId,
+            @org.eclipse.jdt.annotation.NonNull Boolean hasTvdbId, @org.eclipse.jdt.annotation.NonNull Boolean isMovie,
+            @org.eclipse.jdt.annotation.NonNull Boolean isSeries, @org.eclipse.jdt.annotation.NonNull Boolean isNews,
+            @org.eclipse.jdt.annotation.NonNull Boolean isKids, @org.eclipse.jdt.annotation.NonNull Boolean isSports,
+            @org.eclipse.jdt.annotation.NonNull List<UUID> excludeItemIds,
+            @org.eclipse.jdt.annotation.NonNull Integer startIndex, @org.eclipse.jdt.annotation.NonNull Integer limit,
+            @org.eclipse.jdt.annotation.NonNull Boolean recursive,
+            @org.eclipse.jdt.annotation.NonNull String searchTerm,
+            @org.eclipse.jdt.annotation.NonNull List<SortOrder> sortOrder,
+            @org.eclipse.jdt.annotation.NonNull UUID parentId,
+            @org.eclipse.jdt.annotation.NonNull List<ItemFields> fields,
+            @org.eclipse.jdt.annotation.NonNull List<BaseItemKind> excludeItemTypes,
+            @org.eclipse.jdt.annotation.NonNull List<ItemFilter> filters,
+            @org.eclipse.jdt.annotation.NonNull Boolean isFavorite,
+            @org.eclipse.jdt.annotation.NonNull List<MediaType> mediaTypes,
+            @org.eclipse.jdt.annotation.NonNull List<ImageType> imageTypes,
+            @org.eclipse.jdt.annotation.NonNull List<ItemSortBy> sortBy,
+            @org.eclipse.jdt.annotation.NonNull Boolean isPlayed,
+            @org.eclipse.jdt.annotation.NonNull List<String> genres,
+            @org.eclipse.jdt.annotation.NonNull List<String> officialRatings,
+            @org.eclipse.jdt.annotation.NonNull List<String> tags,
+            @org.eclipse.jdt.annotation.NonNull List<Integer> years,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableUserData,
+            @org.eclipse.jdt.annotation.NonNull Integer imageTypeLimit,
+            @org.eclipse.jdt.annotation.NonNull List<ImageType> enableImageTypes,
+            @org.eclipse.jdt.annotation.NonNull String person, @org.eclipse.jdt.annotation.NonNull List<UUID> personIds,
+            @org.eclipse.jdt.annotation.NonNull List<String> personTypes,
+            @org.eclipse.jdt.annotation.NonNull List<String> studios,
+            @org.eclipse.jdt.annotation.NonNull List<String> artists,
+            @org.eclipse.jdt.annotation.NonNull List<UUID> excludeArtistIds,
+            @org.eclipse.jdt.annotation.NonNull List<UUID> artistIds,
+            @org.eclipse.jdt.annotation.NonNull List<UUID> albumArtistIds,
+            @org.eclipse.jdt.annotation.NonNull List<UUID> contributingArtistIds,
+            @org.eclipse.jdt.annotation.NonNull List<String> albums,
+            @org.eclipse.jdt.annotation.NonNull List<UUID> albumIds, @org.eclipse.jdt.annotation.NonNull List<UUID> ids,
+            @org.eclipse.jdt.annotation.NonNull List<VideoType> videoTypes,
+            @org.eclipse.jdt.annotation.NonNull String minOfficialRating,
+            @org.eclipse.jdt.annotation.NonNull Boolean isLocked,
+            @org.eclipse.jdt.annotation.NonNull Boolean isPlaceHolder,
+            @org.eclipse.jdt.annotation.NonNull Boolean hasOfficialRating,
+            @org.eclipse.jdt.annotation.NonNull Boolean collapseBoxSetItems,
+            @org.eclipse.jdt.annotation.NonNull Integer minWidth, @org.eclipse.jdt.annotation.NonNull Integer minHeight,
+            @org.eclipse.jdt.annotation.NonNull Integer maxWidth, @org.eclipse.jdt.annotation.NonNull Integer maxHeight,
+            @org.eclipse.jdt.annotation.NonNull Boolean is3D,
+            @org.eclipse.jdt.annotation.NonNull List<SeriesStatus> seriesStatus,
+            @org.eclipse.jdt.annotation.NonNull String nameStartsWithOrGreater,
+            @org.eclipse.jdt.annotation.NonNull String nameStartsWith,
+            @org.eclipse.jdt.annotation.NonNull String nameLessThan,
+            @org.eclipse.jdt.annotation.NonNull List<UUID> studioIds,
+            @org.eclipse.jdt.annotation.NonNull List<UUID> genreIds,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableTotalRecordCount,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableImages, Map<String, String> headers) throws ApiException {
         ApiResponse<BaseItemDtoQueryResult> localVarResponse = getTrailersWithHttpInfo(userId, maxOfficialRating,
                 hasThemeSong, hasThemeVideo, hasSubtitles, hasSpecialFeature, hasTrailer, adjacentTo, parentIndexNumber,
                 hasParentalRating, isHd, is4K, locationTypes, excludeLocationTypes, isMissing, isUnaired,
@@ -295,7 +584,7 @@ public class TrailersApi {
                 albums, albumIds, ids, videoTypes, minOfficialRating, isLocked, isPlaceHolder, hasOfficialRating,
                 collapseBoxSetItems, minWidth, minHeight, maxWidth, maxHeight, is3D, seriesStatus,
                 nameStartsWithOrGreater, nameStartsWith, nameLessThan, studioIds, genreIds, enableTotalRecordCount,
-                enableImages);
+                enableImages, headers);
         return localVarResponse.getData();
     }
 
@@ -499,6 +788,221 @@ public class TrailersApi {
             @org.eclipse.jdt.annotation.NonNull List<UUID> genreIds,
             @org.eclipse.jdt.annotation.NonNull Boolean enableTotalRecordCount,
             @org.eclipse.jdt.annotation.NonNull Boolean enableImages) throws ApiException {
+        return getTrailersWithHttpInfo(userId, maxOfficialRating, hasThemeSong, hasThemeVideo, hasSubtitles,
+                hasSpecialFeature, hasTrailer, adjacentTo, parentIndexNumber, hasParentalRating, isHd, is4K,
+                locationTypes, excludeLocationTypes, isMissing, isUnaired, minCommunityRating, minCriticRating,
+                minPremiereDate, minDateLastSaved, minDateLastSavedForUser, maxPremiereDate, hasOverview, hasImdbId,
+                hasTmdbId, hasTvdbId, isMovie, isSeries, isNews, isKids, isSports, excludeItemIds, startIndex, limit,
+                recursive, searchTerm, sortOrder, parentId, fields, excludeItemTypes, filters, isFavorite, mediaTypes,
+                imageTypes, sortBy, isPlayed, genres, officialRatings, tags, years, enableUserData, imageTypeLimit,
+                enableImageTypes, person, personIds, personTypes, studios, artists, excludeArtistIds, artistIds,
+                albumArtistIds, contributingArtistIds, albums, albumIds, ids, videoTypes, minOfficialRating, isLocked,
+                isPlaceHolder, hasOfficialRating, collapseBoxSetItems, minWidth, minHeight, maxWidth, maxHeight, is3D,
+                seriesStatus, nameStartsWithOrGreater, nameStartsWith, nameLessThan, studioIds, genreIds,
+                enableTotalRecordCount, enableImages, null);
+    }
+
+    /**
+     * Finds movies and trailers similar to a given trailer.
+     * 
+     * @param userId The user id supplied as query parameter; this is required when not using an API key. (optional)
+     * @param maxOfficialRating Optional filter by maximum official rating (PG, PG-13, TV-MA, etc). (optional)
+     * @param hasThemeSong Optional filter by items with theme songs. (optional)
+     * @param hasThemeVideo Optional filter by items with theme videos. (optional)
+     * @param hasSubtitles Optional filter by items with subtitles. (optional)
+     * @param hasSpecialFeature Optional filter by items with special features. (optional)
+     * @param hasTrailer Optional filter by items with trailers. (optional)
+     * @param adjacentTo Optional. Return items that are siblings of a supplied item. (optional)
+     * @param parentIndexNumber Optional filter by parent index number. (optional)
+     * @param hasParentalRating Optional filter by items that have or do not have a parental rating. (optional)
+     * @param isHd Optional filter by items that are HD or not. (optional)
+     * @param is4K Optional filter by items that are 4K or not. (optional)
+     * @param locationTypes Optional. If specified, results will be filtered based on LocationType. This allows
+     *            multiple, comma delimited. (optional)
+     * @param excludeLocationTypes Optional. If specified, results will be filtered based on the LocationType. This
+     *            allows multiple, comma delimited. (optional)
+     * @param isMissing Optional filter by items that are missing episodes or not. (optional)
+     * @param isUnaired Optional filter by items that are unaired episodes or not. (optional)
+     * @param minCommunityRating Optional filter by minimum community rating. (optional)
+     * @param minCriticRating Optional filter by minimum critic rating. (optional)
+     * @param minPremiereDate Optional. The minimum premiere date. Format &#x3D; ISO. (optional)
+     * @param minDateLastSaved Optional. The minimum last saved date. Format &#x3D; ISO. (optional)
+     * @param minDateLastSavedForUser Optional. The minimum last saved date for the current user. Format &#x3D; ISO.
+     *            (optional)
+     * @param maxPremiereDate Optional. The maximum premiere date. Format &#x3D; ISO. (optional)
+     * @param hasOverview Optional filter by items that have an overview or not. (optional)
+     * @param hasImdbId Optional filter by items that have an IMDb id or not. (optional)
+     * @param hasTmdbId Optional filter by items that have a TMDb id or not. (optional)
+     * @param hasTvdbId Optional filter by items that have a TVDb id or not. (optional)
+     * @param isMovie Optional filter for live tv movies. (optional)
+     * @param isSeries Optional filter for live tv series. (optional)
+     * @param isNews Optional filter for live tv news. (optional)
+     * @param isKids Optional filter for live tv kids. (optional)
+     * @param isSports Optional filter for live tv sports. (optional)
+     * @param excludeItemIds Optional. If specified, results will be filtered by excluding item ids. This allows
+     *            multiple, comma delimited. (optional)
+     * @param startIndex Optional. The record index to start at. All items with a lower index will be dropped from the
+     *            results. (optional)
+     * @param limit Optional. The maximum number of records to return. (optional)
+     * @param recursive When searching within folders, this determines whether or not the search will be recursive.
+     *            true/false. (optional)
+     * @param searchTerm Optional. Filter based on a search term. (optional)
+     * @param sortOrder Sort Order - Ascending, Descending. (optional)
+     * @param parentId Specify this to localize the search to a specific item or folder. Omit to use the root.
+     *            (optional)
+     * @param fields Optional. Specify additional fields of information to return in the output. This allows multiple,
+     *            comma delimited. Options: Budget, Chapters, DateCreated, Genres, HomePageUrl, IndexOptions,
+     *            MediaStreams, Overview, ParentId, Path, People, ProviderIds, PrimaryImageAspectRatio, Revenue,
+     *            SortName, Studios, Taglines. (optional)
+     * @param excludeItemTypes Optional. If specified, results will be filtered based on item type. This allows
+     *            multiple, comma delimited. (optional)
+     * @param filters Optional. Specify additional filters to apply. This allows multiple, comma delimited. Options:
+     *            IsFolder, IsNotFolder, IsUnplayed, IsPlayed, IsFavorite, IsResumable, Likes, Dislikes. (optional)
+     * @param isFavorite Optional filter by items that are marked as favorite, or not. (optional)
+     * @param mediaTypes Optional filter by MediaType. Allows multiple, comma delimited. (optional)
+     * @param imageTypes Optional. If specified, results will be filtered based on those containing image types. This
+     *            allows multiple, comma delimited. (optional)
+     * @param sortBy Optional. Specify one or more sort orders, comma delimited. Options: Album, AlbumArtist, Artist,
+     *            Budget, CommunityRating, CriticRating, DateCreated, DatePlayed, PlayCount, PremiereDate,
+     *            ProductionYear, SortName, Random, Revenue, Runtime. (optional)
+     * @param isPlayed Optional filter by items that are played, or not. (optional)
+     * @param genres Optional. If specified, results will be filtered based on genre. This allows multiple, pipe
+     *            delimited. (optional)
+     * @param officialRatings Optional. If specified, results will be filtered based on OfficialRating. This allows
+     *            multiple, pipe delimited. (optional)
+     * @param tags Optional. If specified, results will be filtered based on tag. This allows multiple, pipe delimited.
+     *            (optional)
+     * @param years Optional. If specified, results will be filtered based on production year. This allows multiple,
+     *            comma delimited. (optional)
+     * @param enableUserData Optional, include user data. (optional)
+     * @param imageTypeLimit Optional, the max number of images to return, per image type. (optional)
+     * @param enableImageTypes Optional. The image types to include in the output. (optional)
+     * @param person Optional. If specified, results will be filtered to include only those containing the specified
+     *            person. (optional)
+     * @param personIds Optional. If specified, results will be filtered to include only those containing the specified
+     *            person id. (optional)
+     * @param personTypes Optional. If specified, along with Person, results will be filtered to include only those
+     *            containing the specified person and PersonType. Allows multiple, comma-delimited. (optional)
+     * @param studios Optional. If specified, results will be filtered based on studio. This allows multiple, pipe
+     *            delimited. (optional)
+     * @param artists Optional. If specified, results will be filtered based on artists. This allows multiple, pipe
+     *            delimited. (optional)
+     * @param excludeArtistIds Optional. If specified, results will be filtered based on artist id. This allows
+     *            multiple, pipe delimited. (optional)
+     * @param artistIds Optional. If specified, results will be filtered to include only those containing the specified
+     *            artist id. (optional)
+     * @param albumArtistIds Optional. If specified, results will be filtered to include only those containing the
+     *            specified album artist id. (optional)
+     * @param contributingArtistIds Optional. If specified, results will be filtered to include only those containing
+     *            the specified contributing artist id. (optional)
+     * @param albums Optional. If specified, results will be filtered based on album. This allows multiple, pipe
+     *            delimited. (optional)
+     * @param albumIds Optional. If specified, results will be filtered based on album id. This allows multiple, pipe
+     *            delimited. (optional)
+     * @param ids Optional. If specific items are needed, specify a list of item id&#39;s to retrieve. This allows
+     *            multiple, comma delimited. (optional)
+     * @param videoTypes Optional filter by VideoType (videofile, dvd, bluray, iso). Allows multiple, comma delimited.
+     *            (optional)
+     * @param minOfficialRating Optional filter by minimum official rating (PG, PG-13, TV-MA, etc). (optional)
+     * @param isLocked Optional filter by items that are locked. (optional)
+     * @param isPlaceHolder Optional filter by items that are placeholders. (optional)
+     * @param hasOfficialRating Optional filter by items that have official ratings. (optional)
+     * @param collapseBoxSetItems Whether or not to hide items behind their boxsets. (optional)
+     * @param minWidth Optional. Filter by the minimum width of the item. (optional)
+     * @param minHeight Optional. Filter by the minimum height of the item. (optional)
+     * @param maxWidth Optional. Filter by the maximum width of the item. (optional)
+     * @param maxHeight Optional. Filter by the maximum height of the item. (optional)
+     * @param is3D Optional filter by items that are 3D, or not. (optional)
+     * @param seriesStatus Optional filter by Series Status. Allows multiple, comma delimited. (optional)
+     * @param nameStartsWithOrGreater Optional filter by items whose name is sorted equally or greater than a given
+     *            input string. (optional)
+     * @param nameStartsWith Optional filter by items whose name is sorted equally than a given input string. (optional)
+     * @param nameLessThan Optional filter by items whose name is equally or lesser than a given input string.
+     *            (optional)
+     * @param studioIds Optional. If specified, results will be filtered based on studio id. This allows multiple, pipe
+     *            delimited. (optional)
+     * @param genreIds Optional. If specified, results will be filtered based on genre id. This allows multiple, pipe
+     *            delimited. (optional)
+     * @param enableTotalRecordCount Optional. Enable the total record count. (optional, default to true)
+     * @param enableImages Optional, include image information in output. (optional, default to true)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;BaseItemDtoQueryResult&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<BaseItemDtoQueryResult> getTrailersWithHttpInfo(@org.eclipse.jdt.annotation.NonNull UUID userId,
+            @org.eclipse.jdt.annotation.NonNull String maxOfficialRating,
+            @org.eclipse.jdt.annotation.NonNull Boolean hasThemeSong,
+            @org.eclipse.jdt.annotation.NonNull Boolean hasThemeVideo,
+            @org.eclipse.jdt.annotation.NonNull Boolean hasSubtitles,
+            @org.eclipse.jdt.annotation.NonNull Boolean hasSpecialFeature,
+            @org.eclipse.jdt.annotation.NonNull Boolean hasTrailer, @org.eclipse.jdt.annotation.NonNull UUID adjacentTo,
+            @org.eclipse.jdt.annotation.NonNull Integer parentIndexNumber,
+            @org.eclipse.jdt.annotation.NonNull Boolean hasParentalRating,
+            @org.eclipse.jdt.annotation.NonNull Boolean isHd, @org.eclipse.jdt.annotation.NonNull Boolean is4K,
+            @org.eclipse.jdt.annotation.NonNull List<LocationType> locationTypes,
+            @org.eclipse.jdt.annotation.NonNull List<LocationType> excludeLocationTypes,
+            @org.eclipse.jdt.annotation.NonNull Boolean isMissing,
+            @org.eclipse.jdt.annotation.NonNull Boolean isUnaired,
+            @org.eclipse.jdt.annotation.NonNull Double minCommunityRating,
+            @org.eclipse.jdt.annotation.NonNull Double minCriticRating,
+            @org.eclipse.jdt.annotation.NonNull OffsetDateTime minPremiereDate,
+            @org.eclipse.jdt.annotation.NonNull OffsetDateTime minDateLastSaved,
+            @org.eclipse.jdt.annotation.NonNull OffsetDateTime minDateLastSavedForUser,
+            @org.eclipse.jdt.annotation.NonNull OffsetDateTime maxPremiereDate,
+            @org.eclipse.jdt.annotation.NonNull Boolean hasOverview,
+            @org.eclipse.jdt.annotation.NonNull Boolean hasImdbId,
+            @org.eclipse.jdt.annotation.NonNull Boolean hasTmdbId,
+            @org.eclipse.jdt.annotation.NonNull Boolean hasTvdbId, @org.eclipse.jdt.annotation.NonNull Boolean isMovie,
+            @org.eclipse.jdt.annotation.NonNull Boolean isSeries, @org.eclipse.jdt.annotation.NonNull Boolean isNews,
+            @org.eclipse.jdt.annotation.NonNull Boolean isKids, @org.eclipse.jdt.annotation.NonNull Boolean isSports,
+            @org.eclipse.jdt.annotation.NonNull List<UUID> excludeItemIds,
+            @org.eclipse.jdt.annotation.NonNull Integer startIndex, @org.eclipse.jdt.annotation.NonNull Integer limit,
+            @org.eclipse.jdt.annotation.NonNull Boolean recursive,
+            @org.eclipse.jdt.annotation.NonNull String searchTerm,
+            @org.eclipse.jdt.annotation.NonNull List<SortOrder> sortOrder,
+            @org.eclipse.jdt.annotation.NonNull UUID parentId,
+            @org.eclipse.jdt.annotation.NonNull List<ItemFields> fields,
+            @org.eclipse.jdt.annotation.NonNull List<BaseItemKind> excludeItemTypes,
+            @org.eclipse.jdt.annotation.NonNull List<ItemFilter> filters,
+            @org.eclipse.jdt.annotation.NonNull Boolean isFavorite,
+            @org.eclipse.jdt.annotation.NonNull List<MediaType> mediaTypes,
+            @org.eclipse.jdt.annotation.NonNull List<ImageType> imageTypes,
+            @org.eclipse.jdt.annotation.NonNull List<ItemSortBy> sortBy,
+            @org.eclipse.jdt.annotation.NonNull Boolean isPlayed,
+            @org.eclipse.jdt.annotation.NonNull List<String> genres,
+            @org.eclipse.jdt.annotation.NonNull List<String> officialRatings,
+            @org.eclipse.jdt.annotation.NonNull List<String> tags,
+            @org.eclipse.jdt.annotation.NonNull List<Integer> years,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableUserData,
+            @org.eclipse.jdt.annotation.NonNull Integer imageTypeLimit,
+            @org.eclipse.jdt.annotation.NonNull List<ImageType> enableImageTypes,
+            @org.eclipse.jdt.annotation.NonNull String person, @org.eclipse.jdt.annotation.NonNull List<UUID> personIds,
+            @org.eclipse.jdt.annotation.NonNull List<String> personTypes,
+            @org.eclipse.jdt.annotation.NonNull List<String> studios,
+            @org.eclipse.jdt.annotation.NonNull List<String> artists,
+            @org.eclipse.jdt.annotation.NonNull List<UUID> excludeArtistIds,
+            @org.eclipse.jdt.annotation.NonNull List<UUID> artistIds,
+            @org.eclipse.jdt.annotation.NonNull List<UUID> albumArtistIds,
+            @org.eclipse.jdt.annotation.NonNull List<UUID> contributingArtistIds,
+            @org.eclipse.jdt.annotation.NonNull List<String> albums,
+            @org.eclipse.jdt.annotation.NonNull List<UUID> albumIds, @org.eclipse.jdt.annotation.NonNull List<UUID> ids,
+            @org.eclipse.jdt.annotation.NonNull List<VideoType> videoTypes,
+            @org.eclipse.jdt.annotation.NonNull String minOfficialRating,
+            @org.eclipse.jdt.annotation.NonNull Boolean isLocked,
+            @org.eclipse.jdt.annotation.NonNull Boolean isPlaceHolder,
+            @org.eclipse.jdt.annotation.NonNull Boolean hasOfficialRating,
+            @org.eclipse.jdt.annotation.NonNull Boolean collapseBoxSetItems,
+            @org.eclipse.jdt.annotation.NonNull Integer minWidth, @org.eclipse.jdt.annotation.NonNull Integer minHeight,
+            @org.eclipse.jdt.annotation.NonNull Integer maxWidth, @org.eclipse.jdt.annotation.NonNull Integer maxHeight,
+            @org.eclipse.jdt.annotation.NonNull Boolean is3D,
+            @org.eclipse.jdt.annotation.NonNull List<SeriesStatus> seriesStatus,
+            @org.eclipse.jdt.annotation.NonNull String nameStartsWithOrGreater,
+            @org.eclipse.jdt.annotation.NonNull String nameStartsWith,
+            @org.eclipse.jdt.annotation.NonNull String nameLessThan,
+            @org.eclipse.jdt.annotation.NonNull List<UUID> studioIds,
+            @org.eclipse.jdt.annotation.NonNull List<UUID> genreIds,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableTotalRecordCount,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableImages, Map<String, String> headers) throws ApiException {
         HttpRequest.Builder localVarRequestBuilder = getTrailersRequestBuilder(userId, maxOfficialRating, hasThemeSong,
                 hasThemeVideo, hasSubtitles, hasSpecialFeature, hasTrailer, adjacentTo, parentIndexNumber,
                 hasParentalRating, isHd, is4K, locationTypes, excludeLocationTypes, isMissing, isUnaired,
@@ -511,7 +1015,7 @@ public class TrailersApi {
                 albums, albumIds, ids, videoTypes, minOfficialRating, isLocked, isPlaceHolder, hasOfficialRating,
                 collapseBoxSetItems, minWidth, minHeight, maxWidth, maxHeight, is3D, seriesStatus,
                 nameStartsWithOrGreater, nameStartsWith, nameLessThan, studioIds, genreIds, enableTotalRecordCount,
-                enableImages);
+                enableImages, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -528,14 +1032,14 @@ public class TrailersApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                BaseItemDtoQueryResult responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<BaseItemDtoQueryResult>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<BaseItemDtoQueryResult>(localVarResponse.statusCode(),
-                        localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody,
-                                        new TypeReference<BaseItemDtoQueryResult>() {
-                                        }));
+                        localVarResponse.headers().map(), responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -619,7 +1123,7 @@ public class TrailersApi {
             @org.eclipse.jdt.annotation.NonNull List<UUID> studioIds,
             @org.eclipse.jdt.annotation.NonNull List<UUID> genreIds,
             @org.eclipse.jdt.annotation.NonNull Boolean enableTotalRecordCount,
-            @org.eclipse.jdt.annotation.NonNull Boolean enableImages) throws ApiException {
+            @org.eclipse.jdt.annotation.NonNull Boolean enableImages, Map<String, String> headers) throws ApiException {
 
         HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
 
@@ -815,6 +1319,8 @@ public class TrailersApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }

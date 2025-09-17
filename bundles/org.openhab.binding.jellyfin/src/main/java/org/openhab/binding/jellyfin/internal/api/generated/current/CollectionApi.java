@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.jellyfin.internal.api.generated.current;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -21,6 +22,7 @@ import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.StringJoiner;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -37,6 +39,28 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class CollectionApi {
+    /**
+     * Utility class for extending HttpRequest.Builder functionality.
+     */
+    private static class HttpRequestBuilderExtensions {
+        /**
+         * Adds additional headers to the provided HttpRequest.Builder. Useful for adding method/endpoint specific
+         * headers.
+         *
+         * @param builder the HttpRequest.Builder to which headers will be added
+         * @param headers a map of header names and values to add; may be null
+         * @return the same HttpRequest.Builder instance with the additional headers set
+         */
+        static HttpRequest.Builder withAdditionalHeaders(HttpRequest.Builder builder, Map<String, String> headers) {
+            if (headers != null) {
+                for (Map.Entry<String, String> entry : headers.entrySet()) {
+                    builder.header(entry.getKey(), entry.getValue());
+                }
+            }
+            return builder;
+        }
+    }
+
     private final HttpClient memberVarHttpClient;
     private final ObjectMapper memberVarObjectMapper;
     private final String memberVarBaseUri;
@@ -73,6 +97,56 @@ public class CollectionApi {
     }
 
     /**
+     * Download file from the given response.
+     *
+     * @param response Response
+     * @return File
+     * @throws ApiException If fail to read file content from response and write to disk
+     */
+    public File downloadFileFromResponse(HttpResponse<InputStream> response) throws ApiException {
+        try {
+            File file = prepareDownloadFile(response);
+            java.nio.file.Files.copy(response.body(), file.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+            return file;
+        } catch (IOException e) {
+            throw new ApiException(e);
+        }
+    }
+
+    /**
+     * <p>
+     * Prepare the file for download from the response.
+     * </p>
+     *
+     * @param response a {@link java.net.http.HttpResponse} object.
+     * @return a {@link java.io.File} object.
+     * @throws java.io.IOException if any.
+     */
+    private File prepareDownloadFile(HttpResponse<InputStream> response) throws IOException {
+        String filename = null;
+        java.util.Optional<String> contentDisposition = response.headers().firstValue("Content-Disposition");
+        if (contentDisposition.isPresent() && !"".equals(contentDisposition.get())) {
+            // Get filename from the Content-Disposition header.
+            java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("filename=['\"]?([^'\"\\s]+)['\"]?");
+            java.util.regex.Matcher matcher = pattern.matcher(contentDisposition.get());
+            if (matcher.find())
+                filename = matcher.group(1);
+        }
+        File file = null;
+        if (filename != null) {
+            java.nio.file.Path tempDir = java.nio.file.Files.createTempDirectory("swagger-gen-native");
+            java.nio.file.Path filePath = java.nio.file.Files.createFile(tempDir.resolve(filename));
+            file = filePath.toFile();
+            tempDir.toFile().deleteOnExit(); // best effort cleanup
+            file.deleteOnExit(); // best effort cleanup
+        } else {
+            file = java.nio.file.Files.createTempFile("download-", "").toFile();
+            file.deleteOnExit(); // best effort cleanup
+        }
+        return file;
+    }
+
+    /**
      * Adds items to a collection.
      * 
      * @param collectionId The collection id. (required)
@@ -81,7 +155,20 @@ public class CollectionApi {
      */
     public void addToCollection(@org.eclipse.jdt.annotation.Nullable UUID collectionId,
             @org.eclipse.jdt.annotation.Nullable List<UUID> ids) throws ApiException {
-        addToCollectionWithHttpInfo(collectionId, ids);
+        addToCollection(collectionId, ids, null);
+    }
+
+    /**
+     * Adds items to a collection.
+     * 
+     * @param collectionId The collection id. (required)
+     * @param ids Item ids, comma delimited. (required)
+     * @param headers Optional headers to include in the request
+     * @throws ApiException if fails to make API call
+     */
+    public void addToCollection(@org.eclipse.jdt.annotation.Nullable UUID collectionId,
+            @org.eclipse.jdt.annotation.Nullable List<UUID> ids, Map<String, String> headers) throws ApiException {
+        addToCollectionWithHttpInfo(collectionId, ids, headers);
     }
 
     /**
@@ -94,7 +181,21 @@ public class CollectionApi {
      */
     public ApiResponse<Void> addToCollectionWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID collectionId,
             @org.eclipse.jdt.annotation.Nullable List<UUID> ids) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = addToCollectionRequestBuilder(collectionId, ids);
+        return addToCollectionWithHttpInfo(collectionId, ids, null);
+    }
+
+    /**
+     * Adds items to a collection.
+     * 
+     * @param collectionId The collection id. (required)
+     * @param ids Item ids, comma delimited. (required)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<Void> addToCollectionWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID collectionId,
+            @org.eclipse.jdt.annotation.Nullable List<UUID> ids, Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = addToCollectionRequestBuilder(collectionId, ids, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -122,7 +223,7 @@ public class CollectionApi {
     }
 
     private HttpRequest.Builder addToCollectionRequestBuilder(@org.eclipse.jdt.annotation.Nullable UUID collectionId,
-            @org.eclipse.jdt.annotation.Nullable List<UUID> ids) throws ApiException {
+            @org.eclipse.jdt.annotation.Nullable List<UUID> ids, Map<String, String> headers) throws ApiException {
         // verify the required parameter 'collectionId' is set
         if (collectionId == null) {
             throw new ApiException(400, "Missing the required parameter 'collectionId' when calling addToCollection");
@@ -160,6 +261,8 @@ public class CollectionApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -179,8 +282,25 @@ public class CollectionApi {
     public CollectionCreationResult createCollection(@org.eclipse.jdt.annotation.NonNull String name,
             @org.eclipse.jdt.annotation.NonNull List<String> ids, @org.eclipse.jdt.annotation.NonNull UUID parentId,
             @org.eclipse.jdt.annotation.NonNull Boolean isLocked) throws ApiException {
+        return createCollection(name, ids, parentId, isLocked, null);
+    }
+
+    /**
+     * Creates a new collection.
+     * 
+     * @param name The name of the collection. (optional)
+     * @param ids Item Ids to add to the collection. (optional)
+     * @param parentId Optional. Create the collection within a specific folder. (optional)
+     * @param isLocked Whether or not to lock the new collection. (optional, default to false)
+     * @param headers Optional headers to include in the request
+     * @return CollectionCreationResult
+     * @throws ApiException if fails to make API call
+     */
+    public CollectionCreationResult createCollection(@org.eclipse.jdt.annotation.NonNull String name,
+            @org.eclipse.jdt.annotation.NonNull List<String> ids, @org.eclipse.jdt.annotation.NonNull UUID parentId,
+            @org.eclipse.jdt.annotation.NonNull Boolean isLocked, Map<String, String> headers) throws ApiException {
         ApiResponse<CollectionCreationResult> localVarResponse = createCollectionWithHttpInfo(name, ids, parentId,
-                isLocked);
+                isLocked, headers);
         return localVarResponse.getData();
     }
 
@@ -198,7 +318,26 @@ public class CollectionApi {
             @org.eclipse.jdt.annotation.NonNull String name, @org.eclipse.jdt.annotation.NonNull List<String> ids,
             @org.eclipse.jdt.annotation.NonNull UUID parentId, @org.eclipse.jdt.annotation.NonNull Boolean isLocked)
             throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = createCollectionRequestBuilder(name, ids, parentId, isLocked);
+        return createCollectionWithHttpInfo(name, ids, parentId, isLocked, null);
+    }
+
+    /**
+     * Creates a new collection.
+     * 
+     * @param name The name of the collection. (optional)
+     * @param ids Item Ids to add to the collection. (optional)
+     * @param parentId Optional. Create the collection within a specific folder. (optional)
+     * @param isLocked Whether or not to lock the new collection. (optional, default to false)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;CollectionCreationResult&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<CollectionCreationResult> createCollectionWithHttpInfo(
+            @org.eclipse.jdt.annotation.NonNull String name, @org.eclipse.jdt.annotation.NonNull List<String> ids,
+            @org.eclipse.jdt.annotation.NonNull UUID parentId, @org.eclipse.jdt.annotation.NonNull Boolean isLocked,
+            Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = createCollectionRequestBuilder(name, ids, parentId, isLocked,
+                headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -215,14 +354,14 @@ public class CollectionApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                CollectionCreationResult responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<CollectionCreationResult>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<CollectionCreationResult>(localVarResponse.statusCode(),
-                        localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody,
-                                        new TypeReference<CollectionCreationResult>() {
-                                        }));
+                        localVarResponse.headers().map(), responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -235,7 +374,7 @@ public class CollectionApi {
 
     private HttpRequest.Builder createCollectionRequestBuilder(@org.eclipse.jdt.annotation.NonNull String name,
             @org.eclipse.jdt.annotation.NonNull List<String> ids, @org.eclipse.jdt.annotation.NonNull UUID parentId,
-            @org.eclipse.jdt.annotation.NonNull Boolean isLocked) throws ApiException {
+            @org.eclipse.jdt.annotation.NonNull Boolean isLocked, Map<String, String> headers) throws ApiException {
 
         HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
 
@@ -271,6 +410,8 @@ public class CollectionApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -286,7 +427,20 @@ public class CollectionApi {
      */
     public void removeFromCollection(@org.eclipse.jdt.annotation.Nullable UUID collectionId,
             @org.eclipse.jdt.annotation.Nullable List<UUID> ids) throws ApiException {
-        removeFromCollectionWithHttpInfo(collectionId, ids);
+        removeFromCollection(collectionId, ids, null);
+    }
+
+    /**
+     * Removes items from a collection.
+     * 
+     * @param collectionId The collection id. (required)
+     * @param ids Item ids, comma delimited. (required)
+     * @param headers Optional headers to include in the request
+     * @throws ApiException if fails to make API call
+     */
+    public void removeFromCollection(@org.eclipse.jdt.annotation.Nullable UUID collectionId,
+            @org.eclipse.jdt.annotation.Nullable List<UUID> ids, Map<String, String> headers) throws ApiException {
+        removeFromCollectionWithHttpInfo(collectionId, ids, headers);
     }
 
     /**
@@ -299,7 +453,21 @@ public class CollectionApi {
      */
     public ApiResponse<Void> removeFromCollectionWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID collectionId,
             @org.eclipse.jdt.annotation.Nullable List<UUID> ids) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = removeFromCollectionRequestBuilder(collectionId, ids);
+        return removeFromCollectionWithHttpInfo(collectionId, ids, null);
+    }
+
+    /**
+     * Removes items from a collection.
+     * 
+     * @param collectionId The collection id. (required)
+     * @param ids Item ids, comma delimited. (required)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<Void> removeFromCollectionWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID collectionId,
+            @org.eclipse.jdt.annotation.Nullable List<UUID> ids, Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = removeFromCollectionRequestBuilder(collectionId, ids, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -327,8 +495,8 @@ public class CollectionApi {
     }
 
     private HttpRequest.Builder removeFromCollectionRequestBuilder(
-            @org.eclipse.jdt.annotation.Nullable UUID collectionId, @org.eclipse.jdt.annotation.Nullable List<UUID> ids)
-            throws ApiException {
+            @org.eclipse.jdt.annotation.Nullable UUID collectionId, @org.eclipse.jdt.annotation.Nullable List<UUID> ids,
+            Map<String, String> headers) throws ApiException {
         // verify the required parameter 'collectionId' is set
         if (collectionId == null) {
             throw new ApiException(400,
@@ -367,6 +535,8 @@ public class CollectionApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }

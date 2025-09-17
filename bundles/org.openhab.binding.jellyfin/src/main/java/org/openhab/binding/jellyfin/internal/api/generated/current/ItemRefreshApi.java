@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.jellyfin.internal.api.generated.current;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -21,6 +22,7 @@ import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.StringJoiner;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -36,6 +38,28 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class ItemRefreshApi {
+    /**
+     * Utility class for extending HttpRequest.Builder functionality.
+     */
+    private static class HttpRequestBuilderExtensions {
+        /**
+         * Adds additional headers to the provided HttpRequest.Builder. Useful for adding method/endpoint specific
+         * headers.
+         *
+         * @param builder the HttpRequest.Builder to which headers will be added
+         * @param headers a map of header names and values to add; may be null
+         * @return the same HttpRequest.Builder instance with the additional headers set
+         */
+        static HttpRequest.Builder withAdditionalHeaders(HttpRequest.Builder builder, Map<String, String> headers) {
+            if (headers != null) {
+                for (Map.Entry<String, String> entry : headers.entrySet()) {
+                    builder.header(entry.getKey(), entry.getValue());
+                }
+            }
+            return builder;
+        }
+    }
+
     private final HttpClient memberVarHttpClient;
     private final ObjectMapper memberVarObjectMapper;
     private final String memberVarBaseUri;
@@ -72,6 +96,56 @@ public class ItemRefreshApi {
     }
 
     /**
+     * Download file from the given response.
+     *
+     * @param response Response
+     * @return File
+     * @throws ApiException If fail to read file content from response and write to disk
+     */
+    public File downloadFileFromResponse(HttpResponse<InputStream> response) throws ApiException {
+        try {
+            File file = prepareDownloadFile(response);
+            java.nio.file.Files.copy(response.body(), file.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+            return file;
+        } catch (IOException e) {
+            throw new ApiException(e);
+        }
+    }
+
+    /**
+     * <p>
+     * Prepare the file for download from the response.
+     * </p>
+     *
+     * @param response a {@link java.net.http.HttpResponse} object.
+     * @return a {@link java.io.File} object.
+     * @throws java.io.IOException if any.
+     */
+    private File prepareDownloadFile(HttpResponse<InputStream> response) throws IOException {
+        String filename = null;
+        java.util.Optional<String> contentDisposition = response.headers().firstValue("Content-Disposition");
+        if (contentDisposition.isPresent() && !"".equals(contentDisposition.get())) {
+            // Get filename from the Content-Disposition header.
+            java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("filename=['\"]?([^'\"\\s]+)['\"]?");
+            java.util.regex.Matcher matcher = pattern.matcher(contentDisposition.get());
+            if (matcher.find())
+                filename = matcher.group(1);
+        }
+        File file = null;
+        if (filename != null) {
+            java.nio.file.Path tempDir = java.nio.file.Files.createTempDirectory("swagger-gen-native");
+            java.nio.file.Path filePath = java.nio.file.Files.createFile(tempDir.resolve(filename));
+            file = filePath.toFile();
+            tempDir.toFile().deleteOnExit(); // best effort cleanup
+            file.deleteOnExit(); // best effort cleanup
+        } else {
+            file = java.nio.file.Files.createTempFile("download-", "").toFile();
+            file.deleteOnExit(); // best effort cleanup
+        }
+        return file;
+    }
+
+    /**
      * Refreshes metadata for an item.
      * 
      * @param itemId Item id. (required)
@@ -91,8 +165,34 @@ public class ItemRefreshApi {
             @org.eclipse.jdt.annotation.NonNull Boolean replaceAllMetadata,
             @org.eclipse.jdt.annotation.NonNull Boolean replaceAllImages,
             @org.eclipse.jdt.annotation.NonNull Boolean regenerateTrickplay) throws ApiException {
+        refreshItem(itemId, metadataRefreshMode, imageRefreshMode, replaceAllMetadata, replaceAllImages,
+                regenerateTrickplay, null);
+    }
+
+    /**
+     * Refreshes metadata for an item.
+     * 
+     * @param itemId Item id. (required)
+     * @param metadataRefreshMode (Optional) Specifies the metadata refresh mode. (optional, default to None)
+     * @param imageRefreshMode (Optional) Specifies the image refresh mode. (optional, default to None)
+     * @param replaceAllMetadata (Optional) Determines if metadata should be replaced. Only applicable if mode is
+     *            FullRefresh. (optional, default to false)
+     * @param replaceAllImages (Optional) Determines if images should be replaced. Only applicable if mode is
+     *            FullRefresh. (optional, default to false)
+     * @param regenerateTrickplay (Optional) Determines if trickplay images should be replaced. Only applicable if mode
+     *            is FullRefresh. (optional, default to false)
+     * @param headers Optional headers to include in the request
+     * @throws ApiException if fails to make API call
+     */
+    public void refreshItem(@org.eclipse.jdt.annotation.Nullable UUID itemId,
+            @org.eclipse.jdt.annotation.NonNull MetadataRefreshMode metadataRefreshMode,
+            @org.eclipse.jdt.annotation.NonNull MetadataRefreshMode imageRefreshMode,
+            @org.eclipse.jdt.annotation.NonNull Boolean replaceAllMetadata,
+            @org.eclipse.jdt.annotation.NonNull Boolean replaceAllImages,
+            @org.eclipse.jdt.annotation.NonNull Boolean regenerateTrickplay, Map<String, String> headers)
+            throws ApiException {
         refreshItemWithHttpInfo(itemId, metadataRefreshMode, imageRefreshMode, replaceAllMetadata, replaceAllImages,
-                regenerateTrickplay);
+                regenerateTrickplay, headers);
     }
 
     /**
@@ -116,8 +216,35 @@ public class ItemRefreshApi {
             @org.eclipse.jdt.annotation.NonNull Boolean replaceAllMetadata,
             @org.eclipse.jdt.annotation.NonNull Boolean replaceAllImages,
             @org.eclipse.jdt.annotation.NonNull Boolean regenerateTrickplay) throws ApiException {
+        return refreshItemWithHttpInfo(itemId, metadataRefreshMode, imageRefreshMode, replaceAllMetadata,
+                replaceAllImages, regenerateTrickplay, null);
+    }
+
+    /**
+     * Refreshes metadata for an item.
+     * 
+     * @param itemId Item id. (required)
+     * @param metadataRefreshMode (Optional) Specifies the metadata refresh mode. (optional, default to None)
+     * @param imageRefreshMode (Optional) Specifies the image refresh mode. (optional, default to None)
+     * @param replaceAllMetadata (Optional) Determines if metadata should be replaced. Only applicable if mode is
+     *            FullRefresh. (optional, default to false)
+     * @param replaceAllImages (Optional) Determines if images should be replaced. Only applicable if mode is
+     *            FullRefresh. (optional, default to false)
+     * @param regenerateTrickplay (Optional) Determines if trickplay images should be replaced. Only applicable if mode
+     *            is FullRefresh. (optional, default to false)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<Void> refreshItemWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID itemId,
+            @org.eclipse.jdt.annotation.NonNull MetadataRefreshMode metadataRefreshMode,
+            @org.eclipse.jdt.annotation.NonNull MetadataRefreshMode imageRefreshMode,
+            @org.eclipse.jdt.annotation.NonNull Boolean replaceAllMetadata,
+            @org.eclipse.jdt.annotation.NonNull Boolean replaceAllImages,
+            @org.eclipse.jdt.annotation.NonNull Boolean regenerateTrickplay, Map<String, String> headers)
+            throws ApiException {
         HttpRequest.Builder localVarRequestBuilder = refreshItemRequestBuilder(itemId, metadataRefreshMode,
-                imageRefreshMode, replaceAllMetadata, replaceAllImages, regenerateTrickplay);
+                imageRefreshMode, replaceAllMetadata, replaceAllImages, regenerateTrickplay, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -149,7 +276,8 @@ public class ItemRefreshApi {
             @org.eclipse.jdt.annotation.NonNull MetadataRefreshMode imageRefreshMode,
             @org.eclipse.jdt.annotation.NonNull Boolean replaceAllMetadata,
             @org.eclipse.jdt.annotation.NonNull Boolean replaceAllImages,
-            @org.eclipse.jdt.annotation.NonNull Boolean regenerateTrickplay) throws ApiException {
+            @org.eclipse.jdt.annotation.NonNull Boolean regenerateTrickplay, Map<String, String> headers)
+            throws ApiException {
         // verify the required parameter 'itemId' is set
         if (itemId == null) {
             throw new ApiException(400, "Missing the required parameter 'itemId' when calling refreshItem");
@@ -191,6 +319,8 @@ public class ItemRefreshApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }

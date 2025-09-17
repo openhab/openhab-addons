@@ -22,6 +22,7 @@ import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.StringJoiner;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -33,11 +34,32 @@ import org.openhab.binding.jellyfin.internal.api.generated.Configuration;
 import org.openhab.binding.jellyfin.internal.api.generated.Pair;
 import org.openhab.binding.jellyfin.internal.api.generated.current.model.MediaStreamProtocol;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class UniversalAudioApi {
+    /**
+     * Utility class for extending HttpRequest.Builder functionality.
+     */
+    private static class HttpRequestBuilderExtensions {
+        /**
+         * Adds additional headers to the provided HttpRequest.Builder. Useful for adding method/endpoint specific
+         * headers.
+         *
+         * @param builder the HttpRequest.Builder to which headers will be added
+         * @param headers a map of header names and values to add; may be null
+         * @return the same HttpRequest.Builder instance with the additional headers set
+         */
+        static HttpRequest.Builder withAdditionalHeaders(HttpRequest.Builder builder, Map<String, String> headers) {
+            if (headers != null) {
+                for (Map.Entry<String, String> entry : headers.entrySet()) {
+                    builder.header(entry.getKey(), entry.getValue());
+                }
+            }
+            return builder;
+        }
+    }
+
     private final HttpClient memberVarHttpClient;
     private final ObjectMapper memberVarObjectMapper;
     private final String memberVarBaseUri;
@@ -71,6 +93,56 @@ public class UniversalAudioApi {
             body = "[no body]";
         }
         return operationId + " call failed with: " + statusCode + " - " + body;
+    }
+
+    /**
+     * Download file from the given response.
+     *
+     * @param response Response
+     * @return File
+     * @throws ApiException If fail to read file content from response and write to disk
+     */
+    public File downloadFileFromResponse(HttpResponse<InputStream> response) throws ApiException {
+        try {
+            File file = prepareDownloadFile(response);
+            java.nio.file.Files.copy(response.body(), file.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+            return file;
+        } catch (IOException e) {
+            throw new ApiException(e);
+        }
+    }
+
+    /**
+     * <p>
+     * Prepare the file for download from the response.
+     * </p>
+     *
+     * @param response a {@link java.net.http.HttpResponse} object.
+     * @return a {@link java.io.File} object.
+     * @throws java.io.IOException if any.
+     */
+    private File prepareDownloadFile(HttpResponse<InputStream> response) throws IOException {
+        String filename = null;
+        java.util.Optional<String> contentDisposition = response.headers().firstValue("Content-Disposition");
+        if (contentDisposition.isPresent() && !"".equals(contentDisposition.get())) {
+            // Get filename from the Content-Disposition header.
+            java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("filename=['\"]?([^'\"\\s]+)['\"]?");
+            java.util.regex.Matcher matcher = pattern.matcher(contentDisposition.get());
+            if (matcher.find())
+                filename = matcher.group(1);
+        }
+        File file = null;
+        if (filename != null) {
+            java.nio.file.Path tempDir = java.nio.file.Files.createTempDirectory("swagger-gen-native");
+            java.nio.file.Path filePath = java.nio.file.Files.createFile(tempDir.resolve(filename));
+            file = filePath.toFile();
+            tempDir.toFile().deleteOnExit(); // best effort cleanup
+            file.deleteOnExit(); // best effort cleanup
+        } else {
+            file = java.nio.file.Files.createTempFile("download-", "").toFile();
+            file.deleteOnExit(); // best effort cleanup
+        }
+        return file;
     }
 
     /**
@@ -117,10 +189,63 @@ public class UniversalAudioApi {
             @org.eclipse.jdt.annotation.NonNull Boolean enableAudioVbrEncoding,
             @org.eclipse.jdt.annotation.NonNull Boolean breakOnNonKeyFrames,
             @org.eclipse.jdt.annotation.NonNull Boolean enableRedirection) throws ApiException {
+        return getUniversalAudioStream(itemId, container, mediaSourceId, deviceId, userId, audioCodec, maxAudioChannels,
+                transcodingAudioChannels, maxStreamingBitrate, audioBitRate, startTimeTicks, transcodingContainer,
+                transcodingProtocol, maxAudioSampleRate, maxAudioBitDepth, enableRemoteMedia, enableAudioVbrEncoding,
+                breakOnNonKeyFrames, enableRedirection, null);
+    }
+
+    /**
+     * Gets an audio stream.
+     * 
+     * @param itemId The item id. (required)
+     * @param container Optional. The audio container. (optional)
+     * @param mediaSourceId The media version id, if playing an alternate version. (optional)
+     * @param deviceId The device id of the client requesting. Used to stop encoding processes when needed. (optional)
+     * @param userId Optional. The user id. (optional)
+     * @param audioCodec Optional. The audio codec to transcode to. (optional)
+     * @param maxAudioChannels Optional. The maximum number of audio channels. (optional)
+     * @param transcodingAudioChannels Optional. The number of how many audio channels to transcode to. (optional)
+     * @param maxStreamingBitrate Optional. The maximum streaming bitrate. (optional)
+     * @param audioBitRate Optional. Specify an audio bitrate to encode to, e.g. 128000. If omitted this will be left to
+     *            encoder defaults. (optional)
+     * @param startTimeTicks Optional. Specify a starting offset, in ticks. 1 tick &#x3D; 10000 ms. (optional)
+     * @param transcodingContainer Optional. The container to transcode to. (optional)
+     * @param transcodingProtocol Optional. The transcoding protocol. (optional)
+     * @param maxAudioSampleRate Optional. The maximum audio sample rate. (optional)
+     * @param maxAudioBitDepth Optional. The maximum audio bit depth. (optional)
+     * @param enableRemoteMedia Optional. Whether to enable remote media. (optional)
+     * @param enableAudioVbrEncoding Optional. Whether to enable Audio Encoding. (optional, default to true)
+     * @param breakOnNonKeyFrames Optional. Whether to break on non key frames. (optional, default to false)
+     * @param enableRedirection Whether to enable redirection. Defaults to true. (optional, default to true)
+     * @param headers Optional headers to include in the request
+     * @return File
+     * @throws ApiException if fails to make API call
+     */
+    public File getUniversalAudioStream(@org.eclipse.jdt.annotation.Nullable UUID itemId,
+            @org.eclipse.jdt.annotation.NonNull List<String> container,
+            @org.eclipse.jdt.annotation.NonNull String mediaSourceId,
+            @org.eclipse.jdt.annotation.NonNull String deviceId, @org.eclipse.jdt.annotation.NonNull UUID userId,
+            @org.eclipse.jdt.annotation.NonNull String audioCodec,
+            @org.eclipse.jdt.annotation.NonNull Integer maxAudioChannels,
+            @org.eclipse.jdt.annotation.NonNull Integer transcodingAudioChannels,
+            @org.eclipse.jdt.annotation.NonNull Integer maxStreamingBitrate,
+            @org.eclipse.jdt.annotation.NonNull Integer audioBitRate,
+            @org.eclipse.jdt.annotation.NonNull Long startTimeTicks,
+            @org.eclipse.jdt.annotation.NonNull String transcodingContainer,
+            @org.eclipse.jdt.annotation.NonNull MediaStreamProtocol transcodingProtocol,
+            @org.eclipse.jdt.annotation.NonNull Integer maxAudioSampleRate,
+            @org.eclipse.jdt.annotation.NonNull Integer maxAudioBitDepth,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableRemoteMedia,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableAudioVbrEncoding,
+            @org.eclipse.jdt.annotation.NonNull Boolean breakOnNonKeyFrames,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableRedirection, Map<String, String> headers)
+            throws ApiException {
         ApiResponse<File> localVarResponse = getUniversalAudioStreamWithHttpInfo(itemId, container, mediaSourceId,
                 deviceId, userId, audioCodec, maxAudioChannels, transcodingAudioChannels, maxStreamingBitrate,
                 audioBitRate, startTimeTicks, transcodingContainer, transcodingProtocol, maxAudioSampleRate,
-                maxAudioBitDepth, enableRemoteMedia, enableAudioVbrEncoding, breakOnNonKeyFrames, enableRedirection);
+                maxAudioBitDepth, enableRemoteMedia, enableAudioVbrEncoding, breakOnNonKeyFrames, enableRedirection,
+                headers);
         return localVarResponse.getData();
     }
 
@@ -168,11 +293,63 @@ public class UniversalAudioApi {
             @org.eclipse.jdt.annotation.NonNull Boolean enableAudioVbrEncoding,
             @org.eclipse.jdt.annotation.NonNull Boolean breakOnNonKeyFrames,
             @org.eclipse.jdt.annotation.NonNull Boolean enableRedirection) throws ApiException {
+        return getUniversalAudioStreamWithHttpInfo(itemId, container, mediaSourceId, deviceId, userId, audioCodec,
+                maxAudioChannels, transcodingAudioChannels, maxStreamingBitrate, audioBitRate, startTimeTicks,
+                transcodingContainer, transcodingProtocol, maxAudioSampleRate, maxAudioBitDepth, enableRemoteMedia,
+                enableAudioVbrEncoding, breakOnNonKeyFrames, enableRedirection, null);
+    }
+
+    /**
+     * Gets an audio stream.
+     * 
+     * @param itemId The item id. (required)
+     * @param container Optional. The audio container. (optional)
+     * @param mediaSourceId The media version id, if playing an alternate version. (optional)
+     * @param deviceId The device id of the client requesting. Used to stop encoding processes when needed. (optional)
+     * @param userId Optional. The user id. (optional)
+     * @param audioCodec Optional. The audio codec to transcode to. (optional)
+     * @param maxAudioChannels Optional. The maximum number of audio channels. (optional)
+     * @param transcodingAudioChannels Optional. The number of how many audio channels to transcode to. (optional)
+     * @param maxStreamingBitrate Optional. The maximum streaming bitrate. (optional)
+     * @param audioBitRate Optional. Specify an audio bitrate to encode to, e.g. 128000. If omitted this will be left to
+     *            encoder defaults. (optional)
+     * @param startTimeTicks Optional. Specify a starting offset, in ticks. 1 tick &#x3D; 10000 ms. (optional)
+     * @param transcodingContainer Optional. The container to transcode to. (optional)
+     * @param transcodingProtocol Optional. The transcoding protocol. (optional)
+     * @param maxAudioSampleRate Optional. The maximum audio sample rate. (optional)
+     * @param maxAudioBitDepth Optional. The maximum audio bit depth. (optional)
+     * @param enableRemoteMedia Optional. Whether to enable remote media. (optional)
+     * @param enableAudioVbrEncoding Optional. Whether to enable Audio Encoding. (optional, default to true)
+     * @param breakOnNonKeyFrames Optional. Whether to break on non key frames. (optional, default to false)
+     * @param enableRedirection Whether to enable redirection. Defaults to true. (optional, default to true)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;File&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<File> getUniversalAudioStreamWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID itemId,
+            @org.eclipse.jdt.annotation.NonNull List<String> container,
+            @org.eclipse.jdt.annotation.NonNull String mediaSourceId,
+            @org.eclipse.jdt.annotation.NonNull String deviceId, @org.eclipse.jdt.annotation.NonNull UUID userId,
+            @org.eclipse.jdt.annotation.NonNull String audioCodec,
+            @org.eclipse.jdt.annotation.NonNull Integer maxAudioChannels,
+            @org.eclipse.jdt.annotation.NonNull Integer transcodingAudioChannels,
+            @org.eclipse.jdt.annotation.NonNull Integer maxStreamingBitrate,
+            @org.eclipse.jdt.annotation.NonNull Integer audioBitRate,
+            @org.eclipse.jdt.annotation.NonNull Long startTimeTicks,
+            @org.eclipse.jdt.annotation.NonNull String transcodingContainer,
+            @org.eclipse.jdt.annotation.NonNull MediaStreamProtocol transcodingProtocol,
+            @org.eclipse.jdt.annotation.NonNull Integer maxAudioSampleRate,
+            @org.eclipse.jdt.annotation.NonNull Integer maxAudioBitDepth,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableRemoteMedia,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableAudioVbrEncoding,
+            @org.eclipse.jdt.annotation.NonNull Boolean breakOnNonKeyFrames,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableRedirection, Map<String, String> headers)
+            throws ApiException {
         HttpRequest.Builder localVarRequestBuilder = getUniversalAudioStreamRequestBuilder(itemId, container,
                 mediaSourceId, deviceId, userId, audioCodec, maxAudioChannels, transcodingAudioChannels,
                 maxStreamingBitrate, audioBitRate, startTimeTicks, transcodingContainer, transcodingProtocol,
                 maxAudioSampleRate, maxAudioBitDepth, enableRemoteMedia, enableAudioVbrEncoding, breakOnNonKeyFrames,
-                enableRedirection);
+                enableRedirection, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -187,13 +364,13 @@ public class UniversalAudioApi {
                     return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
                 }
 
-                String responseBody = new String(localVarResponse.body().readAllBytes());
+                // Handle file downloading.
+                File responseValue = downloadFileFromResponse(localVarResponse);
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {
-                                }));
+                        responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -221,7 +398,8 @@ public class UniversalAudioApi {
             @org.eclipse.jdt.annotation.NonNull Boolean enableRemoteMedia,
             @org.eclipse.jdt.annotation.NonNull Boolean enableAudioVbrEncoding,
             @org.eclipse.jdt.annotation.NonNull Boolean breakOnNonKeyFrames,
-            @org.eclipse.jdt.annotation.NonNull Boolean enableRedirection) throws ApiException {
+            @org.eclipse.jdt.annotation.NonNull Boolean enableRedirection, Map<String, String> headers)
+            throws ApiException {
         // verify the required parameter 'itemId' is set
         if (itemId == null) {
             throw new ApiException(400, "Missing the required parameter 'itemId' when calling getUniversalAudioStream");
@@ -289,6 +467,8 @@ public class UniversalAudioApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -339,10 +519,63 @@ public class UniversalAudioApi {
             @org.eclipse.jdt.annotation.NonNull Boolean enableAudioVbrEncoding,
             @org.eclipse.jdt.annotation.NonNull Boolean breakOnNonKeyFrames,
             @org.eclipse.jdt.annotation.NonNull Boolean enableRedirection) throws ApiException {
+        return headUniversalAudioStream(itemId, container, mediaSourceId, deviceId, userId, audioCodec,
+                maxAudioChannels, transcodingAudioChannels, maxStreamingBitrate, audioBitRate, startTimeTicks,
+                transcodingContainer, transcodingProtocol, maxAudioSampleRate, maxAudioBitDepth, enableRemoteMedia,
+                enableAudioVbrEncoding, breakOnNonKeyFrames, enableRedirection, null);
+    }
+
+    /**
+     * Gets an audio stream.
+     * 
+     * @param itemId The item id. (required)
+     * @param container Optional. The audio container. (optional)
+     * @param mediaSourceId The media version id, if playing an alternate version. (optional)
+     * @param deviceId The device id of the client requesting. Used to stop encoding processes when needed. (optional)
+     * @param userId Optional. The user id. (optional)
+     * @param audioCodec Optional. The audio codec to transcode to. (optional)
+     * @param maxAudioChannels Optional. The maximum number of audio channels. (optional)
+     * @param transcodingAudioChannels Optional. The number of how many audio channels to transcode to. (optional)
+     * @param maxStreamingBitrate Optional. The maximum streaming bitrate. (optional)
+     * @param audioBitRate Optional. Specify an audio bitrate to encode to, e.g. 128000. If omitted this will be left to
+     *            encoder defaults. (optional)
+     * @param startTimeTicks Optional. Specify a starting offset, in ticks. 1 tick &#x3D; 10000 ms. (optional)
+     * @param transcodingContainer Optional. The container to transcode to. (optional)
+     * @param transcodingProtocol Optional. The transcoding protocol. (optional)
+     * @param maxAudioSampleRate Optional. The maximum audio sample rate. (optional)
+     * @param maxAudioBitDepth Optional. The maximum audio bit depth. (optional)
+     * @param enableRemoteMedia Optional. Whether to enable remote media. (optional)
+     * @param enableAudioVbrEncoding Optional. Whether to enable Audio Encoding. (optional, default to true)
+     * @param breakOnNonKeyFrames Optional. Whether to break on non key frames. (optional, default to false)
+     * @param enableRedirection Whether to enable redirection. Defaults to true. (optional, default to true)
+     * @param headers Optional headers to include in the request
+     * @return File
+     * @throws ApiException if fails to make API call
+     */
+    public File headUniversalAudioStream(@org.eclipse.jdt.annotation.Nullable UUID itemId,
+            @org.eclipse.jdt.annotation.NonNull List<String> container,
+            @org.eclipse.jdt.annotation.NonNull String mediaSourceId,
+            @org.eclipse.jdt.annotation.NonNull String deviceId, @org.eclipse.jdt.annotation.NonNull UUID userId,
+            @org.eclipse.jdt.annotation.NonNull String audioCodec,
+            @org.eclipse.jdt.annotation.NonNull Integer maxAudioChannels,
+            @org.eclipse.jdt.annotation.NonNull Integer transcodingAudioChannels,
+            @org.eclipse.jdt.annotation.NonNull Integer maxStreamingBitrate,
+            @org.eclipse.jdt.annotation.NonNull Integer audioBitRate,
+            @org.eclipse.jdt.annotation.NonNull Long startTimeTicks,
+            @org.eclipse.jdt.annotation.NonNull String transcodingContainer,
+            @org.eclipse.jdt.annotation.NonNull MediaStreamProtocol transcodingProtocol,
+            @org.eclipse.jdt.annotation.NonNull Integer maxAudioSampleRate,
+            @org.eclipse.jdt.annotation.NonNull Integer maxAudioBitDepth,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableRemoteMedia,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableAudioVbrEncoding,
+            @org.eclipse.jdt.annotation.NonNull Boolean breakOnNonKeyFrames,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableRedirection, Map<String, String> headers)
+            throws ApiException {
         ApiResponse<File> localVarResponse = headUniversalAudioStreamWithHttpInfo(itemId, container, mediaSourceId,
                 deviceId, userId, audioCodec, maxAudioChannels, transcodingAudioChannels, maxStreamingBitrate,
                 audioBitRate, startTimeTicks, transcodingContainer, transcodingProtocol, maxAudioSampleRate,
-                maxAudioBitDepth, enableRemoteMedia, enableAudioVbrEncoding, breakOnNonKeyFrames, enableRedirection);
+                maxAudioBitDepth, enableRemoteMedia, enableAudioVbrEncoding, breakOnNonKeyFrames, enableRedirection,
+                headers);
         return localVarResponse.getData();
     }
 
@@ -390,11 +623,63 @@ public class UniversalAudioApi {
             @org.eclipse.jdt.annotation.NonNull Boolean enableAudioVbrEncoding,
             @org.eclipse.jdt.annotation.NonNull Boolean breakOnNonKeyFrames,
             @org.eclipse.jdt.annotation.NonNull Boolean enableRedirection) throws ApiException {
+        return headUniversalAudioStreamWithHttpInfo(itemId, container, mediaSourceId, deviceId, userId, audioCodec,
+                maxAudioChannels, transcodingAudioChannels, maxStreamingBitrate, audioBitRate, startTimeTicks,
+                transcodingContainer, transcodingProtocol, maxAudioSampleRate, maxAudioBitDepth, enableRemoteMedia,
+                enableAudioVbrEncoding, breakOnNonKeyFrames, enableRedirection, null);
+    }
+
+    /**
+     * Gets an audio stream.
+     * 
+     * @param itemId The item id. (required)
+     * @param container Optional. The audio container. (optional)
+     * @param mediaSourceId The media version id, if playing an alternate version. (optional)
+     * @param deviceId The device id of the client requesting. Used to stop encoding processes when needed. (optional)
+     * @param userId Optional. The user id. (optional)
+     * @param audioCodec Optional. The audio codec to transcode to. (optional)
+     * @param maxAudioChannels Optional. The maximum number of audio channels. (optional)
+     * @param transcodingAudioChannels Optional. The number of how many audio channels to transcode to. (optional)
+     * @param maxStreamingBitrate Optional. The maximum streaming bitrate. (optional)
+     * @param audioBitRate Optional. Specify an audio bitrate to encode to, e.g. 128000. If omitted this will be left to
+     *            encoder defaults. (optional)
+     * @param startTimeTicks Optional. Specify a starting offset, in ticks. 1 tick &#x3D; 10000 ms. (optional)
+     * @param transcodingContainer Optional. The container to transcode to. (optional)
+     * @param transcodingProtocol Optional. The transcoding protocol. (optional)
+     * @param maxAudioSampleRate Optional. The maximum audio sample rate. (optional)
+     * @param maxAudioBitDepth Optional. The maximum audio bit depth. (optional)
+     * @param enableRemoteMedia Optional. Whether to enable remote media. (optional)
+     * @param enableAudioVbrEncoding Optional. Whether to enable Audio Encoding. (optional, default to true)
+     * @param breakOnNonKeyFrames Optional. Whether to break on non key frames. (optional, default to false)
+     * @param enableRedirection Whether to enable redirection. Defaults to true. (optional, default to true)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;File&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<File> headUniversalAudioStreamWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID itemId,
+            @org.eclipse.jdt.annotation.NonNull List<String> container,
+            @org.eclipse.jdt.annotation.NonNull String mediaSourceId,
+            @org.eclipse.jdt.annotation.NonNull String deviceId, @org.eclipse.jdt.annotation.NonNull UUID userId,
+            @org.eclipse.jdt.annotation.NonNull String audioCodec,
+            @org.eclipse.jdt.annotation.NonNull Integer maxAudioChannels,
+            @org.eclipse.jdt.annotation.NonNull Integer transcodingAudioChannels,
+            @org.eclipse.jdt.annotation.NonNull Integer maxStreamingBitrate,
+            @org.eclipse.jdt.annotation.NonNull Integer audioBitRate,
+            @org.eclipse.jdt.annotation.NonNull Long startTimeTicks,
+            @org.eclipse.jdt.annotation.NonNull String transcodingContainer,
+            @org.eclipse.jdt.annotation.NonNull MediaStreamProtocol transcodingProtocol,
+            @org.eclipse.jdt.annotation.NonNull Integer maxAudioSampleRate,
+            @org.eclipse.jdt.annotation.NonNull Integer maxAudioBitDepth,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableRemoteMedia,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableAudioVbrEncoding,
+            @org.eclipse.jdt.annotation.NonNull Boolean breakOnNonKeyFrames,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableRedirection, Map<String, String> headers)
+            throws ApiException {
         HttpRequest.Builder localVarRequestBuilder = headUniversalAudioStreamRequestBuilder(itemId, container,
                 mediaSourceId, deviceId, userId, audioCodec, maxAudioChannels, transcodingAudioChannels,
                 maxStreamingBitrate, audioBitRate, startTimeTicks, transcodingContainer, transcodingProtocol,
                 maxAudioSampleRate, maxAudioBitDepth, enableRemoteMedia, enableAudioVbrEncoding, breakOnNonKeyFrames,
-                enableRedirection);
+                enableRedirection, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -409,13 +694,13 @@ public class UniversalAudioApi {
                     return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
                 }
 
-                String responseBody = new String(localVarResponse.body().readAllBytes());
+                // Handle file downloading.
+                File responseValue = downloadFileFromResponse(localVarResponse);
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {
-                                }));
+                        responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -443,7 +728,8 @@ public class UniversalAudioApi {
             @org.eclipse.jdt.annotation.NonNull Boolean enableRemoteMedia,
             @org.eclipse.jdt.annotation.NonNull Boolean enableAudioVbrEncoding,
             @org.eclipse.jdt.annotation.NonNull Boolean breakOnNonKeyFrames,
-            @org.eclipse.jdt.annotation.NonNull Boolean enableRedirection) throws ApiException {
+            @org.eclipse.jdt.annotation.NonNull Boolean enableRedirection, Map<String, String> headers)
+            throws ApiException {
         // verify the required parameter 'itemId' is set
         if (itemId == null) {
             throw new ApiException(400,
@@ -512,6 +798,8 @@ public class UniversalAudioApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }

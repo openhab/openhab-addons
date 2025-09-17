@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.jellyfin.internal.api.generated.current;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -21,6 +22,7 @@ import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.StringJoiner;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -37,6 +39,28 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class QuickConnectApi {
+    /**
+     * Utility class for extending HttpRequest.Builder functionality.
+     */
+    private static class HttpRequestBuilderExtensions {
+        /**
+         * Adds additional headers to the provided HttpRequest.Builder. Useful for adding method/endpoint specific
+         * headers.
+         *
+         * @param builder the HttpRequest.Builder to which headers will be added
+         * @param headers a map of header names and values to add; may be null
+         * @return the same HttpRequest.Builder instance with the additional headers set
+         */
+        static HttpRequest.Builder withAdditionalHeaders(HttpRequest.Builder builder, Map<String, String> headers) {
+            if (headers != null) {
+                for (Map.Entry<String, String> entry : headers.entrySet()) {
+                    builder.header(entry.getKey(), entry.getValue());
+                }
+            }
+            return builder;
+        }
+    }
+
     private final HttpClient memberVarHttpClient;
     private final ObjectMapper memberVarObjectMapper;
     private final String memberVarBaseUri;
@@ -73,6 +97,56 @@ public class QuickConnectApi {
     }
 
     /**
+     * Download file from the given response.
+     *
+     * @param response Response
+     * @return File
+     * @throws ApiException If fail to read file content from response and write to disk
+     */
+    public File downloadFileFromResponse(HttpResponse<InputStream> response) throws ApiException {
+        try {
+            File file = prepareDownloadFile(response);
+            java.nio.file.Files.copy(response.body(), file.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+            return file;
+        } catch (IOException e) {
+            throw new ApiException(e);
+        }
+    }
+
+    /**
+     * <p>
+     * Prepare the file for download from the response.
+     * </p>
+     *
+     * @param response a {@link java.net.http.HttpResponse} object.
+     * @return a {@link java.io.File} object.
+     * @throws java.io.IOException if any.
+     */
+    private File prepareDownloadFile(HttpResponse<InputStream> response) throws IOException {
+        String filename = null;
+        java.util.Optional<String> contentDisposition = response.headers().firstValue("Content-Disposition");
+        if (contentDisposition.isPresent() && !"".equals(contentDisposition.get())) {
+            // Get filename from the Content-Disposition header.
+            java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("filename=['\"]?([^'\"\\s]+)['\"]?");
+            java.util.regex.Matcher matcher = pattern.matcher(contentDisposition.get());
+            if (matcher.find())
+                filename = matcher.group(1);
+        }
+        File file = null;
+        if (filename != null) {
+            java.nio.file.Path tempDir = java.nio.file.Files.createTempDirectory("swagger-gen-native");
+            java.nio.file.Path filePath = java.nio.file.Files.createFile(tempDir.resolve(filename));
+            file = filePath.toFile();
+            tempDir.toFile().deleteOnExit(); // best effort cleanup
+            file.deleteOnExit(); // best effort cleanup
+        } else {
+            file = java.nio.file.Files.createTempFile("download-", "").toFile();
+            file.deleteOnExit(); // best effort cleanup
+        }
+        return file;
+    }
+
+    /**
      * Authorizes a pending quick connect request.
      * 
      * @param code Quick connect code to authorize. (required)
@@ -82,7 +156,21 @@ public class QuickConnectApi {
      */
     public Boolean authorizeQuickConnect(@org.eclipse.jdt.annotation.Nullable String code,
             @org.eclipse.jdt.annotation.NonNull UUID userId) throws ApiException {
-        ApiResponse<Boolean> localVarResponse = authorizeQuickConnectWithHttpInfo(code, userId);
+        return authorizeQuickConnect(code, userId, null);
+    }
+
+    /**
+     * Authorizes a pending quick connect request.
+     * 
+     * @param code Quick connect code to authorize. (required)
+     * @param userId The user the authorize. Access to the requested user is required. (optional)
+     * @param headers Optional headers to include in the request
+     * @return Boolean
+     * @throws ApiException if fails to make API call
+     */
+    public Boolean authorizeQuickConnect(@org.eclipse.jdt.annotation.Nullable String code,
+            @org.eclipse.jdt.annotation.NonNull UUID userId, Map<String, String> headers) throws ApiException {
+        ApiResponse<Boolean> localVarResponse = authorizeQuickConnectWithHttpInfo(code, userId, headers);
         return localVarResponse.getData();
     }
 
@@ -96,7 +184,21 @@ public class QuickConnectApi {
      */
     public ApiResponse<Boolean> authorizeQuickConnectWithHttpInfo(@org.eclipse.jdt.annotation.Nullable String code,
             @org.eclipse.jdt.annotation.NonNull UUID userId) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = authorizeQuickConnectRequestBuilder(code, userId);
+        return authorizeQuickConnectWithHttpInfo(code, userId, null);
+    }
+
+    /**
+     * Authorizes a pending quick connect request.
+     * 
+     * @param code Quick connect code to authorize. (required)
+     * @param userId The user the authorize. Access to the requested user is required. (optional)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;Boolean&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<Boolean> authorizeQuickConnectWithHttpInfo(@org.eclipse.jdt.annotation.Nullable String code,
+            @org.eclipse.jdt.annotation.NonNull UUID userId, Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = authorizeQuickConnectRequestBuilder(code, userId, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -113,12 +215,14 @@ public class QuickConnectApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                Boolean responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<Boolean>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<Boolean>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<Boolean>() {
-                                }));
+                        responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -130,7 +234,7 @@ public class QuickConnectApi {
     }
 
     private HttpRequest.Builder authorizeQuickConnectRequestBuilder(@org.eclipse.jdt.annotation.Nullable String code,
-            @org.eclipse.jdt.annotation.NonNull UUID userId) throws ApiException {
+            @org.eclipse.jdt.annotation.NonNull UUID userId, Map<String, String> headers) throws ApiException {
         // verify the required parameter 'code' is set
         if (code == null) {
             throw new ApiException(400, "Missing the required parameter 'code' when calling authorizeQuickConnect");
@@ -166,6 +270,8 @@ public class QuickConnectApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -179,7 +285,18 @@ public class QuickConnectApi {
      * @throws ApiException if fails to make API call
      */
     public Boolean getQuickConnectEnabled() throws ApiException {
-        ApiResponse<Boolean> localVarResponse = getQuickConnectEnabledWithHttpInfo();
+        return getQuickConnectEnabled(null);
+    }
+
+    /**
+     * Gets the current quick connect state.
+     * 
+     * @param headers Optional headers to include in the request
+     * @return Boolean
+     * @throws ApiException if fails to make API call
+     */
+    public Boolean getQuickConnectEnabled(Map<String, String> headers) throws ApiException {
+        ApiResponse<Boolean> localVarResponse = getQuickConnectEnabledWithHttpInfo(headers);
         return localVarResponse.getData();
     }
 
@@ -190,7 +307,18 @@ public class QuickConnectApi {
      * @throws ApiException if fails to make API call
      */
     public ApiResponse<Boolean> getQuickConnectEnabledWithHttpInfo() throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getQuickConnectEnabledRequestBuilder();
+        return getQuickConnectEnabledWithHttpInfo(null);
+    }
+
+    /**
+     * Gets the current quick connect state.
+     * 
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;Boolean&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<Boolean> getQuickConnectEnabledWithHttpInfo(Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = getQuickConnectEnabledRequestBuilder(headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -207,12 +335,14 @@ public class QuickConnectApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                Boolean responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<Boolean>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<Boolean>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<Boolean>() {
-                                }));
+                        responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -223,7 +353,7 @@ public class QuickConnectApi {
         }
     }
 
-    private HttpRequest.Builder getQuickConnectEnabledRequestBuilder() throws ApiException {
+    private HttpRequest.Builder getQuickConnectEnabledRequestBuilder(Map<String, String> headers) throws ApiException {
 
         HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
 
@@ -238,6 +368,8 @@ public class QuickConnectApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -253,7 +385,20 @@ public class QuickConnectApi {
      */
     public QuickConnectResult getQuickConnectState(@org.eclipse.jdt.annotation.Nullable String secret)
             throws ApiException {
-        ApiResponse<QuickConnectResult> localVarResponse = getQuickConnectStateWithHttpInfo(secret);
+        return getQuickConnectState(secret, null);
+    }
+
+    /**
+     * Attempts to retrieve authentication information.
+     * 
+     * @param secret Secret previously returned from the Initiate endpoint. (required)
+     * @param headers Optional headers to include in the request
+     * @return QuickConnectResult
+     * @throws ApiException if fails to make API call
+     */
+    public QuickConnectResult getQuickConnectState(@org.eclipse.jdt.annotation.Nullable String secret,
+            Map<String, String> headers) throws ApiException {
+        ApiResponse<QuickConnectResult> localVarResponse = getQuickConnectStateWithHttpInfo(secret, headers);
         return localVarResponse.getData();
     }
 
@@ -266,7 +411,20 @@ public class QuickConnectApi {
      */
     public ApiResponse<QuickConnectResult> getQuickConnectStateWithHttpInfo(
             @org.eclipse.jdt.annotation.Nullable String secret) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getQuickConnectStateRequestBuilder(secret);
+        return getQuickConnectStateWithHttpInfo(secret, null);
+    }
+
+    /**
+     * Attempts to retrieve authentication information.
+     * 
+     * @param secret Secret previously returned from the Initiate endpoint. (required)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;QuickConnectResult&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<QuickConnectResult> getQuickConnectStateWithHttpInfo(
+            @org.eclipse.jdt.annotation.Nullable String secret, Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = getQuickConnectStateRequestBuilder(secret, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -283,14 +441,14 @@ public class QuickConnectApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                QuickConnectResult responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<QuickConnectResult>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<QuickConnectResult>(localVarResponse.statusCode(),
-                        localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody,
-                                        new TypeReference<QuickConnectResult>() {
-                                        }));
+                        localVarResponse.headers().map(), responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -301,8 +459,8 @@ public class QuickConnectApi {
         }
     }
 
-    private HttpRequest.Builder getQuickConnectStateRequestBuilder(@org.eclipse.jdt.annotation.Nullable String secret)
-            throws ApiException {
+    private HttpRequest.Builder getQuickConnectStateRequestBuilder(@org.eclipse.jdt.annotation.Nullable String secret,
+            Map<String, String> headers) throws ApiException {
         // verify the required parameter 'secret' is set
         if (secret == null) {
             throw new ApiException(400, "Missing the required parameter 'secret' when calling getQuickConnectState");
@@ -336,6 +494,8 @@ public class QuickConnectApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -349,7 +509,18 @@ public class QuickConnectApi {
      * @throws ApiException if fails to make API call
      */
     public QuickConnectResult initiateQuickConnect() throws ApiException {
-        ApiResponse<QuickConnectResult> localVarResponse = initiateQuickConnectWithHttpInfo();
+        return initiateQuickConnect(null);
+    }
+
+    /**
+     * Initiate a new quick connect request.
+     * 
+     * @param headers Optional headers to include in the request
+     * @return QuickConnectResult
+     * @throws ApiException if fails to make API call
+     */
+    public QuickConnectResult initiateQuickConnect(Map<String, String> headers) throws ApiException {
+        ApiResponse<QuickConnectResult> localVarResponse = initiateQuickConnectWithHttpInfo(headers);
         return localVarResponse.getData();
     }
 
@@ -360,7 +531,19 @@ public class QuickConnectApi {
      * @throws ApiException if fails to make API call
      */
     public ApiResponse<QuickConnectResult> initiateQuickConnectWithHttpInfo() throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = initiateQuickConnectRequestBuilder();
+        return initiateQuickConnectWithHttpInfo(null);
+    }
+
+    /**
+     * Initiate a new quick connect request.
+     * 
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;QuickConnectResult&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<QuickConnectResult> initiateQuickConnectWithHttpInfo(Map<String, String> headers)
+            throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = initiateQuickConnectRequestBuilder(headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -377,14 +560,14 @@ public class QuickConnectApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                QuickConnectResult responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<QuickConnectResult>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<QuickConnectResult>(localVarResponse.statusCode(),
-                        localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody,
-                                        new TypeReference<QuickConnectResult>() {
-                                        }));
+                        localVarResponse.headers().map(), responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -395,7 +578,7 @@ public class QuickConnectApi {
         }
     }
 
-    private HttpRequest.Builder initiateQuickConnectRequestBuilder() throws ApiException {
+    private HttpRequest.Builder initiateQuickConnectRequestBuilder(Map<String, String> headers) throws ApiException {
 
         HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
 
@@ -410,6 +593,8 @@ public class QuickConnectApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }

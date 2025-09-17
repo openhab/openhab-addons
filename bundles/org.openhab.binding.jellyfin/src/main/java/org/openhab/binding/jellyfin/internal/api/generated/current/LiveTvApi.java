@@ -23,6 +23,7 @@ import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.StringJoiner;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -59,6 +60,28 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class LiveTvApi {
+    /**
+     * Utility class for extending HttpRequest.Builder functionality.
+     */
+    private static class HttpRequestBuilderExtensions {
+        /**
+         * Adds additional headers to the provided HttpRequest.Builder. Useful for adding method/endpoint specific
+         * headers.
+         *
+         * @param builder the HttpRequest.Builder to which headers will be added
+         * @param headers a map of header names and values to add; may be null
+         * @return the same HttpRequest.Builder instance with the additional headers set
+         */
+        static HttpRequest.Builder withAdditionalHeaders(HttpRequest.Builder builder, Map<String, String> headers) {
+            if (headers != null) {
+                for (Map.Entry<String, String> entry : headers.entrySet()) {
+                    builder.header(entry.getKey(), entry.getValue());
+                }
+            }
+            return builder;
+        }
+    }
+
     private final HttpClient memberVarHttpClient;
     private final ObjectMapper memberVarObjectMapper;
     private final String memberVarBaseUri;
@@ -95,6 +118,56 @@ public class LiveTvApi {
     }
 
     /**
+     * Download file from the given response.
+     *
+     * @param response Response
+     * @return File
+     * @throws ApiException If fail to read file content from response and write to disk
+     */
+    public File downloadFileFromResponse(HttpResponse<InputStream> response) throws ApiException {
+        try {
+            File file = prepareDownloadFile(response);
+            java.nio.file.Files.copy(response.body(), file.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+            return file;
+        } catch (IOException e) {
+            throw new ApiException(e);
+        }
+    }
+
+    /**
+     * <p>
+     * Prepare the file for download from the response.
+     * </p>
+     *
+     * @param response a {@link java.net.http.HttpResponse} object.
+     * @return a {@link java.io.File} object.
+     * @throws java.io.IOException if any.
+     */
+    private File prepareDownloadFile(HttpResponse<InputStream> response) throws IOException {
+        String filename = null;
+        java.util.Optional<String> contentDisposition = response.headers().firstValue("Content-Disposition");
+        if (contentDisposition.isPresent() && !"".equals(contentDisposition.get())) {
+            // Get filename from the Content-Disposition header.
+            java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("filename=['\"]?([^'\"\\s]+)['\"]?");
+            java.util.regex.Matcher matcher = pattern.matcher(contentDisposition.get());
+            if (matcher.find())
+                filename = matcher.group(1);
+        }
+        File file = null;
+        if (filename != null) {
+            java.nio.file.Path tempDir = java.nio.file.Files.createTempDirectory("swagger-gen-native");
+            java.nio.file.Path filePath = java.nio.file.Files.createFile(tempDir.resolve(filename));
+            file = filePath.toFile();
+            tempDir.toFile().deleteOnExit(); // best effort cleanup
+            file.deleteOnExit(); // best effort cleanup
+        } else {
+            file = java.nio.file.Files.createTempFile("download-", "").toFile();
+            file.deleteOnExit(); // best effort cleanup
+        }
+        return file;
+    }
+
+    /**
      * Adds a listings provider.
      * 
      * @param pw Password. (optional)
@@ -108,8 +181,27 @@ public class LiveTvApi {
             @org.eclipse.jdt.annotation.NonNull Boolean validateListings,
             @org.eclipse.jdt.annotation.NonNull Boolean validateLogin,
             @org.eclipse.jdt.annotation.NonNull ListingsProviderInfo listingsProviderInfo) throws ApiException {
+        return addListingProvider(pw, validateListings, validateLogin, listingsProviderInfo, null);
+    }
+
+    /**
+     * Adds a listings provider.
+     * 
+     * @param pw Password. (optional)
+     * @param validateListings Validate listings. (optional, default to false)
+     * @param validateLogin Validate login. (optional, default to false)
+     * @param listingsProviderInfo New listings info. (optional)
+     * @param headers Optional headers to include in the request
+     * @return ListingsProviderInfo
+     * @throws ApiException if fails to make API call
+     */
+    public ListingsProviderInfo addListingProvider(@org.eclipse.jdt.annotation.NonNull String pw,
+            @org.eclipse.jdt.annotation.NonNull Boolean validateListings,
+            @org.eclipse.jdt.annotation.NonNull Boolean validateLogin,
+            @org.eclipse.jdt.annotation.NonNull ListingsProviderInfo listingsProviderInfo, Map<String, String> headers)
+            throws ApiException {
         ApiResponse<ListingsProviderInfo> localVarResponse = addListingProviderWithHttpInfo(pw, validateListings,
-                validateLogin, listingsProviderInfo);
+                validateLogin, listingsProviderInfo, headers);
         return localVarResponse.getData();
     }
 
@@ -127,8 +219,27 @@ public class LiveTvApi {
             @org.eclipse.jdt.annotation.NonNull String pw, @org.eclipse.jdt.annotation.NonNull Boolean validateListings,
             @org.eclipse.jdt.annotation.NonNull Boolean validateLogin,
             @org.eclipse.jdt.annotation.NonNull ListingsProviderInfo listingsProviderInfo) throws ApiException {
+        return addListingProviderWithHttpInfo(pw, validateListings, validateLogin, listingsProviderInfo, null);
+    }
+
+    /**
+     * Adds a listings provider.
+     * 
+     * @param pw Password. (optional)
+     * @param validateListings Validate listings. (optional, default to false)
+     * @param validateLogin Validate login. (optional, default to false)
+     * @param listingsProviderInfo New listings info. (optional)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;ListingsProviderInfo&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<ListingsProviderInfo> addListingProviderWithHttpInfo(
+            @org.eclipse.jdt.annotation.NonNull String pw, @org.eclipse.jdt.annotation.NonNull Boolean validateListings,
+            @org.eclipse.jdt.annotation.NonNull Boolean validateLogin,
+            @org.eclipse.jdt.annotation.NonNull ListingsProviderInfo listingsProviderInfo, Map<String, String> headers)
+            throws ApiException {
         HttpRequest.Builder localVarRequestBuilder = addListingProviderRequestBuilder(pw, validateListings,
-                validateLogin, listingsProviderInfo);
+                validateLogin, listingsProviderInfo, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -145,14 +256,14 @@ public class LiveTvApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                ListingsProviderInfo responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<ListingsProviderInfo>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<ListingsProviderInfo>(localVarResponse.statusCode(),
-                        localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody,
-                                        new TypeReference<ListingsProviderInfo>() {
-                                        }));
+                        localVarResponse.headers().map(), responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -166,7 +277,8 @@ public class LiveTvApi {
     private HttpRequest.Builder addListingProviderRequestBuilder(@org.eclipse.jdt.annotation.NonNull String pw,
             @org.eclipse.jdt.annotation.NonNull Boolean validateListings,
             @org.eclipse.jdt.annotation.NonNull Boolean validateLogin,
-            @org.eclipse.jdt.annotation.NonNull ListingsProviderInfo listingsProviderInfo) throws ApiException {
+            @org.eclipse.jdt.annotation.NonNull ListingsProviderInfo listingsProviderInfo, Map<String, String> headers)
+            throws ApiException {
 
         HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
 
@@ -206,6 +318,8 @@ public class LiveTvApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -221,7 +335,20 @@ public class LiveTvApi {
      */
     public TunerHostInfo addTunerHost(@org.eclipse.jdt.annotation.NonNull TunerHostInfo tunerHostInfo)
             throws ApiException {
-        ApiResponse<TunerHostInfo> localVarResponse = addTunerHostWithHttpInfo(tunerHostInfo);
+        return addTunerHost(tunerHostInfo, null);
+    }
+
+    /**
+     * Adds a tuner host.
+     * 
+     * @param tunerHostInfo New tuner host. (optional)
+     * @param headers Optional headers to include in the request
+     * @return TunerHostInfo
+     * @throws ApiException if fails to make API call
+     */
+    public TunerHostInfo addTunerHost(@org.eclipse.jdt.annotation.NonNull TunerHostInfo tunerHostInfo,
+            Map<String, String> headers) throws ApiException {
+        ApiResponse<TunerHostInfo> localVarResponse = addTunerHostWithHttpInfo(tunerHostInfo, headers);
         return localVarResponse.getData();
     }
 
@@ -234,7 +361,21 @@ public class LiveTvApi {
      */
     public ApiResponse<TunerHostInfo> addTunerHostWithHttpInfo(
             @org.eclipse.jdt.annotation.NonNull TunerHostInfo tunerHostInfo) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = addTunerHostRequestBuilder(tunerHostInfo);
+        return addTunerHostWithHttpInfo(tunerHostInfo, null);
+    }
+
+    /**
+     * Adds a tuner host.
+     * 
+     * @param tunerHostInfo New tuner host. (optional)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;TunerHostInfo&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<TunerHostInfo> addTunerHostWithHttpInfo(
+            @org.eclipse.jdt.annotation.NonNull TunerHostInfo tunerHostInfo, Map<String, String> headers)
+            throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = addTunerHostRequestBuilder(tunerHostInfo, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -251,12 +392,14 @@ public class LiveTvApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                TunerHostInfo responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<TunerHostInfo>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<TunerHostInfo>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<TunerHostInfo>() {
-                                }));
+                        responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -268,7 +411,8 @@ public class LiveTvApi {
     }
 
     private HttpRequest.Builder addTunerHostRequestBuilder(
-            @org.eclipse.jdt.annotation.NonNull TunerHostInfo tunerHostInfo) throws ApiException {
+            @org.eclipse.jdt.annotation.NonNull TunerHostInfo tunerHostInfo, Map<String, String> headers)
+            throws ApiException {
 
         HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
 
@@ -289,6 +433,8 @@ public class LiveTvApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -302,7 +448,19 @@ public class LiveTvApi {
      * @throws ApiException if fails to make API call
      */
     public void cancelSeriesTimer(@org.eclipse.jdt.annotation.Nullable String timerId) throws ApiException {
-        cancelSeriesTimerWithHttpInfo(timerId);
+        cancelSeriesTimer(timerId, null);
+    }
+
+    /**
+     * Cancels a live tv series timer.
+     * 
+     * @param timerId Timer id. (required)
+     * @param headers Optional headers to include in the request
+     * @throws ApiException if fails to make API call
+     */
+    public void cancelSeriesTimer(@org.eclipse.jdt.annotation.Nullable String timerId, Map<String, String> headers)
+            throws ApiException {
+        cancelSeriesTimerWithHttpInfo(timerId, headers);
     }
 
     /**
@@ -314,7 +472,20 @@ public class LiveTvApi {
      */
     public ApiResponse<Void> cancelSeriesTimerWithHttpInfo(@org.eclipse.jdt.annotation.Nullable String timerId)
             throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = cancelSeriesTimerRequestBuilder(timerId);
+        return cancelSeriesTimerWithHttpInfo(timerId, null);
+    }
+
+    /**
+     * Cancels a live tv series timer.
+     * 
+     * @param timerId Timer id. (required)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<Void> cancelSeriesTimerWithHttpInfo(@org.eclipse.jdt.annotation.Nullable String timerId,
+            Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = cancelSeriesTimerRequestBuilder(timerId, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -341,8 +512,8 @@ public class LiveTvApi {
         }
     }
 
-    private HttpRequest.Builder cancelSeriesTimerRequestBuilder(@org.eclipse.jdt.annotation.Nullable String timerId)
-            throws ApiException {
+    private HttpRequest.Builder cancelSeriesTimerRequestBuilder(@org.eclipse.jdt.annotation.Nullable String timerId,
+            Map<String, String> headers) throws ApiException {
         // verify the required parameter 'timerId' is set
         if (timerId == null) {
             throw new ApiException(400, "Missing the required parameter 'timerId' when calling cancelSeriesTimer");
@@ -361,6 +532,8 @@ public class LiveTvApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -374,7 +547,19 @@ public class LiveTvApi {
      * @throws ApiException if fails to make API call
      */
     public void cancelTimer(@org.eclipse.jdt.annotation.Nullable String timerId) throws ApiException {
-        cancelTimerWithHttpInfo(timerId);
+        cancelTimer(timerId, null);
+    }
+
+    /**
+     * Cancels a live tv timer.
+     * 
+     * @param timerId Timer id. (required)
+     * @param headers Optional headers to include in the request
+     * @throws ApiException if fails to make API call
+     */
+    public void cancelTimer(@org.eclipse.jdt.annotation.Nullable String timerId, Map<String, String> headers)
+            throws ApiException {
+        cancelTimerWithHttpInfo(timerId, headers);
     }
 
     /**
@@ -386,7 +571,20 @@ public class LiveTvApi {
      */
     public ApiResponse<Void> cancelTimerWithHttpInfo(@org.eclipse.jdt.annotation.Nullable String timerId)
             throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = cancelTimerRequestBuilder(timerId);
+        return cancelTimerWithHttpInfo(timerId, null);
+    }
+
+    /**
+     * Cancels a live tv timer.
+     * 
+     * @param timerId Timer id. (required)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<Void> cancelTimerWithHttpInfo(@org.eclipse.jdt.annotation.Nullable String timerId,
+            Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = cancelTimerRequestBuilder(timerId, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -413,8 +611,8 @@ public class LiveTvApi {
         }
     }
 
-    private HttpRequest.Builder cancelTimerRequestBuilder(@org.eclipse.jdt.annotation.Nullable String timerId)
-            throws ApiException {
+    private HttpRequest.Builder cancelTimerRequestBuilder(@org.eclipse.jdt.annotation.Nullable String timerId,
+            Map<String, String> headers) throws ApiException {
         // verify the required parameter 'timerId' is set
         if (timerId == null) {
             throw new ApiException(400, "Missing the required parameter 'timerId' when calling cancelTimer");
@@ -432,6 +630,8 @@ public class LiveTvApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -446,7 +646,19 @@ public class LiveTvApi {
      */
     public void createSeriesTimer(@org.eclipse.jdt.annotation.NonNull SeriesTimerInfoDto seriesTimerInfoDto)
             throws ApiException {
-        createSeriesTimerWithHttpInfo(seriesTimerInfoDto);
+        createSeriesTimer(seriesTimerInfoDto, null);
+    }
+
+    /**
+     * Creates a live tv series timer.
+     * 
+     * @param seriesTimerInfoDto New series timer info. (optional)
+     * @param headers Optional headers to include in the request
+     * @throws ApiException if fails to make API call
+     */
+    public void createSeriesTimer(@org.eclipse.jdt.annotation.NonNull SeriesTimerInfoDto seriesTimerInfoDto,
+            Map<String, String> headers) throws ApiException {
+        createSeriesTimerWithHttpInfo(seriesTimerInfoDto, headers);
     }
 
     /**
@@ -458,7 +670,21 @@ public class LiveTvApi {
      */
     public ApiResponse<Void> createSeriesTimerWithHttpInfo(
             @org.eclipse.jdt.annotation.NonNull SeriesTimerInfoDto seriesTimerInfoDto) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = createSeriesTimerRequestBuilder(seriesTimerInfoDto);
+        return createSeriesTimerWithHttpInfo(seriesTimerInfoDto, null);
+    }
+
+    /**
+     * Creates a live tv series timer.
+     * 
+     * @param seriesTimerInfoDto New series timer info. (optional)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<Void> createSeriesTimerWithHttpInfo(
+            @org.eclipse.jdt.annotation.NonNull SeriesTimerInfoDto seriesTimerInfoDto, Map<String, String> headers)
+            throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = createSeriesTimerRequestBuilder(seriesTimerInfoDto, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -486,7 +712,8 @@ public class LiveTvApi {
     }
 
     private HttpRequest.Builder createSeriesTimerRequestBuilder(
-            @org.eclipse.jdt.annotation.NonNull SeriesTimerInfoDto seriesTimerInfoDto) throws ApiException {
+            @org.eclipse.jdt.annotation.NonNull SeriesTimerInfoDto seriesTimerInfoDto, Map<String, String> headers)
+            throws ApiException {
 
         HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
 
@@ -506,6 +733,8 @@ public class LiveTvApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -519,7 +748,19 @@ public class LiveTvApi {
      * @throws ApiException if fails to make API call
      */
     public void createTimer(@org.eclipse.jdt.annotation.NonNull TimerInfoDto timerInfoDto) throws ApiException {
-        createTimerWithHttpInfo(timerInfoDto);
+        createTimer(timerInfoDto, null);
+    }
+
+    /**
+     * Creates a live tv timer.
+     * 
+     * @param timerInfoDto New timer info. (optional)
+     * @param headers Optional headers to include in the request
+     * @throws ApiException if fails to make API call
+     */
+    public void createTimer(@org.eclipse.jdt.annotation.NonNull TimerInfoDto timerInfoDto, Map<String, String> headers)
+            throws ApiException {
+        createTimerWithHttpInfo(timerInfoDto, headers);
     }
 
     /**
@@ -531,7 +772,20 @@ public class LiveTvApi {
      */
     public ApiResponse<Void> createTimerWithHttpInfo(@org.eclipse.jdt.annotation.NonNull TimerInfoDto timerInfoDto)
             throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = createTimerRequestBuilder(timerInfoDto);
+        return createTimerWithHttpInfo(timerInfoDto, null);
+    }
+
+    /**
+     * Creates a live tv timer.
+     * 
+     * @param timerInfoDto New timer info. (optional)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<Void> createTimerWithHttpInfo(@org.eclipse.jdt.annotation.NonNull TimerInfoDto timerInfoDto,
+            Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = createTimerRequestBuilder(timerInfoDto, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -558,8 +812,8 @@ public class LiveTvApi {
         }
     }
 
-    private HttpRequest.Builder createTimerRequestBuilder(@org.eclipse.jdt.annotation.NonNull TimerInfoDto timerInfoDto)
-            throws ApiException {
+    private HttpRequest.Builder createTimerRequestBuilder(@org.eclipse.jdt.annotation.NonNull TimerInfoDto timerInfoDto,
+            Map<String, String> headers) throws ApiException {
 
         HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
 
@@ -579,6 +833,8 @@ public class LiveTvApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -592,7 +848,19 @@ public class LiveTvApi {
      * @throws ApiException if fails to make API call
      */
     public void deleteListingProvider(@org.eclipse.jdt.annotation.NonNull String id) throws ApiException {
-        deleteListingProviderWithHttpInfo(id);
+        deleteListingProvider(id, null);
+    }
+
+    /**
+     * Delete listing provider.
+     * 
+     * @param id Listing provider id. (optional)
+     * @param headers Optional headers to include in the request
+     * @throws ApiException if fails to make API call
+     */
+    public void deleteListingProvider(@org.eclipse.jdt.annotation.NonNull String id, Map<String, String> headers)
+            throws ApiException {
+        deleteListingProviderWithHttpInfo(id, headers);
     }
 
     /**
@@ -604,7 +872,20 @@ public class LiveTvApi {
      */
     public ApiResponse<Void> deleteListingProviderWithHttpInfo(@org.eclipse.jdt.annotation.NonNull String id)
             throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = deleteListingProviderRequestBuilder(id);
+        return deleteListingProviderWithHttpInfo(id, null);
+    }
+
+    /**
+     * Delete listing provider.
+     * 
+     * @param id Listing provider id. (optional)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<Void> deleteListingProviderWithHttpInfo(@org.eclipse.jdt.annotation.NonNull String id,
+            Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = deleteListingProviderRequestBuilder(id, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -631,8 +912,8 @@ public class LiveTvApi {
         }
     }
 
-    private HttpRequest.Builder deleteListingProviderRequestBuilder(@org.eclipse.jdt.annotation.NonNull String id)
-            throws ApiException {
+    private HttpRequest.Builder deleteListingProviderRequestBuilder(@org.eclipse.jdt.annotation.NonNull String id,
+            Map<String, String> headers) throws ApiException {
 
         HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
 
@@ -661,6 +942,8 @@ public class LiveTvApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -674,7 +957,19 @@ public class LiveTvApi {
      * @throws ApiException if fails to make API call
      */
     public void deleteRecording(@org.eclipse.jdt.annotation.Nullable UUID recordingId) throws ApiException {
-        deleteRecordingWithHttpInfo(recordingId);
+        deleteRecording(recordingId, null);
+    }
+
+    /**
+     * Deletes a live tv recording.
+     * 
+     * @param recordingId Recording id. (required)
+     * @param headers Optional headers to include in the request
+     * @throws ApiException if fails to make API call
+     */
+    public void deleteRecording(@org.eclipse.jdt.annotation.Nullable UUID recordingId, Map<String, String> headers)
+            throws ApiException {
+        deleteRecordingWithHttpInfo(recordingId, headers);
     }
 
     /**
@@ -686,7 +981,20 @@ public class LiveTvApi {
      */
     public ApiResponse<Void> deleteRecordingWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID recordingId)
             throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = deleteRecordingRequestBuilder(recordingId);
+        return deleteRecordingWithHttpInfo(recordingId, null);
+    }
+
+    /**
+     * Deletes a live tv recording.
+     * 
+     * @param recordingId Recording id. (required)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<Void> deleteRecordingWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID recordingId,
+            Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = deleteRecordingRequestBuilder(recordingId, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -713,8 +1021,8 @@ public class LiveTvApi {
         }
     }
 
-    private HttpRequest.Builder deleteRecordingRequestBuilder(@org.eclipse.jdt.annotation.Nullable UUID recordingId)
-            throws ApiException {
+    private HttpRequest.Builder deleteRecordingRequestBuilder(@org.eclipse.jdt.annotation.Nullable UUID recordingId,
+            Map<String, String> headers) throws ApiException {
         // verify the required parameter 'recordingId' is set
         if (recordingId == null) {
             throw new ApiException(400, "Missing the required parameter 'recordingId' when calling deleteRecording");
@@ -734,6 +1042,8 @@ public class LiveTvApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -747,7 +1057,19 @@ public class LiveTvApi {
      * @throws ApiException if fails to make API call
      */
     public void deleteTunerHost(@org.eclipse.jdt.annotation.NonNull String id) throws ApiException {
-        deleteTunerHostWithHttpInfo(id);
+        deleteTunerHost(id, null);
+    }
+
+    /**
+     * Deletes a tuner host.
+     * 
+     * @param id Tuner host id. (optional)
+     * @param headers Optional headers to include in the request
+     * @throws ApiException if fails to make API call
+     */
+    public void deleteTunerHost(@org.eclipse.jdt.annotation.NonNull String id, Map<String, String> headers)
+            throws ApiException {
+        deleteTunerHostWithHttpInfo(id, headers);
     }
 
     /**
@@ -759,7 +1081,20 @@ public class LiveTvApi {
      */
     public ApiResponse<Void> deleteTunerHostWithHttpInfo(@org.eclipse.jdt.annotation.NonNull String id)
             throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = deleteTunerHostRequestBuilder(id);
+        return deleteTunerHostWithHttpInfo(id, null);
+    }
+
+    /**
+     * Deletes a tuner host.
+     * 
+     * @param id Tuner host id. (optional)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<Void> deleteTunerHostWithHttpInfo(@org.eclipse.jdt.annotation.NonNull String id,
+            Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = deleteTunerHostRequestBuilder(id, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -786,8 +1121,8 @@ public class LiveTvApi {
         }
     }
 
-    private HttpRequest.Builder deleteTunerHostRequestBuilder(@org.eclipse.jdt.annotation.NonNull String id)
-            throws ApiException {
+    private HttpRequest.Builder deleteTunerHostRequestBuilder(@org.eclipse.jdt.annotation.NonNull String id,
+            Map<String, String> headers) throws ApiException {
 
         HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
 
@@ -816,6 +1151,8 @@ public class LiveTvApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -831,7 +1168,20 @@ public class LiveTvApi {
      */
     public List<TunerHostInfo> discoverTuners(@org.eclipse.jdt.annotation.NonNull Boolean newDevicesOnly)
             throws ApiException {
-        ApiResponse<List<TunerHostInfo>> localVarResponse = discoverTunersWithHttpInfo(newDevicesOnly);
+        return discoverTuners(newDevicesOnly, null);
+    }
+
+    /**
+     * Discover tuners.
+     * 
+     * @param newDevicesOnly Only discover new tuners. (optional, default to false)
+     * @param headers Optional headers to include in the request
+     * @return List&lt;TunerHostInfo&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public List<TunerHostInfo> discoverTuners(@org.eclipse.jdt.annotation.NonNull Boolean newDevicesOnly,
+            Map<String, String> headers) throws ApiException {
+        ApiResponse<List<TunerHostInfo>> localVarResponse = discoverTunersWithHttpInfo(newDevicesOnly, headers);
         return localVarResponse.getData();
     }
 
@@ -844,7 +1194,21 @@ public class LiveTvApi {
      */
     public ApiResponse<List<TunerHostInfo>> discoverTunersWithHttpInfo(
             @org.eclipse.jdt.annotation.NonNull Boolean newDevicesOnly) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = discoverTunersRequestBuilder(newDevicesOnly);
+        return discoverTunersWithHttpInfo(newDevicesOnly, null);
+    }
+
+    /**
+     * Discover tuners.
+     * 
+     * @param newDevicesOnly Only discover new tuners. (optional, default to false)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;List&lt;TunerHostInfo&gt;&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<List<TunerHostInfo>> discoverTunersWithHttpInfo(
+            @org.eclipse.jdt.annotation.NonNull Boolean newDevicesOnly, Map<String, String> headers)
+            throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = discoverTunersRequestBuilder(newDevicesOnly, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -861,14 +1225,14 @@ public class LiveTvApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                List<TunerHostInfo> responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<List<TunerHostInfo>>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<List<TunerHostInfo>>(localVarResponse.statusCode(),
-                        localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody,
-                                        new TypeReference<List<TunerHostInfo>>() {
-                                        }));
+                        localVarResponse.headers().map(), responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -879,8 +1243,8 @@ public class LiveTvApi {
         }
     }
 
-    private HttpRequest.Builder discoverTunersRequestBuilder(@org.eclipse.jdt.annotation.NonNull Boolean newDevicesOnly)
-            throws ApiException {
+    private HttpRequest.Builder discoverTunersRequestBuilder(@org.eclipse.jdt.annotation.NonNull Boolean newDevicesOnly,
+            Map<String, String> headers) throws ApiException {
 
         HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
 
@@ -910,6 +1274,8 @@ public class LiveTvApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -925,7 +1291,20 @@ public class LiveTvApi {
      */
     public List<TunerHostInfo> discvoverTuners(@org.eclipse.jdt.annotation.NonNull Boolean newDevicesOnly)
             throws ApiException {
-        ApiResponse<List<TunerHostInfo>> localVarResponse = discvoverTunersWithHttpInfo(newDevicesOnly);
+        return discvoverTuners(newDevicesOnly, null);
+    }
+
+    /**
+     * Discover tuners.
+     * 
+     * @param newDevicesOnly Only discover new tuners. (optional, default to false)
+     * @param headers Optional headers to include in the request
+     * @return List&lt;TunerHostInfo&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public List<TunerHostInfo> discvoverTuners(@org.eclipse.jdt.annotation.NonNull Boolean newDevicesOnly,
+            Map<String, String> headers) throws ApiException {
+        ApiResponse<List<TunerHostInfo>> localVarResponse = discvoverTunersWithHttpInfo(newDevicesOnly, headers);
         return localVarResponse.getData();
     }
 
@@ -938,7 +1317,21 @@ public class LiveTvApi {
      */
     public ApiResponse<List<TunerHostInfo>> discvoverTunersWithHttpInfo(
             @org.eclipse.jdt.annotation.NonNull Boolean newDevicesOnly) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = discvoverTunersRequestBuilder(newDevicesOnly);
+        return discvoverTunersWithHttpInfo(newDevicesOnly, null);
+    }
+
+    /**
+     * Discover tuners.
+     * 
+     * @param newDevicesOnly Only discover new tuners. (optional, default to false)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;List&lt;TunerHostInfo&gt;&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<List<TunerHostInfo>> discvoverTunersWithHttpInfo(
+            @org.eclipse.jdt.annotation.NonNull Boolean newDevicesOnly, Map<String, String> headers)
+            throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = discvoverTunersRequestBuilder(newDevicesOnly, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -955,14 +1348,14 @@ public class LiveTvApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                List<TunerHostInfo> responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<List<TunerHostInfo>>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<List<TunerHostInfo>>(localVarResponse.statusCode(),
-                        localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody,
-                                        new TypeReference<List<TunerHostInfo>>() {
-                                        }));
+                        localVarResponse.headers().map(), responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -974,7 +1367,8 @@ public class LiveTvApi {
     }
 
     private HttpRequest.Builder discvoverTunersRequestBuilder(
-            @org.eclipse.jdt.annotation.NonNull Boolean newDevicesOnly) throws ApiException {
+            @org.eclipse.jdt.annotation.NonNull Boolean newDevicesOnly, Map<String, String> headers)
+            throws ApiException {
 
         HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
 
@@ -1004,6 +1398,8 @@ public class LiveTvApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -1020,7 +1416,21 @@ public class LiveTvApi {
      */
     public BaseItemDto getChannel(@org.eclipse.jdt.annotation.Nullable UUID channelId,
             @org.eclipse.jdt.annotation.NonNull UUID userId) throws ApiException {
-        ApiResponse<BaseItemDto> localVarResponse = getChannelWithHttpInfo(channelId, userId);
+        return getChannel(channelId, userId, null);
+    }
+
+    /**
+     * Gets a live tv channel.
+     * 
+     * @param channelId Channel id. (required)
+     * @param userId Optional. Attach user data. (optional)
+     * @param headers Optional headers to include in the request
+     * @return BaseItemDto
+     * @throws ApiException if fails to make API call
+     */
+    public BaseItemDto getChannel(@org.eclipse.jdt.annotation.Nullable UUID channelId,
+            @org.eclipse.jdt.annotation.NonNull UUID userId, Map<String, String> headers) throws ApiException {
+        ApiResponse<BaseItemDto> localVarResponse = getChannelWithHttpInfo(channelId, userId, headers);
         return localVarResponse.getData();
     }
 
@@ -1034,7 +1444,21 @@ public class LiveTvApi {
      */
     public ApiResponse<BaseItemDto> getChannelWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID channelId,
             @org.eclipse.jdt.annotation.NonNull UUID userId) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getChannelRequestBuilder(channelId, userId);
+        return getChannelWithHttpInfo(channelId, userId, null);
+    }
+
+    /**
+     * Gets a live tv channel.
+     * 
+     * @param channelId Channel id. (required)
+     * @param userId Optional. Attach user data. (optional)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;BaseItemDto&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<BaseItemDto> getChannelWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID channelId,
+            @org.eclipse.jdt.annotation.NonNull UUID userId, Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = getChannelRequestBuilder(channelId, userId, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -1051,12 +1475,14 @@ public class LiveTvApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                BaseItemDto responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<BaseItemDto>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<BaseItemDto>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<BaseItemDto>() {
-                                }));
+                        responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -1068,7 +1494,7 @@ public class LiveTvApi {
     }
 
     private HttpRequest.Builder getChannelRequestBuilder(@org.eclipse.jdt.annotation.Nullable UUID channelId,
-            @org.eclipse.jdt.annotation.NonNull UUID userId) throws ApiException {
+            @org.eclipse.jdt.annotation.NonNull UUID userId, Map<String, String> headers) throws ApiException {
         // verify the required parameter 'channelId' is set
         if (channelId == null) {
             throw new ApiException(400, "Missing the required parameter 'channelId' when calling getChannel");
@@ -1103,6 +1529,8 @@ public class LiveTvApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -1118,7 +1546,21 @@ public class LiveTvApi {
      */
     public ChannelMappingOptionsDto getChannelMappingOptions(@org.eclipse.jdt.annotation.NonNull String providerId)
             throws ApiException {
-        ApiResponse<ChannelMappingOptionsDto> localVarResponse = getChannelMappingOptionsWithHttpInfo(providerId);
+        return getChannelMappingOptions(providerId, null);
+    }
+
+    /**
+     * Get channel mapping options.
+     * 
+     * @param providerId Provider id. (optional)
+     * @param headers Optional headers to include in the request
+     * @return ChannelMappingOptionsDto
+     * @throws ApiException if fails to make API call
+     */
+    public ChannelMappingOptionsDto getChannelMappingOptions(@org.eclipse.jdt.annotation.NonNull String providerId,
+            Map<String, String> headers) throws ApiException {
+        ApiResponse<ChannelMappingOptionsDto> localVarResponse = getChannelMappingOptionsWithHttpInfo(providerId,
+                headers);
         return localVarResponse.getData();
     }
 
@@ -1131,7 +1573,20 @@ public class LiveTvApi {
      */
     public ApiResponse<ChannelMappingOptionsDto> getChannelMappingOptionsWithHttpInfo(
             @org.eclipse.jdt.annotation.NonNull String providerId) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getChannelMappingOptionsRequestBuilder(providerId);
+        return getChannelMappingOptionsWithHttpInfo(providerId, null);
+    }
+
+    /**
+     * Get channel mapping options.
+     * 
+     * @param providerId Provider id. (optional)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;ChannelMappingOptionsDto&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<ChannelMappingOptionsDto> getChannelMappingOptionsWithHttpInfo(
+            @org.eclipse.jdt.annotation.NonNull String providerId, Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = getChannelMappingOptionsRequestBuilder(providerId, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -1148,14 +1603,14 @@ public class LiveTvApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                ChannelMappingOptionsDto responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<ChannelMappingOptionsDto>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<ChannelMappingOptionsDto>(localVarResponse.statusCode(),
-                        localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody,
-                                        new TypeReference<ChannelMappingOptionsDto>() {
-                                        }));
+                        localVarResponse.headers().map(), responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -1167,7 +1622,7 @@ public class LiveTvApi {
     }
 
     private HttpRequest.Builder getChannelMappingOptionsRequestBuilder(
-            @org.eclipse.jdt.annotation.NonNull String providerId) throws ApiException {
+            @org.eclipse.jdt.annotation.NonNull String providerId, Map<String, String> headers) throws ApiException {
 
         HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
 
@@ -1197,6 +1652,8 @@ public class LiveTvApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -1210,7 +1667,18 @@ public class LiveTvApi {
      * @throws ApiException if fails to make API call
      */
     public ListingsProviderInfo getDefaultListingProvider() throws ApiException {
-        ApiResponse<ListingsProviderInfo> localVarResponse = getDefaultListingProviderWithHttpInfo();
+        return getDefaultListingProvider(null);
+    }
+
+    /**
+     * Gets default listings provider info.
+     * 
+     * @param headers Optional headers to include in the request
+     * @return ListingsProviderInfo
+     * @throws ApiException if fails to make API call
+     */
+    public ListingsProviderInfo getDefaultListingProvider(Map<String, String> headers) throws ApiException {
+        ApiResponse<ListingsProviderInfo> localVarResponse = getDefaultListingProviderWithHttpInfo(headers);
         return localVarResponse.getData();
     }
 
@@ -1221,7 +1689,19 @@ public class LiveTvApi {
      * @throws ApiException if fails to make API call
      */
     public ApiResponse<ListingsProviderInfo> getDefaultListingProviderWithHttpInfo() throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getDefaultListingProviderRequestBuilder();
+        return getDefaultListingProviderWithHttpInfo(null);
+    }
+
+    /**
+     * Gets default listings provider info.
+     * 
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;ListingsProviderInfo&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<ListingsProviderInfo> getDefaultListingProviderWithHttpInfo(Map<String, String> headers)
+            throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = getDefaultListingProviderRequestBuilder(headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -1238,14 +1718,14 @@ public class LiveTvApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                ListingsProviderInfo responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<ListingsProviderInfo>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<ListingsProviderInfo>(localVarResponse.statusCode(),
-                        localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody,
-                                        new TypeReference<ListingsProviderInfo>() {
-                                        }));
+                        localVarResponse.headers().map(), responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -1256,7 +1736,8 @@ public class LiveTvApi {
         }
     }
 
-    private HttpRequest.Builder getDefaultListingProviderRequestBuilder() throws ApiException {
+    private HttpRequest.Builder getDefaultListingProviderRequestBuilder(Map<String, String> headers)
+            throws ApiException {
 
         HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
 
@@ -1271,6 +1752,8 @@ public class LiveTvApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -1286,7 +1769,20 @@ public class LiveTvApi {
      */
     public SeriesTimerInfoDto getDefaultTimer(@org.eclipse.jdt.annotation.NonNull String programId)
             throws ApiException {
-        ApiResponse<SeriesTimerInfoDto> localVarResponse = getDefaultTimerWithHttpInfo(programId);
+        return getDefaultTimer(programId, null);
+    }
+
+    /**
+     * Gets the default values for a new timer.
+     * 
+     * @param programId Optional. To attach default values based on a program. (optional)
+     * @param headers Optional headers to include in the request
+     * @return SeriesTimerInfoDto
+     * @throws ApiException if fails to make API call
+     */
+    public SeriesTimerInfoDto getDefaultTimer(@org.eclipse.jdt.annotation.NonNull String programId,
+            Map<String, String> headers) throws ApiException {
+        ApiResponse<SeriesTimerInfoDto> localVarResponse = getDefaultTimerWithHttpInfo(programId, headers);
         return localVarResponse.getData();
     }
 
@@ -1299,7 +1795,20 @@ public class LiveTvApi {
      */
     public ApiResponse<SeriesTimerInfoDto> getDefaultTimerWithHttpInfo(
             @org.eclipse.jdt.annotation.NonNull String programId) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getDefaultTimerRequestBuilder(programId);
+        return getDefaultTimerWithHttpInfo(programId, null);
+    }
+
+    /**
+     * Gets the default values for a new timer.
+     * 
+     * @param programId Optional. To attach default values based on a program. (optional)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;SeriesTimerInfoDto&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<SeriesTimerInfoDto> getDefaultTimerWithHttpInfo(
+            @org.eclipse.jdt.annotation.NonNull String programId, Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = getDefaultTimerRequestBuilder(programId, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -1316,14 +1825,14 @@ public class LiveTvApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                SeriesTimerInfoDto responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<SeriesTimerInfoDto>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<SeriesTimerInfoDto>(localVarResponse.statusCode(),
-                        localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody,
-                                        new TypeReference<SeriesTimerInfoDto>() {
-                                        }));
+                        localVarResponse.headers().map(), responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -1334,8 +1843,8 @@ public class LiveTvApi {
         }
     }
 
-    private HttpRequest.Builder getDefaultTimerRequestBuilder(@org.eclipse.jdt.annotation.NonNull String programId)
-            throws ApiException {
+    private HttpRequest.Builder getDefaultTimerRequestBuilder(@org.eclipse.jdt.annotation.NonNull String programId,
+            Map<String, String> headers) throws ApiException {
 
         HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
 
@@ -1365,6 +1874,8 @@ public class LiveTvApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -1378,7 +1889,18 @@ public class LiveTvApi {
      * @throws ApiException if fails to make API call
      */
     public GuideInfo getGuideInfo() throws ApiException {
-        ApiResponse<GuideInfo> localVarResponse = getGuideInfoWithHttpInfo();
+        return getGuideInfo(null);
+    }
+
+    /**
+     * Get guid info.
+     * 
+     * @param headers Optional headers to include in the request
+     * @return GuideInfo
+     * @throws ApiException if fails to make API call
+     */
+    public GuideInfo getGuideInfo(Map<String, String> headers) throws ApiException {
+        ApiResponse<GuideInfo> localVarResponse = getGuideInfoWithHttpInfo(headers);
         return localVarResponse.getData();
     }
 
@@ -1389,7 +1911,18 @@ public class LiveTvApi {
      * @throws ApiException if fails to make API call
      */
     public ApiResponse<GuideInfo> getGuideInfoWithHttpInfo() throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getGuideInfoRequestBuilder();
+        return getGuideInfoWithHttpInfo(null);
+    }
+
+    /**
+     * Get guid info.
+     * 
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;GuideInfo&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<GuideInfo> getGuideInfoWithHttpInfo(Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = getGuideInfoRequestBuilder(headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -1406,12 +1939,14 @@ public class LiveTvApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                GuideInfo responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<GuideInfo>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<GuideInfo>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<GuideInfo>() {
-                                }));
+                        responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -1422,7 +1957,7 @@ public class LiveTvApi {
         }
     }
 
-    private HttpRequest.Builder getGuideInfoRequestBuilder() throws ApiException {
+    private HttpRequest.Builder getGuideInfoRequestBuilder(Map<String, String> headers) throws ApiException {
 
         HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
 
@@ -1437,6 +1972,8 @@ public class LiveTvApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -1456,7 +1993,24 @@ public class LiveTvApi {
     public List<NameIdPair> getLineups(@org.eclipse.jdt.annotation.NonNull String id,
             @org.eclipse.jdt.annotation.NonNull String type, @org.eclipse.jdt.annotation.NonNull String location,
             @org.eclipse.jdt.annotation.NonNull String country) throws ApiException {
-        ApiResponse<List<NameIdPair>> localVarResponse = getLineupsWithHttpInfo(id, type, location, country);
+        return getLineups(id, type, location, country, null);
+    }
+
+    /**
+     * Gets available lineups.
+     * 
+     * @param id Provider id. (optional)
+     * @param type Provider type. (optional)
+     * @param location Location. (optional)
+     * @param country Country. (optional)
+     * @param headers Optional headers to include in the request
+     * @return List&lt;NameIdPair&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public List<NameIdPair> getLineups(@org.eclipse.jdt.annotation.NonNull String id,
+            @org.eclipse.jdt.annotation.NonNull String type, @org.eclipse.jdt.annotation.NonNull String location,
+            @org.eclipse.jdt.annotation.NonNull String country, Map<String, String> headers) throws ApiException {
+        ApiResponse<List<NameIdPair>> localVarResponse = getLineupsWithHttpInfo(id, type, location, country, headers);
         return localVarResponse.getData();
     }
 
@@ -1473,7 +2027,24 @@ public class LiveTvApi {
     public ApiResponse<List<NameIdPair>> getLineupsWithHttpInfo(@org.eclipse.jdt.annotation.NonNull String id,
             @org.eclipse.jdt.annotation.NonNull String type, @org.eclipse.jdt.annotation.NonNull String location,
             @org.eclipse.jdt.annotation.NonNull String country) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getLineupsRequestBuilder(id, type, location, country);
+        return getLineupsWithHttpInfo(id, type, location, country, null);
+    }
+
+    /**
+     * Gets available lineups.
+     * 
+     * @param id Provider id. (optional)
+     * @param type Provider type. (optional)
+     * @param location Location. (optional)
+     * @param country Country. (optional)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;List&lt;NameIdPair&gt;&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<List<NameIdPair>> getLineupsWithHttpInfo(@org.eclipse.jdt.annotation.NonNull String id,
+            @org.eclipse.jdt.annotation.NonNull String type, @org.eclipse.jdt.annotation.NonNull String location,
+            @org.eclipse.jdt.annotation.NonNull String country, Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = getLineupsRequestBuilder(id, type, location, country, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -1490,12 +2061,14 @@ public class LiveTvApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                List<NameIdPair> responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<List<NameIdPair>>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<List<NameIdPair>>(localVarResponse.statusCode(),
-                        localVarResponse.headers().map(), responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<List<NameIdPair>>() {
-                                }));
+                        localVarResponse.headers().map(), responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -1508,7 +2081,7 @@ public class LiveTvApi {
 
     private HttpRequest.Builder getLineupsRequestBuilder(@org.eclipse.jdt.annotation.NonNull String id,
             @org.eclipse.jdt.annotation.NonNull String type, @org.eclipse.jdt.annotation.NonNull String location,
-            @org.eclipse.jdt.annotation.NonNull String country) throws ApiException {
+            @org.eclipse.jdt.annotation.NonNull String country, Map<String, String> headers) throws ApiException {
 
         HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
 
@@ -1544,6 +2117,8 @@ public class LiveTvApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -1558,7 +2133,20 @@ public class LiveTvApi {
      * @throws ApiException if fails to make API call
      */
     public File getLiveRecordingFile(@org.eclipse.jdt.annotation.Nullable String recordingId) throws ApiException {
-        ApiResponse<File> localVarResponse = getLiveRecordingFileWithHttpInfo(recordingId);
+        return getLiveRecordingFile(recordingId, null);
+    }
+
+    /**
+     * Gets a live tv recording stream.
+     * 
+     * @param recordingId Recording id. (required)
+     * @param headers Optional headers to include in the request
+     * @return File
+     * @throws ApiException if fails to make API call
+     */
+    public File getLiveRecordingFile(@org.eclipse.jdt.annotation.Nullable String recordingId,
+            Map<String, String> headers) throws ApiException {
+        ApiResponse<File> localVarResponse = getLiveRecordingFileWithHttpInfo(recordingId, headers);
         return localVarResponse.getData();
     }
 
@@ -1571,7 +2159,20 @@ public class LiveTvApi {
      */
     public ApiResponse<File> getLiveRecordingFileWithHttpInfo(@org.eclipse.jdt.annotation.Nullable String recordingId)
             throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getLiveRecordingFileRequestBuilder(recordingId);
+        return getLiveRecordingFileWithHttpInfo(recordingId, null);
+    }
+
+    /**
+     * Gets a live tv recording stream.
+     * 
+     * @param recordingId Recording id. (required)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;File&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<File> getLiveRecordingFileWithHttpInfo(@org.eclipse.jdt.annotation.Nullable String recordingId,
+            Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = getLiveRecordingFileRequestBuilder(recordingId, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -1586,13 +2187,13 @@ public class LiveTvApi {
                     return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
                 }
 
-                String responseBody = new String(localVarResponse.body().readAllBytes());
+                // Handle file downloading.
+                File responseValue = downloadFileFromResponse(localVarResponse);
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {
-                                }));
+                        responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -1604,7 +2205,7 @@ public class LiveTvApi {
     }
 
     private HttpRequest.Builder getLiveRecordingFileRequestBuilder(
-            @org.eclipse.jdt.annotation.Nullable String recordingId) throws ApiException {
+            @org.eclipse.jdt.annotation.Nullable String recordingId, Map<String, String> headers) throws ApiException {
         // verify the required parameter 'recordingId' is set
         if (recordingId == null) {
             throw new ApiException(400,
@@ -1625,6 +2226,8 @@ public class LiveTvApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -1641,7 +2244,21 @@ public class LiveTvApi {
      */
     public File getLiveStreamFile(@org.eclipse.jdt.annotation.Nullable String streamId,
             @org.eclipse.jdt.annotation.Nullable String container) throws ApiException {
-        ApiResponse<File> localVarResponse = getLiveStreamFileWithHttpInfo(streamId, container);
+        return getLiveStreamFile(streamId, container, null);
+    }
+
+    /**
+     * Gets a live tv channel stream.
+     * 
+     * @param streamId Stream id. (required)
+     * @param container Container type. (required)
+     * @param headers Optional headers to include in the request
+     * @return File
+     * @throws ApiException if fails to make API call
+     */
+    public File getLiveStreamFile(@org.eclipse.jdt.annotation.Nullable String streamId,
+            @org.eclipse.jdt.annotation.Nullable String container, Map<String, String> headers) throws ApiException {
+        ApiResponse<File> localVarResponse = getLiveStreamFileWithHttpInfo(streamId, container, headers);
         return localVarResponse.getData();
     }
 
@@ -1655,7 +2272,21 @@ public class LiveTvApi {
      */
     public ApiResponse<File> getLiveStreamFileWithHttpInfo(@org.eclipse.jdt.annotation.Nullable String streamId,
             @org.eclipse.jdt.annotation.Nullable String container) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getLiveStreamFileRequestBuilder(streamId, container);
+        return getLiveStreamFileWithHttpInfo(streamId, container, null);
+    }
+
+    /**
+     * Gets a live tv channel stream.
+     * 
+     * @param streamId Stream id. (required)
+     * @param container Container type. (required)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;File&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<File> getLiveStreamFileWithHttpInfo(@org.eclipse.jdt.annotation.Nullable String streamId,
+            @org.eclipse.jdt.annotation.Nullable String container, Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = getLiveStreamFileRequestBuilder(streamId, container, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -1670,13 +2301,13 @@ public class LiveTvApi {
                     return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
                 }
 
-                String responseBody = new String(localVarResponse.body().readAllBytes());
+                // Handle file downloading.
+                File responseValue = downloadFileFromResponse(localVarResponse);
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {
-                                }));
+                        responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -1688,7 +2319,7 @@ public class LiveTvApi {
     }
 
     private HttpRequest.Builder getLiveStreamFileRequestBuilder(@org.eclipse.jdt.annotation.Nullable String streamId,
-            @org.eclipse.jdt.annotation.Nullable String container) throws ApiException {
+            @org.eclipse.jdt.annotation.Nullable String container, Map<String, String> headers) throws ApiException {
         // verify the required parameter 'streamId' is set
         if (streamId == null) {
             throw new ApiException(400, "Missing the required parameter 'streamId' when calling getLiveStreamFile");
@@ -1713,6 +2344,8 @@ public class LiveTvApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -1764,10 +2397,62 @@ public class LiveTvApi {
             @org.eclipse.jdt.annotation.NonNull SortOrder sortOrder,
             @org.eclipse.jdt.annotation.NonNull Boolean enableFavoriteSorting,
             @org.eclipse.jdt.annotation.NonNull Boolean addCurrentProgram) throws ApiException {
+        return getLiveTvChannels(type, userId, startIndex, isMovie, isSeries, isNews, isKids, isSports, limit,
+                isFavorite, isLiked, isDisliked, enableImages, imageTypeLimit, enableImageTypes, fields, enableUserData,
+                sortBy, sortOrder, enableFavoriteSorting, addCurrentProgram, null);
+    }
+
+    /**
+     * Gets available live tv channels.
+     * 
+     * @param type Optional. Filter by channel type. (optional)
+     * @param userId Optional. Filter by user and attach user data. (optional)
+     * @param startIndex Optional. The record index to start at. All items with a lower index will be dropped from the
+     *            results. (optional)
+     * @param isMovie Optional. Filter for movies. (optional)
+     * @param isSeries Optional. Filter for series. (optional)
+     * @param isNews Optional. Filter for news. (optional)
+     * @param isKids Optional. Filter for kids. (optional)
+     * @param isSports Optional. Filter for sports. (optional)
+     * @param limit Optional. The maximum number of records to return. (optional)
+     * @param isFavorite Optional. Filter by channels that are favorites, or not. (optional)
+     * @param isLiked Optional. Filter by channels that are liked, or not. (optional)
+     * @param isDisliked Optional. Filter by channels that are disliked, or not. (optional)
+     * @param enableImages Optional. Include image information in output. (optional)
+     * @param imageTypeLimit Optional. The max number of images to return, per image type. (optional)
+     * @param enableImageTypes \&quot;Optional. The image types to include in the output. (optional)
+     * @param fields Optional. Specify additional fields of information to return in the output. (optional)
+     * @param enableUserData Optional. Include user data. (optional)
+     * @param sortBy Optional. Key to sort by. (optional)
+     * @param sortOrder Optional. Sort order. (optional)
+     * @param enableFavoriteSorting Optional. Incorporate favorite and like status into channel sorting. (optional,
+     *            default to false)
+     * @param addCurrentProgram Optional. Adds current program info to each channel. (optional, default to true)
+     * @param headers Optional headers to include in the request
+     * @return BaseItemDtoQueryResult
+     * @throws ApiException if fails to make API call
+     */
+    public BaseItemDtoQueryResult getLiveTvChannels(@org.eclipse.jdt.annotation.NonNull ChannelType type,
+            @org.eclipse.jdt.annotation.NonNull UUID userId, @org.eclipse.jdt.annotation.NonNull Integer startIndex,
+            @org.eclipse.jdt.annotation.NonNull Boolean isMovie, @org.eclipse.jdt.annotation.NonNull Boolean isSeries,
+            @org.eclipse.jdt.annotation.NonNull Boolean isNews, @org.eclipse.jdt.annotation.NonNull Boolean isKids,
+            @org.eclipse.jdt.annotation.NonNull Boolean isSports, @org.eclipse.jdt.annotation.NonNull Integer limit,
+            @org.eclipse.jdt.annotation.NonNull Boolean isFavorite, @org.eclipse.jdt.annotation.NonNull Boolean isLiked,
+            @org.eclipse.jdt.annotation.NonNull Boolean isDisliked,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableImages,
+            @org.eclipse.jdt.annotation.NonNull Integer imageTypeLimit,
+            @org.eclipse.jdt.annotation.NonNull List<ImageType> enableImageTypes,
+            @org.eclipse.jdt.annotation.NonNull List<ItemFields> fields,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableUserData,
+            @org.eclipse.jdt.annotation.NonNull List<ItemSortBy> sortBy,
+            @org.eclipse.jdt.annotation.NonNull SortOrder sortOrder,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableFavoriteSorting,
+            @org.eclipse.jdt.annotation.NonNull Boolean addCurrentProgram, Map<String, String> headers)
+            throws ApiException {
         ApiResponse<BaseItemDtoQueryResult> localVarResponse = getLiveTvChannelsWithHttpInfo(type, userId, startIndex,
                 isMovie, isSeries, isNews, isKids, isSports, limit, isFavorite, isLiked, isDisliked, enableImages,
                 imageTypeLimit, enableImageTypes, fields, enableUserData, sortBy, sortOrder, enableFavoriteSorting,
-                addCurrentProgram);
+                addCurrentProgram, headers);
         return localVarResponse.getData();
     }
 
@@ -1816,10 +2501,62 @@ public class LiveTvApi {
             @org.eclipse.jdt.annotation.NonNull SortOrder sortOrder,
             @org.eclipse.jdt.annotation.NonNull Boolean enableFavoriteSorting,
             @org.eclipse.jdt.annotation.NonNull Boolean addCurrentProgram) throws ApiException {
+        return getLiveTvChannelsWithHttpInfo(type, userId, startIndex, isMovie, isSeries, isNews, isKids, isSports,
+                limit, isFavorite, isLiked, isDisliked, enableImages, imageTypeLimit, enableImageTypes, fields,
+                enableUserData, sortBy, sortOrder, enableFavoriteSorting, addCurrentProgram, null);
+    }
+
+    /**
+     * Gets available live tv channels.
+     * 
+     * @param type Optional. Filter by channel type. (optional)
+     * @param userId Optional. Filter by user and attach user data. (optional)
+     * @param startIndex Optional. The record index to start at. All items with a lower index will be dropped from the
+     *            results. (optional)
+     * @param isMovie Optional. Filter for movies. (optional)
+     * @param isSeries Optional. Filter for series. (optional)
+     * @param isNews Optional. Filter for news. (optional)
+     * @param isKids Optional. Filter for kids. (optional)
+     * @param isSports Optional. Filter for sports. (optional)
+     * @param limit Optional. The maximum number of records to return. (optional)
+     * @param isFavorite Optional. Filter by channels that are favorites, or not. (optional)
+     * @param isLiked Optional. Filter by channels that are liked, or not. (optional)
+     * @param isDisliked Optional. Filter by channels that are disliked, or not. (optional)
+     * @param enableImages Optional. Include image information in output. (optional)
+     * @param imageTypeLimit Optional. The max number of images to return, per image type. (optional)
+     * @param enableImageTypes \&quot;Optional. The image types to include in the output. (optional)
+     * @param fields Optional. Specify additional fields of information to return in the output. (optional)
+     * @param enableUserData Optional. Include user data. (optional)
+     * @param sortBy Optional. Key to sort by. (optional)
+     * @param sortOrder Optional. Sort order. (optional)
+     * @param enableFavoriteSorting Optional. Incorporate favorite and like status into channel sorting. (optional,
+     *            default to false)
+     * @param addCurrentProgram Optional. Adds current program info to each channel. (optional, default to true)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;BaseItemDtoQueryResult&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<BaseItemDtoQueryResult> getLiveTvChannelsWithHttpInfo(
+            @org.eclipse.jdt.annotation.NonNull ChannelType type, @org.eclipse.jdt.annotation.NonNull UUID userId,
+            @org.eclipse.jdt.annotation.NonNull Integer startIndex, @org.eclipse.jdt.annotation.NonNull Boolean isMovie,
+            @org.eclipse.jdt.annotation.NonNull Boolean isSeries, @org.eclipse.jdt.annotation.NonNull Boolean isNews,
+            @org.eclipse.jdt.annotation.NonNull Boolean isKids, @org.eclipse.jdt.annotation.NonNull Boolean isSports,
+            @org.eclipse.jdt.annotation.NonNull Integer limit, @org.eclipse.jdt.annotation.NonNull Boolean isFavorite,
+            @org.eclipse.jdt.annotation.NonNull Boolean isLiked, @org.eclipse.jdt.annotation.NonNull Boolean isDisliked,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableImages,
+            @org.eclipse.jdt.annotation.NonNull Integer imageTypeLimit,
+            @org.eclipse.jdt.annotation.NonNull List<ImageType> enableImageTypes,
+            @org.eclipse.jdt.annotation.NonNull List<ItemFields> fields,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableUserData,
+            @org.eclipse.jdt.annotation.NonNull List<ItemSortBy> sortBy,
+            @org.eclipse.jdt.annotation.NonNull SortOrder sortOrder,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableFavoriteSorting,
+            @org.eclipse.jdt.annotation.NonNull Boolean addCurrentProgram, Map<String, String> headers)
+            throws ApiException {
         HttpRequest.Builder localVarRequestBuilder = getLiveTvChannelsRequestBuilder(type, userId, startIndex, isMovie,
                 isSeries, isNews, isKids, isSports, limit, isFavorite, isLiked, isDisliked, enableImages,
                 imageTypeLimit, enableImageTypes, fields, enableUserData, sortBy, sortOrder, enableFavoriteSorting,
-                addCurrentProgram);
+                addCurrentProgram, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -1836,14 +2573,14 @@ public class LiveTvApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                BaseItemDtoQueryResult responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<BaseItemDtoQueryResult>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<BaseItemDtoQueryResult>(localVarResponse.statusCode(),
-                        localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody,
-                                        new TypeReference<BaseItemDtoQueryResult>() {
-                                        }));
+                        localVarResponse.headers().map(), responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -1869,7 +2606,8 @@ public class LiveTvApi {
             @org.eclipse.jdt.annotation.NonNull List<ItemSortBy> sortBy,
             @org.eclipse.jdt.annotation.NonNull SortOrder sortOrder,
             @org.eclipse.jdt.annotation.NonNull Boolean enableFavoriteSorting,
-            @org.eclipse.jdt.annotation.NonNull Boolean addCurrentProgram) throws ApiException {
+            @org.eclipse.jdt.annotation.NonNull Boolean addCurrentProgram, Map<String, String> headers)
+            throws ApiException {
 
         HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
 
@@ -1939,6 +2677,8 @@ public class LiveTvApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -1952,7 +2692,18 @@ public class LiveTvApi {
      * @throws ApiException if fails to make API call
      */
     public LiveTvInfo getLiveTvInfo() throws ApiException {
-        ApiResponse<LiveTvInfo> localVarResponse = getLiveTvInfoWithHttpInfo();
+        return getLiveTvInfo(null);
+    }
+
+    /**
+     * Gets available live tv services.
+     * 
+     * @param headers Optional headers to include in the request
+     * @return LiveTvInfo
+     * @throws ApiException if fails to make API call
+     */
+    public LiveTvInfo getLiveTvInfo(Map<String, String> headers) throws ApiException {
+        ApiResponse<LiveTvInfo> localVarResponse = getLiveTvInfoWithHttpInfo(headers);
         return localVarResponse.getData();
     }
 
@@ -1963,7 +2714,18 @@ public class LiveTvApi {
      * @throws ApiException if fails to make API call
      */
     public ApiResponse<LiveTvInfo> getLiveTvInfoWithHttpInfo() throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getLiveTvInfoRequestBuilder();
+        return getLiveTvInfoWithHttpInfo(null);
+    }
+
+    /**
+     * Gets available live tv services.
+     * 
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;LiveTvInfo&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<LiveTvInfo> getLiveTvInfoWithHttpInfo(Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = getLiveTvInfoRequestBuilder(headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -1980,12 +2742,14 @@ public class LiveTvApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                LiveTvInfo responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<LiveTvInfo>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<LiveTvInfo>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<LiveTvInfo>() {
-                                }));
+                        responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -1996,7 +2760,7 @@ public class LiveTvApi {
         }
     }
 
-    private HttpRequest.Builder getLiveTvInfoRequestBuilder() throws ApiException {
+    private HttpRequest.Builder getLiveTvInfoRequestBuilder(Map<String, String> headers) throws ApiException {
 
         HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
 
@@ -2011,6 +2775,8 @@ public class LiveTvApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -2074,10 +2840,76 @@ public class LiveTvApi {
             @org.eclipse.jdt.annotation.NonNull UUID librarySeriesId,
             @org.eclipse.jdt.annotation.NonNull List<ItemFields> fields,
             @org.eclipse.jdt.annotation.NonNull Boolean enableTotalRecordCount) throws ApiException {
+        return getLiveTvPrograms(channelIds, userId, minStartDate, hasAired, isAiring, maxStartDate, minEndDate,
+                maxEndDate, isMovie, isSeries, isNews, isKids, isSports, startIndex, limit, sortBy, sortOrder, genres,
+                genreIds, enableImages, imageTypeLimit, enableImageTypes, enableUserData, seriesTimerId,
+                librarySeriesId, fields, enableTotalRecordCount, null);
+    }
+
+    /**
+     * Gets available live tv epgs.
+     * 
+     * @param channelIds The channels to return guide information for. (optional)
+     * @param userId Optional. Filter by user id. (optional)
+     * @param minStartDate Optional. The minimum premiere start date. (optional)
+     * @param hasAired Optional. Filter by programs that have completed airing, or not. (optional)
+     * @param isAiring Optional. Filter by programs that are currently airing, or not. (optional)
+     * @param maxStartDate Optional. The maximum premiere start date. (optional)
+     * @param minEndDate Optional. The minimum premiere end date. (optional)
+     * @param maxEndDate Optional. The maximum premiere end date. (optional)
+     * @param isMovie Optional. Filter for movies. (optional)
+     * @param isSeries Optional. Filter for series. (optional)
+     * @param isNews Optional. Filter for news. (optional)
+     * @param isKids Optional. Filter for kids. (optional)
+     * @param isSports Optional. Filter for sports. (optional)
+     * @param startIndex Optional. The record index to start at. All items with a lower index will be dropped from the
+     *            results. (optional)
+     * @param limit Optional. The maximum number of records to return. (optional)
+     * @param sortBy Optional. Specify one or more sort orders, comma delimited. Options: Name, StartDate. (optional)
+     * @param sortOrder Sort Order - Ascending,Descending. (optional)
+     * @param genres The genres to return guide information for. (optional)
+     * @param genreIds The genre ids to return guide information for. (optional)
+     * @param enableImages Optional. Include image information in output. (optional)
+     * @param imageTypeLimit Optional. The max number of images to return, per image type. (optional)
+     * @param enableImageTypes Optional. The image types to include in the output. (optional)
+     * @param enableUserData Optional. Include user data. (optional)
+     * @param seriesTimerId Optional. Filter by series timer id. (optional)
+     * @param librarySeriesId Optional. Filter by library series id. (optional)
+     * @param fields Optional. Specify additional fields of information to return in the output. (optional)
+     * @param enableTotalRecordCount Retrieve total record count. (optional, default to true)
+     * @param headers Optional headers to include in the request
+     * @return BaseItemDtoQueryResult
+     * @throws ApiException if fails to make API call
+     */
+    public BaseItemDtoQueryResult getLiveTvPrograms(@org.eclipse.jdt.annotation.NonNull List<UUID> channelIds,
+            @org.eclipse.jdt.annotation.NonNull UUID userId,
+            @org.eclipse.jdt.annotation.NonNull OffsetDateTime minStartDate,
+            @org.eclipse.jdt.annotation.NonNull Boolean hasAired, @org.eclipse.jdt.annotation.NonNull Boolean isAiring,
+            @org.eclipse.jdt.annotation.NonNull OffsetDateTime maxStartDate,
+            @org.eclipse.jdt.annotation.NonNull OffsetDateTime minEndDate,
+            @org.eclipse.jdt.annotation.NonNull OffsetDateTime maxEndDate,
+            @org.eclipse.jdt.annotation.NonNull Boolean isMovie, @org.eclipse.jdt.annotation.NonNull Boolean isSeries,
+            @org.eclipse.jdt.annotation.NonNull Boolean isNews, @org.eclipse.jdt.annotation.NonNull Boolean isKids,
+            @org.eclipse.jdt.annotation.NonNull Boolean isSports,
+            @org.eclipse.jdt.annotation.NonNull Integer startIndex, @org.eclipse.jdt.annotation.NonNull Integer limit,
+            @org.eclipse.jdt.annotation.NonNull List<ItemSortBy> sortBy,
+            @org.eclipse.jdt.annotation.NonNull List<SortOrder> sortOrder,
+            @org.eclipse.jdt.annotation.NonNull List<String> genres,
+            @org.eclipse.jdt.annotation.NonNull List<UUID> genreIds,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableImages,
+            @org.eclipse.jdt.annotation.NonNull Integer imageTypeLimit,
+            @org.eclipse.jdt.annotation.NonNull List<ImageType> enableImageTypes,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableUserData,
+            @org.eclipse.jdt.annotation.NonNull String seriesTimerId,
+            @org.eclipse.jdt.annotation.NonNull UUID librarySeriesId,
+            @org.eclipse.jdt.annotation.NonNull List<ItemFields> fields,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableTotalRecordCount, Map<String, String> headers)
+            throws ApiException {
         ApiResponse<BaseItemDtoQueryResult> localVarResponse = getLiveTvProgramsWithHttpInfo(channelIds, userId,
                 minStartDate, hasAired, isAiring, maxStartDate, minEndDate, maxEndDate, isMovie, isSeries, isNews,
                 isKids, isSports, startIndex, limit, sortBy, sortOrder, genres, genreIds, enableImages, imageTypeLimit,
-                enableImageTypes, enableUserData, seriesTimerId, librarySeriesId, fields, enableTotalRecordCount);
+                enableImageTypes, enableUserData, seriesTimerId, librarySeriesId, fields, enableTotalRecordCount,
+                headers);
         return localVarResponse.getData();
     }
 
@@ -2138,10 +2970,75 @@ public class LiveTvApi {
             @org.eclipse.jdt.annotation.NonNull UUID librarySeriesId,
             @org.eclipse.jdt.annotation.NonNull List<ItemFields> fields,
             @org.eclipse.jdt.annotation.NonNull Boolean enableTotalRecordCount) throws ApiException {
+        return getLiveTvProgramsWithHttpInfo(channelIds, userId, minStartDate, hasAired, isAiring, maxStartDate,
+                minEndDate, maxEndDate, isMovie, isSeries, isNews, isKids, isSports, startIndex, limit, sortBy,
+                sortOrder, genres, genreIds, enableImages, imageTypeLimit, enableImageTypes, enableUserData,
+                seriesTimerId, librarySeriesId, fields, enableTotalRecordCount, null);
+    }
+
+    /**
+     * Gets available live tv epgs.
+     * 
+     * @param channelIds The channels to return guide information for. (optional)
+     * @param userId Optional. Filter by user id. (optional)
+     * @param minStartDate Optional. The minimum premiere start date. (optional)
+     * @param hasAired Optional. Filter by programs that have completed airing, or not. (optional)
+     * @param isAiring Optional. Filter by programs that are currently airing, or not. (optional)
+     * @param maxStartDate Optional. The maximum premiere start date. (optional)
+     * @param minEndDate Optional. The minimum premiere end date. (optional)
+     * @param maxEndDate Optional. The maximum premiere end date. (optional)
+     * @param isMovie Optional. Filter for movies. (optional)
+     * @param isSeries Optional. Filter for series. (optional)
+     * @param isNews Optional. Filter for news. (optional)
+     * @param isKids Optional. Filter for kids. (optional)
+     * @param isSports Optional. Filter for sports. (optional)
+     * @param startIndex Optional. The record index to start at. All items with a lower index will be dropped from the
+     *            results. (optional)
+     * @param limit Optional. The maximum number of records to return. (optional)
+     * @param sortBy Optional. Specify one or more sort orders, comma delimited. Options: Name, StartDate. (optional)
+     * @param sortOrder Sort Order - Ascending,Descending. (optional)
+     * @param genres The genres to return guide information for. (optional)
+     * @param genreIds The genre ids to return guide information for. (optional)
+     * @param enableImages Optional. Include image information in output. (optional)
+     * @param imageTypeLimit Optional. The max number of images to return, per image type. (optional)
+     * @param enableImageTypes Optional. The image types to include in the output. (optional)
+     * @param enableUserData Optional. Include user data. (optional)
+     * @param seriesTimerId Optional. Filter by series timer id. (optional)
+     * @param librarySeriesId Optional. Filter by library series id. (optional)
+     * @param fields Optional. Specify additional fields of information to return in the output. (optional)
+     * @param enableTotalRecordCount Retrieve total record count. (optional, default to true)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;BaseItemDtoQueryResult&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<BaseItemDtoQueryResult> getLiveTvProgramsWithHttpInfo(
+            @org.eclipse.jdt.annotation.NonNull List<UUID> channelIds, @org.eclipse.jdt.annotation.NonNull UUID userId,
+            @org.eclipse.jdt.annotation.NonNull OffsetDateTime minStartDate,
+            @org.eclipse.jdt.annotation.NonNull Boolean hasAired, @org.eclipse.jdt.annotation.NonNull Boolean isAiring,
+            @org.eclipse.jdt.annotation.NonNull OffsetDateTime maxStartDate,
+            @org.eclipse.jdt.annotation.NonNull OffsetDateTime minEndDate,
+            @org.eclipse.jdt.annotation.NonNull OffsetDateTime maxEndDate,
+            @org.eclipse.jdt.annotation.NonNull Boolean isMovie, @org.eclipse.jdt.annotation.NonNull Boolean isSeries,
+            @org.eclipse.jdt.annotation.NonNull Boolean isNews, @org.eclipse.jdt.annotation.NonNull Boolean isKids,
+            @org.eclipse.jdt.annotation.NonNull Boolean isSports,
+            @org.eclipse.jdt.annotation.NonNull Integer startIndex, @org.eclipse.jdt.annotation.NonNull Integer limit,
+            @org.eclipse.jdt.annotation.NonNull List<ItemSortBy> sortBy,
+            @org.eclipse.jdt.annotation.NonNull List<SortOrder> sortOrder,
+            @org.eclipse.jdt.annotation.NonNull List<String> genres,
+            @org.eclipse.jdt.annotation.NonNull List<UUID> genreIds,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableImages,
+            @org.eclipse.jdt.annotation.NonNull Integer imageTypeLimit,
+            @org.eclipse.jdt.annotation.NonNull List<ImageType> enableImageTypes,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableUserData,
+            @org.eclipse.jdt.annotation.NonNull String seriesTimerId,
+            @org.eclipse.jdt.annotation.NonNull UUID librarySeriesId,
+            @org.eclipse.jdt.annotation.NonNull List<ItemFields> fields,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableTotalRecordCount, Map<String, String> headers)
+            throws ApiException {
         HttpRequest.Builder localVarRequestBuilder = getLiveTvProgramsRequestBuilder(channelIds, userId, minStartDate,
                 hasAired, isAiring, maxStartDate, minEndDate, maxEndDate, isMovie, isSeries, isNews, isKids, isSports,
                 startIndex, limit, sortBy, sortOrder, genres, genreIds, enableImages, imageTypeLimit, enableImageTypes,
-                enableUserData, seriesTimerId, librarySeriesId, fields, enableTotalRecordCount);
+                enableUserData, seriesTimerId, librarySeriesId, fields, enableTotalRecordCount, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -2158,14 +3055,14 @@ public class LiveTvApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                BaseItemDtoQueryResult responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<BaseItemDtoQueryResult>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<BaseItemDtoQueryResult>(localVarResponse.statusCode(),
-                        localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody,
-                                        new TypeReference<BaseItemDtoQueryResult>() {
-                                        }));
+                        localVarResponse.headers().map(), responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -2198,7 +3095,8 @@ public class LiveTvApi {
             @org.eclipse.jdt.annotation.NonNull String seriesTimerId,
             @org.eclipse.jdt.annotation.NonNull UUID librarySeriesId,
             @org.eclipse.jdt.annotation.NonNull List<ItemFields> fields,
-            @org.eclipse.jdt.annotation.NonNull Boolean enableTotalRecordCount) throws ApiException {
+            @org.eclipse.jdt.annotation.NonNull Boolean enableTotalRecordCount, Map<String, String> headers)
+            throws ApiException {
 
         HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
 
@@ -2280,6 +3178,8 @@ public class LiveTvApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -2296,7 +3196,21 @@ public class LiveTvApi {
      */
     public BaseItemDto getProgram(@org.eclipse.jdt.annotation.Nullable String programId,
             @org.eclipse.jdt.annotation.NonNull UUID userId) throws ApiException {
-        ApiResponse<BaseItemDto> localVarResponse = getProgramWithHttpInfo(programId, userId);
+        return getProgram(programId, userId, null);
+    }
+
+    /**
+     * Gets a live tv program.
+     * 
+     * @param programId Program id. (required)
+     * @param userId Optional. Attach user data. (optional)
+     * @param headers Optional headers to include in the request
+     * @return BaseItemDto
+     * @throws ApiException if fails to make API call
+     */
+    public BaseItemDto getProgram(@org.eclipse.jdt.annotation.Nullable String programId,
+            @org.eclipse.jdt.annotation.NonNull UUID userId, Map<String, String> headers) throws ApiException {
+        ApiResponse<BaseItemDto> localVarResponse = getProgramWithHttpInfo(programId, userId, headers);
         return localVarResponse.getData();
     }
 
@@ -2310,7 +3224,21 @@ public class LiveTvApi {
      */
     public ApiResponse<BaseItemDto> getProgramWithHttpInfo(@org.eclipse.jdt.annotation.Nullable String programId,
             @org.eclipse.jdt.annotation.NonNull UUID userId) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getProgramRequestBuilder(programId, userId);
+        return getProgramWithHttpInfo(programId, userId, null);
+    }
+
+    /**
+     * Gets a live tv program.
+     * 
+     * @param programId Program id. (required)
+     * @param userId Optional. Attach user data. (optional)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;BaseItemDto&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<BaseItemDto> getProgramWithHttpInfo(@org.eclipse.jdt.annotation.Nullable String programId,
+            @org.eclipse.jdt.annotation.NonNull UUID userId, Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = getProgramRequestBuilder(programId, userId, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -2327,12 +3255,14 @@ public class LiveTvApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                BaseItemDto responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<BaseItemDto>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<BaseItemDto>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<BaseItemDto>() {
-                                }));
+                        responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -2344,7 +3274,7 @@ public class LiveTvApi {
     }
 
     private HttpRequest.Builder getProgramRequestBuilder(@org.eclipse.jdt.annotation.Nullable String programId,
-            @org.eclipse.jdt.annotation.NonNull UUID userId) throws ApiException {
+            @org.eclipse.jdt.annotation.NonNull UUID userId, Map<String, String> headers) throws ApiException {
         // verify the required parameter 'programId' is set
         if (programId == null) {
             throw new ApiException(400, "Missing the required parameter 'programId' when calling getProgram");
@@ -2379,6 +3309,8 @@ public class LiveTvApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -2394,7 +3326,20 @@ public class LiveTvApi {
      */
     public BaseItemDtoQueryResult getPrograms(@org.eclipse.jdt.annotation.NonNull GetProgramsDto getProgramsDto)
             throws ApiException {
-        ApiResponse<BaseItemDtoQueryResult> localVarResponse = getProgramsWithHttpInfo(getProgramsDto);
+        return getPrograms(getProgramsDto, null);
+    }
+
+    /**
+     * Gets available live tv epgs.
+     * 
+     * @param getProgramsDto Request body. (optional)
+     * @param headers Optional headers to include in the request
+     * @return BaseItemDtoQueryResult
+     * @throws ApiException if fails to make API call
+     */
+    public BaseItemDtoQueryResult getPrograms(@org.eclipse.jdt.annotation.NonNull GetProgramsDto getProgramsDto,
+            Map<String, String> headers) throws ApiException {
+        ApiResponse<BaseItemDtoQueryResult> localVarResponse = getProgramsWithHttpInfo(getProgramsDto, headers);
         return localVarResponse.getData();
     }
 
@@ -2407,7 +3352,21 @@ public class LiveTvApi {
      */
     public ApiResponse<BaseItemDtoQueryResult> getProgramsWithHttpInfo(
             @org.eclipse.jdt.annotation.NonNull GetProgramsDto getProgramsDto) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getProgramsRequestBuilder(getProgramsDto);
+        return getProgramsWithHttpInfo(getProgramsDto, null);
+    }
+
+    /**
+     * Gets available live tv epgs.
+     * 
+     * @param getProgramsDto Request body. (optional)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;BaseItemDtoQueryResult&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<BaseItemDtoQueryResult> getProgramsWithHttpInfo(
+            @org.eclipse.jdt.annotation.NonNull GetProgramsDto getProgramsDto, Map<String, String> headers)
+            throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = getProgramsRequestBuilder(getProgramsDto, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -2424,14 +3383,14 @@ public class LiveTvApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                BaseItemDtoQueryResult responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<BaseItemDtoQueryResult>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<BaseItemDtoQueryResult>(localVarResponse.statusCode(),
-                        localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody,
-                                        new TypeReference<BaseItemDtoQueryResult>() {
-                                        }));
+                        localVarResponse.headers().map(), responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -2443,7 +3402,8 @@ public class LiveTvApi {
     }
 
     private HttpRequest.Builder getProgramsRequestBuilder(
-            @org.eclipse.jdt.annotation.NonNull GetProgramsDto getProgramsDto) throws ApiException {
+            @org.eclipse.jdt.annotation.NonNull GetProgramsDto getProgramsDto, Map<String, String> headers)
+            throws ApiException {
 
         HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
 
@@ -2464,6 +3424,8 @@ public class LiveTvApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -2504,9 +3466,50 @@ public class LiveTvApi {
             @org.eclipse.jdt.annotation.NonNull List<ItemFields> fields,
             @org.eclipse.jdt.annotation.NonNull Boolean enableUserData,
             @org.eclipse.jdt.annotation.NonNull Boolean enableTotalRecordCount) throws ApiException {
+        return getRecommendedPrograms(userId, limit, isAiring, hasAired, isSeries, isMovie, isNews, isKids, isSports,
+                enableImages, imageTypeLimit, enableImageTypes, genreIds, fields, enableUserData,
+                enableTotalRecordCount, null);
+    }
+
+    /**
+     * Gets recommended live tv epgs.
+     * 
+     * @param userId Optional. filter by user id. (optional)
+     * @param limit Optional. The maximum number of records to return. (optional)
+     * @param isAiring Optional. Filter by programs that are currently airing, or not. (optional)
+     * @param hasAired Optional. Filter by programs that have completed airing, or not. (optional)
+     * @param isSeries Optional. Filter for series. (optional)
+     * @param isMovie Optional. Filter for movies. (optional)
+     * @param isNews Optional. Filter for news. (optional)
+     * @param isKids Optional. Filter for kids. (optional)
+     * @param isSports Optional. Filter for sports. (optional)
+     * @param enableImages Optional. Include image information in output. (optional)
+     * @param imageTypeLimit Optional. The max number of images to return, per image type. (optional)
+     * @param enableImageTypes Optional. The image types to include in the output. (optional)
+     * @param genreIds The genres to return guide information for. (optional)
+     * @param fields Optional. Specify additional fields of information to return in the output. (optional)
+     * @param enableUserData Optional. include user data. (optional)
+     * @param enableTotalRecordCount Retrieve total record count. (optional, default to true)
+     * @param headers Optional headers to include in the request
+     * @return BaseItemDtoQueryResult
+     * @throws ApiException if fails to make API call
+     */
+    public BaseItemDtoQueryResult getRecommendedPrograms(@org.eclipse.jdt.annotation.NonNull UUID userId,
+            @org.eclipse.jdt.annotation.NonNull Integer limit, @org.eclipse.jdt.annotation.NonNull Boolean isAiring,
+            @org.eclipse.jdt.annotation.NonNull Boolean hasAired, @org.eclipse.jdt.annotation.NonNull Boolean isSeries,
+            @org.eclipse.jdt.annotation.NonNull Boolean isMovie, @org.eclipse.jdt.annotation.NonNull Boolean isNews,
+            @org.eclipse.jdt.annotation.NonNull Boolean isKids, @org.eclipse.jdt.annotation.NonNull Boolean isSports,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableImages,
+            @org.eclipse.jdt.annotation.NonNull Integer imageTypeLimit,
+            @org.eclipse.jdt.annotation.NonNull List<ImageType> enableImageTypes,
+            @org.eclipse.jdt.annotation.NonNull List<UUID> genreIds,
+            @org.eclipse.jdt.annotation.NonNull List<ItemFields> fields,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableUserData,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableTotalRecordCount, Map<String, String> headers)
+            throws ApiException {
         ApiResponse<BaseItemDtoQueryResult> localVarResponse = getRecommendedProgramsWithHttpInfo(userId, limit,
                 isAiring, hasAired, isSeries, isMovie, isNews, isKids, isSports, enableImages, imageTypeLimit,
-                enableImageTypes, genreIds, fields, enableUserData, enableTotalRecordCount);
+                enableImageTypes, genreIds, fields, enableUserData, enableTotalRecordCount, headers);
         return localVarResponse.getData();
     }
 
@@ -2545,9 +3548,51 @@ public class LiveTvApi {
             @org.eclipse.jdt.annotation.NonNull List<ItemFields> fields,
             @org.eclipse.jdt.annotation.NonNull Boolean enableUserData,
             @org.eclipse.jdt.annotation.NonNull Boolean enableTotalRecordCount) throws ApiException {
+        return getRecommendedProgramsWithHttpInfo(userId, limit, isAiring, hasAired, isSeries, isMovie, isNews, isKids,
+                isSports, enableImages, imageTypeLimit, enableImageTypes, genreIds, fields, enableUserData,
+                enableTotalRecordCount, null);
+    }
+
+    /**
+     * Gets recommended live tv epgs.
+     * 
+     * @param userId Optional. filter by user id. (optional)
+     * @param limit Optional. The maximum number of records to return. (optional)
+     * @param isAiring Optional. Filter by programs that are currently airing, or not. (optional)
+     * @param hasAired Optional. Filter by programs that have completed airing, or not. (optional)
+     * @param isSeries Optional. Filter for series. (optional)
+     * @param isMovie Optional. Filter for movies. (optional)
+     * @param isNews Optional. Filter for news. (optional)
+     * @param isKids Optional. Filter for kids. (optional)
+     * @param isSports Optional. Filter for sports. (optional)
+     * @param enableImages Optional. Include image information in output. (optional)
+     * @param imageTypeLimit Optional. The max number of images to return, per image type. (optional)
+     * @param enableImageTypes Optional. The image types to include in the output. (optional)
+     * @param genreIds The genres to return guide information for. (optional)
+     * @param fields Optional. Specify additional fields of information to return in the output. (optional)
+     * @param enableUserData Optional. include user data. (optional)
+     * @param enableTotalRecordCount Retrieve total record count. (optional, default to true)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;BaseItemDtoQueryResult&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<BaseItemDtoQueryResult> getRecommendedProgramsWithHttpInfo(
+            @org.eclipse.jdt.annotation.NonNull UUID userId, @org.eclipse.jdt.annotation.NonNull Integer limit,
+            @org.eclipse.jdt.annotation.NonNull Boolean isAiring, @org.eclipse.jdt.annotation.NonNull Boolean hasAired,
+            @org.eclipse.jdt.annotation.NonNull Boolean isSeries, @org.eclipse.jdt.annotation.NonNull Boolean isMovie,
+            @org.eclipse.jdt.annotation.NonNull Boolean isNews, @org.eclipse.jdt.annotation.NonNull Boolean isKids,
+            @org.eclipse.jdt.annotation.NonNull Boolean isSports,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableImages,
+            @org.eclipse.jdt.annotation.NonNull Integer imageTypeLimit,
+            @org.eclipse.jdt.annotation.NonNull List<ImageType> enableImageTypes,
+            @org.eclipse.jdt.annotation.NonNull List<UUID> genreIds,
+            @org.eclipse.jdt.annotation.NonNull List<ItemFields> fields,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableUserData,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableTotalRecordCount, Map<String, String> headers)
+            throws ApiException {
         HttpRequest.Builder localVarRequestBuilder = getRecommendedProgramsRequestBuilder(userId, limit, isAiring,
                 hasAired, isSeries, isMovie, isNews, isKids, isSports, enableImages, imageTypeLimit, enableImageTypes,
-                genreIds, fields, enableUserData, enableTotalRecordCount);
+                genreIds, fields, enableUserData, enableTotalRecordCount, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -2564,14 +3609,14 @@ public class LiveTvApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                BaseItemDtoQueryResult responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<BaseItemDtoQueryResult>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<BaseItemDtoQueryResult>(localVarResponse.statusCode(),
-                        localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody,
-                                        new TypeReference<BaseItemDtoQueryResult>() {
-                                        }));
+                        localVarResponse.headers().map(), responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -2593,7 +3638,8 @@ public class LiveTvApi {
             @org.eclipse.jdt.annotation.NonNull List<UUID> genreIds,
             @org.eclipse.jdt.annotation.NonNull List<ItemFields> fields,
             @org.eclipse.jdt.annotation.NonNull Boolean enableUserData,
-            @org.eclipse.jdt.annotation.NonNull Boolean enableTotalRecordCount) throws ApiException {
+            @org.eclipse.jdt.annotation.NonNull Boolean enableTotalRecordCount, Map<String, String> headers)
+            throws ApiException {
 
         HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
 
@@ -2653,6 +3699,8 @@ public class LiveTvApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -2669,7 +3717,21 @@ public class LiveTvApi {
      */
     public BaseItemDto getRecording(@org.eclipse.jdt.annotation.Nullable UUID recordingId,
             @org.eclipse.jdt.annotation.NonNull UUID userId) throws ApiException {
-        ApiResponse<BaseItemDto> localVarResponse = getRecordingWithHttpInfo(recordingId, userId);
+        return getRecording(recordingId, userId, null);
+    }
+
+    /**
+     * Gets a live tv recording.
+     * 
+     * @param recordingId Recording id. (required)
+     * @param userId Optional. Attach user data. (optional)
+     * @param headers Optional headers to include in the request
+     * @return BaseItemDto
+     * @throws ApiException if fails to make API call
+     */
+    public BaseItemDto getRecording(@org.eclipse.jdt.annotation.Nullable UUID recordingId,
+            @org.eclipse.jdt.annotation.NonNull UUID userId, Map<String, String> headers) throws ApiException {
+        ApiResponse<BaseItemDto> localVarResponse = getRecordingWithHttpInfo(recordingId, userId, headers);
         return localVarResponse.getData();
     }
 
@@ -2683,7 +3745,21 @@ public class LiveTvApi {
      */
     public ApiResponse<BaseItemDto> getRecordingWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID recordingId,
             @org.eclipse.jdt.annotation.NonNull UUID userId) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getRecordingRequestBuilder(recordingId, userId);
+        return getRecordingWithHttpInfo(recordingId, userId, null);
+    }
+
+    /**
+     * Gets a live tv recording.
+     * 
+     * @param recordingId Recording id. (required)
+     * @param userId Optional. Attach user data. (optional)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;BaseItemDto&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<BaseItemDto> getRecordingWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID recordingId,
+            @org.eclipse.jdt.annotation.NonNull UUID userId, Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = getRecordingRequestBuilder(recordingId, userId, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -2700,12 +3776,14 @@ public class LiveTvApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                BaseItemDto responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<BaseItemDto>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<BaseItemDto>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<BaseItemDto>() {
-                                }));
+                        responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -2717,7 +3795,7 @@ public class LiveTvApi {
     }
 
     private HttpRequest.Builder getRecordingRequestBuilder(@org.eclipse.jdt.annotation.Nullable UUID recordingId,
-            @org.eclipse.jdt.annotation.NonNull UUID userId) throws ApiException {
+            @org.eclipse.jdt.annotation.NonNull UUID userId, Map<String, String> headers) throws ApiException {
         // verify the required parameter 'recordingId' is set
         if (recordingId == null) {
             throw new ApiException(400, "Missing the required parameter 'recordingId' when calling getRecording");
@@ -2752,6 +3830,8 @@ public class LiveTvApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -2767,7 +3847,20 @@ public class LiveTvApi {
      */
     public BaseItemDtoQueryResult getRecordingFolders(@org.eclipse.jdt.annotation.NonNull UUID userId)
             throws ApiException {
-        ApiResponse<BaseItemDtoQueryResult> localVarResponse = getRecordingFoldersWithHttpInfo(userId);
+        return getRecordingFolders(userId, null);
+    }
+
+    /**
+     * Gets recording folders.
+     * 
+     * @param userId Optional. Filter by user and attach user data. (optional)
+     * @param headers Optional headers to include in the request
+     * @return BaseItemDtoQueryResult
+     * @throws ApiException if fails to make API call
+     */
+    public BaseItemDtoQueryResult getRecordingFolders(@org.eclipse.jdt.annotation.NonNull UUID userId,
+            Map<String, String> headers) throws ApiException {
+        ApiResponse<BaseItemDtoQueryResult> localVarResponse = getRecordingFoldersWithHttpInfo(userId, headers);
         return localVarResponse.getData();
     }
 
@@ -2780,7 +3873,20 @@ public class LiveTvApi {
      */
     public ApiResponse<BaseItemDtoQueryResult> getRecordingFoldersWithHttpInfo(
             @org.eclipse.jdt.annotation.NonNull UUID userId) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getRecordingFoldersRequestBuilder(userId);
+        return getRecordingFoldersWithHttpInfo(userId, null);
+    }
+
+    /**
+     * Gets recording folders.
+     * 
+     * @param userId Optional. Filter by user and attach user data. (optional)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;BaseItemDtoQueryResult&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<BaseItemDtoQueryResult> getRecordingFoldersWithHttpInfo(
+            @org.eclipse.jdt.annotation.NonNull UUID userId, Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = getRecordingFoldersRequestBuilder(userId, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -2797,14 +3903,14 @@ public class LiveTvApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                BaseItemDtoQueryResult responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<BaseItemDtoQueryResult>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<BaseItemDtoQueryResult>(localVarResponse.statusCode(),
-                        localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody,
-                                        new TypeReference<BaseItemDtoQueryResult>() {
-                                        }));
+                        localVarResponse.headers().map(), responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -2815,8 +3921,8 @@ public class LiveTvApi {
         }
     }
 
-    private HttpRequest.Builder getRecordingFoldersRequestBuilder(@org.eclipse.jdt.annotation.NonNull UUID userId)
-            throws ApiException {
+    private HttpRequest.Builder getRecordingFoldersRequestBuilder(@org.eclipse.jdt.annotation.NonNull UUID userId,
+            Map<String, String> headers) throws ApiException {
 
         HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
 
@@ -2846,6 +3952,8 @@ public class LiveTvApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -2861,7 +3969,21 @@ public class LiveTvApi {
      */
     @Deprecated
     public void getRecordingGroup(@org.eclipse.jdt.annotation.Nullable UUID groupId) throws ApiException {
-        getRecordingGroupWithHttpInfo(groupId);
+        getRecordingGroup(groupId, null);
+    }
+
+    /**
+     * Get recording group.
+     * 
+     * @param groupId Group id. (required)
+     * @param headers Optional headers to include in the request
+     * @throws ApiException if fails to make API call
+     * @deprecated
+     */
+    @Deprecated
+    public void getRecordingGroup(@org.eclipse.jdt.annotation.Nullable UUID groupId, Map<String, String> headers)
+            throws ApiException {
+        getRecordingGroupWithHttpInfo(groupId, headers);
     }
 
     /**
@@ -2875,7 +3997,22 @@ public class LiveTvApi {
     @Deprecated
     public ApiResponse<Void> getRecordingGroupWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID groupId)
             throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getRecordingGroupRequestBuilder(groupId);
+        return getRecordingGroupWithHttpInfo(groupId, null);
+    }
+
+    /**
+     * Get recording group.
+     * 
+     * @param groupId Group id. (required)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException if fails to make API call
+     * @deprecated
+     */
+    @Deprecated
+    public ApiResponse<Void> getRecordingGroupWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID groupId,
+            Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = getRecordingGroupRequestBuilder(groupId, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -2902,8 +4039,8 @@ public class LiveTvApi {
         }
     }
 
-    private HttpRequest.Builder getRecordingGroupRequestBuilder(@org.eclipse.jdt.annotation.Nullable UUID groupId)
-            throws ApiException {
+    private HttpRequest.Builder getRecordingGroupRequestBuilder(@org.eclipse.jdt.annotation.Nullable UUID groupId,
+            Map<String, String> headers) throws ApiException {
         // verify the required parameter 'groupId' is set
         if (groupId == null) {
             throw new ApiException(400, "Missing the required parameter 'groupId' when calling getRecordingGroup");
@@ -2923,6 +4060,8 @@ public class LiveTvApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -2940,7 +4079,22 @@ public class LiveTvApi {
     @Deprecated
     public BaseItemDtoQueryResult getRecordingGroups(@org.eclipse.jdt.annotation.NonNull UUID userId)
             throws ApiException {
-        ApiResponse<BaseItemDtoQueryResult> localVarResponse = getRecordingGroupsWithHttpInfo(userId);
+        return getRecordingGroups(userId, null);
+    }
+
+    /**
+     * Gets live tv recording groups.
+     * 
+     * @param userId Optional. Filter by user and attach user data. (optional)
+     * @param headers Optional headers to include in the request
+     * @return BaseItemDtoQueryResult
+     * @throws ApiException if fails to make API call
+     * @deprecated
+     */
+    @Deprecated
+    public BaseItemDtoQueryResult getRecordingGroups(@org.eclipse.jdt.annotation.NonNull UUID userId,
+            Map<String, String> headers) throws ApiException {
+        ApiResponse<BaseItemDtoQueryResult> localVarResponse = getRecordingGroupsWithHttpInfo(userId, headers);
         return localVarResponse.getData();
     }
 
@@ -2955,7 +4109,22 @@ public class LiveTvApi {
     @Deprecated
     public ApiResponse<BaseItemDtoQueryResult> getRecordingGroupsWithHttpInfo(
             @org.eclipse.jdt.annotation.NonNull UUID userId) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getRecordingGroupsRequestBuilder(userId);
+        return getRecordingGroupsWithHttpInfo(userId, null);
+    }
+
+    /**
+     * Gets live tv recording groups.
+     * 
+     * @param userId Optional. Filter by user and attach user data. (optional)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;BaseItemDtoQueryResult&gt;
+     * @throws ApiException if fails to make API call
+     * @deprecated
+     */
+    @Deprecated
+    public ApiResponse<BaseItemDtoQueryResult> getRecordingGroupsWithHttpInfo(
+            @org.eclipse.jdt.annotation.NonNull UUID userId, Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = getRecordingGroupsRequestBuilder(userId, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -2972,14 +4141,14 @@ public class LiveTvApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                BaseItemDtoQueryResult responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<BaseItemDtoQueryResult>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<BaseItemDtoQueryResult>(localVarResponse.statusCode(),
-                        localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody,
-                                        new TypeReference<BaseItemDtoQueryResult>() {
-                                        }));
+                        localVarResponse.headers().map(), responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -2990,8 +4159,8 @@ public class LiveTvApi {
         }
     }
 
-    private HttpRequest.Builder getRecordingGroupsRequestBuilder(@org.eclipse.jdt.annotation.NonNull UUID userId)
-            throws ApiException {
+    private HttpRequest.Builder getRecordingGroupsRequestBuilder(@org.eclipse.jdt.annotation.NonNull UUID userId,
+            Map<String, String> headers) throws ApiException {
 
         HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
 
@@ -3021,6 +4190,8 @@ public class LiveTvApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -3069,9 +4240,59 @@ public class LiveTvApi {
             @org.eclipse.jdt.annotation.NonNull Boolean isNews,
             @org.eclipse.jdt.annotation.NonNull Boolean isLibraryItem,
             @org.eclipse.jdt.annotation.NonNull Boolean enableTotalRecordCount) throws ApiException {
+        return getRecordings(channelId, userId, startIndex, limit, status, isInProgress, seriesTimerId, enableImages,
+                imageTypeLimit, enableImageTypes, fields, enableUserData, isMovie, isSeries, isKids, isSports, isNews,
+                isLibraryItem, enableTotalRecordCount, null);
+    }
+
+    /**
+     * Gets live tv recordings.
+     * 
+     * @param channelId Optional. Filter by channel id. (optional)
+     * @param userId Optional. Filter by user and attach user data. (optional)
+     * @param startIndex Optional. The record index to start at. All items with a lower index will be dropped from the
+     *            results. (optional)
+     * @param limit Optional. The maximum number of records to return. (optional)
+     * @param status Optional. Filter by recording status. (optional)
+     * @param isInProgress Optional. Filter by recordings that are in progress, or not. (optional)
+     * @param seriesTimerId Optional. Filter by recordings belonging to a series timer. (optional)
+     * @param enableImages Optional. Include image information in output. (optional)
+     * @param imageTypeLimit Optional. The max number of images to return, per image type. (optional)
+     * @param enableImageTypes Optional. The image types to include in the output. (optional)
+     * @param fields Optional. Specify additional fields of information to return in the output. (optional)
+     * @param enableUserData Optional. Include user data. (optional)
+     * @param isMovie Optional. Filter for movies. (optional)
+     * @param isSeries Optional. Filter for series. (optional)
+     * @param isKids Optional. Filter for kids. (optional)
+     * @param isSports Optional. Filter for sports. (optional)
+     * @param isNews Optional. Filter for news. (optional)
+     * @param isLibraryItem Optional. Filter for is library item. (optional)
+     * @param enableTotalRecordCount Optional. Return total record count. (optional, default to true)
+     * @param headers Optional headers to include in the request
+     * @return BaseItemDtoQueryResult
+     * @throws ApiException if fails to make API call
+     */
+    public BaseItemDtoQueryResult getRecordings(@org.eclipse.jdt.annotation.NonNull String channelId,
+            @org.eclipse.jdt.annotation.NonNull UUID userId, @org.eclipse.jdt.annotation.NonNull Integer startIndex,
+            @org.eclipse.jdt.annotation.NonNull Integer limit,
+            @org.eclipse.jdt.annotation.NonNull RecordingStatus status,
+            @org.eclipse.jdt.annotation.NonNull Boolean isInProgress,
+            @org.eclipse.jdt.annotation.NonNull String seriesTimerId,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableImages,
+            @org.eclipse.jdt.annotation.NonNull Integer imageTypeLimit,
+            @org.eclipse.jdt.annotation.NonNull List<ImageType> enableImageTypes,
+            @org.eclipse.jdt.annotation.NonNull List<ItemFields> fields,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableUserData,
+            @org.eclipse.jdt.annotation.NonNull Boolean isMovie, @org.eclipse.jdt.annotation.NonNull Boolean isSeries,
+            @org.eclipse.jdt.annotation.NonNull Boolean isKids, @org.eclipse.jdt.annotation.NonNull Boolean isSports,
+            @org.eclipse.jdt.annotation.NonNull Boolean isNews,
+            @org.eclipse.jdt.annotation.NonNull Boolean isLibraryItem,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableTotalRecordCount, Map<String, String> headers)
+            throws ApiException {
         ApiResponse<BaseItemDtoQueryResult> localVarResponse = getRecordingsWithHttpInfo(channelId, userId, startIndex,
                 limit, status, isInProgress, seriesTimerId, enableImages, imageTypeLimit, enableImageTypes, fields,
-                enableUserData, isMovie, isSeries, isKids, isSports, isNews, isLibraryItem, enableTotalRecordCount);
+                enableUserData, isMovie, isSeries, isKids, isSports, isNews, isLibraryItem, enableTotalRecordCount,
+                headers);
         return localVarResponse.getData();
     }
 
@@ -3117,9 +4338,59 @@ public class LiveTvApi {
             @org.eclipse.jdt.annotation.NonNull Boolean isNews,
             @org.eclipse.jdt.annotation.NonNull Boolean isLibraryItem,
             @org.eclipse.jdt.annotation.NonNull Boolean enableTotalRecordCount) throws ApiException {
+        return getRecordingsWithHttpInfo(channelId, userId, startIndex, limit, status, isInProgress, seriesTimerId,
+                enableImages, imageTypeLimit, enableImageTypes, fields, enableUserData, isMovie, isSeries, isKids,
+                isSports, isNews, isLibraryItem, enableTotalRecordCount, null);
+    }
+
+    /**
+     * Gets live tv recordings.
+     * 
+     * @param channelId Optional. Filter by channel id. (optional)
+     * @param userId Optional. Filter by user and attach user data. (optional)
+     * @param startIndex Optional. The record index to start at. All items with a lower index will be dropped from the
+     *            results. (optional)
+     * @param limit Optional. The maximum number of records to return. (optional)
+     * @param status Optional. Filter by recording status. (optional)
+     * @param isInProgress Optional. Filter by recordings that are in progress, or not. (optional)
+     * @param seriesTimerId Optional. Filter by recordings belonging to a series timer. (optional)
+     * @param enableImages Optional. Include image information in output. (optional)
+     * @param imageTypeLimit Optional. The max number of images to return, per image type. (optional)
+     * @param enableImageTypes Optional. The image types to include in the output. (optional)
+     * @param fields Optional. Specify additional fields of information to return in the output. (optional)
+     * @param enableUserData Optional. Include user data. (optional)
+     * @param isMovie Optional. Filter for movies. (optional)
+     * @param isSeries Optional. Filter for series. (optional)
+     * @param isKids Optional. Filter for kids. (optional)
+     * @param isSports Optional. Filter for sports. (optional)
+     * @param isNews Optional. Filter for news. (optional)
+     * @param isLibraryItem Optional. Filter for is library item. (optional)
+     * @param enableTotalRecordCount Optional. Return total record count. (optional, default to true)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;BaseItemDtoQueryResult&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<BaseItemDtoQueryResult> getRecordingsWithHttpInfo(
+            @org.eclipse.jdt.annotation.NonNull String channelId, @org.eclipse.jdt.annotation.NonNull UUID userId,
+            @org.eclipse.jdt.annotation.NonNull Integer startIndex, @org.eclipse.jdt.annotation.NonNull Integer limit,
+            @org.eclipse.jdt.annotation.NonNull RecordingStatus status,
+            @org.eclipse.jdt.annotation.NonNull Boolean isInProgress,
+            @org.eclipse.jdt.annotation.NonNull String seriesTimerId,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableImages,
+            @org.eclipse.jdt.annotation.NonNull Integer imageTypeLimit,
+            @org.eclipse.jdt.annotation.NonNull List<ImageType> enableImageTypes,
+            @org.eclipse.jdt.annotation.NonNull List<ItemFields> fields,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableUserData,
+            @org.eclipse.jdt.annotation.NonNull Boolean isMovie, @org.eclipse.jdt.annotation.NonNull Boolean isSeries,
+            @org.eclipse.jdt.annotation.NonNull Boolean isKids, @org.eclipse.jdt.annotation.NonNull Boolean isSports,
+            @org.eclipse.jdt.annotation.NonNull Boolean isNews,
+            @org.eclipse.jdt.annotation.NonNull Boolean isLibraryItem,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableTotalRecordCount, Map<String, String> headers)
+            throws ApiException {
         HttpRequest.Builder localVarRequestBuilder = getRecordingsRequestBuilder(channelId, userId, startIndex, limit,
                 status, isInProgress, seriesTimerId, enableImages, imageTypeLimit, enableImageTypes, fields,
-                enableUserData, isMovie, isSeries, isKids, isSports, isNews, isLibraryItem, enableTotalRecordCount);
+                enableUserData, isMovie, isSeries, isKids, isSports, isNews, isLibraryItem, enableTotalRecordCount,
+                headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -3136,14 +4407,14 @@ public class LiveTvApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                BaseItemDtoQueryResult responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<BaseItemDtoQueryResult>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<BaseItemDtoQueryResult>(localVarResponse.statusCode(),
-                        localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody,
-                                        new TypeReference<BaseItemDtoQueryResult>() {
-                                        }));
+                        localVarResponse.headers().map(), responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -3169,7 +4440,8 @@ public class LiveTvApi {
             @org.eclipse.jdt.annotation.NonNull Boolean isKids, @org.eclipse.jdt.annotation.NonNull Boolean isSports,
             @org.eclipse.jdt.annotation.NonNull Boolean isNews,
             @org.eclipse.jdt.annotation.NonNull Boolean isLibraryItem,
-            @org.eclipse.jdt.annotation.NonNull Boolean enableTotalRecordCount) throws ApiException {
+            @org.eclipse.jdt.annotation.NonNull Boolean enableTotalRecordCount, Map<String, String> headers)
+            throws ApiException {
 
         HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
 
@@ -3235,6 +4507,8 @@ public class LiveTvApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -3276,9 +4550,50 @@ public class LiveTvApi {
             @org.eclipse.jdt.annotation.NonNull List<ItemFields> fields,
             @org.eclipse.jdt.annotation.NonNull Boolean enableUserData,
             @org.eclipse.jdt.annotation.NonNull Boolean enableTotalRecordCount) throws ApiException {
+        return getRecordingsSeries(channelId, userId, groupId, startIndex, limit, status, isInProgress, seriesTimerId,
+                enableImages, imageTypeLimit, enableImageTypes, fields, enableUserData, enableTotalRecordCount, null);
+    }
+
+    /**
+     * Gets live tv recording series.
+     * 
+     * @param channelId Optional. Filter by channel id. (optional)
+     * @param userId Optional. Filter by user and attach user data. (optional)
+     * @param groupId Optional. Filter by recording group. (optional)
+     * @param startIndex Optional. The record index to start at. All items with a lower index will be dropped from the
+     *            results. (optional)
+     * @param limit Optional. The maximum number of records to return. (optional)
+     * @param status Optional. Filter by recording status. (optional)
+     * @param isInProgress Optional. Filter by recordings that are in progress, or not. (optional)
+     * @param seriesTimerId Optional. Filter by recordings belonging to a series timer. (optional)
+     * @param enableImages Optional. Include image information in output. (optional)
+     * @param imageTypeLimit Optional. The max number of images to return, per image type. (optional)
+     * @param enableImageTypes Optional. The image types to include in the output. (optional)
+     * @param fields Optional. Specify additional fields of information to return in the output. (optional)
+     * @param enableUserData Optional. Include user data. (optional)
+     * @param enableTotalRecordCount Optional. Return total record count. (optional, default to true)
+     * @param headers Optional headers to include in the request
+     * @return BaseItemDtoQueryResult
+     * @throws ApiException if fails to make API call
+     * @deprecated
+     */
+    @Deprecated
+    public BaseItemDtoQueryResult getRecordingsSeries(@org.eclipse.jdt.annotation.NonNull String channelId,
+            @org.eclipse.jdt.annotation.NonNull UUID userId, @org.eclipse.jdt.annotation.NonNull String groupId,
+            @org.eclipse.jdt.annotation.NonNull Integer startIndex, @org.eclipse.jdt.annotation.NonNull Integer limit,
+            @org.eclipse.jdt.annotation.NonNull RecordingStatus status,
+            @org.eclipse.jdt.annotation.NonNull Boolean isInProgress,
+            @org.eclipse.jdt.annotation.NonNull String seriesTimerId,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableImages,
+            @org.eclipse.jdt.annotation.NonNull Integer imageTypeLimit,
+            @org.eclipse.jdt.annotation.NonNull List<ImageType> enableImageTypes,
+            @org.eclipse.jdt.annotation.NonNull List<ItemFields> fields,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableUserData,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableTotalRecordCount, Map<String, String> headers)
+            throws ApiException {
         ApiResponse<BaseItemDtoQueryResult> localVarResponse = getRecordingsSeriesWithHttpInfo(channelId, userId,
                 groupId, startIndex, limit, status, isInProgress, seriesTimerId, enableImages, imageTypeLimit,
-                enableImageTypes, fields, enableUserData, enableTotalRecordCount);
+                enableImageTypes, fields, enableUserData, enableTotalRecordCount, headers);
         return localVarResponse.getData();
     }
 
@@ -3318,9 +4633,52 @@ public class LiveTvApi {
             @org.eclipse.jdt.annotation.NonNull List<ItemFields> fields,
             @org.eclipse.jdt.annotation.NonNull Boolean enableUserData,
             @org.eclipse.jdt.annotation.NonNull Boolean enableTotalRecordCount) throws ApiException {
+        return getRecordingsSeriesWithHttpInfo(channelId, userId, groupId, startIndex, limit, status, isInProgress,
+                seriesTimerId, enableImages, imageTypeLimit, enableImageTypes, fields, enableUserData,
+                enableTotalRecordCount, null);
+    }
+
+    /**
+     * Gets live tv recording series.
+     * 
+     * @param channelId Optional. Filter by channel id. (optional)
+     * @param userId Optional. Filter by user and attach user data. (optional)
+     * @param groupId Optional. Filter by recording group. (optional)
+     * @param startIndex Optional. The record index to start at. All items with a lower index will be dropped from the
+     *            results. (optional)
+     * @param limit Optional. The maximum number of records to return. (optional)
+     * @param status Optional. Filter by recording status. (optional)
+     * @param isInProgress Optional. Filter by recordings that are in progress, or not. (optional)
+     * @param seriesTimerId Optional. Filter by recordings belonging to a series timer. (optional)
+     * @param enableImages Optional. Include image information in output. (optional)
+     * @param imageTypeLimit Optional. The max number of images to return, per image type. (optional)
+     * @param enableImageTypes Optional. The image types to include in the output. (optional)
+     * @param fields Optional. Specify additional fields of information to return in the output. (optional)
+     * @param enableUserData Optional. Include user data. (optional)
+     * @param enableTotalRecordCount Optional. Return total record count. (optional, default to true)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;BaseItemDtoQueryResult&gt;
+     * @throws ApiException if fails to make API call
+     * @deprecated
+     */
+    @Deprecated
+    public ApiResponse<BaseItemDtoQueryResult> getRecordingsSeriesWithHttpInfo(
+            @org.eclipse.jdt.annotation.NonNull String channelId, @org.eclipse.jdt.annotation.NonNull UUID userId,
+            @org.eclipse.jdt.annotation.NonNull String groupId, @org.eclipse.jdt.annotation.NonNull Integer startIndex,
+            @org.eclipse.jdt.annotation.NonNull Integer limit,
+            @org.eclipse.jdt.annotation.NonNull RecordingStatus status,
+            @org.eclipse.jdt.annotation.NonNull Boolean isInProgress,
+            @org.eclipse.jdt.annotation.NonNull String seriesTimerId,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableImages,
+            @org.eclipse.jdt.annotation.NonNull Integer imageTypeLimit,
+            @org.eclipse.jdt.annotation.NonNull List<ImageType> enableImageTypes,
+            @org.eclipse.jdt.annotation.NonNull List<ItemFields> fields,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableUserData,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableTotalRecordCount, Map<String, String> headers)
+            throws ApiException {
         HttpRequest.Builder localVarRequestBuilder = getRecordingsSeriesRequestBuilder(channelId, userId, groupId,
                 startIndex, limit, status, isInProgress, seriesTimerId, enableImages, imageTypeLimit, enableImageTypes,
-                fields, enableUserData, enableTotalRecordCount);
+                fields, enableUserData, enableTotalRecordCount, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -3337,14 +4695,14 @@ public class LiveTvApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                BaseItemDtoQueryResult responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<BaseItemDtoQueryResult>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<BaseItemDtoQueryResult>(localVarResponse.statusCode(),
-                        localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody,
-                                        new TypeReference<BaseItemDtoQueryResult>() {
-                                        }));
+                        localVarResponse.headers().map(), responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -3366,7 +4724,8 @@ public class LiveTvApi {
             @org.eclipse.jdt.annotation.NonNull List<ImageType> enableImageTypes,
             @org.eclipse.jdt.annotation.NonNull List<ItemFields> fields,
             @org.eclipse.jdt.annotation.NonNull Boolean enableUserData,
-            @org.eclipse.jdt.annotation.NonNull Boolean enableTotalRecordCount) throws ApiException {
+            @org.eclipse.jdt.annotation.NonNull Boolean enableTotalRecordCount, Map<String, String> headers)
+            throws ApiException {
 
         HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
 
@@ -3422,6 +4781,8 @@ public class LiveTvApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -3435,7 +4796,18 @@ public class LiveTvApi {
      * @throws ApiException if fails to make API call
      */
     public File getSchedulesDirectCountries() throws ApiException {
-        ApiResponse<File> localVarResponse = getSchedulesDirectCountriesWithHttpInfo();
+        return getSchedulesDirectCountries(null);
+    }
+
+    /**
+     * Gets available countries.
+     * 
+     * @param headers Optional headers to include in the request
+     * @return File
+     * @throws ApiException if fails to make API call
+     */
+    public File getSchedulesDirectCountries(Map<String, String> headers) throws ApiException {
+        ApiResponse<File> localVarResponse = getSchedulesDirectCountriesWithHttpInfo(headers);
         return localVarResponse.getData();
     }
 
@@ -3446,7 +4818,18 @@ public class LiveTvApi {
      * @throws ApiException if fails to make API call
      */
     public ApiResponse<File> getSchedulesDirectCountriesWithHttpInfo() throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getSchedulesDirectCountriesRequestBuilder();
+        return getSchedulesDirectCountriesWithHttpInfo(null);
+    }
+
+    /**
+     * Gets available countries.
+     * 
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;File&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<File> getSchedulesDirectCountriesWithHttpInfo(Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = getSchedulesDirectCountriesRequestBuilder(headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -3461,13 +4844,13 @@ public class LiveTvApi {
                     return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
                 }
 
-                String responseBody = new String(localVarResponse.body().readAllBytes());
+                // Handle file downloading.
+                File responseValue = downloadFileFromResponse(localVarResponse);
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {
-                                }));
+                        responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -3478,7 +4861,8 @@ public class LiveTvApi {
         }
     }
 
-    private HttpRequest.Builder getSchedulesDirectCountriesRequestBuilder() throws ApiException {
+    private HttpRequest.Builder getSchedulesDirectCountriesRequestBuilder(Map<String, String> headers)
+            throws ApiException {
 
         HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
 
@@ -3492,6 +4876,8 @@ public class LiveTvApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -3506,7 +4892,20 @@ public class LiveTvApi {
      * @throws ApiException if fails to make API call
      */
     public SeriesTimerInfoDto getSeriesTimer(@org.eclipse.jdt.annotation.Nullable String timerId) throws ApiException {
-        ApiResponse<SeriesTimerInfoDto> localVarResponse = getSeriesTimerWithHttpInfo(timerId);
+        return getSeriesTimer(timerId, null);
+    }
+
+    /**
+     * Gets a live tv series timer.
+     * 
+     * @param timerId Timer id. (required)
+     * @param headers Optional headers to include in the request
+     * @return SeriesTimerInfoDto
+     * @throws ApiException if fails to make API call
+     */
+    public SeriesTimerInfoDto getSeriesTimer(@org.eclipse.jdt.annotation.Nullable String timerId,
+            Map<String, String> headers) throws ApiException {
+        ApiResponse<SeriesTimerInfoDto> localVarResponse = getSeriesTimerWithHttpInfo(timerId, headers);
         return localVarResponse.getData();
     }
 
@@ -3519,7 +4918,20 @@ public class LiveTvApi {
      */
     public ApiResponse<SeriesTimerInfoDto> getSeriesTimerWithHttpInfo(
             @org.eclipse.jdt.annotation.Nullable String timerId) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getSeriesTimerRequestBuilder(timerId);
+        return getSeriesTimerWithHttpInfo(timerId, null);
+    }
+
+    /**
+     * Gets a live tv series timer.
+     * 
+     * @param timerId Timer id. (required)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;SeriesTimerInfoDto&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<SeriesTimerInfoDto> getSeriesTimerWithHttpInfo(
+            @org.eclipse.jdt.annotation.Nullable String timerId, Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = getSeriesTimerRequestBuilder(timerId, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -3536,14 +4948,14 @@ public class LiveTvApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                SeriesTimerInfoDto responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<SeriesTimerInfoDto>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<SeriesTimerInfoDto>(localVarResponse.statusCode(),
-                        localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody,
-                                        new TypeReference<SeriesTimerInfoDto>() {
-                                        }));
+                        localVarResponse.headers().map(), responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -3554,8 +4966,8 @@ public class LiveTvApi {
         }
     }
 
-    private HttpRequest.Builder getSeriesTimerRequestBuilder(@org.eclipse.jdt.annotation.Nullable String timerId)
-            throws ApiException {
+    private HttpRequest.Builder getSeriesTimerRequestBuilder(@org.eclipse.jdt.annotation.Nullable String timerId,
+            Map<String, String> headers) throws ApiException {
         // verify the required parameter 'timerId' is set
         if (timerId == null) {
             throw new ApiException(400, "Missing the required parameter 'timerId' when calling getSeriesTimer");
@@ -3575,6 +4987,8 @@ public class LiveTvApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -3591,7 +5005,22 @@ public class LiveTvApi {
      */
     public SeriesTimerInfoDtoQueryResult getSeriesTimers(@org.eclipse.jdt.annotation.NonNull String sortBy,
             @org.eclipse.jdt.annotation.NonNull SortOrder sortOrder) throws ApiException {
-        ApiResponse<SeriesTimerInfoDtoQueryResult> localVarResponse = getSeriesTimersWithHttpInfo(sortBy, sortOrder);
+        return getSeriesTimers(sortBy, sortOrder, null);
+    }
+
+    /**
+     * Gets live tv series timers.
+     * 
+     * @param sortBy Optional. Sort by SortName or Priority. (optional)
+     * @param sortOrder Optional. Sort in Ascending or Descending order. (optional)
+     * @param headers Optional headers to include in the request
+     * @return SeriesTimerInfoDtoQueryResult
+     * @throws ApiException if fails to make API call
+     */
+    public SeriesTimerInfoDtoQueryResult getSeriesTimers(@org.eclipse.jdt.annotation.NonNull String sortBy,
+            @org.eclipse.jdt.annotation.NonNull SortOrder sortOrder, Map<String, String> headers) throws ApiException {
+        ApiResponse<SeriesTimerInfoDtoQueryResult> localVarResponse = getSeriesTimersWithHttpInfo(sortBy, sortOrder,
+                headers);
         return localVarResponse.getData();
     }
 
@@ -3606,7 +5035,22 @@ public class LiveTvApi {
     public ApiResponse<SeriesTimerInfoDtoQueryResult> getSeriesTimersWithHttpInfo(
             @org.eclipse.jdt.annotation.NonNull String sortBy, @org.eclipse.jdt.annotation.NonNull SortOrder sortOrder)
             throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getSeriesTimersRequestBuilder(sortBy, sortOrder);
+        return getSeriesTimersWithHttpInfo(sortBy, sortOrder, null);
+    }
+
+    /**
+     * Gets live tv series timers.
+     * 
+     * @param sortBy Optional. Sort by SortName or Priority. (optional)
+     * @param sortOrder Optional. Sort in Ascending or Descending order. (optional)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;SeriesTimerInfoDtoQueryResult&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<SeriesTimerInfoDtoQueryResult> getSeriesTimersWithHttpInfo(
+            @org.eclipse.jdt.annotation.NonNull String sortBy, @org.eclipse.jdt.annotation.NonNull SortOrder sortOrder,
+            Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = getSeriesTimersRequestBuilder(sortBy, sortOrder, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -3623,14 +5067,15 @@ public class LiveTvApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                SeriesTimerInfoDtoQueryResult responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody,
+                                new TypeReference<SeriesTimerInfoDtoQueryResult>() {
+                                });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<SeriesTimerInfoDtoQueryResult>(localVarResponse.statusCode(),
-                        localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody,
-                                        new TypeReference<SeriesTimerInfoDtoQueryResult>() {
-                                        }));
+                        localVarResponse.headers().map(), responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -3642,7 +5087,7 @@ public class LiveTvApi {
     }
 
     private HttpRequest.Builder getSeriesTimersRequestBuilder(@org.eclipse.jdt.annotation.NonNull String sortBy,
-            @org.eclipse.jdt.annotation.NonNull SortOrder sortOrder) throws ApiException {
+            @org.eclipse.jdt.annotation.NonNull SortOrder sortOrder, Map<String, String> headers) throws ApiException {
 
         HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
 
@@ -3674,6 +5119,8 @@ public class LiveTvApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -3688,7 +5135,20 @@ public class LiveTvApi {
      * @throws ApiException if fails to make API call
      */
     public TimerInfoDto getTimer(@org.eclipse.jdt.annotation.Nullable String timerId) throws ApiException {
-        ApiResponse<TimerInfoDto> localVarResponse = getTimerWithHttpInfo(timerId);
+        return getTimer(timerId, null);
+    }
+
+    /**
+     * Gets a timer.
+     * 
+     * @param timerId Timer id. (required)
+     * @param headers Optional headers to include in the request
+     * @return TimerInfoDto
+     * @throws ApiException if fails to make API call
+     */
+    public TimerInfoDto getTimer(@org.eclipse.jdt.annotation.Nullable String timerId, Map<String, String> headers)
+            throws ApiException {
+        ApiResponse<TimerInfoDto> localVarResponse = getTimerWithHttpInfo(timerId, headers);
         return localVarResponse.getData();
     }
 
@@ -3701,7 +5161,20 @@ public class LiveTvApi {
      */
     public ApiResponse<TimerInfoDto> getTimerWithHttpInfo(@org.eclipse.jdt.annotation.Nullable String timerId)
             throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getTimerRequestBuilder(timerId);
+        return getTimerWithHttpInfo(timerId, null);
+    }
+
+    /**
+     * Gets a timer.
+     * 
+     * @param timerId Timer id. (required)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;TimerInfoDto&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<TimerInfoDto> getTimerWithHttpInfo(@org.eclipse.jdt.annotation.Nullable String timerId,
+            Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = getTimerRequestBuilder(timerId, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -3718,12 +5191,14 @@ public class LiveTvApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                TimerInfoDto responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<TimerInfoDto>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<TimerInfoDto>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<TimerInfoDto>() {
-                                }));
+                        responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -3734,8 +5209,8 @@ public class LiveTvApi {
         }
     }
 
-    private HttpRequest.Builder getTimerRequestBuilder(@org.eclipse.jdt.annotation.Nullable String timerId)
-            throws ApiException {
+    private HttpRequest.Builder getTimerRequestBuilder(@org.eclipse.jdt.annotation.Nullable String timerId,
+            Map<String, String> headers) throws ApiException {
         // verify the required parameter 'timerId' is set
         if (timerId == null) {
             throw new ApiException(400, "Missing the required parameter 'timerId' when calling getTimer");
@@ -3754,6 +5229,8 @@ public class LiveTvApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -3774,8 +5251,26 @@ public class LiveTvApi {
             @org.eclipse.jdt.annotation.NonNull String seriesTimerId,
             @org.eclipse.jdt.annotation.NonNull Boolean isActive,
             @org.eclipse.jdt.annotation.NonNull Boolean isScheduled) throws ApiException {
+        return getTimers(channelId, seriesTimerId, isActive, isScheduled, null);
+    }
+
+    /**
+     * Gets the live tv timers.
+     * 
+     * @param channelId Optional. Filter by channel id. (optional)
+     * @param seriesTimerId Optional. Filter by timers belonging to a series timer. (optional)
+     * @param isActive Optional. Filter by timers that are active. (optional)
+     * @param isScheduled Optional. Filter by timers that are scheduled. (optional)
+     * @param headers Optional headers to include in the request
+     * @return TimerInfoDtoQueryResult
+     * @throws ApiException if fails to make API call
+     */
+    public TimerInfoDtoQueryResult getTimers(@org.eclipse.jdt.annotation.NonNull String channelId,
+            @org.eclipse.jdt.annotation.NonNull String seriesTimerId,
+            @org.eclipse.jdt.annotation.NonNull Boolean isActive,
+            @org.eclipse.jdt.annotation.NonNull Boolean isScheduled, Map<String, String> headers) throws ApiException {
         ApiResponse<TimerInfoDtoQueryResult> localVarResponse = getTimersWithHttpInfo(channelId, seriesTimerId,
-                isActive, isScheduled);
+                isActive, isScheduled, headers);
         return localVarResponse.getData();
     }
 
@@ -3794,8 +5289,27 @@ public class LiveTvApi {
             @org.eclipse.jdt.annotation.NonNull String seriesTimerId,
             @org.eclipse.jdt.annotation.NonNull Boolean isActive,
             @org.eclipse.jdt.annotation.NonNull Boolean isScheduled) throws ApiException {
+        return getTimersWithHttpInfo(channelId, seriesTimerId, isActive, isScheduled, null);
+    }
+
+    /**
+     * Gets the live tv timers.
+     * 
+     * @param channelId Optional. Filter by channel id. (optional)
+     * @param seriesTimerId Optional. Filter by timers belonging to a series timer. (optional)
+     * @param isActive Optional. Filter by timers that are active. (optional)
+     * @param isScheduled Optional. Filter by timers that are scheduled. (optional)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;TimerInfoDtoQueryResult&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<TimerInfoDtoQueryResult> getTimersWithHttpInfo(
+            @org.eclipse.jdt.annotation.NonNull String channelId,
+            @org.eclipse.jdt.annotation.NonNull String seriesTimerId,
+            @org.eclipse.jdt.annotation.NonNull Boolean isActive,
+            @org.eclipse.jdt.annotation.NonNull Boolean isScheduled, Map<String, String> headers) throws ApiException {
         HttpRequest.Builder localVarRequestBuilder = getTimersRequestBuilder(channelId, seriesTimerId, isActive,
-                isScheduled);
+                isScheduled, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -3812,14 +5326,14 @@ public class LiveTvApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                TimerInfoDtoQueryResult responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<TimerInfoDtoQueryResult>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<TimerInfoDtoQueryResult>(localVarResponse.statusCode(),
-                        localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody,
-                                        new TypeReference<TimerInfoDtoQueryResult>() {
-                                        }));
+                        localVarResponse.headers().map(), responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -3833,7 +5347,7 @@ public class LiveTvApi {
     private HttpRequest.Builder getTimersRequestBuilder(@org.eclipse.jdt.annotation.NonNull String channelId,
             @org.eclipse.jdt.annotation.NonNull String seriesTimerId,
             @org.eclipse.jdt.annotation.NonNull Boolean isActive,
-            @org.eclipse.jdt.annotation.NonNull Boolean isScheduled) throws ApiException {
+            @org.eclipse.jdt.annotation.NonNull Boolean isScheduled, Map<String, String> headers) throws ApiException {
 
         HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
 
@@ -3869,6 +5383,8 @@ public class LiveTvApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -3882,7 +5398,18 @@ public class LiveTvApi {
      * @throws ApiException if fails to make API call
      */
     public List<NameIdPair> getTunerHostTypes() throws ApiException {
-        ApiResponse<List<NameIdPair>> localVarResponse = getTunerHostTypesWithHttpInfo();
+        return getTunerHostTypes(null);
+    }
+
+    /**
+     * Get tuner host types.
+     * 
+     * @param headers Optional headers to include in the request
+     * @return List&lt;NameIdPair&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public List<NameIdPair> getTunerHostTypes(Map<String, String> headers) throws ApiException {
+        ApiResponse<List<NameIdPair>> localVarResponse = getTunerHostTypesWithHttpInfo(headers);
         return localVarResponse.getData();
     }
 
@@ -3893,7 +5420,19 @@ public class LiveTvApi {
      * @throws ApiException if fails to make API call
      */
     public ApiResponse<List<NameIdPair>> getTunerHostTypesWithHttpInfo() throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getTunerHostTypesRequestBuilder();
+        return getTunerHostTypesWithHttpInfo(null);
+    }
+
+    /**
+     * Get tuner host types.
+     * 
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;List&lt;NameIdPair&gt;&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<List<NameIdPair>> getTunerHostTypesWithHttpInfo(Map<String, String> headers)
+            throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = getTunerHostTypesRequestBuilder(headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -3910,12 +5449,14 @@ public class LiveTvApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                List<NameIdPair> responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<List<NameIdPair>>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<List<NameIdPair>>(localVarResponse.statusCode(),
-                        localVarResponse.headers().map(), responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<List<NameIdPair>>() {
-                                }));
+                        localVarResponse.headers().map(), responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -3926,7 +5467,7 @@ public class LiveTvApi {
         }
     }
 
-    private HttpRequest.Builder getTunerHostTypesRequestBuilder() throws ApiException {
+    private HttpRequest.Builder getTunerHostTypesRequestBuilder(Map<String, String> headers) throws ApiException {
 
         HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
 
@@ -3941,6 +5482,8 @@ public class LiveTvApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -3954,7 +5497,19 @@ public class LiveTvApi {
      * @throws ApiException if fails to make API call
      */
     public void resetTuner(@org.eclipse.jdt.annotation.Nullable String tunerId) throws ApiException {
-        resetTunerWithHttpInfo(tunerId);
+        resetTuner(tunerId, null);
+    }
+
+    /**
+     * Resets a tv tuner.
+     * 
+     * @param tunerId Tuner id. (required)
+     * @param headers Optional headers to include in the request
+     * @throws ApiException if fails to make API call
+     */
+    public void resetTuner(@org.eclipse.jdt.annotation.Nullable String tunerId, Map<String, String> headers)
+            throws ApiException {
+        resetTunerWithHttpInfo(tunerId, headers);
     }
 
     /**
@@ -3966,7 +5521,20 @@ public class LiveTvApi {
      */
     public ApiResponse<Void> resetTunerWithHttpInfo(@org.eclipse.jdt.annotation.Nullable String tunerId)
             throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = resetTunerRequestBuilder(tunerId);
+        return resetTunerWithHttpInfo(tunerId, null);
+    }
+
+    /**
+     * Resets a tv tuner.
+     * 
+     * @param tunerId Tuner id. (required)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<Void> resetTunerWithHttpInfo(@org.eclipse.jdt.annotation.Nullable String tunerId,
+            Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = resetTunerRequestBuilder(tunerId, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -3993,8 +5561,8 @@ public class LiveTvApi {
         }
     }
 
-    private HttpRequest.Builder resetTunerRequestBuilder(@org.eclipse.jdt.annotation.Nullable String tunerId)
-            throws ApiException {
+    private HttpRequest.Builder resetTunerRequestBuilder(@org.eclipse.jdt.annotation.Nullable String tunerId,
+            Map<String, String> headers) throws ApiException {
         // verify the required parameter 'tunerId' is set
         if (tunerId == null) {
             throw new ApiException(400, "Missing the required parameter 'tunerId' when calling resetTuner");
@@ -4013,6 +5581,8 @@ public class LiveTvApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -4028,7 +5598,22 @@ public class LiveTvApi {
      */
     public TunerChannelMapping setChannelMapping(
             @org.eclipse.jdt.annotation.Nullable SetChannelMappingDto setChannelMappingDto) throws ApiException {
-        ApiResponse<TunerChannelMapping> localVarResponse = setChannelMappingWithHttpInfo(setChannelMappingDto);
+        return setChannelMapping(setChannelMappingDto, null);
+    }
+
+    /**
+     * Set channel mappings.
+     * 
+     * @param setChannelMappingDto The set channel mapping dto. (required)
+     * @param headers Optional headers to include in the request
+     * @return TunerChannelMapping
+     * @throws ApiException if fails to make API call
+     */
+    public TunerChannelMapping setChannelMapping(
+            @org.eclipse.jdt.annotation.Nullable SetChannelMappingDto setChannelMappingDto, Map<String, String> headers)
+            throws ApiException {
+        ApiResponse<TunerChannelMapping> localVarResponse = setChannelMappingWithHttpInfo(setChannelMappingDto,
+                headers);
         return localVarResponse.getData();
     }
 
@@ -4041,7 +5626,21 @@ public class LiveTvApi {
      */
     public ApiResponse<TunerChannelMapping> setChannelMappingWithHttpInfo(
             @org.eclipse.jdt.annotation.Nullable SetChannelMappingDto setChannelMappingDto) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = setChannelMappingRequestBuilder(setChannelMappingDto);
+        return setChannelMappingWithHttpInfo(setChannelMappingDto, null);
+    }
+
+    /**
+     * Set channel mappings.
+     * 
+     * @param setChannelMappingDto The set channel mapping dto. (required)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;TunerChannelMapping&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<TunerChannelMapping> setChannelMappingWithHttpInfo(
+            @org.eclipse.jdt.annotation.Nullable SetChannelMappingDto setChannelMappingDto, Map<String, String> headers)
+            throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = setChannelMappingRequestBuilder(setChannelMappingDto, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -4058,14 +5657,14 @@ public class LiveTvApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                TunerChannelMapping responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<TunerChannelMapping>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<TunerChannelMapping>(localVarResponse.statusCode(),
-                        localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody,
-                                        new TypeReference<TunerChannelMapping>() {
-                                        }));
+                        localVarResponse.headers().map(), responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -4077,7 +5676,8 @@ public class LiveTvApi {
     }
 
     private HttpRequest.Builder setChannelMappingRequestBuilder(
-            @org.eclipse.jdt.annotation.Nullable SetChannelMappingDto setChannelMappingDto) throws ApiException {
+            @org.eclipse.jdt.annotation.Nullable SetChannelMappingDto setChannelMappingDto, Map<String, String> headers)
+            throws ApiException {
         // verify the required parameter 'setChannelMappingDto' is set
         if (setChannelMappingDto == null) {
             throw new ApiException(400,
@@ -4103,6 +5703,8 @@ public class LiveTvApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -4118,7 +5720,21 @@ public class LiveTvApi {
      */
     public void updateSeriesTimer(@org.eclipse.jdt.annotation.Nullable String timerId,
             @org.eclipse.jdt.annotation.NonNull SeriesTimerInfoDto seriesTimerInfoDto) throws ApiException {
-        updateSeriesTimerWithHttpInfo(timerId, seriesTimerInfoDto);
+        updateSeriesTimer(timerId, seriesTimerInfoDto, null);
+    }
+
+    /**
+     * Updates a live tv series timer.
+     * 
+     * @param timerId Timer id. (required)
+     * @param seriesTimerInfoDto New series timer info. (optional)
+     * @param headers Optional headers to include in the request
+     * @throws ApiException if fails to make API call
+     */
+    public void updateSeriesTimer(@org.eclipse.jdt.annotation.Nullable String timerId,
+            @org.eclipse.jdt.annotation.NonNull SeriesTimerInfoDto seriesTimerInfoDto, Map<String, String> headers)
+            throws ApiException {
+        updateSeriesTimerWithHttpInfo(timerId, seriesTimerInfoDto, headers);
     }
 
     /**
@@ -4131,7 +5747,23 @@ public class LiveTvApi {
      */
     public ApiResponse<Void> updateSeriesTimerWithHttpInfo(@org.eclipse.jdt.annotation.Nullable String timerId,
             @org.eclipse.jdt.annotation.NonNull SeriesTimerInfoDto seriesTimerInfoDto) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = updateSeriesTimerRequestBuilder(timerId, seriesTimerInfoDto);
+        return updateSeriesTimerWithHttpInfo(timerId, seriesTimerInfoDto, null);
+    }
+
+    /**
+     * Updates a live tv series timer.
+     * 
+     * @param timerId Timer id. (required)
+     * @param seriesTimerInfoDto New series timer info. (optional)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<Void> updateSeriesTimerWithHttpInfo(@org.eclipse.jdt.annotation.Nullable String timerId,
+            @org.eclipse.jdt.annotation.NonNull SeriesTimerInfoDto seriesTimerInfoDto, Map<String, String> headers)
+            throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = updateSeriesTimerRequestBuilder(timerId, seriesTimerInfoDto,
+                headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -4159,7 +5791,8 @@ public class LiveTvApi {
     }
 
     private HttpRequest.Builder updateSeriesTimerRequestBuilder(@org.eclipse.jdt.annotation.Nullable String timerId,
-            @org.eclipse.jdt.annotation.NonNull SeriesTimerInfoDto seriesTimerInfoDto) throws ApiException {
+            @org.eclipse.jdt.annotation.NonNull SeriesTimerInfoDto seriesTimerInfoDto, Map<String, String> headers)
+            throws ApiException {
         // verify the required parameter 'timerId' is set
         if (timerId == null) {
             throw new ApiException(400, "Missing the required parameter 'timerId' when calling updateSeriesTimer");
@@ -4184,6 +5817,8 @@ public class LiveTvApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -4199,7 +5834,21 @@ public class LiveTvApi {
      */
     public void updateTimer(@org.eclipse.jdt.annotation.Nullable String timerId,
             @org.eclipse.jdt.annotation.NonNull TimerInfoDto timerInfoDto) throws ApiException {
-        updateTimerWithHttpInfo(timerId, timerInfoDto);
+        updateTimer(timerId, timerInfoDto, null);
+    }
+
+    /**
+     * Updates a live tv timer.
+     * 
+     * @param timerId Timer id. (required)
+     * @param timerInfoDto New timer info. (optional)
+     * @param headers Optional headers to include in the request
+     * @throws ApiException if fails to make API call
+     */
+    public void updateTimer(@org.eclipse.jdt.annotation.Nullable String timerId,
+            @org.eclipse.jdt.annotation.NonNull TimerInfoDto timerInfoDto, Map<String, String> headers)
+            throws ApiException {
+        updateTimerWithHttpInfo(timerId, timerInfoDto, headers);
     }
 
     /**
@@ -4212,7 +5861,22 @@ public class LiveTvApi {
      */
     public ApiResponse<Void> updateTimerWithHttpInfo(@org.eclipse.jdt.annotation.Nullable String timerId,
             @org.eclipse.jdt.annotation.NonNull TimerInfoDto timerInfoDto) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = updateTimerRequestBuilder(timerId, timerInfoDto);
+        return updateTimerWithHttpInfo(timerId, timerInfoDto, null);
+    }
+
+    /**
+     * Updates a live tv timer.
+     * 
+     * @param timerId Timer id. (required)
+     * @param timerInfoDto New timer info. (optional)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<Void> updateTimerWithHttpInfo(@org.eclipse.jdt.annotation.Nullable String timerId,
+            @org.eclipse.jdt.annotation.NonNull TimerInfoDto timerInfoDto, Map<String, String> headers)
+            throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = updateTimerRequestBuilder(timerId, timerInfoDto, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -4240,7 +5904,8 @@ public class LiveTvApi {
     }
 
     private HttpRequest.Builder updateTimerRequestBuilder(@org.eclipse.jdt.annotation.Nullable String timerId,
-            @org.eclipse.jdt.annotation.NonNull TimerInfoDto timerInfoDto) throws ApiException {
+            @org.eclipse.jdt.annotation.NonNull TimerInfoDto timerInfoDto, Map<String, String> headers)
+            throws ApiException {
         // verify the required parameter 'timerId' is set
         if (timerId == null) {
             throw new ApiException(400, "Missing the required parameter 'timerId' when calling updateTimer");
@@ -4264,6 +5929,8 @@ public class LiveTvApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }

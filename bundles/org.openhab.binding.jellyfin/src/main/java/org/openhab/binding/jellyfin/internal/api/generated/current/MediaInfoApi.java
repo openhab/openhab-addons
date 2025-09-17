@@ -22,6 +22,7 @@ import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.StringJoiner;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -41,6 +42,28 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class MediaInfoApi {
+    /**
+     * Utility class for extending HttpRequest.Builder functionality.
+     */
+    private static class HttpRequestBuilderExtensions {
+        /**
+         * Adds additional headers to the provided HttpRequest.Builder. Useful for adding method/endpoint specific
+         * headers.
+         *
+         * @param builder the HttpRequest.Builder to which headers will be added
+         * @param headers a map of header names and values to add; may be null
+         * @return the same HttpRequest.Builder instance with the additional headers set
+         */
+        static HttpRequest.Builder withAdditionalHeaders(HttpRequest.Builder builder, Map<String, String> headers) {
+            if (headers != null) {
+                for (Map.Entry<String, String> entry : headers.entrySet()) {
+                    builder.header(entry.getKey(), entry.getValue());
+                }
+            }
+            return builder;
+        }
+    }
+
     private final HttpClient memberVarHttpClient;
     private final ObjectMapper memberVarObjectMapper;
     private final String memberVarBaseUri;
@@ -77,13 +100,75 @@ public class MediaInfoApi {
     }
 
     /**
+     * Download file from the given response.
+     *
+     * @param response Response
+     * @return File
+     * @throws ApiException If fail to read file content from response and write to disk
+     */
+    public File downloadFileFromResponse(HttpResponse<InputStream> response) throws ApiException {
+        try {
+            File file = prepareDownloadFile(response);
+            java.nio.file.Files.copy(response.body(), file.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+            return file;
+        } catch (IOException e) {
+            throw new ApiException(e);
+        }
+    }
+
+    /**
+     * <p>
+     * Prepare the file for download from the response.
+     * </p>
+     *
+     * @param response a {@link java.net.http.HttpResponse} object.
+     * @return a {@link java.io.File} object.
+     * @throws java.io.IOException if any.
+     */
+    private File prepareDownloadFile(HttpResponse<InputStream> response) throws IOException {
+        String filename = null;
+        java.util.Optional<String> contentDisposition = response.headers().firstValue("Content-Disposition");
+        if (contentDisposition.isPresent() && !"".equals(contentDisposition.get())) {
+            // Get filename from the Content-Disposition header.
+            java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("filename=['\"]?([^'\"\\s]+)['\"]?");
+            java.util.regex.Matcher matcher = pattern.matcher(contentDisposition.get());
+            if (matcher.find())
+                filename = matcher.group(1);
+        }
+        File file = null;
+        if (filename != null) {
+            java.nio.file.Path tempDir = java.nio.file.Files.createTempDirectory("swagger-gen-native");
+            java.nio.file.Path filePath = java.nio.file.Files.createFile(tempDir.resolve(filename));
+            file = filePath.toFile();
+            tempDir.toFile().deleteOnExit(); // best effort cleanup
+            file.deleteOnExit(); // best effort cleanup
+        } else {
+            file = java.nio.file.Files.createTempFile("download-", "").toFile();
+            file.deleteOnExit(); // best effort cleanup
+        }
+        return file;
+    }
+
+    /**
      * Closes a media source.
      * 
      * @param liveStreamId The livestream id. (required)
      * @throws ApiException if fails to make API call
      */
     public void closeLiveStream(@org.eclipse.jdt.annotation.Nullable String liveStreamId) throws ApiException {
-        closeLiveStreamWithHttpInfo(liveStreamId);
+        closeLiveStream(liveStreamId, null);
+    }
+
+    /**
+     * Closes a media source.
+     * 
+     * @param liveStreamId The livestream id. (required)
+     * @param headers Optional headers to include in the request
+     * @throws ApiException if fails to make API call
+     */
+    public void closeLiveStream(@org.eclipse.jdt.annotation.Nullable String liveStreamId, Map<String, String> headers)
+            throws ApiException {
+        closeLiveStreamWithHttpInfo(liveStreamId, headers);
     }
 
     /**
@@ -95,7 +180,20 @@ public class MediaInfoApi {
      */
     public ApiResponse<Void> closeLiveStreamWithHttpInfo(@org.eclipse.jdt.annotation.Nullable String liveStreamId)
             throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = closeLiveStreamRequestBuilder(liveStreamId);
+        return closeLiveStreamWithHttpInfo(liveStreamId, null);
+    }
+
+    /**
+     * Closes a media source.
+     * 
+     * @param liveStreamId The livestream id. (required)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<Void> closeLiveStreamWithHttpInfo(@org.eclipse.jdt.annotation.Nullable String liveStreamId,
+            Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = closeLiveStreamRequestBuilder(liveStreamId, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -122,8 +220,8 @@ public class MediaInfoApi {
         }
     }
 
-    private HttpRequest.Builder closeLiveStreamRequestBuilder(@org.eclipse.jdt.annotation.Nullable String liveStreamId)
-            throws ApiException {
+    private HttpRequest.Builder closeLiveStreamRequestBuilder(@org.eclipse.jdt.annotation.Nullable String liveStreamId,
+            Map<String, String> headers) throws ApiException {
         // verify the required parameter 'liveStreamId' is set
         if (liveStreamId == null) {
             throw new ApiException(400, "Missing the required parameter 'liveStreamId' when calling closeLiveStream");
@@ -156,6 +254,8 @@ public class MediaInfoApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -170,7 +270,20 @@ public class MediaInfoApi {
      * @throws ApiException if fails to make API call
      */
     public File getBitrateTestBytes(@org.eclipse.jdt.annotation.NonNull Integer size) throws ApiException {
-        ApiResponse<File> localVarResponse = getBitrateTestBytesWithHttpInfo(size);
+        return getBitrateTestBytes(size, null);
+    }
+
+    /**
+     * Tests the network with a request with the size of the bitrate.
+     * 
+     * @param size The bitrate. Defaults to 102400. (optional, default to 102400)
+     * @param headers Optional headers to include in the request
+     * @return File
+     * @throws ApiException if fails to make API call
+     */
+    public File getBitrateTestBytes(@org.eclipse.jdt.annotation.NonNull Integer size, Map<String, String> headers)
+            throws ApiException {
+        ApiResponse<File> localVarResponse = getBitrateTestBytesWithHttpInfo(size, headers);
         return localVarResponse.getData();
     }
 
@@ -183,7 +296,20 @@ public class MediaInfoApi {
      */
     public ApiResponse<File> getBitrateTestBytesWithHttpInfo(@org.eclipse.jdt.annotation.NonNull Integer size)
             throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getBitrateTestBytesRequestBuilder(size);
+        return getBitrateTestBytesWithHttpInfo(size, null);
+    }
+
+    /**
+     * Tests the network with a request with the size of the bitrate.
+     * 
+     * @param size The bitrate. Defaults to 102400. (optional, default to 102400)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;File&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<File> getBitrateTestBytesWithHttpInfo(@org.eclipse.jdt.annotation.NonNull Integer size,
+            Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = getBitrateTestBytesRequestBuilder(size, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -198,13 +324,13 @@ public class MediaInfoApi {
                     return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
                 }
 
-                String responseBody = new String(localVarResponse.body().readAllBytes());
+                // Handle file downloading.
+                File responseValue = downloadFileFromResponse(localVarResponse);
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {
-                                }));
+                        responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -215,8 +341,8 @@ public class MediaInfoApi {
         }
     }
 
-    private HttpRequest.Builder getBitrateTestBytesRequestBuilder(@org.eclipse.jdt.annotation.NonNull Integer size)
-            throws ApiException {
+    private HttpRequest.Builder getBitrateTestBytesRequestBuilder(@org.eclipse.jdt.annotation.NonNull Integer size,
+            Map<String, String> headers) throws ApiException {
 
         HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
 
@@ -245,6 +371,8 @@ public class MediaInfoApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -261,7 +389,21 @@ public class MediaInfoApi {
      */
     public PlaybackInfoResponse getPlaybackInfo(@org.eclipse.jdt.annotation.Nullable UUID itemId,
             @org.eclipse.jdt.annotation.NonNull UUID userId) throws ApiException {
-        ApiResponse<PlaybackInfoResponse> localVarResponse = getPlaybackInfoWithHttpInfo(itemId, userId);
+        return getPlaybackInfo(itemId, userId, null);
+    }
+
+    /**
+     * Gets live playback media info for an item.
+     * 
+     * @param itemId The item id. (required)
+     * @param userId The user id. (optional)
+     * @param headers Optional headers to include in the request
+     * @return PlaybackInfoResponse
+     * @throws ApiException if fails to make API call
+     */
+    public PlaybackInfoResponse getPlaybackInfo(@org.eclipse.jdt.annotation.Nullable UUID itemId,
+            @org.eclipse.jdt.annotation.NonNull UUID userId, Map<String, String> headers) throws ApiException {
+        ApiResponse<PlaybackInfoResponse> localVarResponse = getPlaybackInfoWithHttpInfo(itemId, userId, headers);
         return localVarResponse.getData();
     }
 
@@ -276,7 +418,22 @@ public class MediaInfoApi {
     public ApiResponse<PlaybackInfoResponse> getPlaybackInfoWithHttpInfo(
             @org.eclipse.jdt.annotation.Nullable UUID itemId, @org.eclipse.jdt.annotation.NonNull UUID userId)
             throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getPlaybackInfoRequestBuilder(itemId, userId);
+        return getPlaybackInfoWithHttpInfo(itemId, userId, null);
+    }
+
+    /**
+     * Gets live playback media info for an item.
+     * 
+     * @param itemId The item id. (required)
+     * @param userId The user id. (optional)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;PlaybackInfoResponse&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<PlaybackInfoResponse> getPlaybackInfoWithHttpInfo(
+            @org.eclipse.jdt.annotation.Nullable UUID itemId, @org.eclipse.jdt.annotation.NonNull UUID userId,
+            Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = getPlaybackInfoRequestBuilder(itemId, userId, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -293,14 +450,14 @@ public class MediaInfoApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                PlaybackInfoResponse responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<PlaybackInfoResponse>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<PlaybackInfoResponse>(localVarResponse.statusCode(),
-                        localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody,
-                                        new TypeReference<PlaybackInfoResponse>() {
-                                        }));
+                        localVarResponse.headers().map(), responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -312,7 +469,7 @@ public class MediaInfoApi {
     }
 
     private HttpRequest.Builder getPlaybackInfoRequestBuilder(@org.eclipse.jdt.annotation.Nullable UUID itemId,
-            @org.eclipse.jdt.annotation.NonNull UUID userId) throws ApiException {
+            @org.eclipse.jdt.annotation.NonNull UUID userId, Map<String, String> headers) throws ApiException {
         // verify the required parameter 'itemId' is set
         if (itemId == null) {
             throw new ApiException(400, "Missing the required parameter 'itemId' when calling getPlaybackInfo");
@@ -347,6 +504,8 @@ public class MediaInfoApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -393,10 +552,58 @@ public class MediaInfoApi {
             @org.eclipse.jdt.annotation.NonNull Boolean allowVideoStreamCopy,
             @org.eclipse.jdt.annotation.NonNull Boolean allowAudioStreamCopy,
             @org.eclipse.jdt.annotation.NonNull PlaybackInfoDto playbackInfoDto) throws ApiException {
+        return getPostedPlaybackInfo(itemId, userId, maxStreamingBitrate, startTimeTicks, audioStreamIndex,
+                subtitleStreamIndex, maxAudioChannels, mediaSourceId, liveStreamId, autoOpenLiveStream,
+                enableDirectPlay, enableDirectStream, enableTranscoding, allowVideoStreamCopy, allowAudioStreamCopy,
+                playbackInfoDto, null);
+    }
+
+    /**
+     * Gets live playback media info for an item.
+     * For backwards compatibility parameters can be sent via Query or Body, with Query having higher precedence. Query
+     * parameters are obsolete.
+     * 
+     * @param itemId The item id. (required)
+     * @param userId The user id. (optional)
+     * @param maxStreamingBitrate The maximum streaming bitrate. (optional)
+     * @param startTimeTicks The start time in ticks. (optional)
+     * @param audioStreamIndex The audio stream index. (optional)
+     * @param subtitleStreamIndex The subtitle stream index. (optional)
+     * @param maxAudioChannels The maximum number of audio channels. (optional)
+     * @param mediaSourceId The media source id. (optional)
+     * @param liveStreamId The livestream id. (optional)
+     * @param autoOpenLiveStream Whether to auto open the livestream. (optional)
+     * @param enableDirectPlay Whether to enable direct play. Default: true. (optional)
+     * @param enableDirectStream Whether to enable direct stream. Default: true. (optional)
+     * @param enableTranscoding Whether to enable transcoding. Default: true. (optional)
+     * @param allowVideoStreamCopy Whether to allow to copy the video stream. Default: true. (optional)
+     * @param allowAudioStreamCopy Whether to allow to copy the audio stream. Default: true. (optional)
+     * @param playbackInfoDto The playback info. (optional)
+     * @param headers Optional headers to include in the request
+     * @return PlaybackInfoResponse
+     * @throws ApiException if fails to make API call
+     */
+    public PlaybackInfoResponse getPostedPlaybackInfo(@org.eclipse.jdt.annotation.Nullable UUID itemId,
+            @org.eclipse.jdt.annotation.NonNull UUID userId,
+            @org.eclipse.jdt.annotation.NonNull Integer maxStreamingBitrate,
+            @org.eclipse.jdt.annotation.NonNull Long startTimeTicks,
+            @org.eclipse.jdt.annotation.NonNull Integer audioStreamIndex,
+            @org.eclipse.jdt.annotation.NonNull Integer subtitleStreamIndex,
+            @org.eclipse.jdt.annotation.NonNull Integer maxAudioChannels,
+            @org.eclipse.jdt.annotation.NonNull String mediaSourceId,
+            @org.eclipse.jdt.annotation.NonNull String liveStreamId,
+            @org.eclipse.jdt.annotation.NonNull Boolean autoOpenLiveStream,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableDirectPlay,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableDirectStream,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableTranscoding,
+            @org.eclipse.jdt.annotation.NonNull Boolean allowVideoStreamCopy,
+            @org.eclipse.jdt.annotation.NonNull Boolean allowAudioStreamCopy,
+            @org.eclipse.jdt.annotation.NonNull PlaybackInfoDto playbackInfoDto, Map<String, String> headers)
+            throws ApiException {
         ApiResponse<PlaybackInfoResponse> localVarResponse = getPostedPlaybackInfoWithHttpInfo(itemId, userId,
                 maxStreamingBitrate, startTimeTicks, audioStreamIndex, subtitleStreamIndex, maxAudioChannels,
                 mediaSourceId, liveStreamId, autoOpenLiveStream, enableDirectPlay, enableDirectStream,
-                enableTranscoding, allowVideoStreamCopy, allowAudioStreamCopy, playbackInfoDto);
+                enableTranscoding, allowVideoStreamCopy, allowAudioStreamCopy, playbackInfoDto, headers);
         return localVarResponse.getData();
     }
 
@@ -440,10 +647,58 @@ public class MediaInfoApi {
             @org.eclipse.jdt.annotation.NonNull Boolean allowVideoStreamCopy,
             @org.eclipse.jdt.annotation.NonNull Boolean allowAudioStreamCopy,
             @org.eclipse.jdt.annotation.NonNull PlaybackInfoDto playbackInfoDto) throws ApiException {
+        return getPostedPlaybackInfoWithHttpInfo(itemId, userId, maxStreamingBitrate, startTimeTicks, audioStreamIndex,
+                subtitleStreamIndex, maxAudioChannels, mediaSourceId, liveStreamId, autoOpenLiveStream,
+                enableDirectPlay, enableDirectStream, enableTranscoding, allowVideoStreamCopy, allowAudioStreamCopy,
+                playbackInfoDto, null);
+    }
+
+    /**
+     * Gets live playback media info for an item.
+     * For backwards compatibility parameters can be sent via Query or Body, with Query having higher precedence. Query
+     * parameters are obsolete.
+     * 
+     * @param itemId The item id. (required)
+     * @param userId The user id. (optional)
+     * @param maxStreamingBitrate The maximum streaming bitrate. (optional)
+     * @param startTimeTicks The start time in ticks. (optional)
+     * @param audioStreamIndex The audio stream index. (optional)
+     * @param subtitleStreamIndex The subtitle stream index. (optional)
+     * @param maxAudioChannels The maximum number of audio channels. (optional)
+     * @param mediaSourceId The media source id. (optional)
+     * @param liveStreamId The livestream id. (optional)
+     * @param autoOpenLiveStream Whether to auto open the livestream. (optional)
+     * @param enableDirectPlay Whether to enable direct play. Default: true. (optional)
+     * @param enableDirectStream Whether to enable direct stream. Default: true. (optional)
+     * @param enableTranscoding Whether to enable transcoding. Default: true. (optional)
+     * @param allowVideoStreamCopy Whether to allow to copy the video stream. Default: true. (optional)
+     * @param allowAudioStreamCopy Whether to allow to copy the audio stream. Default: true. (optional)
+     * @param playbackInfoDto The playback info. (optional)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;PlaybackInfoResponse&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<PlaybackInfoResponse> getPostedPlaybackInfoWithHttpInfo(
+            @org.eclipse.jdt.annotation.Nullable UUID itemId, @org.eclipse.jdt.annotation.NonNull UUID userId,
+            @org.eclipse.jdt.annotation.NonNull Integer maxStreamingBitrate,
+            @org.eclipse.jdt.annotation.NonNull Long startTimeTicks,
+            @org.eclipse.jdt.annotation.NonNull Integer audioStreamIndex,
+            @org.eclipse.jdt.annotation.NonNull Integer subtitleStreamIndex,
+            @org.eclipse.jdt.annotation.NonNull Integer maxAudioChannels,
+            @org.eclipse.jdt.annotation.NonNull String mediaSourceId,
+            @org.eclipse.jdt.annotation.NonNull String liveStreamId,
+            @org.eclipse.jdt.annotation.NonNull Boolean autoOpenLiveStream,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableDirectPlay,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableDirectStream,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableTranscoding,
+            @org.eclipse.jdt.annotation.NonNull Boolean allowVideoStreamCopy,
+            @org.eclipse.jdt.annotation.NonNull Boolean allowAudioStreamCopy,
+            @org.eclipse.jdt.annotation.NonNull PlaybackInfoDto playbackInfoDto, Map<String, String> headers)
+            throws ApiException {
         HttpRequest.Builder localVarRequestBuilder = getPostedPlaybackInfoRequestBuilder(itemId, userId,
                 maxStreamingBitrate, startTimeTicks, audioStreamIndex, subtitleStreamIndex, maxAudioChannels,
                 mediaSourceId, liveStreamId, autoOpenLiveStream, enableDirectPlay, enableDirectStream,
-                enableTranscoding, allowVideoStreamCopy, allowAudioStreamCopy, playbackInfoDto);
+                enableTranscoding, allowVideoStreamCopy, allowAudioStreamCopy, playbackInfoDto, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -460,14 +715,14 @@ public class MediaInfoApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                PlaybackInfoResponse responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<PlaybackInfoResponse>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<PlaybackInfoResponse>(localVarResponse.statusCode(),
-                        localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody,
-                                        new TypeReference<PlaybackInfoResponse>() {
-                                        }));
+                        localVarResponse.headers().map(), responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -493,7 +748,8 @@ public class MediaInfoApi {
             @org.eclipse.jdt.annotation.NonNull Boolean enableTranscoding,
             @org.eclipse.jdt.annotation.NonNull Boolean allowVideoStreamCopy,
             @org.eclipse.jdt.annotation.NonNull Boolean allowAudioStreamCopy,
-            @org.eclipse.jdt.annotation.NonNull PlaybackInfoDto playbackInfoDto) throws ApiException {
+            @org.eclipse.jdt.annotation.NonNull PlaybackInfoDto playbackInfoDto, Map<String, String> headers)
+            throws ApiException {
         // verify the required parameter 'itemId' is set
         if (itemId == null) {
             throw new ApiException(400, "Missing the required parameter 'itemId' when calling getPostedPlaybackInfo");
@@ -560,6 +816,8 @@ public class MediaInfoApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -597,9 +855,47 @@ public class MediaInfoApi {
             @org.eclipse.jdt.annotation.NonNull Boolean enableDirectStream,
             @org.eclipse.jdt.annotation.NonNull Boolean alwaysBurnInSubtitleWhenTranscoding,
             @org.eclipse.jdt.annotation.NonNull OpenLiveStreamDto openLiveStreamDto) throws ApiException {
+        return openLiveStream(openToken, userId, playSessionId, maxStreamingBitrate, startTimeTicks, audioStreamIndex,
+                subtitleStreamIndex, maxAudioChannels, itemId, enableDirectPlay, enableDirectStream,
+                alwaysBurnInSubtitleWhenTranscoding, openLiveStreamDto, null);
+    }
+
+    /**
+     * Opens a media source.
+     * 
+     * @param openToken The open token. (optional)
+     * @param userId The user id. (optional)
+     * @param playSessionId The play session id. (optional)
+     * @param maxStreamingBitrate The maximum streaming bitrate. (optional)
+     * @param startTimeTicks The start time in ticks. (optional)
+     * @param audioStreamIndex The audio stream index. (optional)
+     * @param subtitleStreamIndex The subtitle stream index. (optional)
+     * @param maxAudioChannels The maximum number of audio channels. (optional)
+     * @param itemId The item id. (optional)
+     * @param enableDirectPlay Whether to enable direct play. Default: true. (optional)
+     * @param enableDirectStream Whether to enable direct stream. Default: true. (optional)
+     * @param alwaysBurnInSubtitleWhenTranscoding Always burn-in subtitle when transcoding. (optional)
+     * @param openLiveStreamDto The open live stream dto. (optional)
+     * @param headers Optional headers to include in the request
+     * @return LiveStreamResponse
+     * @throws ApiException if fails to make API call
+     */
+    public LiveStreamResponse openLiveStream(@org.eclipse.jdt.annotation.NonNull String openToken,
+            @org.eclipse.jdt.annotation.NonNull UUID userId, @org.eclipse.jdt.annotation.NonNull String playSessionId,
+            @org.eclipse.jdt.annotation.NonNull Integer maxStreamingBitrate,
+            @org.eclipse.jdt.annotation.NonNull Long startTimeTicks,
+            @org.eclipse.jdt.annotation.NonNull Integer audioStreamIndex,
+            @org.eclipse.jdt.annotation.NonNull Integer subtitleStreamIndex,
+            @org.eclipse.jdt.annotation.NonNull Integer maxAudioChannels,
+            @org.eclipse.jdt.annotation.NonNull UUID itemId,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableDirectPlay,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableDirectStream,
+            @org.eclipse.jdt.annotation.NonNull Boolean alwaysBurnInSubtitleWhenTranscoding,
+            @org.eclipse.jdt.annotation.NonNull OpenLiveStreamDto openLiveStreamDto, Map<String, String> headers)
+            throws ApiException {
         ApiResponse<LiveStreamResponse> localVarResponse = openLiveStreamWithHttpInfo(openToken, userId, playSessionId,
                 maxStreamingBitrate, startTimeTicks, audioStreamIndex, subtitleStreamIndex, maxAudioChannels, itemId,
-                enableDirectPlay, enableDirectStream, alwaysBurnInSubtitleWhenTranscoding, openLiveStreamDto);
+                enableDirectPlay, enableDirectStream, alwaysBurnInSubtitleWhenTranscoding, openLiveStreamDto, headers);
         return localVarResponse.getData();
     }
 
@@ -635,9 +931,48 @@ public class MediaInfoApi {
             @org.eclipse.jdt.annotation.NonNull Boolean enableDirectStream,
             @org.eclipse.jdt.annotation.NonNull Boolean alwaysBurnInSubtitleWhenTranscoding,
             @org.eclipse.jdt.annotation.NonNull OpenLiveStreamDto openLiveStreamDto) throws ApiException {
+        return openLiveStreamWithHttpInfo(openToken, userId, playSessionId, maxStreamingBitrate, startTimeTicks,
+                audioStreamIndex, subtitleStreamIndex, maxAudioChannels, itemId, enableDirectPlay, enableDirectStream,
+                alwaysBurnInSubtitleWhenTranscoding, openLiveStreamDto, null);
+    }
+
+    /**
+     * Opens a media source.
+     * 
+     * @param openToken The open token. (optional)
+     * @param userId The user id. (optional)
+     * @param playSessionId The play session id. (optional)
+     * @param maxStreamingBitrate The maximum streaming bitrate. (optional)
+     * @param startTimeTicks The start time in ticks. (optional)
+     * @param audioStreamIndex The audio stream index. (optional)
+     * @param subtitleStreamIndex The subtitle stream index. (optional)
+     * @param maxAudioChannels The maximum number of audio channels. (optional)
+     * @param itemId The item id. (optional)
+     * @param enableDirectPlay Whether to enable direct play. Default: true. (optional)
+     * @param enableDirectStream Whether to enable direct stream. Default: true. (optional)
+     * @param alwaysBurnInSubtitleWhenTranscoding Always burn-in subtitle when transcoding. (optional)
+     * @param openLiveStreamDto The open live stream dto. (optional)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;LiveStreamResponse&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<LiveStreamResponse> openLiveStreamWithHttpInfo(
+            @org.eclipse.jdt.annotation.NonNull String openToken, @org.eclipse.jdt.annotation.NonNull UUID userId,
+            @org.eclipse.jdt.annotation.NonNull String playSessionId,
+            @org.eclipse.jdt.annotation.NonNull Integer maxStreamingBitrate,
+            @org.eclipse.jdt.annotation.NonNull Long startTimeTicks,
+            @org.eclipse.jdt.annotation.NonNull Integer audioStreamIndex,
+            @org.eclipse.jdt.annotation.NonNull Integer subtitleStreamIndex,
+            @org.eclipse.jdt.annotation.NonNull Integer maxAudioChannels,
+            @org.eclipse.jdt.annotation.NonNull UUID itemId,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableDirectPlay,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableDirectStream,
+            @org.eclipse.jdt.annotation.NonNull Boolean alwaysBurnInSubtitleWhenTranscoding,
+            @org.eclipse.jdt.annotation.NonNull OpenLiveStreamDto openLiveStreamDto, Map<String, String> headers)
+            throws ApiException {
         HttpRequest.Builder localVarRequestBuilder = openLiveStreamRequestBuilder(openToken, userId, playSessionId,
                 maxStreamingBitrate, startTimeTicks, audioStreamIndex, subtitleStreamIndex, maxAudioChannels, itemId,
-                enableDirectPlay, enableDirectStream, alwaysBurnInSubtitleWhenTranscoding, openLiveStreamDto);
+                enableDirectPlay, enableDirectStream, alwaysBurnInSubtitleWhenTranscoding, openLiveStreamDto, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -654,14 +989,14 @@ public class MediaInfoApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                LiveStreamResponse responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<LiveStreamResponse>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<LiveStreamResponse>(localVarResponse.statusCode(),
-                        localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody,
-                                        new TypeReference<LiveStreamResponse>() {
-                                        }));
+                        localVarResponse.headers().map(), responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -683,7 +1018,8 @@ public class MediaInfoApi {
             @org.eclipse.jdt.annotation.NonNull Boolean enableDirectPlay,
             @org.eclipse.jdt.annotation.NonNull Boolean enableDirectStream,
             @org.eclipse.jdt.annotation.NonNull Boolean alwaysBurnInSubtitleWhenTranscoding,
-            @org.eclipse.jdt.annotation.NonNull OpenLiveStreamDto openLiveStreamDto) throws ApiException {
+            @org.eclipse.jdt.annotation.NonNull OpenLiveStreamDto openLiveStreamDto, Map<String, String> headers)
+            throws ApiException {
 
         HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
 
@@ -742,6 +1078,8 @@ public class MediaInfoApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }

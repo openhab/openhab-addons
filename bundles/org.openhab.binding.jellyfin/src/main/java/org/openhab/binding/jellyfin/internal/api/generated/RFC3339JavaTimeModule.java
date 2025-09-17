@@ -16,6 +16,7 @@ import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZonedDateTime;
 
+import com.fasterxml.jackson.databind.Module.SetupContext;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
@@ -24,6 +25,11 @@ public class RFC3339JavaTimeModule extends SimpleModule {
 
     public RFC3339JavaTimeModule() {
         super("RFC3339JavaTimeModule");
+    }
+
+    @Override
+    public void setupModule(SetupContext context) {
+        super.setupModule(context);
 
         addDeserializer(Instant.class, RFC3339InstantDeserializer.INSTANT);
         addDeserializer(OffsetDateTime.class, RFC3339InstantDeserializer.OFFSET_DATE_TIME);

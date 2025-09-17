@@ -33,7 +33,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
         ProblemDetails.JSON_PROPERTY_STATUS, ProblemDetails.JSON_PROPERTY_DETAIL,
         ProblemDetails.JSON_PROPERTY_INSTANCE })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
-public class ProblemDetails extends HashMap<String, Object> {
+public class ProblemDetails {
     public static final String JSON_PROPERTY_TYPE = "type";
     @org.eclipse.jdt.annotation.NonNull
     private String type;
@@ -235,19 +235,18 @@ public class ProblemDetails extends HashMap<String, Object> {
                 && Objects.equals(this.status, problemDetails.status)
                 && Objects.equals(this.detail, problemDetails.detail)
                 && Objects.equals(this.instance, problemDetails.instance)
-                && Objects.equals(this.additionalProperties, problemDetails.additionalProperties) && super.equals(o);
+                && Objects.equals(this.additionalProperties, problemDetails.additionalProperties);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(type, title, status, detail, instance, super.hashCode(), additionalProperties);
+        return Objects.hash(type, title, status, detail, instance, additionalProperties);
     }
 
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("class ProblemDetails {\n");
-        sb.append("    ").append(toIndentedString(super.toString())).append("\n");
         sb.append("    type: ").append(toIndentedString(type)).append("\n");
         sb.append("    title: ").append(toIndentedString(title)).append("\n");
         sb.append("    status: ").append(toIndentedString(status)).append("\n");

@@ -22,6 +22,7 @@ import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.StringJoiner;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -32,11 +33,32 @@ import org.openhab.binding.jellyfin.internal.api.generated.ApiResponse;
 import org.openhab.binding.jellyfin.internal.api.generated.Configuration;
 import org.openhab.binding.jellyfin.internal.api.generated.Pair;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class TrickplayApi {
+    /**
+     * Utility class for extending HttpRequest.Builder functionality.
+     */
+    private static class HttpRequestBuilderExtensions {
+        /**
+         * Adds additional headers to the provided HttpRequest.Builder. Useful for adding method/endpoint specific
+         * headers.
+         *
+         * @param builder the HttpRequest.Builder to which headers will be added
+         * @param headers a map of header names and values to add; may be null
+         * @return the same HttpRequest.Builder instance with the additional headers set
+         */
+        static HttpRequest.Builder withAdditionalHeaders(HttpRequest.Builder builder, Map<String, String> headers) {
+            if (headers != null) {
+                for (Map.Entry<String, String> entry : headers.entrySet()) {
+                    builder.header(entry.getKey(), entry.getValue());
+                }
+            }
+            return builder;
+        }
+    }
+
     private final HttpClient memberVarHttpClient;
     private final ObjectMapper memberVarObjectMapper;
     private final String memberVarBaseUri;
@@ -73,6 +95,56 @@ public class TrickplayApi {
     }
 
     /**
+     * Download file from the given response.
+     *
+     * @param response Response
+     * @return File
+     * @throws ApiException If fail to read file content from response and write to disk
+     */
+    public File downloadFileFromResponse(HttpResponse<InputStream> response) throws ApiException {
+        try {
+            File file = prepareDownloadFile(response);
+            java.nio.file.Files.copy(response.body(), file.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+            return file;
+        } catch (IOException e) {
+            throw new ApiException(e);
+        }
+    }
+
+    /**
+     * <p>
+     * Prepare the file for download from the response.
+     * </p>
+     *
+     * @param response a {@link java.net.http.HttpResponse} object.
+     * @return a {@link java.io.File} object.
+     * @throws java.io.IOException if any.
+     */
+    private File prepareDownloadFile(HttpResponse<InputStream> response) throws IOException {
+        String filename = null;
+        java.util.Optional<String> contentDisposition = response.headers().firstValue("Content-Disposition");
+        if (contentDisposition.isPresent() && !"".equals(contentDisposition.get())) {
+            // Get filename from the Content-Disposition header.
+            java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("filename=['\"]?([^'\"\\s]+)['\"]?");
+            java.util.regex.Matcher matcher = pattern.matcher(contentDisposition.get());
+            if (matcher.find())
+                filename = matcher.group(1);
+        }
+        File file = null;
+        if (filename != null) {
+            java.nio.file.Path tempDir = java.nio.file.Files.createTempDirectory("swagger-gen-native");
+            java.nio.file.Path filePath = java.nio.file.Files.createFile(tempDir.resolve(filename));
+            file = filePath.toFile();
+            tempDir.toFile().deleteOnExit(); // best effort cleanup
+            file.deleteOnExit(); // best effort cleanup
+        } else {
+            file = java.nio.file.Files.createTempFile("download-", "").toFile();
+            file.deleteOnExit(); // best effort cleanup
+        }
+        return file;
+    }
+
+    /**
      * Gets an image tiles playlist for trickplay.
      * 
      * @param itemId The item id. (required)
@@ -84,7 +156,23 @@ public class TrickplayApi {
     public File getTrickplayHlsPlaylist(@org.eclipse.jdt.annotation.Nullable UUID itemId,
             @org.eclipse.jdt.annotation.Nullable Integer width, @org.eclipse.jdt.annotation.NonNull UUID mediaSourceId)
             throws ApiException {
-        ApiResponse<File> localVarResponse = getTrickplayHlsPlaylistWithHttpInfo(itemId, width, mediaSourceId);
+        return getTrickplayHlsPlaylist(itemId, width, mediaSourceId, null);
+    }
+
+    /**
+     * Gets an image tiles playlist for trickplay.
+     * 
+     * @param itemId The item id. (required)
+     * @param width The width of a single tile. (required)
+     * @param mediaSourceId The media version id, if using an alternate version. (optional)
+     * @param headers Optional headers to include in the request
+     * @return File
+     * @throws ApiException if fails to make API call
+     */
+    public File getTrickplayHlsPlaylist(@org.eclipse.jdt.annotation.Nullable UUID itemId,
+            @org.eclipse.jdt.annotation.Nullable Integer width, @org.eclipse.jdt.annotation.NonNull UUID mediaSourceId,
+            Map<String, String> headers) throws ApiException {
+        ApiResponse<File> localVarResponse = getTrickplayHlsPlaylistWithHttpInfo(itemId, width, mediaSourceId, headers);
         return localVarResponse.getData();
     }
 
@@ -100,8 +188,24 @@ public class TrickplayApi {
     public ApiResponse<File> getTrickplayHlsPlaylistWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID itemId,
             @org.eclipse.jdt.annotation.Nullable Integer width, @org.eclipse.jdt.annotation.NonNull UUID mediaSourceId)
             throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getTrickplayHlsPlaylistRequestBuilder(itemId, width,
-                mediaSourceId);
+        return getTrickplayHlsPlaylistWithHttpInfo(itemId, width, mediaSourceId, null);
+    }
+
+    /**
+     * Gets an image tiles playlist for trickplay.
+     * 
+     * @param itemId The item id. (required)
+     * @param width The width of a single tile. (required)
+     * @param mediaSourceId The media version id, if using an alternate version. (optional)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;File&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<File> getTrickplayHlsPlaylistWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID itemId,
+            @org.eclipse.jdt.annotation.Nullable Integer width, @org.eclipse.jdt.annotation.NonNull UUID mediaSourceId,
+            Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = getTrickplayHlsPlaylistRequestBuilder(itemId, width, mediaSourceId,
+                headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -116,13 +220,13 @@ public class TrickplayApi {
                     return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
                 }
 
-                String responseBody = new String(localVarResponse.body().readAllBytes());
+                // Handle file downloading.
+                File responseValue = downloadFileFromResponse(localVarResponse);
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {
-                                }));
+                        responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -134,8 +238,8 @@ public class TrickplayApi {
     }
 
     private HttpRequest.Builder getTrickplayHlsPlaylistRequestBuilder(@org.eclipse.jdt.annotation.Nullable UUID itemId,
-            @org.eclipse.jdt.annotation.Nullable Integer width, @org.eclipse.jdt.annotation.NonNull UUID mediaSourceId)
-            throws ApiException {
+            @org.eclipse.jdt.annotation.Nullable Integer width, @org.eclipse.jdt.annotation.NonNull UUID mediaSourceId,
+            Map<String, String> headers) throws ApiException {
         // verify the required parameter 'itemId' is set
         if (itemId == null) {
             throw new ApiException(400, "Missing the required parameter 'itemId' when calling getTrickplayHlsPlaylist");
@@ -175,6 +279,8 @@ public class TrickplayApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -194,7 +300,25 @@ public class TrickplayApi {
     public File getTrickplayTileImage(@org.eclipse.jdt.annotation.Nullable UUID itemId,
             @org.eclipse.jdt.annotation.Nullable Integer width, @org.eclipse.jdt.annotation.Nullable Integer index,
             @org.eclipse.jdt.annotation.NonNull UUID mediaSourceId) throws ApiException {
-        ApiResponse<File> localVarResponse = getTrickplayTileImageWithHttpInfo(itemId, width, index, mediaSourceId);
+        return getTrickplayTileImage(itemId, width, index, mediaSourceId, null);
+    }
+
+    /**
+     * Gets a trickplay tile image.
+     * 
+     * @param itemId The item id. (required)
+     * @param width The width of a single tile. (required)
+     * @param index The index of the desired tile. (required)
+     * @param mediaSourceId The media version id, if using an alternate version. (optional)
+     * @param headers Optional headers to include in the request
+     * @return File
+     * @throws ApiException if fails to make API call
+     */
+    public File getTrickplayTileImage(@org.eclipse.jdt.annotation.Nullable UUID itemId,
+            @org.eclipse.jdt.annotation.Nullable Integer width, @org.eclipse.jdt.annotation.Nullable Integer index,
+            @org.eclipse.jdt.annotation.NonNull UUID mediaSourceId, Map<String, String> headers) throws ApiException {
+        ApiResponse<File> localVarResponse = getTrickplayTileImageWithHttpInfo(itemId, width, index, mediaSourceId,
+                headers);
         return localVarResponse.getData();
     }
 
@@ -211,8 +335,25 @@ public class TrickplayApi {
     public ApiResponse<File> getTrickplayTileImageWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID itemId,
             @org.eclipse.jdt.annotation.Nullable Integer width, @org.eclipse.jdt.annotation.Nullable Integer index,
             @org.eclipse.jdt.annotation.NonNull UUID mediaSourceId) throws ApiException {
+        return getTrickplayTileImageWithHttpInfo(itemId, width, index, mediaSourceId, null);
+    }
+
+    /**
+     * Gets a trickplay tile image.
+     * 
+     * @param itemId The item id. (required)
+     * @param width The width of a single tile. (required)
+     * @param index The index of the desired tile. (required)
+     * @param mediaSourceId The media version id, if using an alternate version. (optional)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;File&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<File> getTrickplayTileImageWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID itemId,
+            @org.eclipse.jdt.annotation.Nullable Integer width, @org.eclipse.jdt.annotation.Nullable Integer index,
+            @org.eclipse.jdt.annotation.NonNull UUID mediaSourceId, Map<String, String> headers) throws ApiException {
         HttpRequest.Builder localVarRequestBuilder = getTrickplayTileImageRequestBuilder(itemId, width, index,
-                mediaSourceId);
+                mediaSourceId, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -227,13 +368,13 @@ public class TrickplayApi {
                     return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
                 }
 
-                String responseBody = new String(localVarResponse.body().readAllBytes());
+                // Handle file downloading.
+                File responseValue = downloadFileFromResponse(localVarResponse);
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {
-                                }));
+                        responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -246,7 +387,7 @@ public class TrickplayApi {
 
     private HttpRequest.Builder getTrickplayTileImageRequestBuilder(@org.eclipse.jdt.annotation.Nullable UUID itemId,
             @org.eclipse.jdt.annotation.Nullable Integer width, @org.eclipse.jdt.annotation.Nullable Integer index,
-            @org.eclipse.jdt.annotation.NonNull UUID mediaSourceId) throws ApiException {
+            @org.eclipse.jdt.annotation.NonNull UUID mediaSourceId, Map<String, String> headers) throws ApiException {
         // verify the required parameter 'itemId' is set
         if (itemId == null) {
             throw new ApiException(400, "Missing the required parameter 'itemId' when calling getTrickplayTileImage");
@@ -291,6 +432,8 @@ public class TrickplayApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }

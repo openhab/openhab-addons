@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.jellyfin.internal.api.generated.current;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -21,6 +22,7 @@ import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.StringJoiner;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -47,6 +49,28 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class ItemLookupApi {
+    /**
+     * Utility class for extending HttpRequest.Builder functionality.
+     */
+    private static class HttpRequestBuilderExtensions {
+        /**
+         * Adds additional headers to the provided HttpRequest.Builder. Useful for adding method/endpoint specific
+         * headers.
+         *
+         * @param builder the HttpRequest.Builder to which headers will be added
+         * @param headers a map of header names and values to add; may be null
+         * @return the same HttpRequest.Builder instance with the additional headers set
+         */
+        static HttpRequest.Builder withAdditionalHeaders(HttpRequest.Builder builder, Map<String, String> headers) {
+            if (headers != null) {
+                for (Map.Entry<String, String> entry : headers.entrySet()) {
+                    builder.header(entry.getKey(), entry.getValue());
+                }
+            }
+            return builder;
+        }
+    }
+
     private final HttpClient memberVarHttpClient;
     private final ObjectMapper memberVarObjectMapper;
     private final String memberVarBaseUri;
@@ -83,6 +107,56 @@ public class ItemLookupApi {
     }
 
     /**
+     * Download file from the given response.
+     *
+     * @param response Response
+     * @return File
+     * @throws ApiException If fail to read file content from response and write to disk
+     */
+    public File downloadFileFromResponse(HttpResponse<InputStream> response) throws ApiException {
+        try {
+            File file = prepareDownloadFile(response);
+            java.nio.file.Files.copy(response.body(), file.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+            return file;
+        } catch (IOException e) {
+            throw new ApiException(e);
+        }
+    }
+
+    /**
+     * <p>
+     * Prepare the file for download from the response.
+     * </p>
+     *
+     * @param response a {@link java.net.http.HttpResponse} object.
+     * @return a {@link java.io.File} object.
+     * @throws java.io.IOException if any.
+     */
+    private File prepareDownloadFile(HttpResponse<InputStream> response) throws IOException {
+        String filename = null;
+        java.util.Optional<String> contentDisposition = response.headers().firstValue("Content-Disposition");
+        if (contentDisposition.isPresent() && !"".equals(contentDisposition.get())) {
+            // Get filename from the Content-Disposition header.
+            java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("filename=['\"]?([^'\"\\s]+)['\"]?");
+            java.util.regex.Matcher matcher = pattern.matcher(contentDisposition.get());
+            if (matcher.find())
+                filename = matcher.group(1);
+        }
+        File file = null;
+        if (filename != null) {
+            java.nio.file.Path tempDir = java.nio.file.Files.createTempDirectory("swagger-gen-native");
+            java.nio.file.Path filePath = java.nio.file.Files.createFile(tempDir.resolve(filename));
+            file = filePath.toFile();
+            tempDir.toFile().deleteOnExit(); // best effort cleanup
+            file.deleteOnExit(); // best effort cleanup
+        } else {
+            file = java.nio.file.Files.createTempFile("download-", "").toFile();
+            file.deleteOnExit(); // best effort cleanup
+        }
+        return file;
+    }
+
+    /**
      * Applies search criteria to an item and refreshes metadata.
      * 
      * @param itemId Item id. (required)
@@ -94,7 +168,24 @@ public class ItemLookupApi {
     public void applySearchCriteria(@org.eclipse.jdt.annotation.Nullable UUID itemId,
             @org.eclipse.jdt.annotation.Nullable RemoteSearchResult remoteSearchResult,
             @org.eclipse.jdt.annotation.NonNull Boolean replaceAllImages) throws ApiException {
-        applySearchCriteriaWithHttpInfo(itemId, remoteSearchResult, replaceAllImages);
+        applySearchCriteria(itemId, remoteSearchResult, replaceAllImages, null);
+    }
+
+    /**
+     * Applies search criteria to an item and refreshes metadata.
+     * 
+     * @param itemId Item id. (required)
+     * @param remoteSearchResult The remote search result. (required)
+     * @param replaceAllImages Optional. Whether or not to replace all images. Default: True. (optional, default to
+     *            true)
+     * @param headers Optional headers to include in the request
+     * @throws ApiException if fails to make API call
+     */
+    public void applySearchCriteria(@org.eclipse.jdt.annotation.Nullable UUID itemId,
+            @org.eclipse.jdt.annotation.Nullable RemoteSearchResult remoteSearchResult,
+            @org.eclipse.jdt.annotation.NonNull Boolean replaceAllImages, Map<String, String> headers)
+            throws ApiException {
+        applySearchCriteriaWithHttpInfo(itemId, remoteSearchResult, replaceAllImages, headers);
     }
 
     /**
@@ -110,8 +201,26 @@ public class ItemLookupApi {
     public ApiResponse<Void> applySearchCriteriaWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID itemId,
             @org.eclipse.jdt.annotation.Nullable RemoteSearchResult remoteSearchResult,
             @org.eclipse.jdt.annotation.NonNull Boolean replaceAllImages) throws ApiException {
+        return applySearchCriteriaWithHttpInfo(itemId, remoteSearchResult, replaceAllImages, null);
+    }
+
+    /**
+     * Applies search criteria to an item and refreshes metadata.
+     * 
+     * @param itemId Item id. (required)
+     * @param remoteSearchResult The remote search result. (required)
+     * @param replaceAllImages Optional. Whether or not to replace all images. Default: True. (optional, default to
+     *            true)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<Void> applySearchCriteriaWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID itemId,
+            @org.eclipse.jdt.annotation.Nullable RemoteSearchResult remoteSearchResult,
+            @org.eclipse.jdt.annotation.NonNull Boolean replaceAllImages, Map<String, String> headers)
+            throws ApiException {
         HttpRequest.Builder localVarRequestBuilder = applySearchCriteriaRequestBuilder(itemId, remoteSearchResult,
-                replaceAllImages);
+                replaceAllImages, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -140,7 +249,8 @@ public class ItemLookupApi {
 
     private HttpRequest.Builder applySearchCriteriaRequestBuilder(@org.eclipse.jdt.annotation.Nullable UUID itemId,
             @org.eclipse.jdt.annotation.Nullable RemoteSearchResult remoteSearchResult,
-            @org.eclipse.jdt.annotation.NonNull Boolean replaceAllImages) throws ApiException {
+            @org.eclipse.jdt.annotation.NonNull Boolean replaceAllImages, Map<String, String> headers)
+            throws ApiException {
         // verify the required parameter 'itemId' is set
         if (itemId == null) {
             throw new ApiException(400, "Missing the required parameter 'itemId' when calling applySearchCriteria");
@@ -186,6 +296,8 @@ public class ItemLookupApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -202,8 +314,22 @@ public class ItemLookupApi {
     public List<RemoteSearchResult> getBookRemoteSearchResults(
             @org.eclipse.jdt.annotation.Nullable BookInfoRemoteSearchQuery bookInfoRemoteSearchQuery)
             throws ApiException {
+        return getBookRemoteSearchResults(bookInfoRemoteSearchQuery, null);
+    }
+
+    /**
+     * Get book remote search.
+     * 
+     * @param bookInfoRemoteSearchQuery Remote search query. (required)
+     * @param headers Optional headers to include in the request
+     * @return List&lt;RemoteSearchResult&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public List<RemoteSearchResult> getBookRemoteSearchResults(
+            @org.eclipse.jdt.annotation.Nullable BookInfoRemoteSearchQuery bookInfoRemoteSearchQuery,
+            Map<String, String> headers) throws ApiException {
         ApiResponse<List<RemoteSearchResult>> localVarResponse = getBookRemoteSearchResultsWithHttpInfo(
-                bookInfoRemoteSearchQuery);
+                bookInfoRemoteSearchQuery, headers);
         return localVarResponse.getData();
     }
 
@@ -217,8 +343,22 @@ public class ItemLookupApi {
     public ApiResponse<List<RemoteSearchResult>> getBookRemoteSearchResultsWithHttpInfo(
             @org.eclipse.jdt.annotation.Nullable BookInfoRemoteSearchQuery bookInfoRemoteSearchQuery)
             throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getBookRemoteSearchResultsRequestBuilder(
-                bookInfoRemoteSearchQuery);
+        return getBookRemoteSearchResultsWithHttpInfo(bookInfoRemoteSearchQuery, null);
+    }
+
+    /**
+     * Get book remote search.
+     * 
+     * @param bookInfoRemoteSearchQuery Remote search query. (required)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;List&lt;RemoteSearchResult&gt;&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<List<RemoteSearchResult>> getBookRemoteSearchResultsWithHttpInfo(
+            @org.eclipse.jdt.annotation.Nullable BookInfoRemoteSearchQuery bookInfoRemoteSearchQuery,
+            Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = getBookRemoteSearchResultsRequestBuilder(bookInfoRemoteSearchQuery,
+                headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -235,14 +375,14 @@ public class ItemLookupApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                List<RemoteSearchResult> responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<List<RemoteSearchResult>>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<List<RemoteSearchResult>>(localVarResponse.statusCode(),
-                        localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody,
-                                        new TypeReference<List<RemoteSearchResult>>() {
-                                        }));
+                        localVarResponse.headers().map(), responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -254,8 +394,8 @@ public class ItemLookupApi {
     }
 
     private HttpRequest.Builder getBookRemoteSearchResultsRequestBuilder(
-            @org.eclipse.jdt.annotation.Nullable BookInfoRemoteSearchQuery bookInfoRemoteSearchQuery)
-            throws ApiException {
+            @org.eclipse.jdt.annotation.Nullable BookInfoRemoteSearchQuery bookInfoRemoteSearchQuery,
+            Map<String, String> headers) throws ApiException {
         // verify the required parameter 'bookInfoRemoteSearchQuery' is set
         if (bookInfoRemoteSearchQuery == null) {
             throw new ApiException(400,
@@ -281,6 +421,8 @@ public class ItemLookupApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -297,8 +439,22 @@ public class ItemLookupApi {
     public List<RemoteSearchResult> getBoxSetRemoteSearchResults(
             @org.eclipse.jdt.annotation.Nullable BoxSetInfoRemoteSearchQuery boxSetInfoRemoteSearchQuery)
             throws ApiException {
+        return getBoxSetRemoteSearchResults(boxSetInfoRemoteSearchQuery, null);
+    }
+
+    /**
+     * Get box set remote search.
+     * 
+     * @param boxSetInfoRemoteSearchQuery Remote search query. (required)
+     * @param headers Optional headers to include in the request
+     * @return List&lt;RemoteSearchResult&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public List<RemoteSearchResult> getBoxSetRemoteSearchResults(
+            @org.eclipse.jdt.annotation.Nullable BoxSetInfoRemoteSearchQuery boxSetInfoRemoteSearchQuery,
+            Map<String, String> headers) throws ApiException {
         ApiResponse<List<RemoteSearchResult>> localVarResponse = getBoxSetRemoteSearchResultsWithHttpInfo(
-                boxSetInfoRemoteSearchQuery);
+                boxSetInfoRemoteSearchQuery, headers);
         return localVarResponse.getData();
     }
 
@@ -312,8 +468,22 @@ public class ItemLookupApi {
     public ApiResponse<List<RemoteSearchResult>> getBoxSetRemoteSearchResultsWithHttpInfo(
             @org.eclipse.jdt.annotation.Nullable BoxSetInfoRemoteSearchQuery boxSetInfoRemoteSearchQuery)
             throws ApiException {
+        return getBoxSetRemoteSearchResultsWithHttpInfo(boxSetInfoRemoteSearchQuery, null);
+    }
+
+    /**
+     * Get box set remote search.
+     * 
+     * @param boxSetInfoRemoteSearchQuery Remote search query. (required)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;List&lt;RemoteSearchResult&gt;&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<List<RemoteSearchResult>> getBoxSetRemoteSearchResultsWithHttpInfo(
+            @org.eclipse.jdt.annotation.Nullable BoxSetInfoRemoteSearchQuery boxSetInfoRemoteSearchQuery,
+            Map<String, String> headers) throws ApiException {
         HttpRequest.Builder localVarRequestBuilder = getBoxSetRemoteSearchResultsRequestBuilder(
-                boxSetInfoRemoteSearchQuery);
+                boxSetInfoRemoteSearchQuery, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -330,14 +500,14 @@ public class ItemLookupApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                List<RemoteSearchResult> responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<List<RemoteSearchResult>>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<List<RemoteSearchResult>>(localVarResponse.statusCode(),
-                        localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody,
-                                        new TypeReference<List<RemoteSearchResult>>() {
-                                        }));
+                        localVarResponse.headers().map(), responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -349,8 +519,8 @@ public class ItemLookupApi {
     }
 
     private HttpRequest.Builder getBoxSetRemoteSearchResultsRequestBuilder(
-            @org.eclipse.jdt.annotation.Nullable BoxSetInfoRemoteSearchQuery boxSetInfoRemoteSearchQuery)
-            throws ApiException {
+            @org.eclipse.jdt.annotation.Nullable BoxSetInfoRemoteSearchQuery boxSetInfoRemoteSearchQuery,
+            Map<String, String> headers) throws ApiException {
         // verify the required parameter 'boxSetInfoRemoteSearchQuery' is set
         if (boxSetInfoRemoteSearchQuery == null) {
             throw new ApiException(400,
@@ -376,6 +546,8 @@ public class ItemLookupApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -391,7 +563,20 @@ public class ItemLookupApi {
      */
     public List<ExternalIdInfo> getExternalIdInfos(@org.eclipse.jdt.annotation.Nullable UUID itemId)
             throws ApiException {
-        ApiResponse<List<ExternalIdInfo>> localVarResponse = getExternalIdInfosWithHttpInfo(itemId);
+        return getExternalIdInfos(itemId, null);
+    }
+
+    /**
+     * Get the item&#39;s external id info.
+     * 
+     * @param itemId Item id. (required)
+     * @param headers Optional headers to include in the request
+     * @return List&lt;ExternalIdInfo&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public List<ExternalIdInfo> getExternalIdInfos(@org.eclipse.jdt.annotation.Nullable UUID itemId,
+            Map<String, String> headers) throws ApiException {
+        ApiResponse<List<ExternalIdInfo>> localVarResponse = getExternalIdInfosWithHttpInfo(itemId, headers);
         return localVarResponse.getData();
     }
 
@@ -404,7 +589,20 @@ public class ItemLookupApi {
      */
     public ApiResponse<List<ExternalIdInfo>> getExternalIdInfosWithHttpInfo(
             @org.eclipse.jdt.annotation.Nullable UUID itemId) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getExternalIdInfosRequestBuilder(itemId);
+        return getExternalIdInfosWithHttpInfo(itemId, null);
+    }
+
+    /**
+     * Get the item&#39;s external id info.
+     * 
+     * @param itemId Item id. (required)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;List&lt;ExternalIdInfo&gt;&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<List<ExternalIdInfo>> getExternalIdInfosWithHttpInfo(
+            @org.eclipse.jdt.annotation.Nullable UUID itemId, Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = getExternalIdInfosRequestBuilder(itemId, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -421,14 +619,14 @@ public class ItemLookupApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                List<ExternalIdInfo> responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<List<ExternalIdInfo>>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<List<ExternalIdInfo>>(localVarResponse.statusCode(),
-                        localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody,
-                                        new TypeReference<List<ExternalIdInfo>>() {
-                                        }));
+                        localVarResponse.headers().map(), responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -439,8 +637,8 @@ public class ItemLookupApi {
         }
     }
 
-    private HttpRequest.Builder getExternalIdInfosRequestBuilder(@org.eclipse.jdt.annotation.Nullable UUID itemId)
-            throws ApiException {
+    private HttpRequest.Builder getExternalIdInfosRequestBuilder(@org.eclipse.jdt.annotation.Nullable UUID itemId,
+            Map<String, String> headers) throws ApiException {
         // verify the required parameter 'itemId' is set
         if (itemId == null) {
             throw new ApiException(400, "Missing the required parameter 'itemId' when calling getExternalIdInfos");
@@ -460,6 +658,8 @@ public class ItemLookupApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -476,8 +676,22 @@ public class ItemLookupApi {
     public List<RemoteSearchResult> getMovieRemoteSearchResults(
             @org.eclipse.jdt.annotation.Nullable MovieInfoRemoteSearchQuery movieInfoRemoteSearchQuery)
             throws ApiException {
+        return getMovieRemoteSearchResults(movieInfoRemoteSearchQuery, null);
+    }
+
+    /**
+     * Get movie remote search.
+     * 
+     * @param movieInfoRemoteSearchQuery Remote search query. (required)
+     * @param headers Optional headers to include in the request
+     * @return List&lt;RemoteSearchResult&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public List<RemoteSearchResult> getMovieRemoteSearchResults(
+            @org.eclipse.jdt.annotation.Nullable MovieInfoRemoteSearchQuery movieInfoRemoteSearchQuery,
+            Map<String, String> headers) throws ApiException {
         ApiResponse<List<RemoteSearchResult>> localVarResponse = getMovieRemoteSearchResultsWithHttpInfo(
-                movieInfoRemoteSearchQuery);
+                movieInfoRemoteSearchQuery, headers);
         return localVarResponse.getData();
     }
 
@@ -491,8 +705,22 @@ public class ItemLookupApi {
     public ApiResponse<List<RemoteSearchResult>> getMovieRemoteSearchResultsWithHttpInfo(
             @org.eclipse.jdt.annotation.Nullable MovieInfoRemoteSearchQuery movieInfoRemoteSearchQuery)
             throws ApiException {
+        return getMovieRemoteSearchResultsWithHttpInfo(movieInfoRemoteSearchQuery, null);
+    }
+
+    /**
+     * Get movie remote search.
+     * 
+     * @param movieInfoRemoteSearchQuery Remote search query. (required)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;List&lt;RemoteSearchResult&gt;&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<List<RemoteSearchResult>> getMovieRemoteSearchResultsWithHttpInfo(
+            @org.eclipse.jdt.annotation.Nullable MovieInfoRemoteSearchQuery movieInfoRemoteSearchQuery,
+            Map<String, String> headers) throws ApiException {
         HttpRequest.Builder localVarRequestBuilder = getMovieRemoteSearchResultsRequestBuilder(
-                movieInfoRemoteSearchQuery);
+                movieInfoRemoteSearchQuery, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -509,14 +737,14 @@ public class ItemLookupApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                List<RemoteSearchResult> responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<List<RemoteSearchResult>>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<List<RemoteSearchResult>>(localVarResponse.statusCode(),
-                        localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody,
-                                        new TypeReference<List<RemoteSearchResult>>() {
-                                        }));
+                        localVarResponse.headers().map(), responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -528,8 +756,8 @@ public class ItemLookupApi {
     }
 
     private HttpRequest.Builder getMovieRemoteSearchResultsRequestBuilder(
-            @org.eclipse.jdt.annotation.Nullable MovieInfoRemoteSearchQuery movieInfoRemoteSearchQuery)
-            throws ApiException {
+            @org.eclipse.jdt.annotation.Nullable MovieInfoRemoteSearchQuery movieInfoRemoteSearchQuery,
+            Map<String, String> headers) throws ApiException {
         // verify the required parameter 'movieInfoRemoteSearchQuery' is set
         if (movieInfoRemoteSearchQuery == null) {
             throw new ApiException(400,
@@ -555,6 +783,8 @@ public class ItemLookupApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -571,8 +801,22 @@ public class ItemLookupApi {
     public List<RemoteSearchResult> getMusicAlbumRemoteSearchResults(
             @org.eclipse.jdt.annotation.Nullable AlbumInfoRemoteSearchQuery albumInfoRemoteSearchQuery)
             throws ApiException {
+        return getMusicAlbumRemoteSearchResults(albumInfoRemoteSearchQuery, null);
+    }
+
+    /**
+     * Get music album remote search.
+     * 
+     * @param albumInfoRemoteSearchQuery Remote search query. (required)
+     * @param headers Optional headers to include in the request
+     * @return List&lt;RemoteSearchResult&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public List<RemoteSearchResult> getMusicAlbumRemoteSearchResults(
+            @org.eclipse.jdt.annotation.Nullable AlbumInfoRemoteSearchQuery albumInfoRemoteSearchQuery,
+            Map<String, String> headers) throws ApiException {
         ApiResponse<List<RemoteSearchResult>> localVarResponse = getMusicAlbumRemoteSearchResultsWithHttpInfo(
-                albumInfoRemoteSearchQuery);
+                albumInfoRemoteSearchQuery, headers);
         return localVarResponse.getData();
     }
 
@@ -586,8 +830,22 @@ public class ItemLookupApi {
     public ApiResponse<List<RemoteSearchResult>> getMusicAlbumRemoteSearchResultsWithHttpInfo(
             @org.eclipse.jdt.annotation.Nullable AlbumInfoRemoteSearchQuery albumInfoRemoteSearchQuery)
             throws ApiException {
+        return getMusicAlbumRemoteSearchResultsWithHttpInfo(albumInfoRemoteSearchQuery, null);
+    }
+
+    /**
+     * Get music album remote search.
+     * 
+     * @param albumInfoRemoteSearchQuery Remote search query. (required)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;List&lt;RemoteSearchResult&gt;&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<List<RemoteSearchResult>> getMusicAlbumRemoteSearchResultsWithHttpInfo(
+            @org.eclipse.jdt.annotation.Nullable AlbumInfoRemoteSearchQuery albumInfoRemoteSearchQuery,
+            Map<String, String> headers) throws ApiException {
         HttpRequest.Builder localVarRequestBuilder = getMusicAlbumRemoteSearchResultsRequestBuilder(
-                albumInfoRemoteSearchQuery);
+                albumInfoRemoteSearchQuery, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -604,14 +862,14 @@ public class ItemLookupApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                List<RemoteSearchResult> responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<List<RemoteSearchResult>>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<List<RemoteSearchResult>>(localVarResponse.statusCode(),
-                        localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody,
-                                        new TypeReference<List<RemoteSearchResult>>() {
-                                        }));
+                        localVarResponse.headers().map(), responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -623,8 +881,8 @@ public class ItemLookupApi {
     }
 
     private HttpRequest.Builder getMusicAlbumRemoteSearchResultsRequestBuilder(
-            @org.eclipse.jdt.annotation.Nullable AlbumInfoRemoteSearchQuery albumInfoRemoteSearchQuery)
-            throws ApiException {
+            @org.eclipse.jdt.annotation.Nullable AlbumInfoRemoteSearchQuery albumInfoRemoteSearchQuery,
+            Map<String, String> headers) throws ApiException {
         // verify the required parameter 'albumInfoRemoteSearchQuery' is set
         if (albumInfoRemoteSearchQuery == null) {
             throw new ApiException(400,
@@ -650,6 +908,8 @@ public class ItemLookupApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -666,8 +926,22 @@ public class ItemLookupApi {
     public List<RemoteSearchResult> getMusicArtistRemoteSearchResults(
             @org.eclipse.jdt.annotation.Nullable ArtistInfoRemoteSearchQuery artistInfoRemoteSearchQuery)
             throws ApiException {
+        return getMusicArtistRemoteSearchResults(artistInfoRemoteSearchQuery, null);
+    }
+
+    /**
+     * Get music artist remote search.
+     * 
+     * @param artistInfoRemoteSearchQuery Remote search query. (required)
+     * @param headers Optional headers to include in the request
+     * @return List&lt;RemoteSearchResult&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public List<RemoteSearchResult> getMusicArtistRemoteSearchResults(
+            @org.eclipse.jdt.annotation.Nullable ArtistInfoRemoteSearchQuery artistInfoRemoteSearchQuery,
+            Map<String, String> headers) throws ApiException {
         ApiResponse<List<RemoteSearchResult>> localVarResponse = getMusicArtistRemoteSearchResultsWithHttpInfo(
-                artistInfoRemoteSearchQuery);
+                artistInfoRemoteSearchQuery, headers);
         return localVarResponse.getData();
     }
 
@@ -681,8 +955,22 @@ public class ItemLookupApi {
     public ApiResponse<List<RemoteSearchResult>> getMusicArtistRemoteSearchResultsWithHttpInfo(
             @org.eclipse.jdt.annotation.Nullable ArtistInfoRemoteSearchQuery artistInfoRemoteSearchQuery)
             throws ApiException {
+        return getMusicArtistRemoteSearchResultsWithHttpInfo(artistInfoRemoteSearchQuery, null);
+    }
+
+    /**
+     * Get music artist remote search.
+     * 
+     * @param artistInfoRemoteSearchQuery Remote search query. (required)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;List&lt;RemoteSearchResult&gt;&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<List<RemoteSearchResult>> getMusicArtistRemoteSearchResultsWithHttpInfo(
+            @org.eclipse.jdt.annotation.Nullable ArtistInfoRemoteSearchQuery artistInfoRemoteSearchQuery,
+            Map<String, String> headers) throws ApiException {
         HttpRequest.Builder localVarRequestBuilder = getMusicArtistRemoteSearchResultsRequestBuilder(
-                artistInfoRemoteSearchQuery);
+                artistInfoRemoteSearchQuery, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -699,14 +987,14 @@ public class ItemLookupApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                List<RemoteSearchResult> responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<List<RemoteSearchResult>>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<List<RemoteSearchResult>>(localVarResponse.statusCode(),
-                        localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody,
-                                        new TypeReference<List<RemoteSearchResult>>() {
-                                        }));
+                        localVarResponse.headers().map(), responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -718,8 +1006,8 @@ public class ItemLookupApi {
     }
 
     private HttpRequest.Builder getMusicArtistRemoteSearchResultsRequestBuilder(
-            @org.eclipse.jdt.annotation.Nullable ArtistInfoRemoteSearchQuery artistInfoRemoteSearchQuery)
-            throws ApiException {
+            @org.eclipse.jdt.annotation.Nullable ArtistInfoRemoteSearchQuery artistInfoRemoteSearchQuery,
+            Map<String, String> headers) throws ApiException {
         // verify the required parameter 'artistInfoRemoteSearchQuery' is set
         if (artistInfoRemoteSearchQuery == null) {
             throw new ApiException(400,
@@ -745,6 +1033,8 @@ public class ItemLookupApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -761,8 +1051,22 @@ public class ItemLookupApi {
     public List<RemoteSearchResult> getMusicVideoRemoteSearchResults(
             @org.eclipse.jdt.annotation.Nullable MusicVideoInfoRemoteSearchQuery musicVideoInfoRemoteSearchQuery)
             throws ApiException {
+        return getMusicVideoRemoteSearchResults(musicVideoInfoRemoteSearchQuery, null);
+    }
+
+    /**
+     * Get music video remote search.
+     * 
+     * @param musicVideoInfoRemoteSearchQuery Remote search query. (required)
+     * @param headers Optional headers to include in the request
+     * @return List&lt;RemoteSearchResult&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public List<RemoteSearchResult> getMusicVideoRemoteSearchResults(
+            @org.eclipse.jdt.annotation.Nullable MusicVideoInfoRemoteSearchQuery musicVideoInfoRemoteSearchQuery,
+            Map<String, String> headers) throws ApiException {
         ApiResponse<List<RemoteSearchResult>> localVarResponse = getMusicVideoRemoteSearchResultsWithHttpInfo(
-                musicVideoInfoRemoteSearchQuery);
+                musicVideoInfoRemoteSearchQuery, headers);
         return localVarResponse.getData();
     }
 
@@ -776,8 +1080,22 @@ public class ItemLookupApi {
     public ApiResponse<List<RemoteSearchResult>> getMusicVideoRemoteSearchResultsWithHttpInfo(
             @org.eclipse.jdt.annotation.Nullable MusicVideoInfoRemoteSearchQuery musicVideoInfoRemoteSearchQuery)
             throws ApiException {
+        return getMusicVideoRemoteSearchResultsWithHttpInfo(musicVideoInfoRemoteSearchQuery, null);
+    }
+
+    /**
+     * Get music video remote search.
+     * 
+     * @param musicVideoInfoRemoteSearchQuery Remote search query. (required)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;List&lt;RemoteSearchResult&gt;&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<List<RemoteSearchResult>> getMusicVideoRemoteSearchResultsWithHttpInfo(
+            @org.eclipse.jdt.annotation.Nullable MusicVideoInfoRemoteSearchQuery musicVideoInfoRemoteSearchQuery,
+            Map<String, String> headers) throws ApiException {
         HttpRequest.Builder localVarRequestBuilder = getMusicVideoRemoteSearchResultsRequestBuilder(
-                musicVideoInfoRemoteSearchQuery);
+                musicVideoInfoRemoteSearchQuery, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -794,14 +1112,14 @@ public class ItemLookupApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                List<RemoteSearchResult> responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<List<RemoteSearchResult>>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<List<RemoteSearchResult>>(localVarResponse.statusCode(),
-                        localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody,
-                                        new TypeReference<List<RemoteSearchResult>>() {
-                                        }));
+                        localVarResponse.headers().map(), responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -813,8 +1131,8 @@ public class ItemLookupApi {
     }
 
     private HttpRequest.Builder getMusicVideoRemoteSearchResultsRequestBuilder(
-            @org.eclipse.jdt.annotation.Nullable MusicVideoInfoRemoteSearchQuery musicVideoInfoRemoteSearchQuery)
-            throws ApiException {
+            @org.eclipse.jdt.annotation.Nullable MusicVideoInfoRemoteSearchQuery musicVideoInfoRemoteSearchQuery,
+            Map<String, String> headers) throws ApiException {
         // verify the required parameter 'musicVideoInfoRemoteSearchQuery' is set
         if (musicVideoInfoRemoteSearchQuery == null) {
             throw new ApiException(400,
@@ -840,6 +1158,8 @@ public class ItemLookupApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -856,8 +1176,22 @@ public class ItemLookupApi {
     public List<RemoteSearchResult> getPersonRemoteSearchResults(
             @org.eclipse.jdt.annotation.Nullable PersonLookupInfoRemoteSearchQuery personLookupInfoRemoteSearchQuery)
             throws ApiException {
+        return getPersonRemoteSearchResults(personLookupInfoRemoteSearchQuery, null);
+    }
+
+    /**
+     * Get person remote search.
+     * 
+     * @param personLookupInfoRemoteSearchQuery Remote search query. (required)
+     * @param headers Optional headers to include in the request
+     * @return List&lt;RemoteSearchResult&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public List<RemoteSearchResult> getPersonRemoteSearchResults(
+            @org.eclipse.jdt.annotation.Nullable PersonLookupInfoRemoteSearchQuery personLookupInfoRemoteSearchQuery,
+            Map<String, String> headers) throws ApiException {
         ApiResponse<List<RemoteSearchResult>> localVarResponse = getPersonRemoteSearchResultsWithHttpInfo(
-                personLookupInfoRemoteSearchQuery);
+                personLookupInfoRemoteSearchQuery, headers);
         return localVarResponse.getData();
     }
 
@@ -871,8 +1205,22 @@ public class ItemLookupApi {
     public ApiResponse<List<RemoteSearchResult>> getPersonRemoteSearchResultsWithHttpInfo(
             @org.eclipse.jdt.annotation.Nullable PersonLookupInfoRemoteSearchQuery personLookupInfoRemoteSearchQuery)
             throws ApiException {
+        return getPersonRemoteSearchResultsWithHttpInfo(personLookupInfoRemoteSearchQuery, null);
+    }
+
+    /**
+     * Get person remote search.
+     * 
+     * @param personLookupInfoRemoteSearchQuery Remote search query. (required)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;List&lt;RemoteSearchResult&gt;&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<List<RemoteSearchResult>> getPersonRemoteSearchResultsWithHttpInfo(
+            @org.eclipse.jdt.annotation.Nullable PersonLookupInfoRemoteSearchQuery personLookupInfoRemoteSearchQuery,
+            Map<String, String> headers) throws ApiException {
         HttpRequest.Builder localVarRequestBuilder = getPersonRemoteSearchResultsRequestBuilder(
-                personLookupInfoRemoteSearchQuery);
+                personLookupInfoRemoteSearchQuery, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -889,14 +1237,14 @@ public class ItemLookupApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                List<RemoteSearchResult> responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<List<RemoteSearchResult>>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<List<RemoteSearchResult>>(localVarResponse.statusCode(),
-                        localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody,
-                                        new TypeReference<List<RemoteSearchResult>>() {
-                                        }));
+                        localVarResponse.headers().map(), responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -908,8 +1256,8 @@ public class ItemLookupApi {
     }
 
     private HttpRequest.Builder getPersonRemoteSearchResultsRequestBuilder(
-            @org.eclipse.jdt.annotation.Nullable PersonLookupInfoRemoteSearchQuery personLookupInfoRemoteSearchQuery)
-            throws ApiException {
+            @org.eclipse.jdt.annotation.Nullable PersonLookupInfoRemoteSearchQuery personLookupInfoRemoteSearchQuery,
+            Map<String, String> headers) throws ApiException {
         // verify the required parameter 'personLookupInfoRemoteSearchQuery' is set
         if (personLookupInfoRemoteSearchQuery == null) {
             throw new ApiException(400,
@@ -935,6 +1283,8 @@ public class ItemLookupApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -951,8 +1301,22 @@ public class ItemLookupApi {
     public List<RemoteSearchResult> getSeriesRemoteSearchResults(
             @org.eclipse.jdt.annotation.Nullable SeriesInfoRemoteSearchQuery seriesInfoRemoteSearchQuery)
             throws ApiException {
+        return getSeriesRemoteSearchResults(seriesInfoRemoteSearchQuery, null);
+    }
+
+    /**
+     * Get series remote search.
+     * 
+     * @param seriesInfoRemoteSearchQuery Remote search query. (required)
+     * @param headers Optional headers to include in the request
+     * @return List&lt;RemoteSearchResult&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public List<RemoteSearchResult> getSeriesRemoteSearchResults(
+            @org.eclipse.jdt.annotation.Nullable SeriesInfoRemoteSearchQuery seriesInfoRemoteSearchQuery,
+            Map<String, String> headers) throws ApiException {
         ApiResponse<List<RemoteSearchResult>> localVarResponse = getSeriesRemoteSearchResultsWithHttpInfo(
-                seriesInfoRemoteSearchQuery);
+                seriesInfoRemoteSearchQuery, headers);
         return localVarResponse.getData();
     }
 
@@ -966,8 +1330,22 @@ public class ItemLookupApi {
     public ApiResponse<List<RemoteSearchResult>> getSeriesRemoteSearchResultsWithHttpInfo(
             @org.eclipse.jdt.annotation.Nullable SeriesInfoRemoteSearchQuery seriesInfoRemoteSearchQuery)
             throws ApiException {
+        return getSeriesRemoteSearchResultsWithHttpInfo(seriesInfoRemoteSearchQuery, null);
+    }
+
+    /**
+     * Get series remote search.
+     * 
+     * @param seriesInfoRemoteSearchQuery Remote search query. (required)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;List&lt;RemoteSearchResult&gt;&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<List<RemoteSearchResult>> getSeriesRemoteSearchResultsWithHttpInfo(
+            @org.eclipse.jdt.annotation.Nullable SeriesInfoRemoteSearchQuery seriesInfoRemoteSearchQuery,
+            Map<String, String> headers) throws ApiException {
         HttpRequest.Builder localVarRequestBuilder = getSeriesRemoteSearchResultsRequestBuilder(
-                seriesInfoRemoteSearchQuery);
+                seriesInfoRemoteSearchQuery, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -984,14 +1362,14 @@ public class ItemLookupApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                List<RemoteSearchResult> responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<List<RemoteSearchResult>>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<List<RemoteSearchResult>>(localVarResponse.statusCode(),
-                        localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody,
-                                        new TypeReference<List<RemoteSearchResult>>() {
-                                        }));
+                        localVarResponse.headers().map(), responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -1003,8 +1381,8 @@ public class ItemLookupApi {
     }
 
     private HttpRequest.Builder getSeriesRemoteSearchResultsRequestBuilder(
-            @org.eclipse.jdt.annotation.Nullable SeriesInfoRemoteSearchQuery seriesInfoRemoteSearchQuery)
-            throws ApiException {
+            @org.eclipse.jdt.annotation.Nullable SeriesInfoRemoteSearchQuery seriesInfoRemoteSearchQuery,
+            Map<String, String> headers) throws ApiException {
         // verify the required parameter 'seriesInfoRemoteSearchQuery' is set
         if (seriesInfoRemoteSearchQuery == null) {
             throw new ApiException(400,
@@ -1030,6 +1408,8 @@ public class ItemLookupApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -1046,8 +1426,22 @@ public class ItemLookupApi {
     public List<RemoteSearchResult> getTrailerRemoteSearchResults(
             @org.eclipse.jdt.annotation.Nullable TrailerInfoRemoteSearchQuery trailerInfoRemoteSearchQuery)
             throws ApiException {
+        return getTrailerRemoteSearchResults(trailerInfoRemoteSearchQuery, null);
+    }
+
+    /**
+     * Get trailer remote search.
+     * 
+     * @param trailerInfoRemoteSearchQuery Remote search query. (required)
+     * @param headers Optional headers to include in the request
+     * @return List&lt;RemoteSearchResult&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public List<RemoteSearchResult> getTrailerRemoteSearchResults(
+            @org.eclipse.jdt.annotation.Nullable TrailerInfoRemoteSearchQuery trailerInfoRemoteSearchQuery,
+            Map<String, String> headers) throws ApiException {
         ApiResponse<List<RemoteSearchResult>> localVarResponse = getTrailerRemoteSearchResultsWithHttpInfo(
-                trailerInfoRemoteSearchQuery);
+                trailerInfoRemoteSearchQuery, headers);
         return localVarResponse.getData();
     }
 
@@ -1061,8 +1455,22 @@ public class ItemLookupApi {
     public ApiResponse<List<RemoteSearchResult>> getTrailerRemoteSearchResultsWithHttpInfo(
             @org.eclipse.jdt.annotation.Nullable TrailerInfoRemoteSearchQuery trailerInfoRemoteSearchQuery)
             throws ApiException {
+        return getTrailerRemoteSearchResultsWithHttpInfo(trailerInfoRemoteSearchQuery, null);
+    }
+
+    /**
+     * Get trailer remote search.
+     * 
+     * @param trailerInfoRemoteSearchQuery Remote search query. (required)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;List&lt;RemoteSearchResult&gt;&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<List<RemoteSearchResult>> getTrailerRemoteSearchResultsWithHttpInfo(
+            @org.eclipse.jdt.annotation.Nullable TrailerInfoRemoteSearchQuery trailerInfoRemoteSearchQuery,
+            Map<String, String> headers) throws ApiException {
         HttpRequest.Builder localVarRequestBuilder = getTrailerRemoteSearchResultsRequestBuilder(
-                trailerInfoRemoteSearchQuery);
+                trailerInfoRemoteSearchQuery, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -1079,14 +1487,14 @@ public class ItemLookupApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                List<RemoteSearchResult> responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<List<RemoteSearchResult>>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<List<RemoteSearchResult>>(localVarResponse.statusCode(),
-                        localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody,
-                                        new TypeReference<List<RemoteSearchResult>>() {
-                                        }));
+                        localVarResponse.headers().map(), responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -1098,8 +1506,8 @@ public class ItemLookupApi {
     }
 
     private HttpRequest.Builder getTrailerRemoteSearchResultsRequestBuilder(
-            @org.eclipse.jdt.annotation.Nullable TrailerInfoRemoteSearchQuery trailerInfoRemoteSearchQuery)
-            throws ApiException {
+            @org.eclipse.jdt.annotation.Nullable TrailerInfoRemoteSearchQuery trailerInfoRemoteSearchQuery,
+            Map<String, String> headers) throws ApiException {
         // verify the required parameter 'trailerInfoRemoteSearchQuery' is set
         if (trailerInfoRemoteSearchQuery == null) {
             throw new ApiException(400,
@@ -1125,6 +1533,8 @@ public class ItemLookupApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }

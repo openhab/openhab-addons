@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.jellyfin.internal.api.generated.current;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -21,6 +22,7 @@ import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.StringJoiner;
 import java.util.function.Consumer;
 
@@ -37,6 +39,28 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class ScheduledTasksApi {
+    /**
+     * Utility class for extending HttpRequest.Builder functionality.
+     */
+    private static class HttpRequestBuilderExtensions {
+        /**
+         * Adds additional headers to the provided HttpRequest.Builder. Useful for adding method/endpoint specific
+         * headers.
+         *
+         * @param builder the HttpRequest.Builder to which headers will be added
+         * @param headers a map of header names and values to add; may be null
+         * @return the same HttpRequest.Builder instance with the additional headers set
+         */
+        static HttpRequest.Builder withAdditionalHeaders(HttpRequest.Builder builder, Map<String, String> headers) {
+            if (headers != null) {
+                for (Map.Entry<String, String> entry : headers.entrySet()) {
+                    builder.header(entry.getKey(), entry.getValue());
+                }
+            }
+            return builder;
+        }
+    }
+
     private final HttpClient memberVarHttpClient;
     private final ObjectMapper memberVarObjectMapper;
     private final String memberVarBaseUri;
@@ -73,6 +97,56 @@ public class ScheduledTasksApi {
     }
 
     /**
+     * Download file from the given response.
+     *
+     * @param response Response
+     * @return File
+     * @throws ApiException If fail to read file content from response and write to disk
+     */
+    public File downloadFileFromResponse(HttpResponse<InputStream> response) throws ApiException {
+        try {
+            File file = prepareDownloadFile(response);
+            java.nio.file.Files.copy(response.body(), file.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+            return file;
+        } catch (IOException e) {
+            throw new ApiException(e);
+        }
+    }
+
+    /**
+     * <p>
+     * Prepare the file for download from the response.
+     * </p>
+     *
+     * @param response a {@link java.net.http.HttpResponse} object.
+     * @return a {@link java.io.File} object.
+     * @throws java.io.IOException if any.
+     */
+    private File prepareDownloadFile(HttpResponse<InputStream> response) throws IOException {
+        String filename = null;
+        java.util.Optional<String> contentDisposition = response.headers().firstValue("Content-Disposition");
+        if (contentDisposition.isPresent() && !"".equals(contentDisposition.get())) {
+            // Get filename from the Content-Disposition header.
+            java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("filename=['\"]?([^'\"\\s]+)['\"]?");
+            java.util.regex.Matcher matcher = pattern.matcher(contentDisposition.get());
+            if (matcher.find())
+                filename = matcher.group(1);
+        }
+        File file = null;
+        if (filename != null) {
+            java.nio.file.Path tempDir = java.nio.file.Files.createTempDirectory("swagger-gen-native");
+            java.nio.file.Path filePath = java.nio.file.Files.createFile(tempDir.resolve(filename));
+            file = filePath.toFile();
+            tempDir.toFile().deleteOnExit(); // best effort cleanup
+            file.deleteOnExit(); // best effort cleanup
+        } else {
+            file = java.nio.file.Files.createTempFile("download-", "").toFile();
+            file.deleteOnExit(); // best effort cleanup
+        }
+        return file;
+    }
+
+    /**
      * Get task by id.
      * 
      * @param taskId Task Id. (required)
@@ -80,7 +154,20 @@ public class ScheduledTasksApi {
      * @throws ApiException if fails to make API call
      */
     public TaskInfo getTask(@org.eclipse.jdt.annotation.Nullable String taskId) throws ApiException {
-        ApiResponse<TaskInfo> localVarResponse = getTaskWithHttpInfo(taskId);
+        return getTask(taskId, null);
+    }
+
+    /**
+     * Get task by id.
+     * 
+     * @param taskId Task Id. (required)
+     * @param headers Optional headers to include in the request
+     * @return TaskInfo
+     * @throws ApiException if fails to make API call
+     */
+    public TaskInfo getTask(@org.eclipse.jdt.annotation.Nullable String taskId, Map<String, String> headers)
+            throws ApiException {
+        ApiResponse<TaskInfo> localVarResponse = getTaskWithHttpInfo(taskId, headers);
         return localVarResponse.getData();
     }
 
@@ -93,7 +180,20 @@ public class ScheduledTasksApi {
      */
     public ApiResponse<TaskInfo> getTaskWithHttpInfo(@org.eclipse.jdt.annotation.Nullable String taskId)
             throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getTaskRequestBuilder(taskId);
+        return getTaskWithHttpInfo(taskId, null);
+    }
+
+    /**
+     * Get task by id.
+     * 
+     * @param taskId Task Id. (required)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;TaskInfo&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<TaskInfo> getTaskWithHttpInfo(@org.eclipse.jdt.annotation.Nullable String taskId,
+            Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = getTaskRequestBuilder(taskId, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -110,12 +210,14 @@ public class ScheduledTasksApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                TaskInfo responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<TaskInfo>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<TaskInfo>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<TaskInfo>() {
-                                }));
+                        responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -126,8 +228,8 @@ public class ScheduledTasksApi {
         }
     }
 
-    private HttpRequest.Builder getTaskRequestBuilder(@org.eclipse.jdt.annotation.Nullable String taskId)
-            throws ApiException {
+    private HttpRequest.Builder getTaskRequestBuilder(@org.eclipse.jdt.annotation.Nullable String taskId,
+            Map<String, String> headers) throws ApiException {
         // verify the required parameter 'taskId' is set
         if (taskId == null) {
             throw new ApiException(400, "Missing the required parameter 'taskId' when calling getTask");
@@ -146,6 +248,8 @@ public class ScheduledTasksApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -162,7 +266,21 @@ public class ScheduledTasksApi {
      */
     public List<TaskInfo> getTasks(@org.eclipse.jdt.annotation.NonNull Boolean isHidden,
             @org.eclipse.jdt.annotation.NonNull Boolean isEnabled) throws ApiException {
-        ApiResponse<List<TaskInfo>> localVarResponse = getTasksWithHttpInfo(isHidden, isEnabled);
+        return getTasks(isHidden, isEnabled, null);
+    }
+
+    /**
+     * Get tasks.
+     * 
+     * @param isHidden Optional filter tasks that are hidden, or not. (optional)
+     * @param isEnabled Optional filter tasks that are enabled, or not. (optional)
+     * @param headers Optional headers to include in the request
+     * @return List&lt;TaskInfo&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public List<TaskInfo> getTasks(@org.eclipse.jdt.annotation.NonNull Boolean isHidden,
+            @org.eclipse.jdt.annotation.NonNull Boolean isEnabled, Map<String, String> headers) throws ApiException {
+        ApiResponse<List<TaskInfo>> localVarResponse = getTasksWithHttpInfo(isHidden, isEnabled, headers);
         return localVarResponse.getData();
     }
 
@@ -176,7 +294,21 @@ public class ScheduledTasksApi {
      */
     public ApiResponse<List<TaskInfo>> getTasksWithHttpInfo(@org.eclipse.jdt.annotation.NonNull Boolean isHidden,
             @org.eclipse.jdt.annotation.NonNull Boolean isEnabled) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getTasksRequestBuilder(isHidden, isEnabled);
+        return getTasksWithHttpInfo(isHidden, isEnabled, null);
+    }
+
+    /**
+     * Get tasks.
+     * 
+     * @param isHidden Optional filter tasks that are hidden, or not. (optional)
+     * @param isEnabled Optional filter tasks that are enabled, or not. (optional)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;List&lt;TaskInfo&gt;&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<List<TaskInfo>> getTasksWithHttpInfo(@org.eclipse.jdt.annotation.NonNull Boolean isHidden,
+            @org.eclipse.jdt.annotation.NonNull Boolean isEnabled, Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = getTasksRequestBuilder(isHidden, isEnabled, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -193,12 +325,14 @@ public class ScheduledTasksApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                List<TaskInfo> responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<List<TaskInfo>>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<List<TaskInfo>>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<List<TaskInfo>>() {
-                                }));
+                        responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -210,7 +344,7 @@ public class ScheduledTasksApi {
     }
 
     private HttpRequest.Builder getTasksRequestBuilder(@org.eclipse.jdt.annotation.NonNull Boolean isHidden,
-            @org.eclipse.jdt.annotation.NonNull Boolean isEnabled) throws ApiException {
+            @org.eclipse.jdt.annotation.NonNull Boolean isEnabled, Map<String, String> headers) throws ApiException {
 
         HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
 
@@ -242,6 +376,8 @@ public class ScheduledTasksApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -255,7 +391,19 @@ public class ScheduledTasksApi {
      * @throws ApiException if fails to make API call
      */
     public void startTask(@org.eclipse.jdt.annotation.Nullable String taskId) throws ApiException {
-        startTaskWithHttpInfo(taskId);
+        startTask(taskId, null);
+    }
+
+    /**
+     * Start specified task.
+     * 
+     * @param taskId Task Id. (required)
+     * @param headers Optional headers to include in the request
+     * @throws ApiException if fails to make API call
+     */
+    public void startTask(@org.eclipse.jdt.annotation.Nullable String taskId, Map<String, String> headers)
+            throws ApiException {
+        startTaskWithHttpInfo(taskId, headers);
     }
 
     /**
@@ -267,7 +415,20 @@ public class ScheduledTasksApi {
      */
     public ApiResponse<Void> startTaskWithHttpInfo(@org.eclipse.jdt.annotation.Nullable String taskId)
             throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = startTaskRequestBuilder(taskId);
+        return startTaskWithHttpInfo(taskId, null);
+    }
+
+    /**
+     * Start specified task.
+     * 
+     * @param taskId Task Id. (required)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<Void> startTaskWithHttpInfo(@org.eclipse.jdt.annotation.Nullable String taskId,
+            Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = startTaskRequestBuilder(taskId, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -294,8 +455,8 @@ public class ScheduledTasksApi {
         }
     }
 
-    private HttpRequest.Builder startTaskRequestBuilder(@org.eclipse.jdt.annotation.Nullable String taskId)
-            throws ApiException {
+    private HttpRequest.Builder startTaskRequestBuilder(@org.eclipse.jdt.annotation.Nullable String taskId,
+            Map<String, String> headers) throws ApiException {
         // verify the required parameter 'taskId' is set
         if (taskId == null) {
             throw new ApiException(400, "Missing the required parameter 'taskId' when calling startTask");
@@ -315,6 +476,8 @@ public class ScheduledTasksApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -328,7 +491,19 @@ public class ScheduledTasksApi {
      * @throws ApiException if fails to make API call
      */
     public void stopTask(@org.eclipse.jdt.annotation.Nullable String taskId) throws ApiException {
-        stopTaskWithHttpInfo(taskId);
+        stopTask(taskId, null);
+    }
+
+    /**
+     * Stop specified task.
+     * 
+     * @param taskId Task Id. (required)
+     * @param headers Optional headers to include in the request
+     * @throws ApiException if fails to make API call
+     */
+    public void stopTask(@org.eclipse.jdt.annotation.Nullable String taskId, Map<String, String> headers)
+            throws ApiException {
+        stopTaskWithHttpInfo(taskId, headers);
     }
 
     /**
@@ -340,7 +515,20 @@ public class ScheduledTasksApi {
      */
     public ApiResponse<Void> stopTaskWithHttpInfo(@org.eclipse.jdt.annotation.Nullable String taskId)
             throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = stopTaskRequestBuilder(taskId);
+        return stopTaskWithHttpInfo(taskId, null);
+    }
+
+    /**
+     * Stop specified task.
+     * 
+     * @param taskId Task Id. (required)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<Void> stopTaskWithHttpInfo(@org.eclipse.jdt.annotation.Nullable String taskId,
+            Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = stopTaskRequestBuilder(taskId, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -367,8 +555,8 @@ public class ScheduledTasksApi {
         }
     }
 
-    private HttpRequest.Builder stopTaskRequestBuilder(@org.eclipse.jdt.annotation.Nullable String taskId)
-            throws ApiException {
+    private HttpRequest.Builder stopTaskRequestBuilder(@org.eclipse.jdt.annotation.Nullable String taskId,
+            Map<String, String> headers) throws ApiException {
         // verify the required parameter 'taskId' is set
         if (taskId == null) {
             throw new ApiException(400, "Missing the required parameter 'taskId' when calling stopTask");
@@ -388,6 +576,8 @@ public class ScheduledTasksApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -403,7 +593,21 @@ public class ScheduledTasksApi {
      */
     public void updateTask(@org.eclipse.jdt.annotation.Nullable String taskId,
             @org.eclipse.jdt.annotation.Nullable List<TaskTriggerInfo> taskTriggerInfo) throws ApiException {
-        updateTaskWithHttpInfo(taskId, taskTriggerInfo);
+        updateTask(taskId, taskTriggerInfo, null);
+    }
+
+    /**
+     * Update specified task triggers.
+     * 
+     * @param taskId Task Id. (required)
+     * @param taskTriggerInfo Triggers. (required)
+     * @param headers Optional headers to include in the request
+     * @throws ApiException if fails to make API call
+     */
+    public void updateTask(@org.eclipse.jdt.annotation.Nullable String taskId,
+            @org.eclipse.jdt.annotation.Nullable List<TaskTriggerInfo> taskTriggerInfo, Map<String, String> headers)
+            throws ApiException {
+        updateTaskWithHttpInfo(taskId, taskTriggerInfo, headers);
     }
 
     /**
@@ -416,7 +620,22 @@ public class ScheduledTasksApi {
      */
     public ApiResponse<Void> updateTaskWithHttpInfo(@org.eclipse.jdt.annotation.Nullable String taskId,
             @org.eclipse.jdt.annotation.Nullable List<TaskTriggerInfo> taskTriggerInfo) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = updateTaskRequestBuilder(taskId, taskTriggerInfo);
+        return updateTaskWithHttpInfo(taskId, taskTriggerInfo, null);
+    }
+
+    /**
+     * Update specified task triggers.
+     * 
+     * @param taskId Task Id. (required)
+     * @param taskTriggerInfo Triggers. (required)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<Void> updateTaskWithHttpInfo(@org.eclipse.jdt.annotation.Nullable String taskId,
+            @org.eclipse.jdt.annotation.Nullable List<TaskTriggerInfo> taskTriggerInfo, Map<String, String> headers)
+            throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = updateTaskRequestBuilder(taskId, taskTriggerInfo, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -444,7 +663,8 @@ public class ScheduledTasksApi {
     }
 
     private HttpRequest.Builder updateTaskRequestBuilder(@org.eclipse.jdt.annotation.Nullable String taskId,
-            @org.eclipse.jdt.annotation.Nullable List<TaskTriggerInfo> taskTriggerInfo) throws ApiException {
+            @org.eclipse.jdt.annotation.Nullable List<TaskTriggerInfo> taskTriggerInfo, Map<String, String> headers)
+            throws ApiException {
         // verify the required parameter 'taskId' is set
         if (taskId == null) {
             throw new ApiException(400, "Missing the required parameter 'taskId' when calling updateTask");
@@ -474,6 +694,8 @@ public class ScheduledTasksApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }

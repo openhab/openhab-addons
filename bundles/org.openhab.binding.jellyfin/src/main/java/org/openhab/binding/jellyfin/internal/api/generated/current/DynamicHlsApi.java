@@ -35,11 +35,32 @@ import org.openhab.binding.jellyfin.internal.api.generated.Pair;
 import org.openhab.binding.jellyfin.internal.api.generated.current.model.EncodingContext;
 import org.openhab.binding.jellyfin.internal.api.generated.current.model.SubtitleDeliveryMethod;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class DynamicHlsApi {
+    /**
+     * Utility class for extending HttpRequest.Builder functionality.
+     */
+    private static class HttpRequestBuilderExtensions {
+        /**
+         * Adds additional headers to the provided HttpRequest.Builder. Useful for adding method/endpoint specific
+         * headers.
+         *
+         * @param builder the HttpRequest.Builder to which headers will be added
+         * @param headers a map of header names and values to add; may be null
+         * @return the same HttpRequest.Builder instance with the additional headers set
+         */
+        static HttpRequest.Builder withAdditionalHeaders(HttpRequest.Builder builder, Map<String, String> headers) {
+            if (headers != null) {
+                for (Map.Entry<String, String> entry : headers.entrySet()) {
+                    builder.header(entry.getKey(), entry.getValue());
+                }
+            }
+            return builder;
+        }
+    }
+
     private final HttpClient memberVarHttpClient;
     private final ObjectMapper memberVarObjectMapper;
     private final String memberVarBaseUri;
@@ -73,6 +94,56 @@ public class DynamicHlsApi {
             body = "[no body]";
         }
         return operationId + " call failed with: " + statusCode + " - " + body;
+    }
+
+    /**
+     * Download file from the given response.
+     *
+     * @param response Response
+     * @return File
+     * @throws ApiException If fail to read file content from response and write to disk
+     */
+    public File downloadFileFromResponse(HttpResponse<InputStream> response) throws ApiException {
+        try {
+            File file = prepareDownloadFile(response);
+            java.nio.file.Files.copy(response.body(), file.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+            return file;
+        } catch (IOException e) {
+            throw new ApiException(e);
+        }
+    }
+
+    /**
+     * <p>
+     * Prepare the file for download from the response.
+     * </p>
+     *
+     * @param response a {@link java.net.http.HttpResponse} object.
+     * @return a {@link java.io.File} object.
+     * @throws java.io.IOException if any.
+     */
+    private File prepareDownloadFile(HttpResponse<InputStream> response) throws IOException {
+        String filename = null;
+        java.util.Optional<String> contentDisposition = response.headers().firstValue("Content-Disposition");
+        if (contentDisposition.isPresent() && !"".equals(contentDisposition.get())) {
+            // Get filename from the Content-Disposition header.
+            java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("filename=['\"]?([^'\"\\s]+)['\"]?");
+            java.util.regex.Matcher matcher = pattern.matcher(contentDisposition.get());
+            if (matcher.find())
+                filename = matcher.group(1);
+        }
+        File file = null;
+        if (filename != null) {
+            java.nio.file.Path tempDir = java.nio.file.Files.createTempDirectory("swagger-gen-native");
+            java.nio.file.Path filePath = java.nio.file.Files.createFile(tempDir.resolve(filename));
+            file = filePath.toFile();
+            tempDir.toFile().deleteOnExit(); // best effort cleanup
+            file.deleteOnExit(); // best effort cleanup
+        } else {
+            file = java.nio.file.Files.createTempFile("download-", "").toFile();
+            file.deleteOnExit(); // best effort cleanup
+        }
+        return file;
     }
 
     /**
@@ -197,6 +268,141 @@ public class DynamicHlsApi {
             @org.eclipse.jdt.annotation.NonNull EncodingContext context,
             @org.eclipse.jdt.annotation.NonNull Map<String, String> streamOptions,
             @org.eclipse.jdt.annotation.NonNull Boolean enableAudioVbrEncoding) throws ApiException {
+        return getHlsAudioSegment(itemId, playlistId, segmentId, container, runtimeTicks, actualSegmentLengthTicks,
+                _static, params, tag, deviceProfileId, playSessionId, segmentContainer, segmentLength, minSegments,
+                mediaSourceId, deviceId, audioCodec, enableAutoStreamCopy, allowVideoStreamCopy, allowAudioStreamCopy,
+                breakOnNonKeyFrames, audioSampleRate, maxAudioBitDepth, maxStreamingBitrate, audioBitRate,
+                audioChannels, maxAudioChannels, profile, level, framerate, maxFramerate, copyTimestamps,
+                startTimeTicks, width, height, videoBitRate, subtitleStreamIndex, subtitleMethod, maxRefFrames,
+                maxVideoBitDepth, requireAvc, deInterlace, requireNonAnamorphic, transcodingMaxAudioChannels,
+                cpuCoreLimit, liveStreamId, enableMpegtsM2TsMode, videoCodec, subtitleCodec, transcodeReasons,
+                audioStreamIndex, videoStreamIndex, context, streamOptions, enableAudioVbrEncoding, null);
+    }
+
+    /**
+     * Gets a video stream using HTTP live streaming.
+     * 
+     * @param itemId The item id. (required)
+     * @param playlistId The playlist id. (required)
+     * @param segmentId The segment id. (required)
+     * @param container The video container. Possible values are: ts, webm, asf, wmv, ogv, mp4, m4v, mkv, mpeg, mpg,
+     *            avi, 3gp, wmv, wtv, m2ts, mov, iso, flv. (required)
+     * @param runtimeTicks The position of the requested segment in ticks. (required)
+     * @param actualSegmentLengthTicks The length of the requested segment in ticks. (required)
+     * @param _static Optional. If true, the original file will be streamed statically without any encoding. Use either
+     *            no url extension or the original file extension. true/false. (optional)
+     * @param params The streaming parameters. (optional)
+     * @param tag The tag. (optional)
+     * @param deviceProfileId Optional. The dlna device profile id to utilize. (optional)
+     * @param playSessionId The play session id. (optional)
+     * @param segmentContainer The segment container. (optional)
+     * @param segmentLength The segment length. (optional)
+     * @param minSegments The minimum number of segments. (optional)
+     * @param mediaSourceId The media version id, if playing an alternate version. (optional)
+     * @param deviceId The device id of the client requesting. Used to stop encoding processes when needed. (optional)
+     * @param audioCodec Optional. Specify an audio codec to encode to, e.g. mp3. (optional)
+     * @param enableAutoStreamCopy Whether or not to allow automatic stream copy if requested values match the original
+     *            source. Defaults to true. (optional)
+     * @param allowVideoStreamCopy Whether or not to allow copying of the video stream url. (optional)
+     * @param allowAudioStreamCopy Whether or not to allow copying of the audio stream url. (optional)
+     * @param breakOnNonKeyFrames Optional. Whether to break on non key frames. (optional)
+     * @param audioSampleRate Optional. Specify a specific audio sample rate, e.g. 44100. (optional)
+     * @param maxAudioBitDepth Optional. The maximum audio bit depth. (optional)
+     * @param maxStreamingBitrate Optional. The maximum streaming bitrate. (optional)
+     * @param audioBitRate Optional. Specify an audio bitrate to encode to, e.g. 128000. If omitted this will be left to
+     *            encoder defaults. (optional)
+     * @param audioChannels Optional. Specify a specific number of audio channels to encode to, e.g. 2. (optional)
+     * @param maxAudioChannels Optional. Specify a maximum number of audio channels to encode to, e.g. 2. (optional)
+     * @param profile Optional. Specify a specific an encoder profile (varies by encoder), e.g. main, baseline, high.
+     *            (optional)
+     * @param level Optional. Specify a level for the encoder profile (varies by encoder), e.g. 3, 3.1. (optional)
+     * @param framerate Optional. A specific video framerate to encode to, e.g. 23.976. Generally this should be omitted
+     *            unless the device has specific requirements. (optional)
+     * @param maxFramerate Optional. A specific maximum video framerate to encode to, e.g. 23.976. Generally this should
+     *            be omitted unless the device has specific requirements. (optional)
+     * @param copyTimestamps Whether or not to copy timestamps when transcoding with an offset. Defaults to false.
+     *            (optional)
+     * @param startTimeTicks Optional. Specify a starting offset, in ticks. 1 tick &#x3D; 10000 ms. (optional)
+     * @param width Optional. The fixed horizontal resolution of the encoded video. (optional)
+     * @param height Optional. The fixed vertical resolution of the encoded video. (optional)
+     * @param videoBitRate Optional. Specify a video bitrate to encode to, e.g. 500000. If omitted this will be left to
+     *            encoder defaults. (optional)
+     * @param subtitleStreamIndex Optional. The index of the subtitle stream to use. If omitted no subtitles will be
+     *            used. (optional)
+     * @param subtitleMethod Optional. Specify the subtitle delivery method. (optional)
+     * @param maxRefFrames Optional. (optional)
+     * @param maxVideoBitDepth Optional. The maximum video bit depth. (optional)
+     * @param requireAvc Optional. Whether to require avc. (optional)
+     * @param deInterlace Optional. Whether to deinterlace the video. (optional)
+     * @param requireNonAnamorphic Optional. Whether to require a non anamorphic stream. (optional)
+     * @param transcodingMaxAudioChannels Optional. The maximum number of audio channels to transcode. (optional)
+     * @param cpuCoreLimit Optional. The limit of how many cpu cores to use. (optional)
+     * @param liveStreamId The live stream id. (optional)
+     * @param enableMpegtsM2TsMode Optional. Whether to enable the MpegtsM2Ts mode. (optional)
+     * @param videoCodec Optional. Specify a video codec to encode to, e.g. h264. (optional)
+     * @param subtitleCodec Optional. Specify a subtitle codec to encode to. (optional)
+     * @param transcodeReasons Optional. The transcoding reason. (optional)
+     * @param audioStreamIndex Optional. The index of the audio stream to use. If omitted the first audio stream will be
+     *            used. (optional)
+     * @param videoStreamIndex Optional. The index of the video stream to use. If omitted the first video stream will be
+     *            used. (optional)
+     * @param context Optional. The MediaBrowser.Model.Dlna.EncodingContext. (optional)
+     * @param streamOptions Optional. The streaming options. (optional)
+     * @param enableAudioVbrEncoding Optional. Whether to enable Audio Encoding. (optional, default to true)
+     * @param headers Optional headers to include in the request
+     * @return File
+     * @throws ApiException if fails to make API call
+     */
+    public File getHlsAudioSegment(@org.eclipse.jdt.annotation.Nullable UUID itemId,
+            @org.eclipse.jdt.annotation.Nullable String playlistId,
+            @org.eclipse.jdt.annotation.Nullable Integer segmentId,
+            @org.eclipse.jdt.annotation.Nullable String container,
+            @org.eclipse.jdt.annotation.Nullable Long runtimeTicks,
+            @org.eclipse.jdt.annotation.Nullable Long actualSegmentLengthTicks,
+            @org.eclipse.jdt.annotation.NonNull Boolean _static, @org.eclipse.jdt.annotation.NonNull String params,
+            @org.eclipse.jdt.annotation.NonNull String tag, @org.eclipse.jdt.annotation.NonNull String deviceProfileId,
+            @org.eclipse.jdt.annotation.NonNull String playSessionId,
+            @org.eclipse.jdt.annotation.NonNull String segmentContainer,
+            @org.eclipse.jdt.annotation.NonNull Integer segmentLength,
+            @org.eclipse.jdt.annotation.NonNull Integer minSegments,
+            @org.eclipse.jdt.annotation.NonNull String mediaSourceId,
+            @org.eclipse.jdt.annotation.NonNull String deviceId, @org.eclipse.jdt.annotation.NonNull String audioCodec,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableAutoStreamCopy,
+            @org.eclipse.jdt.annotation.NonNull Boolean allowVideoStreamCopy,
+            @org.eclipse.jdt.annotation.NonNull Boolean allowAudioStreamCopy,
+            @org.eclipse.jdt.annotation.NonNull Boolean breakOnNonKeyFrames,
+            @org.eclipse.jdt.annotation.NonNull Integer audioSampleRate,
+            @org.eclipse.jdt.annotation.NonNull Integer maxAudioBitDepth,
+            @org.eclipse.jdt.annotation.NonNull Integer maxStreamingBitrate,
+            @org.eclipse.jdt.annotation.NonNull Integer audioBitRate,
+            @org.eclipse.jdt.annotation.NonNull Integer audioChannels,
+            @org.eclipse.jdt.annotation.NonNull Integer maxAudioChannels,
+            @org.eclipse.jdt.annotation.NonNull String profile, @org.eclipse.jdt.annotation.NonNull String level,
+            @org.eclipse.jdt.annotation.NonNull Float framerate, @org.eclipse.jdt.annotation.NonNull Float maxFramerate,
+            @org.eclipse.jdt.annotation.NonNull Boolean copyTimestamps,
+            @org.eclipse.jdt.annotation.NonNull Long startTimeTicks, @org.eclipse.jdt.annotation.NonNull Integer width,
+            @org.eclipse.jdt.annotation.NonNull Integer height,
+            @org.eclipse.jdt.annotation.NonNull Integer videoBitRate,
+            @org.eclipse.jdt.annotation.NonNull Integer subtitleStreamIndex,
+            @org.eclipse.jdt.annotation.NonNull SubtitleDeliveryMethod subtitleMethod,
+            @org.eclipse.jdt.annotation.NonNull Integer maxRefFrames,
+            @org.eclipse.jdt.annotation.NonNull Integer maxVideoBitDepth,
+            @org.eclipse.jdt.annotation.NonNull Boolean requireAvc,
+            @org.eclipse.jdt.annotation.NonNull Boolean deInterlace,
+            @org.eclipse.jdt.annotation.NonNull Boolean requireNonAnamorphic,
+            @org.eclipse.jdt.annotation.NonNull Integer transcodingMaxAudioChannels,
+            @org.eclipse.jdt.annotation.NonNull Integer cpuCoreLimit,
+            @org.eclipse.jdt.annotation.NonNull String liveStreamId,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableMpegtsM2TsMode,
+            @org.eclipse.jdt.annotation.NonNull String videoCodec,
+            @org.eclipse.jdt.annotation.NonNull String subtitleCodec,
+            @org.eclipse.jdt.annotation.NonNull String transcodeReasons,
+            @org.eclipse.jdt.annotation.NonNull Integer audioStreamIndex,
+            @org.eclipse.jdt.annotation.NonNull Integer videoStreamIndex,
+            @org.eclipse.jdt.annotation.NonNull EncodingContext context,
+            @org.eclipse.jdt.annotation.NonNull Map<String, String> streamOptions,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableAudioVbrEncoding, Map<String, String> headers)
+            throws ApiException {
         ApiResponse<File> localVarResponse = getHlsAudioSegmentWithHttpInfo(itemId, playlistId, segmentId, container,
                 runtimeTicks, actualSegmentLengthTicks, _static, params, tag, deviceProfileId, playSessionId,
                 segmentContainer, segmentLength, minSegments, mediaSourceId, deviceId, audioCodec, enableAutoStreamCopy,
@@ -206,7 +412,7 @@ public class DynamicHlsApi {
                 subtitleMethod, maxRefFrames, maxVideoBitDepth, requireAvc, deInterlace, requireNonAnamorphic,
                 transcodingMaxAudioChannels, cpuCoreLimit, liveStreamId, enableMpegtsM2TsMode, videoCodec,
                 subtitleCodec, transcodeReasons, audioStreamIndex, videoStreamIndex, context, streamOptions,
-                enableAudioVbrEncoding);
+                enableAudioVbrEncoding, headers);
         return localVarResponse.getData();
     }
 
@@ -332,6 +538,142 @@ public class DynamicHlsApi {
             @org.eclipse.jdt.annotation.NonNull EncodingContext context,
             @org.eclipse.jdt.annotation.NonNull Map<String, String> streamOptions,
             @org.eclipse.jdt.annotation.NonNull Boolean enableAudioVbrEncoding) throws ApiException {
+        return getHlsAudioSegmentWithHttpInfo(itemId, playlistId, segmentId, container, runtimeTicks,
+                actualSegmentLengthTicks, _static, params, tag, deviceProfileId, playSessionId, segmentContainer,
+                segmentLength, minSegments, mediaSourceId, deviceId, audioCodec, enableAutoStreamCopy,
+                allowVideoStreamCopy, allowAudioStreamCopy, breakOnNonKeyFrames, audioSampleRate, maxAudioBitDepth,
+                maxStreamingBitrate, audioBitRate, audioChannels, maxAudioChannels, profile, level, framerate,
+                maxFramerate, copyTimestamps, startTimeTicks, width, height, videoBitRate, subtitleStreamIndex,
+                subtitleMethod, maxRefFrames, maxVideoBitDepth, requireAvc, deInterlace, requireNonAnamorphic,
+                transcodingMaxAudioChannels, cpuCoreLimit, liveStreamId, enableMpegtsM2TsMode, videoCodec,
+                subtitleCodec, transcodeReasons, audioStreamIndex, videoStreamIndex, context, streamOptions,
+                enableAudioVbrEncoding, null);
+    }
+
+    /**
+     * Gets a video stream using HTTP live streaming.
+     * 
+     * @param itemId The item id. (required)
+     * @param playlistId The playlist id. (required)
+     * @param segmentId The segment id. (required)
+     * @param container The video container. Possible values are: ts, webm, asf, wmv, ogv, mp4, m4v, mkv, mpeg, mpg,
+     *            avi, 3gp, wmv, wtv, m2ts, mov, iso, flv. (required)
+     * @param runtimeTicks The position of the requested segment in ticks. (required)
+     * @param actualSegmentLengthTicks The length of the requested segment in ticks. (required)
+     * @param _static Optional. If true, the original file will be streamed statically without any encoding. Use either
+     *            no url extension or the original file extension. true/false. (optional)
+     * @param params The streaming parameters. (optional)
+     * @param tag The tag. (optional)
+     * @param deviceProfileId Optional. The dlna device profile id to utilize. (optional)
+     * @param playSessionId The play session id. (optional)
+     * @param segmentContainer The segment container. (optional)
+     * @param segmentLength The segment length. (optional)
+     * @param minSegments The minimum number of segments. (optional)
+     * @param mediaSourceId The media version id, if playing an alternate version. (optional)
+     * @param deviceId The device id of the client requesting. Used to stop encoding processes when needed. (optional)
+     * @param audioCodec Optional. Specify an audio codec to encode to, e.g. mp3. (optional)
+     * @param enableAutoStreamCopy Whether or not to allow automatic stream copy if requested values match the original
+     *            source. Defaults to true. (optional)
+     * @param allowVideoStreamCopy Whether or not to allow copying of the video stream url. (optional)
+     * @param allowAudioStreamCopy Whether or not to allow copying of the audio stream url. (optional)
+     * @param breakOnNonKeyFrames Optional. Whether to break on non key frames. (optional)
+     * @param audioSampleRate Optional. Specify a specific audio sample rate, e.g. 44100. (optional)
+     * @param maxAudioBitDepth Optional. The maximum audio bit depth. (optional)
+     * @param maxStreamingBitrate Optional. The maximum streaming bitrate. (optional)
+     * @param audioBitRate Optional. Specify an audio bitrate to encode to, e.g. 128000. If omitted this will be left to
+     *            encoder defaults. (optional)
+     * @param audioChannels Optional. Specify a specific number of audio channels to encode to, e.g. 2. (optional)
+     * @param maxAudioChannels Optional. Specify a maximum number of audio channels to encode to, e.g. 2. (optional)
+     * @param profile Optional. Specify a specific an encoder profile (varies by encoder), e.g. main, baseline, high.
+     *            (optional)
+     * @param level Optional. Specify a level for the encoder profile (varies by encoder), e.g. 3, 3.1. (optional)
+     * @param framerate Optional. A specific video framerate to encode to, e.g. 23.976. Generally this should be omitted
+     *            unless the device has specific requirements. (optional)
+     * @param maxFramerate Optional. A specific maximum video framerate to encode to, e.g. 23.976. Generally this should
+     *            be omitted unless the device has specific requirements. (optional)
+     * @param copyTimestamps Whether or not to copy timestamps when transcoding with an offset. Defaults to false.
+     *            (optional)
+     * @param startTimeTicks Optional. Specify a starting offset, in ticks. 1 tick &#x3D; 10000 ms. (optional)
+     * @param width Optional. The fixed horizontal resolution of the encoded video. (optional)
+     * @param height Optional. The fixed vertical resolution of the encoded video. (optional)
+     * @param videoBitRate Optional. Specify a video bitrate to encode to, e.g. 500000. If omitted this will be left to
+     *            encoder defaults. (optional)
+     * @param subtitleStreamIndex Optional. The index of the subtitle stream to use. If omitted no subtitles will be
+     *            used. (optional)
+     * @param subtitleMethod Optional. Specify the subtitle delivery method. (optional)
+     * @param maxRefFrames Optional. (optional)
+     * @param maxVideoBitDepth Optional. The maximum video bit depth. (optional)
+     * @param requireAvc Optional. Whether to require avc. (optional)
+     * @param deInterlace Optional. Whether to deinterlace the video. (optional)
+     * @param requireNonAnamorphic Optional. Whether to require a non anamorphic stream. (optional)
+     * @param transcodingMaxAudioChannels Optional. The maximum number of audio channels to transcode. (optional)
+     * @param cpuCoreLimit Optional. The limit of how many cpu cores to use. (optional)
+     * @param liveStreamId The live stream id. (optional)
+     * @param enableMpegtsM2TsMode Optional. Whether to enable the MpegtsM2Ts mode. (optional)
+     * @param videoCodec Optional. Specify a video codec to encode to, e.g. h264. (optional)
+     * @param subtitleCodec Optional. Specify a subtitle codec to encode to. (optional)
+     * @param transcodeReasons Optional. The transcoding reason. (optional)
+     * @param audioStreamIndex Optional. The index of the audio stream to use. If omitted the first audio stream will be
+     *            used. (optional)
+     * @param videoStreamIndex Optional. The index of the video stream to use. If omitted the first video stream will be
+     *            used. (optional)
+     * @param context Optional. The MediaBrowser.Model.Dlna.EncodingContext. (optional)
+     * @param streamOptions Optional. The streaming options. (optional)
+     * @param enableAudioVbrEncoding Optional. Whether to enable Audio Encoding. (optional, default to true)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;File&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<File> getHlsAudioSegmentWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID itemId,
+            @org.eclipse.jdt.annotation.Nullable String playlistId,
+            @org.eclipse.jdt.annotation.Nullable Integer segmentId,
+            @org.eclipse.jdt.annotation.Nullable String container,
+            @org.eclipse.jdt.annotation.Nullable Long runtimeTicks,
+            @org.eclipse.jdt.annotation.Nullable Long actualSegmentLengthTicks,
+            @org.eclipse.jdt.annotation.NonNull Boolean _static, @org.eclipse.jdt.annotation.NonNull String params,
+            @org.eclipse.jdt.annotation.NonNull String tag, @org.eclipse.jdt.annotation.NonNull String deviceProfileId,
+            @org.eclipse.jdt.annotation.NonNull String playSessionId,
+            @org.eclipse.jdt.annotation.NonNull String segmentContainer,
+            @org.eclipse.jdt.annotation.NonNull Integer segmentLength,
+            @org.eclipse.jdt.annotation.NonNull Integer minSegments,
+            @org.eclipse.jdt.annotation.NonNull String mediaSourceId,
+            @org.eclipse.jdt.annotation.NonNull String deviceId, @org.eclipse.jdt.annotation.NonNull String audioCodec,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableAutoStreamCopy,
+            @org.eclipse.jdt.annotation.NonNull Boolean allowVideoStreamCopy,
+            @org.eclipse.jdt.annotation.NonNull Boolean allowAudioStreamCopy,
+            @org.eclipse.jdt.annotation.NonNull Boolean breakOnNonKeyFrames,
+            @org.eclipse.jdt.annotation.NonNull Integer audioSampleRate,
+            @org.eclipse.jdt.annotation.NonNull Integer maxAudioBitDepth,
+            @org.eclipse.jdt.annotation.NonNull Integer maxStreamingBitrate,
+            @org.eclipse.jdt.annotation.NonNull Integer audioBitRate,
+            @org.eclipse.jdt.annotation.NonNull Integer audioChannels,
+            @org.eclipse.jdt.annotation.NonNull Integer maxAudioChannels,
+            @org.eclipse.jdt.annotation.NonNull String profile, @org.eclipse.jdt.annotation.NonNull String level,
+            @org.eclipse.jdt.annotation.NonNull Float framerate, @org.eclipse.jdt.annotation.NonNull Float maxFramerate,
+            @org.eclipse.jdt.annotation.NonNull Boolean copyTimestamps,
+            @org.eclipse.jdt.annotation.NonNull Long startTimeTicks, @org.eclipse.jdt.annotation.NonNull Integer width,
+            @org.eclipse.jdt.annotation.NonNull Integer height,
+            @org.eclipse.jdt.annotation.NonNull Integer videoBitRate,
+            @org.eclipse.jdt.annotation.NonNull Integer subtitleStreamIndex,
+            @org.eclipse.jdt.annotation.NonNull SubtitleDeliveryMethod subtitleMethod,
+            @org.eclipse.jdt.annotation.NonNull Integer maxRefFrames,
+            @org.eclipse.jdt.annotation.NonNull Integer maxVideoBitDepth,
+            @org.eclipse.jdt.annotation.NonNull Boolean requireAvc,
+            @org.eclipse.jdt.annotation.NonNull Boolean deInterlace,
+            @org.eclipse.jdt.annotation.NonNull Boolean requireNonAnamorphic,
+            @org.eclipse.jdt.annotation.NonNull Integer transcodingMaxAudioChannels,
+            @org.eclipse.jdt.annotation.NonNull Integer cpuCoreLimit,
+            @org.eclipse.jdt.annotation.NonNull String liveStreamId,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableMpegtsM2TsMode,
+            @org.eclipse.jdt.annotation.NonNull String videoCodec,
+            @org.eclipse.jdt.annotation.NonNull String subtitleCodec,
+            @org.eclipse.jdt.annotation.NonNull String transcodeReasons,
+            @org.eclipse.jdt.annotation.NonNull Integer audioStreamIndex,
+            @org.eclipse.jdt.annotation.NonNull Integer videoStreamIndex,
+            @org.eclipse.jdt.annotation.NonNull EncodingContext context,
+            @org.eclipse.jdt.annotation.NonNull Map<String, String> streamOptions,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableAudioVbrEncoding, Map<String, String> headers)
+            throws ApiException {
         HttpRequest.Builder localVarRequestBuilder = getHlsAudioSegmentRequestBuilder(itemId, playlistId, segmentId,
                 container, runtimeTicks, actualSegmentLengthTicks, _static, params, tag, deviceProfileId, playSessionId,
                 segmentContainer, segmentLength, minSegments, mediaSourceId, deviceId, audioCodec, enableAutoStreamCopy,
@@ -341,7 +683,7 @@ public class DynamicHlsApi {
                 subtitleMethod, maxRefFrames, maxVideoBitDepth, requireAvc, deInterlace, requireNonAnamorphic,
                 transcodingMaxAudioChannels, cpuCoreLimit, liveStreamId, enableMpegtsM2TsMode, videoCodec,
                 subtitleCodec, transcodeReasons, audioStreamIndex, videoStreamIndex, context, streamOptions,
-                enableAudioVbrEncoding);
+                enableAudioVbrEncoding, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -356,13 +698,13 @@ public class DynamicHlsApi {
                     return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
                 }
 
-                String responseBody = new String(localVarResponse.body().readAllBytes());
+                // Handle file downloading.
+                File responseValue = downloadFileFromResponse(localVarResponse);
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {
-                                }));
+                        responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -421,7 +763,8 @@ public class DynamicHlsApi {
             @org.eclipse.jdt.annotation.NonNull Integer videoStreamIndex,
             @org.eclipse.jdt.annotation.NonNull EncodingContext context,
             @org.eclipse.jdt.annotation.NonNull Map<String, String> streamOptions,
-            @org.eclipse.jdt.annotation.NonNull Boolean enableAudioVbrEncoding) throws ApiException {
+            @org.eclipse.jdt.annotation.NonNull Boolean enableAudioVbrEncoding, Map<String, String> headers)
+            throws ApiException {
         // verify the required parameter 'itemId' is set
         if (itemId == null) {
             throw new ApiException(400, "Missing the required parameter 'itemId' when calling getHlsAudioSegment");
@@ -581,6 +924,8 @@ public class DynamicHlsApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -713,6 +1058,145 @@ public class DynamicHlsApi {
             @org.eclipse.jdt.annotation.NonNull Map<String, String> streamOptions,
             @org.eclipse.jdt.annotation.NonNull Boolean enableAudioVbrEncoding,
             @org.eclipse.jdt.annotation.NonNull Boolean alwaysBurnInSubtitleWhenTranscoding) throws ApiException {
+        return getHlsVideoSegment(itemId, playlistId, segmentId, container, runtimeTicks, actualSegmentLengthTicks,
+                _static, params, tag, deviceProfileId, playSessionId, segmentContainer, segmentLength, minSegments,
+                mediaSourceId, deviceId, audioCodec, enableAutoStreamCopy, allowVideoStreamCopy, allowAudioStreamCopy,
+                breakOnNonKeyFrames, audioSampleRate, maxAudioBitDepth, audioBitRate, audioChannels, maxAudioChannels,
+                profile, level, framerate, maxFramerate, copyTimestamps, startTimeTicks, width, height, maxWidth,
+                maxHeight, videoBitRate, subtitleStreamIndex, subtitleMethod, maxRefFrames, maxVideoBitDepth,
+                requireAvc, deInterlace, requireNonAnamorphic, transcodingMaxAudioChannels, cpuCoreLimit, liveStreamId,
+                enableMpegtsM2TsMode, videoCodec, subtitleCodec, transcodeReasons, audioStreamIndex, videoStreamIndex,
+                context, streamOptions, enableAudioVbrEncoding, alwaysBurnInSubtitleWhenTranscoding, null);
+    }
+
+    /**
+     * Gets a video stream using HTTP live streaming.
+     * 
+     * @param itemId The item id. (required)
+     * @param playlistId The playlist id. (required)
+     * @param segmentId The segment id. (required)
+     * @param container The video container. Possible values are: ts, webm, asf, wmv, ogv, mp4, m4v, mkv, mpeg, mpg,
+     *            avi, 3gp, wmv, wtv, m2ts, mov, iso, flv. (required)
+     * @param runtimeTicks The position of the requested segment in ticks. (required)
+     * @param actualSegmentLengthTicks The length of the requested segment in ticks. (required)
+     * @param _static Optional. If true, the original file will be streamed statically without any encoding. Use either
+     *            no url extension or the original file extension. true/false. (optional)
+     * @param params The streaming parameters. (optional)
+     * @param tag The tag. (optional)
+     * @param deviceProfileId Optional. The dlna device profile id to utilize. (optional)
+     * @param playSessionId The play session id. (optional)
+     * @param segmentContainer The segment container. (optional)
+     * @param segmentLength The desired segment length. (optional)
+     * @param minSegments The minimum number of segments. (optional)
+     * @param mediaSourceId The media version id, if playing an alternate version. (optional)
+     * @param deviceId The device id of the client requesting. Used to stop encoding processes when needed. (optional)
+     * @param audioCodec Optional. Specify an audio codec to encode to, e.g. mp3. (optional)
+     * @param enableAutoStreamCopy Whether or not to allow automatic stream copy if requested values match the original
+     *            source. Defaults to true. (optional)
+     * @param allowVideoStreamCopy Whether or not to allow copying of the video stream url. (optional)
+     * @param allowAudioStreamCopy Whether or not to allow copying of the audio stream url. (optional)
+     * @param breakOnNonKeyFrames Optional. Whether to break on non key frames. (optional)
+     * @param audioSampleRate Optional. Specify a specific audio sample rate, e.g. 44100. (optional)
+     * @param maxAudioBitDepth Optional. The maximum audio bit depth. (optional)
+     * @param audioBitRate Optional. Specify an audio bitrate to encode to, e.g. 128000. If omitted this will be left to
+     *            encoder defaults. (optional)
+     * @param audioChannels Optional. Specify a specific number of audio channels to encode to, e.g. 2. (optional)
+     * @param maxAudioChannels Optional. Specify a maximum number of audio channels to encode to, e.g. 2. (optional)
+     * @param profile Optional. Specify a specific an encoder profile (varies by encoder), e.g. main, baseline, high.
+     *            (optional)
+     * @param level Optional. Specify a level for the encoder profile (varies by encoder), e.g. 3, 3.1. (optional)
+     * @param framerate Optional. A specific video framerate to encode to, e.g. 23.976. Generally this should be omitted
+     *            unless the device has specific requirements. (optional)
+     * @param maxFramerate Optional. A specific maximum video framerate to encode to, e.g. 23.976. Generally this should
+     *            be omitted unless the device has specific requirements. (optional)
+     * @param copyTimestamps Whether or not to copy timestamps when transcoding with an offset. Defaults to false.
+     *            (optional)
+     * @param startTimeTicks Optional. Specify a starting offset, in ticks. 1 tick &#x3D; 10000 ms. (optional)
+     * @param width Optional. The fixed horizontal resolution of the encoded video. (optional)
+     * @param height Optional. The fixed vertical resolution of the encoded video. (optional)
+     * @param maxWidth Optional. The maximum horizontal resolution of the encoded video. (optional)
+     * @param maxHeight Optional. The maximum vertical resolution of the encoded video. (optional)
+     * @param videoBitRate Optional. Specify a video bitrate to encode to, e.g. 500000. If omitted this will be left to
+     *            encoder defaults. (optional)
+     * @param subtitleStreamIndex Optional. The index of the subtitle stream to use. If omitted no subtitles will be
+     *            used. (optional)
+     * @param subtitleMethod Optional. Specify the subtitle delivery method. (optional)
+     * @param maxRefFrames Optional. (optional)
+     * @param maxVideoBitDepth Optional. The maximum video bit depth. (optional)
+     * @param requireAvc Optional. Whether to require avc. (optional)
+     * @param deInterlace Optional. Whether to deinterlace the video. (optional)
+     * @param requireNonAnamorphic Optional. Whether to require a non anamorphic stream. (optional)
+     * @param transcodingMaxAudioChannels Optional. The maximum number of audio channels to transcode. (optional)
+     * @param cpuCoreLimit Optional. The limit of how many cpu cores to use. (optional)
+     * @param liveStreamId The live stream id. (optional)
+     * @param enableMpegtsM2TsMode Optional. Whether to enable the MpegtsM2Ts mode. (optional)
+     * @param videoCodec Optional. Specify a video codec to encode to, e.g. h264. (optional)
+     * @param subtitleCodec Optional. Specify a subtitle codec to encode to. (optional)
+     * @param transcodeReasons Optional. The transcoding reason. (optional)
+     * @param audioStreamIndex Optional. The index of the audio stream to use. If omitted the first audio stream will be
+     *            used. (optional)
+     * @param videoStreamIndex Optional. The index of the video stream to use. If omitted the first video stream will be
+     *            used. (optional)
+     * @param context Optional. The MediaBrowser.Model.Dlna.EncodingContext. (optional)
+     * @param streamOptions Optional. The streaming options. (optional)
+     * @param enableAudioVbrEncoding Optional. Whether to enable Audio Encoding. (optional, default to true)
+     * @param alwaysBurnInSubtitleWhenTranscoding Whether to always burn in subtitles when transcoding. (optional,
+     *            default to false)
+     * @param headers Optional headers to include in the request
+     * @return File
+     * @throws ApiException if fails to make API call
+     */
+    public File getHlsVideoSegment(@org.eclipse.jdt.annotation.Nullable UUID itemId,
+            @org.eclipse.jdt.annotation.Nullable String playlistId,
+            @org.eclipse.jdt.annotation.Nullable Integer segmentId,
+            @org.eclipse.jdt.annotation.Nullable String container,
+            @org.eclipse.jdt.annotation.Nullable Long runtimeTicks,
+            @org.eclipse.jdt.annotation.Nullable Long actualSegmentLengthTicks,
+            @org.eclipse.jdt.annotation.NonNull Boolean _static, @org.eclipse.jdt.annotation.NonNull String params,
+            @org.eclipse.jdt.annotation.NonNull String tag, @org.eclipse.jdt.annotation.NonNull String deviceProfileId,
+            @org.eclipse.jdt.annotation.NonNull String playSessionId,
+            @org.eclipse.jdt.annotation.NonNull String segmentContainer,
+            @org.eclipse.jdt.annotation.NonNull Integer segmentLength,
+            @org.eclipse.jdt.annotation.NonNull Integer minSegments,
+            @org.eclipse.jdt.annotation.NonNull String mediaSourceId,
+            @org.eclipse.jdt.annotation.NonNull String deviceId, @org.eclipse.jdt.annotation.NonNull String audioCodec,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableAutoStreamCopy,
+            @org.eclipse.jdt.annotation.NonNull Boolean allowVideoStreamCopy,
+            @org.eclipse.jdt.annotation.NonNull Boolean allowAudioStreamCopy,
+            @org.eclipse.jdt.annotation.NonNull Boolean breakOnNonKeyFrames,
+            @org.eclipse.jdt.annotation.NonNull Integer audioSampleRate,
+            @org.eclipse.jdt.annotation.NonNull Integer maxAudioBitDepth,
+            @org.eclipse.jdt.annotation.NonNull Integer audioBitRate,
+            @org.eclipse.jdt.annotation.NonNull Integer audioChannels,
+            @org.eclipse.jdt.annotation.NonNull Integer maxAudioChannels,
+            @org.eclipse.jdt.annotation.NonNull String profile, @org.eclipse.jdt.annotation.NonNull String level,
+            @org.eclipse.jdt.annotation.NonNull Float framerate, @org.eclipse.jdt.annotation.NonNull Float maxFramerate,
+            @org.eclipse.jdt.annotation.NonNull Boolean copyTimestamps,
+            @org.eclipse.jdt.annotation.NonNull Long startTimeTicks, @org.eclipse.jdt.annotation.NonNull Integer width,
+            @org.eclipse.jdt.annotation.NonNull Integer height, @org.eclipse.jdt.annotation.NonNull Integer maxWidth,
+            @org.eclipse.jdt.annotation.NonNull Integer maxHeight,
+            @org.eclipse.jdt.annotation.NonNull Integer videoBitRate,
+            @org.eclipse.jdt.annotation.NonNull Integer subtitleStreamIndex,
+            @org.eclipse.jdt.annotation.NonNull SubtitleDeliveryMethod subtitleMethod,
+            @org.eclipse.jdt.annotation.NonNull Integer maxRefFrames,
+            @org.eclipse.jdt.annotation.NonNull Integer maxVideoBitDepth,
+            @org.eclipse.jdt.annotation.NonNull Boolean requireAvc,
+            @org.eclipse.jdt.annotation.NonNull Boolean deInterlace,
+            @org.eclipse.jdt.annotation.NonNull Boolean requireNonAnamorphic,
+            @org.eclipse.jdt.annotation.NonNull Integer transcodingMaxAudioChannels,
+            @org.eclipse.jdt.annotation.NonNull Integer cpuCoreLimit,
+            @org.eclipse.jdt.annotation.NonNull String liveStreamId,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableMpegtsM2TsMode,
+            @org.eclipse.jdt.annotation.NonNull String videoCodec,
+            @org.eclipse.jdt.annotation.NonNull String subtitleCodec,
+            @org.eclipse.jdt.annotation.NonNull String transcodeReasons,
+            @org.eclipse.jdt.annotation.NonNull Integer audioStreamIndex,
+            @org.eclipse.jdt.annotation.NonNull Integer videoStreamIndex,
+            @org.eclipse.jdt.annotation.NonNull EncodingContext context,
+            @org.eclipse.jdt.annotation.NonNull Map<String, String> streamOptions,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableAudioVbrEncoding,
+            @org.eclipse.jdt.annotation.NonNull Boolean alwaysBurnInSubtitleWhenTranscoding,
+            Map<String, String> headers) throws ApiException {
         ApiResponse<File> localVarResponse = getHlsVideoSegmentWithHttpInfo(itemId, playlistId, segmentId, container,
                 runtimeTicks, actualSegmentLengthTicks, _static, params, tag, deviceProfileId, playSessionId,
                 segmentContainer, segmentLength, minSegments, mediaSourceId, deviceId, audioCodec, enableAutoStreamCopy,
@@ -722,7 +1206,7 @@ public class DynamicHlsApi {
                 maxRefFrames, maxVideoBitDepth, requireAvc, deInterlace, requireNonAnamorphic,
                 transcodingMaxAudioChannels, cpuCoreLimit, liveStreamId, enableMpegtsM2TsMode, videoCodec,
                 subtitleCodec, transcodeReasons, audioStreamIndex, videoStreamIndex, context, streamOptions,
-                enableAudioVbrEncoding, alwaysBurnInSubtitleWhenTranscoding);
+                enableAudioVbrEncoding, alwaysBurnInSubtitleWhenTranscoding, headers);
         return localVarResponse.getData();
     }
 
@@ -852,6 +1336,146 @@ public class DynamicHlsApi {
             @org.eclipse.jdt.annotation.NonNull Map<String, String> streamOptions,
             @org.eclipse.jdt.annotation.NonNull Boolean enableAudioVbrEncoding,
             @org.eclipse.jdt.annotation.NonNull Boolean alwaysBurnInSubtitleWhenTranscoding) throws ApiException {
+        return getHlsVideoSegmentWithHttpInfo(itemId, playlistId, segmentId, container, runtimeTicks,
+                actualSegmentLengthTicks, _static, params, tag, deviceProfileId, playSessionId, segmentContainer,
+                segmentLength, minSegments, mediaSourceId, deviceId, audioCodec, enableAutoStreamCopy,
+                allowVideoStreamCopy, allowAudioStreamCopy, breakOnNonKeyFrames, audioSampleRate, maxAudioBitDepth,
+                audioBitRate, audioChannels, maxAudioChannels, profile, level, framerate, maxFramerate, copyTimestamps,
+                startTimeTicks, width, height, maxWidth, maxHeight, videoBitRate, subtitleStreamIndex, subtitleMethod,
+                maxRefFrames, maxVideoBitDepth, requireAvc, deInterlace, requireNonAnamorphic,
+                transcodingMaxAudioChannels, cpuCoreLimit, liveStreamId, enableMpegtsM2TsMode, videoCodec,
+                subtitleCodec, transcodeReasons, audioStreamIndex, videoStreamIndex, context, streamOptions,
+                enableAudioVbrEncoding, alwaysBurnInSubtitleWhenTranscoding, null);
+    }
+
+    /**
+     * Gets a video stream using HTTP live streaming.
+     * 
+     * @param itemId The item id. (required)
+     * @param playlistId The playlist id. (required)
+     * @param segmentId The segment id. (required)
+     * @param container The video container. Possible values are: ts, webm, asf, wmv, ogv, mp4, m4v, mkv, mpeg, mpg,
+     *            avi, 3gp, wmv, wtv, m2ts, mov, iso, flv. (required)
+     * @param runtimeTicks The position of the requested segment in ticks. (required)
+     * @param actualSegmentLengthTicks The length of the requested segment in ticks. (required)
+     * @param _static Optional. If true, the original file will be streamed statically without any encoding. Use either
+     *            no url extension or the original file extension. true/false. (optional)
+     * @param params The streaming parameters. (optional)
+     * @param tag The tag. (optional)
+     * @param deviceProfileId Optional. The dlna device profile id to utilize. (optional)
+     * @param playSessionId The play session id. (optional)
+     * @param segmentContainer The segment container. (optional)
+     * @param segmentLength The desired segment length. (optional)
+     * @param minSegments The minimum number of segments. (optional)
+     * @param mediaSourceId The media version id, if playing an alternate version. (optional)
+     * @param deviceId The device id of the client requesting. Used to stop encoding processes when needed. (optional)
+     * @param audioCodec Optional. Specify an audio codec to encode to, e.g. mp3. (optional)
+     * @param enableAutoStreamCopy Whether or not to allow automatic stream copy if requested values match the original
+     *            source. Defaults to true. (optional)
+     * @param allowVideoStreamCopy Whether or not to allow copying of the video stream url. (optional)
+     * @param allowAudioStreamCopy Whether or not to allow copying of the audio stream url. (optional)
+     * @param breakOnNonKeyFrames Optional. Whether to break on non key frames. (optional)
+     * @param audioSampleRate Optional. Specify a specific audio sample rate, e.g. 44100. (optional)
+     * @param maxAudioBitDepth Optional. The maximum audio bit depth. (optional)
+     * @param audioBitRate Optional. Specify an audio bitrate to encode to, e.g. 128000. If omitted this will be left to
+     *            encoder defaults. (optional)
+     * @param audioChannels Optional. Specify a specific number of audio channels to encode to, e.g. 2. (optional)
+     * @param maxAudioChannels Optional. Specify a maximum number of audio channels to encode to, e.g. 2. (optional)
+     * @param profile Optional. Specify a specific an encoder profile (varies by encoder), e.g. main, baseline, high.
+     *            (optional)
+     * @param level Optional. Specify a level for the encoder profile (varies by encoder), e.g. 3, 3.1. (optional)
+     * @param framerate Optional. A specific video framerate to encode to, e.g. 23.976. Generally this should be omitted
+     *            unless the device has specific requirements. (optional)
+     * @param maxFramerate Optional. A specific maximum video framerate to encode to, e.g. 23.976. Generally this should
+     *            be omitted unless the device has specific requirements. (optional)
+     * @param copyTimestamps Whether or not to copy timestamps when transcoding with an offset. Defaults to false.
+     *            (optional)
+     * @param startTimeTicks Optional. Specify a starting offset, in ticks. 1 tick &#x3D; 10000 ms. (optional)
+     * @param width Optional. The fixed horizontal resolution of the encoded video. (optional)
+     * @param height Optional. The fixed vertical resolution of the encoded video. (optional)
+     * @param maxWidth Optional. The maximum horizontal resolution of the encoded video. (optional)
+     * @param maxHeight Optional. The maximum vertical resolution of the encoded video. (optional)
+     * @param videoBitRate Optional. Specify a video bitrate to encode to, e.g. 500000. If omitted this will be left to
+     *            encoder defaults. (optional)
+     * @param subtitleStreamIndex Optional. The index of the subtitle stream to use. If omitted no subtitles will be
+     *            used. (optional)
+     * @param subtitleMethod Optional. Specify the subtitle delivery method. (optional)
+     * @param maxRefFrames Optional. (optional)
+     * @param maxVideoBitDepth Optional. The maximum video bit depth. (optional)
+     * @param requireAvc Optional. Whether to require avc. (optional)
+     * @param deInterlace Optional. Whether to deinterlace the video. (optional)
+     * @param requireNonAnamorphic Optional. Whether to require a non anamorphic stream. (optional)
+     * @param transcodingMaxAudioChannels Optional. The maximum number of audio channels to transcode. (optional)
+     * @param cpuCoreLimit Optional. The limit of how many cpu cores to use. (optional)
+     * @param liveStreamId The live stream id. (optional)
+     * @param enableMpegtsM2TsMode Optional. Whether to enable the MpegtsM2Ts mode. (optional)
+     * @param videoCodec Optional. Specify a video codec to encode to, e.g. h264. (optional)
+     * @param subtitleCodec Optional. Specify a subtitle codec to encode to. (optional)
+     * @param transcodeReasons Optional. The transcoding reason. (optional)
+     * @param audioStreamIndex Optional. The index of the audio stream to use. If omitted the first audio stream will be
+     *            used. (optional)
+     * @param videoStreamIndex Optional. The index of the video stream to use. If omitted the first video stream will be
+     *            used. (optional)
+     * @param context Optional. The MediaBrowser.Model.Dlna.EncodingContext. (optional)
+     * @param streamOptions Optional. The streaming options. (optional)
+     * @param enableAudioVbrEncoding Optional. Whether to enable Audio Encoding. (optional, default to true)
+     * @param alwaysBurnInSubtitleWhenTranscoding Whether to always burn in subtitles when transcoding. (optional,
+     *            default to false)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;File&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<File> getHlsVideoSegmentWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID itemId,
+            @org.eclipse.jdt.annotation.Nullable String playlistId,
+            @org.eclipse.jdt.annotation.Nullable Integer segmentId,
+            @org.eclipse.jdt.annotation.Nullable String container,
+            @org.eclipse.jdt.annotation.Nullable Long runtimeTicks,
+            @org.eclipse.jdt.annotation.Nullable Long actualSegmentLengthTicks,
+            @org.eclipse.jdt.annotation.NonNull Boolean _static, @org.eclipse.jdt.annotation.NonNull String params,
+            @org.eclipse.jdt.annotation.NonNull String tag, @org.eclipse.jdt.annotation.NonNull String deviceProfileId,
+            @org.eclipse.jdt.annotation.NonNull String playSessionId,
+            @org.eclipse.jdt.annotation.NonNull String segmentContainer,
+            @org.eclipse.jdt.annotation.NonNull Integer segmentLength,
+            @org.eclipse.jdt.annotation.NonNull Integer minSegments,
+            @org.eclipse.jdt.annotation.NonNull String mediaSourceId,
+            @org.eclipse.jdt.annotation.NonNull String deviceId, @org.eclipse.jdt.annotation.NonNull String audioCodec,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableAutoStreamCopy,
+            @org.eclipse.jdt.annotation.NonNull Boolean allowVideoStreamCopy,
+            @org.eclipse.jdt.annotation.NonNull Boolean allowAudioStreamCopy,
+            @org.eclipse.jdt.annotation.NonNull Boolean breakOnNonKeyFrames,
+            @org.eclipse.jdt.annotation.NonNull Integer audioSampleRate,
+            @org.eclipse.jdt.annotation.NonNull Integer maxAudioBitDepth,
+            @org.eclipse.jdt.annotation.NonNull Integer audioBitRate,
+            @org.eclipse.jdt.annotation.NonNull Integer audioChannels,
+            @org.eclipse.jdt.annotation.NonNull Integer maxAudioChannels,
+            @org.eclipse.jdt.annotation.NonNull String profile, @org.eclipse.jdt.annotation.NonNull String level,
+            @org.eclipse.jdt.annotation.NonNull Float framerate, @org.eclipse.jdt.annotation.NonNull Float maxFramerate,
+            @org.eclipse.jdt.annotation.NonNull Boolean copyTimestamps,
+            @org.eclipse.jdt.annotation.NonNull Long startTimeTicks, @org.eclipse.jdt.annotation.NonNull Integer width,
+            @org.eclipse.jdt.annotation.NonNull Integer height, @org.eclipse.jdt.annotation.NonNull Integer maxWidth,
+            @org.eclipse.jdt.annotation.NonNull Integer maxHeight,
+            @org.eclipse.jdt.annotation.NonNull Integer videoBitRate,
+            @org.eclipse.jdt.annotation.NonNull Integer subtitleStreamIndex,
+            @org.eclipse.jdt.annotation.NonNull SubtitleDeliveryMethod subtitleMethod,
+            @org.eclipse.jdt.annotation.NonNull Integer maxRefFrames,
+            @org.eclipse.jdt.annotation.NonNull Integer maxVideoBitDepth,
+            @org.eclipse.jdt.annotation.NonNull Boolean requireAvc,
+            @org.eclipse.jdt.annotation.NonNull Boolean deInterlace,
+            @org.eclipse.jdt.annotation.NonNull Boolean requireNonAnamorphic,
+            @org.eclipse.jdt.annotation.NonNull Integer transcodingMaxAudioChannels,
+            @org.eclipse.jdt.annotation.NonNull Integer cpuCoreLimit,
+            @org.eclipse.jdt.annotation.NonNull String liveStreamId,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableMpegtsM2TsMode,
+            @org.eclipse.jdt.annotation.NonNull String videoCodec,
+            @org.eclipse.jdt.annotation.NonNull String subtitleCodec,
+            @org.eclipse.jdt.annotation.NonNull String transcodeReasons,
+            @org.eclipse.jdt.annotation.NonNull Integer audioStreamIndex,
+            @org.eclipse.jdt.annotation.NonNull Integer videoStreamIndex,
+            @org.eclipse.jdt.annotation.NonNull EncodingContext context,
+            @org.eclipse.jdt.annotation.NonNull Map<String, String> streamOptions,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableAudioVbrEncoding,
+            @org.eclipse.jdt.annotation.NonNull Boolean alwaysBurnInSubtitleWhenTranscoding,
+            Map<String, String> headers) throws ApiException {
         HttpRequest.Builder localVarRequestBuilder = getHlsVideoSegmentRequestBuilder(itemId, playlistId, segmentId,
                 container, runtimeTicks, actualSegmentLengthTicks, _static, params, tag, deviceProfileId, playSessionId,
                 segmentContainer, segmentLength, minSegments, mediaSourceId, deviceId, audioCodec, enableAutoStreamCopy,
@@ -861,7 +1485,7 @@ public class DynamicHlsApi {
                 maxRefFrames, maxVideoBitDepth, requireAvc, deInterlace, requireNonAnamorphic,
                 transcodingMaxAudioChannels, cpuCoreLimit, liveStreamId, enableMpegtsM2TsMode, videoCodec,
                 subtitleCodec, transcodeReasons, audioStreamIndex, videoStreamIndex, context, streamOptions,
-                enableAudioVbrEncoding, alwaysBurnInSubtitleWhenTranscoding);
+                enableAudioVbrEncoding, alwaysBurnInSubtitleWhenTranscoding, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -876,13 +1500,13 @@ public class DynamicHlsApi {
                     return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
                 }
 
-                String responseBody = new String(localVarResponse.body().readAllBytes());
+                // Handle file downloading.
+                File responseValue = downloadFileFromResponse(localVarResponse);
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {
-                                }));
+                        responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -942,7 +1566,8 @@ public class DynamicHlsApi {
             @org.eclipse.jdt.annotation.NonNull EncodingContext context,
             @org.eclipse.jdt.annotation.NonNull Map<String, String> streamOptions,
             @org.eclipse.jdt.annotation.NonNull Boolean enableAudioVbrEncoding,
-            @org.eclipse.jdt.annotation.NonNull Boolean alwaysBurnInSubtitleWhenTranscoding) throws ApiException {
+            @org.eclipse.jdt.annotation.NonNull Boolean alwaysBurnInSubtitleWhenTranscoding,
+            Map<String, String> headers) throws ApiException {
         // verify the required parameter 'itemId' is set
         if (itemId == null) {
             throw new ApiException(400, "Missing the required parameter 'itemId' when calling getHlsVideoSegment");
@@ -1107,6 +1732,8 @@ public class DynamicHlsApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -1232,6 +1859,138 @@ public class DynamicHlsApi {
             @org.eclipse.jdt.annotation.NonNull Boolean enableSubtitlesInManifest,
             @org.eclipse.jdt.annotation.NonNull Boolean enableAudioVbrEncoding,
             @org.eclipse.jdt.annotation.NonNull Boolean alwaysBurnInSubtitleWhenTranscoding) throws ApiException {
+        return getLiveHlsStream(itemId, container, _static, params, tag, deviceProfileId, playSessionId,
+                segmentContainer, segmentLength, minSegments, mediaSourceId, deviceId, audioCodec, enableAutoStreamCopy,
+                allowVideoStreamCopy, allowAudioStreamCopy, breakOnNonKeyFrames, audioSampleRate, maxAudioBitDepth,
+                audioBitRate, audioChannels, maxAudioChannels, profile, level, framerate, maxFramerate, copyTimestamps,
+                startTimeTicks, width, height, videoBitRate, subtitleStreamIndex, subtitleMethod, maxRefFrames,
+                maxVideoBitDepth, requireAvc, deInterlace, requireNonAnamorphic, transcodingMaxAudioChannels,
+                cpuCoreLimit, liveStreamId, enableMpegtsM2TsMode, videoCodec, subtitleCodec, transcodeReasons,
+                audioStreamIndex, videoStreamIndex, context, streamOptions, maxWidth, maxHeight,
+                enableSubtitlesInManifest, enableAudioVbrEncoding, alwaysBurnInSubtitleWhenTranscoding, null);
+    }
+
+    /**
+     * Gets a hls live stream.
+     * 
+     * @param itemId The item id. (required)
+     * @param container The audio container. (optional)
+     * @param _static Optional. If true, the original file will be streamed statically without any encoding. Use either
+     *            no url extension or the original file extension. true/false. (optional)
+     * @param params The streaming parameters. (optional)
+     * @param tag The tag. (optional)
+     * @param deviceProfileId Optional. The dlna device profile id to utilize. (optional)
+     * @param playSessionId The play session id. (optional)
+     * @param segmentContainer The segment container. (optional)
+     * @param segmentLength The segment length. (optional)
+     * @param minSegments The minimum number of segments. (optional)
+     * @param mediaSourceId The media version id, if playing an alternate version. (optional)
+     * @param deviceId The device id of the client requesting. Used to stop encoding processes when needed. (optional)
+     * @param audioCodec Optional. Specify an audio codec to encode to, e.g. mp3. (optional)
+     * @param enableAutoStreamCopy Whether or not to allow automatic stream copy if requested values match the original
+     *            source. Defaults to true. (optional)
+     * @param allowVideoStreamCopy Whether or not to allow copying of the video stream url. (optional)
+     * @param allowAudioStreamCopy Whether or not to allow copying of the audio stream url. (optional)
+     * @param breakOnNonKeyFrames Optional. Whether to break on non key frames. (optional)
+     * @param audioSampleRate Optional. Specify a specific audio sample rate, e.g. 44100. (optional)
+     * @param maxAudioBitDepth Optional. The maximum audio bit depth. (optional)
+     * @param audioBitRate Optional. Specify an audio bitrate to encode to, e.g. 128000. If omitted this will be left to
+     *            encoder defaults. (optional)
+     * @param audioChannels Optional. Specify a specific number of audio channels to encode to, e.g. 2. (optional)
+     * @param maxAudioChannels Optional. Specify a maximum number of audio channels to encode to, e.g. 2. (optional)
+     * @param profile Optional. Specify a specific an encoder profile (varies by encoder), e.g. main, baseline, high.
+     *            (optional)
+     * @param level Optional. Specify a level for the encoder profile (varies by encoder), e.g. 3, 3.1. (optional)
+     * @param framerate Optional. A specific video framerate to encode to, e.g. 23.976. Generally this should be omitted
+     *            unless the device has specific requirements. (optional)
+     * @param maxFramerate Optional. A specific maximum video framerate to encode to, e.g. 23.976. Generally this should
+     *            be omitted unless the device has specific requirements. (optional)
+     * @param copyTimestamps Whether or not to copy timestamps when transcoding with an offset. Defaults to false.
+     *            (optional)
+     * @param startTimeTicks Optional. Specify a starting offset, in ticks. 1 tick &#x3D; 10000 ms. (optional)
+     * @param width Optional. The fixed horizontal resolution of the encoded video. (optional)
+     * @param height Optional. The fixed vertical resolution of the encoded video. (optional)
+     * @param videoBitRate Optional. Specify a video bitrate to encode to, e.g. 500000. If omitted this will be left to
+     *            encoder defaults. (optional)
+     * @param subtitleStreamIndex Optional. The index of the subtitle stream to use. If omitted no subtitles will be
+     *            used. (optional)
+     * @param subtitleMethod Optional. Specify the subtitle delivery method. (optional)
+     * @param maxRefFrames Optional. (optional)
+     * @param maxVideoBitDepth Optional. The maximum video bit depth. (optional)
+     * @param requireAvc Optional. Whether to require avc. (optional)
+     * @param deInterlace Optional. Whether to deinterlace the video. (optional)
+     * @param requireNonAnamorphic Optional. Whether to require a non anamorphic stream. (optional)
+     * @param transcodingMaxAudioChannels Optional. The maximum number of audio channels to transcode. (optional)
+     * @param cpuCoreLimit Optional. The limit of how many cpu cores to use. (optional)
+     * @param liveStreamId The live stream id. (optional)
+     * @param enableMpegtsM2TsMode Optional. Whether to enable the MpegtsM2Ts mode. (optional)
+     * @param videoCodec Optional. Specify a video codec to encode to, e.g. h264. (optional)
+     * @param subtitleCodec Optional. Specify a subtitle codec to encode to. (optional)
+     * @param transcodeReasons Optional. The transcoding reason. (optional)
+     * @param audioStreamIndex Optional. The index of the audio stream to use. If omitted the first audio stream will be
+     *            used. (optional)
+     * @param videoStreamIndex Optional. The index of the video stream to use. If omitted the first video stream will be
+     *            used. (optional)
+     * @param context Optional. The MediaBrowser.Model.Dlna.EncodingContext. (optional)
+     * @param streamOptions Optional. The streaming options. (optional)
+     * @param maxWidth Optional. The max width. (optional)
+     * @param maxHeight Optional. The max height. (optional)
+     * @param enableSubtitlesInManifest Optional. Whether to enable subtitles in the manifest. (optional)
+     * @param enableAudioVbrEncoding Optional. Whether to enable Audio Encoding. (optional, default to true)
+     * @param alwaysBurnInSubtitleWhenTranscoding Whether to always burn in subtitles when transcoding. (optional,
+     *            default to false)
+     * @param headers Optional headers to include in the request
+     * @return File
+     * @throws ApiException if fails to make API call
+     */
+    public File getLiveHlsStream(@org.eclipse.jdt.annotation.Nullable UUID itemId,
+            @org.eclipse.jdt.annotation.NonNull String container, @org.eclipse.jdt.annotation.NonNull Boolean _static,
+            @org.eclipse.jdt.annotation.NonNull String params, @org.eclipse.jdt.annotation.NonNull String tag,
+            @org.eclipse.jdt.annotation.NonNull String deviceProfileId,
+            @org.eclipse.jdt.annotation.NonNull String playSessionId,
+            @org.eclipse.jdt.annotation.NonNull String segmentContainer,
+            @org.eclipse.jdt.annotation.NonNull Integer segmentLength,
+            @org.eclipse.jdt.annotation.NonNull Integer minSegments,
+            @org.eclipse.jdt.annotation.NonNull String mediaSourceId,
+            @org.eclipse.jdt.annotation.NonNull String deviceId, @org.eclipse.jdt.annotation.NonNull String audioCodec,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableAutoStreamCopy,
+            @org.eclipse.jdt.annotation.NonNull Boolean allowVideoStreamCopy,
+            @org.eclipse.jdt.annotation.NonNull Boolean allowAudioStreamCopy,
+            @org.eclipse.jdt.annotation.NonNull Boolean breakOnNonKeyFrames,
+            @org.eclipse.jdt.annotation.NonNull Integer audioSampleRate,
+            @org.eclipse.jdt.annotation.NonNull Integer maxAudioBitDepth,
+            @org.eclipse.jdt.annotation.NonNull Integer audioBitRate,
+            @org.eclipse.jdt.annotation.NonNull Integer audioChannels,
+            @org.eclipse.jdt.annotation.NonNull Integer maxAudioChannels,
+            @org.eclipse.jdt.annotation.NonNull String profile, @org.eclipse.jdt.annotation.NonNull String level,
+            @org.eclipse.jdt.annotation.NonNull Float framerate, @org.eclipse.jdt.annotation.NonNull Float maxFramerate,
+            @org.eclipse.jdt.annotation.NonNull Boolean copyTimestamps,
+            @org.eclipse.jdt.annotation.NonNull Long startTimeTicks, @org.eclipse.jdt.annotation.NonNull Integer width,
+            @org.eclipse.jdt.annotation.NonNull Integer height,
+            @org.eclipse.jdt.annotation.NonNull Integer videoBitRate,
+            @org.eclipse.jdt.annotation.NonNull Integer subtitleStreamIndex,
+            @org.eclipse.jdt.annotation.NonNull SubtitleDeliveryMethod subtitleMethod,
+            @org.eclipse.jdt.annotation.NonNull Integer maxRefFrames,
+            @org.eclipse.jdt.annotation.NonNull Integer maxVideoBitDepth,
+            @org.eclipse.jdt.annotation.NonNull Boolean requireAvc,
+            @org.eclipse.jdt.annotation.NonNull Boolean deInterlace,
+            @org.eclipse.jdt.annotation.NonNull Boolean requireNonAnamorphic,
+            @org.eclipse.jdt.annotation.NonNull Integer transcodingMaxAudioChannels,
+            @org.eclipse.jdt.annotation.NonNull Integer cpuCoreLimit,
+            @org.eclipse.jdt.annotation.NonNull String liveStreamId,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableMpegtsM2TsMode,
+            @org.eclipse.jdt.annotation.NonNull String videoCodec,
+            @org.eclipse.jdt.annotation.NonNull String subtitleCodec,
+            @org.eclipse.jdt.annotation.NonNull String transcodeReasons,
+            @org.eclipse.jdt.annotation.NonNull Integer audioStreamIndex,
+            @org.eclipse.jdt.annotation.NonNull Integer videoStreamIndex,
+            @org.eclipse.jdt.annotation.NonNull EncodingContext context,
+            @org.eclipse.jdt.annotation.NonNull Map<String, String> streamOptions,
+            @org.eclipse.jdt.annotation.NonNull Integer maxWidth, @org.eclipse.jdt.annotation.NonNull Integer maxHeight,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableSubtitlesInManifest,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableAudioVbrEncoding,
+            @org.eclipse.jdt.annotation.NonNull Boolean alwaysBurnInSubtitleWhenTranscoding,
+            Map<String, String> headers) throws ApiException {
         ApiResponse<File> localVarResponse = getLiveHlsStreamWithHttpInfo(itemId, container, _static, params, tag,
                 deviceProfileId, playSessionId, segmentContainer, segmentLength, minSegments, mediaSourceId, deviceId,
                 audioCodec, enableAutoStreamCopy, allowVideoStreamCopy, allowAudioStreamCopy, breakOnNonKeyFrames,
@@ -1241,7 +2000,7 @@ public class DynamicHlsApi {
                 requireNonAnamorphic, transcodingMaxAudioChannels, cpuCoreLimit, liveStreamId, enableMpegtsM2TsMode,
                 videoCodec, subtitleCodec, transcodeReasons, audioStreamIndex, videoStreamIndex, context, streamOptions,
                 maxWidth, maxHeight, enableSubtitlesInManifest, enableAudioVbrEncoding,
-                alwaysBurnInSubtitleWhenTranscoding);
+                alwaysBurnInSubtitleWhenTranscoding, headers);
         return localVarResponse.getData();
     }
 
@@ -1364,6 +2123,138 @@ public class DynamicHlsApi {
             @org.eclipse.jdt.annotation.NonNull Boolean enableSubtitlesInManifest,
             @org.eclipse.jdt.annotation.NonNull Boolean enableAudioVbrEncoding,
             @org.eclipse.jdt.annotation.NonNull Boolean alwaysBurnInSubtitleWhenTranscoding) throws ApiException {
+        return getLiveHlsStreamWithHttpInfo(itemId, container, _static, params, tag, deviceProfileId, playSessionId,
+                segmentContainer, segmentLength, minSegments, mediaSourceId, deviceId, audioCodec, enableAutoStreamCopy,
+                allowVideoStreamCopy, allowAudioStreamCopy, breakOnNonKeyFrames, audioSampleRate, maxAudioBitDepth,
+                audioBitRate, audioChannels, maxAudioChannels, profile, level, framerate, maxFramerate, copyTimestamps,
+                startTimeTicks, width, height, videoBitRate, subtitleStreamIndex, subtitleMethod, maxRefFrames,
+                maxVideoBitDepth, requireAvc, deInterlace, requireNonAnamorphic, transcodingMaxAudioChannels,
+                cpuCoreLimit, liveStreamId, enableMpegtsM2TsMode, videoCodec, subtitleCodec, transcodeReasons,
+                audioStreamIndex, videoStreamIndex, context, streamOptions, maxWidth, maxHeight,
+                enableSubtitlesInManifest, enableAudioVbrEncoding, alwaysBurnInSubtitleWhenTranscoding, null);
+    }
+
+    /**
+     * Gets a hls live stream.
+     * 
+     * @param itemId The item id. (required)
+     * @param container The audio container. (optional)
+     * @param _static Optional. If true, the original file will be streamed statically without any encoding. Use either
+     *            no url extension or the original file extension. true/false. (optional)
+     * @param params The streaming parameters. (optional)
+     * @param tag The tag. (optional)
+     * @param deviceProfileId Optional. The dlna device profile id to utilize. (optional)
+     * @param playSessionId The play session id. (optional)
+     * @param segmentContainer The segment container. (optional)
+     * @param segmentLength The segment length. (optional)
+     * @param minSegments The minimum number of segments. (optional)
+     * @param mediaSourceId The media version id, if playing an alternate version. (optional)
+     * @param deviceId The device id of the client requesting. Used to stop encoding processes when needed. (optional)
+     * @param audioCodec Optional. Specify an audio codec to encode to, e.g. mp3. (optional)
+     * @param enableAutoStreamCopy Whether or not to allow automatic stream copy if requested values match the original
+     *            source. Defaults to true. (optional)
+     * @param allowVideoStreamCopy Whether or not to allow copying of the video stream url. (optional)
+     * @param allowAudioStreamCopy Whether or not to allow copying of the audio stream url. (optional)
+     * @param breakOnNonKeyFrames Optional. Whether to break on non key frames. (optional)
+     * @param audioSampleRate Optional. Specify a specific audio sample rate, e.g. 44100. (optional)
+     * @param maxAudioBitDepth Optional. The maximum audio bit depth. (optional)
+     * @param audioBitRate Optional. Specify an audio bitrate to encode to, e.g. 128000. If omitted this will be left to
+     *            encoder defaults. (optional)
+     * @param audioChannels Optional. Specify a specific number of audio channels to encode to, e.g. 2. (optional)
+     * @param maxAudioChannels Optional. Specify a maximum number of audio channels to encode to, e.g. 2. (optional)
+     * @param profile Optional. Specify a specific an encoder profile (varies by encoder), e.g. main, baseline, high.
+     *            (optional)
+     * @param level Optional. Specify a level for the encoder profile (varies by encoder), e.g. 3, 3.1. (optional)
+     * @param framerate Optional. A specific video framerate to encode to, e.g. 23.976. Generally this should be omitted
+     *            unless the device has specific requirements. (optional)
+     * @param maxFramerate Optional. A specific maximum video framerate to encode to, e.g. 23.976. Generally this should
+     *            be omitted unless the device has specific requirements. (optional)
+     * @param copyTimestamps Whether or not to copy timestamps when transcoding with an offset. Defaults to false.
+     *            (optional)
+     * @param startTimeTicks Optional. Specify a starting offset, in ticks. 1 tick &#x3D; 10000 ms. (optional)
+     * @param width Optional. The fixed horizontal resolution of the encoded video. (optional)
+     * @param height Optional. The fixed vertical resolution of the encoded video. (optional)
+     * @param videoBitRate Optional. Specify a video bitrate to encode to, e.g. 500000. If omitted this will be left to
+     *            encoder defaults. (optional)
+     * @param subtitleStreamIndex Optional. The index of the subtitle stream to use. If omitted no subtitles will be
+     *            used. (optional)
+     * @param subtitleMethod Optional. Specify the subtitle delivery method. (optional)
+     * @param maxRefFrames Optional. (optional)
+     * @param maxVideoBitDepth Optional. The maximum video bit depth. (optional)
+     * @param requireAvc Optional. Whether to require avc. (optional)
+     * @param deInterlace Optional. Whether to deinterlace the video. (optional)
+     * @param requireNonAnamorphic Optional. Whether to require a non anamorphic stream. (optional)
+     * @param transcodingMaxAudioChannels Optional. The maximum number of audio channels to transcode. (optional)
+     * @param cpuCoreLimit Optional. The limit of how many cpu cores to use. (optional)
+     * @param liveStreamId The live stream id. (optional)
+     * @param enableMpegtsM2TsMode Optional. Whether to enable the MpegtsM2Ts mode. (optional)
+     * @param videoCodec Optional. Specify a video codec to encode to, e.g. h264. (optional)
+     * @param subtitleCodec Optional. Specify a subtitle codec to encode to. (optional)
+     * @param transcodeReasons Optional. The transcoding reason. (optional)
+     * @param audioStreamIndex Optional. The index of the audio stream to use. If omitted the first audio stream will be
+     *            used. (optional)
+     * @param videoStreamIndex Optional. The index of the video stream to use. If omitted the first video stream will be
+     *            used. (optional)
+     * @param context Optional. The MediaBrowser.Model.Dlna.EncodingContext. (optional)
+     * @param streamOptions Optional. The streaming options. (optional)
+     * @param maxWidth Optional. The max width. (optional)
+     * @param maxHeight Optional. The max height. (optional)
+     * @param enableSubtitlesInManifest Optional. Whether to enable subtitles in the manifest. (optional)
+     * @param enableAudioVbrEncoding Optional. Whether to enable Audio Encoding. (optional, default to true)
+     * @param alwaysBurnInSubtitleWhenTranscoding Whether to always burn in subtitles when transcoding. (optional,
+     *            default to false)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;File&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<File> getLiveHlsStreamWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID itemId,
+            @org.eclipse.jdt.annotation.NonNull String container, @org.eclipse.jdt.annotation.NonNull Boolean _static,
+            @org.eclipse.jdt.annotation.NonNull String params, @org.eclipse.jdt.annotation.NonNull String tag,
+            @org.eclipse.jdt.annotation.NonNull String deviceProfileId,
+            @org.eclipse.jdt.annotation.NonNull String playSessionId,
+            @org.eclipse.jdt.annotation.NonNull String segmentContainer,
+            @org.eclipse.jdt.annotation.NonNull Integer segmentLength,
+            @org.eclipse.jdt.annotation.NonNull Integer minSegments,
+            @org.eclipse.jdt.annotation.NonNull String mediaSourceId,
+            @org.eclipse.jdt.annotation.NonNull String deviceId, @org.eclipse.jdt.annotation.NonNull String audioCodec,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableAutoStreamCopy,
+            @org.eclipse.jdt.annotation.NonNull Boolean allowVideoStreamCopy,
+            @org.eclipse.jdt.annotation.NonNull Boolean allowAudioStreamCopy,
+            @org.eclipse.jdt.annotation.NonNull Boolean breakOnNonKeyFrames,
+            @org.eclipse.jdt.annotation.NonNull Integer audioSampleRate,
+            @org.eclipse.jdt.annotation.NonNull Integer maxAudioBitDepth,
+            @org.eclipse.jdt.annotation.NonNull Integer audioBitRate,
+            @org.eclipse.jdt.annotation.NonNull Integer audioChannels,
+            @org.eclipse.jdt.annotation.NonNull Integer maxAudioChannels,
+            @org.eclipse.jdt.annotation.NonNull String profile, @org.eclipse.jdt.annotation.NonNull String level,
+            @org.eclipse.jdt.annotation.NonNull Float framerate, @org.eclipse.jdt.annotation.NonNull Float maxFramerate,
+            @org.eclipse.jdt.annotation.NonNull Boolean copyTimestamps,
+            @org.eclipse.jdt.annotation.NonNull Long startTimeTicks, @org.eclipse.jdt.annotation.NonNull Integer width,
+            @org.eclipse.jdt.annotation.NonNull Integer height,
+            @org.eclipse.jdt.annotation.NonNull Integer videoBitRate,
+            @org.eclipse.jdt.annotation.NonNull Integer subtitleStreamIndex,
+            @org.eclipse.jdt.annotation.NonNull SubtitleDeliveryMethod subtitleMethod,
+            @org.eclipse.jdt.annotation.NonNull Integer maxRefFrames,
+            @org.eclipse.jdt.annotation.NonNull Integer maxVideoBitDepth,
+            @org.eclipse.jdt.annotation.NonNull Boolean requireAvc,
+            @org.eclipse.jdt.annotation.NonNull Boolean deInterlace,
+            @org.eclipse.jdt.annotation.NonNull Boolean requireNonAnamorphic,
+            @org.eclipse.jdt.annotation.NonNull Integer transcodingMaxAudioChannels,
+            @org.eclipse.jdt.annotation.NonNull Integer cpuCoreLimit,
+            @org.eclipse.jdt.annotation.NonNull String liveStreamId,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableMpegtsM2TsMode,
+            @org.eclipse.jdt.annotation.NonNull String videoCodec,
+            @org.eclipse.jdt.annotation.NonNull String subtitleCodec,
+            @org.eclipse.jdt.annotation.NonNull String transcodeReasons,
+            @org.eclipse.jdt.annotation.NonNull Integer audioStreamIndex,
+            @org.eclipse.jdt.annotation.NonNull Integer videoStreamIndex,
+            @org.eclipse.jdt.annotation.NonNull EncodingContext context,
+            @org.eclipse.jdt.annotation.NonNull Map<String, String> streamOptions,
+            @org.eclipse.jdt.annotation.NonNull Integer maxWidth, @org.eclipse.jdt.annotation.NonNull Integer maxHeight,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableSubtitlesInManifest,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableAudioVbrEncoding,
+            @org.eclipse.jdt.annotation.NonNull Boolean alwaysBurnInSubtitleWhenTranscoding,
+            Map<String, String> headers) throws ApiException {
         HttpRequest.Builder localVarRequestBuilder = getLiveHlsStreamRequestBuilder(itemId, container, _static, params,
                 tag, deviceProfileId, playSessionId, segmentContainer, segmentLength, minSegments, mediaSourceId,
                 deviceId, audioCodec, enableAutoStreamCopy, allowVideoStreamCopy, allowAudioStreamCopy,
@@ -1373,7 +2264,7 @@ public class DynamicHlsApi {
                 requireNonAnamorphic, transcodingMaxAudioChannels, cpuCoreLimit, liveStreamId, enableMpegtsM2TsMode,
                 videoCodec, subtitleCodec, transcodeReasons, audioStreamIndex, videoStreamIndex, context, streamOptions,
                 maxWidth, maxHeight, enableSubtitlesInManifest, enableAudioVbrEncoding,
-                alwaysBurnInSubtitleWhenTranscoding);
+                alwaysBurnInSubtitleWhenTranscoding, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -1388,13 +2279,13 @@ public class DynamicHlsApi {
                     return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
                 }
 
-                String responseBody = new String(localVarResponse.body().readAllBytes());
+                // Handle file downloading.
+                File responseValue = downloadFileFromResponse(localVarResponse);
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {
-                                }));
+                        responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -1451,7 +2342,8 @@ public class DynamicHlsApi {
             @org.eclipse.jdt.annotation.NonNull Integer maxWidth, @org.eclipse.jdt.annotation.NonNull Integer maxHeight,
             @org.eclipse.jdt.annotation.NonNull Boolean enableSubtitlesInManifest,
             @org.eclipse.jdt.annotation.NonNull Boolean enableAudioVbrEncoding,
-            @org.eclipse.jdt.annotation.NonNull Boolean alwaysBurnInSubtitleWhenTranscoding) throws ApiException {
+            @org.eclipse.jdt.annotation.NonNull Boolean alwaysBurnInSubtitleWhenTranscoding,
+            Map<String, String> headers) throws ApiException {
         // verify the required parameter 'itemId' is set
         if (itemId == null) {
             throw new ApiException(400, "Missing the required parameter 'itemId' when calling getLiveHlsStream");
@@ -1590,6 +2482,8 @@ public class DynamicHlsApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -1709,6 +2603,132 @@ public class DynamicHlsApi {
             @org.eclipse.jdt.annotation.NonNull Map<String, String> streamOptions,
             @org.eclipse.jdt.annotation.NonNull Boolean enableAdaptiveBitrateStreaming,
             @org.eclipse.jdt.annotation.NonNull Boolean enableAudioVbrEncoding) throws ApiException {
+        return getMasterHlsAudioPlaylist(itemId, mediaSourceId, _static, params, tag, deviceProfileId, playSessionId,
+                segmentContainer, segmentLength, minSegments, deviceId, audioCodec, enableAutoStreamCopy,
+                allowVideoStreamCopy, allowAudioStreamCopy, breakOnNonKeyFrames, audioSampleRate, maxAudioBitDepth,
+                maxStreamingBitrate, audioBitRate, audioChannels, maxAudioChannels, profile, level, framerate,
+                maxFramerate, copyTimestamps, startTimeTicks, width, height, videoBitRate, subtitleStreamIndex,
+                subtitleMethod, maxRefFrames, maxVideoBitDepth, requireAvc, deInterlace, requireNonAnamorphic,
+                transcodingMaxAudioChannels, cpuCoreLimit, liveStreamId, enableMpegtsM2TsMode, videoCodec,
+                subtitleCodec, transcodeReasons, audioStreamIndex, videoStreamIndex, context, streamOptions,
+                enableAdaptiveBitrateStreaming, enableAudioVbrEncoding, null);
+    }
+
+    /**
+     * Gets an audio hls playlist stream.
+     * 
+     * @param itemId The item id. (required)
+     * @param mediaSourceId The media version id, if playing an alternate version. (required)
+     * @param _static Optional. If true, the original file will be streamed statically without any encoding. Use either
+     *            no url extension or the original file extension. true/false. (optional)
+     * @param params The streaming parameters. (optional)
+     * @param tag The tag. (optional)
+     * @param deviceProfileId Optional. The dlna device profile id to utilize. (optional)
+     * @param playSessionId The play session id. (optional)
+     * @param segmentContainer The segment container. (optional)
+     * @param segmentLength The segment length. (optional)
+     * @param minSegments The minimum number of segments. (optional)
+     * @param deviceId The device id of the client requesting. Used to stop encoding processes when needed. (optional)
+     * @param audioCodec Optional. Specify an audio codec to encode to, e.g. mp3. (optional)
+     * @param enableAutoStreamCopy Whether or not to allow automatic stream copy if requested values match the original
+     *            source. Defaults to true. (optional)
+     * @param allowVideoStreamCopy Whether or not to allow copying of the video stream url. (optional)
+     * @param allowAudioStreamCopy Whether or not to allow copying of the audio stream url. (optional)
+     * @param breakOnNonKeyFrames Optional. Whether to break on non key frames. (optional)
+     * @param audioSampleRate Optional. Specify a specific audio sample rate, e.g. 44100. (optional)
+     * @param maxAudioBitDepth Optional. The maximum audio bit depth. (optional)
+     * @param maxStreamingBitrate Optional. The maximum streaming bitrate. (optional)
+     * @param audioBitRate Optional. Specify an audio bitrate to encode to, e.g. 128000. If omitted this will be left to
+     *            encoder defaults. (optional)
+     * @param audioChannels Optional. Specify a specific number of audio channels to encode to, e.g. 2. (optional)
+     * @param maxAudioChannels Optional. Specify a maximum number of audio channels to encode to, e.g. 2. (optional)
+     * @param profile Optional. Specify a specific an encoder profile (varies by encoder), e.g. main, baseline, high.
+     *            (optional)
+     * @param level Optional. Specify a level for the encoder profile (varies by encoder), e.g. 3, 3.1. (optional)
+     * @param framerate Optional. A specific video framerate to encode to, e.g. 23.976. Generally this should be omitted
+     *            unless the device has specific requirements. (optional)
+     * @param maxFramerate Optional. A specific maximum video framerate to encode to, e.g. 23.976. Generally this should
+     *            be omitted unless the device has specific requirements. (optional)
+     * @param copyTimestamps Whether or not to copy timestamps when transcoding with an offset. Defaults to false.
+     *            (optional)
+     * @param startTimeTicks Optional. Specify a starting offset, in ticks. 1 tick &#x3D; 10000 ms. (optional)
+     * @param width Optional. The fixed horizontal resolution of the encoded video. (optional)
+     * @param height Optional. The fixed vertical resolution of the encoded video. (optional)
+     * @param videoBitRate Optional. Specify a video bitrate to encode to, e.g. 500000. If omitted this will be left to
+     *            encoder defaults. (optional)
+     * @param subtitleStreamIndex Optional. The index of the subtitle stream to use. If omitted no subtitles will be
+     *            used. (optional)
+     * @param subtitleMethod Optional. Specify the subtitle delivery method. (optional)
+     * @param maxRefFrames Optional. (optional)
+     * @param maxVideoBitDepth Optional. The maximum video bit depth. (optional)
+     * @param requireAvc Optional. Whether to require avc. (optional)
+     * @param deInterlace Optional. Whether to deinterlace the video. (optional)
+     * @param requireNonAnamorphic Optional. Whether to require a non anamorphic stream. (optional)
+     * @param transcodingMaxAudioChannels Optional. The maximum number of audio channels to transcode. (optional)
+     * @param cpuCoreLimit Optional. The limit of how many cpu cores to use. (optional)
+     * @param liveStreamId The live stream id. (optional)
+     * @param enableMpegtsM2TsMode Optional. Whether to enable the MpegtsM2Ts mode. (optional)
+     * @param videoCodec Optional. Specify a video codec to encode to, e.g. h264. (optional)
+     * @param subtitleCodec Optional. Specify a subtitle codec to encode to. (optional)
+     * @param transcodeReasons Optional. The transcoding reason. (optional)
+     * @param audioStreamIndex Optional. The index of the audio stream to use. If omitted the first audio stream will be
+     *            used. (optional)
+     * @param videoStreamIndex Optional. The index of the video stream to use. If omitted the first video stream will be
+     *            used. (optional)
+     * @param context Optional. The MediaBrowser.Model.Dlna.EncodingContext. (optional)
+     * @param streamOptions Optional. The streaming options. (optional)
+     * @param enableAdaptiveBitrateStreaming Enable adaptive bitrate streaming. (optional, default to true)
+     * @param enableAudioVbrEncoding Optional. Whether to enable Audio Encoding. (optional, default to true)
+     * @param headers Optional headers to include in the request
+     * @return File
+     * @throws ApiException if fails to make API call
+     */
+    public File getMasterHlsAudioPlaylist(@org.eclipse.jdt.annotation.Nullable UUID itemId,
+            @org.eclipse.jdt.annotation.Nullable String mediaSourceId,
+            @org.eclipse.jdt.annotation.NonNull Boolean _static, @org.eclipse.jdt.annotation.NonNull String params,
+            @org.eclipse.jdt.annotation.NonNull String tag, @org.eclipse.jdt.annotation.NonNull String deviceProfileId,
+            @org.eclipse.jdt.annotation.NonNull String playSessionId,
+            @org.eclipse.jdt.annotation.NonNull String segmentContainer,
+            @org.eclipse.jdt.annotation.NonNull Integer segmentLength,
+            @org.eclipse.jdt.annotation.NonNull Integer minSegments,
+            @org.eclipse.jdt.annotation.NonNull String deviceId, @org.eclipse.jdt.annotation.NonNull String audioCodec,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableAutoStreamCopy,
+            @org.eclipse.jdt.annotation.NonNull Boolean allowVideoStreamCopy,
+            @org.eclipse.jdt.annotation.NonNull Boolean allowAudioStreamCopy,
+            @org.eclipse.jdt.annotation.NonNull Boolean breakOnNonKeyFrames,
+            @org.eclipse.jdt.annotation.NonNull Integer audioSampleRate,
+            @org.eclipse.jdt.annotation.NonNull Integer maxAudioBitDepth,
+            @org.eclipse.jdt.annotation.NonNull Integer maxStreamingBitrate,
+            @org.eclipse.jdt.annotation.NonNull Integer audioBitRate,
+            @org.eclipse.jdt.annotation.NonNull Integer audioChannels,
+            @org.eclipse.jdt.annotation.NonNull Integer maxAudioChannels,
+            @org.eclipse.jdt.annotation.NonNull String profile, @org.eclipse.jdt.annotation.NonNull String level,
+            @org.eclipse.jdt.annotation.NonNull Float framerate, @org.eclipse.jdt.annotation.NonNull Float maxFramerate,
+            @org.eclipse.jdt.annotation.NonNull Boolean copyTimestamps,
+            @org.eclipse.jdt.annotation.NonNull Long startTimeTicks, @org.eclipse.jdt.annotation.NonNull Integer width,
+            @org.eclipse.jdt.annotation.NonNull Integer height,
+            @org.eclipse.jdt.annotation.NonNull Integer videoBitRate,
+            @org.eclipse.jdt.annotation.NonNull Integer subtitleStreamIndex,
+            @org.eclipse.jdt.annotation.NonNull SubtitleDeliveryMethod subtitleMethod,
+            @org.eclipse.jdt.annotation.NonNull Integer maxRefFrames,
+            @org.eclipse.jdt.annotation.NonNull Integer maxVideoBitDepth,
+            @org.eclipse.jdt.annotation.NonNull Boolean requireAvc,
+            @org.eclipse.jdt.annotation.NonNull Boolean deInterlace,
+            @org.eclipse.jdt.annotation.NonNull Boolean requireNonAnamorphic,
+            @org.eclipse.jdt.annotation.NonNull Integer transcodingMaxAudioChannels,
+            @org.eclipse.jdt.annotation.NonNull Integer cpuCoreLimit,
+            @org.eclipse.jdt.annotation.NonNull String liveStreamId,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableMpegtsM2TsMode,
+            @org.eclipse.jdt.annotation.NonNull String videoCodec,
+            @org.eclipse.jdt.annotation.NonNull String subtitleCodec,
+            @org.eclipse.jdt.annotation.NonNull String transcodeReasons,
+            @org.eclipse.jdt.annotation.NonNull Integer audioStreamIndex,
+            @org.eclipse.jdt.annotation.NonNull Integer videoStreamIndex,
+            @org.eclipse.jdt.annotation.NonNull EncodingContext context,
+            @org.eclipse.jdt.annotation.NonNull Map<String, String> streamOptions,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableAdaptiveBitrateStreaming,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableAudioVbrEncoding, Map<String, String> headers)
+            throws ApiException {
         ApiResponse<File> localVarResponse = getMasterHlsAudioPlaylistWithHttpInfo(itemId, mediaSourceId, _static,
                 params, tag, deviceProfileId, playSessionId, segmentContainer, segmentLength, minSegments, deviceId,
                 audioCodec, enableAutoStreamCopy, allowVideoStreamCopy, allowAudioStreamCopy, breakOnNonKeyFrames,
@@ -1717,7 +2737,7 @@ public class DynamicHlsApi {
                 subtitleStreamIndex, subtitleMethod, maxRefFrames, maxVideoBitDepth, requireAvc, deInterlace,
                 requireNonAnamorphic, transcodingMaxAudioChannels, cpuCoreLimit, liveStreamId, enableMpegtsM2TsMode,
                 videoCodec, subtitleCodec, transcodeReasons, audioStreamIndex, videoStreamIndex, context, streamOptions,
-                enableAdaptiveBitrateStreaming, enableAudioVbrEncoding);
+                enableAdaptiveBitrateStreaming, enableAudioVbrEncoding, headers);
         return localVarResponse.getData();
     }
 
@@ -1834,6 +2854,132 @@ public class DynamicHlsApi {
             @org.eclipse.jdt.annotation.NonNull Map<String, String> streamOptions,
             @org.eclipse.jdt.annotation.NonNull Boolean enableAdaptiveBitrateStreaming,
             @org.eclipse.jdt.annotation.NonNull Boolean enableAudioVbrEncoding) throws ApiException {
+        return getMasterHlsAudioPlaylistWithHttpInfo(itemId, mediaSourceId, _static, params, tag, deviceProfileId,
+                playSessionId, segmentContainer, segmentLength, minSegments, deviceId, audioCodec, enableAutoStreamCopy,
+                allowVideoStreamCopy, allowAudioStreamCopy, breakOnNonKeyFrames, audioSampleRate, maxAudioBitDepth,
+                maxStreamingBitrate, audioBitRate, audioChannels, maxAudioChannels, profile, level, framerate,
+                maxFramerate, copyTimestamps, startTimeTicks, width, height, videoBitRate, subtitleStreamIndex,
+                subtitleMethod, maxRefFrames, maxVideoBitDepth, requireAvc, deInterlace, requireNonAnamorphic,
+                transcodingMaxAudioChannels, cpuCoreLimit, liveStreamId, enableMpegtsM2TsMode, videoCodec,
+                subtitleCodec, transcodeReasons, audioStreamIndex, videoStreamIndex, context, streamOptions,
+                enableAdaptiveBitrateStreaming, enableAudioVbrEncoding, null);
+    }
+
+    /**
+     * Gets an audio hls playlist stream.
+     * 
+     * @param itemId The item id. (required)
+     * @param mediaSourceId The media version id, if playing an alternate version. (required)
+     * @param _static Optional. If true, the original file will be streamed statically without any encoding. Use either
+     *            no url extension or the original file extension. true/false. (optional)
+     * @param params The streaming parameters. (optional)
+     * @param tag The tag. (optional)
+     * @param deviceProfileId Optional. The dlna device profile id to utilize. (optional)
+     * @param playSessionId The play session id. (optional)
+     * @param segmentContainer The segment container. (optional)
+     * @param segmentLength The segment length. (optional)
+     * @param minSegments The minimum number of segments. (optional)
+     * @param deviceId The device id of the client requesting. Used to stop encoding processes when needed. (optional)
+     * @param audioCodec Optional. Specify an audio codec to encode to, e.g. mp3. (optional)
+     * @param enableAutoStreamCopy Whether or not to allow automatic stream copy if requested values match the original
+     *            source. Defaults to true. (optional)
+     * @param allowVideoStreamCopy Whether or not to allow copying of the video stream url. (optional)
+     * @param allowAudioStreamCopy Whether or not to allow copying of the audio stream url. (optional)
+     * @param breakOnNonKeyFrames Optional. Whether to break on non key frames. (optional)
+     * @param audioSampleRate Optional. Specify a specific audio sample rate, e.g. 44100. (optional)
+     * @param maxAudioBitDepth Optional. The maximum audio bit depth. (optional)
+     * @param maxStreamingBitrate Optional. The maximum streaming bitrate. (optional)
+     * @param audioBitRate Optional. Specify an audio bitrate to encode to, e.g. 128000. If omitted this will be left to
+     *            encoder defaults. (optional)
+     * @param audioChannels Optional. Specify a specific number of audio channels to encode to, e.g. 2. (optional)
+     * @param maxAudioChannels Optional. Specify a maximum number of audio channels to encode to, e.g. 2. (optional)
+     * @param profile Optional. Specify a specific an encoder profile (varies by encoder), e.g. main, baseline, high.
+     *            (optional)
+     * @param level Optional. Specify a level for the encoder profile (varies by encoder), e.g. 3, 3.1. (optional)
+     * @param framerate Optional. A specific video framerate to encode to, e.g. 23.976. Generally this should be omitted
+     *            unless the device has specific requirements. (optional)
+     * @param maxFramerate Optional. A specific maximum video framerate to encode to, e.g. 23.976. Generally this should
+     *            be omitted unless the device has specific requirements. (optional)
+     * @param copyTimestamps Whether or not to copy timestamps when transcoding with an offset. Defaults to false.
+     *            (optional)
+     * @param startTimeTicks Optional. Specify a starting offset, in ticks. 1 tick &#x3D; 10000 ms. (optional)
+     * @param width Optional. The fixed horizontal resolution of the encoded video. (optional)
+     * @param height Optional. The fixed vertical resolution of the encoded video. (optional)
+     * @param videoBitRate Optional. Specify a video bitrate to encode to, e.g. 500000. If omitted this will be left to
+     *            encoder defaults. (optional)
+     * @param subtitleStreamIndex Optional. The index of the subtitle stream to use. If omitted no subtitles will be
+     *            used. (optional)
+     * @param subtitleMethod Optional. Specify the subtitle delivery method. (optional)
+     * @param maxRefFrames Optional. (optional)
+     * @param maxVideoBitDepth Optional. The maximum video bit depth. (optional)
+     * @param requireAvc Optional. Whether to require avc. (optional)
+     * @param deInterlace Optional. Whether to deinterlace the video. (optional)
+     * @param requireNonAnamorphic Optional. Whether to require a non anamorphic stream. (optional)
+     * @param transcodingMaxAudioChannels Optional. The maximum number of audio channels to transcode. (optional)
+     * @param cpuCoreLimit Optional. The limit of how many cpu cores to use. (optional)
+     * @param liveStreamId The live stream id. (optional)
+     * @param enableMpegtsM2TsMode Optional. Whether to enable the MpegtsM2Ts mode. (optional)
+     * @param videoCodec Optional. Specify a video codec to encode to, e.g. h264. (optional)
+     * @param subtitleCodec Optional. Specify a subtitle codec to encode to. (optional)
+     * @param transcodeReasons Optional. The transcoding reason. (optional)
+     * @param audioStreamIndex Optional. The index of the audio stream to use. If omitted the first audio stream will be
+     *            used. (optional)
+     * @param videoStreamIndex Optional. The index of the video stream to use. If omitted the first video stream will be
+     *            used. (optional)
+     * @param context Optional. The MediaBrowser.Model.Dlna.EncodingContext. (optional)
+     * @param streamOptions Optional. The streaming options. (optional)
+     * @param enableAdaptiveBitrateStreaming Enable adaptive bitrate streaming. (optional, default to true)
+     * @param enableAudioVbrEncoding Optional. Whether to enable Audio Encoding. (optional, default to true)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;File&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<File> getMasterHlsAudioPlaylistWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID itemId,
+            @org.eclipse.jdt.annotation.Nullable String mediaSourceId,
+            @org.eclipse.jdt.annotation.NonNull Boolean _static, @org.eclipse.jdt.annotation.NonNull String params,
+            @org.eclipse.jdt.annotation.NonNull String tag, @org.eclipse.jdt.annotation.NonNull String deviceProfileId,
+            @org.eclipse.jdt.annotation.NonNull String playSessionId,
+            @org.eclipse.jdt.annotation.NonNull String segmentContainer,
+            @org.eclipse.jdt.annotation.NonNull Integer segmentLength,
+            @org.eclipse.jdt.annotation.NonNull Integer minSegments,
+            @org.eclipse.jdt.annotation.NonNull String deviceId, @org.eclipse.jdt.annotation.NonNull String audioCodec,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableAutoStreamCopy,
+            @org.eclipse.jdt.annotation.NonNull Boolean allowVideoStreamCopy,
+            @org.eclipse.jdt.annotation.NonNull Boolean allowAudioStreamCopy,
+            @org.eclipse.jdt.annotation.NonNull Boolean breakOnNonKeyFrames,
+            @org.eclipse.jdt.annotation.NonNull Integer audioSampleRate,
+            @org.eclipse.jdt.annotation.NonNull Integer maxAudioBitDepth,
+            @org.eclipse.jdt.annotation.NonNull Integer maxStreamingBitrate,
+            @org.eclipse.jdt.annotation.NonNull Integer audioBitRate,
+            @org.eclipse.jdt.annotation.NonNull Integer audioChannels,
+            @org.eclipse.jdt.annotation.NonNull Integer maxAudioChannels,
+            @org.eclipse.jdt.annotation.NonNull String profile, @org.eclipse.jdt.annotation.NonNull String level,
+            @org.eclipse.jdt.annotation.NonNull Float framerate, @org.eclipse.jdt.annotation.NonNull Float maxFramerate,
+            @org.eclipse.jdt.annotation.NonNull Boolean copyTimestamps,
+            @org.eclipse.jdt.annotation.NonNull Long startTimeTicks, @org.eclipse.jdt.annotation.NonNull Integer width,
+            @org.eclipse.jdt.annotation.NonNull Integer height,
+            @org.eclipse.jdt.annotation.NonNull Integer videoBitRate,
+            @org.eclipse.jdt.annotation.NonNull Integer subtitleStreamIndex,
+            @org.eclipse.jdt.annotation.NonNull SubtitleDeliveryMethod subtitleMethod,
+            @org.eclipse.jdt.annotation.NonNull Integer maxRefFrames,
+            @org.eclipse.jdt.annotation.NonNull Integer maxVideoBitDepth,
+            @org.eclipse.jdt.annotation.NonNull Boolean requireAvc,
+            @org.eclipse.jdt.annotation.NonNull Boolean deInterlace,
+            @org.eclipse.jdt.annotation.NonNull Boolean requireNonAnamorphic,
+            @org.eclipse.jdt.annotation.NonNull Integer transcodingMaxAudioChannels,
+            @org.eclipse.jdt.annotation.NonNull Integer cpuCoreLimit,
+            @org.eclipse.jdt.annotation.NonNull String liveStreamId,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableMpegtsM2TsMode,
+            @org.eclipse.jdt.annotation.NonNull String videoCodec,
+            @org.eclipse.jdt.annotation.NonNull String subtitleCodec,
+            @org.eclipse.jdt.annotation.NonNull String transcodeReasons,
+            @org.eclipse.jdt.annotation.NonNull Integer audioStreamIndex,
+            @org.eclipse.jdt.annotation.NonNull Integer videoStreamIndex,
+            @org.eclipse.jdt.annotation.NonNull EncodingContext context,
+            @org.eclipse.jdt.annotation.NonNull Map<String, String> streamOptions,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableAdaptiveBitrateStreaming,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableAudioVbrEncoding, Map<String, String> headers)
+            throws ApiException {
         HttpRequest.Builder localVarRequestBuilder = getMasterHlsAudioPlaylistRequestBuilder(itemId, mediaSourceId,
                 _static, params, tag, deviceProfileId, playSessionId, segmentContainer, segmentLength, minSegments,
                 deviceId, audioCodec, enableAutoStreamCopy, allowVideoStreamCopy, allowAudioStreamCopy,
@@ -1843,7 +2989,7 @@ public class DynamicHlsApi {
                 maxVideoBitDepth, requireAvc, deInterlace, requireNonAnamorphic, transcodingMaxAudioChannels,
                 cpuCoreLimit, liveStreamId, enableMpegtsM2TsMode, videoCodec, subtitleCodec, transcodeReasons,
                 audioStreamIndex, videoStreamIndex, context, streamOptions, enableAdaptiveBitrateStreaming,
-                enableAudioVbrEncoding);
+                enableAudioVbrEncoding, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -1858,13 +3004,13 @@ public class DynamicHlsApi {
                     return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
                 }
 
-                String responseBody = new String(localVarResponse.body().readAllBytes());
+                // Handle file downloading.
+                File responseValue = downloadFileFromResponse(localVarResponse);
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {
-                                }));
+                        responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -1919,7 +3065,8 @@ public class DynamicHlsApi {
             @org.eclipse.jdt.annotation.NonNull EncodingContext context,
             @org.eclipse.jdt.annotation.NonNull Map<String, String> streamOptions,
             @org.eclipse.jdt.annotation.NonNull Boolean enableAdaptiveBitrateStreaming,
-            @org.eclipse.jdt.annotation.NonNull Boolean enableAudioVbrEncoding) throws ApiException {
+            @org.eclipse.jdt.annotation.NonNull Boolean enableAudioVbrEncoding, Map<String, String> headers)
+            throws ApiException {
         // verify the required parameter 'itemId' is set
         if (itemId == null) {
             throw new ApiException(400,
@@ -2058,6 +3205,8 @@ public class DynamicHlsApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -2184,6 +3333,140 @@ public class DynamicHlsApi {
             @org.eclipse.jdt.annotation.NonNull Boolean enableTrickplay,
             @org.eclipse.jdt.annotation.NonNull Boolean enableAudioVbrEncoding,
             @org.eclipse.jdt.annotation.NonNull Boolean alwaysBurnInSubtitleWhenTranscoding) throws ApiException {
+        return getMasterHlsVideoPlaylist(itemId, mediaSourceId, _static, params, tag, deviceProfileId, playSessionId,
+                segmentContainer, segmentLength, minSegments, deviceId, audioCodec, enableAutoStreamCopy,
+                allowVideoStreamCopy, allowAudioStreamCopy, breakOnNonKeyFrames, audioSampleRate, maxAudioBitDepth,
+                audioBitRate, audioChannels, maxAudioChannels, profile, level, framerate, maxFramerate, copyTimestamps,
+                startTimeTicks, width, height, maxWidth, maxHeight, videoBitRate, subtitleStreamIndex, subtitleMethod,
+                maxRefFrames, maxVideoBitDepth, requireAvc, deInterlace, requireNonAnamorphic,
+                transcodingMaxAudioChannels, cpuCoreLimit, liveStreamId, enableMpegtsM2TsMode, videoCodec,
+                subtitleCodec, transcodeReasons, audioStreamIndex, videoStreamIndex, context, streamOptions,
+                enableAdaptiveBitrateStreaming, enableTrickplay, enableAudioVbrEncoding,
+                alwaysBurnInSubtitleWhenTranscoding, null);
+    }
+
+    /**
+     * Gets a video hls playlist stream.
+     * 
+     * @param itemId The item id. (required)
+     * @param mediaSourceId The media version id, if playing an alternate version. (required)
+     * @param _static Optional. If true, the original file will be streamed statically without any encoding. Use either
+     *            no url extension or the original file extension. true/false. (optional)
+     * @param params The streaming parameters. (optional)
+     * @param tag The tag. (optional)
+     * @param deviceProfileId Optional. The dlna device profile id to utilize. (optional)
+     * @param playSessionId The play session id. (optional)
+     * @param segmentContainer The segment container. (optional)
+     * @param segmentLength The segment length. (optional)
+     * @param minSegments The minimum number of segments. (optional)
+     * @param deviceId The device id of the client requesting. Used to stop encoding processes when needed. (optional)
+     * @param audioCodec Optional. Specify an audio codec to encode to, e.g. mp3. (optional)
+     * @param enableAutoStreamCopy Whether or not to allow automatic stream copy if requested values match the original
+     *            source. Defaults to true. (optional)
+     * @param allowVideoStreamCopy Whether or not to allow copying of the video stream url. (optional)
+     * @param allowAudioStreamCopy Whether or not to allow copying of the audio stream url. (optional)
+     * @param breakOnNonKeyFrames Optional. Whether to break on non key frames. (optional)
+     * @param audioSampleRate Optional. Specify a specific audio sample rate, e.g. 44100. (optional)
+     * @param maxAudioBitDepth Optional. The maximum audio bit depth. (optional)
+     * @param audioBitRate Optional. Specify an audio bitrate to encode to, e.g. 128000. If omitted this will be left to
+     *            encoder defaults. (optional)
+     * @param audioChannels Optional. Specify a specific number of audio channels to encode to, e.g. 2. (optional)
+     * @param maxAudioChannels Optional. Specify a maximum number of audio channels to encode to, e.g. 2. (optional)
+     * @param profile Optional. Specify a specific an encoder profile (varies by encoder), e.g. main, baseline, high.
+     *            (optional)
+     * @param level Optional. Specify a level for the encoder profile (varies by encoder), e.g. 3, 3.1. (optional)
+     * @param framerate Optional. A specific video framerate to encode to, e.g. 23.976. Generally this should be omitted
+     *            unless the device has specific requirements. (optional)
+     * @param maxFramerate Optional. A specific maximum video framerate to encode to, e.g. 23.976. Generally this should
+     *            be omitted unless the device has specific requirements. (optional)
+     * @param copyTimestamps Whether or not to copy timestamps when transcoding with an offset. Defaults to false.
+     *            (optional)
+     * @param startTimeTicks Optional. Specify a starting offset, in ticks. 1 tick &#x3D; 10000 ms. (optional)
+     * @param width Optional. The fixed horizontal resolution of the encoded video. (optional)
+     * @param height Optional. The fixed vertical resolution of the encoded video. (optional)
+     * @param maxWidth Optional. The maximum horizontal resolution of the encoded video. (optional)
+     * @param maxHeight Optional. The maximum vertical resolution of the encoded video. (optional)
+     * @param videoBitRate Optional. Specify a video bitrate to encode to, e.g. 500000. If omitted this will be left to
+     *            encoder defaults. (optional)
+     * @param subtitleStreamIndex Optional. The index of the subtitle stream to use. If omitted no subtitles will be
+     *            used. (optional)
+     * @param subtitleMethod Optional. Specify the subtitle delivery method. (optional)
+     * @param maxRefFrames Optional. (optional)
+     * @param maxVideoBitDepth Optional. The maximum video bit depth. (optional)
+     * @param requireAvc Optional. Whether to require avc. (optional)
+     * @param deInterlace Optional. Whether to deinterlace the video. (optional)
+     * @param requireNonAnamorphic Optional. Whether to require a non anamorphic stream. (optional)
+     * @param transcodingMaxAudioChannels Optional. The maximum number of audio channels to transcode. (optional)
+     * @param cpuCoreLimit Optional. The limit of how many cpu cores to use. (optional)
+     * @param liveStreamId The live stream id. (optional)
+     * @param enableMpegtsM2TsMode Optional. Whether to enable the MpegtsM2Ts mode. (optional)
+     * @param videoCodec Optional. Specify a video codec to encode to, e.g. h264. (optional)
+     * @param subtitleCodec Optional. Specify a subtitle codec to encode to. (optional)
+     * @param transcodeReasons Optional. The transcoding reason. (optional)
+     * @param audioStreamIndex Optional. The index of the audio stream to use. If omitted the first audio stream will be
+     *            used. (optional)
+     * @param videoStreamIndex Optional. The index of the video stream to use. If omitted the first video stream will be
+     *            used. (optional)
+     * @param context Optional. The MediaBrowser.Model.Dlna.EncodingContext. (optional)
+     * @param streamOptions Optional. The streaming options. (optional)
+     * @param enableAdaptiveBitrateStreaming Enable adaptive bitrate streaming. (optional, default to true)
+     * @param enableTrickplay Enable trickplay image playlists being added to master playlist. (optional, default to
+     *            true)
+     * @param enableAudioVbrEncoding Whether to enable Audio Encoding. (optional, default to true)
+     * @param alwaysBurnInSubtitleWhenTranscoding Whether to always burn in subtitles when transcoding. (optional,
+     *            default to false)
+     * @param headers Optional headers to include in the request
+     * @return File
+     * @throws ApiException if fails to make API call
+     */
+    public File getMasterHlsVideoPlaylist(@org.eclipse.jdt.annotation.Nullable UUID itemId,
+            @org.eclipse.jdt.annotation.Nullable String mediaSourceId,
+            @org.eclipse.jdt.annotation.NonNull Boolean _static, @org.eclipse.jdt.annotation.NonNull String params,
+            @org.eclipse.jdt.annotation.NonNull String tag, @org.eclipse.jdt.annotation.NonNull String deviceProfileId,
+            @org.eclipse.jdt.annotation.NonNull String playSessionId,
+            @org.eclipse.jdt.annotation.NonNull String segmentContainer,
+            @org.eclipse.jdt.annotation.NonNull Integer segmentLength,
+            @org.eclipse.jdt.annotation.NonNull Integer minSegments,
+            @org.eclipse.jdt.annotation.NonNull String deviceId, @org.eclipse.jdt.annotation.NonNull String audioCodec,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableAutoStreamCopy,
+            @org.eclipse.jdt.annotation.NonNull Boolean allowVideoStreamCopy,
+            @org.eclipse.jdt.annotation.NonNull Boolean allowAudioStreamCopy,
+            @org.eclipse.jdt.annotation.NonNull Boolean breakOnNonKeyFrames,
+            @org.eclipse.jdt.annotation.NonNull Integer audioSampleRate,
+            @org.eclipse.jdt.annotation.NonNull Integer maxAudioBitDepth,
+            @org.eclipse.jdt.annotation.NonNull Integer audioBitRate,
+            @org.eclipse.jdt.annotation.NonNull Integer audioChannels,
+            @org.eclipse.jdt.annotation.NonNull Integer maxAudioChannels,
+            @org.eclipse.jdt.annotation.NonNull String profile, @org.eclipse.jdt.annotation.NonNull String level,
+            @org.eclipse.jdt.annotation.NonNull Float framerate, @org.eclipse.jdt.annotation.NonNull Float maxFramerate,
+            @org.eclipse.jdt.annotation.NonNull Boolean copyTimestamps,
+            @org.eclipse.jdt.annotation.NonNull Long startTimeTicks, @org.eclipse.jdt.annotation.NonNull Integer width,
+            @org.eclipse.jdt.annotation.NonNull Integer height, @org.eclipse.jdt.annotation.NonNull Integer maxWidth,
+            @org.eclipse.jdt.annotation.NonNull Integer maxHeight,
+            @org.eclipse.jdt.annotation.NonNull Integer videoBitRate,
+            @org.eclipse.jdt.annotation.NonNull Integer subtitleStreamIndex,
+            @org.eclipse.jdt.annotation.NonNull SubtitleDeliveryMethod subtitleMethod,
+            @org.eclipse.jdt.annotation.NonNull Integer maxRefFrames,
+            @org.eclipse.jdt.annotation.NonNull Integer maxVideoBitDepth,
+            @org.eclipse.jdt.annotation.NonNull Boolean requireAvc,
+            @org.eclipse.jdt.annotation.NonNull Boolean deInterlace,
+            @org.eclipse.jdt.annotation.NonNull Boolean requireNonAnamorphic,
+            @org.eclipse.jdt.annotation.NonNull Integer transcodingMaxAudioChannels,
+            @org.eclipse.jdt.annotation.NonNull Integer cpuCoreLimit,
+            @org.eclipse.jdt.annotation.NonNull String liveStreamId,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableMpegtsM2TsMode,
+            @org.eclipse.jdt.annotation.NonNull String videoCodec,
+            @org.eclipse.jdt.annotation.NonNull String subtitleCodec,
+            @org.eclipse.jdt.annotation.NonNull String transcodeReasons,
+            @org.eclipse.jdt.annotation.NonNull Integer audioStreamIndex,
+            @org.eclipse.jdt.annotation.NonNull Integer videoStreamIndex,
+            @org.eclipse.jdt.annotation.NonNull EncodingContext context,
+            @org.eclipse.jdt.annotation.NonNull Map<String, String> streamOptions,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableAdaptiveBitrateStreaming,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableTrickplay,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableAudioVbrEncoding,
+            @org.eclipse.jdt.annotation.NonNull Boolean alwaysBurnInSubtitleWhenTranscoding,
+            Map<String, String> headers) throws ApiException {
         ApiResponse<File> localVarResponse = getMasterHlsVideoPlaylistWithHttpInfo(itemId, mediaSourceId, _static,
                 params, tag, deviceProfileId, playSessionId, segmentContainer, segmentLength, minSegments, deviceId,
                 audioCodec, enableAutoStreamCopy, allowVideoStreamCopy, allowAudioStreamCopy, breakOnNonKeyFrames,
@@ -2193,7 +3476,7 @@ public class DynamicHlsApi {
                 deInterlace, requireNonAnamorphic, transcodingMaxAudioChannels, cpuCoreLimit, liveStreamId,
                 enableMpegtsM2TsMode, videoCodec, subtitleCodec, transcodeReasons, audioStreamIndex, videoStreamIndex,
                 context, streamOptions, enableAdaptiveBitrateStreaming, enableTrickplay, enableAudioVbrEncoding,
-                alwaysBurnInSubtitleWhenTranscoding);
+                alwaysBurnInSubtitleWhenTranscoding, headers);
         return localVarResponse.getData();
     }
 
@@ -2317,6 +3600,140 @@ public class DynamicHlsApi {
             @org.eclipse.jdt.annotation.NonNull Boolean enableTrickplay,
             @org.eclipse.jdt.annotation.NonNull Boolean enableAudioVbrEncoding,
             @org.eclipse.jdt.annotation.NonNull Boolean alwaysBurnInSubtitleWhenTranscoding) throws ApiException {
+        return getMasterHlsVideoPlaylistWithHttpInfo(itemId, mediaSourceId, _static, params, tag, deviceProfileId,
+                playSessionId, segmentContainer, segmentLength, minSegments, deviceId, audioCodec, enableAutoStreamCopy,
+                allowVideoStreamCopy, allowAudioStreamCopy, breakOnNonKeyFrames, audioSampleRate, maxAudioBitDepth,
+                audioBitRate, audioChannels, maxAudioChannels, profile, level, framerate, maxFramerate, copyTimestamps,
+                startTimeTicks, width, height, maxWidth, maxHeight, videoBitRate, subtitleStreamIndex, subtitleMethod,
+                maxRefFrames, maxVideoBitDepth, requireAvc, deInterlace, requireNonAnamorphic,
+                transcodingMaxAudioChannels, cpuCoreLimit, liveStreamId, enableMpegtsM2TsMode, videoCodec,
+                subtitleCodec, transcodeReasons, audioStreamIndex, videoStreamIndex, context, streamOptions,
+                enableAdaptiveBitrateStreaming, enableTrickplay, enableAudioVbrEncoding,
+                alwaysBurnInSubtitleWhenTranscoding, null);
+    }
+
+    /**
+     * Gets a video hls playlist stream.
+     * 
+     * @param itemId The item id. (required)
+     * @param mediaSourceId The media version id, if playing an alternate version. (required)
+     * @param _static Optional. If true, the original file will be streamed statically without any encoding. Use either
+     *            no url extension or the original file extension. true/false. (optional)
+     * @param params The streaming parameters. (optional)
+     * @param tag The tag. (optional)
+     * @param deviceProfileId Optional. The dlna device profile id to utilize. (optional)
+     * @param playSessionId The play session id. (optional)
+     * @param segmentContainer The segment container. (optional)
+     * @param segmentLength The segment length. (optional)
+     * @param minSegments The minimum number of segments. (optional)
+     * @param deviceId The device id of the client requesting. Used to stop encoding processes when needed. (optional)
+     * @param audioCodec Optional. Specify an audio codec to encode to, e.g. mp3. (optional)
+     * @param enableAutoStreamCopy Whether or not to allow automatic stream copy if requested values match the original
+     *            source. Defaults to true. (optional)
+     * @param allowVideoStreamCopy Whether or not to allow copying of the video stream url. (optional)
+     * @param allowAudioStreamCopy Whether or not to allow copying of the audio stream url. (optional)
+     * @param breakOnNonKeyFrames Optional. Whether to break on non key frames. (optional)
+     * @param audioSampleRate Optional. Specify a specific audio sample rate, e.g. 44100. (optional)
+     * @param maxAudioBitDepth Optional. The maximum audio bit depth. (optional)
+     * @param audioBitRate Optional. Specify an audio bitrate to encode to, e.g. 128000. If omitted this will be left to
+     *            encoder defaults. (optional)
+     * @param audioChannels Optional. Specify a specific number of audio channels to encode to, e.g. 2. (optional)
+     * @param maxAudioChannels Optional. Specify a maximum number of audio channels to encode to, e.g. 2. (optional)
+     * @param profile Optional. Specify a specific an encoder profile (varies by encoder), e.g. main, baseline, high.
+     *            (optional)
+     * @param level Optional. Specify a level for the encoder profile (varies by encoder), e.g. 3, 3.1. (optional)
+     * @param framerate Optional. A specific video framerate to encode to, e.g. 23.976. Generally this should be omitted
+     *            unless the device has specific requirements. (optional)
+     * @param maxFramerate Optional. A specific maximum video framerate to encode to, e.g. 23.976. Generally this should
+     *            be omitted unless the device has specific requirements. (optional)
+     * @param copyTimestamps Whether or not to copy timestamps when transcoding with an offset. Defaults to false.
+     *            (optional)
+     * @param startTimeTicks Optional. Specify a starting offset, in ticks. 1 tick &#x3D; 10000 ms. (optional)
+     * @param width Optional. The fixed horizontal resolution of the encoded video. (optional)
+     * @param height Optional. The fixed vertical resolution of the encoded video. (optional)
+     * @param maxWidth Optional. The maximum horizontal resolution of the encoded video. (optional)
+     * @param maxHeight Optional. The maximum vertical resolution of the encoded video. (optional)
+     * @param videoBitRate Optional. Specify a video bitrate to encode to, e.g. 500000. If omitted this will be left to
+     *            encoder defaults. (optional)
+     * @param subtitleStreamIndex Optional. The index of the subtitle stream to use. If omitted no subtitles will be
+     *            used. (optional)
+     * @param subtitleMethod Optional. Specify the subtitle delivery method. (optional)
+     * @param maxRefFrames Optional. (optional)
+     * @param maxVideoBitDepth Optional. The maximum video bit depth. (optional)
+     * @param requireAvc Optional. Whether to require avc. (optional)
+     * @param deInterlace Optional. Whether to deinterlace the video. (optional)
+     * @param requireNonAnamorphic Optional. Whether to require a non anamorphic stream. (optional)
+     * @param transcodingMaxAudioChannels Optional. The maximum number of audio channels to transcode. (optional)
+     * @param cpuCoreLimit Optional. The limit of how many cpu cores to use. (optional)
+     * @param liveStreamId The live stream id. (optional)
+     * @param enableMpegtsM2TsMode Optional. Whether to enable the MpegtsM2Ts mode. (optional)
+     * @param videoCodec Optional. Specify a video codec to encode to, e.g. h264. (optional)
+     * @param subtitleCodec Optional. Specify a subtitle codec to encode to. (optional)
+     * @param transcodeReasons Optional. The transcoding reason. (optional)
+     * @param audioStreamIndex Optional. The index of the audio stream to use. If omitted the first audio stream will be
+     *            used. (optional)
+     * @param videoStreamIndex Optional. The index of the video stream to use. If omitted the first video stream will be
+     *            used. (optional)
+     * @param context Optional. The MediaBrowser.Model.Dlna.EncodingContext. (optional)
+     * @param streamOptions Optional. The streaming options. (optional)
+     * @param enableAdaptiveBitrateStreaming Enable adaptive bitrate streaming. (optional, default to true)
+     * @param enableTrickplay Enable trickplay image playlists being added to master playlist. (optional, default to
+     *            true)
+     * @param enableAudioVbrEncoding Whether to enable Audio Encoding. (optional, default to true)
+     * @param alwaysBurnInSubtitleWhenTranscoding Whether to always burn in subtitles when transcoding. (optional,
+     *            default to false)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;File&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<File> getMasterHlsVideoPlaylistWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID itemId,
+            @org.eclipse.jdt.annotation.Nullable String mediaSourceId,
+            @org.eclipse.jdt.annotation.NonNull Boolean _static, @org.eclipse.jdt.annotation.NonNull String params,
+            @org.eclipse.jdt.annotation.NonNull String tag, @org.eclipse.jdt.annotation.NonNull String deviceProfileId,
+            @org.eclipse.jdt.annotation.NonNull String playSessionId,
+            @org.eclipse.jdt.annotation.NonNull String segmentContainer,
+            @org.eclipse.jdt.annotation.NonNull Integer segmentLength,
+            @org.eclipse.jdt.annotation.NonNull Integer minSegments,
+            @org.eclipse.jdt.annotation.NonNull String deviceId, @org.eclipse.jdt.annotation.NonNull String audioCodec,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableAutoStreamCopy,
+            @org.eclipse.jdt.annotation.NonNull Boolean allowVideoStreamCopy,
+            @org.eclipse.jdt.annotation.NonNull Boolean allowAudioStreamCopy,
+            @org.eclipse.jdt.annotation.NonNull Boolean breakOnNonKeyFrames,
+            @org.eclipse.jdt.annotation.NonNull Integer audioSampleRate,
+            @org.eclipse.jdt.annotation.NonNull Integer maxAudioBitDepth,
+            @org.eclipse.jdt.annotation.NonNull Integer audioBitRate,
+            @org.eclipse.jdt.annotation.NonNull Integer audioChannels,
+            @org.eclipse.jdt.annotation.NonNull Integer maxAudioChannels,
+            @org.eclipse.jdt.annotation.NonNull String profile, @org.eclipse.jdt.annotation.NonNull String level,
+            @org.eclipse.jdt.annotation.NonNull Float framerate, @org.eclipse.jdt.annotation.NonNull Float maxFramerate,
+            @org.eclipse.jdt.annotation.NonNull Boolean copyTimestamps,
+            @org.eclipse.jdt.annotation.NonNull Long startTimeTicks, @org.eclipse.jdt.annotation.NonNull Integer width,
+            @org.eclipse.jdt.annotation.NonNull Integer height, @org.eclipse.jdt.annotation.NonNull Integer maxWidth,
+            @org.eclipse.jdt.annotation.NonNull Integer maxHeight,
+            @org.eclipse.jdt.annotation.NonNull Integer videoBitRate,
+            @org.eclipse.jdt.annotation.NonNull Integer subtitleStreamIndex,
+            @org.eclipse.jdt.annotation.NonNull SubtitleDeliveryMethod subtitleMethod,
+            @org.eclipse.jdt.annotation.NonNull Integer maxRefFrames,
+            @org.eclipse.jdt.annotation.NonNull Integer maxVideoBitDepth,
+            @org.eclipse.jdt.annotation.NonNull Boolean requireAvc,
+            @org.eclipse.jdt.annotation.NonNull Boolean deInterlace,
+            @org.eclipse.jdt.annotation.NonNull Boolean requireNonAnamorphic,
+            @org.eclipse.jdt.annotation.NonNull Integer transcodingMaxAudioChannels,
+            @org.eclipse.jdt.annotation.NonNull Integer cpuCoreLimit,
+            @org.eclipse.jdt.annotation.NonNull String liveStreamId,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableMpegtsM2TsMode,
+            @org.eclipse.jdt.annotation.NonNull String videoCodec,
+            @org.eclipse.jdt.annotation.NonNull String subtitleCodec,
+            @org.eclipse.jdt.annotation.NonNull String transcodeReasons,
+            @org.eclipse.jdt.annotation.NonNull Integer audioStreamIndex,
+            @org.eclipse.jdt.annotation.NonNull Integer videoStreamIndex,
+            @org.eclipse.jdt.annotation.NonNull EncodingContext context,
+            @org.eclipse.jdt.annotation.NonNull Map<String, String> streamOptions,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableAdaptiveBitrateStreaming,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableTrickplay,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableAudioVbrEncoding,
+            @org.eclipse.jdt.annotation.NonNull Boolean alwaysBurnInSubtitleWhenTranscoding,
+            Map<String, String> headers) throws ApiException {
         HttpRequest.Builder localVarRequestBuilder = getMasterHlsVideoPlaylistRequestBuilder(itemId, mediaSourceId,
                 _static, params, tag, deviceProfileId, playSessionId, segmentContainer, segmentLength, minSegments,
                 deviceId, audioCodec, enableAutoStreamCopy, allowVideoStreamCopy, allowAudioStreamCopy,
@@ -2326,7 +3743,7 @@ public class DynamicHlsApi {
                 requireAvc, deInterlace, requireNonAnamorphic, transcodingMaxAudioChannels, cpuCoreLimit, liveStreamId,
                 enableMpegtsM2TsMode, videoCodec, subtitleCodec, transcodeReasons, audioStreamIndex, videoStreamIndex,
                 context, streamOptions, enableAdaptiveBitrateStreaming, enableTrickplay, enableAudioVbrEncoding,
-                alwaysBurnInSubtitleWhenTranscoding);
+                alwaysBurnInSubtitleWhenTranscoding, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -2341,13 +3758,13 @@ public class DynamicHlsApi {
                     return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
                 }
 
-                String responseBody = new String(localVarResponse.body().readAllBytes());
+                // Handle file downloading.
+                File responseValue = downloadFileFromResponse(localVarResponse);
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {
-                                }));
+                        responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -2404,7 +3821,8 @@ public class DynamicHlsApi {
             @org.eclipse.jdt.annotation.NonNull Boolean enableAdaptiveBitrateStreaming,
             @org.eclipse.jdt.annotation.NonNull Boolean enableTrickplay,
             @org.eclipse.jdt.annotation.NonNull Boolean enableAudioVbrEncoding,
-            @org.eclipse.jdt.annotation.NonNull Boolean alwaysBurnInSubtitleWhenTranscoding) throws ApiException {
+            @org.eclipse.jdt.annotation.NonNull Boolean alwaysBurnInSubtitleWhenTranscoding,
+            Map<String, String> headers) throws ApiException {
         // verify the required parameter 'itemId' is set
         if (itemId == null) {
             throw new ApiException(400,
@@ -2551,6 +3969,8 @@ public class DynamicHlsApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -2668,6 +4088,130 @@ public class DynamicHlsApi {
             @org.eclipse.jdt.annotation.NonNull EncodingContext context,
             @org.eclipse.jdt.annotation.NonNull Map<String, String> streamOptions,
             @org.eclipse.jdt.annotation.NonNull Boolean enableAudioVbrEncoding) throws ApiException {
+        return getVariantHlsAudioPlaylist(itemId, _static, params, tag, deviceProfileId, playSessionId,
+                segmentContainer, segmentLength, minSegments, mediaSourceId, deviceId, audioCodec, enableAutoStreamCopy,
+                allowVideoStreamCopy, allowAudioStreamCopy, breakOnNonKeyFrames, audioSampleRate, maxAudioBitDepth,
+                maxStreamingBitrate, audioBitRate, audioChannels, maxAudioChannels, profile, level, framerate,
+                maxFramerate, copyTimestamps, startTimeTicks, width, height, videoBitRate, subtitleStreamIndex,
+                subtitleMethod, maxRefFrames, maxVideoBitDepth, requireAvc, deInterlace, requireNonAnamorphic,
+                transcodingMaxAudioChannels, cpuCoreLimit, liveStreamId, enableMpegtsM2TsMode, videoCodec,
+                subtitleCodec, transcodeReasons, audioStreamIndex, videoStreamIndex, context, streamOptions,
+                enableAudioVbrEncoding, null);
+    }
+
+    /**
+     * Gets an audio stream using HTTP live streaming.
+     * 
+     * @param itemId The item id. (required)
+     * @param _static Optional. If true, the original file will be streamed statically without any encoding. Use either
+     *            no url extension or the original file extension. true/false. (optional)
+     * @param params The streaming parameters. (optional)
+     * @param tag The tag. (optional)
+     * @param deviceProfileId Optional. The dlna device profile id to utilize. (optional)
+     * @param playSessionId The play session id. (optional)
+     * @param segmentContainer The segment container. (optional)
+     * @param segmentLength The segment length. (optional)
+     * @param minSegments The minimum number of segments. (optional)
+     * @param mediaSourceId The media version id, if playing an alternate version. (optional)
+     * @param deviceId The device id of the client requesting. Used to stop encoding processes when needed. (optional)
+     * @param audioCodec Optional. Specify an audio codec to encode to, e.g. mp3. (optional)
+     * @param enableAutoStreamCopy Whether or not to allow automatic stream copy if requested values match the original
+     *            source. Defaults to true. (optional)
+     * @param allowVideoStreamCopy Whether or not to allow copying of the video stream url. (optional)
+     * @param allowAudioStreamCopy Whether or not to allow copying of the audio stream url. (optional)
+     * @param breakOnNonKeyFrames Optional. Whether to break on non key frames. (optional)
+     * @param audioSampleRate Optional. Specify a specific audio sample rate, e.g. 44100. (optional)
+     * @param maxAudioBitDepth Optional. The maximum audio bit depth. (optional)
+     * @param maxStreamingBitrate Optional. The maximum streaming bitrate. (optional)
+     * @param audioBitRate Optional. Specify an audio bitrate to encode to, e.g. 128000. If omitted this will be left to
+     *            encoder defaults. (optional)
+     * @param audioChannels Optional. Specify a specific number of audio channels to encode to, e.g. 2. (optional)
+     * @param maxAudioChannels Optional. Specify a maximum number of audio channels to encode to, e.g. 2. (optional)
+     * @param profile Optional. Specify a specific an encoder profile (varies by encoder), e.g. main, baseline, high.
+     *            (optional)
+     * @param level Optional. Specify a level for the encoder profile (varies by encoder), e.g. 3, 3.1. (optional)
+     * @param framerate Optional. A specific video framerate to encode to, e.g. 23.976. Generally this should be omitted
+     *            unless the device has specific requirements. (optional)
+     * @param maxFramerate Optional. A specific maximum video framerate to encode to, e.g. 23.976. Generally this should
+     *            be omitted unless the device has specific requirements. (optional)
+     * @param copyTimestamps Whether or not to copy timestamps when transcoding with an offset. Defaults to false.
+     *            (optional)
+     * @param startTimeTicks Optional. Specify a starting offset, in ticks. 1 tick &#x3D; 10000 ms. (optional)
+     * @param width Optional. The fixed horizontal resolution of the encoded video. (optional)
+     * @param height Optional. The fixed vertical resolution of the encoded video. (optional)
+     * @param videoBitRate Optional. Specify a video bitrate to encode to, e.g. 500000. If omitted this will be left to
+     *            encoder defaults. (optional)
+     * @param subtitleStreamIndex Optional. The index of the subtitle stream to use. If omitted no subtitles will be
+     *            used. (optional)
+     * @param subtitleMethod Optional. Specify the subtitle delivery method. (optional)
+     * @param maxRefFrames Optional. (optional)
+     * @param maxVideoBitDepth Optional. The maximum video bit depth. (optional)
+     * @param requireAvc Optional. Whether to require avc. (optional)
+     * @param deInterlace Optional. Whether to deinterlace the video. (optional)
+     * @param requireNonAnamorphic Optional. Whether to require a non anamorphic stream. (optional)
+     * @param transcodingMaxAudioChannels Optional. The maximum number of audio channels to transcode. (optional)
+     * @param cpuCoreLimit Optional. The limit of how many cpu cores to use. (optional)
+     * @param liveStreamId The live stream id. (optional)
+     * @param enableMpegtsM2TsMode Optional. Whether to enable the MpegtsM2Ts mode. (optional)
+     * @param videoCodec Optional. Specify a video codec to encode to, e.g. h264. (optional)
+     * @param subtitleCodec Optional. Specify a subtitle codec to encode to. (optional)
+     * @param transcodeReasons Optional. The transcoding reason. (optional)
+     * @param audioStreamIndex Optional. The index of the audio stream to use. If omitted the first audio stream will be
+     *            used. (optional)
+     * @param videoStreamIndex Optional. The index of the video stream to use. If omitted the first video stream will be
+     *            used. (optional)
+     * @param context Optional. The MediaBrowser.Model.Dlna.EncodingContext. (optional)
+     * @param streamOptions Optional. The streaming options. (optional)
+     * @param enableAudioVbrEncoding Optional. Whether to enable Audio Encoding. (optional, default to true)
+     * @param headers Optional headers to include in the request
+     * @return File
+     * @throws ApiException if fails to make API call
+     */
+    public File getVariantHlsAudioPlaylist(@org.eclipse.jdt.annotation.Nullable UUID itemId,
+            @org.eclipse.jdt.annotation.NonNull Boolean _static, @org.eclipse.jdt.annotation.NonNull String params,
+            @org.eclipse.jdt.annotation.NonNull String tag, @org.eclipse.jdt.annotation.NonNull String deviceProfileId,
+            @org.eclipse.jdt.annotation.NonNull String playSessionId,
+            @org.eclipse.jdt.annotation.NonNull String segmentContainer,
+            @org.eclipse.jdt.annotation.NonNull Integer segmentLength,
+            @org.eclipse.jdt.annotation.NonNull Integer minSegments,
+            @org.eclipse.jdt.annotation.NonNull String mediaSourceId,
+            @org.eclipse.jdt.annotation.NonNull String deviceId, @org.eclipse.jdt.annotation.NonNull String audioCodec,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableAutoStreamCopy,
+            @org.eclipse.jdt.annotation.NonNull Boolean allowVideoStreamCopy,
+            @org.eclipse.jdt.annotation.NonNull Boolean allowAudioStreamCopy,
+            @org.eclipse.jdt.annotation.NonNull Boolean breakOnNonKeyFrames,
+            @org.eclipse.jdt.annotation.NonNull Integer audioSampleRate,
+            @org.eclipse.jdt.annotation.NonNull Integer maxAudioBitDepth,
+            @org.eclipse.jdt.annotation.NonNull Integer maxStreamingBitrate,
+            @org.eclipse.jdt.annotation.NonNull Integer audioBitRate,
+            @org.eclipse.jdt.annotation.NonNull Integer audioChannels,
+            @org.eclipse.jdt.annotation.NonNull Integer maxAudioChannels,
+            @org.eclipse.jdt.annotation.NonNull String profile, @org.eclipse.jdt.annotation.NonNull String level,
+            @org.eclipse.jdt.annotation.NonNull Float framerate, @org.eclipse.jdt.annotation.NonNull Float maxFramerate,
+            @org.eclipse.jdt.annotation.NonNull Boolean copyTimestamps,
+            @org.eclipse.jdt.annotation.NonNull Long startTimeTicks, @org.eclipse.jdt.annotation.NonNull Integer width,
+            @org.eclipse.jdt.annotation.NonNull Integer height,
+            @org.eclipse.jdt.annotation.NonNull Integer videoBitRate,
+            @org.eclipse.jdt.annotation.NonNull Integer subtitleStreamIndex,
+            @org.eclipse.jdt.annotation.NonNull SubtitleDeliveryMethod subtitleMethod,
+            @org.eclipse.jdt.annotation.NonNull Integer maxRefFrames,
+            @org.eclipse.jdt.annotation.NonNull Integer maxVideoBitDepth,
+            @org.eclipse.jdt.annotation.NonNull Boolean requireAvc,
+            @org.eclipse.jdt.annotation.NonNull Boolean deInterlace,
+            @org.eclipse.jdt.annotation.NonNull Boolean requireNonAnamorphic,
+            @org.eclipse.jdt.annotation.NonNull Integer transcodingMaxAudioChannels,
+            @org.eclipse.jdt.annotation.NonNull Integer cpuCoreLimit,
+            @org.eclipse.jdt.annotation.NonNull String liveStreamId,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableMpegtsM2TsMode,
+            @org.eclipse.jdt.annotation.NonNull String videoCodec,
+            @org.eclipse.jdt.annotation.NonNull String subtitleCodec,
+            @org.eclipse.jdt.annotation.NonNull String transcodeReasons,
+            @org.eclipse.jdt.annotation.NonNull Integer audioStreamIndex,
+            @org.eclipse.jdt.annotation.NonNull Integer videoStreamIndex,
+            @org.eclipse.jdt.annotation.NonNull EncodingContext context,
+            @org.eclipse.jdt.annotation.NonNull Map<String, String> streamOptions,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableAudioVbrEncoding, Map<String, String> headers)
+            throws ApiException {
         ApiResponse<File> localVarResponse = getVariantHlsAudioPlaylistWithHttpInfo(itemId, _static, params, tag,
                 deviceProfileId, playSessionId, segmentContainer, segmentLength, minSegments, mediaSourceId, deviceId,
                 audioCodec, enableAutoStreamCopy, allowVideoStreamCopy, allowAudioStreamCopy, breakOnNonKeyFrames,
@@ -2676,7 +4220,7 @@ public class DynamicHlsApi {
                 subtitleStreamIndex, subtitleMethod, maxRefFrames, maxVideoBitDepth, requireAvc, deInterlace,
                 requireNonAnamorphic, transcodingMaxAudioChannels, cpuCoreLimit, liveStreamId, enableMpegtsM2TsMode,
                 videoCodec, subtitleCodec, transcodeReasons, audioStreamIndex, videoStreamIndex, context, streamOptions,
-                enableAudioVbrEncoding);
+                enableAudioVbrEncoding, headers);
         return localVarResponse.getData();
     }
 
@@ -2791,6 +4335,130 @@ public class DynamicHlsApi {
             @org.eclipse.jdt.annotation.NonNull EncodingContext context,
             @org.eclipse.jdt.annotation.NonNull Map<String, String> streamOptions,
             @org.eclipse.jdt.annotation.NonNull Boolean enableAudioVbrEncoding) throws ApiException {
+        return getVariantHlsAudioPlaylistWithHttpInfo(itemId, _static, params, tag, deviceProfileId, playSessionId,
+                segmentContainer, segmentLength, minSegments, mediaSourceId, deviceId, audioCodec, enableAutoStreamCopy,
+                allowVideoStreamCopy, allowAudioStreamCopy, breakOnNonKeyFrames, audioSampleRate, maxAudioBitDepth,
+                maxStreamingBitrate, audioBitRate, audioChannels, maxAudioChannels, profile, level, framerate,
+                maxFramerate, copyTimestamps, startTimeTicks, width, height, videoBitRate, subtitleStreamIndex,
+                subtitleMethod, maxRefFrames, maxVideoBitDepth, requireAvc, deInterlace, requireNonAnamorphic,
+                transcodingMaxAudioChannels, cpuCoreLimit, liveStreamId, enableMpegtsM2TsMode, videoCodec,
+                subtitleCodec, transcodeReasons, audioStreamIndex, videoStreamIndex, context, streamOptions,
+                enableAudioVbrEncoding, null);
+    }
+
+    /**
+     * Gets an audio stream using HTTP live streaming.
+     * 
+     * @param itemId The item id. (required)
+     * @param _static Optional. If true, the original file will be streamed statically without any encoding. Use either
+     *            no url extension or the original file extension. true/false. (optional)
+     * @param params The streaming parameters. (optional)
+     * @param tag The tag. (optional)
+     * @param deviceProfileId Optional. The dlna device profile id to utilize. (optional)
+     * @param playSessionId The play session id. (optional)
+     * @param segmentContainer The segment container. (optional)
+     * @param segmentLength The segment length. (optional)
+     * @param minSegments The minimum number of segments. (optional)
+     * @param mediaSourceId The media version id, if playing an alternate version. (optional)
+     * @param deviceId The device id of the client requesting. Used to stop encoding processes when needed. (optional)
+     * @param audioCodec Optional. Specify an audio codec to encode to, e.g. mp3. (optional)
+     * @param enableAutoStreamCopy Whether or not to allow automatic stream copy if requested values match the original
+     *            source. Defaults to true. (optional)
+     * @param allowVideoStreamCopy Whether or not to allow copying of the video stream url. (optional)
+     * @param allowAudioStreamCopy Whether or not to allow copying of the audio stream url. (optional)
+     * @param breakOnNonKeyFrames Optional. Whether to break on non key frames. (optional)
+     * @param audioSampleRate Optional. Specify a specific audio sample rate, e.g. 44100. (optional)
+     * @param maxAudioBitDepth Optional. The maximum audio bit depth. (optional)
+     * @param maxStreamingBitrate Optional. The maximum streaming bitrate. (optional)
+     * @param audioBitRate Optional. Specify an audio bitrate to encode to, e.g. 128000. If omitted this will be left to
+     *            encoder defaults. (optional)
+     * @param audioChannels Optional. Specify a specific number of audio channels to encode to, e.g. 2. (optional)
+     * @param maxAudioChannels Optional. Specify a maximum number of audio channels to encode to, e.g. 2. (optional)
+     * @param profile Optional. Specify a specific an encoder profile (varies by encoder), e.g. main, baseline, high.
+     *            (optional)
+     * @param level Optional. Specify a level for the encoder profile (varies by encoder), e.g. 3, 3.1. (optional)
+     * @param framerate Optional. A specific video framerate to encode to, e.g. 23.976. Generally this should be omitted
+     *            unless the device has specific requirements. (optional)
+     * @param maxFramerate Optional. A specific maximum video framerate to encode to, e.g. 23.976. Generally this should
+     *            be omitted unless the device has specific requirements. (optional)
+     * @param copyTimestamps Whether or not to copy timestamps when transcoding with an offset. Defaults to false.
+     *            (optional)
+     * @param startTimeTicks Optional. Specify a starting offset, in ticks. 1 tick &#x3D; 10000 ms. (optional)
+     * @param width Optional. The fixed horizontal resolution of the encoded video. (optional)
+     * @param height Optional. The fixed vertical resolution of the encoded video. (optional)
+     * @param videoBitRate Optional. Specify a video bitrate to encode to, e.g. 500000. If omitted this will be left to
+     *            encoder defaults. (optional)
+     * @param subtitleStreamIndex Optional. The index of the subtitle stream to use. If omitted no subtitles will be
+     *            used. (optional)
+     * @param subtitleMethod Optional. Specify the subtitle delivery method. (optional)
+     * @param maxRefFrames Optional. (optional)
+     * @param maxVideoBitDepth Optional. The maximum video bit depth. (optional)
+     * @param requireAvc Optional. Whether to require avc. (optional)
+     * @param deInterlace Optional. Whether to deinterlace the video. (optional)
+     * @param requireNonAnamorphic Optional. Whether to require a non anamorphic stream. (optional)
+     * @param transcodingMaxAudioChannels Optional. The maximum number of audio channels to transcode. (optional)
+     * @param cpuCoreLimit Optional. The limit of how many cpu cores to use. (optional)
+     * @param liveStreamId The live stream id. (optional)
+     * @param enableMpegtsM2TsMode Optional. Whether to enable the MpegtsM2Ts mode. (optional)
+     * @param videoCodec Optional. Specify a video codec to encode to, e.g. h264. (optional)
+     * @param subtitleCodec Optional. Specify a subtitle codec to encode to. (optional)
+     * @param transcodeReasons Optional. The transcoding reason. (optional)
+     * @param audioStreamIndex Optional. The index of the audio stream to use. If omitted the first audio stream will be
+     *            used. (optional)
+     * @param videoStreamIndex Optional. The index of the video stream to use. If omitted the first video stream will be
+     *            used. (optional)
+     * @param context Optional. The MediaBrowser.Model.Dlna.EncodingContext. (optional)
+     * @param streamOptions Optional. The streaming options. (optional)
+     * @param enableAudioVbrEncoding Optional. Whether to enable Audio Encoding. (optional, default to true)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;File&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<File> getVariantHlsAudioPlaylistWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID itemId,
+            @org.eclipse.jdt.annotation.NonNull Boolean _static, @org.eclipse.jdt.annotation.NonNull String params,
+            @org.eclipse.jdt.annotation.NonNull String tag, @org.eclipse.jdt.annotation.NonNull String deviceProfileId,
+            @org.eclipse.jdt.annotation.NonNull String playSessionId,
+            @org.eclipse.jdt.annotation.NonNull String segmentContainer,
+            @org.eclipse.jdt.annotation.NonNull Integer segmentLength,
+            @org.eclipse.jdt.annotation.NonNull Integer minSegments,
+            @org.eclipse.jdt.annotation.NonNull String mediaSourceId,
+            @org.eclipse.jdt.annotation.NonNull String deviceId, @org.eclipse.jdt.annotation.NonNull String audioCodec,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableAutoStreamCopy,
+            @org.eclipse.jdt.annotation.NonNull Boolean allowVideoStreamCopy,
+            @org.eclipse.jdt.annotation.NonNull Boolean allowAudioStreamCopy,
+            @org.eclipse.jdt.annotation.NonNull Boolean breakOnNonKeyFrames,
+            @org.eclipse.jdt.annotation.NonNull Integer audioSampleRate,
+            @org.eclipse.jdt.annotation.NonNull Integer maxAudioBitDepth,
+            @org.eclipse.jdt.annotation.NonNull Integer maxStreamingBitrate,
+            @org.eclipse.jdt.annotation.NonNull Integer audioBitRate,
+            @org.eclipse.jdt.annotation.NonNull Integer audioChannels,
+            @org.eclipse.jdt.annotation.NonNull Integer maxAudioChannels,
+            @org.eclipse.jdt.annotation.NonNull String profile, @org.eclipse.jdt.annotation.NonNull String level,
+            @org.eclipse.jdt.annotation.NonNull Float framerate, @org.eclipse.jdt.annotation.NonNull Float maxFramerate,
+            @org.eclipse.jdt.annotation.NonNull Boolean copyTimestamps,
+            @org.eclipse.jdt.annotation.NonNull Long startTimeTicks, @org.eclipse.jdt.annotation.NonNull Integer width,
+            @org.eclipse.jdt.annotation.NonNull Integer height,
+            @org.eclipse.jdt.annotation.NonNull Integer videoBitRate,
+            @org.eclipse.jdt.annotation.NonNull Integer subtitleStreamIndex,
+            @org.eclipse.jdt.annotation.NonNull SubtitleDeliveryMethod subtitleMethod,
+            @org.eclipse.jdt.annotation.NonNull Integer maxRefFrames,
+            @org.eclipse.jdt.annotation.NonNull Integer maxVideoBitDepth,
+            @org.eclipse.jdt.annotation.NonNull Boolean requireAvc,
+            @org.eclipse.jdt.annotation.NonNull Boolean deInterlace,
+            @org.eclipse.jdt.annotation.NonNull Boolean requireNonAnamorphic,
+            @org.eclipse.jdt.annotation.NonNull Integer transcodingMaxAudioChannels,
+            @org.eclipse.jdt.annotation.NonNull Integer cpuCoreLimit,
+            @org.eclipse.jdt.annotation.NonNull String liveStreamId,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableMpegtsM2TsMode,
+            @org.eclipse.jdt.annotation.NonNull String videoCodec,
+            @org.eclipse.jdt.annotation.NonNull String subtitleCodec,
+            @org.eclipse.jdt.annotation.NonNull String transcodeReasons,
+            @org.eclipse.jdt.annotation.NonNull Integer audioStreamIndex,
+            @org.eclipse.jdt.annotation.NonNull Integer videoStreamIndex,
+            @org.eclipse.jdt.annotation.NonNull EncodingContext context,
+            @org.eclipse.jdt.annotation.NonNull Map<String, String> streamOptions,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableAudioVbrEncoding, Map<String, String> headers)
+            throws ApiException {
         HttpRequest.Builder localVarRequestBuilder = getVariantHlsAudioPlaylistRequestBuilder(itemId, _static, params,
                 tag, deviceProfileId, playSessionId, segmentContainer, segmentLength, minSegments, mediaSourceId,
                 deviceId, audioCodec, enableAutoStreamCopy, allowVideoStreamCopy, allowAudioStreamCopy,
@@ -2799,7 +4467,7 @@ public class DynamicHlsApi {
                 startTimeTicks, width, height, videoBitRate, subtitleStreamIndex, subtitleMethod, maxRefFrames,
                 maxVideoBitDepth, requireAvc, deInterlace, requireNonAnamorphic, transcodingMaxAudioChannels,
                 cpuCoreLimit, liveStreamId, enableMpegtsM2TsMode, videoCodec, subtitleCodec, transcodeReasons,
-                audioStreamIndex, videoStreamIndex, context, streamOptions, enableAudioVbrEncoding);
+                audioStreamIndex, videoStreamIndex, context, streamOptions, enableAudioVbrEncoding, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -2814,13 +4482,13 @@ public class DynamicHlsApi {
                     return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
                 }
 
-                String responseBody = new String(localVarResponse.body().readAllBytes());
+                // Handle file downloading.
+                File responseValue = downloadFileFromResponse(localVarResponse);
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {
-                                }));
+                        responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -2875,7 +4543,8 @@ public class DynamicHlsApi {
             @org.eclipse.jdt.annotation.NonNull Integer videoStreamIndex,
             @org.eclipse.jdt.annotation.NonNull EncodingContext context,
             @org.eclipse.jdt.annotation.NonNull Map<String, String> streamOptions,
-            @org.eclipse.jdt.annotation.NonNull Boolean enableAudioVbrEncoding) throws ApiException {
+            @org.eclipse.jdt.annotation.NonNull Boolean enableAudioVbrEncoding, Map<String, String> headers)
+            throws ApiException {
         // verify the required parameter 'itemId' is set
         if (itemId == null) {
             throw new ApiException(400,
@@ -3006,6 +4675,8 @@ public class DynamicHlsApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -3127,6 +4798,134 @@ public class DynamicHlsApi {
             @org.eclipse.jdt.annotation.NonNull Map<String, String> streamOptions,
             @org.eclipse.jdt.annotation.NonNull Boolean enableAudioVbrEncoding,
             @org.eclipse.jdt.annotation.NonNull Boolean alwaysBurnInSubtitleWhenTranscoding) throws ApiException {
+        return getVariantHlsVideoPlaylist(itemId, _static, params, tag, deviceProfileId, playSessionId,
+                segmentContainer, segmentLength, minSegments, mediaSourceId, deviceId, audioCodec, enableAutoStreamCopy,
+                allowVideoStreamCopy, allowAudioStreamCopy, breakOnNonKeyFrames, audioSampleRate, maxAudioBitDepth,
+                audioBitRate, audioChannels, maxAudioChannels, profile, level, framerate, maxFramerate, copyTimestamps,
+                startTimeTicks, width, height, maxWidth, maxHeight, videoBitRate, subtitleStreamIndex, subtitleMethod,
+                maxRefFrames, maxVideoBitDepth, requireAvc, deInterlace, requireNonAnamorphic,
+                transcodingMaxAudioChannels, cpuCoreLimit, liveStreamId, enableMpegtsM2TsMode, videoCodec,
+                subtitleCodec, transcodeReasons, audioStreamIndex, videoStreamIndex, context, streamOptions,
+                enableAudioVbrEncoding, alwaysBurnInSubtitleWhenTranscoding, null);
+    }
+
+    /**
+     * Gets a video stream using HTTP live streaming.
+     * 
+     * @param itemId The item id. (required)
+     * @param _static Optional. If true, the original file will be streamed statically without any encoding. Use either
+     *            no url extension or the original file extension. true/false. (optional)
+     * @param params The streaming parameters. (optional)
+     * @param tag The tag. (optional)
+     * @param deviceProfileId Optional. The dlna device profile id to utilize. (optional)
+     * @param playSessionId The play session id. (optional)
+     * @param segmentContainer The segment container. (optional)
+     * @param segmentLength The segment length. (optional)
+     * @param minSegments The minimum number of segments. (optional)
+     * @param mediaSourceId The media version id, if playing an alternate version. (optional)
+     * @param deviceId The device id of the client requesting. Used to stop encoding processes when needed. (optional)
+     * @param audioCodec Optional. Specify an audio codec to encode to, e.g. mp3. (optional)
+     * @param enableAutoStreamCopy Whether or not to allow automatic stream copy if requested values match the original
+     *            source. Defaults to true. (optional)
+     * @param allowVideoStreamCopy Whether or not to allow copying of the video stream url. (optional)
+     * @param allowAudioStreamCopy Whether or not to allow copying of the audio stream url. (optional)
+     * @param breakOnNonKeyFrames Optional. Whether to break on non key frames. (optional)
+     * @param audioSampleRate Optional. Specify a specific audio sample rate, e.g. 44100. (optional)
+     * @param maxAudioBitDepth Optional. The maximum audio bit depth. (optional)
+     * @param audioBitRate Optional. Specify an audio bitrate to encode to, e.g. 128000. If omitted this will be left to
+     *            encoder defaults. (optional)
+     * @param audioChannels Optional. Specify a specific number of audio channels to encode to, e.g. 2. (optional)
+     * @param maxAudioChannels Optional. Specify a maximum number of audio channels to encode to, e.g. 2. (optional)
+     * @param profile Optional. Specify a specific an encoder profile (varies by encoder), e.g. main, baseline, high.
+     *            (optional)
+     * @param level Optional. Specify a level for the encoder profile (varies by encoder), e.g. 3, 3.1. (optional)
+     * @param framerate Optional. A specific video framerate to encode to, e.g. 23.976. Generally this should be omitted
+     *            unless the device has specific requirements. (optional)
+     * @param maxFramerate Optional. A specific maximum video framerate to encode to, e.g. 23.976. Generally this should
+     *            be omitted unless the device has specific requirements. (optional)
+     * @param copyTimestamps Whether or not to copy timestamps when transcoding with an offset. Defaults to false.
+     *            (optional)
+     * @param startTimeTicks Optional. Specify a starting offset, in ticks. 1 tick &#x3D; 10000 ms. (optional)
+     * @param width Optional. The fixed horizontal resolution of the encoded video. (optional)
+     * @param height Optional. The fixed vertical resolution of the encoded video. (optional)
+     * @param maxWidth Optional. The maximum horizontal resolution of the encoded video. (optional)
+     * @param maxHeight Optional. The maximum vertical resolution of the encoded video. (optional)
+     * @param videoBitRate Optional. Specify a video bitrate to encode to, e.g. 500000. If omitted this will be left to
+     *            encoder defaults. (optional)
+     * @param subtitleStreamIndex Optional. The index of the subtitle stream to use. If omitted no subtitles will be
+     *            used. (optional)
+     * @param subtitleMethod Optional. Specify the subtitle delivery method. (optional)
+     * @param maxRefFrames Optional. (optional)
+     * @param maxVideoBitDepth Optional. The maximum video bit depth. (optional)
+     * @param requireAvc Optional. Whether to require avc. (optional)
+     * @param deInterlace Optional. Whether to deinterlace the video. (optional)
+     * @param requireNonAnamorphic Optional. Whether to require a non anamorphic stream. (optional)
+     * @param transcodingMaxAudioChannels Optional. The maximum number of audio channels to transcode. (optional)
+     * @param cpuCoreLimit Optional. The limit of how many cpu cores to use. (optional)
+     * @param liveStreamId The live stream id. (optional)
+     * @param enableMpegtsM2TsMode Optional. Whether to enable the MpegtsM2Ts mode. (optional)
+     * @param videoCodec Optional. Specify a video codec to encode to, e.g. h264. (optional)
+     * @param subtitleCodec Optional. Specify a subtitle codec to encode to. (optional)
+     * @param transcodeReasons Optional. The transcoding reason. (optional)
+     * @param audioStreamIndex Optional. The index of the audio stream to use. If omitted the first audio stream will be
+     *            used. (optional)
+     * @param videoStreamIndex Optional. The index of the video stream to use. If omitted the first video stream will be
+     *            used. (optional)
+     * @param context Optional. The MediaBrowser.Model.Dlna.EncodingContext. (optional)
+     * @param streamOptions Optional. The streaming options. (optional)
+     * @param enableAudioVbrEncoding Optional. Whether to enable Audio Encoding. (optional, default to true)
+     * @param alwaysBurnInSubtitleWhenTranscoding Whether to always burn in subtitles when transcoding. (optional,
+     *            default to false)
+     * @param headers Optional headers to include in the request
+     * @return File
+     * @throws ApiException if fails to make API call
+     */
+    public File getVariantHlsVideoPlaylist(@org.eclipse.jdt.annotation.Nullable UUID itemId,
+            @org.eclipse.jdt.annotation.NonNull Boolean _static, @org.eclipse.jdt.annotation.NonNull String params,
+            @org.eclipse.jdt.annotation.NonNull String tag, @org.eclipse.jdt.annotation.NonNull String deviceProfileId,
+            @org.eclipse.jdt.annotation.NonNull String playSessionId,
+            @org.eclipse.jdt.annotation.NonNull String segmentContainer,
+            @org.eclipse.jdt.annotation.NonNull Integer segmentLength,
+            @org.eclipse.jdt.annotation.NonNull Integer minSegments,
+            @org.eclipse.jdt.annotation.NonNull String mediaSourceId,
+            @org.eclipse.jdt.annotation.NonNull String deviceId, @org.eclipse.jdt.annotation.NonNull String audioCodec,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableAutoStreamCopy,
+            @org.eclipse.jdt.annotation.NonNull Boolean allowVideoStreamCopy,
+            @org.eclipse.jdt.annotation.NonNull Boolean allowAudioStreamCopy,
+            @org.eclipse.jdt.annotation.NonNull Boolean breakOnNonKeyFrames,
+            @org.eclipse.jdt.annotation.NonNull Integer audioSampleRate,
+            @org.eclipse.jdt.annotation.NonNull Integer maxAudioBitDepth,
+            @org.eclipse.jdt.annotation.NonNull Integer audioBitRate,
+            @org.eclipse.jdt.annotation.NonNull Integer audioChannels,
+            @org.eclipse.jdt.annotation.NonNull Integer maxAudioChannels,
+            @org.eclipse.jdt.annotation.NonNull String profile, @org.eclipse.jdt.annotation.NonNull String level,
+            @org.eclipse.jdt.annotation.NonNull Float framerate, @org.eclipse.jdt.annotation.NonNull Float maxFramerate,
+            @org.eclipse.jdt.annotation.NonNull Boolean copyTimestamps,
+            @org.eclipse.jdt.annotation.NonNull Long startTimeTicks, @org.eclipse.jdt.annotation.NonNull Integer width,
+            @org.eclipse.jdt.annotation.NonNull Integer height, @org.eclipse.jdt.annotation.NonNull Integer maxWidth,
+            @org.eclipse.jdt.annotation.NonNull Integer maxHeight,
+            @org.eclipse.jdt.annotation.NonNull Integer videoBitRate,
+            @org.eclipse.jdt.annotation.NonNull Integer subtitleStreamIndex,
+            @org.eclipse.jdt.annotation.NonNull SubtitleDeliveryMethod subtitleMethod,
+            @org.eclipse.jdt.annotation.NonNull Integer maxRefFrames,
+            @org.eclipse.jdt.annotation.NonNull Integer maxVideoBitDepth,
+            @org.eclipse.jdt.annotation.NonNull Boolean requireAvc,
+            @org.eclipse.jdt.annotation.NonNull Boolean deInterlace,
+            @org.eclipse.jdt.annotation.NonNull Boolean requireNonAnamorphic,
+            @org.eclipse.jdt.annotation.NonNull Integer transcodingMaxAudioChannels,
+            @org.eclipse.jdt.annotation.NonNull Integer cpuCoreLimit,
+            @org.eclipse.jdt.annotation.NonNull String liveStreamId,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableMpegtsM2TsMode,
+            @org.eclipse.jdt.annotation.NonNull String videoCodec,
+            @org.eclipse.jdt.annotation.NonNull String subtitleCodec,
+            @org.eclipse.jdt.annotation.NonNull String transcodeReasons,
+            @org.eclipse.jdt.annotation.NonNull Integer audioStreamIndex,
+            @org.eclipse.jdt.annotation.NonNull Integer videoStreamIndex,
+            @org.eclipse.jdt.annotation.NonNull EncodingContext context,
+            @org.eclipse.jdt.annotation.NonNull Map<String, String> streamOptions,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableAudioVbrEncoding,
+            @org.eclipse.jdt.annotation.NonNull Boolean alwaysBurnInSubtitleWhenTranscoding,
+            Map<String, String> headers) throws ApiException {
         ApiResponse<File> localVarResponse = getVariantHlsVideoPlaylistWithHttpInfo(itemId, _static, params, tag,
                 deviceProfileId, playSessionId, segmentContainer, segmentLength, minSegments, mediaSourceId, deviceId,
                 audioCodec, enableAutoStreamCopy, allowVideoStreamCopy, allowAudioStreamCopy, breakOnNonKeyFrames,
@@ -3135,7 +4934,7 @@ public class DynamicHlsApi {
                 videoBitRate, subtitleStreamIndex, subtitleMethod, maxRefFrames, maxVideoBitDepth, requireAvc,
                 deInterlace, requireNonAnamorphic, transcodingMaxAudioChannels, cpuCoreLimit, liveStreamId,
                 enableMpegtsM2TsMode, videoCodec, subtitleCodec, transcodeReasons, audioStreamIndex, videoStreamIndex,
-                context, streamOptions, enableAudioVbrEncoding, alwaysBurnInSubtitleWhenTranscoding);
+                context, streamOptions, enableAudioVbrEncoding, alwaysBurnInSubtitleWhenTranscoding, headers);
         return localVarResponse.getData();
     }
 
@@ -3254,6 +5053,134 @@ public class DynamicHlsApi {
             @org.eclipse.jdt.annotation.NonNull Map<String, String> streamOptions,
             @org.eclipse.jdt.annotation.NonNull Boolean enableAudioVbrEncoding,
             @org.eclipse.jdt.annotation.NonNull Boolean alwaysBurnInSubtitleWhenTranscoding) throws ApiException {
+        return getVariantHlsVideoPlaylistWithHttpInfo(itemId, _static, params, tag, deviceProfileId, playSessionId,
+                segmentContainer, segmentLength, minSegments, mediaSourceId, deviceId, audioCodec, enableAutoStreamCopy,
+                allowVideoStreamCopy, allowAudioStreamCopy, breakOnNonKeyFrames, audioSampleRate, maxAudioBitDepth,
+                audioBitRate, audioChannels, maxAudioChannels, profile, level, framerate, maxFramerate, copyTimestamps,
+                startTimeTicks, width, height, maxWidth, maxHeight, videoBitRate, subtitleStreamIndex, subtitleMethod,
+                maxRefFrames, maxVideoBitDepth, requireAvc, deInterlace, requireNonAnamorphic,
+                transcodingMaxAudioChannels, cpuCoreLimit, liveStreamId, enableMpegtsM2TsMode, videoCodec,
+                subtitleCodec, transcodeReasons, audioStreamIndex, videoStreamIndex, context, streamOptions,
+                enableAudioVbrEncoding, alwaysBurnInSubtitleWhenTranscoding, null);
+    }
+
+    /**
+     * Gets a video stream using HTTP live streaming.
+     * 
+     * @param itemId The item id. (required)
+     * @param _static Optional. If true, the original file will be streamed statically without any encoding. Use either
+     *            no url extension or the original file extension. true/false. (optional)
+     * @param params The streaming parameters. (optional)
+     * @param tag The tag. (optional)
+     * @param deviceProfileId Optional. The dlna device profile id to utilize. (optional)
+     * @param playSessionId The play session id. (optional)
+     * @param segmentContainer The segment container. (optional)
+     * @param segmentLength The segment length. (optional)
+     * @param minSegments The minimum number of segments. (optional)
+     * @param mediaSourceId The media version id, if playing an alternate version. (optional)
+     * @param deviceId The device id of the client requesting. Used to stop encoding processes when needed. (optional)
+     * @param audioCodec Optional. Specify an audio codec to encode to, e.g. mp3. (optional)
+     * @param enableAutoStreamCopy Whether or not to allow automatic stream copy if requested values match the original
+     *            source. Defaults to true. (optional)
+     * @param allowVideoStreamCopy Whether or not to allow copying of the video stream url. (optional)
+     * @param allowAudioStreamCopy Whether or not to allow copying of the audio stream url. (optional)
+     * @param breakOnNonKeyFrames Optional. Whether to break on non key frames. (optional)
+     * @param audioSampleRate Optional. Specify a specific audio sample rate, e.g. 44100. (optional)
+     * @param maxAudioBitDepth Optional. The maximum audio bit depth. (optional)
+     * @param audioBitRate Optional. Specify an audio bitrate to encode to, e.g. 128000. If omitted this will be left to
+     *            encoder defaults. (optional)
+     * @param audioChannels Optional. Specify a specific number of audio channels to encode to, e.g. 2. (optional)
+     * @param maxAudioChannels Optional. Specify a maximum number of audio channels to encode to, e.g. 2. (optional)
+     * @param profile Optional. Specify a specific an encoder profile (varies by encoder), e.g. main, baseline, high.
+     *            (optional)
+     * @param level Optional. Specify a level for the encoder profile (varies by encoder), e.g. 3, 3.1. (optional)
+     * @param framerate Optional. A specific video framerate to encode to, e.g. 23.976. Generally this should be omitted
+     *            unless the device has specific requirements. (optional)
+     * @param maxFramerate Optional. A specific maximum video framerate to encode to, e.g. 23.976. Generally this should
+     *            be omitted unless the device has specific requirements. (optional)
+     * @param copyTimestamps Whether or not to copy timestamps when transcoding with an offset. Defaults to false.
+     *            (optional)
+     * @param startTimeTicks Optional. Specify a starting offset, in ticks. 1 tick &#x3D; 10000 ms. (optional)
+     * @param width Optional. The fixed horizontal resolution of the encoded video. (optional)
+     * @param height Optional. The fixed vertical resolution of the encoded video. (optional)
+     * @param maxWidth Optional. The maximum horizontal resolution of the encoded video. (optional)
+     * @param maxHeight Optional. The maximum vertical resolution of the encoded video. (optional)
+     * @param videoBitRate Optional. Specify a video bitrate to encode to, e.g. 500000. If omitted this will be left to
+     *            encoder defaults. (optional)
+     * @param subtitleStreamIndex Optional. The index of the subtitle stream to use. If omitted no subtitles will be
+     *            used. (optional)
+     * @param subtitleMethod Optional. Specify the subtitle delivery method. (optional)
+     * @param maxRefFrames Optional. (optional)
+     * @param maxVideoBitDepth Optional. The maximum video bit depth. (optional)
+     * @param requireAvc Optional. Whether to require avc. (optional)
+     * @param deInterlace Optional. Whether to deinterlace the video. (optional)
+     * @param requireNonAnamorphic Optional. Whether to require a non anamorphic stream. (optional)
+     * @param transcodingMaxAudioChannels Optional. The maximum number of audio channels to transcode. (optional)
+     * @param cpuCoreLimit Optional. The limit of how many cpu cores to use. (optional)
+     * @param liveStreamId The live stream id. (optional)
+     * @param enableMpegtsM2TsMode Optional. Whether to enable the MpegtsM2Ts mode. (optional)
+     * @param videoCodec Optional. Specify a video codec to encode to, e.g. h264. (optional)
+     * @param subtitleCodec Optional. Specify a subtitle codec to encode to. (optional)
+     * @param transcodeReasons Optional. The transcoding reason. (optional)
+     * @param audioStreamIndex Optional. The index of the audio stream to use. If omitted the first audio stream will be
+     *            used. (optional)
+     * @param videoStreamIndex Optional. The index of the video stream to use. If omitted the first video stream will be
+     *            used. (optional)
+     * @param context Optional. The MediaBrowser.Model.Dlna.EncodingContext. (optional)
+     * @param streamOptions Optional. The streaming options. (optional)
+     * @param enableAudioVbrEncoding Optional. Whether to enable Audio Encoding. (optional, default to true)
+     * @param alwaysBurnInSubtitleWhenTranscoding Whether to always burn in subtitles when transcoding. (optional,
+     *            default to false)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;File&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<File> getVariantHlsVideoPlaylistWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID itemId,
+            @org.eclipse.jdt.annotation.NonNull Boolean _static, @org.eclipse.jdt.annotation.NonNull String params,
+            @org.eclipse.jdt.annotation.NonNull String tag, @org.eclipse.jdt.annotation.NonNull String deviceProfileId,
+            @org.eclipse.jdt.annotation.NonNull String playSessionId,
+            @org.eclipse.jdt.annotation.NonNull String segmentContainer,
+            @org.eclipse.jdt.annotation.NonNull Integer segmentLength,
+            @org.eclipse.jdt.annotation.NonNull Integer minSegments,
+            @org.eclipse.jdt.annotation.NonNull String mediaSourceId,
+            @org.eclipse.jdt.annotation.NonNull String deviceId, @org.eclipse.jdt.annotation.NonNull String audioCodec,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableAutoStreamCopy,
+            @org.eclipse.jdt.annotation.NonNull Boolean allowVideoStreamCopy,
+            @org.eclipse.jdt.annotation.NonNull Boolean allowAudioStreamCopy,
+            @org.eclipse.jdt.annotation.NonNull Boolean breakOnNonKeyFrames,
+            @org.eclipse.jdt.annotation.NonNull Integer audioSampleRate,
+            @org.eclipse.jdt.annotation.NonNull Integer maxAudioBitDepth,
+            @org.eclipse.jdt.annotation.NonNull Integer audioBitRate,
+            @org.eclipse.jdt.annotation.NonNull Integer audioChannels,
+            @org.eclipse.jdt.annotation.NonNull Integer maxAudioChannels,
+            @org.eclipse.jdt.annotation.NonNull String profile, @org.eclipse.jdt.annotation.NonNull String level,
+            @org.eclipse.jdt.annotation.NonNull Float framerate, @org.eclipse.jdt.annotation.NonNull Float maxFramerate,
+            @org.eclipse.jdt.annotation.NonNull Boolean copyTimestamps,
+            @org.eclipse.jdt.annotation.NonNull Long startTimeTicks, @org.eclipse.jdt.annotation.NonNull Integer width,
+            @org.eclipse.jdt.annotation.NonNull Integer height, @org.eclipse.jdt.annotation.NonNull Integer maxWidth,
+            @org.eclipse.jdt.annotation.NonNull Integer maxHeight,
+            @org.eclipse.jdt.annotation.NonNull Integer videoBitRate,
+            @org.eclipse.jdt.annotation.NonNull Integer subtitleStreamIndex,
+            @org.eclipse.jdt.annotation.NonNull SubtitleDeliveryMethod subtitleMethod,
+            @org.eclipse.jdt.annotation.NonNull Integer maxRefFrames,
+            @org.eclipse.jdt.annotation.NonNull Integer maxVideoBitDepth,
+            @org.eclipse.jdt.annotation.NonNull Boolean requireAvc,
+            @org.eclipse.jdt.annotation.NonNull Boolean deInterlace,
+            @org.eclipse.jdt.annotation.NonNull Boolean requireNonAnamorphic,
+            @org.eclipse.jdt.annotation.NonNull Integer transcodingMaxAudioChannels,
+            @org.eclipse.jdt.annotation.NonNull Integer cpuCoreLimit,
+            @org.eclipse.jdt.annotation.NonNull String liveStreamId,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableMpegtsM2TsMode,
+            @org.eclipse.jdt.annotation.NonNull String videoCodec,
+            @org.eclipse.jdt.annotation.NonNull String subtitleCodec,
+            @org.eclipse.jdt.annotation.NonNull String transcodeReasons,
+            @org.eclipse.jdt.annotation.NonNull Integer audioStreamIndex,
+            @org.eclipse.jdt.annotation.NonNull Integer videoStreamIndex,
+            @org.eclipse.jdt.annotation.NonNull EncodingContext context,
+            @org.eclipse.jdt.annotation.NonNull Map<String, String> streamOptions,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableAudioVbrEncoding,
+            @org.eclipse.jdt.annotation.NonNull Boolean alwaysBurnInSubtitleWhenTranscoding,
+            Map<String, String> headers) throws ApiException {
         HttpRequest.Builder localVarRequestBuilder = getVariantHlsVideoPlaylistRequestBuilder(itemId, _static, params,
                 tag, deviceProfileId, playSessionId, segmentContainer, segmentLength, minSegments, mediaSourceId,
                 deviceId, audioCodec, enableAutoStreamCopy, allowVideoStreamCopy, allowAudioStreamCopy,
@@ -3262,7 +5189,7 @@ public class DynamicHlsApi {
                 maxHeight, videoBitRate, subtitleStreamIndex, subtitleMethod, maxRefFrames, maxVideoBitDepth,
                 requireAvc, deInterlace, requireNonAnamorphic, transcodingMaxAudioChannels, cpuCoreLimit, liveStreamId,
                 enableMpegtsM2TsMode, videoCodec, subtitleCodec, transcodeReasons, audioStreamIndex, videoStreamIndex,
-                context, streamOptions, enableAudioVbrEncoding, alwaysBurnInSubtitleWhenTranscoding);
+                context, streamOptions, enableAudioVbrEncoding, alwaysBurnInSubtitleWhenTranscoding, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -3277,13 +5204,13 @@ public class DynamicHlsApi {
                     return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
                 }
 
-                String responseBody = new String(localVarResponse.body().readAllBytes());
+                // Handle file downloading.
+                File responseValue = downloadFileFromResponse(localVarResponse);
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {
-                                }));
+                        responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -3339,7 +5266,8 @@ public class DynamicHlsApi {
             @org.eclipse.jdt.annotation.NonNull EncodingContext context,
             @org.eclipse.jdt.annotation.NonNull Map<String, String> streamOptions,
             @org.eclipse.jdt.annotation.NonNull Boolean enableAudioVbrEncoding,
-            @org.eclipse.jdt.annotation.NonNull Boolean alwaysBurnInSubtitleWhenTranscoding) throws ApiException {
+            @org.eclipse.jdt.annotation.NonNull Boolean alwaysBurnInSubtitleWhenTranscoding,
+            Map<String, String> headers) throws ApiException {
         // verify the required parameter 'itemId' is set
         if (itemId == null) {
             throw new ApiException(400,
@@ -3475,6 +5403,8 @@ public class DynamicHlsApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -3594,6 +5524,132 @@ public class DynamicHlsApi {
             @org.eclipse.jdt.annotation.NonNull Map<String, String> streamOptions,
             @org.eclipse.jdt.annotation.NonNull Boolean enableAdaptiveBitrateStreaming,
             @org.eclipse.jdt.annotation.NonNull Boolean enableAudioVbrEncoding) throws ApiException {
+        return headMasterHlsAudioPlaylist(itemId, mediaSourceId, _static, params, tag, deviceProfileId, playSessionId,
+                segmentContainer, segmentLength, minSegments, deviceId, audioCodec, enableAutoStreamCopy,
+                allowVideoStreamCopy, allowAudioStreamCopy, breakOnNonKeyFrames, audioSampleRate, maxAudioBitDepth,
+                maxStreamingBitrate, audioBitRate, audioChannels, maxAudioChannels, profile, level, framerate,
+                maxFramerate, copyTimestamps, startTimeTicks, width, height, videoBitRate, subtitleStreamIndex,
+                subtitleMethod, maxRefFrames, maxVideoBitDepth, requireAvc, deInterlace, requireNonAnamorphic,
+                transcodingMaxAudioChannels, cpuCoreLimit, liveStreamId, enableMpegtsM2TsMode, videoCodec,
+                subtitleCodec, transcodeReasons, audioStreamIndex, videoStreamIndex, context, streamOptions,
+                enableAdaptiveBitrateStreaming, enableAudioVbrEncoding, null);
+    }
+
+    /**
+     * Gets an audio hls playlist stream.
+     * 
+     * @param itemId The item id. (required)
+     * @param mediaSourceId The media version id, if playing an alternate version. (required)
+     * @param _static Optional. If true, the original file will be streamed statically without any encoding. Use either
+     *            no url extension or the original file extension. true/false. (optional)
+     * @param params The streaming parameters. (optional)
+     * @param tag The tag. (optional)
+     * @param deviceProfileId Optional. The dlna device profile id to utilize. (optional)
+     * @param playSessionId The play session id. (optional)
+     * @param segmentContainer The segment container. (optional)
+     * @param segmentLength The segment length. (optional)
+     * @param minSegments The minimum number of segments. (optional)
+     * @param deviceId The device id of the client requesting. Used to stop encoding processes when needed. (optional)
+     * @param audioCodec Optional. Specify an audio codec to encode to, e.g. mp3. (optional)
+     * @param enableAutoStreamCopy Whether or not to allow automatic stream copy if requested values match the original
+     *            source. Defaults to true. (optional)
+     * @param allowVideoStreamCopy Whether or not to allow copying of the video stream url. (optional)
+     * @param allowAudioStreamCopy Whether or not to allow copying of the audio stream url. (optional)
+     * @param breakOnNonKeyFrames Optional. Whether to break on non key frames. (optional)
+     * @param audioSampleRate Optional. Specify a specific audio sample rate, e.g. 44100. (optional)
+     * @param maxAudioBitDepth Optional. The maximum audio bit depth. (optional)
+     * @param maxStreamingBitrate Optional. The maximum streaming bitrate. (optional)
+     * @param audioBitRate Optional. Specify an audio bitrate to encode to, e.g. 128000. If omitted this will be left to
+     *            encoder defaults. (optional)
+     * @param audioChannels Optional. Specify a specific number of audio channels to encode to, e.g. 2. (optional)
+     * @param maxAudioChannels Optional. Specify a maximum number of audio channels to encode to, e.g. 2. (optional)
+     * @param profile Optional. Specify a specific an encoder profile (varies by encoder), e.g. main, baseline, high.
+     *            (optional)
+     * @param level Optional. Specify a level for the encoder profile (varies by encoder), e.g. 3, 3.1. (optional)
+     * @param framerate Optional. A specific video framerate to encode to, e.g. 23.976. Generally this should be omitted
+     *            unless the device has specific requirements. (optional)
+     * @param maxFramerate Optional. A specific maximum video framerate to encode to, e.g. 23.976. Generally this should
+     *            be omitted unless the device has specific requirements. (optional)
+     * @param copyTimestamps Whether or not to copy timestamps when transcoding with an offset. Defaults to false.
+     *            (optional)
+     * @param startTimeTicks Optional. Specify a starting offset, in ticks. 1 tick &#x3D; 10000 ms. (optional)
+     * @param width Optional. The fixed horizontal resolution of the encoded video. (optional)
+     * @param height Optional. The fixed vertical resolution of the encoded video. (optional)
+     * @param videoBitRate Optional. Specify a video bitrate to encode to, e.g. 500000. If omitted this will be left to
+     *            encoder defaults. (optional)
+     * @param subtitleStreamIndex Optional. The index of the subtitle stream to use. If omitted no subtitles will be
+     *            used. (optional)
+     * @param subtitleMethod Optional. Specify the subtitle delivery method. (optional)
+     * @param maxRefFrames Optional. (optional)
+     * @param maxVideoBitDepth Optional. The maximum video bit depth. (optional)
+     * @param requireAvc Optional. Whether to require avc. (optional)
+     * @param deInterlace Optional. Whether to deinterlace the video. (optional)
+     * @param requireNonAnamorphic Optional. Whether to require a non anamorphic stream. (optional)
+     * @param transcodingMaxAudioChannels Optional. The maximum number of audio channels to transcode. (optional)
+     * @param cpuCoreLimit Optional. The limit of how many cpu cores to use. (optional)
+     * @param liveStreamId The live stream id. (optional)
+     * @param enableMpegtsM2TsMode Optional. Whether to enable the MpegtsM2Ts mode. (optional)
+     * @param videoCodec Optional. Specify a video codec to encode to, e.g. h264. (optional)
+     * @param subtitleCodec Optional. Specify a subtitle codec to encode to. (optional)
+     * @param transcodeReasons Optional. The transcoding reason. (optional)
+     * @param audioStreamIndex Optional. The index of the audio stream to use. If omitted the first audio stream will be
+     *            used. (optional)
+     * @param videoStreamIndex Optional. The index of the video stream to use. If omitted the first video stream will be
+     *            used. (optional)
+     * @param context Optional. The MediaBrowser.Model.Dlna.EncodingContext. (optional)
+     * @param streamOptions Optional. The streaming options. (optional)
+     * @param enableAdaptiveBitrateStreaming Enable adaptive bitrate streaming. (optional, default to true)
+     * @param enableAudioVbrEncoding Optional. Whether to enable Audio Encoding. (optional, default to true)
+     * @param headers Optional headers to include in the request
+     * @return File
+     * @throws ApiException if fails to make API call
+     */
+    public File headMasterHlsAudioPlaylist(@org.eclipse.jdt.annotation.Nullable UUID itemId,
+            @org.eclipse.jdt.annotation.Nullable String mediaSourceId,
+            @org.eclipse.jdt.annotation.NonNull Boolean _static, @org.eclipse.jdt.annotation.NonNull String params,
+            @org.eclipse.jdt.annotation.NonNull String tag, @org.eclipse.jdt.annotation.NonNull String deviceProfileId,
+            @org.eclipse.jdt.annotation.NonNull String playSessionId,
+            @org.eclipse.jdt.annotation.NonNull String segmentContainer,
+            @org.eclipse.jdt.annotation.NonNull Integer segmentLength,
+            @org.eclipse.jdt.annotation.NonNull Integer minSegments,
+            @org.eclipse.jdt.annotation.NonNull String deviceId, @org.eclipse.jdt.annotation.NonNull String audioCodec,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableAutoStreamCopy,
+            @org.eclipse.jdt.annotation.NonNull Boolean allowVideoStreamCopy,
+            @org.eclipse.jdt.annotation.NonNull Boolean allowAudioStreamCopy,
+            @org.eclipse.jdt.annotation.NonNull Boolean breakOnNonKeyFrames,
+            @org.eclipse.jdt.annotation.NonNull Integer audioSampleRate,
+            @org.eclipse.jdt.annotation.NonNull Integer maxAudioBitDepth,
+            @org.eclipse.jdt.annotation.NonNull Integer maxStreamingBitrate,
+            @org.eclipse.jdt.annotation.NonNull Integer audioBitRate,
+            @org.eclipse.jdt.annotation.NonNull Integer audioChannels,
+            @org.eclipse.jdt.annotation.NonNull Integer maxAudioChannels,
+            @org.eclipse.jdt.annotation.NonNull String profile, @org.eclipse.jdt.annotation.NonNull String level,
+            @org.eclipse.jdt.annotation.NonNull Float framerate, @org.eclipse.jdt.annotation.NonNull Float maxFramerate,
+            @org.eclipse.jdt.annotation.NonNull Boolean copyTimestamps,
+            @org.eclipse.jdt.annotation.NonNull Long startTimeTicks, @org.eclipse.jdt.annotation.NonNull Integer width,
+            @org.eclipse.jdt.annotation.NonNull Integer height,
+            @org.eclipse.jdt.annotation.NonNull Integer videoBitRate,
+            @org.eclipse.jdt.annotation.NonNull Integer subtitleStreamIndex,
+            @org.eclipse.jdt.annotation.NonNull SubtitleDeliveryMethod subtitleMethod,
+            @org.eclipse.jdt.annotation.NonNull Integer maxRefFrames,
+            @org.eclipse.jdt.annotation.NonNull Integer maxVideoBitDepth,
+            @org.eclipse.jdt.annotation.NonNull Boolean requireAvc,
+            @org.eclipse.jdt.annotation.NonNull Boolean deInterlace,
+            @org.eclipse.jdt.annotation.NonNull Boolean requireNonAnamorphic,
+            @org.eclipse.jdt.annotation.NonNull Integer transcodingMaxAudioChannels,
+            @org.eclipse.jdt.annotation.NonNull Integer cpuCoreLimit,
+            @org.eclipse.jdt.annotation.NonNull String liveStreamId,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableMpegtsM2TsMode,
+            @org.eclipse.jdt.annotation.NonNull String videoCodec,
+            @org.eclipse.jdt.annotation.NonNull String subtitleCodec,
+            @org.eclipse.jdt.annotation.NonNull String transcodeReasons,
+            @org.eclipse.jdt.annotation.NonNull Integer audioStreamIndex,
+            @org.eclipse.jdt.annotation.NonNull Integer videoStreamIndex,
+            @org.eclipse.jdt.annotation.NonNull EncodingContext context,
+            @org.eclipse.jdt.annotation.NonNull Map<String, String> streamOptions,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableAdaptiveBitrateStreaming,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableAudioVbrEncoding, Map<String, String> headers)
+            throws ApiException {
         ApiResponse<File> localVarResponse = headMasterHlsAudioPlaylistWithHttpInfo(itemId, mediaSourceId, _static,
                 params, tag, deviceProfileId, playSessionId, segmentContainer, segmentLength, minSegments, deviceId,
                 audioCodec, enableAutoStreamCopy, allowVideoStreamCopy, allowAudioStreamCopy, breakOnNonKeyFrames,
@@ -3602,7 +5658,7 @@ public class DynamicHlsApi {
                 subtitleStreamIndex, subtitleMethod, maxRefFrames, maxVideoBitDepth, requireAvc, deInterlace,
                 requireNonAnamorphic, transcodingMaxAudioChannels, cpuCoreLimit, liveStreamId, enableMpegtsM2TsMode,
                 videoCodec, subtitleCodec, transcodeReasons, audioStreamIndex, videoStreamIndex, context, streamOptions,
-                enableAdaptiveBitrateStreaming, enableAudioVbrEncoding);
+                enableAdaptiveBitrateStreaming, enableAudioVbrEncoding, headers);
         return localVarResponse.getData();
     }
 
@@ -3719,6 +5775,132 @@ public class DynamicHlsApi {
             @org.eclipse.jdt.annotation.NonNull Map<String, String> streamOptions,
             @org.eclipse.jdt.annotation.NonNull Boolean enableAdaptiveBitrateStreaming,
             @org.eclipse.jdt.annotation.NonNull Boolean enableAudioVbrEncoding) throws ApiException {
+        return headMasterHlsAudioPlaylistWithHttpInfo(itemId, mediaSourceId, _static, params, tag, deviceProfileId,
+                playSessionId, segmentContainer, segmentLength, minSegments, deviceId, audioCodec, enableAutoStreamCopy,
+                allowVideoStreamCopy, allowAudioStreamCopy, breakOnNonKeyFrames, audioSampleRate, maxAudioBitDepth,
+                maxStreamingBitrate, audioBitRate, audioChannels, maxAudioChannels, profile, level, framerate,
+                maxFramerate, copyTimestamps, startTimeTicks, width, height, videoBitRate, subtitleStreamIndex,
+                subtitleMethod, maxRefFrames, maxVideoBitDepth, requireAvc, deInterlace, requireNonAnamorphic,
+                transcodingMaxAudioChannels, cpuCoreLimit, liveStreamId, enableMpegtsM2TsMode, videoCodec,
+                subtitleCodec, transcodeReasons, audioStreamIndex, videoStreamIndex, context, streamOptions,
+                enableAdaptiveBitrateStreaming, enableAudioVbrEncoding, null);
+    }
+
+    /**
+     * Gets an audio hls playlist stream.
+     * 
+     * @param itemId The item id. (required)
+     * @param mediaSourceId The media version id, if playing an alternate version. (required)
+     * @param _static Optional. If true, the original file will be streamed statically without any encoding. Use either
+     *            no url extension or the original file extension. true/false. (optional)
+     * @param params The streaming parameters. (optional)
+     * @param tag The tag. (optional)
+     * @param deviceProfileId Optional. The dlna device profile id to utilize. (optional)
+     * @param playSessionId The play session id. (optional)
+     * @param segmentContainer The segment container. (optional)
+     * @param segmentLength The segment length. (optional)
+     * @param minSegments The minimum number of segments. (optional)
+     * @param deviceId The device id of the client requesting. Used to stop encoding processes when needed. (optional)
+     * @param audioCodec Optional. Specify an audio codec to encode to, e.g. mp3. (optional)
+     * @param enableAutoStreamCopy Whether or not to allow automatic stream copy if requested values match the original
+     *            source. Defaults to true. (optional)
+     * @param allowVideoStreamCopy Whether or not to allow copying of the video stream url. (optional)
+     * @param allowAudioStreamCopy Whether or not to allow copying of the audio stream url. (optional)
+     * @param breakOnNonKeyFrames Optional. Whether to break on non key frames. (optional)
+     * @param audioSampleRate Optional. Specify a specific audio sample rate, e.g. 44100. (optional)
+     * @param maxAudioBitDepth Optional. The maximum audio bit depth. (optional)
+     * @param maxStreamingBitrate Optional. The maximum streaming bitrate. (optional)
+     * @param audioBitRate Optional. Specify an audio bitrate to encode to, e.g. 128000. If omitted this will be left to
+     *            encoder defaults. (optional)
+     * @param audioChannels Optional. Specify a specific number of audio channels to encode to, e.g. 2. (optional)
+     * @param maxAudioChannels Optional. Specify a maximum number of audio channels to encode to, e.g. 2. (optional)
+     * @param profile Optional. Specify a specific an encoder profile (varies by encoder), e.g. main, baseline, high.
+     *            (optional)
+     * @param level Optional. Specify a level for the encoder profile (varies by encoder), e.g. 3, 3.1. (optional)
+     * @param framerate Optional. A specific video framerate to encode to, e.g. 23.976. Generally this should be omitted
+     *            unless the device has specific requirements. (optional)
+     * @param maxFramerate Optional. A specific maximum video framerate to encode to, e.g. 23.976. Generally this should
+     *            be omitted unless the device has specific requirements. (optional)
+     * @param copyTimestamps Whether or not to copy timestamps when transcoding with an offset. Defaults to false.
+     *            (optional)
+     * @param startTimeTicks Optional. Specify a starting offset, in ticks. 1 tick &#x3D; 10000 ms. (optional)
+     * @param width Optional. The fixed horizontal resolution of the encoded video. (optional)
+     * @param height Optional. The fixed vertical resolution of the encoded video. (optional)
+     * @param videoBitRate Optional. Specify a video bitrate to encode to, e.g. 500000. If omitted this will be left to
+     *            encoder defaults. (optional)
+     * @param subtitleStreamIndex Optional. The index of the subtitle stream to use. If omitted no subtitles will be
+     *            used. (optional)
+     * @param subtitleMethod Optional. Specify the subtitle delivery method. (optional)
+     * @param maxRefFrames Optional. (optional)
+     * @param maxVideoBitDepth Optional. The maximum video bit depth. (optional)
+     * @param requireAvc Optional. Whether to require avc. (optional)
+     * @param deInterlace Optional. Whether to deinterlace the video. (optional)
+     * @param requireNonAnamorphic Optional. Whether to require a non anamorphic stream. (optional)
+     * @param transcodingMaxAudioChannels Optional. The maximum number of audio channels to transcode. (optional)
+     * @param cpuCoreLimit Optional. The limit of how many cpu cores to use. (optional)
+     * @param liveStreamId The live stream id. (optional)
+     * @param enableMpegtsM2TsMode Optional. Whether to enable the MpegtsM2Ts mode. (optional)
+     * @param videoCodec Optional. Specify a video codec to encode to, e.g. h264. (optional)
+     * @param subtitleCodec Optional. Specify a subtitle codec to encode to. (optional)
+     * @param transcodeReasons Optional. The transcoding reason. (optional)
+     * @param audioStreamIndex Optional. The index of the audio stream to use. If omitted the first audio stream will be
+     *            used. (optional)
+     * @param videoStreamIndex Optional. The index of the video stream to use. If omitted the first video stream will be
+     *            used. (optional)
+     * @param context Optional. The MediaBrowser.Model.Dlna.EncodingContext. (optional)
+     * @param streamOptions Optional. The streaming options. (optional)
+     * @param enableAdaptiveBitrateStreaming Enable adaptive bitrate streaming. (optional, default to true)
+     * @param enableAudioVbrEncoding Optional. Whether to enable Audio Encoding. (optional, default to true)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;File&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<File> headMasterHlsAudioPlaylistWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID itemId,
+            @org.eclipse.jdt.annotation.Nullable String mediaSourceId,
+            @org.eclipse.jdt.annotation.NonNull Boolean _static, @org.eclipse.jdt.annotation.NonNull String params,
+            @org.eclipse.jdt.annotation.NonNull String tag, @org.eclipse.jdt.annotation.NonNull String deviceProfileId,
+            @org.eclipse.jdt.annotation.NonNull String playSessionId,
+            @org.eclipse.jdt.annotation.NonNull String segmentContainer,
+            @org.eclipse.jdt.annotation.NonNull Integer segmentLength,
+            @org.eclipse.jdt.annotation.NonNull Integer minSegments,
+            @org.eclipse.jdt.annotation.NonNull String deviceId, @org.eclipse.jdt.annotation.NonNull String audioCodec,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableAutoStreamCopy,
+            @org.eclipse.jdt.annotation.NonNull Boolean allowVideoStreamCopy,
+            @org.eclipse.jdt.annotation.NonNull Boolean allowAudioStreamCopy,
+            @org.eclipse.jdt.annotation.NonNull Boolean breakOnNonKeyFrames,
+            @org.eclipse.jdt.annotation.NonNull Integer audioSampleRate,
+            @org.eclipse.jdt.annotation.NonNull Integer maxAudioBitDepth,
+            @org.eclipse.jdt.annotation.NonNull Integer maxStreamingBitrate,
+            @org.eclipse.jdt.annotation.NonNull Integer audioBitRate,
+            @org.eclipse.jdt.annotation.NonNull Integer audioChannels,
+            @org.eclipse.jdt.annotation.NonNull Integer maxAudioChannels,
+            @org.eclipse.jdt.annotation.NonNull String profile, @org.eclipse.jdt.annotation.NonNull String level,
+            @org.eclipse.jdt.annotation.NonNull Float framerate, @org.eclipse.jdt.annotation.NonNull Float maxFramerate,
+            @org.eclipse.jdt.annotation.NonNull Boolean copyTimestamps,
+            @org.eclipse.jdt.annotation.NonNull Long startTimeTicks, @org.eclipse.jdt.annotation.NonNull Integer width,
+            @org.eclipse.jdt.annotation.NonNull Integer height,
+            @org.eclipse.jdt.annotation.NonNull Integer videoBitRate,
+            @org.eclipse.jdt.annotation.NonNull Integer subtitleStreamIndex,
+            @org.eclipse.jdt.annotation.NonNull SubtitleDeliveryMethod subtitleMethod,
+            @org.eclipse.jdt.annotation.NonNull Integer maxRefFrames,
+            @org.eclipse.jdt.annotation.NonNull Integer maxVideoBitDepth,
+            @org.eclipse.jdt.annotation.NonNull Boolean requireAvc,
+            @org.eclipse.jdt.annotation.NonNull Boolean deInterlace,
+            @org.eclipse.jdt.annotation.NonNull Boolean requireNonAnamorphic,
+            @org.eclipse.jdt.annotation.NonNull Integer transcodingMaxAudioChannels,
+            @org.eclipse.jdt.annotation.NonNull Integer cpuCoreLimit,
+            @org.eclipse.jdt.annotation.NonNull String liveStreamId,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableMpegtsM2TsMode,
+            @org.eclipse.jdt.annotation.NonNull String videoCodec,
+            @org.eclipse.jdt.annotation.NonNull String subtitleCodec,
+            @org.eclipse.jdt.annotation.NonNull String transcodeReasons,
+            @org.eclipse.jdt.annotation.NonNull Integer audioStreamIndex,
+            @org.eclipse.jdt.annotation.NonNull Integer videoStreamIndex,
+            @org.eclipse.jdt.annotation.NonNull EncodingContext context,
+            @org.eclipse.jdt.annotation.NonNull Map<String, String> streamOptions,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableAdaptiveBitrateStreaming,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableAudioVbrEncoding, Map<String, String> headers)
+            throws ApiException {
         HttpRequest.Builder localVarRequestBuilder = headMasterHlsAudioPlaylistRequestBuilder(itemId, mediaSourceId,
                 _static, params, tag, deviceProfileId, playSessionId, segmentContainer, segmentLength, minSegments,
                 deviceId, audioCodec, enableAutoStreamCopy, allowVideoStreamCopy, allowAudioStreamCopy,
@@ -3728,7 +5910,7 @@ public class DynamicHlsApi {
                 maxVideoBitDepth, requireAvc, deInterlace, requireNonAnamorphic, transcodingMaxAudioChannels,
                 cpuCoreLimit, liveStreamId, enableMpegtsM2TsMode, videoCodec, subtitleCodec, transcodeReasons,
                 audioStreamIndex, videoStreamIndex, context, streamOptions, enableAdaptiveBitrateStreaming,
-                enableAudioVbrEncoding);
+                enableAudioVbrEncoding, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -3743,13 +5925,13 @@ public class DynamicHlsApi {
                     return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
                 }
 
-                String responseBody = new String(localVarResponse.body().readAllBytes());
+                // Handle file downloading.
+                File responseValue = downloadFileFromResponse(localVarResponse);
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {
-                                }));
+                        responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -3804,7 +5986,8 @@ public class DynamicHlsApi {
             @org.eclipse.jdt.annotation.NonNull EncodingContext context,
             @org.eclipse.jdt.annotation.NonNull Map<String, String> streamOptions,
             @org.eclipse.jdt.annotation.NonNull Boolean enableAdaptiveBitrateStreaming,
-            @org.eclipse.jdt.annotation.NonNull Boolean enableAudioVbrEncoding) throws ApiException {
+            @org.eclipse.jdt.annotation.NonNull Boolean enableAudioVbrEncoding, Map<String, String> headers)
+            throws ApiException {
         // verify the required parameter 'itemId' is set
         if (itemId == null) {
             throw new ApiException(400,
@@ -3943,6 +6126,8 @@ public class DynamicHlsApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -4069,6 +6254,140 @@ public class DynamicHlsApi {
             @org.eclipse.jdt.annotation.NonNull Boolean enableTrickplay,
             @org.eclipse.jdt.annotation.NonNull Boolean enableAudioVbrEncoding,
             @org.eclipse.jdt.annotation.NonNull Boolean alwaysBurnInSubtitleWhenTranscoding) throws ApiException {
+        return headMasterHlsVideoPlaylist(itemId, mediaSourceId, _static, params, tag, deviceProfileId, playSessionId,
+                segmentContainer, segmentLength, minSegments, deviceId, audioCodec, enableAutoStreamCopy,
+                allowVideoStreamCopy, allowAudioStreamCopy, breakOnNonKeyFrames, audioSampleRate, maxAudioBitDepth,
+                audioBitRate, audioChannels, maxAudioChannels, profile, level, framerate, maxFramerate, copyTimestamps,
+                startTimeTicks, width, height, maxWidth, maxHeight, videoBitRate, subtitleStreamIndex, subtitleMethod,
+                maxRefFrames, maxVideoBitDepth, requireAvc, deInterlace, requireNonAnamorphic,
+                transcodingMaxAudioChannels, cpuCoreLimit, liveStreamId, enableMpegtsM2TsMode, videoCodec,
+                subtitleCodec, transcodeReasons, audioStreamIndex, videoStreamIndex, context, streamOptions,
+                enableAdaptiveBitrateStreaming, enableTrickplay, enableAudioVbrEncoding,
+                alwaysBurnInSubtitleWhenTranscoding, null);
+    }
+
+    /**
+     * Gets a video hls playlist stream.
+     * 
+     * @param itemId The item id. (required)
+     * @param mediaSourceId The media version id, if playing an alternate version. (required)
+     * @param _static Optional. If true, the original file will be streamed statically without any encoding. Use either
+     *            no url extension or the original file extension. true/false. (optional)
+     * @param params The streaming parameters. (optional)
+     * @param tag The tag. (optional)
+     * @param deviceProfileId Optional. The dlna device profile id to utilize. (optional)
+     * @param playSessionId The play session id. (optional)
+     * @param segmentContainer The segment container. (optional)
+     * @param segmentLength The segment length. (optional)
+     * @param minSegments The minimum number of segments. (optional)
+     * @param deviceId The device id of the client requesting. Used to stop encoding processes when needed. (optional)
+     * @param audioCodec Optional. Specify an audio codec to encode to, e.g. mp3. (optional)
+     * @param enableAutoStreamCopy Whether or not to allow automatic stream copy if requested values match the original
+     *            source. Defaults to true. (optional)
+     * @param allowVideoStreamCopy Whether or not to allow copying of the video stream url. (optional)
+     * @param allowAudioStreamCopy Whether or not to allow copying of the audio stream url. (optional)
+     * @param breakOnNonKeyFrames Optional. Whether to break on non key frames. (optional)
+     * @param audioSampleRate Optional. Specify a specific audio sample rate, e.g. 44100. (optional)
+     * @param maxAudioBitDepth Optional. The maximum audio bit depth. (optional)
+     * @param audioBitRate Optional. Specify an audio bitrate to encode to, e.g. 128000. If omitted this will be left to
+     *            encoder defaults. (optional)
+     * @param audioChannels Optional. Specify a specific number of audio channels to encode to, e.g. 2. (optional)
+     * @param maxAudioChannels Optional. Specify a maximum number of audio channels to encode to, e.g. 2. (optional)
+     * @param profile Optional. Specify a specific an encoder profile (varies by encoder), e.g. main, baseline, high.
+     *            (optional)
+     * @param level Optional. Specify a level for the encoder profile (varies by encoder), e.g. 3, 3.1. (optional)
+     * @param framerate Optional. A specific video framerate to encode to, e.g. 23.976. Generally this should be omitted
+     *            unless the device has specific requirements. (optional)
+     * @param maxFramerate Optional. A specific maximum video framerate to encode to, e.g. 23.976. Generally this should
+     *            be omitted unless the device has specific requirements. (optional)
+     * @param copyTimestamps Whether or not to copy timestamps when transcoding with an offset. Defaults to false.
+     *            (optional)
+     * @param startTimeTicks Optional. Specify a starting offset, in ticks. 1 tick &#x3D; 10000 ms. (optional)
+     * @param width Optional. The fixed horizontal resolution of the encoded video. (optional)
+     * @param height Optional. The fixed vertical resolution of the encoded video. (optional)
+     * @param maxWidth Optional. The maximum horizontal resolution of the encoded video. (optional)
+     * @param maxHeight Optional. The maximum vertical resolution of the encoded video. (optional)
+     * @param videoBitRate Optional. Specify a video bitrate to encode to, e.g. 500000. If omitted this will be left to
+     *            encoder defaults. (optional)
+     * @param subtitleStreamIndex Optional. The index of the subtitle stream to use. If omitted no subtitles will be
+     *            used. (optional)
+     * @param subtitleMethod Optional. Specify the subtitle delivery method. (optional)
+     * @param maxRefFrames Optional. (optional)
+     * @param maxVideoBitDepth Optional. The maximum video bit depth. (optional)
+     * @param requireAvc Optional. Whether to require avc. (optional)
+     * @param deInterlace Optional. Whether to deinterlace the video. (optional)
+     * @param requireNonAnamorphic Optional. Whether to require a non anamorphic stream. (optional)
+     * @param transcodingMaxAudioChannels Optional. The maximum number of audio channels to transcode. (optional)
+     * @param cpuCoreLimit Optional. The limit of how many cpu cores to use. (optional)
+     * @param liveStreamId The live stream id. (optional)
+     * @param enableMpegtsM2TsMode Optional. Whether to enable the MpegtsM2Ts mode. (optional)
+     * @param videoCodec Optional. Specify a video codec to encode to, e.g. h264. (optional)
+     * @param subtitleCodec Optional. Specify a subtitle codec to encode to. (optional)
+     * @param transcodeReasons Optional. The transcoding reason. (optional)
+     * @param audioStreamIndex Optional. The index of the audio stream to use. If omitted the first audio stream will be
+     *            used. (optional)
+     * @param videoStreamIndex Optional. The index of the video stream to use. If omitted the first video stream will be
+     *            used. (optional)
+     * @param context Optional. The MediaBrowser.Model.Dlna.EncodingContext. (optional)
+     * @param streamOptions Optional. The streaming options. (optional)
+     * @param enableAdaptiveBitrateStreaming Enable adaptive bitrate streaming. (optional, default to true)
+     * @param enableTrickplay Enable trickplay image playlists being added to master playlist. (optional, default to
+     *            true)
+     * @param enableAudioVbrEncoding Whether to enable Audio Encoding. (optional, default to true)
+     * @param alwaysBurnInSubtitleWhenTranscoding Whether to always burn in subtitles when transcoding. (optional,
+     *            default to false)
+     * @param headers Optional headers to include in the request
+     * @return File
+     * @throws ApiException if fails to make API call
+     */
+    public File headMasterHlsVideoPlaylist(@org.eclipse.jdt.annotation.Nullable UUID itemId,
+            @org.eclipse.jdt.annotation.Nullable String mediaSourceId,
+            @org.eclipse.jdt.annotation.NonNull Boolean _static, @org.eclipse.jdt.annotation.NonNull String params,
+            @org.eclipse.jdt.annotation.NonNull String tag, @org.eclipse.jdt.annotation.NonNull String deviceProfileId,
+            @org.eclipse.jdt.annotation.NonNull String playSessionId,
+            @org.eclipse.jdt.annotation.NonNull String segmentContainer,
+            @org.eclipse.jdt.annotation.NonNull Integer segmentLength,
+            @org.eclipse.jdt.annotation.NonNull Integer minSegments,
+            @org.eclipse.jdt.annotation.NonNull String deviceId, @org.eclipse.jdt.annotation.NonNull String audioCodec,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableAutoStreamCopy,
+            @org.eclipse.jdt.annotation.NonNull Boolean allowVideoStreamCopy,
+            @org.eclipse.jdt.annotation.NonNull Boolean allowAudioStreamCopy,
+            @org.eclipse.jdt.annotation.NonNull Boolean breakOnNonKeyFrames,
+            @org.eclipse.jdt.annotation.NonNull Integer audioSampleRate,
+            @org.eclipse.jdt.annotation.NonNull Integer maxAudioBitDepth,
+            @org.eclipse.jdt.annotation.NonNull Integer audioBitRate,
+            @org.eclipse.jdt.annotation.NonNull Integer audioChannels,
+            @org.eclipse.jdt.annotation.NonNull Integer maxAudioChannels,
+            @org.eclipse.jdt.annotation.NonNull String profile, @org.eclipse.jdt.annotation.NonNull String level,
+            @org.eclipse.jdt.annotation.NonNull Float framerate, @org.eclipse.jdt.annotation.NonNull Float maxFramerate,
+            @org.eclipse.jdt.annotation.NonNull Boolean copyTimestamps,
+            @org.eclipse.jdt.annotation.NonNull Long startTimeTicks, @org.eclipse.jdt.annotation.NonNull Integer width,
+            @org.eclipse.jdt.annotation.NonNull Integer height, @org.eclipse.jdt.annotation.NonNull Integer maxWidth,
+            @org.eclipse.jdt.annotation.NonNull Integer maxHeight,
+            @org.eclipse.jdt.annotation.NonNull Integer videoBitRate,
+            @org.eclipse.jdt.annotation.NonNull Integer subtitleStreamIndex,
+            @org.eclipse.jdt.annotation.NonNull SubtitleDeliveryMethod subtitleMethod,
+            @org.eclipse.jdt.annotation.NonNull Integer maxRefFrames,
+            @org.eclipse.jdt.annotation.NonNull Integer maxVideoBitDepth,
+            @org.eclipse.jdt.annotation.NonNull Boolean requireAvc,
+            @org.eclipse.jdt.annotation.NonNull Boolean deInterlace,
+            @org.eclipse.jdt.annotation.NonNull Boolean requireNonAnamorphic,
+            @org.eclipse.jdt.annotation.NonNull Integer transcodingMaxAudioChannels,
+            @org.eclipse.jdt.annotation.NonNull Integer cpuCoreLimit,
+            @org.eclipse.jdt.annotation.NonNull String liveStreamId,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableMpegtsM2TsMode,
+            @org.eclipse.jdt.annotation.NonNull String videoCodec,
+            @org.eclipse.jdt.annotation.NonNull String subtitleCodec,
+            @org.eclipse.jdt.annotation.NonNull String transcodeReasons,
+            @org.eclipse.jdt.annotation.NonNull Integer audioStreamIndex,
+            @org.eclipse.jdt.annotation.NonNull Integer videoStreamIndex,
+            @org.eclipse.jdt.annotation.NonNull EncodingContext context,
+            @org.eclipse.jdt.annotation.NonNull Map<String, String> streamOptions,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableAdaptiveBitrateStreaming,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableTrickplay,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableAudioVbrEncoding,
+            @org.eclipse.jdt.annotation.NonNull Boolean alwaysBurnInSubtitleWhenTranscoding,
+            Map<String, String> headers) throws ApiException {
         ApiResponse<File> localVarResponse = headMasterHlsVideoPlaylistWithHttpInfo(itemId, mediaSourceId, _static,
                 params, tag, deviceProfileId, playSessionId, segmentContainer, segmentLength, minSegments, deviceId,
                 audioCodec, enableAutoStreamCopy, allowVideoStreamCopy, allowAudioStreamCopy, breakOnNonKeyFrames,
@@ -4078,7 +6397,7 @@ public class DynamicHlsApi {
                 deInterlace, requireNonAnamorphic, transcodingMaxAudioChannels, cpuCoreLimit, liveStreamId,
                 enableMpegtsM2TsMode, videoCodec, subtitleCodec, transcodeReasons, audioStreamIndex, videoStreamIndex,
                 context, streamOptions, enableAdaptiveBitrateStreaming, enableTrickplay, enableAudioVbrEncoding,
-                alwaysBurnInSubtitleWhenTranscoding);
+                alwaysBurnInSubtitleWhenTranscoding, headers);
         return localVarResponse.getData();
     }
 
@@ -4202,6 +6521,140 @@ public class DynamicHlsApi {
             @org.eclipse.jdt.annotation.NonNull Boolean enableTrickplay,
             @org.eclipse.jdt.annotation.NonNull Boolean enableAudioVbrEncoding,
             @org.eclipse.jdt.annotation.NonNull Boolean alwaysBurnInSubtitleWhenTranscoding) throws ApiException {
+        return headMasterHlsVideoPlaylistWithHttpInfo(itemId, mediaSourceId, _static, params, tag, deviceProfileId,
+                playSessionId, segmentContainer, segmentLength, minSegments, deviceId, audioCodec, enableAutoStreamCopy,
+                allowVideoStreamCopy, allowAudioStreamCopy, breakOnNonKeyFrames, audioSampleRate, maxAudioBitDepth,
+                audioBitRate, audioChannels, maxAudioChannels, profile, level, framerate, maxFramerate, copyTimestamps,
+                startTimeTicks, width, height, maxWidth, maxHeight, videoBitRate, subtitleStreamIndex, subtitleMethod,
+                maxRefFrames, maxVideoBitDepth, requireAvc, deInterlace, requireNonAnamorphic,
+                transcodingMaxAudioChannels, cpuCoreLimit, liveStreamId, enableMpegtsM2TsMode, videoCodec,
+                subtitleCodec, transcodeReasons, audioStreamIndex, videoStreamIndex, context, streamOptions,
+                enableAdaptiveBitrateStreaming, enableTrickplay, enableAudioVbrEncoding,
+                alwaysBurnInSubtitleWhenTranscoding, null);
+    }
+
+    /**
+     * Gets a video hls playlist stream.
+     * 
+     * @param itemId The item id. (required)
+     * @param mediaSourceId The media version id, if playing an alternate version. (required)
+     * @param _static Optional. If true, the original file will be streamed statically without any encoding. Use either
+     *            no url extension or the original file extension. true/false. (optional)
+     * @param params The streaming parameters. (optional)
+     * @param tag The tag. (optional)
+     * @param deviceProfileId Optional. The dlna device profile id to utilize. (optional)
+     * @param playSessionId The play session id. (optional)
+     * @param segmentContainer The segment container. (optional)
+     * @param segmentLength The segment length. (optional)
+     * @param minSegments The minimum number of segments. (optional)
+     * @param deviceId The device id of the client requesting. Used to stop encoding processes when needed. (optional)
+     * @param audioCodec Optional. Specify an audio codec to encode to, e.g. mp3. (optional)
+     * @param enableAutoStreamCopy Whether or not to allow automatic stream copy if requested values match the original
+     *            source. Defaults to true. (optional)
+     * @param allowVideoStreamCopy Whether or not to allow copying of the video stream url. (optional)
+     * @param allowAudioStreamCopy Whether or not to allow copying of the audio stream url. (optional)
+     * @param breakOnNonKeyFrames Optional. Whether to break on non key frames. (optional)
+     * @param audioSampleRate Optional. Specify a specific audio sample rate, e.g. 44100. (optional)
+     * @param maxAudioBitDepth Optional. The maximum audio bit depth. (optional)
+     * @param audioBitRate Optional. Specify an audio bitrate to encode to, e.g. 128000. If omitted this will be left to
+     *            encoder defaults. (optional)
+     * @param audioChannels Optional. Specify a specific number of audio channels to encode to, e.g. 2. (optional)
+     * @param maxAudioChannels Optional. Specify a maximum number of audio channels to encode to, e.g. 2. (optional)
+     * @param profile Optional. Specify a specific an encoder profile (varies by encoder), e.g. main, baseline, high.
+     *            (optional)
+     * @param level Optional. Specify a level for the encoder profile (varies by encoder), e.g. 3, 3.1. (optional)
+     * @param framerate Optional. A specific video framerate to encode to, e.g. 23.976. Generally this should be omitted
+     *            unless the device has specific requirements. (optional)
+     * @param maxFramerate Optional. A specific maximum video framerate to encode to, e.g. 23.976. Generally this should
+     *            be omitted unless the device has specific requirements. (optional)
+     * @param copyTimestamps Whether or not to copy timestamps when transcoding with an offset. Defaults to false.
+     *            (optional)
+     * @param startTimeTicks Optional. Specify a starting offset, in ticks. 1 tick &#x3D; 10000 ms. (optional)
+     * @param width Optional. The fixed horizontal resolution of the encoded video. (optional)
+     * @param height Optional. The fixed vertical resolution of the encoded video. (optional)
+     * @param maxWidth Optional. The maximum horizontal resolution of the encoded video. (optional)
+     * @param maxHeight Optional. The maximum vertical resolution of the encoded video. (optional)
+     * @param videoBitRate Optional. Specify a video bitrate to encode to, e.g. 500000. If omitted this will be left to
+     *            encoder defaults. (optional)
+     * @param subtitleStreamIndex Optional. The index of the subtitle stream to use. If omitted no subtitles will be
+     *            used. (optional)
+     * @param subtitleMethod Optional. Specify the subtitle delivery method. (optional)
+     * @param maxRefFrames Optional. (optional)
+     * @param maxVideoBitDepth Optional. The maximum video bit depth. (optional)
+     * @param requireAvc Optional. Whether to require avc. (optional)
+     * @param deInterlace Optional. Whether to deinterlace the video. (optional)
+     * @param requireNonAnamorphic Optional. Whether to require a non anamorphic stream. (optional)
+     * @param transcodingMaxAudioChannels Optional. The maximum number of audio channels to transcode. (optional)
+     * @param cpuCoreLimit Optional. The limit of how many cpu cores to use. (optional)
+     * @param liveStreamId The live stream id. (optional)
+     * @param enableMpegtsM2TsMode Optional. Whether to enable the MpegtsM2Ts mode. (optional)
+     * @param videoCodec Optional. Specify a video codec to encode to, e.g. h264. (optional)
+     * @param subtitleCodec Optional. Specify a subtitle codec to encode to. (optional)
+     * @param transcodeReasons Optional. The transcoding reason. (optional)
+     * @param audioStreamIndex Optional. The index of the audio stream to use. If omitted the first audio stream will be
+     *            used. (optional)
+     * @param videoStreamIndex Optional. The index of the video stream to use. If omitted the first video stream will be
+     *            used. (optional)
+     * @param context Optional. The MediaBrowser.Model.Dlna.EncodingContext. (optional)
+     * @param streamOptions Optional. The streaming options. (optional)
+     * @param enableAdaptiveBitrateStreaming Enable adaptive bitrate streaming. (optional, default to true)
+     * @param enableTrickplay Enable trickplay image playlists being added to master playlist. (optional, default to
+     *            true)
+     * @param enableAudioVbrEncoding Whether to enable Audio Encoding. (optional, default to true)
+     * @param alwaysBurnInSubtitleWhenTranscoding Whether to always burn in subtitles when transcoding. (optional,
+     *            default to false)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;File&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<File> headMasterHlsVideoPlaylistWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID itemId,
+            @org.eclipse.jdt.annotation.Nullable String mediaSourceId,
+            @org.eclipse.jdt.annotation.NonNull Boolean _static, @org.eclipse.jdt.annotation.NonNull String params,
+            @org.eclipse.jdt.annotation.NonNull String tag, @org.eclipse.jdt.annotation.NonNull String deviceProfileId,
+            @org.eclipse.jdt.annotation.NonNull String playSessionId,
+            @org.eclipse.jdt.annotation.NonNull String segmentContainer,
+            @org.eclipse.jdt.annotation.NonNull Integer segmentLength,
+            @org.eclipse.jdt.annotation.NonNull Integer minSegments,
+            @org.eclipse.jdt.annotation.NonNull String deviceId, @org.eclipse.jdt.annotation.NonNull String audioCodec,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableAutoStreamCopy,
+            @org.eclipse.jdt.annotation.NonNull Boolean allowVideoStreamCopy,
+            @org.eclipse.jdt.annotation.NonNull Boolean allowAudioStreamCopy,
+            @org.eclipse.jdt.annotation.NonNull Boolean breakOnNonKeyFrames,
+            @org.eclipse.jdt.annotation.NonNull Integer audioSampleRate,
+            @org.eclipse.jdt.annotation.NonNull Integer maxAudioBitDepth,
+            @org.eclipse.jdt.annotation.NonNull Integer audioBitRate,
+            @org.eclipse.jdt.annotation.NonNull Integer audioChannels,
+            @org.eclipse.jdt.annotation.NonNull Integer maxAudioChannels,
+            @org.eclipse.jdt.annotation.NonNull String profile, @org.eclipse.jdt.annotation.NonNull String level,
+            @org.eclipse.jdt.annotation.NonNull Float framerate, @org.eclipse.jdt.annotation.NonNull Float maxFramerate,
+            @org.eclipse.jdt.annotation.NonNull Boolean copyTimestamps,
+            @org.eclipse.jdt.annotation.NonNull Long startTimeTicks, @org.eclipse.jdt.annotation.NonNull Integer width,
+            @org.eclipse.jdt.annotation.NonNull Integer height, @org.eclipse.jdt.annotation.NonNull Integer maxWidth,
+            @org.eclipse.jdt.annotation.NonNull Integer maxHeight,
+            @org.eclipse.jdt.annotation.NonNull Integer videoBitRate,
+            @org.eclipse.jdt.annotation.NonNull Integer subtitleStreamIndex,
+            @org.eclipse.jdt.annotation.NonNull SubtitleDeliveryMethod subtitleMethod,
+            @org.eclipse.jdt.annotation.NonNull Integer maxRefFrames,
+            @org.eclipse.jdt.annotation.NonNull Integer maxVideoBitDepth,
+            @org.eclipse.jdt.annotation.NonNull Boolean requireAvc,
+            @org.eclipse.jdt.annotation.NonNull Boolean deInterlace,
+            @org.eclipse.jdt.annotation.NonNull Boolean requireNonAnamorphic,
+            @org.eclipse.jdt.annotation.NonNull Integer transcodingMaxAudioChannels,
+            @org.eclipse.jdt.annotation.NonNull Integer cpuCoreLimit,
+            @org.eclipse.jdt.annotation.NonNull String liveStreamId,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableMpegtsM2TsMode,
+            @org.eclipse.jdt.annotation.NonNull String videoCodec,
+            @org.eclipse.jdt.annotation.NonNull String subtitleCodec,
+            @org.eclipse.jdt.annotation.NonNull String transcodeReasons,
+            @org.eclipse.jdt.annotation.NonNull Integer audioStreamIndex,
+            @org.eclipse.jdt.annotation.NonNull Integer videoStreamIndex,
+            @org.eclipse.jdt.annotation.NonNull EncodingContext context,
+            @org.eclipse.jdt.annotation.NonNull Map<String, String> streamOptions,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableAdaptiveBitrateStreaming,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableTrickplay,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableAudioVbrEncoding,
+            @org.eclipse.jdt.annotation.NonNull Boolean alwaysBurnInSubtitleWhenTranscoding,
+            Map<String, String> headers) throws ApiException {
         HttpRequest.Builder localVarRequestBuilder = headMasterHlsVideoPlaylistRequestBuilder(itemId, mediaSourceId,
                 _static, params, tag, deviceProfileId, playSessionId, segmentContainer, segmentLength, minSegments,
                 deviceId, audioCodec, enableAutoStreamCopy, allowVideoStreamCopy, allowAudioStreamCopy,
@@ -4211,7 +6664,7 @@ public class DynamicHlsApi {
                 requireAvc, deInterlace, requireNonAnamorphic, transcodingMaxAudioChannels, cpuCoreLimit, liveStreamId,
                 enableMpegtsM2TsMode, videoCodec, subtitleCodec, transcodeReasons, audioStreamIndex, videoStreamIndex,
                 context, streamOptions, enableAdaptiveBitrateStreaming, enableTrickplay, enableAudioVbrEncoding,
-                alwaysBurnInSubtitleWhenTranscoding);
+                alwaysBurnInSubtitleWhenTranscoding, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -4226,13 +6679,13 @@ public class DynamicHlsApi {
                     return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
                 }
 
-                String responseBody = new String(localVarResponse.body().readAllBytes());
+                // Handle file downloading.
+                File responseValue = downloadFileFromResponse(localVarResponse);
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {
-                                }));
+                        responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -4289,7 +6742,8 @@ public class DynamicHlsApi {
             @org.eclipse.jdt.annotation.NonNull Boolean enableAdaptiveBitrateStreaming,
             @org.eclipse.jdt.annotation.NonNull Boolean enableTrickplay,
             @org.eclipse.jdt.annotation.NonNull Boolean enableAudioVbrEncoding,
-            @org.eclipse.jdt.annotation.NonNull Boolean alwaysBurnInSubtitleWhenTranscoding) throws ApiException {
+            @org.eclipse.jdt.annotation.NonNull Boolean alwaysBurnInSubtitleWhenTranscoding,
+            Map<String, String> headers) throws ApiException {
         // verify the required parameter 'itemId' is set
         if (itemId == null) {
             throw new ApiException(400,
@@ -4436,6 +6890,8 @@ public class DynamicHlsApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }

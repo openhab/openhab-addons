@@ -22,6 +22,7 @@ import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.StringJoiner;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -39,6 +40,28 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class LyricsApi {
+    /**
+     * Utility class for extending HttpRequest.Builder functionality.
+     */
+    private static class HttpRequestBuilderExtensions {
+        /**
+         * Adds additional headers to the provided HttpRequest.Builder. Useful for adding method/endpoint specific
+         * headers.
+         *
+         * @param builder the HttpRequest.Builder to which headers will be added
+         * @param headers a map of header names and values to add; may be null
+         * @return the same HttpRequest.Builder instance with the additional headers set
+         */
+        static HttpRequest.Builder withAdditionalHeaders(HttpRequest.Builder builder, Map<String, String> headers) {
+            if (headers != null) {
+                for (Map.Entry<String, String> entry : headers.entrySet()) {
+                    builder.header(entry.getKey(), entry.getValue());
+                }
+            }
+            return builder;
+        }
+    }
+
     private final HttpClient memberVarHttpClient;
     private final ObjectMapper memberVarObjectMapper;
     private final String memberVarBaseUri;
@@ -75,13 +98,75 @@ public class LyricsApi {
     }
 
     /**
+     * Download file from the given response.
+     *
+     * @param response Response
+     * @return File
+     * @throws ApiException If fail to read file content from response and write to disk
+     */
+    public File downloadFileFromResponse(HttpResponse<InputStream> response) throws ApiException {
+        try {
+            File file = prepareDownloadFile(response);
+            java.nio.file.Files.copy(response.body(), file.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+            return file;
+        } catch (IOException e) {
+            throw new ApiException(e);
+        }
+    }
+
+    /**
+     * <p>
+     * Prepare the file for download from the response.
+     * </p>
+     *
+     * @param response a {@link java.net.http.HttpResponse} object.
+     * @return a {@link java.io.File} object.
+     * @throws java.io.IOException if any.
+     */
+    private File prepareDownloadFile(HttpResponse<InputStream> response) throws IOException {
+        String filename = null;
+        java.util.Optional<String> contentDisposition = response.headers().firstValue("Content-Disposition");
+        if (contentDisposition.isPresent() && !"".equals(contentDisposition.get())) {
+            // Get filename from the Content-Disposition header.
+            java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("filename=['\"]?([^'\"\\s]+)['\"]?");
+            java.util.regex.Matcher matcher = pattern.matcher(contentDisposition.get());
+            if (matcher.find())
+                filename = matcher.group(1);
+        }
+        File file = null;
+        if (filename != null) {
+            java.nio.file.Path tempDir = java.nio.file.Files.createTempDirectory("swagger-gen-native");
+            java.nio.file.Path filePath = java.nio.file.Files.createFile(tempDir.resolve(filename));
+            file = filePath.toFile();
+            tempDir.toFile().deleteOnExit(); // best effort cleanup
+            file.deleteOnExit(); // best effort cleanup
+        } else {
+            file = java.nio.file.Files.createTempFile("download-", "").toFile();
+            file.deleteOnExit(); // best effort cleanup
+        }
+        return file;
+    }
+
+    /**
      * Deletes an external lyric file.
      * 
      * @param itemId The item id. (required)
      * @throws ApiException if fails to make API call
      */
     public void deleteLyrics(@org.eclipse.jdt.annotation.Nullable UUID itemId) throws ApiException {
-        deleteLyricsWithHttpInfo(itemId);
+        deleteLyrics(itemId, null);
+    }
+
+    /**
+     * Deletes an external lyric file.
+     * 
+     * @param itemId The item id. (required)
+     * @param headers Optional headers to include in the request
+     * @throws ApiException if fails to make API call
+     */
+    public void deleteLyrics(@org.eclipse.jdt.annotation.Nullable UUID itemId, Map<String, String> headers)
+            throws ApiException {
+        deleteLyricsWithHttpInfo(itemId, headers);
     }
 
     /**
@@ -93,7 +178,20 @@ public class LyricsApi {
      */
     public ApiResponse<Void> deleteLyricsWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID itemId)
             throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = deleteLyricsRequestBuilder(itemId);
+        return deleteLyricsWithHttpInfo(itemId, null);
+    }
+
+    /**
+     * Deletes an external lyric file.
+     * 
+     * @param itemId The item id. (required)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<Void> deleteLyricsWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID itemId,
+            Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = deleteLyricsRequestBuilder(itemId, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -120,8 +218,8 @@ public class LyricsApi {
         }
     }
 
-    private HttpRequest.Builder deleteLyricsRequestBuilder(@org.eclipse.jdt.annotation.Nullable UUID itemId)
-            throws ApiException {
+    private HttpRequest.Builder deleteLyricsRequestBuilder(@org.eclipse.jdt.annotation.Nullable UUID itemId,
+            Map<String, String> headers) throws ApiException {
         // verify the required parameter 'itemId' is set
         if (itemId == null) {
             throw new ApiException(400, "Missing the required parameter 'itemId' when calling deleteLyrics");
@@ -140,6 +238,8 @@ public class LyricsApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -156,7 +256,21 @@ public class LyricsApi {
      */
     public LyricDto downloadRemoteLyrics(@org.eclipse.jdt.annotation.Nullable UUID itemId,
             @org.eclipse.jdt.annotation.Nullable String lyricId) throws ApiException {
-        ApiResponse<LyricDto> localVarResponse = downloadRemoteLyricsWithHttpInfo(itemId, lyricId);
+        return downloadRemoteLyrics(itemId, lyricId, null);
+    }
+
+    /**
+     * Downloads a remote lyric.
+     * 
+     * @param itemId The item id. (required)
+     * @param lyricId The lyric id. (required)
+     * @param headers Optional headers to include in the request
+     * @return LyricDto
+     * @throws ApiException if fails to make API call
+     */
+    public LyricDto downloadRemoteLyrics(@org.eclipse.jdt.annotation.Nullable UUID itemId,
+            @org.eclipse.jdt.annotation.Nullable String lyricId, Map<String, String> headers) throws ApiException {
+        ApiResponse<LyricDto> localVarResponse = downloadRemoteLyricsWithHttpInfo(itemId, lyricId, headers);
         return localVarResponse.getData();
     }
 
@@ -170,7 +284,21 @@ public class LyricsApi {
      */
     public ApiResponse<LyricDto> downloadRemoteLyricsWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID itemId,
             @org.eclipse.jdt.annotation.Nullable String lyricId) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = downloadRemoteLyricsRequestBuilder(itemId, lyricId);
+        return downloadRemoteLyricsWithHttpInfo(itemId, lyricId, null);
+    }
+
+    /**
+     * Downloads a remote lyric.
+     * 
+     * @param itemId The item id. (required)
+     * @param lyricId The lyric id. (required)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;LyricDto&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<LyricDto> downloadRemoteLyricsWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID itemId,
+            @org.eclipse.jdt.annotation.Nullable String lyricId, Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = downloadRemoteLyricsRequestBuilder(itemId, lyricId, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -187,12 +315,14 @@ public class LyricsApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                LyricDto responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<LyricDto>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<LyricDto>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<LyricDto>() {
-                                }));
+                        responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -204,7 +334,7 @@ public class LyricsApi {
     }
 
     private HttpRequest.Builder downloadRemoteLyricsRequestBuilder(@org.eclipse.jdt.annotation.Nullable UUID itemId,
-            @org.eclipse.jdt.annotation.Nullable String lyricId) throws ApiException {
+            @org.eclipse.jdt.annotation.Nullable String lyricId, Map<String, String> headers) throws ApiException {
         // verify the required parameter 'itemId' is set
         if (itemId == null) {
             throw new ApiException(400, "Missing the required parameter 'itemId' when calling downloadRemoteLyrics");
@@ -229,6 +359,8 @@ public class LyricsApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -243,7 +375,20 @@ public class LyricsApi {
      * @throws ApiException if fails to make API call
      */
     public LyricDto getLyrics(@org.eclipse.jdt.annotation.Nullable UUID itemId) throws ApiException {
-        ApiResponse<LyricDto> localVarResponse = getLyricsWithHttpInfo(itemId);
+        return getLyrics(itemId, null);
+    }
+
+    /**
+     * Gets an item&#39;s lyrics.
+     * 
+     * @param itemId Item id. (required)
+     * @param headers Optional headers to include in the request
+     * @return LyricDto
+     * @throws ApiException if fails to make API call
+     */
+    public LyricDto getLyrics(@org.eclipse.jdt.annotation.Nullable UUID itemId, Map<String, String> headers)
+            throws ApiException {
+        ApiResponse<LyricDto> localVarResponse = getLyricsWithHttpInfo(itemId, headers);
         return localVarResponse.getData();
     }
 
@@ -256,7 +401,20 @@ public class LyricsApi {
      */
     public ApiResponse<LyricDto> getLyricsWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID itemId)
             throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getLyricsRequestBuilder(itemId);
+        return getLyricsWithHttpInfo(itemId, null);
+    }
+
+    /**
+     * Gets an item&#39;s lyrics.
+     * 
+     * @param itemId Item id. (required)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;LyricDto&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<LyricDto> getLyricsWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID itemId,
+            Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = getLyricsRequestBuilder(itemId, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -273,12 +431,14 @@ public class LyricsApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                LyricDto responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<LyricDto>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<LyricDto>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<LyricDto>() {
-                                }));
+                        responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -289,8 +449,8 @@ public class LyricsApi {
         }
     }
 
-    private HttpRequest.Builder getLyricsRequestBuilder(@org.eclipse.jdt.annotation.Nullable UUID itemId)
-            throws ApiException {
+    private HttpRequest.Builder getLyricsRequestBuilder(@org.eclipse.jdt.annotation.Nullable UUID itemId,
+            Map<String, String> headers) throws ApiException {
         // verify the required parameter 'itemId' is set
         if (itemId == null) {
             throw new ApiException(400, "Missing the required parameter 'itemId' when calling getLyrics");
@@ -309,6 +469,8 @@ public class LyricsApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -323,7 +485,20 @@ public class LyricsApi {
      * @throws ApiException if fails to make API call
      */
     public LyricDto getRemoteLyrics(@org.eclipse.jdt.annotation.Nullable String lyricId) throws ApiException {
-        ApiResponse<LyricDto> localVarResponse = getRemoteLyricsWithHttpInfo(lyricId);
+        return getRemoteLyrics(lyricId, null);
+    }
+
+    /**
+     * Gets the remote lyrics.
+     * 
+     * @param lyricId The remote provider item id. (required)
+     * @param headers Optional headers to include in the request
+     * @return LyricDto
+     * @throws ApiException if fails to make API call
+     */
+    public LyricDto getRemoteLyrics(@org.eclipse.jdt.annotation.Nullable String lyricId, Map<String, String> headers)
+            throws ApiException {
+        ApiResponse<LyricDto> localVarResponse = getRemoteLyricsWithHttpInfo(lyricId, headers);
         return localVarResponse.getData();
     }
 
@@ -336,7 +511,20 @@ public class LyricsApi {
      */
     public ApiResponse<LyricDto> getRemoteLyricsWithHttpInfo(@org.eclipse.jdt.annotation.Nullable String lyricId)
             throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getRemoteLyricsRequestBuilder(lyricId);
+        return getRemoteLyricsWithHttpInfo(lyricId, null);
+    }
+
+    /**
+     * Gets the remote lyrics.
+     * 
+     * @param lyricId The remote provider item id. (required)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;LyricDto&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<LyricDto> getRemoteLyricsWithHttpInfo(@org.eclipse.jdt.annotation.Nullable String lyricId,
+            Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = getRemoteLyricsRequestBuilder(lyricId, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -353,12 +541,14 @@ public class LyricsApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                LyricDto responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<LyricDto>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<LyricDto>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<LyricDto>() {
-                                }));
+                        responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -369,8 +559,8 @@ public class LyricsApi {
         }
     }
 
-    private HttpRequest.Builder getRemoteLyricsRequestBuilder(@org.eclipse.jdt.annotation.Nullable String lyricId)
-            throws ApiException {
+    private HttpRequest.Builder getRemoteLyricsRequestBuilder(@org.eclipse.jdt.annotation.Nullable String lyricId,
+            Map<String, String> headers) throws ApiException {
         // verify the required parameter 'lyricId' is set
         if (lyricId == null) {
             throw new ApiException(400, "Missing the required parameter 'lyricId' when calling getRemoteLyrics");
@@ -390,6 +580,8 @@ public class LyricsApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -405,7 +597,20 @@ public class LyricsApi {
      */
     public List<RemoteLyricInfoDto> searchRemoteLyrics(@org.eclipse.jdt.annotation.Nullable UUID itemId)
             throws ApiException {
-        ApiResponse<List<RemoteLyricInfoDto>> localVarResponse = searchRemoteLyricsWithHttpInfo(itemId);
+        return searchRemoteLyrics(itemId, null);
+    }
+
+    /**
+     * Search remote lyrics.
+     * 
+     * @param itemId The item id. (required)
+     * @param headers Optional headers to include in the request
+     * @return List&lt;RemoteLyricInfoDto&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public List<RemoteLyricInfoDto> searchRemoteLyrics(@org.eclipse.jdt.annotation.Nullable UUID itemId,
+            Map<String, String> headers) throws ApiException {
+        ApiResponse<List<RemoteLyricInfoDto>> localVarResponse = searchRemoteLyricsWithHttpInfo(itemId, headers);
         return localVarResponse.getData();
     }
 
@@ -418,7 +623,20 @@ public class LyricsApi {
      */
     public ApiResponse<List<RemoteLyricInfoDto>> searchRemoteLyricsWithHttpInfo(
             @org.eclipse.jdt.annotation.Nullable UUID itemId) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = searchRemoteLyricsRequestBuilder(itemId);
+        return searchRemoteLyricsWithHttpInfo(itemId, null);
+    }
+
+    /**
+     * Search remote lyrics.
+     * 
+     * @param itemId The item id. (required)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;List&lt;RemoteLyricInfoDto&gt;&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<List<RemoteLyricInfoDto>> searchRemoteLyricsWithHttpInfo(
+            @org.eclipse.jdt.annotation.Nullable UUID itemId, Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = searchRemoteLyricsRequestBuilder(itemId, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -435,14 +653,14 @@ public class LyricsApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                List<RemoteLyricInfoDto> responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<List<RemoteLyricInfoDto>>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<List<RemoteLyricInfoDto>>(localVarResponse.statusCode(),
-                        localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody,
-                                        new TypeReference<List<RemoteLyricInfoDto>>() {
-                                        }));
+                        localVarResponse.headers().map(), responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -453,8 +671,8 @@ public class LyricsApi {
         }
     }
 
-    private HttpRequest.Builder searchRemoteLyricsRequestBuilder(@org.eclipse.jdt.annotation.Nullable UUID itemId)
-            throws ApiException {
+    private HttpRequest.Builder searchRemoteLyricsRequestBuilder(@org.eclipse.jdt.annotation.Nullable UUID itemId,
+            Map<String, String> headers) throws ApiException {
         // verify the required parameter 'itemId' is set
         if (itemId == null) {
             throw new ApiException(400, "Missing the required parameter 'itemId' when calling searchRemoteLyrics");
@@ -474,6 +692,8 @@ public class LyricsApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -492,7 +712,23 @@ public class LyricsApi {
     public LyricDto uploadLyrics(@org.eclipse.jdt.annotation.Nullable UUID itemId,
             @org.eclipse.jdt.annotation.Nullable String fileName, @org.eclipse.jdt.annotation.NonNull File body)
             throws ApiException {
-        ApiResponse<LyricDto> localVarResponse = uploadLyricsWithHttpInfo(itemId, fileName, body);
+        return uploadLyrics(itemId, fileName, body, null);
+    }
+
+    /**
+     * Upload an external lyric file.
+     * 
+     * @param itemId The item the lyric belongs to. (required)
+     * @param fileName Name of the file being uploaded. (required)
+     * @param body (optional)
+     * @param headers Optional headers to include in the request
+     * @return LyricDto
+     * @throws ApiException if fails to make API call
+     */
+    public LyricDto uploadLyrics(@org.eclipse.jdt.annotation.Nullable UUID itemId,
+            @org.eclipse.jdt.annotation.Nullable String fileName, @org.eclipse.jdt.annotation.NonNull File body,
+            Map<String, String> headers) throws ApiException {
+        ApiResponse<LyricDto> localVarResponse = uploadLyricsWithHttpInfo(itemId, fileName, body, headers);
         return localVarResponse.getData();
     }
 
@@ -508,7 +744,23 @@ public class LyricsApi {
     public ApiResponse<LyricDto> uploadLyricsWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID itemId,
             @org.eclipse.jdt.annotation.Nullable String fileName, @org.eclipse.jdt.annotation.NonNull File body)
             throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = uploadLyricsRequestBuilder(itemId, fileName, body);
+        return uploadLyricsWithHttpInfo(itemId, fileName, body, null);
+    }
+
+    /**
+     * Upload an external lyric file.
+     * 
+     * @param itemId The item the lyric belongs to. (required)
+     * @param fileName Name of the file being uploaded. (required)
+     * @param body (optional)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;LyricDto&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<LyricDto> uploadLyricsWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID itemId,
+            @org.eclipse.jdt.annotation.Nullable String fileName, @org.eclipse.jdt.annotation.NonNull File body,
+            Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = uploadLyricsRequestBuilder(itemId, fileName, body, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -525,12 +777,14 @@ public class LyricsApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                LyricDto responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<LyricDto>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<LyricDto>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<LyricDto>() {
-                                }));
+                        responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -542,8 +796,8 @@ public class LyricsApi {
     }
 
     private HttpRequest.Builder uploadLyricsRequestBuilder(@org.eclipse.jdt.annotation.Nullable UUID itemId,
-            @org.eclipse.jdt.annotation.Nullable String fileName, @org.eclipse.jdt.annotation.NonNull File body)
-            throws ApiException {
+            @org.eclipse.jdt.annotation.Nullable String fileName, @org.eclipse.jdt.annotation.NonNull File body,
+            Map<String, String> headers) throws ApiException {
         // verify the required parameter 'itemId' is set
         if (itemId == null) {
             throw new ApiException(400, "Missing the required parameter 'itemId' when calling uploadLyrics");
@@ -587,6 +841,8 @@ public class LyricsApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }

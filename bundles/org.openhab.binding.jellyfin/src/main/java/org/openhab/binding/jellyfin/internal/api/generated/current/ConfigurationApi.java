@@ -20,6 +20,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
+import java.util.Map;
 import java.util.function.Consumer;
 
 import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
@@ -34,6 +35,28 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class ConfigurationApi {
+    /**
+     * Utility class for extending HttpRequest.Builder functionality.
+     */
+    private static class HttpRequestBuilderExtensions {
+        /**
+         * Adds additional headers to the provided HttpRequest.Builder. Useful for adding method/endpoint specific
+         * headers.
+         *
+         * @param builder the HttpRequest.Builder to which headers will be added
+         * @param headers a map of header names and values to add; may be null
+         * @return the same HttpRequest.Builder instance with the additional headers set
+         */
+        static HttpRequest.Builder withAdditionalHeaders(HttpRequest.Builder builder, Map<String, String> headers) {
+            if (headers != null) {
+                for (Map.Entry<String, String> entry : headers.entrySet()) {
+                    builder.header(entry.getKey(), entry.getValue());
+                }
+            }
+            return builder;
+        }
+    }
+
     private final HttpClient memberVarHttpClient;
     private final ObjectMapper memberVarObjectMapper;
     private final String memberVarBaseUri;
@@ -70,13 +93,74 @@ public class ConfigurationApi {
     }
 
     /**
+     * Download file from the given response.
+     *
+     * @param response Response
+     * @return File
+     * @throws ApiException If fail to read file content from response and write to disk
+     */
+    public File downloadFileFromResponse(HttpResponse<InputStream> response) throws ApiException {
+        try {
+            File file = prepareDownloadFile(response);
+            java.nio.file.Files.copy(response.body(), file.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+            return file;
+        } catch (IOException e) {
+            throw new ApiException(e);
+        }
+    }
+
+    /**
+     * <p>
+     * Prepare the file for download from the response.
+     * </p>
+     *
+     * @param response a {@link java.net.http.HttpResponse} object.
+     * @return a {@link java.io.File} object.
+     * @throws java.io.IOException if any.
+     */
+    private File prepareDownloadFile(HttpResponse<InputStream> response) throws IOException {
+        String filename = null;
+        java.util.Optional<String> contentDisposition = response.headers().firstValue("Content-Disposition");
+        if (contentDisposition.isPresent() && !"".equals(contentDisposition.get())) {
+            // Get filename from the Content-Disposition header.
+            java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("filename=['\"]?([^'\"\\s]+)['\"]?");
+            java.util.regex.Matcher matcher = pattern.matcher(contentDisposition.get());
+            if (matcher.find())
+                filename = matcher.group(1);
+        }
+        File file = null;
+        if (filename != null) {
+            java.nio.file.Path tempDir = java.nio.file.Files.createTempDirectory("swagger-gen-native");
+            java.nio.file.Path filePath = java.nio.file.Files.createFile(tempDir.resolve(filename));
+            file = filePath.toFile();
+            tempDir.toFile().deleteOnExit(); // best effort cleanup
+            file.deleteOnExit(); // best effort cleanup
+        } else {
+            file = java.nio.file.Files.createTempFile("download-", "").toFile();
+            file.deleteOnExit(); // best effort cleanup
+        }
+        return file;
+    }
+
+    /**
      * Gets application configuration.
      * 
      * @return ServerConfiguration
      * @throws ApiException if fails to make API call
      */
     public ServerConfiguration getConfiguration() throws ApiException {
-        ApiResponse<ServerConfiguration> localVarResponse = getConfigurationWithHttpInfo();
+        return getConfiguration(null);
+    }
+
+    /**
+     * Gets application configuration.
+     * 
+     * @param headers Optional headers to include in the request
+     * @return ServerConfiguration
+     * @throws ApiException if fails to make API call
+     */
+    public ServerConfiguration getConfiguration(Map<String, String> headers) throws ApiException {
+        ApiResponse<ServerConfiguration> localVarResponse = getConfigurationWithHttpInfo(headers);
         return localVarResponse.getData();
     }
 
@@ -87,7 +171,19 @@ public class ConfigurationApi {
      * @throws ApiException if fails to make API call
      */
     public ApiResponse<ServerConfiguration> getConfigurationWithHttpInfo() throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getConfigurationRequestBuilder();
+        return getConfigurationWithHttpInfo(null);
+    }
+
+    /**
+     * Gets application configuration.
+     * 
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;ServerConfiguration&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<ServerConfiguration> getConfigurationWithHttpInfo(Map<String, String> headers)
+            throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = getConfigurationRequestBuilder(headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -104,14 +200,14 @@ public class ConfigurationApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                ServerConfiguration responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<ServerConfiguration>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<ServerConfiguration>(localVarResponse.statusCode(),
-                        localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody,
-                                        new TypeReference<ServerConfiguration>() {
-                                        }));
+                        localVarResponse.headers().map(), responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -122,7 +218,7 @@ public class ConfigurationApi {
         }
     }
 
-    private HttpRequest.Builder getConfigurationRequestBuilder() throws ApiException {
+    private HttpRequest.Builder getConfigurationRequestBuilder(Map<String, String> headers) throws ApiException {
 
         HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
 
@@ -137,6 +233,8 @@ public class ConfigurationApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -150,7 +248,18 @@ public class ConfigurationApi {
      * @throws ApiException if fails to make API call
      */
     public MetadataOptions getDefaultMetadataOptions() throws ApiException {
-        ApiResponse<MetadataOptions> localVarResponse = getDefaultMetadataOptionsWithHttpInfo();
+        return getDefaultMetadataOptions(null);
+    }
+
+    /**
+     * Gets a default MetadataOptions object.
+     * 
+     * @param headers Optional headers to include in the request
+     * @return MetadataOptions
+     * @throws ApiException if fails to make API call
+     */
+    public MetadataOptions getDefaultMetadataOptions(Map<String, String> headers) throws ApiException {
+        ApiResponse<MetadataOptions> localVarResponse = getDefaultMetadataOptionsWithHttpInfo(headers);
         return localVarResponse.getData();
     }
 
@@ -161,7 +270,19 @@ public class ConfigurationApi {
      * @throws ApiException if fails to make API call
      */
     public ApiResponse<MetadataOptions> getDefaultMetadataOptionsWithHttpInfo() throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getDefaultMetadataOptionsRequestBuilder();
+        return getDefaultMetadataOptionsWithHttpInfo(null);
+    }
+
+    /**
+     * Gets a default MetadataOptions object.
+     * 
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;MetadataOptions&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<MetadataOptions> getDefaultMetadataOptionsWithHttpInfo(Map<String, String> headers)
+            throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = getDefaultMetadataOptionsRequestBuilder(headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -178,12 +299,14 @@ public class ConfigurationApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                MetadataOptions responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<MetadataOptions>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<MetadataOptions>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<MetadataOptions>() {
-                                }));
+                        responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -194,7 +317,8 @@ public class ConfigurationApi {
         }
     }
 
-    private HttpRequest.Builder getDefaultMetadataOptionsRequestBuilder() throws ApiException {
+    private HttpRequest.Builder getDefaultMetadataOptionsRequestBuilder(Map<String, String> headers)
+            throws ApiException {
 
         HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
 
@@ -209,6 +333,8 @@ public class ConfigurationApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -223,7 +349,20 @@ public class ConfigurationApi {
      * @throws ApiException if fails to make API call
      */
     public File getNamedConfiguration(@org.eclipse.jdt.annotation.Nullable String key) throws ApiException {
-        ApiResponse<File> localVarResponse = getNamedConfigurationWithHttpInfo(key);
+        return getNamedConfiguration(key, null);
+    }
+
+    /**
+     * Gets a named configuration.
+     * 
+     * @param key Configuration key. (required)
+     * @param headers Optional headers to include in the request
+     * @return File
+     * @throws ApiException if fails to make API call
+     */
+    public File getNamedConfiguration(@org.eclipse.jdt.annotation.Nullable String key, Map<String, String> headers)
+            throws ApiException {
+        ApiResponse<File> localVarResponse = getNamedConfigurationWithHttpInfo(key, headers);
         return localVarResponse.getData();
     }
 
@@ -236,7 +375,20 @@ public class ConfigurationApi {
      */
     public ApiResponse<File> getNamedConfigurationWithHttpInfo(@org.eclipse.jdt.annotation.Nullable String key)
             throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getNamedConfigurationRequestBuilder(key);
+        return getNamedConfigurationWithHttpInfo(key, null);
+    }
+
+    /**
+     * Gets a named configuration.
+     * 
+     * @param key Configuration key. (required)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;File&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<File> getNamedConfigurationWithHttpInfo(@org.eclipse.jdt.annotation.Nullable String key,
+            Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = getNamedConfigurationRequestBuilder(key, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -251,13 +403,13 @@ public class ConfigurationApi {
                     return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
                 }
 
-                String responseBody = new String(localVarResponse.body().readAllBytes());
+                // Handle file downloading.
+                File responseValue = downloadFileFromResponse(localVarResponse);
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {
-                                }));
+                        responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -268,8 +420,8 @@ public class ConfigurationApi {
         }
     }
 
-    private HttpRequest.Builder getNamedConfigurationRequestBuilder(@org.eclipse.jdt.annotation.Nullable String key)
-            throws ApiException {
+    private HttpRequest.Builder getNamedConfigurationRequestBuilder(@org.eclipse.jdt.annotation.Nullable String key,
+            Map<String, String> headers) throws ApiException {
         // verify the required parameter 'key' is set
         if (key == null) {
             throw new ApiException(400, "Missing the required parameter 'key' when calling getNamedConfiguration");
@@ -287,6 +439,8 @@ public class ConfigurationApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -301,7 +455,19 @@ public class ConfigurationApi {
      */
     public void updateConfiguration(@org.eclipse.jdt.annotation.Nullable ServerConfiguration serverConfiguration)
             throws ApiException {
-        updateConfigurationWithHttpInfo(serverConfiguration);
+        updateConfiguration(serverConfiguration, null);
+    }
+
+    /**
+     * Updates application configuration.
+     * 
+     * @param serverConfiguration Configuration. (required)
+     * @param headers Optional headers to include in the request
+     * @throws ApiException if fails to make API call
+     */
+    public void updateConfiguration(@org.eclipse.jdt.annotation.Nullable ServerConfiguration serverConfiguration,
+            Map<String, String> headers) throws ApiException {
+        updateConfigurationWithHttpInfo(serverConfiguration, headers);
     }
 
     /**
@@ -313,7 +479,21 @@ public class ConfigurationApi {
      */
     public ApiResponse<Void> updateConfigurationWithHttpInfo(
             @org.eclipse.jdt.annotation.Nullable ServerConfiguration serverConfiguration) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = updateConfigurationRequestBuilder(serverConfiguration);
+        return updateConfigurationWithHttpInfo(serverConfiguration, null);
+    }
+
+    /**
+     * Updates application configuration.
+     * 
+     * @param serverConfiguration Configuration. (required)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<Void> updateConfigurationWithHttpInfo(
+            @org.eclipse.jdt.annotation.Nullable ServerConfiguration serverConfiguration, Map<String, String> headers)
+            throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = updateConfigurationRequestBuilder(serverConfiguration, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -341,7 +521,8 @@ public class ConfigurationApi {
     }
 
     private HttpRequest.Builder updateConfigurationRequestBuilder(
-            @org.eclipse.jdt.annotation.Nullable ServerConfiguration serverConfiguration) throws ApiException {
+            @org.eclipse.jdt.annotation.Nullable ServerConfiguration serverConfiguration, Map<String, String> headers)
+            throws ApiException {
         // verify the required parameter 'serverConfiguration' is set
         if (serverConfiguration == null) {
             throw new ApiException(400,
@@ -366,6 +547,8 @@ public class ConfigurationApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -381,7 +564,20 @@ public class ConfigurationApi {
      */
     public void updateNamedConfiguration(@org.eclipse.jdt.annotation.Nullable String key,
             @org.eclipse.jdt.annotation.Nullable Object body) throws ApiException {
-        updateNamedConfigurationWithHttpInfo(key, body);
+        updateNamedConfiguration(key, body, null);
+    }
+
+    /**
+     * Updates named configuration.
+     * 
+     * @param key Configuration key. (required)
+     * @param body Configuration. (required)
+     * @param headers Optional headers to include in the request
+     * @throws ApiException if fails to make API call
+     */
+    public void updateNamedConfiguration(@org.eclipse.jdt.annotation.Nullable String key,
+            @org.eclipse.jdt.annotation.Nullable Object body, Map<String, String> headers) throws ApiException {
+        updateNamedConfigurationWithHttpInfo(key, body, headers);
     }
 
     /**
@@ -394,7 +590,21 @@ public class ConfigurationApi {
      */
     public ApiResponse<Void> updateNamedConfigurationWithHttpInfo(@org.eclipse.jdt.annotation.Nullable String key,
             @org.eclipse.jdt.annotation.Nullable Object body) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = updateNamedConfigurationRequestBuilder(key, body);
+        return updateNamedConfigurationWithHttpInfo(key, body, null);
+    }
+
+    /**
+     * Updates named configuration.
+     * 
+     * @param key Configuration key. (required)
+     * @param body Configuration. (required)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<Void> updateNamedConfigurationWithHttpInfo(@org.eclipse.jdt.annotation.Nullable String key,
+            @org.eclipse.jdt.annotation.Nullable Object body, Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = updateNamedConfigurationRequestBuilder(key, body, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -422,7 +632,7 @@ public class ConfigurationApi {
     }
 
     private HttpRequest.Builder updateNamedConfigurationRequestBuilder(@org.eclipse.jdt.annotation.Nullable String key,
-            @org.eclipse.jdt.annotation.Nullable Object body) throws ApiException {
+            @org.eclipse.jdt.annotation.Nullable Object body, Map<String, String> headers) throws ApiException {
         // verify the required parameter 'key' is set
         if (key == null) {
             throw new ApiException(400, "Missing the required parameter 'key' when calling updateNamedConfiguration");
@@ -450,6 +660,8 @@ public class ConfigurationApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }

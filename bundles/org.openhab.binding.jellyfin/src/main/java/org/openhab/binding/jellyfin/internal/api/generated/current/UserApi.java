@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.jellyfin.internal.api.generated.current;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -21,6 +22,7 @@ import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.StringJoiner;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -48,6 +50,28 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class UserApi {
+    /**
+     * Utility class for extending HttpRequest.Builder functionality.
+     */
+    private static class HttpRequestBuilderExtensions {
+        /**
+         * Adds additional headers to the provided HttpRequest.Builder. Useful for adding method/endpoint specific
+         * headers.
+         *
+         * @param builder the HttpRequest.Builder to which headers will be added
+         * @param headers a map of header names and values to add; may be null
+         * @return the same HttpRequest.Builder instance with the additional headers set
+         */
+        static HttpRequest.Builder withAdditionalHeaders(HttpRequest.Builder builder, Map<String, String> headers) {
+            if (headers != null) {
+                for (Map.Entry<String, String> entry : headers.entrySet()) {
+                    builder.header(entry.getKey(), entry.getValue());
+                }
+            }
+            return builder;
+        }
+    }
+
     private final HttpClient memberVarHttpClient;
     private final ObjectMapper memberVarObjectMapper;
     private final String memberVarBaseUri;
@@ -84,6 +108,56 @@ public class UserApi {
     }
 
     /**
+     * Download file from the given response.
+     *
+     * @param response Response
+     * @return File
+     * @throws ApiException If fail to read file content from response and write to disk
+     */
+    public File downloadFileFromResponse(HttpResponse<InputStream> response) throws ApiException {
+        try {
+            File file = prepareDownloadFile(response);
+            java.nio.file.Files.copy(response.body(), file.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+            return file;
+        } catch (IOException e) {
+            throw new ApiException(e);
+        }
+    }
+
+    /**
+     * <p>
+     * Prepare the file for download from the response.
+     * </p>
+     *
+     * @param response a {@link java.net.http.HttpResponse} object.
+     * @return a {@link java.io.File} object.
+     * @throws java.io.IOException if any.
+     */
+    private File prepareDownloadFile(HttpResponse<InputStream> response) throws IOException {
+        String filename = null;
+        java.util.Optional<String> contentDisposition = response.headers().firstValue("Content-Disposition");
+        if (contentDisposition.isPresent() && !"".equals(contentDisposition.get())) {
+            // Get filename from the Content-Disposition header.
+            java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("filename=['\"]?([^'\"\\s]+)['\"]?");
+            java.util.regex.Matcher matcher = pattern.matcher(contentDisposition.get());
+            if (matcher.find())
+                filename = matcher.group(1);
+        }
+        File file = null;
+        if (filename != null) {
+            java.nio.file.Path tempDir = java.nio.file.Files.createTempDirectory("swagger-gen-native");
+            java.nio.file.Path filePath = java.nio.file.Files.createFile(tempDir.resolve(filename));
+            file = filePath.toFile();
+            tempDir.toFile().deleteOnExit(); // best effort cleanup
+            file.deleteOnExit(); // best effort cleanup
+        } else {
+            file = java.nio.file.Files.createTempFile("download-", "").toFile();
+            file.deleteOnExit(); // best effort cleanup
+        }
+        return file;
+    }
+
+    /**
      * Authenticates a user by name.
      * 
      * @param authenticateUserByName The
@@ -94,7 +168,24 @@ public class UserApi {
      */
     public AuthenticationResult authenticateUserByName(
             @org.eclipse.jdt.annotation.Nullable AuthenticateUserByName authenticateUserByName) throws ApiException {
-        ApiResponse<AuthenticationResult> localVarResponse = authenticateUserByNameWithHttpInfo(authenticateUserByName);
+        return authenticateUserByName(authenticateUserByName, null);
+    }
+
+    /**
+     * Authenticates a user by name.
+     * 
+     * @param authenticateUserByName The
+     *            M:Jellyfin.Api.Controllers.UserController.AuthenticateUserByName(Jellyfin.Api.Models.UserDtos.AuthenticateUserByName)
+     *            request. (required)
+     * @param headers Optional headers to include in the request
+     * @return AuthenticationResult
+     * @throws ApiException if fails to make API call
+     */
+    public AuthenticationResult authenticateUserByName(
+            @org.eclipse.jdt.annotation.Nullable AuthenticateUserByName authenticateUserByName,
+            Map<String, String> headers) throws ApiException {
+        ApiResponse<AuthenticationResult> localVarResponse = authenticateUserByNameWithHttpInfo(authenticateUserByName,
+                headers);
         return localVarResponse.getData();
     }
 
@@ -109,7 +200,24 @@ public class UserApi {
      */
     public ApiResponse<AuthenticationResult> authenticateUserByNameWithHttpInfo(
             @org.eclipse.jdt.annotation.Nullable AuthenticateUserByName authenticateUserByName) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = authenticateUserByNameRequestBuilder(authenticateUserByName);
+        return authenticateUserByNameWithHttpInfo(authenticateUserByName, null);
+    }
+
+    /**
+     * Authenticates a user by name.
+     * 
+     * @param authenticateUserByName The
+     *            M:Jellyfin.Api.Controllers.UserController.AuthenticateUserByName(Jellyfin.Api.Models.UserDtos.AuthenticateUserByName)
+     *            request. (required)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;AuthenticationResult&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<AuthenticationResult> authenticateUserByNameWithHttpInfo(
+            @org.eclipse.jdt.annotation.Nullable AuthenticateUserByName authenticateUserByName,
+            Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = authenticateUserByNameRequestBuilder(authenticateUserByName,
+                headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -126,14 +234,14 @@ public class UserApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                AuthenticationResult responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<AuthenticationResult>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<AuthenticationResult>(localVarResponse.statusCode(),
-                        localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody,
-                                        new TypeReference<AuthenticationResult>() {
-                                        }));
+                        localVarResponse.headers().map(), responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -145,7 +253,8 @@ public class UserApi {
     }
 
     private HttpRequest.Builder authenticateUserByNameRequestBuilder(
-            @org.eclipse.jdt.annotation.Nullable AuthenticateUserByName authenticateUserByName) throws ApiException {
+            @org.eclipse.jdt.annotation.Nullable AuthenticateUserByName authenticateUserByName,
+            Map<String, String> headers) throws ApiException {
         // verify the required parameter 'authenticateUserByName' is set
         if (authenticateUserByName == null) {
             throw new ApiException(400,
@@ -171,6 +280,8 @@ public class UserApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -186,7 +297,22 @@ public class UserApi {
      */
     public AuthenticationResult authenticateWithQuickConnect(
             @org.eclipse.jdt.annotation.Nullable QuickConnectDto quickConnectDto) throws ApiException {
-        ApiResponse<AuthenticationResult> localVarResponse = authenticateWithQuickConnectWithHttpInfo(quickConnectDto);
+        return authenticateWithQuickConnect(quickConnectDto, null);
+    }
+
+    /**
+     * Authenticates a user with quick connect.
+     * 
+     * @param quickConnectDto The Jellyfin.Api.Models.UserDtos.QuickConnectDto request. (required)
+     * @param headers Optional headers to include in the request
+     * @return AuthenticationResult
+     * @throws ApiException if fails to make API call
+     */
+    public AuthenticationResult authenticateWithQuickConnect(
+            @org.eclipse.jdt.annotation.Nullable QuickConnectDto quickConnectDto, Map<String, String> headers)
+            throws ApiException {
+        ApiResponse<AuthenticationResult> localVarResponse = authenticateWithQuickConnectWithHttpInfo(quickConnectDto,
+                headers);
         return localVarResponse.getData();
     }
 
@@ -199,7 +325,22 @@ public class UserApi {
      */
     public ApiResponse<AuthenticationResult> authenticateWithQuickConnectWithHttpInfo(
             @org.eclipse.jdt.annotation.Nullable QuickConnectDto quickConnectDto) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = authenticateWithQuickConnectRequestBuilder(quickConnectDto);
+        return authenticateWithQuickConnectWithHttpInfo(quickConnectDto, null);
+    }
+
+    /**
+     * Authenticates a user with quick connect.
+     * 
+     * @param quickConnectDto The Jellyfin.Api.Models.UserDtos.QuickConnectDto request. (required)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;AuthenticationResult&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<AuthenticationResult> authenticateWithQuickConnectWithHttpInfo(
+            @org.eclipse.jdt.annotation.Nullable QuickConnectDto quickConnectDto, Map<String, String> headers)
+            throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = authenticateWithQuickConnectRequestBuilder(quickConnectDto,
+                headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -216,14 +357,14 @@ public class UserApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                AuthenticationResult responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<AuthenticationResult>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<AuthenticationResult>(localVarResponse.statusCode(),
-                        localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody,
-                                        new TypeReference<AuthenticationResult>() {
-                                        }));
+                        localVarResponse.headers().map(), responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -235,7 +376,8 @@ public class UserApi {
     }
 
     private HttpRequest.Builder authenticateWithQuickConnectRequestBuilder(
-            @org.eclipse.jdt.annotation.Nullable QuickConnectDto quickConnectDto) throws ApiException {
+            @org.eclipse.jdt.annotation.Nullable QuickConnectDto quickConnectDto, Map<String, String> headers)
+            throws ApiException {
         // verify the required parameter 'quickConnectDto' is set
         if (quickConnectDto == null) {
             throw new ApiException(400,
@@ -261,6 +403,8 @@ public class UserApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -276,7 +420,20 @@ public class UserApi {
      */
     public UserDto createUserByName(@org.eclipse.jdt.annotation.Nullable CreateUserByName createUserByName)
             throws ApiException {
-        ApiResponse<UserDto> localVarResponse = createUserByNameWithHttpInfo(createUserByName);
+        return createUserByName(createUserByName, null);
+    }
+
+    /**
+     * Creates a user.
+     * 
+     * @param createUserByName The create user by name request body. (required)
+     * @param headers Optional headers to include in the request
+     * @return UserDto
+     * @throws ApiException if fails to make API call
+     */
+    public UserDto createUserByName(@org.eclipse.jdt.annotation.Nullable CreateUserByName createUserByName,
+            Map<String, String> headers) throws ApiException {
+        ApiResponse<UserDto> localVarResponse = createUserByNameWithHttpInfo(createUserByName, headers);
         return localVarResponse.getData();
     }
 
@@ -289,7 +446,21 @@ public class UserApi {
      */
     public ApiResponse<UserDto> createUserByNameWithHttpInfo(
             @org.eclipse.jdt.annotation.Nullable CreateUserByName createUserByName) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = createUserByNameRequestBuilder(createUserByName);
+        return createUserByNameWithHttpInfo(createUserByName, null);
+    }
+
+    /**
+     * Creates a user.
+     * 
+     * @param createUserByName The create user by name request body. (required)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;UserDto&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<UserDto> createUserByNameWithHttpInfo(
+            @org.eclipse.jdt.annotation.Nullable CreateUserByName createUserByName, Map<String, String> headers)
+            throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = createUserByNameRequestBuilder(createUserByName, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -306,12 +477,14 @@ public class UserApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                UserDto responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<UserDto>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<UserDto>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<UserDto>() {
-                                }));
+                        responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -323,7 +496,8 @@ public class UserApi {
     }
 
     private HttpRequest.Builder createUserByNameRequestBuilder(
-            @org.eclipse.jdt.annotation.Nullable CreateUserByName createUserByName) throws ApiException {
+            @org.eclipse.jdt.annotation.Nullable CreateUserByName createUserByName, Map<String, String> headers)
+            throws ApiException {
         // verify the required parameter 'createUserByName' is set
         if (createUserByName == null) {
             throw new ApiException(400,
@@ -349,6 +523,8 @@ public class UserApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -362,7 +538,19 @@ public class UserApi {
      * @throws ApiException if fails to make API call
      */
     public void deleteUser(@org.eclipse.jdt.annotation.Nullable UUID userId) throws ApiException {
-        deleteUserWithHttpInfo(userId);
+        deleteUser(userId, null);
+    }
+
+    /**
+     * Deletes a user.
+     * 
+     * @param userId The user id. (required)
+     * @param headers Optional headers to include in the request
+     * @throws ApiException if fails to make API call
+     */
+    public void deleteUser(@org.eclipse.jdt.annotation.Nullable UUID userId, Map<String, String> headers)
+            throws ApiException {
+        deleteUserWithHttpInfo(userId, headers);
     }
 
     /**
@@ -374,7 +562,20 @@ public class UserApi {
      */
     public ApiResponse<Void> deleteUserWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID userId)
             throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = deleteUserRequestBuilder(userId);
+        return deleteUserWithHttpInfo(userId, null);
+    }
+
+    /**
+     * Deletes a user.
+     * 
+     * @param userId The user id. (required)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<Void> deleteUserWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID userId,
+            Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = deleteUserRequestBuilder(userId, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -401,8 +602,8 @@ public class UserApi {
         }
     }
 
-    private HttpRequest.Builder deleteUserRequestBuilder(@org.eclipse.jdt.annotation.Nullable UUID userId)
-            throws ApiException {
+    private HttpRequest.Builder deleteUserRequestBuilder(@org.eclipse.jdt.annotation.Nullable UUID userId,
+            Map<String, String> headers) throws ApiException {
         // verify the required parameter 'userId' is set
         if (userId == null) {
             throw new ApiException(400, "Missing the required parameter 'userId' when calling deleteUser");
@@ -421,6 +622,8 @@ public class UserApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -436,7 +639,20 @@ public class UserApi {
      */
     public ForgotPasswordResult forgotPassword(@org.eclipse.jdt.annotation.Nullable ForgotPasswordDto forgotPasswordDto)
             throws ApiException {
-        ApiResponse<ForgotPasswordResult> localVarResponse = forgotPasswordWithHttpInfo(forgotPasswordDto);
+        return forgotPassword(forgotPasswordDto, null);
+    }
+
+    /**
+     * Initiates the forgot password process for a local user.
+     * 
+     * @param forgotPasswordDto The forgot password request containing the entered username. (required)
+     * @param headers Optional headers to include in the request
+     * @return ForgotPasswordResult
+     * @throws ApiException if fails to make API call
+     */
+    public ForgotPasswordResult forgotPassword(@org.eclipse.jdt.annotation.Nullable ForgotPasswordDto forgotPasswordDto,
+            Map<String, String> headers) throws ApiException {
+        ApiResponse<ForgotPasswordResult> localVarResponse = forgotPasswordWithHttpInfo(forgotPasswordDto, headers);
         return localVarResponse.getData();
     }
 
@@ -449,7 +665,21 @@ public class UserApi {
      */
     public ApiResponse<ForgotPasswordResult> forgotPasswordWithHttpInfo(
             @org.eclipse.jdt.annotation.Nullable ForgotPasswordDto forgotPasswordDto) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = forgotPasswordRequestBuilder(forgotPasswordDto);
+        return forgotPasswordWithHttpInfo(forgotPasswordDto, null);
+    }
+
+    /**
+     * Initiates the forgot password process for a local user.
+     * 
+     * @param forgotPasswordDto The forgot password request containing the entered username. (required)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;ForgotPasswordResult&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<ForgotPasswordResult> forgotPasswordWithHttpInfo(
+            @org.eclipse.jdt.annotation.Nullable ForgotPasswordDto forgotPasswordDto, Map<String, String> headers)
+            throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = forgotPasswordRequestBuilder(forgotPasswordDto, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -466,14 +696,14 @@ public class UserApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                ForgotPasswordResult responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<ForgotPasswordResult>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<ForgotPasswordResult>(localVarResponse.statusCode(),
-                        localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody,
-                                        new TypeReference<ForgotPasswordResult>() {
-                                        }));
+                        localVarResponse.headers().map(), responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -485,7 +715,8 @@ public class UserApi {
     }
 
     private HttpRequest.Builder forgotPasswordRequestBuilder(
-            @org.eclipse.jdt.annotation.Nullable ForgotPasswordDto forgotPasswordDto) throws ApiException {
+            @org.eclipse.jdt.annotation.Nullable ForgotPasswordDto forgotPasswordDto, Map<String, String> headers)
+            throws ApiException {
         // verify the required parameter 'forgotPasswordDto' is set
         if (forgotPasswordDto == null) {
             throw new ApiException(400,
@@ -511,6 +742,8 @@ public class UserApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -526,7 +759,21 @@ public class UserApi {
      */
     public PinRedeemResult forgotPasswordPin(
             @org.eclipse.jdt.annotation.Nullable ForgotPasswordPinDto forgotPasswordPinDto) throws ApiException {
-        ApiResponse<PinRedeemResult> localVarResponse = forgotPasswordPinWithHttpInfo(forgotPasswordPinDto);
+        return forgotPasswordPin(forgotPasswordPinDto, null);
+    }
+
+    /**
+     * Redeems a forgot password pin.
+     * 
+     * @param forgotPasswordPinDto The forgot password pin request containing the entered pin. (required)
+     * @param headers Optional headers to include in the request
+     * @return PinRedeemResult
+     * @throws ApiException if fails to make API call
+     */
+    public PinRedeemResult forgotPasswordPin(
+            @org.eclipse.jdt.annotation.Nullable ForgotPasswordPinDto forgotPasswordPinDto, Map<String, String> headers)
+            throws ApiException {
+        ApiResponse<PinRedeemResult> localVarResponse = forgotPasswordPinWithHttpInfo(forgotPasswordPinDto, headers);
         return localVarResponse.getData();
     }
 
@@ -539,7 +786,21 @@ public class UserApi {
      */
     public ApiResponse<PinRedeemResult> forgotPasswordPinWithHttpInfo(
             @org.eclipse.jdt.annotation.Nullable ForgotPasswordPinDto forgotPasswordPinDto) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = forgotPasswordPinRequestBuilder(forgotPasswordPinDto);
+        return forgotPasswordPinWithHttpInfo(forgotPasswordPinDto, null);
+    }
+
+    /**
+     * Redeems a forgot password pin.
+     * 
+     * @param forgotPasswordPinDto The forgot password pin request containing the entered pin. (required)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;PinRedeemResult&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<PinRedeemResult> forgotPasswordPinWithHttpInfo(
+            @org.eclipse.jdt.annotation.Nullable ForgotPasswordPinDto forgotPasswordPinDto, Map<String, String> headers)
+            throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = forgotPasswordPinRequestBuilder(forgotPasswordPinDto, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -556,12 +817,14 @@ public class UserApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                PinRedeemResult responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<PinRedeemResult>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<PinRedeemResult>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<PinRedeemResult>() {
-                                }));
+                        responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -573,7 +836,8 @@ public class UserApi {
     }
 
     private HttpRequest.Builder forgotPasswordPinRequestBuilder(
-            @org.eclipse.jdt.annotation.Nullable ForgotPasswordPinDto forgotPasswordPinDto) throws ApiException {
+            @org.eclipse.jdt.annotation.Nullable ForgotPasswordPinDto forgotPasswordPinDto, Map<String, String> headers)
+            throws ApiException {
         // verify the required parameter 'forgotPasswordPinDto' is set
         if (forgotPasswordPinDto == null) {
             throw new ApiException(400,
@@ -599,6 +863,8 @@ public class UserApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -612,7 +878,18 @@ public class UserApi {
      * @throws ApiException if fails to make API call
      */
     public UserDto getCurrentUser() throws ApiException {
-        ApiResponse<UserDto> localVarResponse = getCurrentUserWithHttpInfo();
+        return getCurrentUser(null);
+    }
+
+    /**
+     * Gets the user based on auth token.
+     * 
+     * @param headers Optional headers to include in the request
+     * @return UserDto
+     * @throws ApiException if fails to make API call
+     */
+    public UserDto getCurrentUser(Map<String, String> headers) throws ApiException {
+        ApiResponse<UserDto> localVarResponse = getCurrentUserWithHttpInfo(headers);
         return localVarResponse.getData();
     }
 
@@ -623,7 +900,18 @@ public class UserApi {
      * @throws ApiException if fails to make API call
      */
     public ApiResponse<UserDto> getCurrentUserWithHttpInfo() throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getCurrentUserRequestBuilder();
+        return getCurrentUserWithHttpInfo(null);
+    }
+
+    /**
+     * Gets the user based on auth token.
+     * 
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;UserDto&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<UserDto> getCurrentUserWithHttpInfo(Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = getCurrentUserRequestBuilder(headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -640,12 +928,14 @@ public class UserApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                UserDto responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<UserDto>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<UserDto>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<UserDto>() {
-                                }));
+                        responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -656,7 +946,7 @@ public class UserApi {
         }
     }
 
-    private HttpRequest.Builder getCurrentUserRequestBuilder() throws ApiException {
+    private HttpRequest.Builder getCurrentUserRequestBuilder(Map<String, String> headers) throws ApiException {
 
         HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
 
@@ -671,6 +961,8 @@ public class UserApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -684,7 +976,18 @@ public class UserApi {
      * @throws ApiException if fails to make API call
      */
     public List<UserDto> getPublicUsers() throws ApiException {
-        ApiResponse<List<UserDto>> localVarResponse = getPublicUsersWithHttpInfo();
+        return getPublicUsers(null);
+    }
+
+    /**
+     * Gets a list of publicly visible users for display on a login screen.
+     * 
+     * @param headers Optional headers to include in the request
+     * @return List&lt;UserDto&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public List<UserDto> getPublicUsers(Map<String, String> headers) throws ApiException {
+        ApiResponse<List<UserDto>> localVarResponse = getPublicUsersWithHttpInfo(headers);
         return localVarResponse.getData();
     }
 
@@ -695,7 +998,18 @@ public class UserApi {
      * @throws ApiException if fails to make API call
      */
     public ApiResponse<List<UserDto>> getPublicUsersWithHttpInfo() throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getPublicUsersRequestBuilder();
+        return getPublicUsersWithHttpInfo(null);
+    }
+
+    /**
+     * Gets a list of publicly visible users for display on a login screen.
+     * 
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;List&lt;UserDto&gt;&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<List<UserDto>> getPublicUsersWithHttpInfo(Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = getPublicUsersRequestBuilder(headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -712,12 +1026,14 @@ public class UserApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                List<UserDto> responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<List<UserDto>>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<List<UserDto>>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<List<UserDto>>() {
-                                }));
+                        responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -728,7 +1044,7 @@ public class UserApi {
         }
     }
 
-    private HttpRequest.Builder getPublicUsersRequestBuilder() throws ApiException {
+    private HttpRequest.Builder getPublicUsersRequestBuilder(Map<String, String> headers) throws ApiException {
 
         HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
 
@@ -743,6 +1059,8 @@ public class UserApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -757,7 +1075,20 @@ public class UserApi {
      * @throws ApiException if fails to make API call
      */
     public UserDto getUserById(@org.eclipse.jdt.annotation.Nullable UUID userId) throws ApiException {
-        ApiResponse<UserDto> localVarResponse = getUserByIdWithHttpInfo(userId);
+        return getUserById(userId, null);
+    }
+
+    /**
+     * Gets a user by Id.
+     * 
+     * @param userId The user id. (required)
+     * @param headers Optional headers to include in the request
+     * @return UserDto
+     * @throws ApiException if fails to make API call
+     */
+    public UserDto getUserById(@org.eclipse.jdt.annotation.Nullable UUID userId, Map<String, String> headers)
+            throws ApiException {
+        ApiResponse<UserDto> localVarResponse = getUserByIdWithHttpInfo(userId, headers);
         return localVarResponse.getData();
     }
 
@@ -770,7 +1101,20 @@ public class UserApi {
      */
     public ApiResponse<UserDto> getUserByIdWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID userId)
             throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getUserByIdRequestBuilder(userId);
+        return getUserByIdWithHttpInfo(userId, null);
+    }
+
+    /**
+     * Gets a user by Id.
+     * 
+     * @param userId The user id. (required)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;UserDto&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<UserDto> getUserByIdWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID userId,
+            Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = getUserByIdRequestBuilder(userId, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -787,12 +1131,14 @@ public class UserApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                UserDto responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<UserDto>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<UserDto>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<UserDto>() {
-                                }));
+                        responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -803,8 +1149,8 @@ public class UserApi {
         }
     }
 
-    private HttpRequest.Builder getUserByIdRequestBuilder(@org.eclipse.jdt.annotation.Nullable UUID userId)
-            throws ApiException {
+    private HttpRequest.Builder getUserByIdRequestBuilder(@org.eclipse.jdt.annotation.Nullable UUID userId,
+            Map<String, String> headers) throws ApiException {
         // verify the required parameter 'userId' is set
         if (userId == null) {
             throw new ApiException(400, "Missing the required parameter 'userId' when calling getUserById");
@@ -823,6 +1169,8 @@ public class UserApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -839,7 +1187,21 @@ public class UserApi {
      */
     public List<UserDto> getUsers(@org.eclipse.jdt.annotation.NonNull Boolean isHidden,
             @org.eclipse.jdt.annotation.NonNull Boolean isDisabled) throws ApiException {
-        ApiResponse<List<UserDto>> localVarResponse = getUsersWithHttpInfo(isHidden, isDisabled);
+        return getUsers(isHidden, isDisabled, null);
+    }
+
+    /**
+     * Gets a list of users.
+     * 
+     * @param isHidden Optional filter by IsHidden&#x3D;true or false. (optional)
+     * @param isDisabled Optional filter by IsDisabled&#x3D;true or false. (optional)
+     * @param headers Optional headers to include in the request
+     * @return List&lt;UserDto&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public List<UserDto> getUsers(@org.eclipse.jdt.annotation.NonNull Boolean isHidden,
+            @org.eclipse.jdt.annotation.NonNull Boolean isDisabled, Map<String, String> headers) throws ApiException {
+        ApiResponse<List<UserDto>> localVarResponse = getUsersWithHttpInfo(isHidden, isDisabled, headers);
         return localVarResponse.getData();
     }
 
@@ -853,7 +1215,21 @@ public class UserApi {
      */
     public ApiResponse<List<UserDto>> getUsersWithHttpInfo(@org.eclipse.jdt.annotation.NonNull Boolean isHidden,
             @org.eclipse.jdt.annotation.NonNull Boolean isDisabled) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getUsersRequestBuilder(isHidden, isDisabled);
+        return getUsersWithHttpInfo(isHidden, isDisabled, null);
+    }
+
+    /**
+     * Gets a list of users.
+     * 
+     * @param isHidden Optional filter by IsHidden&#x3D;true or false. (optional)
+     * @param isDisabled Optional filter by IsDisabled&#x3D;true or false. (optional)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;List&lt;UserDto&gt;&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<List<UserDto>> getUsersWithHttpInfo(@org.eclipse.jdt.annotation.NonNull Boolean isHidden,
+            @org.eclipse.jdt.annotation.NonNull Boolean isDisabled, Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = getUsersRequestBuilder(isHidden, isDisabled, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -870,12 +1246,14 @@ public class UserApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                List<UserDto> responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<List<UserDto>>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<List<UserDto>>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<List<UserDto>>() {
-                                }));
+                        responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -887,7 +1265,7 @@ public class UserApi {
     }
 
     private HttpRequest.Builder getUsersRequestBuilder(@org.eclipse.jdt.annotation.NonNull Boolean isHidden,
-            @org.eclipse.jdt.annotation.NonNull Boolean isDisabled) throws ApiException {
+            @org.eclipse.jdt.annotation.NonNull Boolean isDisabled, Map<String, String> headers) throws ApiException {
 
         HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
 
@@ -919,6 +1297,8 @@ public class UserApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -934,7 +1314,20 @@ public class UserApi {
      */
     public void updateUser(@org.eclipse.jdt.annotation.Nullable UserDto userDto,
             @org.eclipse.jdt.annotation.NonNull UUID userId) throws ApiException {
-        updateUserWithHttpInfo(userDto, userId);
+        updateUser(userDto, userId, null);
+    }
+
+    /**
+     * Updates a user.
+     * 
+     * @param userDto The updated user model. (required)
+     * @param userId The user id. (optional)
+     * @param headers Optional headers to include in the request
+     * @throws ApiException if fails to make API call
+     */
+    public void updateUser(@org.eclipse.jdt.annotation.Nullable UserDto userDto,
+            @org.eclipse.jdt.annotation.NonNull UUID userId, Map<String, String> headers) throws ApiException {
+        updateUserWithHttpInfo(userDto, userId, headers);
     }
 
     /**
@@ -947,7 +1340,21 @@ public class UserApi {
      */
     public ApiResponse<Void> updateUserWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UserDto userDto,
             @org.eclipse.jdt.annotation.NonNull UUID userId) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = updateUserRequestBuilder(userDto, userId);
+        return updateUserWithHttpInfo(userDto, userId, null);
+    }
+
+    /**
+     * Updates a user.
+     * 
+     * @param userDto The updated user model. (required)
+     * @param userId The user id. (optional)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<Void> updateUserWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UserDto userDto,
+            @org.eclipse.jdt.annotation.NonNull UUID userId, Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = updateUserRequestBuilder(userDto, userId, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -975,7 +1382,7 @@ public class UserApi {
     }
 
     private HttpRequest.Builder updateUserRequestBuilder(@org.eclipse.jdt.annotation.Nullable UserDto userDto,
-            @org.eclipse.jdt.annotation.NonNull UUID userId) throws ApiException {
+            @org.eclipse.jdt.annotation.NonNull UUID userId, Map<String, String> headers) throws ApiException {
         // verify the required parameter 'userDto' is set
         if (userDto == null) {
             throw new ApiException(400, "Missing the required parameter 'userDto' when calling updateUser");
@@ -1015,6 +1422,8 @@ public class UserApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -1030,7 +1439,20 @@ public class UserApi {
      */
     public void updateUserConfiguration(@org.eclipse.jdt.annotation.Nullable UserConfiguration userConfiguration,
             @org.eclipse.jdt.annotation.NonNull UUID userId) throws ApiException {
-        updateUserConfigurationWithHttpInfo(userConfiguration, userId);
+        updateUserConfiguration(userConfiguration, userId, null);
+    }
+
+    /**
+     * Updates a user configuration.
+     * 
+     * @param userConfiguration The new user configuration. (required)
+     * @param userId The user id. (optional)
+     * @param headers Optional headers to include in the request
+     * @throws ApiException if fails to make API call
+     */
+    public void updateUserConfiguration(@org.eclipse.jdt.annotation.Nullable UserConfiguration userConfiguration,
+            @org.eclipse.jdt.annotation.NonNull UUID userId, Map<String, String> headers) throws ApiException {
+        updateUserConfigurationWithHttpInfo(userConfiguration, userId, headers);
     }
 
     /**
@@ -1044,7 +1466,23 @@ public class UserApi {
     public ApiResponse<Void> updateUserConfigurationWithHttpInfo(
             @org.eclipse.jdt.annotation.Nullable UserConfiguration userConfiguration,
             @org.eclipse.jdt.annotation.NonNull UUID userId) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = updateUserConfigurationRequestBuilder(userConfiguration, userId);
+        return updateUserConfigurationWithHttpInfo(userConfiguration, userId, null);
+    }
+
+    /**
+     * Updates a user configuration.
+     * 
+     * @param userConfiguration The new user configuration. (required)
+     * @param userId The user id. (optional)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<Void> updateUserConfigurationWithHttpInfo(
+            @org.eclipse.jdt.annotation.Nullable UserConfiguration userConfiguration,
+            @org.eclipse.jdt.annotation.NonNull UUID userId, Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = updateUserConfigurationRequestBuilder(userConfiguration, userId,
+                headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -1073,7 +1511,7 @@ public class UserApi {
 
     private HttpRequest.Builder updateUserConfigurationRequestBuilder(
             @org.eclipse.jdt.annotation.Nullable UserConfiguration userConfiguration,
-            @org.eclipse.jdt.annotation.NonNull UUID userId) throws ApiException {
+            @org.eclipse.jdt.annotation.NonNull UUID userId, Map<String, String> headers) throws ApiException {
         // verify the required parameter 'userConfiguration' is set
         if (userConfiguration == null) {
             throw new ApiException(400,
@@ -1114,6 +1552,8 @@ public class UserApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -1131,7 +1571,22 @@ public class UserApi {
      */
     public void updateUserPassword(@org.eclipse.jdt.annotation.Nullable UpdateUserPassword updateUserPassword,
             @org.eclipse.jdt.annotation.NonNull UUID userId) throws ApiException {
-        updateUserPasswordWithHttpInfo(updateUserPassword, userId);
+        updateUserPassword(updateUserPassword, userId, null);
+    }
+
+    /**
+     * Updates a user&#39;s password.
+     * 
+     * @param updateUserPassword The
+     *            M:Jellyfin.Api.Controllers.UserController.UpdateUserPassword(System.Nullable{System.Guid},Jellyfin.Api.Models.UserDtos.UpdateUserPassword)
+     *            request. (required)
+     * @param userId The user id. (optional)
+     * @param headers Optional headers to include in the request
+     * @throws ApiException if fails to make API call
+     */
+    public void updateUserPassword(@org.eclipse.jdt.annotation.Nullable UpdateUserPassword updateUserPassword,
+            @org.eclipse.jdt.annotation.NonNull UUID userId, Map<String, String> headers) throws ApiException {
+        updateUserPasswordWithHttpInfo(updateUserPassword, userId, headers);
     }
 
     /**
@@ -1147,7 +1602,25 @@ public class UserApi {
     public ApiResponse<Void> updateUserPasswordWithHttpInfo(
             @org.eclipse.jdt.annotation.Nullable UpdateUserPassword updateUserPassword,
             @org.eclipse.jdt.annotation.NonNull UUID userId) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = updateUserPasswordRequestBuilder(updateUserPassword, userId);
+        return updateUserPasswordWithHttpInfo(updateUserPassword, userId, null);
+    }
+
+    /**
+     * Updates a user&#39;s password.
+     * 
+     * @param updateUserPassword The
+     *            M:Jellyfin.Api.Controllers.UserController.UpdateUserPassword(System.Nullable{System.Guid},Jellyfin.Api.Models.UserDtos.UpdateUserPassword)
+     *            request. (required)
+     * @param userId The user id. (optional)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<Void> updateUserPasswordWithHttpInfo(
+            @org.eclipse.jdt.annotation.Nullable UpdateUserPassword updateUserPassword,
+            @org.eclipse.jdt.annotation.NonNull UUID userId, Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = updateUserPasswordRequestBuilder(updateUserPassword, userId,
+                headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -1176,7 +1649,7 @@ public class UserApi {
 
     private HttpRequest.Builder updateUserPasswordRequestBuilder(
             @org.eclipse.jdt.annotation.Nullable UpdateUserPassword updateUserPassword,
-            @org.eclipse.jdt.annotation.NonNull UUID userId) throws ApiException {
+            @org.eclipse.jdt.annotation.NonNull UUID userId, Map<String, String> headers) throws ApiException {
         // verify the required parameter 'updateUserPassword' is set
         if (updateUserPassword == null) {
             throw new ApiException(400,
@@ -1217,6 +1690,8 @@ public class UserApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -1232,7 +1707,21 @@ public class UserApi {
      */
     public void updateUserPolicy(@org.eclipse.jdt.annotation.Nullable UUID userId,
             @org.eclipse.jdt.annotation.Nullable UserPolicy userPolicy) throws ApiException {
-        updateUserPolicyWithHttpInfo(userId, userPolicy);
+        updateUserPolicy(userId, userPolicy, null);
+    }
+
+    /**
+     * Updates a user policy.
+     * 
+     * @param userId The user id. (required)
+     * @param userPolicy The new user policy. (required)
+     * @param headers Optional headers to include in the request
+     * @throws ApiException if fails to make API call
+     */
+    public void updateUserPolicy(@org.eclipse.jdt.annotation.Nullable UUID userId,
+            @org.eclipse.jdt.annotation.Nullable UserPolicy userPolicy, Map<String, String> headers)
+            throws ApiException {
+        updateUserPolicyWithHttpInfo(userId, userPolicy, headers);
     }
 
     /**
@@ -1245,7 +1734,22 @@ public class UserApi {
      */
     public ApiResponse<Void> updateUserPolicyWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID userId,
             @org.eclipse.jdt.annotation.Nullable UserPolicy userPolicy) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = updateUserPolicyRequestBuilder(userId, userPolicy);
+        return updateUserPolicyWithHttpInfo(userId, userPolicy, null);
+    }
+
+    /**
+     * Updates a user policy.
+     * 
+     * @param userId The user id. (required)
+     * @param userPolicy The new user policy. (required)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<Void> updateUserPolicyWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID userId,
+            @org.eclipse.jdt.annotation.Nullable UserPolicy userPolicy, Map<String, String> headers)
+            throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = updateUserPolicyRequestBuilder(userId, userPolicy, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -1273,7 +1777,8 @@ public class UserApi {
     }
 
     private HttpRequest.Builder updateUserPolicyRequestBuilder(@org.eclipse.jdt.annotation.Nullable UUID userId,
-            @org.eclipse.jdt.annotation.Nullable UserPolicy userPolicy) throws ApiException {
+            @org.eclipse.jdt.annotation.Nullable UserPolicy userPolicy, Map<String, String> headers)
+            throws ApiException {
         // verify the required parameter 'userId' is set
         if (userId == null) {
             throw new ApiException(400, "Missing the required parameter 'userId' when calling updateUserPolicy");
@@ -1302,6 +1807,8 @@ public class UserApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }

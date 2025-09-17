@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.jellyfin.internal.api.generated.current;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -20,6 +21,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 
 import org.openhab.binding.jellyfin.internal.api.generated.ApiClient;
@@ -49,6 +51,28 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class SyncPlayApi {
+    /**
+     * Utility class for extending HttpRequest.Builder functionality.
+     */
+    private static class HttpRequestBuilderExtensions {
+        /**
+         * Adds additional headers to the provided HttpRequest.Builder. Useful for adding method/endpoint specific
+         * headers.
+         *
+         * @param builder the HttpRequest.Builder to which headers will be added
+         * @param headers a map of header names and values to add; may be null
+         * @return the same HttpRequest.Builder instance with the additional headers set
+         */
+        static HttpRequest.Builder withAdditionalHeaders(HttpRequest.Builder builder, Map<String, String> headers) {
+            if (headers != null) {
+                for (Map.Entry<String, String> entry : headers.entrySet()) {
+                    builder.header(entry.getKey(), entry.getValue());
+                }
+            }
+            return builder;
+        }
+    }
+
     private final HttpClient memberVarHttpClient;
     private final ObjectMapper memberVarObjectMapper;
     private final String memberVarBaseUri;
@@ -85,6 +109,56 @@ public class SyncPlayApi {
     }
 
     /**
+     * Download file from the given response.
+     *
+     * @param response Response
+     * @return File
+     * @throws ApiException If fail to read file content from response and write to disk
+     */
+    public File downloadFileFromResponse(HttpResponse<InputStream> response) throws ApiException {
+        try {
+            File file = prepareDownloadFile(response);
+            java.nio.file.Files.copy(response.body(), file.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+            return file;
+        } catch (IOException e) {
+            throw new ApiException(e);
+        }
+    }
+
+    /**
+     * <p>
+     * Prepare the file for download from the response.
+     * </p>
+     *
+     * @param response a {@link java.net.http.HttpResponse} object.
+     * @return a {@link java.io.File} object.
+     * @throws java.io.IOException if any.
+     */
+    private File prepareDownloadFile(HttpResponse<InputStream> response) throws IOException {
+        String filename = null;
+        java.util.Optional<String> contentDisposition = response.headers().firstValue("Content-Disposition");
+        if (contentDisposition.isPresent() && !"".equals(contentDisposition.get())) {
+            // Get filename from the Content-Disposition header.
+            java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("filename=['\"]?([^'\"\\s]+)['\"]?");
+            java.util.regex.Matcher matcher = pattern.matcher(contentDisposition.get());
+            if (matcher.find())
+                filename = matcher.group(1);
+        }
+        File file = null;
+        if (filename != null) {
+            java.nio.file.Path tempDir = java.nio.file.Files.createTempDirectory("swagger-gen-native");
+            java.nio.file.Path filePath = java.nio.file.Files.createFile(tempDir.resolve(filename));
+            file = filePath.toFile();
+            tempDir.toFile().deleteOnExit(); // best effort cleanup
+            file.deleteOnExit(); // best effort cleanup
+        } else {
+            file = java.nio.file.Files.createTempFile("download-", "").toFile();
+            file.deleteOnExit(); // best effort cleanup
+        }
+        return file;
+    }
+
+    /**
      * Notify SyncPlay group that member is buffering.
      * 
      * @param bufferRequestDto The player status. (required)
@@ -92,7 +166,19 @@ public class SyncPlayApi {
      */
     public void syncPlayBuffering(@org.eclipse.jdt.annotation.Nullable BufferRequestDto bufferRequestDto)
             throws ApiException {
-        syncPlayBufferingWithHttpInfo(bufferRequestDto);
+        syncPlayBuffering(bufferRequestDto, null);
+    }
+
+    /**
+     * Notify SyncPlay group that member is buffering.
+     * 
+     * @param bufferRequestDto The player status. (required)
+     * @param headers Optional headers to include in the request
+     * @throws ApiException if fails to make API call
+     */
+    public void syncPlayBuffering(@org.eclipse.jdt.annotation.Nullable BufferRequestDto bufferRequestDto,
+            Map<String, String> headers) throws ApiException {
+        syncPlayBufferingWithHttpInfo(bufferRequestDto, headers);
     }
 
     /**
@@ -104,7 +190,21 @@ public class SyncPlayApi {
      */
     public ApiResponse<Void> syncPlayBufferingWithHttpInfo(
             @org.eclipse.jdt.annotation.Nullable BufferRequestDto bufferRequestDto) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = syncPlayBufferingRequestBuilder(bufferRequestDto);
+        return syncPlayBufferingWithHttpInfo(bufferRequestDto, null);
+    }
+
+    /**
+     * Notify SyncPlay group that member is buffering.
+     * 
+     * @param bufferRequestDto The player status. (required)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<Void> syncPlayBufferingWithHttpInfo(
+            @org.eclipse.jdt.annotation.Nullable BufferRequestDto bufferRequestDto, Map<String, String> headers)
+            throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = syncPlayBufferingRequestBuilder(bufferRequestDto, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -132,7 +232,8 @@ public class SyncPlayApi {
     }
 
     private HttpRequest.Builder syncPlayBufferingRequestBuilder(
-            @org.eclipse.jdt.annotation.Nullable BufferRequestDto bufferRequestDto) throws ApiException {
+            @org.eclipse.jdt.annotation.Nullable BufferRequestDto bufferRequestDto, Map<String, String> headers)
+            throws ApiException {
         // verify the required parameter 'bufferRequestDto' is set
         if (bufferRequestDto == null) {
             throw new ApiException(400,
@@ -157,6 +258,8 @@ public class SyncPlayApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -171,7 +274,19 @@ public class SyncPlayApi {
      */
     public void syncPlayCreateGroup(@org.eclipse.jdt.annotation.Nullable NewGroupRequestDto newGroupRequestDto)
             throws ApiException {
-        syncPlayCreateGroupWithHttpInfo(newGroupRequestDto);
+        syncPlayCreateGroup(newGroupRequestDto, null);
+    }
+
+    /**
+     * Create a new SyncPlay group.
+     * 
+     * @param newGroupRequestDto The settings of the new group. (required)
+     * @param headers Optional headers to include in the request
+     * @throws ApiException if fails to make API call
+     */
+    public void syncPlayCreateGroup(@org.eclipse.jdt.annotation.Nullable NewGroupRequestDto newGroupRequestDto,
+            Map<String, String> headers) throws ApiException {
+        syncPlayCreateGroupWithHttpInfo(newGroupRequestDto, headers);
     }
 
     /**
@@ -183,7 +298,21 @@ public class SyncPlayApi {
      */
     public ApiResponse<Void> syncPlayCreateGroupWithHttpInfo(
             @org.eclipse.jdt.annotation.Nullable NewGroupRequestDto newGroupRequestDto) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = syncPlayCreateGroupRequestBuilder(newGroupRequestDto);
+        return syncPlayCreateGroupWithHttpInfo(newGroupRequestDto, null);
+    }
+
+    /**
+     * Create a new SyncPlay group.
+     * 
+     * @param newGroupRequestDto The settings of the new group. (required)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<Void> syncPlayCreateGroupWithHttpInfo(
+            @org.eclipse.jdt.annotation.Nullable NewGroupRequestDto newGroupRequestDto, Map<String, String> headers)
+            throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = syncPlayCreateGroupRequestBuilder(newGroupRequestDto, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -211,7 +340,8 @@ public class SyncPlayApi {
     }
 
     private HttpRequest.Builder syncPlayCreateGroupRequestBuilder(
-            @org.eclipse.jdt.annotation.Nullable NewGroupRequestDto newGroupRequestDto) throws ApiException {
+            @org.eclipse.jdt.annotation.Nullable NewGroupRequestDto newGroupRequestDto, Map<String, String> headers)
+            throws ApiException {
         // verify the required parameter 'newGroupRequestDto' is set
         if (newGroupRequestDto == null) {
             throw new ApiException(400,
@@ -236,6 +366,8 @@ public class SyncPlayApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -249,7 +381,18 @@ public class SyncPlayApi {
      * @throws ApiException if fails to make API call
      */
     public List<GroupInfoDto> syncPlayGetGroups() throws ApiException {
-        ApiResponse<List<GroupInfoDto>> localVarResponse = syncPlayGetGroupsWithHttpInfo();
+        return syncPlayGetGroups(null);
+    }
+
+    /**
+     * Gets all SyncPlay groups.
+     * 
+     * @param headers Optional headers to include in the request
+     * @return List&lt;GroupInfoDto&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public List<GroupInfoDto> syncPlayGetGroups(Map<String, String> headers) throws ApiException {
+        ApiResponse<List<GroupInfoDto>> localVarResponse = syncPlayGetGroupsWithHttpInfo(headers);
         return localVarResponse.getData();
     }
 
@@ -260,7 +403,19 @@ public class SyncPlayApi {
      * @throws ApiException if fails to make API call
      */
     public ApiResponse<List<GroupInfoDto>> syncPlayGetGroupsWithHttpInfo() throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = syncPlayGetGroupsRequestBuilder();
+        return syncPlayGetGroupsWithHttpInfo(null);
+    }
+
+    /**
+     * Gets all SyncPlay groups.
+     * 
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;List&lt;GroupInfoDto&gt;&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<List<GroupInfoDto>> syncPlayGetGroupsWithHttpInfo(Map<String, String> headers)
+            throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = syncPlayGetGroupsRequestBuilder(headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -277,14 +432,14 @@ public class SyncPlayApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                List<GroupInfoDto> responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<List<GroupInfoDto>>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<List<GroupInfoDto>>(localVarResponse.statusCode(),
-                        localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody,
-                                        new TypeReference<List<GroupInfoDto>>() {
-                                        }));
+                        localVarResponse.headers().map(), responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -295,7 +450,7 @@ public class SyncPlayApi {
         }
     }
 
-    private HttpRequest.Builder syncPlayGetGroupsRequestBuilder() throws ApiException {
+    private HttpRequest.Builder syncPlayGetGroupsRequestBuilder(Map<String, String> headers) throws ApiException {
 
         HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
 
@@ -310,6 +465,8 @@ public class SyncPlayApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -324,7 +481,19 @@ public class SyncPlayApi {
      */
     public void syncPlayJoinGroup(@org.eclipse.jdt.annotation.Nullable JoinGroupRequestDto joinGroupRequestDto)
             throws ApiException {
-        syncPlayJoinGroupWithHttpInfo(joinGroupRequestDto);
+        syncPlayJoinGroup(joinGroupRequestDto, null);
+    }
+
+    /**
+     * Join an existing SyncPlay group.
+     * 
+     * @param joinGroupRequestDto The group to join. (required)
+     * @param headers Optional headers to include in the request
+     * @throws ApiException if fails to make API call
+     */
+    public void syncPlayJoinGroup(@org.eclipse.jdt.annotation.Nullable JoinGroupRequestDto joinGroupRequestDto,
+            Map<String, String> headers) throws ApiException {
+        syncPlayJoinGroupWithHttpInfo(joinGroupRequestDto, headers);
     }
 
     /**
@@ -336,7 +505,21 @@ public class SyncPlayApi {
      */
     public ApiResponse<Void> syncPlayJoinGroupWithHttpInfo(
             @org.eclipse.jdt.annotation.Nullable JoinGroupRequestDto joinGroupRequestDto) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = syncPlayJoinGroupRequestBuilder(joinGroupRequestDto);
+        return syncPlayJoinGroupWithHttpInfo(joinGroupRequestDto, null);
+    }
+
+    /**
+     * Join an existing SyncPlay group.
+     * 
+     * @param joinGroupRequestDto The group to join. (required)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<Void> syncPlayJoinGroupWithHttpInfo(
+            @org.eclipse.jdt.annotation.Nullable JoinGroupRequestDto joinGroupRequestDto, Map<String, String> headers)
+            throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = syncPlayJoinGroupRequestBuilder(joinGroupRequestDto, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -364,7 +547,8 @@ public class SyncPlayApi {
     }
 
     private HttpRequest.Builder syncPlayJoinGroupRequestBuilder(
-            @org.eclipse.jdt.annotation.Nullable JoinGroupRequestDto joinGroupRequestDto) throws ApiException {
+            @org.eclipse.jdt.annotation.Nullable JoinGroupRequestDto joinGroupRequestDto, Map<String, String> headers)
+            throws ApiException {
         // verify the required parameter 'joinGroupRequestDto' is set
         if (joinGroupRequestDto == null) {
             throw new ApiException(400,
@@ -389,6 +573,8 @@ public class SyncPlayApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -401,7 +587,17 @@ public class SyncPlayApi {
      * @throws ApiException if fails to make API call
      */
     public void syncPlayLeaveGroup() throws ApiException {
-        syncPlayLeaveGroupWithHttpInfo();
+        syncPlayLeaveGroup(null);
+    }
+
+    /**
+     * Leave the joined SyncPlay group.
+     * 
+     * @param headers Optional headers to include in the request
+     * @throws ApiException if fails to make API call
+     */
+    public void syncPlayLeaveGroup(Map<String, String> headers) throws ApiException {
+        syncPlayLeaveGroupWithHttpInfo(headers);
     }
 
     /**
@@ -411,7 +607,18 @@ public class SyncPlayApi {
      * @throws ApiException if fails to make API call
      */
     public ApiResponse<Void> syncPlayLeaveGroupWithHttpInfo() throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = syncPlayLeaveGroupRequestBuilder();
+        return syncPlayLeaveGroupWithHttpInfo(null);
+    }
+
+    /**
+     * Leave the joined SyncPlay group.
+     * 
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<Void> syncPlayLeaveGroupWithHttpInfo(Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = syncPlayLeaveGroupRequestBuilder(headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -438,7 +645,7 @@ public class SyncPlayApi {
         }
     }
 
-    private HttpRequest.Builder syncPlayLeaveGroupRequestBuilder() throws ApiException {
+    private HttpRequest.Builder syncPlayLeaveGroupRequestBuilder(Map<String, String> headers) throws ApiException {
 
         HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
 
@@ -452,6 +659,8 @@ public class SyncPlayApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -467,7 +676,20 @@ public class SyncPlayApi {
     public void syncPlayMovePlaylistItem(
             @org.eclipse.jdt.annotation.Nullable MovePlaylistItemRequestDto movePlaylistItemRequestDto)
             throws ApiException {
-        syncPlayMovePlaylistItemWithHttpInfo(movePlaylistItemRequestDto);
+        syncPlayMovePlaylistItem(movePlaylistItemRequestDto, null);
+    }
+
+    /**
+     * Request to move an item in the playlist in SyncPlay group.
+     * 
+     * @param movePlaylistItemRequestDto The new position for the item. (required)
+     * @param headers Optional headers to include in the request
+     * @throws ApiException if fails to make API call
+     */
+    public void syncPlayMovePlaylistItem(
+            @org.eclipse.jdt.annotation.Nullable MovePlaylistItemRequestDto movePlaylistItemRequestDto,
+            Map<String, String> headers) throws ApiException {
+        syncPlayMovePlaylistItemWithHttpInfo(movePlaylistItemRequestDto, headers);
     }
 
     /**
@@ -480,7 +702,22 @@ public class SyncPlayApi {
     public ApiResponse<Void> syncPlayMovePlaylistItemWithHttpInfo(
             @org.eclipse.jdt.annotation.Nullable MovePlaylistItemRequestDto movePlaylistItemRequestDto)
             throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = syncPlayMovePlaylistItemRequestBuilder(movePlaylistItemRequestDto);
+        return syncPlayMovePlaylistItemWithHttpInfo(movePlaylistItemRequestDto, null);
+    }
+
+    /**
+     * Request to move an item in the playlist in SyncPlay group.
+     * 
+     * @param movePlaylistItemRequestDto The new position for the item. (required)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<Void> syncPlayMovePlaylistItemWithHttpInfo(
+            @org.eclipse.jdt.annotation.Nullable MovePlaylistItemRequestDto movePlaylistItemRequestDto,
+            Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = syncPlayMovePlaylistItemRequestBuilder(movePlaylistItemRequestDto,
+                headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -508,8 +745,8 @@ public class SyncPlayApi {
     }
 
     private HttpRequest.Builder syncPlayMovePlaylistItemRequestBuilder(
-            @org.eclipse.jdt.annotation.Nullable MovePlaylistItemRequestDto movePlaylistItemRequestDto)
-            throws ApiException {
+            @org.eclipse.jdt.annotation.Nullable MovePlaylistItemRequestDto movePlaylistItemRequestDto,
+            Map<String, String> headers) throws ApiException {
         // verify the required parameter 'movePlaylistItemRequestDto' is set
         if (movePlaylistItemRequestDto == null) {
             throw new ApiException(400,
@@ -534,6 +771,8 @@ public class SyncPlayApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -548,7 +787,19 @@ public class SyncPlayApi {
      */
     public void syncPlayNextItem(@org.eclipse.jdt.annotation.Nullable NextItemRequestDto nextItemRequestDto)
             throws ApiException {
-        syncPlayNextItemWithHttpInfo(nextItemRequestDto);
+        syncPlayNextItem(nextItemRequestDto, null);
+    }
+
+    /**
+     * Request next item in SyncPlay group.
+     * 
+     * @param nextItemRequestDto The current item information. (required)
+     * @param headers Optional headers to include in the request
+     * @throws ApiException if fails to make API call
+     */
+    public void syncPlayNextItem(@org.eclipse.jdt.annotation.Nullable NextItemRequestDto nextItemRequestDto,
+            Map<String, String> headers) throws ApiException {
+        syncPlayNextItemWithHttpInfo(nextItemRequestDto, headers);
     }
 
     /**
@@ -560,7 +811,21 @@ public class SyncPlayApi {
      */
     public ApiResponse<Void> syncPlayNextItemWithHttpInfo(
             @org.eclipse.jdt.annotation.Nullable NextItemRequestDto nextItemRequestDto) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = syncPlayNextItemRequestBuilder(nextItemRequestDto);
+        return syncPlayNextItemWithHttpInfo(nextItemRequestDto, null);
+    }
+
+    /**
+     * Request next item in SyncPlay group.
+     * 
+     * @param nextItemRequestDto The current item information. (required)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<Void> syncPlayNextItemWithHttpInfo(
+            @org.eclipse.jdt.annotation.Nullable NextItemRequestDto nextItemRequestDto, Map<String, String> headers)
+            throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = syncPlayNextItemRequestBuilder(nextItemRequestDto, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -588,7 +853,8 @@ public class SyncPlayApi {
     }
 
     private HttpRequest.Builder syncPlayNextItemRequestBuilder(
-            @org.eclipse.jdt.annotation.Nullable NextItemRequestDto nextItemRequestDto) throws ApiException {
+            @org.eclipse.jdt.annotation.Nullable NextItemRequestDto nextItemRequestDto, Map<String, String> headers)
+            throws ApiException {
         // verify the required parameter 'nextItemRequestDto' is set
         if (nextItemRequestDto == null) {
             throw new ApiException(400,
@@ -613,6 +879,8 @@ public class SyncPlayApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -625,7 +893,17 @@ public class SyncPlayApi {
      * @throws ApiException if fails to make API call
      */
     public void syncPlayPause() throws ApiException {
-        syncPlayPauseWithHttpInfo();
+        syncPlayPause(null);
+    }
+
+    /**
+     * Request pause in SyncPlay group.
+     * 
+     * @param headers Optional headers to include in the request
+     * @throws ApiException if fails to make API call
+     */
+    public void syncPlayPause(Map<String, String> headers) throws ApiException {
+        syncPlayPauseWithHttpInfo(headers);
     }
 
     /**
@@ -635,7 +913,18 @@ public class SyncPlayApi {
      * @throws ApiException if fails to make API call
      */
     public ApiResponse<Void> syncPlayPauseWithHttpInfo() throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = syncPlayPauseRequestBuilder();
+        return syncPlayPauseWithHttpInfo(null);
+    }
+
+    /**
+     * Request pause in SyncPlay group.
+     * 
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<Void> syncPlayPauseWithHttpInfo(Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = syncPlayPauseRequestBuilder(headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -662,7 +951,7 @@ public class SyncPlayApi {
         }
     }
 
-    private HttpRequest.Builder syncPlayPauseRequestBuilder() throws ApiException {
+    private HttpRequest.Builder syncPlayPauseRequestBuilder(Map<String, String> headers) throws ApiException {
 
         HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
 
@@ -676,6 +965,8 @@ public class SyncPlayApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -689,7 +980,19 @@ public class SyncPlayApi {
      * @throws ApiException if fails to make API call
      */
     public void syncPlayPing(@org.eclipse.jdt.annotation.Nullable PingRequestDto pingRequestDto) throws ApiException {
-        syncPlayPingWithHttpInfo(pingRequestDto);
+        syncPlayPing(pingRequestDto, null);
+    }
+
+    /**
+     * Update session ping.
+     * 
+     * @param pingRequestDto The new ping. (required)
+     * @param headers Optional headers to include in the request
+     * @throws ApiException if fails to make API call
+     */
+    public void syncPlayPing(@org.eclipse.jdt.annotation.Nullable PingRequestDto pingRequestDto,
+            Map<String, String> headers) throws ApiException {
+        syncPlayPingWithHttpInfo(pingRequestDto, headers);
     }
 
     /**
@@ -701,7 +1004,21 @@ public class SyncPlayApi {
      */
     public ApiResponse<Void> syncPlayPingWithHttpInfo(
             @org.eclipse.jdt.annotation.Nullable PingRequestDto pingRequestDto) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = syncPlayPingRequestBuilder(pingRequestDto);
+        return syncPlayPingWithHttpInfo(pingRequestDto, null);
+    }
+
+    /**
+     * Update session ping.
+     * 
+     * @param pingRequestDto The new ping. (required)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<Void> syncPlayPingWithHttpInfo(
+            @org.eclipse.jdt.annotation.Nullable PingRequestDto pingRequestDto, Map<String, String> headers)
+            throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = syncPlayPingRequestBuilder(pingRequestDto, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -729,7 +1046,8 @@ public class SyncPlayApi {
     }
 
     private HttpRequest.Builder syncPlayPingRequestBuilder(
-            @org.eclipse.jdt.annotation.Nullable PingRequestDto pingRequestDto) throws ApiException {
+            @org.eclipse.jdt.annotation.Nullable PingRequestDto pingRequestDto, Map<String, String> headers)
+            throws ApiException {
         // verify the required parameter 'pingRequestDto' is set
         if (pingRequestDto == null) {
             throw new ApiException(400, "Missing the required parameter 'pingRequestDto' when calling syncPlayPing");
@@ -753,6 +1071,8 @@ public class SyncPlayApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -767,7 +1087,19 @@ public class SyncPlayApi {
      */
     public void syncPlayPreviousItem(@org.eclipse.jdt.annotation.Nullable PreviousItemRequestDto previousItemRequestDto)
             throws ApiException {
-        syncPlayPreviousItemWithHttpInfo(previousItemRequestDto);
+        syncPlayPreviousItem(previousItemRequestDto, null);
+    }
+
+    /**
+     * Request previous item in SyncPlay group.
+     * 
+     * @param previousItemRequestDto The current item information. (required)
+     * @param headers Optional headers to include in the request
+     * @throws ApiException if fails to make API call
+     */
+    public void syncPlayPreviousItem(@org.eclipse.jdt.annotation.Nullable PreviousItemRequestDto previousItemRequestDto,
+            Map<String, String> headers) throws ApiException {
+        syncPlayPreviousItemWithHttpInfo(previousItemRequestDto, headers);
     }
 
     /**
@@ -779,7 +1111,22 @@ public class SyncPlayApi {
      */
     public ApiResponse<Void> syncPlayPreviousItemWithHttpInfo(
             @org.eclipse.jdt.annotation.Nullable PreviousItemRequestDto previousItemRequestDto) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = syncPlayPreviousItemRequestBuilder(previousItemRequestDto);
+        return syncPlayPreviousItemWithHttpInfo(previousItemRequestDto, null);
+    }
+
+    /**
+     * Request previous item in SyncPlay group.
+     * 
+     * @param previousItemRequestDto The current item information. (required)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<Void> syncPlayPreviousItemWithHttpInfo(
+            @org.eclipse.jdt.annotation.Nullable PreviousItemRequestDto previousItemRequestDto,
+            Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = syncPlayPreviousItemRequestBuilder(previousItemRequestDto,
+                headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -807,7 +1154,8 @@ public class SyncPlayApi {
     }
 
     private HttpRequest.Builder syncPlayPreviousItemRequestBuilder(
-            @org.eclipse.jdt.annotation.Nullable PreviousItemRequestDto previousItemRequestDto) throws ApiException {
+            @org.eclipse.jdt.annotation.Nullable PreviousItemRequestDto previousItemRequestDto,
+            Map<String, String> headers) throws ApiException {
         // verify the required parameter 'previousItemRequestDto' is set
         if (previousItemRequestDto == null) {
             throw new ApiException(400,
@@ -832,6 +1180,8 @@ public class SyncPlayApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -846,7 +1196,19 @@ public class SyncPlayApi {
      */
     public void syncPlayQueue(@org.eclipse.jdt.annotation.Nullable QueueRequestDto queueRequestDto)
             throws ApiException {
-        syncPlayQueueWithHttpInfo(queueRequestDto);
+        syncPlayQueue(queueRequestDto, null);
+    }
+
+    /**
+     * Request to queue items to the playlist of a SyncPlay group.
+     * 
+     * @param queueRequestDto The items to add. (required)
+     * @param headers Optional headers to include in the request
+     * @throws ApiException if fails to make API call
+     */
+    public void syncPlayQueue(@org.eclipse.jdt.annotation.Nullable QueueRequestDto queueRequestDto,
+            Map<String, String> headers) throws ApiException {
+        syncPlayQueueWithHttpInfo(queueRequestDto, headers);
     }
 
     /**
@@ -858,7 +1220,21 @@ public class SyncPlayApi {
      */
     public ApiResponse<Void> syncPlayQueueWithHttpInfo(
             @org.eclipse.jdt.annotation.Nullable QueueRequestDto queueRequestDto) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = syncPlayQueueRequestBuilder(queueRequestDto);
+        return syncPlayQueueWithHttpInfo(queueRequestDto, null);
+    }
+
+    /**
+     * Request to queue items to the playlist of a SyncPlay group.
+     * 
+     * @param queueRequestDto The items to add. (required)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<Void> syncPlayQueueWithHttpInfo(
+            @org.eclipse.jdt.annotation.Nullable QueueRequestDto queueRequestDto, Map<String, String> headers)
+            throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = syncPlayQueueRequestBuilder(queueRequestDto, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -886,7 +1262,8 @@ public class SyncPlayApi {
     }
 
     private HttpRequest.Builder syncPlayQueueRequestBuilder(
-            @org.eclipse.jdt.annotation.Nullable QueueRequestDto queueRequestDto) throws ApiException {
+            @org.eclipse.jdt.annotation.Nullable QueueRequestDto queueRequestDto, Map<String, String> headers)
+            throws ApiException {
         // verify the required parameter 'queueRequestDto' is set
         if (queueRequestDto == null) {
             throw new ApiException(400, "Missing the required parameter 'queueRequestDto' when calling syncPlayQueue");
@@ -910,6 +1287,8 @@ public class SyncPlayApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -924,7 +1303,19 @@ public class SyncPlayApi {
      */
     public void syncPlayReady(@org.eclipse.jdt.annotation.Nullable ReadyRequestDto readyRequestDto)
             throws ApiException {
-        syncPlayReadyWithHttpInfo(readyRequestDto);
+        syncPlayReady(readyRequestDto, null);
+    }
+
+    /**
+     * Notify SyncPlay group that member is ready for playback.
+     * 
+     * @param readyRequestDto The player status. (required)
+     * @param headers Optional headers to include in the request
+     * @throws ApiException if fails to make API call
+     */
+    public void syncPlayReady(@org.eclipse.jdt.annotation.Nullable ReadyRequestDto readyRequestDto,
+            Map<String, String> headers) throws ApiException {
+        syncPlayReadyWithHttpInfo(readyRequestDto, headers);
     }
 
     /**
@@ -936,7 +1327,21 @@ public class SyncPlayApi {
      */
     public ApiResponse<Void> syncPlayReadyWithHttpInfo(
             @org.eclipse.jdt.annotation.Nullable ReadyRequestDto readyRequestDto) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = syncPlayReadyRequestBuilder(readyRequestDto);
+        return syncPlayReadyWithHttpInfo(readyRequestDto, null);
+    }
+
+    /**
+     * Notify SyncPlay group that member is ready for playback.
+     * 
+     * @param readyRequestDto The player status. (required)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<Void> syncPlayReadyWithHttpInfo(
+            @org.eclipse.jdt.annotation.Nullable ReadyRequestDto readyRequestDto, Map<String, String> headers)
+            throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = syncPlayReadyRequestBuilder(readyRequestDto, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -964,7 +1369,8 @@ public class SyncPlayApi {
     }
 
     private HttpRequest.Builder syncPlayReadyRequestBuilder(
-            @org.eclipse.jdt.annotation.Nullable ReadyRequestDto readyRequestDto) throws ApiException {
+            @org.eclipse.jdt.annotation.Nullable ReadyRequestDto readyRequestDto, Map<String, String> headers)
+            throws ApiException {
         // verify the required parameter 'readyRequestDto' is set
         if (readyRequestDto == null) {
             throw new ApiException(400, "Missing the required parameter 'readyRequestDto' when calling syncPlayReady");
@@ -988,6 +1394,8 @@ public class SyncPlayApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -1003,7 +1411,20 @@ public class SyncPlayApi {
     public void syncPlayRemoveFromPlaylist(
             @org.eclipse.jdt.annotation.Nullable RemoveFromPlaylistRequestDto removeFromPlaylistRequestDto)
             throws ApiException {
-        syncPlayRemoveFromPlaylistWithHttpInfo(removeFromPlaylistRequestDto);
+        syncPlayRemoveFromPlaylist(removeFromPlaylistRequestDto, null);
+    }
+
+    /**
+     * Request to remove items from the playlist in SyncPlay group.
+     * 
+     * @param removeFromPlaylistRequestDto The items to remove. (required)
+     * @param headers Optional headers to include in the request
+     * @throws ApiException if fails to make API call
+     */
+    public void syncPlayRemoveFromPlaylist(
+            @org.eclipse.jdt.annotation.Nullable RemoveFromPlaylistRequestDto removeFromPlaylistRequestDto,
+            Map<String, String> headers) throws ApiException {
+        syncPlayRemoveFromPlaylistWithHttpInfo(removeFromPlaylistRequestDto, headers);
     }
 
     /**
@@ -1016,8 +1437,22 @@ public class SyncPlayApi {
     public ApiResponse<Void> syncPlayRemoveFromPlaylistWithHttpInfo(
             @org.eclipse.jdt.annotation.Nullable RemoveFromPlaylistRequestDto removeFromPlaylistRequestDto)
             throws ApiException {
+        return syncPlayRemoveFromPlaylistWithHttpInfo(removeFromPlaylistRequestDto, null);
+    }
+
+    /**
+     * Request to remove items from the playlist in SyncPlay group.
+     * 
+     * @param removeFromPlaylistRequestDto The items to remove. (required)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<Void> syncPlayRemoveFromPlaylistWithHttpInfo(
+            @org.eclipse.jdt.annotation.Nullable RemoveFromPlaylistRequestDto removeFromPlaylistRequestDto,
+            Map<String, String> headers) throws ApiException {
         HttpRequest.Builder localVarRequestBuilder = syncPlayRemoveFromPlaylistRequestBuilder(
-                removeFromPlaylistRequestDto);
+                removeFromPlaylistRequestDto, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -1045,8 +1480,8 @@ public class SyncPlayApi {
     }
 
     private HttpRequest.Builder syncPlayRemoveFromPlaylistRequestBuilder(
-            @org.eclipse.jdt.annotation.Nullable RemoveFromPlaylistRequestDto removeFromPlaylistRequestDto)
-            throws ApiException {
+            @org.eclipse.jdt.annotation.Nullable RemoveFromPlaylistRequestDto removeFromPlaylistRequestDto,
+            Map<String, String> headers) throws ApiException {
         // verify the required parameter 'removeFromPlaylistRequestDto' is set
         if (removeFromPlaylistRequestDto == null) {
             throw new ApiException(400,
@@ -1071,6 +1506,8 @@ public class SyncPlayApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -1084,7 +1521,19 @@ public class SyncPlayApi {
      * @throws ApiException if fails to make API call
      */
     public void syncPlaySeek(@org.eclipse.jdt.annotation.Nullable SeekRequestDto seekRequestDto) throws ApiException {
-        syncPlaySeekWithHttpInfo(seekRequestDto);
+        syncPlaySeek(seekRequestDto, null);
+    }
+
+    /**
+     * Request seek in SyncPlay group.
+     * 
+     * @param seekRequestDto The new playback position. (required)
+     * @param headers Optional headers to include in the request
+     * @throws ApiException if fails to make API call
+     */
+    public void syncPlaySeek(@org.eclipse.jdt.annotation.Nullable SeekRequestDto seekRequestDto,
+            Map<String, String> headers) throws ApiException {
+        syncPlaySeekWithHttpInfo(seekRequestDto, headers);
     }
 
     /**
@@ -1096,7 +1545,21 @@ public class SyncPlayApi {
      */
     public ApiResponse<Void> syncPlaySeekWithHttpInfo(
             @org.eclipse.jdt.annotation.Nullable SeekRequestDto seekRequestDto) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = syncPlaySeekRequestBuilder(seekRequestDto);
+        return syncPlaySeekWithHttpInfo(seekRequestDto, null);
+    }
+
+    /**
+     * Request seek in SyncPlay group.
+     * 
+     * @param seekRequestDto The new playback position. (required)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<Void> syncPlaySeekWithHttpInfo(
+            @org.eclipse.jdt.annotation.Nullable SeekRequestDto seekRequestDto, Map<String, String> headers)
+            throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = syncPlaySeekRequestBuilder(seekRequestDto, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -1124,7 +1587,8 @@ public class SyncPlayApi {
     }
 
     private HttpRequest.Builder syncPlaySeekRequestBuilder(
-            @org.eclipse.jdt.annotation.Nullable SeekRequestDto seekRequestDto) throws ApiException {
+            @org.eclipse.jdt.annotation.Nullable SeekRequestDto seekRequestDto, Map<String, String> headers)
+            throws ApiException {
         // verify the required parameter 'seekRequestDto' is set
         if (seekRequestDto == null) {
             throw new ApiException(400, "Missing the required parameter 'seekRequestDto' when calling syncPlaySeek");
@@ -1148,6 +1612,8 @@ public class SyncPlayApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -1162,7 +1628,19 @@ public class SyncPlayApi {
      */
     public void syncPlaySetIgnoreWait(@org.eclipse.jdt.annotation.Nullable IgnoreWaitRequestDto ignoreWaitRequestDto)
             throws ApiException {
-        syncPlaySetIgnoreWaitWithHttpInfo(ignoreWaitRequestDto);
+        syncPlaySetIgnoreWait(ignoreWaitRequestDto, null);
+    }
+
+    /**
+     * Request SyncPlay group to ignore member during group-wait.
+     * 
+     * @param ignoreWaitRequestDto The settings to set. (required)
+     * @param headers Optional headers to include in the request
+     * @throws ApiException if fails to make API call
+     */
+    public void syncPlaySetIgnoreWait(@org.eclipse.jdt.annotation.Nullable IgnoreWaitRequestDto ignoreWaitRequestDto,
+            Map<String, String> headers) throws ApiException {
+        syncPlaySetIgnoreWaitWithHttpInfo(ignoreWaitRequestDto, headers);
     }
 
     /**
@@ -1174,7 +1652,21 @@ public class SyncPlayApi {
      */
     public ApiResponse<Void> syncPlaySetIgnoreWaitWithHttpInfo(
             @org.eclipse.jdt.annotation.Nullable IgnoreWaitRequestDto ignoreWaitRequestDto) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = syncPlaySetIgnoreWaitRequestBuilder(ignoreWaitRequestDto);
+        return syncPlaySetIgnoreWaitWithHttpInfo(ignoreWaitRequestDto, null);
+    }
+
+    /**
+     * Request SyncPlay group to ignore member during group-wait.
+     * 
+     * @param ignoreWaitRequestDto The settings to set. (required)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<Void> syncPlaySetIgnoreWaitWithHttpInfo(
+            @org.eclipse.jdt.annotation.Nullable IgnoreWaitRequestDto ignoreWaitRequestDto, Map<String, String> headers)
+            throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = syncPlaySetIgnoreWaitRequestBuilder(ignoreWaitRequestDto, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -1202,7 +1694,8 @@ public class SyncPlayApi {
     }
 
     private HttpRequest.Builder syncPlaySetIgnoreWaitRequestBuilder(
-            @org.eclipse.jdt.annotation.Nullable IgnoreWaitRequestDto ignoreWaitRequestDto) throws ApiException {
+            @org.eclipse.jdt.annotation.Nullable IgnoreWaitRequestDto ignoreWaitRequestDto, Map<String, String> headers)
+            throws ApiException {
         // verify the required parameter 'ignoreWaitRequestDto' is set
         if (ignoreWaitRequestDto == null) {
             throw new ApiException(400,
@@ -1227,6 +1720,8 @@ public class SyncPlayApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -1241,7 +1736,19 @@ public class SyncPlayApi {
      */
     public void syncPlaySetNewQueue(@org.eclipse.jdt.annotation.Nullable PlayRequestDto playRequestDto)
             throws ApiException {
-        syncPlaySetNewQueueWithHttpInfo(playRequestDto);
+        syncPlaySetNewQueue(playRequestDto, null);
+    }
+
+    /**
+     * Request to set new playlist in SyncPlay group.
+     * 
+     * @param playRequestDto The new playlist to play in the group. (required)
+     * @param headers Optional headers to include in the request
+     * @throws ApiException if fails to make API call
+     */
+    public void syncPlaySetNewQueue(@org.eclipse.jdt.annotation.Nullable PlayRequestDto playRequestDto,
+            Map<String, String> headers) throws ApiException {
+        syncPlaySetNewQueueWithHttpInfo(playRequestDto, headers);
     }
 
     /**
@@ -1253,7 +1760,21 @@ public class SyncPlayApi {
      */
     public ApiResponse<Void> syncPlaySetNewQueueWithHttpInfo(
             @org.eclipse.jdt.annotation.Nullable PlayRequestDto playRequestDto) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = syncPlaySetNewQueueRequestBuilder(playRequestDto);
+        return syncPlaySetNewQueueWithHttpInfo(playRequestDto, null);
+    }
+
+    /**
+     * Request to set new playlist in SyncPlay group.
+     * 
+     * @param playRequestDto The new playlist to play in the group. (required)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<Void> syncPlaySetNewQueueWithHttpInfo(
+            @org.eclipse.jdt.annotation.Nullable PlayRequestDto playRequestDto, Map<String, String> headers)
+            throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = syncPlaySetNewQueueRequestBuilder(playRequestDto, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -1281,7 +1802,8 @@ public class SyncPlayApi {
     }
 
     private HttpRequest.Builder syncPlaySetNewQueueRequestBuilder(
-            @org.eclipse.jdt.annotation.Nullable PlayRequestDto playRequestDto) throws ApiException {
+            @org.eclipse.jdt.annotation.Nullable PlayRequestDto playRequestDto, Map<String, String> headers)
+            throws ApiException {
         // verify the required parameter 'playRequestDto' is set
         if (playRequestDto == null) {
             throw new ApiException(400,
@@ -1306,6 +1828,8 @@ public class SyncPlayApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -1321,7 +1845,20 @@ public class SyncPlayApi {
     public void syncPlaySetPlaylistItem(
             @org.eclipse.jdt.annotation.Nullable SetPlaylistItemRequestDto setPlaylistItemRequestDto)
             throws ApiException {
-        syncPlaySetPlaylistItemWithHttpInfo(setPlaylistItemRequestDto);
+        syncPlaySetPlaylistItem(setPlaylistItemRequestDto, null);
+    }
+
+    /**
+     * Request to change playlist item in SyncPlay group.
+     * 
+     * @param setPlaylistItemRequestDto The new item to play. (required)
+     * @param headers Optional headers to include in the request
+     * @throws ApiException if fails to make API call
+     */
+    public void syncPlaySetPlaylistItem(
+            @org.eclipse.jdt.annotation.Nullable SetPlaylistItemRequestDto setPlaylistItemRequestDto,
+            Map<String, String> headers) throws ApiException {
+        syncPlaySetPlaylistItemWithHttpInfo(setPlaylistItemRequestDto, headers);
     }
 
     /**
@@ -1334,7 +1871,22 @@ public class SyncPlayApi {
     public ApiResponse<Void> syncPlaySetPlaylistItemWithHttpInfo(
             @org.eclipse.jdt.annotation.Nullable SetPlaylistItemRequestDto setPlaylistItemRequestDto)
             throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = syncPlaySetPlaylistItemRequestBuilder(setPlaylistItemRequestDto);
+        return syncPlaySetPlaylistItemWithHttpInfo(setPlaylistItemRequestDto, null);
+    }
+
+    /**
+     * Request to change playlist item in SyncPlay group.
+     * 
+     * @param setPlaylistItemRequestDto The new item to play. (required)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<Void> syncPlaySetPlaylistItemWithHttpInfo(
+            @org.eclipse.jdt.annotation.Nullable SetPlaylistItemRequestDto setPlaylistItemRequestDto,
+            Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = syncPlaySetPlaylistItemRequestBuilder(setPlaylistItemRequestDto,
+                headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -1362,8 +1914,8 @@ public class SyncPlayApi {
     }
 
     private HttpRequest.Builder syncPlaySetPlaylistItemRequestBuilder(
-            @org.eclipse.jdt.annotation.Nullable SetPlaylistItemRequestDto setPlaylistItemRequestDto)
-            throws ApiException {
+            @org.eclipse.jdt.annotation.Nullable SetPlaylistItemRequestDto setPlaylistItemRequestDto,
+            Map<String, String> headers) throws ApiException {
         // verify the required parameter 'setPlaylistItemRequestDto' is set
         if (setPlaylistItemRequestDto == null) {
             throw new ApiException(400,
@@ -1388,6 +1940,8 @@ public class SyncPlayApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -1402,7 +1956,20 @@ public class SyncPlayApi {
      */
     public void syncPlaySetRepeatMode(
             @org.eclipse.jdt.annotation.Nullable SetRepeatModeRequestDto setRepeatModeRequestDto) throws ApiException {
-        syncPlaySetRepeatModeWithHttpInfo(setRepeatModeRequestDto);
+        syncPlaySetRepeatMode(setRepeatModeRequestDto, null);
+    }
+
+    /**
+     * Request to set repeat mode in SyncPlay group.
+     * 
+     * @param setRepeatModeRequestDto The new repeat mode. (required)
+     * @param headers Optional headers to include in the request
+     * @throws ApiException if fails to make API call
+     */
+    public void syncPlaySetRepeatMode(
+            @org.eclipse.jdt.annotation.Nullable SetRepeatModeRequestDto setRepeatModeRequestDto,
+            Map<String, String> headers) throws ApiException {
+        syncPlaySetRepeatModeWithHttpInfo(setRepeatModeRequestDto, headers);
     }
 
     /**
@@ -1414,7 +1981,22 @@ public class SyncPlayApi {
      */
     public ApiResponse<Void> syncPlaySetRepeatModeWithHttpInfo(
             @org.eclipse.jdt.annotation.Nullable SetRepeatModeRequestDto setRepeatModeRequestDto) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = syncPlaySetRepeatModeRequestBuilder(setRepeatModeRequestDto);
+        return syncPlaySetRepeatModeWithHttpInfo(setRepeatModeRequestDto, null);
+    }
+
+    /**
+     * Request to set repeat mode in SyncPlay group.
+     * 
+     * @param setRepeatModeRequestDto The new repeat mode. (required)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<Void> syncPlaySetRepeatModeWithHttpInfo(
+            @org.eclipse.jdt.annotation.Nullable SetRepeatModeRequestDto setRepeatModeRequestDto,
+            Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = syncPlaySetRepeatModeRequestBuilder(setRepeatModeRequestDto,
+                headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -1442,7 +2024,8 @@ public class SyncPlayApi {
     }
 
     private HttpRequest.Builder syncPlaySetRepeatModeRequestBuilder(
-            @org.eclipse.jdt.annotation.Nullable SetRepeatModeRequestDto setRepeatModeRequestDto) throws ApiException {
+            @org.eclipse.jdt.annotation.Nullable SetRepeatModeRequestDto setRepeatModeRequestDto,
+            Map<String, String> headers) throws ApiException {
         // verify the required parameter 'setRepeatModeRequestDto' is set
         if (setRepeatModeRequestDto == null) {
             throw new ApiException(400,
@@ -1467,6 +2050,8 @@ public class SyncPlayApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -1482,7 +2067,20 @@ public class SyncPlayApi {
     public void syncPlaySetShuffleMode(
             @org.eclipse.jdt.annotation.Nullable SetShuffleModeRequestDto setShuffleModeRequestDto)
             throws ApiException {
-        syncPlaySetShuffleModeWithHttpInfo(setShuffleModeRequestDto);
+        syncPlaySetShuffleMode(setShuffleModeRequestDto, null);
+    }
+
+    /**
+     * Request to set shuffle mode in SyncPlay group.
+     * 
+     * @param setShuffleModeRequestDto The new shuffle mode. (required)
+     * @param headers Optional headers to include in the request
+     * @throws ApiException if fails to make API call
+     */
+    public void syncPlaySetShuffleMode(
+            @org.eclipse.jdt.annotation.Nullable SetShuffleModeRequestDto setShuffleModeRequestDto,
+            Map<String, String> headers) throws ApiException {
+        syncPlaySetShuffleModeWithHttpInfo(setShuffleModeRequestDto, headers);
     }
 
     /**
@@ -1495,7 +2093,22 @@ public class SyncPlayApi {
     public ApiResponse<Void> syncPlaySetShuffleModeWithHttpInfo(
             @org.eclipse.jdt.annotation.Nullable SetShuffleModeRequestDto setShuffleModeRequestDto)
             throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = syncPlaySetShuffleModeRequestBuilder(setShuffleModeRequestDto);
+        return syncPlaySetShuffleModeWithHttpInfo(setShuffleModeRequestDto, null);
+    }
+
+    /**
+     * Request to set shuffle mode in SyncPlay group.
+     * 
+     * @param setShuffleModeRequestDto The new shuffle mode. (required)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<Void> syncPlaySetShuffleModeWithHttpInfo(
+            @org.eclipse.jdt.annotation.Nullable SetShuffleModeRequestDto setShuffleModeRequestDto,
+            Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = syncPlaySetShuffleModeRequestBuilder(setShuffleModeRequestDto,
+                headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -1523,8 +2136,8 @@ public class SyncPlayApi {
     }
 
     private HttpRequest.Builder syncPlaySetShuffleModeRequestBuilder(
-            @org.eclipse.jdt.annotation.Nullable SetShuffleModeRequestDto setShuffleModeRequestDto)
-            throws ApiException {
+            @org.eclipse.jdt.annotation.Nullable SetShuffleModeRequestDto setShuffleModeRequestDto,
+            Map<String, String> headers) throws ApiException {
         // verify the required parameter 'setShuffleModeRequestDto' is set
         if (setShuffleModeRequestDto == null) {
             throw new ApiException(400,
@@ -1549,6 +2162,8 @@ public class SyncPlayApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -1561,7 +2176,17 @@ public class SyncPlayApi {
      * @throws ApiException if fails to make API call
      */
     public void syncPlayStop() throws ApiException {
-        syncPlayStopWithHttpInfo();
+        syncPlayStop(null);
+    }
+
+    /**
+     * Request stop in SyncPlay group.
+     * 
+     * @param headers Optional headers to include in the request
+     * @throws ApiException if fails to make API call
+     */
+    public void syncPlayStop(Map<String, String> headers) throws ApiException {
+        syncPlayStopWithHttpInfo(headers);
     }
 
     /**
@@ -1571,7 +2196,18 @@ public class SyncPlayApi {
      * @throws ApiException if fails to make API call
      */
     public ApiResponse<Void> syncPlayStopWithHttpInfo() throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = syncPlayStopRequestBuilder();
+        return syncPlayStopWithHttpInfo(null);
+    }
+
+    /**
+     * Request stop in SyncPlay group.
+     * 
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<Void> syncPlayStopWithHttpInfo(Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = syncPlayStopRequestBuilder(headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -1598,7 +2234,7 @@ public class SyncPlayApi {
         }
     }
 
-    private HttpRequest.Builder syncPlayStopRequestBuilder() throws ApiException {
+    private HttpRequest.Builder syncPlayStopRequestBuilder(Map<String, String> headers) throws ApiException {
 
         HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
 
@@ -1612,6 +2248,8 @@ public class SyncPlayApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -1624,7 +2262,17 @@ public class SyncPlayApi {
      * @throws ApiException if fails to make API call
      */
     public void syncPlayUnpause() throws ApiException {
-        syncPlayUnpauseWithHttpInfo();
+        syncPlayUnpause(null);
+    }
+
+    /**
+     * Request unpause in SyncPlay group.
+     * 
+     * @param headers Optional headers to include in the request
+     * @throws ApiException if fails to make API call
+     */
+    public void syncPlayUnpause(Map<String, String> headers) throws ApiException {
+        syncPlayUnpauseWithHttpInfo(headers);
     }
 
     /**
@@ -1634,7 +2282,18 @@ public class SyncPlayApi {
      * @throws ApiException if fails to make API call
      */
     public ApiResponse<Void> syncPlayUnpauseWithHttpInfo() throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = syncPlayUnpauseRequestBuilder();
+        return syncPlayUnpauseWithHttpInfo(null);
+    }
+
+    /**
+     * Request unpause in SyncPlay group.
+     * 
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<Void> syncPlayUnpauseWithHttpInfo(Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = syncPlayUnpauseRequestBuilder(headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -1661,7 +2320,7 @@ public class SyncPlayApi {
         }
     }
 
-    private HttpRequest.Builder syncPlayUnpauseRequestBuilder() throws ApiException {
+    private HttpRequest.Builder syncPlayUnpauseRequestBuilder(Map<String, String> headers) throws ApiException {
 
         HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
 
@@ -1675,6 +2334,8 @@ public class SyncPlayApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }

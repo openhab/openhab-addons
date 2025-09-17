@@ -21,6 +21,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.function.Consumer;
 
@@ -35,6 +36,28 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class PluginsApi {
+    /**
+     * Utility class for extending HttpRequest.Builder functionality.
+     */
+    private static class HttpRequestBuilderExtensions {
+        /**
+         * Adds additional headers to the provided HttpRequest.Builder. Useful for adding method/endpoint specific
+         * headers.
+         *
+         * @param builder the HttpRequest.Builder to which headers will be added
+         * @param headers a map of header names and values to add; may be null
+         * @return the same HttpRequest.Builder instance with the additional headers set
+         */
+        static HttpRequest.Builder withAdditionalHeaders(HttpRequest.Builder builder, Map<String, String> headers) {
+            if (headers != null) {
+                for (Map.Entry<String, String> entry : headers.entrySet()) {
+                    builder.header(entry.getKey(), entry.getValue());
+                }
+            }
+            return builder;
+        }
+    }
+
     private final HttpClient memberVarHttpClient;
     private final ObjectMapper memberVarObjectMapper;
     private final String memberVarBaseUri;
@@ -71,6 +94,56 @@ public class PluginsApi {
     }
 
     /**
+     * Download file from the given response.
+     *
+     * @param response Response
+     * @return File
+     * @throws ApiException If fail to read file content from response and write to disk
+     */
+    public File downloadFileFromResponse(HttpResponse<InputStream> response) throws ApiException {
+        try {
+            File file = prepareDownloadFile(response);
+            java.nio.file.Files.copy(response.body(), file.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+            return file;
+        } catch (IOException e) {
+            throw new ApiException(e);
+        }
+    }
+
+    /**
+     * <p>
+     * Prepare the file for download from the response.
+     * </p>
+     *
+     * @param response a {@link java.net.http.HttpResponse} object.
+     * @return a {@link java.io.File} object.
+     * @throws java.io.IOException if any.
+     */
+    private File prepareDownloadFile(HttpResponse<InputStream> response) throws IOException {
+        String filename = null;
+        java.util.Optional<String> contentDisposition = response.headers().firstValue("Content-Disposition");
+        if (contentDisposition.isPresent() && !"".equals(contentDisposition.get())) {
+            // Get filename from the Content-Disposition header.
+            java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("filename=['\"]?([^'\"\\s]+)['\"]?");
+            java.util.regex.Matcher matcher = pattern.matcher(contentDisposition.get());
+            if (matcher.find())
+                filename = matcher.group(1);
+        }
+        File file = null;
+        if (filename != null) {
+            java.nio.file.Path tempDir = java.nio.file.Files.createTempDirectory("swagger-gen-native");
+            java.nio.file.Path filePath = java.nio.file.Files.createFile(tempDir.resolve(filename));
+            file = filePath.toFile();
+            tempDir.toFile().deleteOnExit(); // best effort cleanup
+            file.deleteOnExit(); // best effort cleanup
+        } else {
+            file = java.nio.file.Files.createTempFile("download-", "").toFile();
+            file.deleteOnExit(); // best effort cleanup
+        }
+        return file;
+    }
+
+    /**
      * Disable a plugin.
      * 
      * @param pluginId Plugin id. (required)
@@ -79,7 +152,20 @@ public class PluginsApi {
      */
     public void disablePlugin(@org.eclipse.jdt.annotation.Nullable UUID pluginId,
             @org.eclipse.jdt.annotation.Nullable String version) throws ApiException {
-        disablePluginWithHttpInfo(pluginId, version);
+        disablePlugin(pluginId, version, null);
+    }
+
+    /**
+     * Disable a plugin.
+     * 
+     * @param pluginId Plugin id. (required)
+     * @param version Plugin version. (required)
+     * @param headers Optional headers to include in the request
+     * @throws ApiException if fails to make API call
+     */
+    public void disablePlugin(@org.eclipse.jdt.annotation.Nullable UUID pluginId,
+            @org.eclipse.jdt.annotation.Nullable String version, Map<String, String> headers) throws ApiException {
+        disablePluginWithHttpInfo(pluginId, version, headers);
     }
 
     /**
@@ -92,7 +178,21 @@ public class PluginsApi {
      */
     public ApiResponse<Void> disablePluginWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID pluginId,
             @org.eclipse.jdt.annotation.Nullable String version) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = disablePluginRequestBuilder(pluginId, version);
+        return disablePluginWithHttpInfo(pluginId, version, null);
+    }
+
+    /**
+     * Disable a plugin.
+     * 
+     * @param pluginId Plugin id. (required)
+     * @param version Plugin version. (required)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<Void> disablePluginWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID pluginId,
+            @org.eclipse.jdt.annotation.Nullable String version, Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = disablePluginRequestBuilder(pluginId, version, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -120,7 +220,7 @@ public class PluginsApi {
     }
 
     private HttpRequest.Builder disablePluginRequestBuilder(@org.eclipse.jdt.annotation.Nullable UUID pluginId,
-            @org.eclipse.jdt.annotation.Nullable String version) throws ApiException {
+            @org.eclipse.jdt.annotation.Nullable String version, Map<String, String> headers) throws ApiException {
         // verify the required parameter 'pluginId' is set
         if (pluginId == null) {
             throw new ApiException(400, "Missing the required parameter 'pluginId' when calling disablePlugin");
@@ -145,6 +245,8 @@ public class PluginsApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -160,7 +262,20 @@ public class PluginsApi {
      */
     public void enablePlugin(@org.eclipse.jdt.annotation.Nullable UUID pluginId,
             @org.eclipse.jdt.annotation.Nullable String version) throws ApiException {
-        enablePluginWithHttpInfo(pluginId, version);
+        enablePlugin(pluginId, version, null);
+    }
+
+    /**
+     * Enables a disabled plugin.
+     * 
+     * @param pluginId Plugin id. (required)
+     * @param version Plugin version. (required)
+     * @param headers Optional headers to include in the request
+     * @throws ApiException if fails to make API call
+     */
+    public void enablePlugin(@org.eclipse.jdt.annotation.Nullable UUID pluginId,
+            @org.eclipse.jdt.annotation.Nullable String version, Map<String, String> headers) throws ApiException {
+        enablePluginWithHttpInfo(pluginId, version, headers);
     }
 
     /**
@@ -173,7 +288,21 @@ public class PluginsApi {
      */
     public ApiResponse<Void> enablePluginWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID pluginId,
             @org.eclipse.jdt.annotation.Nullable String version) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = enablePluginRequestBuilder(pluginId, version);
+        return enablePluginWithHttpInfo(pluginId, version, null);
+    }
+
+    /**
+     * Enables a disabled plugin.
+     * 
+     * @param pluginId Plugin id. (required)
+     * @param version Plugin version. (required)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<Void> enablePluginWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID pluginId,
+            @org.eclipse.jdt.annotation.Nullable String version, Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = enablePluginRequestBuilder(pluginId, version, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -201,7 +330,7 @@ public class PluginsApi {
     }
 
     private HttpRequest.Builder enablePluginRequestBuilder(@org.eclipse.jdt.annotation.Nullable UUID pluginId,
-            @org.eclipse.jdt.annotation.Nullable String version) throws ApiException {
+            @org.eclipse.jdt.annotation.Nullable String version, Map<String, String> headers) throws ApiException {
         // verify the required parameter 'pluginId' is set
         if (pluginId == null) {
             throw new ApiException(400, "Missing the required parameter 'pluginId' when calling enablePlugin");
@@ -226,6 +355,8 @@ public class PluginsApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -240,7 +371,20 @@ public class PluginsApi {
      * @throws ApiException if fails to make API call
      */
     public Object getPluginConfiguration(@org.eclipse.jdt.annotation.Nullable UUID pluginId) throws ApiException {
-        ApiResponse<Object> localVarResponse = getPluginConfigurationWithHttpInfo(pluginId);
+        return getPluginConfiguration(pluginId, null);
+    }
+
+    /**
+     * Gets plugin configuration.
+     * 
+     * @param pluginId Plugin id. (required)
+     * @param headers Optional headers to include in the request
+     * @return Object
+     * @throws ApiException if fails to make API call
+     */
+    public Object getPluginConfiguration(@org.eclipse.jdt.annotation.Nullable UUID pluginId,
+            Map<String, String> headers) throws ApiException {
+        ApiResponse<Object> localVarResponse = getPluginConfigurationWithHttpInfo(pluginId, headers);
         return localVarResponse.getData();
     }
 
@@ -253,7 +397,20 @@ public class PluginsApi {
      */
     public ApiResponse<Object> getPluginConfigurationWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID pluginId)
             throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getPluginConfigurationRequestBuilder(pluginId);
+        return getPluginConfigurationWithHttpInfo(pluginId, null);
+    }
+
+    /**
+     * Gets plugin configuration.
+     * 
+     * @param pluginId Plugin id. (required)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;Object&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<Object> getPluginConfigurationWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID pluginId,
+            Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = getPluginConfigurationRequestBuilder(pluginId, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -270,12 +427,14 @@ public class PluginsApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                Object responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<Object>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<Object>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<Object>() {
-                                }));
+                        responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -286,8 +445,8 @@ public class PluginsApi {
         }
     }
 
-    private HttpRequest.Builder getPluginConfigurationRequestBuilder(@org.eclipse.jdt.annotation.Nullable UUID pluginId)
-            throws ApiException {
+    private HttpRequest.Builder getPluginConfigurationRequestBuilder(@org.eclipse.jdt.annotation.Nullable UUID pluginId,
+            Map<String, String> headers) throws ApiException {
         // verify the required parameter 'pluginId' is set
         if (pluginId == null) {
             throw new ApiException(400,
@@ -308,6 +467,8 @@ public class PluginsApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -324,7 +485,21 @@ public class PluginsApi {
      */
     public File getPluginImage(@org.eclipse.jdt.annotation.Nullable UUID pluginId,
             @org.eclipse.jdt.annotation.Nullable String version) throws ApiException {
-        ApiResponse<File> localVarResponse = getPluginImageWithHttpInfo(pluginId, version);
+        return getPluginImage(pluginId, version, null);
+    }
+
+    /**
+     * Gets a plugin&#39;s image.
+     * 
+     * @param pluginId Plugin id. (required)
+     * @param version Plugin version. (required)
+     * @param headers Optional headers to include in the request
+     * @return File
+     * @throws ApiException if fails to make API call
+     */
+    public File getPluginImage(@org.eclipse.jdt.annotation.Nullable UUID pluginId,
+            @org.eclipse.jdt.annotation.Nullable String version, Map<String, String> headers) throws ApiException {
+        ApiResponse<File> localVarResponse = getPluginImageWithHttpInfo(pluginId, version, headers);
         return localVarResponse.getData();
     }
 
@@ -338,7 +513,21 @@ public class PluginsApi {
      */
     public ApiResponse<File> getPluginImageWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID pluginId,
             @org.eclipse.jdt.annotation.Nullable String version) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getPluginImageRequestBuilder(pluginId, version);
+        return getPluginImageWithHttpInfo(pluginId, version, null);
+    }
+
+    /**
+     * Gets a plugin&#39;s image.
+     * 
+     * @param pluginId Plugin id. (required)
+     * @param version Plugin version. (required)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;File&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<File> getPluginImageWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID pluginId,
+            @org.eclipse.jdt.annotation.Nullable String version, Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = getPluginImageRequestBuilder(pluginId, version, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -353,13 +542,13 @@ public class PluginsApi {
                     return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(), null);
                 }
 
-                String responseBody = new String(localVarResponse.body().readAllBytes());
+                // Handle file downloading.
+                File responseValue = downloadFileFromResponse(localVarResponse);
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<File>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<File>() {
-                                }));
+                        responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -371,7 +560,7 @@ public class PluginsApi {
     }
 
     private HttpRequest.Builder getPluginImageRequestBuilder(@org.eclipse.jdt.annotation.Nullable UUID pluginId,
-            @org.eclipse.jdt.annotation.Nullable String version) throws ApiException {
+            @org.eclipse.jdt.annotation.Nullable String version, Map<String, String> headers) throws ApiException {
         // verify the required parameter 'pluginId' is set
         if (pluginId == null) {
             throw new ApiException(400, "Missing the required parameter 'pluginId' when calling getPluginImage");
@@ -396,6 +585,8 @@ public class PluginsApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -409,7 +600,19 @@ public class PluginsApi {
      * @throws ApiException if fails to make API call
      */
     public void getPluginManifest(@org.eclipse.jdt.annotation.Nullable UUID pluginId) throws ApiException {
-        getPluginManifestWithHttpInfo(pluginId);
+        getPluginManifest(pluginId, null);
+    }
+
+    /**
+     * Gets a plugin&#39;s manifest.
+     * 
+     * @param pluginId Plugin id. (required)
+     * @param headers Optional headers to include in the request
+     * @throws ApiException if fails to make API call
+     */
+    public void getPluginManifest(@org.eclipse.jdt.annotation.Nullable UUID pluginId, Map<String, String> headers)
+            throws ApiException {
+        getPluginManifestWithHttpInfo(pluginId, headers);
     }
 
     /**
@@ -421,7 +624,20 @@ public class PluginsApi {
      */
     public ApiResponse<Void> getPluginManifestWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID pluginId)
             throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getPluginManifestRequestBuilder(pluginId);
+        return getPluginManifestWithHttpInfo(pluginId, null);
+    }
+
+    /**
+     * Gets a plugin&#39;s manifest.
+     * 
+     * @param pluginId Plugin id. (required)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<Void> getPluginManifestWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID pluginId,
+            Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = getPluginManifestRequestBuilder(pluginId, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -448,8 +664,8 @@ public class PluginsApi {
         }
     }
 
-    private HttpRequest.Builder getPluginManifestRequestBuilder(@org.eclipse.jdt.annotation.Nullable UUID pluginId)
-            throws ApiException {
+    private HttpRequest.Builder getPluginManifestRequestBuilder(@org.eclipse.jdt.annotation.Nullable UUID pluginId,
+            Map<String, String> headers) throws ApiException {
         // verify the required parameter 'pluginId' is set
         if (pluginId == null) {
             throw new ApiException(400, "Missing the required parameter 'pluginId' when calling getPluginManifest");
@@ -469,6 +685,8 @@ public class PluginsApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -482,7 +700,18 @@ public class PluginsApi {
      * @throws ApiException if fails to make API call
      */
     public List<PluginInfo> getPlugins() throws ApiException {
-        ApiResponse<List<PluginInfo>> localVarResponse = getPluginsWithHttpInfo();
+        return getPlugins(null);
+    }
+
+    /**
+     * Gets a list of currently installed plugins.
+     * 
+     * @param headers Optional headers to include in the request
+     * @return List&lt;PluginInfo&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public List<PluginInfo> getPlugins(Map<String, String> headers) throws ApiException {
+        ApiResponse<List<PluginInfo>> localVarResponse = getPluginsWithHttpInfo(headers);
         return localVarResponse.getData();
     }
 
@@ -493,7 +722,18 @@ public class PluginsApi {
      * @throws ApiException if fails to make API call
      */
     public ApiResponse<List<PluginInfo>> getPluginsWithHttpInfo() throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getPluginsRequestBuilder();
+        return getPluginsWithHttpInfo(null);
+    }
+
+    /**
+     * Gets a list of currently installed plugins.
+     * 
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;List&lt;PluginInfo&gt;&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<List<PluginInfo>> getPluginsWithHttpInfo(Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = getPluginsRequestBuilder(headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -510,12 +750,14 @@ public class PluginsApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                List<PluginInfo> responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<List<PluginInfo>>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<List<PluginInfo>>(localVarResponse.statusCode(),
-                        localVarResponse.headers().map(), responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<List<PluginInfo>>() {
-                                }));
+                        localVarResponse.headers().map(), responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -526,7 +768,7 @@ public class PluginsApi {
         }
     }
 
-    private HttpRequest.Builder getPluginsRequestBuilder() throws ApiException {
+    private HttpRequest.Builder getPluginsRequestBuilder(Map<String, String> headers) throws ApiException {
 
         HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
 
@@ -541,6 +783,8 @@ public class PluginsApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -556,7 +800,21 @@ public class PluginsApi {
      */
     @Deprecated
     public void uninstallPlugin(@org.eclipse.jdt.annotation.Nullable UUID pluginId) throws ApiException {
-        uninstallPluginWithHttpInfo(pluginId);
+        uninstallPlugin(pluginId, null);
+    }
+
+    /**
+     * Uninstalls a plugin.
+     * 
+     * @param pluginId Plugin id. (required)
+     * @param headers Optional headers to include in the request
+     * @throws ApiException if fails to make API call
+     * @deprecated
+     */
+    @Deprecated
+    public void uninstallPlugin(@org.eclipse.jdt.annotation.Nullable UUID pluginId, Map<String, String> headers)
+            throws ApiException {
+        uninstallPluginWithHttpInfo(pluginId, headers);
     }
 
     /**
@@ -570,7 +828,22 @@ public class PluginsApi {
     @Deprecated
     public ApiResponse<Void> uninstallPluginWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID pluginId)
             throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = uninstallPluginRequestBuilder(pluginId);
+        return uninstallPluginWithHttpInfo(pluginId, null);
+    }
+
+    /**
+     * Uninstalls a plugin.
+     * 
+     * @param pluginId Plugin id. (required)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException if fails to make API call
+     * @deprecated
+     */
+    @Deprecated
+    public ApiResponse<Void> uninstallPluginWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID pluginId,
+            Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = uninstallPluginRequestBuilder(pluginId, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -597,8 +870,8 @@ public class PluginsApi {
         }
     }
 
-    private HttpRequest.Builder uninstallPluginRequestBuilder(@org.eclipse.jdt.annotation.Nullable UUID pluginId)
-            throws ApiException {
+    private HttpRequest.Builder uninstallPluginRequestBuilder(@org.eclipse.jdt.annotation.Nullable UUID pluginId,
+            Map<String, String> headers) throws ApiException {
         // verify the required parameter 'pluginId' is set
         if (pluginId == null) {
             throw new ApiException(400, "Missing the required parameter 'pluginId' when calling uninstallPlugin");
@@ -617,6 +890,8 @@ public class PluginsApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -632,7 +907,20 @@ public class PluginsApi {
      */
     public void uninstallPluginByVersion(@org.eclipse.jdt.annotation.Nullable UUID pluginId,
             @org.eclipse.jdt.annotation.Nullable String version) throws ApiException {
-        uninstallPluginByVersionWithHttpInfo(pluginId, version);
+        uninstallPluginByVersion(pluginId, version, null);
+    }
+
+    /**
+     * Uninstalls a plugin by version.
+     * 
+     * @param pluginId Plugin id. (required)
+     * @param version Plugin version. (required)
+     * @param headers Optional headers to include in the request
+     * @throws ApiException if fails to make API call
+     */
+    public void uninstallPluginByVersion(@org.eclipse.jdt.annotation.Nullable UUID pluginId,
+            @org.eclipse.jdt.annotation.Nullable String version, Map<String, String> headers) throws ApiException {
+        uninstallPluginByVersionWithHttpInfo(pluginId, version, headers);
     }
 
     /**
@@ -645,7 +933,21 @@ public class PluginsApi {
      */
     public ApiResponse<Void> uninstallPluginByVersionWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID pluginId,
             @org.eclipse.jdt.annotation.Nullable String version) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = uninstallPluginByVersionRequestBuilder(pluginId, version);
+        return uninstallPluginByVersionWithHttpInfo(pluginId, version, null);
+    }
+
+    /**
+     * Uninstalls a plugin by version.
+     * 
+     * @param pluginId Plugin id. (required)
+     * @param version Plugin version. (required)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<Void> uninstallPluginByVersionWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID pluginId,
+            @org.eclipse.jdt.annotation.Nullable String version, Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = uninstallPluginByVersionRequestBuilder(pluginId, version, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -673,8 +975,8 @@ public class PluginsApi {
     }
 
     private HttpRequest.Builder uninstallPluginByVersionRequestBuilder(
-            @org.eclipse.jdt.annotation.Nullable UUID pluginId, @org.eclipse.jdt.annotation.Nullable String version)
-            throws ApiException {
+            @org.eclipse.jdt.annotation.Nullable UUID pluginId, @org.eclipse.jdt.annotation.Nullable String version,
+            Map<String, String> headers) throws ApiException {
         // verify the required parameter 'pluginId' is set
         if (pluginId == null) {
             throw new ApiException(400,
@@ -701,6 +1003,8 @@ public class PluginsApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -715,7 +1019,20 @@ public class PluginsApi {
      * @throws ApiException if fails to make API call
      */
     public void updatePluginConfiguration(@org.eclipse.jdt.annotation.Nullable UUID pluginId) throws ApiException {
-        updatePluginConfigurationWithHttpInfo(pluginId);
+        updatePluginConfiguration(pluginId, null);
+    }
+
+    /**
+     * Updates plugin configuration.
+     * Accepts plugin configuration as JSON body.
+     * 
+     * @param pluginId Plugin id. (required)
+     * @param headers Optional headers to include in the request
+     * @throws ApiException if fails to make API call
+     */
+    public void updatePluginConfiguration(@org.eclipse.jdt.annotation.Nullable UUID pluginId,
+            Map<String, String> headers) throws ApiException {
+        updatePluginConfigurationWithHttpInfo(pluginId, headers);
     }
 
     /**
@@ -728,7 +1045,21 @@ public class PluginsApi {
      */
     public ApiResponse<Void> updatePluginConfigurationWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID pluginId)
             throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = updatePluginConfigurationRequestBuilder(pluginId);
+        return updatePluginConfigurationWithHttpInfo(pluginId, null);
+    }
+
+    /**
+     * Updates plugin configuration.
+     * Accepts plugin configuration as JSON body.
+     * 
+     * @param pluginId Plugin id. (required)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<Void> updatePluginConfigurationWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID pluginId,
+            Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = updatePluginConfigurationRequestBuilder(pluginId, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -756,7 +1087,7 @@ public class PluginsApi {
     }
 
     private HttpRequest.Builder updatePluginConfigurationRequestBuilder(
-            @org.eclipse.jdt.annotation.Nullable UUID pluginId) throws ApiException {
+            @org.eclipse.jdt.annotation.Nullable UUID pluginId, Map<String, String> headers) throws ApiException {
         // verify the required parameter 'pluginId' is set
         if (pluginId == null) {
             throw new ApiException(400,
@@ -777,6 +1108,8 @@ public class PluginsApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }

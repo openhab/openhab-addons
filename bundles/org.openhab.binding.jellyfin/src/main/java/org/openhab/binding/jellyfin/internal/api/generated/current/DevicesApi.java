@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.jellyfin.internal.api.generated.current;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -21,6 +22,7 @@ import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.StringJoiner;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -39,6 +41,28 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class DevicesApi {
+    /**
+     * Utility class for extending HttpRequest.Builder functionality.
+     */
+    private static class HttpRequestBuilderExtensions {
+        /**
+         * Adds additional headers to the provided HttpRequest.Builder. Useful for adding method/endpoint specific
+         * headers.
+         *
+         * @param builder the HttpRequest.Builder to which headers will be added
+         * @param headers a map of header names and values to add; may be null
+         * @return the same HttpRequest.Builder instance with the additional headers set
+         */
+        static HttpRequest.Builder withAdditionalHeaders(HttpRequest.Builder builder, Map<String, String> headers) {
+            if (headers != null) {
+                for (Map.Entry<String, String> entry : headers.entrySet()) {
+                    builder.header(entry.getKey(), entry.getValue());
+                }
+            }
+            return builder;
+        }
+    }
+
     private final HttpClient memberVarHttpClient;
     private final ObjectMapper memberVarObjectMapper;
     private final String memberVarBaseUri;
@@ -75,13 +99,75 @@ public class DevicesApi {
     }
 
     /**
+     * Download file from the given response.
+     *
+     * @param response Response
+     * @return File
+     * @throws ApiException If fail to read file content from response and write to disk
+     */
+    public File downloadFileFromResponse(HttpResponse<InputStream> response) throws ApiException {
+        try {
+            File file = prepareDownloadFile(response);
+            java.nio.file.Files.copy(response.body(), file.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+            return file;
+        } catch (IOException e) {
+            throw new ApiException(e);
+        }
+    }
+
+    /**
+     * <p>
+     * Prepare the file for download from the response.
+     * </p>
+     *
+     * @param response a {@link java.net.http.HttpResponse} object.
+     * @return a {@link java.io.File} object.
+     * @throws java.io.IOException if any.
+     */
+    private File prepareDownloadFile(HttpResponse<InputStream> response) throws IOException {
+        String filename = null;
+        java.util.Optional<String> contentDisposition = response.headers().firstValue("Content-Disposition");
+        if (contentDisposition.isPresent() && !"".equals(contentDisposition.get())) {
+            // Get filename from the Content-Disposition header.
+            java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("filename=['\"]?([^'\"\\s]+)['\"]?");
+            java.util.regex.Matcher matcher = pattern.matcher(contentDisposition.get());
+            if (matcher.find())
+                filename = matcher.group(1);
+        }
+        File file = null;
+        if (filename != null) {
+            java.nio.file.Path tempDir = java.nio.file.Files.createTempDirectory("swagger-gen-native");
+            java.nio.file.Path filePath = java.nio.file.Files.createFile(tempDir.resolve(filename));
+            file = filePath.toFile();
+            tempDir.toFile().deleteOnExit(); // best effort cleanup
+            file.deleteOnExit(); // best effort cleanup
+        } else {
+            file = java.nio.file.Files.createTempFile("download-", "").toFile();
+            file.deleteOnExit(); // best effort cleanup
+        }
+        return file;
+    }
+
+    /**
      * Deletes a device.
      * 
      * @param id Device Id. (required)
      * @throws ApiException if fails to make API call
      */
     public void deleteDevice(@org.eclipse.jdt.annotation.Nullable String id) throws ApiException {
-        deleteDeviceWithHttpInfo(id);
+        deleteDevice(id, null);
+    }
+
+    /**
+     * Deletes a device.
+     * 
+     * @param id Device Id. (required)
+     * @param headers Optional headers to include in the request
+     * @throws ApiException if fails to make API call
+     */
+    public void deleteDevice(@org.eclipse.jdt.annotation.Nullable String id, Map<String, String> headers)
+            throws ApiException {
+        deleteDeviceWithHttpInfo(id, headers);
     }
 
     /**
@@ -93,7 +179,20 @@ public class DevicesApi {
      */
     public ApiResponse<Void> deleteDeviceWithHttpInfo(@org.eclipse.jdt.annotation.Nullable String id)
             throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = deleteDeviceRequestBuilder(id);
+        return deleteDeviceWithHttpInfo(id, null);
+    }
+
+    /**
+     * Deletes a device.
+     * 
+     * @param id Device Id. (required)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<Void> deleteDeviceWithHttpInfo(@org.eclipse.jdt.annotation.Nullable String id,
+            Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = deleteDeviceRequestBuilder(id, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -120,8 +219,8 @@ public class DevicesApi {
         }
     }
 
-    private HttpRequest.Builder deleteDeviceRequestBuilder(@org.eclipse.jdt.annotation.Nullable String id)
-            throws ApiException {
+    private HttpRequest.Builder deleteDeviceRequestBuilder(@org.eclipse.jdt.annotation.Nullable String id,
+            Map<String, String> headers) throws ApiException {
         // verify the required parameter 'id' is set
         if (id == null) {
             throw new ApiException(400, "Missing the required parameter 'id' when calling deleteDevice");
@@ -155,6 +254,8 @@ public class DevicesApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -169,7 +270,20 @@ public class DevicesApi {
      * @throws ApiException if fails to make API call
      */
     public DeviceInfoDto getDeviceInfo(@org.eclipse.jdt.annotation.Nullable String id) throws ApiException {
-        ApiResponse<DeviceInfoDto> localVarResponse = getDeviceInfoWithHttpInfo(id);
+        return getDeviceInfo(id, null);
+    }
+
+    /**
+     * Get info for a device.
+     * 
+     * @param id Device Id. (required)
+     * @param headers Optional headers to include in the request
+     * @return DeviceInfoDto
+     * @throws ApiException if fails to make API call
+     */
+    public DeviceInfoDto getDeviceInfo(@org.eclipse.jdt.annotation.Nullable String id, Map<String, String> headers)
+            throws ApiException {
+        ApiResponse<DeviceInfoDto> localVarResponse = getDeviceInfoWithHttpInfo(id, headers);
         return localVarResponse.getData();
     }
 
@@ -182,7 +296,20 @@ public class DevicesApi {
      */
     public ApiResponse<DeviceInfoDto> getDeviceInfoWithHttpInfo(@org.eclipse.jdt.annotation.Nullable String id)
             throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getDeviceInfoRequestBuilder(id);
+        return getDeviceInfoWithHttpInfo(id, null);
+    }
+
+    /**
+     * Get info for a device.
+     * 
+     * @param id Device Id. (required)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;DeviceInfoDto&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<DeviceInfoDto> getDeviceInfoWithHttpInfo(@org.eclipse.jdt.annotation.Nullable String id,
+            Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = getDeviceInfoRequestBuilder(id, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -199,12 +326,14 @@ public class DevicesApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                DeviceInfoDto responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<DeviceInfoDto>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<DeviceInfoDto>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<DeviceInfoDto>() {
-                                }));
+                        responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -215,8 +344,8 @@ public class DevicesApi {
         }
     }
 
-    private HttpRequest.Builder getDeviceInfoRequestBuilder(@org.eclipse.jdt.annotation.Nullable String id)
-            throws ApiException {
+    private HttpRequest.Builder getDeviceInfoRequestBuilder(@org.eclipse.jdt.annotation.Nullable String id,
+            Map<String, String> headers) throws ApiException {
         // verify the required parameter 'id' is set
         if (id == null) {
             throw new ApiException(400, "Missing the required parameter 'id' when calling getDeviceInfo");
@@ -250,6 +379,8 @@ public class DevicesApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -264,7 +395,20 @@ public class DevicesApi {
      * @throws ApiException if fails to make API call
      */
     public DeviceOptionsDto getDeviceOptions(@org.eclipse.jdt.annotation.Nullable String id) throws ApiException {
-        ApiResponse<DeviceOptionsDto> localVarResponse = getDeviceOptionsWithHttpInfo(id);
+        return getDeviceOptions(id, null);
+    }
+
+    /**
+     * Get options for a device.
+     * 
+     * @param id Device Id. (required)
+     * @param headers Optional headers to include in the request
+     * @return DeviceOptionsDto
+     * @throws ApiException if fails to make API call
+     */
+    public DeviceOptionsDto getDeviceOptions(@org.eclipse.jdt.annotation.Nullable String id,
+            Map<String, String> headers) throws ApiException {
+        ApiResponse<DeviceOptionsDto> localVarResponse = getDeviceOptionsWithHttpInfo(id, headers);
         return localVarResponse.getData();
     }
 
@@ -277,7 +421,20 @@ public class DevicesApi {
      */
     public ApiResponse<DeviceOptionsDto> getDeviceOptionsWithHttpInfo(@org.eclipse.jdt.annotation.Nullable String id)
             throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getDeviceOptionsRequestBuilder(id);
+        return getDeviceOptionsWithHttpInfo(id, null);
+    }
+
+    /**
+     * Get options for a device.
+     * 
+     * @param id Device Id. (required)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;DeviceOptionsDto&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<DeviceOptionsDto> getDeviceOptionsWithHttpInfo(@org.eclipse.jdt.annotation.Nullable String id,
+            Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = getDeviceOptionsRequestBuilder(id, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -294,12 +451,14 @@ public class DevicesApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                DeviceOptionsDto responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<DeviceOptionsDto>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<DeviceOptionsDto>(localVarResponse.statusCode(),
-                        localVarResponse.headers().map(), responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<DeviceOptionsDto>() {
-                                }));
+                        localVarResponse.headers().map(), responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -310,8 +469,8 @@ public class DevicesApi {
         }
     }
 
-    private HttpRequest.Builder getDeviceOptionsRequestBuilder(@org.eclipse.jdt.annotation.Nullable String id)
-            throws ApiException {
+    private HttpRequest.Builder getDeviceOptionsRequestBuilder(@org.eclipse.jdt.annotation.Nullable String id,
+            Map<String, String> headers) throws ApiException {
         // verify the required parameter 'id' is set
         if (id == null) {
             throw new ApiException(400, "Missing the required parameter 'id' when calling getDeviceOptions");
@@ -345,6 +504,8 @@ public class DevicesApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -359,7 +520,20 @@ public class DevicesApi {
      * @throws ApiException if fails to make API call
      */
     public DeviceInfoDtoQueryResult getDevices(@org.eclipse.jdt.annotation.NonNull UUID userId) throws ApiException {
-        ApiResponse<DeviceInfoDtoQueryResult> localVarResponse = getDevicesWithHttpInfo(userId);
+        return getDevices(userId, null);
+    }
+
+    /**
+     * Get Devices.
+     * 
+     * @param userId Gets or sets the user identifier. (optional)
+     * @param headers Optional headers to include in the request
+     * @return DeviceInfoDtoQueryResult
+     * @throws ApiException if fails to make API call
+     */
+    public DeviceInfoDtoQueryResult getDevices(@org.eclipse.jdt.annotation.NonNull UUID userId,
+            Map<String, String> headers) throws ApiException {
+        ApiResponse<DeviceInfoDtoQueryResult> localVarResponse = getDevicesWithHttpInfo(userId, headers);
         return localVarResponse.getData();
     }
 
@@ -372,7 +546,20 @@ public class DevicesApi {
      */
     public ApiResponse<DeviceInfoDtoQueryResult> getDevicesWithHttpInfo(@org.eclipse.jdt.annotation.NonNull UUID userId)
             throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getDevicesRequestBuilder(userId);
+        return getDevicesWithHttpInfo(userId, null);
+    }
+
+    /**
+     * Get Devices.
+     * 
+     * @param userId Gets or sets the user identifier. (optional)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;DeviceInfoDtoQueryResult&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<DeviceInfoDtoQueryResult> getDevicesWithHttpInfo(@org.eclipse.jdt.annotation.NonNull UUID userId,
+            Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = getDevicesRequestBuilder(userId, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -389,14 +576,14 @@ public class DevicesApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                DeviceInfoDtoQueryResult responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<DeviceInfoDtoQueryResult>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<DeviceInfoDtoQueryResult>(localVarResponse.statusCode(),
-                        localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody,
-                                        new TypeReference<DeviceInfoDtoQueryResult>() {
-                                        }));
+                        localVarResponse.headers().map(), responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -407,8 +594,8 @@ public class DevicesApi {
         }
     }
 
-    private HttpRequest.Builder getDevicesRequestBuilder(@org.eclipse.jdt.annotation.NonNull UUID userId)
-            throws ApiException {
+    private HttpRequest.Builder getDevicesRequestBuilder(@org.eclipse.jdt.annotation.NonNull UUID userId,
+            Map<String, String> headers) throws ApiException {
 
         HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
 
@@ -438,6 +625,8 @@ public class DevicesApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -453,7 +642,21 @@ public class DevicesApi {
      */
     public void updateDeviceOptions(@org.eclipse.jdt.annotation.Nullable String id,
             @org.eclipse.jdt.annotation.Nullable DeviceOptionsDto deviceOptionsDto) throws ApiException {
-        updateDeviceOptionsWithHttpInfo(id, deviceOptionsDto);
+        updateDeviceOptions(id, deviceOptionsDto, null);
+    }
+
+    /**
+     * Update device options.
+     * 
+     * @param id Device Id. (required)
+     * @param deviceOptionsDto Device Options. (required)
+     * @param headers Optional headers to include in the request
+     * @throws ApiException if fails to make API call
+     */
+    public void updateDeviceOptions(@org.eclipse.jdt.annotation.Nullable String id,
+            @org.eclipse.jdt.annotation.Nullable DeviceOptionsDto deviceOptionsDto, Map<String, String> headers)
+            throws ApiException {
+        updateDeviceOptionsWithHttpInfo(id, deviceOptionsDto, headers);
     }
 
     /**
@@ -466,7 +669,22 @@ public class DevicesApi {
      */
     public ApiResponse<Void> updateDeviceOptionsWithHttpInfo(@org.eclipse.jdt.annotation.Nullable String id,
             @org.eclipse.jdt.annotation.Nullable DeviceOptionsDto deviceOptionsDto) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = updateDeviceOptionsRequestBuilder(id, deviceOptionsDto);
+        return updateDeviceOptionsWithHttpInfo(id, deviceOptionsDto, null);
+    }
+
+    /**
+     * Update device options.
+     * 
+     * @param id Device Id. (required)
+     * @param deviceOptionsDto Device Options. (required)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<Void> updateDeviceOptionsWithHttpInfo(@org.eclipse.jdt.annotation.Nullable String id,
+            @org.eclipse.jdt.annotation.Nullable DeviceOptionsDto deviceOptionsDto, Map<String, String> headers)
+            throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = updateDeviceOptionsRequestBuilder(id, deviceOptionsDto, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -494,7 +712,8 @@ public class DevicesApi {
     }
 
     private HttpRequest.Builder updateDeviceOptionsRequestBuilder(@org.eclipse.jdt.annotation.Nullable String id,
-            @org.eclipse.jdt.annotation.Nullable DeviceOptionsDto deviceOptionsDto) throws ApiException {
+            @org.eclipse.jdt.annotation.Nullable DeviceOptionsDto deviceOptionsDto, Map<String, String> headers)
+            throws ApiException {
         // verify the required parameter 'id' is set
         if (id == null) {
             throw new ApiException(400, "Missing the required parameter 'id' when calling updateDeviceOptions");
@@ -538,6 +757,8 @@ public class DevicesApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }

@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.jellyfin.internal.api.generated.current;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -21,6 +22,7 @@ import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.StringJoiner;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -46,6 +48,28 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class PlaylistsApi {
+    /**
+     * Utility class for extending HttpRequest.Builder functionality.
+     */
+    private static class HttpRequestBuilderExtensions {
+        /**
+         * Adds additional headers to the provided HttpRequest.Builder. Useful for adding method/endpoint specific
+         * headers.
+         *
+         * @param builder the HttpRequest.Builder to which headers will be added
+         * @param headers a map of header names and values to add; may be null
+         * @return the same HttpRequest.Builder instance with the additional headers set
+         */
+        static HttpRequest.Builder withAdditionalHeaders(HttpRequest.Builder builder, Map<String, String> headers) {
+            if (headers != null) {
+                for (Map.Entry<String, String> entry : headers.entrySet()) {
+                    builder.header(entry.getKey(), entry.getValue());
+                }
+            }
+            return builder;
+        }
+    }
+
     private final HttpClient memberVarHttpClient;
     private final ObjectMapper memberVarObjectMapper;
     private final String memberVarBaseUri;
@@ -82,6 +106,56 @@ public class PlaylistsApi {
     }
 
     /**
+     * Download file from the given response.
+     *
+     * @param response Response
+     * @return File
+     * @throws ApiException If fail to read file content from response and write to disk
+     */
+    public File downloadFileFromResponse(HttpResponse<InputStream> response) throws ApiException {
+        try {
+            File file = prepareDownloadFile(response);
+            java.nio.file.Files.copy(response.body(), file.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+            return file;
+        } catch (IOException e) {
+            throw new ApiException(e);
+        }
+    }
+
+    /**
+     * <p>
+     * Prepare the file for download from the response.
+     * </p>
+     *
+     * @param response a {@link java.net.http.HttpResponse} object.
+     * @return a {@link java.io.File} object.
+     * @throws java.io.IOException if any.
+     */
+    private File prepareDownloadFile(HttpResponse<InputStream> response) throws IOException {
+        String filename = null;
+        java.util.Optional<String> contentDisposition = response.headers().firstValue("Content-Disposition");
+        if (contentDisposition.isPresent() && !"".equals(contentDisposition.get())) {
+            // Get filename from the Content-Disposition header.
+            java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("filename=['\"]?([^'\"\\s]+)['\"]?");
+            java.util.regex.Matcher matcher = pattern.matcher(contentDisposition.get());
+            if (matcher.find())
+                filename = matcher.group(1);
+        }
+        File file = null;
+        if (filename != null) {
+            java.nio.file.Path tempDir = java.nio.file.Files.createTempDirectory("swagger-gen-native");
+            java.nio.file.Path filePath = java.nio.file.Files.createFile(tempDir.resolve(filename));
+            file = filePath.toFile();
+            tempDir.toFile().deleteOnExit(); // best effort cleanup
+            file.deleteOnExit(); // best effort cleanup
+        } else {
+            file = java.nio.file.Files.createTempFile("download-", "").toFile();
+            file.deleteOnExit(); // best effort cleanup
+        }
+        return file;
+    }
+
+    /**
      * Adds items to a playlist.
      * 
      * @param playlistId The playlist id. (required)
@@ -92,7 +166,22 @@ public class PlaylistsApi {
     public void addItemToPlaylist(@org.eclipse.jdt.annotation.Nullable UUID playlistId,
             @org.eclipse.jdt.annotation.NonNull List<UUID> ids, @org.eclipse.jdt.annotation.NonNull UUID userId)
             throws ApiException {
-        addItemToPlaylistWithHttpInfo(playlistId, ids, userId);
+        addItemToPlaylist(playlistId, ids, userId, null);
+    }
+
+    /**
+     * Adds items to a playlist.
+     * 
+     * @param playlistId The playlist id. (required)
+     * @param ids Item id, comma delimited. (optional)
+     * @param userId The userId. (optional)
+     * @param headers Optional headers to include in the request
+     * @throws ApiException if fails to make API call
+     */
+    public void addItemToPlaylist(@org.eclipse.jdt.annotation.Nullable UUID playlistId,
+            @org.eclipse.jdt.annotation.NonNull List<UUID> ids, @org.eclipse.jdt.annotation.NonNull UUID userId,
+            Map<String, String> headers) throws ApiException {
+        addItemToPlaylistWithHttpInfo(playlistId, ids, userId, headers);
     }
 
     /**
@@ -107,7 +196,23 @@ public class PlaylistsApi {
     public ApiResponse<Void> addItemToPlaylistWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID playlistId,
             @org.eclipse.jdt.annotation.NonNull List<UUID> ids, @org.eclipse.jdt.annotation.NonNull UUID userId)
             throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = addItemToPlaylistRequestBuilder(playlistId, ids, userId);
+        return addItemToPlaylistWithHttpInfo(playlistId, ids, userId, null);
+    }
+
+    /**
+     * Adds items to a playlist.
+     * 
+     * @param playlistId The playlist id. (required)
+     * @param ids Item id, comma delimited. (optional)
+     * @param userId The userId. (optional)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<Void> addItemToPlaylistWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID playlistId,
+            @org.eclipse.jdt.annotation.NonNull List<UUID> ids, @org.eclipse.jdt.annotation.NonNull UUID userId,
+            Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = addItemToPlaylistRequestBuilder(playlistId, ids, userId, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -135,8 +240,8 @@ public class PlaylistsApi {
     }
 
     private HttpRequest.Builder addItemToPlaylistRequestBuilder(@org.eclipse.jdt.annotation.Nullable UUID playlistId,
-            @org.eclipse.jdt.annotation.NonNull List<UUID> ids, @org.eclipse.jdt.annotation.NonNull UUID userId)
-            throws ApiException {
+            @org.eclipse.jdt.annotation.NonNull List<UUID> ids, @org.eclipse.jdt.annotation.NonNull UUID userId,
+            Map<String, String> headers) throws ApiException {
         // verify the required parameter 'playlistId' is set
         if (playlistId == null) {
             throw new ApiException(400, "Missing the required parameter 'playlistId' when calling addItemToPlaylist");
@@ -173,6 +278,8 @@ public class PlaylistsApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -196,8 +303,30 @@ public class PlaylistsApi {
             @org.eclipse.jdt.annotation.NonNull List<UUID> ids, @org.eclipse.jdt.annotation.NonNull UUID userId,
             @org.eclipse.jdt.annotation.NonNull MediaType mediaType,
             @org.eclipse.jdt.annotation.NonNull CreatePlaylistDto createPlaylistDto) throws ApiException {
+        return createPlaylist(name, ids, userId, mediaType, createPlaylistDto, null);
+    }
+
+    /**
+     * Creates a new playlist.
+     * For backwards compatibility parameters can be sent via Query or Body, with Query having higher precedence. Query
+     * parameters are obsolete.
+     * 
+     * @param name The playlist name. (optional)
+     * @param ids The item ids. (optional)
+     * @param userId The user id. (optional)
+     * @param mediaType The media type. (optional)
+     * @param createPlaylistDto The create playlist payload. (optional)
+     * @param headers Optional headers to include in the request
+     * @return PlaylistCreationResult
+     * @throws ApiException if fails to make API call
+     */
+    public PlaylistCreationResult createPlaylist(@org.eclipse.jdt.annotation.NonNull String name,
+            @org.eclipse.jdt.annotation.NonNull List<UUID> ids, @org.eclipse.jdt.annotation.NonNull UUID userId,
+            @org.eclipse.jdt.annotation.NonNull MediaType mediaType,
+            @org.eclipse.jdt.annotation.NonNull CreatePlaylistDto createPlaylistDto, Map<String, String> headers)
+            throws ApiException {
         ApiResponse<PlaylistCreationResult> localVarResponse = createPlaylistWithHttpInfo(name, ids, userId, mediaType,
-                createPlaylistDto);
+                createPlaylistDto, headers);
         return localVarResponse.getData();
     }
 
@@ -218,8 +347,30 @@ public class PlaylistsApi {
             @org.eclipse.jdt.annotation.NonNull String name, @org.eclipse.jdt.annotation.NonNull List<UUID> ids,
             @org.eclipse.jdt.annotation.NonNull UUID userId, @org.eclipse.jdt.annotation.NonNull MediaType mediaType,
             @org.eclipse.jdt.annotation.NonNull CreatePlaylistDto createPlaylistDto) throws ApiException {
+        return createPlaylistWithHttpInfo(name, ids, userId, mediaType, createPlaylistDto, null);
+    }
+
+    /**
+     * Creates a new playlist.
+     * For backwards compatibility parameters can be sent via Query or Body, with Query having higher precedence. Query
+     * parameters are obsolete.
+     * 
+     * @param name The playlist name. (optional)
+     * @param ids The item ids. (optional)
+     * @param userId The user id. (optional)
+     * @param mediaType The media type. (optional)
+     * @param createPlaylistDto The create playlist payload. (optional)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;PlaylistCreationResult&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<PlaylistCreationResult> createPlaylistWithHttpInfo(
+            @org.eclipse.jdt.annotation.NonNull String name, @org.eclipse.jdt.annotation.NonNull List<UUID> ids,
+            @org.eclipse.jdt.annotation.NonNull UUID userId, @org.eclipse.jdt.annotation.NonNull MediaType mediaType,
+            @org.eclipse.jdt.annotation.NonNull CreatePlaylistDto createPlaylistDto, Map<String, String> headers)
+            throws ApiException {
         HttpRequest.Builder localVarRequestBuilder = createPlaylistRequestBuilder(name, ids, userId, mediaType,
-                createPlaylistDto);
+                createPlaylistDto, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -236,14 +387,14 @@ public class PlaylistsApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                PlaylistCreationResult responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<PlaylistCreationResult>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<PlaylistCreationResult>(localVarResponse.statusCode(),
-                        localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody,
-                                        new TypeReference<PlaylistCreationResult>() {
-                                        }));
+                        localVarResponse.headers().map(), responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -257,7 +408,8 @@ public class PlaylistsApi {
     private HttpRequest.Builder createPlaylistRequestBuilder(@org.eclipse.jdt.annotation.NonNull String name,
             @org.eclipse.jdt.annotation.NonNull List<UUID> ids, @org.eclipse.jdt.annotation.NonNull UUID userId,
             @org.eclipse.jdt.annotation.NonNull MediaType mediaType,
-            @org.eclipse.jdt.annotation.NonNull CreatePlaylistDto createPlaylistDto) throws ApiException {
+            @org.eclipse.jdt.annotation.NonNull CreatePlaylistDto createPlaylistDto, Map<String, String> headers)
+            throws ApiException {
 
         HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
 
@@ -299,6 +451,8 @@ public class PlaylistsApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -313,7 +467,20 @@ public class PlaylistsApi {
      * @throws ApiException if fails to make API call
      */
     public PlaylistDto getPlaylist(@org.eclipse.jdt.annotation.Nullable UUID playlistId) throws ApiException {
-        ApiResponse<PlaylistDto> localVarResponse = getPlaylistWithHttpInfo(playlistId);
+        return getPlaylist(playlistId, null);
+    }
+
+    /**
+     * Get a playlist.
+     * 
+     * @param playlistId The playlist id. (required)
+     * @param headers Optional headers to include in the request
+     * @return PlaylistDto
+     * @throws ApiException if fails to make API call
+     */
+    public PlaylistDto getPlaylist(@org.eclipse.jdt.annotation.Nullable UUID playlistId, Map<String, String> headers)
+            throws ApiException {
+        ApiResponse<PlaylistDto> localVarResponse = getPlaylistWithHttpInfo(playlistId, headers);
         return localVarResponse.getData();
     }
 
@@ -326,7 +493,20 @@ public class PlaylistsApi {
      */
     public ApiResponse<PlaylistDto> getPlaylistWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID playlistId)
             throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getPlaylistRequestBuilder(playlistId);
+        return getPlaylistWithHttpInfo(playlistId, null);
+    }
+
+    /**
+     * Get a playlist.
+     * 
+     * @param playlistId The playlist id. (required)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;PlaylistDto&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<PlaylistDto> getPlaylistWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID playlistId,
+            Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = getPlaylistRequestBuilder(playlistId, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -343,12 +523,14 @@ public class PlaylistsApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                PlaylistDto responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<PlaylistDto>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<PlaylistDto>(localVarResponse.statusCode(), localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<PlaylistDto>() {
-                                }));
+                        responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -359,8 +541,8 @@ public class PlaylistsApi {
         }
     }
 
-    private HttpRequest.Builder getPlaylistRequestBuilder(@org.eclipse.jdt.annotation.Nullable UUID playlistId)
-            throws ApiException {
+    private HttpRequest.Builder getPlaylistRequestBuilder(@org.eclipse.jdt.annotation.Nullable UUID playlistId,
+            Map<String, String> headers) throws ApiException {
         // verify the required parameter 'playlistId' is set
         if (playlistId == null) {
             throw new ApiException(400, "Missing the required parameter 'playlistId' when calling getPlaylist");
@@ -380,6 +562,8 @@ public class PlaylistsApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -410,8 +594,38 @@ public class PlaylistsApi {
             @org.eclipse.jdt.annotation.NonNull Boolean enableUserData,
             @org.eclipse.jdt.annotation.NonNull Integer imageTypeLimit,
             @org.eclipse.jdt.annotation.NonNull List<ImageType> enableImageTypes) throws ApiException {
+        return getPlaylistItems(playlistId, userId, startIndex, limit, fields, enableImages, enableUserData,
+                imageTypeLimit, enableImageTypes, null);
+    }
+
+    /**
+     * Gets the original items of a playlist.
+     * 
+     * @param playlistId The playlist id. (required)
+     * @param userId User id. (optional)
+     * @param startIndex Optional. The record index to start at. All items with a lower index will be dropped from the
+     *            results. (optional)
+     * @param limit Optional. The maximum number of records to return. (optional)
+     * @param fields Optional. Specify additional fields of information to return in the output. (optional)
+     * @param enableImages Optional. Include image information in output. (optional)
+     * @param enableUserData Optional. Include user data. (optional)
+     * @param imageTypeLimit Optional. The max number of images to return, per image type. (optional)
+     * @param enableImageTypes Optional. The image types to include in the output. (optional)
+     * @param headers Optional headers to include in the request
+     * @return BaseItemDtoQueryResult
+     * @throws ApiException if fails to make API call
+     */
+    public BaseItemDtoQueryResult getPlaylistItems(@org.eclipse.jdt.annotation.Nullable UUID playlistId,
+            @org.eclipse.jdt.annotation.NonNull UUID userId, @org.eclipse.jdt.annotation.NonNull Integer startIndex,
+            @org.eclipse.jdt.annotation.NonNull Integer limit,
+            @org.eclipse.jdt.annotation.NonNull List<ItemFields> fields,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableImages,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableUserData,
+            @org.eclipse.jdt.annotation.NonNull Integer imageTypeLimit,
+            @org.eclipse.jdt.annotation.NonNull List<ImageType> enableImageTypes, Map<String, String> headers)
+            throws ApiException {
         ApiResponse<BaseItemDtoQueryResult> localVarResponse = getPlaylistItemsWithHttpInfo(playlistId, userId,
-                startIndex, limit, fields, enableImages, enableUserData, imageTypeLimit, enableImageTypes);
+                startIndex, limit, fields, enableImages, enableUserData, imageTypeLimit, enableImageTypes, headers);
         return localVarResponse.getData();
     }
 
@@ -439,8 +653,38 @@ public class PlaylistsApi {
             @org.eclipse.jdt.annotation.NonNull Boolean enableUserData,
             @org.eclipse.jdt.annotation.NonNull Integer imageTypeLimit,
             @org.eclipse.jdt.annotation.NonNull List<ImageType> enableImageTypes) throws ApiException {
+        return getPlaylistItemsWithHttpInfo(playlistId, userId, startIndex, limit, fields, enableImages, enableUserData,
+                imageTypeLimit, enableImageTypes, null);
+    }
+
+    /**
+     * Gets the original items of a playlist.
+     * 
+     * @param playlistId The playlist id. (required)
+     * @param userId User id. (optional)
+     * @param startIndex Optional. The record index to start at. All items with a lower index will be dropped from the
+     *            results. (optional)
+     * @param limit Optional. The maximum number of records to return. (optional)
+     * @param fields Optional. Specify additional fields of information to return in the output. (optional)
+     * @param enableImages Optional. Include image information in output. (optional)
+     * @param enableUserData Optional. Include user data. (optional)
+     * @param imageTypeLimit Optional. The max number of images to return, per image type. (optional)
+     * @param enableImageTypes Optional. The image types to include in the output. (optional)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;BaseItemDtoQueryResult&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<BaseItemDtoQueryResult> getPlaylistItemsWithHttpInfo(
+            @org.eclipse.jdt.annotation.Nullable UUID playlistId, @org.eclipse.jdt.annotation.NonNull UUID userId,
+            @org.eclipse.jdt.annotation.NonNull Integer startIndex, @org.eclipse.jdt.annotation.NonNull Integer limit,
+            @org.eclipse.jdt.annotation.NonNull List<ItemFields> fields,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableImages,
+            @org.eclipse.jdt.annotation.NonNull Boolean enableUserData,
+            @org.eclipse.jdt.annotation.NonNull Integer imageTypeLimit,
+            @org.eclipse.jdt.annotation.NonNull List<ImageType> enableImageTypes, Map<String, String> headers)
+            throws ApiException {
         HttpRequest.Builder localVarRequestBuilder = getPlaylistItemsRequestBuilder(playlistId, userId, startIndex,
-                limit, fields, enableImages, enableUserData, imageTypeLimit, enableImageTypes);
+                limit, fields, enableImages, enableUserData, imageTypeLimit, enableImageTypes, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -457,14 +701,14 @@ public class PlaylistsApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                BaseItemDtoQueryResult responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<BaseItemDtoQueryResult>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<BaseItemDtoQueryResult>(localVarResponse.statusCode(),
-                        localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody,
-                                        new TypeReference<BaseItemDtoQueryResult>() {
-                                        }));
+                        localVarResponse.headers().map(), responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -482,7 +726,8 @@ public class PlaylistsApi {
             @org.eclipse.jdt.annotation.NonNull Boolean enableImages,
             @org.eclipse.jdt.annotation.NonNull Boolean enableUserData,
             @org.eclipse.jdt.annotation.NonNull Integer imageTypeLimit,
-            @org.eclipse.jdt.annotation.NonNull List<ImageType> enableImageTypes) throws ApiException {
+            @org.eclipse.jdt.annotation.NonNull List<ImageType> enableImageTypes, Map<String, String> headers)
+            throws ApiException {
         // verify the required parameter 'playlistId' is set
         if (playlistId == null) {
             throw new ApiException(400, "Missing the required parameter 'playlistId' when calling getPlaylistItems");
@@ -531,6 +776,8 @@ public class PlaylistsApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -547,7 +794,22 @@ public class PlaylistsApi {
      */
     public PlaylistUserPermissions getPlaylistUser(@org.eclipse.jdt.annotation.Nullable UUID playlistId,
             @org.eclipse.jdt.annotation.Nullable UUID userId) throws ApiException {
-        ApiResponse<PlaylistUserPermissions> localVarResponse = getPlaylistUserWithHttpInfo(playlistId, userId);
+        return getPlaylistUser(playlistId, userId, null);
+    }
+
+    /**
+     * Get a playlist user.
+     * 
+     * @param playlistId The playlist id. (required)
+     * @param userId The user id. (required)
+     * @param headers Optional headers to include in the request
+     * @return PlaylistUserPermissions
+     * @throws ApiException if fails to make API call
+     */
+    public PlaylistUserPermissions getPlaylistUser(@org.eclipse.jdt.annotation.Nullable UUID playlistId,
+            @org.eclipse.jdt.annotation.Nullable UUID userId, Map<String, String> headers) throws ApiException {
+        ApiResponse<PlaylistUserPermissions> localVarResponse = getPlaylistUserWithHttpInfo(playlistId, userId,
+                headers);
         return localVarResponse.getData();
     }
 
@@ -562,7 +824,22 @@ public class PlaylistsApi {
     public ApiResponse<PlaylistUserPermissions> getPlaylistUserWithHttpInfo(
             @org.eclipse.jdt.annotation.Nullable UUID playlistId, @org.eclipse.jdt.annotation.Nullable UUID userId)
             throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getPlaylistUserRequestBuilder(playlistId, userId);
+        return getPlaylistUserWithHttpInfo(playlistId, userId, null);
+    }
+
+    /**
+     * Get a playlist user.
+     * 
+     * @param playlistId The playlist id. (required)
+     * @param userId The user id. (required)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;PlaylistUserPermissions&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<PlaylistUserPermissions> getPlaylistUserWithHttpInfo(
+            @org.eclipse.jdt.annotation.Nullable UUID playlistId, @org.eclipse.jdt.annotation.Nullable UUID userId,
+            Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = getPlaylistUserRequestBuilder(playlistId, userId, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -579,14 +856,14 @@ public class PlaylistsApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                PlaylistUserPermissions responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<PlaylistUserPermissions>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<PlaylistUserPermissions>(localVarResponse.statusCode(),
-                        localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody,
-                                        new TypeReference<PlaylistUserPermissions>() {
-                                        }));
+                        localVarResponse.headers().map(), responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -598,7 +875,7 @@ public class PlaylistsApi {
     }
 
     private HttpRequest.Builder getPlaylistUserRequestBuilder(@org.eclipse.jdt.annotation.Nullable UUID playlistId,
-            @org.eclipse.jdt.annotation.Nullable UUID userId) throws ApiException {
+            @org.eclipse.jdt.annotation.Nullable UUID userId, Map<String, String> headers) throws ApiException {
         // verify the required parameter 'playlistId' is set
         if (playlistId == null) {
             throw new ApiException(400, "Missing the required parameter 'playlistId' when calling getPlaylistUser");
@@ -623,6 +900,8 @@ public class PlaylistsApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -638,7 +917,20 @@ public class PlaylistsApi {
      */
     public List<PlaylistUserPermissions> getPlaylistUsers(@org.eclipse.jdt.annotation.Nullable UUID playlistId)
             throws ApiException {
-        ApiResponse<List<PlaylistUserPermissions>> localVarResponse = getPlaylistUsersWithHttpInfo(playlistId);
+        return getPlaylistUsers(playlistId, null);
+    }
+
+    /**
+     * Get a playlist&#39;s users.
+     * 
+     * @param playlistId The playlist id. (required)
+     * @param headers Optional headers to include in the request
+     * @return List&lt;PlaylistUserPermissions&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public List<PlaylistUserPermissions> getPlaylistUsers(@org.eclipse.jdt.annotation.Nullable UUID playlistId,
+            Map<String, String> headers) throws ApiException {
+        ApiResponse<List<PlaylistUserPermissions>> localVarResponse = getPlaylistUsersWithHttpInfo(playlistId, headers);
         return localVarResponse.getData();
     }
 
@@ -651,7 +943,20 @@ public class PlaylistsApi {
      */
     public ApiResponse<List<PlaylistUserPermissions>> getPlaylistUsersWithHttpInfo(
             @org.eclipse.jdt.annotation.Nullable UUID playlistId) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getPlaylistUsersRequestBuilder(playlistId);
+        return getPlaylistUsersWithHttpInfo(playlistId, null);
+    }
+
+    /**
+     * Get a playlist&#39;s users.
+     * 
+     * @param playlistId The playlist id. (required)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;List&lt;PlaylistUserPermissions&gt;&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<List<PlaylistUserPermissions>> getPlaylistUsersWithHttpInfo(
+            @org.eclipse.jdt.annotation.Nullable UUID playlistId, Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = getPlaylistUsersRequestBuilder(playlistId, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -668,14 +973,15 @@ public class PlaylistsApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                List<PlaylistUserPermissions> responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody,
+                                new TypeReference<List<PlaylistUserPermissions>>() {
+                                });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<List<PlaylistUserPermissions>>(localVarResponse.statusCode(),
-                        localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody,
-                                        new TypeReference<List<PlaylistUserPermissions>>() {
-                                        }));
+                        localVarResponse.headers().map(), responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -686,8 +992,8 @@ public class PlaylistsApi {
         }
     }
 
-    private HttpRequest.Builder getPlaylistUsersRequestBuilder(@org.eclipse.jdt.annotation.Nullable UUID playlistId)
-            throws ApiException {
+    private HttpRequest.Builder getPlaylistUsersRequestBuilder(@org.eclipse.jdt.annotation.Nullable UUID playlistId,
+            Map<String, String> headers) throws ApiException {
         // verify the required parameter 'playlistId' is set
         if (playlistId == null) {
             throw new ApiException(400, "Missing the required parameter 'playlistId' when calling getPlaylistUsers");
@@ -707,6 +1013,8 @@ public class PlaylistsApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -724,7 +1032,22 @@ public class PlaylistsApi {
     public void moveItem(@org.eclipse.jdt.annotation.Nullable String playlistId,
             @org.eclipse.jdt.annotation.Nullable String itemId, @org.eclipse.jdt.annotation.Nullable Integer newIndex)
             throws ApiException {
-        moveItemWithHttpInfo(playlistId, itemId, newIndex);
+        moveItem(playlistId, itemId, newIndex, null);
+    }
+
+    /**
+     * Moves a playlist item.
+     * 
+     * @param playlistId The playlist id. (required)
+     * @param itemId The item id. (required)
+     * @param newIndex The new index. (required)
+     * @param headers Optional headers to include in the request
+     * @throws ApiException if fails to make API call
+     */
+    public void moveItem(@org.eclipse.jdt.annotation.Nullable String playlistId,
+            @org.eclipse.jdt.annotation.Nullable String itemId, @org.eclipse.jdt.annotation.Nullable Integer newIndex,
+            Map<String, String> headers) throws ApiException {
+        moveItemWithHttpInfo(playlistId, itemId, newIndex, headers);
     }
 
     /**
@@ -739,7 +1062,23 @@ public class PlaylistsApi {
     public ApiResponse<Void> moveItemWithHttpInfo(@org.eclipse.jdt.annotation.Nullable String playlistId,
             @org.eclipse.jdt.annotation.Nullable String itemId, @org.eclipse.jdt.annotation.Nullable Integer newIndex)
             throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = moveItemRequestBuilder(playlistId, itemId, newIndex);
+        return moveItemWithHttpInfo(playlistId, itemId, newIndex, null);
+    }
+
+    /**
+     * Moves a playlist item.
+     * 
+     * @param playlistId The playlist id. (required)
+     * @param itemId The item id. (required)
+     * @param newIndex The new index. (required)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<Void> moveItemWithHttpInfo(@org.eclipse.jdt.annotation.Nullable String playlistId,
+            @org.eclipse.jdt.annotation.Nullable String itemId, @org.eclipse.jdt.annotation.Nullable Integer newIndex,
+            Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = moveItemRequestBuilder(playlistId, itemId, newIndex, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -767,8 +1106,8 @@ public class PlaylistsApi {
     }
 
     private HttpRequest.Builder moveItemRequestBuilder(@org.eclipse.jdt.annotation.Nullable String playlistId,
-            @org.eclipse.jdt.annotation.Nullable String itemId, @org.eclipse.jdt.annotation.Nullable Integer newIndex)
-            throws ApiException {
+            @org.eclipse.jdt.annotation.Nullable String itemId, @org.eclipse.jdt.annotation.Nullable Integer newIndex,
+            Map<String, String> headers) throws ApiException {
         // verify the required parameter 'playlistId' is set
         if (playlistId == null) {
             throw new ApiException(400, "Missing the required parameter 'playlistId' when calling moveItem");
@@ -798,6 +1137,8 @@ public class PlaylistsApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -813,7 +1154,21 @@ public class PlaylistsApi {
      */
     public void removeItemFromPlaylist(@org.eclipse.jdt.annotation.Nullable String playlistId,
             @org.eclipse.jdt.annotation.NonNull List<String> entryIds) throws ApiException {
-        removeItemFromPlaylistWithHttpInfo(playlistId, entryIds);
+        removeItemFromPlaylist(playlistId, entryIds, null);
+    }
+
+    /**
+     * Removes items from a playlist.
+     * 
+     * @param playlistId The playlist id. (required)
+     * @param entryIds The item ids, comma delimited. (optional)
+     * @param headers Optional headers to include in the request
+     * @throws ApiException if fails to make API call
+     */
+    public void removeItemFromPlaylist(@org.eclipse.jdt.annotation.Nullable String playlistId,
+            @org.eclipse.jdt.annotation.NonNull List<String> entryIds, Map<String, String> headers)
+            throws ApiException {
+        removeItemFromPlaylistWithHttpInfo(playlistId, entryIds, headers);
     }
 
     /**
@@ -826,7 +1181,23 @@ public class PlaylistsApi {
      */
     public ApiResponse<Void> removeItemFromPlaylistWithHttpInfo(@org.eclipse.jdt.annotation.Nullable String playlistId,
             @org.eclipse.jdt.annotation.NonNull List<String> entryIds) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = removeItemFromPlaylistRequestBuilder(playlistId, entryIds);
+        return removeItemFromPlaylistWithHttpInfo(playlistId, entryIds, null);
+    }
+
+    /**
+     * Removes items from a playlist.
+     * 
+     * @param playlistId The playlist id. (required)
+     * @param entryIds The item ids, comma delimited. (optional)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<Void> removeItemFromPlaylistWithHttpInfo(@org.eclipse.jdt.annotation.Nullable String playlistId,
+            @org.eclipse.jdt.annotation.NonNull List<String> entryIds, Map<String, String> headers)
+            throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = removeItemFromPlaylistRequestBuilder(playlistId, entryIds,
+                headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -855,7 +1226,8 @@ public class PlaylistsApi {
 
     private HttpRequest.Builder removeItemFromPlaylistRequestBuilder(
             @org.eclipse.jdt.annotation.Nullable String playlistId,
-            @org.eclipse.jdt.annotation.NonNull List<String> entryIds) throws ApiException {
+            @org.eclipse.jdt.annotation.NonNull List<String> entryIds, Map<String, String> headers)
+            throws ApiException {
         // verify the required parameter 'playlistId' is set
         if (playlistId == null) {
             throw new ApiException(400,
@@ -891,6 +1263,8 @@ public class PlaylistsApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -906,7 +1280,20 @@ public class PlaylistsApi {
      */
     public void removeUserFromPlaylist(@org.eclipse.jdt.annotation.Nullable UUID playlistId,
             @org.eclipse.jdt.annotation.Nullable UUID userId) throws ApiException {
-        removeUserFromPlaylistWithHttpInfo(playlistId, userId);
+        removeUserFromPlaylist(playlistId, userId, null);
+    }
+
+    /**
+     * Remove a user from a playlist&#39;s users.
+     * 
+     * @param playlistId The playlist id. (required)
+     * @param userId The user id. (required)
+     * @param headers Optional headers to include in the request
+     * @throws ApiException if fails to make API call
+     */
+    public void removeUserFromPlaylist(@org.eclipse.jdt.annotation.Nullable UUID playlistId,
+            @org.eclipse.jdt.annotation.Nullable UUID userId, Map<String, String> headers) throws ApiException {
+        removeUserFromPlaylistWithHttpInfo(playlistId, userId, headers);
     }
 
     /**
@@ -919,7 +1306,21 @@ public class PlaylistsApi {
      */
     public ApiResponse<Void> removeUserFromPlaylistWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID playlistId,
             @org.eclipse.jdt.annotation.Nullable UUID userId) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = removeUserFromPlaylistRequestBuilder(playlistId, userId);
+        return removeUserFromPlaylistWithHttpInfo(playlistId, userId, null);
+    }
+
+    /**
+     * Remove a user from a playlist&#39;s users.
+     * 
+     * @param playlistId The playlist id. (required)
+     * @param userId The user id. (required)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<Void> removeUserFromPlaylistWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID playlistId,
+            @org.eclipse.jdt.annotation.Nullable UUID userId, Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = removeUserFromPlaylistRequestBuilder(playlistId, userId, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -947,8 +1348,8 @@ public class PlaylistsApi {
     }
 
     private HttpRequest.Builder removeUserFromPlaylistRequestBuilder(
-            @org.eclipse.jdt.annotation.Nullable UUID playlistId, @org.eclipse.jdt.annotation.Nullable UUID userId)
-            throws ApiException {
+            @org.eclipse.jdt.annotation.Nullable UUID playlistId, @org.eclipse.jdt.annotation.Nullable UUID userId,
+            Map<String, String> headers) throws ApiException {
         // verify the required parameter 'playlistId' is set
         if (playlistId == null) {
             throw new ApiException(400,
@@ -974,6 +1375,8 @@ public class PlaylistsApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -989,7 +1392,21 @@ public class PlaylistsApi {
      */
     public void updatePlaylist(@org.eclipse.jdt.annotation.Nullable UUID playlistId,
             @org.eclipse.jdt.annotation.Nullable UpdatePlaylistDto updatePlaylistDto) throws ApiException {
-        updatePlaylistWithHttpInfo(playlistId, updatePlaylistDto);
+        updatePlaylist(playlistId, updatePlaylistDto, null);
+    }
+
+    /**
+     * Updates a playlist.
+     * 
+     * @param playlistId The playlist id. (required)
+     * @param updatePlaylistDto The Jellyfin.Api.Models.PlaylistDtos.UpdatePlaylistDto id. (required)
+     * @param headers Optional headers to include in the request
+     * @throws ApiException if fails to make API call
+     */
+    public void updatePlaylist(@org.eclipse.jdt.annotation.Nullable UUID playlistId,
+            @org.eclipse.jdt.annotation.Nullable UpdatePlaylistDto updatePlaylistDto, Map<String, String> headers)
+            throws ApiException {
+        updatePlaylistWithHttpInfo(playlistId, updatePlaylistDto, headers);
     }
 
     /**
@@ -1002,7 +1419,23 @@ public class PlaylistsApi {
      */
     public ApiResponse<Void> updatePlaylistWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID playlistId,
             @org.eclipse.jdt.annotation.Nullable UpdatePlaylistDto updatePlaylistDto) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = updatePlaylistRequestBuilder(playlistId, updatePlaylistDto);
+        return updatePlaylistWithHttpInfo(playlistId, updatePlaylistDto, null);
+    }
+
+    /**
+     * Updates a playlist.
+     * 
+     * @param playlistId The playlist id. (required)
+     * @param updatePlaylistDto The Jellyfin.Api.Models.PlaylistDtos.UpdatePlaylistDto id. (required)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<Void> updatePlaylistWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID playlistId,
+            @org.eclipse.jdt.annotation.Nullable UpdatePlaylistDto updatePlaylistDto, Map<String, String> headers)
+            throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = updatePlaylistRequestBuilder(playlistId, updatePlaylistDto,
+                headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -1030,7 +1463,8 @@ public class PlaylistsApi {
     }
 
     private HttpRequest.Builder updatePlaylistRequestBuilder(@org.eclipse.jdt.annotation.Nullable UUID playlistId,
-            @org.eclipse.jdt.annotation.Nullable UpdatePlaylistDto updatePlaylistDto) throws ApiException {
+            @org.eclipse.jdt.annotation.Nullable UpdatePlaylistDto updatePlaylistDto, Map<String, String> headers)
+            throws ApiException {
         // verify the required parameter 'playlistId' is set
         if (playlistId == null) {
             throw new ApiException(400, "Missing the required parameter 'playlistId' when calling updatePlaylist");
@@ -1061,6 +1495,8 @@ public class PlaylistsApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -1078,7 +1514,23 @@ public class PlaylistsApi {
     public void updatePlaylistUser(@org.eclipse.jdt.annotation.Nullable UUID playlistId,
             @org.eclipse.jdt.annotation.Nullable UUID userId,
             @org.eclipse.jdt.annotation.Nullable UpdatePlaylistUserDto updatePlaylistUserDto) throws ApiException {
-        updatePlaylistUserWithHttpInfo(playlistId, userId, updatePlaylistUserDto);
+        updatePlaylistUser(playlistId, userId, updatePlaylistUserDto, null);
+    }
+
+    /**
+     * Modify a user of a playlist&#39;s users.
+     * 
+     * @param playlistId The playlist id. (required)
+     * @param userId The user id. (required)
+     * @param updatePlaylistUserDto The Jellyfin.Api.Models.PlaylistDtos.UpdatePlaylistUserDto. (required)
+     * @param headers Optional headers to include in the request
+     * @throws ApiException if fails to make API call
+     */
+    public void updatePlaylistUser(@org.eclipse.jdt.annotation.Nullable UUID playlistId,
+            @org.eclipse.jdt.annotation.Nullable UUID userId,
+            @org.eclipse.jdt.annotation.Nullable UpdatePlaylistUserDto updatePlaylistUserDto,
+            Map<String, String> headers) throws ApiException {
+        updatePlaylistUserWithHttpInfo(playlistId, userId, updatePlaylistUserDto, headers);
     }
 
     /**
@@ -1093,8 +1545,25 @@ public class PlaylistsApi {
     public ApiResponse<Void> updatePlaylistUserWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID playlistId,
             @org.eclipse.jdt.annotation.Nullable UUID userId,
             @org.eclipse.jdt.annotation.Nullable UpdatePlaylistUserDto updatePlaylistUserDto) throws ApiException {
+        return updatePlaylistUserWithHttpInfo(playlistId, userId, updatePlaylistUserDto, null);
+    }
+
+    /**
+     * Modify a user of a playlist&#39;s users.
+     * 
+     * @param playlistId The playlist id. (required)
+     * @param userId The user id. (required)
+     * @param updatePlaylistUserDto The Jellyfin.Api.Models.PlaylistDtos.UpdatePlaylistUserDto. (required)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<Void> updatePlaylistUserWithHttpInfo(@org.eclipse.jdt.annotation.Nullable UUID playlistId,
+            @org.eclipse.jdt.annotation.Nullable UUID userId,
+            @org.eclipse.jdt.annotation.Nullable UpdatePlaylistUserDto updatePlaylistUserDto,
+            Map<String, String> headers) throws ApiException {
         HttpRequest.Builder localVarRequestBuilder = updatePlaylistUserRequestBuilder(playlistId, userId,
-                updatePlaylistUserDto);
+                updatePlaylistUserDto, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -1123,7 +1592,8 @@ public class PlaylistsApi {
 
     private HttpRequest.Builder updatePlaylistUserRequestBuilder(@org.eclipse.jdt.annotation.Nullable UUID playlistId,
             @org.eclipse.jdt.annotation.Nullable UUID userId,
-            @org.eclipse.jdt.annotation.Nullable UpdatePlaylistUserDto updatePlaylistUserDto) throws ApiException {
+            @org.eclipse.jdt.annotation.Nullable UpdatePlaylistUserDto updatePlaylistUserDto,
+            Map<String, String> headers) throws ApiException {
         // verify the required parameter 'playlistId' is set
         if (playlistId == null) {
             throw new ApiException(400, "Missing the required parameter 'playlistId' when calling updatePlaylistUser");
@@ -1159,6 +1629,8 @@ public class PlaylistsApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }

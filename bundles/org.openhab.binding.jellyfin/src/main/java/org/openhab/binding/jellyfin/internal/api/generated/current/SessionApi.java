@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.jellyfin.internal.api.generated.current;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -21,6 +22,7 @@ import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.StringJoiner;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -46,6 +48,28 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "OpenAPI Generator")
 public class SessionApi {
+    /**
+     * Utility class for extending HttpRequest.Builder functionality.
+     */
+    private static class HttpRequestBuilderExtensions {
+        /**
+         * Adds additional headers to the provided HttpRequest.Builder. Useful for adding method/endpoint specific
+         * headers.
+         *
+         * @param builder the HttpRequest.Builder to which headers will be added
+         * @param headers a map of header names and values to add; may be null
+         * @return the same HttpRequest.Builder instance with the additional headers set
+         */
+        static HttpRequest.Builder withAdditionalHeaders(HttpRequest.Builder builder, Map<String, String> headers) {
+            if (headers != null) {
+                for (Map.Entry<String, String> entry : headers.entrySet()) {
+                    builder.header(entry.getKey(), entry.getValue());
+                }
+            }
+            return builder;
+        }
+    }
+
     private final HttpClient memberVarHttpClient;
     private final ObjectMapper memberVarObjectMapper;
     private final String memberVarBaseUri;
@@ -82,6 +106,56 @@ public class SessionApi {
     }
 
     /**
+     * Download file from the given response.
+     *
+     * @param response Response
+     * @return File
+     * @throws ApiException If fail to read file content from response and write to disk
+     */
+    public File downloadFileFromResponse(HttpResponse<InputStream> response) throws ApiException {
+        try {
+            File file = prepareDownloadFile(response);
+            java.nio.file.Files.copy(response.body(), file.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+            return file;
+        } catch (IOException e) {
+            throw new ApiException(e);
+        }
+    }
+
+    /**
+     * <p>
+     * Prepare the file for download from the response.
+     * </p>
+     *
+     * @param response a {@link java.net.http.HttpResponse} object.
+     * @return a {@link java.io.File} object.
+     * @throws java.io.IOException if any.
+     */
+    private File prepareDownloadFile(HttpResponse<InputStream> response) throws IOException {
+        String filename = null;
+        java.util.Optional<String> contentDisposition = response.headers().firstValue("Content-Disposition");
+        if (contentDisposition.isPresent() && !"".equals(contentDisposition.get())) {
+            // Get filename from the Content-Disposition header.
+            java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("filename=['\"]?([^'\"\\s]+)['\"]?");
+            java.util.regex.Matcher matcher = pattern.matcher(contentDisposition.get());
+            if (matcher.find())
+                filename = matcher.group(1);
+        }
+        File file = null;
+        if (filename != null) {
+            java.nio.file.Path tempDir = java.nio.file.Files.createTempDirectory("swagger-gen-native");
+            java.nio.file.Path filePath = java.nio.file.Files.createFile(tempDir.resolve(filename));
+            file = filePath.toFile();
+            tempDir.toFile().deleteOnExit(); // best effort cleanup
+            file.deleteOnExit(); // best effort cleanup
+        } else {
+            file = java.nio.file.Files.createTempFile("download-", "").toFile();
+            file.deleteOnExit(); // best effort cleanup
+        }
+        return file;
+    }
+
+    /**
      * Adds an additional user to a session.
      * 
      * @param sessionId The session id. (required)
@@ -90,7 +164,20 @@ public class SessionApi {
      */
     public void addUserToSession(@org.eclipse.jdt.annotation.Nullable String sessionId,
             @org.eclipse.jdt.annotation.Nullable UUID userId) throws ApiException {
-        addUserToSessionWithHttpInfo(sessionId, userId);
+        addUserToSession(sessionId, userId, null);
+    }
+
+    /**
+     * Adds an additional user to a session.
+     * 
+     * @param sessionId The session id. (required)
+     * @param userId The user id. (required)
+     * @param headers Optional headers to include in the request
+     * @throws ApiException if fails to make API call
+     */
+    public void addUserToSession(@org.eclipse.jdt.annotation.Nullable String sessionId,
+            @org.eclipse.jdt.annotation.Nullable UUID userId, Map<String, String> headers) throws ApiException {
+        addUserToSessionWithHttpInfo(sessionId, userId, headers);
     }
 
     /**
@@ -103,7 +190,21 @@ public class SessionApi {
      */
     public ApiResponse<Void> addUserToSessionWithHttpInfo(@org.eclipse.jdt.annotation.Nullable String sessionId,
             @org.eclipse.jdt.annotation.Nullable UUID userId) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = addUserToSessionRequestBuilder(sessionId, userId);
+        return addUserToSessionWithHttpInfo(sessionId, userId, null);
+    }
+
+    /**
+     * Adds an additional user to a session.
+     * 
+     * @param sessionId The session id. (required)
+     * @param userId The user id. (required)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<Void> addUserToSessionWithHttpInfo(@org.eclipse.jdt.annotation.Nullable String sessionId,
+            @org.eclipse.jdt.annotation.Nullable UUID userId, Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = addUserToSessionRequestBuilder(sessionId, userId, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -131,7 +232,7 @@ public class SessionApi {
     }
 
     private HttpRequest.Builder addUserToSessionRequestBuilder(@org.eclipse.jdt.annotation.Nullable String sessionId,
-            @org.eclipse.jdt.annotation.Nullable UUID userId) throws ApiException {
+            @org.eclipse.jdt.annotation.Nullable UUID userId, Map<String, String> headers) throws ApiException {
         // verify the required parameter 'sessionId' is set
         if (sessionId == null) {
             throw new ApiException(400, "Missing the required parameter 'sessionId' when calling addUserToSession");
@@ -155,6 +256,8 @@ public class SessionApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -174,7 +277,24 @@ public class SessionApi {
             @org.eclipse.jdt.annotation.Nullable BaseItemKind itemType,
             @org.eclipse.jdt.annotation.Nullable String itemId, @org.eclipse.jdt.annotation.Nullable String itemName)
             throws ApiException {
-        displayContentWithHttpInfo(sessionId, itemType, itemId, itemName);
+        displayContent(sessionId, itemType, itemId, itemName, null);
+    }
+
+    /**
+     * Instructs a session to browse to an item or view.
+     * 
+     * @param sessionId The session Id. (required)
+     * @param itemType The type of item to browse to. (required)
+     * @param itemId The Id of the item. (required)
+     * @param itemName The name of the item. (required)
+     * @param headers Optional headers to include in the request
+     * @throws ApiException if fails to make API call
+     */
+    public void displayContent(@org.eclipse.jdt.annotation.Nullable String sessionId,
+            @org.eclipse.jdt.annotation.Nullable BaseItemKind itemType,
+            @org.eclipse.jdt.annotation.Nullable String itemId, @org.eclipse.jdt.annotation.Nullable String itemName,
+            Map<String, String> headers) throws ApiException {
+        displayContentWithHttpInfo(sessionId, itemType, itemId, itemName, headers);
     }
 
     /**
@@ -191,8 +311,26 @@ public class SessionApi {
             @org.eclipse.jdt.annotation.Nullable BaseItemKind itemType,
             @org.eclipse.jdt.annotation.Nullable String itemId, @org.eclipse.jdt.annotation.Nullable String itemName)
             throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = displayContentRequestBuilder(sessionId, itemType, itemId,
-                itemName);
+        return displayContentWithHttpInfo(sessionId, itemType, itemId, itemName, null);
+    }
+
+    /**
+     * Instructs a session to browse to an item or view.
+     * 
+     * @param sessionId The session Id. (required)
+     * @param itemType The type of item to browse to. (required)
+     * @param itemId The Id of the item. (required)
+     * @param itemName The name of the item. (required)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<Void> displayContentWithHttpInfo(@org.eclipse.jdt.annotation.Nullable String sessionId,
+            @org.eclipse.jdt.annotation.Nullable BaseItemKind itemType,
+            @org.eclipse.jdt.annotation.Nullable String itemId, @org.eclipse.jdt.annotation.Nullable String itemName,
+            Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = displayContentRequestBuilder(sessionId, itemType, itemId, itemName,
+                headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -221,8 +359,8 @@ public class SessionApi {
 
     private HttpRequest.Builder displayContentRequestBuilder(@org.eclipse.jdt.annotation.Nullable String sessionId,
             @org.eclipse.jdt.annotation.Nullable BaseItemKind itemType,
-            @org.eclipse.jdt.annotation.Nullable String itemId, @org.eclipse.jdt.annotation.Nullable String itemName)
-            throws ApiException {
+            @org.eclipse.jdt.annotation.Nullable String itemId, @org.eclipse.jdt.annotation.Nullable String itemName,
+            Map<String, String> headers) throws ApiException {
         // verify the required parameter 'sessionId' is set
         if (sessionId == null) {
             throw new ApiException(400, "Missing the required parameter 'sessionId' when calling displayContent");
@@ -272,6 +410,8 @@ public class SessionApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -285,7 +425,18 @@ public class SessionApi {
      * @throws ApiException if fails to make API call
      */
     public List<NameIdPair> getAuthProviders() throws ApiException {
-        ApiResponse<List<NameIdPair>> localVarResponse = getAuthProvidersWithHttpInfo();
+        return getAuthProviders(null);
+    }
+
+    /**
+     * Get all auth providers.
+     * 
+     * @param headers Optional headers to include in the request
+     * @return List&lt;NameIdPair&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public List<NameIdPair> getAuthProviders(Map<String, String> headers) throws ApiException {
+        ApiResponse<List<NameIdPair>> localVarResponse = getAuthProvidersWithHttpInfo(headers);
         return localVarResponse.getData();
     }
 
@@ -296,7 +447,18 @@ public class SessionApi {
      * @throws ApiException if fails to make API call
      */
     public ApiResponse<List<NameIdPair>> getAuthProvidersWithHttpInfo() throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getAuthProvidersRequestBuilder();
+        return getAuthProvidersWithHttpInfo(null);
+    }
+
+    /**
+     * Get all auth providers.
+     * 
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;List&lt;NameIdPair&gt;&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<List<NameIdPair>> getAuthProvidersWithHttpInfo(Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = getAuthProvidersRequestBuilder(headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -313,12 +475,14 @@ public class SessionApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                List<NameIdPair> responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<List<NameIdPair>>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<List<NameIdPair>>(localVarResponse.statusCode(),
-                        localVarResponse.headers().map(), responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<List<NameIdPair>>() {
-                                }));
+                        localVarResponse.headers().map(), responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -329,7 +493,7 @@ public class SessionApi {
         }
     }
 
-    private HttpRequest.Builder getAuthProvidersRequestBuilder() throws ApiException {
+    private HttpRequest.Builder getAuthProvidersRequestBuilder(Map<String, String> headers) throws ApiException {
 
         HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
 
@@ -344,6 +508,8 @@ public class SessionApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -357,7 +523,18 @@ public class SessionApi {
      * @throws ApiException if fails to make API call
      */
     public List<NameIdPair> getPasswordResetProviders() throws ApiException {
-        ApiResponse<List<NameIdPair>> localVarResponse = getPasswordResetProvidersWithHttpInfo();
+        return getPasswordResetProviders(null);
+    }
+
+    /**
+     * Get all password reset providers.
+     * 
+     * @param headers Optional headers to include in the request
+     * @return List&lt;NameIdPair&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public List<NameIdPair> getPasswordResetProviders(Map<String, String> headers) throws ApiException {
+        ApiResponse<List<NameIdPair>> localVarResponse = getPasswordResetProvidersWithHttpInfo(headers);
         return localVarResponse.getData();
     }
 
@@ -368,7 +545,19 @@ public class SessionApi {
      * @throws ApiException if fails to make API call
      */
     public ApiResponse<List<NameIdPair>> getPasswordResetProvidersWithHttpInfo() throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = getPasswordResetProvidersRequestBuilder();
+        return getPasswordResetProvidersWithHttpInfo(null);
+    }
+
+    /**
+     * Get all password reset providers.
+     * 
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;List&lt;NameIdPair&gt;&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<List<NameIdPair>> getPasswordResetProvidersWithHttpInfo(Map<String, String> headers)
+            throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = getPasswordResetProvidersRequestBuilder(headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -385,12 +574,14 @@ public class SessionApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                List<NameIdPair> responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<List<NameIdPair>>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<List<NameIdPair>>(localVarResponse.statusCode(),
-                        localVarResponse.headers().map(), responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody, new TypeReference<List<NameIdPair>>() {
-                                }));
+                        localVarResponse.headers().map(), responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -401,7 +592,8 @@ public class SessionApi {
         }
     }
 
-    private HttpRequest.Builder getPasswordResetProvidersRequestBuilder() throws ApiException {
+    private HttpRequest.Builder getPasswordResetProvidersRequestBuilder(Map<String, String> headers)
+            throws ApiException {
 
         HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
 
@@ -416,6 +608,8 @@ public class SessionApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -434,8 +628,25 @@ public class SessionApi {
     public List<SessionInfoDto> getSessions(@org.eclipse.jdt.annotation.NonNull UUID controllableByUserId,
             @org.eclipse.jdt.annotation.NonNull String deviceId,
             @org.eclipse.jdt.annotation.NonNull Integer activeWithinSeconds) throws ApiException {
+        return getSessions(controllableByUserId, deviceId, activeWithinSeconds, null);
+    }
+
+    /**
+     * Gets a list of sessions.
+     * 
+     * @param controllableByUserId Filter by sessions that a given user is allowed to remote control. (optional)
+     * @param deviceId Filter by device Id. (optional)
+     * @param activeWithinSeconds Optional. Filter by sessions that were active in the last n seconds. (optional)
+     * @param headers Optional headers to include in the request
+     * @return List&lt;SessionInfoDto&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public List<SessionInfoDto> getSessions(@org.eclipse.jdt.annotation.NonNull UUID controllableByUserId,
+            @org.eclipse.jdt.annotation.NonNull String deviceId,
+            @org.eclipse.jdt.annotation.NonNull Integer activeWithinSeconds, Map<String, String> headers)
+            throws ApiException {
         ApiResponse<List<SessionInfoDto>> localVarResponse = getSessionsWithHttpInfo(controllableByUserId, deviceId,
-                activeWithinSeconds);
+                activeWithinSeconds, headers);
         return localVarResponse.getData();
     }
 
@@ -452,8 +663,26 @@ public class SessionApi {
             @org.eclipse.jdt.annotation.NonNull UUID controllableByUserId,
             @org.eclipse.jdt.annotation.NonNull String deviceId,
             @org.eclipse.jdt.annotation.NonNull Integer activeWithinSeconds) throws ApiException {
+        return getSessionsWithHttpInfo(controllableByUserId, deviceId, activeWithinSeconds, null);
+    }
+
+    /**
+     * Gets a list of sessions.
+     * 
+     * @param controllableByUserId Filter by sessions that a given user is allowed to remote control. (optional)
+     * @param deviceId Filter by device Id. (optional)
+     * @param activeWithinSeconds Optional. Filter by sessions that were active in the last n seconds. (optional)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;List&lt;SessionInfoDto&gt;&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<List<SessionInfoDto>> getSessionsWithHttpInfo(
+            @org.eclipse.jdt.annotation.NonNull UUID controllableByUserId,
+            @org.eclipse.jdt.annotation.NonNull String deviceId,
+            @org.eclipse.jdt.annotation.NonNull Integer activeWithinSeconds, Map<String, String> headers)
+            throws ApiException {
         HttpRequest.Builder localVarRequestBuilder = getSessionsRequestBuilder(controllableByUserId, deviceId,
-                activeWithinSeconds);
+                activeWithinSeconds, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -470,14 +699,14 @@ public class SessionApi {
                 }
 
                 String responseBody = new String(localVarResponse.body().readAllBytes());
+                List<SessionInfoDto> responseValue = responseBody.isBlank() ? null
+                        : memberVarObjectMapper.readValue(responseBody, new TypeReference<List<SessionInfoDto>>() {
+                        });
+
                 localVarResponse.body().close();
 
                 return new ApiResponse<List<SessionInfoDto>>(localVarResponse.statusCode(),
-                        localVarResponse.headers().map(),
-                        responseBody.isBlank() ? null
-                                : memberVarObjectMapper.readValue(responseBody,
-                                        new TypeReference<List<SessionInfoDto>>() {
-                                        }));
+                        localVarResponse.headers().map(), responseValue);
             } finally {
             }
         } catch (IOException e) {
@@ -490,7 +719,8 @@ public class SessionApi {
 
     private HttpRequest.Builder getSessionsRequestBuilder(@org.eclipse.jdt.annotation.NonNull UUID controllableByUserId,
             @org.eclipse.jdt.annotation.NonNull String deviceId,
-            @org.eclipse.jdt.annotation.NonNull Integer activeWithinSeconds) throws ApiException {
+            @org.eclipse.jdt.annotation.NonNull Integer activeWithinSeconds, Map<String, String> headers)
+            throws ApiException {
 
         HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
 
@@ -524,6 +754,8 @@ public class SessionApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -552,8 +784,35 @@ public class SessionApi {
             @org.eclipse.jdt.annotation.NonNull Integer audioStreamIndex,
             @org.eclipse.jdt.annotation.NonNull Integer subtitleStreamIndex,
             @org.eclipse.jdt.annotation.NonNull Integer startIndex) throws ApiException {
+        play(sessionId, playCommand, itemIds, startPositionTicks, mediaSourceId, audioStreamIndex, subtitleStreamIndex,
+                startIndex, null);
+    }
+
+    /**
+     * Instructs a session to play an item.
+     * 
+     * @param sessionId The session id. (required)
+     * @param playCommand The type of play command to issue (PlayNow, PlayNext, PlayLast). Clients who have not yet
+     *            implemented play next and play last may play now. (required)
+     * @param itemIds The ids of the items to play, comma delimited. (required)
+     * @param startPositionTicks The starting position of the first item. (optional)
+     * @param mediaSourceId Optional. The media source id. (optional)
+     * @param audioStreamIndex Optional. The index of the audio stream to play. (optional)
+     * @param subtitleStreamIndex Optional. The index of the subtitle stream to play. (optional)
+     * @param startIndex Optional. The start index. (optional)
+     * @param headers Optional headers to include in the request
+     * @throws ApiException if fails to make API call
+     */
+    public void play(@org.eclipse.jdt.annotation.Nullable String sessionId,
+            @org.eclipse.jdt.annotation.Nullable PlayCommand playCommand,
+            @org.eclipse.jdt.annotation.Nullable List<UUID> itemIds,
+            @org.eclipse.jdt.annotation.NonNull Long startPositionTicks,
+            @org.eclipse.jdt.annotation.NonNull String mediaSourceId,
+            @org.eclipse.jdt.annotation.NonNull Integer audioStreamIndex,
+            @org.eclipse.jdt.annotation.NonNull Integer subtitleStreamIndex,
+            @org.eclipse.jdt.annotation.NonNull Integer startIndex, Map<String, String> headers) throws ApiException {
         playWithHttpInfo(sessionId, playCommand, itemIds, startPositionTicks, mediaSourceId, audioStreamIndex,
-                subtitleStreamIndex, startIndex);
+                subtitleStreamIndex, startIndex, headers);
     }
 
     /**
@@ -579,8 +838,36 @@ public class SessionApi {
             @org.eclipse.jdt.annotation.NonNull Integer audioStreamIndex,
             @org.eclipse.jdt.annotation.NonNull Integer subtitleStreamIndex,
             @org.eclipse.jdt.annotation.NonNull Integer startIndex) throws ApiException {
+        return playWithHttpInfo(sessionId, playCommand, itemIds, startPositionTicks, mediaSourceId, audioStreamIndex,
+                subtitleStreamIndex, startIndex, null);
+    }
+
+    /**
+     * Instructs a session to play an item.
+     * 
+     * @param sessionId The session id. (required)
+     * @param playCommand The type of play command to issue (PlayNow, PlayNext, PlayLast). Clients who have not yet
+     *            implemented play next and play last may play now. (required)
+     * @param itemIds The ids of the items to play, comma delimited. (required)
+     * @param startPositionTicks The starting position of the first item. (optional)
+     * @param mediaSourceId Optional. The media source id. (optional)
+     * @param audioStreamIndex Optional. The index of the audio stream to play. (optional)
+     * @param subtitleStreamIndex Optional. The index of the subtitle stream to play. (optional)
+     * @param startIndex Optional. The start index. (optional)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<Void> playWithHttpInfo(@org.eclipse.jdt.annotation.Nullable String sessionId,
+            @org.eclipse.jdt.annotation.Nullable PlayCommand playCommand,
+            @org.eclipse.jdt.annotation.Nullable List<UUID> itemIds,
+            @org.eclipse.jdt.annotation.NonNull Long startPositionTicks,
+            @org.eclipse.jdt.annotation.NonNull String mediaSourceId,
+            @org.eclipse.jdt.annotation.NonNull Integer audioStreamIndex,
+            @org.eclipse.jdt.annotation.NonNull Integer subtitleStreamIndex,
+            @org.eclipse.jdt.annotation.NonNull Integer startIndex, Map<String, String> headers) throws ApiException {
         HttpRequest.Builder localVarRequestBuilder = playRequestBuilder(sessionId, playCommand, itemIds,
-                startPositionTicks, mediaSourceId, audioStreamIndex, subtitleStreamIndex, startIndex);
+                startPositionTicks, mediaSourceId, audioStreamIndex, subtitleStreamIndex, startIndex, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -614,7 +901,7 @@ public class SessionApi {
             @org.eclipse.jdt.annotation.NonNull String mediaSourceId,
             @org.eclipse.jdt.annotation.NonNull Integer audioStreamIndex,
             @org.eclipse.jdt.annotation.NonNull Integer subtitleStreamIndex,
-            @org.eclipse.jdt.annotation.NonNull Integer startIndex) throws ApiException {
+            @org.eclipse.jdt.annotation.NonNull Integer startIndex, Map<String, String> headers) throws ApiException {
         // verify the required parameter 'sessionId' is set
         if (sessionId == null) {
             throw new ApiException(400, "Missing the required parameter 'sessionId' when calling play");
@@ -668,6 +955,8 @@ public class SessionApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -690,8 +979,30 @@ public class SessionApi {
             @org.eclipse.jdt.annotation.NonNull List<GeneralCommandType> supportedCommands,
             @org.eclipse.jdt.annotation.NonNull Boolean supportsMediaControl,
             @org.eclipse.jdt.annotation.NonNull Boolean supportsPersistentIdentifier) throws ApiException {
+        postCapabilities(id, playableMediaTypes, supportedCommands, supportsMediaControl, supportsPersistentIdentifier,
+                null);
+    }
+
+    /**
+     * Updates capabilities for a device.
+     * 
+     * @param id The session id. (optional)
+     * @param playableMediaTypes A list of playable media types, comma delimited. Audio, Video, Book, Photo. (optional)
+     * @param supportedCommands A list of supported remote control commands, comma delimited. (optional)
+     * @param supportsMediaControl Determines whether media can be played remotely.. (optional, default to false)
+     * @param supportsPersistentIdentifier Determines whether the device supports a unique identifier. (optional,
+     *            default to true)
+     * @param headers Optional headers to include in the request
+     * @throws ApiException if fails to make API call
+     */
+    public void postCapabilities(@org.eclipse.jdt.annotation.NonNull String id,
+            @org.eclipse.jdt.annotation.NonNull List<MediaType> playableMediaTypes,
+            @org.eclipse.jdt.annotation.NonNull List<GeneralCommandType> supportedCommands,
+            @org.eclipse.jdt.annotation.NonNull Boolean supportsMediaControl,
+            @org.eclipse.jdt.annotation.NonNull Boolean supportsPersistentIdentifier, Map<String, String> headers)
+            throws ApiException {
         postCapabilitiesWithHttpInfo(id, playableMediaTypes, supportedCommands, supportsMediaControl,
-                supportsPersistentIdentifier);
+                supportsPersistentIdentifier, headers);
     }
 
     /**
@@ -711,8 +1022,31 @@ public class SessionApi {
             @org.eclipse.jdt.annotation.NonNull List<GeneralCommandType> supportedCommands,
             @org.eclipse.jdt.annotation.NonNull Boolean supportsMediaControl,
             @org.eclipse.jdt.annotation.NonNull Boolean supportsPersistentIdentifier) throws ApiException {
+        return postCapabilitiesWithHttpInfo(id, playableMediaTypes, supportedCommands, supportsMediaControl,
+                supportsPersistentIdentifier, null);
+    }
+
+    /**
+     * Updates capabilities for a device.
+     * 
+     * @param id The session id. (optional)
+     * @param playableMediaTypes A list of playable media types, comma delimited. Audio, Video, Book, Photo. (optional)
+     * @param supportedCommands A list of supported remote control commands, comma delimited. (optional)
+     * @param supportsMediaControl Determines whether media can be played remotely.. (optional, default to false)
+     * @param supportsPersistentIdentifier Determines whether the device supports a unique identifier. (optional,
+     *            default to true)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<Void> postCapabilitiesWithHttpInfo(@org.eclipse.jdt.annotation.NonNull String id,
+            @org.eclipse.jdt.annotation.NonNull List<MediaType> playableMediaTypes,
+            @org.eclipse.jdt.annotation.NonNull List<GeneralCommandType> supportedCommands,
+            @org.eclipse.jdt.annotation.NonNull Boolean supportsMediaControl,
+            @org.eclipse.jdt.annotation.NonNull Boolean supportsPersistentIdentifier, Map<String, String> headers)
+            throws ApiException {
         HttpRequest.Builder localVarRequestBuilder = postCapabilitiesRequestBuilder(id, playableMediaTypes,
-                supportedCommands, supportsMediaControl, supportsPersistentIdentifier);
+                supportedCommands, supportsMediaControl, supportsPersistentIdentifier, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -743,7 +1077,8 @@ public class SessionApi {
             @org.eclipse.jdt.annotation.NonNull List<MediaType> playableMediaTypes,
             @org.eclipse.jdt.annotation.NonNull List<GeneralCommandType> supportedCommands,
             @org.eclipse.jdt.annotation.NonNull Boolean supportsMediaControl,
-            @org.eclipse.jdt.annotation.NonNull Boolean supportsPersistentIdentifier) throws ApiException {
+            @org.eclipse.jdt.annotation.NonNull Boolean supportsPersistentIdentifier, Map<String, String> headers)
+            throws ApiException {
 
         HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
 
@@ -781,6 +1116,8 @@ public class SessionApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -796,7 +1133,20 @@ public class SessionApi {
      */
     public void postFullCapabilities(@org.eclipse.jdt.annotation.Nullable ClientCapabilitiesDto clientCapabilitiesDto,
             @org.eclipse.jdt.annotation.NonNull String id) throws ApiException {
-        postFullCapabilitiesWithHttpInfo(clientCapabilitiesDto, id);
+        postFullCapabilities(clientCapabilitiesDto, id, null);
+    }
+
+    /**
+     * Updates capabilities for a device.
+     * 
+     * @param clientCapabilitiesDto The MediaBrowser.Model.Session.ClientCapabilities. (required)
+     * @param id The session id. (optional)
+     * @param headers Optional headers to include in the request
+     * @throws ApiException if fails to make API call
+     */
+    public void postFullCapabilities(@org.eclipse.jdt.annotation.Nullable ClientCapabilitiesDto clientCapabilitiesDto,
+            @org.eclipse.jdt.annotation.NonNull String id, Map<String, String> headers) throws ApiException {
+        postFullCapabilitiesWithHttpInfo(clientCapabilitiesDto, id, headers);
     }
 
     /**
@@ -810,7 +1160,23 @@ public class SessionApi {
     public ApiResponse<Void> postFullCapabilitiesWithHttpInfo(
             @org.eclipse.jdt.annotation.Nullable ClientCapabilitiesDto clientCapabilitiesDto,
             @org.eclipse.jdt.annotation.NonNull String id) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = postFullCapabilitiesRequestBuilder(clientCapabilitiesDto, id);
+        return postFullCapabilitiesWithHttpInfo(clientCapabilitiesDto, id, null);
+    }
+
+    /**
+     * Updates capabilities for a device.
+     * 
+     * @param clientCapabilitiesDto The MediaBrowser.Model.Session.ClientCapabilities. (required)
+     * @param id The session id. (optional)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<Void> postFullCapabilitiesWithHttpInfo(
+            @org.eclipse.jdt.annotation.Nullable ClientCapabilitiesDto clientCapabilitiesDto,
+            @org.eclipse.jdt.annotation.NonNull String id, Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = postFullCapabilitiesRequestBuilder(clientCapabilitiesDto, id,
+                headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -839,7 +1205,7 @@ public class SessionApi {
 
     private HttpRequest.Builder postFullCapabilitiesRequestBuilder(
             @org.eclipse.jdt.annotation.Nullable ClientCapabilitiesDto clientCapabilitiesDto,
-            @org.eclipse.jdt.annotation.NonNull String id) throws ApiException {
+            @org.eclipse.jdt.annotation.NonNull String id, Map<String, String> headers) throws ApiException {
         // verify the required parameter 'clientCapabilitiesDto' is set
         if (clientCapabilitiesDto == null) {
             throw new ApiException(400,
@@ -879,6 +1245,8 @@ public class SessionApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -894,7 +1262,20 @@ public class SessionApi {
      */
     public void removeUserFromSession(@org.eclipse.jdt.annotation.Nullable String sessionId,
             @org.eclipse.jdt.annotation.Nullable UUID userId) throws ApiException {
-        removeUserFromSessionWithHttpInfo(sessionId, userId);
+        removeUserFromSession(sessionId, userId, null);
+    }
+
+    /**
+     * Removes an additional user from a session.
+     * 
+     * @param sessionId The session id. (required)
+     * @param userId The user id. (required)
+     * @param headers Optional headers to include in the request
+     * @throws ApiException if fails to make API call
+     */
+    public void removeUserFromSession(@org.eclipse.jdt.annotation.Nullable String sessionId,
+            @org.eclipse.jdt.annotation.Nullable UUID userId, Map<String, String> headers) throws ApiException {
+        removeUserFromSessionWithHttpInfo(sessionId, userId, headers);
     }
 
     /**
@@ -907,7 +1288,21 @@ public class SessionApi {
      */
     public ApiResponse<Void> removeUserFromSessionWithHttpInfo(@org.eclipse.jdt.annotation.Nullable String sessionId,
             @org.eclipse.jdt.annotation.Nullable UUID userId) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = removeUserFromSessionRequestBuilder(sessionId, userId);
+        return removeUserFromSessionWithHttpInfo(sessionId, userId, null);
+    }
+
+    /**
+     * Removes an additional user from a session.
+     * 
+     * @param sessionId The session id. (required)
+     * @param userId The user id. (required)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<Void> removeUserFromSessionWithHttpInfo(@org.eclipse.jdt.annotation.Nullable String sessionId,
+            @org.eclipse.jdt.annotation.Nullable UUID userId, Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = removeUserFromSessionRequestBuilder(sessionId, userId, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -935,8 +1330,8 @@ public class SessionApi {
     }
 
     private HttpRequest.Builder removeUserFromSessionRequestBuilder(
-            @org.eclipse.jdt.annotation.Nullable String sessionId, @org.eclipse.jdt.annotation.Nullable UUID userId)
-            throws ApiException {
+            @org.eclipse.jdt.annotation.Nullable String sessionId, @org.eclipse.jdt.annotation.Nullable UUID userId,
+            Map<String, String> headers) throws ApiException {
         // verify the required parameter 'sessionId' is set
         if (sessionId == null) {
             throw new ApiException(400,
@@ -961,6 +1356,8 @@ public class SessionApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -973,7 +1370,17 @@ public class SessionApi {
      * @throws ApiException if fails to make API call
      */
     public void reportSessionEnded() throws ApiException {
-        reportSessionEndedWithHttpInfo();
+        reportSessionEnded(null);
+    }
+
+    /**
+     * Reports that a session has ended.
+     * 
+     * @param headers Optional headers to include in the request
+     * @throws ApiException if fails to make API call
+     */
+    public void reportSessionEnded(Map<String, String> headers) throws ApiException {
+        reportSessionEndedWithHttpInfo(headers);
     }
 
     /**
@@ -983,7 +1390,18 @@ public class SessionApi {
      * @throws ApiException if fails to make API call
      */
     public ApiResponse<Void> reportSessionEndedWithHttpInfo() throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = reportSessionEndedRequestBuilder();
+        return reportSessionEndedWithHttpInfo(null);
+    }
+
+    /**
+     * Reports that a session has ended.
+     * 
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<Void> reportSessionEndedWithHttpInfo(Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = reportSessionEndedRequestBuilder(headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -1010,7 +1428,7 @@ public class SessionApi {
         }
     }
 
-    private HttpRequest.Builder reportSessionEndedRequestBuilder() throws ApiException {
+    private HttpRequest.Builder reportSessionEndedRequestBuilder(Map<String, String> headers) throws ApiException {
 
         HttpRequest.Builder localVarRequestBuilder = HttpRequest.newBuilder();
 
@@ -1024,6 +1442,8 @@ public class SessionApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -1039,7 +1459,20 @@ public class SessionApi {
      */
     public void reportViewing(@org.eclipse.jdt.annotation.Nullable String itemId,
             @org.eclipse.jdt.annotation.NonNull String sessionId) throws ApiException {
-        reportViewingWithHttpInfo(itemId, sessionId);
+        reportViewing(itemId, sessionId, null);
+    }
+
+    /**
+     * Reports that a session is viewing an item.
+     * 
+     * @param itemId The item id. (required)
+     * @param sessionId The session id. (optional)
+     * @param headers Optional headers to include in the request
+     * @throws ApiException if fails to make API call
+     */
+    public void reportViewing(@org.eclipse.jdt.annotation.Nullable String itemId,
+            @org.eclipse.jdt.annotation.NonNull String sessionId, Map<String, String> headers) throws ApiException {
+        reportViewingWithHttpInfo(itemId, sessionId, headers);
     }
 
     /**
@@ -1052,7 +1485,21 @@ public class SessionApi {
      */
     public ApiResponse<Void> reportViewingWithHttpInfo(@org.eclipse.jdt.annotation.Nullable String itemId,
             @org.eclipse.jdt.annotation.NonNull String sessionId) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = reportViewingRequestBuilder(itemId, sessionId);
+        return reportViewingWithHttpInfo(itemId, sessionId, null);
+    }
+
+    /**
+     * Reports that a session is viewing an item.
+     * 
+     * @param itemId The item id. (required)
+     * @param sessionId The session id. (optional)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<Void> reportViewingWithHttpInfo(@org.eclipse.jdt.annotation.Nullable String itemId,
+            @org.eclipse.jdt.annotation.NonNull String sessionId, Map<String, String> headers) throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = reportViewingRequestBuilder(itemId, sessionId, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -1080,7 +1527,7 @@ public class SessionApi {
     }
 
     private HttpRequest.Builder reportViewingRequestBuilder(@org.eclipse.jdt.annotation.Nullable String itemId,
-            @org.eclipse.jdt.annotation.NonNull String sessionId) throws ApiException {
+            @org.eclipse.jdt.annotation.NonNull String sessionId, Map<String, String> headers) throws ApiException {
         // verify the required parameter 'itemId' is set
         if (itemId == null) {
             throw new ApiException(400, "Missing the required parameter 'itemId' when calling reportViewing");
@@ -1115,6 +1562,8 @@ public class SessionApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -1130,7 +1579,21 @@ public class SessionApi {
      */
     public void sendFullGeneralCommand(@org.eclipse.jdt.annotation.Nullable String sessionId,
             @org.eclipse.jdt.annotation.Nullable GeneralCommand generalCommand) throws ApiException {
-        sendFullGeneralCommandWithHttpInfo(sessionId, generalCommand);
+        sendFullGeneralCommand(sessionId, generalCommand, null);
+    }
+
+    /**
+     * Issues a full general command to a client.
+     * 
+     * @param sessionId The session id. (required)
+     * @param generalCommand The MediaBrowser.Model.Session.GeneralCommand. (required)
+     * @param headers Optional headers to include in the request
+     * @throws ApiException if fails to make API call
+     */
+    public void sendFullGeneralCommand(@org.eclipse.jdt.annotation.Nullable String sessionId,
+            @org.eclipse.jdt.annotation.Nullable GeneralCommand generalCommand, Map<String, String> headers)
+            throws ApiException {
+        sendFullGeneralCommandWithHttpInfo(sessionId, generalCommand, headers);
     }
 
     /**
@@ -1143,7 +1606,23 @@ public class SessionApi {
      */
     public ApiResponse<Void> sendFullGeneralCommandWithHttpInfo(@org.eclipse.jdt.annotation.Nullable String sessionId,
             @org.eclipse.jdt.annotation.Nullable GeneralCommand generalCommand) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = sendFullGeneralCommandRequestBuilder(sessionId, generalCommand);
+        return sendFullGeneralCommandWithHttpInfo(sessionId, generalCommand, null);
+    }
+
+    /**
+     * Issues a full general command to a client.
+     * 
+     * @param sessionId The session id. (required)
+     * @param generalCommand The MediaBrowser.Model.Session.GeneralCommand. (required)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<Void> sendFullGeneralCommandWithHttpInfo(@org.eclipse.jdt.annotation.Nullable String sessionId,
+            @org.eclipse.jdt.annotation.Nullable GeneralCommand generalCommand, Map<String, String> headers)
+            throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = sendFullGeneralCommandRequestBuilder(sessionId, generalCommand,
+                headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -1172,7 +1651,8 @@ public class SessionApi {
 
     private HttpRequest.Builder sendFullGeneralCommandRequestBuilder(
             @org.eclipse.jdt.annotation.Nullable String sessionId,
-            @org.eclipse.jdt.annotation.Nullable GeneralCommand generalCommand) throws ApiException {
+            @org.eclipse.jdt.annotation.Nullable GeneralCommand generalCommand, Map<String, String> headers)
+            throws ApiException {
         // verify the required parameter 'sessionId' is set
         if (sessionId == null) {
             throw new ApiException(400,
@@ -1203,6 +1683,8 @@ public class SessionApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -1218,7 +1700,21 @@ public class SessionApi {
      */
     public void sendGeneralCommand(@org.eclipse.jdt.annotation.Nullable String sessionId,
             @org.eclipse.jdt.annotation.Nullable GeneralCommandType command) throws ApiException {
-        sendGeneralCommandWithHttpInfo(sessionId, command);
+        sendGeneralCommand(sessionId, command, null);
+    }
+
+    /**
+     * Issues a general command to a client.
+     * 
+     * @param sessionId The session id. (required)
+     * @param command The command to send. (required)
+     * @param headers Optional headers to include in the request
+     * @throws ApiException if fails to make API call
+     */
+    public void sendGeneralCommand(@org.eclipse.jdt.annotation.Nullable String sessionId,
+            @org.eclipse.jdt.annotation.Nullable GeneralCommandType command, Map<String, String> headers)
+            throws ApiException {
+        sendGeneralCommandWithHttpInfo(sessionId, command, headers);
     }
 
     /**
@@ -1231,7 +1727,22 @@ public class SessionApi {
      */
     public ApiResponse<Void> sendGeneralCommandWithHttpInfo(@org.eclipse.jdt.annotation.Nullable String sessionId,
             @org.eclipse.jdt.annotation.Nullable GeneralCommandType command) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = sendGeneralCommandRequestBuilder(sessionId, command);
+        return sendGeneralCommandWithHttpInfo(sessionId, command, null);
+    }
+
+    /**
+     * Issues a general command to a client.
+     * 
+     * @param sessionId The session id. (required)
+     * @param command The command to send. (required)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<Void> sendGeneralCommandWithHttpInfo(@org.eclipse.jdt.annotation.Nullable String sessionId,
+            @org.eclipse.jdt.annotation.Nullable GeneralCommandType command, Map<String, String> headers)
+            throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = sendGeneralCommandRequestBuilder(sessionId, command, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -1259,7 +1770,8 @@ public class SessionApi {
     }
 
     private HttpRequest.Builder sendGeneralCommandRequestBuilder(@org.eclipse.jdt.annotation.Nullable String sessionId,
-            @org.eclipse.jdt.annotation.Nullable GeneralCommandType command) throws ApiException {
+            @org.eclipse.jdt.annotation.Nullable GeneralCommandType command, Map<String, String> headers)
+            throws ApiException {
         // verify the required parameter 'sessionId' is set
         if (sessionId == null) {
             throw new ApiException(400, "Missing the required parameter 'sessionId' when calling sendGeneralCommand");
@@ -1283,6 +1795,8 @@ public class SessionApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -1299,7 +1813,22 @@ public class SessionApi {
      */
     public void sendMessageCommand(@org.eclipse.jdt.annotation.Nullable String sessionId,
             @org.eclipse.jdt.annotation.Nullable MessageCommand messageCommand) throws ApiException {
-        sendMessageCommandWithHttpInfo(sessionId, messageCommand);
+        sendMessageCommand(sessionId, messageCommand, null);
+    }
+
+    /**
+     * Issues a command to a client to display a message to the user.
+     * 
+     * @param sessionId The session id. (required)
+     * @param messageCommand The MediaBrowser.Model.Session.MessageCommand object containing Header, Message Text, and
+     *            TimeoutMs. (required)
+     * @param headers Optional headers to include in the request
+     * @throws ApiException if fails to make API call
+     */
+    public void sendMessageCommand(@org.eclipse.jdt.annotation.Nullable String sessionId,
+            @org.eclipse.jdt.annotation.Nullable MessageCommand messageCommand, Map<String, String> headers)
+            throws ApiException {
+        sendMessageCommandWithHttpInfo(sessionId, messageCommand, headers);
     }
 
     /**
@@ -1313,7 +1842,24 @@ public class SessionApi {
      */
     public ApiResponse<Void> sendMessageCommandWithHttpInfo(@org.eclipse.jdt.annotation.Nullable String sessionId,
             @org.eclipse.jdt.annotation.Nullable MessageCommand messageCommand) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = sendMessageCommandRequestBuilder(sessionId, messageCommand);
+        return sendMessageCommandWithHttpInfo(sessionId, messageCommand, null);
+    }
+
+    /**
+     * Issues a command to a client to display a message to the user.
+     * 
+     * @param sessionId The session id. (required)
+     * @param messageCommand The MediaBrowser.Model.Session.MessageCommand object containing Header, Message Text, and
+     *            TimeoutMs. (required)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<Void> sendMessageCommandWithHttpInfo(@org.eclipse.jdt.annotation.Nullable String sessionId,
+            @org.eclipse.jdt.annotation.Nullable MessageCommand messageCommand, Map<String, String> headers)
+            throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = sendMessageCommandRequestBuilder(sessionId, messageCommand,
+                headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -1341,7 +1887,8 @@ public class SessionApi {
     }
 
     private HttpRequest.Builder sendMessageCommandRequestBuilder(@org.eclipse.jdt.annotation.Nullable String sessionId,
-            @org.eclipse.jdt.annotation.Nullable MessageCommand messageCommand) throws ApiException {
+            @org.eclipse.jdt.annotation.Nullable MessageCommand messageCommand, Map<String, String> headers)
+            throws ApiException {
         // verify the required parameter 'sessionId' is set
         if (sessionId == null) {
             throw new ApiException(400, "Missing the required parameter 'sessionId' when calling sendMessageCommand");
@@ -1371,6 +1918,8 @@ public class SessionApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -1390,7 +1939,25 @@ public class SessionApi {
             @org.eclipse.jdt.annotation.Nullable PlaystateCommand command,
             @org.eclipse.jdt.annotation.NonNull Long seekPositionTicks,
             @org.eclipse.jdt.annotation.NonNull String controllingUserId) throws ApiException {
-        sendPlaystateCommandWithHttpInfo(sessionId, command, seekPositionTicks, controllingUserId);
+        sendPlaystateCommand(sessionId, command, seekPositionTicks, controllingUserId, null);
+    }
+
+    /**
+     * Issues a playstate command to a client.
+     * 
+     * @param sessionId The session id. (required)
+     * @param command The MediaBrowser.Model.Session.PlaystateCommand. (required)
+     * @param seekPositionTicks The optional position ticks. (optional)
+     * @param controllingUserId The optional controlling user id. (optional)
+     * @param headers Optional headers to include in the request
+     * @throws ApiException if fails to make API call
+     */
+    public void sendPlaystateCommand(@org.eclipse.jdt.annotation.Nullable String sessionId,
+            @org.eclipse.jdt.annotation.Nullable PlaystateCommand command,
+            @org.eclipse.jdt.annotation.NonNull Long seekPositionTicks,
+            @org.eclipse.jdt.annotation.NonNull String controllingUserId, Map<String, String> headers)
+            throws ApiException {
+        sendPlaystateCommandWithHttpInfo(sessionId, command, seekPositionTicks, controllingUserId, headers);
     }
 
     /**
@@ -1407,8 +1974,27 @@ public class SessionApi {
             @org.eclipse.jdt.annotation.Nullable PlaystateCommand command,
             @org.eclipse.jdt.annotation.NonNull Long seekPositionTicks,
             @org.eclipse.jdt.annotation.NonNull String controllingUserId) throws ApiException {
+        return sendPlaystateCommandWithHttpInfo(sessionId, command, seekPositionTicks, controllingUserId, null);
+    }
+
+    /**
+     * Issues a playstate command to a client.
+     * 
+     * @param sessionId The session id. (required)
+     * @param command The MediaBrowser.Model.Session.PlaystateCommand. (required)
+     * @param seekPositionTicks The optional position ticks. (optional)
+     * @param controllingUserId The optional controlling user id. (optional)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<Void> sendPlaystateCommandWithHttpInfo(@org.eclipse.jdt.annotation.Nullable String sessionId,
+            @org.eclipse.jdt.annotation.Nullable PlaystateCommand command,
+            @org.eclipse.jdt.annotation.NonNull Long seekPositionTicks,
+            @org.eclipse.jdt.annotation.NonNull String controllingUserId, Map<String, String> headers)
+            throws ApiException {
         HttpRequest.Builder localVarRequestBuilder = sendPlaystateCommandRequestBuilder(sessionId, command,
-                seekPositionTicks, controllingUserId);
+                seekPositionTicks, controllingUserId, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -1439,7 +2025,8 @@ public class SessionApi {
             @org.eclipse.jdt.annotation.Nullable String sessionId,
             @org.eclipse.jdt.annotation.Nullable PlaystateCommand command,
             @org.eclipse.jdt.annotation.NonNull Long seekPositionTicks,
-            @org.eclipse.jdt.annotation.NonNull String controllingUserId) throws ApiException {
+            @org.eclipse.jdt.annotation.NonNull String controllingUserId, Map<String, String> headers)
+            throws ApiException {
         // verify the required parameter 'sessionId' is set
         if (sessionId == null) {
             throw new ApiException(400, "Missing the required parameter 'sessionId' when calling sendPlaystateCommand");
@@ -1480,6 +2067,8 @@ public class SessionApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
@@ -1495,7 +2084,21 @@ public class SessionApi {
      */
     public void sendSystemCommand(@org.eclipse.jdt.annotation.Nullable String sessionId,
             @org.eclipse.jdt.annotation.Nullable GeneralCommandType command) throws ApiException {
-        sendSystemCommandWithHttpInfo(sessionId, command);
+        sendSystemCommand(sessionId, command, null);
+    }
+
+    /**
+     * Issues a system command to a client.
+     * 
+     * @param sessionId The session id. (required)
+     * @param command The command to send. (required)
+     * @param headers Optional headers to include in the request
+     * @throws ApiException if fails to make API call
+     */
+    public void sendSystemCommand(@org.eclipse.jdt.annotation.Nullable String sessionId,
+            @org.eclipse.jdt.annotation.Nullable GeneralCommandType command, Map<String, String> headers)
+            throws ApiException {
+        sendSystemCommandWithHttpInfo(sessionId, command, headers);
     }
 
     /**
@@ -1508,7 +2111,22 @@ public class SessionApi {
      */
     public ApiResponse<Void> sendSystemCommandWithHttpInfo(@org.eclipse.jdt.annotation.Nullable String sessionId,
             @org.eclipse.jdt.annotation.Nullable GeneralCommandType command) throws ApiException {
-        HttpRequest.Builder localVarRequestBuilder = sendSystemCommandRequestBuilder(sessionId, command);
+        return sendSystemCommandWithHttpInfo(sessionId, command, null);
+    }
+
+    /**
+     * Issues a system command to a client.
+     * 
+     * @param sessionId The session id. (required)
+     * @param command The command to send. (required)
+     * @param headers Optional headers to include in the request
+     * @return ApiResponse&lt;Void&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<Void> sendSystemCommandWithHttpInfo(@org.eclipse.jdt.annotation.Nullable String sessionId,
+            @org.eclipse.jdt.annotation.Nullable GeneralCommandType command, Map<String, String> headers)
+            throws ApiException {
+        HttpRequest.Builder localVarRequestBuilder = sendSystemCommandRequestBuilder(sessionId, command, headers);
         try {
             HttpResponse<InputStream> localVarResponse = memberVarHttpClient.send(localVarRequestBuilder.build(),
                     HttpResponse.BodyHandlers.ofInputStream());
@@ -1536,7 +2154,8 @@ public class SessionApi {
     }
 
     private HttpRequest.Builder sendSystemCommandRequestBuilder(@org.eclipse.jdt.annotation.Nullable String sessionId,
-            @org.eclipse.jdt.annotation.Nullable GeneralCommandType command) throws ApiException {
+            @org.eclipse.jdt.annotation.Nullable GeneralCommandType command, Map<String, String> headers)
+            throws ApiException {
         // verify the required parameter 'sessionId' is set
         if (sessionId == null) {
             throw new ApiException(400, "Missing the required parameter 'sessionId' when calling sendSystemCommand");
@@ -1560,6 +2179,8 @@ public class SessionApi {
         if (memberVarReadTimeout != null) {
             localVarRequestBuilder.timeout(memberVarReadTimeout);
         }
+        // Add custom headers if provided
+        localVarRequestBuilder = HttpRequestBuilderExtensions.withAdditionalHeaders(localVarRequestBuilder, headers);
         if (memberVarInterceptor != null) {
             memberVarInterceptor.accept(localVarRequestBuilder);
         }
