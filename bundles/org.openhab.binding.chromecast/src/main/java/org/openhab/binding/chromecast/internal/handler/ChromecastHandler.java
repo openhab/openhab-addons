@@ -16,9 +16,12 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.security.GeneralSecurityException;
+import java.time.Duration;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
+
+import javax.jmdns.ServiceInfo;
 
 import org.digitalmediaserver.cast.CastDevice;
 import org.digitalmediaserver.cast.event.CastEvent;
@@ -32,6 +35,7 @@ import org.openhab.binding.chromecast.internal.ChromecastStatusUpdater;
 import org.openhab.binding.chromecast.internal.action.ChromecastActions;
 import org.openhab.binding.chromecast.internal.config.ChromecastConfig;
 import org.openhab.core.common.ThreadPoolManager;
+import org.openhab.core.io.transport.mdns.MDNSClient;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.thing.ChannelUID;
@@ -67,6 +71,8 @@ public class ChromecastHandler extends BaseThingHandler {
     private final ScheduledExecutorService executor = ThreadPoolManager
             .getScheduledPool(CHROMECAST_HANDLER_THREADPOOL_NAME);
 
+    private final MDNSClient mdnsClient;
+
     /**
      * The actual implementation. A new one is created each time #initialize is called.
      */
@@ -77,8 +83,9 @@ public class ChromecastHandler extends BaseThingHandler {
      *
      * @param thing the thing the coordinator should be created for
      */
-    public ChromecastHandler(final Thing thing) {
+    public ChromecastHandler(final Thing thing, MDNSClient mdnsClient) {
         super(thing);
+        this.mdnsClient = mdnsClient;
     }
 
     @Override
@@ -115,7 +122,19 @@ public class ChromecastHandler extends BaseThingHandler {
         }
 
         if (localCoordinator == null) {
-            CastDevice chromecast = new CastDevice(config.host, inetAddress, null, null, null, null, null, null, 1,
+            ServiceInfo serviceInfo = null;
+            InetAddress[] ias;
+            ServiceInfo[] serviceInfos = mdnsClient.list(CastDevice.SERVICE_TYPE, Duration.ofMillis(300L));
+            for (ServiceInfo sInfo : serviceInfos) {
+                ias = sInfo.getInetAddresses();
+                for (InetAddress ia : ias) {
+                    if (inetAddress.equals(ia)) {
+                        serviceInfo = sInfo;
+                        break;
+                    }
+                }
+            }
+            CastDevice chromecast = serviceInfo != null ? new CastDevice(serviceInfo, true) :  new CastDevice(config.host, inetAddress, null, null, null, null, null, null, 1,
                     null, true);
             localCoordinator = new Coordinator(this, thing, chromecast, config.refreshRate);
             coordinator = localCoordinator;
