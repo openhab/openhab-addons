@@ -32,7 +32,7 @@
 			</parameter>
 			<parameter name="lightName" type="text">
 				<label>Light Name</label>
-				<description>Deprecated: use name parameter</description>
+				<description>Deprecated: use 'name' parameter instead</description>
 				<advanced>true</advanced>
 			</parameter>
 		</config-description>

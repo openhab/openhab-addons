@@ -25,8 +25,8 @@ import org.openhab.binding.meross.internal.api.MerossEnum.Namespace;
 public class TypeFactory {
     public static ModeFactory getFactory(Namespace commandNamespace) {
         return switch (commandNamespace) {
-            case Namespace.CONTROL_TOGGLEX -> new TogglexFactory();
-            case Namespace.GARAGE_DOOR_STATE -> new DoorStateFactory();
+            case CONTROL_TOGGLEX -> new TogglexFactory();
+            case GARAGE_DOOR_STATE -> new DoorStateFactory();
             default -> throw new IllegalStateException("Unexpected value: " + commandNamespace.name());
         };
     }

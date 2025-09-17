@@ -124,8 +124,8 @@ public class MerossDiscoveryService extends AbstractThingHandlerDiscoveryService
                 deviceProperties.put(MerossBindingConstants.PROPERTY_DEVICE_NAME, device.devName());
                 deviceProperties.put(MerossBindingConstants.PROPERTY_DEVICE_UUID, device.uuid());
                 deviceProperties.put(DEVICE_TYPE, device.deviceType());
-                deviceProperties.put(DEVICE_SUB_TYPE, device.deviceType());
-                deviceProperties.put(FIRMWARE_VERSION, device.subType());
+                deviceProperties.put(DEVICE_SUB_TYPE, device.subType());
+                deviceProperties.put(FIRMWARE_VERSION, device.firmwareVersion());
                 deviceProperties.put(HARDWARE_VERSION, device.hardwareVersion());
                 deviceProperties.put(REGION, device.region());
                 thingDiscovered(DiscoveryResultBuilder.create(deviceThing).withLabel(device.devName())

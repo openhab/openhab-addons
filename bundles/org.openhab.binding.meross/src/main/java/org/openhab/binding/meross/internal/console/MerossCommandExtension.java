@@ -136,7 +136,10 @@ public class MerossCommandExtension extends AbstractConsoleCommandExtension impl
 
         String deviceUuid = null;
         if (args.length > 2 && FINGERPRINT.equalsIgnoreCase(args[0])) {
-            deviceUuid = handlers.get(0).getDevUUIDByDevName(args[2]);
+            // Check if argument is a device uuid, if not try device name
+            deviceUuid = handlers.get(0).getDevices().stream().map(Device::uuid).filter(uuid -> uuid == args[2])
+                    .findFirst().orElse(null);
+            deviceUuid = deviceUuid != null ? deviceUuid : handlers.get(0).getDevUUIDByDevName(args[2]);
         }
 
         if (DEVICES.equalsIgnoreCase(args[0])) {
@@ -154,7 +157,7 @@ public class MerossCommandExtension extends AbstractConsoleCommandExtension impl
             }
             List<Device> devices = handler.getDevices();
             devices.forEach(device -> {
-                console.println(device.devName() + ": " + device.uuid());
+                console.println(String.format("%-25s: %s", device.devName(), device.uuid()));
             });
             if (multipleAccount) {
                 console.println("### End account");
@@ -319,8 +322,8 @@ public class MerossCommandExtension extends AbstractConsoleCommandExtension impl
                 buildCommandUsage(DEVICES + " <userEmail>", "list all devices on account"),
                 buildCommandUsage(FINGERPRINT, "generate fingerprint for all devices on all accounts"),
                 buildCommandUsage(FINGERPRINT + " <userEmail>", "generate fingerprint for devices on account"),
-                buildCommandUsage(FINGERPRINT + " <userEmail> <devName>",
-                        "generate fingerprint for a specific device on account") });
+                buildCommandUsage(FINGERPRINT + " <userEmail> <device>",
+                        "generate fingerprint for a specific device with uuid or name on account") });
     }
 
     @Override
@@ -341,10 +344,12 @@ public class MerossCommandExtension extends AbstractConsoleCommandExtension impl
             ThingHandler handler = thingRegistry.stream()
                     .filter(t -> THING_TYPE_GATEWAY.equals(t.getThingTypeUID())
                             && t.getConfiguration().get("userEmail").toString().equals(args[1]))
-                    .map(t -> t.getHandler()).findFirst().get();
-            return new StringsCompleter(
-                    ((MerossBridgeHandler) handler).getDevices().stream().map(device -> device.devName()).toList(),
-                    false).complete(args, cursorArgumentIndex, cursorPosition, candidates);
+                    .map(t -> t.getHandler()).findFirst().orElse(null);
+            if (handler != null) {
+                return new StringsCompleter(
+                        ((MerossBridgeHandler) handler).getDevices().stream().map(device -> device.devName()).toList(),
+                        false).complete(args, cursorArgumentIndex, cursorPosition, candidates);
+            }
         }
         return false;
     }
