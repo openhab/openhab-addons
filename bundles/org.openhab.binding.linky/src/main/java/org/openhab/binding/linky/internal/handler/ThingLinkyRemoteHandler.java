@@ -515,10 +515,15 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
         dailyIndex.getValue().ifPresentOrElse(values -> {
             int dSize = values.baseValue.length;
 
-            updateTimeSeries(LINKY_REMOTE_DAILY_GROUP, CHANNEL_CONSUMPTION_IDX0, values.baseValue, 0,
-                    Units.KILOWATT_HOUR);
-            updateTimeSeries(LINKY_REMOTE_DAILY_GROUP, CHANNEL_CONSUMPTION_IDX1, values.baseValue, 1,
-                    Units.KILOWATT_HOUR);
+            for (int idx = 0; idx < 10; idx++) {
+                updateTimeSeries(LINKY_REMOTE_DAILY_GROUP, CHANNEL_CONSUMPTION_SUPPLIER_IDX + idx, values.baseValue,
+                        idx, Units.KILOWATT_HOUR);
+            }
+
+            for (int idx = 0; idx < 4; idx++) {
+                updateTimeSeries(LINKY_REMOTE_DAILY_GROUP, CHANNEL_CONSUMPTION_DISTRIBUTOR_IDX + idx, values.baseValue,
+                        idx, Units.KILOWATT_HOUR);
+            }
 
             /*
              * updateKwhChannel(LINKY_REMOTE_DAILY_GROUP, CHANNEL_DAY_MINUS_1, values.baseValue[dSize - 1].value);

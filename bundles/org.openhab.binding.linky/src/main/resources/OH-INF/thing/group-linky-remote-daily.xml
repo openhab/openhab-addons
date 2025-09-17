@@ -26,14 +26,63 @@
 				<label>Consumption</label>
 				<description>The energy consumption</description>
 			</channel>
-			<channel id="consumptionIdx0" typeId="consumption">
-				<label>Consumption Idx0</label>
-				<description>The energy consumption Idx0</description>
+			<channel id="consumptionSupplierIdx0" typeId="consumption">
+				<label>Consumption Supplier Idx0</label>
+				<description>The supplier energy consumption Idx0</description>
 			</channel>
-			<channel id="consumptionIdx1" typeId="consumption">
-				<label>Consumption Idx1</label>
-				<description>The energy consumption Idx1</description>
-			</channel>
+            <channel id="consumptionSupplierIdx1" typeId="consumption">
+                <label>Consumption Supplier Idx1</label>
+                <description>The supplier energy consumption Idx1</description>
+            </channel>
+            <channel id="consumptionSupplierIdx2" typeId="consumption">
+                <label>Consumption Supplier Idx2</label>
+                <description>The supplier energy consumption Idx2</description>
+            </channel>
+            <channel id="consumptionSupplierIdx3" typeId="consumption">
+                <label>Consumption Supplier Idx3</label>
+                <description>The supplier energy consumption Idx3</description>
+            </channel>
+            <channel id="consumptionSupplierIdx4" typeId="consumption">
+                <label>Consumption Supplier Idx4</label>
+                <description>The supplier energy consumption Idx4</description>
+            </channel>
+            <channel id="consumptionSupplierIdx5" typeId="consumption">
+                <label>Consumption Supplier Idx5</label>
+                <description>The supplier energy consumption Idx5</description>
+            </channel>
+            <channel id="consumptionSupplierIdx6" typeId="consumption">
+                <label>Consumption Supplier Idx6</label>
+                <description>The supplier energy consumption Idx6</description>
+            </channel>
+            <channel id="consumptionSupplierIdx7" typeId="consumption">
+                <label>Consumption Supplier Idx7</label>
+                <description>The supplier energy consumption Idx7</description>
+            </channel>
+            <channel id="consumptionSupplierIdx8" typeId="consumption">
+                <label>Consumption Supplier Idx8</label>
+                <description>The supplier energy consumption Idx8</description>
+            </channel>
+            <channel id="consumptionSupplierIdx9" typeId="consumption">
+                <label>Consumption Supplier Idx9</label>
+                <description>The supplier energy consumption Idx9</description>
+            </channel>
+            
+            <channel id="consumptionDistributorIdx0" typeId="consumption">
+                <label>Consumption Distributor Idx0</label>
+                <description>The distributor energy consumption Idx0</description>
+            </channel>
+            <channel id="consumptionDistributorIdx1" typeId="consumption">
+                <label>Consumption Distributor Idx1</label>
+                <description>The distributor energy consumption Idx1</description>
+            </channel>
+            <channel id="consumptionDistributorIdx2" typeId="consumption">
+                <label>Consumption Distributor Idx2</label>
+                <description>The distributor energy consumption Idx2</description>
+            </channel>
+            <channel id="consumptionDistributorIdx3" typeId="consumption">
+                <label>Consumption Distributor Idx3</label>
+                <description>The distributor energy consumption Idx3</description>
+            </channel>
 
 			<channel id="max-power" typeId="power">
 				<label>Peak Value</label>
