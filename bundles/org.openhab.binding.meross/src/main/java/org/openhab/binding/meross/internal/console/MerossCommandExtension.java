@@ -155,9 +155,26 @@ public class MerossCommandExtension extends AbstractConsoleCommandExtension impl
             if (multipleAccount) {
                 console.println("### Account " + handler.getThing().getConfiguration().get("userEmail").toString());
             }
+
+            Map<String, MerossDeviceHandler> deviceHandlers = thingRegistry.stream()
+                    .filter(t -> DEVICE_THING_TYPES_UIDS.contains(t.getThingTypeUID()))
+                    .map(d -> ((MerossDeviceHandler) d.getHandler())).filter(Objects::nonNull).collect(Collectors
+                            .toMap(h -> h.getThing().getConfiguration().get("uuid").toString(), Function.identity()));
+
             List<Device> devices = handler.getDevices();
             devices.forEach(device -> {
-                console.println(String.format("%-25s: %s", device.devName(), device.uuid()));
+                console.print(String.format("%-25s: %s", device.devName(), device.uuid()));
+
+                MerossDeviceHandler deviceHandler = deviceHandlers.get(device.uuid());
+                if (deviceHandler != null) {
+                    // If the device is already configured we also add the IP address to the output
+                    String ipAddress = deviceHandler.getIpAddress();
+                    if (ipAddress != null) {
+                        console.print(String.format(" - %s", ipAddress));
+                    }
+                }
+
+                console.println("");
             });
             if (multipleAccount) {
                 console.println("### End account");

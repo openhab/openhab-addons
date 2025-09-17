@@ -30,15 +30,15 @@ import org.eclipse.jdt.annotation.Nullable;
 public class ContentAnonymizer {
 
     private static final Map<String, String> ANONYMIZED_DEVICE_UUID_MAP = new HashMap<>();
-    private static final String ANONYMIZED_DEVICE_UUID = "anonymized_deviceUuid_";
+    private static final String ANONYMIZED_DEVICE_UUID = "#############################_";
     private static int anonymizedDeviceUuidIndex = 0;
 
     private static final Map<String, String> ANONYMIZED_USER_ID_MAP = new HashMap<>();
-    private static final String ANONYMIZED_USER_ID = "anonymized_userId_";
+    private static final String ANONYMIZED_USER_ID = "########_";
     private static int anonymizedUserIdIndex = 0;
 
     private static final Map<String, String> ANONYMIZED_APP_ID_MAP = new HashMap<>();
-    private static final String ANONYMIZED_APP_ID = "anonymized_appId_";
+    private static final String ANONYMIZED_APP_ID = "#########_";
     private static int anonymizedAppIdIndex = 0;
 
     private static final Pattern APPLIANCE_TOPIC_PATTERN = Pattern
@@ -50,6 +50,8 @@ public class ContentAnonymizer {
 
     private static final Pattern MAC_ADDRESS_PATTERN = Pattern
             .compile("(?<leading>\"\\w*[Mm]ac\\w*\"):\"(?<macAddress>(\\w{2}:){5}\\w{2})\"");
+    private static final Pattern IP_ADDRESS_PATTERN = Pattern
+            .compile("(?<leading>\"\\w*[Ii]p\\w*\"):\"(?<ipAddress>(\\d{1-3}\\.){3}\\d{1-3})\"");
 
     public static @Nullable String anonymizeTopic(@Nullable String topic) {
         if (topic == null) {
@@ -137,6 +139,15 @@ public class ContentAnonymizer {
         while (matcher.find()) {
             String leading = matcher.group("leading");
             matcher.appendReplacement(result, leading + ":\"xx:xx:xx:xx:xx:xx\"");
+        }
+        matcher.appendTail(result);
+        anonymized = result.toString();
+
+        result = new StringBuffer();
+        matcher = IP_ADDRESS_PATTERN.matcher(anonymized);
+        while (matcher.find()) {
+            String leading = matcher.group("leading");
+            matcher.appendReplacement(result, leading + ":\"xxx.xxx.xxx.xxx\"");
         }
         matcher.appendTail(result);
         anonymized = result.toString();
