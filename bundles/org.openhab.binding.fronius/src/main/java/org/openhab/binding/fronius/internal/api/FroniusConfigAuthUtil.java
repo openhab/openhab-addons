@@ -130,8 +130,8 @@ public class FroniusConfigAuthUtil {
         String response = hashAsHex(hashAlgorithm,
                 ha1 + ":" + nonce + ":" + String.format("%08x", nc) + ":" + cnonce + ":" + qop + ":" + ha2);
 
-        String algorithm = hashAlgorithm.equals("SHA-256") ? "SHA256" : "MD5"; // workaround Fronius expects wrong algo
-                                                                               // name
+        // Fronius expects "SHA256" as algorithm name instead of the standard "SHA-256"
+        String algorithm = hashAlgorithm.equals("SHA-256") ? "SHA256" : "MD5";
         return String.format(DIGEST_AUTH_HEADER_FORMAT, username, realm, nonce, algorithm, uri, response, qop, nc,
                 cnonce);
     }
@@ -142,7 +142,7 @@ public class FroniusConfigAuthUtil {
      * @param algorithm the hash algorithm to use
      * @param data the data to hash
      * @return the hashed data as a hex string
-     * @throws NoSuchAlgorithmException if the MD5 algorithm is not available
+     * @throws NoSuchAlgorithmException if the specified algorithm is not available
      */
     private static String hashAsHex(String algorithm, String data) throws NoSuchAlgorithmException {
         MessageDigest md = MessageDigest.getInstance(algorithm);

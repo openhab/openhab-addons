@@ -107,7 +107,8 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
             String firmwareVersion = localInverterInfo.firmware();
             if (firmwareVersion != null) {
                 int hyphenIndex = firmwareVersion.indexOf('-');
-                SemverVersion version = SemverVersion.fromString(firmwareVersion.substring(0, hyphenIndex));
+                String versionString = (hyphenIndex > 0) ? firmwareVersion.substring(0, hyphenIndex) : firmwareVersion;
+                SemverVersion version = SemverVersion.fromString(versionString);
                 if (version.isGreaterThanOrEqualTo(SemverVersion.fromString("1.36.0"))) {
                     batteryControl = new FroniusBatteryControl(httpClient, version, scheme, hostname, username,
                             password);
