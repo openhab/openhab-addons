@@ -25,6 +25,7 @@ public class Args {
     public String propertyName;
     public Object propertyKey;
 
+    public int event;
     public int type;
     public String label;
     public String eventLabel;

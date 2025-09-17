@@ -176,6 +176,7 @@ public class ZwaveJSBridgeHandler extends BaseBridgeHandler implements ZwaveEven
                         Event event = normalizeNotificationEvent(eventMsg.event);
                         nodeListener.onNodeStateChanged(event);
                     }
+                    break;
                 case "value updated":
                 case "value notification":
                     if (nodeListener != null) {
