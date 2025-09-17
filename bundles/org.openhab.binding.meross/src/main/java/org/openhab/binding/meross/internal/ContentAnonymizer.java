@@ -51,7 +51,7 @@ public class ContentAnonymizer {
     private static final Pattern MAC_ADDRESS_PATTERN = Pattern
             .compile("(?<leading>\"\\w*[Mm]ac\\w*\"):\"(?<macAddress>(\\w{2}:){5}\\w{2})\"");
     private static final Pattern IP_ADDRESS_PATTERN = Pattern
-            .compile("(?<leading>\"\\w*[Ii]p\\w*\"):\"(?<ipAddress>(\\d{1-3}\\.){3}\\d{1-3})\"");
+            .compile("(?<leading>\"\\w*[Ii][Pp]\\w*\"):\"(?<ipAddress>(\\d{1,3}\\.){3}\\d{1,3})\"");
 
     public static @Nullable String anonymizeTopic(@Nullable String topic) {
         if (topic == null) {
