@@ -137,9 +137,8 @@ public class SbusMotionSensorHandler extends AbstractSbusHandler {
     @Override
     protected void processAsyncMessage(SbusResponse response) {
         try {
-            if (response instanceof MotionSensorStatusReport) {
+            if (response instanceof MotionSensorStatusReport report) {
                 // Process motion sensor status report (0x02CA broadcast)
-                MotionSensorStatusReport report = (MotionSensorStatusReport) response;
                 updateChannelStatesFromReport(report);
                 logger.debug("Processed async motion sensor status report for handler {}", getThing().getUID());
             } else if (response instanceof ReadNineInOneStatusResponse) {
