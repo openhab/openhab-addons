@@ -28,6 +28,7 @@ import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.api.Response;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
+import org.openhab.core.thing.firmware.types.SemverVersion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,13 +45,13 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class FroniusConfigAuthUtil {
     private static final String AUTHENTICATE_HEADER = "X-Www-Authenticate";
-    private static final String DIGEST_AUTH_HEADER_FORMAT = "Digest username=\"%s\", realm=\"%s\", nonce=\"%s\", uri=\"%s\", response=\"%s\", qop=%s, nc=%08x, cnonce=\"%s\"";
+    private static final String DIGEST_AUTH_HEADER_FORMAT = "Digest username=\"%s\", realm=\"%s\", nonce=\"%s\", algorithm=\"%s\", uri=\"%s\", response=\"%s\", qop=%s, nc=%08x, cnonce=\"%s\"";
     private static final String LOGIN_ENDPOINT = "/commands/Login";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FroniusConfigAuthUtil.class);
 
     /**
-     * Sends a HTTP GET request to the given login URI and extracts the authentication parameters from the
+     * Sends an HTTP GET request to the given login URI and extracts the authentication parameters from the
      * authentication header.
      * This method uses a {@link Response.Listener.Adapter} to intercept the response headers and extract the
      * authentication header, as normal digest authentication using
@@ -65,7 +66,7 @@ public class FroniusConfigAuthUtil {
      */
     private static Map<String, String> getAuthParams(HttpClient httpClient, URI loginUri, int timeout)
             throws FroniusCommunicationException {
-        LOGGER.debug("Sending login request to get authentication challenge");
+        LOGGER.debug("Sending login request to get authentication challenge ...");
         CountDownLatch latch = new CountDownLatch(1);
         Request request = httpClient.newRequest(loginUri).timeout(timeout, TimeUnit.MILLISECONDS);
         XWwwAuthenticateHeaderListener xWwwAuthenticateHeaderListener = new XWwwAuthenticateHeaderListener(latch);
@@ -82,7 +83,7 @@ public class FroniusConfigAuthUtil {
         if (authHeader == null) {
             throw new FroniusCommunicationException("No authentication header found in login response");
         }
-        LOGGER.debug("Parsing authentication challenge");
+        LOGGER.debug("Got login response. Parsing authentication challenge ...");
 
         // Extract parameters from the header
         Map<String, String> params = new HashMap<>();
@@ -96,57 +97,55 @@ public class FroniusConfigAuthUtil {
                 params.put(key, value);
             }
         }
+
+        LOGGER.debug("Got authentication challenge.");
         return params;
     }
 
     /**
      * Creates a Digest Authentication header for the given parameters.
      *
-     * @param nonce
-     * @param realm
-     * @param qop
+     * @param hashAlgorithm the hash algorithm to use, e.g. <code>MD5</code> or <code>SHA-256</code>
      * @param uri
      * @param method
      * @param username
      * @param password
+     * @param nonce
+     * @param realm
+     * @param qop
      * @param nc
      * @param cnonce
      * @return the digest authentication header
-     * @throws FroniusCommunicationException if an authentication parameter is missing or the digest header could not be
-     *             created
+     * @throws IllegalArgumentException when authentication parameters are missing
+     * @throws NoSuchAlgorithmException when no hash algorithm with the given name is available
      */
-    private static String createDigestHeader(@Nullable String nonce, @Nullable String realm, @Nullable String qop,
-            String uri, HttpMethod method, String username, String password, int nc, String cnonce)
-            throws FroniusCommunicationException {
-        if (nonce == null || realm == null || qop == null) {
-            throw new FroniusCommunicationException("Failed to create digest header",
-                    new IllegalArgumentException("Missing authentication parameters"));
+    private static String createDigestHeader(String hashAlgorithm, String uri, HttpMethod method, String username,
+            String password, @Nullable String nonce, @Nullable String realm, @Nullable String qop, int nc,
+            @Nullable String cnonce) throws IllegalArgumentException, NoSuchAlgorithmException {
+        if (nonce == null || realm == null || qop == null || cnonce == null) {
+            throw new IllegalArgumentException("Missing authentication parameters");
         }
-        LOGGER.debug("Creating digest authentication header");
-        String ha1;
-        String ha2;
-        String response;
-        try {
-            ha1 = md5Hex(username + ":" + realm + ":" + password);
-            ha2 = md5Hex(method.asString() + ":" + uri);
-            response = md5Hex(
-                    ha1 + ":" + nonce + ":" + String.format("%08x", nc) + ":" + cnonce + ":" + qop + ":" + ha2);
-        } catch (NoSuchAlgorithmException e) {
-            throw new FroniusCommunicationException("Failed to create digest header", e);
-        }
+        String ha1 = hashAsHex(hashAlgorithm, username + ":" + realm + ":" + password);
+        String ha2 = hashAsHex(hashAlgorithm, method.asString() + ":" + uri);
+        String response = hashAsHex(hashAlgorithm,
+                ha1 + ":" + nonce + ":" + String.format("%08x", nc) + ":" + cnonce + ":" + qop + ":" + ha2);
 
-        return String.format(DIGEST_AUTH_HEADER_FORMAT, username, realm, nonce, uri, response, qop, nc, cnonce);
+        String algorithm = hashAlgorithm.equals("SHA-256") ? "SHA256" : "MD5"; // workaround Fronius expects wrong algo
+                                                                               // name
+        return String.format(DIGEST_AUTH_HEADER_FORMAT, username, realm, nonce, algorithm, uri, response, qop, nc,
+                cnonce);
     }
 
     /**
-     * Computes the MD5 has of the given data and returns it as a hex string.
+     * Computes the hash for the given algorithm of the given data and returns it as a hex string.
      *
+     * @param algorithm the hash algorithm to use
      * @param data the data to hash
      * @return the hashed data as a hex string
      * @throws NoSuchAlgorithmException if the MD5 algorithm is not available
      */
-    private static String md5Hex(String data) throws NoSuchAlgorithmException {
-        MessageDigest md = MessageDigest.getInstance("MD5");
+    private static String hashAsHex(String algorithm, String data) throws NoSuchAlgorithmException {
+        MessageDigest md = MessageDigest.getInstance(algorithm);
         byte[] array = md.digest(data.getBytes());
         StringBuilder sb = new StringBuilder();
         for (byte b : array) {
@@ -172,6 +171,7 @@ public class FroniusConfigAuthUtil {
         StatusListener statusListener = new StatusListener(latch);
         request.onResponseBegin(statusListener);
         Integer status;
+        LOGGER.debug("Logging in ...");
         try {
             request.send(result -> latch.countDown());
             // Wait for the request to complete
@@ -192,6 +192,7 @@ public class FroniusConfigAuthUtil {
         if (status != 200) {
             throw new FroniusCommunicationException("Failed to send login request, status code: " + status);
         }
+        LOGGER.debug("Login successful.");
     }
 
     /**
@@ -209,13 +210,16 @@ public class FroniusConfigAuthUtil {
      * @throws FroniusCommunicationException when the login failed or interrupted
      * @throws FroniusUnauthorizedException when the login failed due to invalid credentials
      */
-    public static synchronized String login(HttpClient httpClient, URI baseUri, String username, String password,
-            HttpMethod method, String relativeUrl, int timeout)
+    public static synchronized String login(HttpClient httpClient, SemverVersion firmwareVersion, URI baseUri,
+            String username, String password, HttpMethod method, String relativeUrl, int timeout)
             throws FroniusCommunicationException, FroniusUnauthorizedException {
+        final String hashAlgorithm = firmwareVersion.isGreaterThanOrEqualTo(SemverVersion.fromString("1.38.6"))
+                ? "SHA-256"
+                : "MD5";
+        final URI loginUri = URI.create(baseUri + LOGIN_ENDPOINT + "?user=" + username);
+        final String relativeLoginUrl = loginUri.getPath();
+
         // Perform request to get authentication parameters
-        LOGGER.debug("Getting authentication parameters");
-        URI loginUri = URI.create(baseUri + LOGIN_ENDPOINT + "?user=" + username);
-        String relativeLoginUrl = loginUri.getPath();
         Map<String, String> authDetails;
 
         int attemptCount = 1;
@@ -245,15 +249,19 @@ public class FroniusConfigAuthUtil {
         int nc = 1;
         String cnonce;
         try {
-            cnonce = md5Hex(String.valueOf(System.currentTimeMillis()));
+            cnonce = hashAsHex(hashAlgorithm, String.valueOf(System.currentTimeMillis()));
         } catch (NoSuchAlgorithmException e) {
             throw new FroniusCommunicationException("Failed to create cnonce", e);
         }
-        String authHeader = createDigestHeader(authDetails.get("nonce"), authDetails.get("realm"),
-                authDetails.get("qop"), relativeLoginUrl, HttpMethod.GET, username, password, nc, cnonce);
+        String authHeader;
+        try {
+            authHeader = createDigestHeader(hashAlgorithm, relativeLoginUrl, HttpMethod.GET, username, password,
+                    authDetails.get("nonce"), authDetails.get("realm"), authDetails.get("qop"), nc, cnonce);
+        } catch (NoSuchAlgorithmException | IllegalArgumentException e) {
+            throw new FroniusCommunicationException("Failed to create digest authentication header for login", e);
+        }
 
         // Perform login request with Digest Authentication
-        LOGGER.debug("Sending login request");
         attemptCount = 1;
         try {
             while (true) {
@@ -281,10 +289,15 @@ public class FroniusConfigAuthUtil {
         }
 
         // Create new auth header for next request
-        LOGGER.debug("Login successful, creating auth header for next request");
+        LOGGER.debug("Creating auth header for next request ...");
         nc++;
-        authHeader = createDigestHeader(authDetails.get("nonce"), authDetails.get("realm"), authDetails.get("qop"),
-                relativeUrl, method, username, password, nc, cnonce);
+        try {
+            authHeader = createDigestHeader(hashAlgorithm, relativeUrl, method, username, password,
+                    authDetails.get("nonce"), authDetails.get("realm"), authDetails.get("qop"), nc, cnonce);
+        } catch (NoSuchAlgorithmException e) {
+            throw new FroniusCommunicationException("Failed to create digest authentication header for request", e);
+        }
+        LOGGER.debug("Created auth header for next request.");
 
         return authHeader;
     }
