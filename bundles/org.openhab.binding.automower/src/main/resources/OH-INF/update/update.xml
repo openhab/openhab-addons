@@ -594,19 +594,42 @@
 			<update-channel id="up-time" groupIds="statistic">
 				<type>automower:stat-up-time-type</type>
 			</update-channel>
-
 			<!-- Commands -->
-			<update-channel id="start-in-work-area" groupIds="command">
+			<remove-channel id="start_in_work_area" groupIds="command">
+			</remove-channel>
+			<remove-channel id="resume_schedule" groupIds="command">
+			</remove-channel>
+			<remove-channel id="park_until_next_schedule" groupIds="command">
+			</remove-channel>
+			<remove-channel id="park_until_further_notice" groupIds="command">
+			</remove-channel>
+			<add-channel id="start-in-work-area" groupIds="command">
 				<type>automower:start-in-work-area</type>
-			</update-channel>
-			<update-channel id="resume-schedule" groupIds="command">
+			</add-channel>
+			<add-channel id="resume-schedule" groupIds="command">
 				<type>automower:resume-schedule</type>
-			</update-channel>
-			<update-channel id="park-until-next-schedule" groupIds="command">
+			</add-channel>
+			<add-channel id="park-until-next-schedule" groupIds="command">
 				<type>automower:park-until-next-schedule</type>
-			</update-channel>
-			<update-channel id="park-until-further-notice" groupIds="command">
+			</add-channel>
+			<add-channel id="park-until-further-notice" groupIds="command">
 				<type>automower:park-until-further-notice</type>
+			</add-channel>
+			<!-- Messages -->
+			<update-channel id="msg-timestamp" groupIds="message">
+				<type>automower:message-time-type</type>
+			</update-channel>
+			<update-channel id="msg-code" groupIds="message">
+				<type>automower:message-code-type</type>
+			</update-channel>
+			<update-channel id="msg-text" groupIds="message">
+				<type>automower:message-type</type>
+			</update-channel>
+			<update-channel id="msg-severity" groupIds="message">
+				<type>automower:message-severity-type</type>
+			</update-channel>
+			<update-channel id="msg-gps-position" groupIds="message">
+				<type>automower:message-position-type</type>
 			</update-channel>
 		</instruction-set>
 	</thing-type>
