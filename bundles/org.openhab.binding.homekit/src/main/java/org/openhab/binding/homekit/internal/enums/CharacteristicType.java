@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.homekit.internal.enums;
 
+import java.util.Arrays;
+import java.util.stream.Collectors;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
@@ -181,15 +184,12 @@ public enum CharacteristicType {
     }
 
     /**
-     * Returns the name of the enum constant in `First Letter Capitals`.
+     * Returns the name of the enum constant in Title Case.
      */
     @Override
     public String toString() {
-        String[] parts = name().toLowerCase().split("_");
-        StringBuilder builder = new StringBuilder(parts[0]);
-        for (int i = 1; i < parts.length; i++) {
-            builder.append(Character.toUpperCase(parts[i].charAt(0))).append(parts[i].substring(1));
-        }
-        return builder.toString();
+        return Arrays.stream(name().split("_")).map(
+                word -> word.isEmpty() ? word : Character.toUpperCase(word.charAt(0)) + word.substring(1).toLowerCase())
+                .collect(Collectors.joining(" "));
     }
 }

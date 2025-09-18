@@ -51,7 +51,7 @@ public class Characteristic {
     public @NonNullByDefault({}) String format; // e.g. "bool"
     public @NonNullByDefault({}) List<String> perms; // e.g. ["pr", "pw", "ev"]
     public @NonNullByDefault({}) Integer iid; // e.g. 10
-    public @NonNullByDefault({}) String unit; // e.g. "celsius"
+    public @NonNullByDefault({}) String unit; // e.g. "celsius" or "percentage"
     public @NonNullByDefault({}) Double maxValue; // e.g. 100
     public @NonNullByDefault({}) Double minValue; // e.g. 0
     public @NonNullByDefault({}) Double minStep;
@@ -83,12 +83,18 @@ public class Characteristic {
             return null;
         }
 
+        // convert "percentage" to "percent" as SimpleUnitFormat does handle the former
+        if ("percentage".equals(unit)) {
+            unit = "percent";
+        }
+
         // determine channel type and attributes based on characteristic properties
         boolean isReadOnly = !perms.contains("pw");
         boolean isString = DataFormatType.STRING == dataFormatType;
         boolean isBoolean = DataFormatType.BOOL == dataFormatType;
         boolean isNumber = !isString && !isBoolean;
         boolean isStateChannel = true;
+        boolean isPercentage = "percent".equals(unit);
 
         String itemType = null;
         String category = null;
@@ -102,8 +108,8 @@ public class Characteristic {
                 pointTag = Point.STATUS;
                 category = "switch";
             } else if (isNumber) {
-                itemType = CoreItemFactory.NUMBER;
-                pointTag = Point.MEASUREMENT;
+                itemType = isPercentage ? CoreItemFactory.DIMMER : CoreItemFactory.NUMBER;
+                pointTag = isPercentage ? Point.STATUS : Point.MEASUREMENT;
             } else if (isString) {
                 itemType = CoreItemFactory.STRING;
                 pointTag = Point.STATUS;
@@ -114,8 +120,8 @@ public class Characteristic {
                 pointTag = Point.SWITCH;
                 category = "switch";
             } else if (isNumber) {
-                itemType = CoreItemFactory.NUMBER;
-                pointTag = Point.SETPOINT;
+                itemType = isPercentage ? CoreItemFactory.DIMMER : CoreItemFactory.NUMBER;
+                pointTag = isPercentage ? Point.CONTROL : Point.SETPOINT;
             } else if (isString) {
                 itemType = CoreItemFactory.STRING;
                 pointTag = Point.CONTROL;
@@ -127,6 +133,7 @@ public class Characteristic {
             case ACTIVE:
             case ACTIVE_IDENTIFIER:
             case ADMINISTRATOR_ONLY_ACCESS:
+                itemType = null;
                 break;
 
             case AIR_PARTICULATE_DENSITY:
@@ -250,6 +257,7 @@ public class Characteristic {
 
             case FIRMWARE_REVISION:
             case HARDWARE_REVISION:
+                itemType = null;
                 break;
 
             case HEATER_COOLER_STATE_CURRENT:
@@ -283,7 +291,7 @@ public class Characteristic {
                 break;
 
             case IDENTIFY:
-                isStateChannel = false;
+                itemType = null;
                 break;
 
             case IMAGE_MIRROR:
@@ -297,6 +305,7 @@ public class Characteristic {
 
             case IN_USE:
             case IS_CONFIGURED:
+                itemType = null;
                 break;
 
             case LEAK_DETECTED:
@@ -326,6 +335,7 @@ public class Characteristic {
             case LOGS:
             case MANUFACTURER:
             case MODEL:
+                itemType = null;
                 break;
 
             case MOTION_DETECTED:
@@ -339,6 +349,9 @@ public class Characteristic {
                 break;
 
             case NAME:
+                itemType = null;
+                break;
+
             case NIGHT_VISION:
             case OBSTRUCTION_DETECTED:
                 break;
@@ -353,12 +366,14 @@ public class Characteristic {
                 break;
 
             case OUTLET_IN_USE:
+                itemType = null;
                 break;
 
             case PAIRING_FEATURES:
             case PAIRING_PAIRINGS:
             case PAIRING_PAIR_SETUP:
             case PAIRING_PAIR_VERIFY:
+                itemType = null;
                 break;
 
             case POSITION_CURRENT:
@@ -412,6 +427,7 @@ public class Characteristic {
             case SERVICE_LABEL_NAMESPACE:
             case SETUP_DATA_STREAM_TRANSPORT:
             case SETUP_ENDPOINTS:
+                itemType = null;
                 break;
 
             case SET_DURATION:
@@ -419,6 +435,7 @@ public class Characteristic {
                 break;
 
             case SIRI_INPUT_TYPE:
+                itemType = null;
                 break;
 
             case SLAT_STATE_CURRENT:
@@ -463,6 +480,7 @@ public class Characteristic {
             case SUPPORTED_RTP_CONFIGURATION:
             case SUPPORTED_TARGET_CONFIGURATION:
             case SUPPORTED_VIDEO_STREAM_CONFIGURATION:
+                itemType = null;
                 break;
 
             case SWING_MODE:
@@ -470,6 +488,7 @@ public class Characteristic {
                 break;
 
             case TARGET_LIST:
+                itemType = null;
                 break;
 
             case TEMPERATURE_COOLING_THRESHOLD:
@@ -492,6 +511,7 @@ public class Characteristic {
             case TYPE_SLAT:
             case VALVE_TYPE:
             case VERSION:
+                itemType = null;
                 break;
 
             case VERTICAL_TILT_CURRENT:
@@ -510,6 +530,7 @@ public class Characteristic {
 
             case ZOOM_DIGITAL:
             case ZOOM_OPTICAL:
+                itemType = null;
                 break;
         }
 
@@ -522,12 +543,13 @@ public class Characteristic {
          * properties e.g. min, max, step, unit may be different
          */
         ChannelTypeUID uid = new ChannelTypeUID(BINDING_ID, characteristicType.getGroupTypeId());
+        String label = CHANNEL_TYPE_LABEL_FMT.formatted(characteristicType.toString());
         ChannelType channelType;
         if (isStateChannel) {
             if (itemType == null) {
                 return null;
             }
-            StateChannelTypeBuilder builder = ChannelTypeBuilder.state(uid, CHANNEL_TYPE_LABEL, itemType);
+            StateChannelTypeBuilder builder = ChannelTypeBuilder.state(uid, label, itemType);
             Optional.ofNullable(category).ifPresent(builder::withCategory);
             if (pointTag != null) {
                 if (propertyTag != null) {
@@ -538,7 +560,7 @@ public class Characteristic {
             }
             channelType = builder.build();
         } else {
-            channelType = ChannelTypeBuilder.trigger(uid, CHANNEL_TYPE_LABEL).build();
+            channelType = ChannelTypeBuilder.trigger(uid, label).build();
         }
 
         // persist the channel _type_
@@ -564,7 +586,7 @@ public class Characteristic {
 
     public @Nullable CharacteristicType getCharacteristicType() {
         try {
-            return CharacteristicType.from(Integer.parseInt(type));
+            return CharacteristicType.from(Integer.parseInt(type, 16));
         } catch (IllegalArgumentException e) {
             return null;
         }

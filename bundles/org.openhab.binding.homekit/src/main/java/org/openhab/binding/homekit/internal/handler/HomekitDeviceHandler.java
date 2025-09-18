@@ -57,6 +57,8 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
 
+import tech.units.indriya.format.SimpleUnitFormat;
+
 /**
  * Handles a single HomeKit accessory.
  * It provides a polling mechanism to regularly update the state of the accessory.
@@ -221,7 +223,7 @@ public class HomekitDeviceHandler extends HomekitBaseServerHandler {
 
         // convert QuantityTypes to the characteristic's unit
         if (object instanceof QuantityType<?> quantity) {
-            Unit<?> unit = UnitUtils.parseUnit(Optional.ofNullable(properties.get("unit")).orElse(null));
+            Unit<?> unit = properties.get("unit") instanceof String p ? SimpleUnitFormat.getInstance().parse(p) : null;
             if (unit != null && !unit.equals(quantity.getUnit()) && quantity.getUnit().isCompatible(unit)) {
                 QuantityType<?> temp = quantity.toUnit(unit);
                 object = temp != null ? temp : quantity;

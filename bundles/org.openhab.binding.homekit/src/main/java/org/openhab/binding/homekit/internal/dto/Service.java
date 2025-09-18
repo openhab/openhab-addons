@@ -63,8 +63,8 @@ public class Service {
         }
 
         ChannelGroupTypeUID groupTypeUID = new ChannelGroupTypeUID(BINDING_ID, serviceType.getChannelTypeId());
-        ChannelGroupType groupType = ChannelGroupTypeBuilder.instance(groupTypeUID, GROUP_TYPE_LABEL) //
-                .withDescription(serviceType.toString()) //
+        String label = GROUP_TYPE_LABEL_FMT.formatted(serviceType.toString());
+        ChannelGroupType groupType = ChannelGroupTypeBuilder.instance(groupTypeUID, label) //
                 .withChannelDefinitions(channelDefinitions) //
                 .build();
 
@@ -75,14 +75,18 @@ public class Service {
 
     public @Nullable ServiceType getServiceType() {
         try {
-            return ServiceType.from(Integer.parseInt(type));
+            return ServiceType.from(Integer.parseInt(type, 16));
         } catch (IllegalArgumentException e) {
             return null;
         }
     }
 
+    public @Nullable Characteristic getCharacteristic(Integer iid) {
+        return characteristics.stream().filter(c -> iid.equals(c.iid)).findFirst().orElse(null);
+    }
+
     @Override
     public String toString() {
-        return getServiceType() instanceof ServiceType st ? st.getType() : "Unknown";
+        return getServiceType() instanceof ServiceType st ? st.getTypeName() : "Unknown";
     }
 }

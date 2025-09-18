@@ -13,12 +13,16 @@
 package org.openhab.binding.homekit.internal.hap_services;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
-import org.bouncycastle.crypto.AsymmetricCipherKeyPair;
 import org.bouncycastle.crypto.params.Ed25519PrivateKeyParameters;
+import org.bouncycastle.crypto.params.Ed25519PublicKeyParameters;
+import org.bouncycastle.crypto.params.X25519PrivateKeyParameters;
 import org.bouncycastle.crypto.params.X25519PublicKeyParameters;
+import org.bouncycastle.crypto.signers.Ed25519Signer;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.homekit.internal.crypto.CryptoUtils;
 import org.openhab.binding.homekit.internal.crypto.Tlv8Codec;
@@ -34,7 +38,7 @@ import org.openhab.binding.homekit.internal.transport.HttpTransport;
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-public class PairingVerifyService {
+public class PairVerifyClient {
 
     private static final String PAIR_VERIFY_ENCRYPT_INFO = "Pair-Verify-Encrypt-Info";
     private static final String PAIR_VERIFY_ENCRYPT_SALT = "Pair-Verify-Encrypt-Salt";
@@ -43,73 +47,95 @@ public class PairingVerifyService {
     private static final String CONTROL_WRITE_ENCRYPTION_KEY = "Control-Write-Encryption-Key";
     private static final String CONTROL_READ_ENCRYPTION_KEY = "Control-Read-Encryption-Key";
     private static final String CONTROL_SALT = "Control-Salt";
-    private static final byte[] NONCE_M2 = CryptoUtils.generateNonce("PV-Msg02");
-    private static final byte[] NONCE_M3 = CryptoUtils.generateNonce("PV-Msg03");
+    private static final byte[] VERIFY_NONCE_M2 = CryptoUtils.generateNonce("PV-Msg02");
+    private static final byte[] VERIFY_NONCE_M3 = CryptoUtils.generateNonce("PV-Msg03");
 
     private final HttpTransport httpTransport;
     private final String baseUrl;
-    private final byte[] accessoryIdentifier;
-    private final Ed25519PrivateKeyParameters controllerPrivateKey;
+    private final byte[] clientIdentifier;
+    private final Ed25519PrivateKeyParameters clientPrivateSigningKey;
+    private final Ed25519PublicKeyParameters serverPublicSigningKey;
 
-    public PairingVerifyService(HttpTransport httpTransport, String baseUrl, String accessoryIdentifier,
-            Ed25519PrivateKeyParameters controllerPrivateKey) {
+    public PairVerifyClient(HttpTransport httpTransport, String baseUrl, String clientIdentifier,
+            Ed25519PrivateKeyParameters clientPrivateSigningKey, Ed25519PublicKeyParameters serverPublicSigningKey) {
         this.httpTransport = httpTransport;
         this.baseUrl = baseUrl;
-        this.accessoryIdentifier = accessoryIdentifier.getBytes(StandardCharsets.UTF_8);
-        this.controllerPrivateKey = controllerPrivateKey;
+        this.clientIdentifier = clientIdentifier.getBytes(StandardCharsets.UTF_8);
+        this.clientPrivateSigningKey = clientPrivateSigningKey;
+        this.serverPublicSigningKey = serverPublicSigningKey;
     }
 
+    /**
+     * Executes the 4-step pairing verification process with the accessory.
+     *
+     * @return SessionKeys containing the derived session keys
+     * @throws Exception if any step of the pairing process fails
+     */
     public SessionKeys verify() throws Exception {
-        // M1 — Create controller ephemeral public key and send it to accessory
-        AsymmetricCipherKeyPair controllerEphemeralKeys = CryptoUtils.generateCurve25519KeyPair();
-        byte[] controllerEphemeralPublicKeyBytes;
-        if (controllerEphemeralKeys.getPublic() instanceof X25519PublicKeyParameters x25519) {
-            controllerEphemeralPublicKeyBytes = x25519.getEncoded();
-        } else {
-            throw new IllegalStateException("Generated controller ephemeral public key is not X25519");
-        }
-        Map<Integer, byte[]> tlv1 = Map.of( //
+        Map<Integer, byte[]> tlv;
+        byte[] encoded;
+        byte[] response;
+        byte[] encrypted;
+        byte[] decrypted;
+
+        // M1 — Create new random client ephemeral X25519 public key and send it to server
+        X25519PrivateKeyParameters clientKey = CryptoUtils.generateX25519KeyPair();
+        byte[] clientKeyBytes = clientKey.generatePublicKey().getEncoded();
+        tlv = Map.of( //
                 TlvType.STATE.key, new byte[] { PairingState.M1.value }, //
-                // Per HAP Section 5.6.2, the METHOD TLV is not required in the M1 message of pair-verify
-                TlvType.PUBLIC_KEY.key, controllerEphemeralPublicKeyBytes);
-        Validator.validate(PairingMethod.VERIFY, tlv1);
+                TlvType.PUBLIC_KEY.key, clientKeyBytes);
+        Validator.validate(PairingMethod.VERIFY, tlv);
+        encoded = Tlv8Codec.encode(tlv);
+        response = httpTransport.post(baseUrl, ENDPOINT_PAIR_VERIFY, CONTENT_TYPE_TLV, encoded);
 
-        byte[] resp1 = httpTransport.post(baseUrl, ENDPOINT_PAIR_VERIFY, CONTENT_TYPE_TLV, Tlv8Codec.encode(tlv1));
+        // M2 — Receive server ephemeral X25519 public key and encrypted TLV
+        tlv = Tlv8Codec.decode(response);
+        Validator.validate(PairingMethod.VERIFY, tlv);
+        byte[] serverKeyBytes = tlv.get(TlvType.PUBLIC_KEY.key);
+        X25519PublicKeyParameters serverKey = new X25519PublicKeyParameters(serverKeyBytes, 0);
 
-        // M2 — Receive accessory ephemeral public key and encrypted TLV
-        Map<Integer, byte[]> tlv2 = Tlv8Codec.decode(resp1);
-        Validator.validate(PairingMethod.VERIFY, tlv2);
-
-        byte[] accessoryPublicKeyBytes = tlv2.getOrDefault(TlvType.PUBLIC_KEY.key, new byte[0]);
-        byte[] encrypted = tlv2.getOrDefault(TlvType.ENCRYPTED_DATA.key, new byte[0]);
-
-        X25519PublicKeyParameters accessoryEphemeralKeys = new X25519PublicKeyParameters(accessoryPublicKeyBytes, 0);
-        byte[] sharedSecret = CryptoUtils.computeSharedSecret(controllerEphemeralKeys.getPrivate(),
-                accessoryEphemeralKeys);
-
+        byte[] sharedSecret = CryptoUtils.computeSharedSecret(clientKey, serverKey);
         byte[] sessionKey = CryptoUtils.hkdf(sharedSecret, PAIR_VERIFY_ENCRYPT_SALT, PAIR_VERIFY_ENCRYPT_INFO);
-        byte[] decrypted = CryptoUtils.decrypt(sessionKey, NONCE_M2, encrypted);
-        Map<Integer, byte[]> innerTLV = Tlv8Codec.decode(decrypted);
-        CryptoUtils.validateAccessory(innerTLV); // validates identifier + signature
+
+        encrypted = tlv.get(TlvType.ENCRYPTED_DATA.key);
+        decrypted = CryptoUtils.decrypt(sessionKey, VERIFY_NONCE_M2, Objects.requireNonNull(encrypted));
+        tlv = Tlv8Codec.decode(decrypted); // inner tlv
+
+        // validate identifier + signature
+        byte[] identifier = tlv.get(TlvType.IDENTIFIER.key);
+        byte[] signature = tlv.get(TlvType.SIGNATURE.key);
+        if (identifier == null || signature == null) {
+            throw new SecurityException("Accessory identifier or signature missing");
+        }
+        Ed25519Signer verifier = new Ed25519Signer();
+        verifier.init(false, serverPublicSigningKey);
+        verifier.update(identifier, 0, identifier.length);
+        boolean valid = verifier.verifySignature(signature);
+        if (!valid) {
+            throw new SecurityException("Accessory signature verification failed");
+        }
+        System.out.println("Verified accessory identifier: " + new String(identifier, StandardCharsets.UTF_8));
 
         // M3 — Send encrypted controller identifier and signature
-        byte[] verifyPayload = concat(controllerEphemeralPublicKeyBytes, accessoryPublicKeyBytes);
-        byte[] signature = CryptoUtils.signVerifyMessage(controllerPrivateKey, verifyPayload);
-        byte[] controllerInfo = Tlv8Codec.encode(Map.of( //
-                TlvType.IDENTIFIER.key, accessoryIdentifier, //
-                TlvType.SIGNATURE.key, signature));
-        byte[] encryptedM3 = CryptoUtils.encrypt(sessionKey, NONCE_M3, controllerInfo);
+        byte[] payload = concat(clientKeyBytes, serverKeyBytes);
+        signature = CryptoUtils.signVerifyMessage(clientPrivateSigningKey, payload);
+        tlv = Map.of( //
+                TlvType.IDENTIFIER.key, clientIdentifier, //
+                TlvType.SIGNATURE.key, signature);
+        encoded = Tlv8Codec.encode(tlv);
+        encrypted = CryptoUtils.encrypt(sessionKey, VERIFY_NONCE_M3, encoded);
 
-        Map<Integer, byte[]> tlv3 = Map.of( //
+        tlv = Map.of( //
                 TlvType.STATE.key, new byte[] { PairingState.M3.value }, //
-                TlvType.ENCRYPTED_DATA.key, encryptedM3);
-        Validator.validate(PairingMethod.VERIFY, tlv3);
+                TlvType.ENCRYPTED_DATA.key, encrypted);
+        Validator.validate(PairingMethod.VERIFY, tlv);
 
-        byte[] resp3 = httpTransport.post(baseUrl, ENDPOINT_PAIR_VERIFY, CONTENT_TYPE_TLV, Tlv8Codec.encode(tlv3));
+        encoded = Tlv8Codec.encode(tlv);
+        response = httpTransport.post(baseUrl, ENDPOINT_PAIR_VERIFY, CONTENT_TYPE_TLV, encoded);
 
         // M4 — Final confirmation
-        Map<Integer, byte[]> tlv4 = Tlv8Codec.decode(resp3);
-        Validator.validate(PairingMethod.VERIFY, tlv4);
+        tlv = Tlv8Codec.decode(response);
+        Validator.validate(PairingMethod.VERIFY, tlv);
 
         // Derive directional session keys
         byte[] readKey = CryptoUtils.hkdf(sharedSecret, CONTROL_SALT, CONTROL_READ_ENCRYPTION_KEY);
@@ -118,17 +144,21 @@ public class PairingVerifyService {
         return new SessionKeys(readKey, writeKey);
     }
 
-    private static byte[] concat(byte[] a, byte[] b) {
-        byte[] out = new byte[a.length + b.length];
-        System.arraycopy(a, 0, out, 0, a.length);
-        System.arraycopy(b, 0, out, a.length, b.length);
+    private static byte[] concat(byte[]... parts) {
+        int total = Arrays.stream(parts).mapToInt(p -> p.length).sum();
+        byte[] out = new byte[total];
+        int pos = 0;
+        for (byte[] p : parts) {
+            System.arraycopy(p, 0, out, pos, p.length);
+            pos += p.length;
+        }
         return out;
     }
 
     /**
      * Helper that validates the TLV map for the specification required pairing state.
      */
-    protected static class Validator {
+    public static class Validator {
 
         private static final Map<PairingState, Set<Integer>> SPECIFICATION_REQUIRED_KEYS = Map.of( //
                 PairingState.M1, Set.of(TlvType.STATE.key, TlvType.PUBLIC_KEY.key), // TLVType.METHOD not required

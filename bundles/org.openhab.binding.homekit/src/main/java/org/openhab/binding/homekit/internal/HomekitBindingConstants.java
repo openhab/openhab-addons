@@ -32,8 +32,8 @@ public class HomekitBindingConstants {
     // labels
     public static final String THING_LABEL_FMT = "Model %s on %s";
     public static final String CHILD_LABEL_FMT = "Accessory %d on %s";
-    public static final String GROUP_TYPE_LABEL = "Channel group type";
-    public static final String CHANNEL_TYPE_LABEL = "Channel type";
+    public static final String GROUP_TYPE_LABEL_FMT = "Channel group type: %s";
+    public static final String CHANNEL_TYPE_LABEL_FMT = "Channel type: %s";
 
     // UID id formats
     public static final String CHILD_FMT = "child-%x"; // e.g. child-123abc;

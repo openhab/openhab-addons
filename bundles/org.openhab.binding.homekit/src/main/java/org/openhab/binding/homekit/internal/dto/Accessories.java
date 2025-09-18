@@ -14,6 +14,8 @@ package org.openhab.binding.homekit.internal.dto;
 
 import java.util.List;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * HomeKit accessories DTO.
  * Used to deserialize the JSON response from the /accessories endpoint of a HomeKit bridge.
@@ -23,4 +25,8 @@ import java.util.List;
  */
 public class Accessories {
     public List<Accessory> accessories;
+
+    public @Nullable Accessory getAccessory(Integer aid) {
+        return accessories.stream().filter(a -> aid.equals(a.aid)).findFirst().orElse(null);
+    }
 }

@@ -130,6 +130,10 @@ public class Accessory {
         return null;
     }
 
+    public @Nullable Service getService(Integer iid) {
+        return services.stream().filter(s -> iid.equals(s.iid)).findFirst().orElse(null);
+    }
+
     @Override
     public String toString() {
         return getAccessoryType().toString();

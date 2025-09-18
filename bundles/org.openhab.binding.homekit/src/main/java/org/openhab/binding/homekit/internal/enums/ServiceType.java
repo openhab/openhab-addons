@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.homekit.internal.enums;
 
+import java.util.Arrays;
+import java.util.stream.Collectors;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
@@ -36,7 +39,7 @@ public enum ServiceType {
     HEATER_COOLER(0xBC, "public.hap.service.heater-cooler"),
     HUMIDIFIER_DEHUMIDIFIER(0xBD, "public.hap.service.humidifier-dehumidifier"),
     IRRIGATION_SYSTEM(0xCF, "public.hap.service.irrigation-system"),
-    LIGHTBULB(0x43, "public.hap.service.lightbulb"),
+    LIGHT_BULB(0x43, "public.hap.service.lightbulb"),
     LOCK_MANAGEMENT(0x44, "public.hap.service.lock-management"),
     LOCK_MECHANISM(0x45, "public.hap.service.lock-mechanism"),
     MICROPHONE(0x112, "public.hap.service.microphone"),
@@ -68,41 +71,38 @@ public enum ServiceType {
     WINDOW(0x8B, "public.hap.service.window"),
     WINDOW_COVERING(0x8C, "public.hap.service.window-covering");
 
-    private final int id;
-    private final String type;
+    private final int type;
+    private final String typeName;
 
-    ServiceType(int id, String type) {
-        this.id = id;
+    ServiceType(int type, String typeName) {
         this.type = type;
+        this.typeName = typeName;
     }
 
-    public static ServiceType from(int id) throws IllegalArgumentException {
+    public static ServiceType from(int type) throws IllegalArgumentException {
         for (ServiceType value : values()) {
-            if (value.id == id) {
+            if (value.type == type) {
                 return value;
             }
         }
-        throw new IllegalArgumentException("Unknown ID: " + id);
+        throw new IllegalArgumentException("Unknown ID: " + type);
     }
 
     public String getChannelTypeId() {
-        return type.replace("-", "_").replace(".", "-"); // convert to OH channel type format
+        return typeName.replace("-", "_").replace(".", "-"); // convert to OH channel type format
     }
 
-    public String getType() {
-        return type;
+    public String getTypeName() {
+        return typeName;
     }
 
     /**
-     * Returns the name of the enum constant in `First Letter Capitals`.
+     * Returns the name of the enum constant in Title Case.
      */
     @Override
     public String toString() {
-        String[] parts = name().toLowerCase().split("_");
-        StringBuilder builder = new StringBuilder(parts[0]);
-        for (int i = 1; i < parts.length; i++) {
-            builder.append(Character.toUpperCase(parts[i].charAt(0))).append(parts[i].substring(1));
-        }
-        return builder.toString();
+        return Arrays.stream(name().split("_")).map(
+                word -> word.isEmpty() ? word : Character.toUpperCase(word.charAt(0)) + word.substring(1).toLowerCase())
+                .collect(Collectors.joining(" "));
     }
 }

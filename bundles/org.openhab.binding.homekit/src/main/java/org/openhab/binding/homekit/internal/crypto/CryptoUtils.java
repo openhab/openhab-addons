@@ -13,26 +13,23 @@
 package org.openhab.binding.homekit.internal.crypto;
 
 import java.nio.charset.StandardCharsets;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.security.SecureRandom;
-import java.util.Map;
 
-import org.bouncycastle.crypto.AsymmetricCipherKeyPair;
 import org.bouncycastle.crypto.InvalidCipherTextException;
-import org.bouncycastle.crypto.agreement.X25519Agreement;
 import org.bouncycastle.crypto.digests.SHA512Digest;
 import org.bouncycastle.crypto.generators.HKDFBytesGenerator;
-import org.bouncycastle.crypto.generators.X25519KeyPairGenerator;
 import org.bouncycastle.crypto.modes.ChaCha20Poly1305;
 import org.bouncycastle.crypto.params.AEADParameters;
-import org.bouncycastle.crypto.params.AsymmetricKeyParameter;
 import org.bouncycastle.crypto.params.Ed25519PrivateKeyParameters;
 import org.bouncycastle.crypto.params.Ed25519PublicKeyParameters;
 import org.bouncycastle.crypto.params.HKDFParameters;
 import org.bouncycastle.crypto.params.KeyParameter;
-import org.bouncycastle.crypto.params.X25519KeyGenerationParameters;
+import org.bouncycastle.crypto.params.X25519PrivateKeyParameters;
+import org.bouncycastle.crypto.params.X25519PublicKeyParameters;
 import org.bouncycastle.crypto.signers.Ed25519Signer;
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.homekit.internal.enums.TlvType;
 
 /**
  * Utility class for cryptographic operations used in HomeKit communication.
@@ -42,22 +39,18 @@ import org.openhab.binding.homekit.internal.enums.TlvType;
 @NonNullByDefault
 public class CryptoUtils {
 
-    private static final SecureRandom random = new SecureRandom();
-
-    // Generate ephemeral Curve25519 key pair
-    public static AsymmetricCipherKeyPair generateCurve25519KeyPair() {
-        X25519KeyPairGenerator generator = new X25519KeyPairGenerator();
-        generator.init(new X25519KeyGenerationParameters(random));
-        return generator.generateKeyPair();
+    // Generate ephemeral X25519 (Curve25519) key pair
+    public static X25519PrivateKeyParameters generateX25519KeyPair()
+            throws NoSuchAlgorithmException, NoSuchProviderException {
+        return new X25519PrivateKeyParameters(new SecureRandom());
     }
 
     // Compute shared secret using ECDH
-    public static byte[] computeSharedSecret(AsymmetricKeyParameter privateKey, AsymmetricKeyParameter peerPublicKey) {
-        X25519Agreement agreement = new X25519Agreement();
-        agreement.init(privateKey);
-        byte[] sharedSecret = new byte[agreement.getAgreementSize()];
-        agreement.calculateAgreement(peerPublicKey, sharedSecret, 0);
-        return sharedSecret;
+    public static byte[] computeSharedSecret(X25519PrivateKeyParameters clientPrivateKey,
+            X25519PublicKeyParameters serverPublicKey) {
+        byte[] secret = new byte[32];
+        clientPrivateKey.generateSecret(serverPublicKey, secret, 0);
+        return secret;
     }
 
     // HKDF-SHA512 key derivation
@@ -102,25 +95,11 @@ public class CryptoUtils {
         return signer.generateSignature();
     }
 
-    // Validate accessory identity and signature
-    public static void validateAccessory(Map<Integer, byte[]> tlv) {
-        byte[] identifier = tlv.get(TlvType.IDENTIFIER.key);
-        byte[] signature = tlv.get(TlvType.SIGNATURE.key);
-        byte[] publicKey = tlv.get(TlvType.PUBLIC_KEY.key);
-
-        if (identifier == null || signature == null || publicKey == null) {
-            throw new SecurityException("Missing accessory credentials");
-        }
-
-        Ed25519PublicKeyParameters pubKey = new Ed25519PublicKeyParameters(publicKey, 0);
+    public static boolean verifyVerifyMessage(Ed25519PublicKeyParameters publicKey, byte[] message, byte[] signature) {
         Ed25519Signer verifier = new Ed25519Signer();
-        verifier.init(false, pubKey);
-        verifier.update(identifier, 0, identifier.length);
-
-        boolean valid = verifier.verifySignature(signature);
-        if (!valid) {
-            throw new SecurityException("Accessory signature verification failed");
-        }
+        verifier.init(false, publicKey);
+        verifier.update(message, 0, message.length);
+        return verifier.verifySignature(signature);
     }
 
     /**
