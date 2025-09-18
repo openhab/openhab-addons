@@ -38,20 +38,23 @@ Moreover, the devices should be in an online status.
 
 ## Bridge Configuration
 
-| Name     | Type | Description                                              | Default                      | Required | Advanced |
-|----------|------|----------------------------------------------------------|------------------------------|----------|----------|
-| hostname | text | Meross Hostname or IP address (for Europe located users) | <https://iotx-eu.meross.com> | yes      | yes      |
-| email    | text | Email of your Meross Account                             | N/A                          | yes      | no       |
-| password | text | Password of your Meross Account                          | N/A                          | yes      | no       |
+| Name     | Type | Description                                              | Default                    | Required | Advanced |
+|----------|------|----------------------------------------------------------|----------------------------|----------|----------|
+| hostname | text | Meross Hostname or IP address (for Europe located users) | https://iotx-eu.meross.com | yes      | yes      |
+| email    | text | Email of your Meross Account                             | N/A                        | yes      | no       |
+| password | text | Password of your Meross Account                          | N/A                        | yes      | no       |
 
 ### Other host locations
 
-| Location     | Hostname                     |
-|--------------|------------------------------|
-| Asia-Pacific | <https://iotx-ap.meross.com> |
-| US           | <https://iotx-us.meross.com> |
+| Location     | Hostname                   |
+|--------------|----------------------------|
+| Asia-Pacific | https://iotx-ap.meross.com |
+| US           | https://iotx-us.meross.com |
+
+If you are outside of Europe, please set the appropriate `Hostname`.
 
 NOTICE: Due to  **Meross**&reg; security policy please minimize host connections in order to avoid TOO MANY TOKENS (code 1301) error occurs which leads to a  8-10 hours suspension of your account.
+The binding relies as much as possible on local http communication.
 Therefore, background device discovery is also disabled.
 You will need to manually scan for new devices.
 
