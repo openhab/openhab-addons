@@ -39,8 +39,6 @@ public interface RandomUserAgentVersionGenerator {
         double random = min + (max - min) * Math.random();
 
         // with the US locale we ensure that the decimal separator is a dot
-        String formattedUserAgentVersion = String.format(Locale.US, "%." + decimalPlaces + "f", random);
-
-        return formattedUserAgentVersion;
+        return String.format(Locale.US, "%." + decimalPlaces + "f", random);
     }
 }
