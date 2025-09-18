@@ -211,7 +211,6 @@ public class ZwaveJSTypeGeneratorImpl implements ZwaveJSTypeGenerator {
                         && entry.getValue().contains(COMMAND_CLASS_DOOR_LOCK))
                 .map(Map.Entry::getKey).toList();
 
-        // 2. Extract channel creation logic to a helper
         for (Integer endpoint : endpoints) {
             createRawNotificationChannel(thingUID, node, result, endpoint);
         }
