@@ -82,7 +82,8 @@ public class MeterReading {
                 if (i > 0) {
                     result[i - 1] = new IntervalReading();
                     result[i - 1].value = value - lastVal;
-                    result[i - 1].date = dataObj.dateDebut;
+                    // The index in on nextDay N, but index difference give consumption for day N-1
+                    result[i - 1].date = dataObj.dateDebut.minusDays(1);
                     result[i - 1].valueSupplier = new double[10];
                     result[i - 1].valueDistributor = new double[4];
                     result[i - 1].supplierLabel = new String[10];
