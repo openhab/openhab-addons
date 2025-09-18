@@ -1090,6 +1090,10 @@
 		<item-type>Switch</item-type>
 		<label>Presence Simulation State</label>
 		<description>Channel to enable or disable the presence simulation.</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Enabled</tag>
+		</tags>
 		<state readOnly="false">
 			<options>
 				<option value="ON">Enabled</option>
