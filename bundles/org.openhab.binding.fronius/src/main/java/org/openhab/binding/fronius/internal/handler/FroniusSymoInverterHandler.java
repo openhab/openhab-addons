@@ -109,14 +109,12 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
                 int hyphenIndex = firmwareVersion.indexOf('-');
                 String versionString = (hyphenIndex > 0) ? firmwareVersion.substring(0, hyphenIndex) : firmwareVersion;
                 SemverVersion version = SemverVersion.fromString(versionString);
-                if (version.isGreaterThanOrEqualTo(SemverVersion.fromString("1.36.0"))) {
-                    batteryControl = new FroniusBatteryControl(httpClient, version, scheme, hostname, username,
-                            password);
-                    return;
-                }
+                batteryControl = new FroniusBatteryControl(httpClient, version, scheme, hostname, username, password);
+                return;
             }
         }
-        logger.warn("Your Fronius Symo Inverter firmware version is not supported by battery control.");
+        logger.warn(
+                "The firmware version of the Fronius inverter could not be determined. Battery control is not available.");
     }
 
     private void updateProperties() {
