@@ -60,36 +60,41 @@ public class JettyAdminServiceV6 extends AdminService {
                 .content(new StringContentProvider(gson.toJson(new Password(token))));
         var response = send(request);
         var content = response.getContentAsString();
-        SessionAnswer answer = gson.fromJson(content, SessionAnswer.class);
-        logger.debug(answer.session().message());
-        session = answer.session();
+        if (gson.fromJson(content, SessionAnswer.class) instanceof SessionAnswer answer) {
+            session = answer.session();
+        }
     }
 
     @Override
     public Optional<DnsStatistics> summary() throws PiHoleException {
         logger.debug("Getting summary");
         getAuth();
-        var url = apiUrl.resolve(apiUrl.getPath() + "/stats/summary");
-        var request = client.newRequest(url).timeout(TIMEOUT_SECONDS, SECONDS)
-                .header(HttpHeader.ACCEPT, "application/json").header("sid", session.sid());
-        var response = send(request);
-        StatAnswer statAnswer = gson.fromJson(response.getContentAsString(), StatAnswer.class);
+        if (session instanceof Session local) {
+            var url = apiUrl.resolve(apiUrl.getPath() + "/stats/summary");
+            var request = client.newRequest(url).timeout(TIMEOUT_SECONDS, SECONDS)
+                    .header(HttpHeader.ACCEPT, "application/json").header("sid", local.sid());
+            var response = send(request);
+            StatAnswer statAnswer = gson.fromJson(response.getContentAsString(), StatAnswer.class);
 
-        url = apiUrl.resolve(apiUrl.getPath() + "/dns/blocking");
-        request = client.newRequest(url).timeout(TIMEOUT_SECONDS, SECONDS).header(HttpHeader.ACCEPT, "application/json")
-                .header("sid", session.sid());
-        response = send(request);
-        DnsBlockingAnswer blockingAnswer = gson.fromJson(response.getContentAsString(), DnsBlockingAnswer.class);
+            url = apiUrl.resolve(apiUrl.getPath() + "/dns/blocking");
+            request = client.newRequest(url).timeout(TIMEOUT_SECONDS, SECONDS)
+                    .header(HttpHeader.ACCEPT, "application/json").header("sid", local.sid());
+            response = send(request);
+            DnsBlockingAnswer blockingAnswer = gson.fromJson(response.getContentAsString(), DnsBlockingAnswer.class);
 
-        Queries queries = statAnswer.queries();
-        Replies replies = queries.replies();
-        DnsStatistics translated = new DnsStatistics(statAnswer.gravity().domainsBeingBlocked(), null, null, null,
-                queries.uniqueDomains(), queries.forwarded(), queries.cached(), null, null, queries.types().all(),
-                replies.unknown(), replies.nodata(), replies.nxdomain(), replies.cname(), replies.ip(),
-                replies.domain(), replies.rrname(), replies.servfail(), replies.refused(), replies.notimp(),
-                replies.other(), replies.dnssec(), replies.none(), replies.blob(), replies.all(), null,
-                blockingAnswer.blocking(), null);
-        return Optional.of(translated);
+            if (statAnswer != null && blockingAnswer != null) {
+                Queries queries = statAnswer.queries();
+                Replies replies = queries.replies();
+                DnsStatistics translated = new DnsStatistics(statAnswer.gravity().domainsBeingBlocked(), null, null,
+                        null, queries.uniqueDomains(), queries.forwarded(), queries.cached(), null, null,
+                        queries.types().all(), replies.unknown(), replies.nodata(), replies.nxdomain(), replies.cname(),
+                        replies.ip(), replies.domain(), replies.rrname(), replies.servfail(), replies.refused(),
+                        replies.notimp(), replies.other(), replies.dnssec(), replies.none(), replies.blob(),
+                        replies.all(), null, blockingAnswer.blocking(), null);
+                return Optional.of(translated);
+            }
+        }
+        return Optional.empty();
     }
 
     @Override
@@ -105,10 +110,12 @@ public class JettyAdminServiceV6 extends AdminService {
     }
 
     private void internalBlock(Blocking action) throws PiHoleException {
-        var url = apiUrl.resolve(apiUrl.getPath() + "/dns/blocking");
-        var request = client.newRequest(url).timeout(TIMEOUT_SECONDS, SECONDS).method(HttpMethod.POST)
-                .header(HttpHeader.ACCEPT, "application/json").header("sid", session.sid())
-                .content(new StringContentProvider(gson.toJson(action)));
-        send(request);
+        if (session instanceof Session local) {
+            var url = apiUrl.resolve(apiUrl.getPath() + "/dns/blocking");
+            var request = client.newRequest(url).timeout(TIMEOUT_SECONDS, SECONDS).method(HttpMethod.POST)
+                    .header(HttpHeader.ACCEPT, "application/json").header("sid", local.sid())
+                    .content(new StringContentProvider(gson.toJson(action)));
+            send(request);
+        }
     }
 }
