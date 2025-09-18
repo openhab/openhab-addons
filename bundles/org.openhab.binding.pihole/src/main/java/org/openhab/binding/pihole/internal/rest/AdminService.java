@@ -26,7 +26,8 @@ import org.openhab.binding.pihole.internal.rest.model.DnsStatistics;
 import com.google.gson.Gson;
 
 /**
- * @author Gaël L'hopital - Initial contribution
+ * @author Martin Grzeslowski - Initial contribution
+ * @author Gaël L'hopital - Changed from 'interface' to abstract class
  */
 @NonNullByDefault
 public abstract class AdminService {
@@ -75,5 +76,4 @@ public abstract class AdminService {
                     "Exception while sending request to Pi-hole. %s".formatted(e.getLocalizedMessage()), e);
         }
     }
-
 }

@@ -25,17 +25,21 @@ import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.pihole.internal.PiHoleException;
 import org.openhab.binding.pihole.internal.rest.model.DnsStatistics;
+import org.openhab.binding.pihole.internal.rest.model.v6.Blocking;
+import org.openhab.binding.pihole.internal.rest.model.v6.DnsBlockingAnswer;
 import org.openhab.binding.pihole.internal.rest.model.v6.Password;
 import org.openhab.binding.pihole.internal.rest.model.v6.SessionAnswer;
 import org.openhab.binding.pihole.internal.rest.model.v6.SessionAnswer.Session;
 import org.openhab.binding.pihole.internal.rest.model.v6.StatAnswer;
+import org.openhab.binding.pihole.internal.rest.model.v6.StatAnswer.Queries;
+import org.openhab.binding.pihole.internal.rest.model.v6.StatAnswer.Replies;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 
 /**
- * @author Martin Grzeslowski - Initial contribution
+ * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
 public class JettyAdminServiceV6 extends AdminService {
@@ -66,31 +70,45 @@ public class JettyAdminServiceV6 extends AdminService {
         logger.debug("Getting summary");
         getAuth();
         var url = apiUrl.resolve(apiUrl.getPath() + "/stats/summary");
-        var request = client.newRequest(url).timeout(TIMEOUT_SECONDS, SECONDS).method(HttpMethod.GET)
+        var request = client.newRequest(url).timeout(TIMEOUT_SECONDS, SECONDS)
                 .header(HttpHeader.ACCEPT, "application/json").header("sid", session.sid());
         var response = send(request);
-        var content = response.getContentAsString();
-        StatAnswer answer = gson.fromJson(content, StatAnswer.class);
-        DnsStatistics translated = new DnsStatistics(answer.gravity().domainsBeingBlocked(), null, null, null,
-                answer.queries().uniqueDomains(), answer.queries().forwarded(), answer.queries().cached(), null, null,
-                null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
-                null, null);
+        StatAnswer statAnswer = gson.fromJson(response.getContentAsString(), StatAnswer.class);
+
+        url = apiUrl.resolve(apiUrl.getPath() + "/dns/blocking");
+        request = client.newRequest(url).timeout(TIMEOUT_SECONDS, SECONDS).header(HttpHeader.ACCEPT, "application/json")
+                .header("sid", session.sid());
+        response = send(request);
+        DnsBlockingAnswer blockingAnswer = gson.fromJson(response.getContentAsString(), DnsBlockingAnswer.class);
+
+        Queries queries = statAnswer.queries();
+        Replies replies = queries.replies();
+        DnsStatistics translated = new DnsStatistics(statAnswer.gravity().domainsBeingBlocked(), null, null, null,
+                queries.uniqueDomains(), queries.forwarded(), queries.cached(), null, null, queries.types().all(),
+                replies.unknown(), replies.nodata(), replies.nxdomain(), replies.cname(), replies.ip(),
+                replies.domain(), replies.rrname(), replies.servfail(), replies.refused(), replies.notimp(),
+                replies.other(), replies.dnssec(), replies.none(), replies.blob(), replies.all(), null,
+                blockingAnswer.blocking(), null);
         return Optional.of(translated);
     }
 
     @Override
     public void disableBlocking(long seconds) throws PiHoleException {
         logger.debug("Disabling blocking for {} seconds", seconds);
-        // var url = baseUrl.resolve("/admin/api.php?disable=%s&auth=%s".formatted(seconds, token));
-        // var request = client.newRequest(url).timeout(TIMEOUT_SECONDS, SECONDS);
-        // send(request);
+        internalBlock(new Blocking(false, seconds));
     }
 
     @Override
     public void enableBlocking() throws PiHoleException {
         logger.debug("Enabling blocking");
-        // var url = baseUrl.resolve("/admin/api.php?enable&auth=%s".formatted(token));
-        // var request = client.newRequest(url).timeout(TIMEOUT_SECONDS, SECONDS);
-        // send(request);
+        internalBlock(Blocking.BLOCK);
+    }
+
+    private void internalBlock(Blocking action) throws PiHoleException {
+        var url = apiUrl.resolve(apiUrl.getPath() + "/dns/blocking");
+        var request = client.newRequest(url).timeout(TIMEOUT_SECONDS, SECONDS).method(HttpMethod.POST)
+                .header(HttpHeader.ACCEPT, "application/json").header("sid", session.sid())
+                .content(new StringContentProvider(gson.toJson(action)));
+        send(request);
     }
 }

@@ -48,6 +48,11 @@ public record StatAnswer(Queries queries, Clients client, Gravity gravity, doubl
             @SerializedName("DNSSEC") int dnssec, //
             @SerializedName("NONE") int none, //
             @SerializedName("BLOB") int blob) {
+
+        public int all() {
+            return unknown + nodata + nxdomain + cname + ip + domain + rrname + servfail + refused + notimp + other
+                    + dnssec + none + blob;
+        }
     }
 
     public record Status(@SerializedName("UNKNOWN") int unknown, //
@@ -71,12 +76,26 @@ public record StatAnswer(Queries queries, Clients client, Gravity gravity, doubl
             @SerializedName("EXTERNAL_BLOCKED_EDE15") int externalBlockedEde15) {
     }
 
-    public record Types(@SerializedName("A") int a, @SerializedName("AAAA") int aaaa, @SerializedName("ANY") int any,
-            @SerializedName("SRV") int srv, @SerializedName("SOA") int soa, @SerializedName("PTR") int ptr,
-            @SerializedName("TXT") int txt, @SerializedName("NAPTR") int naptr, @SerializedName("MX") int mx,
-            @SerializedName("DS") int ds, @SerializedName("RRSIG") int rrsig, @SerializedName("DNSKEY") int dnskey,
-            @SerializedName("NS") int ns, @SerializedName("SVCB") int svcb, @SerializedName("HTTPS") int https,
+    public record Types(@SerializedName("A") int a, //
+            @SerializedName("AAAA") int aaaa, //
+            @SerializedName("ANY") int any, //
+            @SerializedName("SRV") int srv, //
+            @SerializedName("SOA") int soa, //
+            @SerializedName("PTR") int ptr, //
+            @SerializedName("TXT") int txt, //
+            @SerializedName("NAPTR") int naptr, //
+            @SerializedName("MX") int mx, //
+            @SerializedName("DS") int ds, //
+            @SerializedName("RRSIG") int rrsig, //
+            @SerializedName("DNSKEY") int dnskey, //
+            @SerializedName("NS") int ns, //
+            @SerializedName("SVCB") int svcb, //
+            @SerializedName("HTTPS") int https, //
             @SerializedName("OTHER") int other) {
-    }
 
+        public int all() {
+            return a + aaaa + any + srv + soa + ptr + txt + naptr + mx + ds + rrsig + dnskey + ns + svcb + https
+                    + other;
+        }
+    }
 }
