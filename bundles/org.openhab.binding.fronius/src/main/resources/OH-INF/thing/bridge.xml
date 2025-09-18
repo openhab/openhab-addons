@@ -30,6 +30,15 @@
 				<description>Specifies the refresh interval in seconds.</description>
 				<default>10</default>
 			</parameter>
+			<parameter name="scheme" type="text">
+				<label>Scheme</label>
+				<description>Set the protocol scheme that is used to connect to your device.</description>
+				<default>http</default>
+				<options>
+					<option value="http">HTTP</option>
+					<option value="https">HTTPS</option>
+				</options>
+			</parameter>
 		</config-description>
 	</bridge-type>
 </thing:thing-descriptions>

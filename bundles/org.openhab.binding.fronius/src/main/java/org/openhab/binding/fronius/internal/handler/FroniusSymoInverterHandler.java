@@ -14,7 +14,6 @@ package org.openhab.binding.fronius.internal.handler;
 
 import static org.openhab.binding.fronius.internal.FroniusBindingConstants.API_TIMEOUT;
 
-import java.net.URI;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -99,29 +98,22 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
         updateChannels();
     }
 
-    private void initializeBatteryControl(String hostname, @Nullable String username, @Nullable String password) {
+    private void initializeBatteryControl(String scheme, String hostname, @Nullable String username,
+            @Nullable String password) {
         if (username == null || password == null) {
             return;
         }
-
-        String apiPrefix = "";
 
         InverterInfo localInverterInfo = inverterInfo;
         if (localInverterInfo != null) {
             String firmwareVersion = localInverterInfo.firmware();
             int lastDotIndex = firmwareVersion.lastIndexOf('.');
             float version = Float.parseFloat(firmwareVersion.substring(0, lastDotIndex));
-            if (version >= 1.36) {
-                apiPrefix = "/api";
-            } else {
-                logger.warn("Fronius Symo Inverter firmware version {} is not supported for battery control.",
-                        firmwareVersion);
-                return;
-            }
+            batteryControl = new FroniusBatteryControl(httpClient, version, scheme, hostname, username, password);
+            return;
         }
-
-        batteryControl = new FroniusBatteryControl(httpClient, URI.create("http://" + hostname + apiPrefix), username,
-                password);
+        logger.warn(
+                "Your Fronius Symo Inverter has an unknown firmware version and is not supported by battery control.");
     }
 
     private void updateProperties() {
@@ -144,7 +136,8 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
             FroniusBridgeConfiguration bridgeConfig = bridge.getConfiguration().as(FroniusBridgeConfiguration.class);
             inverterInfo = getInverterInfo(bridgeConfig.hostname);
             updateProperties();
-            initializeBatteryControl(bridgeConfig.hostname, bridgeConfig.username, bridgeConfig.password);
+            initializeBatteryControl(bridgeConfig.scheme, bridgeConfig.hostname, bridgeConfig.username,
+                    bridgeConfig.password);
         }
         super.initialize();
     }
@@ -162,7 +155,8 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
             FroniusBridgeConfiguration bridgeConfig = bridge.getConfiguration().as(FroniusBridgeConfiguration.class);
             inverterInfo = getInverterInfo(bridgeConfig.hostname);
             updateProperties();
-            initializeBatteryControl(bridgeConfig.hostname, bridgeConfig.username, bridgeConfig.password);
+            initializeBatteryControl(bridgeConfig.scheme, bridgeConfig.hostname, bridgeConfig.username,
+                    bridgeConfig.password);
         }
     }
 
@@ -359,18 +353,21 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
      */
     private void updateData(FroniusBridgeConfiguration bridgeConfiguration, FroniusBaseDeviceConfiguration config)
             throws FroniusCommunicationException {
-        inverterRealtimeResponse = getRealtimeData(bridgeConfiguration.hostname, config.deviceId);
-        powerFlowResponse = getPowerFlowRealtime(bridgeConfiguration.hostname);
+        inverterRealtimeResponse = getRealtimeData(bridgeConfiguration.scheme, bridgeConfiguration.hostname,
+                config.deviceId);
+        powerFlowResponse = getPowerFlowRealtime(bridgeConfiguration.scheme, bridgeConfiguration.hostname);
     }
 
     /**
      * Make the PowerFlowRealtimeDataRequest
      *
+     * @param scheme http or https
      * @param ip address of the device
      * @return {PowerFlowRealtimeResponse} the object representation of the json response
      */
-    private PowerFlowRealtimeResponse getPowerFlowRealtime(String ip) throws FroniusCommunicationException {
-        String location = FroniusBindingConstants.getPowerFlowDataUrl(ip);
+    private PowerFlowRealtimeResponse getPowerFlowRealtime(String scheme, String ip)
+            throws FroniusCommunicationException {
+        String location = FroniusBindingConstants.getPowerFlowDataUrl(scheme, ip);
         return collectDataFromUrl(PowerFlowRealtimeResponse.class, location);
     }
 
@@ -381,8 +378,9 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
      * @param deviceId of the device
      * @return {InverterRealtimeResponse} the object representation of the json response
      */
-    private InverterRealtimeResponse getRealtimeData(String ip, int deviceId) throws FroniusCommunicationException {
-        String location = FroniusBindingConstants.getInverterDataUrl(ip, deviceId);
+    private InverterRealtimeResponse getRealtimeData(String scheme, String ip, int deviceId)
+            throws FroniusCommunicationException {
+        String location = FroniusBindingConstants.getInverterDataUrl(scheme, ip, deviceId);
         return collectDataFromUrl(InverterRealtimeResponse.class, location);
     }
 
