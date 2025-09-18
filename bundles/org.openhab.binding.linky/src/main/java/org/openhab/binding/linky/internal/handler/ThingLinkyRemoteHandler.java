@@ -847,19 +847,13 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
 
         if (!isDataLastDayAvailable(meterReading)) {
             logger.debug("Data including yesterday are not yet available");
-            // return meterReading;
-            // return null;
+            return meterReading;
         }
 
         if (meterReading != null) {
             if (meterReading.weekValue == null) {
                 LocalDate startDate = meterReading.baseValue[0].date.toLocalDate();
-                LocalDate endDate;
-                if (meterReading.baseValue[meterReading.baseValue.length - 1] != null) {
-                    endDate = meterReading.baseValue[meterReading.baseValue.length - 1].date.toLocalDate();
-                } else {
-                    endDate = meterReading.baseValue[meterReading.baseValue.length - 2].date.toLocalDate();
-                }
+                LocalDate endDate = meterReading.baseValue[meterReading.baseValue.length - 1].date.toLocalDate();
 
                 int startWeek = startDate.get(WeekFields.of(Locale.FRANCE).weekOfYear());
                 int endWeek = endDate.get(WeekFields.of(Locale.FRANCE).weekOfYear());
@@ -891,9 +885,6 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
 
                 for (int idx = 0; idx < size; idx++) {
                     IntervalReading ir = meterReading.baseValue[idx];
-                    if (ir == null) {
-                        continue;
-                    }
                     LocalDateTime dt = ir.date;
                     double value = ir.value;
                     value = value / divider;

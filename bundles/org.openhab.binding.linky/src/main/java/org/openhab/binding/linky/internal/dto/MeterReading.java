@@ -61,7 +61,15 @@ public class MeterReading {
 
     public static IntervalReading[] fromAgregat(ConsumptionReport.Aggregate agregat, boolean useIndex) {
         int size = agregat.datas.size();
-        IntervalReading[] result = new IntervalReading[size];
+        IntervalReading[] result = null;
+
+        // For some unknown reason, index API don't return the index for day N-1.
+        // So array length is cut off 1
+        if (useIndex) {
+            result = new IntervalReading[size - 1];
+        } else {
+            result = new IntervalReading[size];
+        }
 
         if (!useIndex) {
             for (int i = 0; i < size; i++) {
