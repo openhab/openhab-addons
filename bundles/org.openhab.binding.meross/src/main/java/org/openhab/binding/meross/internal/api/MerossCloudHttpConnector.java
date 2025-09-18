@@ -53,6 +53,7 @@ import com.google.gson.reflect.TypeToken;
 @NonNullByDefault
 public class MerossCloudHttpConnector extends MerossHttpConnector {
     private final Logger logger = LoggerFactory.getLogger(MerossCloudHttpConnector.class);
+
     private static final String INITIAL_STRING = "23x17ahWarFH6w29";
     private final String userEmail;
     private final String userPassword;
@@ -138,6 +139,7 @@ public class MerossCloudHttpConnector extends MerossHttpConnector {
                     CloudCredentials.class);
             loginStatusCode = response.getStatus();
             token = credentials != null ? credentials.token() : null;
+            logger.debug("Successfully logged in to the cloud");
         } catch (IOException e) {
             token = null;
             throw new ConnectException("Error while logging in");
@@ -148,6 +150,7 @@ public class MerossCloudHttpConnector extends MerossHttpConnector {
         try {
             if (token != null) {
                 postResponse(createContent(Map.of()), apiBaseUrl, MerossEnum.HttpEndpoint.LOGOUT.value());
+                logger.debug("Successfully logged out from the cloud");
             }
         } catch (IOException e) {
             logger.debug("Cannot log out", e);

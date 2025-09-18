@@ -63,6 +63,8 @@ public class MerossBridgeHandler extends BaseBridgeHandler {
     private @Nullable CloudCredentials credentials;
     private List<Device> devices = List.of();
 
+    private @Nullable String clientId;
+
     private final Logger logger = LoggerFactory.getLogger(MerossBridgeHandler.class);
 
     public MerossBridgeHandler(Thing thing, HttpClient httpClient) {
@@ -102,8 +104,6 @@ public class MerossBridgeHandler extends BaseBridgeHandler {
             credentials = merossHttpConnector.getCredentials();
 
             initializeMerossMqttConnector();
-
-            updateStatus(ThingStatus.ONLINE);
 
             MerossDiscoveryService discoveryService = this.discoveryService;
             if (discoveryService != null) {
@@ -155,7 +155,14 @@ public class MerossBridgeHandler extends BaseBridgeHandler {
      *
      */
     private void initializeMerossMqttConnector() throws MqttException, InterruptedException {
-        String clientId = MqttMessageBuilder.buildClientId();
+        // Make sure to keep the clientId when restarting the connection
+        String clientId = this.clientId;
+        if (clientId == null) {
+            clientId = MqttMessageBuilder.buildClientId();
+            this.clientId = clientId;
+        } else {
+            MqttMessageBuilder.setClientId(clientId);
+        }
         MqttMessageBuilder.setClientId(clientId);
         CloudCredentials credentials = this.credentials;
         if (credentials == null) {
@@ -168,10 +175,11 @@ public class MerossBridgeHandler extends BaseBridgeHandler {
             String brokerAddress = credentials.mqttDomain();
             MqttMessageBuilder.setBrokerAddress(brokerAddress);
 
-            if (merossMqttConnector != null) {
+            if (merossMqttConnector == null) {
+                merossMqttConnector = new MerossMqttConnector(this, scheduler);
+            } else {
                 merossMqttConnector.stopConnection();
             }
-            merossMqttConnector = new MerossMqttConnector(this);
             merossMqttConnector.startConnection();
         }
     }

@@ -34,7 +34,7 @@ public class ContentAnonymizer {
     private static int anonymizedDeviceUuidIndex = 0;
 
     private static final Map<String, String> ANONYMIZED_USER_ID_MAP = new HashMap<>();
-    private static final String ANONYMIZED_USER_ID = "########_";
+    private static final String ANONYMIZED_USER_ID = "#####_";
     private static int anonymizedUserIdIndex = 0;
 
     private static final Map<String, String> ANONYMIZED_APP_ID_MAP = new HashMap<>();
@@ -44,14 +44,17 @@ public class ContentAnonymizer {
     private static final Pattern APPLIANCE_TOPIC_PATTERN = Pattern
             .compile("(?<leading>\\/appliance\\/)(?<deviceUuid>\\w+)");
     private static final Pattern APP_TOPIC_PATTERN = Pattern
-            .compile("(?<leading>\\/app\\/)(?<userId>\\w+)(-(?<appId>\\w+))?");
+            .compile("(?<leading>\\/app\\/)(?<userId>\\d+)(-(?<appId>\\w+))?");
     private static final Pattern DEVICE_UUID_PATTERN = Pattern.compile("(?<leading>\"uuid\"):\"(?<deviceUuid>\\w+)\"");
-    private static final Pattern USER_ID_PATTERN = Pattern.compile("(?<leading>\"userId\"):\"(?<userId>\\w+)\"");
+    private static final Pattern USER_ID_PATTERN = Pattern.compile("(?<leading>\"userId\"):\"?(?<userId>\\d+)\"?");
 
     private static final Pattern MAC_ADDRESS_PATTERN = Pattern
-            .compile("(?<leading>\"\\w*[Mm]ac\\w*\"):\"(?<macAddress>(\\w{2}:){5}\\w{2})\"");
+            .compile("(?<leading>\"\\w*([Mm]ac|bssid)\\w*\"):\"(?<macAddress>(\\w{2}:){5}\\w{2})\"");
     private static final Pattern IP_ADDRESS_PATTERN = Pattern
             .compile("(?<leading>\"\\w*[Ii][Pp]\\w*\"):\"(?<ipAddress>(\\d{1,3}\\.){3}\\d{1,3})\"");
+    private static final Pattern SSID_PATTERN = Pattern.compile("(?<leading>\"\\w*ssid\\w*\"):\"(?<ssid>(\\w|=)*)\"");
+    private static final Pattern POSITION_PATTERN = Pattern
+            .compile("\"longitude\":(?<longitude>\\d*),\"latitude\":(?<latitude>\\d*)");
 
     public static @Nullable String anonymizeTopic(@Nullable String topic) {
         if (topic == null) {
@@ -151,6 +154,23 @@ public class ContentAnonymizer {
         }
         matcher.appendTail(result);
         anonymized = result.toString();
+
+        result = new StringBuffer();
+        matcher = SSID_PATTERN.matcher(anonymized);
+        while (matcher.find()) {
+            String leading = matcher.group("leading");
+            matcher.appendReplacement(result, leading + ":\"xxxxxxxxxxxxxxxxxxxx\"");
+        }
+        matcher.appendTail(result);
+        anonymized = result.toString();
+
+        result = new StringBuffer();
+        matcher = POSITION_PATTERN.matcher(anonymized);
+        while (matcher.find()) {
+            matcher.appendReplacement(result, "\"longitude\":11111111,\"latitude\":1111111");
+        }
+        matcher.appendTail(result);
+        anonymized = result.toString().trim();
 
         return anonymized;
     }

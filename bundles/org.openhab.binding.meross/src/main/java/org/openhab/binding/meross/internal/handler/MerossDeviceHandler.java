@@ -59,6 +59,9 @@ public class MerossDeviceHandler extends BaseThingHandler implements MerossDevic
 
     private final Logger logger = LoggerFactory.getLogger(MerossDeviceHandler.class);
 
+    private long lastRefresh;
+    private static final int REFRESH_INTERVAL_MILLIS = 5000;
+
     public MerossDeviceHandler(Thing thing, HttpClient httpClient) {
         super(thing);
         this.httpClient = httpClient;
@@ -67,10 +70,10 @@ public class MerossDeviceHandler extends BaseThingHandler implements MerossDevic
     @Override
     public void initialize() {
         this.config = getConfigAs(MerossDeviceConfiguration.class);
-        initializeDevice();
+        initializeCommunication();
     }
 
-    private void initializeDevice() {
+    private void initializeCommunication() {
         Bridge bridge = getBridge();
         if (bridge == null || !(bridge.getHandler() instanceof MerossBridgeHandler merossBridgeHandler)) {
             return;
@@ -114,11 +117,19 @@ public class MerossDeviceHandler extends BaseThingHandler implements MerossDevic
             this.manager = manager;
             try {
                 manager.initialize();
+                initializeDevice();
             } catch (MqttException | InterruptedException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Communication error for device with name " + config.name);
             }
         });
+    }
+
+    /**
+     * This method is called after the communication with the device is set up. Subclasses can implement this method to
+     * implement device specific setup.
+     */
+    protected void initializeDevice() {
     }
 
     @Override
@@ -138,9 +149,9 @@ public class MerossDeviceHandler extends BaseThingHandler implements MerossDevic
             ThingStatus bridgeStatus = bridge.getStatus();
             if (ThingStatus.OFFLINE.equals(bridgeStatus)) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
-                return;
+            } else if (ThingStatus.ONLINE.equals(bridgeStatus) && !(ThingStatus.ONLINE.equals(thing.getStatus()))) {
+                initializeCommunication();
             }
-            initializeDevice();
         }
     }
 
@@ -202,29 +213,43 @@ public class MerossDeviceHandler extends BaseThingHandler implements MerossDevic
         }
         int channel = getChannel(channelUID, channelGroup);
 
-        try {
-            if (command instanceof RefreshType) {
-                if (ipAddress == null) {
-                    logger.debug("Not connected locally, refresh not supported");
-                } else {
-                    manager.refresh(namespace);
+        // Local communication is waiting for http call responses, so can take some time. Therefore use the scheduler to
+        // handle any command.
+        scheduler.submit(() -> {
+            try {
+                if (command instanceof RefreshType) {
+                    if (ipAddress == null) {
+                        logger.debug("Not connected locally, refresh not supported");
+                    } else {
+                        // Refresh for most devices is for all data at once (System.All) and not for the specific
+                        // namespace.
+                        // Therefore don't do a refresh if we just had one triggered (probably from another channel) to
+                        // avoid excessive http calls.
+                        long now = System.currentTimeMillis();
+                        if (now > lastRefresh + REFRESH_INTERVAL_MILLIS) {
+                            manager.refresh(Namespace.SYSTEM_ALL);
+                            lastRefresh = now;
+                        }
+                    }
+                    return;
                 }
-                return;
-            }
 
-            manager.sendCommand(channel, namespace, command);
-        } catch (MqttException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Cannot send command, " + e.getMessage());
-        } catch (InterruptedException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Connection interrupted");
-        }
+                manager.sendCommand(channel, namespace, command);
+            } catch (MqttException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Cannot send command, " + e.getMessage());
+            } catch (InterruptedException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Connection interrupted");
+            }
+        });
     }
 
     private int getChannel(ChannelUID channelUID, String channelGroupUID) {
         int channel = 0;
         try {
-            channel = Integer.parseInt(channelUID.getId().substring(channelGroupUID.length()));
+            // If the device has multiple channels, the channel number will be appended to the channel name starting
+            // with _
+            channel = Integer.parseInt(channelUID.getId().substring(channelGroupUID.length() + 1));
         } catch (IndexOutOfBoundsException | NumberFormatException e) {
             // Ignore and default to channel 0, this is because only a single channel is available
         }
@@ -237,7 +262,9 @@ public class MerossDeviceHandler extends BaseThingHandler implements MerossDevic
         if (channelGroup == null) {
             return;
         }
-        String channelId = channelGroup + String.valueOf(deviceChannel);
+        // If the device has multiple channels, the channel number will be appended to the channel name starting
+        // with _
+        String channelId = channelGroup + "_" + String.valueOf(deviceChannel);
         if (thing.getChannel(channelId) == null && deviceChannel == 0) {
             channelId = channelGroup;
         }

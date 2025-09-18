@@ -35,6 +35,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -162,6 +163,9 @@ public class MerossCommandExtension extends AbstractConsoleCommandExtension impl
                             .toMap(h -> h.getThing().getConfiguration().get("uuid").toString(), Function.identity()));
 
             List<Device> devices = handler.getDevices();
+            if (devices.isEmpty()) {
+                console.print("No devices found");
+            }
             devices.forEach(device -> {
                 console.print(String.format("%-25s: %s", device.devName(), device.uuid()));
 
@@ -192,6 +196,7 @@ public class MerossCommandExtension extends AbstractConsoleCommandExtension impl
                 .map(d -> ((MerossDeviceHandler) d.getHandler())).filter(Objects::nonNull).collect(Collectors
                         .toMap(h -> h.getThing().getConfiguration().get("uuid").toString(), Function.identity()));
 
+        console.println("Generating fingerprint, please be patient...");
         console.println("# Start fingerprint");
         int accountNdx = 0;
         boolean multipleAccount = handlers.size() > 1;
@@ -206,8 +211,11 @@ public class MerossCommandExtension extends AbstractConsoleCommandExtension impl
             } else {
                 String accountPath = path + File.separator + "Account-" + String.valueOf(accountNdx);
                 List<Device> devices = handler.getDevices();
+                if (devices.isEmpty()) {
+                    console.print("No devices found");
+                }
                 devices.forEach(device -> {
-                    if (deviceUuid == null || device.uuid().equals(deviceUuid)) {
+                    if (deviceUuid == null || deviceUuid.isEmpty() || device.uuid().equals(deviceUuid)) {
                         DeviceHandlerCallback callback = new DeviceHandlerCallback();
                         MerossDeviceHandler deviceHandler = deviceHandlers.get(device.uuid());
                         if (deviceHandler != null) {
@@ -340,7 +348,9 @@ public class MerossCommandExtension extends AbstractConsoleCommandExtension impl
                 buildCommandUsage(FINGERPRINT, "generate fingerprint for all devices on all accounts"),
                 buildCommandUsage(FINGERPRINT + " <userEmail>", "generate fingerprint for devices on account"),
                 buildCommandUsage(FINGERPRINT + " <userEmail> <device>",
-                        "generate fingerprint for a specific device with uuid or name on account") });
+                        "generate fingerprint for a specific device with name or uuid on account"),
+                buildCommandUsage(FINGERPRINT + " <userEmail> <device>",
+                        "generate fingerprint for a specific device with name or uuid on account") });
     }
 
     @Override
@@ -363,9 +373,10 @@ public class MerossCommandExtension extends AbstractConsoleCommandExtension impl
                             && t.getConfiguration().get("userEmail").toString().equals(args[1]))
                     .map(t -> t.getHandler()).findFirst().orElse(null);
             if (handler != null) {
-                return new StringsCompleter(
-                        ((MerossBridgeHandler) handler).getDevices().stream().map(device -> device.devName()).toList(),
-                        false).complete(args, cursorArgumentIndex, cursorPosition, candidates);
+                return new StringsCompleter(((MerossBridgeHandler) handler).getDevices().stream()
+                        .flatMap(device -> Stream.<String> of(device.devName(), device.uuid()))
+                        .collect(Collectors.toSet()), false)
+                        .complete(args, cursorArgumentIndex, cursorPosition, candidates);
             }
         }
         return false;

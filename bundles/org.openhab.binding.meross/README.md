@@ -10,22 +10,26 @@ If possible, it will communicate in the local network with the device to send co
 Supported thing types
 
 - `gateway` : Acts as a Bridge to your Meross cloud account.
-- `light` : Represents a light device like a Smart ambient light.
+- `light` : Represents a device recognized as a smart light or plug device with no specific support, on/off should work.
 - `msg100`: Represents a garage door.
 - `msg200`: Represents a triple garage door.
+- `garage-door`: Represents a device recognized as garage door with no specific support, open/close should work.
 
-|   Meross Name       | Type   | Description         | Supported | Tested |
-|---------------------|--------|---------------------|-----------|--------|
-| Smart ambient light | msl430 | Smart ambient light | yes       | yes    |
-| Smart plug          | mss210 | Smart plug          | yes       | yes    |
-| Garage door         | msg100 | Garage door         | yes       | yes    |
-| Triple garage door  | msg200 | Triple garage door  | yes       |        |
+|   Meross Name       | Type   | Thing Type | Description         | Supported | Tested |
+|---------------------|--------|------------|---------------------|-----------|--------|
+| Smart ambient light | msl430 | light      | Smart ambient light | yes       | yes    |
+| Smart plug          | mss210 | light      | Smart plug          | yes       | yes    |
+| Garage door         | msg100 | msg100     | Garage door         | yes       | yes    |
+| Triple garage door  | msg200 | msg200     | Triple garage door  | yes       |        |
 
 ## Discovery
 
 The Discovery service is supported.
 Automatic discovery will run when the gateway start, or when manually scanning for new devices.
 Background discovery is not supported.
+
+Discovery tries to detect specific hardware and find the appropriate thing type.
+If no specific thing type is available, it will default to a generic thing type for the class of devices.
 
 ## Binding Configuration
 
@@ -53,29 +57,30 @@ You will need to manually scan for new devices.
 
 ## Thing Configuration
 
-| Parameter | Type | Description                                              | Default | Required | Thing type id                   | Advanced |
-|-----------|------|----------------------------------------------------------|---------|----------|---------------------------------|----------|
-| name      | text | The name of the device as registered to Meross account   | N/A     | yes      | light, door, tripleDoor         | no       |
-| uuid      | text | The device uuid                                          | N/A     | yes      | light, door, tripleDoor         | no       |
-| ipAddress | text | The IP address of the device in the local network        | N/A     | yes      | light, door, tripleDoor         | no       |
+| Parameter | Type | Description                                              | Default | Required | Thing type id         | Advanced |
+|-----------|------|----------------------------------------------------------|---------|----------|-----------------------|----------|
+| name      | text | The name of the device as registered to Meross account   | N/A     | yes      | light, msg100, msg200 | no       |
+| uuid      | text | The device uuid                                          | N/A     | yes      | light, msg100, msg200 | no       |
+| ipAddress | text | The IP address of the device in the local network        | N/A     | no       | light, msg100, msg200 | no       |
 
 The unique key to the device is the `uuid` and will be retrieved and set during discovery.
 If you wish to use textual thing configuration, you get the ID from the discovered thing or through the console `devices` command.
 
-The `ipAddress` will be retrieved during initial configuration with the device.
+The `ipAddress` will be retrieved during initial configuration of the device.
 Once established, it will be used for local device communication.
+For file based configurations, it is advised to set the IP address in the configuration to avoid overloading the cloud communication.
 
 ## Channels
 
 Only power channel is supported:
 
-| Channel    | Type          | Thing type |Read/Write | Description                                                  |
-|------------|---------------|------------|-----------|--------------------------------------------------------------|
-| power      | Switch        | light      | x         | Power bulb/plug capability to control bulbs and plugs on/off |
-| doorState  | Rollershutter | door       | x         | Garage door up/down control                                  |
-| doorState0 | Rollershutter | tripleDoor | x         | Garage door up/down control, first door                      |
-| doorState1 | Rollershutter | tripleDoor | x         | Garage door up/down control, second door                     |
-| doorState2 | Rollershutter | tripleDoor | x         | Garage door up/down control, third door                      |
+| Channel      | Type          | Thing type |Read/Write | Description                                                  |
+|--------------|---------------|------------|-----------|--------------------------------------------------------------|
+| power        | Switch        | light      | x         | Power bulb/plug capability to control bulbs and plugs on/off |
+| door-state   | Rollershutter | msg100     | x         | Garage door up/down control                                  |
+| door-state-0 | Rollershutter | msg200     | x         | Garage door up/down control, first door                      |
+| door-state-1 | Rollershutter | msg200     | x         | Garage door up/down control, second door                     |
+| door-state-2 | Rollershutter | msg200     | x         | Garage door up/down control, third door                      |
 
 ## Console Commands
 

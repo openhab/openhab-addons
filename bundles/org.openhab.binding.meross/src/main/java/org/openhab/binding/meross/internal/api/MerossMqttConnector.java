@@ -14,6 +14,8 @@ package org.openhab.binding.meross.internal.api;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -44,6 +46,7 @@ public class MerossMqttConnector implements MqttConnectionObserver {
 
     private static final int SECURE_WEB_SOCKET_PORT = 443;
     private static final int RECEPTION_TIMEOUT_SECONDS = 5;
+    private static final int MQTT_DISCONNECT_DELAY_SECONDS = 60;
     private static final int KEEP_ALIVE_SECONDS = 30;
     private static final int QOS_AT_MOST_ONCE = 0;
     private static final int QOS_AT_LEAST_ONCE = 1;
@@ -51,13 +54,16 @@ public class MerossMqttConnector implements MqttConnectionObserver {
     private final Logger logger = LoggerFactory.getLogger(MerossMqttConnector.class);
 
     private MerossBridgeHandler callback;
+    private ScheduledExecutorService scheduler;
 
     private @Nullable MqttBrokerConnection mqttConnection;
     private @Nullable CompletableFuture<Boolean> stoppedFuture;
+    private @Nullable ScheduledFuture<?> disconnectFuture;
     private CompletableFuture<Boolean> connected = new CompletableFuture<>();
 
-    public MerossMqttConnector(MerossBridgeHandler callback) {
+    public MerossMqttConnector(MerossBridgeHandler callback, ScheduledExecutorService scheduler) {
         this.callback = callback;
+        this.scheduler = scheduler;
 
         String brokerAddress = MqttMessageBuilder.brokerAddress;
         String clientId = MqttMessageBuilder.clientId;
@@ -113,6 +119,7 @@ public class MerossMqttConnector implements MqttConnectionObserver {
                 logger.debug("error connecting");
                 throw new MqttException("Connection execution exception");
             }
+            connected.get(RECEPTION_TIMEOUT_SECONDS, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
             logger.debug("connection interrupted exception");
             if (Thread.interrupted()) {
@@ -140,6 +147,11 @@ public class MerossMqttConnector implements MqttConnectionObserver {
 
         logger.debug("Stopping connection...");
         connected.complete(false);
+        ScheduledFuture<?> disconnectFuture = this.disconnectFuture;
+        if (disconnectFuture != null) {
+            disconnectFuture.cancel(true);
+            this.disconnectFuture = null;
+        }
         stoppedFuture = mqttConnection.stop();
     }
 
@@ -157,8 +169,11 @@ public class MerossMqttConnector implements MqttConnectionObserver {
         }
 
         try {
-            connected.get(RECEPTION_TIMEOUT_SECONDS, TimeUnit.SECONDS);
-            mqttConnection.publish(requestTopic, message, QOS_AT_MOST_ONCE, false);
+            if (connected.get(RECEPTION_TIMEOUT_SECONDS, TimeUnit.SECONDS)) {
+                mqttConnection.publish(requestTopic, message, QOS_AT_MOST_ONCE, false);
+            } else {
+                throw new MqttException("Disconnected exception");
+            }
         } catch (InterruptedException e) {
             logger.debug("connection interrupted exception");
             if (Thread.interrupted()) {
@@ -220,16 +235,31 @@ public class MerossMqttConnector implements MqttConnectionObserver {
 
     @Override
     public void connectionStateChanged(MqttConnectionState state, @Nullable Throwable error) {
-        logger.debug("Connection state changed: {}", state);
+        logger.trace("Connection state changed: {}", state);
         switch (state) {
             case MqttConnectionState.CONNECTING:
                 break;
             case MqttConnectionState.CONNECTED:
+                ScheduledFuture<?> disconnectFuture = this.disconnectFuture;
+                if (disconnectFuture != null) {
+                    disconnectFuture.cancel(true);
+                    this.disconnectFuture = null;
+                }
                 callback.updateBridgeStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
                 connected.complete(true);
                 break;
             case MqttConnectionState.DISCONNECTED:
-                callback.updateBridgeStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                connected = new CompletableFuture<Boolean>();
+                // The transport tries to reconnect anyway. If we put the bridge offline immediately, it will trigger a
+                // re-initialization of all devices creating a lot of traffic. Devices can still be commanded through
+                // local http connections even if the connection to the Meross MQTT broker is disrupted. So don't put
+                // the bridge offline immediately.
+                if (this.disconnectFuture == null) {
+                    this.disconnectFuture = scheduler.schedule(() -> {
+                        logger.trace("Disconnecting", error);
+                        callback.updateBridgeStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                    }, MQTT_DISCONNECT_DELAY_SECONDS, TimeUnit.SECONDS);
+                }
                 break;
         }
     }

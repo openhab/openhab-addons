@@ -13,9 +13,9 @@
 		<description>Meross Triple Garage Door</description>
 
 		<channels>
-			<channel id="doorState0" typeId="doorState"/>
-			<channel id="doorState1" typeId="doorState"/>
-			<channel id="doorState2" typeId="doorState"/>
+			<channel id="door-state-0" typeId="door-state"/>
+			<channel id="door-state-1" typeId="door-state"/>
+			<channel id="door-state-2" typeId="door-state"/>
 		</channels>
 
 		<config-description>

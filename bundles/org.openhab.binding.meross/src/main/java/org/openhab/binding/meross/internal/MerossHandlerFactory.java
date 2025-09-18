@@ -59,9 +59,14 @@ public class MerossHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (THING_TYPE_GATEWAY.equals(thingTypeUID)) {
             return new MerossBridgeHandler(thing, httpClient);
-        } else if (THING_TYPE_LIGHT.equals(thingTypeUID)) {
+        }
+
+        // First treat the devices that need a specific thing type
+        if (THING_TYPE_LIGHT.equals(thingTypeUID)) {
             return new MerossLightHandler(thing, httpClient);
         } else if (DEVICE_THING_TYPES_UIDS.contains(thingTypeUID)) {
+            // General case when no special logic is required for the device (apart from the channel definitions from
+            // the thing type xml that are covered in general handler)
             return new MerossDeviceHandler(thing, httpClient);
         }
         return null;

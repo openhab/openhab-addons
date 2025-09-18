@@ -38,29 +38,38 @@ public class MerossBindingConstants {
 
     // List of all supported device types
 
-    // List of all known Meross light hardware types
+    // Meross light hardware types
     public static final Set<String> LIGHT_HARDWARE_TYPES = Set.of("msl", "mss");
 
-    // Garage door openers
+    // Meross garage door openers hardware types
     public static final String MSG100 = "msg100";
     public static final String MSG200 = "msg200";
+    public static final Set<String> GARAGE_DOOR_HARDWARE_TYPES = Set.of("msg");
 
     // Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_GATEWAY = new ThingTypeUID(BINDING_ID, "gateway");
 
-    public static final ThingTypeUID THING_TYPE_LIGHT = new ThingTypeUID(BINDING_ID, "light");
+    public static final ThingTypeUID THING_TYPE_LIGHT = new ThingTypeUID(BINDING_ID, "light"); // catch all when not
+                                                                                               // explicitly defined
+
     public static final ThingTypeUID THING_TYPE_MSG100 = new ThingTypeUID(BINDING_ID, MSG100);
     public static final ThingTypeUID THING_TYPE_MSG200 = new ThingTypeUID(BINDING_ID, MSG200);
+    public static final ThingTypeUID THING_TYPE_GARAGE_DOOR = new ThingTypeUID(BINDING_ID, "garage-door"); // catch all
+                                                                                                           // when not
+                                                                                                           // explicitly
+                                                                                                           // defined
 
     public static final Set<ThingTypeUID> DEVICE_THING_TYPES_UIDS = Set.of( //
             THING_TYPE_LIGHT, //
             THING_TYPE_MSG100, //
-            THING_TYPE_MSG200);
+            THING_TYPE_MSG200, //
+            THING_TYPE_GARAGE_DOOR);
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set
             .copyOf(Stream.of(Collections.singleton(THING_TYPE_GATEWAY), DEVICE_THING_TYPES_UIDS).flatMap(Set::stream)
                     .collect(Collectors.toSet()));
 
-    // Hardware types to thing types
+    // Hardware types to thing types, specific hardware thing types will have an ID equal to the name of the hardware
+    // type
     public static final Map<String, ThingTypeUID> HARDWARE_THING_TYPE_MAP = DEVICE_THING_TYPES_UIDS.stream()
             .collect(Collectors.toMap(ThingTypeUID::getId, Function.identity()));
 
@@ -72,7 +81,7 @@ public class MerossBindingConstants {
 
     // List of all channel types, different thing types will support different channels types
     public static final String CHANNEL_TOGGLEX = "power";
-    public static final String CHANNEL_DOOR_STATE = "doorState";
+    public static final String CHANNEL_DOOR_STATE = "door-state";
 
     // Map of channel types to Meross namespaces
     public static final Map<String, Namespace> CHANNEL_NAMESPACE_MAP = Map.of( //

@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -46,6 +47,7 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
@@ -74,7 +76,7 @@ public class MerossManager implements MqttMessageSubscriber {
 
     private static final int FUTURE_TIMOUT_SEC = 5;
     private @Nullable CompletableFuture<Boolean> ipInitialized;
-    private @Nullable CompletableFuture<String> responseFuture;
+    private Map<String, CompletableFuture<String>> responseFutures = new ConcurrentHashMap<>();
 
     private Set<String> abilities = Set.of();
 
@@ -89,8 +91,6 @@ public class MerossManager implements MqttMessageSubscriber {
         this.callback = callback;
         this.httpClient = httpClient;
         this.mqttConnector = mqttConnector;
-        mqttConnector.addClientUserTopicSubscriber(this);
-        mqttConnector.addClientResponseTopicSubscriber(this);
     }
 
     private void setHttpConnector() {
@@ -108,11 +108,10 @@ public class MerossManager implements MqttMessageSubscriber {
         }
     }
 
-    public void dispose() {
-        mqttConnector.removeDeviceRequestTopicSubscriber(this, deviceUUID);
-    }
-
     public void initialize() throws MqttException, InterruptedException {
+        mqttConnector.addClientUserTopicSubscriber(this);
+        mqttConnector.addClientResponseTopicSubscriber(this);
+
         // if there is an IP adress configured, we can build the httpConnector straight away
         setHttpConnector();
 
@@ -156,25 +155,35 @@ public class MerossManager implements MqttMessageSubscriber {
         }
     }
 
+    public void dispose() {
+        mqttConnector.removeClientUserTopicSubscriber(this);
+        mqttConnector.removeClientResponseTopicSubscriber(this);
+    }
+
     private synchronized void publishMessage(String topic, byte[] message) throws MqttException, InterruptedException {
+        try {
+            if (!publishMessageLocal(topic, message)) {
+                logger.trace("Publishing to mqtt...");
+                mqttConnector.publishMqttMessage(topic, message);
+            }
+        } catch (IOException e) {
+            logger.debug("Error communicating to device with IP address {} in LAN, trying cloud",
+                    callback.getIpAddress());
+            logger.trace("Error: ", e);
+        }
+    }
+
+    private boolean publishMessageLocal(String topic, byte[] message) throws IOException {
         logger.trace("Publishing topic {}, message {}", ContentAnonymizer.anonymizeTopic(topic),
                 ContentAnonymizer.anonymizeMessage(new String(message, StandardCharsets.UTF_8)));
-
         MerossHttpConnector httpConnector = this.httpConnector;
         if (httpConnector != null) {
             logger.trace("Publishing to local http...");
-            try {
-                String response = httpConnector.postResponse(message);
-                processMessage(topic, response.getBytes());
-                return;
-            } catch (IOException e) {
-                logger.debug("Error communicating to device with IP address {} in LAN, trying cloud",
-                        callback.getIpAddress());
-                logger.trace("Error: ", e);
-            }
+            String response = httpConnector.postResponse(message);
+            processMessage(topic, response.getBytes());
+            return true;
         }
-        logger.trace("Publishing to mqtt...");
-        mqttConnector.publishMqttMessage(topic, message);
+        return false;
     }
 
     private CompletableFuture<Boolean> getSystemAll() throws MqttException, InterruptedException {
@@ -227,9 +236,23 @@ public class MerossManager implements MqttMessageSubscriber {
      * @throws InterruptedException
      */
     public void refresh(Namespace namespace) throws MqttException, InterruptedException {
-        byte[] message = MqttMessageBuilder.buildMqttMessage("GET", namespace.value(), deviceUUID,
-                Collections.emptyMap());
+        if (!abilities.isEmpty()) {
+            if (!abilities.contains(namespace.value())) {
+                logger.debug("Ability {} not supported", namespace.value());
+                return;
+            }
+        }
+        getState(namespace.value());
+    }
+
+    private void getState(String ability) throws MqttException, InterruptedException {
+        byte[] message = MqttMessageBuilder.buildMqttMessage("GET", ability, deviceUUID, Collections.emptyMap());
         publishMessage(deviceRequestTopic, message);
+    }
+
+    private void getStateLocal(String ability) throws IOException {
+        byte[] message = MqttMessageBuilder.buildMqttMessage("GET", ability, deviceUUID, Collections.emptyMap());
+        publishMessageLocal(deviceRequestTopic, message);
     }
 
     @Override
@@ -248,6 +271,9 @@ public class MerossManager implements MqttMessageSubscriber {
                         && header.get("namespace").isJsonPrimitive()) {
                     method = header.get("method").getAsString();
                     String namespaceString = header.get("namespace").getAsString();
+                    if ("GETACK".equals(method)) {
+                        setResponse(mqttPayload, namespaceString);
+                    }
                     namespace = Namespace.getNamespaceByAbilityValue(namespaceString);
                 }
             }
@@ -265,7 +291,6 @@ public class MerossManager implements MqttMessageSubscriber {
             if ("GETACK".equals(method)) {
                 switch (namespace) {
                     case Namespace.SYSTEM_ALL:
-                        setResponse(mqttPayload, namespace);
                         JsonObject all;
                         if (payload.has("all") && !payload.get("all").isJsonNull()) {
                             all = payload.getAsJsonObject("all");
@@ -308,7 +333,6 @@ public class MerossManager implements MqttMessageSubscriber {
                         }
                         break;
                     case Namespace.SYSTEM_ABILITY:
-                        setResponse(mqttPayload, namespace);
                         if (payload.has("ability") && !payload.get("ability").isJsonNull()) {
                             JsonElement ability = payload.get("ability").getAsJsonObject();
                             Map<String, Object> abilities = GSON.fromJson(ability, ABILITIES_TYPE);
@@ -393,44 +417,82 @@ public class MerossManager implements MqttMessageSubscriber {
     public String getDeviceSpecsCommand()
             throws InterruptedException, ExecutionException, TimeoutException, MqttException {
         setHttpConnector();
-        String systemAll = getSystemAllCommand();
-        String abilities = getAbilitiesCommand();
         JsonObject wrapper = new JsonObject();
-        if (systemAll != null) {
+        try {
+            String systemAll = getSystemAllCommand();
             wrapper.add("systemAll", JsonParser.parseString(systemAll));
+        } catch (JsonParseException | ExecutionException | TimeoutException | MqttException e) {
+            // Don't stop on failure
+            logger.trace("Error:", e);
         }
-        if (abilities != null) {
+        try {
+            String abilities = getAbilitiesCommand();
             wrapper.add("abilities", JsonParser.parseString(abilities));
+            if (callback.getIpAddress() != null) {
+                // Don't do all the gets to the cloud to avoid cloud overloading
+                for (String ability : this.abilities) {
+                    if (Namespace.SYSTEM_ALL.value().equals(ability)
+                            || Namespace.SYSTEM_ABILITY.value().equals(ability)) {
+                        // We already have this response
+                        continue;
+                    }
+                    try {
+                        String abilityGet = executeAbilityGet(ability);
+                        if (!abilityGet.isEmpty()) {
+                            wrapper.add(ability, JsonParser.parseString(abilityGet));
+                        }
+                    } catch (JsonParseException | ExecutionException | TimeoutException | MqttException e) {
+                        // Don't stop on failure
+                        logger.trace("Error:", e);
+                    }
+                }
+            }
+        } catch (JsonParseException | ExecutionException | TimeoutException | MqttException e) {
+            // Don't stop on failure
+            logger.trace("Error:", e);
         }
         return wrapper.toString();
     }
 
-    private @Nullable String getSystemAllCommand()
+    private String getSystemAllCommand()
             throws InterruptedException, ExecutionException, TimeoutException, MqttException {
         CompletableFuture<String> responseFuture = new CompletableFuture<>();
         if (httpConnector == null) {
             setHttpConnector();
         }
-        this.responseFuture = responseFuture;
+        this.responseFutures.put(Namespace.SYSTEM_ALL.value(), responseFuture);
         getSystemAll();
         return responseFuture.get(FUTURE_TIMOUT_SEC, TimeUnit.SECONDS);
     }
 
-    private @Nullable String getAbilitiesCommand()
+    private String getAbilitiesCommand()
             throws InterruptedException, ExecutionException, TimeoutException, MqttException {
         CompletableFuture<String> responseFuture = new CompletableFuture<>();
         if (httpConnector == null) {
             setHttpConnector();
         }
-        this.responseFuture = responseFuture;
+        this.responseFutures.put(Namespace.SYSTEM_ABILITY.value(), responseFuture);
         getAbilities();
         return responseFuture.get(FUTURE_TIMOUT_SEC, TimeUnit.SECONDS);
     }
 
-    private void setResponse(String message, Namespace namespace) {
-        CompletableFuture<String> responseFuture = this.responseFuture;
+    private String executeAbilityGet(String ability)
+            throws InterruptedException, ExecutionException, TimeoutException, MqttException {
+        CompletableFuture<String> responseFuture = new CompletableFuture<>();
+        this.responseFutures.put(ability, responseFuture);
+        try {
+            getStateLocal(ability);
+        } catch (IOException e) {
+            return "\"no valid response to GET\"";
+        }
+        return responseFuture.get(FUTURE_TIMOUT_SEC, TimeUnit.SECONDS);
+    }
+
+    private void setResponse(String message, String namespace) {
+        CompletableFuture<String> responseFuture = this.responseFutures.get(namespace);
         if (responseFuture != null && !responseFuture.isDone()) {
             responseFuture.complete(message);
+            this.responseFutures.remove(namespace);
         }
     }
 }

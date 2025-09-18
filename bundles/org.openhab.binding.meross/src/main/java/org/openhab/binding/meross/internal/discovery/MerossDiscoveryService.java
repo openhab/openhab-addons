@@ -109,15 +109,17 @@ public class MerossDiscoveryService extends AbstractThingHandlerDiscoveryService
             ThingUID bridgeUID = thingHandler.getThing().getUID();
             devices.forEach(device -> {
                 String deviceType = device.deviceType();
-                ThingTypeUID thingTypeUID;
-                if (isLightType(deviceType)) {
-                    thingTypeUID = MerossBindingConstants.THING_TYPE_LIGHT;
-                } else {
-                    thingTypeUID = MerossBindingConstants.HARDWARE_THING_TYPE_MAP.get(deviceType);
-                }
+                ThingTypeUID thingTypeUID = MerossBindingConstants.HARDWARE_THING_TYPE_MAP.get(deviceType);
                 if (thingTypeUID == null) {
-                    logger.debug("Unsupported device found: name {} : type {}", device.devName(), device.deviceType());
-                    return;
+                    if (isLightType(deviceType)) {
+                        thingTypeUID = MerossBindingConstants.THING_TYPE_LIGHT;
+                    } else if (isGarageDoorType(deviceType)) {
+                        thingTypeUID = MerossBindingConstants.THING_TYPE_GARAGE_DOOR;
+                    } else {
+                        logger.debug("Unsupported device found: name {} : type {}", device.devName(),
+                                device.deviceType());
+                        return;
+                    }
                 }
                 ThingUID deviceThing = new ThingUID(thingTypeUID, thingHandler.getThing().getUID(), device.uuid());
                 Map<String, Object> deviceProperties = new HashMap<>();
@@ -139,6 +141,12 @@ public class MerossDiscoveryService extends AbstractThingHandlerDiscoveryService
     public boolean isLightType(String typeName) {
         String targetString = typeName.substring(0, 3);
         Set<String> types = MerossBindingConstants.LIGHT_HARDWARE_TYPES;
+        return types.stream().anyMatch(type -> type.equals(targetString));
+    }
+
+    public boolean isGarageDoorType(String typeName) {
+        String targetString = typeName.substring(0, 3);
+        Set<String> types = MerossBindingConstants.GARAGE_DOOR_HARDWARE_TYPES;
         return types.stream().anyMatch(type -> type.equals(targetString));
     }
 }
