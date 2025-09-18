@@ -36,7 +36,6 @@ import org.openhab.binding.fronius.internal.api.dto.inverter.batterycontrol.Time
 import org.openhab.binding.fronius.internal.api.dto.inverter.batterycontrol.WeekdaysRecord;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
-import org.openhab.core.thing.firmware.types.SemverVersion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,7 +64,7 @@ public class FroniusBatteryControl {
     private final Logger logger = LoggerFactory.getLogger(FroniusBatteryControl.class);
     private final Gson gson = new Gson();
     private final HttpClient httpClient;
-    private final SemverVersion firmwareVersion;
+    private final float firmwareVersion;
     private final URI baseUri;
     private final String username;
     private final String password;
@@ -82,7 +81,7 @@ public class FroniusBatteryControl {
      * @param username the username for the inverter Web UI
      * @param password the password for the inverter Web UI
      */
-    public FroniusBatteryControl(HttpClient httpClient, SemverVersion firmwareVersion, String scheme, String hostname,
+    public FroniusBatteryControl(HttpClient httpClient, float firmwareVersion, String scheme, String hostname,
             String username, String password) {
         this.httpClient = httpClient;
         this.firmwareVersion = firmwareVersion;
@@ -93,9 +92,9 @@ public class FroniusBatteryControl {
         this.batteriesUri = URI.create(baseUri + BATTERIES_ENDPOINT);
     }
 
-    private static URI getBaseUri(SemverVersion firmwareVersion, String scheme, String hostname) {
+    private static URI getBaseUri(float firmwareVersion, String scheme, String hostname) {
         String apiPrefix = "";
-        if (firmwareVersion.isGreaterThanOrEqualTo(new SemverVersion(1, 36, 0))) {
+        if (firmwareVersion >= 1.36) {
             apiPrefix = "/api";
         }
         return URI.create(String.format("%s://%s%s", scheme, hostname, apiPrefix));

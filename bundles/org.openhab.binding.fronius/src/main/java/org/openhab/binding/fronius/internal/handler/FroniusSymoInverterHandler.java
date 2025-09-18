@@ -47,7 +47,6 @@ import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.binding.ThingHandlerService;
-import org.openhab.core.thing.firmware.types.SemverVersion;
 import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -108,18 +107,13 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
         InverterInfo localInverterInfo = inverterInfo;
         if (localInverterInfo != null) {
             String firmwareVersion = localInverterInfo.firmware();
-            if (firmwareVersion != null) {
-                int hyphenIndex = firmwareVersion.indexOf('-');
-                String versionString = (hyphenIndex > 0) ? firmwareVersion.substring(0, hyphenIndex) : firmwareVersion;
-                SemverVersion version = SemverVersion.fromString(versionString);
-                if (version.isGreaterThanOrEqualTo(SemverVersion.fromString("1.36.0"))) {
-                    batteryControl = new FroniusBatteryControl(httpClient, version, scheme, hostname, username,
-                            password);
-                    return;
-                }
-            }
+            int lastDotIndex = firmwareVersion.lastIndexOf('.');
+            float version = Float.parseFloat(firmwareVersion.substring(0, lastDotIndex));
+            batteryControl = new FroniusBatteryControl(httpClient, version, scheme, hostname, username, password);
+            return;
         }
-        logger.warn("Your Fronius Symo Inverter firmware version is not supported by battery control.");
+        logger.warn(
+                "Your Fronius Symo Inverter has an unknown firmware version and is not supported by battery control.");
     }
 
     private void updateProperties() {
