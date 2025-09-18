@@ -95,7 +95,7 @@ public class FroniusBatteryControl {
 
     private static URI getBaseUri(SemverVersion firmwareVersion, String scheme, String hostname) {
         String apiPrefix = "";
-        if (firmwareVersion.isGreaterThanOrEqualTo(new SemverVersion(1, 36, 0))) {
+        if (firmwareVersion.isGreaterThanOrEqualTo(SemverVersion.fromString("1.36.0"))) {
             apiPrefix = "/api";
         }
         return URI.create(String.format("%s://%s%s", scheme, hostname, apiPrefix));
