@@ -12,12 +12,13 @@
  */
 package org.openhab.binding.viessmann.internal;
 
+import static java.util.Map.entry;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.viessmann.internal.util.ViessmannUtil;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ThingTypeUID;
@@ -59,30 +60,23 @@ public class ViessmannBindingConstants {
     public static final String GATEWAY_SERIAL = "gatewaySerial";
     public static final String REPRESENTATION_ID = "representationId";
 
-    public static final Map<String, String> FEATURES_MAP = ViessmannUtil.readProperties(ViessmannBindingConstants.class,
-            "features.properties");
-
-    public static final Map<String, String> FEATURE_DESCRIPTION_MAP = ViessmannUtil
-            .readProperties(ViessmannBindingConstants.class, "featuresDescription.properties");
-
-    public static final Map<String, String> UNIT_MAP = Map.of( //
-            "celsius", SIUnits.CELSIUS.getSymbol(), //
-            "kelvin", Units.KELVIN.toString(), //
-            "kilowattHour", Units.KILOWATT_HOUR.toString(), //
-            "percent", Units.PERCENT.toString(), //
-            "minute", Units.MINUTE.toString(), //
-            "hour", Units.HOUR.toString(), //
-            "hours", Units.HOUR.toString(), //
-            "liter", Units.LITRE.toString(), //
-            "liter/minute", Units.LITRE_PER_MINUTE.toString(), //
-            "cubicMeter", SIUnits.CUBIC_METRE.toString());
+    public static final Map<String, String> UNIT_MAP = Map.ofEntries(entry("celsius", SIUnits.CELSIUS.getSymbol()), //
+            entry("kelvin", Units.KELVIN.toString()), //
+            entry("kilowattHour", Units.KILOWATT_HOUR.toString()), //
+            entry("gas-kilowattHour", Units.KILOWATT_HOUR.toString()), //
+            entry("power-kilowattHour", Units.KILOWATT_HOUR.toString()), //
+            entry("percent", Units.PERCENT.toString()), //
+            entry("minute", Units.MINUTE.toString()), //
+            entry("hour", Units.HOUR.toString()), //
+            entry("hours", Units.HOUR.toString()), //
+            entry("liter", Units.LITRE.toString()), //
+            entry("liter/minute", Units.LITRE_PER_MINUTE.toString()), //
+            entry("cubicMeter", SIUnits.CUBIC_METRE.toString()));
 
     public static final Map<String, String> SUB_CHANNEL_TYPE_MAP = Map.of( //
             "cubicMeter", "type-volume", //
-            "kilowattHour", "type-energy");
-
-    public static final Map<String, String> MODES_MAP = ViessmannUtil.readProperties(ViessmannBindingConstants.class,
-            "modes.properties");
+            "gas-kilowattHour", "type-gas-energy", //
+            "power-kilowattHour", "type-power-energy");
 
     public static final String CHANNEL_LAST_ERROR_MESSAGE = "last-error-message";
     public static final String CHANNEL_ERROR_IS_ACTIVE = "error-is-active";

@@ -44,6 +44,7 @@ import org.openhab.binding.viessmann.internal.dto.installation.Gateway;
 import org.openhab.binding.viessmann.internal.dto.installation.InstallationDTO;
 import org.openhab.binding.viessmann.internal.interfaces.ApiInterface;
 import org.openhab.binding.viessmann.internal.util.ViessmannUtil;
+import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.storage.Storage;
 import org.openhab.core.thing.Bridge;
@@ -79,7 +80,7 @@ public class ViessmannAccountHandler extends BaseBridgeHandler implements ApiInt
 
     private static final String STORED_API_CALLS = "apiCalls";
 
-    private final HttpClient httpClient;
+    private final HttpClientFactory httpClientFactory;
     private final @Nullable String callbackUrl;
 
     private @NonNullByDefault({}) ViessmannApi api;
@@ -107,11 +108,11 @@ public class ViessmannAccountHandler extends BaseBridgeHandler implements ApiInt
 
     private AccountConfiguration config = new AccountConfiguration();
 
-    public ViessmannAccountHandler(Bridge bridge, Storage<String> stateStorage, HttpClient httpClient,
+    public ViessmannAccountHandler(Bridge bridge, Storage<String> stateStorage, HttpClientFactory httpClientFactory,
             @Nullable String callbackUrl, ItemChannelLinkRegistry linkRegistry) {
         super(bridge);
         this.stateStorage = stateStorage;
-        this.httpClient = httpClient;
+        this.httpClientFactory = httpClientFactory;
         this.callbackUrl = callbackUrl;
         this.linkRegistry = linkRegistry;
     }
@@ -189,6 +190,8 @@ public class ViessmannAccountHandler extends BaseBridgeHandler implements ApiInt
         } else {
             apiCalls = 0;
         }
+
+        HttpClient httpClient = httpClientFactory.getCommonHttpClient();
 
         api = new ViessmannApi(this.config.apiKey, httpClient, this.config.user, this.config.password,
                 this.config.installationId, this.config.gatewaySerial, callbackUrl);

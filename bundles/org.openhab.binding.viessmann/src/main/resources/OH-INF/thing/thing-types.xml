@@ -296,7 +296,7 @@
 		<state min="10" max="70" step="1" pattern="%d %unit%" readOnly="false"/>
 	</channel-type>
 
-	<channel-type id="type-energy">
+	<channel-type id="type-power-energy">
 		<item-type>Number:Energy</item-type>
 		<label>Energy</label>
 		<category>Energy</category>
@@ -305,6 +305,17 @@
 			<tag>Energy</tag>
 		</tags>
 		<state pattern="%.3f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="type-gas-energy">
+		<item-type>Number:Energy</item-type>
+		<label>Gas Energy</label>
+		<category>Gas</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="type-volume">

@@ -19,11 +19,12 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.viessmann.internal.handler.DeviceHandler;
 import org.openhab.binding.viessmann.internal.handler.ViessmannAccountHandler;
 import org.openhab.binding.viessmann.internal.handler.ViessmannBridgeHandler;
 import org.openhab.binding.viessmann.internal.handler.ViessmannGatewayHandler;
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.net.HttpServiceUtil;
 import org.openhab.core.storage.Storage;
@@ -54,27 +55,32 @@ import org.slf4j.LoggerFactory;
 public class ViessmannHandlerFactory extends BaseThingHandlerFactory {
     private final Logger logger = LoggerFactory.getLogger(ViessmannHandlerFactory.class);
 
-    private final HttpClient httpClient;
+    private final HttpClientFactory httpClientFactory;
     private final StorageService storageService;
     private final BindingServlet bindingServlet;
     private final ViessmannDynamicStateDescriptionProvider stateDescriptionProvider;
     private final ItemChannelLinkRegistry linkRegistry;
-
+    private final LocaleProvider localeProvider;
+    private final TranslationProvider i18Provider;
     private @Nullable String callbackUrl;
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_ACCOUNT, THING_TYPE_GATEWAY,
             THING_TYPE_BRIDGE, THING_TYPE_DEVICE);
 
     @Activate
-    public ViessmannHandlerFactory(@Reference HttpService httpService, @Reference HttpClientFactory httpClientFactory,
-            @Reference StorageService storageService,
+    public ViessmannHandlerFactory(final @Reference HttpService httpService,
+            final @Reference HttpClientFactory httpClientFactory, final @Reference StorageService storageService,
             final @Reference ViessmannDynamicStateDescriptionProvider stateDescriptionProvider,
-            @Reference ItemChannelLinkRegistry linkRegistry) {
-        this.httpClient = httpClientFactory.getCommonHttpClient();
+            final @Reference ItemChannelLinkRegistry linkRegistry, final @Reference LocaleProvider localeProvider,
+            final @Reference TranslationProvider i18Provider) {
+        // this.httpClient = httpClientFactory.getCommonHttpClient();
+        this.httpClientFactory = httpClientFactory;
         this.bindingServlet = new BindingServlet(httpService);
         this.storageService = storageService;
         this.stateDescriptionProvider = stateDescriptionProvider;
         this.linkRegistry = linkRegistry;
+        this.localeProvider = localeProvider;
+        this.i18Provider = i18Provider;
     }
 
     @Override
@@ -102,15 +108,17 @@ public class ViessmannHandlerFactory extends BaseThingHandlerFactory {
         if (THING_TYPE_ACCOUNT.equals(thingTypeUID)) {
             Storage<String> storage = storageService.getStorage(thing.getUID().toString(),
                     String.class.getClassLoader());
-            return new ViessmannAccountHandler((Bridge) thing, storage, httpClient, createCallbackUrl(), linkRegistry);
+            return new ViessmannAccountHandler((Bridge) thing, storage, httpClientFactory, createCallbackUrl(),
+                    linkRegistry);
         } else if (THING_TYPE_GATEWAY.equals(thingTypeUID)) {
             return new ViessmannGatewayHandler((Bridge) thing, linkRegistry);
         } else if (THING_TYPE_BRIDGE.equals(thingTypeUID)) {
             Storage<String> storage = storageService.getStorage(thing.getUID().toString(),
                     String.class.getClassLoader());
-            return new ViessmannBridgeHandler((Bridge) thing, storage, httpClient, createCallbackUrl(), linkRegistry);
+            return new ViessmannBridgeHandler((Bridge) thing, storage, httpClientFactory, createCallbackUrl(),
+                    linkRegistry);
         } else if (THING_TYPE_DEVICE.equals(thingTypeUID)) {
-            return new DeviceHandler(thing, stateDescriptionProvider, linkRegistry);
+            return new DeviceHandler(thing, stateDescriptionProvider, linkRegistry, i18Provider, localeProvider);
         }
         return null;
     }

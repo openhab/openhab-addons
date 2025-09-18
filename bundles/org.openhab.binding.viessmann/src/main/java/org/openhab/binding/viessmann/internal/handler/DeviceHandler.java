@@ -22,6 +22,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -43,6 +44,8 @@ import org.openhab.binding.viessmann.internal.dto.schedule.DaySchedule;
 import org.openhab.binding.viessmann.internal.dto.schedule.ScheduleDTO;
 import org.openhab.binding.viessmann.internal.interfaces.BridgeInterface;
 import org.openhab.binding.viessmann.internal.util.ViessmannUtil;
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
@@ -61,6 +64,8 @@ import org.openhab.core.thing.link.ItemChannelLinkRegistry;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.StateOption;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -88,10 +93,18 @@ public class DeviceHandler extends ViessmannThingHandler {
 
     private final ItemChannelLinkRegistry linkRegistry;
 
+    private final TranslationProvider i18Provider;
+    private final LocaleProvider localeProvider;
+
+    private final Bundle bundle;
+
     public DeviceHandler(Thing thing, ViessmannDynamicStateDescriptionProvider stateDescriptionProvider,
-            ItemChannelLinkRegistry linkRegistry) {
+            ItemChannelLinkRegistry linkRegistry, TranslationProvider i18Provider, LocaleProvider localeProvider) {
         super(thing, stateDescriptionProvider);
         this.linkRegistry = linkRegistry;
+        this.i18Provider = i18Provider;
+        this.localeProvider = localeProvider;
+        bundle = FrameworkUtil.getBundle(getClass());
     }
 
     @Override
@@ -119,18 +132,28 @@ public class DeviceHandler extends ViessmannThingHandler {
         for (Channel channel : oldChannels) {
             String oldId = channel.getUID().getId();
             String newId = ViessmannUtil.camelToHyphen(oldId);
+            boolean updateChannelType = false;
+            String channelLabel = channel.getLabel();
+            String channelType = ViessmannUtil
+                    .camelToHyphen(Objects.requireNonNull(channel.getChannelTypeUID()).toString());
+            channelType = channelType.replace(BINDING_ID + ":", "");
 
-            if (!newId.equals(oldId)) {
+            if ("type-energy".equals(channelType)) {
+                logger.trace("Migrate channelType");
+                if (newId.contains("gas")) {
+                    channelType = "type-gas-energy";
+                }
+                if (newId.contains("power")) {
+                    channelType = "type-power-energy";
+                }
+                updateChannelType = true;
+            }
+
+            if (!newId.equals(oldId) || updateChannelType) {
                 logger.info("Migrating channel '{}' -> '{}'", oldId, newId);
 
                 ChannelUID oldUid = channel.getUID();
                 ChannelUID newUid = new ChannelUID(thing.getUID(), newId);
-
-                String channelLabel = channel.getLabel();
-
-                String channelType = ViessmannUtil
-                        .camelToHyphen(Objects.requireNonNull(channel.getChannelTypeUID()).toString());
-                channelType = channelType.replace(BINDING_ID + ":", "");
 
                 ChannelTypeUID channelTypeUID = new ChannelTypeUID(BINDING_ID, channelType);
                 if (channelLabel != null) {
@@ -446,25 +469,49 @@ public class DeviceHandler extends ViessmannThingHandler {
                             // returns array as string
                             typeEntry = prop.day.type;
                             valueEntry = prop.day.value.toString();
-                            viUnit = prop.day.unit;
+                            if (featureDataDTO.feature.contains("gas")) {
+                                viUnit = "gas-" + prop.day.unit;
+                            } else if (featureDataDTO.feature.contains("power")) {
+                                viUnit = "power-" + prop.day.unit;
+                            } else {
+                                viUnit = prop.day.unit;
+                            }
                             break;
                         case "week":
                             // returns array as string
                             typeEntry = prop.week.type;
                             valueEntry = prop.week.value.toString();
-                            viUnit = prop.week.unit;
+                            if (featureDataDTO.feature.contains("gas")) {
+                                viUnit = "gas-" + prop.week.unit;
+                            } else if (featureDataDTO.feature.contains("power")) {
+                                viUnit = "power-" + prop.week.unit;
+                            } else {
+                                viUnit = prop.week.unit;
+                            }
                             break;
                         case "month":
                             // returns array as string
                             typeEntry = prop.month.type;
                             valueEntry = prop.month.value.toString();
-                            viUnit = prop.month.unit;
+                            if (featureDataDTO.feature.contains("gas")) {
+                                viUnit = "gas-" + prop.month.unit;
+                            } else if (featureDataDTO.feature.contains("power")) {
+                                viUnit = "power-" + prop.month.unit;
+                            } else {
+                                viUnit = prop.month.unit;
+                            }
                             break;
                         case "year":
                             // returns array as string
                             typeEntry = prop.year.type;
                             valueEntry = prop.year.value.toString();
-                            viUnit = prop.year.unit;
+                            if (featureDataDTO.feature.contains("gas")) {
+                                viUnit = "gas-" + prop.year.unit;
+                            } else if (featureDataDTO.feature.contains("power")) {
+                                viUnit = "power-" + prop.year.unit;
+                            } else {
+                                viUnit = prop.year.unit;
+                            }
                             break;
                         case "unit":
                             typeEntry = prop.unit.type;
@@ -563,6 +610,22 @@ public class DeviceHandler extends ViessmannThingHandler {
                                                     "The command URI is different. The channel is now being updated.");
                                             createChannel(msg);
                                         }
+                                    }
+                                }
+                                String channelDescription = channel.getDescription();
+                                if (channelDescription != null) {
+                                    if (!channelDescription.equals(msg.getFeatureDescription())) {
+                                        logger.trace(
+                                                "Channel Description is different. The channel is now being updated.");
+                                        createChannel(msg);
+                                    }
+                                }
+
+                                String channelLabel = channel.getLabel();
+                                if (channelLabel != null) {
+                                    if (!channelLabel.equals(msg.getFeatureName())) {
+                                        logger.trace("Channel Label is different. The channel is now being updated.");
+                                        createChannel(msg);
                                     }
                                 }
                             }
@@ -741,19 +804,25 @@ public class DeviceHandler extends ViessmannThingHandler {
     }
 
     private String getFeatureName(String feature) {
+        Locale locale = localeProvider.getLocale();
         Pattern pattern = Pattern.compile("(\\.[0-3])");
         Matcher matcher = pattern.matcher(feature);
         if (matcher.find()) {
             String circuit = matcher.group(0);
             feature = matcher.replaceAll(".N");
-            return FEATURES_MAP.getOrDefault(feature, feature) + " (Circuit: " + circuit.replace(".", "") + ")";
+            String featureName = Objects
+                    .requireNonNull(i18Provider.getText(bundle, "viessmann.feature.name." + feature, feature, locale));
+            return featureName + " (Circuit: " + circuit.replace(".", "") + ")";
         }
-        return FEATURES_MAP.getOrDefault(feature, feature);
+        return Objects
+                .requireNonNull(i18Provider.getText(bundle, "viessmann.feature.name." + feature, feature, locale));
     }
 
     private @Nullable String getFeatureDescription(String feature) {
+        Locale locale = localeProvider.getLocale();
         feature = feature.replaceAll("\\.[0-3]", ".N");
-        return FEATURE_DESCRIPTION_MAP.get(feature);
+        return Objects
+                .requireNonNull(i18Provider.getText(bundle, "viessmann.feature.description." + feature, "", locale));
     }
 
     private OnOffType parseSchedule(String scheduleJson) {
@@ -980,9 +1049,12 @@ public class DeviceHandler extends ViessmannThingHandler {
         if ("type-set-mode".equals(convertChannelType(msg))) {
             List<String> modes = msg.commands.setMode.params.mode.constraints.enumValue;
             if (modes != null) {
+                Locale locale = localeProvider.getLocale();
                 List<StateOption> stateOptions = new ArrayList<>();
                 for (String command : modes) {
-                    StateOption stateOption = new StateOption(command, MODES_MAP.get(command));
+                    String commandLabel = Objects.requireNonNull(
+                            i18Provider.getText(bundle, "viessmann.command.label." + command, command, locale));
+                    StateOption stateOption = new StateOption(command, commandLabel);
                     stateOptions.add(stateOption);
                 }
                 ChannelUID channelUID = new ChannelUID(thing.getUID(), msg.getChannelId());
