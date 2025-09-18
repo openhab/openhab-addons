@@ -149,10 +149,8 @@ Battery control uses the battery management's time-dependent battery control set
 Please note that user-specified time of use plans cannot be used together with battery control, as battery control will override the user-specified time of use settings.
 :::
 
-Please note that the battery control actions are only available for `powerinverter` Things if username and password are provided in the bridge configuration, and the inverter supports time of use settings in its Web UI.
-In addition to that, battery control has only been tested with Symo Gen24 Plus inverters so far and firmware version >= 1.36.x.
-
 The `powerinverter` Thing provides actions to control the battery charging and discharging behaviour of hybrid inverters, such as Symo Gen24 Plus, if username and password are provided in the bridge configuration.
+The inverter must have the battery time of use plan settings available in the web interface.
 
 You can retrieve the actions as follows:
 
