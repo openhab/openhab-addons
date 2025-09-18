@@ -238,7 +238,7 @@ public class FroniusSymoInverterActions implements ThingActions {
             @ActionInput(name = "from", label = "@text/actions.from.label", description = "@text/actions.from.description", required = true) LocalTime from,
             @ActionInput(name = "until", label = "@text/actions.until.label", description = "@text/actions.until.description", required = true) LocalTime until,
             @ActionInput(name = "scheduleType", label = "@text/actions.schedule-type.label", description = "@text/actions.schedule-type.description", required = true) String scheduleType,
-            @ActionInput(name = "power", label = "@text/actions.power.label", description = "@text/actions.power.label", type = "QuantityType<Power>", required = true) QuantityType<Power> power) {
+            @ActionInput(name = "power", label = "@text/actions.power.label", description = "@text/actions.power.description", type = "QuantityType<Power>", required = true) QuantityType<Power> power) {
         return addSchedule(from, until, ScheduleType.valueOf(scheduleType), power);
     }
 
@@ -274,7 +274,7 @@ public class FroniusSymoInverterActions implements ThingActions {
 
     @RuleAction(label = "@text/actions.force-battery-charging.label", description = "@text/actions.force-battery-charging.description")
     public @ActionOutput(type = "boolean", label = "Success") boolean forceBatteryCharging(
-            @ActionInput(name = "power", label = "@text/actions.power.label", description = "@text/actions.power.label", type = "QuantityType<Power>", required = true) QuantityType<Power> power) {
+            @ActionInput(name = "power", label = "@text/actions.power.label", description = "@text/actions.power.description", type = "QuantityType<Power>", required = true) QuantityType<Power> power) {
         FroniusBatteryControl batteryControl = getBatteryControl();
         if (batteryControl != null) {
             return executeBatteryControlAction(() -> {
@@ -289,7 +289,7 @@ public class FroniusSymoInverterActions implements ThingActions {
     public @ActionOutput(type = "boolean", label = "Success") boolean addForcedBatteryChargingSchedule(
             @ActionInput(name = "from", label = "@text/actions.from.label", description = "@text/actions.from.description", required = true) LocalTime from,
             @ActionInput(name = "until", label = "@text/actions.until.label", description = "@text/actions.until.description", required = true) LocalTime until,
-            @ActionInput(name = "power", label = "@text/actions.power.label", description = "@text/actions.power.label", type = "QuantityType<Power>", required = true) QuantityType<Power> power) {
+            @ActionInput(name = "power", label = "@text/actions.power.label", description = "@text/actions.power.description", type = "QuantityType<Power>", required = true) QuantityType<Power> power) {
         FroniusBatteryControl batteryControl = getBatteryControl();
         if (batteryControl != null) {
             return executeBatteryControlAction(() -> {
@@ -337,7 +337,7 @@ public class FroniusSymoInverterActions implements ThingActions {
 
     @RuleAction(label = "@text/actions.force-battery-discharging.label", description = "@text/actions.force-battery-discharging.description")
     public @ActionOutput(type = "boolean", label = "Success") boolean forceBatteryDischarging(
-            @ActionInput(name = "power", label = "@text/actions.power.label", description = "@text/actions.power.label", type = "QuantityType<Power>", required = true) QuantityType<Power> power) {
+            @ActionInput(name = "power", label = "@text/actions.power.label", description = "@text/actions.power.description", type = "QuantityType<Power>", required = true) QuantityType<Power> power) {
         FroniusBatteryControl batteryControl = getBatteryControl();
         if (batteryControl != null) {
             return executeBatteryControlAction(() -> {
@@ -352,7 +352,7 @@ public class FroniusSymoInverterActions implements ThingActions {
     public @ActionOutput(type = "boolean", label = "Success") boolean addForcedBatteryDischargingSchedule(
             @ActionInput(name = "from", label = "@text/actions.from.label", description = "@text/actions.from.description", required = true) LocalTime from,
             @ActionInput(name = "until", label = "@text/actions.until.label", description = "@text/actions.until.description", required = true) LocalTime until,
-            @ActionInput(name = "power", label = "@text/actions.power.label", description = "@text/actions.power.label", type = "QuantityType<Power>", required = true) QuantityType<Power> power) {
+            @ActionInput(name = "power", label = "@text/actions.power.label", description = "@text/actions.power.description", type = "QuantityType<Power>", required = true) QuantityType<Power> power) {
         FroniusBatteryControl batteryControl = getBatteryControl();
         if (batteryControl != null) {
             return executeBatteryControlAction(() -> {

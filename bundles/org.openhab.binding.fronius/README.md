@@ -193,19 +193,19 @@ Once the actions instance has been retrieved, you can invoke the following metho
 - `forceBatteryDischarging(QuantityType<Power> power)`: Force the battery to discharge with the specified power (removes all battery control schedules first and applies all the time).
 - `addForcedBatteryDischargingSchedule(LocalTime from, LocalTime until, QuantityType<Power> power)`: Add a schedule to force the battery to discharge with the specified power in the specified time range.
 - `addForcedBatteryDischargingSchedule(ZonedDateTime from, ZonedDateTime until, QuantityType<Power> power)`: Add a schedule to force the battery to discharge with the specified power in the specified time range.
-- `addScheduleLocalTime from, LocalTime until, ScheduleType scheduleType, QuantityType<Power> power`: Add a custom schedule with the specified type and power in the specified time range.
-- `addScheduleZonedDateTime from, ZonedDateTime until, ScheduleType scheduleType, QuantityType<Power> power`: Add a custom schedule with the specified type and power in the specified time range.
+- `addSchedule(LocalTime from, LocalTime until, ScheduleType scheduleType, QuantityType<Power> power)`: Add a custom schedule with the specified type and power in the specified time range.
+- `addSchedule(ZonedDateTime from, ZonedDateTime until, ScheduleType scheduleType, QuantityType<Power> power)`: Add a custom schedule with the specified type and power in the specified time range.
 - `setBackupReservedBatteryCapacity(int percent)`: Set the reserved battery capacity for backup power.
 - `setBackupReservedBatteryCapacity(PercentType percent)`: Set the reserved battery capacity for backup power.
 
-The enum `ScheduleType` has the following members:
+The `ScheduleType` enum has the following members:
 
 - `CHARGE_MIN`
 - `CHARGE_MAX`
 - `DISCHARGE_MIN`
 - `DISCHARGE_MAX`
 
-It's full class name is `org.openhab.binding.fronius.internal.api.dto.inverter.batterycontrol`.
+Its full class name is `org.openhab.binding.fronius.internal.api.dto.inverter.batterycontrol.ScheduleType`.
 
 All methods return a boolean value indicating whether the action was successful.
 
