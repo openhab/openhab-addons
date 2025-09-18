@@ -170,7 +170,7 @@ public class FroniusBatteryControl {
      * @throws FroniusCommunicationException when an error occurs during communication with the inverter
      * @throws FroniusUnauthorizedException when the login fails due to invalid credentials
      */
-    private void addSchedule(LocalTime from, LocalTime until, ScheduleType scheduleType, QuantityType<Power> power)
+    public void addSchedule(LocalTime from, LocalTime until, ScheduleType scheduleType, QuantityType<Power> power)
             throws FroniusCommunicationException, FroniusUnauthorizedException {
         TimeOfUseRecords currentTimeOfUse = getTimeOfUse();
         TimeOfUseRecord[] timeOfUse = new TimeOfUseRecord[currentTimeOfUse.records().length + 1];
