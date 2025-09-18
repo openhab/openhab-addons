@@ -26,6 +26,7 @@
 				<label>Consumption</label>
 				<description>The energy consumption</description>
 			</channel>
+			
 			<channel id="consumptionSupplierIdx0" typeId="consumption">
 				<label>Consumption Supplier Idx0</label>
 				<description>The supplier energy consumption Idx0</description>

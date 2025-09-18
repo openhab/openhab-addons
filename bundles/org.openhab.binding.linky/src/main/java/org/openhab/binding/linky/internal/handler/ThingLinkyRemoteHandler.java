@@ -525,6 +525,36 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
                         idx, Units.KILOWATT_HOUR);
             }
 
+            for (int idx = 0; idx < 10; idx++) {
+                updateTimeSeries(LINKY_REMOTE_WEEKLY_GROUP, CHANNEL_CONSUMPTION_SUPPLIER_IDX + idx, values.weekValue,
+                        idx, Units.KILOWATT_HOUR);
+            }
+
+            for (int idx = 0; idx < 4; idx++) {
+                updateTimeSeries(LINKY_REMOTE_WEEKLY_GROUP, CHANNEL_CONSUMPTION_DISTRIBUTOR_IDX + idx, values.weekValue,
+                        idx, Units.KILOWATT_HOUR);
+            }
+
+            for (int idx = 0; idx < 10; idx++) {
+                updateTimeSeries(LINKY_REMOTE_MONTHLY_GROUP, CHANNEL_CONSUMPTION_SUPPLIER_IDX + idx, values.monthValue,
+                        idx, Units.KILOWATT_HOUR);
+            }
+
+            for (int idx = 0; idx < 4; idx++) {
+                updateTimeSeries(LINKY_REMOTE_MONTHLY_GROUP, CHANNEL_CONSUMPTION_DISTRIBUTOR_IDX + idx,
+                        values.monthValue, idx, Units.KILOWATT_HOUR);
+            }
+
+            for (int idx = 0; idx < 10; idx++) {
+                updateTimeSeries(LINKY_REMOTE_YEARLY_GROUP, CHANNEL_CONSUMPTION_SUPPLIER_IDX + idx, values.yearValue,
+                        idx, Units.KILOWATT_HOUR);
+            }
+
+            for (int idx = 0; idx < 4; idx++) {
+                updateTimeSeries(LINKY_REMOTE_YEARLY_GROUP, CHANNEL_CONSUMPTION_DISTRIBUTOR_IDX + idx, values.yearValue,
+                        idx, Units.KILOWATT_HOUR);
+            }
+
             /*
              * updateKwhChannel(LINKY_REMOTE_DAILY_GROUP, CHANNEL_DAY_MINUS_1, values.baseValue[dSize - 1].value);
              * updateKwhChannel(LINKY_REMOTE_DAILY_GROUP, CHANNEL_DAY_MINUS_2, values.baseValue[dSize - 2].value);
@@ -620,7 +650,7 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
                     continue;
                 }
                 if (idx != -1) {
-                    if (iv[i + 1] != null) {
+                    if (i + 1 < iv.length && iv[i + 1] != null) {
                         timeSeries.add(timestamp, new QuantityType<>(iv[i + 1].valueSupplier[idx], unit));
                     }
                 } else {
@@ -817,14 +847,19 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
 
         if (!isDataLastDayAvailable(meterReading)) {
             logger.debug("Data including yesterday are not yet available");
-            return meterReading;
+            // return meterReading;
             // return null;
         }
 
         if (meterReading != null) {
             if (meterReading.weekValue == null) {
                 LocalDate startDate = meterReading.baseValue[0].date.toLocalDate();
-                LocalDate endDate = meterReading.baseValue[meterReading.baseValue.length - 1].date.toLocalDate();
+                LocalDate endDate;
+                if (meterReading.baseValue[meterReading.baseValue.length - 1] != null) {
+                    endDate = meterReading.baseValue[meterReading.baseValue.length - 1].date.toLocalDate();
+                } else {
+                    endDate = meterReading.baseValue[meterReading.baseValue.length - 2].date.toLocalDate();
+                }
 
                 int startWeek = startDate.get(WeekFields.of(Locale.FRANCE).weekOfYear());
                 int endWeek = endDate.get(WeekFields.of(Locale.FRANCE).weekOfYear());
@@ -856,6 +891,9 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
 
                 for (int idx = 0; idx < size; idx++) {
                     IntervalReading ir = meterReading.baseValue[idx];
+                    if (ir == null) {
+                        continue;
+                    }
                     LocalDateTime dt = ir.date;
                     double value = ir.value;
                     value = value / divider;
@@ -869,6 +907,7 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
 
                     if (idxWeek < weeksNum) {
                         meterReading.weekValue[idxWeek].value += value;
+
                         if (meterReading.weekValue[idxWeek].date == null) {
                             meterReading.weekValue[idxWeek].date = dt;
                         }
@@ -884,6 +923,33 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
                         meterReading.yearValue[idxYear].value += value;
                         if (meterReading.yearValue[idxYear].date == null) {
                             meterReading.yearValue[idxYear].date = LocalDateTime.of(dt.getYear(), 1, 1, 0, 0);
+                        }
+                    }
+
+                    if (ir.valueSupplier != null) {
+                        if (meterReading.weekValue[idxWeek].valueSupplier == null) {
+                            meterReading.weekValue[idxWeek].valueSupplier = new double[10];
+                        }
+                        if (meterReading.monthValue[idxMonth].valueSupplier == null) {
+                            meterReading.monthValue[idxMonth].valueSupplier = new double[10];
+                        }
+                        if (meterReading.yearValue[idxYear].valueSupplier == null) {
+                            meterReading.yearValue[idxYear].valueSupplier = new double[10];
+                        }
+                        for (int idxSupplier = 0; idxSupplier < 10; idxSupplier++) {
+                            double valueSupplier = ir.valueSupplier[idxSupplier];
+
+                            if (idxWeek < weeksNum) {
+                                meterReading.weekValue[idxWeek].valueSupplier[idxSupplier] += valueSupplier;
+                            }
+                            if (idxMonth < monthsNum) {
+                                meterReading.monthValue[idxMonth].valueSupplier[idxSupplier] += valueSupplier;
+                            }
+
+                            if (idxYear < yearsNum) {
+                                meterReading.yearValue[idxYear].valueSupplier[idxSupplier] += valueSupplier;
+                            }
+
                         }
                     }
                 }
