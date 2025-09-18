@@ -36,6 +36,7 @@ import org.openhab.binding.fronius.internal.api.dto.inverter.batterycontrol.Time
 import org.openhab.binding.fronius.internal.api.dto.inverter.batterycontrol.WeekdaysRecord;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
+import org.openhab.core.thing.firmware.types.SemverVersion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,6 +65,7 @@ public class FroniusBatteryControl {
     private final Logger logger = LoggerFactory.getLogger(FroniusBatteryControl.class);
     private final Gson gson = new Gson();
     private final HttpClient httpClient;
+    private final SemverVersion firmwareVersion;
     private final URI baseUri;
     private final String username;
     private final String password;
@@ -74,17 +76,29 @@ public class FroniusBatteryControl {
      * Creates a new instance of {@link FroniusBatteryControl}.
      * 
      * @param httpClient the HTTP client to use
-     * @param baseUri the base URI of the Fronius hybrid inverter, MUST NOT end with a slash
+     * @param firmwareVersion the firmware version of the inverter
+     * @param scheme http or https
+     * @param hostname the hostname or IP address of the inverter
      * @param username the username for the inverter Web UI
      * @param password the password for the inverter Web UI
      */
-    public FroniusBatteryControl(HttpClient httpClient, URI baseUri, String username, String password) {
+    public FroniusBatteryControl(HttpClient httpClient, SemverVersion firmwareVersion, String scheme, String hostname,
+            String username, String password) {
         this.httpClient = httpClient;
-        this.baseUri = baseUri;
+        this.firmwareVersion = firmwareVersion;
+        this.baseUri = getBaseUri(firmwareVersion, scheme, hostname);
         this.username = username;
         this.password = password;
         this.timeOfUseUri = URI.create(baseUri + TIME_OF_USE_ENDPOINT);
         this.batteriesUri = URI.create(baseUri + BATTERIES_ENDPOINT);
+    }
+
+    private static URI getBaseUri(SemverVersion firmwareVersion, String scheme, String hostname) {
+        String apiPrefix = "";
+        if (firmwareVersion.isGreaterThanOrEqualTo(new SemverVersion(1, 36, 0))) {
+            apiPrefix = "/api";
+        }
+        return URI.create(String.format("%s://%s%s", scheme, hostname, apiPrefix));
     }
 
     /**
@@ -96,8 +110,8 @@ public class FroniusBatteryControl {
      */
     private TimeOfUseRecords getTimeOfUse() throws FroniusCommunicationException, FroniusUnauthorizedException {
         // Login and get the auth header for the next request
-        String authHeader = FroniusConfigAuthUtil.login(httpClient, baseUri, username, password, HttpMethod.GET,
-                timeOfUseUri.getPath(), API_TIMEOUT);
+        String authHeader = FroniusConfigAuthUtil.login(httpClient, firmwareVersion, baseUri, username, password,
+                HttpMethod.GET, timeOfUseUri.getPath(), API_TIMEOUT);
         Properties headers = new Properties();
         headers.put(HttpHeader.AUTHORIZATION.asString(), authHeader);
         // Get the time of use settings
@@ -128,8 +142,8 @@ public class FroniusBatteryControl {
     private void setTimeOfUse(TimeOfUseRecords records)
             throws FroniusCommunicationException, FroniusUnauthorizedException {
         // Login and get the auth header for the next request
-        String authHeader = FroniusConfigAuthUtil.login(httpClient, baseUri, username, password, HttpMethod.POST,
-                timeOfUseUri.getPath(), API_TIMEOUT);
+        String authHeader = FroniusConfigAuthUtil.login(httpClient, firmwareVersion, baseUri, username, password,
+                HttpMethod.POST, timeOfUseUri.getPath(), API_TIMEOUT);
         Properties headers = new Properties();
         headers.put(HttpHeader.AUTHORIZATION.asString(), authHeader);
 
@@ -304,8 +318,8 @@ public class FroniusBatteryControl {
         }
 
         // Login and get the auth header for the next request
-        String authHeader = FroniusConfigAuthUtil.login(httpClient, baseUri, username, password, HttpMethod.POST,
-                batteriesUri.getPath(), API_TIMEOUT);
+        String authHeader = FroniusConfigAuthUtil.login(httpClient, firmwareVersion, baseUri, username, password,
+                HttpMethod.POST, batteriesUri.getPath(), API_TIMEOUT);
         Properties headers = new Properties();
         headers.put(HttpHeader.AUTHORIZATION.asString(), authHeader);
 
