@@ -50,6 +50,7 @@ import org.openhab.binding.mybmw.internal.utils.Constants;
 import org.openhab.binding.mybmw.internal.utils.Converter;
 import org.openhab.binding.mybmw.internal.utils.HTTPConstants;
 import org.openhab.binding.mybmw.internal.utils.ImageProperties;
+import org.openhab.binding.mybmw.internal.utils.RandomUserAgentVersionGenerator;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.slf4j.Logger;
@@ -407,8 +408,10 @@ public class MyBMWHttpProxy implements MyBMWProxy {
         }
 
         req.header(HttpHeader.AUTHORIZATION, bearerToken);
-        req.header(HTTPConstants.HEADER_X_USER_AGENT, String.format(BimmerConstants.X_USER_AGENT, brand.toLowerCase(),
-                BimmerConstants.APP_VERSIONS.get(bridgeConfiguration.getRegion()), bridgeConfiguration.getRegion()));
+        req.header(HTTPConstants.HEADER_X_USER_AGENT,
+                String.format(BimmerConstants.X_USER_AGENT, RandomUserAgentVersionGenerator.getRandomUserAgentVersion(),
+                        brand.toLowerCase(), BimmerConstants.APP_VERSIONS.get(bridgeConfiguration.getRegion()),
+                        bridgeConfiguration.getRegion()));
         req.header(HttpHeader.ACCEPT_LANGUAGE, bridgeConfiguration.getLanguage());
         req.header(HttpHeader.ACCEPT, contentType);
         req.header(HTTPConstants.HEADER_BMW_VIN, vin);
