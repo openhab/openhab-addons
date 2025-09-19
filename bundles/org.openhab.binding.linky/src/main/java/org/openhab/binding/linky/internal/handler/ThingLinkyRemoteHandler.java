@@ -14,6 +14,7 @@ package org.openhab.binding.linky.internal.handler;
 
 import static org.openhab.binding.linky.internal.constants.LinkyBindingConstants.*;
 
+import java.text.Normalizer;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -22,6 +23,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.WeekFields;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -37,6 +39,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.linky.internal.api.EnedisHttpApi;
 import org.openhab.binding.linky.internal.api.ExpiringDayCache;
 import org.openhab.binding.linky.internal.config.LinkyThingRemoteConfiguration;
+import org.openhab.binding.linky.internal.constants.LinkyBindingConstants;
 import org.openhab.binding.linky.internal.dto.Contact;
 import org.openhab.binding.linky.internal.dto.Contract;
 import org.openhab.binding.linky.internal.dto.Identity;
@@ -56,10 +59,13 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.MetricPrefix;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.binding.builder.ChannelBuilder;
+import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
@@ -508,31 +514,159 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
         });
     }
 
+    private void addChannel(List<Channel> channels, ChannelTypeUID chanTypeUid, String channelGroup, String channelName,
+            String channelLabel, String channelDesc) {
+        ChannelUID channelUid = new ChannelUID(this.getThing().getUID(), channelGroup, channelName);
+        Channel channel = ChannelBuilder.create(channelUid).withType(chanTypeUid).withDescription(channelDesc)
+                .withLabel(channelLabel).build();
+
+        if (!channels.contains(channel)) {
+            channels.add(channel);
+        }
+
+    }
+
+    /**
+     * The methods remove specific local character (like 'é'/'ê','â') so we have a correctly formated UID from a
+     * localize item label
+     *
+     * @param label
+     * @return the label without invalid character
+     */
+    public static String sanetizeId(String label) {
+        String result = label;
+
+        if (!Normalizer.isNormalized(label, Normalizer.Form.NFKD)) {
+            result = Normalizer.normalize(label, Normalizer.Form.NFKD);
+            result = result.replaceAll("\\p{M}", "");
+        }
+
+        result = result.replaceAll("[^a-zA-Z0-9_]", "");
+        result = result.substring(0, 1).toLowerCase() + result.substring(1);
+
+        return result;
+    }
+
+    private void handleDynamicChannel(MeterReading values) {
+        ChannelTypeUID chanTypeUid = new ChannelTypeUID(LinkyBindingConstants.BINDING_ID, "consumption");
+        List<Channel> channels = new ArrayList<Channel>();
+
+        for (IntervalReading ir : values.baseValue) {
+            for (String st : ir.distributorLabel) {
+
+            }
+            for (String st : ir.supplierLabel) {
+                if (st == null) {
+                    continue;
+                }
+
+                String channelName = sanetizeId(st);
+                String channelLabel = st;
+                String channelDesc = "The " + st;
+
+                addChannel(channels, chanTypeUid, LINKY_REMOTE_DAILY_GROUP, channelName, channelLabel, channelDesc);
+
+            }
+        }
+
+        for (int idx = 0; idx < 10; idx++) {
+            String channelName = CHANNEL_CONSUMPTION_SUPPLIER_IDX + idx;
+            String channelLabel = "Supplier Consumption " + idx;
+            String channelDesc = "The Supplier Consumption for index " + idx;
+
+            addChannel(channels, chanTypeUid, LINKY_REMOTE_DAILY_GROUP, channelName, channelLabel, channelDesc);
+            addChannel(channels, chanTypeUid, LINKY_REMOTE_WEEKLY_GROUP, channelName, channelLabel, channelDesc);
+            addChannel(channels, chanTypeUid, LINKY_REMOTE_MONTHLY_GROUP, channelName, channelLabel, channelDesc);
+            addChannel(channels, chanTypeUid, LINKY_REMOTE_YEARLY_GROUP, channelName, channelLabel, channelDesc);
+        }
+
+        for (int idx = 0; idx < 4; idx++) {
+            String channelName = CHANNEL_CONSUMPTION_DISTRIBUTOR_IDX + idx;
+            String channelLabel = "Distributor Consumption " + idx;
+            String channelDesc = "The Distributor Consumption for index " + idx;
+
+            addChannel(channels, chanTypeUid, LINKY_REMOTE_DAILY_GROUP, channelName, channelLabel, channelDesc);
+            addChannel(channels, chanTypeUid, LINKY_REMOTE_WEEKLY_GROUP, channelName, channelLabel, channelDesc);
+            addChannel(channels, chanTypeUid, LINKY_REMOTE_MONTHLY_GROUP, channelName, channelLabel, channelDesc);
+            addChannel(channels, chanTypeUid, LINKY_REMOTE_YEARLY_GROUP, channelName, channelLabel, channelDesc);
+        }
+
+        if (channels.size() > 0) {
+            Thing thing = this.getThing();
+
+            for (Channel chan : thing.getChannels()) {
+                channels.add(chan);
+            }
+
+            // channels.add(chanTest);
+            updateThing(editThing().withChannels(channels).build());
+        }
+
+    }
+
+    private @Nullable List<IntervalReading[]> cut(@Nullable IntervalReading[] irs) {
+        List<IntervalReading[]> result = new ArrayList<IntervalReading[]>();
+        String currentTarif = "";
+        int lastIdx = 0;
+        for (int idx = 0; idx < irs.length; idx++) {
+            String tarif = String.join("#", irs[idx].supplierLabel);
+
+            if ((!tarif.equals(currentTarif) && !currentTarif.equals("")) || (idx == irs.length - 1)) {
+                logger.debug("tarif change:" + lastIdx + "/" + (idx - 1));
+
+                IntervalReading[] subArray;
+                if (idx == irs.length - 1) {
+                    subArray = Arrays.copyOfRange(irs, lastIdx, idx + 1);
+                } else {
+                    subArray = Arrays.copyOfRange(irs, lastIdx, idx);
+                }
+                result.add(subArray);
+                lastIdx = idx;
+            }
+
+            currentTarif = tarif;
+            logger.debug("");
+        }
+        return result;
+    }
+
     /**
      * Request new daily/weekly data and updates channels
      */
     private synchronized void updateEnergyIndex() {
         dailyIndex.getValue().ifPresentOrElse(values -> {
             int dSize = values.baseValue.length;
+            String channelName = "";
+
+            handleDynamicChannel(values);
 
             for (int idx = 0; idx < 10; idx++) {
-                updateTimeSeries(LINKY_REMOTE_DAILY_GROUP, CHANNEL_CONSUMPTION_SUPPLIER_IDX + idx, values.baseValue,
-                        idx, Units.KILOWATT_HOUR);
+                channelName = CHANNEL_CONSUMPTION_SUPPLIER_IDX + idx;
+                updateTimeSeries(LINKY_REMOTE_DAILY_GROUP, channelName, values.baseValue, idx, Units.KILOWATT_HOUR);
+
+                List<IntervalReading[]> irs = cut(values.baseValue);
+                for (IntervalReading[] ir : irs) {
+                    if (ir[0].supplierLabel[idx] == null) {
+                        continue;
+                    }
+                    channelName = sanetizeId(ir[0].supplierLabel[idx]);
+                    updateTimeSeries(LINKY_REMOTE_DAILY_GROUP, channelName, ir, idx, Units.KILOWATT_HOUR);
+                }
             }
 
             for (int idx = 0; idx < 4; idx++) {
-                updateTimeSeries(LINKY_REMOTE_DAILY_GROUP, CHANNEL_CONSUMPTION_DISTRIBUTOR_IDX + idx, values.baseValue,
-                        idx, Units.KILOWATT_HOUR);
+                channelName = CHANNEL_CONSUMPTION_SUPPLIER_IDX + idx;
+                updateTimeSeries(LINKY_REMOTE_DAILY_GROUP, channelName, values.baseValue, idx, Units.KILOWATT_HOUR);
             }
 
             for (int idx = 0; idx < 10; idx++) {
-                updateTimeSeries(LINKY_REMOTE_WEEKLY_GROUP, CHANNEL_CONSUMPTION_SUPPLIER_IDX + idx, values.weekValue,
-                        idx, Units.KILOWATT_HOUR);
+                channelName = CHANNEL_CONSUMPTION_SUPPLIER_IDX + idx;
+                updateTimeSeries(LINKY_REMOTE_WEEKLY_GROUP, channelName, values.weekValue, idx, Units.KILOWATT_HOUR);
             }
 
             for (int idx = 0; idx < 4; idx++) {
-                updateTimeSeries(LINKY_REMOTE_WEEKLY_GROUP, CHANNEL_CONSUMPTION_DISTRIBUTOR_IDX + idx, values.weekValue,
-                        idx, Units.KILOWATT_HOUR);
+                channelName = CHANNEL_CONSUMPTION_SUPPLIER_IDX + idx;
+                updateTimeSeries(LINKY_REMOTE_WEEKLY_GROUP, channelName, values.weekValue, idx, Units.KILOWATT_HOUR);
             }
 
             for (int idx = 0; idx < 10; idx++) {
@@ -554,67 +688,7 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
                 updateTimeSeries(LINKY_REMOTE_YEARLY_GROUP, CHANNEL_CONSUMPTION_DISTRIBUTOR_IDX + idx, values.yearValue,
                         idx, Units.KILOWATT_HOUR);
             }
-
-            /*
-             * updateKwhChannel(LINKY_REMOTE_DAILY_GROUP, CHANNEL_DAY_MINUS_1, values.baseValue[dSize - 1].value);
-             * updateKwhChannel(LINKY_REMOTE_DAILY_GROUP, CHANNEL_DAY_MINUS_2, values.baseValue[dSize - 2].value);
-             * updateKwhChannel(LINKY_REMOTE_DAILY_GROUP, CHANNEL_DAY_MINUS_3, values.baseValue[dSize - 3].value);
-             *
-             * int idxCurrentYear = values.yearValue.length - 1;
-             * int idxCurrentWeek = values.weekValue.length - 1;
-             * int idxCurrentMonth = values.monthValue.length - 1;
-             *
-             * updateKwhChannel(LINKY_REMOTE_WEEKLY_GROUP, CHANNEL_WEEK_MINUS_0,
-             * values.weekValue[idxCurrentWeek].value);
-             * updateKwhChannel(LINKY_REMOTE_WEEKLY_GROUP, CHANNEL_WEEK_MINUS_1,
-             * values.weekValue[idxCurrentWeek - 1].value);
-             * if (idxCurrentWeek - 2 >= 0) {
-             * updateKwhChannel(LINKY_REMOTE_WEEKLY_GROUP, CHANNEL_WEEK_MINUS_2,
-             * values.weekValue[idxCurrentWeek - 2].value);
-             * }
-             *
-             * updateKwhChannel(LINKY_REMOTE_MONTHLY_GROUP, CHANNEL_MONTH_MINUS_0,
-             * values.monthValue[idxCurrentMonth].value);
-             * updateKwhChannel(LINKY_REMOTE_MONTHLY_GROUP, CHANNEL_MONTH_MINUS_1,
-             * values.monthValue[idxCurrentMonth - 1].value);
-             * if (idxCurrentMonth - 2 >= 0) {
-             * updateKwhChannel(LINKY_REMOTE_MONTHLY_GROUP, CHANNEL_MONTH_MINUS_2,
-             * values.monthValue[idxCurrentMonth - 2].value);
-             * }
-             *
-             * updateKwhChannel(LINKY_REMOTE_YEARLY_GROUP, CHANNEL_YEAR_MINUS_0,
-             * values.yearValue[idxCurrentYear].value);
-             * updateKwhChannel(LINKY_REMOTE_YEARLY_GROUP, CHANNEL_YEAR_MINUS_1,
-             * values.yearValue[idxCurrentYear - 1].value);
-             * if (idxCurrentYear - 2 >= 0) {
-             * updateKwhChannel(LINKY_REMOTE_YEARLY_GROUP, CHANNEL_YEAR_MINUS_2,
-             * values.yearValue[idxCurrentYear - 2].value);
-             * }
-             *
-             * updateTimeSeries(LINKY_REMOTE_DAILY_GROUP, CHANNEL_CONSUMPTION, values.baseValue, Units.KILOWATT_HOUR);
-             * updateTimeSeries(LINKY_REMOTE_WEEKLY_GROUP, CHANNEL_CONSUMPTION, values.weekValue, Units.KILOWATT_HOUR);
-             * updateTimeSeries(LINKY_REMOTE_MONTHLY_GROUP, CHANNEL_CONSUMPTION, values.monthValue,
-             * Units.KILOWATT_HOUR);
-             * updateTimeSeries(LINKY_REMOTE_YEARLY_GROUP, CHANNEL_CONSUMPTION, values.yearValue, Units.KILOWATT_HOUR);
-             */
         }, () -> {
-            /*
-             * updateKwhChannel(LINKY_REMOTE_DAILY_GROUP, CHANNEL_DAY_MINUS_1, Double.NaN);
-             * updateKwhChannel(LINKY_REMOTE_DAILY_GROUP, CHANNEL_DAY_MINUS_2, Double.NaN);
-             * updateKwhChannel(LINKY_REMOTE_DAILY_GROUP, CHANNEL_DAY_MINUS_3, Double.NaN);
-             *
-             * updateKwhChannel(LINKY_REMOTE_WEEKLY_GROUP, CHANNEL_WEEK_MINUS_0, Double.NaN);
-             * updateKwhChannel(LINKY_REMOTE_WEEKLY_GROUP, CHANNEL_WEEK_MINUS_1, Double.NaN);
-             * updateKwhChannel(LINKY_REMOTE_WEEKLY_GROUP, CHANNEL_WEEK_MINUS_2, Double.NaN);
-             *
-             * updateKwhChannel(LINKY_REMOTE_MONTHLY_GROUP, CHANNEL_MONTH_MINUS_0, Double.NaN);
-             * updateKwhChannel(LINKY_REMOTE_MONTHLY_GROUP, CHANNEL_MONTH_MINUS_1, Double.NaN);
-             * updateKwhChannel(LINKY_REMOTE_MONTHLY_GROUP, CHANNEL_MONTH_MINUS_2, Double.NaN);
-             *
-             * updateKwhChannel(LINKY_REMOTE_YEARLY_GROUP, CHANNEL_YEAR_MINUS_0, Double.NaN);
-             * updateKwhChannel(LINKY_REMOTE_YEARLY_GROUP, CHANNEL_YEAR_MINUS_1, Double.NaN);
-             * updateKwhChannel(LINKY_REMOTE_YEARLY_GROUP, CHANNEL_YEAR_MINUS_2, Double.NaN);
-             */
         });
     }
 
@@ -1024,4 +1098,5 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
     private boolean isLinked(String groupName, String channelName) {
         return isLinked(groupName + "#" + channelName);
     }
+
 }
