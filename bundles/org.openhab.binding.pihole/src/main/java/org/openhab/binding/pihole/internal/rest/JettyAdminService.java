@@ -34,10 +34,12 @@ public class JettyAdminService extends AdminService {
     private final Logger logger = LoggerFactory.getLogger(JettyAdminService.class);
 
     private final URI baseUrl;
+    private final String token;
 
     public JettyAdminService(String token, URI baseUrl, HttpClient client, Gson gson) {
-        super(token, client, gson);
+        super(client, gson);
         this.baseUrl = baseUrl;
+        this.token = token;
     }
 
     @Override

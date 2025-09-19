@@ -12,16 +12,21 @@
  */
 package org.openhab.binding.pihole.internal.rest.model.v6;
 
+import java.util.List;
+import java.util.Map;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public record SessionAnswer(Session session, double took) {
-    public record Session(boolean valid, boolean totp, String sid, String csrf, int validity, String message) {
-        public int cautiousValidity() {
-            return validity / 3 * 2;
-        }
+public record HistoryClients(Map<String, Client> clients, List<History> history, double took) {
+    public record Client(String name, int total) {
+
+    }
+
+    public record History(double timestamp, Map<String, Integer> data) {
+
     }
 }

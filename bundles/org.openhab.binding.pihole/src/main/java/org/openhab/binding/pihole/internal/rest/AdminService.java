@@ -33,14 +33,10 @@ import com.google.gson.Gson;
 public abstract class AdminService {
     protected static final long TIMEOUT_SECONDS = 10L;
 
-    protected final String token;
-
     protected final HttpClient client;
     protected final Gson gson;
 
-    public AdminService(String token, HttpClient client, Gson gson) {
-        super();
-        this.token = token;
+    public AdminService(HttpClient client, Gson gson) {
         this.client = client;
         this.gson = gson;
     }
@@ -68,7 +64,7 @@ public abstract class AdminService {
      */
     public abstract void enableBlocking() throws PiHoleException;
 
-    protected static ContentResponse send(Request request) throws PiHoleException {
+    protected ContentResponse send(Request request) throws PiHoleException {
         try {
             return request.send();
         } catch (InterruptedException | TimeoutException | ExecutionException e) {

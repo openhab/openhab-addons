@@ -65,8 +65,9 @@ public class PiHoleHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        return PI_HOLE_TYPE.equals(thingTypeUID)
-                ? new PiHoleHandler(thing, timeZoneProvider, httpClientFactory.getCommonHttpClient(), GSON)
-                : null;
+        if (PI_HOLE_TYPE.equals(thingTypeUID)) {
+            return new PiHoleHandler(thing, timeZoneProvider, httpClientFactory.getCommonHttpClient(), GSON);
+        }
+        return null;
     }
 }

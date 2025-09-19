@@ -25,7 +25,7 @@ public record StatAnswer(Queries queries, Clients client, Gravity gravity, doubl
 
     }
 
-    public record Gravity(int domainsBeingBlocked, int lastUpdate) {
+    public record Gravity(int domainsBeingBlocked, long lastUpdate) {
 
     }
 
