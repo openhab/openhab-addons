@@ -172,7 +172,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
     @Override
     public void initialize() {
         RoborockAccountConfiguration localConfig = config = getConfigAs(RoborockAccountConfiguration.class);
-        if (localConfig == null || localConfig.email.isBlank()) {
+        if (localConfig.email.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error.no-email");
             return;

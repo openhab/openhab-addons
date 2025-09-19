@@ -178,10 +178,7 @@ public final class ProtocolUtils {
     private static boolean validateCrc32(byte[] message, int expectedCrc32) {
         CRC32 crc32 = new CRC32();
         crc32.update(message, 0, message.length - CRC_LENGTH);
-        if (crc32.getValue() != (expectedCrc32 & 0xFFFFFFFFL)) {
-            return false;
-        }
-        return true;
+        return !(crc32.getValue() != (expectedCrc32 & 0xFFFFFFFFL));
     }
 
     /**
