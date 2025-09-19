@@ -361,7 +361,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
 
         if (supportsRoutines) {
             String routinesResponse = bridgeHandler.getRoutines(config.duid);
-            if (!routinesResponse.isEmpty()
+            if ((routinesResponse != null) && !routinesResponse.isEmpty()
                     && JsonParser.parseString(routinesResponse).getAsJsonObject().get("result").isJsonArray()
                     && JsonParser.parseString(routinesResponse).getAsJsonObject().get("result").getAsJsonArray()
                             .size() > 0
