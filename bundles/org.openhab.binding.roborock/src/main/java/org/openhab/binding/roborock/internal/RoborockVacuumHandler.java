@@ -183,7 +183,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                 } else if ("dock".equals(command.toString())) {
                     sendRPCCommand(COMMAND_APP_CHARGE);
                 } else {
-                    logger.info("Command {} not recognised", command.toString());
+                    logger.warn("Command {} not recognised", command.toString());
                 }
                 return;
             }
@@ -288,7 +288,6 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                         rrHomeId = Integer.toString(home.data.rrHomeId);
                     }
                 }
-                updateStatus(ThingStatus.ONLINE);
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
                         "@text/offline.conf-error.no-token");

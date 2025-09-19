@@ -8,6 +8,9 @@
 		<label>Account</label>
 		<description>Control Roborock devices</description>
 		<semantic-equipment-tag>WebService</semantic-equipment-tag>
+
+		<representation-property>uniqueId</representation-property>
+
 		<config-description>
 			<parameter name="email" type="text" required="true">
 				<label>Email Address</label>
@@ -38,6 +41,8 @@
 			<channel-group id="network" typeId="network"/>
 			<channel-group id="info" typeId="info"/>
 		</channel-groups>
+
+		<representation-property>uniqueId</representation-property>
 
 		<config-description>
 			<parameter name="duid" type="text" required="true">
@@ -224,15 +229,6 @@
 			<tag>Info</tag>
 		</tags>
 		<state pattern="%.0f" readOnly="true"/>
-	</channel-type>
-	<channel-type id="state">
-		<item-type>String</item-type>
-		<label>State</label>
-		<tags>
-			<tag>Status</tag>
-			<tag>Info</tag>
-		</tags>
-		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="state-id">
 		<item-type>Number</item-type>
