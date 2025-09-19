@@ -233,19 +233,26 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
             try {
                 String response = webTargets.doLogin(baseUri, config.email, config.password);
                 int code = 0;
-                if (!response.isEmpty() && JsonParser.parseString(response).getAsJsonObject().has("code")) {
+                String message = "";
+                if ((response != null) && !response.isEmpty()
+                        && JsonParser.parseString(response).getAsJsonObject().has("code")) {
                     code = JsonParser.parseString(response).getAsJsonObject().get("code").getAsInt();
+                    message = JsonParser.parseString(response).getAsJsonObject().get("msg").getAsString();
                 }
                 if (code == 200) {
                     Login loginResponse = gson.fromJson(response, Login.class);
+                    if (loginResponse == null) {
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                "@text/offline.comm-error.login-failed " + message);
+                        return;
+                    }
                     sessionStorage.put("token", loginResponse.data.token);
                     sessionStorage.put("rriot", gson.toJson(loginResponse.data.rriot));
                     token = loginResponse.data.token;
                     rriot = loginResponse.data.rriot;
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "@text/offline.comm-error.login-failed "
-                                    + JsonParser.parseString(response).getAsJsonObject().get("msg").getAsString());
+                            "@text/offline.comm-error.login-failed " + message);
                     return;
                 }
             } catch (RoborockException e) {
@@ -348,12 +355,17 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
 
     @Override
     public void messageArrived(@Nullable String topic, @Nullable MqttMessage message) throws Exception {
-        byte[] payload = message.getPayload();
+        String localTopic = topic;
+        MqttMessage localMessage = message;
+        if (localTopic == null || localMessage == null) {
+            return;
+        }
+        byte[] payload = localMessage.getPayload();
         if (payload == null || payload.length == 0) {
             return;
         }
 
-        String destination = topic.substring(topic.lastIndexOf('/') + 1);
+        String destination = localTopic.substring(localTopic.lastIndexOf('/') + 1);
         logger.debug("Received MQTT message for device {}", destination);
 
         // Check list of child handlers and send message to the right one
