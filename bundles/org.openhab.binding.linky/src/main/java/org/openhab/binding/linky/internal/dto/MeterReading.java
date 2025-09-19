@@ -89,7 +89,11 @@ public class MeterReading {
 
                 if (i > 0) {
                     result[i - 1] = new IntervalReading();
-                    result[i - 1].value = value - lastVal;
+                    if (i == 1) {
+                        result[i - 1].value = 0.0;
+                    } else {
+                        result[i - 1].value = value - lastVal;
+                    }
                     // The index in on nextDay N, but index difference give consumption for day N-1
                     result[i - 1].date = dataObj.dateDebut.minusDays(1);
                     result[i - 1].valueSupplier = new double[10];
@@ -109,7 +113,11 @@ public class MeterReading {
                         for (int idxSupplier = 0; idxSupplier < dataObj.classesTemporellesSupplier.length; idxSupplier++) {
                             ClassesTemporelles ct = dataObj.classesTemporellesSupplier[idxSupplier];
 
-                            result[i - 1].valueSupplier[idxSupplier] = (ct.valeur - lastValueSupplier[idxSupplier]);
+                            if (i == 1) {
+                                result[i - 1].valueSupplier[idxSupplier] = 0.00;
+                            } else {
+                                result[i - 1].valueSupplier[idxSupplier] = (ct.valeur - lastValueSupplier[idxSupplier]);
+                            }
                             result[i - 1].supplierLabel[idxSupplier] = ct.libelle;
 
                             lastValueSupplier[idxSupplier] = ct.valeur;
@@ -120,8 +128,12 @@ public class MeterReading {
                         for (int idxDistributor = 0; idxDistributor < dataObj.classesTemporellesDistributor.length; idxDistributor++) {
                             ClassesTemporelles ct = dataObj.classesTemporellesDistributor[idxDistributor];
 
-                            result[i - 1].valueDistributor[idxDistributor] = (ct.valeur
-                                    - lastValueDistributor[idxDistributor]);
+                            if (i == 1) {
+                                result[i - 1].valueDistributor[idxDistributor] = 0.0;
+                            } else {
+                                result[i - 1].valueDistributor[idxDistributor] = (ct.valeur
+                                        - lastValueDistributor[idxDistributor]);
+                            }
                             result[i - 1].distributorLabel[idxDistributor] = ct.libelle;
 
                             lastValueDistributor[idxDistributor] = ct.valeur;
