@@ -183,7 +183,8 @@ public class AutomowerWorkAreaHandler extends BaseThingHandler {
         }
     }
 
-    private void addRemoveDynamicChannels(List<CalendarTask> calendarTasks, AutomowerHandler mowerHandler) {
+    private synchronized void addRemoveDynamicChannels(List<CalendarTask> calendarTasks,
+            AutomowerHandler mowerHandler) {
         // make sure that static channels are present
         List<Channel> channelAdd = new ArrayList<>();
 
