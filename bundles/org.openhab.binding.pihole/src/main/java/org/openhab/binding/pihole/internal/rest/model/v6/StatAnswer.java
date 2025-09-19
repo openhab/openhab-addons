@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.pihole.internal.rest.model.v6;
 
+import java.time.Instant;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import com.google.gson.annotations.SerializedName;
@@ -26,7 +28,9 @@ public record StatAnswer(Queries queries, Clients client, Gravity gravity, doubl
     }
 
     public record Gravity(int domainsBeingBlocked, long lastUpdate) {
-
+        public Instant instant() {
+            return Instant.ofEpochSecond(lastUpdate);
+        }
     }
 
     public record Queries(int total, int blocked, double percentBlocked, int uniqueDomains, int forwarded, int cached,

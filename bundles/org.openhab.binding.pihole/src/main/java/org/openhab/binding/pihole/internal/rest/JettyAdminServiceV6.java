@@ -15,6 +15,7 @@ package org.openhab.binding.pihole.internal.rest;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
 import java.net.URI;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
@@ -30,6 +31,7 @@ import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.pihole.internal.PiHoleException;
 import org.openhab.binding.pihole.internal.rest.model.DnsStatistics;
 import org.openhab.binding.pihole.internal.rest.model.GravityLastUpdated;
+import org.openhab.binding.pihole.internal.rest.model.Relative;
 import org.openhab.binding.pihole.internal.rest.model.v6.Blocking;
 import org.openhab.binding.pihole.internal.rest.model.v6.ConfigAnswer;
 import org.openhab.binding.pihole.internal.rest.model.v6.DnsBlockingAnswer;
@@ -118,11 +120,11 @@ public class JettyAdminServiceV6 extends AdminService {
 
     @Override
     public Optional<DnsStatistics> summary() throws PiHoleException {
-        logger.debug("Getting summary");
+        logger.debug("Building the as if it was a v5 API");
         StatAnswer statAnswer = get(statsSummaryURI, StatAnswer.class);
+        Gravity gravity = statAnswer.gravity();
         Queries statQueries = statAnswer.queries();
         Replies replies = statQueries.replies();
-        Gravity gravity = statAnswer.gravity();
 
         DnsBlockingAnswer blockingAnswer = get(dnsBlockingURI, DnsBlockingAnswer.class);
 
@@ -132,6 +134,8 @@ public class JettyAdminServiceV6 extends AdminService {
 
         HistoryClients historyClients = get(historyClientsURI, HistoryClients.class, "N", "0");
         ConfigAnswer configAnswer = get(configURI, ConfigAnswer.class);
+        Duration duration = Duration.between(gravity.instant(), Instant.now());
+        Relative relative = new Relative((int) duration.toDaysPart(), duration.toHoursPart(), duration.toMinutesPart());
 
         DnsStatistics translated = new DnsStatistics(gravity.domainsBeingBlocked(), statDatabase.sumQueries(),
                 statDatabase.sumBlocked(), statDatabase.percentBlocked(), statQueries.uniqueDomains(),
@@ -139,8 +143,8 @@ public class JettyAdminServiceV6 extends AdminService {
                 statQueries.types().all(), replies.unknown(), replies.nodata(), replies.nxdomain(), replies.cname(),
                 replies.ip(), replies.domain(), replies.rrname(), replies.servfail(), replies.refused(),
                 replies.notimp(), replies.other(), replies.dnssec(), replies.none(), replies.blob(), replies.all(),
-                configAnswer.config().misc().privacylevel(), blockingAnswer.blocking(),
-                new GravityLastUpdated(configAnswer.config().files().gravity() != null, gravity.lastUpdate(), null));
+                configAnswer.config().misc().privacylevel(), blockingAnswer.blocking(), new GravityLastUpdated(
+                        configAnswer.config().files().gravity() != null, gravity.lastUpdate(), relative));
 
         return Optional.of(translated);
     }
