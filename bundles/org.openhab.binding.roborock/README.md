@@ -13,7 +13,7 @@ The following things types are available:
 
 ## Discovery
 
-After (manually) adding a Roborock Account bridge, registered vehicles will be auto discovered.
+After (manually) adding a Roborock Account bridge, registered vacuums will be auto discovered.
 
 ## `account` Bridge Configuration
 
