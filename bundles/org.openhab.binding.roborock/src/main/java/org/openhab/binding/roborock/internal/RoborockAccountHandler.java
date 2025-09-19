@@ -299,8 +299,8 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
             String serverURI = "ssl://" + mqttURL.getHost() + ":" + mqttURL.getPort();
             String clientId = mqttUser;
 
-            mqttClient = new MqttClient(serverURI, clientId, new MemoryPersistence());
-            mqttClient.setCallback(this);
+            MqttClient localMqttClient = mqttClient = new MqttClient(serverURI, clientId, new MemoryPersistence());
+            localMqttClient.setCallback(this);
 
             MqttConnectOptions connOpts = new MqttConnectOptions();
             connOpts.setCleanSession(false);
@@ -310,7 +310,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
             connOpts.setConnectionTimeout(60);
             connOpts.setKeepAliveInterval(0);
 
-            mqttClient.connect(connOpts);
+            localMqttClient.connect(connOpts);
         } catch (URISyntaxException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.comm-error.mqtt-url-bad");
@@ -330,7 +330,10 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
         try {
             String mqttUser = ProtocolUtils.md5Hex(rriot.u + ':' + rriot.k).substring(2, 10);
             String topic = "rr/m/o/" + rriot.u + "/" + mqttUser + "/#";
-            mqttClient.subscribe(topic, 0);
+            MqttClient localMqttClient = mqttClient;
+            if (localMqttClient != null) {
+                localMqttClient.subscribe(topic, 0);
+            }
             updateStatus(ThingStatus.ONLINE);
         } catch (MqttException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
@@ -367,12 +370,13 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
     }
 
     public void disconnectMqttClient() {
-        if (mqttClient != null) {
+        MqttClient localMqttClient = mqttClient;
+        if (localMqttClient != null) {
             try {
-                if (mqttClient.isConnected()) {
-                    mqttClient.disconnect();
+                if (localMqttClient.isConnected()) {
+                    localMqttClient.disconnect();
                 }
-                mqttClient.close();
+                localMqttClient.close();
             } catch (MqttException e) {
                 logger.error("Error while disconnecting MQTT client.", e);
             }
@@ -384,6 +388,7 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
             throws UnsupportedEncodingException {
         int timestamp = (int) Instant.now().getEpochSecond();
         int protocol = 101;
+        MqttClient localMqttClient = mqttClient;
 
         String nonceHex = HexFormat.of().formatHex(nonce);
 
@@ -411,13 +416,14 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
         byte[] messageBytes = build(localKey, protocol, timestamp, payload.getBytes(StandardCharsets.UTF_8));
         // now send message via mqtt
         String topic = "rr/m/i/" + rriot.u + "/" + mqttUser + "/" + thingID;
-        if (this.mqttClient != null && this.mqttClient.isConnected()) {
+
+        if (localMqttClient != null && localMqttClient.isConnected()) {
             logger.debug("Publishing {} message to {}", method, topic);
             try {
                 MqttMessage message = new MqttMessage(messageBytes);
                 message.setQos(1);
                 message.setRetained(false);
-                mqttClient.publish(topic, message);
+                localMqttClient.publish(topic, message);
                 return id;
             } catch (MqttException e) {
                 logger.error("MQTT publish failed", e);
