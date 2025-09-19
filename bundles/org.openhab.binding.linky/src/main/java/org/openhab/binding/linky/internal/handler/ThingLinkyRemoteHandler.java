@@ -565,6 +565,9 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
                 String channelDesc = "The " + st;
 
                 addChannel(channels, chanTypeUid, LINKY_REMOTE_DAILY_GROUP, channelName, channelLabel, channelDesc);
+                addChannel(channels, chanTypeUid, LINKY_REMOTE_WEEKLY_GROUP, channelName, channelLabel, channelDesc);
+                addChannel(channels, chanTypeUid, LINKY_REMOTE_MONTHLY_GROUP, channelName, channelLabel, channelDesc);
+                addChannel(channels, chanTypeUid, LINKY_REMOTE_YEARLY_GROUP, channelName, channelLabel, channelDesc);
 
             }
         }
@@ -604,7 +607,7 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
 
     }
 
-    private @Nullable List<IntervalReading[]> cut(@Nullable IntervalReading[] irs) {
+    private List<IntervalReading[]> splitOnTariffBound(@Nullable IntervalReading[] irs) {
         List<IntervalReading[]> result = new ArrayList<IntervalReading[]>();
         String currentTarif = "";
         int lastIdx = 0;
@@ -640,13 +643,17 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
 
             handleDynamicChannel(values);
 
+            List<IntervalReading[]> irsDaily = splitOnTariffBound(values.baseValue);
+            List<IntervalReading[]> irsWeekly = splitOnTariffBound(values.weekValue);
+            List<IntervalReading[]> irsMonthly = splitOnTariffBound(values.monthValue);
+            List<IntervalReading[]> irsYearly = splitOnTariffBound(values.yearValue);
+
             for (int idx = 0; idx < 10; idx++) {
                 channelName = CHANNEL_CONSUMPTION_SUPPLIER_IDX + idx;
                 updateTimeSeries(LINKY_REMOTE_DAILY_GROUP, channelName, values.baseValue, idx, Units.KILOWATT_HOUR);
 
-                List<IntervalReading[]> irs = cut(values.baseValue);
-                for (IntervalReading[] ir : irs) {
-                    if (ir[0].supplierLabel[idx] == null) {
+                for (IntervalReading[] ir : irsDaily) {
+                    if (ir[0].supplierLabel == null || ir[0].supplierLabel[idx] == null) {
                         continue;
                     }
                     channelName = sanetizeId(ir[0].supplierLabel[idx]);
@@ -657,36 +664,92 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
             for (int idx = 0; idx < 4; idx++) {
                 channelName = CHANNEL_CONSUMPTION_SUPPLIER_IDX + idx;
                 updateTimeSeries(LINKY_REMOTE_DAILY_GROUP, channelName, values.baseValue, idx, Units.KILOWATT_HOUR);
+
+                for (IntervalReading[] ir : irsDaily) {
+                    if (ir[0].distributorLabel == null || ir[0].distributorLabel[idx] == null) {
+                        continue;
+                    }
+                    channelName = sanetizeId(ir[0].distributorLabel[idx]);
+                    updateTimeSeries(LINKY_REMOTE_DAILY_GROUP, channelName, ir, idx, Units.KILOWATT_HOUR);
+                }
             }
 
             for (int idx = 0; idx < 10; idx++) {
                 channelName = CHANNEL_CONSUMPTION_SUPPLIER_IDX + idx;
                 updateTimeSeries(LINKY_REMOTE_WEEKLY_GROUP, channelName, values.weekValue, idx, Units.KILOWATT_HOUR);
+
+                for (IntervalReading[] ir : irsWeekly) {
+                    if (ir[0].supplierLabel == null || ir[0].supplierLabel[idx] == null) {
+                        continue;
+                    }
+                    channelName = sanetizeId(ir[0].supplierLabel[idx]);
+                    updateTimeSeries(LINKY_REMOTE_WEEKLY_GROUP, channelName, ir, idx, Units.KILOWATT_HOUR);
+                }
             }
 
             for (int idx = 0; idx < 4; idx++) {
                 channelName = CHANNEL_CONSUMPTION_SUPPLIER_IDX + idx;
                 updateTimeSeries(LINKY_REMOTE_WEEKLY_GROUP, channelName, values.weekValue, idx, Units.KILOWATT_HOUR);
+
+                for (IntervalReading[] ir : irsWeekly) {
+                    if (ir[0].distributorLabel == null || ir[0].distributorLabel[idx] == null) {
+                        continue;
+                    }
+                    channelName = sanetizeId(ir[0].distributorLabel[idx]);
+                    updateTimeSeries(LINKY_REMOTE_WEEKLY_GROUP, channelName, ir, idx, Units.KILOWATT_HOUR);
+                }
             }
 
             for (int idx = 0; idx < 10; idx++) {
                 updateTimeSeries(LINKY_REMOTE_MONTHLY_GROUP, CHANNEL_CONSUMPTION_SUPPLIER_IDX + idx, values.monthValue,
                         idx, Units.KILOWATT_HOUR);
+
+                for (IntervalReading[] ir : irsMonthly) {
+                    if (ir[0].supplierLabel == null || ir[0].supplierLabel[idx] == null) {
+                        continue;
+                    }
+                    channelName = sanetizeId(ir[0].supplierLabel[idx]);
+                    updateTimeSeries(LINKY_REMOTE_MONTHLY_GROUP, channelName, ir, idx, Units.KILOWATT_HOUR);
+                }
             }
 
             for (int idx = 0; idx < 4; idx++) {
                 updateTimeSeries(LINKY_REMOTE_MONTHLY_GROUP, CHANNEL_CONSUMPTION_DISTRIBUTOR_IDX + idx,
                         values.monthValue, idx, Units.KILOWATT_HOUR);
+
+                for (IntervalReading[] ir : irsMonthly) {
+                    if (ir[0].distributorLabel == null || ir[0].distributorLabel[idx] == null) {
+                        continue;
+                    }
+                    channelName = sanetizeId(ir[0].distributorLabel[idx]);
+                    updateTimeSeries(LINKY_REMOTE_MONTHLY_GROUP, channelName, ir, idx, Units.KILOWATT_HOUR);
+                }
             }
 
             for (int idx = 0; idx < 10; idx++) {
                 updateTimeSeries(LINKY_REMOTE_YEARLY_GROUP, CHANNEL_CONSUMPTION_SUPPLIER_IDX + idx, values.yearValue,
                         idx, Units.KILOWATT_HOUR);
+
+                for (IntervalReading[] ir : irsYearly) {
+                    if (ir[0].supplierLabel == null || ir[0].supplierLabel[idx] == null) {
+                        continue;
+                    }
+                    channelName = sanetizeId(ir[0].supplierLabel[idx]);
+                    updateTimeSeries(LINKY_REMOTE_YEARLY_GROUP, channelName, ir, idx, Units.KILOWATT_HOUR);
+                }
             }
 
             for (int idx = 0; idx < 4; idx++) {
                 updateTimeSeries(LINKY_REMOTE_YEARLY_GROUP, CHANNEL_CONSUMPTION_DISTRIBUTOR_IDX + idx, values.yearValue,
                         idx, Units.KILOWATT_HOUR);
+
+                for (IntervalReading[] ir : irsYearly) {
+                    if (ir[0].distributorLabel == null || ir[0].distributorLabel[idx] == null) {
+                        continue;
+                    }
+                    channelName = sanetizeId(ir[0].distributorLabel[idx]);
+                    updateTimeSeries(LINKY_REMOTE_YEARLY_GROUP, channelName, ir, idx, Units.KILOWATT_HOUR);
+                }
             }
         }, () -> {
         });
@@ -911,6 +974,15 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
         }
     }
 
+    private void initIntervalReadingTarif(IntervalReading irs) {
+        if (irs.valueDistributor == null) {
+            irs.valueDistributor = new double[4];
+        }
+        if (irs.valueSupplier == null) {
+            irs.valueSupplier = new double[10];
+        }
+    }
+
     public @Nullable MeterReading getMeterReadingAfterChecks(@Nullable MeterReading meterReading) {
         try {
             checkData(meterReading);
@@ -992,30 +1064,46 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
                     }
 
                     if (ir.valueSupplier != null) {
-                        if (meterReading.weekValue[idxWeek].valueSupplier == null) {
-                            meterReading.weekValue[idxWeek].valueSupplier = new double[10];
-                        }
-                        if (meterReading.monthValue[idxMonth].valueSupplier == null) {
-                            meterReading.monthValue[idxMonth].valueSupplier = new double[10];
-                        }
-                        if (meterReading.yearValue[idxYear].valueSupplier == null) {
-                            meterReading.yearValue[idxYear].valueSupplier = new double[10];
-                        }
+                        initIntervalReadingTarif(meterReading.weekValue[idxWeek]);
+                        initIntervalReadingTarif(meterReading.monthValue[idxMonth]);
+                        initIntervalReadingTarif(meterReading.yearValue[idxYear]);
+
                         for (int idxSupplier = 0; idxSupplier < 10; idxSupplier++) {
                             double valueSupplier = ir.valueSupplier[idxSupplier];
 
                             if (idxWeek < weeksNum) {
                                 meterReading.weekValue[idxWeek].valueSupplier[idxSupplier] += valueSupplier;
+                                meterReading.weekValue[idxWeek].supplierLabel = ir.supplierLabel;
                             }
                             if (idxMonth < monthsNum) {
                                 meterReading.monthValue[idxMonth].valueSupplier[idxSupplier] += valueSupplier;
+                                meterReading.monthValue[idxMonth].supplierLabel = ir.supplierLabel;
                             }
 
                             if (idxYear < yearsNum) {
                                 meterReading.yearValue[idxYear].valueSupplier[idxSupplier] += valueSupplier;
+                                meterReading.yearValue[idxYear].supplierLabel = ir.supplierLabel;
+                            }
+                        }
+
+                        for (int idxDistributor = 0; idxDistributor < 4; idxDistributor++) {
+                            double valueDistributor = ir.valueDistributor[idxDistributor];
+
+                            if (idxWeek < weeksNum) {
+                                meterReading.weekValue[idxWeek].valueDistributor[idxDistributor] += valueDistributor;
+                                meterReading.weekValue[idxWeek].distributorLabel = ir.distributorLabel;
+                            }
+                            if (idxMonth < monthsNum) {
+                                meterReading.monthValue[idxMonth].valueDistributor[idxDistributor] += valueDistributor;
+                                meterReading.monthValue[idxMonth].distributorLabel = ir.distributorLabel;
                             }
 
+                            if (idxYear < yearsNum) {
+                                meterReading.yearValue[idxYear].valueDistributor[idxDistributor] += valueDistributor;
+                                meterReading.yearValue[idxYear].distributorLabel = ir.distributorLabel;
+                            }
                         }
+
                     }
                 }
             }
