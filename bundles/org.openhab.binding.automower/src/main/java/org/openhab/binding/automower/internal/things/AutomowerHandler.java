@@ -119,7 +119,7 @@ public class AutomowerHandler extends BaseThingHandler {
     public synchronized void handleCommand(ChannelUID channelUID, Command command) {
         String groupId = channelUID.getGroupId();
         String channelId = channelUID.getIdWithoutGroup();
-        if (groupId == null || channelId == null) {
+        if (groupId == null) {
             logger.warn("Invalid channelUID format: {}", channelUID);
             return;
         }
@@ -844,40 +844,35 @@ public class AutomowerHandler extends BaseThingHandler {
     }
 
     private void addRemoveDynamicChannels(Mower mower, Capabilities capabilities, List<CalendarTask> calendarTasks) {
-        // create a copy of the present channels
+        // make sure that static channels are present
         List<Channel> channelAdd = new ArrayList<>();
-        for (Channel channel : thing.getChannels()) {
-            channelAdd.add(channel);
+
+        for (String channelID : AUTOMOWER_STATIC_CHANNEL_IDS) {
+            Channel channel = thing.getChannel(channelID);
+            if (channel == null) {
+                logger.warn("Static Channel '{}' is not present: remove and re-add Thing", channelID);
+            } else {
+                channelAdd.add(channel);
+            }
         }
-        List<Channel> channelRemove = new ArrayList<>();
 
         if (capabilities.hasWorkAreas()) {
             createChannel(CHANNEL_STATUS_WORK_AREA_ID, CHANNEL_TYPE_STATUS_WORK_AREA_ID, CoreItemFactory.NUMBER,
                     channelAdd, thing);
             createChannel(CHANNEL_STATUS_WORK_AREA, CHANNEL_TYPE_STATUS_WORK_AREA, CoreItemFactory.STRING, channelAdd,
                     thing);
-        } else {
-            removeChannel(CHANNEL_STATUS_WORK_AREA_ID, channelRemove, thing);
-            removeChannel(CHANNEL_STATUS_WORK_AREA, channelRemove, thing);
         }
         if (capabilities.canConfirmError()) {
             createChannel(CHANNEL_STATUS_ERROR_CONFIRMABLE, CHANNEL_TYPE_STATUS_ERROR_CONFIRMABLE,
                     CoreItemFactory.SWITCH, channelAdd, thing);
-        } else {
-            removeChannel(CHANNEL_STATUS_ERROR_CONFIRMABLE, channelRemove, thing);
         }
         if (capabilities.hasPosition()) {
             createChannel(CHANNEL_STATUS_POSITION, CHANNEL_TYPE_STATUS_POSITION, CoreItemFactory.LOCATION, channelAdd,
                     thing);
-        } else {
-            removeChannel(CHANNEL_STATUS_POSITION, channelRemove, thing);
         }
-
         if (capabilities.hasHeadlights()) {
             createChannel(CHANNEL_SETTING_HEADLIGHT_MODE, CHANNEL_TYPE_SETTING_HEADLIGHT_MODE, CoreItemFactory.STRING,
                     channelAdd, thing);
-        } else {
-            removeChannel(CHANNEL_SETTING_HEADLIGHT_MODE, channelRemove, thing);
         }
 
         int i;
@@ -903,23 +898,15 @@ public class AutomowerHandler extends BaseThingHandler {
                 createIndexedChannel(GROUP_CALENDARTASK, i + 1, CHANNEL_CALENDARTASK.get(j),
                         CHANNEL_TYPE_CALENDARTASK.get(j++), CoreItemFactory.SWITCH, channelAdd, thing);
             }
-            // remove all consecutive channels that are no longer required
-            for (int j = 0; j < CHANNEL_CALENDARTASK.size(); j++) {
-                removeConsecutiveIndexedChannels(GROUP_CALENDARTASK, i + 1, CHANNEL_CALENDARTASK.get(j), channelRemove,
-                        thing);
-            }
         }
 
-        i = 0;
         if (capabilities.hasStayOutZones()) {
             createChannel(CHANNEL_STAYOUTZONE_DIRTY, CHANNEL_TYPE_STAYOUTZONES_DIRTY, CoreItemFactory.SWITCH,
                     channelAdd, thing);
-        } else {
-            removeChannel(CHANNEL_STAYOUTZONE_DIRTY, channelRemove, thing);
         }
 
         // remove channels that are now longer required and add new once
-        updateThing(editThing().withChannels(channelAdd).withoutChannels(channelRemove).build());
+        updateThing(editThing().withChannels(channelAdd).build());
     }
 
     private void updateStatusChannels(Mower mower, Capabilities capabilities) {
@@ -1266,7 +1253,9 @@ public class AutomowerHandler extends BaseThingHandler {
     static void createChannel(@Nullable String label, String channel, ChannelTypeUID channelTypeUID, String itemType,
             List<Channel> channelAdd, Thing thing) {
         ChannelUID channelUid = new ChannelUID(thing.getUID(), channel);
-        if (thing.getChannel(channelUid) == null) {
+        Channel chn = thing.getChannel(channelUid);
+        if (chn == null) {
+            // Channel does not yet exist - create it
             Channel newChannel;
             if (label == null) {
                 newChannel = ChannelBuilder.create(channelUid, itemType).withType(channelTypeUID).build();
@@ -1275,32 +1264,9 @@ public class AutomowerHandler extends BaseThingHandler {
                         .build();
             }
             channelAdd.add(newChannel);
-        }
-    }
-
-    static void removeIndexedChannel(String ChannelGroup, int id, String channel, List<Channel> channelRemove,
-            Thing thing) {
-        String indexedChannel = getIndexedChannel(ChannelGroup, id, channel);
-        removeChannel(indexedChannel, channelRemove, thing);
-    }
-
-    static void removeConsecutiveIndexedChannels(String ChannelGroup, int id, String channel,
-            List<Channel> channelRemove, Thing thing) {
-        String indexedChannel = getIndexedChannel(ChannelGroup, id, channel);
-        if (removeChannel(indexedChannel, channelRemove, thing)) {
-            // remove next channel recursively
-            removeConsecutiveIndexedChannels(ChannelGroup, id + 1, channel, channelRemove, thing);
-        }
-    }
-
-    static boolean removeChannel(String channel, List<Channel> channelRemove, Thing thing) {
-        ChannelUID channelUid = new ChannelUID(thing.getUID(), channel);
-        Channel chn = thing.getChannel(channelUid);
-        if (chn != null) {
-            channelRemove.add(chn);
-            return true;
         } else {
-            return false;
+            // Channel already exists
+            channelAdd.add(chn);
         }
     }
 

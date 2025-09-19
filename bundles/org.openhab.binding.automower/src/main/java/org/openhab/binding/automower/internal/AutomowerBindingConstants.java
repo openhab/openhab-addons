@@ -13,6 +13,7 @@
 package org.openhab.binding.automower.internal;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -133,12 +134,29 @@ public class AutomowerBindingConstants {
     public static final String GROUP_COMMAND = "command#";
 
     public static final String CHANNEL_COMMAND_START = GROUP_COMMAND + "start";
-    public static final String CHANNEL_COMMAND_START_IN_WORK_AREA = GROUP_COMMAND + "start_in_work_area";
-    public static final String CHANNEL_COMMAND_RESUME_SCHEDULE = GROUP_COMMAND + "resume_schedule";
+    public static final String CHANNEL_COMMAND_START_IN_WORK_AREA = GROUP_COMMAND + "start-in-work-area";
+    public static final String CHANNEL_COMMAND_RESUME_SCHEDULE = GROUP_COMMAND + "resume-schedule";
     public static final String CHANNEL_COMMAND_PAUSE = GROUP_COMMAND + "pause";
     public static final String CHANNEL_COMMAND_PARK = GROUP_COMMAND + "park";
-    public static final String CHANNEL_COMMAND_PARK_UNTIL_NEXT_SCHEDULE = GROUP_COMMAND + "park_until_next_schedule";
-    public static final String CHANNEL_COMMAND_PARK_UNTIL_NOTICE = GROUP_COMMAND + "park_until_further_notice";
+    public static final String CHANNEL_COMMAND_PARK_UNTIL_NEXT_SCHEDULE = GROUP_COMMAND + "park-until-next-schedule";
+    public static final String CHANNEL_COMMAND_PARK_UNTIL_NOTICE = GROUP_COMMAND + "park-until-further-notice";
+
+    public static final List<String> AUTOMOWER_STATIC_CHANNEL_IDS = Arrays.asList(CHANNEL_STATUS_NAME,
+            CHANNEL_STATUS_MODE, CHANNEL_STATUS_ACTIVITY, CHANNEL_STATUS_INACTIVE_REASON, CHANNEL_STATUS_STATE,
+            CHANNEL_STATUS_LAST_UPDATE, CHANNEL_STATUS_LAST_POLL_UPDATE, CHANNEL_STATUS_POLL_UPDATE,
+            CHANNEL_STATUS_BATTERY, CHANNEL_STATUS_ERROR_CODE, CHANNEL_STATUS_ERROR_MESSAGE,
+            CHANNEL_STATUS_ERROR_TIMESTAMP, CHANNEL_STATUS_NEXT_START, CHANNEL_STATUS_OVERRIDE_ACTION,
+            CHANNEL_STATUS_RESTRICTED_REASON, CHANNEL_SETTING_CUTTING_HEIGHT,
+            CHANNEL_STATISTIC_CUTTING_BLADE_USAGE_TIME, CHANNEL_STATISTIC_DOWN_TIME,
+            CHANNEL_STATISTIC_NUMBER_OF_CHARGING_CYCLES, CHANNEL_STATISTIC_NUMBER_OF_COLLISIONS,
+            CHANNEL_STATISTIC_TOTAL_CHARGING_TIME, CHANNEL_STATISTIC_TOTAL_CUTTING_TIME,
+            CHANNEL_STATISTIC_TOTAL_CUTTING_PERCENT, CHANNEL_STATISTIC_TOTAL_DRIVE_DISTANCE,
+            CHANNEL_STATISTIC_TOTAL_RUNNING_TIME, CHANNEL_STATISTIC_TOTAL_SEARCHING_TIME,
+            CHANNEL_STATISTIC_TOTAL_SEARCHING_PERCENT, CHANNEL_STATISTIC_UP_TIME, CHANNEL_MESSAGE_TIMESTAMP,
+            CHANNEL_MESSAGE_CODE, CHANNEL_MESSAGE_TEXT, CHANNEL_MESSAGE_SEVERITY, CHANNEL_MESSAGE_GPS_POSITION,
+            CHANNEL_COMMAND_START, CHANNEL_COMMAND_START_IN_WORK_AREA, CHANNEL_COMMAND_RESUME_SCHEDULE,
+            CHANNEL_COMMAND_PAUSE, CHANNEL_COMMAND_PARK, CHANNEL_COMMAND_PARK_UNTIL_NEXT_SCHEDULE,
+            CHANNEL_COMMAND_PARK_UNTIL_NOTICE);
 
     // Automower properties
     public static final String AUTOMOWER_ID = "mowerId";
@@ -178,6 +196,10 @@ public class AutomowerBindingConstants {
     public static final String CHANNEL_WORKAREA_ENABLED = GROUP_WORKAREA + "enabled";
     public static final String CHANNEL_WORKAREA_PROGRESS = GROUP_WORKAREA + "progress";
     public static final String CHANNEL_WORKAREA_LAST_TIME_COMPLETED = GROUP_WORKAREA + "last-time-completed";
+
+    public static final List<String> WORKAREA_STATIC_CHANNEL_IDS = Arrays.asList(CHANNEL_WORKAREA_NAME,
+            CHANNEL_WORKAREA_CUTTING_HEIGHT, CHANNEL_WORKAREA_ENABLED, CHANNEL_WORKAREA_PROGRESS,
+            CHANNEL_WORKAREA_LAST_TIME_COMPLETED);
 
     // Error codes and messages
     public static final Map<Integer, String> ERROR = new HashMap<>() {

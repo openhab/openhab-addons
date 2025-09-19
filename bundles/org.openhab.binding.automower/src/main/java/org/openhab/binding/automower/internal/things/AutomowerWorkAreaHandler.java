@@ -184,12 +184,17 @@ public class AutomowerWorkAreaHandler extends BaseThingHandler {
     }
 
     private void addRemoveDynamicChannels(List<CalendarTask> calendarTasks, AutomowerHandler mowerHandler) {
-        // create a copy of the present channels
+        // make sure that static channels are present
         List<Channel> channelAdd = new ArrayList<>();
-        for (Channel channel : thing.getChannels()) {
-            channelAdd.add(channel);
+
+        for (String channelID : WORKAREA_STATIC_CHANNEL_IDS) {
+            Channel channel = thing.getChannel(channelID);
+            if (channel == null) {
+                logger.warn("Static Channel '{}' is not present: remove and re-add Thing", channelID);
+            } else {
+                channelAdd.add(channel);
+            }
         }
-        List<Channel> channelRemove = new ArrayList<>();
 
         int i;
         for (i = 0; i < calendarTasks.size(); i++) {
@@ -213,14 +218,9 @@ public class AutomowerWorkAreaHandler extends BaseThingHandler {
             AutomowerHandler.createIndexedChannel(GROUP_CALENDARTASK, i + 1, CHANNEL_CALENDARTASK.get(j),
                     CHANNEL_TYPE_CALENDARTASK.get(j++), CoreItemFactory.SWITCH, channelAdd, thing);
         }
-        // remove all consecutive channels that are no longer required
-        for (int j = 0; j < CHANNEL_CALENDARTASK.size(); j++) {
-            AutomowerHandler.removeConsecutiveIndexedChannels(GROUP_CALENDARTASK, i + 1, CHANNEL_CALENDARTASK.get(j),
-                    channelRemove, thing);
-        }
 
         // remove channels that are now longer required and add new once
-        updateThing(editThing().withChannels(channelAdd).withoutChannels(channelRemove).build());
+        updateThing(editThing().withChannels(channelAdd).build());
     }
 
     public void updateChannels(WorkArea workArea, List<CalendarTask> calendarTasks, AutomowerHandler mowerHandler) {

@@ -553,10 +553,22 @@
 			<update-channel id="external-reason" groupIds="status">
 				<type>automower:external-reason-type</type>
 			</update-channel>
+			<remove-channel id="work-area-id" groupIds="status">
+			</remove-channel>
+			<remove-channel id="work-area" groupIds="status">
+			</remove-channel>
+			<remove-channel id="error-confirmable" groupIds="status">
+			</remove-channel>
+			<remove-channel id="position" groupIds="status">
+			</remove-channel>
+
 			<!-- Settings -->
 			<update-channel id="cutting-height" groupIds="setting">
 				<type>automower:setting-cutting-height-type</type>
 			</update-channel>
+			<remove-channel id="headlight-mode" groupIds="setting">
+			</remove-channel>
+
 			<!-- Statistics -->
 			<update-channel id="cutting-blade-usage-time" groupIds="statistic">
 				<type>automower:stat-cutting-blade-usage-time-type</type>
@@ -594,6 +606,7 @@
 			<update-channel id="up-time" groupIds="statistic">
 				<type>automower:stat-up-time-type</type>
 			</update-channel>
+
 			<!-- Commands -->
 			<remove-channel id="start_in_work_area" groupIds="command">
 			</remove-channel>
@@ -615,6 +628,7 @@
 			<add-channel id="park-until-further-notice" groupIds="command">
 				<type>automower:park-until-further-notice</type>
 			</add-channel>
+
 			<!-- Messages -->
 			<update-channel id="msg-timestamp" groupIds="message">
 				<type>automower:message-time-type</type>
