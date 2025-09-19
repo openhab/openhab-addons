@@ -97,6 +97,14 @@ public class MeterReading {
                     result[i - 1].supplierLabel = new String[10];
                     result[i - 1].distributorLabel = new String[4];
 
+                    if (dataObj.classesTemporellesSupplier == null) {
+                        dataObj.classesTemporellesSupplier = agregat.datas.get(i - 1).classesTemporellesSupplier;
+                    }
+
+                    if (dataObj.classesTemporellesDistributor == null) {
+                        dataObj.classesTemporellesDistributor = agregat.datas.get(i - 1).classesTemporellesDistributor;
+                    }
+
                     if (dataObj.classesTemporellesSupplier != null) {
                         for (int idxSupplier = 0; idxSupplier < dataObj.classesTemporellesSupplier.length; idxSupplier++) {
                             ClassesTemporelles ct = dataObj.classesTemporellesSupplier[idxSupplier];
