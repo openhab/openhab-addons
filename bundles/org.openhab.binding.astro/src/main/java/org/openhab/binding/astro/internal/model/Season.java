@@ -15,9 +15,13 @@ package org.openhab.binding.astro.internal.model;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
+import java.util.Locale;
+import java.util.TimeZone;
 
 import javax.measure.quantity.Time;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.astro.internal.util.DateTimeUtils;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
@@ -27,17 +31,19 @@ import org.openhab.core.library.unit.Units;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class Season {
-    private Calendar spring;
-    private Calendar summer;
-    private Calendar autumn;
-    private Calendar winter;
+    private @Nullable Calendar spring;
+    private @Nullable Calendar summer;
+    private @Nullable Calendar autumn;
+    private @Nullable Calendar winter;
 
-    private SeasonName name;
+    private @Nullable SeasonName name;
 
     /**
      * Returns the date of the beginning of spring.
      */
+    @Nullable
     public Calendar getSpring() {
         return spring;
     }
@@ -45,13 +51,14 @@ public class Season {
     /**
      * Sets the date of the beginning of spring.
      */
-    public void setSpring(Calendar spring) {
+    public void setSpring(@Nullable Calendar spring) {
         this.spring = spring;
     }
 
     /**
      * Returns the date of the beginning of summer.
      */
+    @Nullable
     public Calendar getSummer() {
         return summer;
     }
@@ -59,13 +66,14 @@ public class Season {
     /**
      * Sets the date of the beginning of summer.
      */
-    public void setSummer(Calendar summer) {
+    public void setSummer(@Nullable Calendar summer) {
         this.summer = summer;
     }
 
     /**
      * Returns the date of the beginning of autumn.
      */
+    @Nullable
     public Calendar getAutumn() {
         return autumn;
     }
@@ -73,13 +81,14 @@ public class Season {
     /**
      * Sets the date of the beginning of autumn.
      */
-    public void setAutumn(Calendar autumn) {
+    public void setAutumn(@Nullable Calendar autumn) {
         this.autumn = autumn;
     }
 
     /**
      * Returns the date of the beginning of winter.
      */
+    @Nullable
     public Calendar getWinter() {
         return winter;
     }
@@ -87,13 +96,14 @@ public class Season {
     /**
      * Returns the date of the beginning of winter.
      */
-    public void setWinter(Calendar winter) {
+    public void setWinter(@Nullable Calendar winter) {
         this.winter = winter;
     }
 
     /**
      * Returns the current season name.
      */
+    @Nullable
     public SeasonName getName() {
         return name;
     }
@@ -101,22 +111,22 @@ public class Season {
     /**
      * Sets the current season name.
      */
-    public void setName(SeasonName name) {
+    public void setName(@Nullable SeasonName name) {
         this.name = name;
     }
 
     /**
      * Returns the next season.
      */
-    public Calendar getNextSeason() {
-        return DateTimeUtils.getNextFromToday(spring, summer, autumn, winter);
+    public Calendar getNextSeason(TimeZone zone, Locale locale) {
+        return DateTimeUtils.getNextFromToday(zone, locale, spring, summer, autumn, winter);
     }
 
     /**
      * Returns the next season name.
      */
     public SeasonName getNextName() {
-        int ordinal = name.ordinal() + 1;
+        int ordinal = name == null ? 0 : name.ordinal() + 1;
         if (ordinal > 3) {
             ordinal = 0;
         }
@@ -126,9 +136,9 @@ public class Season {
     /**
      * Returns the time left for current season
      */
-    public QuantityType<Time> getTimeLeft() {
-        final Calendar now = Calendar.getInstance();
-        final Calendar next = getNextSeason();
+    public QuantityType<Time> getTimeLeft(TimeZone zone, Locale locale) {
+        final Calendar now = Calendar.getInstance(zone, locale);
+        final Calendar next = getNextSeason(zone, locale);
         final Duration timeLeft = Duration.of(next.getTimeInMillis() - now.getTimeInMillis(), ChronoUnit.MILLIS);
 
         return new QuantityType<>(timeLeft.toDays(), Units.DAY);
