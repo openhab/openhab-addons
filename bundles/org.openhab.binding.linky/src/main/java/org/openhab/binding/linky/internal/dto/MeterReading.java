@@ -82,10 +82,21 @@ public class MeterReading {
             double lastVal = 0.0;
             double[] lastValueSupplier = new double[6];
             double[] lastValueDistributor = new double[6];
+            String lastCalendrierSupplier = "";
+            String lastCalendrierDistributor = "";
 
             for (int i = 0; i < size; i++) {
                 Data dataObj = agregat.datas.get(i);
                 double value = dataObj.valeur;
+                String calendrierDistributor = "";
+                String calendrierSupplier = "";
+
+                if (dataObj.calendrier == null) {
+                    dataObj.calendrier = agregat.datas.get(i - 1).calendrier;
+                }
+
+                calendrierDistributor = dataObj.calendrier[0].idCalendrier;
+                calendrierSupplier = dataObj.calendrier[1].idCalendrier;
 
                 if (i > 0) {
                     result[i - 1] = new IntervalReading();
@@ -96,6 +107,7 @@ public class MeterReading {
                     }
                     // The index in on nextDay N, but index difference give consumption for day N-1
                     result[i - 1].date = dataObj.dateDebut.minusDays(1);
+
                     result[i - 1].valueSupplier = new double[10];
                     result[i - 1].valueDistributor = new double[4];
                     result[i - 1].supplierLabel = new String[10];
@@ -113,7 +125,7 @@ public class MeterReading {
                         for (int idxSupplier = 0; idxSupplier < dataObj.classesTemporellesSupplier.length; idxSupplier++) {
                             ClassesTemporelles ct = dataObj.classesTemporellesSupplier[idxSupplier];
 
-                            if (i == 1) {
+                            if (i == 1 || !calendrierSupplier.equals(lastCalendrierSupplier)) {
                                 result[i - 1].valueSupplier[idxSupplier] = 0.00;
                             } else {
                                 result[i - 1].valueSupplier[idxSupplier] = (ct.valeur - lastValueSupplier[idxSupplier]);
@@ -128,7 +140,7 @@ public class MeterReading {
                         for (int idxDistributor = 0; idxDistributor < dataObj.classesTemporellesDistributor.length; idxDistributor++) {
                             ClassesTemporelles ct = dataObj.classesTemporellesDistributor[idxDistributor];
 
-                            if (i == 1) {
+                            if (i == 1 || !calendrierDistributor.equals(lastCalendrierDistributor)) {
                                 result[i - 1].valueDistributor[idxDistributor] = 0.0;
                             } else {
                                 result[i - 1].valueDistributor[idxDistributor] = (ct.valeur
@@ -141,6 +153,8 @@ public class MeterReading {
                     }
                 }
                 lastVal = value;
+                lastCalendrierDistributor = calendrierDistributor;
+                lastCalendrierSupplier = calendrierSupplier;
             }
 
         }

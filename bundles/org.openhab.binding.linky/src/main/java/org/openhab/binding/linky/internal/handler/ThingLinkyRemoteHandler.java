@@ -783,14 +783,15 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
 
                 Instant timestamp = iv[i].date.atZone(zoneId).toInstant();
 
-                if (Double.isNaN(iv[i].value)) {
-                    continue;
-                }
                 if (idx != -1) {
                     if (i < iv.length && iv[i] != null) {
                         timeSeries.add(timestamp, new QuantityType<>(iv[i].valueSupplier[idx], unit));
                     }
                 } else {
+                    if (Double.isNaN(iv[i].value)) {
+                        continue;
+                    }
+
                     timeSeries.add(timestamp, new QuantityType<>(iv[i].value, unit));
                 }
             } catch (Exception ex) {
