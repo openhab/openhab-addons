@@ -31,8 +31,6 @@ import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -46,8 +44,6 @@ import com.google.gson.JsonParser;
  */
 @NonNullByDefault
 public class TeslascopeAccountHandler extends BaseBridgeHandler {
-
-    private final Logger logger = LoggerFactory.getLogger(TeslascopeAccountHandler.class);
 
     private @Nullable TeslascopeAccountConfiguration config;
     private @Nullable ScheduledFuture<?> pollFuture;
@@ -66,54 +62,64 @@ public class TeslascopeAccountHandler extends BaseBridgeHandler {
     }
 
     public String getVehicleList() {
-        try {
-            return webTargets.getVehicleList(config.apiKey);
-        } catch (TeslascopeAuthenticationException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Authentication problem: " + e.getMessage());
-            return "";
-        } catch (TeslascopeCommunicationException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Communication problem: " + e.getMessage());
-            return "";
+        TeslascopeAccountConfiguration localConfig = config;
+        if (localConfig != null) {
+            try {
+                return webTargets.getVehicleList(localConfig.apiKey);
+            } catch (TeslascopeAuthenticationException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "Authentication problem: " + e.getMessage());
+            } catch (TeslascopeCommunicationException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Communication problem: " + e.getMessage());
+            }
         }
+        return "";
     }
 
     public String getDetailedInformation(String publicID) {
-        try {
-            return webTargets.getDetailedInformation(publicID, config.apiKey);
-        } catch (TeslascopeAuthenticationException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Authentication problem: " + e.getMessage());
-            return "";
-        } catch (TeslascopeCommunicationException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Communication problem: " + e.getMessage());
-            return "";
+        TeslascopeAccountConfiguration localConfig = config;
+        if (localConfig != null) {
+            try {
+                return webTargets.getDetailedInformation(publicID, localConfig.apiKey);
+            } catch (TeslascopeAuthenticationException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "Authentication problem: " + e.getMessage());
+            } catch (TeslascopeCommunicationException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Communication problem: " + e.getMessage());
+            }
         }
+        return "";
     }
 
     public void sendCommand(String publicID, String command) {
-        try {
-            webTargets.sendCommand(publicID, config.apiKey, command);
-        } catch (TeslascopeAuthenticationException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Authentication problem: " + e.getMessage());
-        } catch (TeslascopeCommunicationException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Communication problem: " + e.getMessage());
+        TeslascopeAccountConfiguration localConfig = config;
+        if (localConfig != null) {
+            try {
+                webTargets.sendCommand(publicID, localConfig.apiKey, command);
+            } catch (TeslascopeAuthenticationException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "Authentication problem: " + e.getMessage());
+            } catch (TeslascopeCommunicationException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Communication problem: " + e.getMessage());
+            }
         }
     }
 
     public void sendCommand(String publicID, String command, String params) {
-        try {
-            webTargets.sendCommand(publicID, config.apiKey, command, params);
-        } catch (TeslascopeAuthenticationException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Authentication problem: " + e.getMessage());
-        } catch (TeslascopeCommunicationException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Communication problem: " + e.getMessage());
+        TeslascopeAccountConfiguration localConfig = config;
+        if (localConfig != null) {
+            try {
+                webTargets.sendCommand(publicID, localConfig.apiKey, command, params);
+            } catch (TeslascopeAuthenticationException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "Authentication problem: " + e.getMessage());
+            } catch (TeslascopeCommunicationException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Communication problem: " + e.getMessage());
+            }
         }
     }
 
@@ -124,8 +130,8 @@ public class TeslascopeAccountHandler extends BaseBridgeHandler {
 
     @Override
     public void initialize() {
-        config = getConfigAs(TeslascopeAccountConfiguration.class);
-        if (config.apiKey.isBlank()) {
+        TeslascopeAccountConfiguration localConfig = config = getConfigAs(TeslascopeAccountConfiguration.class);
+        if (localConfig.apiKey.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error.no-api-key");
             return;

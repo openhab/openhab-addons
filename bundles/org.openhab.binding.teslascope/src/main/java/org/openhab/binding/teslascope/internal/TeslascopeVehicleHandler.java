@@ -83,6 +83,7 @@ public class TeslascopeVehicleHandler extends BaseThingHandler {
         TeslascopeAccountHandler localBridge = bridgeHandler;
         if (localBridge == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "@text/offline.conf-error.no-bridge");
+            return;
         }
         try {
             localBridge.sendCommand(publicID, command);
@@ -95,6 +96,7 @@ public class TeslascopeVehicleHandler extends BaseThingHandler {
         TeslascopeAccountHandler localBridge = bridgeHandler;
         if (localBridge == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "@text/offline.conf-error.no-bridge");
+            return;
         }
         try {
             localBridge.sendCommand(publicID, command, params);
@@ -430,7 +432,7 @@ public class TeslascopeVehicleHandler extends BaseThingHandler {
         sendCommand(config.publicID, b ? "enableSentryMode" : "disableSentryMode");
     }
 
-    protected void setChargeLimit(QuantityType chargeLimit) {
+    protected void setChargeLimit(QuantityType<?> chargeLimit) {
         sendCommand(config.publicID, "setChargeLimit", "&limit=" + chargeLimit.toString().replace(" %", ""));
     }
 }
