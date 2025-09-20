@@ -98,7 +98,7 @@ Important: Run all the following commands from repo root folder.
 Check the documentation how to create new bindings
 https://www.openhab.org/docs/developer/#develop-a-new-binding
 
-Ask the user to name the binding <bindingname> and use the supplied name. It needs to be in CamlCase and match [A-Za-z]*.
+Ask the user to name the binding <bindingname> and use the supplied name. It needs to be in CamelCase and match [A-Z][A-Za-z]*.
 
 Make sure that bindings/org.openhab.binding.<bindingname> does not exist.
 
