@@ -57,6 +57,14 @@ Z-Wave nodes can have multiple channels corresponding to their capabilities.
 The channels can be linked to items in openHAB to control and monitor the device.
 These channels are dynamically added to the Thing during node initialization; therefore, there is no list of possible channels in this documentation.
 
+### Notification-Virtual Channel
+
+The binding automatically adds a `notification-virtual` channel for endpoints that have both a Notification (Alarm) and a Door Lock command class.
+This virtual channel is designed to provide a unified state update when a notification event occurs.
+It provides the event payload in JSON as a string value.
+A common scenario is using this JSON to determine the userId that unlocked a door lock.
+This channel is added automatically; no manual configuration is required.
+
 ## Channel Configuration and Inversion
 
 Channels in the `zwavejs` binding support an **inversion** configuration option.

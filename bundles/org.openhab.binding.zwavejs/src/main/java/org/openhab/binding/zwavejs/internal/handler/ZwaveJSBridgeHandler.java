@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.zwavejs.internal.handler;
 
+import static org.openhab.binding.zwavejs.internal.BindingConstants.VIRTUAL_COMMAND_CLASS_NOTIFICATION;
+import static org.openhab.binding.zwavejs.internal.BindingConstants.VIRTUAL_NOTIFICATION_PROPERTY;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -55,6 +58,8 @@ import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.gson.Gson;
 
 /**
  * The {@link ZwaveJSBridgeHandler} is responsible for handling communication between the
@@ -166,6 +171,12 @@ public class ZwaveJSBridgeHandler extends BaseBridgeHandler implements ZwaveEven
             String eventType = eventMsg.event.event;
             ZwaveNodeListener nodeListener = nodeListeners.get(eventMsg.event.nodeId);
             switch (eventType) {
+                case "notification":
+                    if (nodeListener != null) {
+                        Event event = normalizeNotificationEvent(eventMsg.event);
+                        nodeListener.onNodeStateChanged(event);
+                    }
+                    break;
                 case "value updated":
                 case "value notification":
                     if (nodeListener != null) {
@@ -198,6 +209,19 @@ public class ZwaveJSBridgeHandler extends BaseBridgeHandler implements ZwaveEven
             }
             return;
         }
+    }
+
+    public static Event normalizeNotificationEvent(Event event) {
+        Event normalizedEvent = new Event();
+        normalizedEvent.event = event.event;
+        normalizedEvent.args = new Args();
+        normalizedEvent.args.commandClass = event.ccId;
+        normalizedEvent.args.commandClassName = VIRTUAL_COMMAND_CLASS_NOTIFICATION;
+        normalizedEvent.args.propertyName = VIRTUAL_NOTIFICATION_PROPERTY;
+        normalizedEvent.args.endpoint = event.endpointIndex;
+        normalizedEvent.args.newValue = new Gson().toJson(event.args);
+        normalizedEvent.nodeId = event.nodeId;
+        return normalizedEvent;
     }
 
     private @Nullable Event createEventFromMessageId(String messageId, @Nullable Object value) {
