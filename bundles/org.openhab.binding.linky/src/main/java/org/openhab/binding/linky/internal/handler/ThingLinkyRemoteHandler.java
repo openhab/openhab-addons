@@ -633,124 +633,48 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
         return result;
     }
 
+    private void updateEnergyIndex(IntervalReading[] irs, String groupName) {
+        List<IntervalReading[]> lirs = splitOnTariffBound(irs);
+
+        for (int idx = 0; idx < 10; idx++) {
+            String channelName = CHANNEL_CONSUMPTION_SUPPLIER_IDX + idx;
+            updateTimeSeries(groupName, channelName, irs, idx, Units.KILOWATT_HOUR, IndexMode.Supplier);
+
+            for (IntervalReading[] ir : lirs) {
+                if (ir[0].supplierLabel == null || ir[0].supplierLabel[idx] == null) {
+                    continue;
+                }
+                channelName = sanetizeId(ir[0].supplierLabel[idx]);
+                updateTimeSeries(groupName, channelName, ir, idx, Units.KILOWATT_HOUR, IndexMode.Supplier);
+            }
+        }
+
+        for (int idx = 0; idx < 4; idx++) {
+            String channelName = CHANNEL_CONSUMPTION_DISTRIBUTOR_IDX + idx;
+            updateTimeSeries(groupName, channelName, irs, idx, Units.KILOWATT_HOUR, IndexMode.Distributor);
+
+            for (IntervalReading[] ir : lirs) {
+                if (ir[0].distributorLabel == null || ir[0].distributorLabel[idx] == null) {
+                    continue;
+                }
+                channelName = sanetizeId(ir[0].distributorLabel[idx]);
+                updateTimeSeries(groupName, channelName, ir, idx, Units.KILOWATT_HOUR, IndexMode.Distributor);
+            }
+        }
+
+    }
+
     /**
      * Request new daily/weekly data and updates channels
      */
     private synchronized void updateEnergyIndex() {
         dailyIndex.getValue().ifPresentOrElse(values -> {
-            int dSize = values.baseValue.length;
-            String channelName = "";
-
             handleDynamicChannel(values);
 
-            List<IntervalReading[]> irsDaily = splitOnTariffBound(values.baseValue);
-            List<IntervalReading[]> irsWeekly = splitOnTariffBound(values.weekValue);
-            List<IntervalReading[]> irsMonthly = splitOnTariffBound(values.monthValue);
-            List<IntervalReading[]> irsYearly = splitOnTariffBound(values.yearValue);
-
-            for (int idx = 0; idx < 10; idx++) {
-                channelName = CHANNEL_CONSUMPTION_SUPPLIER_IDX + idx;
-                updateTimeSeries(LINKY_REMOTE_DAILY_GROUP, channelName, values.baseValue, idx, Units.KILOWATT_HOUR);
-
-                for (IntervalReading[] ir : irsDaily) {
-                    if (ir[0].supplierLabel == null || ir[0].supplierLabel[idx] == null) {
-                        continue;
-                    }
-                    channelName = sanetizeId(ir[0].supplierLabel[idx]);
-                    updateTimeSeries(LINKY_REMOTE_DAILY_GROUP, channelName, ir, idx, Units.KILOWATT_HOUR);
-                }
-            }
-
-            for (int idx = 0; idx < 4; idx++) {
-                channelName = CHANNEL_CONSUMPTION_SUPPLIER_IDX + idx;
-                updateTimeSeries(LINKY_REMOTE_DAILY_GROUP, channelName, values.baseValue, idx, Units.KILOWATT_HOUR);
-
-                for (IntervalReading[] ir : irsDaily) {
-                    if (ir[0].distributorLabel == null || ir[0].distributorLabel[idx] == null) {
-                        continue;
-                    }
-                    channelName = sanetizeId(ir[0].distributorLabel[idx]);
-                    updateTimeSeries(LINKY_REMOTE_DAILY_GROUP, channelName, ir, idx, Units.KILOWATT_HOUR);
-                }
-            }
-
-            for (int idx = 0; idx < 10; idx++) {
-                channelName = CHANNEL_CONSUMPTION_SUPPLIER_IDX + idx;
-                updateTimeSeries(LINKY_REMOTE_WEEKLY_GROUP, channelName, values.weekValue, idx, Units.KILOWATT_HOUR);
-
-                for (IntervalReading[] ir : irsWeekly) {
-                    if (ir[0].supplierLabel == null || ir[0].supplierLabel[idx] == null) {
-                        continue;
-                    }
-                    channelName = sanetizeId(ir[0].supplierLabel[idx]);
-                    updateTimeSeries(LINKY_REMOTE_WEEKLY_GROUP, channelName, ir, idx, Units.KILOWATT_HOUR);
-                }
-            }
-
-            for (int idx = 0; idx < 4; idx++) {
-                channelName = CHANNEL_CONSUMPTION_SUPPLIER_IDX + idx;
-                updateTimeSeries(LINKY_REMOTE_WEEKLY_GROUP, channelName, values.weekValue, idx, Units.KILOWATT_HOUR);
-
-                for (IntervalReading[] ir : irsWeekly) {
-                    if (ir[0].distributorLabel == null || ir[0].distributorLabel[idx] == null) {
-                        continue;
-                    }
-                    channelName = sanetizeId(ir[0].distributorLabel[idx]);
-                    updateTimeSeries(LINKY_REMOTE_WEEKLY_GROUP, channelName, ir, idx, Units.KILOWATT_HOUR);
-                }
-            }
-
-            for (int idx = 0; idx < 10; idx++) {
-                updateTimeSeries(LINKY_REMOTE_MONTHLY_GROUP, CHANNEL_CONSUMPTION_SUPPLIER_IDX + idx, values.monthValue,
-                        idx, Units.KILOWATT_HOUR);
-
-                for (IntervalReading[] ir : irsMonthly) {
-                    if (ir[0].supplierLabel == null || ir[0].supplierLabel[idx] == null) {
-                        continue;
-                    }
-                    channelName = sanetizeId(ir[0].supplierLabel[idx]);
-                    updateTimeSeries(LINKY_REMOTE_MONTHLY_GROUP, channelName, ir, idx, Units.KILOWATT_HOUR);
-                }
-            }
-
-            for (int idx = 0; idx < 4; idx++) {
-                updateTimeSeries(LINKY_REMOTE_MONTHLY_GROUP, CHANNEL_CONSUMPTION_DISTRIBUTOR_IDX + idx,
-                        values.monthValue, idx, Units.KILOWATT_HOUR);
-
-                for (IntervalReading[] ir : irsMonthly) {
-                    if (ir[0].distributorLabel == null || ir[0].distributorLabel[idx] == null) {
-                        continue;
-                    }
-                    channelName = sanetizeId(ir[0].distributorLabel[idx]);
-                    updateTimeSeries(LINKY_REMOTE_MONTHLY_GROUP, channelName, ir, idx, Units.KILOWATT_HOUR);
-                }
-            }
-
-            for (int idx = 0; idx < 10; idx++) {
-                updateTimeSeries(LINKY_REMOTE_YEARLY_GROUP, CHANNEL_CONSUMPTION_SUPPLIER_IDX + idx, values.yearValue,
-                        idx, Units.KILOWATT_HOUR);
-
-                for (IntervalReading[] ir : irsYearly) {
-                    if (ir[0].supplierLabel == null || ir[0].supplierLabel[idx] == null) {
-                        continue;
-                    }
-                    channelName = sanetizeId(ir[0].supplierLabel[idx]);
-                    updateTimeSeries(LINKY_REMOTE_YEARLY_GROUP, channelName, ir, idx, Units.KILOWATT_HOUR);
-                }
-            }
-
-            for (int idx = 0; idx < 4; idx++) {
-                updateTimeSeries(LINKY_REMOTE_YEARLY_GROUP, CHANNEL_CONSUMPTION_DISTRIBUTOR_IDX + idx, values.yearValue,
-                        idx, Units.KILOWATT_HOUR);
-
-                for (IntervalReading[] ir : irsYearly) {
-                    if (ir[0].distributorLabel == null || ir[0].distributorLabel[idx] == null) {
-                        continue;
-                    }
-                    channelName = sanetizeId(ir[0].distributorLabel[idx]);
-                    updateTimeSeries(LINKY_REMOTE_YEARLY_GROUP, channelName, ir, idx, Units.KILOWATT_HOUR);
-                }
-            }
+            updateEnergyIndex(values.baseValue, LINKY_REMOTE_DAILY_GROUP);
+            updateEnergyIndex(values.weekValue, LINKY_REMOTE_WEEKLY_GROUP);
+            updateEnergyIndex(values.monthValue, LINKY_REMOTE_MONTHLY_GROUP);
+            updateEnergyIndex(values.yearValue, LINKY_REMOTE_YEARLY_GROUP);
         }, () -> {
         });
     }
@@ -768,8 +692,19 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
         }
     }
 
+    enum IndexMode {
+        None,
+        Supplier,
+        Distributor
+    }
+
     private synchronized <T extends Quantity<T>> void updateTimeSeries(String groupId, String channelId,
             IntervalReading[] iv, int idx, Unit<T> unit) {
+        updateTimeSeries(groupId, channelId, iv, idx, unit, IndexMode.None);
+    }
+
+    private synchronized <T extends Quantity<T>> void updateTimeSeries(String groupId, String channelId,
+            IntervalReading[] iv, int idx, Unit<T> unit, IndexMode indexMode) {
         TimeSeries timeSeries = new TimeSeries(Policy.REPLACE);
 
         for (int i = 0; i < iv.length; i++) {
@@ -783,16 +718,24 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
 
                 Instant timestamp = iv[i].date.atZone(zoneId).toInstant();
 
-                if (idx != -1) {
-                    if (i < iv.length && iv[i] != null) {
-                        timeSeries.add(timestamp, new QuantityType<>(iv[i].valueSupplier[idx], unit));
-                    }
-                } else {
+                if (indexMode == IndexMode.None) {
                     if (Double.isNaN(iv[i].value)) {
                         continue;
                     }
 
                     timeSeries.add(timestamp, new QuantityType<>(iv[i].value, unit));
+                } else {
+                    if (i < iv.length && iv[i] != null) {
+                        if (indexMode == IndexMode.Supplier) {
+                            if (iv[i].supplierLabel[idx] != null && !Double.isNaN(iv[i].valueSupplier[idx])) {
+                                timeSeries.add(timestamp, new QuantityType<>(iv[i].valueSupplier[idx], unit));
+                            }
+                        } else if (indexMode == IndexMode.Distributor && !Double.isNaN(iv[i].valueDistributor[idx])) {
+                            if (iv[i].distributorLabel[idx] != null) {
+                                timeSeries.add(timestamp, new QuantityType<>(iv[i].valueDistributor[idx], unit));
+                            }
+                        }
+                    }
                 }
             } catch (Exception ex) {
                 logger.error("error occurs durring updatePowerTimeSeries for {} : {}", config.prmId, ex.getMessage(),
