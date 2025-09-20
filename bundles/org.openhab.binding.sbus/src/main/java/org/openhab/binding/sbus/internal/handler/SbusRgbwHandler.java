@@ -317,7 +317,8 @@ public class SbusRgbwHandler extends AbstractSbusHandler {
      * @return array of RGBW values [R, G, B, W] (converted from 0..100 to 0..255)
      * @throws IllegalStateException if the SBUS transaction fails
      */
-    private int[] readRgbw(SbusService adapter, int subnetId, int deviceId, int channelNumber) throws IllegalStateException {
+    private int[] readRgbw(SbusService adapter, int subnetId, int deviceId, int channelNumber)
+            throws IllegalStateException {
         // Construct SBUS request
         ReadRgbwRequest request = new ReadRgbwRequest();
         request.setSubnetID(subnetId);

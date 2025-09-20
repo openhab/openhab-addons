@@ -95,7 +95,8 @@ public class SbusContactHandler extends AbstractSbusHandler {
      * @return array of contact status values (true for open, false for closed)
      * @throws IllegalStateException if the SBUS transaction fails
      */
-    private boolean[] readContactStatusChannels(SbusService adapter, int subnetId, int deviceId) throws IllegalStateException {
+    private boolean[] readContactStatusChannels(SbusService adapter, int subnetId, int deviceId)
+            throws IllegalStateException {
         // Construct SBUS request
         ReadDryChannelsRequest request = new ReadDryChannelsRequest();
         request.setSubnetID(subnetId);

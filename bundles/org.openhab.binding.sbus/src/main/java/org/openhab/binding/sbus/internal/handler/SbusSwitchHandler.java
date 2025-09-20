@@ -292,8 +292,7 @@ public class SbusSwitchHandler extends AbstractSbusHandler {
                 logger.debug("Processed async status message for switch handler {}", getThing().getUID());
             }
         } catch (IllegalStateException | IllegalArgumentException e) {
-            logger.warn("Error processing async message in switch handler {}: {}", getThing().getUID(),
-                    e.getMessage());
+            logger.warn("Error processing async message in switch handler {}: {}", getThing().getUID(), e.getMessage());
         }
     }
 
