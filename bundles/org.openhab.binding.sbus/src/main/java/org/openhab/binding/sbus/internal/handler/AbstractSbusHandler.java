@@ -84,7 +84,7 @@ public abstract class AbstractSbusHandler extends BaseThingHandler implements Sb
         try {
             sbusAdapter.addMessageListener(this);
             logger.debug("Registered handler {} as message listener", getThing().getUID());
-        } catch (Exception e) {
+        } catch (IllegalStateException e) {
             logger.warn("Failed to register message listener for {}: {}", getThing().getUID(), e.getMessage());
         }
     }
@@ -131,8 +131,8 @@ public abstract class AbstractSbusHandler extends BaseThingHandler implements Sb
             pollingJob = scheduler.scheduleWithFixedDelay(() -> {
                 try {
                     pollDevice();
-                } catch (Exception e) {
-                    logger.warn("Error polling Sbus device", e);
+                } catch (IllegalStateException e) {
+                    logger.warn("Error polling Sbus device: {}", e.getMessage());
                 }
             }, 0, config.refresh, TimeUnit.SECONDS);
         } else if (config.refresh == 0) {
@@ -140,8 +140,8 @@ public abstract class AbstractSbusHandler extends BaseThingHandler implements Sb
             pollingJob = scheduler.schedule(() -> {
                 try {
                     pollDevice();
-                } catch (Exception e) {
-                    logger.warn("Error polling Sbus device", e);
+                } catch (IllegalStateException e) {
+                    logger.warn("Error polling Sbus device: {}", e.getMessage());
                 }
             }, 0, TimeUnit.SECONDS);
         }

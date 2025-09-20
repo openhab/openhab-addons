@@ -80,8 +80,10 @@ public class SbusTemperatureHandler extends AbstractSbusHandler {
             updateChannelStatesFromTemperatures(temperatures);
 
             updateStatus(ThingStatus.ONLINE);
-        } catch (Exception e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/error.device.read-state");
+        } catch (IllegalStateException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/error.device.communication");
+            logger.warn("Error polling temperature device {}: {}", getThing().getUID(), e.getMessage());
         }
     }
 
@@ -123,10 +125,10 @@ public class SbusTemperatureHandler extends AbstractSbusHandler {
      * @param deviceId the device ID
      * @param temperatureUnit the unit of measurement (FAHRENHEIT or CELSIUS)
      * @return array of temperature values in the specified unit
-     * @throws Exception if the SBUS transaction fails
+     * @throws IllegalStateException if the SBUS transaction fails
      */
     private float[] readTemperatures(SbusService adapter, int subnetId, int deviceId, TemperatureUnit temperatureUnit)
-            throws Exception {
+            throws IllegalStateException {
         // Construct SBUS request
         ReadTemperatureRequest request = new ReadTemperatureRequest();
         request.setTemperatureUnit(temperatureUnit.getValue());
@@ -135,11 +137,9 @@ public class SbusTemperatureHandler extends AbstractSbusHandler {
 
         // Execute transaction and parse response
         SbusResponse response = adapter.executeTransaction(request);
-        if (!(response instanceof ReadTemperatureResponse)) {
+        if (!(response instanceof ReadTemperatureResponse tempResponse)) {
             throw new IllegalStateException("Unexpected response type: " + response.getClass().getSimpleName());
         }
-
-        ReadTemperatureResponse tempResponse = (ReadTemperatureResponse) response;
         InputRegister[] registers = tempResponse.getRegisters();
         float[] temperatures = new float[registers.length];
         for (int i = 0; i < registers.length; i++) {
@@ -159,16 +159,15 @@ public class SbusTemperatureHandler extends AbstractSbusHandler {
     @Override
     protected void processAsyncMessage(SbusResponse response) {
         try {
-            if (response instanceof ReadTemperatureResponse) {
+            if (response instanceof ReadTemperatureResponse tempResponse) {
                 // Process temperature response using existing logic
-                ReadTemperatureResponse tempResponse = (ReadTemperatureResponse) response;
                 float[] temperatures = extractTemperatures(tempResponse);
 
                 // Update channel states based on async message
                 updateChannelStatesFromTemperatures(temperatures);
                 logger.debug("Processed async temperature message for handler {}", getThing().getUID());
             }
-        } catch (Exception e) {
+        } catch (IllegalStateException | IllegalArgumentException e) {
             logger.warn("Error processing async message in temperature handler {}: {}", getThing().getUID(),
                     e.getMessage());
         }

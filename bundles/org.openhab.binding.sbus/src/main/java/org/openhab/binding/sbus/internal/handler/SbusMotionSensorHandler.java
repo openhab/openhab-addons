@@ -68,7 +68,7 @@ public class SbusMotionSensorHandler extends AbstractSbusHandler {
             // Update channel states from response
             updateChannelStatesFromResponse(response);
             updateStatus(ThingStatus.ONLINE);
-        } catch (Exception e) {
+        } catch (IllegalStateException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/error.device.communication");
             logger.warn("Error polling motion sensor device {}: {}", getThing().getUID(), e.getMessage());
@@ -141,13 +141,12 @@ public class SbusMotionSensorHandler extends AbstractSbusHandler {
                 // Process motion sensor status report (0x02CA broadcast)
                 updateChannelStatesFromReport(report);
                 logger.debug("Processed async motion sensor status report for handler {}", getThing().getUID());
-            } else if (response instanceof ReadNineInOneStatusResponse) {
+            } else if (response instanceof ReadNineInOneStatusResponse statusResponse) {
                 // Process 9-in-1 status response (0xDB01)
-                ReadNineInOneStatusResponse statusResponse = (ReadNineInOneStatusResponse) response;
                 updateChannelStatesFromResponse(statusResponse);
                 logger.debug("Processed async 9-in-1 status response for handler {}", getThing().getUID());
             }
-        } catch (Exception e) {
+        } catch (IllegalStateException | IllegalArgumentException e) {
             logger.warn("Error processing async message in motion sensor handler {}: {}", getThing().getUID(),
                     e.getMessage());
         }

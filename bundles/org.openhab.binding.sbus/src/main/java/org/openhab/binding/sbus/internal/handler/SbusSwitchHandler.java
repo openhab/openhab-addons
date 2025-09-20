@@ -81,8 +81,10 @@ public class SbusSwitchHandler extends AbstractSbusHandler {
             // Iterate over all channels and update their states
             updateChannelStatesFromStatus(statuses);
             updateStatus(ThingStatus.ONLINE);
-        } catch (Exception e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/error.device.read-state");
+        } catch (IllegalStateException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/error.device.communication");
+            logger.warn("Error polling switch device {}: {}", getThing().getUID(), e.getMessage());
         }
     }
 
@@ -147,13 +149,13 @@ public class SbusSwitchHandler extends AbstractSbusHandler {
                     handleStopMoveCommand(config, channelConfig, channelUID, adapter);
                 }
             }
-        } catch (Exception e) {
-            logger.warn("Error sending command to device", e);
+        } catch (IllegalStateException e) {
+            logger.warn("Error sending command to device: {}", e.getMessage());
         }
     }
 
     private void handleOnOffCommand(OnOffType command, SbusDeviceConfig config, SbusChannelConfig channelConfig,
-            ChannelUID channelUID, SbusService adapter) throws Exception {
+            ChannelUID channelUID, SbusService adapter) throws IllegalStateException {
         boolean isOn = command == OnOffType.ON;
         int value = isOn ? 100 : 0;
         writeSingleChannel(adapter, config.subnetId, config.id, channelConfig.channelNumber, value,
@@ -162,7 +164,7 @@ public class SbusSwitchHandler extends AbstractSbusHandler {
     }
 
     private void handlePercentCommand(PercentType command, SbusDeviceConfig config, SbusChannelConfig channelConfig,
-            ChannelUID channelUID, SbusService adapter) throws Exception {
+            ChannelUID channelUID, SbusService adapter) throws IllegalStateException {
         int value = command.intValue();
         writeSingleChannel(adapter, config.subnetId, config.id, channelConfig.channelNumber, value,
                 channelConfig.timer);
@@ -178,9 +180,9 @@ public class SbusSwitchHandler extends AbstractSbusHandler {
      * @param subnetId the subnet ID of the device
      * @param deviceId the device ID
      * @return array of status channel values
-     * @throws Exception if the SBUS transaction fails
+     * @throws IllegalStateException if the SBUS transaction fails
      */
-    private int[] readStatusChannels(SbusService adapter, int subnetId, int deviceId) throws Exception {
+    private int[] readStatusChannels(SbusService adapter, int subnetId, int deviceId) throws IllegalStateException {
         // Construct SBUS request
         ReadStatusChannelsRequest request = new ReadStatusChannelsRequest();
         request.setSubnetID(subnetId);
@@ -188,11 +190,9 @@ public class SbusSwitchHandler extends AbstractSbusHandler {
 
         // Execute transaction and parse response
         SbusResponse response = adapter.executeTransaction(request);
-        if (!(response instanceof ReadStatusChannelsResponse)) {
+        if (!(response instanceof ReadStatusChannelsResponse statusResponse)) {
             throw new IllegalStateException("Unexpected response type: " + response.getClass().getSimpleName());
         }
-
-        ReadStatusChannelsResponse statusResponse = (ReadStatusChannelsResponse) response;
         InputRegister[] registers = statusResponse.getRegisters();
         int[] statuses = new int[registers.length];
         for (int i = 0; i < registers.length; i++) {
@@ -210,10 +210,10 @@ public class SbusSwitchHandler extends AbstractSbusHandler {
      * @param channelNumber the channel number to write to
      * @param value the value to write (0-255)
      * @param timer timer value in seconds (-1 for no timer)
-     * @throws Exception if the SBUS transaction fails
+     * @throws IllegalStateException if the SBUS transaction fails
      */
     private void writeSingleChannel(SbusService adapter, int subnetId, int deviceId, int channelNumber, int value,
-            int timer) throws Exception {
+            int timer) throws IllegalStateException {
         // Construct SBUS write request
         WriteSingleChannelRequest request = new WriteSingleChannelRequest(timer >= 0);
         request.setSubnetID(subnetId);
@@ -237,7 +237,7 @@ public class SbusSwitchHandler extends AbstractSbusHandler {
     }
 
     private void handleUpDownCommand(UpDownType command, SbusDeviceConfig config, SbusChannelConfig channelConfig,
-            ChannelUID channelUID, SbusService adapter) throws Exception {
+            ChannelUID channelUID, SbusService adapter) throws IllegalStateException {
         boolean isUp = command == UpDownType.UP;
         // Set main channel
         if (getChannelToClose(channelConfig, isUp) > 0) {
@@ -261,7 +261,7 @@ public class SbusSwitchHandler extends AbstractSbusHandler {
     }
 
     private void handleStopMoveCommand(SbusDeviceConfig config, SbusChannelConfig channelConfig, ChannelUID channelUID,
-            SbusService adapter) throws Exception {
+            SbusService adapter) throws IllegalStateException {
         // For STOP command, we stop both channels by setting them to 0
         if (channelConfig.channelNumber > 0) {
             writeSingleChannel(adapter, config.subnetId, config.id, channelConfig.channelNumber, 0,
@@ -279,9 +279,8 @@ public class SbusSwitchHandler extends AbstractSbusHandler {
     @Override
     protected void processAsyncMessage(SbusResponse response) {
         try {
-            if (response instanceof ReadStatusChannelsResponse) {
+            if (response instanceof ReadStatusChannelsResponse statusResponse) {
                 // Process status channel response using existing logic
-                ReadStatusChannelsResponse statusResponse = (ReadStatusChannelsResponse) response;
                 InputRegister[] registers = statusResponse.getRegisters();
                 int[] statuses = new int[registers.length];
                 for (int i = 0; i < registers.length; i++) {
@@ -292,8 +291,9 @@ public class SbusSwitchHandler extends AbstractSbusHandler {
                 updateChannelStatesFromStatus(statuses);
                 logger.debug("Processed async status message for switch handler {}", getThing().getUID());
             }
-        } catch (Exception e) {
-            logger.warn("Error processing async message in switch handler {}: {}", getThing().getUID(), e.getMessage());
+        } catch (IllegalStateException | IllegalArgumentException e) {
+            logger.warn("Error processing async message in switch handler {}: {}", getThing().getUID(),
+                    e.getMessage());
         }
     }
 

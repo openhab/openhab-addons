@@ -66,7 +66,7 @@ public class SbusBridgeHandler extends BaseBridgeHandler {
             sbusService.initialize(config.host, config.port, config.timeout);
             logger.debug("SBUS bridge initialized with timeout: {}ms", config.timeout);
             updateStatus(ThingStatus.ONLINE);
-        } catch (Exception e) {
+        } catch (IllegalStateException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }

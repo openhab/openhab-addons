@@ -72,8 +72,9 @@ public class SbusContactHandler extends AbstractSbusHandler {
 
             updateChannelStatesFromStatuses(contactStates);
             updateStatus(ThingStatus.ONLINE);
-        } catch (Exception e) {
+        } catch (IllegalStateException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/error.device.read-state");
+            logger.warn("Error polling contact device {}: {}", getThing().getUID(), e.getMessage());
         }
     }
 
@@ -92,9 +93,9 @@ public class SbusContactHandler extends AbstractSbusHandler {
      * @param subnetId the subnet ID of the device
      * @param deviceId the device ID
      * @return array of contact status values (true for open, false for closed)
-     * @throws Exception if the SBUS transaction fails
+     * @throws IllegalStateException if the SBUS transaction fails
      */
-    private boolean[] readContactStatusChannels(SbusService adapter, int subnetId, int deviceId) throws Exception {
+    private boolean[] readContactStatusChannels(SbusService adapter, int subnetId, int deviceId) throws IllegalStateException {
         // Construct SBUS request
         ReadDryChannelsRequest request = new ReadDryChannelsRequest();
         request.setSubnetID(subnetId);
@@ -127,7 +128,7 @@ public class SbusContactHandler extends AbstractSbusHandler {
                 updateChannelStatesFromStatuses(statuses);
                 logger.debug("Processed async contact status message for handler {}", getThing().getUID());
             }
-        } catch (Exception e) {
+        } catch (IllegalStateException | IllegalArgumentException e) {
             logger.warn("Error processing async message in contact handler {}: {}", getThing().getUID(),
                     e.getMessage());
         }

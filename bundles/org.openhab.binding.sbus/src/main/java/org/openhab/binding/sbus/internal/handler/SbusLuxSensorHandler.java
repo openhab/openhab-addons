@@ -68,7 +68,7 @@ public class SbusLuxSensorHandler extends AbstractSbusHandler {
             // Update channel states from response
             updateChannelStatesFromResponse(response);
             updateStatus(ThingStatus.ONLINE);
-        } catch (Exception e) {
+        } catch (IllegalStateException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/error.device.communication");
             logger.warn("Error polling lux sensor device {}: {}", getThing().getUID(), e.getMessage());
@@ -116,10 +116,10 @@ public class SbusLuxSensorHandler extends AbstractSbusHandler {
      * @param subnetId the subnet ID of the device
      * @param deviceId the device ID
      * @return ReadNineInOneStatusResponse containing sensor data
-     * @throws Exception if the SBUS transaction fails
+     * @throws IllegalStateException if the SBUS transaction fails
      */
     private ReadNineInOneStatusResponse readNineInOneStatus(SbusService adapter, int subnetId, int deviceId)
-            throws Exception {
+            throws IllegalStateException {
         ReadNineInOneStatusRequest request = new ReadNineInOneStatusRequest();
         request.setSubnetID(subnetId);
         request.setUnitID(deviceId);
@@ -146,7 +146,7 @@ public class SbusLuxSensorHandler extends AbstractSbusHandler {
                 updateChannelStatesFromResponse(statusResponse);
                 logger.debug("Processed async 9-in-1 status response for lux handler {}", getThing().getUID());
             }
-        } catch (Exception e) {
+        } catch (IllegalStateException | IllegalArgumentException e) {
             logger.warn("Error processing async message in lux sensor handler {}: {}", getThing().getUID(),
                     e.getMessage());
         }

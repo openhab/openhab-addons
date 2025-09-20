@@ -145,8 +145,10 @@ public class SbusRgbwHandler extends AbstractSbusHandler {
             }
 
             updateStatus(ThingStatus.ONLINE);
-        } catch (Exception e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/error.device.read-state");
+        } catch (IllegalStateException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/error.device.communication");
+            logger.warn("Error polling RGBW device {}: {}", getThing().getUID(), e.getMessage());
         }
     }
 
@@ -282,9 +284,9 @@ public class SbusRgbwHandler extends AbstractSbusHandler {
      * @param subnetId the subnet ID of the device
      * @param deviceId the device ID
      * @return array of status channel values (converted from 0..100 to 0..255)
-     * @throws Exception if the SBUS transaction fails
+     * @throws IllegalStateException if the SBUS transaction fails
      */
-    private int[] readStatusChannels(SbusService adapter, int subnetId, int deviceId) throws Exception {
+    private int[] readStatusChannels(SbusService adapter, int subnetId, int deviceId) throws IllegalStateException {
         // Construct SBUS request
         ReadStatusChannelsRequest request = new ReadStatusChannelsRequest();
         request.setSubnetID(subnetId);
@@ -292,11 +294,9 @@ public class SbusRgbwHandler extends AbstractSbusHandler {
 
         // Execute transaction and parse response
         SbusResponse response = adapter.executeTransaction(request);
-        if (!(response instanceof ReadStatusChannelsResponse)) {
+        if (!(response instanceof ReadStatusChannelsResponse statusResponse)) {
             throw new IllegalStateException("Unexpected response type: " + response.getClass().getSimpleName());
         }
-
-        ReadStatusChannelsResponse statusResponse = (ReadStatusChannelsResponse) response;
         InputRegister[] registers = statusResponse.getRegisters();
         int[] statusValues = new int[registers.length];
         for (int i = 0; i < registers.length; i++) {
@@ -315,9 +315,9 @@ public class SbusRgbwHandler extends AbstractSbusHandler {
      * @param deviceId the device ID
      * @param channelNumber the channel number
      * @return array of RGBW values [R, G, B, W] (converted from 0..100 to 0..255)
-     * @throws Exception if the SBUS transaction fails
+     * @throws IllegalStateException if the SBUS transaction fails
      */
-    private int[] readRgbw(SbusService adapter, int subnetId, int deviceId, int channelNumber) throws Exception {
+    private int[] readRgbw(SbusService adapter, int subnetId, int deviceId, int channelNumber) throws IllegalStateException {
         // Construct SBUS request
         ReadRgbwRequest request = new ReadRgbwRequest();
         request.setSubnetID(subnetId);
@@ -326,11 +326,9 @@ public class SbusRgbwHandler extends AbstractSbusHandler {
 
         // Execute transaction and parse response
         SbusResponse response = adapter.executeTransaction(request);
-        if (!(response instanceof ReadRgbwResponse)) {
+        if (!(response instanceof ReadRgbwResponse rgbwResponse)) {
             throw new IllegalStateException("Unexpected response type: " + response.getClass().getSimpleName());
         }
-
-        ReadRgbwResponse rgbwResponse = (ReadRgbwResponse) response;
         InputRegister[] registers = rgbwResponse.getRegisters();
         int[] rgbwValues = new int[Math.min(4, registers.length)];
         for (int i = 0; i < rgbwValues.length; i++) {
@@ -349,10 +347,10 @@ public class SbusRgbwHandler extends AbstractSbusHandler {
      * @param deviceId the device ID
      * @param channelNumber the channel number
      * @param rgbwValues array of RGBW values [R, G, B, W]
-     * @throws Exception if the SBUS transaction fails
+     * @throws IllegalStateException if the SBUS transaction fails
      */
     private void writeRgbw(SbusService adapter, int subnetId, int deviceId, int channelNumber, int[] rgbwValues)
-            throws Exception {
+            throws IllegalStateException {
         // 1) Scale/clamp to 0..100 per protocol
         int[] pct = toPct100(rgbwValues);
 
@@ -382,10 +380,10 @@ public class SbusRgbwHandler extends AbstractSbusHandler {
      * @param channelNumber the channel number
      * @param value the channel value (0-100)
      * @param duration the duration (-1 for indefinite)
-     * @throws Exception if the SBUS transaction fails
+     * @throws IllegalStateException if the SBUS transaction fails
      */
     private void writeSingleChannel(SbusService adapter, int subnetId, int deviceId, int channelNumber, int value,
-            int duration) throws Exception {
+            int duration) throws IllegalStateException {
         // Clamp to 0..100; if caller gave 0..255, scale first
         value = Math.max(0, Math.min(100, value <= 100 ? value : Math.round((value * 100f) / 255f)));
         WriteSingleChannelRequest request = new WriteSingleChannelRequest(duration >= 0);
@@ -423,15 +421,13 @@ public class SbusRgbwHandler extends AbstractSbusHandler {
                 String channelTypeId = channelTypeUID.getId();
                 int[] rgbwValues = new int[] {};
                 // Process the response based on type and available channels
-                if (response instanceof ReadStatusChannelsResponse
+                if (response instanceof ReadStatusChannelsResponse statusResponse
                         && BindingConstants.CHANNEL_TYPE_SWITCH.equals(channelTypeId)) {
                     // Process status channel response using existing logic
-                    ReadStatusChannelsResponse statusResponse = (ReadStatusChannelsResponse) response;
                     rgbwValues = extractStatusValues(statusResponse);
-                } else if (response instanceof ReadRgbwResponse
+                } else if (response instanceof ReadRgbwResponse rgbwResponse
                         && BindingConstants.CHANNEL_TYPE_COLOR.equals(channelTypeId)) {
                     // Process RGBW response using existing logic
-                    ReadRgbwResponse rgbwResponse = (ReadRgbwResponse) response;
                     rgbwValues = extractRgbwValues(rgbwResponse);
                 }
                 fixRgbwValues(rgbwValues);
