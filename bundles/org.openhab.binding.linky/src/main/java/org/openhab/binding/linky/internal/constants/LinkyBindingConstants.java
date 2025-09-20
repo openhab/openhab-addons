@@ -57,10 +57,10 @@ public class LinkyBindingConstants {
     public static final String LINKY_TEMPO_CALENDAR_GROUP = "tempo-calendar";
     public static final String LINKY_REMOTE_LOAD_CURVE_GROUP = "load-curve";
 
+    public static final String CONSUMPTION = "consumption";
+
     // List of all Channel id's
     public static final String CHANNEL_CONSUMPTION = "consumption";
-    public static final String CHANNEL_CONSUMPTION_SUPPLIER_IDX = "consumptionSupplierIdx";
-    public static final String CHANNEL_CONSUMPTION_DISTRIBUTOR_IDX = "consumptionDistributorIdx";
     public static final String CHANNEL_MAX_POWER = "max-power";
     public static final String CHANNEL_POWER = "power";
     public static final String CHANNEL_TIMESTAMP_CHANNEL = "power";

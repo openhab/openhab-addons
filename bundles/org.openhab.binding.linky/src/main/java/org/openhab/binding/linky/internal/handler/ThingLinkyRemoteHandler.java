@@ -514,18 +514,6 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
         });
     }
 
-    private void addChannel(List<Channel> channels, ChannelTypeUID chanTypeUid, String channelGroup, String channelName,
-            String channelLabel, String channelDesc) {
-        ChannelUID channelUid = new ChannelUID(this.getThing().getUID(), channelGroup, channelName);
-        Channel channel = ChannelBuilder.create(channelUid).withType(chanTypeUid).withDescription(channelDesc)
-                .withLabel(channelLabel).build();
-
-        if (!channels.contains(channel)) {
-            channels.add(channel);
-        }
-
-    }
-
     /**
      * The methods remove specific local character (like 'é'/'ê','â') so we have a correctly formated UID from a
      * localize item label
@@ -547,15 +535,52 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
         return result;
     }
 
-    private void handleDynamicChannel(MeterReading values) {
-        ChannelTypeUID chanTypeUid = new ChannelTypeUID(LinkyBindingConstants.BINDING_ID, "consumption");
-        List<Channel> channels = new ArrayList<Channel>();
+    private void addChannel(List<Channel> channels, ChannelTypeUID chanTypeUid, String channelGroup, String channelName,
+            String channelLabel, String channelDesc) {
+        ChannelUID channelUid = new ChannelUID(this.getThing().getUID(), channelGroup, channelName);
+        Channel channel = ChannelBuilder.create(channelUid).withType(chanTypeUid).withDescription(channelDesc)
+                .withLabel(channelLabel).build();
 
+        if (getThing().getChannel(channelUid) != null) {
+            return;
+        }
+
+        if (channels.contains(channel)) {
+            return;
+        }
+
+        channels.add(channel);
+    }
+
+    private void addDynamicChannelByIdx(List<Channel> channels, ChannelTypeUID chanTypeUid, IndexMode indexMode) {
+        int size = getIndexSize(indexMode);
+        String channelPrefix = CHANNEL_CONSUMPTION + indexMode.toString() + "Idx";
+
+        for (int idx = 0; idx < size; idx++) {
+            String channelName = channelPrefix + idx;
+            String channelLabel = indexMode.toString() + " Consumption " + idx;
+            String channelDesc = "The " + indexMode.toString() + " Consumption for index " + idx;
+
+            addChannel(channels, chanTypeUid, LINKY_REMOTE_DAILY_GROUP, channelName, channelLabel, channelDesc);
+            addChannel(channels, chanTypeUid, LINKY_REMOTE_WEEKLY_GROUP, channelName, channelLabel, channelDesc);
+            addChannel(channels, chanTypeUid, LINKY_REMOTE_MONTHLY_GROUP, channelName, channelLabel, channelDesc);
+            addChannel(channels, chanTypeUid, LINKY_REMOTE_YEARLY_GROUP, channelName, channelLabel, channelDesc);
+        }
+    }
+
+    private void addDynamicChannelByLabel(List<Channel> channels, ChannelTypeUID chanTypeUid, MeterReading values,
+            IndexMode indexMode) {
         for (IntervalReading ir : values.baseValue) {
-            for (String st : ir.distributorLabel) {
-
+            String[] label;
+            if (indexMode == IndexMode.Supplier) {
+                label = ir.supplierLabel;
+            } else if (indexMode == IndexMode.Distributor) {
+                label = ir.distributorLabel;
+            } else {
+                return;
             }
-            for (String st : ir.supplierLabel) {
+
+            for (String st : label) {
                 if (st == null) {
                     continue;
                 }
@@ -568,31 +593,21 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
                 addChannel(channels, chanTypeUid, LINKY_REMOTE_WEEKLY_GROUP, channelName, channelLabel, channelDesc);
                 addChannel(channels, chanTypeUid, LINKY_REMOTE_MONTHLY_GROUP, channelName, channelLabel, channelDesc);
                 addChannel(channels, chanTypeUid, LINKY_REMOTE_YEARLY_GROUP, channelName, channelLabel, channelDesc);
-
             }
         }
 
-        for (int idx = 0; idx < 10; idx++) {
-            String channelName = CHANNEL_CONSUMPTION_SUPPLIER_IDX + idx;
-            String channelLabel = "Supplier Consumption " + idx;
-            String channelDesc = "The Supplier Consumption for index " + idx;
+    }
 
-            addChannel(channels, chanTypeUid, LINKY_REMOTE_DAILY_GROUP, channelName, channelLabel, channelDesc);
-            addChannel(channels, chanTypeUid, LINKY_REMOTE_WEEKLY_GROUP, channelName, channelLabel, channelDesc);
-            addChannel(channels, chanTypeUid, LINKY_REMOTE_MONTHLY_GROUP, channelName, channelLabel, channelDesc);
-            addChannel(channels, chanTypeUid, LINKY_REMOTE_YEARLY_GROUP, channelName, channelLabel, channelDesc);
-        }
+    private void handleDynamicChannel(MeterReading values) {
+        ChannelTypeUID chanTypeUid = new ChannelTypeUID(LinkyBindingConstants.BINDING_ID,
+                LinkyBindingConstants.CONSUMPTION);
+        List<Channel> channels = new ArrayList<Channel>();
 
-        for (int idx = 0; idx < 4; idx++) {
-            String channelName = CHANNEL_CONSUMPTION_DISTRIBUTOR_IDX + idx;
-            String channelLabel = "Distributor Consumption " + idx;
-            String channelDesc = "The Distributor Consumption for index " + idx;
+        addDynamicChannelByLabel(channels, chanTypeUid, values, IndexMode.Supplier);
+        addDynamicChannelByLabel(channels, chanTypeUid, values, IndexMode.Distributor);
 
-            addChannel(channels, chanTypeUid, LINKY_REMOTE_DAILY_GROUP, channelName, channelLabel, channelDesc);
-            addChannel(channels, chanTypeUid, LINKY_REMOTE_WEEKLY_GROUP, channelName, channelLabel, channelDesc);
-            addChannel(channels, chanTypeUid, LINKY_REMOTE_MONTHLY_GROUP, channelName, channelLabel, channelDesc);
-            addChannel(channels, chanTypeUid, LINKY_REMOTE_YEARLY_GROUP, channelName, channelLabel, channelDesc);
-        }
+        addDynamicChannelByIdx(channels, chanTypeUid, IndexMode.Supplier);
+        addDynamicChannelByIdx(channels, chanTypeUid, IndexMode.Distributor);
 
         if (channels.size() > 0) {
             Thing thing = this.getThing();
@@ -601,7 +616,6 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
                 channels.add(chan);
             }
 
-            // channels.add(chanTest);
             updateThing(editThing().withChannels(channels).build());
         }
 
@@ -633,35 +647,48 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
         return result;
     }
 
+    private int getIndexSize(IndexMode indexMode) {
+        if (indexMode == IndexMode.Supplier) {
+            return 10;
+        } else if (indexMode == IndexMode.Distributor) {
+            return 4;
+        }
+
+        return 0;
+    }
+
+    private void updateEnergyIndex(IntervalReading[] irs, String groupName, List<IntervalReading[]> lirs,
+            IndexMode indexMode) {
+        int size = getIndexSize(indexMode);
+        String channelPrefix = CHANNEL_CONSUMPTION + indexMode.toString() + "Idx";
+
+        for (int idx = 0; idx < size; idx++) {
+            updateTimeSeries(groupName, channelPrefix + idx, irs, idx, Units.KILOWATT_HOUR, indexMode);
+
+            for (IntervalReading[] ir : lirs) {
+                String[] label;
+                if (indexMode == IndexMode.Supplier) {
+                    label = ir[0].supplierLabel;
+                } else if (indexMode == IndexMode.Distributor) {
+                    label = ir[0].distributorLabel;
+                } else {
+                    continue;
+                }
+
+                if (label == null || label[idx] == null) {
+                    continue;
+                }
+
+                updateTimeSeries(groupName, sanetizeId(label[idx]), ir, idx, Units.KILOWATT_HOUR, indexMode);
+            }
+        }
+
+    }
+
     private void updateEnergyIndex(IntervalReading[] irs, String groupName) {
         List<IntervalReading[]> lirs = splitOnTariffBound(irs);
-
-        for (int idx = 0; idx < 10; idx++) {
-            String channelName = CHANNEL_CONSUMPTION_SUPPLIER_IDX + idx;
-            updateTimeSeries(groupName, channelName, irs, idx, Units.KILOWATT_HOUR, IndexMode.Supplier);
-
-            for (IntervalReading[] ir : lirs) {
-                if (ir[0].supplierLabel == null || ir[0].supplierLabel[idx] == null) {
-                    continue;
-                }
-                channelName = sanetizeId(ir[0].supplierLabel[idx]);
-                updateTimeSeries(groupName, channelName, ir, idx, Units.KILOWATT_HOUR, IndexMode.Supplier);
-            }
-        }
-
-        for (int idx = 0; idx < 4; idx++) {
-            String channelName = CHANNEL_CONSUMPTION_DISTRIBUTOR_IDX + idx;
-            updateTimeSeries(groupName, channelName, irs, idx, Units.KILOWATT_HOUR, IndexMode.Distributor);
-
-            for (IntervalReading[] ir : lirs) {
-                if (ir[0].distributorLabel == null || ir[0].distributorLabel[idx] == null) {
-                    continue;
-                }
-                channelName = sanetizeId(ir[0].distributorLabel[idx]);
-                updateTimeSeries(groupName, channelName, ir, idx, Units.KILOWATT_HOUR, IndexMode.Distributor);
-            }
-        }
-
+        updateEnergyIndex(irs, groupName, lirs, IndexMode.Supplier);
+        updateEnergyIndex(irs, groupName, lirs, IndexMode.Distributor);
     }
 
     /**
