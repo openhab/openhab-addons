@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.sbus.handler;
+package org.openhab.binding.sbus.internal.handler;
 
 import static org.openhab.binding.sbus.BindingConstants.*;
 
@@ -18,8 +18,6 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.core.i18n.LocaleProvider;
-import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -27,7 +25,6 @@ import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,27 +38,10 @@ import org.slf4j.LoggerFactory;
 public class SbusHandlerFactory extends BaseThingHandlerFactory {
 
     private final Logger logger = LoggerFactory.getLogger(SbusHandlerFactory.class);
-    private @Nullable SbusService sbusService;
-    private @Nullable TranslationProvider translationProvider;
-    private @Nullable LocaleProvider localeProvider;
-
-    @Reference
-    public void setSbusService(final SbusService service) {
-        this.sbusService = service;
-    }
-
-    @Reference
-    public void setTranslationProvider(TranslationProvider translationProvider) {
-        this.translationProvider = translationProvider;
-    }
-
-    @Reference
-    public void setLocaleProvider(LocaleProvider localeProvider) {
-        this.localeProvider = localeProvider;
-    }
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_UDP_BRIDGE, THING_TYPE_SWITCH,
-            THING_TYPE_TEMPERATURE, THING_TYPE_RGBW, THING_TYPE_CONTACT);
+            THING_TYPE_TEMPERATURE, THING_TYPE_RGBW, THING_TYPE_CONTACT_SENSOR, THING_TYPE_MOTION_SENSOR,
+            THING_TYPE_LUX_SENSOR);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -72,30 +52,29 @@ public class SbusHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        final TranslationProvider tp = translationProvider;
-        final LocaleProvider lp = localeProvider;
-        if (tp == null || lp == null) {
-            logger.error("Required services not available");
-            return null;
-        }
-
         if (thingTypeUID.equals(THING_TYPE_UDP_BRIDGE)) {
             logger.debug("Creating Sbus UDP bridge handler for thing {}", thing.getUID());
-            return new SbusBridgeHandler((Bridge) thing, sbusService, tp, lp);
+            return new SbusBridgeHandler((Bridge) thing);
         }
 
         if (thingTypeUID.equals(THING_TYPE_SWITCH)) {
             logger.debug("Creating Sbus switch handler for thing {}", thing.getUID());
-            return new SbusSwitchHandler(thing, tp, lp);
+            return new SbusSwitchHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_TEMPERATURE)) {
             logger.debug("Creating Sbus temperature handler for thing {}", thing.getUID());
-            return new SbusTemperatureHandler(thing, tp, lp);
+            return new SbusTemperatureHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_RGBW)) {
             logger.debug("Creating Sbus RGBW handler for thing {}", thing.getUID());
-            return new SbusRgbwHandler(thing, tp, lp);
-        } else if (thingTypeUID.equals(THING_TYPE_CONTACT)) {
-            logger.debug("Creating Sbus contact handler for thing {}", thing.getUID());
-            return new SbusContactHandler(thing, tp, lp);
+            return new SbusRgbwHandler(thing);
+        } else if (thingTypeUID.equals(THING_TYPE_CONTACT_SENSOR)) {
+            logger.debug("Creating Sbus contact sensor handler for thing {}", thing.getUID());
+            return new SbusContactHandler(thing);
+        } else if (thingTypeUID.equals(THING_TYPE_MOTION_SENSOR)) {
+            logger.debug("Creating Sbus motion sensor handler for thing {}", thing.getUID());
+            return new SbusMotionSensorHandler(thing);
+        } else if (thingTypeUID.equals(THING_TYPE_LUX_SENSOR)) {
+            logger.debug("Creating Sbus lux sensor handler for thing {}", thing.getUID());
+            return new SbusLuxSensorHandler(thing);
         }
 
         logger.debug("Unknown thing type: {}", thingTypeUID);
