@@ -134,25 +134,25 @@ public class TeslascopeVehicleHandler extends BaseThingHandler {
                 }
                 break;
             case TeslascopeBindingConstants.CHANNEL_FLASH_LIGHTS:
-                if (command instanceof OnOffType onOffCommand) {
+                if (command instanceof OnOffType) {
                     flashLights();
                     return;
                 }
                 break;
             case TeslascopeBindingConstants.CHANNEL_FRONT_TRUNK:
-                if (command instanceof OnOffType onOffCommand) {
+                if (command instanceof OnOffType) {
                     openFrunk();
                     return;
                 }
                 break;
             case TeslascopeBindingConstants.CHANNEL_HONK_HORN:
-                if (command instanceof OnOffType onOffCommand) {
+                if (command instanceof OnOffType) {
                     honkHorn();
                     return;
                 }
                 break;
             case TeslascopeBindingConstants.CHANNEL_REAR_TRUNK:
-                if (command instanceof OnOffType onOffCommand) {
+                if (command instanceof OnOffType) {
                     openTrunk();
                     return;
                 }
