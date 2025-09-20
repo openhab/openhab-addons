@@ -41,17 +41,17 @@ Purpose: To enable interworking between different KNX devices, the data represen
 
 ## KNX-Specific Development
 
-## Testing & Debugging
+### Testing & Debugging
 
-### KNX-Specific Testing
+#### KNX-Specific Testing
 - **Mock Infrastructure**: Use Calimero test utilities for unit tests
 - **Hardware Testing**: Requires KNX IP Interface and ETS software
 - **DPT Validation**: Test all supported data type conversions
 
-### Code Coverage
+#### Code Coverage
 Results available in `target/site/jacoco/index.html` after running tests (as per root AGENTS.md).
 
-### Debug Logging
+#### Debug Logging
 ```properties
 # KNX-specific debug logging, set to DEBUG or TRACE
 log:set DEBUG tuwien.auto.calimero
