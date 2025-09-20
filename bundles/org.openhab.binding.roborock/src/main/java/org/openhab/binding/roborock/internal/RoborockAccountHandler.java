@@ -209,9 +209,13 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
     }
 
     private void initAPI() {
+        RoborockAccountConfiguration localConfig = config;
+        if (localConfig == null) {
+            return;
+        }
         if (baseUri.isEmpty()) {
             try {
-                baseUri = webTargets.getUrlByEmail(config.email);
+                baseUri = webTargets.getUrlByEmail(localConfig.email);
             } catch (RoborockException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Error " + e.getMessage());
                 return;
@@ -231,10 +235,10 @@ public class RoborockAccountHandler extends BaseBridgeHandler implements MqttCal
         } else {
             logger.debug("No available token or rriot values from sessionStorage, logging in");
             try {
-                String response = webTargets.doLogin(baseUri, config.email, config.password);
+                String response = webTargets.doLogin(baseUri, localConfig.email, localConfig.password);
                 int code = 0;
                 String message = "";
-                if ((response != null) && !response.isEmpty()
+                if (response != null && !response.isEmpty()
                         && JsonParser.parseString(response).getAsJsonObject().has("code")) {
                     code = JsonParser.parseString(response).getAsJsonObject().get("code").getAsInt();
                     message = JsonParser.parseString(response).getAsJsonObject().get("msg").getAsString();

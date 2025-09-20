@@ -279,24 +279,29 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     }
 
     private void initDevice() {
-        if (token.isEmpty()) {
-            token = getTokenFromBridge();
-            if (!token.isEmpty()) {
-                if (rrHomeId.isEmpty()) {
-                    Home home = bridgeHandler.getHomeDetail();
-                    if (home != null) {
-                        rrHomeId = Integer.toString(home.data.rrHomeId);
+        RoborockAccountHandler localBridgeHandler = bridgeHandler;
+        if (localBridgeHandler != null) {
+            if (token.isEmpty()) {
+                token = getTokenFromBridge();
+                if (!token.isEmpty()) {
+                    if (rrHomeId.isEmpty()) {
+                        Home home = localBridgeHandler.getHomeDetail();
+                        if (home != null) {
+                            rrHomeId = Integer.toString(home.data.rrHomeId);
+                        }
                     }
+                } else {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
+                            "@text/offline.conf-error.no-token");
+                    return;
                 }
-            } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
-                        "@text/offline.conf-error.no-token");
-                return;
             }
-        }
 
-        scheduleNextPoll(-1);
-        updateStatus(ThingStatus.ONLINE);
+            scheduleNextPoll(-1);
+            updateStatus(ThingStatus.ONLINE);
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "@text/offline.conf-error.no-token");
+        }
     }
 
     private synchronized void teardown(boolean scheduleReconnection) {
@@ -350,42 +355,48 @@ public class RoborockVacuumHandler extends BaseThingHandler {
     }
 
     private void pollData() {
-        HomeData homeData = bridgeHandler.getHomeData();
-        if (homeData != null && homeData.result != null) {
-            homeRooms = homeData.result.rooms;
-            Devices devices[] = homeData.result.devices;
-            updateDevice(devices);
-            Devices receivedDevices[] = homeData.result.receivedDevices;
-            updateDevice(receivedDevices);
-        }
-
-        if (supportsRoutines) {
-            String routinesResponse = bridgeHandler.getRoutines(config.duid);
-            if ((routinesResponse != null) && !routinesResponse.isEmpty()
-                    && JsonParser.parseString(routinesResponse).getAsJsonObject().get("result").isJsonArray()
-                    && JsonParser.parseString(routinesResponse).getAsJsonObject().get("result").getAsJsonArray()
-                            .size() > 0
-                    && JsonParser.parseString(routinesResponse).getAsJsonObject().get("result").getAsJsonArray().get(0)
-                            .isJsonObject()) {
-                JsonArray routinesArray = JsonParser.parseString(routinesResponse).getAsJsonObject().get("result")
-                        .getAsJsonArray();
-                Map<String, Object> routines = new HashMap<>();
-                for (int i = 0; i < routinesArray.size(); ++i) {
-                    JsonObject routinesJsonObject = routinesArray.get(i).getAsJsonObject();
-                    routines.put(routinesJsonObject.get("id").getAsString(),
-                            routinesJsonObject.get("name").getAsString());
-                }
-                updateState(CHANNEL_ROUTINES, new StringType(gson.toJson(routines)));
-            } else {
-                logger.debug("Routines not supported for device {}", config.duid);
-                supportsRoutines = false;
+        RoborockAccountHandler localBridgeHandler = bridgeHandler;
+        if (localBridgeHandler != null) {
+            HomeData homeData = localBridgeHandler.getHomeData();
+            if (homeData != null && homeData.result != null) {
+                homeRooms = homeData.result.rooms;
+                Devices devices[] = homeData.result.devices;
+                updateDevice(devices);
+                Devices receivedDevices[] = homeData.result.receivedDevices;
+                updateDevice(receivedDevices);
             }
+
+            if (supportsRoutines) {
+                String routinesResponse = localBridgeHandler.getRoutines(config.duid);
+                if (routinesResponse != null && !routinesResponse.isEmpty()
+                        && JsonParser.parseString(routinesResponse).getAsJsonObject().get("result").isJsonArray()
+                        && JsonParser.parseString(routinesResponse).getAsJsonObject().get("result").getAsJsonArray()
+                                .size() > 0
+                        && JsonParser.parseString(routinesResponse).getAsJsonObject().get("result").getAsJsonArray()
+                                .get(0).isJsonObject()) {
+                    JsonArray routinesArray = JsonParser.parseString(routinesResponse).getAsJsonObject().get("result")
+                            .getAsJsonArray();
+                    Map<String, Object> routines = new HashMap<>();
+                    for (int i = 0; i < routinesArray.size(); ++i) {
+                        JsonObject routinesJsonObject = routinesArray.get(i).getAsJsonObject();
+                        routines.put(routinesJsonObject.get("id").getAsString(),
+                                routinesJsonObject.get("name").getAsString());
+                    }
+                    updateState(CHANNEL_ROUTINES, new StringType(gson.toJson(routines)));
+                } else {
+                    logger.debug("Routines not supported for device {}", config.duid);
+                    supportsRoutines = false;
+                }
+            }
+
+            lastSuccessfulPollTimestamp = System.currentTimeMillis();
+            scheduleNextPoll(-1);
+
+            updateStatus(ThingStatus.ONLINE);
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "@text/offline.conf-error.no-bridge");
+            return;
         }
-
-        lastSuccessfulPollTimestamp = System.currentTimeMillis();
-        scheduleNextPoll(-1);
-
-        updateStatus(ThingStatus.ONLINE);
     }
 
     private void sendAllMqttCommands() {
