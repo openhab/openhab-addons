@@ -198,6 +198,7 @@
     <module>org.openhab.binding.heos</module>
     <module>org.openhab.binding.herzborg</module>
     <module>org.openhab.binding.homeconnect</module>
+    <module>org.openhab.binding.homekit</module>
     <module>org.openhab.binding.homematic</module>
     <module>org.openhab.binding.homewizard</module>
     <module>org.openhab.binding.hpprinter</module>

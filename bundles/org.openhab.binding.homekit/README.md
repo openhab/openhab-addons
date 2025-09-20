@@ -1,0 +1,72 @@
+# HomeKit Binding
+
+This binding allows pairing with HomeKit accessory devices and importing their services as channel groups and their respective service- characteristics as channels.
+
+## Supported Things
+
+There are two types of Things supported:
+
+- `device`: This integrates a single HomeKit accessory, whereby its services appear as channel groups their respective service- characteristics appear as channels.
+- `bridge`: This integrates a HomeKit bridge accessory containing multiple child `device` Things.
+  So Things of type `device` either represent a stand-alone accessories or a child of a `bridge` Thing.
+
+Things of type `bridge` and stand-alone `device` Things both communicate directly with their HomeKit device over the LAN.
+Whereas child `device` Things communicate via their respective `bridge` Thing.
+
+## Discovery
+
+Both `bridge` and stand-alone `device` Things will be auto discovered via mDNS.
+And once a `bridge` Thing has been instantiated, and paired, its child `device` Things will also be auto discovered
+
+## Binding Configuration
+
+The `bridge` and stand-alone `device` Things need to be paired with their respective HomeKit accessories.
+This requires entering the HomeKit pairing code as a configuration parameter in the binding.
+Note that HomeKit accessories can only be paired with one controller, so if it is already paired with something else, you will need to remove that pairing first.
+
+## Thing Configuration
+
+_Describe what is needed to manually configure a thing, either through the UI or via a thing-file._
+_This should be mainly about its mandatory and optional configuration parameters._
+
+_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
+
+### `bridge` and stand-alone `device` Thing Configuration
+
+| Name              | Type    | Description                                       | Default | Required  | Advanced  |
+|-------------------|---------|---------------------------------------------------|---------|-----------|-----------|
+| `ipV4Address`     | text    | IP v4 address of the HomeKit accessory.           | N/A     | see below | see below |
+| `pairingCode`     | text    | Code used for pairing with the HomeKit accessory. | N/A     | see below | see below |
+| `refreshInterval` | integer | Interval at which the accessory is polled in sec. | 60      | no        | yes       |
+
+Things of type `bridge` and stand-alone `device` Things require both an `ipv4Address` and a `pairingCode`.
+The `ipv4Address` is set by the mDNS auto- discovery process.
+However the `pairingCode` must be entered manually.
+Child `device` Things do not require neither an `ipv4Address` nor a `pairingCode`.
+
+## Channels
+
+Channels will be auto- created depending on the services and respective service- characteristis of the HomeKit accessory.
+
+### Thing Configuration
+
+```java
+Example thing configuration goes here.
+```
+
+### Item Configuration
+
+```java
+Example item configuration goes here.
+```
+
+### Sitemap Configuration
+
+```perl
+Optional Sitemap configuration goes here.
+Remove this section, if not needed.
+```
+
+## Any custom content here!
+
+_Feel free to add additional sections for whatever you think should also be mentioned about your binding!_
