@@ -102,10 +102,10 @@ Ask the user to name the binding <bindingname> and use the supplied name. It nee
 
 Make sure that bindings/org.openhab.binding.<bindingname> does not exist.
 
-Do not create folder contents by your own. Run the script create_openhab_binding_skeleton at project root directory with sh or powershell to create.
+Do not create folder contents on your own. Run the script create_openhab_binding_skeleton at project root directory with sh or powershell to create.
 authorname needs to be in "" as it can contain spaces.
 githubusername is [a-z0-9]*.
-authorname may be deduced from git config.
+The authorname may be deduced from git config.
 
 Run mvn spotless:apply in the new folder. Make sure you don't run this at top directory but in the binding folder to avoid long runtime.
 
