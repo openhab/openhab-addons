@@ -4,10 +4,14 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<bridge-type id="gateway">
-		<label>Meross Gateway</label>
-		<description>Meross Gateway</description>
-
-		<config-description-ref uri="thing-type:meross:gateway"/>
-	</bridge-type>
+	<channel-type id="power">
+		<item-type>Switch</item-type>
+		<label>Switch</label>
+		<description>Switch the power ON and OFF</description>
+		<category>Light</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Light</tag>
+		</tags>
+	</channel-type>
 </thing:thing-descriptions>
