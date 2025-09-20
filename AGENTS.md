@@ -72,7 +72,7 @@ When upgrading Maven dependencies:
 
 ### AGENTS.md
 There might be AGENTS.md files in subfolders. Consider them when files from that binding are open in the editor:
-- bundles\org.openhab.*\AGENTS.md
+- bundles/org.openhab.*/AGENTS.md
 
 ### CODEOWNERS File
 - Located at repository root
@@ -95,7 +95,7 @@ There might be AGENTS.md files in subfolders. Consider them when files from that
 
 Important: Run all the following commands from repo root folder.
 
-Check the documentation how to create new bindings
+Check the documentation for how to create new bindings:
 https://www.openhab.org/docs/developer/#develop-a-new-binding
 
 Ask the user to name the binding <bindingname> and use the supplied name. It needs to be in CamelCase and match [A-Z][A-Za-z]*.
@@ -134,8 +134,8 @@ mvn clean install -pl org.openhab.binding.bindingname
 ```
 
 After building, the directory target inside org.openhab.binding.bindingname contains several test reports.
-- target\code_analysis\report.html for results of the static code analysis
-- target\site\jacoco\index.html contains code coverage (only if available for a specific binding)
+- target/code_analysis/report.html for results of the static code analysis
+- target/site/jacoco/index.html contains code coverage (only if available for a specific binding)
 
 ## Common Pitfalls
 
