@@ -192,4 +192,16 @@ public enum CharacteristicType {
                 word -> word.isEmpty() ? word : Character.toUpperCase(word.charAt(0)) + word.substring(1).toLowerCase())
                 .collect(Collectors.joining(" "));
     }
+
+    public String toCamelCase() {
+        String[] parts = name().split("_");
+        StringBuilder camelCase = new StringBuilder(parts[0].toLowerCase());
+        for (int i = 1; i < parts.length; i++) {
+            String part = parts[i].toLowerCase();
+            if (!part.isEmpty()) {
+                camelCase.append(Character.toUpperCase(part.charAt(0))).append(part.substring(1));
+            }
+        }
+        return camelCase.toString();
+    }
 }

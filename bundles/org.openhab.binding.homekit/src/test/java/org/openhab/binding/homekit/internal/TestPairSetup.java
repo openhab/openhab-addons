@@ -12,14 +12,23 @@
  */
 package org.openhab.binding.homekit.internal;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
+import static org.openhab.binding.homekit.internal.crypto.CryptoConstants.*;
+import static org.openhab.binding.homekit.internal.crypto.CryptoUtils.*;
 
+import java.nio.charset.StandardCharsets;
+import java.security.SecureRandom;
 import java.util.Map;
+import java.util.Objects;
 
+import org.bouncycastle.crypto.InvalidCipherTextException;
 import org.bouncycastle.crypto.params.Ed25519PrivateKeyParameters;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.homekit.internal.crypto.CryptoUtils;
+import org.openhab.binding.homekit.internal.crypto.SRPclient;
 import org.openhab.binding.homekit.internal.crypto.Tlv8Codec;
 import org.openhab.binding.homekit.internal.enums.PairingMethod;
 import org.openhab.binding.homekit.internal.enums.PairingState;
@@ -47,15 +56,49 @@ class TestPairSetup {
             E487CB59 D31AC550 471E81F0 0F6928E0 1DDA08E9 74A004F4 9E61F5D1 05284D20
             """;
 
+    private @NonNullByDefault({}) byte[] clientPublicKey;
+
+    @Test
+    void testBareCrypto() throws InvalidCipherTextException {
+        byte[] plainText0 = "the quick brown dog".getBytes(StandardCharsets.UTF_8);
+        byte[] key = new byte[32]; // 256 bits = 32 bytes
+        byte[] nonce = CryptoUtils.generateNonce(123);
+        new SecureRandom().nextBytes(key);
+        byte[] cipherText = encrypt(key, nonce, plainText0, null);
+        byte[] plainText1 = decrypt(key, nonce, cipherText, null);
+        assertArrayEquals(plainText0, plainText1);
+        byte[] cipherText2 = encrypt(key, nonce, plainText0, CHACHA20_POLY1305);
+        byte[] plainText2 = decrypt(key, nonce, cipherText2, CHACHA20_POLY1305);
+        assertArrayEquals(plainText0, plainText2);
+        assertThrows(InvalidCipherTextException.class,
+                () -> decrypt(key, nonce, cipherText2, "bad-authTag".getBytes(StandardCharsets.UTF_8)));
+    }
+
+    @Test
+    void testSrpClient() throws Exception {
+        byte[] plainText0 = "the quick brown dog".getBytes(StandardCharsets.UTF_8);
+        SRPclient client = new SRPclient("password123", hexBlockToByteArray(SALT_HEX),
+                hexBlockToByteArray(SERVER_PRIVATE_HEX));
+        byte[] key = client.getSymmetricKey();
+        byte[] cipherText = encrypt(key, PS_M5_NONCE, plainText0, null);
+        byte[] plainText1 = decrypt(key, PS_M5_NONCE, cipherText, null);
+        assertArrayEquals(plainText0, plainText1);
+        byte[] cipherText2 = encrypt(key, PS_M5_NONCE, plainText0, CHACHA20_POLY1305);
+        byte[] plainText2 = decrypt(key, PS_M5_NONCE, cipherText2, CHACHA20_POLY1305);
+        assertArrayEquals(plainText0, plainText2);
+        assertThrows(InvalidCipherTextException.class,
+                () -> decrypt(key, PS_M5_NONCE, cipherText2, "bad-authTag".getBytes(StandardCharsets.UTF_8)));
+    }
+
     @Test
     void testPairSetup() throws Exception {
         // initialize test parameters
         String baseUrl = "http://example.com";
-        String username = "alice";
         String password = "password123";
-        String clientIdentifier = "11:22:33:44:55:66";
-        String serverIdentifier = "AA:BB:CC:DD:EE:FF";
+        String clientPairingIdentifier = "11:22:33:44:55:66";
+        String serverPairingIdentifier = "66:55:44:33:22:11";
         byte[] serverSalt = hexBlockToByteArray(SALT_HEX);
+        byte[] serverPairingId = serverPairingIdentifier.getBytes(StandardCharsets.UTF_8);
 
         // initialize signing keys
         Ed25519PrivateKeyParameters clientPrivateSigningKey = new Ed25519PrivateKeyParameters(
@@ -67,9 +110,9 @@ class TestPairSetup {
         HttpTransport mockTransport = mock(HttpTransport.class);
 
         // create SRP client and server
-        SRPserver server = new SRPserver(username, password, serverSalt);
-        PairSetupClient client = new PairSetupClient(mockTransport, baseUrl, clientIdentifier, clientPrivateSigningKey, username,
-                password);
+        SRPtestServer server = new SRPtestServer(password, serverSalt, serverPairingId, serverPrivateSigningKey);
+        PairSetupClient client = new PairSetupClient(mockTransport, baseUrl, clientPairingIdentifier,
+                clientPrivateSigningKey, password);
 
         // mock the HTTP transport to simulate the SRP exchange
         doAnswer(invocation -> {
@@ -86,8 +129,8 @@ class TestPairSetup {
             // process the message based on the pairing process Mx state
             return switch (state[0]) {
                 case 1 -> getServerResponseM1(server, serverSalt);
-                case 3 -> getServerResponseM3(server, client);
-                case 5 -> getServerResponseM5(server, serverIdentifier, serverPrivateSigningKey);
+                case 3 -> getServerResponseM3(server, tlv, client);
+                case 5 -> getServerResponseM5(server);
                 default -> throw new IllegalArgumentException("Unexpected state");
             };
 
@@ -97,38 +140,33 @@ class TestPairSetup {
         client.pair();
     }
 
-    private byte[] getServerResponseM1(SRPserver server, byte[] serverSalt) {
+    private byte[] getServerResponseM1(SRPtestServer server, byte[] serverSalt) {
         Map<Integer, byte[]> tlv = Map.of( //
                 TlvType.STATE.key, new byte[] { PairingState.M2.value }, //
                 TlvType.SALT.key, serverSalt, // salt
                 TlvType.PUBLIC_KEY.key, server.getPublicKey() // server public key
         );
-
         PairSetupClient.Validator.validate(PairingMethod.SETUP, tlv);
         return Tlv8Codec.encode(tlv);
     }
 
-    private byte[] getServerResponseM3(SRPserver server, PairSetupClient client) throws Exception {
-        byte[] serverProof = server.computeServerProof(client.getPublicKey());
-
-        Map<Integer, byte[]> tlv = Map.of( //
+    private byte[] getServerResponseM3(SRPtestServer server, Map<Integer, byte[]> tlv2, PairSetupClient client)
+            throws Exception {
+        clientPublicKey = tlv2.get(TlvType.PUBLIC_KEY.key);
+        byte[] serverProof = server.createServerProof(Objects.requireNonNull(clientPublicKey));
+        Map<Integer, byte[]> tlv3 = Map.of( //
                 TlvType.STATE.key, new byte[] { PairingState.M4.value }, //
                 TlvType.PROOF.key, serverProof // server proof
         );
-
-        PairSetupClient.Validator.validate(PairingMethod.SETUP, tlv);
-        return Tlv8Codec.encode(tlv);
+        PairSetupClient.Validator.validate(PairingMethod.SETUP, tlv3);
+        return Tlv8Codec.encode(tlv3);
     }
 
-    private byte[] getServerResponseM5(SRPserver server, String serverIdentifier,
-            Ed25519PrivateKeyParameters serverPrivateSigningKey) throws Exception {
-        byte[] serverEncyptedData = server.createEncryptedData(serverIdentifier, server.getPublicKey(),
-                serverPrivateSigningKey);
-
+    private byte[] getServerResponseM5(SRPtestServer server) throws Exception {
+        byte[] cipertext = server.createEncryptedAccessoryInfo();
         Map<Integer, byte[]> tlv = Map.of( //
                 TlvType.STATE.key, new byte[] { PairingState.M6.value }, //
-                TlvType.ENCRYPTED_DATA.key, serverEncyptedData);
-
+                TlvType.ENCRYPTED_DATA.key, cipertext);
         PairSetupClient.Validator.validate(PairingMethod.SETUP, tlv);
         return Tlv8Codec.encode(tlv);
     }

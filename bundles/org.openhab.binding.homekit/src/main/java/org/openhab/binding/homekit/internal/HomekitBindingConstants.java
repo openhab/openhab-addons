@@ -14,6 +14,7 @@ package org.openhab.binding.homekit.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.thing.type.ChannelTypeUID;
 
 /**
  * Defines common constants which are used across the whole HomeKit binding.
@@ -28,6 +29,11 @@ public class HomekitBindingConstants {
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "bridge");
     public static final ThingTypeUID THING_TYPE_DEVICE = new ThingTypeUID(BINDING_ID, "device");
+
+    // specific Channel Type UIDs
+    public static final String FAKE_PROPERTY_CHANNEL = "property-fake-channel";
+    public static final ChannelTypeUID FAKE_PROPERTY_CHANNEL_TYPE_UID = new ChannelTypeUID(BINDING_ID,
+            FAKE_PROPERTY_CHANNEL);
 
     // labels
     public static final String THING_LABEL_FMT = "Model %s on %s";
@@ -48,6 +54,7 @@ public class HomekitBindingConstants {
     public static final String PROPERTY_PROTOCOL_VERSION = "protocolVersion";
     public static final String PROPERTY_DEVICE_CATEGORY = "deviceCategory";
     public static final String PROPERTY_CONTROLLER_PRIVATE_KEY = "controllerPrivateKey";
+    public static final String PROPERTY_ACCESSORY_PUBLIC_KEY = "accessoryPublicKey";
 
     // HomeKit HTTP URI endpoints and content types
     public static final String ENDPOINT_PAIRING = "pair-setup";

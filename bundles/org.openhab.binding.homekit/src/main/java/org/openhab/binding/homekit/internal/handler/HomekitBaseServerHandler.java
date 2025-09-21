@@ -28,15 +28,14 @@ import org.bouncycastle.crypto.params.Ed25519PrivateKeyParameters;
 import org.bouncycastle.crypto.params.Ed25519PublicKeyParameters;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.homekit.internal.crypto.SRPclient;
 import org.openhab.binding.homekit.internal.dto.Accessories;
 import org.openhab.binding.homekit.internal.dto.Accessory;
 import org.openhab.binding.homekit.internal.hap_services.CharacteristicReadWriteService;
+import org.openhab.binding.homekit.internal.hap_services.PairRemoveClient;
 import org.openhab.binding.homekit.internal.hap_services.PairSetupClient;
 import org.openhab.binding.homekit.internal.hap_services.PairVerifyClient;
-import org.openhab.binding.homekit.internal.hap_services.PairingRemoveService;
+import org.openhab.binding.homekit.internal.session.AsymmetricSessionKeys;
 import org.openhab.binding.homekit.internal.session.SecureSession;
-import org.openhab.binding.homekit.internal.session.SessionKeys;
 import org.openhab.binding.homekit.internal.transport.HttpTransport;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
@@ -77,9 +76,10 @@ public abstract class HomekitBaseServerHandler extends BaseThingHandler {
     protected @NonNullByDefault({}) String baseUrl;
     protected @NonNullByDefault({}) String pairingCode;
     protected @NonNullByDefault({}) Integer accessoryId;
-    protected @NonNullByDefault({}) SessionKeys sessionKeys;
+    protected @NonNullByDefault({}) AsymmetricSessionKeys sessionKeys;
 
-    protected @Nullable Ed25519PrivateKeyParameters controllerPrivateKey = null;
+    protected @Nullable Ed25519PrivateKeyParameters controllerLongTermPrivateKey = null;
+    protected @Nullable Ed25519PublicKeyParameters accessoryLongTermPublicKey = null;
 
     public HomekitBaseServerHandler(Thing thing, HttpClientFactory httpClientFactory) {
         super(thing);
@@ -149,9 +149,10 @@ public abstract class HomekitBaseServerHandler extends BaseThingHandler {
             scheduler.submit(() -> {
                 // unpair and clear stored keys if this is NOT a child accessory
                 try {
-                    new PairingRemoveService(httpTransport, baseUrl, sessionKeys, thing.getUID().toString()).remove();
-                    this.controllerPrivateKey = null;
-                    storeControllerPrivateSigningKey();
+                    PairRemoveClient service = new PairRemoveClient(httpTransport, baseUrl, thing.getUID().toString());
+                    service.remove();
+                    this.accessoryLongTermPublicKey = null;
+                    storeLongTermKeys();
                     updateStatus(ThingStatus.REMOVED);
                 } catch (Exception e) {
                     logger.warn("Failed to remove pairing for accessory {}", accessoryId);
@@ -193,15 +194,15 @@ public abstract class HomekitBaseServerHandler extends BaseThingHandler {
             return;
         }
 
-        restoreControllerPrivateSigningKey();
-        Ed25519PrivateKeyParameters controllerPrivateSigningKey = this.controllerPrivateKey;
-        Ed25519PublicKeyParameters TODO_serverPublicSigningKey = controllerPrivateSigningKey.generatePublicKey(); // TODO
+        restoreLongTermKeys();
 
-        if (controllerPrivateSigningKey != null) {
+        Ed25519PrivateKeyParameters controllerLongTermPrivateKey = this.controllerLongTermPrivateKey;
+        Ed25519PublicKeyParameters accessoryLongTermPublicKey = this.accessoryLongTermPublicKey;
+        if (controllerLongTermPrivateKey != null && accessoryLongTermPublicKey != null) {
             // Perform Pair-Verify with existing key
             try {
                 PairVerifyClient client = new PairVerifyClient(httpTransport, baseUrl, accessoryId.toString(),
-                        controllerPrivateSigningKey, TODO_serverPublicSigningKey);
+                        controllerLongTermPrivateKey, accessoryLongTermPublicKey);
 
                 this.sessionKeys = client.verify();
 
@@ -214,33 +215,34 @@ public abstract class HomekitBaseServerHandler extends BaseThingHandler {
                 return;
             } catch (Exception e) {
                 logger.debug("Restored pairing was not verified for accessory {}", accessoryId);
-                this.controllerPrivateKey = null;
-                storeControllerPrivateSigningKey();
+                this.controllerLongTermPrivateKey = null;
+                storeLongTermKeys();
                 // fall through to create new pairing
             }
         }
 
         // Create new controller private key
-        controllerPrivateSigningKey = new Ed25519PrivateKeyParameters(new SecureRandom());
-        logger.debug("Created new controller private key for accessory {}", accessoryId);
+        controllerLongTermPrivateKey = new Ed25519PrivateKeyParameters(new SecureRandom());
+        logger.debug("Created new controller long term private key for accessory {}", accessoryId);
 
         try {
             // Perform Pair-Setup
             PairSetupClient pairSetupClient = new PairSetupClient(httpTransport, baseUrl, thing.getUID().toString(),
-                    controllerPrivateSigningKey, SRPclient.PAIR_SETUP, pairingCode);
+                    controllerLongTermPrivateKey, pairingCode);
 
-            this.sessionKeys = pairSetupClient.pair();
+            accessoryLongTermPublicKey = pairSetupClient.pair();
+            this.accessoryLongTermPublicKey = accessoryLongTermPublicKey;
 
             // Perform Pair-Verify immediately after Pair-Setup
             PairVerifyClient pairVerifyClient = new PairVerifyClient(httpTransport, baseUrl, accessoryId.toString(),
-                    controllerPrivateSigningKey, TODO_serverPublicSigningKey);
+                    controllerLongTermPrivateKey, accessoryLongTermPublicKey);
 
             this.sessionKeys = pairVerifyClient.verify();
-
             this.session = new SecureSession(sessionKeys);
             this.rwService = new CharacteristicReadWriteService(httpTransport, session, baseUrl);
-            this.controllerPrivateKey = controllerPrivateSigningKey;
-            storeControllerPrivateSigningKey();
+            this.controllerLongTermPrivateKey = controllerLongTermPrivateKey;
+
+            storeLongTermKeys();
 
             updateStatus(ThingStatus.ONLINE);
             logger.debug("Pairing and verification completed for accessory {}", accessoryId);
@@ -251,23 +253,30 @@ public abstract class HomekitBaseServerHandler extends BaseThingHandler {
     }
 
     /**
-     * Restores the controller's private key from the thing's properties.
-     * The private key is expected to have been stored as a Base64-encoded string.
-     */
-    private void restoreControllerPrivateSigningKey() {
-        String encoded = thing.getProperties().get(PROPERTY_CONTROLLER_PRIVATE_KEY);
-        controllerPrivateKey = encoded == null ? null
-                : new Ed25519PrivateKeyParameters(Base64.getDecoder().decode(encoded), 0);
-    }
-
-    /**
      * Stores the controller's private key in the thing's properties.
      * The private key is stored as a Base64-encoded string.
      */
-    private void storeControllerPrivateSigningKey() {
-        Ed25519PrivateKeyParameters controllerPrivateKey = this.controllerPrivateKey;
-        String property = controllerPrivateKey == null ? null
-                : Base64.getEncoder().encodeToString(controllerPrivateKey.getEncoded());
+    private void storeLongTermKeys() {
+        Ed25519PrivateKeyParameters controllerKey = this.controllerLongTermPrivateKey;
+        String property = controllerKey == null ? null : Base64.getEncoder().encodeToString(controllerKey.getEncoded());
         thing.setProperty(PROPERTY_CONTROLLER_PRIVATE_KEY, property);
+
+        Ed25519PublicKeyParameters accessoryKey = this.accessoryLongTermPublicKey;
+        property = accessoryKey == null ? null : Base64.getEncoder().encodeToString(accessoryKey.getEncoded());
+        thing.setProperty(PROPERTY_ACCESSORY_PUBLIC_KEY, property);
+    }
+
+    /**
+     * Restores the controller's private key from the thing's properties.
+     * The private key is expected to have been stored as a Base64-encoded string.
+     */
+    private void restoreLongTermKeys() {
+        String encoded = thing.getProperties().get(PROPERTY_CONTROLLER_PRIVATE_KEY);
+        controllerLongTermPrivateKey = encoded == null ? null
+                : new Ed25519PrivateKeyParameters(Base64.getDecoder().decode(encoded), 0);
+
+        encoded = thing.getProperties().get(PROPERTY_ACCESSORY_PUBLIC_KEY);
+        accessoryLongTermPublicKey = encoded == null ? null
+                : new Ed25519PublicKeyParameters(Base64.getDecoder().decode(encoded), 0);
     }
 }

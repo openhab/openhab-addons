@@ -20,11 +20,11 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-public class SessionKeys {
+public class AsymmetricSessionKeys {
     private final byte[] readKey;
     private final byte[] writeKey;
 
-    public SessionKeys(byte[] readKey, byte[] writeKey) {
+    public AsymmetricSessionKeys(byte[] readKey, byte[] writeKey) {
         this.readKey = readKey;
         this.writeKey = writeKey;
     }

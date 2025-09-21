@@ -17,12 +17,10 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.homekit.internal.crypto.CryptoUtils;
 import org.openhab.binding.homekit.internal.crypto.Tlv8Codec;
 import org.openhab.binding.homekit.internal.enums.PairingMethod;
 import org.openhab.binding.homekit.internal.enums.PairingState;
 import org.openhab.binding.homekit.internal.enums.TlvType;
-import org.openhab.binding.homekit.internal.session.SessionKeys;
 import org.openhab.binding.homekit.internal.transport.HttpTransport;
 
 /**
@@ -31,49 +29,35 @@ import org.openhab.binding.homekit.internal.transport.HttpTransport;
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-public class PairingRemoveService {
+public class PairRemoveClient {
 
     private static final String CONTENT_TYPE = "application/pairing+tlv8";
     private static final String ENDPOINT = "/pairings";
-    private static final byte[] NONCE_M5 = CryptoUtils.generateNonce("PV-Msg05");
-    private static final byte[] NONCE_M6 = CryptoUtils.generateNonce("PV-Msg06");
 
     private final HttpTransport httpTransport;
     private final String baseUrl;
-    private final SessionKeys sessionKeys;
-    private final String controllerIdentifier;
+    private final String pairingID;
 
-    public PairingRemoveService(HttpTransport httpTransport, String baseUrl, SessionKeys sessionKeys,
-            String controllerIdentifier) {
+    public PairRemoveClient(HttpTransport httpTransport, String baseUrl, String pairingID) {
         this.httpTransport = httpTransport;
         this.baseUrl = baseUrl;
-        this.sessionKeys = sessionKeys;
-        this.controllerIdentifier = controllerIdentifier;
+        this.pairingID = pairingID;
     }
 
     public void remove() throws Exception {
-        // M1 Construct TLV payload for RemovePairing
-        Map<Integer, byte[]> tlv1 = Map.of( //
+        Map<Integer, byte[]> tlv = Map.of( //
                 TlvType.STATE.key, new byte[] { PairingState.M1.value }, //
                 TlvType.METHOD.key, new byte[] { PairingMethod.REMOVE.value }, //
-                TlvType.IDENTIFIER.key, controllerIdentifier.getBytes(StandardCharsets.UTF_8));
-        Validator.validate(PairingMethod.REMOVE, tlv1);
-        byte[] encoded = Tlv8Codec.encode(tlv1);
+                TlvType.IDENTIFIER.key, pairingID.getBytes(StandardCharsets.UTF_8));
+        Validator.validate(PairingMethod.REMOVE, tlv);
 
-        // Encrypt payload using write key
-        byte[] encrypted = CryptoUtils.encrypt(sessionKeys.getWriteKey(), NONCE_M5, encoded);
-
-        // Send to /pairings endpoint
-        byte[] response = httpTransport.post(baseUrl, ENDPOINT, CONTENT_TYPE, encrypted);
-
-        // M2 Decrypt response using read key
-        byte[] decrypted = CryptoUtils.decrypt(sessionKeys.getReadKey(), NONCE_M6, response);
-        Map<Integer, byte[]> tlv2 = Tlv8Codec.decode(decrypted);
+        byte[] response = httpTransport.post(baseUrl, ENDPOINT, CONTENT_TYPE, Tlv8Codec.encode(tlv));
+        Map<Integer, byte[]> tlv2 = Tlv8Codec.decode(response);
         Validator.validate(PairingMethod.REMOVE, tlv2);
     }
 
     /**
-     * Helper that validates the TLV map for the specification required pairing state.
+     * Helper class that validates the TLV map for the specification required pairing state.
      */
     protected static class Validator {
 
@@ -92,23 +76,23 @@ public class PairingRemoveService {
                         "Pairing method '%s' action failed with unknown error".formatted(method.name()));
             }
 
-            byte[] stateBytes = tlv.get(TlvType.STATE.key);
-            if (stateBytes == null || stateBytes.length != 1) {
+            byte[] state = tlv.get(TlvType.STATE.key);
+            if (state == null || state.length != 1) {
                 throw new SecurityException("Missing or invalid 'STATE' TLV (0x06)");
             }
 
-            PairingState state = PairingState.from(stateBytes[0]);
-            Set<Integer> expectedKeys = SPECIFICATION_REQUIRED_KEYS.get(state);
+            PairingState pairingState = PairingState.from(state[0]);
+            Set<Integer> expectedKeys = SPECIFICATION_REQUIRED_KEYS.get(pairingState);
 
             if (expectedKeys == null) {
                 throw new SecurityException(
-                        "Pairing method '%s' unexpected state '%s'".formatted(method.name(), state.name()));
+                        "Pairing method '%s' unexpected state '%s'".formatted(method.name(), pairingState.name()));
             }
 
             for (Integer key : expectedKeys) {
                 if (!tlv.containsKey(key)) {
                     throw new SecurityException("Pairing method '%s' state '%s' required TLV '0x%02x' missing."
-                            .formatted(method.name(), state.name(), key));
+                            .formatted(method.name(), pairingState.name(), key));
                 }
             }
         }

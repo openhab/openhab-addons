@@ -15,31 +15,33 @@ package org.openhab.binding.homekit.internal.enums;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Enumeration of pairing methods used in HomeKit communication.
+ * Enumeration of error codes used in HomeKit communication.
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-public enum PairingMethod {
-    SETUP(0x00),
-    SETUP_AUTH(0x01),
-    VERIFY(0x02),
-    ADD(0x03),
-    REMOVE(0x04),
-    LIST(0x05);
+public enum ErrorCode {
+    RESERVED(0x00),
+    UNKNOWN(0x01),
+    AUTHENTICATION(0x02),
+    BACK_OFF(0x03),
+    MAX_PEERS(0x04),
+    MAX_TRIES(0x05),
+    UNAVAILABLE(0x06),
+    BUSY(0x07);
 
     public final byte value;
 
-    PairingMethod(int value) {
+    ErrorCode(int value) {
         this.value = (byte) value;
     }
 
-    public static PairingMethod from(byte b) {
-        for (PairingMethod state : values()) {
+    public static ErrorCode from(byte b) {
+        for (ErrorCode state : values()) {
             if (state.value == b) {
                 return state;
             }
         }
-        throw new IllegalArgumentException("Unknown pairing method: " + b);
+        throw new IllegalArgumentException("Unknown error code: " + b);
     }
 }

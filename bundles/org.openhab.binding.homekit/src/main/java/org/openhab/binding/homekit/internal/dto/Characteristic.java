@@ -257,7 +257,7 @@ public class Characteristic {
 
             case FIRMWARE_REVISION:
             case HARDWARE_REVISION:
-                itemType = null;
+                itemType = FAKE_PROPERTY_CHANNEL;
                 break;
 
             case HEATER_COOLER_STATE_CURRENT:
@@ -305,7 +305,7 @@ public class Characteristic {
 
             case IN_USE:
             case IS_CONFIGURED:
-                itemType = null;
+                itemType = FAKE_PROPERTY_CHANNEL;
                 break;
 
             case LEAK_DETECTED:
@@ -333,9 +333,12 @@ public class Characteristic {
                 break;
 
             case LOGS:
+                itemType = null;
+                break;
+
             case MANUFACTURER:
             case MODEL:
-                itemType = null;
+                itemType = FAKE_PROPERTY_CHANNEL;
                 break;
 
             case MOTION_DETECTED:
@@ -349,7 +352,7 @@ public class Characteristic {
                 break;
 
             case NAME:
-                itemType = null;
+                itemType = FAKE_PROPERTY_CHANNEL;
                 break;
 
             case NIGHT_VISION:
@@ -422,7 +425,6 @@ public class Characteristic {
 
             case SELECTED_AUDIO_STREAM_CONFIGURATION:
             case SELECTED_RTP_STREAM_CONFIGURATION:
-            case SERIAL_NUMBER:
             case SERVICE_LABEL_INDEX:
             case SERVICE_LABEL_NAMESPACE:
             case SETUP_DATA_STREAM_TRANSPORT:
@@ -430,12 +432,16 @@ public class Characteristic {
                 itemType = null;
                 break;
 
+            case SERIAL_NUMBER:
+                itemType = FAKE_PROPERTY_CHANNEL;
+                break;
+
             case SET_DURATION:
                 propertyTag = Property.DURATION;
                 break;
 
             case SIRI_INPUT_TYPE:
-                itemType = null;
+                itemType = FAKE_PROPERTY_CHANNEL;
                 break;
 
             case SLAT_STATE_CURRENT:
@@ -500,7 +506,7 @@ public class Characteristic {
                 break;
 
             case TEMPERATURE_UNITS:
-                category = "temperature";
+                itemType = FAKE_PROPERTY_CHANNEL;
                 break;
 
             case TILT_CURRENT:
@@ -511,7 +517,7 @@ public class Characteristic {
             case TYPE_SLAT:
             case VALVE_TYPE:
             case VERSION:
-                itemType = null;
+                itemType = FAKE_PROPERTY_CHANNEL;
                 break;
 
             case VERTICAL_TILT_CURRENT:
@@ -547,6 +553,14 @@ public class Characteristic {
         ChannelType channelType;
         if (isStateChannel) {
             if (itemType == null) {
+                return null;
+            }
+            if (FAKE_PROPERTY_CHANNEL.equals(itemType)) {
+                if (value != null && value.isJsonPrimitive()) {
+                    // create fake property channels for characteristics that contain only static information
+                    return new ChannelDefinitionBuilder(characteristicType.toCamelCase(),
+                            FAKE_PROPERTY_CHANNEL_TYPE_UID).withLabel(value.getAsString()).build();
+                }
                 return null;
             }
             StateChannelTypeBuilder builder = ChannelTypeBuilder.state(uid, label, itemType);

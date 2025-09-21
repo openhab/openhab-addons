@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.homekit.internal.handler;
 
-import static org.openhab.binding.homekit.internal.HomekitBindingConstants.CONFIG_POLLING_INTERVAL;
+import static org.openhab.binding.homekit.internal.HomekitBindingConstants.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +21,8 @@ import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import javax.measure.Unit;
+import javax.measure.format.UnitFormat;
+import javax.measure.spi.ServiceProvider;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.homekit.internal.dto.Accessory;
@@ -57,8 +59,6 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
 
-import tech.units.indriya.format.SimpleUnitFormat;
-
 /**
  * Handles a single HomeKit accessory.
  * It provides a polling mechanism to regularly update the state of the accessory.
@@ -68,6 +68,9 @@ import tech.units.indriya.format.SimpleUnitFormat;
  */
 @NonNullByDefault
 public class HomekitDeviceHandler extends HomekitBaseServerHandler {
+
+    private static final UnitFormat UNIT_NAME_PARSER = ServiceProvider.current().getFormatService()
+            .getUnitFormat("Name");
 
     private final Logger logger = LoggerFactory.getLogger(HomekitDeviceHandler.class);
     private final HomekitTypeProvider typeProvider;
@@ -178,25 +181,35 @@ public class HomekitDeviceHandler extends HomekitBaseServerHandler {
 
         // create the channels
         List<Channel> channels = new ArrayList<>();
+        Map<String, String> properties = thing.getProperties();
         accessory.buildAndRegisterChannelGroupDefinitions(typeProvider).forEach(groupDef -> {
             ChannelGroupType groupType = typeProvider.getChannelGroupType(groupDef.getTypeUID(), null);
             if (groupType != null) {
                 groupType.getChannelDefinitions().forEach(channelDef -> {
-                    ChannelType channelType = typeProvider.getChannelType(channelDef.getChannelTypeUID(), null);
-                    if (channelType != null) {
-                        ChannelUID channelUID = new ChannelUID(thing.getUID(), groupDef.getId(), channelDef.getId());
-                        ChannelBuilder builder = ChannelBuilder.create(channelUID).withType(channelType.getUID())
-                                .withProperties(channelDef.getProperties());
-                        Optional.ofNullable(channelDef.getLabel()).ifPresent(builder::withLabel);
-                        Optional.ofNullable(channelDef.getDescription()).ifPresent(builder::withDescription);
-                        channels.add(builder.build());
+                    if (FAKE_PROPERTY_CHANNEL_TYPE_UID.equals(channelDef.getChannelTypeUID())) {
+                        String name = channelDef.getId();
+                        String value = channelDef.getLabel();
+                        if (value != null) {
+                            properties.put(name, value);
+                        }
+                    } else {
+                        ChannelType channelType = typeProvider.getChannelType(channelDef.getChannelTypeUID(), null);
+                        if (channelType != null) {
+                            ChannelUID channelUID = new ChannelUID(thing.getUID(), groupDef.getId(),
+                                    channelDef.getId());
+                            ChannelBuilder builder = ChannelBuilder.create(channelUID).withType(channelType.getUID())
+                                    .withProperties(channelDef.getProperties());
+                            Optional.ofNullable(channelDef.getLabel()).ifPresent(builder::withLabel);
+                            Optional.ofNullable(channelDef.getDescription()).ifPresent(builder::withDescription);
+                            channels.add(builder.build());
+                        }
                     }
                 });
             }
         });
 
         // update thing with the new channels
-        ThingBuilder builder = editThing().withChannels(channels);
+        ThingBuilder builder = editThing().withProperties(properties).withChannels(channels);
         Optional.ofNullable(accessory.getSemanticEquipmentTag()).ifPresent(builder::withSemanticEquipmentTag);
         updateThing(builder.build());
     }
@@ -223,7 +236,7 @@ public class HomekitDeviceHandler extends HomekitBaseServerHandler {
 
         // convert QuantityTypes to the characteristic's unit
         if (object instanceof QuantityType<?> quantity) {
-            Unit<?> unit = properties.get("unit") instanceof String p ? SimpleUnitFormat.getInstance().parse(p) : null;
+            Unit<?> unit = properties.get("unit") instanceof String p ? UNIT_NAME_PARSER.parse(p) : null;
             if (unit != null && !unit.equals(quantity.getUnit()) && quantity.getUnit().isCompatible(unit)) {
                 QuantityType<?> temp = quantity.toUnit(unit);
                 object = temp != null ? temp : quantity;

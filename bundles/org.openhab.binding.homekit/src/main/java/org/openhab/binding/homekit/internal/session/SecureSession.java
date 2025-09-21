@@ -32,7 +32,7 @@ public class SecureSession {
     private final AtomicInteger writeCounter = new AtomicInteger(0);
     private final AtomicInteger readCounter = new AtomicInteger(0);
 
-    public SecureSession(SessionKeys keys) {
+    public SecureSession(AsymmetricSessionKeys keys) {
         this.writeKey = keys.getWriteKey();
         this.readKey = keys.getReadKey();
     }
@@ -46,7 +46,7 @@ public class SecureSession {
      */
     public byte[] encrypt(byte[] plaintext) throws Exception {
         byte[] nonce = CryptoUtils.generateNonce(writeCounter.getAndIncrement());
-        return CryptoUtils.encrypt(writeKey, nonce, plaintext);
+        return CryptoUtils.encrypt(writeKey, nonce, plaintext, null); // TODO: AAD
     }
 
     /**
@@ -58,6 +58,6 @@ public class SecureSession {
      */
     public byte[] decrypt(byte[] ciphertext) throws Exception {
         byte[] nonce = CryptoUtils.generateNonce(readCounter.getAndIncrement());
-        return CryptoUtils.decrypt(readKey, nonce, ciphertext);
+        return CryptoUtils.decrypt(readKey, nonce, ciphertext, null); // TODO: AAD
     }
 }

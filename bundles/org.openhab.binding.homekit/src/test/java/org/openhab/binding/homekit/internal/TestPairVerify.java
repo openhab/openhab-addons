@@ -14,24 +14,24 @@ package org.openhab.binding.homekit.internal;
 
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
+import static org.openhab.binding.homekit.internal.crypto.CryptoConstants.*;
+import static org.openhab.binding.homekit.internal.crypto.CryptoUtils.*;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.Objects;
 
 import org.bouncycastle.crypto.params.Ed25519PrivateKeyParameters;
 import org.bouncycastle.crypto.params.X25519PrivateKeyParameters;
 import org.bouncycastle.crypto.params.X25519PublicKeyParameters;
+import org.bouncycastle.util.Arrays;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
-import org.openhab.binding.homekit.internal.crypto.CryptoUtils;
 import org.openhab.binding.homekit.internal.crypto.Tlv8Codec;
 import org.openhab.binding.homekit.internal.enums.PairingMethod;
 import org.openhab.binding.homekit.internal.enums.PairingState;
 import org.openhab.binding.homekit.internal.enums.TlvType;
 import org.openhab.binding.homekit.internal.hap_services.PairVerifyClient;
-import org.openhab.binding.homekit.internal.hap_services.PairVerifyClient.Validator;
 import org.openhab.binding.homekit.internal.transport.HttpTransport;
 
 /**
@@ -42,11 +42,6 @@ import org.openhab.binding.homekit.internal.transport.HttpTransport;
 @NonNullByDefault
 class TestPairVerify {
 
-    private static final String PAIR_VERIFY_ENCRYPT_INFO = "Pair-Verify-Encrypt-Info";
-    private static final String PAIR_VERIFY_ENCRYPT_SALT = "Pair-Verify-Encrypt-Salt";
-    private static final byte[] VERIFY_NONCE_M2 = CryptoUtils.generateNonce("PV-Msg02");
-    private static final byte[] VERIFY_NONCE_M3 = CryptoUtils.generateNonce("PV-Msg03");
-
     public static final String CLIENT_PRIVATE_HEX = """
             60975527 035CF2AD 1989806F 0407210B C81EDC04 E2762A56 AFD529DD DA2D4393
             """;
@@ -55,27 +50,32 @@ class TestPairVerify {
             E487CB59 D31AC550 471E81F0 0F6928E0 1DDA08E9 74A004F4 9E61F5D1 05284D20
             """;
 
-    private byte[] sessionKey = new byte[0];
+    private final String baseUrl = "http://example.com";
+    private final String clientPairingIdentifier = "11:22:33:44:55:66";
+    private final byte[] clientPairingId = clientPairingIdentifier.getBytes(StandardCharsets.UTF_8);
+    private final String serverPairingIdentifier = "66:55:44:33:22:11";
+    private final byte[] serverPairingId = serverPairingIdentifier.getBytes(StandardCharsets.UTF_8);
+
+    private final Ed25519PrivateKeyParameters clientLongTermPrivateKey = new Ed25519PrivateKeyParameters(
+            hexBlockToByteArray(CLIENT_PRIVATE_HEX));
+
+    private final Ed25519PrivateKeyParameters serverLongTermPrivateKey = new Ed25519PrivateKeyParameters(
+            hexBlockToByteArray(SERVER_PRIVATE_HEX));
+
+    private @NonNullByDefault({}) X25519PrivateKeyParameters serverKey;
+    private @NonNullByDefault({}) X25519PublicKeyParameters clientKey;
+    private @NonNullByDefault({}) byte[] sessionKey;
 
     @Test
     void testPairVerify() throws Exception {
-        // initialize test parameters
-        String baseUrl = "http://example.com";
-        String clientIdentifier = "11:22:33:44:55:66";
-        String serverIdentifier = "AA:BB:CC:DD:EE:FF";
-
-        // initialize signing keys
-        Ed25519PrivateKeyParameters clientPrivateSigningKey = new Ed25519PrivateKeyParameters(
-                hexBlockToByteArray(CLIENT_PRIVATE_HEX));
-        Ed25519PrivateKeyParameters serverPrivateSigningKey = new Ed25519PrivateKeyParameters(
-                hexBlockToByteArray(SERVER_PRIVATE_HEX));
+        serverKey = generateX25519KeyPair();
 
         // create mock
         HttpTransport mockTransport = mock(HttpTransport.class);
 
         // create SRP client and server
-        PairVerifyClient client = new PairVerifyClient(mockTransport, baseUrl, clientIdentifier,
-                clientPrivateSigningKey, serverPrivateSigningKey.generatePublicKey());
+        PairVerifyClient client = new PairVerifyClient(mockTransport, baseUrl, clientPairingIdentifier,
+                clientLongTermPrivateKey, serverLongTermPrivateKey.generatePublicKey());
 
         // mock the HTTP transport to simulate the SRP exchange
         doAnswer(invocation -> {
@@ -91,7 +91,7 @@ class TestPairVerify {
 
             // process the message based on the pair verification process Mx state
             return switch (state[0]) {
-                case 1 -> getServerResponseM1(tlv, serverIdentifier, serverPrivateSigningKey);
+                case 1 -> getServerResponseM1(tlv);
                 case 3 -> getServerResponseM3(tlv);
                 default -> throw new IllegalArgumentException("Unexpected state");
             };
@@ -102,31 +102,28 @@ class TestPairVerify {
         client.verify();
     }
 
-    private byte[] getServerResponseM1(Map<Integer, byte[]> tlv, String serverIdentifier,
-            Ed25519PrivateKeyParameters serverPrivateSigningKey) throws Exception {
-        X25519PrivateKeyParameters serverKey = CryptoUtils.generateX25519KeyPair();
-
-        byte[] pairingId = serverIdentifier.getBytes(StandardCharsets.UTF_8);
+    private byte[] getServerResponseM1(Map<Integer, byte[]> tlv) throws Exception {
         byte[] clientKeyBytes = tlv.get(TlvType.PUBLIC_KEY.key);
-        byte[] payload = concat(serverKey.generatePublicKey().getEncoded(), pairingId,
-                Objects.requireNonNull(clientKeyBytes));
+        byte[] serverKeyBytes = serverKey.generatePublicKey().getEncoded();
+        byte[] payload = concat(serverKeyBytes, serverPairingId, Objects.requireNonNull(clientKeyBytes));
+        byte[] signature = signMessage(serverLongTermPrivateKey, payload);
 
-        byte[] signature = CryptoUtils.signVerifyMessage(serverPrivateSigningKey, payload);
         Map<Integer, byte[]> tlvInner = Map.of( //
-                TlvType.IDENTIFIER.key, pairingId, //
+                TlvType.IDENTIFIER.key, serverPairingId, //
                 TlvType.SIGNATURE.key, signature);
 
-        X25519PublicKeyParameters clientKey = new X25519PublicKeyParameters(clientKeyBytes);
+        clientKey = new X25519PublicKeyParameters(clientKeyBytes);
 
-        byte[] sharedSecret = CryptoUtils.computeSharedSecret(serverKey, clientKey);
-        this.sessionKey = CryptoUtils.hkdf(sharedSecret, PAIR_VERIFY_ENCRYPT_SALT, PAIR_VERIFY_ENCRYPT_INFO);
-        byte[] plaintext = Tlv8Codec.encode(tlvInner); // TODO ?? authTag see page 40
-        byte[] encrypted = CryptoUtils.encrypt(sessionKey, VERIFY_NONCE_M2, plaintext);
+        byte[] sharedSecret = generateSharedSecret(serverKey, clientKey);
+        sessionKey = generateHkdfKey(sharedSecret, PAIR_VERIFY_ENCRYPT_SALT, PAIR_VERIFY_ENCRYPT_INFO);
+
+        byte[] plaintext = Tlv8Codec.encode(tlvInner);
+        byte[] ciphertext = encrypt(sessionKey, PV_M2_NONCE, plaintext, CHACHA20_POLY1305);
 
         Map<Integer, byte[]> tlvOut = Map.of( //
                 TlvType.STATE.key, new byte[] { PairingState.M2.value }, //
                 TlvType.PUBLIC_KEY.key, serverKey.generatePublicKey().getEncoded(), //
-                TlvType.ENCRYPTED_DATA.key, encrypted);
+                TlvType.ENCRYPTED_DATA.key, ciphertext);
 
         return Tlv8Codec.encode(tlvOut);
     }
@@ -135,13 +132,27 @@ class TestPairVerify {
         if (sessionKey.length == 0) {
             throw new IllegalStateException("Session key not established");
         }
-        byte[] encrypted = tlv.get(TlvType.ENCRYPTED_DATA.key);
-        byte[] plaintext = CryptoUtils.decrypt(sessionKey, VERIFY_NONCE_M3, Objects.requireNonNull(encrypted));
+        byte[] ciphertext = tlv.get(TlvType.ENCRYPTED_DATA.key);
+        if (ciphertext == null) {
+            throw new SecurityException("Missing ciphertext in M3");
+        }
+        byte[] plaintext = decrypt(sessionKey, PV_M3_NONCE, Objects.requireNonNull(ciphertext), CHACHA20_POLY1305);
 
-        System.out.println("Decrypted M3: " + Arrays.toString(plaintext)); // TODO
+        Map<Integer, byte[]> subTlv = Tlv8Codec.decode(plaintext);
+        byte[] information = subTlv.get(TlvType.IDENTIFIER.key);
+        byte[] signature = subTlv.get(TlvType.SIGNATURE.key);
+        if (information == null || signature == null) {
+            throw new SecurityException("Client pairing ID or signature missing");
+        }
+
+        verifySignature(clientLongTermPrivateKey.generatePublicKey(), plaintext, Objects.requireNonNull(signature));
+        byte[] pairingId = Arrays.copyOfRange(information, 32, information.length - 32);
+        if (!Arrays.areEqual(clientPairingId, pairingId)) {
+            throw new SecurityException("Client pairing ID does not match");
+        }
 
         Map<Integer, byte[]> tlvOut = Map.of(TlvType.STATE.key, new byte[] { PairingState.M4.value });
-        Validator.validate(PairingMethod.VERIFY, tlvOut);
+        PairVerifyClient.Validator.validate(PairingMethod.VERIFY, tlvOut);
 
         // no further messages from server
         return Tlv8Codec.encode(tlvOut);
@@ -164,16 +175,5 @@ class TestPairVerify {
             result[i / 2] = (byte) ((high << 4) + low);
         }
         return result;
-    }
-
-    private static byte[] concat(byte[]... parts) {
-        int total = Arrays.stream(parts).mapToInt(p -> p.length).sum();
-        byte[] out = new byte[total];
-        int pos = 0;
-        for (byte[] p : parts) {
-            System.arraycopy(p, 0, out, pos, p.length);
-            pos += p.length;
-        }
-        return out;
     }
 }

@@ -40,7 +40,7 @@ import com.google.gson.JsonElement;
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-class TestChannelDataLoad {
+class TestChannelCreation {
 
     // Chapter 6.6.4 Example Accessory Attribute Database in JSON
     private static final String TEST_JSON = """
@@ -313,17 +313,17 @@ class TestChannelDataLoad {
         for (Accessory accessory : accessories.accessories) {
             assertNotNull(accessory.aid);
             assertNotNull(accessory.services);
-            assertTrue(accessory.services.size() > 0);
+            assertTrue(!accessory.services.isEmpty());
             for (var service : accessory.services) {
                 assertNotNull(service.type);
                 assertNotNull(service.iid);
                 assertNotNull(service.characteristics);
-                assertTrue(service.characteristics.size() > 0);
+                assertTrue(!service.characteristics.isEmpty());
                 for (var characteristic : service.characteristics) {
                     assertNotNull(characteristic.type);
                     assertNotNull(characteristic.iid);
                     assertNotNull(characteristic.perms);
-                    assertTrue(characteristic.perms.size() > 0);
+                    assertTrue(!characteristic.perms.isEmpty());
                     assertNotNull(characteristic.format);
                 }
             }
@@ -381,9 +381,9 @@ class TestChannelDataLoad {
         List<ChannelGroupDefinition> channelGroupDefinitions = accessory
                 .buildAndRegisterChannelGroupDefinitions(typeProvider);
 
-        // There should be one channel group definition for the Light Bulb service
+        // There should be one channel group definition for the Light Bulb service and one for the properties
         assertNotNull(channelGroupDefinitions);
-        assertEquals(1, channelGroupDefinitions.size());
+        assertEquals(2, channelGroupDefinitions.size());
 
         // Check that the channel group definition and its type UID and label are set
         for (ChannelGroupDefinition groupDef : channelGroupDefinitions) {
@@ -392,21 +392,41 @@ class TestChannelDataLoad {
             assertNotNull(groupDef.getLabel());
         }
 
-        // There should be one channel group type for the Light Bulb service
-        assertEquals(1, channelGroupTypes.size());
+        // There should be one channel group type for the Light Bulb service and one for the properties
+        assertEquals(2, channelGroupTypes.size());
+
+        // Check that the public-hap-service-accessory-information channel group type and its UID and label are set
+        ChannelGroupType channelGroupType = channelGroupTypes.stream()
+                .filter(cgt -> "public-hap-service-accessory-information".equals(cgt.getUID().getId())).findFirst()
+                .orElse(null);
+        assertNotNull(channelGroupType);
+        // There should be four fake channel definitions for the Accessory Information service
+        assertEquals(4, channelGroupType.getChannelDefinitions().size());
+
+        // Check the Name fake channel definition
+        ChannelDefinition channelDefinition = channelGroupType.getChannelDefinitions().stream()
+                .filter(cd -> "name".equals(cd.getId())).findFirst().orElse(null);
+        assertNotNull(channelDefinition);
+        assertEquals("Acme LED Light Bulb", channelDefinition.getLabel());
+
+        // Check the Serial Number fake channel definition
+        channelDefinition = channelGroupType.getChannelDefinitions().stream()
+                .filter(cd -> "serialNumber".equals(cd.getId())).findFirst().orElse(null);
+        assertNotNull(channelDefinition);
+        assertEquals("099DB48E9E28", channelDefinition.getLabel());
 
         // Check that the channel group type and its UID and label are set
-        ChannelGroupType channelGroupType = channelGroupTypes.stream()
+        channelGroupType = channelGroupTypes.stream()
                 .filter(cgt -> "public-hap-service-lightbulb".equals(cgt.getUID().getId())).findFirst().orElse(null);
         assertNotNull(channelGroupType);
         assertEquals("Channel group type: Light Bulb", channelGroupType.getLabel());
         assertEquals("public-hap-service-lightbulb", channelGroupType.getUID().getId());
 
         // There should be two channel definitions for the Light Bulb service: On and Brightness
-        assertEquals(1, channelGroupType.getChannelDefinitions().size());
+        assertEquals(2, channelGroupType.getChannelDefinitions().size());
 
         // Check the Brightness channel definition and its properties
-        ChannelDefinition channelDefinition = channelGroupType.getChannelDefinitions().stream()
+        channelDefinition = channelGroupType.getChannelDefinitions().stream()
                 .filter(cd -> "Brightness".equals(cd.getLabel())).findFirst().orElse(null);
         assertNotNull(channelDefinition);
         assertEquals("public-hap-characteristic-brightness", channelDefinition.getChannelTypeUID().getId());

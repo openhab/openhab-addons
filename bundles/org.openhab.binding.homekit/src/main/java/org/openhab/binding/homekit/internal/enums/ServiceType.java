@@ -89,7 +89,7 @@ public enum ServiceType {
     }
 
     public String getChannelTypeId() {
-        return typeName.replace("-", "_").replace(".", "-"); // convert to OH channel type format
+        return typeName.replace(".", "-"); // convert to OH channel type format
     }
 
     public String getTypeName() {
