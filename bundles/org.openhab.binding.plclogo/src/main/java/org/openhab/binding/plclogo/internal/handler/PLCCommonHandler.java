@@ -46,10 +46,8 @@ public abstract class PLCCommonHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(PLCCommonHandler.class);
 
-    private final Map<String, @Nullable State> oldValues = new HashMap<>();
-
-    private @Nullable PLCLogoClient client;
     private String family = NOT_SUPPORTED;
+    private final Map<String, @Nullable State> oldValues = new HashMap<>();
 
     /**
      * Constructor.
@@ -82,7 +80,6 @@ public abstract class PLCCommonHandler extends BaseThingHandler {
         }
 
         family = NOT_SUPPORTED;
-        client = null;
     }
 
     /**
@@ -235,7 +232,8 @@ public abstract class PLCCommonHandler extends BaseThingHandler {
      * @return Configured LOGO! client
      */
     protected @Nullable PLCLogoClient getLogoClient() {
-        return client;
+        final var handler = getBridgeHandler();
+        return (handler != null) ? handler.getLogoClient() : null;
     }
 
     protected @Nullable PLCBridgeHandler getBridgeHandler() {
@@ -267,7 +265,7 @@ public abstract class PLCCommonHandler extends BaseThingHandler {
         final var handler = getBridgeHandler();
         if (handler != null) {
             family = handler.getLogoFamily();
-            client = handler.getLogoClient();
+            final var client = handler.getLogoClient();
             if ((client == null) || NOT_SUPPORTED.equalsIgnoreCase(family)) {
                 final var message = "Can not initialize LOGO! block handler.";
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, message);

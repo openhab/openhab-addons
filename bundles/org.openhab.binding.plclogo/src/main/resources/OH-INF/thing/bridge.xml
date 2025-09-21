@@ -10,9 +10,20 @@
 		<description>Siemens LOGO! PLC</description>
 		<channels>
 			<channel id="diagnostic" typeId="diagnostic"/>
-			<channel id="rtc" typeId="rtc"/>
+			<channel id="rtc" typeId="clock">
+				<label>Real Time Clock</label>
+				<description>The value of Siemens LOGO! real time clock</description>
+			</channel>
+			<channel id="datetime" typeId="clock">
+				<label>Local Date/Time</label>
+				<description>The local date/time reported by Siemens LOGO!</description>
+			</channel>
 			<channel id="weekday" typeId="weekday"/>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<representation-property>address</representation-property>
 		<config-description-ref uri="thing-type:plclogo:bridge"/>
@@ -23,21 +34,21 @@
 		<item-type>String</item-type>
 		<label>Diagnostic</label>
 		<description>The diagnostic reported by Siemens LOGO!</description>
-		<state readOnly="true"></state>
+		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="rtc">
+	<channel-type id="clock">
 		<item-type>DateTime</item-type>
-		<label>Real Time Clock</label>
-		<description>The value of Siemens LOGO! real time clock</description>
-		<state readOnly="true"></state>
+		<label>Local Date/Time</label>
+		<description>The local date/time reported by Siemens LOGO!</description>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="weekday" advanced="true">
 		<item-type>String</item-type>
 		<label>Day of Week</label>
 		<description>The day of week reported by Siemens LOGO!</description>
-		<state readOnly="true"></state>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<!--Siemens LOGO! digital channels -->
@@ -49,6 +60,7 @@
 			<tag>OpenState</tag>
 		</tags>
 	</channel-type>
+
 	<channel-type id="switch">
 		<item-type>Switch</item-type>
 		<label>Digital Output</label>
@@ -66,6 +78,7 @@
 			<tag>Measurement</tag>
 		</tags>
 	</channel-type>
+
 	<channel-type id="datetime">
 		<item-type>DateTime</item-type>
 		<label>Analog Date/Time</label>

@@ -45,6 +45,7 @@ public class PLCLogoBindingConstants {
     public static final String VALUE_CHANNEL = "value";
     public static final String RTC_CHANNEL = "rtc";
     public static final String DIAGNOSTIC_CHANNEL = "diagnostic";
+    public static final String DATE_TIME_CHANNEL = "datetime";
     public static final String DAY_OF_WEEK_CHANNEL = "weekday";
 
     // List of all channel properties
@@ -110,8 +111,10 @@ public class PLCLogoBindingConstants {
     public static final Map<String, Layout> LOGO_CHANNELS = Map.ofEntries(
             Map.entry(DIAGNOSTIC_CHANNEL, new Layout(984, 1)), // Diagnostic starts at 984 for 1 byte
             // RTC starts at 985 for 6 bytes: year month day hour minute second
-            Map.entry(RTC_CHANNEL, new Layout(985, 6)), // "Keep the line break" comment
-            Map.entry(DAY_OF_WEEK_CHANNEL, new Layout(998, 1)) // Day of week starts at 998 for 1 byte
+            Map.entry(RTC_CHANNEL, new Layout(985, 6)),
+            // Local date/time starts at 991 for 12 bytes:
+            // year month day hour minute second unknown day-of-week unknown unknown unknown unknown
+            Map.entry(DATE_TIME_CHANNEL, new Layout(991, 12)) // "Keep the line break" comment
     );
 
     public static final Map<Integer, String> DAY_OF_WEEK = Map.ofEntries(
