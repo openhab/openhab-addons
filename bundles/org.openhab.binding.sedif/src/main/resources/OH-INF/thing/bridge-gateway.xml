@@ -15,7 +15,7 @@
 		<config-description>
 			<parameter name="username" type="text" required="true">
 				<label>Username</label>
-				<context>email</context>
+				<context>user</context>
 				<description>Your Sedif Username</description>
 			</parameter>
 			<parameter name="password" type="text" required="true">
