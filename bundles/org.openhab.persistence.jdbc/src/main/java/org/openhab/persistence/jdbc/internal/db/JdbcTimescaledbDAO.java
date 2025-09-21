@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
 public class JdbcTimescaledbDAO extends JdbcPostgresqlDAO {
     private final Logger logger = LoggerFactory.getLogger(JdbcTimescaledbDAO.class);
 
-    private final String sqlCreateHypertable = "SELECT created FROM create_hypertable('#tableName#', 'time')";
+    private final String sqlCreateHypertable = "SELECT created FROM create_hypertable('#tableName#', 'time', if_not_exists => TRUE)";
     private final String sqlGetItemTables = "SELECT hypertable_name AS table_name FROM timescaledb_information.hypertables WHERE hypertable_name != '#itemsManageTable#'";
 
     @Override
