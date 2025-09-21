@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.plclogo.internal.handler;
 
+import static org.openhab.binding.plclogo.internal.PLCLogoBindingConstants.DATE_TIME_CHANNEL;
 import static org.openhab.binding.plclogo.internal.PLCLogoBindingConstants.DAY_OF_WEEK;
 import static org.openhab.binding.plclogo.internal.PLCLogoBindingConstants.DAY_OF_WEEK_CHANNEL;
 import static org.openhab.binding.plclogo.internal.PLCLogoBindingConstants.DIAGNOSTIC_CHANNEL;
@@ -22,11 +23,10 @@ import static org.openhab.binding.plclogo.internal.PLCLogoBindingConstants.LOGO_
 import static org.openhab.binding.plclogo.internal.PLCLogoBindingConstants.MEMORY_SIZE;
 import static org.openhab.binding.plclogo.internal.PLCLogoBindingConstants.RTC_CHANNEL;
 
-import java.time.DateTimeException;
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -57,6 +57,7 @@ import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import Moka7.S7;
 import Moka7.S7Client;
 
 /**
@@ -74,13 +75,11 @@ public class PLCBridgeHandler extends BaseBridgeHandler {
     private final TimeZoneProvider timeZone;
     private final TranslationProvider translation;
 
-    @Nullable
-    private volatile PLCLogoClient client; // S7 client used for communication with Logo!
+    private volatile @Nullable PLCLogoClient client; // S7 client used for communication with Logo!
     private final Set<PLCCommonHandler> handlers = new HashSet<>();
     private volatile @NonNullByDefault({}) PLCLogoBridgeConfiguration config;
 
-    @Nullable
-    private ScheduledFuture<?> rtcJob;
+    private @Nullable ScheduledFuture<?> rtcJob;
     private final Runnable rtcReader = new Runnable() {
         private final ChannelUID channel = new ChannelUID(getThing().getUID(), RTC_CHANNEL);
 
@@ -91,8 +90,7 @@ public class PLCBridgeHandler extends BaseBridgeHandler {
     };
     private volatile ZonedDateTime rtc;
 
-    @Nullable
-    private ScheduledFuture<?> readerJob;
+    private @Nullable ScheduledFuture<?> readerJob;
     private final Runnable dataReader = new Runnable() {
         // Buffer for block data read operation
         private final byte[] buffer = new byte[2048];
@@ -167,7 +165,10 @@ public class PLCBridgeHandler extends BaseBridgeHandler {
 
         final var client = this.client;
         final var channelId = channelUID.getId();
-        final var layout = LOGO_CHANNELS.get(channelId);
+        final var layout = LOGO_CHANNELS.get(switch (channelId) {
+            case DAY_OF_WEEK_CHANNEL -> DATE_TIME_CHANNEL;
+            default -> channelId;
+        });
         if ((client != null) && (layout != null)) {
             var buffer = new byte[layout.length()];
             Arrays.fill(buffer, (byte) 0);
@@ -177,14 +178,10 @@ public class PLCBridgeHandler extends BaseBridgeHandler {
                     case RTC_CHANNEL -> {
                         rtc = ZonedDateTime.now(timeZone.getTimeZone());
                         if (!LOGO_0BA7.equalsIgnoreCase(getLogoFamily())) {
-                            try {
-                                final var year = rtc.getYear() - rtc.getYear() % 100;
-                                final var date = LocalDate.of(year + buffer[0], buffer[1], buffer[2]);
-                                final var time = LocalTime.of(buffer[3], buffer[4], buffer[5]);
-                                rtc = ZonedDateTime.of(date, time, timeZone.getTimeZone());
-                            } catch (DateTimeException exception) {
-                                logger.warn("Return local server time: {}.", exception.getMessage());
+                            for (int i = 0; i < buffer.length; i++) {
+                                buffer[i] = S7.ByteToBCD(buffer[i]);
                             }
+                            rtc = getDateTime(buffer);
                         }
                         updateState(channelUID, new DateTimeType(rtc));
                     }
@@ -206,10 +203,13 @@ public class PLCBridgeHandler extends BaseBridgeHandler {
                             updateState(channelUID, new StringType("LOGO! family is not supported"));
                         }
                     }
+                    case DATE_TIME_CHANNEL -> {
+                        updateState(channelUID, new DateTimeType(getDateTime(buffer)));
+                    }
                     case DAY_OF_WEEK_CHANNEL -> {
-                        var value = DAY_OF_WEEK.get((int) buffer[0]);
+                        var value = DAY_OF_WEEK.get(S7.BCDtoByte(buffer[7]));
                         if (value == null) {
-                            value = String.format("Unknown day of week value %d received", buffer[0]);
+                            value = String.format("Unknown day of week value %d received", S7.BCDtoByte(buffer[7]));
                         }
                         updateState(channelUID, new StringType(value));
                     }
@@ -239,6 +239,7 @@ public class PLCBridgeHandler extends BaseBridgeHandler {
         logger.debug("Initialize LOGO! bridge handler.");
 
         config = getConfigAs(PLCLogoBridgeConfiguration.class);
+        final var address = config.getAddress();
 
         var client = this.client;
         if (client == null) {
@@ -247,7 +248,7 @@ public class PLCBridgeHandler extends BaseBridgeHandler {
                 final var localTSAP = config.getLocalTSAP();
                 final var remoteTSAP = config.getRemoteTSAP();
                 if ((localTSAP != null) && (remoteTSAP != null)) {
-                    final var result = client.Connect(config.getAddress(), localTSAP, remoteTSAP);
+                    final var result = client.Connect(address, localTSAP, remoteTSAP);
                     if (result != 0) {
                         String message = String.format("Can not initialize LOGO!. %s.", S7Client.ErrorText(result));
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
@@ -260,19 +261,17 @@ public class PLCBridgeHandler extends BaseBridgeHandler {
         }
 
         if (client.isConnected()) {
-            final var host = config.getAddress();
-
             var readerJob = this.readerJob;
             if (readerJob == null) {
-                Integer interval = config.getRefreshRate();
-                logger.info("Creating new reader job for {} with interval {} ms.", host, interval);
+                final var interval = config.getRefreshRate();
+                logger.info("Creating new reader job for {} with interval {} ms.", address, interval);
                 readerJob = scheduler.scheduleWithFixedDelay(dataReader, 100, interval, TimeUnit.MILLISECONDS);
                 this.readerJob = readerJob;
             }
 
             var rtcJob = this.rtcJob;
             if (rtcJob == null) {
-                logger.info("Creating new RTC job for {} with interval 1 s.", host);
+                logger.info("Creating new RTC job for {} with interval 1 s.", address);
                 rtcJob = scheduler.scheduleAtFixedRate(rtcReader, 100, 1000, TimeUnit.MILLISECONDS);
                 this.rtcJob = rtcJob;
             }
@@ -367,5 +366,26 @@ public class PLCBridgeHandler extends BaseBridgeHandler {
     protected void updateConfiguration(Configuration configuration) {
         super.updateConfiguration(configuration);
         config = getConfigAs(PLCLogoBridgeConfiguration.class);
+    }
+
+    private ZonedDateTime getDateTime(final byte[] buffer) {
+        ZonedDateTime result = ZonedDateTime.now(timeZone.getTimeZone());
+
+        if (buffer.length >= 6) {
+            final var calendar = new GregorianCalendar();
+            final var year = result.getYear() - result.getYear() % 100;
+            calendar.set(Calendar.YEAR, year + S7.BCDtoByte(buffer[0]));
+            calendar.set(Calendar.MONTH, S7.BCDtoByte(buffer[1]) - 1);
+            calendar.set(Calendar.DATE, S7.BCDtoByte(buffer[2]));
+            calendar.set(Calendar.HOUR_OF_DAY, S7.BCDtoByte(buffer[3]));
+            calendar.set(Calendar.MINUTE, S7.BCDtoByte(buffer[4]));
+            calendar.set(Calendar.SECOND, S7.BCDtoByte(buffer[5]));
+            calendar.set(Calendar.MILLISECOND, 0);
+            result = calendar.toZonedDateTime();
+        } else {
+            logger.warn("Return local server time: {}.", "Not enough fields provided");
+        }
+
+        return result;
     }
 }
