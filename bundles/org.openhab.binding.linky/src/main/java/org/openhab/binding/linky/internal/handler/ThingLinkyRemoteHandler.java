@@ -43,6 +43,8 @@ import org.openhab.binding.linky.internal.constants.LinkyBindingConstants;
 import org.openhab.binding.linky.internal.dto.Contact;
 import org.openhab.binding.linky.internal.dto.Contract;
 import org.openhab.binding.linky.internal.dto.Identity;
+import org.openhab.binding.linky.internal.dto.IndexInfo;
+import org.openhab.binding.linky.internal.dto.IndexMode;
 import org.openhab.binding.linky.internal.dto.IntervalReading;
 import org.openhab.binding.linky.internal.dto.MetaData;
 import org.openhab.binding.linky.internal.dto.MeterReading;
@@ -535,6 +537,16 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
         return result;
     }
 
+    /**
+     * This methods create a new Channel for a consumption index
+     *
+     * @param channels
+     * @param chanTypeUid
+     * @param channelGroup
+     * @param channelName
+     * @param channelLabel
+     * @param channelDesc
+     */
     private void addChannel(List<Channel> channels, ChannelTypeUID chanTypeUid, String channelGroup, String channelName,
             String channelLabel, String channelDesc) {
         ChannelUID channelUid = new ChannelUID(this.getThing().getUID(), channelGroup, channelName);
@@ -552,11 +564,20 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
         channels.add(channel);
     }
 
+    /**
+     * This methods create dynamic channels of forms:
+     * consumptionSupplierIdx0, consumptionSupplierIdx1, ..., consumptionSupplierIdx9
+     * consumptionDistributorIdx0, consumptionDistributorIdx1, ..., consumptionDistributorIdx3
+     *
+     * @param channels
+     * @param chanTypeUid
+     * @param indexMode
+     */
+
     private void addDynamicChannelByIdx(List<Channel> channels, ChannelTypeUID chanTypeUid, IndexMode indexMode) {
-        int size = getIndexSize(indexMode);
         String channelPrefix = CHANNEL_CONSUMPTION + indexMode.toString() + "Idx";
 
-        for (int idx = 0; idx < size; idx++) {
+        for (int idx = 0; idx < indexMode.getSize(); idx++) {
             String channelName = channelPrefix + idx;
             String channelLabel = indexMode.toString() + " Consumption " + idx;
             String channelDesc = "The " + indexMode.toString() + " Consumption for index " + idx;
@@ -568,17 +589,18 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
         }
     }
 
+    /**
+     * This methods create dynamic channels labelled by tarif name :
+     * heuresPleines, heuresCreuses, bleuHeuresCreuses, bleuHeuresPleines, ...
+     *
+     * @param channels
+     * @param chanTypeUid
+     * @param indexMode
+     */
     private void addDynamicChannelByLabel(List<Channel> channels, ChannelTypeUID chanTypeUid, MeterReading values,
             IndexMode indexMode) {
         for (IntervalReading ir : values.baseValue) {
-            String[] label;
-            if (indexMode == IndexMode.Supplier) {
-                label = ir.supplierLabel;
-            } else if (indexMode == IndexMode.Distributor) {
-                label = ir.distributorLabel;
-            } else {
-                return;
-            }
+            String[] label = ir.indexInfo[indexMode.getIdx()].label;
 
             for (String st : label) {
                 if (st == null) {
@@ -595,9 +617,29 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
                 addChannel(channels, chanTypeUid, LINKY_REMOTE_YEARLY_GROUP, channelName, channelLabel, channelDesc);
             }
         }
-
     }
 
+    /**
+     * This method create new channel dynamically at runtime when we read dataset from Enedis.
+     * We do this because we want to expose Index for each tarif.
+     * For tempo tarif for exemple, you will have 6 different channel.
+     *
+     * But this is not the only available tarif, to listing all possible channel in ressource file will not do it.
+     * It's far more easy to create them looking at the available tarif in customer dataset.
+     *
+     * There will be to set of channel:
+     * - Enedis channel:
+     * Supplier0 to Supplier9 : will expose originals Enedis Supplier Index.
+     * Distributor0 to Distributor 3 : will expose original Enedis Distributor Index.
+     *
+     * - Named channel:
+     * Will enable to have a more speaking channel Name, for exemple you will have
+     * for Heures Pleines / Heures creuses tarif : channel name will be heuresPleines / heuresCreuses.
+     * for Tempo tarif : channel name will be
+     * bleuHeuresCreuses/bleuHeuresPleines/blancHeuresCreuses/blancHeuresPleines/rougeHeuresCreuses/rougeHeuresPleines
+     *
+     * @param values : the dataset from enedis.
+     */
     private void handleDynamicChannel(MeterReading values) {
         ChannelTypeUID chanTypeUid = new ChannelTypeUID(LinkyBindingConstants.BINDING_ID,
                 LinkyBindingConstants.CONSUMPTION);
@@ -609,6 +651,7 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
         addDynamicChannelByIdx(channels, chanTypeUid, IndexMode.Supplier);
         addDynamicChannelByIdx(channels, chanTypeUid, IndexMode.Distributor);
 
+        // If we have channel change, update the thing
         if (channels.size() > 0) {
             Thing thing = this.getThing();
 
@@ -621,59 +664,65 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
 
     }
 
-    private List<IntervalReading[]> splitOnTariffBound(@Nullable IntervalReading[] irs) {
+    /**
+     * This method take the full dataset, and return a List of subdataset, split on the tariff change.
+     * This can happen if on your subscription, you're ask your supplier to change tariff.
+     * For exemple, move from Heures Pleines/Heures Creuses tarif to Tempo tarif.
+     *
+     * We do this split because we want to expose tarif to dedicated named channel so it will be more easy to display
+     * them on a chart.
+     *
+     * @param irs
+     * @return a List of subdataset cut on Tarif change
+     */
+    private List<IntervalReading[]> splitOnTariffBound(@Nullable IntervalReading[] irs, IndexMode indexMode) {
         List<IntervalReading[]> result = new ArrayList<IntervalReading[]>();
         String currentTarif = "";
         int lastIdx = 0;
+
         for (int idx = 0; idx < irs.length; idx++) {
-            String tarif = String.join("#", irs[idx].supplierLabel);
+            IntervalReading ir = irs[idx];
+            if (ir != null) {
+                String tarif = String.join("#", ir.indexInfo[indexMode.getIdx()].label);
 
-            if ((!tarif.equals(currentTarif) && !currentTarif.equals("")) || (idx == irs.length - 1)) {
-                logger.debug("tarif change:" + lastIdx + "/" + (idx - 1));
-
-                IntervalReading[] subArray;
-                if (idx == irs.length - 1) {
-                    subArray = Arrays.copyOfRange(irs, lastIdx, idx + 1);
-                } else {
-                    subArray = Arrays.copyOfRange(irs, lastIdx, idx);
+                if ((!tarif.equals(currentTarif) && !currentTarif.equals("")) || (idx == irs.length - 1)) {
+                    IntervalReading[] subArray;
+                    if (idx == irs.length - 1) {
+                        subArray = Arrays.copyOfRange(irs, lastIdx, idx + 1);
+                    } else {
+                        subArray = Arrays.copyOfRange(irs, lastIdx, idx);
+                    }
+                    result.add(subArray);
+                    lastIdx = idx;
                 }
-                result.add(subArray);
-                lastIdx = idx;
-            }
 
-            currentTarif = tarif;
-            logger.debug("");
+                currentTarif = tarif;
+            }
         }
         return result;
     }
 
-    private int getIndexSize(IndexMode indexMode) {
-        if (indexMode == IndexMode.Supplier) {
-            return 10;
-        } else if (indexMode == IndexMode.Distributor) {
-            return 4;
-        }
+    /**
+     * updateEnergyIndex methods will update timeSeries for a given energy index.
+     * There will be 2 timeseries update for each given energy index:
+     * - The index based time series.
+     * - The tarif labelled base time series.
+     *
+     * @param irs
+     * @param groupName
+     * @param indexMode
+     */
+    private void updateEnergyIndex(IntervalReading[] irs, String groupName, IndexMode indexMode) {
+        List<IntervalReading[]> lirs = splitOnTariffBound(irs, indexMode);
 
-        return 0;
-    }
-
-    private void updateEnergyIndex(IntervalReading[] irs, String groupName, List<IntervalReading[]> lirs,
-            IndexMode indexMode) {
-        int size = getIndexSize(indexMode);
+        int size = indexMode.getSize();
         String channelPrefix = CHANNEL_CONSUMPTION + indexMode.toString() + "Idx";
 
         for (int idx = 0; idx < size; idx++) {
             updateTimeSeries(groupName, channelPrefix + idx, irs, idx, Units.KILOWATT_HOUR, indexMode);
 
             for (IntervalReading[] ir : lirs) {
-                String[] label;
-                if (indexMode == IndexMode.Supplier) {
-                    label = ir[0].supplierLabel;
-                } else if (indexMode == IndexMode.Distributor) {
-                    label = ir[0].distributorLabel;
-                } else {
-                    continue;
-                }
+                String[] label = ir[0].indexInfo[indexMode.getIdx()].label;
 
                 if (label == null || label[idx] == null) {
                     continue;
@@ -686,9 +735,8 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
     }
 
     private void updateEnergyIndex(IntervalReading[] irs, String groupName) {
-        List<IntervalReading[]> lirs = splitOnTariffBound(irs);
-        updateEnergyIndex(irs, groupName, lirs, IndexMode.Supplier);
-        updateEnergyIndex(irs, groupName, lirs, IndexMode.Distributor);
+        updateEnergyIndex(irs, groupName, IndexMode.Supplier);
+        updateEnergyIndex(irs, groupName, IndexMode.Distributor);
     }
 
     /**
@@ -719,12 +767,6 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
         }
     }
 
-    enum IndexMode {
-        None,
-        Supplier,
-        Distributor
-    }
-
     private synchronized <T extends Quantity<T>> void updateTimeSeries(String groupId, String channelId,
             IntervalReading[] iv, int idx, Unit<T> unit) {
         updateTimeSeries(groupId, channelId, iv, idx, unit, IndexMode.None);
@@ -753,14 +795,11 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
                     timeSeries.add(timestamp, new QuantityType<>(iv[i].value, unit));
                 } else {
                     if (i < iv.length && iv[i] != null) {
-                        if (indexMode == IndexMode.Supplier) {
-                            if (iv[i].supplierLabel[idx] != null && !Double.isNaN(iv[i].valueSupplier[idx])) {
-                                timeSeries.add(timestamp, new QuantityType<>(iv[i].valueSupplier[idx], unit));
-                            }
-                        } else if (indexMode == IndexMode.Distributor && !Double.isNaN(iv[i].valueDistributor[idx])) {
-                            if (iv[i].distributorLabel[idx] != null) {
-                                timeSeries.add(timestamp, new QuantityType<>(iv[i].valueDistributor[idx], unit));
-                            }
+                        int indexIdx = indexMode.getIdx();
+
+                        if (iv[i].indexInfo[indexIdx].label[idx] != null
+                                && !Double.isNaN(iv[i].indexInfo[indexIdx].value[idx])) {
+                            timeSeries.add(timestamp, new QuantityType<>(iv[i].indexInfo[indexIdx].value[idx], unit));
                         }
                     }
                 }
@@ -945,15 +984,103 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
         }
     }
 
-    private void initIntervalReadingTarif(IntervalReading irs) {
-        if (irs.valueDistributor == null) {
-            irs.valueDistributor = new double[4];
-        }
-        if (irs.valueSupplier == null) {
-            irs.valueSupplier = new double[10];
+    /**
+     * This method will init the IndexInfo data structure for an IntervalReading ir
+     *
+     * @param ir
+     */
+    private void initIntervalReadingTarif(IntervalReading ir) {
+        if (ir.indexInfo == null) {
+            ir.indexInfo = new IndexInfo[2];
+            ir.indexInfo[0] = new IndexInfo();
+            ir.indexInfo[1] = new IndexInfo();
+
+            ir.indexInfo[0].value = new double[10];
+            ir.indexInfo[0].label = new String[10];
+
+            ir.indexInfo[1].value = new double[4];
+            ir.indexInfo[1].label = new String[4];
         }
     }
 
+    /**
+     * This method will sum day index value to respective week, month & year index.
+     * Will be done for supplier or distributor index in regards to indexMode
+     *
+     *
+     * @param indexMode : the index mode : Supplier or Distributor
+     * @param meterReading
+     * @param ir
+     * @param idxWeek
+     * @param weeksNum
+     * @param idxMonth
+     * @param monthsNum
+     * @param idxYear
+     * @param yearsNum
+     */
+    public void sumIndex(IndexMode indexMode, MeterReading meterReading, IntervalReading ir, int idxWeek, int weeksNum,
+            int idxMonth, int monthsNum, int idxYear, int yearsNum) {
+        int indexIdx = indexMode.getIdx();
+        int size = indexMode.getSize();
+
+        if (ir.indexInfo[indexIdx].value != null) {
+            for (int idxIndex = 0; idxIndex < size; idxIndex++) {
+                double valIndex = ir.indexInfo[indexIdx].value[idxIndex];
+                String label = ir.indexInfo[indexIdx].label[idxIndex];
+
+                // Sums day to week
+                if (idxWeek < weeksNum) {
+                    meterReading.weekValue[idxWeek].indexInfo[indexIdx].value[idxIndex] += valIndex;
+                    meterReading.weekValue[idxWeek].indexInfo[indexIdx].label[idxIndex] = label;
+                }
+
+                // Sums day to month
+                if (idxMonth < monthsNum) {
+                    meterReading.monthValue[idxMonth].indexInfo[indexIdx].value[idxIndex] += valIndex;
+                    meterReading.monthValue[idxMonth].indexInfo[indexIdx].label[idxIndex] = label;
+
+                }
+
+                // Sums day to year
+                if (idxYear < yearsNum) {
+                    meterReading.yearValue[idxYear].indexInfo[indexIdx].value[idxIndex] += valIndex;
+                    meterReading.yearValue[idxYear].indexInfo[indexIdx].label[idxIndex] = label;
+                }
+            }
+        }
+    }
+
+    private void checkData(@Nullable MeterReading meterReading) throws LinkyException {
+        if (meterReading != null) {
+            if (meterReading.baseValue.length == 0) {
+                throw new LinkyException("Invalid meterReading data: no day period");
+            }
+        } else {
+            throw new LinkyException("Invalid meterReading == null");
+        }
+    }
+
+    private boolean isDataLastDayAvailable(@Nullable MeterReading meterReading) {
+        if (meterReading != null) {
+            IntervalReading[] iv = meterReading.baseValue;
+
+            logData(iv, "Last day", DateTimeFormatter.ISO_LOCAL_DATE, Target.LAST);
+            return iv != null && iv.length != 0 && iv[iv.length - 1] != null;
+        }
+
+        return false;
+    }
+
+    /**
+     * This method will do some basic checking on dataset from Enedis.
+     * And will also calculate the Weekly, Monthly and Yearly agregate.
+     *
+     * When data are coming from Enedis, we will only have data day by day.
+     * To get date for week, month, and year, we need to sum the daily data.
+     *
+     * @param meterReading
+     * @return
+     */
     public @Nullable MeterReading getMeterReadingAfterChecks(@Nullable MeterReading meterReading) {
         try {
             checkData(meterReading);
@@ -1013,6 +1140,7 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
                     int idxWeek = (idxYear * 52) + dtWeek - baseWeek;
                     int month = dt.getMonthValue();
 
+                    // Sums day to week
                     if (idxWeek < weeksNum) {
                         meterReading.weekValue[idxWeek].value += value;
 
@@ -1020,6 +1148,8 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
                             meterReading.weekValue[idxWeek].date = dt;
                         }
                     }
+
+                    // Sums day to month
                     if (idxMonth < monthsNum) {
                         meterReading.monthValue[idxMonth].value += value;
                         if (meterReading.monthValue[idxMonth].date == null) {
@@ -1027,6 +1157,7 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
                         }
                     }
 
+                    // Sums day to year
                     if (idxYear < yearsNum) {
                         meterReading.yearValue[idxYear].value += value;
                         if (meterReading.yearValue[idxYear].date == null) {
@@ -1034,74 +1165,21 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
                         }
                     }
 
-                    if (ir.valueSupplier != null) {
+                    if (ir.indexInfo != null) {
                         initIntervalReadingTarif(meterReading.weekValue[idxWeek]);
                         initIntervalReadingTarif(meterReading.monthValue[idxMonth]);
                         initIntervalReadingTarif(meterReading.yearValue[idxYear]);
 
-                        for (int idxSupplier = 0; idxSupplier < 10; idxSupplier++) {
-                            double valueSupplier = ir.valueSupplier[idxSupplier];
-
-                            if (idxWeek < weeksNum) {
-                                meterReading.weekValue[idxWeek].valueSupplier[idxSupplier] += valueSupplier;
-                                meterReading.weekValue[idxWeek].supplierLabel = ir.supplierLabel;
-                            }
-                            if (idxMonth < monthsNum) {
-                                meterReading.monthValue[idxMonth].valueSupplier[idxSupplier] += valueSupplier;
-                                meterReading.monthValue[idxMonth].supplierLabel = ir.supplierLabel;
-                            }
-
-                            if (idxYear < yearsNum) {
-                                meterReading.yearValue[idxYear].valueSupplier[idxSupplier] += valueSupplier;
-                                meterReading.yearValue[idxYear].supplierLabel = ir.supplierLabel;
-                            }
-                        }
-
-                        for (int idxDistributor = 0; idxDistributor < 4; idxDistributor++) {
-                            double valueDistributor = ir.valueDistributor[idxDistributor];
-
-                            if (idxWeek < weeksNum) {
-                                meterReading.weekValue[idxWeek].valueDistributor[idxDistributor] += valueDistributor;
-                                meterReading.weekValue[idxWeek].distributorLabel = ir.distributorLabel;
-                            }
-                            if (idxMonth < monthsNum) {
-                                meterReading.monthValue[idxMonth].valueDistributor[idxDistributor] += valueDistributor;
-                                meterReading.monthValue[idxMonth].distributorLabel = ir.distributorLabel;
-                            }
-
-                            if (idxYear < yearsNum) {
-                                meterReading.yearValue[idxYear].valueDistributor[idxDistributor] += valueDistributor;
-                                meterReading.yearValue[idxYear].distributorLabel = ir.distributorLabel;
-                            }
-                        }
-
+                        sumIndex(IndexMode.Supplier, meterReading, ir, idxWeek, weeksNum, idxMonth, monthsNum, idxYear,
+                                yearsNum);
+                        sumIndex(IndexMode.Distributor, meterReading, ir, idxWeek, weeksNum, idxMonth, monthsNum,
+                                idxYear, yearsNum);
                     }
                 }
             }
         }
 
         return meterReading;
-    }
-
-    private void checkData(@Nullable MeterReading meterReading) throws LinkyException {
-        if (meterReading != null) {
-            if (meterReading.baseValue.length == 0) {
-                throw new LinkyException("Invalid meterReading data: no day period");
-            }
-        } else {
-            throw new LinkyException("Invalid meterReading == null");
-        }
-    }
-
-    private boolean isDataLastDayAvailable(@Nullable MeterReading meterReading) {
-        if (meterReading != null) {
-            IntervalReading[] iv = meterReading.baseValue;
-
-            logData(iv, "Last day", DateTimeFormatter.ISO_LOCAL_DATE, Target.LAST);
-            return iv != null && iv.length != 0 && iv[iv.length - 1] != null;
-        }
-
-        return false;
     }
 
     private void logData(IntervalReading[] ivArray, String title, DateTimeFormatter dateTimeFormatter, Target target) {

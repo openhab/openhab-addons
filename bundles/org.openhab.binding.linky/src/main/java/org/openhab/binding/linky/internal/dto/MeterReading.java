@@ -59,6 +59,14 @@ public class MeterReading {
         return result;
     }
 
+    /**
+     * This method will get data from old ConsumptionReport.Aggregate that is the format use by the Web API.
+     * And will result and IntervalReading[] that is the format of the new Endis API
+     *
+     * @param agregat
+     * @param useIndex : tell if we are reading value from raw consumption or from index value
+     * @return IntervalReading[] : the data structure of new API
+     */
     public static IntervalReading[] fromAgregat(ConsumptionReport.Aggregate agregat, boolean useIndex) {
         int size = agregat.datas.size();
         IntervalReading[] result = null;
@@ -80,78 +88,47 @@ public class MeterReading {
             }
         } else {
             double lastVal = 0.0;
-            double[] lastValueSupplier = new double[6];
-            double[] lastValueDistributor = new double[6];
+            double[] lastValueSupplier = new double[10];
+            double[] lastValueDistributor = new double[4];
             String lastCalendrierSupplier = "";
             String lastCalendrierDistributor = "";
 
-            for (int i = 0; i < size; i++) {
-                Data dataObj = agregat.datas.get(i);
+            for (int idx = 0; idx < size; idx++) {
+                Data dataObj = agregat.datas.get(idx);
                 double value = dataObj.valeur;
                 String calendrierDistributor = "";
                 String calendrierSupplier = "";
 
                 if (dataObj.calendrier == null) {
-                    dataObj.calendrier = agregat.datas.get(i - 1).calendrier;
+                    dataObj.calendrier = agregat.datas.get(idx - 1).calendrier;
                 }
 
                 calendrierDistributor = dataObj.calendrier[0].idCalendrier;
                 calendrierSupplier = dataObj.calendrier[1].idCalendrier;
 
-                if (i > 0) {
-                    result[i - 1] = new IntervalReading();
-                    if (i == 1) {
-                        result[i - 1].value = 0.0;
-                    } else {
-                        result[i - 1].value = value - lastVal;
-                    }
+                if (idx > 0) {
+                    result[idx - 1] = new IntervalReading();
+                    result[idx - 1].value = value - lastVal;
                     // The index in on nextDay N, but index difference give consumption for day N-1
-                    result[i - 1].date = dataObj.dateDebut.minusDays(1);
-
-                    result[i - 1].valueSupplier = new double[10];
-                    result[i - 1].valueDistributor = new double[4];
-                    result[i - 1].supplierLabel = new String[10];
-                    result[i - 1].distributorLabel = new String[4];
+                    result[idx - 1].date = dataObj.dateDebut.minusDays(1);
+                    result[idx - 1].InitIndexInfo();
 
                     if (dataObj.classesTemporellesSupplier == null) {
-                        dataObj.classesTemporellesSupplier = agregat.datas.get(i - 1).classesTemporellesSupplier;
+                        dataObj.classesTemporellesSupplier = agregat.datas.get(idx - 1).classesTemporellesSupplier;
                     }
 
                     if (dataObj.classesTemporellesDistributor == null) {
-                        dataObj.classesTemporellesDistributor = agregat.datas.get(i - 1).classesTemporellesDistributor;
-                    }
-
-                    if (dataObj.classesTemporellesSupplier != null) {
-                        for (int idxSupplier = 0; idxSupplier < dataObj.classesTemporellesSupplier.length; idxSupplier++) {
-                            ClassesTemporelles ct = dataObj.classesTemporellesSupplier[idxSupplier];
-
-                            if (i == 1 || !calendrierSupplier.equals(lastCalendrierSupplier)) {
-                                result[i - 1].valueSupplier[idxSupplier] = 0.00;
-                            } else {
-                                result[i - 1].valueSupplier[idxSupplier] = (ct.valeur - lastValueSupplier[idxSupplier]);
-                            }
-                            result[i - 1].supplierLabel[idxSupplier] = ct.libelle;
-
-                            lastValueSupplier[idxSupplier] = ct.valeur;
-                        }
-                    }
-
-                    if (dataObj.classesTemporellesDistributor != null) {
-                        for (int idxDistributor = 0; idxDistributor < dataObj.classesTemporellesDistributor.length; idxDistributor++) {
-                            ClassesTemporelles ct = dataObj.classesTemporellesDistributor[idxDistributor];
-
-                            if (i == 1 || !calendrierDistributor.equals(lastCalendrierDistributor)) {
-                                result[i - 1].valueDistributor[idxDistributor] = 0.0;
-                            } else {
-                                result[i - 1].valueDistributor[idxDistributor] = (ct.valeur
-                                        - lastValueDistributor[idxDistributor]);
-                            }
-                            result[i - 1].distributorLabel[idxDistributor] = ct.libelle;
-
-                            lastValueDistributor[idxDistributor] = ct.valeur;
-                        }
+                        dataObj.classesTemporellesDistributor = agregat.datas
+                                .get(idx - 1).classesTemporellesDistributor;
                     }
                 }
+
+                InitIndexValue(IndexMode.Supplier, dataObj.classesTemporellesSupplier, result, idx, calendrierSupplier,
+                        lastCalendrierSupplier, lastValueSupplier);
+
+                InitIndexValue(IndexMode.Distributor, dataObj.classesTemporellesDistributor, result, idx,
+                        calendrierDistributor, lastCalendrierDistributor, lastValueDistributor);
+
                 lastVal = value;
                 lastCalendrierDistributor = calendrierDistributor;
                 lastCalendrierSupplier = calendrierSupplier;
@@ -160,5 +137,29 @@ public class MeterReading {
         }
 
         return result;
+    }
+
+    public static void InitIndexValue(IndexMode indexMode, ClassesTemporelles[] classTp, IntervalReading[] ir, int idx,
+            String calendrier, String lastCalendrier, double[] lastValue) {
+        if (classTp != null) {
+            for (int idxClTp = 0; idxClTp < classTp.length; idxClTp++) {
+                ClassesTemporelles ct = classTp[idxClTp];
+
+                if (idx > 0) {
+                    // We check if calendar are the same that previous iteration
+                    // If not, we are not able to reconciliate index, and so set index value to 0 !
+
+                    if (calendrier.equals(lastCalendrier)) {
+                        ir[idx - 1].indexInfo[indexMode.getIdx()].value[idxClTp] = (ct.valeur - lastValue[idxClTp]);
+                    } else {
+                        ir[idx - 1].indexInfo[indexMode.getIdx()].value[idxClTp] = 0;
+                    }
+
+                    ir[idx - 1].indexInfo[indexMode.getIdx()].label[idxClTp] = ct.libelle;
+                }
+
+                lastValue[idxClTp] = ct.valeur;
+            }
+        }
     }
 }

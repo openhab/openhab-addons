@@ -23,9 +23,17 @@ import java.time.LocalDateTime;
 
 public class IntervalReading {
     public Double value = 0.0;
-    public double[] valueSupplier;
-    public double[] valueDistributor;
-    public String[] supplierLabel;
-    public String[] distributorLabel;
+    public IndexInfo[] indexInfo;
     public LocalDateTime date;
+
+    public void InitIndexInfo() {
+        indexInfo = new IndexInfo[2];
+        indexInfo[0] = new IndexInfo();
+        indexInfo[1] = new IndexInfo();
+
+        indexInfo[0].label = new String[10];
+        indexInfo[0].value = new double[10];
+        indexInfo[1].label = new String[4];
+        indexInfo[1].value = new double[4];
+    }
 }
