@@ -656,7 +656,6 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
 
             updateThing(editThing().withChannels(channels).build());
         }
-
     }
 
     /**
@@ -726,7 +725,6 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
                 updateTimeSeries(groupName, sanetizeId(label[idx]), ir, idx, Units.KILOWATT_HOUR, indexMode);
             }
         }
-
     }
 
     private void updateEnergyIndex(IntervalReading[] irs, String groupName) {
@@ -834,7 +832,6 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
      *
      * @return the report as a list of string
      */
-
     public synchronized List<String> reportValues(LocalDate startDay, LocalDate endDay, @Nullable String separator) {
         return buildReport(startDay, endDay, separator);
     }
@@ -1230,5 +1227,4 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
     private boolean isLinked(String groupName, String channelName) {
         return isLinked(groupName + "#" + channelName);
     }
-
 }
