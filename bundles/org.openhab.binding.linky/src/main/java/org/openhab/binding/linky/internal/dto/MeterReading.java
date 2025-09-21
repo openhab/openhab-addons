@@ -111,7 +111,7 @@ public class MeterReading {
                     result[idx - 1].value = value - lastVal;
                     // The index in on nextDay N, but index difference give consumption for day N-1
                     result[idx - 1].date = dataObj.dateDebut.minusDays(1);
-                    result[idx - 1].InitIndexInfo();
+                    result[idx - 1].initIndexInfo();
 
                     if (dataObj.classesTemporellesSupplier == null) {
                         dataObj.classesTemporellesSupplier = agregat.datas.get(idx - 1).classesTemporellesSupplier;
@@ -123,23 +123,22 @@ public class MeterReading {
                     }
                 }
 
-                InitIndexValue(IndexMode.Supplier, dataObj.classesTemporellesSupplier, result, idx, calendrierSupplier,
+                initIndexValue(IndexMode.Supplier, dataObj.classesTemporellesSupplier, result, idx, calendrierSupplier,
                         lastCalendrierSupplier, lastValueSupplier);
 
-                InitIndexValue(IndexMode.Distributor, dataObj.classesTemporellesDistributor, result, idx,
+                initIndexValue(IndexMode.Distributor, dataObj.classesTemporellesDistributor, result, idx,
                         calendrierDistributor, lastCalendrierDistributor, lastValueDistributor);
 
                 lastVal = value;
                 lastCalendrierDistributor = calendrierDistributor;
                 lastCalendrierSupplier = calendrierSupplier;
             }
-
         }
 
         return result;
     }
 
-    public static void InitIndexValue(IndexMode indexMode, ClassesTemporelles[] classTp, IntervalReading[] ir, int idx,
+    public static void initIndexValue(IndexMode indexMode, ClassesTemporelles[] classTp, IntervalReading[] ir, int idx,
             String calendrier, String lastCalendrier, double[] lastValue) {
         if (classTp != null) {
             for (int idxClTp = 0; idxClTp < classTp.length; idxClTp++) {

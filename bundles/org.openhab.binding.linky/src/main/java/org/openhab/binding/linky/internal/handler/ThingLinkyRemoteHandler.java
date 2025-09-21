@@ -647,7 +647,7 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
         addDynamicChannelByIdx(channels, chanTypeUid, IndexMode.Distributor);
 
         // If we have channel change, update the thing
-        if (channels.size() > 0) {
+        if (!channels.isEmpty()) {
             Thing thing = this.getThing();
 
             for (Channel chan : thing.getChannels()) {
@@ -679,7 +679,7 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
             if (ir != null) {
                 String tarif = String.join("#", ir.indexInfo[indexMode.getIdx()].label);
 
-                if ((!tarif.equals(currentTarif) && !currentTarif.equals("")) || (idx == irs.length - 1)) {
+                if ((!tarif.equals(currentTarif) && !"".equals(currentTarif)) || (idx == irs.length - 1)) {
                     IntervalReading[] subArray;
                     if (idx == irs.length - 1) {
                         subArray = Arrays.copyOfRange(irs, lastIdx, idx + 1);
@@ -1030,7 +1030,6 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
                 if (idxMonth < monthsNum) {
                     meterReading.monthValue[idxMonth].indexInfo[indexIdx].value[idxIndex] += valIndex;
                     meterReading.monthValue[idxMonth].indexInfo[indexIdx].label[idxIndex] = label;
-
                 }
 
                 // Sums day to year

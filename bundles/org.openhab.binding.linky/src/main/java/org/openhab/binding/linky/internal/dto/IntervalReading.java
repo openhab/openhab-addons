@@ -26,7 +26,7 @@ public class IntervalReading {
     public IndexInfo[] indexInfo;
     public LocalDateTime date;
 
-    public void InitIndexInfo() {
+    public void initIndexInfo() {
         indexInfo = new IndexInfo[2];
         indexInfo[0] = new IndexInfo();
         indexInfo[1] = new IndexInfo();
