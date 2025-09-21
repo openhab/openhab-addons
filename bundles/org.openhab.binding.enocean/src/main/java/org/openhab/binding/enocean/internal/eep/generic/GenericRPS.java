@@ -23,7 +23,6 @@ import org.openhab.binding.enocean.internal.messages.ERP1Message;
 public class GenericRPS extends GenericEEP {
 
     public GenericRPS() {
-        super();
     }
 
     public GenericRPS(ERP1Message packet) {

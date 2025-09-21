@@ -113,8 +113,8 @@ public class ApplicationBasicCluster extends BaseCluster {
         ACTIVE_HIDDEN(2, "Active Hidden"),
         ACTIVE_VISIBLE_NOT_FOCUS(3, "Active Visible Not Focus");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private ApplicationStatusEnum(Integer value, String label) {
             this.value = value;

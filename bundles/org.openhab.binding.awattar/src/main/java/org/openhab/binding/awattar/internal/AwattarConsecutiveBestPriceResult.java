@@ -35,7 +35,6 @@ public class AwattarConsecutiveBestPriceResult extends AwattarBestPriceResult {
     private final ZoneId zoneId;
 
     public AwattarConsecutiveBestPriceResult(List<AwattarPrice> prices, int length, ZoneId zoneId) {
-        super();
         this.zoneId = zoneId;
 
         // sort the prices by timerange

@@ -30,7 +30,6 @@ public abstract class _RPSMessage extends EEP {
     public static final byte NU_FLAG = 0x10;
 
     public _RPSMessage() {
-        super();
     }
 
     public _RPSMessage(ERP1Message packet) {

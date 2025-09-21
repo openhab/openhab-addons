@@ -337,6 +337,7 @@
 /bundles/org.openhab.binding.ring/ @psmedley
 /bundles/org.openhab.binding.rme/ @kgoderis
 /bundles/org.openhab.binding.robonect/ @reyem
+/bundles/org.openhab.binding.roborock/ @psmedley
 /bundles/org.openhab.binding.roku/ @mlobstein
 /bundles/org.openhab.binding.rotel/ @lolodomo
 /bundles/org.openhab.binding.russound/ @openhab/add-ons-maintainers
@@ -401,7 +402,7 @@
 /bundles/org.openhab.binding.tesla/ @kgoderis
 /bundles/org.openhab.binding.teslapowerwall/ @psmedley
 /bundles/org.openhab.binding.teslascope/ @psmedley
-/bundles/org.openhab.binding.tibber/ @kjoglum
+/bundles/org.openhab.binding.tibber/ @kjoglum @weymann
 /bundles/org.openhab.binding.tivo/ @mlobstein
 /bundles/org.openhab.binding.touchwand/ @roieg
 /bundles/org.openhab.binding.tplinkrouter/ @olivierkeke

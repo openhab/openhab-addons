@@ -12,10 +12,13 @@
  */
 package org.openhab.binding.astro.internal.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Marker interface for all planets.
- * 
+ *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public interface Planet {
 }

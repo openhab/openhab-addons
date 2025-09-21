@@ -15,18 +15,22 @@ package org.openhab.binding.astro.internal.model;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * Holds the calculated sun data.
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class Sun extends RiseSet implements Planet {
 
     private Map<SunPhaseName, Range> ranges = new HashMap<>();
 
     private Position position = new Position();
 
-    private SunZodiac zodiac = new SunZodiac(null, null);
+    private @Nullable SunZodiac zodiac;
 
     private Season season = new Season();
 
@@ -39,6 +43,7 @@ public class Sun extends RiseSet implements Planet {
     /**
      * Returns the astro dawn range.
      */
+    @Nullable
     public Range getAstroDawn() {
         return ranges.get(SunPhaseName.ASTRO_DAWN);
     }
@@ -53,6 +58,7 @@ public class Sun extends RiseSet implements Planet {
     /**
      * Returns the nautic dawn range.
      */
+    @Nullable
     public Range getNauticDawn() {
         return ranges.get(SunPhaseName.NAUTIC_DAWN);
     }
@@ -67,6 +73,7 @@ public class Sun extends RiseSet implements Planet {
     /**
      * Returns the civil dawn range.
      */
+    @Nullable
     public Range getCivilDawn() {
         return ranges.get(SunPhaseName.CIVIL_DAWN);
     }
@@ -81,6 +88,7 @@ public class Sun extends RiseSet implements Planet {
     /**
      * Returns the civil dusk range.
      */
+    @Nullable
     public Range getCivilDusk() {
         return ranges.get(SunPhaseName.CIVIL_DUSK);
     }
@@ -95,6 +103,7 @@ public class Sun extends RiseSet implements Planet {
     /**
      * Returns the nautic dusk range.
      */
+    @Nullable
     public Range getNauticDusk() {
         return ranges.get(SunPhaseName.NAUTIC_DUSK);
     }
@@ -109,6 +118,7 @@ public class Sun extends RiseSet implements Planet {
     /**
      * Returns the astro dusk range.
      */
+    @Nullable
     public Range getAstroDusk() {
         return ranges.get(SunPhaseName.ASTRO_DUSK);
     }
@@ -123,6 +133,7 @@ public class Sun extends RiseSet implements Planet {
     /**
      * Returns the noon range, start and end is always equal.
      */
+    @Nullable
     public Range getNoon() {
         return ranges.get(SunPhaseName.NOON);
     }
@@ -137,6 +148,7 @@ public class Sun extends RiseSet implements Planet {
     /**
      * Returns the daylight range.
      */
+    @Nullable
     public Range getDaylight() {
         return ranges.get(SunPhaseName.DAYLIGHT);
     }
@@ -151,6 +163,7 @@ public class Sun extends RiseSet implements Planet {
     /**
      * Returns the morning night range.
      */
+    @Nullable
     public Range getMorningNight() {
         return ranges.get(SunPhaseName.MORNING_NIGHT);
     }
@@ -165,6 +178,7 @@ public class Sun extends RiseSet implements Planet {
     /**
      * Returns the evening night range.
      */
+    @Nullable
     public Range getEveningNight() {
         return ranges.get(SunPhaseName.EVENING_NIGHT);
     }
@@ -179,6 +193,7 @@ public class Sun extends RiseSet implements Planet {
     /**
      * Returns the night range.
      */
+    @Nullable
     public Range getNight() {
         return ranges.get(SunPhaseName.NIGHT);
     }
@@ -232,6 +247,7 @@ public class Sun extends RiseSet implements Planet {
     /**
      * Returns the zodiac.
      */
+    @Nullable
     public SunZodiac getZodiac() {
         return zodiac;
     }
@@ -239,7 +255,7 @@ public class Sun extends RiseSet implements Planet {
     /**
      * Sets the zodiac.
      */
-    public void setZodiac(SunZodiac zodiac) {
+    public void setZodiac(@Nullable SunZodiac zodiac) {
         this.zodiac = zodiac;
     }
 

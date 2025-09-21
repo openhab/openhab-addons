@@ -22,7 +22,6 @@ public class EiscpException extends Exception {
     private static final long serialVersionUID = -7970958467980752003L;
 
     public EiscpException() {
-        super();
     }
 
     public EiscpException(String message) {

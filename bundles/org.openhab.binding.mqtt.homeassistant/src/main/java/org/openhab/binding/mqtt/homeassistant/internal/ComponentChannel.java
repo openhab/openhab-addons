@@ -64,7 +64,6 @@ public class ComponentChannel {
 
     private ComponentChannel(ChannelState channelState, Channel channel, @Nullable StateDescription stateDescription,
             @Nullable CommandDescription commandDescription, ChannelStateUpdateListener channelStateUpdateListener) {
-        super();
         this.channelState = channelState;
         this.channel = channel;
         this.stateDescription = stateDescription;

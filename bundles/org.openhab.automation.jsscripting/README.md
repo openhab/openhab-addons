@@ -355,11 +355,13 @@ Calling `getItem(...)` or `...` returns an `Item` object with the following prop
   - .persistence ⇒ [`ItemPersistence`](#itempersistence)
   - .semantics ⇒ [`ItemSemantics`](https://openhab.github.io/openhab-js/items.ItemSemantics.html)
   - .type ⇒ `string`
+  - .groupType ⇒ `string|null`
   - .name ⇒ `string`
   - .label ⇒ `string`
   - .state ⇒ `string`
   - .numericState ⇒ `number|null`: State as number, if state can be represented as number, or `null` if that's not the case
   - .quantityState ⇒ [`Quantity|null`](#quantity): Item state as Quantity or `null` if state is not Quantity-compatible or without unit
+  - .boolState ⇒ `boolean|null`: Item state as boolean or `null` if not boolean-compatible or is NULL or UNDEF, see below for mapping of state to boolean
   - .rawState ⇒ `HostState`
   - .previousState ⇒ `string|null`: Previous state as string, or `null` if not available
   - .previousNumericState ⇒ `number|null`: Previous state as number, if state can be represented as number, or `null` if that's not the case or not available
@@ -401,6 +403,25 @@ item.postUpdate("OFF");
 console.log("KitchenLight state", item.state);
 ```
 
+The `boolState` property is mapped according to the following table:
+
+| Item Type          | `.boolState`                                       |
+|--------------------|----------------------------------------------------|
+| Call               | `null`                                             |
+| Color              | brightness > 0                                     |
+| Contact            | state === `OPEN`                                   |
+| DateTime           | `null`                                             |
+| Dimmer             | state > 0                                          |
+| Group              | `null`  if no group type, else use the group state |
+| Image              | `null`                                             |
+| Location           | `null`                                             |
+| Number             | state !== 0                                        |
+| Number:<Dimension> | state !== 0                                        |
+| Player             | state === `PLAY`                                   |
+| Rollershutter      | state > 0                                          |
+| String             | `null`                                             |
+| Switch             | state === `ON`                                     |
+
 See [openhab-js : Item](https://openhab.github.io/openhab-js/items.Item.html) for full API documentation.
 
 #### `itemConfig`
@@ -408,24 +429,38 @@ See [openhab-js : Item](https://openhab.github.io/openhab-js/items.Item.html) fo
 Calling `addItem(itemConfig)` or `replaceItem(itemConfig)` requires the `itemConfig` object with the following properties:
 
 - itemConfig : `object`
-  - .type ⇒ `string`
-  - .name ⇒ `string`
-  - .label ⇒ `string`
-  - .category (icon) ⇒ `string`
-  - .groups ⇒ `Array[string]`
-  - .tags ⇒ `Array[string]`
+  - .type ⇒ `string`: required, e.g. `Switch` or `Group`
+  - .name ⇒ `string`: required
+  - .label ⇒ `string`: optional
+  - .category (icon) ⇒ `string`: optional
+  - .groups ⇒ `Array[string]`: optional names of groups to be a member of
+  - .tags ⇒ `Array[string]`: optional
+  - .group ⇒ `object`: optional additional config if Item is group Item
+    - .type ⇒ `string`: optional type of the group, e.g. `Switch`
+    - .function ⇒ `string`: optional aggregation function, e.g. `AND`
+    - .parameters ⇒ `Array[string]`: parameters possibly required by aggregation function, e.g. `ON` and `OFF`
   - .channels ⇒ `string | Object { channeluid: { config } }`
-  - .metadata ⇒ `Object { namespace: value } | Object { namespace: { value: value , config: { config } } }`
-  - .giBaseType ⇒ `string`
-  - .groupFunction ⇒ `string`
+  - .metadata ⇒ `Object { namespace: 'value' } | Object { namespace: { value: '' , configuration: { ... } } }`
+
+There are a few short forms for common metadata available:
+
+- itemConfig : `object`
+    - .format ⇒ `string`: short form for `stateDescription` metadata's pattern configuration
+    - .unit ⇒ `string`: short form for the `unit` metadata
+    - .autoupdate ⇒ `boolean`: short form for the `autoupdate` metadata
 
 Note: `.type` and `.name` are required.
-Basic UI and the mobile apps need `metadata.stateDescription.config.pattern` to render the state of an Item.
+Basic UI and the mobile apps need `metadata.stateDescription.configuration.pattern` to render the state of an Item.
 
 Example:
 
 ```javascript
-// more advanced example
+items.replaceItem({
+  type: 'Switch',
+  name: 'MySwitch',
+  label: 'My Switch'
+});
+
 items.replaceItem({
   type: 'String',
   name: 'Hallway_Light',
@@ -449,16 +484,15 @@ items.replaceItem({
     }
   }
 });
-// minimal example
+
 items.replaceItem({
-  type: 'Switch',
-  name: 'MySwitch',
-  metadata: {
-    stateDescription: {
-      config: {
-        pattern: '%s'
-      }
-    }
+  type: 'Group',
+  name: 'gLights',
+  label: 'Lights',
+  group: {
+    type: 'Switch',
+    function: 'AND',
+    parameters: ['ON', 'OFF']
   }
 });
 ```

@@ -43,7 +43,6 @@ public class PTM200Message extends _RPSMessage {
     static final byte CLOSED = (byte) 0xF0;
 
     public PTM200Message() {
-        super();
     }
 
     public PTM200Message(ERP1Message packet) {

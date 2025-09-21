@@ -99,7 +99,7 @@ public class AstroActions implements ThingActions {
         if (theHandler != null) {
             if (theHandler instanceof SunHandler sunHandler) {
                 Radiation radiation = sunHandler.getRadiationAt(date != null ? date : ZonedDateTime.now());
-                return radiation.getTotal();
+                return radiation == null ? null : radiation.getTotal();
             } else {
                 logger.info("Astro Action service ThingHandler is not a SunHandler!");
             }

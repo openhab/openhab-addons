@@ -297,14 +297,9 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
 
             userId = values.identity.internId;
 
-            Bridge bridge = getBridge();
-            BridgeRemoteBaseHandler bridgeHandler = null;
-            if (bridge != null) {
-                bridgeHandler = (BridgeRemoteBaseHandler) bridge.getHandler();
-            }
-
-            if (bridgeHandler instanceof BridgeRemoteEnedisWebHandler) {
-                userId = ((BridgeRemoteEnedisWebHandler) bridgeHandler).getIdPersonne();
+            if (getBridge() instanceof Bridge bridge
+                    && bridge.getHandler() instanceof BridgeRemoteEnedisWebHandler bridgeHandler) {
+                userId = bridgeHandler.getIdPersonne();
             }
 
             addProps(props, USER_ID, userId);

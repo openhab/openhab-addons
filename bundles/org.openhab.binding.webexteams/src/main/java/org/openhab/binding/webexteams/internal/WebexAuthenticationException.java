@@ -24,7 +24,6 @@ public class WebexAuthenticationException extends WebexTeamsException {
     static final long serialVersionUID = 44L;
 
     public WebexAuthenticationException() {
-        super();
     }
 
     public WebexAuthenticationException(String msg) {

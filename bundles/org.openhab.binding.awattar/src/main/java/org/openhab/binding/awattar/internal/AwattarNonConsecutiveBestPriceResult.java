@@ -35,7 +35,6 @@ public class AwattarNonConsecutiveBestPriceResult extends AwattarBestPriceResult
 
     public AwattarNonConsecutiveBestPriceResult(List<AwattarPrice> prices, int length, boolean inverted,
             ZoneId zoneId) {
-        super();
         this.zoneId = zoneId;
         members = new ArrayList<>();
 

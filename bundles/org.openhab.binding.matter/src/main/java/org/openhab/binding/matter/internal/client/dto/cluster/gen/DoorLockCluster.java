@@ -583,8 +583,8 @@ public class DoorLockCluster extends BaseCluster {
         DOOR_AJAR(7, "Door Ajar"),
         FORCED_USER(8, "Forced User");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private AlarmCodeEnum(Integer value, String label) {
             this.value = value;
@@ -610,8 +610,8 @@ public class DoorLockCluster extends BaseCluster {
         DUAL(1, "Dual"),
         TRI(2, "Tri");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private CredentialRuleEnum(Integer value, String label) {
             this.value = value;
@@ -643,8 +643,8 @@ public class DoorLockCluster extends BaseCluster {
         ALIRO_EVICTABLE_ENDPOINT_KEY(7, "Aliro Evictable Endpoint Key"),
         ALIRO_NON_EVICTABLE_ENDPOINT_KEY(8, "Aliro Non Evictable Endpoint Key");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private CredentialTypeEnum(Integer value, String label) {
             this.value = value;
@@ -670,8 +670,8 @@ public class DoorLockCluster extends BaseCluster {
         CLEAR(1, "Clear"),
         MODIFY(2, "Modify");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private DataOperationTypeEnum(Integer value, String label) {
             this.value = value;
@@ -700,8 +700,8 @@ public class DoorLockCluster extends BaseCluster {
         DOOR_UNSPECIFIED_ERROR(4, "Door Unspecified Error"),
         DOOR_AJAR(5, "Door Ajar");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private DoorStateEnum(Integer value, String label) {
             this.value = value;
@@ -738,8 +738,8 @@ public class DoorLockCluster extends BaseCluster {
         ALIRO_EVICTABLE_ENDPOINT_KEY(12, "Aliro Evictable Endpoint Key"),
         ALIRO_NON_EVICTABLE_ENDPOINT_KEY(13, "Aliro Non Evictable Endpoint Key");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private LockDataTypeEnum(Integer value, String label) {
             this.value = value;
@@ -767,8 +767,8 @@ public class DoorLockCluster extends BaseCluster {
         FORCED_USER_EVENT(3, "Forced User Event"),
         UNLATCH(4, "Unlatch");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private LockOperationTypeEnum(Integer value, String label) {
             this.value = value;
@@ -796,8 +796,8 @@ public class DoorLockCluster extends BaseCluster {
         RESTRICTED(3, "Restricted"),
         INSUFFICIENT_BATTERY(4, "Insufficient Battery");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private OperationErrorEnum(Integer value, String label) {
             this.value = value;
@@ -832,8 +832,8 @@ public class DoorLockCluster extends BaseCluster {
         NO_REMOTE_LOCK_UNLOCK(3, "No Remote Lock Unlock"),
         PASSAGE(4, "Passage");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private OperatingModeEnum(Integer value, String label) {
             this.value = value;
@@ -867,8 +867,8 @@ public class DoorLockCluster extends BaseCluster {
         BIOMETRIC(9, "Biometric"),
         ALIRO(10, "Aliro");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private OperationSourceEnum(Integer value, String label) {
             this.value = value;
@@ -894,8 +894,8 @@ public class DoorLockCluster extends BaseCluster {
         OCCUPIED_ENABLED(1, "Occupied Enabled"),
         OCCUPIED_DISABLED(3, "Occupied Disabled");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private UserStatusEnum(Integer value, String label) {
             this.value = value;
@@ -928,8 +928,8 @@ public class DoorLockCluster extends BaseCluster {
         SCHEDULE_RESTRICTED_USER(8, "Schedule Restricted User"),
         REMOTE_ONLY_USER(9, "Remote Only User");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private UserTypeEnum(Integer value, String label) {
             this.value = value;
@@ -953,8 +953,8 @@ public class DoorLockCluster extends BaseCluster {
         UNLOCKED(2, "Unlocked"),
         UNLATCHED(3, "Unlatched");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private LockStateEnum(Integer value, String label) {
             this.value = value;
@@ -986,8 +986,8 @@ public class DoorLockCluster extends BaseCluster {
         DOOR_FURNITURE(10, "Door Furniture"),
         EUROCYLINDER(11, "Eurocylinder");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private LockTypeEnum(Integer value, String label) {
             this.value = value;
@@ -1010,8 +1010,8 @@ public class DoorLockCluster extends BaseCluster {
         NO_LED_SIGNAL_ACCESS_ALLOWED(1, "No Led Signal Access Allowed"),
         LED_SIGNAL_ALL(2, "Led Signal All");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private LEDSettingEnum(Integer value, String label) {
             this.value = value;
@@ -1035,8 +1035,8 @@ public class DoorLockCluster extends BaseCluster {
         HIGH(2, "High"),
         MEDIUM(3, "Medium");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private SoundVolumeEnum(Integer value, String label) {
             this.value = value;
@@ -1059,8 +1059,8 @@ public class DoorLockCluster extends BaseCluster {
         PROGRAMMING(1, "Programming"),
         ALARM(2, "Alarm");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private EventTypeEnum(Integer value, String label) {
             this.value = value;
@@ -1082,8 +1082,8 @@ public class DoorLockCluster extends BaseCluster {
         DUPLICATE(2, "Duplicate"),
         OCCUPIED(3, "Occupied");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private StatusCodeEnum(Integer value, String label) {
             this.value = value;

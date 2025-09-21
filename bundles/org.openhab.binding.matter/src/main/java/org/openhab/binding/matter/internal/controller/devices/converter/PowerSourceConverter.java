@@ -71,7 +71,7 @@ public class PowerSourceConverter extends GenericConverter<PowerSourceCluster> {
                         .withType(CHANNEL_POWER_CHARGELEVEL).build();
                 List<StateOption> options = new ArrayList<>();
                 for (BatChargeLevelEnum mode : BatChargeLevelEnum.values()) {
-                    options.add(new StateOption(mode.value.toString(), mode.label));
+                    options.add(new StateOption(mode.getValue().toString(), mode.getLabel()));
                 }
                 StateDescription stateDescription = StateDescriptionFragmentBuilder.create().withPattern("%d")
                         .withOptions(options).build().toStateDescription();
@@ -91,7 +91,7 @@ public class PowerSourceConverter extends GenericConverter<PowerSourceCluster> {
                 break;
             case PowerSourceCluster.ATTRIBUTE_BAT_CHARGE_LEVEL:
                 if (message.value instanceof BatChargeLevelEnum batChargeLevel) {
-                    updateState(CHANNEL_ID_POWER_CHARGELEVEL, new DecimalType(batChargeLevel.value));
+                    updateState(CHANNEL_ID_POWER_CHARGELEVEL, new DecimalType(batChargeLevel.getValue()));
                 }
                 break;
             default:
@@ -107,7 +107,8 @@ public class PowerSourceConverter extends GenericConverter<PowerSourceCluster> {
                         ? convertToPercentage(initializingCluster.batPercentRemaining)
                         : UnDefType.NULL);
         updateState(CHANNEL_ID_POWER_CHARGELEVEL,
-                initializingCluster.batChargeLevel != null ? new DecimalType(initializingCluster.batChargeLevel.value)
+                initializingCluster.batChargeLevel != null
+                        ? new DecimalType(initializingCluster.batChargeLevel.getValue())
                         : UnDefType.NULL);
     }
 

@@ -25,7 +25,6 @@ public class WebexTeamsApiException extends WebexTeamsException {
     static final long serialVersionUID = 46L;
 
     public WebexTeamsApiException() {
-        super();
     }
 
     public WebexTeamsApiException(String message) {

@@ -150,6 +150,7 @@ Please note that user-specified time of use plans cannot be used together with b
 :::
 
 The `powerinverter` Thing provides actions to control the battery charging and discharging behaviour of hybrid inverters, such as Symo Gen24 Plus, if username and password are provided in the bridge configuration.
+The inverter must have the battery time of use plan settings available in the web interface.
 
 You can retrieve the actions as follows:
 
@@ -192,8 +193,19 @@ Once the actions instance has been retrieved, you can invoke the following metho
 - `forceBatteryDischarging(QuantityType<Power> power)`: Force the battery to discharge with the specified power (removes all battery control schedules first and applies all the time).
 - `addForcedBatteryDischargingSchedule(LocalTime from, LocalTime until, QuantityType<Power> power)`: Add a schedule to force the battery to discharge with the specified power in the specified time range.
 - `addForcedBatteryDischargingSchedule(ZonedDateTime from, ZonedDateTime until, QuantityType<Power> power)`: Add a schedule to force the battery to discharge with the specified power in the specified time range.
+- `addSchedule(LocalTime from, LocalTime until, ScheduleType scheduleType, QuantityType<Power> power)`: Add a custom schedule with the specified type and power in the specified time range.
+- `addSchedule(ZonedDateTime from, ZonedDateTime until, ScheduleType scheduleType, QuantityType<Power> power)`: Add a custom schedule with the specified type and power in the specified time range.
 - `setBackupReservedBatteryCapacity(int percent)`: Set the reserved battery capacity for backup power.
 - `setBackupReservedBatteryCapacity(PercentType percent)`: Set the reserved battery capacity for backup power.
+
+The `ScheduleType` enum has the following members:
+
+- `CHARGE_MIN`
+- `CHARGE_MAX`
+- `DISCHARGE_MIN`
+- `DISCHARGE_MAX`
+
+Its full class name is `org.openhab.binding.fronius.internal.api.dto.inverter.batterycontrol.ScheduleType`.
 
 All methods return a boolean value indicating whether the action was successful.
 
