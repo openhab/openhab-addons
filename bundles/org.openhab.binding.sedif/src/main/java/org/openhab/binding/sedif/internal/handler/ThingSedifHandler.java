@@ -638,7 +638,6 @@ public class ThingSedifHandler extends BaseThingHandler {
                         ChronoUnit.MINUTES.between(now, nextDayFirstTimeUpdate) % REFRESH_INTERVAL_IN_MIN + 1,
                         REFRESH_INTERVAL_IN_MIN, TimeUnit.MINUTES);
             }
-
         } catch (SedifException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }

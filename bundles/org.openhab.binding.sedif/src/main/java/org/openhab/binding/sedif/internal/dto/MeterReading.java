@@ -17,9 +17,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
-import java.time.temporal.WeekFields;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.Nullable;
@@ -237,9 +235,6 @@ public class MeterReading extends Value {
         LocalDate realStartDate = startDate.atStartOfDay().with(TemporalAdjusters.previous(DayOfWeek.MONDAY))
                 .toLocalDate();
         LocalDate realEndDate = endDate.atStartOfDay().with(TemporalAdjusters.next(DayOfWeek.SUNDAY)).toLocalDate();
-
-        int startWeek = realStartDate.get(WeekFields.of(Locale.FRANCE).weekOfYear());
-        int endWeek = realEndDate.get(WeekFields.of(Locale.FRANCE).weekOfYear());
 
         int yearsNum = realEndDate.getYear() - realStartDate.getYear() + 1;
         int monthsNum = (realEndDate.getYear() - realStartDate.getYear()) * 12 + realEndDate.getMonthValue()
