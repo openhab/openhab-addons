@@ -1,4 +1,4 @@
-# Sedif Binding
+gatewagatewa# Sedif Binding
 
 This binding enables you to retrieve water consumption data for consumers in the Île-de-France region of France.
 
@@ -42,9 +42,17 @@ After creating the bridge, the binding will populate the inbox with meters regis
 
 ### Meter Thing Configuration
 
-To create a mter thing, you will need your contractId.
+To create a meter thing, you will need your contractId.
 You can find it on the Sedif website, under the section "Tous mes contrats".
 You will see a list where the first column labeled "Contrat" is the contractId.
+
+If you have multiple meter on the same contract, you will also need to get your(s) meterId.
+MeterId are displayed in the contract details pages. 
+Just click on the contract number in the contract list, and you will have a detailled pages with a label Compteur n°D08MAxxxxxx.
+
+Note that you are not forced to create the meter manually.
+Once you create the gateway, generally the inbox will be populated automatically with all meter that are registered on you accounts.
+
 
 
 | Name            | Type    | Description                                           | Default | Required | Advanced |
