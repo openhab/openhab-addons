@@ -15,7 +15,7 @@ The binding supports two different types of things: the `sedif-web` bridge and t
 
 ### Sedif Web Bridge Configuration
 
-To retrieve data, the Sedif device needs to be linked to a `sedif-web` bridge.
+To retrieve data, you need a `sedif-web bridge` linked to your Sedif Web account.
 
 You will need to create an account prior to configuring your bridge.  
 Go to the login page and click on the "Je crée mon espace" button:  
@@ -55,12 +55,9 @@ You will see a list where the first column labeled "Contrat" is the contractId.
 ```java
 Thing sedif:sedif:sedifmeter1 "Sedif Meter 1" (sedif:sedif-web:local)
 	[  
-		contractId="9076051",
-		meterId="D08MA010227"
+		contractId="907....", meterId="D08MA......"
 	]  
-    {
-    }
-```
+``
 
 ### Sedif Thing Channels
 
@@ -113,8 +110,7 @@ Bridge sedif:sedif-web:local "SedifWebBridge" [username="testuser@test.fr", pass
 
 Thing sedif:sedif:sedifmeter1 "Sedif Meter 1" (sedif:sedif-web:local)
 	[  
-		contractId="9076051",
-		meterId="D08MA010227"
+		contractId="907....", meterId="D08MA......"
 	]  
     {
     }

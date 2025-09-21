@@ -27,15 +27,13 @@
 
 		<config-description>
 			<parameter name="contractId" type="text" required="true">
-				<label>ContractId</label>
+				<label>Contract Id</label>
 				<description>Your Contract Id</description>
 			</parameter>
 			<parameter name="meterId" type="text" required="false">
-				<label>MeterId</label>
+				<label>Meter Id</label>
 				<description>Your Meter Id</description>
 			</parameter>
 		</config-description>
 	</thing-type>
-
-
 </thing:thing-descriptions>

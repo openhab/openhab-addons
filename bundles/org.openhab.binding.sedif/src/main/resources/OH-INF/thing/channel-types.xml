@@ -7,7 +7,6 @@
 	<channel-type id="numeric">
 		<item-type>Number</item-type>
 		<label>Numeric Type Consumption</label>
-		<category>text</category>
 		<state readOnly="true" pattern="%.0f"/>
 	</channel-type>
 
