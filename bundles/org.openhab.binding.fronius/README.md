@@ -206,6 +206,7 @@ The `ScheduleType` enum has the following members:
 - `DISCHARGE_MAX`
 
 Its full class name is `org.openhab.binding.fronius.internal.api.dto.inverter.batterycontrol.ScheduleType`.
+You can also provide the name of the enum member as string and the binding will parse the enum member from it.
 
 All methods return a boolean value indicating whether the action was successful.
 
@@ -222,8 +223,10 @@ froniusInverterActions.resetBatteryControl();
 froniusInverterActions.addHoldBatteryChargeSchedule(time.toZDT('18:00'), time.toZDT('22:00'));
 froniusInverterActions.addForcedBatteryChargingSchedule(time.toZDT('22:00'), time.toZDT('23:59'), Quantity('5 kW'));
 froniusInverterActions.addForcedBatteryChargingSchedule(time.toZDT('00:00'), time.toZDT('06:00'), Quantity('5 kW'));
-froniusInverterActions.addForcesBatteryDischargingSchedule(time.toZDT('07:00'), time.toZDT('09:00'));
+froniusInverterActions.addForcedBatteryDischargingSchedule(time.toZDT('07:00'), time.toZDT('09:00'));
 froniusInverterActions.addPreventBatteryChargingSchedule(time.toZDT('09:00'), time.toZDT('12:00'));
+
+froniusInverterActions.addSchedule(time.toZDT('10:00'), time.toZDT('11:00'), 'DISCHARGE_MAX', Quantity('500 W'));
 
 froniusInverterActions.setBackupReservedBatteryCapacity(50);
 ```

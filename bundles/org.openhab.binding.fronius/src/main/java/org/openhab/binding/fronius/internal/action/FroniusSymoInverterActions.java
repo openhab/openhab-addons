@@ -69,9 +69,19 @@ public class FroniusSymoInverterActions implements ThingActions {
         }
     }
 
+    public static boolean addSchedule(ThingActions actions, LocalTime from, LocalTime until, String scheduleType,
+            QuantityType<Power> power) {
+        return addSchedule(actions, from, until, ScheduleType.valueOf(scheduleType), power);
+    }
+
     public static boolean addSchedule(ThingActions actions, ZonedDateTime from, ZonedDateTime until,
             ScheduleType scheduleType, QuantityType<Power> power) {
         return addSchedule(actions, from.toLocalTime(), until.toLocalTime(), scheduleType, power);
+    }
+
+    public static boolean addSchedule(ThingActions actions, ZonedDateTime from, ZonedDateTime until,
+            String scheduleType, QuantityType<Power> power) {
+        return addSchedule(actions, from.toLocalTime(), until.toLocalTime(), ScheduleType.valueOf(scheduleType), power);
     }
 
     public static boolean holdBatteryCharge(ThingActions actions) {
@@ -228,11 +238,6 @@ public class FroniusSymoInverterActions implements ThingActions {
         return false;
     }
 
-    public boolean addSchedule(ZonedDateTime from, ZonedDateTime until, ScheduleType scheduleType,
-            QuantityType<Power> power) {
-        return addSchedule(from.toLocalTime(), until.toLocalTime(), scheduleType, power);
-    }
-
     @RuleAction(label = "@text/actions.add-schedule.label", description = "@text/actions.add-schedule.description")
     public @ActionOutput(type = "boolean", label = "Success") boolean addSchedule(
             @ActionInput(name = "from", label = "@text/actions.from.label", description = "@text/actions.from.description", required = true) LocalTime from,
@@ -240,6 +245,16 @@ public class FroniusSymoInverterActions implements ThingActions {
             @ActionInput(name = "scheduleType", label = "@text/actions.schedule-type.label", description = "@text/actions.schedule-type.description", required = true) String scheduleType,
             @ActionInput(name = "power", label = "@text/actions.power.label", description = "@text/actions.power.description", type = "QuantityType<Power>", required = true) QuantityType<Power> power) {
         return addSchedule(from, until, ScheduleType.valueOf(scheduleType), power);
+    }
+
+    public boolean addSchedule(ZonedDateTime from, ZonedDateTime until, ScheduleType scheduleType,
+            QuantityType<Power> power) {
+        return addSchedule(from.toLocalTime(), until.toLocalTime(), scheduleType, power);
+    }
+
+    public boolean addSchedule(ZonedDateTime from, ZonedDateTime until, String scheduleType,
+            QuantityType<Power> power) {
+        return addSchedule(from.toLocalTime(), until.toLocalTime(), ScheduleType.valueOf(scheduleType), power);
     }
 
     @RuleAction(label = "@text/actions.hold-battery-charge.label", description = "@text/actions.hold-battery-charge.description")
