@@ -77,39 +77,39 @@ Thing sedif:meter:meter1 "Sedif Meter 1" (sedif:gateway:local)
 
 - The daily group will give consumtion information with day granularity
 
-| Channel                                     | Type         | Read/Write | Description                              |
-|---------------------------------------------|--------------|------------|------------------------------------------|
-| daily-consumption#yesterday                 | consumption  | R          | The yeasterday water consumption         |
-| daily-consumption#day-2                     | consumption  | R          | The day-2 water consumption              |
-| daily-consumption#day-3                     | consumption  | R          | The day-3 water consumption              |
-| daily-consumption#consumption               | consumption  | R          | Timeseries for water consumption         |
+| Channel                                     | Item type      | Read/Write | Description                              |
+|---------------------------------------------|----------------|------------|------------------------------------------|
+| daily-consumption#yesterday                 | Number:Volume  | R          | The yeasterday water consumption         |
+| daily-consumption#day-2                     | Number:Volume  | R          | The day-2 water consumption              |
+| daily-consumption#day-3                     | Number:Volume  | R          | The day-3 water consumption              |
+| daily-consumption#consumption               | Number:Volume  | R          | Timeseries for water consumption         |
  
 - The weekly group will give consumtion information with week granularity
 
-| Channel                                     | Type         | Read/Write | Description                              |
-|---------------------------------------------|--------------|------------|------------------------------------------|
-| weekly-consumption#thisWeek                 | consumption  | R          | The current week water consumption       |
-| weekly-consumption#lastWeek                 | consumption  | R          | The last week water consumption          |
-| weekly-consumption#week-2                   | consumption  | R          | The week-2 water consumption             |
-| weekly-consumption#consumption              | consumption  | R          | Timeseries for weekly water consumption  |
+| Channel                                     | Item type      | Read/Write | Description                              |
+|---------------------------------------------|----------------|------------|------------------------------------------|
+| weekly-consumption#thisWeek                 | Number:Volume  | R          | The current week water consumption       |
+| weekly-consumption#lastWeek                 | Number:Volume  | R          | The last week water consumption          |
+| weekly-consumption#week-2                   | Number:Volume  | R          | The week-2 water consumption             |
+| weekly-consumption#consumption              | Number:Volume  | R          | Timeseries for weekly water consumption  |
 
 - The monthly group will give consumtion information with month granularity
 
-| Channel                                     | Type         | Read/Write | Description                              |
-|---------------------------------------------|--------------|------------|------------------------------------------|
-| monthly-consumption#thisMonth               | consumption  | R          | The current month water consumption      |
-| monthly-consumption#lastMonth               | consumption  | R          | The last month water consumption         |
-| monthly-consumption#month-2                 | consumption  | R          | The month-2 water consumption            |
-| monthly-consumption#consumption             | consumption  | R          | Timeseries for monthly water consumption |
+| Channel                                     | Item type      | Read/Write | Description                              |
+|---------------------------------------------|----------------|------------|------------------------------------------|
+| monthly-consumption#thisMonth               | Number:Volume  | R          | The current month water consumption      |
+| monthly-consumption#lastMonth               | Number:Volume  | R          | The last month water consumption         |
+| monthly-consumption#month-2                 | Number:Volume  | R          | The month-2 water consumption            |
+| monthly-consumption#consumption             | Number:Volume  | R          | Timeseries for monthly water consumption |
 
 - The yearly group will give consumtion information with year granularity
 
-| Channel                                     | Type         | Read/Write | Description                              |
-|---------------------------------------------|--------------|------------|------------------------------------------|
-| yearly-consumption#thisYear                 | consumption  | R          | The current year water consumption       |
-| yearly-consumption#lastYear                 | consumption  | R          | The last year water consumption          |
-| yearly-consumption#year-2                   | consumption  | R          | The year-2 water consumption             |
-| yearly-consumption#consumption              | consumption  | R          | Timeseries for yearly water consumption  |
+| Channel                                     | Item type      | Read/Write | Description                              |
+|---------------------------------------------|----------------|------------|------------------------------------------|
+| yearly-consumption#thisYear                 | Number:Volume  | R          | The current year water consumption       |
+| yearly-consumption#lastYear                 | Number:Volume  | R          | The last year water consumption          |
+| yearly-consumption#year-2                   | Number:Volume  | R          | The year-2 water consumption             |
+| yearly-consumption#consumption              | Number:Volume  | R          | Timeseries for yearly water consumption  |
 
 ### Full Example
 
@@ -124,26 +124,26 @@ Thing sedif:meter:meter1 "Meter 1" (sedif:gateway:local)
     }
 
 
-Number	ConsoDaily       "Daily Conso [%.0f %unit%]"      <energy> { channel="sedif:meter:meter1:daily-consumption#consumption"   }
-Number	ConsoYesterday   "Conso Yesterday [%.0f %unit%]"  <energy> { channel="sedif:meter:meter1:daily-consumption#yesterday"     }
-Number	ConsoDayMinus2   "Conso Day-2 [%.0f %unit%]"      <energy> { channel="sedif:meter:meter1:daily-consumption#day-2"         }
-Number	ConsoDayMinus3   "Conso Day-3 [%.0f %unit%]"      <energy> { channel="sedif:meter:meter1:daily-consumption#day-3"         }
+Number:Volume ConsoDaily       "Daily Conso [%.0f %unit%]"      <energy> { channel="sedif:meter:meter1:daily-consumption#consumption"   }
+Number:Volume ConsoYesterday   "Conso Yesterday [%.0f %unit%]"  <energy> { channel="sedif:meter:meter1:daily-consumption#yesterday"     }
+Number:Volume ConsoDayMinus2   "Conso Day-2 [%.0f %unit%]"      <energy> { channel="sedif:meter:meter1:daily-consumption#day-2"         }
+Number:Volume ConsoDayMinus3   "Conso Day-3 [%.0f %unit%]"      <energy> { channel="sedif:meter:meter1:daily-consumption#day-3"         }
 
 
-Number	ConsoWeekly      "Weekly Conso [%.0f %unit%]"     <energy> { channel="sedif:meter:meter1:weekly-consumption#consumption"  }
-Number	ConsoThisWeek    "Conso This Week [%.0f %unit%]"  <energy> { channel="sedif:meter:meter1:weekly-consumption#thisWeek"     }
-Number	ConsoLastWeek    "Conso Last Week [%.0f %unit%]"  <energy> { channel="sedif:meter:meter1:weekly-consumption#lastWeek"     }
-Number	ConsoWeekMinus2  "Conso Week - 2 [%.0f %unit%]"   <energy> { channel="sedif:meter:meter1:weekly-consumption#week-2"       }
+Number:Volume ConsoWeekly      "Weekly Conso [%.0f %unit%]"     <energy> { channel="sedif:meter:meter1:weekly-consumption#consumption"  }
+Number:Volume 	ConsoThisWeek    "Conso This Week [%.0f %unit%]"  <energy> { channel="sedif:meter:meter1:weekly-consumption#thisWeek"     }
+Number:Volume ConsoLastWeek    "Conso Last Week [%.0f %unit%]"  <energy> { channel="sedif:meter:meter1:weekly-consumption#lastWeek"     }
+Number:Volume ConsoWeekMinus2  "Conso Week - 2 [%.0f %unit%]"   <energy> { channel="sedif:meter:meter1:weekly-consumption#week-2"       }
 
-Number	ConsoMonthly     "Montlhy Conso [%.0f %unit%]"    <energy> { channel="sedif:meter:meter1:monthly-consumption#consumption" }
-Number	ConsoThisMonth   "Conso This Month [%.0f %unit%]" <energy> { channel="sedif:meter:meter1:monthly-consumption#thisMonth"   }
-Number	ConsoLastMonth   "Conso Last Month [%.0f %unit%]" <energy> { channel="sedif:meter:meter1:monthly-consumption#lastMonth"   }
-Number	ConsoMonthMinus2 "Conso Month - 2 [%.0f %unit%]"  <energy> { channel="sedif:meter:meter1:monthly-consumption#month-2"     }
+Number:Volume ConsoMonthly     "Montlhy Conso [%.0f %unit%]"    <energy> { channel="sedif:meter:meter1:monthly-consumption#consumption" }
+Number:Volume ConsoThisMonth   "Conso This Month [%.0f %unit%]" <energy> { channel="sedif:meter:meter1:monthly-consumption#thisMonth"   }
+Number:Volume ConsoLastMonth   "Conso Last Month [%.0f %unit%]" <energy> { channel="sedif:meter:meter1:monthly-consumption#lastMonth"   }
+Number:Volume ConsoMonthMinus2 "Conso Month - 2 [%.0f %unit%]"  <energy> { channel="sedif:meter:meter1:monthly-consumption#month-2"     }
 
-Number	ConsoYearly      "Yearly Conso [%.0f %unit%]"     <energy> { channel="sedif:meter:meter1:yearly-consumption#consumption" }
-Number	ConsoThisYear    "Conso This Year [%.0f %unit%]"  <energy> { channel="sedif:meter:meter1:yearly-consumption#thisYear"   }
-Number	ConsoLastYear    "Conso Last Year [%.0f %unit%]"  <energy> { channel="sedif:meter:meter1:yearly-consumption#lastYear"   }
-Number	ConsoYearMinus2  "Conso Year - 2 [%.0f %unit%]"   <energy> { channel="sedif:meter:meter1:yearly-consumption#year-2"     }
+Number:Volume ConsoYearly      "Yearly Conso [%.0f %unit%]"     <energy> { channel="sedif:meter:meter1:yearly-consumption#consumption" }
+Number:Volume ConsoThisYear    "Conso This Year [%.0f %unit%]"  <energy> { channel="sedif:meter:meter1:yearly-consumption#thisYear"   }
+Number:Volume ConsoLastYear    "Conso Last Year [%.0f %unit%]"  <energy> { channel="sedif:meter:meter1:yearly-consumption#lastYear"   }
+Number:Volume ConsoYearMinus2  "Conso Year - 2 [%.0f %unit%]"   <energy> { channel="sedif:meter:meter1:yearly-consumption#year-2"     }
 ```
 
 ### Timeseries and Graphs
