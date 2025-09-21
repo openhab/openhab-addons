@@ -47,7 +47,7 @@ public class HomekitBindingConstants {
     // configuration parameters
     public static final String CONFIG_PAIRING_CODE = "pairingCode";
     public static final String CONFIG_IP_V4_ADDRESS = "ipV4Address";
-    public static final String CONFIG_POLLING_INTERVAL = "refreshInterval";
+    public static final String CONFIG_REFRESH_INTERVAL = "refreshInterval";
 
     // properties
     public static final String PROPERTY_UID = "uid";

@@ -83,14 +83,14 @@ public class HomekitDeviceHandler extends HomekitBaseServerHandler {
     @Override
     public void initialize() {
         super.initialize();
-        String interval = getConfig().get(CONFIG_POLLING_INTERVAL).toString();
+        String refreshInterval = getConfig().get(CONFIG_REFRESH_INTERVAL).toString();
         try {
-            int intervalSeconds = Integer.parseInt(interval);
-            if (intervalSeconds > 0) {
-                scheduler.scheduleWithFixedDelay(this::poll, 0, intervalSeconds, TimeUnit.SECONDS);
+            int refreshIntervalSeconds = Integer.parseInt(refreshInterval);
+            if (refreshIntervalSeconds > 0) {
+                scheduler.scheduleWithFixedDelay(this::refresh, 0, refreshIntervalSeconds, TimeUnit.SECONDS);
             }
         } catch (NumberFormatException e) {
-            logger.warn("Invalid polling interval configuration: {}", interval);
+            logger.warn("Invalid refresh interval configuration: {}", refreshInterval);
         }
     }
 
@@ -123,7 +123,7 @@ public class HomekitDeviceHandler extends HomekitBaseServerHandler {
      * Polls the accessory for its current state and updates the corresponding channels.
      * This method is called periodically by a scheduled executor.
      */
-    private void poll() {
+    private void refresh() {
         CharacteristicReadWriteService rwService = this.rwService;
         if (rwService != null) {
             try {

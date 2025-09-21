@@ -27,7 +27,7 @@
 		</config-description>
 	</thing-type>
 
-	<thing-type id="bridge">
+	<bridge-type id="bridge">
 		<label>HomeKit Bridge</label>
 		<description>HomeKit Accessory Bridge</description>
 		<config-description>
@@ -48,6 +48,6 @@
 				<advanced>true</advanced>
 			</parameter>
 		</config-description>
-	</thing-type>
+	</bridge-type>
 
 </thing:thing-descriptions>
