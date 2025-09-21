@@ -46,7 +46,7 @@ import org.slf4j.LoggerFactory;
 public class SedifDiscoveryService extends AbstractThingHandlerDiscoveryService<BridgeSedifWebHandler>
         implements SedifListener {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_SEDIF);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_METER);
 
     private static final int SCAN_DURATION_IN_S = 60;
 
@@ -122,7 +122,7 @@ public class SedifDiscoveryService extends AbstractThingHandlerDiscoveryService<
 
                 if (contractDetail != null) {
                     for (CompteInfo compteInfo : contractDetail.compteInfo) {
-                        ThingTypeUID tpUid = THING_TYPE_SEDIF;
+                        ThingTypeUID tpUid = THING_TYPE_METER;
                         ThingUID thingUID = new ThingUID(tpUid, compteInfo.numCompteur,
                                 thingHandler.getThing().getUID().getId());
 

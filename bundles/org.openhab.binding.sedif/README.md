@@ -8,14 +8,14 @@ It is based on the new Sedif - Eau Ile de France website : https://www.sedif.com
 
 ## Supported Things
 
-The binding supports two different types of things: the `sedif-web` bridge and the `sedif` meter.
+The binding supports two different types of things: the `gateway` bridge and the `meter`.
 
-- `sedif-web`: This bridge acts as the gateway between your Sedif account and the Sedif meter thing.
-- `sedif`: A Sedif thing that represents your water meter and exposes your water consumption.
+- `gateway`: This bridge acts as the gateway between your Sedif account and the meter thing.
+- `meter`: A meter thing that represents your water meter and exposes your water consumption.
 
-### Sedif Web Bridge Configuration
+### Gateway Bridge Configuration
 
-To retrieve data, you need a `sedif-web bridge` linked to your Sedif Web account.
+To retrieve data, you need a `gateway` bridge linked to your Sedif Web account.
 
 You will need to create an account prior to configuring your bridge.  
 Go to the login page and click on the "Je crée mon espace" button:  
@@ -30,7 +30,7 @@ After this, add your bridge and fill in your username and password.
       | password       | Your Sedif platform password.              |
 
     ```java
-    Bridge sedif:sedif-web:local "SedifWebBridge" [username="testuser@test.fr", password="mypassword"]
+    Bridge sedif:gateway:local "Gateway" [username="testuser@test.fr", password="mypassword"]
     ```
 
 ### Water Meter Discovery
@@ -40,9 +40,9 @@ After creating the bridge, the binding will populate the inbox with meters regis
 ![Discovery](doc/WaterMeterDiscovery.png)
 
 
-### Sedif Thing Configuration
+### Meter Thing Configuration
 
-To create a Sedif thing, you will need your contractId.
+To create a mter thing, you will need your contractId.
 You can find it on the Sedif website, under the section "Tous mes contrats".
 You will see a list where the first column labeled "Contrat" is the contractId.
 
@@ -53,13 +53,13 @@ You will see a list where the first column labeled "Contrat" is the contractId.
 | meterId         | text    | The identifier of the meter associate with this thing | N/A     | no       | no       |
 
 ```java
-Thing sedif:sedif:sedifmeter1 "Sedif Meter 1" (sedif:sedif-web:local)
+Thing sedif:meter:meter1 "Sedif Meter 1" (sedif:gateway:local)
 	[  
 		contractId="907....", meterId="D08MA......"
 	]  
 ``
 
-### Sedif Thing Channels
+### Meter Thing Channels
 
 
 | Channel                                     | Type         | Read/Write | Description                              |
@@ -106,9 +106,9 @@ Thing sedif:sedif:sedifmeter1 "Sedif Meter 1" (sedif:sedif-web:local)
 ### Full Example
 
 ```java
-Bridge sedif:sedif-web:local "SedifWebBridge" [username="testuser@test.fr", password="mypassword"]
+Bridge sedif:gateway:local "GatewayBridge" [username="testuser@test.fr", password="mypassword"]
 
-Thing sedif:sedif:sedifmeter1 "Sedif Meter 1" (sedif:sedif-web:local)
+Thing sedif:meter:meter1 "Meter 1" (sedif:gateway:local)
 	[  
 		contractId="907....", meterId="D08MA......"
 	]  
@@ -116,26 +116,26 @@ Thing sedif:sedif:sedifmeter1 "Sedif Meter 1" (sedif:sedif-web:local)
     }
 
 
-Number	ConsoDaily       "Daily Conso [%.0f %unit%]"      <energy> { channel="sedif:sedif:sedifmeter1:daily-consumption#consumption"   }
-Number	ConsoYesterday   "Conso Yesterday [%.0f %unit%]"  <energy> { channel="sedif:sedif:sedifmeter1:daily-consumption#yesterday"     }
-Number	ConsoDayMinus2   "Conso Day-2 [%.0f %unit%]"      <energy> { channel="sedif:sedif:sedifmeter1:daily-consumption#day-2"         }
-Number	ConsoDayMinus3   "Conso Day-3 [%.0f %unit%]"      <energy> { channel="sedif:sedif:sedifmeter1:daily-consumption#day-3"         }
+Number	ConsoDaily       "Daily Conso [%.0f %unit%]"      <energy> { channel="sedif:meter:meter1:daily-consumption#consumption"   }
+Number	ConsoYesterday   "Conso Yesterday [%.0f %unit%]"  <energy> { channel="sedif:meter:meter1:daily-consumption#yesterday"     }
+Number	ConsoDayMinus2   "Conso Day-2 [%.0f %unit%]"      <energy> { channel="sedif:meter:meter1:daily-consumption#day-2"         }
+Number	ConsoDayMinus3   "Conso Day-3 [%.0f %unit%]"      <energy> { channel="sedif:meter:meter1:daily-consumption#day-3"         }
 
 
-Number	ConsoWeekly      "Weekly Conso [%.0f %unit%]"     <energy> { channel="sedif:sedif:sedifmeter1:weekly-consumption#consumption"  }
-Number	ConsoThisWeek    "Conso This Week [%.0f %unit%]"  <energy> { channel="sedif:sedif:sedifmeter1:weekly-consumption#thisWeek"     }
-Number	ConsoLastWeek    "Conso Last Week [%.0f %unit%]"  <energy> { channel="sedif:sedif:sedifmeter1:weekly-consumption#lastWeek"     }
-Number	ConsoWeekMinus2  "Conso Week - 2 [%.0f %unit%]"   <energy> { channel="sedif:sedif:sedifmeter1:weekly-consumption#week-2"       }
+Number	ConsoWeekly      "Weekly Conso [%.0f %unit%]"     <energy> { channel="sedif:meter:meter1:weekly-consumption#consumption"  }
+Number	ConsoThisWeek    "Conso This Week [%.0f %unit%]"  <energy> { channel="sedif:meter:meter1:weekly-consumption#thisWeek"     }
+Number	ConsoLastWeek    "Conso Last Week [%.0f %unit%]"  <energy> { channel="sedif:meter:meter1:weekly-consumption#lastWeek"     }
+Number	ConsoWeekMinus2  "Conso Week - 2 [%.0f %unit%]"   <energy> { channel="sedif:meter:meter1:weekly-consumption#week-2"       }
 
-Number	ConsoMonthly     "Montlhy Conso [%.0f %unit%]"    <energy> { channel="sedif:sedif:sedifmeter1:monthly-consumption#consumption" }
-Number	ConsoThisMonth   "Conso This Month [%.0f %unit%]" <energy> { channel="sedif:sedif:sedifmeter1:monthly-consumption#thisMonth"   }
-Number	ConsoLastMonth   "Conso Last Month [%.0f %unit%]" <energy> { channel="sedif:sedif:sedifmeter1:monthly-consumption#lastMonth"   }
-Number	ConsoMonthMinus2 "Conso Month - 2 [%.0f %unit%]"  <energy> { channel="sedif:sedif:sedifmeter1:monthly-consumption#month-2"     }
+Number	ConsoMonthly     "Montlhy Conso [%.0f %unit%]"    <energy> { channel="sedif:meter:meter1:monthly-consumption#consumption" }
+Number	ConsoThisMonth   "Conso This Month [%.0f %unit%]" <energy> { channel="sedif:meter:meter1:monthly-consumption#thisMonth"   }
+Number	ConsoLastMonth   "Conso Last Month [%.0f %unit%]" <energy> { channel="sedif:meter:meter1:monthly-consumption#lastMonth"   }
+Number	ConsoMonthMinus2 "Conso Month - 2 [%.0f %unit%]"  <energy> { channel="sedif:meter:meter1:monthly-consumption#month-2"     }
 
-Number	ConsoYearly      "Yearly Conso [%.0f %unit%]"     <energy> { channel="sedif:sedif:sedifmeter1:yearly-consumption#consumption" }
-Number	ConsoThisYear    "Conso This Year [%.0f %unit%]"  <energy> { channel="sedif:sedif:sedifmeter1:yearly-consumption#thisYear"   }
-Number	ConsoLastYear    "Conso Last Year [%.0f %unit%]"  <energy> { channel="sedif:sedif:sedifmeter1:yearly-consumption#lastYear"   }
-Number	ConsoYearMinus2  "Conso Year - 2 [%.0f %unit%]"   <energy> { channel="sedif:sedif:sedifmeter1:yearly-consumption#year-2"     }
+Number	ConsoYearly      "Yearly Conso [%.0f %unit%]"     <energy> { channel="sedif:meter:meter1:yearly-consumption#consumption" }
+Number	ConsoThisYear    "Conso This Year [%.0f %unit%]"  <energy> { channel="sedif:meter:meter1:yearly-consumption#thisYear"   }
+Number	ConsoLastYear    "Conso Last Year [%.0f %unit%]"  <energy> { channel="sedif:meter:meter1:yearly-consumption#lastYear"   }
+Number	ConsoYearMinus2  "Conso Year - 2 [%.0f %unit%]"   <energy> { channel="sedif:meter:meter1:yearly-consumption#year-2"     }
 ```
 
 ### Timeseries and Graphs

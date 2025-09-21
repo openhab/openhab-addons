@@ -4,16 +4,17 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<thing-type id="sedif">
+	<thing-type id="meter">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="sedif-web"/>
+			<bridge-type-ref id="gateway"/>
 		</supported-bridge-type-refs>
 
-		<label>Sedif</label>
+		<label>Meter</label>
 		<description>
-			Provides your water consumption data.
-			In order to receive the data, you must activate your account at
-			...
+			Act as a gateway between a Meter and your Sedif web account.
+			In order to receive the data, you must activate your account on Sedif web site.
+			You will need to get your contractId from this Sedif web site, and eventually your meterId if you have multiple meter on the same account.
+			See the documentation about where to find this informations.
 		</description>
 
 		<channel-groups>

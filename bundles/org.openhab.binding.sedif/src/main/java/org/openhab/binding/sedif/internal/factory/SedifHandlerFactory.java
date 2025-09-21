@@ -125,11 +125,11 @@ public class SedifHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
-        if (THING_TYPE_WEB_SEDIF_BRIDGE.equals(thing.getThingTypeUID())) {
+        if (THING_TYPE_GATEWAY_BRIDGE.equals(thing.getThingTypeUID())) {
             BridgeSedifWebHandler handler = new BridgeSedifWebHandler((Bridge) thing, this.httpClientFactory,
                     this.oAuthFactory, this.httpService, thingRegistry, componentContext, gson);
             return handler;
-        } else if (THING_TYPE_SEDIF.equals(thing.getThingTypeUID())) {
+        } else if (THING_TYPE_METER.equals(thing.getThingTypeUID())) {
             ThingSedifHandler handler = new ThingSedifHandler(thing, localeProvider, timeZoneProvider, gson);
             return handler;
         }
