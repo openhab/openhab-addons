@@ -386,7 +386,7 @@ slots:
         nameLocation: center
 ```
 
-### Displaying Information Graph / New version with tarif
+### Displaying Information Graph / New version with tariff
 
 Using the timeseries channel and new version of the addons, you will be able to easily create a chart to show the consumption graph with tariff differentiation.
 
