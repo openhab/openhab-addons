@@ -527,7 +527,9 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
         }
 
         result = result.replaceAll("[^a-zA-Z0-9_]", "");
-        result = result.substring(0, 1).toLowerCase() + result.substring(1);
+        if (!result.isEmpty()) {
+            result = result.substring(0, 1).toLowerCase() + result.substring(1);
+        }
 
         return result;
     }
@@ -637,7 +639,7 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
      */
     private void handleDynamicChannel(MeterReading values) {
         ChannelTypeUID chanTypeUid = new ChannelTypeUID(LinkyBindingConstants.BINDING_ID,
-                LinkyBindingConstants.CONSUMPTION);
+                LinkyBindingConstants.CHANNEL_TYPE_CONSUMPTION);
         List<Channel> channels = new ArrayList<Channel>();
 
         addDynamicChannelByLabel(channels, chanTypeUid, values, IndexMode.Supplier);
@@ -669,7 +671,7 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
      * @param irs
      * @return a List of subdataset cut on Tarif change
      */
-    private List<IntervalReading[]> splitOnTariffBound(@Nullable IntervalReading[] irs, IndexMode indexMode) {
+    private List<IntervalReading[]> splitOnTariffBound(IntervalReading[] irs, IndexMode indexMode) {
         List<IntervalReading[]> result = new ArrayList<IntervalReading[]>();
         String currentTarif = "";
         int lastIdx = 0;
@@ -797,7 +799,7 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
                     }
                 }
             } catch (Exception ex) {
-                logger.error("error occurs durring updatePowerTimeSeries for {} : {}", config.prmId, ex.getMessage(),
+                logger.error("error occurs during updatePowerTimeSeries for {} : {}", config.prmId, ex.getMessage(),
                         ex);
             }
         }

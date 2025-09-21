@@ -13,7 +13,7 @@
 package org.openhab.binding.linky.internal.dto;
 
 /**
- * The {@link IndexInfo} Will contains data for an given indexr
+ * The {@link IndexInfo} contains data for a given index
  *
  * @author Laurent Arnal - Initial contribution
  */

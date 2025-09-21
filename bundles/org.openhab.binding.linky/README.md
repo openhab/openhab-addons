@@ -253,8 +253,6 @@ The retrieved information is available in multiple groups.
   
 #### Dynamic Thing Channels  
 
-#### Dynamic Thing Channels  
-
 Add-ons now support reading consumption indexes from the Enedis website.  
 This makes it possible to view consumption for different tariffs such as *heures pleines / heures creuses* or *tempo*.  
 
@@ -390,7 +388,8 @@ slots:
 
 ### Displaying Information Graph / New version with tarif
 
-Using the timeseries channel and new version of the addons, you will be able to easily create a chart to show the consumption graph with tarif differenciation.
+Using the timeseries channel and new version of the addons, you will be able to easily create a chart to show the consumption graph with tariff differentiation.
+
 To do this, you need to enable a timeseries persistence framework.
 Graph definitions will look like this:
 

@@ -99,7 +99,7 @@ public class MeterReading {
                 String calendrierDistributor = "";
                 String calendrierSupplier = "";
 
-                if (dataObj.calendrier == null) {
+                if (dataObj.calendrier == null && idx > 0) {
                     dataObj.calendrier = agregat.datas.get(idx - 1).calendrier;
                 }
 
