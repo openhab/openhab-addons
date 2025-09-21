@@ -223,7 +223,7 @@ public class ThingSedifHandler extends BaseThingHandler {
                 os.flush();
             }
         } catch (IOException ioe) {
-            logger.warn("Couldn't write Siemens MetaData information to file '{}'.", file.getAbsolutePath());
+            logger.warn("Couldn't write Sedif MetaData information to file '{}'.", file.getAbsolutePath());
         }
     }
 
@@ -697,6 +697,6 @@ public class ThingSedifHandler extends BaseThingHandler {
     }
 
     public String getNumCompteur() {
-        return idPds;
+        return numCompteur;
     }
 }

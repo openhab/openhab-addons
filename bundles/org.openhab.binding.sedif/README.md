@@ -1,4 +1,4 @@
-gatewagatewa# Sedif Binding
+# Sedif Binding
 
 This binding enables you to retrieve water consumption data for consumers in the Île-de-France region of France.
 
