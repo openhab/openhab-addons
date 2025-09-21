@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.bluetooth.internal;
 
-import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -35,10 +34,8 @@ import org.osgi.service.component.annotations.Component;
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.bluetooth")
 public class BluetoothHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>();
-    static {
-        SUPPORTED_THING_TYPES_UIDS.add(BluetoothBindingConstants.THING_TYPE_BEACON);
-    }
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set
+            .of(BluetoothBindingConstants.THING_TYPE_BEACON);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -49,7 +46,7 @@ public class BluetoothHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (thingTypeUID.equals(BluetoothBindingConstants.THING_TYPE_BEACON)) {
+        if (BluetoothBindingConstants.THING_TYPE_BEACON.equals(thingTypeUID)) {
             return new BeaconBluetoothHandler(thing);
         }
         return null;
