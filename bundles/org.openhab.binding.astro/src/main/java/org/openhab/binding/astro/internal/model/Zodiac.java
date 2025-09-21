@@ -12,21 +12,26 @@
  */
 package org.openhab.binding.astro.internal.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * Holds the sign of the zodiac.
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class Zodiac {
-    private ZodiacSign sign;
+    private @Nullable ZodiacSign sign;
 
-    public Zodiac(ZodiacSign sign) {
+    public Zodiac(@Nullable ZodiacSign sign) {
         this.sign = sign;
     }
 
     /**
      * Returns the sign of the zodiac.
      */
+    @Nullable
     public ZodiacSign getSign() {
         return sign;
     }

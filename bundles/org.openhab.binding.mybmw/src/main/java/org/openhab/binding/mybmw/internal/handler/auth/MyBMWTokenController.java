@@ -40,6 +40,7 @@ import org.openhab.binding.mybmw.internal.dto.auth.OAuthSettingsQueryResponse;
 import org.openhab.binding.mybmw.internal.handler.MyBMWBridgeHandler;
 import org.openhab.binding.mybmw.internal.handler.backend.JsonStringDeserializer;
 import org.openhab.binding.mybmw.internal.utils.Constants;
+import org.openhab.binding.mybmw.internal.utils.RandomUserAgentVersionGenerator;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
 import org.openhab.core.auth.client.oauth2.OAuthClientService;
 import org.openhab.core.auth.client.oauth2.OAuthException;
@@ -266,8 +267,9 @@ public class MyBMWTokenController {
                 + API_OAUTH_CONFIG;
         Request oAuthSettingsRequest = httpClient.newRequest(oAuthSettingsUrl);
         oAuthSettingsRequest.header(HEADER_ACP_SUBSCRIPTION_KEY, OCP_APIM_KEYS.get(bridgeConfiguration.getRegion()));
-        oAuthSettingsRequest.header(HEADER_X_USER_AGENT, String.format(X_USER_AGENT, BRAND_BMW,
-                APP_VERSIONS.get(bridgeConfiguration.getRegion()), bridgeConfiguration.getRegion()));
+        oAuthSettingsRequest.header(HEADER_X_USER_AGENT,
+                String.format(X_USER_AGENT, RandomUserAgentVersionGenerator.getRandomUserAgentVersion(), BRAND_BMW,
+                        APP_VERSIONS.get(bridgeConfiguration.getRegion()), bridgeConfiguration.getRegion()));
         oAuthSettingsRequest.header(HEADER_X_IDENTITY_PROVIDER, AUTH_PROVIDER);
         oAuthSettingsRequest.header(HEADER_X_CORRELATION_ID, uuidString);
         oAuthSettingsRequest.header(HEADER_BMW_CORRELATION_ID, uuidString);

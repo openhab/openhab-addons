@@ -609,29 +609,36 @@ public class WizHandler extends BaseThingHandler {
             updateLightState(CHANNEL_STATE, OnOffType.ON);
             switch (receivedParam.getColorMode()) {
                 case RGBMode:
-                    logger.trace(
-                            "[{}] Received color values - R: {} G: {} B: {} W: {} C: {} Dimming: {}; translate to HSBType: {}",
-                            config.ipAddress, receivedParam.r, receivedParam.g, receivedParam.b, receivedParam.w,
-                            receivedParam.c, receivedParam.dimming, receivedParam.getHSBColor());
-
                     updateLightState(CHANNEL_COLOR, receivedParam.getHSBColor());
                     updateLightState(CHANNEL_TEMPERATURE, UnDefType.UNDEF);
                     updateLightState(CHANNEL_TEMPERATURE_ABS, UnDefType.UNDEF);
+                    logger.debug(
+                            "[{}] Update params from device RGBMode received color values - R: {} G: {} B: {} W: {} C: {} Dimming: {}; translate to HSBType: {}",
+                            config.ipAddress, receivedParam.r, receivedParam.g, receivedParam.b, receivedParam.w,
+                            receivedParam.c, receivedParam.dimming, receivedParam.getHSBColor());
                     break;
                 case CTMode:
                     double[] xy = ColorUtil.kelvinToXY(receivedParam.getTemperature());
                     HSBType color = ColorUtil.xyToHsb(xy);
-                    updateLightState(CHANNEL_COLOR, new HSBType(color.getHue(), color.getSaturation(),
-                            new PercentType(receivedParam.getDimming())));
+                    HSBType ctColor = new HSBType(color.getHue(), color.getSaturation(),
+                            new PercentType(receivedParam.getDimming()));
+                    updateLightState(CHANNEL_COLOR, ctColor);
                     updateLightState(CHANNEL_TEMPERATURE, colorTempToPercent(receivedParam.getTemperature()));
                     updateLightState(CHANNEL_TEMPERATURE_ABS,
                             new QuantityType<>(receivedParam.getTemperature(), Units.KELVIN));
+                    logger.debug(
+                            "[{}] Update params from device CTMode received color temperature: {}K Dimming: {}; translate to HSBType: {}",
+                            config.ipAddress, receivedParam.getTemperature(), receivedParam.getDimming(), ctColor);
                     break;
                 case SingleColorMode:
-                    updateLightState(CHANNEL_COLOR, new HSBType(DecimalType.ZERO, PercentType.ZERO,
-                            new PercentType(receivedParam.getDimming())));
+                    HSBType singleColor = new HSBType(DecimalType.ZERO, PercentType.ZERO,
+                            new PercentType(receivedParam.getDimming()));
+                    updateLightState(CHANNEL_COLOR, singleColor);
                     updateLightState(CHANNEL_TEMPERATURE, UnDefType.UNDEF);
                     updateLightState(CHANNEL_TEMPERATURE_ABS, UnDefType.UNDEF);
+                    logger.debug(
+                            "[{}] Update params from device SingleColorMode received dimming: {}; translate to HSBType: {}",
+                            config.ipAddress, receivedParam.getDimming(), singleColor);
                     break;
             }
         }
@@ -710,14 +717,11 @@ public class WizHandler extends BaseThingHandler {
         if (response != null) {
             boolean setSucceeded = response.getResultSuccess();
             if (setSucceeded) {
-                // can't process this response it doens't have a syncstate, so request updated state
-                // let the getPilot response update the timestamps
-                try {
-                    // wait for state change to apply
-                    Thread.sleep(1000L);
-                } catch (InterruptedException e) {
-                }
-                getPilot();
+                // can't process this response it doesn't have a syncstate
+                // so request updated state after a short delay to let the device
+                // process the setPilot command, the getPilot response will update
+                // the timestamps
+                scheduler.schedule(this::getPilot, 200L, TimeUnit.MILLISECONDS);
                 return setSucceeded;
             }
         }
@@ -782,10 +786,15 @@ public class WizHandler extends BaseThingHandler {
                             .withPattern("%.0f K").build().toStateDescription();
                     stateDescriptionProvider.setDescription(colorTempChannelUID,
                             Objects.requireNonNull(stateDescription));
+
+                    Map<String, String> thingProperties = new HashMap<>();
+                    thingProperties.put(PROPERTY_MIN_COLOR_TEMPERATURE, String.valueOf(minColorTemp));
+                    thingProperties.put(PROPERTY_MAX_COLOR_TEMPERATURE, String.valueOf(maxColorTemp));
+                    updateProperties(thingProperties);
                 }
             } else {
                 // Not a big deal; probably just an older device
-                logger.warn("[{}] No response to getModelConfig request from device", config.ipAddress);
+                logger.debug("[{}] No response to getModelConfig request from device", config.ipAddress);
             }
         } else {
             logger.debug("[{}] No response to getSystemConfig request from device at {}", config.ipAddress,
@@ -835,7 +844,20 @@ public class WizHandler extends BaseThingHandler {
     }
 
     private PercentType colorTempToPercent(int temp) {
-        return new PercentType(BigDecimal.valueOf(((float) temp - minColorTemp) / (maxColorTemp - minColorTemp) * 100));
+        // NOTE: 0% is cold (highest K) and 100% is warm (lowest K)
+        if (temp <= minColorTemp) {
+            return PercentType.HUNDRED;
+        }
+
+        if (temp >= maxColorTemp) {
+            return PercentType.ZERO;
+        }
+
+        if (maxColorTemp == minColorTemp) {
+            return PercentType.HUNDRED;
+        }
+
+        return new PercentType(BigDecimal.valueOf((maxColorTemp - (float) temp) / (maxColorTemp - minColorTemp) * 100));
     }
 
     // SETTERS AND GETTERS

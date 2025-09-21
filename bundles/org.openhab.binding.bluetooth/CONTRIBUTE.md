@@ -60,10 +60,11 @@ The beacon mode thing handler needs to handle the following functionality:
 
 ### Generic Bluetooth Device Support
 
-The core Bluetooth binding already includes generic "beacon" and "connected" Bluetooth thing types.
+The core Bluetooth binding already includes generic `beacon` Bluetooth thing type.
 All devices for which no discovery participant defines a specific thing type are added to the inbox as a beacon device.
 The corresponding handler implementation (`BeaconBluetoothHandler`) uses Beacon mode and merely defines a channel for RSSI for such devices.
 
-The "connected" thing type can be used by manually defining a thing.
-The corresponding handler implementation (`ConnectedBluetoothHandler`) uses Connected mode and thus immediately connects to the device and reads its services.
+The generic Bluetooth binding includes `generic` Bluetooth thing type.
+The `generic` thing type can be used by manually defining a thing.
+The corresponding handler implementation (`GenericBluetoothHandler`) uses Connected mode and thus immediately connects to the device and reads its services.
 Common services are added as channels (t.b.d.).

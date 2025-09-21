@@ -356,8 +356,8 @@ public class JointFabricDatastoreCluster extends BaseCluster {
         COMMITTED(1, "Committed"),
         DELETE_PENDING(2, "Delete Pending");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private DatastoreStateEnum(Integer value, String label) {
             this.value = value;
