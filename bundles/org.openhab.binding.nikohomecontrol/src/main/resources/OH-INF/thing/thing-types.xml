@@ -369,6 +369,33 @@
 			</parameter>
 		</config-description>
 	</thing-type>
+	<thing-type id="carCharger">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge2"/>
+		</supported-bridge-type-refs>
+		<label>@text/carChargerLabel</label>
+		<description>@text/carChargerDescription</description>
+		<semantic-equipment-tag>EVSE</semantic-equipment-tag>
+		<channels>
+			<channel id="status" typeId="system.power"/>
+			<channel id="chargingStatus" typeId="chargingStatus"/>
+			<channel id="evStatus" typeId="evStatus"/>
+			<channel id="couplingStatus" typeId="couplingStatus"/>
+			<channel id="electricalPower" typeId="power"/>
+			<channel id="chargingMode" typeId="chargingMode"/>
+			<channel id="targetDistance" typeId="targetDistance"/>
+			<channel id="targetTime" typeId="targetTime"/>
+			<channel id="boost" typeId="boost"/>
+			<channel id="reachableDistance" typeId="reachableDistance"/>
+			<channel id="nextChargingTime" typeId="nextChargingTime"/>
+		</channels>
+		<config-description>
+			<parameter name="carChargerId" type="text" required="true">
+				<label>@text/deviceConfigDeviceIdLabel</label>
+				<description>@text/deviceConfigDeviceIdDescription</description>
+			</parameter>
+		</config-description>
+	</thing-type>
 
 	<channel-type id="button">
 		<item-type>Switch</item-type>
@@ -622,6 +649,102 @@
 				<option value="ALARM">@text/channelOptionAlarmStateAlarm</option>
 			</options>
 		</state>
+	</channel-type>
+
+	<channel-type id="chargingStatus">
+		<item-type>String</item-type>
+		<label>@text/channelChargingStatusLabel</label>
+		<description>@text/channelChargingStatusDescription</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="ACTIVE">@text/channelOptionChargingStatusActive</option>
+				<option value="INACTIVE">@text/channelOptionChargingStatusInactive</option>
+				<option value="BATTERY FULL">@text/channelOptionChargingStatusBatteryFull</option>
+				<option value="ERROR">@text/channelChargingStatusError</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="evStatus">
+		<item-type>String</item-type>
+		<label>@text/channelEvStatusLabel</label>
+		<description>@text/channelEvStatusDescription</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="IDLE">@text/channelOptionEvStatusIdle</option>
+				<option value="CONNECTED">@text/channelOptionEvStatusConnected</option>
+				<option value="CHARGING">@text/channelOptionEvStatusCharging</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="couplingStatus">
+		<item-type>String</item-type>
+		<label>@text/channelCouplingStatusLabel</label>
+		<description>@text/channelCouplingStatusDescription</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true">
+			<options>
+				<option value="OK">@text/channelOptionCouplingStatusOk</option>
+				<option value="NO INTERNET">@text/channelOptionCouplingStatusNoInternet</option>
+				<option value="NO CREDENTIALS">@text/channelOptionCouplingStatusNoCredentials</option>
+				<option value="INVALID CREDENTIALS">@text/channelOptionCouplingStatusInvalidCredentials</option>
+				<option value="CONNECTION ERROR">@text/channelOptionCouplingStatusConnectionError</option>
+				<option value="CONNECTION TIMEOUT">@text/channelOptionCouplingStatusConnectionTimeout</option>
+				<option value="API ERROR">@text/channelOptionCouplingStatusApiError</option>
+				<option value="UNKNOWN ERROR">@text/channelOptionCouplingStatusUnknownError</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="chargingMode">
+		<item-type>String</item-type>
+		<label>@text/channelChargingModeLabel</label>
+		<description>@text/channelChargingModeDescription</description>
+		<tags>
+			<tag>Control</tag>
+		</tags>
+		<state>
+			<options>
+				<option value="SOLAR">@text/channelOptionChargingModeSolar</option>
+				<option value="NORMAL">@text/channelOptionChargingModeNormal</option>
+				<option value="SMART">@text/channelOptionChargingModeSmart</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="targetDistance">
+		<item-type unitHint="km">Number:Length</item-type>
+		<label>@text/channelTargetDistanceLabel</label>
+		<description>@text/channelTargetDistanceDescription</description>
+		<state pattern="%d %unit%"/>
+	</channel-type>
+	<channel-type id="targetTime">
+		<item-type>DateTime</item-type>
+		<label>@text/channelTargetTimeLabel</label>
+		<description>@text/channelTargetTimeDescription</description>
+		<state pattern="%tR"/>
+	</channel-type>
+	<channel-type id="boost">
+		<item-type>Switch</item-type>
+		<label>@text/channelBoostLabel</label>
+		<description>@text/channelBoostDescription</description>
+	</channel-type>
+	<channel-type id="reachableDistance">
+		<item-type unitHint="km">Number:Length</item-type>
+		<label>@text/channelReachableDistanceLabel</label>
+		<description>@text/channelReachableDistanceDescription</description>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="nextChargingTime">
+		<item-type>DateTime</item-type>
+		<label>@text/channelNextChargingTimeLabel</label>
+		<description>@text/channelNextChargingTimeDescription</description>
+		<state pattern="%tR" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="alarm">

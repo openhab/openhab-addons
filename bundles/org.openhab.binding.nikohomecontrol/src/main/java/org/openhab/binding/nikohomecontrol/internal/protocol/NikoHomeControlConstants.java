@@ -86,4 +86,40 @@ public class NikoHomeControlConstants {
     public static final String NHCALARM = "Alarm";
     public static final Map<String, String> ALARMSTATES = Map.of(NHCOFF, "DISARMED", NHCPREARMED, "PREARMED",
             NHCDETECTORPROBLEM, "DETECTOR PROBLEM", NHCARMED, "ARMED", NHCPREALARM, "PREALARM", NHCALARM, "ALARM");
+
+    // NhcII car charger charging modes
+    public static final String NHCSOLAR = "Solar";
+    public static final String NHCNORMAL = "Normal";
+    public static final String NHCSMART = "Smart";
+    public static final Map<String, String> CHARGINGMODES = Map.of(NHCSOLAR, "SOLAR", NHCNORMAL, "NORMAL", NHCSMART,
+            "SMART");
+
+    // NhcII car charger charging status
+    // NHCACTIVE = "Active" already defined
+    public static final String NHCINACTIVE = "Inactive";
+    public static final String NHCBATTERYFULL = "BatteryFull";
+    public static final String NHCERROR = "Error";
+    public static final Map<String, String> CHARGINGSTATES = Map.of(NHCACTIVE, "ACTIVE", NHCINACTIVE, "INACTIVE",
+            NHCBATTERYFULL, "BATTERY FULL", NHCERROR, "ERROR");
+
+    // NhcII car charger EV status
+    // NHCIDLE = "Idle" already defined
+    public static final String NHCCONNECTED = "Connected";
+    public static final String NHCCHARGING = "Charging";
+    public static final Map<String, String> EVSTATES = Map.of(NHCIDLE, "IDLE", NHCCONNECTED, "CONNECTED", NHCCHARGING,
+            "CHARGING");
+
+    // NhcII car charger coupling status
+    public static final String NHCOK = "Ok";
+    public static final String NHCNOINTERNET = "NoInternet";
+    public static final String NHCNOCREDENTIALS = "NoCredentials";
+    public static final String NHCINVALIDCREDENTIALS = "InvalidCredentials";
+    public static final String NHCCONNECTIONERROR = "ConnectionError";
+    public static final String NHCCONNECTIONTIMEOUT = "ConnectionTimeout";
+    public static final String NHCAPIERROR = "ApiError";
+    public static final String NHCUNKNOWNERROR = "UnknownError";
+    public static final Map<String, String> COUPLINGSTATES = Map.of(NHCOK, "OK", NHCNOINTERNET, "NO INTERNET",
+            NHCNOCREDENTIALS, "NO CREDENTIALS", NHCINVALIDCREDENTIALS, "INVALID CREDENTIALS", NHCCONNECTIONERROR,
+            "CONNECTION ERROR", NHCCONNECTIONTIMEOUT, "CONNECTION TIMEOUT", NHCAPIERROR, "API ERROR", NHCUNKNOWNERROR,
+            "UNKNOWN ERROR");
 }

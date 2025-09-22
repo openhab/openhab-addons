@@ -36,6 +36,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.nikohomecontrol.internal.protocol.NhcAccess;
 import org.openhab.binding.nikohomecontrol.internal.protocol.NhcAction;
 import org.openhab.binding.nikohomecontrol.internal.protocol.NhcAlarm;
+import org.openhab.binding.nikohomecontrol.internal.protocol.NhcCarCharger;
 import org.openhab.binding.nikohomecontrol.internal.protocol.NhcControllerEvent;
 import org.openhab.binding.nikohomecontrol.internal.protocol.NhcMeter;
 import org.openhab.binding.nikohomecontrol.internal.protocol.NhcThermostat;
@@ -72,6 +73,7 @@ import com.google.gson.reflect.TypeToken;
  * </ul>
  *
  * @author Mark Herwege - Initial Contribution
+ * @author Mark Herwege - Add car chargers
  */
 @NonNullByDefault
 public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
@@ -394,6 +396,8 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
             addThermostatDevice(device, location);
         } else if ("centralmeter".equals(device.type) || "energyhome".equals(device.type)) {
             addMeterDevice(device, location);
+        } else if ("chargingstation".equals(device.type)) {
+            addCarChargerDevice(device, location);
         } else {
             logger.debug("device type {} and model {} not supported for {}, {}", device.type, device.model, device.uuid,
                     device.name);
@@ -587,6 +591,19 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
         alarmDevices.put(device.uuid, nhcAlarm);
     }
 
+    private void addCarChargerDevice(NhcDevice2 device, @Nullable String location) {
+        NhcCarCharger nhcCarCharger = carChargerDevices.get(device.uuid);
+        if (nhcCarCharger != null) {
+            nhcCarCharger.setName(device.name);
+            nhcCarCharger.setLocation(location);
+        } else {
+            logger.debug("adding car charger device {} model {}, {}", device.uuid, device.model, device.name);
+            nhcCarCharger = new NhcCarCharger2(device.uuid, device.name, device.type, device.technology, device.model,
+                    location, this);
+        }
+        carChargerDevices.put(device.uuid, nhcCarCharger);
+    }
+
     private void removeDevice(NhcDevice2 device) {
         NhcAction action = actions.get(device.uuid);
         NhcThermostat thermostat = thermostats.get(device.uuid);
@@ -594,6 +611,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
         NhcAccess access = accessDevices.get(device.uuid);
         NhcVideo video = videoDevices.get(device.uuid);
         NhcAlarm alarm = alarmDevices.get(device.uuid);
+        NhcCarCharger carCharger = carChargerDevices.get(device.uuid);
         if (action != null) {
             action.actionRemoved();
             actions.remove(device.uuid);
@@ -612,6 +630,9 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
         } else if (alarm != null) {
             alarm.alarmDeviceRemoved();
             alarmDevices.remove(device.uuid);
+        } else if (carCharger != null) {
+            carCharger.carChargerDeviceRemoved();
+            carChargerDevices.remove(device.uuid);
         }
     }
 
@@ -628,6 +649,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
         NhcAccess accessDevice = accessDevices.get(device.uuid);
         NhcVideo videoDevice = videoDevices.get(device.uuid);
         NhcAlarm alarm = alarmDevices.get(device.uuid);
+        NhcCarCharger carCharger = carChargerDevices.get(device.uuid);
 
         if (action != null) {
             updateActionState((NhcAction2) action, deviceProperties);
@@ -641,6 +663,8 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
             updateVideoState((NhcVideo2) videoDevice, deviceProperties);
         } else if (alarm != null) {
             updateAlarmState((NhcAlarm2) alarm, deviceProperties);
+        } else if (carCharger != null) {
+            updateCarChargerState((NhcCarCharger2) carCharger, deviceProperties);
         } else {
             logger.trace("No known device for {}", device.uuid);
         }
@@ -849,6 +873,45 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
         if (Boolean.valueOf(triggered)) {
             logger.debug("triggering alarm device {}", alarmDevice.getId());
             alarmDevice.triggerAlarm();
+        }
+    }
+
+    private void updateCarChargerState(NhcCarCharger2 carChargerDevice, List<NhcProperty> deviceProperties) {
+        String status = deviceProperties.stream().map(p -> p.status).filter(Objects::nonNull).findFirst().orElse(null);
+        String chargingStatus = deviceProperties.stream().map(p -> p.chargingStatus).filter(Objects::nonNull)
+                .findFirst().orElse(null);
+        String evStatus = deviceProperties.stream().map(p -> p.evStatus).filter(Objects::nonNull).findFirst()
+                .orElse(null);
+        String couplingStatus = deviceProperties.stream().map(p -> p.couplingStatus).filter(Objects::nonNull)
+                .findFirst().orElse(null);
+        Integer electricalPower = deviceProperties.stream().map(p -> p.electricalPower)
+                .map(s -> (!((s == null) || s.isEmpty())) ? Math.round(Float.parseFloat(s)) : null)
+                .filter(Objects::nonNull).findFirst().orElse(null);
+        if (status != null || chargingStatus != null || evStatus != null || couplingStatus != null
+                || electricalPower != null) {
+            logger.debug(
+                    "setting car charger device {} status to {}, charging status to {}, EV status to {}, coupling status to {}, electrical power to {}",
+                    carChargerDevice.getId(), status, chargingStatus, evStatus, couplingStatus, electricalPower);
+            carChargerDevice.setStatus(NHCON.equals(status) ? true : false, chargingStatus, evStatus, couplingStatus,
+                    electricalPower);
+        }
+
+        String chargingMode = deviceProperties.stream().map(p -> p.chargingMode).filter(Objects::nonNull).findFirst()
+                .orElse(null);
+        Float targetDistance = deviceProperties.stream().map(p -> p.targetDistance).filter(Objects::nonNull).findFirst()
+                .map(Float::parseFloat).orElse(null);
+        String targetTime = deviceProperties.stream().map(p -> p.targetTime).filter(Objects::nonNull).findFirst()
+                .orElse(null);
+        Boolean boost = deviceProperties.stream().map(p -> p.boost).filter(Objects::nonNull).findFirst()
+                .map(b -> NHCTRUE.equals(b) ? true : false).orElse(null);
+        Float reachableDistance = deviceProperties.stream().map(p -> p.reachableDistance).filter(Objects::nonNull)
+                .findFirst().map(Float::parseFloat).orElse(null);
+        String nextChargingTime = deviceProperties.stream().map(p -> p.nextChargingTime).filter(Objects::nonNull)
+                .findFirst().orElse(null);
+        if (chargingMode != null || targetDistance != null || targetTime != null || boost != null
+                || reachableDistance != null || nextChargingTime != null) {
+            carChargerDevice.setChargingMode(chargingMode, targetDistance, targetTime, boost, reachableDistance,
+                    nextChargingTime);
         }
     }
 
@@ -1192,6 +1255,104 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
         }
 
         property.control = state;
+
+        String topic = profile + "/control/devices/cmd";
+        String gsonMessage = gson.toJson(message);
+        sendDeviceMessage(topic, gsonMessage);
+    }
+
+    @Override
+    public void executeCarChargerStatus(String carChargerId, boolean status) {
+        NhcMessage2 message = new NhcMessage2();
+
+        message.method = "devices.control";
+        List<NhcMessageParam> params = new ArrayList<>();
+        NhcMessageParam param = new NhcMessageParam();
+        params.add(param);
+        message.params = params;
+        List<NhcDevice2> devices = new ArrayList<>();
+        NhcDevice2 device = new NhcDevice2();
+        devices.add(device);
+        param.devices = devices;
+        device.uuid = carChargerId;
+        List<NhcProperty> deviceProperties = new ArrayList<>();
+        NhcProperty property = new NhcProperty();
+        deviceProperties.add(property);
+        device.properties = deviceProperties;
+
+        NhcCarCharger2 carChargerDevice = (NhcCarCharger2) carChargerDevices.get(carChargerId);
+        if (carChargerDevice == null) {
+            return;
+        }
+
+        property.status = status ? NHCON : NHCOFF;
+
+        String topic = profile + "/control/devices/cmd";
+        String gsonMessage = gson.toJson(message);
+        sendDeviceMessage(topic, gsonMessage);
+    }
+
+    @Override
+    public void executeCarChargerChargingMode(String carChargerId, String chargingMode, float targetDistance,
+            String targetTime) {
+        NhcMessage2 message = new NhcMessage2();
+
+        message.method = "devices.control";
+        List<NhcMessageParam> params = new ArrayList<>();
+        NhcMessageParam param = new NhcMessageParam();
+        params.add(param);
+        message.params = params;
+        List<NhcDevice2> devices = new ArrayList<>();
+        NhcDevice2 device = new NhcDevice2();
+        devices.add(device);
+        param.devices = devices;
+        device.uuid = carChargerId;
+        List<NhcProperty> deviceProperties = new ArrayList<>();
+        NhcProperty property = new NhcProperty();
+        deviceProperties.add(property);
+        device.properties = deviceProperties;
+
+        NhcCarCharger2 carChargerDevice = (NhcCarCharger2) carChargerDevices.get(carChargerId);
+        if (carChargerDevice == null) {
+            return;
+        }
+
+        property.chargingMode = chargingMode;
+        if (NHCSOLAR.equals(chargingMode)) {
+            property.targetDistance = String.valueOf(targetDistance);
+            property.targetTime = targetTime;
+        }
+
+        String topic = profile + "/control/devices/cmd";
+        String gsonMessage = gson.toJson(message);
+        sendDeviceMessage(topic, gsonMessage);
+    }
+
+    @Override
+    public void executeCarChargerChargingBoost(String carChargerId, boolean boost) {
+        NhcMessage2 message = new NhcMessage2();
+
+        message.method = "devices.control";
+        List<NhcMessageParam> params = new ArrayList<>();
+        NhcMessageParam param = new NhcMessageParam();
+        params.add(param);
+        message.params = params;
+        List<NhcDevice2> devices = new ArrayList<>();
+        NhcDevice2 device = new NhcDevice2();
+        devices.add(device);
+        param.devices = devices;
+        device.uuid = carChargerId;
+        List<NhcProperty> deviceProperties = new ArrayList<>();
+        NhcProperty property = new NhcProperty();
+        deviceProperties.add(property);
+        device.properties = deviceProperties;
+
+        NhcCarCharger2 carChargerDevice = (NhcCarCharger2) carChargerDevices.get(carChargerId);
+        if (carChargerDevice == null) {
+            return;
+        }
+
+        property.boost = boost ? NHCTRUE : NHCFALSE;
 
         String topic = profile + "/control/devices/cmd";
         String gsonMessage = gson.toJson(message);

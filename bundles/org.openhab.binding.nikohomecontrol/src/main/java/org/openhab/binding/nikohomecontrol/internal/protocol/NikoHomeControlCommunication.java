@@ -38,6 +38,7 @@ import org.slf4j.LoggerFactory;
  * </ul>
  *
  * @author Mark Herwege - Initial Contribution
+ * @author Mark Herwege - Add car chargers
  */
 @NonNullByDefault
 public abstract class NikoHomeControlCommunication {
@@ -50,6 +51,7 @@ public abstract class NikoHomeControlCommunication {
     protected final Map<String, NhcAccess> accessDevices = new ConcurrentHashMap<>();
     protected final Map<String, NhcVideo> videoDevices = new ConcurrentHashMap<>();
     protected final Map<String, NhcAlarm> alarmDevices = new ConcurrentHashMap<>();
+    protected final Map<String, NhcCarCharger> carChargerDevices = new ConcurrentHashMap<>();
 
     protected final NhcControllerEvent handler;
 
@@ -203,6 +205,15 @@ public abstract class NikoHomeControlCommunication {
     }
 
     /**
+     * Return all car chargers devices in the Niko Home Control Controller.
+     *
+     * @return <code>Map&lt;String, {@link NhcCarCharger}></code>
+     */
+    public Map<String, NhcCarCharger> getCarChargerDevices() {
+        return carChargerDevices;
+    }
+
+    /**
      * Execute an action command by sending it to Niko Home Control.
      *
      * @param actionId
@@ -352,5 +363,35 @@ public abstract class NikoHomeControlCommunication {
      * @param accessId
      */
     public void executeDisarm(String alarmId) {
+    }
+
+    /**
+     * Sends a command to set the status of a car charger to Niko Home Control.
+     *
+     * @param carChargerId the unique identifier of the car charger
+     * @param status the desired status of the car charger (true to enable, false to disable)
+     */
+    public void executeCarChargerStatus(String carChargerId, boolean status) {
+    }
+
+    /**
+     * Executes a command to set the charging mode for a car charger to Niko Home Control.
+     *
+     * @param carChargerId the unique identifier of the car charger device
+     * @param chargingMode the desired charging mode (SOLAR, NORMAL or SMART)
+     * @param targetDistance the target distance (in kilometers) to be achieved by charging
+     * @param targetTime the target time (in ISO 8601 format or HH:mm) by which charging should be completed
+     */
+    public void executeCarChargerChargingMode(String carChargerId, String chargingMode, float targetDistance,
+            String targetTime) {
+    }
+
+    /**
+     * Executes a charging boost command for the specified car charger.
+     *
+     * @param carChargerId the unique identifier of the car charger to control
+     * @param boost {@code true} to enable charging boost, {@code false} to disable it
+     */
+    public void executeCarChargerChargingBoost(String carChargerId, boolean boost) {
     }
 }

@@ -53,6 +53,7 @@ public class NikoHomeControlBindingConstants {
     public static final ThingTypeUID THING_TYPE_ACCESS_RINGANDCOMEIN = new ThingTypeUID(BINDING_ID,
             "accessRingAndComeIn");
     public static final ThingTypeUID THING_TYPE_ALARM = new ThingTypeUID(BINDING_ID, "alarm");
+    public static final ThingTypeUID THING_TYPE_CAR_CHARGER = new ThingTypeUID(BINDING_ID, "carCharger");
 
     // thing type sets
     public static final Set<ThingTypeUID> BRIDGE_THING_TYPES_UIDS = Set.of(BRIDGEI_THING_TYPE, BRIDGEII_THING_TYPE);
@@ -64,10 +65,10 @@ public class NikoHomeControlBindingConstants {
     public static final Set<ThingTypeUID> ACCESS_THING_TYPES_UIDS = Set.of(THING_TYPE_ACCESS,
             THING_TYPE_ACCESS_RINGANDCOMEIN);
     public static final Set<ThingTypeUID> ALARM_THING_TYPES_UIDS = Set.of(THING_TYPE_ALARM);
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream
-            .of(BRIDGE_THING_TYPES_UIDS.stream(), ACTION_THING_TYPES_UIDS.stream(),
-                    THERMOSTAT_THING_TYPES_UIDS.stream(), METER_THING_TYPES_UIDS.stream(),
-                    ACCESS_THING_TYPES_UIDS.stream(), ALARM_THING_TYPES_UIDS.stream())
+    public static final Set<ThingTypeUID> CAR_CHARGER_THING_TYPES_UIDS = Set.of(THING_TYPE_CAR_CHARGER);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream.of(BRIDGE_THING_TYPES_UIDS.stream(),
+            ACTION_THING_TYPES_UIDS.stream(), THERMOSTAT_THING_TYPES_UIDS.stream(), METER_THING_TYPES_UIDS.stream(),
+            ACCESS_THING_TYPES_UIDS.stream(), ALARM_THING_TYPES_UIDS.stream(), CAR_CHARGER_THING_TYPES_UIDS.stream())
             .flatMap(i -> i).collect(Collectors.toSet());
 
     // List of all Channel ids
@@ -103,6 +104,17 @@ public class NikoHomeControlBindingConstants {
     public static final String CHANNEL_ARMED = "armed";
     public static final String CHANNEL_STATE = "state";
 
+    public static final String CHANNEL_STATUS = "status";
+    public static final String CHANNEL_CHARGING_STATUS = "chargingStatus";
+    public static final String CHANNEL_EV_STATUS = "evStatus";
+    public static final String CHANNEL_COUPLING_STATUS = "couplingStatus";
+    public static final String CHANNEL_CHARGING_MODE = "chargingMode";
+    public static final String CHANNEL_TARGET_DISTANCE = "targetDistance";
+    public static final String CHANNEL_TARGET_TIME = "targetTime";
+    public static final String CHANNEL_BOOST = "boost";
+    public static final String CHANNEL_REACHABLE_DISTANCE = "reachableDistance";
+    public static final String CHANNEL_NEXT_CHARGING_TIME = "nextChargingTime";
+
     public static final String CHANNEL_ALARM = "alarm";
     public static final String CHANNEL_NOTICE = "notice";
 
@@ -128,6 +140,8 @@ public class NikoHomeControlBindingConstants {
     public static final String CONFIG_ACCESS_ID = "accessId";
 
     public static final String CONFIG_ALARM_ID = "alarmId";
+
+    public static final String CONFIG_CAR_CHARGER_ID = "carChargerId";
 
     // Thing properties
     public static final String PROPERTY_DEVICE_TYPE = "deviceType";

@@ -24,7 +24,7 @@ The installation only needs to be 'connected' (registered on the Niko Home Contr
 For Niko Home Control I, the binding exposes all actions from the Niko Home Control System that can be triggered from the smartphone/tablet interface, as defined in the Niko Home Control I programming software.
 For Niko Home Control II, the binding exposes all devices in the system.
 
-Supported device types are switches, dimmers and rollershutters or blinds, thermostats, energy meters (Niko Home Control I only) and access control (Niko Home Control II only).
+Supported device types are switches, dimmers and rollershutters or blinds, thermostats, energy meters (Niko Home Control I only), access control (Niko Home Control II only) and car chargers (Niko Home Control II only).
 Niko Home Control alarm and notice messages are retrieved and made available in the binding.
 
 ## Supported Things
@@ -48,6 +48,7 @@ The following thing types are available in the binding:
 | access              |       |   x    | door with bell button and lock                                                    |
 | accessRingAndComeIn |       |   x    | door with bell button, lock and ring and come in functionality                    |
 | alarm               |       |   x    | alarm system                                                                      |
+| carCharger          |   x   |   x    | car charger device                                                                |
 
 ## Binding Configuration
 
@@ -128,7 +129,7 @@ The `password` parameter should be set to the profile password.
 
 ## Thing Configuration
 
-The Thing configurations for **Niko Home Control actions, thermostats, energy meters and access devices** have the following parameters:
+The Thing configurations for **Niko Home Control actions, thermostats, energy meters, access devices and car chargers** have the following parameters:
 
 | Parameter     | NHC I | NHC II | Required | Thing Types                      | Description                                                                       |
 |---------------|:-----:|:------:|:--------:|----------------------------------|-----------------------------------------------------------------------------------|
@@ -141,6 +142,7 @@ The Thing configurations for **Niko Home Control actions, thermostats, energy me
 | refresh       |   x   |   x    |          | energyMeterLive, energyMeter, gasMeter, waterMeter | refresh interval for meter reading in minutes, default 10 minutes. The value should not be lower than 5 minutes to avoid too many meter data retrieval calls |
 | accessId      |       |   x    |     x    | access, accessRingAndComeIn      | unique ID for the access device in the controller                                 |
 | alarmId       |       |   x    |     x    | alarm                            | unique ID for the alarm system in the controller                                  |
+| carChargerId  |       |   x    |     x    | car charger                      | unique ID for the car charger in the controller                                   |
 
 For Niko Home Control I, the `actionId`, `thermostatId` or `meterId` parameter are the unique IP Interface Object ID (`ipInterfaceObjectId`) as automatically assigned in the Niko Home Control Controller when programming the Niko Home Control system using the Niko Home Control I programming software.
 It is not directly visible in the Niko Home Control programming or user software, but will be detected and automatically set by openHAB discovery.
@@ -151,11 +153,8 @@ For Niko Home Control II, the `actionId` parameter is a unique ID for the action
 It can only be auto-discovered.
 If you want to define the action through textual configuration, the easiest way is to first do discovery on the bridge to get the correct `actionId` to use in the textual configuration.
 Discover and add the thing you want to add.
-Note down the `actionId` parameter from the thing, remove it before adding it again through textual configuration, with the same `actionId` parameter.
-Alternatively the `actionId` can be retrieved from the configuration file.
-The file contains a SQLLite database.
-The database contains a table `Action` with column `FifthplayId` corresponding to the required `actionId` parameter.
-The same applies applies for `thermostatId`, `meterId`, `accessId` and `alarmId`.
+You can directly create the textual configuration for the discovered thing in the UI.
+The same applies applies for `thermostatId`, `meterId`, `accessId`, `alarmId` and `carChargerId`.
 
 An example **action** textual configuration looks like:
 
@@ -187,6 +186,12 @@ For **alarm systems**:
 Thing nikohomecontrol:alarm:mybridge:myalarm [ alarmId="abcdef01-dcba-1234-ab98-012345abcdef" ]
 ```
 
+For **car chargers**:
+
+```java
+Thing nikohomecontrol:carCharger:mybridge:mycarcharger [ carChargerId="abcdef01-dcba-1234-ab98-012345abcdef" ]
+```
+
 ## Channels
 
 | Channel Type ID | RW | Advanced | Item Type          | Thing Types | Description                                                                                         |
@@ -216,6 +221,17 @@ Thing nikohomecontrol:alarm:mybridge:myalarm [ alarmId="abcdef01-dcba-1234-ab98-
 | arm             | RW |          | Switch             | alarm       | arm/disarm alarm, will change state (on/off) immediately. Note some integrations (Homekit, Google Home, ...) may require String states for an alarm system (ARMED/DISARMED). This can be achieved using an extra item and a rule updated by/commanding an item linked to this channel |
 | armed           | RW |          | Switch             | alarm       | state of the alarm system (on/off), will only turn on after pre-armed period when arming            |
 | state           | R  |          | String             | alarm       | state of the alarm system (DISARMED, PREARMED, ARMED, PREALARM, ALARM, DETECTOR PROBLEM)            |
+| status          | RW |          | Switch             | carCharger  | status of the car charger (on/off)                                                                  |
+| chargingStatus  | R  |          | String             | carCharger  | charging status of the car charger (ACTIVE, INACTIVE, BATTERY FULL or ERROR)                        |
+| evStatus        | R  |          | String             | carCharger  | status of the electric vehicle (IDLE, CONNECTED or CHARGING)                                        |
+| couplingStatus  | R  |          | String             | carCharger  | coupling status (OK, NO INTERNET, NO CREDENTIALS, INVALID CREDENTIALS, CONNECTION ERROR, CONNECTION TIMEOUT, API ERROR or UNKNOWN ERROR) |
+| electricalPower | R  |          | Number:Power       | carCharger  | current charging power                                                                              |
+| chargingMode    | RW |          | String             | carCharger  | charging mode (SOLAR, NORMAL or SMART)                                                              |
+| targetDistance  | RW |          | Number:Length      | carCharger  | target distance to achieve in charging activity                                                     |
+| targetTime      | RW |          | DateTime           | carCharger  | time by which the target distance should be achieved                                                |
+| boost           | RW |          | Switch             | carCharger  | boost charging to maximum achievable, not respecting capacity limit                                 |
+| reachableDistance | R  |          | Number:Length      | carCharger  | reachable distance in current charing activity                                                      |
+| nextChargingTime | R  |          | DateTime           | carCharger  | next charging start in current charging activity                                                    |
 | alarm           |    |          |                    | bridge, alarm | trigger channel with alarm event message, can be used in rules                                    |
 | notice          |    |          |                    | bridge      | trigger channel with notice event message, can be used in rules                                     |
 

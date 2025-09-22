@@ -25,6 +25,7 @@ import org.openhab.binding.nikohomecontrol.internal.handler.NikoHomeControlBridg
 import org.openhab.binding.nikohomecontrol.internal.protocol.NhcAccess;
 import org.openhab.binding.nikohomecontrol.internal.protocol.NhcAction;
 import org.openhab.binding.nikohomecontrol.internal.protocol.NhcAlarm;
+import org.openhab.binding.nikohomecontrol.internal.protocol.NhcCarCharger;
 import org.openhab.binding.nikohomecontrol.internal.protocol.NhcMeter;
 import org.openhab.binding.nikohomecontrol.internal.protocol.NhcThermostat;
 import org.openhab.binding.nikohomecontrol.internal.protocol.NikoHomeControlCommunication;
@@ -41,6 +42,7 @@ import org.slf4j.LoggerFactory;
  * {@link NikoHomeControlDiscoveryService} is used to return Niko Home Control Actions as things to the framework.
  *
  * @author Mark Herwege - Initial Contribution
+ * @author Mark Herwege - Add car chargers
  */
 @Component(scope = ServiceScope.PROTOTYPE, service = NikoHomeControlDiscoveryService.class)
 @NonNullByDefault
@@ -85,6 +87,7 @@ public class NikoHomeControlDiscoveryService
         discoverMeterDevices(thingHandler, nhcComm);
         discoverAccessDevices(thingHandler, nhcComm);
         discoverAlarmDevices(thingHandler, nhcComm);
+        discoverCarChargerDevices(thingHandler, nhcComm);
     }
 
     private void discoverActionDevices(NikoHomeControlBridgeHandler bridgeHandler,
@@ -195,6 +198,18 @@ public class NikoHomeControlDiscoveryService
             String thingLocation = nhcAlarm.getLocation();
             addDevice(new ThingUID(THING_TYPE_ALARM, bridgeHandler.getThing().getUID(), deviceId), CONFIG_ALARM_ID,
                     deviceId, thingName, thingLocation);
+        });
+    }
+
+    private void discoverCarChargerDevices(NikoHomeControlBridgeHandler bridgeHandler,
+            NikoHomeControlCommunication nhcComm) {
+        Map<String, NhcCarCharger> carChargerDevices = nhcComm.getCarChargerDevices();
+
+        carChargerDevices.forEach((deviceId, nhcCarCharger) -> {
+            String thingName = nhcCarCharger.getName();
+            String thingLocation = nhcCarCharger.getLocation();
+            addDevice(new ThingUID(THING_TYPE_CAR_CHARGER, bridgeHandler.getThing().getUID(), deviceId),
+                    CONFIG_CAR_CHARGER_ID, deviceId, thingName, thingLocation);
         });
     }
 

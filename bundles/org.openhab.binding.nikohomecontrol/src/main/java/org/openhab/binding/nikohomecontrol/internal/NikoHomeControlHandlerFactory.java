@@ -21,6 +21,7 @@ import org.openhab.binding.nikohomecontrol.internal.handler.NikoHomeControlActio
 import org.openhab.binding.nikohomecontrol.internal.handler.NikoHomeControlAlarmHandler;
 import org.openhab.binding.nikohomecontrol.internal.handler.NikoHomeControlBridgeHandler1;
 import org.openhab.binding.nikohomecontrol.internal.handler.NikoHomeControlBridgeHandler2;
+import org.openhab.binding.nikohomecontrol.internal.handler.NikoHomeControlCarChargerHandler;
 import org.openhab.binding.nikohomecontrol.internal.handler.NikoHomeControlMeterHandler;
 import org.openhab.binding.nikohomecontrol.internal.handler.NikoHomeControlThermostatHandler;
 import org.openhab.core.i18n.TimeZoneProvider;
@@ -40,6 +41,7 @@ import org.osgi.service.component.annotations.Reference;
  * handlers.
  *
  * @author Mark Herwege - Initial Contribution
+ * @author Mark Herwege - Add car chargers
  */
 
 @NonNullByDefault
@@ -79,6 +81,8 @@ public class NikoHomeControlHandlerFactory extends BaseThingHandlerFactory {
             return new NikoHomeControlAccessHandler(thing);
         } else if (ALARM_THING_TYPES_UIDS.contains(thing.getThingTypeUID())) {
             return new NikoHomeControlAlarmHandler(thing);
+        } else if (CAR_CHARGER_THING_TYPES_UIDS.contains(thing.getThingTypeUID())) {
+            return new NikoHomeControlCarChargerHandler(thing);
         }
 
         return null;
