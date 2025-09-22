@@ -306,7 +306,7 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
 
     public synchronized <T> T executeUri(URI uri, HttpMethod method, Class<T> clazz, @Nullable String payload,
             @Nullable String contentType, int retryCount) throws NetatmoException {
-        if (connectJob.isPresent()) {
+        if (connectJob != null) {
             throw new NetatmoException("Connection pending, request will not be accepted in the meantime.");
         }
 
@@ -470,6 +470,6 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
     }
 
     public @Nullable Duration getTimeBeforeReconnect() {
-        return connectJob.map(job -> Duration.ofSeconds(job.getDelay(TimeUnit.SECONDS))).orElse(null);
+        return connectJob instanceof ScheduledFuture job ? Duration.ofSeconds(job.getDelay(TimeUnit.SECONDS)) : null;
     }
 }
