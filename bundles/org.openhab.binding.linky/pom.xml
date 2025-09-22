@@ -16,13 +16,6 @@
     <bnd.importpackage>javax.annotation.meta;resolution:=optional</bnd.importpackage>
   </properties>
 
-  <dependencies>
-    <dependency>
-      <groupId>org.jsoup</groupId>
-      <artifactId>jsoup</artifactId>
-      <version>1.14.3</version>
-      <scope>provided</scope>
-    </dependency>
-  </dependencies>
+  
 
 </project>

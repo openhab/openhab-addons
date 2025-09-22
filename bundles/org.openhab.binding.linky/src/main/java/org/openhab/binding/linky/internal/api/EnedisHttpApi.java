@@ -22,7 +22,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.ws.rs.core.MediaType;
@@ -37,9 +36,6 @@ import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.util.Fields;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
 import org.openhab.binding.linky.internal.LinkyConfiguration;
 import org.openhab.binding.linky.internal.LinkyException;
 import org.openhab.binding.linky.internal.dto.AuthData;
@@ -64,16 +60,16 @@ import com.google.gson.JsonSyntaxException;
 public class EnedisHttpApi {
     private static final DateTimeFormatter API_DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     private static final String ENEDIS_DOMAIN = ".enedis.fr";
-    private static final String URL_APPS_LINCS = "https://alex.microapplications" + ENEDIS_DOMAIN;
+    private static final String BASE_URL = "https://alex.microapplications" + ENEDIS_DOMAIN;
     private static final String URL_MON_COMPTE = "https://mon-compte" + ENEDIS_DOMAIN;
     private static final String URL_COMPTE_PART = URL_MON_COMPTE.replace("compte", "compte-particulier");
-    private static final String URL_ENEDIS_AUTHENTICATE = URL_APPS_LINCS + "/authenticate?target=" + URL_COMPTE_PART;
-    private static final String USER_INFO_CONTRACT_URL = URL_APPS_LINCS + "/mon-compte-client/api/private/v1/userinfos";
-    private static final String USER_INFO_URL = URL_APPS_LINCS + "/userinfos";
-    private static final String PRM_INFO_BASE_URL = URL_APPS_LINCS + "/mes-mesures-prm/api/private/v1/personnes/";
-    private static final String PRM_INFO_URL = URL_APPS_LINCS + "/mes-prms-part/api/private/v2/personnes/%s/prms";
+    private static final String URL_ENEDIS_AUTHENTICATE = BASE_URL + "/authenticate?target=" + URL_COMPTE_PART;
+    private static final String USER_INFO_CONTRACT_URL = BASE_URL + "/mon-compte/api/private/v2/userinfos";
+    private static final String USER_INFO_URL = BASE_URL + "/userinfos";
+    private static final String PRM_INFO_BASE_URL = BASE_URL + "/mes-mesures-prm/api/private/v2/personnes/";
+    private static final String PRM_INFO_URL = BASE_URL + "/mes-prms-part/api/private/v2/personnes/%s/prms";
     private static final String MEASURE_URL = PRM_INFO_BASE_URL
-            + "%s/prms/%s/donnees-energetiques?mesuresTypeCode=%s&mesuresCorrigees=false&typeDonnees=CONS&dateDebut=%s";
+            + "%s/prms/%s/donnees-energetiques?mesuresTypeCode=%s&mesuresCorrigees=false&typeDonnees=CONS&dateDebut=%s&segments=%s";
     private static final URI COOKIE_URI = URI.create(URL_COMPTE_PART);
     private static final Pattern REQ_PATTERN = Pattern.compile("ReqID%(.*?)%26");
 
@@ -83,6 +79,8 @@ public class EnedisHttpApi {
     private final LinkyConfiguration config;
 
     private boolean connected = false;
+
+    private String idPersonne = "";
 
     public EnedisHttpApi(LinkyConfiguration config, Gson gson, HttpClient httpClient) {
         this.gson = gson;
@@ -95,96 +93,165 @@ public class EnedisHttpApi {
     }
 
     public void initialize() throws LinkyException {
-        logger.debug("Starting login process for user: {}", config.username);
+        logger.info("Starting login process 2 for user: {}", config.username);
 
         try {
+            ContentResponse result = null;
+            String uri = "";
+            String gotoUri = "";
+
             removeAllCookie();
 
             addCookie(LinkyConfiguration.INTERNAL_AUTH_ID, config.internalAuthId);
-            logger.debug("Step 1: getting authentification");
-            String data = getContent(URL_ENEDIS_AUTHENTICATE);
 
-            logger.debug("Reception request SAML");
-            Document htmlDocument = Jsoup.parse(data);
-            Element el = htmlDocument.select("form").first();
-            Element samlInput = el.select("input[name=SAMLRequest]").first();
+            // ======================================================
+            logger.debug("Step 1a: getting authentification");
+            // ======================================================
+            uri = URL_ENEDIS_AUTHENTICATE;
+            result = httpClient.GET(uri);
 
-            logger.debug("Step 2: send SSO SAMLRequest");
-            ContentResponse result = httpClient.POST(el.attr("action"))
-                    .content(getFormContent("SAMLRequest", samlInput.attr("value"))).send();
-            if (result.getStatus() != HttpStatus.FOUND_302) {
-                throw new LinkyException("Connection failed step 2");
+            if (result.getStatus() != HttpStatus.MOVED_TEMPORARILY_302) {
+                throw new LinkyException("Connection failed step 1a - auth1: %d %s", result.getStatus(),
+                        result.getContentAsString());
             }
 
-            logger.debug("Get the location and the ReqID");
-            Matcher m = REQ_PATTERN.matcher(getLocation(result));
-            if (!m.find()) {
-                throw new LinkyException("Unable to locate ReqId in header");
+            // ======================================================
+            logger.debug("Step 1b: ...");
+            // ======================================================
+            uri = BASE_URL + result.getHeaders().get("Location");
+            result = httpClient.GET(uri);
+
+            if (result.getStatus() != HttpStatus.MOVED_TEMPORARILY_302) {
+                throw new LinkyException("Connection failed step 1b - auth1: %d %s", result.getStatus(),
+                        result.getContentAsString());
             }
 
-            String reqId = m.group(1);
-            String authenticateUrl = URL_MON_COMPTE
-                    + "/auth/json/authenticate?realm=/enedis&forward=true&spEntityID=SP-ODW-PROD&goto=/auth/SSOPOST/metaAlias/enedis/providerIDP?ReqID%"
-                    + reqId + "%26index%3Dnull%26acsURL%3D" + URL_APPS_LINCS
-                    + "/saml/SSO%26spEntityID%3DSP-ODW-PROD%26binding%3Durn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST&AMAuthCookie=";
+            // ======================================================
+            logger.debug("Step 1c: ...");
+            // ======================================================
+            uri = result.getHeaders().get("Location");
 
-            logger.debug("Step 3: auth1 - retrieve the template, thanks to cookie internalAuthId user is already set");
-            result = httpClient.POST(authenticateUrl).header("X-NoSession", "true").header("X-Password", "anonymous")
+            result = httpClient.GET(uri);
+
+            if (result.getStatus() != HttpStatus.MOVED_TEMPORARILY_302) {
+                throw new LinkyException("Connection failed step 1c - auth1: %d %s", result.getStatus(),
+                        result.getContentAsString());
+            }
+
+            // ======================================================
+            logger.debug("Step 1d: ...");
+            // ======================================================
+            uri = result.getHeaders().get("Location");
+            int idx = uri.indexOf("goto=");
+            gotoUri = uri.substring(idx + 5);
+
+            result = httpClient.GET(uri);
+
+            if (result.getStatus() != HttpStatus.MOVED_TEMPORARILY_302) {
+                throw new LinkyException("Connection failed step 1d - auth1: %d %s", result.getStatus(),
+                        result.getContentAsString());
+            }
+
+            // ======================================================
+            logger.debug("Step 1e: ...");
+            // ======================================================
+            uri = URL_MON_COMPTE + result.getHeaders().get("Location");
+            result = httpClient.GET(uri);
+
+            if (result.getStatus() != HttpStatus.OK_200) {
+                throw new LinkyException("Connection failed step 1e - auth1: %d %s", result.getStatus(),
+                        result.getContentAsString());
+            }
+
+            // ======================================================
+            logger.debug("Step 2: auth1 - retrieve the template, thanks to cookie internalAuthId user is already set");
+            // ======================================================
+            uri = URL_MON_COMPTE + "/auth/json/authenticate?realm=/enedis&goto=" + gotoUri;
+
+            result = httpClient.POST(uri).header("X-NoSession", "true").header("X-Password", "anonymous")
                     .header("X-Requested-With", "XMLHttpRequest").header("X-Username", "anonymous").send();
             if (result.getStatus() != HttpStatus.OK_200) {
                 throw new LinkyException("Connection failed step 3 - auth1: %s", result.getContentAsString());
             }
 
             AuthData authData = gson.fromJson(result.getContentAsString(), AuthData.class);
-            if (authData == null || authData.callbacks.size() < 2 || authData.callbacks.get(0).input.isEmpty()
-                    || authData.callbacks.get(1).input.isEmpty() || !config.username
-                            .equals(Objects.requireNonNull(authData.callbacks.get(0).input.get(0)).valueAsString())) {
-                logger.debug("auth1 - invalid template for auth data: {}", result.getContentAsString());
-                throw new LinkyException("Authentication error, the authentication_cookie is probably wrong");
+            if (authData != null) {
+                if (authData.callbacks.size() < 2 || authData.callbacks.get(0).input.isEmpty()
+                        || authData.callbacks.get(1).input.isEmpty() || !config.username.equals(
+                                Objects.requireNonNull(authData.callbacks.get(0).input.get(0)).valueAsString())) {
+                    logger.debug("auth1 - invalid template for auth data: {}", result.getContentAsString());
+                    throw new LinkyException("Authentication error, the authentication_cookie is probably wrong");
+                }
+
+                authData.callbacks.get(1).input.get(0).value = config.password;
             }
 
-            authData.callbacks.get(1).input.get(0).value = config.password;
-            logger.debug("Step 4: auth2 - send the auth data");
-            result = httpClient.POST(authenticateUrl).header(HttpHeader.CONTENT_TYPE, MediaType.APPLICATION_JSON)
+            // ======================================================
+            logger.debug("Step 3: auth2 - send the auth data");
+            // ======================================================
+            result = httpClient.POST(uri).header(HttpHeader.CONTENT_TYPE, MediaType.APPLICATION_JSON)
                     .header("X-NoSession", "true").header("X-Password", "anonymous")
                     .header("X-Requested-With", "XMLHttpRequest").header("X-Username", "anonymous")
                     .content(new StringContentProvider(gson.toJson(authData))).send();
             if (result.getStatus() != HttpStatus.OK_200) {
-                throw new LinkyException("Connection failed step 3 - auth2: %s", result.getContentAsString());
+                throw new LinkyException("Connection failed step 3 - auth2 : %s", result.getContentAsString());
             }
 
             AuthResult authResult = gson.fromJson(result.getContentAsString(), AuthResult.class);
-            if (authResult == null) {
-                throw new LinkyException("Invalid authentication result data");
-            }
 
             logger.debug("Add the tokenId cookie");
-            addCookie("enedisExt", authResult.tokenId);
-
-            logger.debug("Step 5: retrieve the SAMLresponse");
-            data = getContent(URL_MON_COMPTE + "/" + authResult.successUrl);
-            htmlDocument = Jsoup.parse(data);
-            el = htmlDocument.select("form").first();
-            samlInput = el.select("input[name=SAMLResponse]").first();
-
-            logger.debug("Step 6: post the SAMLresponse to finish the authentication");
-            result = httpClient.POST(el.attr("action")).content(getFormContent("SAMLResponse", samlInput.attr("value")))
-                    .send();
-            if (result.getStatus() != HttpStatus.FOUND_302) {
-                throw new LinkyException("Connection failed step 6");
+            if (authResult == null) {
+                throw new LinkyException("Errors on step3 : authResult=null");
             }
 
-            logger.debug("Step 7: retrieve cookieKey");
+            addCookie("enedisExt", authResult.tokenId);
+            // ======================================================
+            logger.debug("Step 4a: Confirm login");
+            // ======================================================
+            uri = authResult.successUrl;
+            result = httpClient.GET(uri);
+            if (result.getStatus() != HttpStatus.MOVED_TEMPORARILY_302) {
+                throw new LinkyException("Connection failed step 4a - auth2: %d %s", result.getStatus(),
+                        result.getContentAsString());
+            }
+
+            // ======================================================
+            logger.debug("Step 4b:Confirm login");
+            // ======================================================
+            uri = result.getHeaders().get("Location");
+            result = httpClient.GET(uri);
+            if (result.getStatus() != HttpStatus.MOVED_TEMPORARILY_302) {
+                throw new LinkyException("Connection failed step 4b - auth2: %d %s", result.getStatus(),
+                        result.getContentAsString());
+            }
+
+            // ======================================================
+            logger.debug("Step 4c: Confirm login");
+            // ======================================================
+            uri = BASE_URL + "/authenticate?target=https://mon-compte-client.enedis.fr%2Fhub%3FallEspace%3Dfalse";
+            // "result.getHeaders().get("Location");
+
+            result = httpClient.GET(uri);
+            if (result.getStatus() != HttpStatus.TEMPORARY_REDIRECT_307) {
+                throw new LinkyException("Connection failed step 4c - auth2: %d %s", result.getStatus(),
+                        result.getContentAsString());
+            }
+
+            // ===========================================================
+            logger.debug("Step 5: retrieve user information andd cookie");
+            // ===========================================================
             result = httpClient.GET(USER_INFO_CONTRACT_URL);
 
             @SuppressWarnings("unchecked")
             HashMap<String, String> hashRes = gson.fromJson(result.getContentAsString(), HashMap.class);
 
             String cookieKey;
+
             if (hashRes != null && hashRes.containsKey("cnAlex")) {
                 cookieKey = "personne_for_" + hashRes.get("cnAlex");
+                idPersonne = Objects.requireNonNull(hashRes.get("idPersonne"));
             } else {
-                throw new LinkyException("Connection failed step 7, missing cookieKey");
+                throw new LinkyException("Connection failed step 5, missing cookieKey");
             }
 
             List<HttpCookie> lCookie = httpClient.getCookieStore().getCookies();
@@ -210,7 +277,7 @@ public class EnedisHttpApi {
             logger.debug("Logout process");
             connected = false;
             try { // Three times in a row to get disconnected
-                String location = getLocation(httpClient.GET(URL_APPS_LINCS + "/logout"));
+                String location = getLocation(httpClient.GET(BASE_URL + "/logout"));
                 location = getLocation(httpClient.GET(location));
                 getLocation(httpClient.GET(location));
                 httpClient.getCookieStore().removeAll();
@@ -256,7 +323,7 @@ public class EnedisHttpApi {
                 if (loc.startsWith("http://") || loc.startsWith("https://")) {
                     newUrl = loc;
                 } else {
-                    newUrl = URL_APPS_LINCS + loc;
+                    newUrl = BASE_URL + loc;
                 }
 
                 request = httpClient.newRequest(newUrl);
@@ -322,18 +389,24 @@ public class EnedisHttpApi {
         return getData(USER_INFO_URL, UserInfo.class);
     }
 
-    private Consumption getMeasures(String userId, String prmId, LocalDate from, LocalDate to, String request)
-            throws LinkyException {
-        String url = String.format(MEASURE_URL, userId, prmId, request, from.format(API_DATE_FORMAT));
+    private Consumption getMeasures(String userId, String prmId, String segment, LocalDate from, LocalDate to,
+            String request) throws LinkyException {
+        String url = String.format(MEASURE_URL, userId, prmId, request, from.format(API_DATE_FORMAT), segment);
         ConsumptionReport report = getData(url, ConsumptionReport.class);
         return report.consumptions;
     }
 
-    public Consumption getEnergyData(String userId, String prmId, LocalDate from, LocalDate to) throws LinkyException {
-        return getMeasures(userId, prmId, from, to, "ENERGIE");
+    public Consumption getEnergyData(String userId, String prmId, String segment, LocalDate from, LocalDate to)
+            throws LinkyException {
+        return getMeasures(userId, prmId, segment, from, to, "ENERGIE");
     }
 
-    public Consumption getPowerData(String userId, String prmId, LocalDate from, LocalDate to) throws LinkyException {
-        return getMeasures(userId, prmId, from, to, "PMAX");
+    public Consumption getPowerData(String userId, String prmId, String segment, LocalDate from, LocalDate to)
+            throws LinkyException {
+        return getMeasures(userId, prmId, segment, from, to, "PMAX");
+    }
+
+    public String getIdPersonne() {
+        return idPersonne;
     }
 }
