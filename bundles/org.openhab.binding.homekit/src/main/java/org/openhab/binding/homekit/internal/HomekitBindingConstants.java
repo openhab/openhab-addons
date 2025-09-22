@@ -43,7 +43,7 @@ public class HomekitBindingConstants {
     public static final String CHANNEL_TYPE_LABEL_FMT = "Channel type: %s";
 
     // UID id formats
-    public static final String CHILD_FMT = "child-%x"; // e.g. child-123abc;
+    public static final String ACCESSORY_FMT = "accessory-%d"; // e.g. accessory-3
 
     // configuration parameters
     public static final String CONFIG_PAIRING_CODE = "pairingCode";

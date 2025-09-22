@@ -70,7 +70,7 @@ public class Service {
 
         // persist the group _type_, and return the definition of a specific _instance_ of that type
         typeProvider.putChannelGroupType(groupType);
-        return new ChannelGroupDefinition(Integer.toString(iid), groupTypeUID, serviceType.toString(), null);
+        return new ChannelGroupDefinition(serviceType.getOpenhabType(), groupTypeUID, serviceType.toString(), null);
     }
 
     public @Nullable ServiceType getServiceType() {

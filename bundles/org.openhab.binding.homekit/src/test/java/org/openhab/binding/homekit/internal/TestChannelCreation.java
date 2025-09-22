@@ -398,8 +398,7 @@ class TestChannelCreation {
 
         // Check that the public-hap-service-accessory-information channel group type and its UID and label are set
         ChannelGroupType channelGroupType = channelGroupTypes.stream()
-                .filter(cgt -> "public-hap-service-accessory-information".equals(cgt.getUID().getId())).findFirst()
-                .orElse(null);
+                .filter(cgt -> "accessory-information".equals(cgt.getUID().getId())).findFirst().orElse(null);
         assertNotNull(channelGroupType);
         // There should be four fake channel definitions for the Accessory Information service
         assertEquals(4, channelGroupType.getChannelDefinitions().size());
@@ -417,11 +416,11 @@ class TestChannelCreation {
         assertEquals("099DB48E9E28", channelDefinition.getLabel());
 
         // Check that the channel group type and its UID and label are set
-        channelGroupType = channelGroupTypes.stream()
-                .filter(cgt -> "public-hap-service-lightbulb".equals(cgt.getUID().getId())).findFirst().orElse(null);
+        channelGroupType = channelGroupTypes.stream().filter(cgt -> "lightbulb".equals(cgt.getUID().getId()))
+                .findFirst().orElse(null);
         assertNotNull(channelGroupType);
         assertEquals("Channel group type: Light Bulb", channelGroupType.getLabel());
-        assertEquals("public-hap-service-lightbulb", channelGroupType.getUID().getId());
+        assertEquals("lightbulb", channelGroupType.getUID().getId());
 
         // There should be two channel definitions for the Light Bulb service: On and Brightness
         assertEquals(2, channelGroupType.getChannelDefinitions().size());
@@ -430,7 +429,7 @@ class TestChannelCreation {
         channelDefinition = channelGroupType.getChannelDefinitions().stream()
                 .filter(cd -> "Brightness".equals(cd.getLabel())).findFirst().orElse(null);
         assertNotNull(channelDefinition);
-        assertEquals("public-hap-characteristic-brightness", channelDefinition.getChannelTypeUID().getId());
+        assertEquals("brightness", channelDefinition.getChannelTypeUID().getId());
         assertEquals("Brightness", channelDefinition.getLabel());
         assertEquals("percentage", channelDefinition.getProperties().get("unit"));
         assertEquals("int", channelDefinition.getProperties().get("format"));
@@ -446,7 +445,7 @@ class TestChannelCreation {
         ChannelType channelType = channelTypes.stream().filter(ct -> "Dimmer".equals(ct.getItemType())).findFirst()
                 .orElse(null);
         assertNotNull(channelType);
-        assertEquals("public-hap-characteristic-brightness", channelType.getUID().getId());
+        assertEquals("brightness", channelType.getUID().getId());
         assertEquals("Channel type: Brightness", channelType.getLabel());
         assertEquals("Dimmer", channelType.getItemType());
         assertEquals("light", channelType.getCategory());

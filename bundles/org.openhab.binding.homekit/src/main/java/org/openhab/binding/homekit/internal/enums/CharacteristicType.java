@@ -176,7 +176,7 @@ public enum CharacteristicType {
     }
 
     public String getOpenhabType() {
-        return type.replace("-", "_").replace(".", "-"); // convert to OH channel-group-type format
+        return type.replace("public.hap.characteristic.", "").replace(".", "-"); // convert to OH channel type format
     }
 
     public String getType() {

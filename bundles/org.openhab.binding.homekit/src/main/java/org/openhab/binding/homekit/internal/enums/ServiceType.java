@@ -89,7 +89,7 @@ public enum ServiceType {
     }
 
     public String getOpenhabType() {
-        return type.replace(".", "-"); // convert to OH channel type format
+        return type.replace("public.hap.service.", "").replace(".", "-"); // convert to OH channel type format
     }
 
     public String getType() {

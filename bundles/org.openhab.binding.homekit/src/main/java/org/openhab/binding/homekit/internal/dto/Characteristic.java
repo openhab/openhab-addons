@@ -589,7 +589,7 @@ public class Characteristic {
         Optional.ofNullable(ev).map(b -> b.toString()).ifPresent(s -> properties.put("ev", s));
 
         // return the definition of a specific _instance_ of the channel _type_
-        return new ChannelDefinitionBuilder(Integer.toString(iid), uid).withProperties(properties)
+        return new ChannelDefinitionBuilder(characteristicType.getOpenhabType(), uid).withProperties(properties)
                 .withLabel(characteristicType.toString()).build();
     }
 
