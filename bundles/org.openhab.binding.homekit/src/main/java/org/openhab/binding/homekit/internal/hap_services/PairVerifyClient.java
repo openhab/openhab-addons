@@ -31,7 +31,7 @@ import org.openhab.binding.homekit.internal.enums.PairingMethod;
 import org.openhab.binding.homekit.internal.enums.PairingState;
 import org.openhab.binding.homekit.internal.enums.TlvType;
 import org.openhab.binding.homekit.internal.session.AsymmetricSessionKeys;
-import org.openhab.binding.homekit.internal.transport.HttpTransport;
+import org.openhab.binding.homekit.internal.transport.IpTransport;
 
 /**
  * Handles the 3-step pair-verify process with a HomeKit accessory.
@@ -44,8 +44,7 @@ public class PairVerifyClient {
     private static final String CONTENT_TYPE_TLV = "application/pairing+tlv8";
     private static final String ENDPOINT_PAIR_VERIFY = "/pair-verify";
 
-    private final HttpTransport httpTransport;
-    private final String baseUrl;
+    private final IpTransport ipTransport;
     private final byte[] pairingId;
     private final Ed25519PrivateKeyParameters clientLongTermPrivateKey;
     private final Ed25519PublicKeyParameters serverLongTermPublicKey;
@@ -56,11 +55,10 @@ public class PairVerifyClient {
     private @NonNullByDefault({}) byte[] readKey;
     private @NonNullByDefault({}) byte[] writeKey;
 
-    public PairVerifyClient(HttpTransport httpTransport, String baseUrl, String pairingId,
+    public PairVerifyClient(IpTransport ipTransport, String pairingId,
             Ed25519PrivateKeyParameters clientLongTermPrivateKey, Ed25519PublicKeyParameters serverLongTermPublicKey)
             throws Exception {
-        this.httpTransport = httpTransport;
-        this.baseUrl = baseUrl;
+        this.ipTransport = ipTransport;
         this.pairingId = pairingId.getBytes(StandardCharsets.UTF_8);
         this.clientLongTermPrivateKey = clientLongTermPrivateKey;
         this.serverLongTermPublicKey = serverLongTermPublicKey;
@@ -85,7 +83,7 @@ public class PairVerifyClient {
                 TlvType.STATE.key, new byte[] { PairingState.M1.value }, //
                 TlvType.PUBLIC_KEY.key, clientKey);
         Validator.validate(PairingMethod.VERIFY, tlv);
-        doStep2(httpTransport.post(baseUrl, ENDPOINT_PAIR_VERIFY, CONTENT_TYPE_TLV, Tlv8Codec.encode(tlv)));
+        doStep2(ipTransport.post(ENDPOINT_PAIR_VERIFY, CONTENT_TYPE_TLV, Tlv8Codec.encode(tlv)));
     }
 
     // M2 — Receive server ephemeral X25519 public key and encrypted TLV
@@ -100,8 +98,7 @@ public class PairVerifyClient {
         sessionKey = generateHkdfKey(sharedSecret, PAIR_VERIFY_ENCRYPT_SALT, PAIR_VERIFY_ENCRYPT_INFO);
 
         byte[] ciphertext = tlv.get(TlvType.ENCRYPTED_DATA.key);
-        byte[] plaintext = CryptoUtils.decrypt(sessionKey, PV_M2_NONCE, Objects.requireNonNull(ciphertext),
-                CHACHA20_POLY1305);
+        byte[] plaintext = CryptoUtils.decrypt(sessionKey, PV_M2_NONCE, Objects.requireNonNull(ciphertext));
 
         // validate identifier + signature
         Map<Integer, byte[]> subTlv = Tlv8Codec.decode(plaintext);
@@ -127,14 +124,14 @@ public class PairVerifyClient {
                 TlvType.SIGNATURE.key, signature);
 
         byte[] plaintext = Tlv8Codec.encode(subTlv);
-        byte[] ciphertext = encrypt(sessionKey, PV_M3_NONCE, plaintext, CHACHA20_POLY1305);
+        byte[] ciphertext = encrypt(sessionKey, PV_M3_NONCE, plaintext);
 
         Map<Integer, byte[]> tlv = Map.of( //
                 TlvType.STATE.key, new byte[] { PairingState.M3.value }, //
                 TlvType.ENCRYPTED_DATA.key, ciphertext);
         Validator.validate(PairingMethod.VERIFY, tlv);
 
-        doStep4(httpTransport.post(baseUrl, ENDPOINT_PAIR_VERIFY, CONTENT_TYPE_TLV, Tlv8Codec.encode(tlv)));
+        doStep4(ipTransport.post(ENDPOINT_PAIR_VERIFY, CONTENT_TYPE_TLV, Tlv8Codec.encode(tlv)));
     }
 
     // M4 — Final confirmation

@@ -63,8 +63,6 @@ public class CryptoConstants {
     public static final byte[] CONTROL_READ_ENCRYPTION_KEY = "Control-Read-Encryption-Key".getBytes(StandardCharsets.UTF_8);
     public static final byte[] CONTROL_WRITE_ENCRYPTION_KEY = "Control-Write-Encryption-Key".getBytes(StandardCharsets.UTF_8);
 
-    public static final byte[] CHACHA20_POLY1305 = "ChaCha20-Poly1305".getBytes(StandardCharsets.UTF_8);
-
     public static final byte[] PAIR_VERIFY_ENCRYPT_INFO = "Pair-Verify-Encrypt-Info".getBytes(StandardCharsets.UTF_8);
     public static final byte[] PAIR_VERIFY_ENCRYPT_SALT = "Pair-Verify-Encrypt-Salt".getBytes(StandardCharsets.UTF_8);
 

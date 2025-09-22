@@ -12,10 +12,16 @@
  */
 package org.openhab.binding.homekit.internal.session;
 
+import static org.openhab.binding.homekit.internal.crypto.CryptoUtils.*;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.Socket;
+import java.nio.ByteBuffer;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.homekit.internal.crypto.CryptoUtils;
 
 /**
  * Manages a secure session using ChaCha20 encryption for a HomeKit accessory.
@@ -27,37 +33,53 @@ import org.openhab.binding.homekit.internal.crypto.CryptoUtils;
 @NonNullByDefault
 public class SecureSession {
 
+    private final InputStream in;
+    private final OutputStream out;
     private final byte[] writeKey;
     private final byte[] readKey;
     private final AtomicInteger writeCounter = new AtomicInteger(0);
     private final AtomicInteger readCounter = new AtomicInteger(0);
 
-    public SecureSession(AsymmetricSessionKeys keys) {
-        this.writeKey = keys.getWriteKey();
-        this.readKey = keys.getReadKey();
+    public SecureSession(Socket socket, AsymmetricSessionKeys keys) throws IOException {
+        in = socket.getInputStream();
+        out = socket.getOutputStream();
+        writeKey = keys.getWriteKey();
+        readKey = keys.getReadKey();
     }
 
     /**
-     * * Encrypts the given plaintext using the write key and a unique nonce.
+     * Encrypts the given plaintext using the write key and a unique nonce and sends it.
      *
-     * @param plaintext The plaintext to encrypt.
-     * @return The encrypted ciphertext.
+     * @param plaintext the plaintext to be encrypted and sent.
      * @throws Exception
      */
-    public byte[] encrypt(byte[] plaintext) throws Exception {
-        byte[] nonce = CryptoUtils.generateNonce(writeCounter.getAndIncrement());
-        return CryptoUtils.encrypt(writeKey, nonce, plaintext, null); // TODO: AAD
+    public void send(byte[] plaintext) throws Exception {
+        byte[] nonce = generateNonce(writeCounter.getAndIncrement());
+        byte[] ciphertext = encrypt(writeKey, nonce, plaintext);
+        ByteBuffer buf = ByteBuffer.allocate(2 + ciphertext.length);
+        buf.order(java.nio.ByteOrder.LITTLE_ENDIAN);
+        buf.putShort((short) ciphertext.length);
+        buf.put(ciphertext);
+        out.write(buf.array());
+        out.flush();
     }
 
     /**
-     * Decrypts the given ciphertext using the read key and a unique nonce.
+     * Reads the cipertext and decrypts it using the read key and a unique nonce.
      *
-     * @param ciphertext The ciphertext to decrypt.
-     * @return The decrypted plaintext.
+     * @return the received ciphertext decrypted.
      * @throws Exception
      */
-    public byte[] decrypt(byte[] ciphertext) throws Exception {
-        byte[] nonce = CryptoUtils.generateNonce(readCounter.getAndIncrement());
-        return CryptoUtils.decrypt(readKey, nonce, ciphertext, null); // TODO: AAD
+    public byte[] receive() throws Exception {
+        int lo = in.read();
+        int hi = in.read();
+        if (lo < 0 || hi < 0) {
+            throw new IllegalStateException("Stream closed");
+        }
+        int length = (lo & 0xFF) | ((hi & 0xFF) << 8);
+        byte[] ciphertext = in.readNBytes(length);
+        byte[] nonce = generateNonce(readCounter.getAndIncrement());
+        byte[] plaintext = decrypt(readKey, nonce, ciphertext);
+        return plaintext;
     }
 }

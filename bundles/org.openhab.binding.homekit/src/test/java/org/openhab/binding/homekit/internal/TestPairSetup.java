@@ -12,10 +12,10 @@
  */
 package org.openhab.binding.homekit.internal;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
-import static org.openhab.binding.homekit.internal.crypto.CryptoConstants.*;
+import static org.openhab.binding.homekit.internal.crypto.CryptoConstants.PS_M5_NONCE;
 import static org.openhab.binding.homekit.internal.crypto.CryptoUtils.*;
 
 import java.nio.charset.StandardCharsets;
@@ -27,14 +27,13 @@ import org.bouncycastle.crypto.InvalidCipherTextException;
 import org.bouncycastle.crypto.params.Ed25519PrivateKeyParameters;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
-import org.openhab.binding.homekit.internal.crypto.CryptoUtils;
 import org.openhab.binding.homekit.internal.crypto.SRPclient;
 import org.openhab.binding.homekit.internal.crypto.Tlv8Codec;
 import org.openhab.binding.homekit.internal.enums.PairingMethod;
 import org.openhab.binding.homekit.internal.enums.PairingState;
 import org.openhab.binding.homekit.internal.enums.TlvType;
 import org.openhab.binding.homekit.internal.hap_services.PairSetupClient;
-import org.openhab.binding.homekit.internal.transport.HttpTransport;
+import org.openhab.binding.homekit.internal.transport.IpTransport;
 
 /**
  * Test cases for the {@link PairSetupClient} class.
@@ -62,61 +61,49 @@ class TestPairSetup {
     void testBareCrypto() throws InvalidCipherTextException {
         byte[] plainText0 = "the quick brown dog".getBytes(StandardCharsets.UTF_8);
         byte[] key = new byte[32]; // 256 bits = 32 bytes
-        byte[] nonce = CryptoUtils.generateNonce(123);
+        byte[] nonce = generateNonce(123);
         new SecureRandom().nextBytes(key);
-        byte[] cipherText = encrypt(key, nonce, plainText0, null);
-        byte[] plainText1 = decrypt(key, nonce, cipherText, null);
+        byte[] cipherText = encrypt(key, nonce, plainText0);
+        byte[] plainText1 = decrypt(key, nonce, cipherText);
         assertArrayEquals(plainText0, plainText1);
-        byte[] cipherText2 = encrypt(key, nonce, plainText0, CHACHA20_POLY1305);
-        byte[] plainText2 = decrypt(key, nonce, cipherText2, CHACHA20_POLY1305);
-        assertArrayEquals(plainText0, plainText2);
-        assertThrows(InvalidCipherTextException.class,
-                () -> decrypt(key, nonce, cipherText2, "bad-authTag".getBytes(StandardCharsets.UTF_8)));
     }
 
     @Test
     void testSrpClient() throws Exception {
         byte[] plainText0 = "the quick brown dog".getBytes(StandardCharsets.UTF_8);
-        SRPclient client = new SRPclient("password123", hexBlockToByteArray(SALT_HEX),
-                hexBlockToByteArray(SERVER_PRIVATE_HEX));
+        SRPclient client = new SRPclient("password123", fromHex(SALT_HEX), fromHex(SERVER_PRIVATE_HEX));
         byte[] key = client.getSymmetricKey();
-        byte[] cipherText = encrypt(key, PS_M5_NONCE, plainText0, null);
-        byte[] plainText1 = decrypt(key, PS_M5_NONCE, cipherText, null);
+        byte[] cipherText = encrypt(key, PS_M5_NONCE, plainText0);
+        byte[] plainText1 = decrypt(key, PS_M5_NONCE, cipherText);
         assertArrayEquals(plainText0, plainText1);
-        byte[] cipherText2 = encrypt(key, PS_M5_NONCE, plainText0, CHACHA20_POLY1305);
-        byte[] plainText2 = decrypt(key, PS_M5_NONCE, cipherText2, CHACHA20_POLY1305);
-        assertArrayEquals(plainText0, plainText2);
-        assertThrows(InvalidCipherTextException.class,
-                () -> decrypt(key, PS_M5_NONCE, cipherText2, "bad-authTag".getBytes(StandardCharsets.UTF_8)));
     }
 
     @Test
     void testPairSetup() throws Exception {
         // initialize test parameters
-        String baseUrl = "http://example.com";
         String password = "password123";
         String clientPairingIdentifier = "11:22:33:44:55:66";
         String serverPairingIdentifier = "66:55:44:33:22:11";
-        byte[] serverSalt = hexBlockToByteArray(SALT_HEX);
+        byte[] serverSalt = fromHex(SALT_HEX);
         byte[] serverPairingId = serverPairingIdentifier.getBytes(StandardCharsets.UTF_8);
 
         // initialize signing keys
         Ed25519PrivateKeyParameters clientPrivateSigningKey = new Ed25519PrivateKeyParameters(
-                hexBlockToByteArray(CLIENT_PRIVATE_HEX));
+                fromHex(CLIENT_PRIVATE_HEX));
         Ed25519PrivateKeyParameters serverPrivateSigningKey = new Ed25519PrivateKeyParameters(
-                hexBlockToByteArray(SERVER_PRIVATE_HEX));
+                fromHex(SERVER_PRIVATE_HEX));
 
         // create mock
-        HttpTransport mockTransport = mock(HttpTransport.class);
+        IpTransport mockTransport = mock(IpTransport.class);
 
         // create SRP client and server
         SRPtestServer server = new SRPtestServer(password, serverSalt, serverPairingId, serverPrivateSigningKey);
-        PairSetupClient client = new PairSetupClient(mockTransport, baseUrl, clientPairingIdentifier,
-                clientPrivateSigningKey, password);
+        PairSetupClient client = new PairSetupClient(mockTransport, clientPairingIdentifier, clientPrivateSigningKey,
+                password);
 
         // mock the HTTP transport to simulate the SRP exchange
         doAnswer(invocation -> {
-            byte[] arg = invocation.getArgument(3);
+            byte[] arg = invocation.getArgument(2);
 
             // decode and validate the incoming TLV
             Map<Integer, byte[]> tlv = Tlv8Codec.decode(arg);
@@ -134,7 +121,7 @@ class TestPairSetup {
                 default -> throw new IllegalArgumentException("Unexpected state");
             };
 
-        }).when(mockTransport).post(anyString(), anyString(), anyString(), any(byte[].class));
+        }).when(mockTransport).post(anyString(), anyString(), any(byte[].class));
 
         // execute the pairing setup
         client.pair();
@@ -169,24 +156,5 @@ class TestPairSetup {
                 TlvType.ENCRYPTED_DATA.key, cipertext);
         PairSetupClient.Validator.validate(PairingMethod.SETUP, tlv);
         return Tlv8Codec.encode(tlv);
-    }
-
-    private static byte[] hexBlockToByteArray(String hexBlock) {
-        String normalized = hexBlock.replaceAll("\\s+", "");
-        if (normalized.length() % 2 != 0) {
-            throw new IllegalArgumentException("Hex string must have even length");
-        }
-        int len = normalized.length();
-        byte[] result = new byte[len / 2];
-        for (int i = 0; i < len; i += 2) {
-            int high = Character.digit(normalized.charAt(i), 16);
-            int low = Character.digit(normalized.charAt(i + 1), 16);
-            if (high == -1 || low == -1) {
-                throw new IllegalArgumentException(
-                        "Invalid hex character: " + normalized.charAt(i) + normalized.charAt(i + 1));
-            }
-            result[i / 2] = (byte) ((high << 4) + low);
-        }
-        return result;
     }
 }

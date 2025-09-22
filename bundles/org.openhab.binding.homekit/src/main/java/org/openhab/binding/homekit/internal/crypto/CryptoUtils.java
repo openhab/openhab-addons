@@ -55,18 +55,8 @@ public class CryptoUtils {
     }
 
     // Decrypt with ChaCha20-Poly1305
-    public static byte[] decrypt(byte[] key, byte[] nonce, byte[] cipherText, byte @Nullable [] authTag)
-            throws InvalidCipherTextException {
-        int length;
-        if (authTag != null) {
-            length = cipherText.length - authTag.length;
-            byte[] cipherTag = Arrays.copyOfRange(cipherText, length, cipherText.length);
-            if (!Arrays.equals(cipherTag, authTag)) {
-                throw new InvalidCipherTextException("Authentication tag mismatch");
-            }
-        } else {
-            length = cipherText.length;
-        }
+    public static byte[] decrypt(byte[] key, byte[] nonce, byte[] cipherText) throws InvalidCipherTextException {
+        int length = cipherText.length;
         ChaCha20Poly1305 cipher = new ChaCha20Poly1305();
         AEADParameters params = new AEADParameters(new KeyParameter(key), 128, nonce, null);
         cipher.init(false, params);
@@ -77,15 +67,14 @@ public class CryptoUtils {
     }
 
     // Encrypt with ChaCha20-Poly1305
-    public static byte[] encrypt(byte[] key, byte[] nonce, byte[] plainText, byte @Nullable [] authTag)
-            throws InvalidCipherTextException {
+    public static byte[] encrypt(byte[] key, byte[] nonce, byte[] plainText) throws InvalidCipherTextException {
         ChaCha20Poly1305 cipher = new ChaCha20Poly1305();
         AEADParameters params = new AEADParameters(new KeyParameter(key), 128, nonce, null);
         cipher.init(true, params);
         byte[] cipherText = new byte[cipher.getOutputSize(plainText.length)];
         int length = cipher.processBytes(plainText, 0, plainText.length, cipherText, 0);
         cipher.doFinal(cipherText, length);
-        return authTag == null ? cipherText : concat(cipherText, authTag);
+        return cipherText;
     }
 
     // HKDF-SHA512 key derivation
@@ -186,15 +175,33 @@ public class CryptoUtils {
         return out;
     }
 
-    public static String toSpaceDelimitedHex(byte @Nullable [] bytes) {
+    public static String asHex(byte @Nullable [] bytes) {
         if (bytes == null) {
             return "null";
         }
         StringBuilder sb = new StringBuilder();
-        sb.append(String.format("[%03d]", bytes.length)).append(' ');
         for (byte b : bytes) {
             sb.append(String.format("%02X", b)).append(' ');
         }
         return sb.toString().trim(); // remove trailing space
+    }
+
+    public static byte[] fromHex(String hexBlock) {
+        String normalized = hexBlock.replaceAll("\\s+", "");
+        if (normalized.length() % 2 != 0) {
+            throw new IllegalArgumentException("Hex string must have even length");
+        }
+        int len = normalized.length();
+        byte[] result = new byte[len / 2];
+        for (int i = 0; i < len; i += 2) {
+            int high = Character.digit(normalized.charAt(i), 16);
+            int low = Character.digit(normalized.charAt(i + 1), 16);
+            if (high == -1 || low == -1) {
+                throw new IllegalArgumentException(
+                        "Invalid hex character: " + normalized.charAt(i) + normalized.charAt(i + 1));
+            }
+            result[i / 2] = (byte) ((high << 4) + low);
+        }
+        return result;
     }
 }

@@ -17,8 +17,7 @@ import static org.openhab.binding.homekit.internal.HomekitBindingConstants.*;
 import java.nio.charset.StandardCharsets;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.homekit.internal.session.SecureSession;
-import org.openhab.binding.homekit.internal.transport.HttpTransport;
+import org.openhab.binding.homekit.internal.transport.IpTransport;
 
 /**
  * HTTP client methods for reading and writing HomeKit accessory characteristics over a secure session.
@@ -31,14 +30,10 @@ public class CharacteristicReadWriteService {
 
     private static final String JSON_TEMPLATE = "{\"%s\":[{\"aid\":%s,\"iid\":%s,\"value\":%s}]}";
 
-    private final SecureSession session;
-    private final HttpTransport httpTransport;
-    private final String baseUrl;
+    private final IpTransport ipTransport;
 
-    public CharacteristicReadWriteService(HttpTransport httpTransport, SecureSession session, String baseUrl) {
-        this.httpTransport = httpTransport;
-        this.session = session;
-        this.baseUrl = baseUrl;
+    public CharacteristicReadWriteService(IpTransport ipTransport) {
+        this.ipTransport = ipTransport;
     }
 
     /**
@@ -50,9 +45,8 @@ public class CharacteristicReadWriteService {
      */
     public String readCharacteristic(String query) throws Exception {
         String endpoint = "%s?id=%s".formatted(ENDPOINT_CHARACTERISTICS, query);
-        byte[] encrypted = httpTransport.get(baseUrl, endpoint, CONTENT_TYPE_HAP);
-        byte[] decrypted = session.decrypt(encrypted);
-        return new String(decrypted, StandardCharsets.UTF_8);
+        byte[] result = ipTransport.get(endpoint, CONTENT_TYPE_HAP);
+        return new String(result, StandardCharsets.UTF_8);
     }
 
     /**
@@ -65,8 +59,7 @@ public class CharacteristicReadWriteService {
      */
     public void writeCharacteristic(String aid, String iid, Object value) throws Exception {
         String json = JSON_TEMPLATE.formatted(ENDPOINT_CHARACTERISTICS, aid, iid, formatValue(value));
-        byte[] encrypted = session.encrypt(json.getBytes());
-        httpTransport.put(baseUrl, ENDPOINT_CHARACTERISTICS, CONTENT_TYPE_HAP, encrypted);
+        ipTransport.put(ENDPOINT_CHARACTERISTICS, CONTENT_TYPE_HAP, json.getBytes());
     }
 
     /*

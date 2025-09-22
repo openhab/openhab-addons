@@ -32,7 +32,7 @@ import org.openhab.binding.homekit.internal.enums.PairingMethod;
 import org.openhab.binding.homekit.internal.enums.PairingState;
 import org.openhab.binding.homekit.internal.enums.TlvType;
 import org.openhab.binding.homekit.internal.hap_services.PairVerifyClient;
-import org.openhab.binding.homekit.internal.transport.HttpTransport;
+import org.openhab.binding.homekit.internal.transport.IpTransport;
 
 /**
  * Test cases for the {@link PairVerifyClient} class.
@@ -50,17 +50,16 @@ class TestPairVerify {
             E487CB59 D31AC550 471E81F0 0F6928E0 1DDA08E9 74A004F4 9E61F5D1 05284D20
             """;
 
-    private final String baseUrl = "http://example.com";
     private final String clientPairingIdentifier = "11:22:33:44:55:66";
     private final byte[] clientPairingId = clientPairingIdentifier.getBytes(StandardCharsets.UTF_8);
     private final String serverPairingIdentifier = "66:55:44:33:22:11";
     private final byte[] serverPairingId = serverPairingIdentifier.getBytes(StandardCharsets.UTF_8);
 
     private final Ed25519PrivateKeyParameters clientLongTermPrivateKey = new Ed25519PrivateKeyParameters(
-            hexBlockToByteArray(CLIENT_PRIVATE_HEX));
+            fromHex(CLIENT_PRIVATE_HEX));
 
     private final Ed25519PrivateKeyParameters serverLongTermPrivateKey = new Ed25519PrivateKeyParameters(
-            hexBlockToByteArray(SERVER_PRIVATE_HEX));
+            fromHex(SERVER_PRIVATE_HEX));
 
     private @NonNullByDefault({}) X25519PrivateKeyParameters serverKey;
     private @NonNullByDefault({}) X25519PublicKeyParameters clientKey;
@@ -71,15 +70,15 @@ class TestPairVerify {
         serverKey = generateX25519KeyPair();
 
         // create mock
-        HttpTransport mockTransport = mock(HttpTransport.class);
+        IpTransport mockTransport = mock(IpTransport.class);
 
         // create SRP client and server
-        PairVerifyClient client = new PairVerifyClient(mockTransport, baseUrl, clientPairingIdentifier,
-                clientLongTermPrivateKey, serverLongTermPrivateKey.generatePublicKey());
+        PairVerifyClient client = new PairVerifyClient(mockTransport, clientPairingIdentifier, clientLongTermPrivateKey,
+                serverLongTermPrivateKey.generatePublicKey());
 
         // mock the HTTP transport to simulate the SRP exchange
         doAnswer(invocation -> {
-            byte[] arg = invocation.getArgument(3);
+            byte[] arg = invocation.getArgument(2);
 
             // decode and validate the incoming TLV
             Map<Integer, byte[]> tlv = Tlv8Codec.decode(arg);
@@ -96,7 +95,7 @@ class TestPairVerify {
                 default -> throw new IllegalArgumentException("Unexpected state");
             };
 
-        }).when(mockTransport).post(anyString(), anyString(), anyString(), any(byte[].class));
+        }).when(mockTransport).post(anyString(), anyString(), any(byte[].class));
 
         // execute the pairing verification process
         client.verify();
@@ -118,7 +117,7 @@ class TestPairVerify {
         sessionKey = generateHkdfKey(sharedSecret, PAIR_VERIFY_ENCRYPT_SALT, PAIR_VERIFY_ENCRYPT_INFO);
 
         byte[] plaintext = Tlv8Codec.encode(tlvInner);
-        byte[] ciphertext = encrypt(sessionKey, PV_M2_NONCE, plaintext, CHACHA20_POLY1305);
+        byte[] ciphertext = encrypt(sessionKey, PV_M2_NONCE, plaintext);
 
         Map<Integer, byte[]> tlvOut = Map.of( //
                 TlvType.STATE.key, new byte[] { PairingState.M2.value }, //
@@ -136,7 +135,7 @@ class TestPairVerify {
         if (ciphertext == null) {
             throw new SecurityException("Missing ciphertext in M3");
         }
-        byte[] plaintext = decrypt(sessionKey, PV_M3_NONCE, Objects.requireNonNull(ciphertext), CHACHA20_POLY1305);
+        byte[] plaintext = decrypt(sessionKey, PV_M3_NONCE, Objects.requireNonNull(ciphertext));
 
         Map<Integer, byte[]> subTlv = Tlv8Codec.decode(plaintext);
         byte[] information = subTlv.get(TlvType.IDENTIFIER.key);
@@ -156,24 +155,5 @@ class TestPairVerify {
 
         // no further messages from server
         return Tlv8Codec.encode(tlvOut);
-    }
-
-    private static byte[] hexBlockToByteArray(String hexBlock) {
-        String normalized = hexBlock.replaceAll("\\s+", "");
-        if (normalized.length() % 2 != 0) {
-            throw new IllegalArgumentException("Hex string must have even length");
-        }
-        int len = normalized.length();
-        byte[] result = new byte[len / 2];
-        for (int i = 0; i < len; i += 2) {
-            int high = Character.digit(normalized.charAt(i), 16);
-            int low = Character.digit(normalized.charAt(i + 1), 16);
-            if (high == -1 || low == -1) {
-                throw new IllegalArgumentException(
-                        "Invalid hex character: " + normalized.charAt(i) + normalized.charAt(i + 1));
-            }
-            result[i / 2] = (byte) ((high << 4) + low);
-        }
-        return result;
     }
 }

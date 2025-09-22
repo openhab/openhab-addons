@@ -26,7 +26,7 @@ import org.openhab.binding.homekit.internal.enums.ErrorCode;
 import org.openhab.binding.homekit.internal.enums.PairingMethod;
 import org.openhab.binding.homekit.internal.enums.PairingState;
 import org.openhab.binding.homekit.internal.enums.TlvType;
-import org.openhab.binding.homekit.internal.transport.HttpTransport;
+import org.openhab.binding.homekit.internal.transport.IpTransport;
 
 /**
  * Handles the 6-step pairing process with a HomeKit accessory.
@@ -43,16 +43,14 @@ public class PairSetupClient {
     private static final String ENDPOINT_PAIR_SETUP = "/pair-setup";
 
     private static final String CONTENT_TYPE_TLV8 = "application/pairing+tlv8";
-    private final HttpTransport httpTransport;
-    private final String baseUrl;
+    private final IpTransport ipTransport;
     private final String password;
     private final byte[] pairingId;
     private final Ed25519PrivateKeyParameters clientLongTermPrivateKey;
 
-    public PairSetupClient(HttpTransport httpTransport, String baseUrl, String pairingId,
+    public PairSetupClient(IpTransport ipTransport, String pairingId,
             Ed25519PrivateKeyParameters clientLongTermPrivateKey, String password) throws Exception {
-        this.httpTransport = httpTransport;
-        this.baseUrl = baseUrl;
+        this.ipTransport = ipTransport;
         this.password = password;
         this.pairingId = pairingId.getBytes(StandardCharsets.UTF_8);
         this.clientLongTermPrivateKey = clientLongTermPrivateKey;
@@ -81,7 +79,7 @@ public class PairSetupClient {
                 TlvType.STATE.key, new byte[] { PairingState.M1.value }, //
                 TlvType.METHOD.key, new byte[] { PairingMethod.SETUP.value });
         Validator.validate(PairingMethod.SETUP, tlv);
-        byte[] response1 = httpTransport.post(baseUrl, ENDPOINT_PAIR_SETUP, CONTENT_TYPE_TLV8, Tlv8Codec.encode(tlv));
+        byte[] response1 = ipTransport.post(ENDPOINT_PAIR_SETUP, CONTENT_TYPE_TLV8, Tlv8Codec.encode(tlv));
         return doStepM2(response1);
     }
 
@@ -114,7 +112,7 @@ public class PairSetupClient {
                 TlvType.PUBLIC_KEY.key, client.getPublicKey(), //
                 TlvType.PROOF.key, client.getClientProof());
         Validator.validate(PairingMethod.SETUP, tlv);
-        byte[] response3 = httpTransport.post(baseUrl, ENDPOINT_PAIR_SETUP, CONTENT_TYPE_TLV8, Tlv8Codec.encode(tlv));
+        byte[] response3 = ipTransport.post(ENDPOINT_PAIR_SETUP, CONTENT_TYPE_TLV8, Tlv8Codec.encode(tlv));
         return doStepM4(client, response3);
     }
 
@@ -144,7 +142,7 @@ public class PairSetupClient {
                 TlvType.STATE.key, new byte[] { PairingState.M5.value }, //
                 TlvType.ENCRYPTED_DATA.key, cipherText);
         Validator.validate(PairingMethod.SETUP, tlv);
-        byte[] response5 = httpTransport.post(baseUrl, ENDPOINT_PAIR_SETUP, CONTENT_TYPE_TLV8, Tlv8Codec.encode(tlv));
+        byte[] response5 = ipTransport.post(ENDPOINT_PAIR_SETUP, CONTENT_TYPE_TLV8, Tlv8Codec.encode(tlv));
         return doStepM6(client, response5);
     }
 

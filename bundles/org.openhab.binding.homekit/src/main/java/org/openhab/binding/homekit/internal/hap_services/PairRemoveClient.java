@@ -21,7 +21,7 @@ import org.openhab.binding.homekit.internal.crypto.Tlv8Codec;
 import org.openhab.binding.homekit.internal.enums.PairingMethod;
 import org.openhab.binding.homekit.internal.enums.PairingState;
 import org.openhab.binding.homekit.internal.enums.TlvType;
-import org.openhab.binding.homekit.internal.transport.HttpTransport;
+import org.openhab.binding.homekit.internal.transport.IpTransport;
 
 /**
  * Service to remove an existing pairing with a HomeKit accessory.
@@ -34,13 +34,11 @@ public class PairRemoveClient {
     private static final String CONTENT_TYPE = "application/pairing+tlv8";
     private static final String ENDPOINT = "/pairings";
 
-    private final HttpTransport httpTransport;
-    private final String baseUrl;
+    private final IpTransport ipTransport;
     private final String pairingID;
 
-    public PairRemoveClient(HttpTransport httpTransport, String baseUrl, String pairingID) {
-        this.httpTransport = httpTransport;
-        this.baseUrl = baseUrl;
+    public PairRemoveClient(IpTransport ipTransport, String pairingID) {
+        this.ipTransport = ipTransport;
         this.pairingID = pairingID;
     }
 
@@ -51,7 +49,7 @@ public class PairRemoveClient {
                 TlvType.IDENTIFIER.key, pairingID.getBytes(StandardCharsets.UTF_8));
         Validator.validate(PairingMethod.REMOVE, tlv);
 
-        byte[] response = httpTransport.post(baseUrl, ENDPOINT, CONTENT_TYPE, Tlv8Codec.encode(tlv));
+        byte[] response = ipTransport.post(ENDPOINT, CONTENT_TYPE, Tlv8Codec.encode(tlv));
         Map<Integer, byte[]> tlv2 = Tlv8Codec.decode(response);
         Validator.validate(PairingMethod.REMOVE, tlv2);
     }

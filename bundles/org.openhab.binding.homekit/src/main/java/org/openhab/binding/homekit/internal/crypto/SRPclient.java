@@ -108,7 +108,7 @@ public class SRPclient {
                 TlvType.SIGNATURE.key, signature);
 
         byte[] plaintext = Tlv8Codec.encode(subTlv);
-        byte[] ciphertext = encrypt(getSymmetricKey(), PS_M5_NONCE, plaintext, CHACHA20_POLY1305);
+        byte[] ciphertext = encrypt(getSymmetricKey(), PS_M5_NONCE, plaintext);
         return ciphertext;
     }
 
@@ -137,7 +137,7 @@ public class SRPclient {
     }
 
     public void verifyEncryptedAccessoryInfo(byte[] cipherText) throws Exception {
-        byte[] plainText = decrypt(getSymmetricKey(), PS_M6_NONCE, cipherText, CHACHA20_POLY1305);
+        byte[] plainText = decrypt(getSymmetricKey(), PS_M6_NONCE, cipherText);
 
         Map<Integer, byte[]> subTlv = Tlv8Codec.decode(plainText);
         byte[] pairingId = subTlv.get(TlvType.IDENTIFIER.key);

@@ -358,6 +358,7 @@ class TestChannelCreation {
         assertNotNull(accessories);
 
         HomekitTypeProvider typeProvider = mock(HomekitTypeProvider.class);
+
         List<ChannelGroupType> channelGroupTypes = new ArrayList<>();
         List<ChannelType> channelTypes = new ArrayList<>();
 

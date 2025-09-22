@@ -111,7 +111,7 @@ public class SRPtestServer {
                 TlvType.SIGNATURE.key, signature);
 
         byte[] plaintext = Tlv8Codec.encode(subTlv);
-        return CryptoUtils.encrypt(getSymmetricKey(), PS_M6_NONCE, plaintext, CHACHA20_POLY1305);
+        return CryptoUtils.encrypt(getSymmetricKey(), PS_M6_NONCE, plaintext);
     }
 
     public byte[] getPublicKey() {

@@ -34,9 +34,7 @@ import org.openhab.binding.homekit.internal.hap_services.CharacteristicReadWrite
 import org.openhab.binding.homekit.internal.hap_services.PairRemoveClient;
 import org.openhab.binding.homekit.internal.hap_services.PairSetupClient;
 import org.openhab.binding.homekit.internal.hap_services.PairVerifyClient;
-import org.openhab.binding.homekit.internal.session.AsymmetricSessionKeys;
-import org.openhab.binding.homekit.internal.session.SecureSession;
-import org.openhab.binding.homekit.internal.transport.HttpTransport;
+import org.openhab.binding.homekit.internal.transport.IpTransport;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -66,24 +64,31 @@ public abstract class HomekitBaseServerHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(HomekitBaseServerHandler.class);
 
-    protected final HttpTransport httpTransport;
     protected final Map<Integer, Accessory> accessories = new HashMap<>();
 
     protected boolean isChildAccessory = false;
 
     protected @NonNullByDefault({}) CharacteristicReadWriteService rwService;
-    protected @NonNullByDefault({}) SecureSession session;
-    protected @NonNullByDefault({}) String baseUrl;
     protected @NonNullByDefault({}) String pairingCode;
     protected @NonNullByDefault({}) Integer accessoryId;
-    protected @NonNullByDefault({}) AsymmetricSessionKeys sessionKeys;
+    protected @NonNullByDefault({}) IpTransport ipTransport;
 
     protected @Nullable Ed25519PrivateKeyParameters controllerLongTermPrivateKey = null;
     protected @Nullable Ed25519PublicKeyParameters accessoryLongTermPublicKey = null;
 
     public HomekitBaseServerHandler(Thing thing, HttpClientFactory httpClientFactory) {
         super(thing);
-        this.httpTransport = new HttpTransport(httpClientFactory.getCommonHttpClient());
+    }
+
+    @Override
+    public void dispose() {
+        if (!isChildAccessory) {
+            try {
+                ipTransport.close();
+            } catch (Exception e) {
+            }
+        }
+        super.dispose();
     }
 
     /**
@@ -96,20 +101,16 @@ public abstract class HomekitBaseServerHandler extends BaseThingHandler {
      * @see <a href="https://datatracker.ietf.org/doc/html/draft-ietf-homekit-http">HomeKit HTTP</a>
      */
     protected void getAccessories() {
-        SecureSession session = this.session;
-        if (session != null) {
-            try {
-                byte[] encrypted = httpTransport.get(baseUrl, ENDPOINT_ACCESSORIES, CONTENT_TYPE_HAP);
-                byte[] decrypted = session.decrypt(encrypted);
-                Accessories result = GSON.fromJson(new String(decrypted, StandardCharsets.UTF_8), Accessories.class);
-                if (result != null && result.accessories instanceof List<Accessory> accessoryList) {
-                    accessories.clear();
-                    accessories.putAll(accessoryList.stream().filter(a -> Objects.nonNull(a.aid))
-                            .collect(Collectors.toMap(a -> a.aid, Function.identity())));
-                }
-            } catch (Exception e) {
-                logger.warn("Failed to get accessories: {}", e.getMessage());
+        try {
+            byte[] decrypted = ipTransport.get(ENDPOINT_ACCESSORIES, CONTENT_TYPE_HAP);
+            Accessories result = GSON.fromJson(new String(decrypted, StandardCharsets.UTF_8), Accessories.class);
+            if (result != null && result.accessories instanceof List<Accessory> accessoryList) {
+                accessories.clear();
+                accessories.putAll(accessoryList.stream().filter(a -> Objects.nonNull(a.aid))
+                        .collect(Collectors.toMap(a -> a.aid, Function.identity())));
             }
+        } catch (Exception e) {
+            logger.warn("Failed to get accessories: {}", e.getMessage());
         }
     }
 
@@ -149,9 +150,9 @@ public abstract class HomekitBaseServerHandler extends BaseThingHandler {
             scheduler.submit(() -> {
                 // unpair and clear stored keys if this is NOT a child accessory
                 try {
-                    PairRemoveClient service = new PairRemoveClient(httpTransport, baseUrl, thing.getUID().toString());
+                    PairRemoveClient service = new PairRemoveClient(ipTransport, thing.getUID().toString());
                     service.remove();
-                    this.accessoryLongTermPublicKey = null;
+                    accessoryLongTermPublicKey = null;
                     storeLongTermKeys();
                     updateStatus(ThingStatus.REMOVED);
                 } catch (Exception e) {
@@ -166,19 +167,25 @@ public abstract class HomekitBaseServerHandler extends BaseThingHandler {
         Bridge bridge = getBridge();
         if (bridge != null && bridge.getHandler() instanceof HomekitBridgeHandler bridgeHandler) {
             // accessory is hosted by a bridge, so use bridge's pairing session and read/write service
-            this.isChildAccessory = true;
-            this.session = bridgeHandler.session;
-            this.rwService = bridgeHandler.rwService;
-            if (this.rwService != null) {
+            isChildAccessory = true;
+            ipTransport = bridgeHandler.ipTransport;
+            rwService = bridgeHandler.rwService;
+            if (rwService != null) {
                 updateStatus(ThingStatus.ONLINE);
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Bridge is not connected");
             }
         } else {
             // standalone accessory or brige accessory, so do pairing and session setup here
-            this.isChildAccessory = false;
-            this.baseUrl = "http://" + getConfig().get(CONFIG_IP_V4_ADDRESS).toString();
-            scheduler.execute(() -> initializePairing()); // return fast, do pairing in background thread
+            isChildAccessory = false;
+            try {
+                ipTransport = new IpTransport(getConfig().get(CONFIG_IP_V4_ADDRESS).toString());
+                scheduler.execute(() -> initializePairing()); // return fast, do pairing in background thread
+            } catch (Exception e) {
+                logger.warn("Failed to create transport: {}", e.getMessage());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Failed to connect to accessory");
+            }
         }
     }
 
@@ -201,13 +208,11 @@ public abstract class HomekitBaseServerHandler extends BaseThingHandler {
         if (controllerLongTermPrivateKey != null && accessoryLongTermPublicKey != null) {
             // Perform Pair-Verify with existing key
             try {
-                PairVerifyClient client = new PairVerifyClient(httpTransport, baseUrl, accessoryId.toString(),
+                PairVerifyClient client = new PairVerifyClient(ipTransport, accessoryId.toString(),
                         controllerLongTermPrivateKey, accessoryLongTermPublicKey);
 
-                this.sessionKeys = client.verify();
-
-                this.session = new SecureSession(sessionKeys);
-                this.rwService = new CharacteristicReadWriteService(httpTransport, session, baseUrl);
+                ipTransport.setSessionKeys(client.verify());
+                rwService = new CharacteristicReadWriteService(ipTransport);
 
                 logger.debug("Restored pairing was verified for accessory {}", accessoryId);
                 updateStatus(ThingStatus.ONLINE);
@@ -227,19 +232,19 @@ public abstract class HomekitBaseServerHandler extends BaseThingHandler {
 
         try {
             // Perform Pair-Setup
-            PairSetupClient pairSetupClient = new PairSetupClient(httpTransport, baseUrl, thing.getUID().toString(),
+            PairSetupClient pairSetupClient = new PairSetupClient(ipTransport, thing.getUID().toString(),
                     controllerLongTermPrivateKey, pairingCode);
 
             accessoryLongTermPublicKey = pairSetupClient.pair();
             this.accessoryLongTermPublicKey = accessoryLongTermPublicKey;
 
             // Perform Pair-Verify immediately after Pair-Setup
-            PairVerifyClient pairVerifyClient = new PairVerifyClient(httpTransport, baseUrl, accessoryId.toString(),
+            PairVerifyClient pairVerifyClient = new PairVerifyClient(ipTransport, accessoryId.toString(),
                     controllerLongTermPrivateKey, accessoryLongTermPublicKey);
 
-            this.sessionKeys = pairVerifyClient.verify();
-            this.session = new SecureSession(sessionKeys);
-            this.rwService = new CharacteristicReadWriteService(httpTransport, session, baseUrl);
+            ipTransport.setSessionKeys(pairVerifyClient.verify());
+            rwService = new CharacteristicReadWriteService(ipTransport);
+
             this.controllerLongTermPrivateKey = controllerLongTermPrivateKey;
 
             storeLongTermKeys();
@@ -250,20 +255,6 @@ public abstract class HomekitBaseServerHandler extends BaseThingHandler {
             logger.warn("Pairing and verification failed for accessory {}", accessoryId);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Pairing failed");
         }
-    }
-
-    /**
-     * Stores the controller's private key in the thing's properties.
-     * The private key is stored as a Base64-encoded string.
-     */
-    private void storeLongTermKeys() {
-        Ed25519PrivateKeyParameters controllerKey = this.controllerLongTermPrivateKey;
-        String property = controllerKey == null ? null : Base64.getEncoder().encodeToString(controllerKey.getEncoded());
-        thing.setProperty(PROPERTY_CONTROLLER_PRIVATE_KEY, property);
-
-        Ed25519PublicKeyParameters accessoryKey = this.accessoryLongTermPublicKey;
-        property = accessoryKey == null ? null : Base64.getEncoder().encodeToString(accessoryKey.getEncoded());
-        thing.setProperty(PROPERTY_ACCESSORY_PUBLIC_KEY, property);
     }
 
     /**
@@ -278,5 +269,19 @@ public abstract class HomekitBaseServerHandler extends BaseThingHandler {
         encoded = thing.getProperties().get(PROPERTY_ACCESSORY_PUBLIC_KEY);
         accessoryLongTermPublicKey = encoded == null ? null
                 : new Ed25519PublicKeyParameters(Base64.getDecoder().decode(encoded), 0);
+    }
+
+    /**
+     * Stores the controller's private key in the thing's properties.
+     * The private key is stored as a Base64-encoded string.
+     */
+    private void storeLongTermKeys() {
+        Ed25519PrivateKeyParameters controllerKey = this.controllerLongTermPrivateKey;
+        String property = controllerKey == null ? null : Base64.getEncoder().encodeToString(controllerKey.getEncoded());
+        thing.setProperty(PROPERTY_CONTROLLER_PRIVATE_KEY, property);
+
+        Ed25519PublicKeyParameters accessoryKey = this.accessoryLongTermPublicKey;
+        property = accessoryKey == null ? null : Base64.getEncoder().encodeToString(accessoryKey.getEncoded());
+        thing.setProperty(PROPERTY_ACCESSORY_PUBLIC_KEY, property);
     }
 }
