@@ -432,7 +432,7 @@ class TestChannelCreation {
         assertNotNull(channelDefinition);
         assertEquals("public-hap-characteristic-brightness", channelDefinition.getChannelTypeUID().getId());
         assertEquals("Brightness", channelDefinition.getLabel());
-        assertEquals("percent", channelDefinition.getProperties().get("unit"));
+        assertEquals("percentage", channelDefinition.getProperties().get("unit"));
         assertEquals("int", channelDefinition.getProperties().get("format"));
         assertEquals("20.0", channelDefinition.getProperties().get("minValue"));
         assertEquals("100.0", channelDefinition.getProperties().get("maxValue"));

@@ -103,7 +103,7 @@ public class HomekitMdnsDiscoveryParticipant implements MDNSDiscoveryParticipant
                         macAddress);
             }
         }
-        logger.warn("Discovered HomeKit device without valid properties - ignoring");
+        logger.warn("Ignoring discovered HomeKit service {} without properties", service.getNiceTextString());
         return null;
     }
 }

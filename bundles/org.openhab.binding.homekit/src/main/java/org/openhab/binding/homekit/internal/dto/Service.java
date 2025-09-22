@@ -62,7 +62,7 @@ public class Service {
             return null;
         }
 
-        ChannelGroupTypeUID groupTypeUID = new ChannelGroupTypeUID(BINDING_ID, serviceType.getChannelTypeId());
+        ChannelGroupTypeUID groupTypeUID = new ChannelGroupTypeUID(BINDING_ID, serviceType.getOpenhabType());
         String label = GROUP_TYPE_LABEL_FMT.formatted(serviceType.toString());
         ChannelGroupType groupType = ChannelGroupTypeBuilder.instance(groupTypeUID, label) //
                 .withChannelDefinitions(channelDefinitions) //
@@ -87,6 +87,6 @@ public class Service {
 
     @Override
     public String toString() {
-        return getServiceType() instanceof ServiceType st ? st.getTypeName() : "Unknown";
+        return getServiceType() instanceof ServiceType st ? st.getType() : "Unknown";
     }
 }

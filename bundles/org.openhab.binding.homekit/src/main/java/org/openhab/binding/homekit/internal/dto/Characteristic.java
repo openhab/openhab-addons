@@ -83,18 +83,13 @@ public class Characteristic {
             return null;
         }
 
-        // convert "percentage" to "percent" as SimpleUnitFormat does handle the former
-        if ("percentage".equals(unit)) {
-            unit = "percent";
-        }
-
         // determine channel type and attributes based on characteristic properties
         boolean isReadOnly = !perms.contains("pw");
         boolean isString = DataFormatType.STRING == dataFormatType;
         boolean isBoolean = DataFormatType.BOOL == dataFormatType;
         boolean isNumber = !isString && !isBoolean;
         boolean isStateChannel = true;
-        boolean isPercentage = "percent".equals(unit);
+        boolean isPercentage = "percentage".equals(unit);
 
         String itemType = null;
         String category = null;
@@ -206,7 +201,7 @@ public class Characteristic {
                 break;
 
             case COLOR_TEMPERATURE:
-                numberSuffix = unit == null ? "Dimensionless" : "Temperature";
+                numberSuffix = isPercentage || unit == null ? "Dimensionless" : "Temperature";
                 propertyTag = Property.COLOR_TEMPERATURE;
                 category = "light";
                 break;
@@ -548,7 +543,7 @@ public class Characteristic {
          * NOTE: different accessories may have the same characteristicType, but their other
          * properties e.g. min, max, step, unit may be different
          */
-        ChannelTypeUID uid = new ChannelTypeUID(BINDING_ID, characteristicType.getGroupTypeId());
+        ChannelTypeUID uid = new ChannelTypeUID(BINDING_ID, characteristicType.getOpenhabType());
         String label = CHANNEL_TYPE_LABEL_FMT.formatted(characteristicType.toString());
         ChannelType channelType;
         if (isStateChannel) {

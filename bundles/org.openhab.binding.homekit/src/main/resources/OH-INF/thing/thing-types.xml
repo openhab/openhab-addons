@@ -8,16 +8,32 @@
 		<label>HomeKit Device</label>
 		<description>HomeKit Accessory Device</description>
 		<config-description>
-			<parameter name="ipV4Address" type="text" required="false">
+			<parameter name="ipV4Address" type="text" required="true">
 				<context>network-address</context>
 				<label>IP Address</label>
 				<description>IP v4 address of the HomeKit accessory.</description>
 			</parameter>
-			<parameter name="pairingCode" type="text" required="false">
+			<parameter name="pairingCode" type="text" required="true">
 				<context>password</context>
 				<label>Pairing Code</label>
 				<description>Code used for pairing with the HomeKit accessory.</description>
 			</parameter>
+			<parameter name="refreshInterval" type="integer" unit="s" min="10" required="false">
+				<label>Refresh Interval</label>
+				<description>Interval at which the accessory is polled in sec.</description>
+				<default>60</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="child">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+		<label>HomeKit Device</label>
+		<description>HomeKit Accessory Device</description>
+		<config-description>
 			<parameter name="refreshInterval" type="integer" unit="s" min="10" required="false">
 				<label>Refresh Interval</label>
 				<description>Interval at which the accessory is polled in sec.</description>

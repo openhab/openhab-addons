@@ -14,12 +14,13 @@ package org.openhab.binding.homekit.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.homekit.internal.discovery.HomekitChildDiscoveryService;
-import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.binding.BridgeHandler;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.builder.BridgeBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Handler for HomeKit bridge devices.
@@ -34,12 +35,11 @@ import org.openhab.core.thing.binding.builder.BridgeBuilder;
 @NonNullByDefault
 public class HomekitBridgeHandler extends HomekitBaseServerHandler implements BridgeHandler {
 
-    // private final Logger logger = LoggerFactory.getLogger(HomekitBridgeHandler.class);
-    protected final HomekitChildDiscoveryService discoveryService;
+    private final Logger logger = LoggerFactory.getLogger(HomekitBridgeHandler.class);
+    private final HomekitChildDiscoveryService discoveryService;
 
-    public HomekitBridgeHandler(Bridge bridge, HttpClientFactory httpClientFactory,
-            HomekitChildDiscoveryService discoveryService) {
-        super(bridge, httpClientFactory);
+    public HomekitBridgeHandler(Bridge bridge, HomekitChildDiscoveryService discoveryService) {
+        super(bridge);
         this.discoveryService = discoveryService;
     }
 
@@ -69,7 +69,9 @@ public class HomekitBridgeHandler extends HomekitBaseServerHandler implements Br
 
     @Override
     public void childHandlerInitialized(ThingHandler childHandler, Thing childThing) {
-        // TODO Auto-generated method stub
+        if (childHandler instanceof HomekitDeviceHandler homekitDeviceHandler) {
+            homekitDeviceHandler.accessoriesLoaded();
+        }
     }
 
     @Override
@@ -78,10 +80,8 @@ public class HomekitBridgeHandler extends HomekitBaseServerHandler implements Br
     }
 
     @Override
-    protected void getAccessories() {
-        super.getAccessories();
-        if (!accessories.isEmpty()) {
-            discoveryService.devicesDiscovered(thing, accessories.values());
-        }
+    protected void accessoriesLoaded() {
+        logger.info("Bridge accessories loaded {}", accessories.size());
+        discoveryService.devicesDiscovered(thing, accessories.values());
     }
 }

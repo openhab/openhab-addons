@@ -24,7 +24,6 @@ import org.openhab.binding.homekit.internal.handler.HomekitBridgeHandler;
 import org.openhab.binding.homekit.internal.handler.HomekitDeviceHandler;
 import org.openhab.binding.homekit.internal.persistence.HomekitTypeProvider;
 import org.openhab.core.config.discovery.DiscoveryService;
-import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -47,18 +46,16 @@ import org.osgi.service.component.annotations.Reference;
 @Component(service = ThingHandlerFactory.class)
 public class HomekitHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_BRIDGE, THING_TYPE_DEVICE);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_BRIDGE, THING_TYPE_DEVICE,
+            THING_TYPE_CHILD);
 
-    private final HttpClientFactory httpClientFactory;
     private final HomekitTypeProvider typeProvider;
 
     private @Nullable ServiceRegistration<?> discoveryServiceRegistration;
     private @Nullable HomekitChildDiscoveryService discoveryService;
 
     @Activate
-    public HomekitHandlerFactory(@Reference HttpClientFactory httpClientFactory,
-            @Reference HomekitTypeProvider typeProvider) {
-        this.httpClientFactory = httpClientFactory;
+    public HomekitHandlerFactory(@Reference HomekitTypeProvider typeProvider) {
         this.typeProvider = typeProvider;
     }
 
@@ -77,9 +74,11 @@ public class HomekitHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (THING_TYPE_BRIDGE.equals(thingTypeUID)) {
-            return new HomekitBridgeHandler((Bridge) thing, httpClientFactory, registerDiscoveryService());
+            return new HomekitBridgeHandler((Bridge) thing, registerDiscoveryService());
         } else if (THING_TYPE_DEVICE.equals(thingTypeUID)) {
-            return new HomekitDeviceHandler(thing, httpClientFactory, typeProvider);
+            return new HomekitDeviceHandler(thing, typeProvider);
+        } else if (THING_TYPE_CHILD.equals(thingTypeUID)) {
+            return new HomekitDeviceHandler(thing, typeProvider);
         }
         return null;
     }

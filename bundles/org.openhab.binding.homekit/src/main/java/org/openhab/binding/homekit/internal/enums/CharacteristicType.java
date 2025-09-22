@@ -175,7 +175,7 @@ public enum CharacteristicType {
         throw new IllegalArgumentException("Unknown ID: " + id);
     }
 
-    public String getGroupTypeId() {
+    public String getOpenhabType() {
         return type.replace("-", "_").replace(".", "-"); // convert to OH channel-group-type format
     }
 

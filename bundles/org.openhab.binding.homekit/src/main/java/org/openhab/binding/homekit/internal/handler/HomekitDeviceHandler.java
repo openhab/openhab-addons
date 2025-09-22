@@ -15,14 +15,14 @@ package org.openhab.binding.homekit.internal.handler;
 import static org.openhab.binding.homekit.internal.HomekitBindingConstants.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import javax.measure.Unit;
-import javax.measure.format.UnitFormat;
-import javax.measure.spi.ServiceProvider;
+import javax.measure.format.MeasurementParseException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.homekit.internal.dto.Accessory;
@@ -31,7 +31,6 @@ import org.openhab.binding.homekit.internal.dto.Service;
 import org.openhab.binding.homekit.internal.enums.DataFormatType;
 import org.openhab.binding.homekit.internal.hap_services.CharacteristicReadWriteService;
 import org.openhab.binding.homekit.internal.persistence.HomekitTypeProvider;
-import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
@@ -69,29 +68,28 @@ import com.google.gson.JsonPrimitive;
 @NonNullByDefault
 public class HomekitDeviceHandler extends HomekitBaseServerHandler {
 
-    private static final UnitFormat UNIT_NAME_PARSER = ServiceProvider.current().getFormatService()
-            .getUnitFormat("Name");
-
     private final Logger logger = LoggerFactory.getLogger(HomekitDeviceHandler.class);
     private final HomekitTypeProvider typeProvider;
 
-    public HomekitDeviceHandler(Thing thing, HttpClientFactory httpClientFactory, HomekitTypeProvider typeProvider) {
-        super(thing, httpClientFactory);
+    public HomekitDeviceHandler(Thing thing, HomekitTypeProvider typeProvider) {
+        super(thing);
         this.typeProvider = typeProvider;
     }
 
     @Override
     public void initialize() {
         super.initialize();
-        String refreshInterval = getConfig().get(CONFIG_REFRESH_INTERVAL).toString();
-        try {
-            int refreshIntervalSeconds = Integer.parseInt(refreshInterval);
-            if (refreshIntervalSeconds > 0) {
-                scheduler.scheduleWithFixedDelay(this::refresh, 0, refreshIntervalSeconds, TimeUnit.SECONDS);
+        if (getConfig().get(CONFIG_REFRESH_INTERVAL) instanceof Object refreshInterval) {
+            try {
+                int refreshIntervalSeconds = Integer.parseInt(refreshInterval.toString());
+                if (refreshIntervalSeconds > 0) {
+                    scheduler.scheduleWithFixedDelay(this::refresh, 0, refreshIntervalSeconds, TimeUnit.SECONDS);
+                    return;
+                }
+            } catch (NumberFormatException e) {
             }
-        } catch (NumberFormatException e) {
-            logger.warn("Invalid refresh interval configuration: {}", refreshInterval);
         }
+        logger.warn("Invalid refresh interval configuration, polling disabled");
     }
 
     @Override
@@ -152,12 +150,10 @@ public class HomekitDeviceHandler extends HomekitBaseServerHandler {
     }
 
     @Override
-    protected void getAccessories() {
-        if (!isChildAccessory) {
-            // child accessories shall not fetch accessories again
-            super.getAccessories();
-        }
-        createChannels();
+    protected void accessoriesLoaded() {
+        logger.info("Thing accessories loaded {}", accessories.size());
+        // create channels based on the fetched accessories
+        createChannels(); // do this asynchronously
     }
 
     /**
@@ -167,25 +163,30 @@ public class HomekitDeviceHandler extends HomekitBaseServerHandler {
      * Each service creates a channel group, and each characteristic creates a channel within it.
      */
     private void createChannels() {
+        logger.info("Creating channels accessories {}", accessories.size());
         if (accessories.isEmpty()) {
             return;
         }
         Integer accessoryId = getAccessoryId();
+        logger.info("Creating channels accessoryId {}", accessoryId);
         if (accessoryId == null) {
             return;
         }
         Accessory accessory = accessories.get(accessoryId);
+        logger.info("Creating channels accessory {}", accessory);
         if (accessory == null) {
             return;
         }
 
         // create the channels
         List<Channel> channels = new ArrayList<>();
-        Map<String, String> properties = thing.getProperties();
+        Map<String, String> properties = new HashMap<>(thing.getProperties()); // keep existing properties
         accessory.buildAndRegisterChannelGroupDefinitions(typeProvider).forEach(groupDef -> {
+            logger.info("Creating channels groupDef {}", groupDef.getId());
             ChannelGroupType groupType = typeProvider.getChannelGroupType(groupDef.getTypeUID(), null);
             if (groupType != null) {
                 groupType.getChannelDefinitions().forEach(channelDef -> {
+                    logger.info("Creating channels channelDef {}", channelDef.getId());
                     if (FAKE_PROPERTY_CHANNEL_TYPE_UID.equals(channelDef.getChannelTypeUID())) {
                         String name = channelDef.getId();
                         String value = channelDef.getLabel();
@@ -208,10 +209,12 @@ public class HomekitDeviceHandler extends HomekitBaseServerHandler {
             }
         });
 
-        // update thing with the new channels
-        ThingBuilder builder = editThing().withProperties(properties).withChannels(channels);
-        Optional.ofNullable(accessory.getSemanticEquipmentTag()).ifPresent(builder::withSemanticEquipmentTag);
-        updateThing(builder.build());
+        if (!channels.isEmpty() || !properties.isEmpty()) {
+            logger.warn("Updating thing with {}/{} channels/properties", channels.size(), properties.size());
+            ThingBuilder builder = editThing().withProperties(properties).withChannels(channels);
+            Optional.ofNullable(accessory.getSemanticEquipmentTag()).ifPresent(builder::withSemanticEquipmentTag);
+            updateThing(builder.build());
+        }
     }
 
     /**
@@ -236,10 +239,13 @@ public class HomekitDeviceHandler extends HomekitBaseServerHandler {
 
         // convert QuantityTypes to the characteristic's unit
         if (object instanceof QuantityType<?> quantity) {
-            Unit<?> unit = properties.get("unit") instanceof String p ? UNIT_NAME_PARSER.parse(p) : null;
-            if (unit != null && !unit.equals(quantity.getUnit()) && quantity.getUnit().isCompatible(unit)) {
-                QuantityType<?> temp = quantity.toUnit(unit);
-                object = temp != null ? temp : quantity;
+            if (properties.get("unit") instanceof String unit) {
+                try {
+                    QuantityType<?> temp = quantity.toUnit(normalizedUnitString(unit));
+                    object = temp != null ? temp : quantity;
+                } catch (MeasurementParseException e) {
+                    logger.warn("Unexpected unit {} for channel {}", unit, channel.getUID());
+                }
             }
         }
 
@@ -287,6 +293,19 @@ public class HomekitDeviceHandler extends HomekitBaseServerHandler {
         }
 
         return object;
+    }
+
+    /**
+     * Convert a HomeKit formatted unit string to OH format.
+     */
+    private static String normalizedUnitString(String unit) {
+        if (unit.isEmpty()) {
+            return unit;
+        }
+        if ("percentage".equals(unit)) { // special case HomeKit "percentage" => "Percent"
+            return "Percent";
+        }
+        return unit.substring(0, 1).toUpperCase() + unit.substring(1).toLowerCase(); // e.g. celsius => Celsius
     }
 
     /**

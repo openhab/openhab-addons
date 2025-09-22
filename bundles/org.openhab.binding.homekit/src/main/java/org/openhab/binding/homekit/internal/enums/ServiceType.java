@@ -71,29 +71,29 @@ public enum ServiceType {
     WINDOW(0x8B, "public.hap.service.window"),
     WINDOW_COVERING(0x8C, "public.hap.service.window-covering");
 
-    private final int type;
-    private final String typeName;
+    private final int id;
+    private final String type;
 
-    ServiceType(int type, String typeName) {
+    ServiceType(int id, String type) {
+        this.id = id;
         this.type = type;
-        this.typeName = typeName;
     }
 
     public static ServiceType from(int type) throws IllegalArgumentException {
         for (ServiceType value : values()) {
-            if (value.type == type) {
+            if (value.id == type) {
                 return value;
             }
         }
         throw new IllegalArgumentException("Unknown ID: " + type);
     }
 
-    public String getChannelTypeId() {
-        return typeName.replace(".", "-"); // convert to OH channel type format
+    public String getOpenhabType() {
+        return type.replace(".", "-"); // convert to OH channel type format
     }
 
-    public String getTypeName() {
-        return typeName;
+    public String getType() {
+        return type;
     }
 
     /**
