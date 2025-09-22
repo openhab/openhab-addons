@@ -77,8 +77,16 @@ public class HomekitDeviceHandler extends HomekitBaseServerHandler {
     }
 
     @Override
-    public void initialize() {
-        super.initialize();
+    protected void accessoriesLoaded() {
+        createChannels(); // create channels based on the fetched accessories
+    }
+
+    /**
+     * Called when the thing handler has been initialized, the pairing verified, the accessories loaded,
+     * and the channels and properties created.
+     * Sets up a scheduled task to periodically refresh the state of the accessory.
+     */
+    private void channelsAndPropertiesLoaded() {
         if (getConfig().get(CONFIG_REFRESH_INTERVAL) instanceof Object refreshInterval) {
             try {
                 int refreshIntervalSeconds = Integer.parseInt(refreshInterval.toString());
@@ -90,131 +98,6 @@ public class HomekitDeviceHandler extends HomekitBaseServerHandler {
             }
         }
         logger.warn("Invalid refresh interval configuration, polling disabled");
-    }
-
-    @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
-        Channel channel = thing.getChannel(channelUID);
-        if (channel == null) {
-            logger.warn("Received command for unknown channel: {}", channelUID);
-            return;
-        }
-        CharacteristicReadWriteService writer = this.rwService;
-        if (writer == null) {
-            logger.warn("No writer service available to handle command for channel: {}", channelUID);
-            return;
-        }
-        Object object = null;
-        try {
-            Integer aid = getAccessoryId();
-            if (aid != null) {
-                object = convertCommandToObject(command, channel);
-                writer.writeCharacteristic(aid.toString(), channelUID.getId(), object);
-            }
-        } catch (Exception e) {
-            logger.warn("Failed to send command '{}' as object '{}' to accessory for '{}", command, object, channelUID,
-                    e);
-        }
-    }
-
-    /**
-     * Polls the accessory for its current state and updates the corresponding channels.
-     * This method is called periodically by a scheduled executor.
-     */
-    private void refresh() {
-        CharacteristicReadWriteService rwService = this.rwService;
-        if (rwService != null) {
-            try {
-                Integer aid = getAccessoryId();
-                List<String> queries = thing.getChannels().stream()
-                        .map(c -> "%s.%s".formatted(aid, Integer.valueOf(c.getUID().getId()))).toList();
-                if (queries.isEmpty()) {
-                    return;
-                }
-                String jsonResponse = rwService.readCharacteristic(String.join(",", queries));
-                Service service = GSON.fromJson(jsonResponse, Service.class);
-                if (service != null && service.characteristics instanceof List<Characteristic> characteristics) {
-                    for (Characteristic characteristic : characteristics) {
-                        for (Channel channel : thing.getChannels()) {
-                            if (channel.getUID().getId().equals(String.valueOf(characteristic.iid))
-                                    && characteristic.value instanceof JsonElement element) {
-                                updateState(channel.getUID(), convertJsonToState(element, channel));
-                            }
-                        }
-                    }
-                }
-            } catch (Exception e) {
-                logger.error("Failed to poll accessory state", e);
-            }
-        }
-    }
-
-    @Override
-    protected void accessoriesLoaded() {
-        logger.info("Thing accessories loaded {}", accessories.size());
-        // create channels based on the fetched accessories
-        createChannels(); // do this asynchronously
-    }
-
-    /**
-     * Creates channels for the accessory based on its services and characteristics.
-     * Only parses the one relevant accessory in the list, as each handler is for a single accessory.
-     * Iterates through that accessory's services and characteristics to create appropriate channels.
-     * Each service creates a channel group, and each characteristic creates a channel within it.
-     */
-    private void createChannels() {
-        logger.info("Creating channels accessories {}", accessories.size());
-        if (accessories.isEmpty()) {
-            return;
-        }
-        Integer accessoryId = getAccessoryId();
-        logger.info("Creating channels accessoryId {}", accessoryId);
-        if (accessoryId == null) {
-            return;
-        }
-        Accessory accessory = accessories.get(accessoryId);
-        logger.info("Creating channels accessory {}", accessory);
-        if (accessory == null) {
-            return;
-        }
-
-        // create the channels
-        List<Channel> channels = new ArrayList<>();
-        Map<String, String> properties = new HashMap<>(thing.getProperties()); // keep existing properties
-        accessory.buildAndRegisterChannelGroupDefinitions(typeProvider).forEach(groupDef -> {
-            logger.info("Creating channels groupDef {}", groupDef.getId());
-            ChannelGroupType groupType = typeProvider.getChannelGroupType(groupDef.getTypeUID(), null);
-            if (groupType != null) {
-                groupType.getChannelDefinitions().forEach(channelDef -> {
-                    logger.info("Creating channels channelDef {}", channelDef.getId());
-                    if (FAKE_PROPERTY_CHANNEL_TYPE_UID.equals(channelDef.getChannelTypeUID())) {
-                        String name = channelDef.getId();
-                        String value = channelDef.getLabel();
-                        if (value != null) {
-                            properties.put(name, value);
-                        }
-                    } else {
-                        ChannelType channelType = typeProvider.getChannelType(channelDef.getChannelTypeUID(), null);
-                        if (channelType != null) {
-                            ChannelUID channelUID = new ChannelUID(thing.getUID(), groupDef.getId(),
-                                    channelDef.getId());
-                            ChannelBuilder builder = ChannelBuilder.create(channelUID).withType(channelType.getUID())
-                                    .withProperties(channelDef.getProperties());
-                            Optional.ofNullable(channelDef.getLabel()).ifPresent(builder::withLabel);
-                            Optional.ofNullable(channelDef.getDescription()).ifPresent(builder::withDescription);
-                            channels.add(builder.build());
-                        }
-                    }
-                });
-            }
-        });
-
-        if (!channels.isEmpty() || !properties.isEmpty()) {
-            logger.warn("Updating thing with {}/{} channels/properties", channels.size(), properties.size());
-            ThingBuilder builder = editThing().withProperties(properties).withChannels(channels);
-            Optional.ofNullable(accessory.getSemanticEquipmentTag()).ifPresent(builder::withSemanticEquipmentTag);
-            updateThing(builder.build());
-        }
     }
 
     /**
@@ -296,19 +179,6 @@ public class HomekitDeviceHandler extends HomekitBaseServerHandler {
     }
 
     /**
-     * Convert a HomeKit formatted unit string to OH format.
-     */
-    private static String normalizedUnitString(String unit) {
-        if (unit.isEmpty()) {
-            return unit;
-        }
-        if ("percentage".equals(unit)) { // special case HomeKit "percentage" => "Percent"
-            return "Percent";
-        }
-        return unit.substring(0, 1).toUpperCase() + unit.substring(1).toLowerCase(); // e.g. celsius => Celsius
-    }
-
-    /**
      * Converts a Characteristic's 'value' JSON element to an openHAB State based on the channel's accepted item type.
      * Handles various data formats including boolean, string, and number.
      *
@@ -367,5 +237,138 @@ public class HomekitDeviceHandler extends HomekitBaseServerHandler {
             };
         }
         return UnDefType.UNDEF;
+    }
+
+    /**
+     * Creates channels for the accessory based on its services and characteristics.
+     * Only parses the one relevant accessory in the list, as each handler is for a single accessory.
+     * Iterates through that accessory's services and characteristics to create appropriate channels.
+     * Each service creates a channel group, and each characteristic creates a channel within it.
+     */
+    private void createChannels() {
+        if (accessories.isEmpty()) {
+            return;
+        }
+        Integer accessoryId = getAccessoryId();
+        if (accessoryId == null) {
+            return;
+        }
+        Accessory accessory = accessories.get(accessoryId);
+        if (accessory == null) {
+            return;
+        }
+
+        // create the channels
+        List<Channel> channels = new ArrayList<>();
+        Map<String, String> properties = new HashMap<>(thing.getProperties()); // keep existing properties
+        accessory.buildAndRegisterChannelGroupDefinitions(typeProvider).forEach(groupDef -> {
+            ChannelGroupType groupType = typeProvider.getChannelGroupType(groupDef.getTypeUID(), null);
+            if (groupType != null) {
+                groupType.getChannelDefinitions().forEach(channelDef -> {
+                    logger.info("Creating channels channelDef {}", channelDef.getId());
+                    if (FAKE_PROPERTY_CHANNEL_TYPE_UID.equals(channelDef.getChannelTypeUID())) {
+                        String name = channelDef.getId();
+                        String value = channelDef.getLabel();
+                        if (value != null) {
+                            properties.put(name, value);
+                        }
+                    } else {
+                        ChannelType channelType = typeProvider.getChannelType(channelDef.getChannelTypeUID(), null);
+                        if (channelType != null) {
+                            ChannelUID channelUID = new ChannelUID(thing.getUID(), groupDef.getId(),
+                                    channelDef.getId());
+                            ChannelBuilder builder = ChannelBuilder.create(channelUID).withType(channelType.getUID())
+                                    .withProperties(channelDef.getProperties());
+                            Optional.ofNullable(channelDef.getLabel()).ifPresent(builder::withLabel);
+                            Optional.ofNullable(channelDef.getDescription()).ifPresent(builder::withDescription);
+                            channels.add(builder.build());
+                        }
+                    }
+                });
+            }
+        });
+
+        if (!channels.isEmpty() || !properties.isEmpty()) {
+            logger.debug("Updating thing with {} channels, {} properties", channels.size(), properties.size());
+            ThingBuilder builder = editThing().withProperties(properties).withChannels(channels);
+            Optional.ofNullable(accessory.getSemanticEquipmentTag()).ifPresent(builder::withSemanticEquipmentTag);
+            updateThing(builder.build());
+            channelsAndPropertiesLoaded();
+        }
+    }
+
+    @Override
+    public void handleCommand(ChannelUID channelUID, Command command) {
+        Channel channel = thing.getChannel(channelUID);
+        if (channel == null) {
+            logger.warn("Received command for unknown channel: {}", channelUID);
+            return;
+        }
+        CharacteristicReadWriteService writer = this.rwService;
+        if (writer == null) {
+            logger.warn("No writer service available to handle command for channel: {}", channelUID);
+            return;
+        }
+        Object object = null;
+        try {
+            Integer aid = getAccessoryId();
+            if (aid != null) {
+                object = convertCommandToObject(command, channel);
+                writer.writeCharacteristic(aid.toString(), channelUID.getId(), object);
+            }
+        } catch (Exception e) {
+            logger.warn("Failed to send command '{}' as object '{}' to accessory for '{}", command, object, channelUID,
+                    e);
+        }
+    }
+
+    @Override
+    public void initialize() {
+        super.initialize();
+    }
+
+    /**
+     * Convert a HomeKit formatted unit string to OH format.
+     */
+    private String normalizedUnitString(String unit) {
+        if (unit.isEmpty()) {
+            return unit;
+        }
+        if ("percentage".equals(unit)) { // special case HomeKit "percentage" => "Percent"
+            return "Percent";
+        }
+        return unit.substring(0, 1).toUpperCase() + unit.substring(1).toLowerCase(); // e.g. celsius => Celsius
+    }
+
+    /**
+     * Polls the accessory for its current state and updates the corresponding channels.
+     * This method is called periodically by a scheduled executor.
+     */
+    private void refresh() {
+        CharacteristicReadWriteService rwService = this.rwService;
+        if (rwService != null) {
+            try {
+                Integer aid = getAccessoryId();
+                List<String> queries = thing.getChannels().stream()
+                        .map(c -> "%s.%s".formatted(aid, Integer.valueOf(c.getUID().getId()))).toList();
+                if (queries.isEmpty()) {
+                    return;
+                }
+                String jsonResponse = rwService.readCharacteristic(String.join(",", queries));
+                Service service = GSON.fromJson(jsonResponse, Service.class);
+                if (service != null && service.characteristics instanceof List<Characteristic> characteristics) {
+                    for (Characteristic characteristic : characteristics) {
+                        for (Channel channel : thing.getChannels()) {
+                            if (channel.getUID().getId().equals(String.valueOf(characteristic.iid))
+                                    && characteristic.value instanceof JsonElement element) {
+                                updateState(channel.getUID(), convertJsonToState(element, channel));
+                            }
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                logger.error("Failed to poll accessory state", e);
+            }
+        }
     }
 }

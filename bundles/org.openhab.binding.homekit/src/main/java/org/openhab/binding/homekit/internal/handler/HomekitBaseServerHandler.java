@@ -119,10 +119,9 @@ public abstract class HomekitBaseServerHandler extends BaseThingHandler {
     }
 
     /**
-     * Called when accessories have been loaded from the /accessories endpoint.
-     * Subclasses should override to perform any processing required.
-     * This method is called in the context of the scheduler thread, so should not
-     * perform long blocking operations.
+     * Called when the thing handler has been initialized, the pairing verified, and the accessories have been loaded.
+     * Subclasses override this to perform any processing required.
+     * This method is called in the context of a scheduler thread, to avoid blocking operations.
      */
     protected abstract void accessoriesLoaded();
 
