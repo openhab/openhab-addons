@@ -99,7 +99,6 @@ public abstract class HomekitBaseServerHandler extends BaseThingHandler {
      * @see <a href="https://datatracker.ietf.org/doc/html/draft-ietf-homekit-http">HomeKit HTTP</a>
      */
     private void fetchAccessories() {
-        logger.info("Fetching accessories for BASE thing {}", thing.getUID());
         try {
             // byte[] json = ipTransport.get(ENDPOINT_ACCESSORIES, CONTENT_TYPE_HAP);
             // Accessories container = GSON.fromJson(new String(json, StandardCharsets.UTF_8), Accessories.class);
@@ -111,7 +110,7 @@ public abstract class HomekitBaseServerHandler extends BaseThingHandler {
                 accessories.putAll(accessoryList.stream().filter(a -> Objects.nonNull(a.aid))
                         .collect(Collectors.toMap(a -> a.aid, Function.identity())));
             }
-            logger.info("Fetched {} accessories", accessories.size());
+            logger.debug("Fetched {} accessories", accessories.size());
             scheduler.submit(() -> accessoriesLoaded()); // notify subclass in scheduler thread
         } catch (Exception e) {
             logger.warn("Failed to get accessories: {}", e.getMessage());
@@ -157,7 +156,6 @@ public abstract class HomekitBaseServerHandler extends BaseThingHandler {
         if (isChildAccessory) {
             updateStatus(ThingStatus.REMOVED);
         } else {
-            updateStatus(ThingStatus.REMOVING);
             scheduler.submit(() -> {
                 // unpair and clear stored keys if this is NOT a child accessory
                 try {
@@ -182,8 +180,8 @@ public abstract class HomekitBaseServerHandler extends BaseThingHandler {
             ipTransport = bridgeHandler.ipTransport;
             rwService = bridgeHandler.rwService;
             // TODO remove comment <= if (rwService != null) {
-            updateStatus(ThingStatus.ONLINE);
             fetchAccessories();
+            updateStatus(ThingStatus.ONLINE);
             // TODO remove comment <= } else {
             // TODO remove comment <= updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Bridge is not
             // connected");
@@ -194,8 +192,8 @@ public abstract class HomekitBaseServerHandler extends BaseThingHandler {
             try {
                 // TODO => ipTransport = new IpTransport(getConfig().get(CONFIG_IP_V4_ADDRESS).toString());
                 // TODO => scheduler.execute(() -> initializePairing()); // return fast, do pairing in background thread
-                updateStatus(ThingStatus.ONLINE); // TODO <= remove when above code is enabled
                 fetchAccessories(); // TODO <= remove when above code is enabled
+                updateStatus(ThingStatus.ONLINE);
             } catch (Exception e) {
                 logger.warn("Failed to create transport: {}", e.getMessage());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
@@ -230,8 +228,8 @@ public abstract class HomekitBaseServerHandler extends BaseThingHandler {
                 rwService = new CharacteristicReadWriteService(ipTransport);
 
                 logger.debug("Restored pairing was verified for accessory {}", accessoryId);
-                updateStatus(ThingStatus.ONLINE);
                 fetchAccessories();
+                updateStatus(ThingStatus.ONLINE);
 
                 return;
             } catch (Exception e) {
@@ -266,8 +264,8 @@ public abstract class HomekitBaseServerHandler extends BaseThingHandler {
             storeLongTermKeys();
 
             logger.debug("Pairing and verification completed for accessory {}", accessoryId);
-            updateStatus(ThingStatus.ONLINE);
             fetchAccessories();
+            updateStatus(ThingStatus.ONLINE);
 
         } catch (Exception e) {
             logger.warn("Pairing and verification failed for accessory {}", accessoryId);

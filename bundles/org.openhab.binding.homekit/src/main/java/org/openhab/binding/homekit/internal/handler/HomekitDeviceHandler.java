@@ -78,6 +78,7 @@ public class HomekitDeviceHandler extends HomekitBaseServerHandler {
 
     @Override
     protected void accessoriesLoaded() {
+        logger.debug("Thing accessories loaded {}", accessories.size());
         createChannels(); // create channels based on the fetched accessories
     }
 
@@ -265,7 +266,6 @@ public class HomekitDeviceHandler extends HomekitBaseServerHandler {
             ChannelGroupType groupType = typeProvider.getChannelGroupType(groupDef.getTypeUID(), null);
             if (groupType != null) {
                 groupType.getChannelDefinitions().forEach(channelDef -> {
-                    logger.info("Creating channels channelDef {}", channelDef.getId());
                     if (FAKE_PROPERTY_CHANNEL_TYPE_UID.equals(channelDef.getChannelTypeUID())) {
                         String name = channelDef.getId();
                         String value = channelDef.getLabel();

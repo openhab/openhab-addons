@@ -24,6 +24,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public enum CharacteristicType {
+    // TODO manually check the Homekit specification pdf to ensure all types are covered
     //@formatter:off
     ACCESSORY_PROPERTIES(0xA6, "public.hap.characteristic.accessory-properties"),
     ACTIVE(0xB0, "public.hap.characteristic.active"),

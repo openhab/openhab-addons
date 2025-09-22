@@ -76,12 +76,12 @@ public class HomekitBridgeHandler extends HomekitBaseServerHandler implements Br
 
     @Override
     public void childHandlerDisposed(ThingHandler childHandler, Thing childThing) {
-        // TODO Auto-generated method stub
+        // do nothing
     }
 
     @Override
     protected void accessoriesLoaded() {
-        logger.info("Bridge accessories loaded {}", accessories.size());
-        discoveryService.devicesDiscovered(thing, accessories.values());
+        logger.debug("Bridge accessories loaded {}", accessories.size());
+        discoveryService.devicesDiscovered(thing, accessories.values()); // discover child accessories
     }
 }

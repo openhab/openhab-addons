@@ -24,6 +24,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public enum ServiceType {
+    // TODO manually check the Homekit specification pdf to ensure all types are covered
     ACCESSORY_INFORMATION(0x3E, "public.hap.service.accessory-information"),
     AIR_PURIFIER(0xBB, "public.hap.service.air-purifier"),
     AUDIO_STREAM_MANAGEMENT(0x127, "public.hap.service.audio-stream-management"),
