@@ -155,7 +155,7 @@ public class ColorDevice extends BaseDevice {
     private void updateBrightness(PercentType brightness) {
         if (primaryItem instanceof ColorItem colorItem) {
             lastB = brightness;
-            colorItem.send(brightness);
+            colorItem.send(brightness, MATTER_SOURCE);
         }
     }
 
@@ -176,7 +176,7 @@ public class ColorDevice extends BaseDevice {
                     }
                 });
             }
-            colorItem.send(OnOffType.from(onOff));
+            colorItem.send(OnOffType.from(onOff), MATTER_SOURCE);
         }
     }
 
@@ -212,7 +212,7 @@ public class ColorDevice extends BaseDevice {
             if (b.intValue() == 0) {
                 b = new PercentType(100);
             }
-            colorItem.send(new HSBType(h, s, b));
+            colorItem.send(new HSBType(h, s, b), MATTER_SOURCE);
         }
         this.lastH = null;
         this.lastS = null;
