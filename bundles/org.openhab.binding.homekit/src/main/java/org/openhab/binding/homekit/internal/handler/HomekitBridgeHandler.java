@@ -15,10 +15,12 @@ package org.openhab.binding.homekit.internal.handler;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.homekit.internal.discovery.HomekitChildDiscoveryService;
 import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.binding.BridgeHandler;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.builder.BridgeBuilder;
+import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -83,5 +85,10 @@ public class HomekitBridgeHandler extends HomekitBaseServerHandler implements Br
     protected void accessoriesLoaded() {
         logger.debug("Bridge accessories loaded {}", accessories.size());
         discoveryService.devicesDiscovered(thing, accessories.values()); // discover child accessories
+    }
+
+    @Override
+    public void handleCommand(ChannelUID channelUID, Command command) {
+        // do nothing
     }
 }

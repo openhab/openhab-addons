@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
  * The device category is also included, allowing differentiation between bridges and accessories.
  * The discovery participant creates a ThingUID based on the MAC address and device category.
  * Discovered devices are published as Things of type
- * {@link org.openhab.binding.homekit.internal.HomekitBindingConstants#THING_TYPE_DEVICE}
+ * {@link org.openhab.binding.homekit.internal.HomekitBindingConstants#THING_TYPE_ACCESSORY}
  * or {@link org.openhab.binding.homekit.internal.HomekitBindingConstants#THING_TYPE_BRIDGE}.
  * Discovered Things include properties such as model name, protocol version, and IP address.
  * This class does not perform active scanning; instead, it relies on the central mDNS discovery
@@ -56,7 +56,7 @@ public class HomekitMdnsDiscoveryParticipant implements MDNSDiscoveryParticipant
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
-        return Set.of(THING_TYPE_DEVICE);
+        return Set.of(THING_TYPE_ACCESSORY);
     }
 
     @Override
@@ -68,21 +68,30 @@ public class HomekitMdnsDiscoveryParticipant implements MDNSDiscoveryParticipant
     public @Nullable DiscoveryResult createResult(ServiceInfo service) {
         ThingUID uid = getThingUID(service);
         if (uid != null) {
-            String ipV4Address = service.getHostAddresses()[0];
+            String host = service.getHostAddresses()[0];
             String macAddress = service.getPropertyString("id"); // HomeKit device ID is the MAC address
             String modelName = service.getPropertyString("md"); // HomeKit device model name
             String deviceCategory = service.getPropertyString("ci"); // HomeKit device category
             String protocolVersion = service.getPropertyString("pv"); // HomeKit protocol version
 
-            return DiscoveryResultBuilder.create(uid) //
-                    .withLabel(THING_LABEL_FMT.formatted(modelName, ipV4Address)) //
-                    .withProperty(CONFIG_IP_V4_ADDRESS, ipV4Address) //
+            DiscoveryResultBuilder builder = DiscoveryResultBuilder.create(uid);
+            builder.withLabel(THING_LABEL_FMT.formatted(service.getName(), host)) //
+                    .withProperty(CONFIG_HOST, host) //
                     .withProperty(Thing.PROPERTY_MODEL_ID, modelName) //
                     .withProperty(Thing.PROPERTY_MAC_ADDRESS, macAddress) //
                     .withProperty(PROPERTY_PROTOCOL_VERSION, protocolVersion) //
                     .withProperty(PROPERTY_DEVICE_CATEGORY, deviceCategory) //
-                    .withRepresentationProperty(Thing.PROPERTY_MAC_ADDRESS).build();
+                    .withRepresentationProperty(Thing.PROPERTY_MAC_ADDRESS);
+
+            if (!isBridge(service)) {
+                // '1' means we shall use the first (and only) accessory
+                ThingUID accessoryUid = new ThingUID(THING_TYPE_ACCESSORY, "1");
+                builder.withProperty(PROPERTY_ACCESSORY_UID, accessoryUid.toString());
+            }
+
+            return builder.build();
         }
+        logger.debug("Ignoring discovered HAP service {} with bad properties", service.getName());
         return null;
     }
 
@@ -91,19 +100,18 @@ public class HomekitMdnsDiscoveryParticipant implements MDNSDiscoveryParticipant
         String macAddress = service.getPropertyString("id");
         if (macAddress != null) {
             String id = macAddress.replace(":", "").replace("-", "").toLowerCase(); // e.g. "a1b2c3d4e5f6"
-            String accessoryType = service.getPropertyString("ci"); // HomeKit accessory type
-            try {
-                if (AccessoryType.BRIDGE.equals(AccessoryType.from(Integer.parseInt(accessoryType)))) {
-                    return new ThingUID(THING_TYPE_BRIDGE, id);
-                } else {
-                    return new ThingUID(THING_TYPE_DEVICE, id);
-                }
-            } catch (IllegalArgumentException e) {
-                logger.warn("Failed to parse accessory type '{}' for HomeKit device with MAC '{}'", accessoryType,
-                        macAddress);
-            }
+            return isBridge(service) ? new ThingUID(THING_TYPE_BRIDGE, id) : new ThingUID(THING_TYPE_ACCESSORY, id);
         }
-        logger.warn("Ignoring discovered HomeKit service {} without properties", service.getNiceTextString());
         return null;
+    }
+
+    private boolean isBridge(ServiceInfo service) {
+        String ci = service.getPropertyString("ci"); // accessory type i.e. 'category'
+        try {
+            return AccessoryType.BRIDGE == AccessoryType.from(Integer.parseInt(ci));
+        } catch (IllegalArgumentException e) {
+            logger.warn("Failed to parse accessory category '{}' for HAP service '{}'", ci, service.getName());
+        }
+        return false;
     }
 }

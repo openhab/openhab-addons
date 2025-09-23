@@ -24,7 +24,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public enum ServiceType {
-    // TODO manually check the Homekit specification pdf to ensure all types are covered
     ACCESSORY_INFORMATION(0x3E, "public.hap.service.accessory-information"),
     AIR_PURIFIER(0xBB, "public.hap.service.air-purifier"),
     AUDIO_STREAM_MANAGEMENT(0x127, "public.hap.service.audio-stream-management"),
@@ -33,12 +32,14 @@ public enum ServiceType {
     DATA_STREAM_TRANSPORT_MANAGEMENT(0x129, "public.hap.service.data-stream-transport-management"),
     DOOR(0x81, "public.hap.service.door"),
     DOORBELL(0x121, "public.hap.service.doorbell"),
+    FAN(0x40, "public.hap.service.fan"),
     FANV2(0xB7, "public.hap.service.fanv2"),
     FAUCET(0xD7, "public.hap.service.faucet"),
     FILTER_MAINTENANCE(0xBA, "public.hap.service.filter-maintenance"),
     GARAGE_DOOR_OPENER(0x41, "public.hap.service.garage-door-opener"),
     HEATER_COOLER(0xBC, "public.hap.service.heater-cooler"),
     HUMIDIFIER_DEHUMIDIFIER(0xBD, "public.hap.service.humidifier-dehumidifier"),
+    INPUT_SOURCE(0xD9, "public.hap.service.input-source"),
     IRRIGATION_SYSTEM(0xCF, "public.hap.service.irrigation-system"),
     LIGHT_BULB(0x43, "public.hap.service.lightbulb"),
     LOCK_MANAGEMENT(0x44, "public.hap.service.lock-management"),
@@ -61,11 +62,13 @@ public enum ServiceType {
     SENSOR_TEMPERATURE(0x8A, "public.hap.service.sensor.temperature"),
     SERVICE_LABEL(0xCC, "public.hap.service.service-label"),
     SIRI(0x133, "public.hap.service.siri"),
+    SMART_SPEAKER(0x228, "public.hap.service.smart-speaker"),
     SPEAKER(0x113, "public.hap.service.speaker"),
     STATELESS_PROGRAMMABLE_SWITCH(0x89, "public.hap.service.stateless-programmable-switch"),
     SWITCH(0x49, "public.hap.service.switch"),
     TARGET_CONTROL(0x125, "public.hap.service.target-control"),
     TARGET_CONTROL_MANAGEMENT(0x122, "public.hap.service.target-control-management"),
+    TELEVISION(0xD8, "public.hap.service.television"),
     THERMOSTAT(0x4A, "public.hap.service.thermostat"),
     VALVE(0xD0, "public.hap.service.valve"),
     VERTICAL_SLAT(0xB9, "public.hap.service.vertical-slat"),
@@ -90,7 +93,7 @@ public enum ServiceType {
     }
 
     public String getOpenhabType() {
-        return type.replace("public.hap.service.", "").replace(".", "-"); // convert to OH channel type format
+        return type.substring(19).replace(".", "-"); // convert to OH channel type format
     }
 
     public String getType() {

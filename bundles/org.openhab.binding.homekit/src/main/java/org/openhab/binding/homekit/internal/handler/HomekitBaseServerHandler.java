@@ -35,12 +35,11 @@ import org.openhab.binding.homekit.internal.hap_services.PairSetupClient;
 import org.openhab.binding.homekit.internal.hap_services.PairVerifyClient;
 import org.openhab.binding.homekit.internal.transport.IpTransport;
 import org.openhab.core.thing.Bridge;
-import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseThingHandler;
-import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -100,11 +99,10 @@ public abstract class HomekitBaseServerHandler extends BaseThingHandler {
      */
     private void fetchAccessories() {
         try {
-            // byte[] json = ipTransport.get(ENDPOINT_ACCESSORIES, CONTENT_TYPE_HAP);
-            // Accessories container = GSON.fromJson(new String(json, StandardCharsets.UTF_8), Accessories.class);
-            // TODO REMOVE TEST CODE
-            Accessories container = GSON.fromJson(TODO_REMOVE_TEST_JSON, Accessories.class);
-            // Accessories result = GSON.fromJson(TODO_REMOVE_TEST_JSON, Accessories.class);
+            String json = TODO_REMOVE_TEST_JSON;
+            // String json = new String(ipTransport.get(ENDPOINT_ACCESSORIES, CONTENT_TYPE_HAP),
+            // StandardCharsets.UTF_8);
+            Accessories container = GSON.fromJson(json, Accessories.class);
             if (container != null && container.accessories instanceof List<Accessory> accessoryList) {
                 accessories.clear();
                 accessories.putAll(accessoryList.stream().filter(a -> Objects.nonNull(a.aid))
@@ -125,30 +123,19 @@ public abstract class HomekitBaseServerHandler extends BaseThingHandler {
     protected abstract void accessoriesLoaded();
 
     /**
-     * Extracts the accessory ID from the thing's UID property.
-     * The UID is expected to end with "-<accessoryId>".
+     * Extracts the accessory ID from the 'Accessory UID' property.
      *
      * @return the accessory ID, or null if it cannot be determined
      */
     protected @Nullable Integer getAccessoryId() {
-        String uidProperty = thing.getProperties().get(PROPERTY_UID);
-        if (uidProperty == null) {
-            return null;
+        String accessoryUid = thing.getProperties().get(PROPERTY_ACCESSORY_UID);
+        if (accessoryUid != null) {
+            try {
+                return Integer.parseInt(new ThingUID(accessoryUid).getId());
+            } catch (NumberFormatException e) {
+            }
         }
-        int accessoryIdIndex = uidProperty.lastIndexOf("-");
-        if (accessoryIdIndex < 0) {
-            return null;
-        }
-        try {
-            return Integer.parseInt(uidProperty.substring(accessoryIdIndex + 1));
-        } catch (NumberFormatException e) {
-            return null;
-        }
-    }
-
-    @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
-        // this is an abstract thing with no channels, so do nothing
+        return null;
     }
 
     @Override

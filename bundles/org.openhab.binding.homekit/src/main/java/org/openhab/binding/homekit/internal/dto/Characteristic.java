@@ -17,6 +17,7 @@ import static org.openhab.binding.homekit.internal.HomekitBindingConstants.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -91,6 +92,15 @@ public class Characteristic {
         boolean isStateChannel = true;
         boolean isPercentage = "percentage".equals(unit);
 
+        String uom = unit == null ? null : switch (unit) {
+            case "celsius" -> "°C";
+            case "percentage" -> "%";
+            case "arcdegrees" -> "°";
+            case "lux" -> "lx"; // lux
+            case "seconds" -> "s";
+            default -> unit; // may be null or a custom unit
+        };
+
         String itemType = null;
         String category = null;
         String numberSuffix = null;
@@ -99,7 +109,7 @@ public class Characteristic {
 
         if (isReadOnly) {
             if (isBoolean) {
-                itemType = CoreItemFactory.SWITCH;
+                itemType = CoreItemFactory.CONTACT;
                 pointTag = Point.STATUS;
                 category = "switch";
             } else if (isNumber) {
@@ -132,22 +142,27 @@ public class Characteristic {
                 break;
 
             case AIR_PARTICULATE_DENSITY:
+                uom = "µg/m³";
                 numberSuffix = "Density";
                 propertyTag = Property.PARTICULATE_MATTER;
                 break;
 
             case AIR_PARTICULATE_SIZE:
-                numberSuffix = "Length";
-                propertyTag = Property.PARTICULATE_MATTER;
+                itemType = FAKE_PROPERTY_CHANNEL;
                 break;
 
             case AIR_PURIFIER_STATE_CURRENT:
+                // TODO numeric enum 3 states
+                propertyTag = Property.MODE;
+                break;
+
             case AIR_PURIFIER_STATE_TARGET:
+                itemType = CoreItemFactory.SWITCH;
                 propertyTag = Property.ENABLED;
                 break;
 
             case AIR_QUALITY:
-                numberSuffix = "Dimensionless";
+                // TODO numeric enum 5 states
                 propertyTag = Property.AIR_QUALITY;
                 break;
 
@@ -171,6 +186,7 @@ public class Characteristic {
                 break;
 
             case CARBON_DIOXIDE_DETECTED:
+                itemType = CoreItemFactory.CONTACT;
                 pointTag = Point.ALARM;
                 propertyTag = Property.CO2;
                 category = "co2";
@@ -178,12 +194,14 @@ public class Characteristic {
 
             case CARBON_DIOXIDE_LEVEL:
             case CARBON_DIOXIDE_PEAK_LEVEL:
+                uom = "ppm";
                 numberSuffix = "Density";
                 propertyTag = Property.CO2;
                 category = "co2";
                 break;
 
             case CARBON_MONOXIDE_DETECTED:
+                itemType = CoreItemFactory.CONTACT;
                 pointTag = Point.ALARM;
                 propertyTag = Property.CO;
                 category = "alarm";
@@ -191,63 +209,93 @@ public class Characteristic {
 
             case CARBON_MONOXIDE_LEVEL:
             case CARBON_MONOXIDE_PEAK_LEVEL:
+                uom = "ppm";
                 numberSuffix = "Density";
                 propertyTag = Property.CO;
                 break;
 
             case CHARGING_STATE:
-                propertyTag = Property.ENERGY;
+                // TODO numeric enum 3 states
+                propertyTag = Property.MODE;
                 category = "battery";
                 break;
 
             case COLOR_TEMPERATURE:
-                numberSuffix = isPercentage || unit == null ? "Dimensionless" : "Temperature";
+                uom = "Mirek";
+                numberSuffix = "Temperature";
                 propertyTag = Property.COLOR_TEMPERATURE;
                 category = "light";
                 break;
 
             case CONTACT_STATE:
+                itemType = CoreItemFactory.CONTACT;
+                pointTag = Point.STATUS;
+                category = "switch";
                 break;
 
             case DENSITY_NO2:
+                uom = "µg/m³";
                 numberSuffix = "Density";
                 propertyTag = Property.AIR_QUALITY;
                 break;
 
             case DENSITY_OZONE:
+                uom = "µg/m³";
                 numberSuffix = "Density";
                 propertyTag = Property.OZONE;
                 break;
 
             case DENSITY_PM10:
             case DENSITY_PM2_5:
+                uom = "µg/m³";
                 numberSuffix = "Density";
                 propertyTag = Property.PARTICULATE_MATTER;
                 break;
 
             case DENSITY_SO2:
+                uom = "µg/m³";
                 numberSuffix = "Density";
                 propertyTag = Property.AIR_QUALITY;
                 break;
 
             case DENSITY_VOC:
+                uom = "µg/m³";
                 numberSuffix = "Density";
                 propertyTag = Property.VOC;
                 break;
 
             case DOOR_STATE_CURRENT:
+                // TODO numeric enum 5 states
+                propertyTag = Property.OPEN_STATE;
+                break;
+
             case DOOR_STATE_TARGET:
+                itemType = CoreItemFactory.SWITCH;
                 propertyTag = Property.OPEN_STATE;
                 break;
 
             case FAN_STATE_CURRENT:
+                // TODO numeric enum 3 states
+                propertyTag = Property.MODE;
+                break;
+
             case FAN_STATE_TARGET:
-                propertyTag = Property.POWER;
+                itemType = CoreItemFactory.SWITCH;
+                propertyTag = Property.MODE;
                 break;
 
             case FILTER_CHANGE_INDICATION:
+                itemType = CoreItemFactory.CONTACT;
+                break;
+
             case FILTER_LIFE_LEVEL:
+                itemType = CoreItemFactory.NUMBER;
+                uom = "%";
+                numberSuffix = "Dimensionless";
+                break;
+
             case FILTER_RESET_INDICATION:
+                itemType = CoreItemFactory.SWITCH;
                 break;
 
             case FIRMWARE_REVISION:
@@ -257,31 +305,45 @@ public class Characteristic {
 
             case HEATER_COOLER_STATE_CURRENT:
             case HEATER_COOLER_STATE_TARGET:
-                propertyTag = Property.POWER;
+                // TODO numeric enum 3 states
+                propertyTag = Property.MODE;
                 category = "heating";
                 break;
 
             case HEATING_COOLING_CURRENT:
+                // TODO numeric enum 3 states
+                propertyTag = Property.MODE;
+                category = "heating";
+                break;
+
             case HEATING_COOLING_TARGET:
+                // TODO numeric enum 4 states
                 propertyTag = Property.MODE;
                 category = "heating";
                 break;
 
             case HORIZONTAL_TILT_CURRENT:
             case HORIZONTAL_TILT_TARGET:
+                numberSuffix = "Angle";
                 propertyTag = Property.TILT;
                 break;
 
             case HUE:
-                numberSuffix = "Dimensionless";
+                numberSuffix = "Angle";
                 propertyTag = Property.COLOR;
                 itemType = CoreItemFactory.COLOR;
                 category = "color";
                 break;
 
             case HUMIDIFIER_DEHUMIDIFIER_STATE_CURRENT:
+                // TODO numeric enum 4 states
+                propertyTag = Property.MODE;
+                category = "humidity";
+                break;
+
             case HUMIDIFIER_DEHUMIDIFIER_STATE_TARGET:
-                propertyTag = Property.HUMIDITY;
+                // TODO numeric enum 3 states
+                propertyTag = Property.MODE;
                 category = "humidity";
                 break;
 
@@ -290,11 +352,18 @@ public class Characteristic {
                 break;
 
             case IMAGE_MIRROR:
+                itemType = CoreItemFactory.SWITCH;
+                category = "image";
+                break;
+
             case IMAGE_ROTATION:
+                // TODO numeric enum 4 states
+                propertyTag = Property.MODE;
                 category = "image";
                 break;
 
             case INPUT_EVENT:
+                // TODO numeric enum 3 states
                 isStateChannel = false;
                 break;
 
@@ -304,6 +373,7 @@ public class Characteristic {
                 break;
 
             case LEAK_DETECTED:
+                itemType = CoreItemFactory.CONTACT;
                 pointTag = Point.ALARM;
                 propertyTag = Property.WATER;
                 category = "alarm";
@@ -315,14 +385,31 @@ public class Characteristic {
                 break;
 
             case LOCK_MANAGEMENT_AUTO_SECURE_TIMEOUT:
+                numberSuffix = "Duration";
+                break;
+
             case LOCK_MANAGEMENT_CONTROL_POINT:
+                // TODO tlv8
+                itemType = null;
+                break;
+
             case LOCK_MECHANISM_LAST_KNOWN_ACTION:
+                // TODO numeric enum 9 states
+                break;
+
             case LOCK_PHYSICAL_CONTROLS:
+                itemType = CoreItemFactory.SWITCH;
                 category = "lock";
                 break;
 
             case LOCK_MECHANISM_CURRENT_STATE:
+                itemType = CoreItemFactory.SWITCH;
+                propertyTag = Property.LOCK_STATE;
+                category = "lock";
+                break;
+
             case LOCK_MECHANISM_TARGET_STATE:
+                // TODO numeric enum 4 states
                 propertyTag = Property.LOCK_STATE;
                 category = "lock";
                 break;
@@ -337,11 +424,13 @@ public class Characteristic {
                 break;
 
             case MOTION_DETECTED:
+                itemType = CoreItemFactory.CONTACT;
                 propertyTag = Property.MOTION;
                 category = "motion";
                 break;
 
             case MUTE:
+                itemType = CoreItemFactory.SWITCH;
                 propertyTag = Property.SOUND_VOLUME;
                 category = "sound";
                 break;
@@ -351,10 +440,16 @@ public class Characteristic {
                 break;
 
             case NIGHT_VISION:
+                itemType = CoreItemFactory.SWITCH;
+                propertyTag = Property.ENABLED;
+                break;
+
             case OBSTRUCTION_DETECTED:
+                itemType = CoreItemFactory.CONTACT;
                 break;
 
             case OCCUPANCY_DETECTED:
+                itemType = CoreItemFactory.CONTACT;
                 propertyTag = Property.PRESENCE;
                 break;
 
@@ -364,7 +459,7 @@ public class Characteristic {
                 break;
 
             case OUTLET_IN_USE:
-                itemType = null;
+                itemType = FAKE_PROPERTY_CHANNEL;
                 break;
 
             case PAIRING_FEATURES:
@@ -374,48 +469,71 @@ public class Characteristic {
                 itemType = null;
                 break;
 
-            case POSITION_CURRENT:
             case POSITION_HOLD:
+                itemType = CoreItemFactory.SWITCH;
+                break;
+
+            case POSITION_CURRENT:
+                propertyTag = Property.OPENING;
+                break;
+
             case POSITION_STATE:
+                // TODO numeric enum 3 states
+                propertyTag = Property.OPENING;
+                break;
+
             case POSITION_TARGET:
+                itemType = CoreItemFactory.DIMMER;
                 propertyTag = Property.OPENING;
                 break;
 
             case PROGRAM_MODE:
+                // TODO numeric enum 3 states
                 propertyTag = Property.MODE;
                 break;
 
-            case RELATIVE_HUMIDITY_CURRENT:
             case RELATIVE_HUMIDITY_DEHUMIDIFIER_THRESHOLD:
             case RELATIVE_HUMIDITY_HUMIDIFIER_THRESHOLD:
+            case RELATIVE_HUMIDITY_CURRENT:
             case RELATIVE_HUMIDITY_TARGET:
+                itemType = CoreItemFactory.NUMBER;
                 numberSuffix = "Dimensionless";
                 propertyTag = Property.HUMIDITY;
                 category = "humidity";
                 break;
 
             case REMAINING_DURATION:
+                uom = "s";
+                numberSuffix = "Duration";
                 propertyTag = Property.DURATION;
                 break;
 
             case ROTATION_DIRECTION:
+                itemType = CoreItemFactory.SWITCH;
+                propertyTag = Property.MODE;
+                break;
+
             case ROTATION_SPEED:
+                itemType = CoreItemFactory.DIMMER;
+                propertyTag = Property.SPEED;
                 break;
 
             case SATURATION:
-                numberSuffix = "Dimensionless";
+                itemType = CoreItemFactory.DIMMER;
                 propertyTag = Property.COLOR;
                 itemType = CoreItemFactory.COLOR;
                 category = "color";
                 break;
 
             case SECURITY_SYSTEM_ALARM_TYPE:
+                itemType = CoreItemFactory.CONTACT;
                 pointTag = Point.ALARM;
                 break;
 
             case SECURITY_SYSTEM_STATE_CURRENT:
             case SECURITY_SYSTEM_STATE_TARGET:
-                propertyTag = Property.ENABLED;
+                // TODO numeric enum 4 states
+                propertyTag = Property.MODE;
                 break;
 
             case SELECTED_AUDIO_STREAM_CONFIGURATION:
@@ -432,6 +550,8 @@ public class Characteristic {
                 break;
 
             case SET_DURATION:
+                uom = "s";
+                numberSuffix = "Duration";
                 propertyTag = Property.DURATION;
                 break;
 
@@ -440,36 +560,44 @@ public class Characteristic {
                 break;
 
             case SLAT_STATE_CURRENT:
+                // TODO numeric enum 3 states
                 propertyTag = Property.TILT;
                 break;
 
             case SMOKE_DETECTED:
+                itemType = CoreItemFactory.CONTACT;
                 pointTag = Point.ALARM;
                 propertyTag = Property.SMOKE;
                 category = "smoke";
                 break;
 
             case STATUS_ACTIVE:
+                itemType = CoreItemFactory.CONTACT;
+                propertyTag = Property.MODE;
                 break;
 
             case STATUS_FAULT:
+                itemType = CoreItemFactory.CONTACT;
                 pointTag = Point.ALARM;
                 break;
 
             case STATUS_JAMMED:
+                itemType = CoreItemFactory.CONTACT;
                 pointTag = Point.ALARM;
+                propertyTag = Property.OPENING;
                 break;
 
             case STATUS_LO_BATT:
+                itemType = CoreItemFactory.CONTACT;
                 pointTag = Point.ALARM;
                 propertyTag = Property.LOW_BATTERY;
                 category = "battery";
                 break;
 
             case STATUS_TAMPERED:
+                itemType = CoreItemFactory.CONTACT;
                 pointTag = Point.ALARM;
                 propertyTag = Property.TAMPERED;
-                category = "lock";
                 break;
 
             case STREAMING_STATUS:
@@ -485,6 +613,7 @@ public class Characteristic {
                 break;
 
             case SWING_MODE:
+                itemType = CoreItemFactory.SWITCH;
                 propertyTag = Property.AIRFLOW;
                 break;
 
@@ -506,6 +635,7 @@ public class Characteristic {
 
             case TILT_CURRENT:
             case TILT_TARGET:
+                numberSuffix = "Angle";
                 propertyTag = Property.TILT;
                 break;
 
@@ -517,15 +647,18 @@ public class Characteristic {
 
             case VERTICAL_TILT_CURRENT:
             case VERTICAL_TILT_TARGET:
+                numberSuffix = "Angle";
                 propertyTag = Property.TILT;
                 break;
 
             case VOLUME:
+                itemType = CoreItemFactory.DIMMER;
                 propertyTag = Property.SOUND_VOLUME;
                 category = "sound";
                 break;
 
             case WATER_LEVEL:
+                numberSuffix = "Dimensionless";
                 propertyTag = Property.WATER;
                 break;
 
@@ -544,7 +677,7 @@ public class Characteristic {
          * properties e.g. min, max, step, unit may be different
          */
         ChannelTypeUID uid = new ChannelTypeUID(BINDING_ID, characteristicType.getOpenhabType());
-        String label = CHANNEL_TYPE_LABEL_FMT.formatted(characteristicType.toString());
+        String typeLabel = CHANNEL_TYPE_LABEL_FMT.formatted(characteristicType.toString());
         ChannelType channelType;
         if (isStateChannel) {
             if (itemType == null) {
@@ -558,7 +691,7 @@ public class Characteristic {
                 }
                 return null;
             }
-            StateChannelTypeBuilder builder = ChannelTypeBuilder.state(uid, label, itemType);
+            StateChannelTypeBuilder builder = ChannelTypeBuilder.state(uid, typeLabel, itemType);
             Optional.ofNullable(category).ifPresent(builder::withCategory);
             if (pointTag != null) {
                 if (propertyTag != null) {
@@ -569,7 +702,7 @@ public class Characteristic {
             }
             channelType = builder.build();
         } else {
-            channelType = ChannelTypeBuilder.trigger(uid, label).build();
+            channelType = ChannelTypeBuilder.trigger(uid, typeLabel).build();
         }
 
         // persist the channel _type_
@@ -580,17 +713,26 @@ public class Characteristic {
          * through properties instead e.g. minValue, maxValue, minStep, format, unit, perms, ev
          */
         Map<String, String> properties = new HashMap<>();
+        Optional.ofNullable(iid).map(v -> v.toString()).ifPresent(s -> properties.put("iid", s));
         Optional.ofNullable(minValue).map(v -> v.toString()).ifPresent(s -> properties.put("minValue", s));
         Optional.ofNullable(maxValue).map(v -> v.toString()).ifPresent(s -> properties.put("maxValue", s));
         Optional.ofNullable(minStep).map(v -> v.toString()).ifPresent(s -> properties.put("minStep", s));
         Optional.ofNullable(format).ifPresent(s -> properties.put("format", s));
-        Optional.ofNullable(unit).ifPresent(s -> properties.put("unit", s));
+        Optional.ofNullable(uom).ifPresent(s -> properties.put("unit", s));
         Optional.ofNullable(perms).map(l -> String.join(",", l)).ifPresent(s -> properties.put("perms", s));
         Optional.ofNullable(ev).map(b -> b.toString()).ifPresent(s -> properties.put("ev", s));
 
         // return the definition of a specific _instance_ of the channel _type_
         return new ChannelDefinitionBuilder(characteristicType.getOpenhabType(), uid).withProperties(properties)
-                .withLabel(characteristicType.toString()).build();
+                .withLabel(getChannelInstanceLabel()).build();
+    }
+
+    /*
+     * Returns the 'description' field if it is present. Otherwise returns the Characteristic type in Title Case.
+     */
+    private String getChannelInstanceLabel() {
+        return description != null && !description.isBlank() ? description
+                : Objects.requireNonNull(getCharacteristicType()).toString();
     }
 
     public @Nullable CharacteristicType getCharacteristicType() {

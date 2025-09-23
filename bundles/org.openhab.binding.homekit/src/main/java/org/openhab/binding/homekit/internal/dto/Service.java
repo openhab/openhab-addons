@@ -19,6 +19,7 @@ import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.homekit.internal.enums.CharacteristicType;
 import org.openhab.binding.homekit.internal.enums.ServiceType;
 import org.openhab.binding.homekit.internal.persistence.HomekitTypeProvider;
 import org.openhab.core.thing.type.ChannelDefinition;
@@ -26,6 +27,8 @@ import org.openhab.core.thing.type.ChannelGroupDefinition;
 import org.openhab.core.thing.type.ChannelGroupType;
 import org.openhab.core.thing.type.ChannelGroupTypeBuilder;
 import org.openhab.core.thing.type.ChannelGroupTypeUID;
+
+import com.google.gson.JsonElement;
 
 /**
  * HomeKit service DTO.
@@ -38,6 +41,7 @@ import org.openhab.core.thing.type.ChannelGroupTypeUID;
 public class Service {
     public @NonNullByDefault({}) String type; // e.g. '96' => 'public.hap.service.battery'
     public @NonNullByDefault({}) Integer iid; // e.g. 10
+    public @NonNullByDefault({}) String name;
     public @NonNullByDefault({}) List<Characteristic> characteristics;
 
     /**
@@ -63,19 +67,42 @@ public class Service {
         }
 
         ChannelGroupTypeUID groupTypeUID = new ChannelGroupTypeUID(BINDING_ID, serviceType.getOpenhabType());
-        String label = GROUP_TYPE_LABEL_FMT.formatted(serviceType.toString());
-        ChannelGroupType groupType = ChannelGroupTypeBuilder.instance(groupTypeUID, label) //
+        String typeLabel = GROUP_TYPE_LABEL_FMT.formatted(serviceType.toString());
+        ChannelGroupType groupType = ChannelGroupTypeBuilder.instance(groupTypeUID, typeLabel) //
                 .withChannelDefinitions(channelDefinitions) //
                 .build();
 
         // persist the group _type_, and return the definition of a specific _instance_ of that type
         typeProvider.putChannelGroupType(groupType);
-        return new ChannelGroupDefinition(serviceType.getOpenhabType(), groupTypeUID, serviceType.toString(), null);
+        return new ChannelGroupDefinition(serviceType.getOpenhabType(), groupTypeUID, getGroupInstanceLabel(), null);
+    }
+
+    /*
+     * Returns the 'name' field if it is present. Otherwise searches for a characterstic of type
+     * CharacteristicType.NAME and if present returns that value. Otherwise returns the service
+     * type in Title Case..
+     */
+    public String getGroupInstanceLabel() {
+        if (name != null && !name.isBlank()) {
+            return name;
+        }
+        if (characteristics instanceof List<Characteristic> characteristics) {
+            for (Characteristic c : characteristics) {
+                if (c.getCharacteristicType() == CharacteristicType.NAME) {
+                    if (c.value instanceof JsonElement v && v.isJsonPrimitive() && v.getAsJsonPrimitive().isString()) {
+                        return v.getAsJsonPrimitive().getAsString();
+                    }
+                }
+            }
+        }
+        return Objects.requireNonNull(getServiceType()).toString();
     }
 
     public @Nullable ServiceType getServiceType() {
         try {
-            return ServiceType.from(Integer.parseInt(type, 16));
+            // convert "00000113-0000-1000-8000-0026BB765291" to "00000113"
+            String firstPart = type.split("-")[0];
+            return ServiceType.from(Integer.parseUnsignedInt(firstPart, 16));
         } catch (IllegalArgumentException e) {
             return null;
         }

@@ -46,8 +46,7 @@ import org.osgi.service.component.annotations.Reference;
 @Component(service = ThingHandlerFactory.class)
 public class HomekitHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_BRIDGE, THING_TYPE_DEVICE,
-            THING_TYPE_CHILD);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_BRIDGE, THING_TYPE_ACCESSORY);
 
     private final HomekitTypeProvider typeProvider;
 
@@ -75,9 +74,7 @@ public class HomekitHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (THING_TYPE_BRIDGE.equals(thingTypeUID)) {
             return new HomekitBridgeHandler((Bridge) thing, registerDiscoveryService());
-        } else if (THING_TYPE_DEVICE.equals(thingTypeUID)) {
-            return new HomekitDeviceHandler(thing, typeProvider);
-        } else if (THING_TYPE_CHILD.equals(thingTypeUID)) {
+        } else if (THING_TYPE_ACCESSORY.equals(thingTypeUID)) {
             return new HomekitDeviceHandler(thing, typeProvider);
         }
         return null;

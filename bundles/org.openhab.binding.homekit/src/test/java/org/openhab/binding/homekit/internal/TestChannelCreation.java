@@ -431,7 +431,7 @@ class TestChannelCreation {
         assertNotNull(channelDefinition);
         assertEquals("brightness", channelDefinition.getChannelTypeUID().getId());
         assertEquals("Brightness", channelDefinition.getLabel());
-        assertEquals("percentage", channelDefinition.getProperties().get("unit"));
+        assertEquals("%", channelDefinition.getProperties().get("unit"));
         assertEquals("int", channelDefinition.getProperties().get("format"));
         assertEquals("20.0", channelDefinition.getProperties().get("minValue"));
         assertEquals("100.0", channelDefinition.getProperties().get("maxValue"));

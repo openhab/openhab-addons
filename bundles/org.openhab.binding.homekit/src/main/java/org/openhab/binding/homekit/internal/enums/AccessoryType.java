@@ -22,8 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public enum AccessoryType {
-    // TODO manually check the Homekit specification pdf to ensure all types are covered
-    OTHER(1, "Other"),
+    OTHER(1, "Other Accessory"),
     BRIDGE(2, "Bridge"),
     FAN(3, "Fan"),
     GARAGE_DOOR(4, "Garage Door"),
@@ -38,7 +37,7 @@ public enum AccessoryType {
     WINDOW(13, "Window"),
     WINDOW_COVERING(14, "Window Covering"),
     PROGRAMMABLE_SWITCH(15, "Programmable Switch"),
-    RESERVED(16, "Reserved"),
+    RANGE_EXTENDER(16, "Range Extender"),
     IP_CAMERA(17, "IP Camera"),
     VIDEO_DOORBELL(18, "Video Doorbell"),
     AIR_PURIFIER(19, "Air Purifier"),
@@ -47,13 +46,18 @@ public enum AccessoryType {
     HUMIDIFIER(22, "Humidifier"),
     DEHUMIDIFIER(23, "Dehumidifier"),
     APPLE_TV(24, "Apple TV"),
+    SMART_SPEAKER(25, "Smart Speaker"),
     SPEAKER(26, "Speaker"),
     AIRPORT(27, "AirPort"),
     SPRINKLER(28, "Sprinkler"),
     FAUCET(29, "Faucet"),
     SHOWER_HEAD(30, "Shower"),
     TELEVISION(31, "Television"),
-    REMOTE(32, "Remote");
+    REMOTE(32, "Remote"),
+    ROUTER(33, "Router"),
+    AUDIO_RECEIVER(34, "Audio Receiver"),
+    TV_SET_TOP_BOX(35, "TV Set Top Box"),
+    TV_STREAMING_STICK(36, "TV Streaming Stick");
 
     private final int id;
     private final String label;

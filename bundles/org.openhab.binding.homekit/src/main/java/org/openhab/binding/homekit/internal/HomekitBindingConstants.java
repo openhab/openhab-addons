@@ -28,8 +28,7 @@ public class HomekitBindingConstants {
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "bridge");
-    public static final ThingTypeUID THING_TYPE_DEVICE = new ThingTypeUID(BINDING_ID, "device");
-    public static final ThingTypeUID THING_TYPE_CHILD = new ThingTypeUID(BINDING_ID, "child");
+    public static final ThingTypeUID THING_TYPE_ACCESSORY = new ThingTypeUID(BINDING_ID, "accessory");
 
     // specific Channel Type UIDs
     public static final String FAKE_PROPERTY_CHANNEL = "property-fake-channel";
@@ -38,20 +37,17 @@ public class HomekitBindingConstants {
 
     // labels
     public static final String THING_LABEL_FMT = "Model %s on %s";
-    public static final String CHILD_LABEL_FMT = "Accessory %d on %s";
+    public static final String ACCESSORY_LABEL_FMT = "Accessory %d on %s";
     public static final String GROUP_TYPE_LABEL_FMT = "Channel group type: %s";
     public static final String CHANNEL_TYPE_LABEL_FMT = "Channel type: %s";
 
-    // UID id formats
-    public static final String ACCESSORY_FMT = "accessory-%d"; // e.g. accessory-3
-
     // configuration parameters
+    public static final String CONFIG_HOST = "host";
     public static final String CONFIG_PAIRING_CODE = "pairingCode";
-    public static final String CONFIG_IP_V4_ADDRESS = "ipV4Address";
     public static final String CONFIG_REFRESH_INTERVAL = "refreshInterval";
 
     // properties
-    public static final String PROPERTY_UID = "uid";
+    public static final String PROPERTY_ACCESSORY_UID = "accessoryUID";
     public static final String PROPERTY_PROTOCOL_VERSION = "protocolVersion";
     public static final String PROPERTY_DEVICE_CATEGORY = "deviceCategory";
     public static final String PROPERTY_CONTROLLER_PRIVATE_KEY = "controllerPrivateKey";

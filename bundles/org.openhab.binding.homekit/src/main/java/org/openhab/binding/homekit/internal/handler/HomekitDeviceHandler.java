@@ -40,6 +40,7 @@ import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.semantics.SemanticTag;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -125,7 +126,7 @@ public class HomekitDeviceHandler extends HomekitBaseServerHandler {
         if (object instanceof QuantityType<?> quantity) {
             if (properties.get("unit") instanceof String unit) {
                 try {
-                    QuantityType<?> temp = quantity.toUnit(normalizedUnitString(unit));
+                    QuantityType<?> temp = quantity.toUnit(unit);
                     object = temp != null ? temp : quantity;
                 } catch (MeasurementParseException e) {
                     logger.warn("Unexpected unit {} for channel {}", unit, channel.getUID());
@@ -288,10 +289,22 @@ public class HomekitDeviceHandler extends HomekitBaseServerHandler {
             }
         });
 
-        if (!channels.isEmpty() || !properties.isEmpty()) {
-            logger.debug("Updating thing with {} channels, {} properties", channels.size(), properties.size());
+        String oldLabel = thing.getLabel();
+        String newLabel = oldLabel == null || oldLabel.isEmpty() ? accessory.getAccessoryInstanceLabel() : null;
+        List<Channel> newChannels = !channels.isEmpty() ? channels : null;
+        Map<String, String> newProperties = !properties.isEmpty() ? properties : null;
+        SemanticTag newTag = accessory.getSemanticEquipmentTag();
+
+        if (newLabel != null || newChannels != null || newProperties != null || newTag != null) {
+            logger.debug("Updating thing {} channels, {} properties, label {}, tag {}", channels.size(),
+                    properties.size(), newLabel, newTag);
+
             ThingBuilder builder = editThing().withProperties(properties).withChannels(channels);
-            Optional.ofNullable(accessory.getSemanticEquipmentTag()).ifPresent(builder::withSemanticEquipmentTag);
+            Optional.ofNullable(newLabel).ifPresent(builder::withLabel);
+            Optional.ofNullable(newChannels).ifPresent(builder::withChannels);
+            Optional.ofNullable(newProperties).ifPresent(builder::withProperties);
+            Optional.ofNullable(newTag).ifPresent(builder::withSemanticEquipmentTag);
+
             updateThing(builder.build());
             channelsAndPropertiesLoaded();
         }
@@ -325,19 +338,6 @@ public class HomekitDeviceHandler extends HomekitBaseServerHandler {
     @Override
     public void initialize() {
         super.initialize();
-    }
-
-    /**
-     * Convert a HomeKit formatted unit string to OH format.
-     */
-    private String normalizedUnitString(String unit) {
-        if (unit.isEmpty()) {
-            return unit;
-        }
-        if ("percentage".equals(unit)) { // special case HomeKit "percentage" => "Percent"
-            return "Percent";
-        }
-        return unit.substring(0, 1).toUpperCase() + unit.substring(1).toLowerCase(); // e.g. celsius => Celsius
     }
 
     /**

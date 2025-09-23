@@ -18,10 +18,14 @@ import java.util.Objects;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homekit.internal.enums.AccessoryType;
+import org.openhab.binding.homekit.internal.enums.CharacteristicType;
+import org.openhab.binding.homekit.internal.enums.ServiceType;
 import org.openhab.binding.homekit.internal.persistence.HomekitTypeProvider;
 import org.openhab.core.semantics.SemanticTag;
 import org.openhab.core.semantics.model.DefaultSemanticTags.Equipment;
 import org.openhab.core.thing.type.ChannelGroupDefinition;
+
+import com.google.gson.JsonElement;
 
 /**
  * HomeKit accessory DTO
@@ -34,6 +38,13 @@ import org.openhab.core.thing.type.ChannelGroupDefinition;
 public class Accessory {
     public @NonNullByDefault({}) Integer aid; // e.g. 1
     public @NonNullByDefault({}) List<Service> services;
+    public @NonNullByDefault({}) String name;
+    public @NonNullByDefault({}) String manufacturer;
+    public @NonNullByDefault({}) String model;
+    public @NonNullByDefault({}) String serialNumber;
+    public @NonNullByDefault({}) String firmwareRevision;
+    public @NonNullByDefault({}) String hardwareRevision;
+    public @NonNullByDefault({}) Integer category;
 
     /**
      * Builds and registers channel group definitions for all services of this accessory.
@@ -51,11 +62,11 @@ public class Accessory {
     }
 
     public AccessoryType getAccessoryType() {
-        Integer aid = this.aid;
-        if (aid == null) {
+        Integer category = this.category;
+        if (category == null) {
             return AccessoryType.OTHER;
         }
-        return AccessoryType.from(aid);
+        return AccessoryType.from(category);
     }
 
     /**
@@ -124,10 +135,49 @@ public class Accessory {
                 return Equipment.TELEVISION;
             case VIDEO_DOORBELL:
                 return Equipment.DOORBELL;
+            case AUDIO_RECEIVER:
+                return Equipment.RECEIVER;
+            case RANGE_EXTENDER:
+                return Equipment.NETWORK_APPLIANCE;
+            case ROUTER:
+                return Equipment.ROUTER;
+            case SMART_SPEAKER:
+                return Equipment.SPEAKER;
+            case TV_SET_TOP_BOX:
+            case TV_STREAMING_STICK:
+                return Equipment.MEDIA_PLAYER;
             case OTHER:
-            case RESERVED:
+                break;
         }
         return null;
+    }
+
+    /**
+     * Gets the label for this accessory instance. If the accessory has a non-blank name, that is returned. Otherwise,
+     * if the accessory has an Accessory Information service with a Name characteristic, that is returned. Otherwise,
+     * the accessory type is returned in Title Case.
+     */
+    public String getAccessoryInstanceLabel() {
+        if (name != null && !name.isBlank()) {
+            return name;
+        }
+        if (services instanceof List<Service> serviceList) {
+            for (Service s : serviceList) {
+                if (s.getServiceType() == ServiceType.ACCESSORY_INFORMATION) {
+                    if (s.characteristics instanceof List<Characteristic> characteristics) {
+                        for (Characteristic c : characteristics) {
+                            if (c.getCharacteristicType() == CharacteristicType.NAME) {
+                                if (c.value instanceof JsonElement v && v.isJsonPrimitive()
+                                        && v.getAsJsonPrimitive().isString()) {
+                                    return v.getAsJsonPrimitive().getAsString();
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return toString();
     }
 
     public @Nullable Service getService(Integer iid) {

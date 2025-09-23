@@ -38,7 +38,7 @@ import org.osgi.service.component.annotations.Component;
 public class HomekitChildDiscoveryService extends AbstractDiscoveryService {
 
     public HomekitChildDiscoveryService() {
-        super(Set.of(THING_TYPE_CHILD), 10, false);
+        super(Set.of(THING_TYPE_ACCESSORY), 10, false);
     }
 
     @Override
@@ -50,13 +50,14 @@ public class HomekitChildDiscoveryService extends AbstractDiscoveryService {
         accessories.forEach(accessory -> {
             if (accessory.aid != null && accessory.services != null) {
                 // accessory ID is unique per bridge
-                ThingUID uid = new ThingUID(THING_TYPE_CHILD, bridge.getUID(), ACCESSORY_FMT.formatted(accessory.aid));
-
+                ThingUID uid = new ThingUID(THING_TYPE_ACCESSORY, bridge.getUID(), accessory.aid.toString());
                 thingDiscovered(DiscoveryResultBuilder.create(uid) //
                         .withBridge(bridge.getUID()) //
-                        .withLabel(CHILD_LABEL_FMT.formatted(accessory.aid, bridge.getLabel())) //
-                        .withProperty(PROPERTY_UID, uid.toString()) //
-                        .withRepresentationProperty(PROPERTY_UID).build());
+                        .withLabel(ACCESSORY_LABEL_FMT.formatted(accessory.aid, bridge.getLabel())) //
+                        .withProperty(CONFIG_HOST, "n/a") //
+                        .withProperty(CONFIG_PAIRING_CODE, "n/a") //
+                        .withProperty(PROPERTY_ACCESSORY_UID, uid.toString()) //
+                        .withRepresentationProperty(PROPERTY_ACCESSORY_UID).build());
             }
         });
     }

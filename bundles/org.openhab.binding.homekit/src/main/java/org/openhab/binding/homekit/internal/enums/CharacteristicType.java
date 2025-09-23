@@ -24,7 +24,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public enum CharacteristicType {
-    // TODO manually check the Homekit specification pdf to ensure all types are covered
     //@formatter:off
     ACCESSORY_PROPERTIES(0xA6, "public.hap.characteristic.accessory-properties"),
     ACTIVE(0xB0, "public.hap.characteristic.active"),
@@ -177,7 +176,7 @@ public enum CharacteristicType {
     }
 
     public String getOpenhabType() {
-        return type.replace("public.hap.characteristic.", "").replace(".", "-"); // convert to OH channel type format
+        return type.substring(26).replace(".", "-"); // convert to OH channel type format
     }
 
     public String getType() {
