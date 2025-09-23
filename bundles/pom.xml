@@ -277,6 +277,7 @@
     <module>org.openhab.binding.modbus</module>
     <module>org.openhab.binding.modbus.e3dc</module>
     <module>org.openhab.binding.modbus.kermi</module>
+    <module>org.openhab.binding.modbus.lambda</module>
     <module>org.openhab.binding.modbus.sbc</module>
     <module>org.openhab.binding.modbus.studer</module>
     <module>org.openhab.binding.modbus.sungrow</module>

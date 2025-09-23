@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="modbus"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="heat-pump">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="tcp"/>
+		</supported-bridge-type-refs>
+
+		<label>Heat Pump</label>
+		<description>Lambda Heat Pump connected through modbus</description>
+
+		<channel-groups>
+			<channel-group id="heat-pump-group" typeId="heat-pump"/>
+		</channel-groups>
+
+		<config-description>
+			<parameter name="refresh" type="integer" min="0" unit="s">
+				<label>Refresh Interval</label>
+				<description>Refresh interval in seconds. Use zero to disable automatic polling.</description>
+				<default>30</default>
+				<unitLabel>s</unitLabel>
+			</parameter>
+
+			<parameter name="maxTries" type="integer" min="1">
+				<label>Maximum Tries</label>
+				<default>3</default>
+				<description>Number of tries when reading data, if some of the reading fail. For single try, enter 1.</description>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="subindex" type="integer" required="true" min="0" max="2">
+				<label>Subindex of Heatpump Thing (0..2)</label>
+				<description>See Lambda Modbus description</description>
+				<default>0</default>
+			</parameter>
+
+		</config-description>
+	</thing-type>
+
+	<channel-group-type id="heat-pump">
+		<label>Heat Pump</label>
+
+		<channels>
+			<channel id="heat-pump-error-state" typeId="heat-pump-error-state"/>
+			<channel id="heat-pump-error-number" typeId="heat-pump-error-number"/>
+			<channel id="heat-pump-state" typeId="heat-pump-state"/>
+			<channel id="heat-pump-operating-state" typeId="heat-pump-operating-state"/>
+			<channel id="heat-pump-t-flow" typeId="heat-pump-t-flow"/>
+			<channel id="heat-pump-t-return" typeId="heat-pump-t-return"/>
+			<channel id="heat-pump-vol-sink" typeId="heat-pump-vol-sink"/>
+			<channel id="heat-pump-t-eqin" typeId="heat-pump-t-eqin"/>
+			<channel id="heat-pump-t-eqout" typeId="heat-pump-t-eqout"/>
+			<channel id="heat-pump-vol-source" typeId="heat-pump-vol-source"/>
+			<channel id="heat-pump-compressor-rating" typeId="heat-pump-compressor-rating"/>
+			<channel id="heat-pump-qp-heating" typeId="heat-pump-qp-heating"/>
+			<channel id="heat-pump-fi-power-consumption" typeId="heat-pump-fi-power-consumption"/>
+			<channel id="heat-pump-cop" typeId="heat-pump-cop"/>
+			<channel id="heatpump-request-password" typeId="heatpump-request-password-channel"/>
+			<channel id="heatpump-request-type" typeId="heatpump-request-type-channel"/>
+			<channel id="heat-pump-request-t-flow" typeId="heat-pump-request-t-flow"/>
+			<channel id="heat-pump-request-t-return" typeId="heat-pump-request-t-return"/>
+			<channel id="heat-pump-request-heat-sink" typeId="heat-pump-request-heat-sink"/>
+			<channel id="heatpump-relais-state" typeId="heatpump-relais-state-channel"/>
+			<channel id="heat-pump-vdae" typeId="heat-pump-vdae"/>
+			<channel id="heat-pump-vdaq" typeId="heat-pump-vdaq"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="heat-pump-error-state">
+		<item-type>Number</item-type>
+		<label>Heatpump Error State</label>
+		<state readOnly="true">
+			<options>
+				<option value="0">NONE</option>
+				<option value="1">MESSAGE</option>
+				<option value="2">WARNING</option>
+				<option value="3">ALARM</option>
+				<option value="4">FAULT</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="heat-pump-error-number">
+		<item-type>Number</item-type>
+		<label>Heatpump Error Number</label>
+		<state readOnly="true">
+			<options>
+				<option value="0">No Error</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="heat-pump-state">
+		<item-type>Number</item-type>
+		<label>Heatpump State</label>
+		<state readOnly="true">
+			<options>
+				<option value="0">INIT</option>
+				<option value="1">REFERENCE</option>
+				<option value="2">RESTART-BLOCK</option>
+				<option value="3">READY</option>
+				<option value="4">START PUMPS</option>
+				<option value="5">START COMPRESSOR</option>
+				<option value="6">PRE-REGULATION</option>
+				<option value="7">REGULATION</option>
+				<option value="8">Not used</option>
+				<option value="9">COOLING</option>
+				<option value="10">DEFROSTING</option>
+				<option value="20">STOPPING</option>
+				<option value="30">FAULT-LOCK</option>
+				<option value="31">ALARM-BLOCK</option>
+				<option value="40">ERROR-RESET</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="heat-pump-operating-state">
+		<item-type>Number</item-type>
+		<label>Heatpump Operating State</label>
+		<state readOnly="true">
+			<options>
+				<option value="0">STBY</option>
+				<option value="1">CH</option>
+				<option value="2">DHW</option>
+				<option value="3">CC</option>
+				<option value="4">CIRCULATE</option>
+				<option value="5">DEFROST</option>
+				<option value="6">OFF</option>
+				<option value="7">FROST</option>
+				<option value="8">STBY-FROST</option>
+				<option value="9">Not used</option>
+				<option value="10">SUMMER</option>
+				<option value="11">HOLIDAY</option>
+				<option value="12">ERROR</option>
+				<option value="13">WARNING</option>
+				<option value="14">INFO-MESSAGE</option>
+				<option value="15">TIME-BLOCK</option>
+				<option value="16">RELEASE-BLOCK</option>
+				<option value="17">MINTEMP-BLOCK</option>
+				<option value="18">FIRMWARE-DOWNLOAD</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="heat-pump-t-flow">
+		<item-type>Number:Temperature</item-type>
+		<label>Heatpump T-Flow</label>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="heat-pump-t-return">
+		<item-type>Number:Temperature</item-type>
+		<label>Heatpump T-Return</label>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="heat-pump-vol-sink">
+		<item-type>Number:VolumetricFlowRate</item-type>
+		<label>Heatpump Volume flow heat sink</label>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="heat-pump-t-eqin">
+		<item-type>Number:Temperature</item-type>
+		<label>Heatpump Energy source inlet temperature</label>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="heat-pump-t-eqout">
+		<item-type>Number:Temperature</item-type>
+		<label>Heatpump Energy source outlet temperature</label>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="heat-pump-vol-source">
+		<item-type>Number:VolumetricFlowRate</item-type>
+		<label>Heatpump Volume flow energy source</label>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="heat-pump-compressor-rating">
+		<item-type>Number</item-type>
+		<label>Heatpump Compressor unit rating</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="heat-pump-qp-heating">
+		<item-type>Number:Power</item-type>
+		<label>Heatpump Actual heating capacity</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="heat-pump-fi-power-consumption">
+		<item-type>Number:Power</item-type>
+		<label>Heatpump Frequency inverter actual power consumption</label>
+		<state readOnly="true" pattern="%.1f kW"/>
+	</channel-type>
+
+	<channel-type id="heat-pump-cop">
+		<item-type>Number</item-type>
+		<label>Heatpump COP</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="heatpump-request-password-channel">
+		<item-type>Number</item-type>
+		<label>Requested Password</label>
+		<state readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="heatpump-request-type-channel">
+		<item-type>Number</item-type>
+		<label>Requested Type</label>
+		<state readOnly="false">
+			<options>
+				<option value="0">NO REQUEST</option>
+				<option value="1">FLOW PUMP CIRCULATION</option>
+				<option value="2">CENTRAL HEATING</option>
+				<option value="3">CENTRAL COOLING</option>
+				<option value="4">DOMESTIC HOT WATER</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="heat-pump-request-t-flow">
+		<item-type>Number:Temperature</item-type>
+		<label>Heatpump requested T-Flow</label>
+		<state readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="heat-pump-request-t-return">
+		<item-type>Number:Temperature</item-type>
+		<label>Heatpump requested T-Return</label>
+		<state readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="heat-pump-request-heat-sink">
+		<item-type>Number:Temperature</item-type>
+		<label>Heatpump requested difference between T-Flow and T-Return</label>
+		<state readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="heatpump-relais-state-channel">
+		<item-type>Number</item-type>
+		<label>Relais State</label>
+		<state readOnly="true">
+			<options>
+				<option value="1">NO Relais Error for 2nd heating stage activated</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="heat-pump-vdae">
+		<item-type>Number:Energy</item-type>
+		<label>Heatpump VdA E since last reset</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="heat-pump-vdaq">
+		<item-type>Number:Energy</item-type>
+		<label>Heatpump VdA Q since last reset</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+</thing:thing-descriptions>

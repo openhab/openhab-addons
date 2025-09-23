@@ -244,6 +244,7 @@
 /bundles/org.openhab.binding.modbus/ @ssalonen
 /bundles/org.openhab.binding.modbus.e3dc/ @weymann
 /bundles/org.openhab.binding.modbus.helioseasycontrols/ @bern77
+/bundles/org.openhab.binding.modbus.lambda/ @chilobo
 /bundles/org.openhab.binding.modbus.kermi/ @KaaNee
 /bundles/org.openhab.binding.modbus.sbc/ @fwolter
 /bundles/org.openhab.binding.modbus.stiebeleltron/ @pail23
