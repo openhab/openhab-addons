@@ -17,7 +17,7 @@ import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.homekit.internal.enums.AccessoryType;
+import org.openhab.binding.homekit.internal.enums.AccessoryCategory;
 import org.openhab.binding.homekit.internal.enums.CharacteristicType;
 import org.openhab.binding.homekit.internal.enums.ServiceType;
 import org.openhab.binding.homekit.internal.persistence.HomekitTypeProvider;
@@ -61,12 +61,12 @@ public class Accessory {
                 .filter(Objects::nonNull).toList();
     }
 
-    public AccessoryType getAccessoryType() {
+    public AccessoryCategory getAccessoryType() {
         Integer category = this.category;
         if (category == null) {
-            return AccessoryType.OTHER;
+            return AccessoryCategory.OTHER;
         }
-        return AccessoryType.from(category);
+        return AccessoryCategory.from(category);
     }
 
     /**

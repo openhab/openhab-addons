@@ -36,8 +36,7 @@ public class HomekitBindingConstants {
             FAKE_PROPERTY_CHANNEL);
 
     // labels
-    public static final String THING_LABEL_FMT = "Model %s on %s";
-    public static final String ACCESSORY_LABEL_FMT = "Accessory %d on %s";
+    public static final String THING_LABEL_FMT = "%s on %s";
     public static final String GROUP_TYPE_LABEL_FMT = "Channel group type: %s";
     public static final String CHANNEL_TYPE_LABEL_FMT = "Channel type: %s";
 
@@ -49,7 +48,7 @@ public class HomekitBindingConstants {
     // properties
     public static final String PROPERTY_ACCESSORY_UID = "accessoryUID";
     public static final String PROPERTY_PROTOCOL_VERSION = "protocolVersion";
-    public static final String PROPERTY_DEVICE_CATEGORY = "deviceCategory";
+    public static final String PROPERTY_ACCESSORY_CATEGORY = "accessoryCategory";
     public static final String PROPERTY_CONTROLLER_PRIVATE_KEY = "controllerPrivateKey";
     public static final String PROPERTY_ACCESSORY_PUBLIC_KEY = "accessoryPublicKey";
 

@@ -14,13 +14,16 @@ package org.openhab.binding.homekit.internal.discovery;
 
 import static org.openhab.binding.homekit.internal.HomekitBindingConstants.*;
 
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 import javax.jmdns.ServiceInfo;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.homekit.internal.enums.AccessoryType;
+import org.openhab.binding.homekit.internal.enums.AccessoryCategory;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.mdns.MDNSDiscoveryParticipant;
@@ -68,50 +71,87 @@ public class HomekitMdnsDiscoveryParticipant implements MDNSDiscoveryParticipant
     public @Nullable DiscoveryResult createResult(ServiceInfo service) {
         ThingUID uid = getThingUID(service);
         if (uid != null) {
-            String host = service.getHostAddresses()[0];
-            String macAddress = service.getPropertyString("id"); // HomeKit device ID is the MAC address
-            String modelName = service.getPropertyString("md"); // HomeKit device model name
-            String deviceCategory = service.getPropertyString("ci"); // HomeKit device category
-            String protocolVersion = service.getPropertyString("pv"); // HomeKit protocol version
+            Map<String, String> properties = getProperties(service);
 
-            DiscoveryResultBuilder builder = DiscoveryResultBuilder.create(uid);
-            builder.withLabel(THING_LABEL_FMT.formatted(service.getName(), host)) //
-                    .withProperty(CONFIG_HOST, host) //
-                    .withProperty(Thing.PROPERTY_MODEL_ID, modelName) //
-                    .withProperty(Thing.PROPERTY_MAC_ADDRESS, macAddress) //
-                    .withProperty(PROPERTY_PROTOCOL_VERSION, protocolVersion) //
-                    .withProperty(PROPERTY_DEVICE_CATEGORY, deviceCategory) //
-                    .withRepresentationProperty(Thing.PROPERTY_MAC_ADDRESS);
-
-            if (!isBridge(service)) {
-                // '1' means we shall use the first (and only) accessory
-                ThingUID accessoryUid = new ThingUID(THING_TYPE_ACCESSORY, "1");
-                builder.withProperty(PROPERTY_ACCESSORY_UID, accessoryUid.toString());
+            String mac = properties.get("id"); // MAC address
+            String host = service.getHostAddresses()[0]; // ipV4 address
+            AccessoryCategory cat;
+            try {
+                String ci = properties.getOrDefault("ci", ""); // accessory category
+                cat = AccessoryCategory.from(Integer.parseInt(ci));
+            } catch (IllegalArgumentException e) {
+                cat = null;
             }
 
-            return builder.build();
+            if (host != null && mac != null && cat != null) {
+                DiscoveryResultBuilder builder = DiscoveryResultBuilder.create(uid);
+                builder.withLabel(THING_LABEL_FMT.formatted(service.getName(), host)) //
+                        .withProperty(CONFIG_HOST, host) //
+                        .withProperty(Thing.PROPERTY_MAC_ADDRESS, mac) //
+                        .withProperty(PROPERTY_ACCESSORY_CATEGORY, cat.toString()) //
+                        .withRepresentationProperty(Thing.PROPERTY_MAC_ADDRESS);
+
+                if (AccessoryCategory.BRIDGE == cat) {
+                    // setting to '1' means force the first (i.e. only) accessory
+                    ThingUID accessoryUid = new ThingUID(THING_TYPE_ACCESSORY, "1");
+                    builder.withProperty(PROPERTY_ACCESSORY_UID, accessoryUid.toString());
+                }
+                String model = properties.get("md");
+                if (model != null) {
+                    builder.withProperty(Thing.PROPERTY_MODEL_ID, model);
+                }
+                String serial = properties.get("s#");
+                if (serial != null) {
+                    builder.withProperty(Thing.PROPERTY_SERIAL_NUMBER, serial);
+                }
+                String protocolVersion = properties.get("pv");
+                if (protocolVersion != null) {
+                    builder.withProperty(PROPERTY_PROTOCOL_VERSION, protocolVersion);
+                }
+
+                return builder.build();
+            }
         }
-        logger.debug("Ignoring discovered HAP service {} with bad properties", service.getName());
         return null;
     }
 
     @Override
     public @Nullable ThingUID getThingUID(ServiceInfo service) {
-        String macAddress = service.getPropertyString("id");
-        if (macAddress != null) {
-            String id = macAddress.replace(":", "").replace("-", "").toLowerCase(); // e.g. "a1b2c3d4e5f6"
-            return isBridge(service) ? new ThingUID(THING_TYPE_BRIDGE, id) : new ThingUID(THING_TYPE_ACCESSORY, id);
+        Map<String, String> properties = getProperties(service);
+
+        String mac = properties.get("id"); // MAC address
+        AccessoryCategory cat;
+        try {
+            String ci = properties.getOrDefault("ci", "");
+            cat = AccessoryCategory.from(Integer.parseInt(ci));
+        } catch (IllegalArgumentException e) {
+            cat = null;
         }
+
+        if (mac != null && cat != null) {
+            return new ThingUID(AccessoryCategory.BRIDGE == cat ? THING_TYPE_BRIDGE : THING_TYPE_ACCESSORY,
+                    mac.replace(":", "").toLowerCase()); // thing id example "a1b2c3d4e5f6"
+        }
+
         return null;
     }
 
-    private boolean isBridge(ServiceInfo service) {
-        String ci = service.getPropertyString("ci"); // accessory type i.e. 'category'
-        try {
-            return AccessoryType.BRIDGE == AccessoryType.from(Integer.parseInt(ci));
-        } catch (IllegalArgumentException e) {
-            logger.warn("Failed to parse accessory category '{}' for HAP service '{}'", ci, service.getName());
+    /**
+     * Work around for a known JmDNS bug when parsing TXT strings with a '0' byte terminator.
+     */
+    private Map<String, String> getProperties(ServiceInfo service) {
+        Map<String, String> map = new HashMap<>();
+        byte[] bytes = service.getTextBytes();
+        int i = 0;
+        while (i < bytes.length) {
+            int len = bytes[i++] & 0xFF;
+            if (len == 0) {
+                break;
+            }
+            String[] parts = new String(bytes, i, len, StandardCharsets.UTF_8).split("=");
+            map.put(parts[0], parts.length > 1 ? parts[1] : "");
+            i += len;
         }
-        return false;
+        return map;
     }
 }

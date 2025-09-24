@@ -49,11 +49,11 @@ public class HomekitChildDiscoveryService extends AbstractDiscoveryService {
     public void devicesDiscovered(Thing bridge, Collection<Accessory> accessories) {
         accessories.forEach(accessory -> {
             if (accessory.aid != null && accessory.services != null) {
-                // accessory ID is unique per bridge
+                // accessory ID should be unique per bridge
                 ThingUID uid = new ThingUID(THING_TYPE_ACCESSORY, bridge.getUID(), accessory.aid.toString());
                 thingDiscovered(DiscoveryResultBuilder.create(uid) //
                         .withBridge(bridge.getUID()) //
-                        .withLabel(ACCESSORY_LABEL_FMT.formatted(accessory.aid, bridge.getLabel())) //
+                        .withLabel(THING_LABEL_FMT.formatted(accessory.getAccessoryInstanceLabel(), bridge.getLabel())) //
                         .withProperty(CONFIG_HOST, "n/a") //
                         .withProperty(CONFIG_PAIRING_CODE, "n/a") //
                         .withProperty(PROPERTY_ACCESSORY_UID, uid.toString()) //

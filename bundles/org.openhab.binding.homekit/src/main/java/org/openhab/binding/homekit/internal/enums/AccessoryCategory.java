@@ -21,7 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-public enum AccessoryType {
+public enum AccessoryCategory {
     OTHER(1, "Other Accessory"),
     BRIDGE(2, "Bridge"),
     FAN(3, "Fan"),
@@ -62,13 +62,13 @@ public enum AccessoryType {
     private final int id;
     private final String label;
 
-    AccessoryType(int category, String label) {
+    AccessoryCategory(int category, String label) {
         this.id = category;
         this.label = label;
     }
 
-    public static AccessoryType from(int id) throws IllegalArgumentException {
-        for (AccessoryType value : values()) {
+    public static AccessoryCategory from(int id) throws IllegalArgumentException {
+        for (AccessoryCategory value : values()) {
             if (value.id == id) {
                 return value;
             }
