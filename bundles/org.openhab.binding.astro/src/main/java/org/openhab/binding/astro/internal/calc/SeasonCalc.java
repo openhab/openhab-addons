@@ -42,7 +42,7 @@ public class SeasonCalc {
         boolean isSouthernHemisphere = latitude < 0.0;
         Season season = currentSeason;
         if (currentYear != year) {
-            season = new Season();
+            season = new Season(zone, locale);
             if (!isSouthernHemisphere) {
                 season.setSpring(calcEquiSol(0, year, zone, locale));
                 season.setSummer(calcEquiSol(1, year, zone, locale));
@@ -82,7 +82,7 @@ public class SeasonCalc {
                     : getCurrentSeasonNameSouthern(calendar));
             return season;
         }
-        return new Season();
+        return new Season(zone, locale);
     }
 
     private void atMidnightOfFirstMonthDay(Calendar calendar) {
