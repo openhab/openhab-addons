@@ -421,7 +421,8 @@
 	<channel-type id="doorlock-lockstate">
 		<item-type>Switch</item-type>
 		<label>Door Lock State</label>
-		<description>Locks and unlocks the door and maintains the lock state. If the door lock supports unbolting, this will reflect the latched state.</description>
+		<description>Locks and unlocks the door and maintains the lock state. If the door lock supports unbolting, this will
+			reflect the latched state.</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>OpenState</tag>

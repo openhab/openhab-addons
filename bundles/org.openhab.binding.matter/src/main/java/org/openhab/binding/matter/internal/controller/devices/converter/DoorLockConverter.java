@@ -70,15 +70,17 @@ public class DoorLockConverter extends GenericConverter<DoorLockCluster> {
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof OnOffType onOffType) {
             String id = channelUID.getIdWithoutGroup();
-            if (id.equals(CHANNEL_ID_DOORLOCK_STATE)) {
-                ClusterCommand doorLockCommand = onOffType == OnOffType.ON ? DoorLockCluster.lockDoor(null)
-                        : DoorLockCluster.unlockDoor(null);
-                handler.sendClusterCommand(endpointNumber, DoorLockCluster.CLUSTER_NAME, doorLockCommand);
-            }
-            if (id.equals(CHANNEL_ID_DOORLOCK_BOLTSTATE)) {
-                ClusterCommand boltCommand = onOffType == OnOffType.ON ? DoorLockCluster.lockDoor(null)
-                        : DoorLockCluster.unboltDoor(null);
-                handler.sendClusterCommand(endpointNumber, DoorLockCluster.CLUSTER_NAME, boltCommand);
+            switch (id) {
+                case CHANNEL_ID_DOORLOCK_STATE:
+                    ClusterCommand doorLockCommand = onOffType == OnOffType.ON ? DoorLockCluster.lockDoor(null)
+                            : DoorLockCluster.unlockDoor(null);
+                    handler.sendClusterCommand(endpointNumber, DoorLockCluster.CLUSTER_NAME, doorLockCommand);
+                    break;
+                case CHANNEL_ID_DOORLOCK_BOLTSTATE:
+                    ClusterCommand boltCommand = onOffType == OnOffType.ON ? DoorLockCluster.lockDoor(null)
+                            : DoorLockCluster.unboltDoor(null);
+                    handler.sendClusterCommand(endpointNumber, DoorLockCluster.CLUSTER_NAME, boltCommand);
+                    break;
             }
         }
         super.handleCommand(channelUID, command);

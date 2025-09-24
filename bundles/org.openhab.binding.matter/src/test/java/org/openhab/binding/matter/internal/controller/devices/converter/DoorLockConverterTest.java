@@ -13,6 +13,7 @@
 package org.openhab.binding.matter.internal.controller.devices.converter;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -79,8 +80,8 @@ class DoorLockConverterTest extends BaseMatterConverterTest {
                 .anyMatch(c -> c.getUID().toString().equals("matter:node:test:12345:1#doorlock-lockstate"));
         boolean hasBoltState = channels.keySet().stream()
                 .anyMatch(c -> c.getUID().toString().equals("matter:node:test:12345:1#doorlock-boltstate"));
-        assertEquals(true, hasLockState);
-        assertEquals(true, hasBoltState);
+        assertTrue(hasLockState);
+        assertTrue(hasBoltState);
     }
 
     @Test
