@@ -196,6 +196,18 @@
 		<semantic-equipment-tag>ElectricMeter</semantic-equipment-tag>
 		<channels>
 			<channel id="power" typeId="power"/>
+			<channel id="powerfromgrid" typeId="power-advanced">
+				<label>@text/channelPowerFromGridLabel</label>
+				<description>@text/channelPowerFromGridDescription</description>
+			</channel>
+			<channel id="powertogrid" typeId="power-advanced">
+				<label>@text/channelPowerToGridLabel</label>
+				<description>@text/channelPowerToGridDescription</description>
+			</channel>
+			<channel id="peakpowerfromGrid" typeId="power-advanced">
+				<label>@text/channelPeakPowerFromGridLabel</label>
+				<description>@text/channelPeakPowerFromGridDescription</description>
+			</channel>
 			<channel id="energy" typeId="energy"/>
 			<channel id="energyday" typeId="energyday"/>
 			<channel id="energylast" typeId="measurementtime"/>
@@ -507,6 +519,16 @@
 	</channel-type>
 
 	<channel-type id="power">
+		<item-type>Number:Power</item-type>
+		<label>@text/channelPowerLabel</label>
+		<description>@text/channelPowerDescription</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+	<channel-type id="power-advanced" advanced="true">
 		<item-type>Number:Power</item-type>
 		<label>@text/channelPowerLabel</label>
 		<description>@text/channelPowerDescription</description>

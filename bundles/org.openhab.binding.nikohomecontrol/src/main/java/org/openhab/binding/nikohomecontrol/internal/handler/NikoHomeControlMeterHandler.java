@@ -50,6 +50,7 @@ import org.slf4j.LoggerFactory;
  * sent to one of the channels.
  *
  * @author Mark Herwege - Initial Contribution
+ * @author Mark Herwege - Add home digital meter power readings
  */
 @NonNullByDefault
 public class NikoHomeControlMeterHandler extends NikoHomeControlBaseHandler implements NhcMeterEvent {
@@ -172,7 +173,7 @@ public class NikoHomeControlMeterHandler extends NikoHomeControlBaseHandler impl
             nhcComm.startMeter(deviceId, getConfig().as(NikoHomeControlMeterConfig.class).refresh);
             // Subscribing to power readings starts an intensive data flow, therefore only do it when there is an item
             // linked to the channel
-            if (isLinked(CHANNEL_POWER)) {
+            if (isLinked(CHANNEL_POWER) || isLinked(CHANNEL_POWER_TO_GRID) || isLinked(CHANNEL_POWER_FROM_GRID)) {
                 nhcComm.startMeterLive(deviceId);
             }
         }
@@ -213,6 +214,12 @@ public class NikoHomeControlMeterHandler extends NikoHomeControlBaseHandler impl
 
     @Override
     public void meterPowerEvent(@Nullable Integer power) {
+        meterPowerEvent(power, null, null);
+    }
+
+    @Override
+    public void meterPowerEvent(@Nullable Integer power, @Nullable Integer powerFromGrid,
+            @Nullable Integer powerToGrid) {
         NhcMeter nhcMeter = this.nhcMeter;
         if (nhcMeter == null) {
             logger.debug("meter with ID {} not initialized", deviceId);
@@ -232,6 +239,28 @@ public class NikoHomeControlMeterHandler extends NikoHomeControlBaseHandler impl
             int value = (invert ? -1 : 1) * power;
             updateState(CHANNEL_POWER, new QuantityType<>(value, Units.WATT));
         }
+        if (powerFromGrid == null) {
+            updateState(CHANNEL_POWER_FROM_GRID, UnDefType.UNDEF);
+        } else {
+            updateState(CHANNEL_POWER_FROM_GRID, new QuantityType<>(powerFromGrid, Units.WATT));
+        }
+        if (powerToGrid == null) {
+            updateState(CHANNEL_POWER_TO_GRID, UnDefType.UNDEF);
+        } else {
+            updateState(CHANNEL_POWER_TO_GRID, new QuantityType<>(powerToGrid, Units.WATT));
+        }
+        updateStatus(ThingStatus.ONLINE);
+    }
+
+    @Override
+    public void meterPeakPowerFromGridEvent(int peakPowerFromGrid) {
+        NhcMeter nhcMeter = this.nhcMeter;
+        if (nhcMeter == null) {
+            logger.debug("meter with ID {} not initialized", deviceId);
+            return;
+        }
+
+        updateState(CHANNEL_PEAK_POWER_FROM_GRID, new QuantityType<>(peakPowerFromGrid, Units.WATT));
         updateStatus(ThingStatus.ONLINE);
     }
 
@@ -285,7 +314,9 @@ public class NikoHomeControlMeterHandler extends NikoHomeControlBaseHandler impl
     public void channelLinked(ChannelUID channelUID) {
         // Subscribing to power readings starts an intensive data flow, therefore only do it when there is an item
         // linked to the channel
-        if (!CHANNEL_POWER.equals(channelUID.getId())) {
+        String channelId = channelUID.getId();
+        if (!CHANNEL_POWER.equals(channelId) || CHANNEL_POWER_FROM_GRID.equals(channelId)
+                || CHANNEL_POWER_TO_GRID.equals(channelId)) {
             return;
         }
         NikoHomeControlCommunication nhcComm = getCommunication(getBridgeHandler());

@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
  * representing a Niko Home Control meter and has methods to receive meter usage information.
  *
  * @author Mark Herwege - Initial Contribution
+ * @author Mark Herwege - Add home digital meter power readings
  */
 @NonNullByDefault
 public abstract class NhcMeter {
@@ -45,6 +46,9 @@ public abstract class NhcMeter {
 
     // This can be null as long as we do not receive power readings
     protected volatile @Nullable Integer power;
+    protected volatile @Nullable Integer powerFromGrid;
+    protected volatile @Nullable Integer powerToGrid;
+    protected volatile int peakPowerFromGrid;
     protected volatile int reading;
     protected volatile int dayReading;
     protected volatile @Nullable LocalDateTime lastReadingUTC;
@@ -75,10 +79,24 @@ public abstract class NhcMeter {
      */
     protected void updatePowerState() {
         NhcMeterEvent handler = eventHandler;
-        Integer value = getPower();
+        Integer power = getPower();
+        if ((handler != null) && (power != null)) {
+            logger.debug("update power channel for {} with {}", id, power);
+            handler.meterPowerEvent(power, getPowerFromGrid(), getPowerToGrid());
+        }
+    }
+
+    /**
+     * Update power value of the meter without touching the meter definition (id, name) and without changing the
+     * ThingHandler callback.
+     *
+     */
+    protected void updatePeakPowerFromGridState() {
+        NhcMeterEvent handler = eventHandler;
+        Integer value = getPeakPowerFromGrid();
         if ((handler != null) && (value != null)) {
-            logger.debug("update power channel for {} with {}", id, value);
-            handler.meterPowerEvent(value);
+            logger.debug("update peakPowerFromGrid channel for {} with {}", id, value);
+            handler.meterPeakPowerFromGridEvent(value);
         }
     }
 
@@ -188,12 +206,54 @@ public abstract class NhcMeter {
     }
 
     /**
+     * @return the power consumed from the grid in W, return null if no reading received yet
+     */
+    public @Nullable Integer getPowerFromGrid() {
+        return powerFromGrid;
+    }
+
+    /**
+     * @return the power in W (positive for consumption, negative for production), return null if no reading received
+     *         yet
+     */
+    public @Nullable Integer getPowerToGrid() {
+        return powerToGrid;
+    }
+
+    /**
      * @param power the power to set in W (positive for consumption, negative for production), null if an empty reading
      *            was received
      */
     public void setPower(@Nullable Integer power) {
+        setPower(power, null, null);
+    }
+
+    /**
+     * @param power the power to set in W (positive for consumption, negative for production), null if an empty reading
+     *            was received
+     * @param powerFromGrid power consumed from the grid
+     * @param powerToGrid power sent to the grid
+     */
+    public void setPower(@Nullable Integer power, @Nullable Integer powerFromGrid, @Nullable Integer powerToGrid) {
         this.power = power;
+        this.powerFromGrid = powerFromGrid;
+        this.powerToGrid = powerToGrid;
         updatePowerState();
+    }
+
+    /**
+     * @return the peak power for the current month in W
+     */
+    public int getPeakPowerFromGrid() {
+        return peakPowerFromGrid;
+    }
+
+    /**
+     * @param peakPowerFromGrid the power to set in W
+     */
+    public void setPeakPowerFromGrid(int peakPowerFromGrid) {
+        this.peakPowerFromGrid = peakPowerFromGrid;
+        updatePeakPowerFromGridState();
     }
 
     /**

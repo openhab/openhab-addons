@@ -86,6 +86,9 @@ public class NikoHomeControlBindingConstants {
     public static final String CHANNEL_HEATING_DEMAND = "heatingdemand";
 
     public static final String CHANNEL_POWER = "power";
+    public static final String CHANNEL_POWER_FROM_GRID = "powerfromgrid";
+    public static final String CHANNEL_POWER_TO_GRID = "powertogrid";
+    public static final String CHANNEL_PEAK_POWER_FROM_GRID = "peakpowerfromgrid";
     public static final String CHANNEL_ENERGY = "energy";
     public static final String CHANNEL_GAS = "gas";
     public static final String CHANNEL_WATER = "water";

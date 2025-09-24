@@ -36,6 +36,27 @@ public interface NhcMeterEvent extends NhcBaseEvent {
     void meterPowerEvent(@Nullable Integer power);
 
     /**
+     * This method is called when a meter event is received from the Niko Home Control controller and separate
+     * information is available for power to grid and power from grid.
+     *
+     * @param power current power consumption/production in W (positive for consumption), null for an empty reading
+     * @param powerFromGrid current power consumption from grid in W, null for an empty reading
+     * @param powerToGrid current power sent to grid in W, null for an empty reading
+     */
+    default void meterPowerEvent(@Nullable Integer power, @Nullable Integer powerFromGrid,
+            @Nullable Integer powerToGrid) {
+        meterPowerEvent(power);
+    }
+
+    /**
+     * This method is called when a meter peak power from grid event is received from the Niko Home Control controller.
+     *
+     * @param peakPowerFromGrid current month peak power from grid
+     */
+    default void meterPeakPowerFromGridEvent(int peakPowerFromGrid) {
+    }
+
+    /**
      * This method is called when a meter reading is received from the Niko Home Control controller.
      *
      * @param reading meter reading

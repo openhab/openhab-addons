@@ -74,6 +74,7 @@ import com.google.gson.reflect.TypeToken;
  *
  * @author Mark Herwege - Initial Contribution
  * @author Mark Herwege - Add car chargers
+ * @author Mark Herwege - Add home digital meter power readings
  */
 @NonNullByDefault
 public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
@@ -801,11 +802,24 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
                     .map(s -> (!((s == null) || s.isEmpty())) ? Math.round(Float.parseFloat(s)) : null)
                     .filter(Objects::nonNull).findFirst();
             int power = electricalPower.orElse(powerFromGrid.orElse(0) - powerToGrid.orElse(0));
-            logger.trace("setting energy meter {} power to {}", meter.getId(), power);
-            meter.setPower(power);
+            logger.trace("setting energy meter {} power to {}, powerFromGrid to {}, powerToGrid to {}", meter.getId(),
+                    power, powerFromGrid.orElse(null), powerToGrid.orElse(null));
+            meter.setPower(power, powerFromGrid.orElse(null), powerToGrid.orElse(null));
         } catch (NumberFormatException e) {
             logger.trace("wrong format in energy meter {} power reading", meter.getId());
-            meter.setPower(null);
+            meter.setPower(null, null, null);
+        }
+
+        try {
+            Integer peakPowerFromGrid = deviceProperties.stream().map(p -> p.electricalMonthlyPeakPowerFromGrid)
+                    .map(s -> (!((s == null) || s.isEmpty())) ? Math.round(Float.parseFloat(s)) : null)
+                    .filter(Objects::nonNull).findFirst().orElse(null);
+            if (peakPowerFromGrid != null) {
+                logger.trace("setting energy meter {} peakPowerFromGrid to {}", peakPowerFromGrid);
+                meter.setPeakPowerFromGrid(peakPowerFromGrid);
+            }
+        } catch (NumberFormatException e) {
+            logger.trace("wrong format in energy meter {} peakPowerFromGrid reading", meter.getId());
         }
     }
 
@@ -823,12 +837,12 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
             }
             switch (accessDevice.getType()) {
                 case RINGANDCOMEIN:
-                    accessDevice.updateRingAndComeInState(state);
                     logger.debug("setting access device {} ring and come in to {}", accessDevice.getId(), state);
+                    accessDevice.updateRingAndComeInState(state);
                     break;
                 case BELLBUTTON:
-                    accessDevice.updateBellState(state);
                     logger.debug("setting access device {} bell to {}", accessDevice.getId(), state);
+                    accessDevice.updateBellState(state);
                     break;
                 default:
                     break;

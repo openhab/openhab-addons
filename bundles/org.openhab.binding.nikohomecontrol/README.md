@@ -194,46 +194,49 @@ Thing nikohomecontrol:carCharger:mybridge:mycarcharger [ carChargerId="abcdef01-
 
 ## Channels
 
-| Channel Type ID | RW | Advanced | Item Type          | Thing Types | Description                                                                                         |
-|-----------------|:--:|:--------:|--------------------|-------------|-----------------------------------------------------------------------------------------------------|
-| button          | RW |          | Switch             | pushButton  | stateless action control, `autoupdate="false"` by default. Only accepts `ON`                        |
-| switch          | RW |          | Switch             | onOff       | on/off switches with state control, such as light switches                                          |
-| brightness      | RW |          | Dimmer             | dimmer      | control dimmer light intensity. OnOff, IncreaseDecrease and Percent command types are supported. Note that sending an `ON` command will switch the dimmer to the value stored when last turning the dimmer off, or 100% depending on the configuration in the Niko Home Control Controller. This can be changed with the Niko Home Control programming software |
-| rollershutter   | RW |          | Rollershutter      | blind       | control rollershutter or blind. UpDown, StopMove and Percent command types are supported            |
-| measured        | R  |          | Number:Temperature | thermostat  | current temperature. Because of API restrictions, NHC II will only report in 0.5°C increments       |
-| heatingmode     | RW |          | String             | thermostat  | current thermostat mode. Allowed values are Day, Night, Eco, Off, Cool, Prog1, Prog2, Prog3. Setting `heatingmode` will reset the `setpoint` channel to the standard value for the mode in the controller |
-| mode            | RW |    X     | Number             | thermostat  | current thermostat mode, same meaning as `heatingmode`, but numeric values (0=Day, 1=Night, 2=Eco, 3=Off, 4=Cool, 5=Prog1, 6=Prog2, 7=Prog3). Setting `mode` will reset the `setpoint` channel to the standard value for the mode in the controller. This channel is kept for binding backward compatibility |
-| setpoint        | RW |          | Number:Temperature | thermostat  | current thermostat setpoint. Updating the `setpoint` will overrule the temperature setpoint defined by `heatingmode` or `mode` for `overruletime` duration. Because of API restrictions, NHC II will only report in 0.5°C increments |
-| overruletime    | RW |          | Number             | thermostat  | used to set the total duration in minutes to apply the setpoint temperature set in the `setpoint` channel before the thermostat returns to the setting from its mode |
-| heatingdemand   | R  |          | String             | thermostat  | indicating if the system is actively heating/cooling. This channel will have value Heating, Cooling or None. For NHC I this is set by the binding from the temperature difference between `setpoint` and `measured`. It therefore may incorrectly indicate cooling even when the system does not have active cooling capabilities |
-| demand          | R  |    X     | Number             | thermostat  | indicating if the system is actively heating/cooling, same as `heatingdemand` but numeric values (-1=Cooling, 0=None, 1=Heating) |
-| power           | R  |          | Number:Power       | energyMeterLive | instant power consumption/production (negative for production), refreshed every 2s. Linking this channel starts an intensive communication flow with the controller and should only be done when appropriate |
-| energy          | R  |          | Number:Energy      | energyMeterLive, energyMeter | total energy meter reading                                                         |
-| energyday       | R  |          | Number:Energy      | energyMeterLive, energyMeter | day energy meter reading                                                           |
-| gas             | R  |          | Number:Volume      | gasMeter    | total gas meter reading                                                                             |
-| gasday          | R  |          | Number:Volume      | gasMeter    | day gas meter reading                                                                               |
-| water           | R  |          | Number:Volume      | waterMeter  | total water meter reading                                                                           |
-| waterday        | R  |          | Number:Volume      | waterMeter  | day water meter reading                                                                             |
-| measurementtime | R  |          | DateTimeType       | energyMeterLive, energyMeter, gasMeter, waterMeter | last meter reading time                                      |
-| bellbutton      | RW |          | Switch             | access, accessRingAndComeIn | bell button connected to access device, including buttons on video phone devices linked to an access device. The bell can also be triggered by an `ON` command, `autoupdate="false"` by default |
-| ringandcomein   | RW |          | Switch             | accessRingAndComeIn | provide state and turn automatic door unlocking at bell ring on/off                         |
-| lock            | RW |          | Switch             | access, accessRingAndComeIn | provide doorlock state and unlock the door by sending an `OFF` command. `autoupdate="false"` by default |
-| arm             | RW |          | Switch             | alarm       | arm/disarm alarm, will change state (on/off) immediately. Note some integrations (Homekit, Google Home, ...) may require String states for an alarm system (ARMED/DISARMED). This can be achieved using an extra item and a rule updated by/commanding an item linked to this channel |
-| armed           | RW |          | Switch             | alarm       | state of the alarm system (on/off), will only turn on after pre-armed period when arming            |
-| state           | R  |          | String             | alarm       | state of the alarm system (DISARMED, PREARMED, ARMED, PREALARM, ALARM, DETECTOR PROBLEM)            |
-| status          | RW |          | Switch             | carCharger  | status of the car charger (on/off)                                                                  |
-| chargingStatus  | R  |          | String             | carCharger  | charging status of the car charger (ACTIVE, INACTIVE, BATTERY FULL or ERROR)                        |
-| evStatus        | R  |          | String             | carCharger  | status of the electric vehicle (IDLE, CONNECTED or CHARGING)                                        |
-| couplingStatus  | R  |          | String             | carCharger  | coupling status (OK, NO INTERNET, NO CREDENTIALS, INVALID CREDENTIALS, CONNECTION ERROR, CONNECTION TIMEOUT, API ERROR or UNKNOWN ERROR) |
-| electricalPower | R  |          | Number:Power       | carCharger  | current charging power                                                                              |
-| chargingMode    | RW |          | String             | carCharger  | charging mode (SOLAR, NORMAL or SMART)                                                              |
-| targetDistance  | RW |          | Number:Length      | carCharger  | target distance to achieve in charging activity                                                     |
-| targetTime      | RW |          | DateTime           | carCharger  | time by which the target distance should be achieved                                                |
-| boost           | RW |          | Switch             | carCharger  | boost charging to maximum achievable, not respecting capacity limit                                 |
+| Channel Type ID   | RW | Advanced | Item Type          | Thing Types | Description                                                                                         |
+|-------------------|:--:|:--------:|--------------------|-------------|-----------------------------------------------------------------------------------------------------|
+| button            | RW |          | Switch             | pushButton  | stateless action control, `autoupdate="false"` by default. Only accepts `ON`                        |
+| switch            | RW |          | Switch             | onOff       | on/off switches with state control, such as light switches                                          |
+| brightness        | RW |          | Dimmer             | dimmer      | control dimmer light intensity. OnOff, IncreaseDecrease and Percent command types are supported. Note that sending an `ON` command will switch the dimmer to the value stored when last turning the dimmer off, or 100% depending on the configuration in the Niko Home Control Controller. This can be changed with the Niko Home Control programming software |
+| rollershutter     | RW |          | Rollershutter      | blind       | control rollershutter or blind. UpDown, StopMove and Percent command types are supported            |
+| measured          | R  |          | Number:Temperature | thermostat  | current temperature. Because of API restrictions, NHC II will only report in 0.5°C increments       |
+| heatingmode       | RW |          | String             | thermostat  | current thermostat mode. Allowed values are Day, Night, Eco, Off, Cool, Prog1, Prog2, Prog3. Setting `heatingmode` will reset the `setpoint` channel to the standard value for the mode in the controller |
+| mode              | RW |    X     | Number             | thermostat  | current thermostat mode, same meaning as `heatingmode`, but numeric values (0=Day, 1=Night, 2=Eco, 3=Off, 4=Cool, 5=Prog1, 6=Prog2, 7=Prog3). Setting `mode` will reset the `setpoint` channel to the standard value for the mode in the controller. This channel is kept for binding backward compatibility |
+| setpoint          | RW |          | Number:Temperature | thermostat  | current thermostat setpoint. Updating the `setpoint` will overrule the temperature setpoint defined by `heatingmode` or `mode` for `overruletime` duration. Because of API restrictions, NHC II will only report in 0.5°C increments |
+| overruletime      | RW |          | Number             | thermostat  | used to set the total duration in minutes to apply the setpoint temperature set in the `setpoint` channel before the thermostat returns to the setting from its mode |
+| heatingdemand     | R  |          | String             | thermostat  | indicating if the system is actively heating/cooling. This channel will have value Heating, Cooling or None. For NHC I this is set by the binding from the temperature difference between `setpoint` and `measured`. It therefore may incorrectly indicate cooling even when the system does not have active cooling capabilities |
+| demand            | R  |    X     | Number             | thermostat  | indicating if the system is actively heating/cooling, same as `heatingdemand` but numeric values (-1=Cooling, 0=None, 1=Heating) |
+| power             | R  |          | Number:Power       | energyMeterLive | instant power consumption/production (negative for production), refreshed every 2s. Linking this channel starts an intensive communication flow with the controller and should only be done when appropriate |
+| powerFromGrid     | R  |          | Number:Power       | energyMeterLive | power consumption grid for home energy meter, refreshed every 2s. Linking this channel starts an intensive communication flow with the controller and should only be done when appropriate |
+| powerToGrid       | R  |          | Number:Power       | energyMeterLive | power sent to grid for home energy meter, refreshed every 2s. Linking this channel starts an intensive communication flow with the controller and should only be done when appropriate |
+| peakPowerFromGrid | R  |          | Number:Power       | energyMeterLive | current month peak power as registered by the home energy meter                         |
+| energy            | R  |          | Number:Energy      | energyMeterLive, energyMeter | total energy meter reading                                                         |
+| energyday         | R  |          | Number:Energy      | energyMeterLive, energyMeter | day energy meter reading                                                           |
+| gas               | R  |          | Number:Volume      | gasMeter    | total gas meter reading                                                                             |
+| gasday            | R  |          | Number:Volume      | gasMeter    | day gas meter reading                                                                               |
+| water             | R  |          | Number:Volume      | waterMeter  | total water meter reading                                                                           |
+| waterday          | R  |          | Number:Volume      | waterMeter  | day water meter reading                                                                             |
+| measurementtime   | R  |          | DateTimeType       | energyMeterLive, energyMeter, gasMeter, waterMeter | last meter reading time                                      |
+| bellbutton        | RW |          | Switch             | access, accessRingAndComeIn | bell button connected to access device, including buttons on video phone devices linked to an access device. The bell can also be triggered by an `ON` command, `autoupdate="false"` by default |
+| ringandcomein     | RW |          | Switch             | accessRingAndComeIn | provide state and turn automatic door unlocking at bell ring on/off                         |
+| lock              | RW |          | Switch             | access, accessRingAndComeIn | provide doorlock state and unlock the door by sending an `OFF` command. `autoupdate="false"` by default |
+| arm               | RW |          | Switch             | alarm       | arm/disarm alarm, will change state (on/off) immediately. Note some integrations (Homekit, Google Home, ...) may require String states for an alarm system (ARMED/DISARMED). This can be achieved using an extra item and a rule updated by/commanding an item linked to this channel |
+| armed             | RW |          | Switch             | alarm       | state of the alarm system (on/off), will only turn on after pre-armed period when arming            |
+| state             | R  |          | String             | alarm       | state of the alarm system (DISARMED, PREARMED, ARMED, PREALARM, ALARM, DETECTOR PROBLEM)            |
+| status            | RW |          | Switch             | carCharger  | status of the car charger (on/off)                                                                  |
+| chargingStatus    | R  |          | String             | carCharger  | charging status of the car charger (ACTIVE, INACTIVE, BATTERY FULL or ERROR)                        |
+| evStatus          | R  |          | String             | carCharger  | status of the electric vehicle (IDLE, CONNECTED or CHARGING)                                        |
+| couplingStatus    | R  |          | String             | carCharger  | coupling status (OK, NO INTERNET, NO CREDENTIALS, INVALID CREDENTIALS, CONNECTION ERROR, CONNECTION TIMEOUT, API ERROR or UNKNOWN ERROR) |
+| electricalPower   | R  |          | Number:Power       | carCharger  | current charging power                                                                              |
+| chargingMode      | RW |          | String             | carCharger  | charging mode (SOLAR, NORMAL or SMART)                                                              |
+| targetDistance    | RW |          | Number:Length      | carCharger  | target distance to achieve in charging activity                                                     |
+| targetTime        | RW |          | DateTime           | carCharger  | time by which the target distance should be achieved                                                |
+| boost             | RW |          | Switch             | carCharger  | boost charging to maximum achievable, not respecting capacity limit                                 |
 | reachableDistance | R  |          | Number:Length      | carCharger  | reachable distance in current charing activity                                                      |
-| nextChargingTime | R  |          | DateTime           | carCharger  | next charging start in current charging activity                                                    |
-| alarm           |    |          |                    | bridge, alarm | trigger channel with alarm event message, can be used in rules                                    |
-| notice          |    |          |                    | bridge      | trigger channel with notice event message, can be used in rules                                     |
+| nextChargingTime  | R  |          | DateTime           | carCharger  | next charging start in current charging activity                                                    |
+| alarm             |    |          |                    | bridge, alarm | trigger channel with alarm event message, can be used in rules                                    |
+| notice            |    |          |                    | bridge      | trigger channel with notice event message, can be used in rules                                     |
 
 ## Console Commands
 

@@ -85,6 +85,8 @@ class NhcDevice2 {
         @Nullable
         String electricalPowerFromGrid;
         @Nullable
+        String electricalMonthlyPeakPowerFromGrid;
+        @Nullable
         String electricalPowerProduction;
         @Nullable
         String electricalPowerSelfConsumption;
