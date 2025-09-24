@@ -15,7 +15,7 @@
 			<description>This group defines JavaScript's system behaviour.</description>
 		</parameter-group>
 
-		<parameter name="injectionEnabledV2" type="integer" required="true" min="0" max="2" groupName="environment">
+		<parameter name="injectionEnabledV2" type="integer" required="true" min="0" max="3" groupName="environment">
 			<label>Inject Global Variables from Helper Library</label>
 			<description><![CDATA[
 			Import all variables from the openHAB JavaScript library for common services like items, things, actions, log, etc... <br>
