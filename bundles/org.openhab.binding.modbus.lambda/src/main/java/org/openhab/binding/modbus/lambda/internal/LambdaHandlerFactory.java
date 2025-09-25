@@ -25,6 +25,7 @@ import org.openhab.binding.modbus.lambda.internal.handler.BufferHandler;
 import org.openhab.binding.modbus.lambda.internal.handler.GeneralHandler;
 import org.openhab.binding.modbus.lambda.internal.handler.HeatingCircuitHandler;
 import org.openhab.binding.modbus.lambda.internal.handler.HeatpumpHandler;
+import org.openhab.binding.modbus.lambda.internal.handler.SolarHandler;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
@@ -48,12 +49,12 @@ public class LambdaHandlerFactory extends BaseThingHandlerFactory {
     private final Logger logger = LoggerFactory.getLogger(LambdaHandlerFactory.class);
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_GENERAL, THING_TYPE_HEAT_PUMP,
-            THING_TYPE_BOILER, THING_TYPE_BUFFER, THING_TYPE_HEATING_CIRCUIT);
+            THING_TYPE_BOILER, THING_TYPE_BUFFER, THING_TYPE_HEATING_CIRCUIT, THING_TYPE_SOLAR);
 
     private static final Map<ThingTypeUID, Function<Thing, ThingHandler>> HANDLER_FACTORY_MAP = Map.of(
             THING_TYPE_HEAT_PUMP, HeatpumpHandler::new, THING_TYPE_GENERAL, GeneralHandler::new, THING_TYPE_BUFFER,
             BufferHandler::new, THING_TYPE_BOILER, BoilerHandler::new, THING_TYPE_HEATING_CIRCUIT,
-            HeatingCircuitHandler::new);
+            HeatingCircuitHandler::new, THING_TYPE_SOLAR, SolarHandler::new);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {

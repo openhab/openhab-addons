@@ -385,7 +385,6 @@ public class BufferHandler extends BaseThingHandler {
     private void tearDown() {
         AbstractBasePoller poller = bufferPoller;
 
-        poller = bufferPoller;
         if (poller != null) {
             poller.unregisterPollTask();
             bufferPoller = null;

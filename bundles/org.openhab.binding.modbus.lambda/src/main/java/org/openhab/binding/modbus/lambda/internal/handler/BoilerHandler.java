@@ -224,7 +224,7 @@ public class BoilerHandler extends BaseThingHandler {
                         break;
                 }
                 if (poller != null) {
-                    logger.trace("Boiler: Es wird gepollt }");
+                    logger.trace("Boiler: Polling initiated");
                     poller.poll();
                 }
             }
@@ -347,7 +347,6 @@ public class BoilerHandler extends BaseThingHandler {
     private void tearDown() {
         AbstractBasePoller poller = boilerPoller;
 
-        poller = boilerPoller;
         if (poller != null) {
             poller.unregisterPollTask();
             boilerPoller = null;
