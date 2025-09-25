@@ -26,7 +26,7 @@ import static org.openhab.core.types.RefreshType.REFRESH;
 import static org.openhab.core.types.UnDefType.UNDEF;
 
 import java.net.MalformedURLException;
-import java.net.URL;
+import java.net.URI;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.atomic.AtomicReference;
@@ -460,7 +460,7 @@ public class VisualCrossingHandler extends BaseThingHandler {
         var config = getConfigAs(VisualCrossingConfiguration.class);
         var hostname = config.hostname;
         try {
-            new URL(hostname);
+            URI.create(hostname).toURL();
         } catch (MalformedURLException e) {
             logger.debug("Hostname [{}] is not an URL!", hostname, e);
             updateStatus(OFFLINE, CONFIGURATION_ERROR,
