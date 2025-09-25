@@ -1,0 +1,7 @@
+{
+  "ignorePatterns": [
+    { "pattern": "^https://github.com/openhab/openhab-addons/commit/.*" },
+    { "pattern": "^https://github.com/openhab/openhab-addons/pull/.*" },
+    { "pattern": "^mailto:.*" }
+  ]
+}
