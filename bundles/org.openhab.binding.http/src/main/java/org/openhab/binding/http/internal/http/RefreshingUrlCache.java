@@ -58,12 +58,19 @@ public class RefreshingUrlCache {
     private final String httpContent;
     private final @Nullable String httpContentType;
     private final HttpStatusListener httpStatusListener;
+    private final boolean refreshAfterCommand;
 
     private @Nullable ScheduledFuture<?> future;
     private @Nullable ChannelHandlerContent lastContent;
 
     public RefreshingUrlCache(RateLimitedHttpClient httpClient, String url, HttpThingConfig thingConfig,
             String httpContent, @Nullable String httpContentType, HttpStatusListener httpStatusListener) {
+        this(httpClient, url, thingConfig, httpContent, httpContentType, httpStatusListener, false);
+    }
+
+    public RefreshingUrlCache(RateLimitedHttpClient httpClient, String url, HttpThingConfig thingConfig,
+            String httpContent, @Nullable String httpContentType, HttpStatusListener httpStatusListener,
+            boolean refreshAfterCommand) {
         this.httpClient = httpClient;
         this.url = url;
         this.strictErrorHandling = thingConfig.strictErrorHandling;
@@ -74,6 +81,7 @@ public class RefreshingUrlCache {
         this.httpContent = httpContent;
         this.httpContentType = httpContentType;
         this.httpStatusListener = httpStatusListener;
+        this.refreshAfterCommand = refreshAfterCommand;
         fallbackEncoding = thingConfig.encoding;
     }
 
@@ -98,6 +106,13 @@ public class RefreshingUrlCache {
 
     private void refresh() {
         refresh(false);
+    }
+
+    public void refreshAfterCommand(ScheduledExecutorService executor) {
+        if (refreshAfterCommand) {
+            executor.schedule(() -> this.refresh(), 1, TimeUnit.SECONDS);
+            logger.trace("Started refresh task for URL '{}'", url);
+        }
     }
 
     private void refresh(boolean isRetry) {
@@ -151,7 +166,7 @@ public class RefreshingUrlCache {
         consumers.add(consumer);
     }
 
-    public Optional<ChannelHandlerContent> get() {
+    public Optional<ChannelHandlerContent> getCached() {
         return Optional.ofNullable(lastContent);
     }
 
