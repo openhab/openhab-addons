@@ -259,13 +259,12 @@ public class TuyaChannelTypeProvider implements ChannelTypeProvider {
             category = "slider";
             configurationRef = "channel-type:tuya:dimmer";
             tags.add(schemaDp.readOnly ? "Point" : "Control");
-            tags.add("Illuminance");
+            tags.add("Brightness");
         } else if ("bool".equals(schemaDp.type)) {
             acceptedItemType = SWITCH;
             category = "switch";
             configurationRef = "channel-type:tuya:switch";
-            tags.add(schemaDp.readOnly ? "Status" : "Control");
-            tags.add("Switch");
+            tags.add(schemaDp.readOnly ? "Status" : "Switch");
         } else if ("enum".equals(schemaDp.type)) {
             acceptedItemType = STRING;
             configurationRef = "channel-type:tuya:string";
