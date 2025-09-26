@@ -12,10 +12,13 @@
  */
 package org.openhab.binding.plclogo.internal;
 
-import static org.openhab.binding.plclogo.internal.PLCLogoBindingConstants.*;
+import static org.openhab.binding.plclogo.internal.PLCLogoBindingConstants.THING_TYPE_ANALOG;
+import static org.openhab.binding.plclogo.internal.PLCLogoBindingConstants.THING_TYPE_DATETIME;
+import static org.openhab.binding.plclogo.internal.PLCLogoBindingConstants.THING_TYPE_DEVICE;
+import static org.openhab.binding.plclogo.internal.PLCLogoBindingConstants.THING_TYPE_DIGITAL;
+import static org.openhab.binding.plclogo.internal.PLCLogoBindingConstants.THING_TYPE_MEMORY;
+import static org.openhab.binding.plclogo.internal.PLCLogoBindingConstants.THING_TYPE_PULSE;
 
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -26,13 +29,17 @@ import org.openhab.binding.plclogo.internal.handler.PLCDateTimeHandler;
 import org.openhab.binding.plclogo.internal.handler.PLCDigitalHandler;
 import org.openhab.binding.plclogo.internal.handler.PLCMemoryHandler;
 import org.openhab.binding.plclogo.internal.handler.PLCPulseHandler;
+import org.openhab.core.i18n.TimeZoneProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * The {@link PLCLogoHandlerFactory} is responsible for creating things and
@@ -44,22 +51,20 @@ import org.osgi.service.component.annotations.Component;
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.plclogo")
 public class PLCLogoHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS;
-    static {
-        Set<ThingTypeUID> buffer = new HashSet<>();
-        buffer.add(THING_TYPE_DEVICE);
-        buffer.add(THING_TYPE_MEMORY);
-        buffer.add(THING_TYPE_ANALOG);
-        buffer.add(THING_TYPE_DIGITAL);
-        buffer.add(THING_TYPE_DATETIME);
-        buffer.add(THING_TYPE_PULSE);
-        SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(buffer);
-    }
+    private final TranslationProvider translationProvider;
+    private final TimeZoneProvider timeZoneProvider;
+
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_DEVICE, THING_TYPE_MEMORY,
+            THING_TYPE_ANALOG, THING_TYPE_DIGITAL, THING_TYPE_DATETIME, THING_TYPE_PULSE);
 
     /**
      * Constructor.
      */
-    public PLCLogoHandlerFactory() {
+    @Activate
+    public PLCLogoHandlerFactory(@Reference TranslationProvider translationProvider,
+            @Reference TimeZoneProvider timeZoneProvider) {
+        this.translationProvider = translationProvider;
+        this.timeZoneProvider = timeZoneProvider;
     }
 
     @Override
@@ -70,7 +75,7 @@ public class PLCLogoHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         if (THING_TYPE_DEVICE.equals(thing.getThingTypeUID()) && (thing instanceof Bridge bridge)) {
-            return new PLCBridgeHandler(bridge);
+            return new PLCBridgeHandler(bridge, translationProvider, timeZoneProvider);
         } else if (THING_TYPE_ANALOG.equals(thing.getThingTypeUID())) {
             return new PLCAnalogHandler(thing);
         } else if (THING_TYPE_DIGITAL.equals(thing.getThingTypeUID())) {

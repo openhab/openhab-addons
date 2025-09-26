@@ -30,7 +30,7 @@ abstract class PLCCommonConfiguration {
      *
      * @return True, if channels update to be forced and false otherwise
      */
-    public Boolean isUpdateForced() {
+    public boolean isUpdateForced() {
         return force;
     }
 
@@ -39,7 +39,7 @@ abstract class PLCCommonConfiguration {
      *
      * @param force Force update of Siemens LOGO! block
      */
-    public void setForceUpdate(final Boolean force) {
+    public void setForceUpdate(final boolean force) {
         this.force = force;
     }
 
