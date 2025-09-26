@@ -9,15 +9,6 @@ There are two important points of attention:
 1. For API v1, the local API of each device must be enabled and a fixed address must be configured for the devices.
 1. For API v2, a bearer token needs to be obtained from the device. See <https://api-documentation.homewizard.com/> for instructions how to obtain a token.
 
-### Local API v1
-
-The local API of a device can be enabled from the HomeWizard app.
-Go to Settings in the app, then Meters and select the device you want to enable.
-On this page enable the local API.
-
-### Local API v2
-
-This version is still in beta. Currently hwe-p1 and hwe-bat are supported.
 
 ### Fixed Address
 
@@ -52,7 +43,7 @@ All devices can be configured through the web interface.
 |--------------|----------|---------|---------------------------------------------------------------------------------------------------|
 | ipAddress    | *        |         | This specifies the IP address (or host name) where the meter can be found.                        |
 | refreshDelay |          | 5       | This specifies the interval in seconds used by the binding to read updated values from the meter. |
-| apiVersion   | *        | v1      | The API version to be used. v2 is still in beta but is already supported in this binding.         |
+| apiVersion   | *        | v1      | The API version to be used.                                                                       |
 | bearerToken  |          |         | The bearer token to be used when using API v2.                                                    |
 
 Note that update rate of the P1 Meter itself depends on the frequency of the telegrams it receives from the Smart Meter.
@@ -95,6 +86,11 @@ For DSMR5 meters this is generally once per second, for older versions the frequ
 | active_liter           | Number:VolumetricFlowRate | This channel provides the active water usage in liters per minute.                         | hwe-wtr                           |
 | state_of_charge        | Number:Dimensionless      | This channel provides access to the current state of charge in percent.                    | hwe-bat                           |
 | cycles                 | Number:Dimensionless      | This channel provides access to the number of battery cycles.                              | hwe-bat                           |
+| batteries_mode        | String     | This channel provides the control mode of the Plug-In Battery.                   | hwe-p1                           |
+| batteries_power                 | Number:Power     | This channel provides the current combined power consumption/production of the ontrolled Plug-In Batteries.                              | hwe-p1                           |
+| batteries_target_power                 | Number:Power     | This channel provides the target power consumption/production of the controlled Plug-In Batteries.                              | hwe-p1                           |
+| batteries_max_consumption                 | Number:Power     | This channel provides the maximum allowed consumption power of the controlled Plug-In Batteries.                             | hwe-p1                           |
+| batteries_max_production                 | Number:Power     | This channel provides the maximum allowed production power of the controlled Plug-In Batteries.                              | hwe-p1                           |
 
 ## Full Example
 
