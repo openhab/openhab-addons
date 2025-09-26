@@ -22,6 +22,8 @@ import org.openhab.binding.homekit.internal.enums.PairingMethod;
 import org.openhab.binding.homekit.internal.enums.PairingState;
 import org.openhab.binding.homekit.internal.enums.TlvType;
 import org.openhab.binding.homekit.internal.transport.IpTransport;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Service to remove an existing pairing with a HomeKit accessory.
@@ -31,25 +33,29 @@ import org.openhab.binding.homekit.internal.transport.IpTransport;
 @NonNullByDefault
 public class PairRemoveClient {
 
+    private static final String ENDPOINT_PAIR_REMOVE = "/pairings";
     private static final String CONTENT_TYPE = "application/pairing+tlv8";
-    private static final String ENDPOINT = "/pairings";
+
+    private final Logger logger = LoggerFactory.getLogger(PairRemoveClient.class);
 
     private final IpTransport ipTransport;
-    private final String pairingID;
+    private final String pairingId;
 
-    public PairRemoveClient(IpTransport ipTransport, String pairingID) {
+    public PairRemoveClient(IpTransport ipTransport, String pairingId) {
+        logger.debug("Created with pairingId:{}", pairingId);
         this.ipTransport = ipTransport;
-        this.pairingID = pairingID;
+        this.pairingId = pairingId;
     }
 
     public void remove() throws Exception {
+        logger.debug("Starting Pair-Remove");
         Map<Integer, byte[]> tlv = Map.of( //
                 TlvType.STATE.key, new byte[] { PairingState.M1.value }, //
                 TlvType.METHOD.key, new byte[] { PairingMethod.REMOVE.value }, //
-                TlvType.IDENTIFIER.key, pairingID.getBytes(StandardCharsets.UTF_8));
+                TlvType.IDENTIFIER.key, pairingId.getBytes(StandardCharsets.UTF_8));
         Validator.validate(PairingMethod.REMOVE, tlv);
 
-        byte[] response = ipTransport.post(ENDPOINT, CONTENT_TYPE, Tlv8Codec.encode(tlv));
+        byte[] response = ipTransport.post(ENDPOINT_PAIR_REMOVE, CONTENT_TYPE, Tlv8Codec.encode(tlv));
         Map<Integer, byte[]> tlv2 = Tlv8Codec.decode(response);
         Validator.validate(PairingMethod.REMOVE, tlv2);
     }

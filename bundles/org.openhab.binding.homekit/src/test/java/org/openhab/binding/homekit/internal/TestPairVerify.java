@@ -56,10 +56,10 @@ class TestPairVerify {
     private final byte[] serverPairingId = serverPairingIdentifier.getBytes(StandardCharsets.UTF_8);
 
     private final Ed25519PrivateKeyParameters clientLongTermPrivateKey = new Ed25519PrivateKeyParameters(
-            fromHex(CLIENT_PRIVATE_HEX));
+            toBytes(CLIENT_PRIVATE_HEX));
 
     private final Ed25519PrivateKeyParameters serverLongTermPrivateKey = new Ed25519PrivateKeyParameters(
-            fromHex(SERVER_PRIVATE_HEX));
+            toBytes(SERVER_PRIVATE_HEX));
 
     private @NonNullByDefault({}) X25519PrivateKeyParameters serverKey;
     private @NonNullByDefault({}) X25519PublicKeyParameters clientKey;

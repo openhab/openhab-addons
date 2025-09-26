@@ -32,6 +32,8 @@ import org.openhab.binding.homekit.internal.enums.PairingState;
 import org.openhab.binding.homekit.internal.enums.TlvType;
 import org.openhab.binding.homekit.internal.session.AsymmetricSessionKeys;
 import org.openhab.binding.homekit.internal.transport.IpTransport;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Handles the 3-step pair-verify process with a HomeKit accessory.
@@ -41,8 +43,10 @@ import org.openhab.binding.homekit.internal.transport.IpTransport;
 @NonNullByDefault
 public class PairVerifyClient {
 
-    private static final String CONTENT_TYPE_TLV = "application/pairing+tlv8";
     private static final String ENDPOINT_PAIR_VERIFY = "/pair-verify";
+    private static final String CONTENT_TYPE_TLV = "application/pairing+tlv8";
+
+    private final Logger logger = LoggerFactory.getLogger(PairVerifyClient.class);
 
     private final IpTransport ipTransport;
     private final byte[] pairingId;
@@ -58,6 +62,7 @@ public class PairVerifyClient {
     public PairVerifyClient(IpTransport ipTransport, String pairingId,
             Ed25519PrivateKeyParameters clientLongTermPrivateKey, Ed25519PublicKeyParameters serverLongTermPublicKey)
             throws Exception {
+        logger.debug("Created with pairingId:{}", pairingId);
         this.ipTransport = ipTransport;
         this.pairingId = pairingId.getBytes(StandardCharsets.UTF_8);
         this.clientLongTermPrivateKey = clientLongTermPrivateKey;
@@ -78,6 +83,7 @@ public class PairVerifyClient {
 
     // M1 — Create new random client ephemeral X25519 public key and send it to server
     private void doStep1() throws Exception {
+        logger.debug("Starting Pair-Verify M1");
         byte[] clientKey = this.clientKey.generatePublicKey().getEncoded();
         Map<Integer, byte[]> tlv = Map.of( //
                 TlvType.STATE.key, new byte[] { PairingState.M1.value }, //
@@ -88,6 +94,7 @@ public class PairVerifyClient {
 
     // M2 — Receive server ephemeral X25519 public key and encrypted TLV
     private void doStep2(byte[] response1) throws Exception {
+        logger.debug("Starting Pair-Verify M2");
         Map<Integer, byte[]> tlv = Tlv8Codec.decode(response1);
         Validator.validate(PairingMethod.VERIFY, tlv);
 
@@ -114,6 +121,7 @@ public class PairVerifyClient {
 
     // M3 — Send encrypted controller identifier and signature
     private void doStep3() throws Exception {
+        logger.debug("Starting Pair-Verify M3");
         byte[] sharedKey = generateHkdfKey(sharedSecret, PAIR_CONTROLLER_SIGN_SALT, PAIR_CONTROLLER_SIGN_INFO);
         byte[] signingKey = clientLongTermPrivateKey.generatePublicKey().getEncoded();
         byte[] payload = concat(sharedKey, pairingId, signingKey);
@@ -136,6 +144,7 @@ public class PairVerifyClient {
 
     // M4 — Final confirmation
     private void doStep4(byte[] response3) throws Exception {
+        logger.debug("Starting Pair-Verify M4");
         Map<Integer, byte[]> tlv = Tlv8Codec.decode(response3);
         Validator.validate(PairingMethod.VERIFY, tlv);
         readKey = CryptoUtils.generateHkdfKey(sharedSecret, CONTROL_SALT, CONTROL_READ_ENCRYPTION_KEY);

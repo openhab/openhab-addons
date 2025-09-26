@@ -14,6 +14,7 @@ package org.openhab.binding.homekit.internal.handler;
 
 import static org.openhab.binding.homekit.internal.HomekitBindingConstants.*;
 
+import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 import java.util.Base64;
 import java.util.HashMap;
@@ -99,9 +100,7 @@ public abstract class HomekitBaseServerHandler extends BaseThingHandler {
      */
     private void fetchAccessories() {
         try {
-            String json = TODO_REMOVE_TEST_JSON;
-            // String json = new String(ipTransport.get(ENDPOINT_ACCESSORIES, CONTENT_TYPE_HAP),
-            // StandardCharsets.UTF_8);
+            String json = new String(ipTransport.get(ENDPOINT_ACCESSORIES, CONTENT_TYPE_HAP), StandardCharsets.UTF_8);
             Accessories container = GSON.fromJson(json, Accessories.class);
             if (container != null && container.accessories instanceof List<Accessory> accessoryList) {
                 accessories.clear();
@@ -111,7 +110,7 @@ public abstract class HomekitBaseServerHandler extends BaseThingHandler {
             logger.debug("Fetched {} accessories", accessories.size());
             scheduler.submit(() -> accessoriesLoaded()); // notify subclass in scheduler thread
         } catch (Exception e) {
-            logger.warn("Failed to get accessories: {}", e.getMessage());
+            logger.debug("Failed to get accessories", e);
         }
     }
 
@@ -166,26 +165,29 @@ public abstract class HomekitBaseServerHandler extends BaseThingHandler {
             isChildAccessory = true;
             ipTransport = bridgeHandler.ipTransport;
             rwService = bridgeHandler.rwService;
-            // TODO remove comment <= if (rwService != null) {
-            fetchAccessories();
-            updateStatus(ThingStatus.ONLINE);
-            // TODO remove comment <= } else {
-            // TODO remove comment <= updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Bridge is not
-            // connected");
-            // TODO remove comment <=}
-        } else {
-            // standalone accessory or brige accessory, so do pairing and session setup here
-            isChildAccessory = false;
-            try {
-                // TODO => ipTransport = new IpTransport(getConfig().get(CONFIG_IP_V4_ADDRESS).toString());
-                // TODO => scheduler.execute(() -> initializePairing()); // return fast, do pairing in background thread
-                fetchAccessories(); // TODO <= remove when above code is enabled
+            if (rwService != null) {
+                fetchAccessories();
                 updateStatus(ThingStatus.ONLINE);
+            } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Bridge is not connected");
+            }
+        } else {
+            // standalone accessory or bridge accessory, so do pairing and session setup here
+            isChildAccessory = false;
+            Object host = getConfig().get(CONFIG_HOST);
+            if (host == null || !(host instanceof String hostString) || hostString.isEmpty()) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Invalid host");
+                return;
+            }
+            try {
+                ipTransport = new IpTransport(hostString);
             } catch (Exception e) {
-                logger.warn("Failed to create transport: {}", e.getMessage());
+                logger.debug("Failed to create transport", e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Failed to connect to accessory");
+                return;
             }
+            scheduler.execute(() -> initializePairing()); // return fast, do pairing in background thread
         }
     }
 
@@ -194,20 +196,25 @@ public abstract class HomekitBaseServerHandler extends BaseThingHandler {
      * Updates the thing status accordingly.
      */
     private void initializePairing() {
-        pairingCode = getConfig().get(CONFIG_PAIRING_CODE).toString();
-        accessoryId = getAccessoryId();
+        Object pairingConfig = getConfig().get(CONFIG_PAIRING_CODE);
+        if (pairingConfig == null || !(pairingConfig instanceof String pairingCode) || pairingCode.isEmpty()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Invalid pairing code");
+            return;
+        }
+        this.pairingCode = pairingCode;
+        this.accessoryId = getAccessoryId();
         if (accessoryId == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Invalid accessory ID");
             return;
         }
 
         restoreLongTermKeys();
-
         Ed25519PrivateKeyParameters controllerLongTermPrivateKey = this.controllerLongTermPrivateKey;
         Ed25519PublicKeyParameters accessoryLongTermPublicKey = this.accessoryLongTermPublicKey;
+
         if (controllerLongTermPrivateKey != null && accessoryLongTermPublicKey != null) {
-            // Perform Pair-Verify with existing key
             try {
+                logger.debug("Starting Pair-Verify with existing key for accessory {}", accessoryId);
                 PairVerifyClient client = new PairVerifyClient(ipTransport, accessoryId.toString(),
                         controllerLongTermPrivateKey, accessoryLongTermPublicKey);
 
@@ -220,7 +227,7 @@ public abstract class HomekitBaseServerHandler extends BaseThingHandler {
 
                 return;
             } catch (Exception e) {
-                logger.debug("Restored pairing was not verified for accessory {}", accessoryId);
+                logger.debug("Restored pairing was not verified for accessory {}", accessoryId, e);
                 this.controllerLongTermPrivateKey = null;
                 storeLongTermKeys();
                 // fall through to create new pairing
@@ -232,12 +239,14 @@ public abstract class HomekitBaseServerHandler extends BaseThingHandler {
         logger.debug("Created new controller long term private key for accessory {}", accessoryId);
 
         try {
-            // Perform Pair-Setup
+            logger.debug("Starting Pair-Setup for accessory {}", accessoryId);
             PairSetupClient pairSetupClient = new PairSetupClient(ipTransport, thing.getUID().toString(),
                     controllerLongTermPrivateKey, pairingCode);
 
             accessoryLongTermPublicKey = pairSetupClient.pair();
             this.accessoryLongTermPublicKey = accessoryLongTermPublicKey;
+
+            logger.debug("Pair-Setup completed; starting Pair-Verify for accessory {}", accessoryId);
 
             // Perform Pair-Verify immediately after Pair-Setup
             PairVerifyClient pairVerifyClient = new PairVerifyClient(ipTransport, accessoryId.toString(),
@@ -248,15 +257,14 @@ public abstract class HomekitBaseServerHandler extends BaseThingHandler {
 
             this.controllerLongTermPrivateKey = controllerLongTermPrivateKey;
 
-            storeLongTermKeys();
-
             logger.debug("Pairing and verification completed for accessory {}", accessoryId);
+            storeLongTermKeys();
             fetchAccessories();
             updateStatus(ThingStatus.ONLINE);
 
         } catch (Exception e) {
-            logger.warn("Pairing and verification failed for accessory {}", accessoryId);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Pairing failed");
+            logger.warn("Pairing and verification failed for accessory {}", accessoryId, e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Pairing / Verification failed");
         }
     }
 
@@ -287,263 +295,4 @@ public abstract class HomekitBaseServerHandler extends BaseThingHandler {
         property = accessoryKey == null ? null : Base64.getEncoder().encodeToString(accessoryKey.getEncoded());
         thing.setProperty(PROPERTY_ACCESSORY_PUBLIC_KEY, property);
     }
-
-    public static final String TODO_REMOVE_TEST_JSON = """
-            {
-                "accessories": [
-                    {
-                        "aid": 1,
-                        "services": [
-                            {
-                                "type": "3E",
-                                "iid": 1,
-                                "characteristics": [
-                                    {
-                                        "type": "23",
-                                        "value": "Acme Light Bridge",
-                                        "perms": [
-                                            "pr"
-                                        ],
-                                        "format": "string",
-                                        "iid": 2
-                                    },
-                                    {
-                                        "type": "20",
-                                        "value": "Acme",
-                                        "perms": [
-                                            "pr"
-                                        ],
-                                        "format": "string",
-                                        "iid": 3
-                                    },
-                                    {
-                                        "type": "30",
-                                        "value": "037A2BABF19D",
-                                        "perms": [
-                                            "pr"
-                                        ],
-                                        "format": "string",
-                                        "iid": 4
-                                    },
-                                    {
-                                        "type": "21",
-                                        "value": "Bridge1,1",
-                                        "perms": [
-                                            "pr"
-                                        ],
-                                        "format": "string",
-                                        "iid": 5
-                                    },
-                                    {
-                                        "type": "14",
-                                        "value": null,
-                                        "perms": [
-                                            "pw"
-                                        ],
-                                        "format": "bool",
-                                        "iid": 6
-                                    },
-                                    {
-                                        "type": "52",
-                                        "value": "100.1.1",
-                                        "perms": [
-                                            "pr"
-                                        ],
-                                        "format": "string",
-                                        "iid": 7
-                                    }
-                                ]
-                            },
-                            {
-                                "type": "A2",
-                                "iid": 8,
-                                "characteristics": [
-                                    {
-                                        "type": "37",
-                                        "value": "01.01.00",
-                                        "perms": [
-                                            "pr"
-                                        ],
-                                        "format": "string",
-                                        "iid": 9
-                                    }
-                                ]
-                            }
-                        ]
-                    },
-                    {
-                        "aid": 2,
-                        "services": [
-                            {
-                                "type": "3E",
-                                "iid": 1,
-                                "characteristics": [
-                                    {
-                                        "type": "23",
-                                        "value": "Acme LED Light Bulb",
-                                        "perms": [
-                                            "pr"
-                                        ],
-                                        "format": "string",
-                                        "iid": 2
-                                    },
-                                    {
-                                        "type": "20",
-                                        "value": "Acme",
-                                        "perms": [
-                                            "pr"
-                                        ],
-                                        "format": "string",
-                                        "iid": 3
-                                    },
-                                    {
-                                        "type": "30",
-                                        "value": "099DB48E9E28",
-                                        "perms": [
-                                            "pr"
-                                        ],
-                                        "format": "string",
-                                        "iid": 4
-                                    },
-                                    {
-                                        "type": "21",
-                                        "value": "LEDBulb1,1",
-                                        "perms": [
-                                            "pr"
-                                        ],
-                                        "format": "string",
-                                        "iid": 5
-                                    },
-                                    {
-                                        "type": "14",
-                                        "value": null,
-                                        "perms": [
-                                            "pw"
-                                        ],
-                                        "format": "bool",
-                                        "iid": 6
-                                    }
-                                ]
-                            },
-                            {
-                                "type": "43",
-                                "iid": 7,
-                                "characteristics": [
-                                    {
-                                        "type": "25",
-                                        "value": true,
-                                        "perms": [
-                                            "pr",
-                                            "pw"
-                                        ],
-                                        "format": "bool",
-                                        "iid": 8
-                                    },
-                                    {
-                                        "type": "8",
-                                        "value": 50,
-                                        "perms": [
-                                            "pr",
-                                            "pw"
-                                        ],
-                                        "iid": 9,
-                                        "maxValue": 100,
-                                        "minStep": 1,
-                                        "minValue": 20,
-                                        "format": "int",
-                                        "unit": "percentage"
-                                    }
-                                ]
-                            }
-                        ]
-                    },
-                    {
-                        "aid": 3,
-                        "services": [
-                            {
-                                "type": "3E",
-                                "iid": 1,
-                                "characteristics": [
-                                    {
-                                        "type": "23",
-                                        "value": "Acme LED Light Bulb",
-                                        "perms": [
-                                            "pr"
-                                        ],
-                                        "format": "string",
-                                        "iid": 2
-                                    },
-                                    {
-                                        "type": "20",
-                                        "value": "Acme",
-                                        "perms": [
-                                            "pr"
-                                        ],
-                                        "format": "string",
-                                        "iid": 3
-                                    },
-                                    {
-                                        "type": "30",
-                                        "value": "099DB48E9E28",
-                                        "perms": [
-                                            "pr"
-                                        ],
-                                        "format": "string",
-                                        "iid": 4
-                                    },
-                                    {
-                                        "type": "21",
-                                        "value": "LEDBulb1,1",
-                                        "perms": [
-                                            "pr"
-                                        ],
-                                        "format": "string",
-                                        "iid": 5
-                                    },
-                                    {
-                                        "type": "14",
-                                        "value": null,
-                                        "perms": [
-                                            "pw"
-                                        ],
-                                        "format": "bool",
-                                        "iid": 6
-                                    }
-                                ]
-                            },
-                            {
-                                "type": "43",
-                                "iid": 7,
-                                "characteristics": [
-                                    {
-                                        "type": "25",
-                                        "value": true,
-                                        "perms": [
-                                            "pr",
-                                            "pw"
-                                        ],
-                                        "format": "bool",
-                                        "iid": 8
-                                    },
-                                    {
-                                        "type": "8",
-                                        "value": 50,
-                                        "perms": [
-                                            "pr",
-                                            "pw"
-                                        ],
-                                        "iid": 9,
-                                        "maxValue": 100,
-                                        "minStep": 1,
-                                        "minValue": 20,
-                                        "format": "int",
-                                        "unit": "percentage"
-                                    }
-                                ]
-                            }
-                        ]
-                    }
-                ]
-            }
-                    """;
 }

@@ -28,8 +28,11 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.homekit.internal.crypto.CryptoUtils;
 import org.openhab.binding.homekit.internal.session.AsymmetricSessionKeys;
 import org.openhab.binding.homekit.internal.session.SecureSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This provides the IP transport layer for HomeKit communication.
@@ -43,7 +46,9 @@ import org.openhab.binding.homekit.internal.session.SecureSession;
 @NonNullByDefault
 public class IpTransport implements AutoCloseable {
 
-    private static final int TIMEOUT = Duration.ofSeconds(5).toMillisPart();
+    private static final int CONNECT_TIMEOUT = Duration.ofSeconds(5).toMillisPart();
+
+    private final Logger logger = LoggerFactory.getLogger(IpTransport.class);
 
     private final String host; // ip address with optional port e.g. "192.168.1.42:9123"
     private final Socket socket;
@@ -54,12 +59,15 @@ public class IpTransport implements AutoCloseable {
      * Creates a new IpTransport instance with the given socket and session keys.
      */
     public IpTransport(String host) throws Exception {
+        logger.debug("Connecting to {}", host);
         this.host = host;
         String[] parts = host.split(":");
-        int port = (parts.length > 1) ? Integer.parseInt(parts[1]) : 80; // default to port 80
+        String ipAddress = parts[0];
+        int port = parts.length > 1 ? Integer.parseInt(parts[1]) : 0;
         socket = new Socket();
-        socket.connect(new InetSocketAddress(host, port), TIMEOUT);
+        socket.connect(new InetSocketAddress(ipAddress, port), CONNECT_TIMEOUT);
         socket.setKeepAlive(false); // HAP spec forbids TCP keepalive
+        logger.debug("Connected to {}:{}", ipAddress, port);
     }
 
     public void setSessionKeys(AsymmetricSessionKeys keys) throws Exception {
@@ -83,6 +91,7 @@ public class IpTransport implements AutoCloseable {
 
     private byte[] execute(String method, String endpoint, String contentType, byte[] body)
             throws IOException, InterruptedException, TimeoutException, ExecutionException {
+        logger.trace("{} {} Content-Type:{} Body:{}", method, endpoint, contentType, CryptoUtils.toHex(body));
         try {
             byte[] request = buildRequest(method, endpoint, contentType, body);
             byte[] response;
@@ -99,6 +108,7 @@ public class IpTransport implements AutoCloseable {
                 response = readPlainResponse(in);
             }
 
+            logger.trace("Response: {}", CryptoUtils.toHex(response));
             return parseResponse(response);
         } catch (IOException | InterruptedException | TimeoutException e) {
             throw e;

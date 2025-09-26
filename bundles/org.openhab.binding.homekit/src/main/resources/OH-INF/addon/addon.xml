@@ -5,6 +5,6 @@
 
 	<type>binding</type>
 	<name>HomeKit Binding</name>
-	<description>This is the binding for HomeKit.</description>
+	<description>This is the binding for a HomeKit client.</description>
 
 </addon:addon>

@@ -50,8 +50,8 @@ public class CryptoConstants {
     public static final byte[] PAIR_SETUP_ENCRYPT_INFO = "Pair-Setup-Encrypt-Info".getBytes(StandardCharsets.UTF_8);
     public static final byte[] PAIR_SETUP_ENCRYPT_SALT = "Pair-Setup-Encrypt-Salt".getBytes(StandardCharsets.UTF_8);
 
-    public static final byte[] PS_M5_NONCE = CryptoUtils.generateNonce("PS-Msg05");
-    public static final byte[] PS_M6_NONCE = CryptoUtils.generateNonce("PS-Msg06");
+    public static final byte[] PS_M5_NONCE = "PS-Msg05".getBytes(StandardCharsets.UTF_8);
+    public static final byte[] PS_M6_NONCE = "PS-Msg06".getBytes(StandardCharsets.UTF_8);
 
     public static final byte[] PAIR_CONTROLLER_SIGN_SALT = "Pair-Setup-Controller-Sign-Salt".getBytes(StandardCharsets.UTF_8);
     public static final byte[] PAIR_CONTROLLER_SIGN_INFO = "Pair-Setup-Controller-Sign-Info".getBytes(StandardCharsets.UTF_8);
@@ -66,14 +66,14 @@ public class CryptoConstants {
     public static final byte[] PAIR_VERIFY_ENCRYPT_INFO = "Pair-Verify-Encrypt-Info".getBytes(StandardCharsets.UTF_8);
     public static final byte[] PAIR_VERIFY_ENCRYPT_SALT = "Pair-Verify-Encrypt-Salt".getBytes(StandardCharsets.UTF_8);
 
-    public static final byte[] PV_M2_NONCE = CryptoUtils.generateNonce("PV-Msg02");
-    public static final byte[] PV_M3_NONCE = CryptoUtils.generateNonce("PV-Msg03");
+    public static final byte[] PV_M2_NONCE = "PV-Msg02".getBytes(StandardCharsets.UTF_8);
+    public static final byte[] PV_M3_NONCE = "PV-Msg03".getBytes(StandardCharsets.UTF_8);
     // @formatter:on
 
     private static BigInteger computeK() {
         try {
-            byte[] paddedN = toUnsigned(N, N);
-            byte[] paddedG = toUnsigned(g, N);
+            byte[] paddedN = toUnsigned(N, 384);
+            byte[] paddedG = toUnsigned(g, 384);
             byte[] hash = sha512(CryptoUtils.concat(paddedN, paddedG));
             return new BigInteger(1, hash);
         } catch (Exception e) {

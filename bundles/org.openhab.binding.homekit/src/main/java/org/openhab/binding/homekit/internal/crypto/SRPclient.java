@@ -36,16 +36,18 @@ import org.openhab.binding.homekit.internal.enums.TlvType;
 @NonNullByDefault
 public class SRPclient {
 
+    public final BigInteger A; // client SRP public key
+    public final BigInteger a; // client SRP private ephemeral
+    public final BigInteger B; // server SRP public key
+    public final byte[] K; // session key
+    public final byte[] M1; // client proof
+    public final BigInteger S; // shared secret
+    public final BigInteger u; // scrambling parameter
+    public final BigInteger x; // SRP private key derived from password
+
     private final String I; // username
     private final byte[] s; // server salt
-    private final BigInteger x; // SRP private key derived from password
-    private final BigInteger a; // client SRP private ephemeral
-    private final BigInteger A; // client SRP public key
-    private final BigInteger B; // server SRP public key
-    private final BigInteger u; // scrambling parameter
-    private final BigInteger S; // shared secret
-    private final byte[] K; // session key
-    private final byte[] M1; // client proof
+    private final byte[] M2; // expected server proof
 
     private @Nullable Ed25519PublicKeyParameters serverLongTermPublicKey = null;
 
@@ -55,24 +57,34 @@ public class SRPclient {
      * @param password the password (P) used for authentication.
      * @param serverSalt the salt (s) provided by the server.
      * @param serverPublicKey the server's public SRP key (B).
+     * @param user the username (I). If null, "Pair-Setup" is used.
+     * @param clientPrivateKey the client's private SRP key (a). If null, a random key is generated.
+     *
      * @throws Exception if an error occurs during initialization.
      */
-    public SRPclient(String password, byte[] serverSalt, byte[] serverPublicKey) throws Exception {
-        I = PAIR_SETUP;
+    public SRPclient(String password, byte[] serverSalt, byte[] serverPublicKey, @Nullable String user,
+            byte @Nullable [] clientPrivateKey) throws Exception {
+        // set username, salt and server public key
         s = serverSalt;
         B = new BigInteger(1, serverPublicKey);
+        I = user != null ? user : PAIR_SETUP; // default username is "Pair-Setup"
 
-        // Generate ephemeral a and compute public A
-        a = new BigInteger(N.bitLength(), new SecureRandom()).mod(N);
+        // Apply or create ephemeral a and compute public A
+        byte[] clientKey = clientPrivateKey;
+        if (clientKey == null) {
+            clientKey = new byte[32];
+            new SecureRandom().nextBytes(clientKey);
+        }
+        a = new BigInteger(1, clientKey);
         A = g.modPow(a, N);
 
         // Compute hash x = H(salt || H(username || ":" || password))
-        byte[] hIP = sha512((PAIR_SETUP + ":" + password).getBytes(StandardCharsets.UTF_8));
+        byte[] hIP = sha512((I + ":" + password).getBytes(StandardCharsets.UTF_8));
         byte[] xHash = sha512(concat(serverSalt, hIP));
         x = new BigInteger(1, xHash);
 
         // Compute scrambling parameter u = H(PAD(A) || PAD(B))
-        byte[] uHash = sha512(concat(toUnsigned(A, N), toUnsigned(B, N)));
+        byte[] uHash = sha512(concat(toUnsigned(A, 384), toUnsigned(B, 384)));
         u = new BigInteger(1, uHash);
         if (u.equals(BigInteger.ZERO)) {
             throw new SecurityException("Invalid scrambling parameter");
@@ -85,19 +97,35 @@ public class SRPclient {
         S = base.modPow(exp, N);
 
         // Compute session key K = H(S)
-        K = sha512(toUnsigned(S, N));
+        K = sha512(toUnsigned(S, 384));
 
-        // Compute client proof M1 = H(H(N) ⊕ H(g) || H(I) || s || A || B || K)
-        byte[] HN = sha512(toUnsigned(N, N));
-        byte[] Hg = sha512(toUnsigned(g, N));
+        // Compute client proof M1 = H(H(N) xor H(g) || H(I) || s || A || B || K)
+        byte[] HN = sha512(toUnsigned(N, 384));
+        byte[] Hg = sha512(toUnsigned(g, 1));
         byte[] Hxor = xor(HN, Hg);
         byte[] HI = sha512(I.getBytes(StandardCharsets.UTF_8));
-        M1 = sha512(concat(Hxor, HI, s, toUnsigned(A, N), toUnsigned(B, N), K));
+        M1 = sha512(concat(Hxor, HI, s, toUnsigned(A, 384), toUnsigned(B, 384), K));
+
+        // Compute expected server proof M2 = H(A || M1 || K)
+        M2 = sha512(concat(toUnsigned(A, 384), M1, K));
+    }
+
+    /**
+     * M1 - Simplified constructor when user and client private key are not provided.
+     *
+     * @param password the password (P) used for authentication.
+     * @param serverSalt the salt (s) provided by the server.
+     * @param serverPublicKey the server's public SRP key (B).
+     *
+     * @throws Exception if an error occurs during initialization.
+     */
+    public SRPclient(String password, byte[] serverSalt, byte[] serverPublicKey) throws Exception {
+        this(password, serverSalt, serverPublicKey, null, null);
     }
 
     public byte[] createEncryptedControllerInfo(byte[] pairingId,
             Ed25519PrivateKeyParameters controllerLongTermPrivateKey) throws Exception {
-        byte[] sharedKey = generateHkdfKey(getSharedSecret(), PAIR_CONTROLLER_SIGN_SALT, PAIR_CONTROLLER_SIGN_INFO);
+        byte[] sharedKey = generateHkdfKey(toUnsigned(S, 384), PAIR_CONTROLLER_SIGN_SALT, PAIR_CONTROLLER_SIGN_INFO);
         byte[] signingKey = controllerLongTermPrivateKey.generatePublicKey().getEncoded();
         byte[] payload = concat(sharedKey, pairingId, signingKey);
         byte[] signature = signMessage(controllerLongTermPrivateKey, payload);
@@ -120,20 +148,12 @@ public class SRPclient {
         return serverLongTermPublicKey;
     }
 
-    public byte[] getClientProof() {
-        return M1;
-    }
-
-    public byte[] getPublicKey() {
-        return toUnsigned(A, N);
-    }
-
-    private byte[] getSharedSecret() {
-        return toUnsigned(S, N);
-    }
-
     public byte[] getSymmetricKey() {
-        return generateHkdfKey(getSharedSecret(), PAIR_SETUP_ENCRYPT_SALT, PAIR_SETUP_ENCRYPT_INFO);
+        return generateHkdfKey(toUnsigned(S, 384), PAIR_SETUP_ENCRYPT_SALT, PAIR_SETUP_ENCRYPT_INFO);
+    }
+
+    public byte[] getScramblingParameter() {
+        return toUnsigned(u, 64);
     }
 
     public void verifyEncryptedAccessoryInfo(byte[] cipherText) throws Exception {
@@ -148,7 +168,7 @@ public class SRPclient {
             throw new SecurityException("Missing accessory credentials in M6");
         }
 
-        byte[] sharedKey = generateHkdfKey(getSharedSecret(), PAIR_ACCESSORY_SIGN_SALT, PAIR_ACCESSORY_SIGN_INFO);
+        byte[] sharedKey = generateHkdfKey(toUnsigned(S, 384), PAIR_ACCESSORY_SIGN_SALT, PAIR_ACCESSORY_SIGN_INFO);
         byte[] payload = concat(sharedKey, pairingId, signingKey);
 
         Ed25519PublicKeyParameters serverLongTermPublicKey = new Ed25519PublicKeyParameters(signingKey, 0);
@@ -157,7 +177,6 @@ public class SRPclient {
     }
 
     public void verifyServerProof(byte[] serverProof) throws Exception {
-        byte[] M2 = sha512(concat(toUnsigned(A, N), M1, K));
         if (!Arrays.equals(M2, serverProof)) {
             throw new SecurityException("SRP server proof mismatch");
         }

@@ -256,7 +256,7 @@ public class HomekitDeviceHandler extends HomekitBaseServerHandler {
             return;
         }
         Accessory accessory = accessories.get(accessoryId);
-        if (accessory == null && !isChildAccessory && accessories.size() > 0) {
+        if (accessory == null && !isChildAccessory && !accessories.isEmpty()) {
             // fallback to the first accessory if the specific one is not found (should not normally happen)
             accessory = accessories.values().iterator().next();
         }

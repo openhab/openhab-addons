@@ -23,7 +23,6 @@ import java.security.SecureRandom;
 import java.util.Map;
 import java.util.Objects;
 
-import org.bouncycastle.crypto.InvalidCipherTextException;
 import org.bouncycastle.crypto.params.Ed25519PrivateKeyParameters;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
@@ -58,7 +57,7 @@ class TestPairSetup {
     private @NonNullByDefault({}) byte[] clientPublicKey;
 
     @Test
-    void testBareCrypto() throws InvalidCipherTextException {
+    void testBareCrypto() throws Exception {
         byte[] plainText0 = "the quick brown dog".getBytes(StandardCharsets.UTF_8);
         byte[] key = new byte[32]; // 256 bits = 32 bytes
         byte[] nonce = generateNonce(123);
@@ -71,7 +70,7 @@ class TestPairSetup {
     @Test
     void testSrpClient() throws Exception {
         byte[] plainText0 = "the quick brown dog".getBytes(StandardCharsets.UTF_8);
-        SRPclient client = new SRPclient("password123", fromHex(SALT_HEX), fromHex(SERVER_PRIVATE_HEX));
+        SRPclient client = new SRPclient("password123", toBytes(SALT_HEX), toBytes(SERVER_PRIVATE_HEX));
         byte[] key = client.getSymmetricKey();
         byte[] cipherText = encrypt(key, PS_M5_NONCE, plainText0);
         byte[] plainText1 = decrypt(key, PS_M5_NONCE, cipherText);
@@ -84,20 +83,20 @@ class TestPairSetup {
         String password = "password123";
         String clientPairingIdentifier = "11:22:33:44:55:66";
         String serverPairingIdentifier = "66:55:44:33:22:11";
-        byte[] serverSalt = fromHex(SALT_HEX);
+        byte[] serverSalt = toBytes(SALT_HEX);
         byte[] serverPairingId = serverPairingIdentifier.getBytes(StandardCharsets.UTF_8);
 
         // initialize signing keys
         Ed25519PrivateKeyParameters clientPrivateSigningKey = new Ed25519PrivateKeyParameters(
-                fromHex(CLIENT_PRIVATE_HEX));
+                toBytes(CLIENT_PRIVATE_HEX));
         Ed25519PrivateKeyParameters serverPrivateSigningKey = new Ed25519PrivateKeyParameters(
-                fromHex(SERVER_PRIVATE_HEX));
+                toBytes(SERVER_PRIVATE_HEX));
 
         // create mock
         IpTransport mockTransport = mock(IpTransport.class);
 
         // create SRP client and server
-        SRPtestServer server = new SRPtestServer(password, serverSalt, serverPairingId, serverPrivateSigningKey);
+        SRPserver server = new SRPserver(password, serverSalt, serverPairingId, serverPrivateSigningKey, null, null);
         PairSetupClient client = new PairSetupClient(mockTransport, clientPairingIdentifier, clientPrivateSigningKey,
                 password);
 
@@ -127,17 +126,17 @@ class TestPairSetup {
         client.pair();
     }
 
-    private byte[] getServerResponseM1(SRPtestServer server, byte[] serverSalt) {
+    private byte[] getServerResponseM1(SRPserver server, byte[] serverSalt) {
         Map<Integer, byte[]> tlv = Map.of( //
                 TlvType.STATE.key, new byte[] { PairingState.M2.value }, //
                 TlvType.SALT.key, serverSalt, // salt
-                TlvType.PUBLIC_KEY.key, server.getPublicKey() // server public key
+                TlvType.PUBLIC_KEY.key, toUnsigned(server.B, 384) // server public key
         );
         PairSetupClient.Validator.validate(PairingMethod.SETUP, tlv);
         return Tlv8Codec.encode(tlv);
     }
 
-    private byte[] getServerResponseM3(SRPtestServer server, Map<Integer, byte[]> tlv2, PairSetupClient client)
+    private byte[] getServerResponseM3(SRPserver server, Map<Integer, byte[]> tlv2, PairSetupClient client)
             throws Exception {
         clientPublicKey = tlv2.get(TlvType.PUBLIC_KEY.key);
         byte[] serverProof = server.createServerProof(Objects.requireNonNull(clientPublicKey));
@@ -149,7 +148,7 @@ class TestPairSetup {
         return Tlv8Codec.encode(tlv3);
     }
 
-    private byte[] getServerResponseM5(SRPtestServer server) throws Exception {
+    private byte[] getServerResponseM5(SRPserver server) throws Exception {
         byte[] cipertext = server.createEncryptedAccessoryInfo();
         Map<Integer, byte[]> tlv = Map.of( //
                 TlvType.STATE.key, new byte[] { PairingState.M6.value }, //

@@ -13,7 +13,8 @@
 package org.openhab.binding.homekit.internal.crypto;
 
 import java.math.BigInteger;
-import java.nio.charset.StandardCharsets;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
@@ -34,6 +35,8 @@ import org.bouncycastle.crypto.params.X25519PublicKeyParameters;
 import org.bouncycastle.crypto.signers.Ed25519Signer;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Utility class for cryptographic operations used in HomeKit communication.
@@ -42,6 +45,7 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class CryptoUtils {
+    private static final Logger logger = LoggerFactory.getLogger(CryptoUtils.class);
 
     public static byte[] concat(byte[]... parts) {
         int total = Arrays.stream(parts).mapToInt(p -> p.length).sum();
@@ -56,24 +60,29 @@ public class CryptoUtils {
 
     // Decrypt with ChaCha20-Poly1305
     public static byte[] decrypt(byte[] key, byte[] nonce, byte[] cipherText) throws InvalidCipherTextException {
-        int length = cipherText.length;
+        byte[] aad = new byte[0]; // AAD = none
+        byte[] nonce96 = new byte[12]; // 96 bit nonce
+        System.arraycopy(nonce, 0, nonce96, 4, 8);
         ChaCha20Poly1305 cipher = new ChaCha20Poly1305();
-        AEADParameters params = new AEADParameters(new KeyParameter(key), 128, nonce, null);
+        AEADParameters params = new AEADParameters(new KeyParameter(key), 128, nonce96, aad);
         cipher.init(false, params);
-        byte[] plainText = new byte[cipher.getOutputSize(length)];
-        length = cipher.processBytes(cipherText, 0, length, plainText, 0);
-        cipher.doFinal(plainText, length);
+        byte[] plainText = new byte[cipher.getOutputSize(cipherText.length)];
+        int offset = cipher.processBytes(cipherText, 0, cipherText.length, plainText, 0);
+        cipher.doFinal(plainText, offset);
         return plainText;
     }
 
     // Encrypt with ChaCha20-Poly1305
     public static byte[] encrypt(byte[] key, byte[] nonce, byte[] plainText) throws InvalidCipherTextException {
+        byte[] aad = new byte[0]; // AAD = none
+        byte[] nonce96 = new byte[12]; // 96 bit nonce
+        System.arraycopy(nonce, 0, nonce96, 4, 8);
         ChaCha20Poly1305 cipher = new ChaCha20Poly1305();
-        AEADParameters params = new AEADParameters(new KeyParameter(key), 128, nonce, null);
+        AEADParameters params = new AEADParameters(new KeyParameter(key), 128, nonce96, aad);
         cipher.init(true, params);
         byte[] cipherText = new byte[cipher.getOutputSize(plainText.length)];
-        int length = cipher.processBytes(plainText, 0, plainText.length, cipherText, 0);
-        cipher.doFinal(cipherText, length);
+        int offset = cipher.processBytes(plainText, 0, plainText.length, cipherText, 0);
+        cipher.doFinal(cipherText, offset);
         return cipherText;
     }
 
@@ -87,33 +96,16 @@ public class CryptoUtils {
     }
 
     /**
-     * Generates a 12-byte nonce using the given counter.
-     * The first 4 bytes are zero, and the last 8 bytes are the counter in big-endian format.
+     * Generates an 64 bit nonce using the given counter.
      *
      * @param counter The counter value.
      * @return The generated nonce.
      */
     public static byte[] generateNonce(int counter) {
-        byte[] nonce = new byte[12];
-        nonce[4] = (byte) ((counter >> 24) & 0xFF);
-        nonce[5] = (byte) ((counter >> 16) & 0xFF);
-        nonce[6] = (byte) ((counter >> 8) & 0xFF);
-        nonce[7] = (byte) (counter & 0xFF);
-        return nonce;
-    }
-
-    /**
-     * Generates a 12-byte nonce using the given label.
-     * The first 4 bytes are zero, and the last 8 bytes come from the label.
-     *
-     * @param counter The counter value.
-     * @return The generated nonce.
-     */
-    public static byte[] generateNonce(String label) {
-        byte[] nonce = new byte[12];
-        byte[] labelBytes = label.getBytes(StandardCharsets.UTF_8);
-        System.arraycopy(labelBytes, 0, nonce, 4, Math.min(labelBytes.length, 8));
-        return nonce;
+        ByteBuffer buf = ByteBuffer.allocate(8).order(ByteOrder.BIG_ENDIAN);
+        buf.putInt(0); // high 4 bytes = zero
+        buf.putInt(counter); // low 4 bytes = counter
+        return buf.array(); // total = 8 bytes
     }
 
     // Compute shared secret using ECDH
@@ -143,17 +135,76 @@ public class CryptoUtils {
         return signer.generateSignature();
     }
 
-    public static byte[] toUnsigned(BigInteger v, BigInteger N) {
-        int len = (N.bitLength() + 7) / 8;
-        byte[] raw = v.toByteArray();
-        if (raw.length == len) {
+    public static BigInteger toBigInteger(String hexBlock) {
+        String plainHex = hexBlock.replaceAll("\\s+", "");
+        if (plainHex.length() % 2 != 0) {
+            throw new IllegalArgumentException("Hex string must have even length");
+        }
+        return new BigInteger(plainHex, 16);
+    }
+
+    public static byte[] toBytes(String hexBlock) {
+        String plainHex = hexBlock.replaceAll("\\s+", "");
+        if (plainHex.length() % 2 != 0) {
+            throw new IllegalArgumentException("Hex string must have even length");
+        }
+        int length = plainHex.length();
+        byte[] result = new byte[length / 2];
+        for (int i = 0; i < length; i += 2) {
+            int hi = Character.digit(plainHex.charAt(i), 16);
+            int lo = Character.digit(plainHex.charAt(i + 1), 16);
+            if (hi == -1 || lo == -1) {
+                throw new IllegalArgumentException(
+                        "Invalid hex character: " + plainHex.charAt(i) + plainHex.charAt(i + 1));
+            }
+            result[i / 2] = (byte) ((hi << 4) + lo);
+        }
+        return result;
+    }
+
+    public static String toHex(byte @Nullable [] bytes) {
+        if (bytes == null) {
+            return "null";
+        }
+        StringBuilder sb = new StringBuilder();
+        for (byte b : bytes) {
+            sb.append(String.format("%02X", b)).append(' ');
+        }
+        return sb.toString().trim(); // remove trailing space
+    }
+
+    /**
+     * Converts a BigInteger to an unsigned byte array of the specified length.
+     * If the byte array representation of the BigInteger is shorter than the specified length,
+     * it is left-padded with zeros. If it is longer, an exception is thrown.
+     *
+     * @param bigInteger the BigInteger to convert.
+     * @param length the desired length of the resulting byte array.
+     * @return a byte array of the given length representing the unsigned BigInteger.
+     * @throws IllegalArgumentException if the BigInteger cannot fit in the specified length.
+     */
+    public static byte[] toUnsigned(BigInteger bigInteger, int length) {
+        byte[] raw = bigInteger.toByteArray();
+        if (raw.length == length && raw[0] != 0) {
             return raw;
         }
-        if (raw.length == len + 1 && raw[0] == 0) {
-            return Arrays.copyOfRange(raw, 1, raw.length);
+
+        byte[] unsigned;
+        if (raw[0] == 0) {
+            // strip leading sign byte
+            unsigned = new byte[raw.length - 1];
+            System.arraycopy(raw, 1, unsigned, 0, unsigned.length);
+        } else {
+            unsigned = raw;
         }
-        byte[] padded = new byte[len];
-        System.arraycopy(raw, 0, padded, len - raw.length, raw.length);
+
+        if (unsigned.length == length) {
+            return unsigned;
+        }
+
+        // pad to fixed length
+        byte[] padded = new byte[length];
+        System.arraycopy(unsigned, 0, padded, length - unsigned.length, unsigned.length);
         return padded;
     }
 
@@ -173,35 +224,5 @@ public class CryptoUtils {
             out[i] = (byte) (a[i] ^ b[i]);
         }
         return out;
-    }
-
-    public static String asHex(byte @Nullable [] bytes) {
-        if (bytes == null) {
-            return "null";
-        }
-        StringBuilder sb = new StringBuilder();
-        for (byte b : bytes) {
-            sb.append(String.format("%02X", b)).append(' ');
-        }
-        return sb.toString().trim(); // remove trailing space
-    }
-
-    public static byte[] fromHex(String hexBlock) {
-        String normalized = hexBlock.replaceAll("\\s+", "");
-        if (normalized.length() % 2 != 0) {
-            throw new IllegalArgumentException("Hex string must have even length");
-        }
-        int len = normalized.length();
-        byte[] result = new byte[len / 2];
-        for (int i = 0; i < len; i += 2) {
-            int high = Character.digit(normalized.charAt(i), 16);
-            int low = Character.digit(normalized.charAt(i + 1), 16);
-            if (high == -1 || low == -1) {
-                throw new IllegalArgumentException(
-                        "Invalid hex character: " + normalized.charAt(i) + normalized.charAt(i + 1));
-            }
-            result[i / 2] = (byte) ((high << 4) + low);
-        }
-        return result;
     }
 }

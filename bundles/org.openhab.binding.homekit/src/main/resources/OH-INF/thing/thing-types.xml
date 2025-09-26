@@ -27,6 +27,7 @@
 		</config-description>
 	</thing-type>
 
+	<!-- Bridges are created dynamically; please ignore the warning from OH CI build.. -->
 	<bridge-type id="bridge">
 		<label>HomeKit Bridge</label>
 		<description>HomeKit Accessory Bridge</description>

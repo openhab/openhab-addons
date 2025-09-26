@@ -31,8 +31,6 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.osgi.service.component.annotations.Component;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Discovers new HomeKit server devices.
@@ -55,8 +53,6 @@ public class HomekitMdnsDiscoveryParticipant implements MDNSDiscoveryParticipant
 
     private static final String SERVICE_TYPE = "_hap._tcp.local.";
 
-    private final Logger logger = LoggerFactory.getLogger(HomekitMdnsDiscoveryParticipant.class);
-
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
         return Set.of(THING_TYPE_ACCESSORY);
@@ -75,6 +71,10 @@ public class HomekitMdnsDiscoveryParticipant implements MDNSDiscoveryParticipant
 
             String mac = properties.get("id"); // MAC address
             String host = service.getHostAddresses()[0]; // ipV4 address
+            int port = service.getPort();
+            if (port != 0) {
+                host = host + ":" + port;
+            }
             AccessoryCategory cat;
             try {
                 String ci = properties.getOrDefault("ci", ""); // accessory category

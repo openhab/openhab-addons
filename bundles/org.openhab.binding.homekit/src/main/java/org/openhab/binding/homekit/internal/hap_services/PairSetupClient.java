@@ -20,6 +20,7 @@ import java.util.Set;
 import org.bouncycastle.crypto.params.Ed25519PrivateKeyParameters;
 import org.bouncycastle.crypto.params.Ed25519PublicKeyParameters;
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.homekit.internal.crypto.CryptoUtils;
 import org.openhab.binding.homekit.internal.crypto.SRPclient;
 import org.openhab.binding.homekit.internal.crypto.Tlv8Codec;
 import org.openhab.binding.homekit.internal.enums.ErrorCode;
@@ -27,6 +28,8 @@ import org.openhab.binding.homekit.internal.enums.PairingMethod;
 import org.openhab.binding.homekit.internal.enums.PairingState;
 import org.openhab.binding.homekit.internal.enums.TlvType;
 import org.openhab.binding.homekit.internal.transport.IpTransport;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Handles the 6-step pairing process with a HomeKit accessory.
@@ -41,17 +44,20 @@ import org.openhab.binding.homekit.internal.transport.IpTransport;
 public class PairSetupClient {
 
     private static final String ENDPOINT_PAIR_SETUP = "/pair-setup";
-
     private static final String CONTENT_TYPE_TLV8 = "application/pairing+tlv8";
+
+    private final Logger logger = LoggerFactory.getLogger(PairSetupClient.class);
+
     private final IpTransport ipTransport;
     private final String password;
     private final byte[] pairingId;
     private final Ed25519PrivateKeyParameters clientLongTermPrivateKey;
 
     public PairSetupClient(IpTransport ipTransport, String pairingId,
-            Ed25519PrivateKeyParameters clientLongTermPrivateKey, String password) throws Exception {
+            Ed25519PrivateKeyParameters clientLongTermPrivateKey, String pairingCode) throws Exception {
+        logger.debug("Created with pairingId:{}, pairingCode:{}", pairingId, pairingCode);
         this.ipTransport = ipTransport;
-        this.password = password;
+        this.password = pairingCode;
         this.pairingId = pairingId.getBytes(StandardCharsets.UTF_8);
         this.clientLongTermPrivateKey = clientLongTermPrivateKey;
     }
@@ -75,6 +81,7 @@ public class PairSetupClient {
      * @throws Exception if an error occurs during execution
      */
     private SRPclient doStepM1() throws Exception {
+        logger.debug("Starting Pair-Setup M1");
         Map<Integer, byte[]> tlv = Map.of( //
                 TlvType.STATE.key, new byte[] { PairingState.M1.value }, //
                 TlvType.METHOD.key, new byte[] { PairingMethod.SETUP.value });
@@ -91,6 +98,7 @@ public class PairSetupClient {
      * @throws Exception if an error occurs during processing
      */
     private SRPclient doStepM2(byte[] response1) throws Exception {
+        logger.debug("Starting Pair-Setup M2");
         Map<Integer, byte[]> tlv = Tlv8Codec.decode(response1);
         Validator.validate(PairingMethod.SETUP, tlv);
         byte[] serverSalt = tlv.get(TlvType.SALT.key);
@@ -107,10 +115,11 @@ public class PairSetupClient {
      * @throws Exception if an error occurs during processing
      */
     private SRPclient doStepM3(SRPclient client) throws Exception {
+        logger.debug("Starting Pair-Setup M3");
         Map<Integer, byte[]> tlv = Map.of( //
                 TlvType.STATE.key, new byte[] { PairingState.M3.value }, //
-                TlvType.PUBLIC_KEY.key, client.getPublicKey(), //
-                TlvType.PROOF.key, client.getClientProof());
+                TlvType.PUBLIC_KEY.key, CryptoUtils.toUnsigned(client.A, 384), //
+                TlvType.PROOF.key, client.M1);
         Validator.validate(PairingMethod.SETUP, tlv);
         byte[] response3 = ipTransport.post(ENDPOINT_PAIR_SETUP, CONTENT_TYPE_TLV8, Tlv8Codec.encode(tlv));
         return doStepM4(client, response3);
@@ -123,6 +132,7 @@ public class PairSetupClient {
      * @throws Exception if an error occurs during processing
      */
     private SRPclient doStepM4(SRPclient client, byte[] response3) throws Exception {
+        logger.debug("Starting Pair-Setup M4");
         Map<Integer, byte[]> tlv = Tlv8Codec.decode(response3);
         Validator.validate(PairingMethod.SETUP, tlv);
         byte[] proof = tlv.get(TlvType.PROOF.key);
@@ -137,6 +147,7 @@ public class PairSetupClient {
      * @throws Exception if an error occurs during processing
      */
     private SRPclient doStepM5(SRPclient client) throws Exception {
+        logger.debug("Starting Pair-Setup M5");
         byte[] cipherText = client.createEncryptedControllerInfo(pairingId, clientLongTermPrivateKey);
         Map<Integer, byte[]> tlv = Map.of( //
                 TlvType.STATE.key, new byte[] { PairingState.M5.value }, //
@@ -154,6 +165,7 @@ public class PairSetupClient {
      * @throws Exception if an error occurs during processing
      */
     private SRPclient doStepM6(SRPclient client, byte[] response5) throws Exception {
+        logger.debug("Starting Pair-Setup M6");
         Map<Integer, byte[]> tlv = Tlv8Codec.decode(response5);
         Validator.validate(PairingMethod.SETUP, tlv);
         byte[] ciphertext = tlv.get(TlvType.ENCRYPTED_DATA.key);

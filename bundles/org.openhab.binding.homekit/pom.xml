@@ -12,7 +12,7 @@
 
   <artifactId>org.openhab.binding.homekit</artifactId>
 
-  <name>openHAB Add-ons :: Bundles :: HomeKit Binding</name>
+  <name>openHAB Add-ons :: Bundles :: HomeKit Client Binding</name>
 
   <dependencies>
     <dependency>
