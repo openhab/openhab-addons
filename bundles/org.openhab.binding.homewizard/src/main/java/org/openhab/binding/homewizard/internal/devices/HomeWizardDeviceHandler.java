@@ -27,13 +27,19 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
+import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.homewizard.internal.HomeWizardConfiguration;
+import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -116,7 +122,7 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
 
         if (configure() && processDeviceInformation()) {
             updateStatus(ThingStatus.UNKNOWN);
-            pollingJob = executorService.scheduleWithFixedDelay(this::pollingCode, 0, config.refreshDelay,
+            pollingJob = executorService.scheduleWithFixedDelay(this::retrieveData, 0, config.refreshDelay,
                     TimeUnit.SECONDS);
         }
     }
@@ -153,6 +159,21 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
         }
 
         return true;
+    }
+
+    /**
+     * Not listening to any commands.
+     */
+    // @Override
+    @Override
+    public void handleCommand(ChannelUID channelUID, Command command) {
+    }
+
+    /**
+     * The actual polling loop
+     */
+    protected void retrieveData() {
+        retrieveMeasurementData();
     }
 
     private boolean processDeviceInformation() {
@@ -226,19 +247,29 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
     }
 
     /**
-     * Device specific handling of the returned data.
+     * Device specific handling of the returned measurement data.
      *
      * @param payload The data obtained form the API call
      */
-    protected abstract void handleDataPayload(String data);
+    protected abstract void handleMeasurementData(String data);
+
+    protected ContentResponse putDataTo(String url, String data)
+            throws InterruptedException, TimeoutException, ExecutionException {
+        var request = httpClient.newRequest(url).method(HttpMethod.PUT).content(new StringContentProvider(data));
+
+        return sendRequest(request);
+    }
 
     protected ContentResponse getResponseFrom(String url)
             throws InterruptedException, TimeoutException, ExecutionException {
-        var request = httpClient.newRequest(url);
+        return sendRequest(httpClient.newRequest(url));
+    }
 
+    private ContentResponse sendRequest(Request request)
+            throws InterruptedException, TimeoutException, ExecutionException {
         if (config.apiVersion > 1) {
-            request = request.header(HttpHeader.AUTHORIZATION, BEARER + " " + config.bearerToken);
-            request = request.header(API_VERSION_HEADER, "" + config.apiVersion);
+            request.header(HttpHeader.AUTHORIZATION, BEARER + " " + config.bearerToken);
+            request.header(API_VERSION_HEADER, "" + config.apiVersion);
         }
         return request.timeout(20, TimeUnit.SECONDS).send();
     }
@@ -250,7 +281,7 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
     public String getDeviceInformationData()
             throws InterruptedException, TimeoutException, ExecutionException, SecurityException {
         var response = getResponseFrom(apiURL);
-        if (response.getStatus() == 401) {
+        if (response.getStatus() == HttpStatus.UNAUTHORIZED_401) {
             throw new SecurityException("Bearer token is invalid.");
         }
         return response.getContentAsString();
@@ -267,13 +298,11 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
         } else {
             url += "measurement";
         }
-
         return getResponseFrom(url).getContentAsString();
     }
 
-    protected void pollData() {
+    protected void retrieveMeasurementData() {
         final String measurementData;
-
         try {
             measurementData = getMeasurementData();
         } catch (Exception e) {
@@ -281,15 +310,7 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
                     String.format("Device is offline or doesn't support the API version"));
             return;
         }
-
         updateStatus(ThingStatus.ONLINE);
-        handleDataPayload(measurementData);
-    }
-
-    /**
-     * The actual polling loop
-     */
-    protected void pollingCode() {
-        pollData();
+        handleMeasurementData(measurementData);
     }
 }

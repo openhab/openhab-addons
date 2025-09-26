@@ -16,9 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.homewizard.internal.HomeWizardBindingConstants;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
-import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
-import org.openhab.core.types.Command;
 
 /**
  * The {@link HomeWizardEnergyMeterHandler} implements functionality generic to several energy meters.
@@ -39,19 +37,12 @@ public class HomeWizardEnergyMeterHandler extends HomeWizardDeviceHandler {
     }
 
     /**
-     * Not listening to any commands.
-     */
-    @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
-    }
-
-    /**
      * Device specific handling of the returned data.
      *
      * @param data The data obtained form the API call
      */
     @Override
-    protected void handleDataPayload(String data) {
+    protected void handleMeasurementData(String data) {
         var payload = gson.fromJson(data, HomeWizardEnergyMeterMeasurementPayload.class);
         if (payload != null) {
             if (!thing.getThingTypeUID().equals(HomeWizardBindingConstants.THING_TYPE_P1_METER)

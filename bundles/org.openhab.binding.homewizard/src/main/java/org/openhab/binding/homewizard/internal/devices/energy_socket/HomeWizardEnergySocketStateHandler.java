@@ -12,19 +12,12 @@
  */
 package org.openhab.binding.homewizard.internal.devices.energy_socket;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homewizard.internal.devices.HomeWizardEnergyMeterHandler;
-import org.openhab.core.io.net.http.HttpUtil;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
-
-import com.google.gson.JsonSyntaxException;
 
 /**
  * The {@link HomeWizardEnergySocketStateHandler} extends the base class
@@ -37,6 +30,8 @@ import com.google.gson.JsonSyntaxException;
  */
 @NonNullByDefault
 public abstract class HomeWizardEnergySocketStateHandler extends HomeWizardEnergyMeterHandler {
+
+    private final String STATE_URL = "v1/state";
 
     /**
      * Constructor
@@ -57,10 +52,10 @@ public abstract class HomeWizardEnergySocketStateHandler extends HomeWizardEnerg
 
     /**
      * @return json response from the state api
-     * @throws IOException
+     * @throws Exception
      */
     public String getStateData() throws Exception {
-        return getResponseFrom(apiURL + "v1/state").getContentAsString();
+        return getResponseFrom(apiURL + STATE_URL).getContentAsString();
     }
 
     protected void pollState() {
@@ -96,21 +91,22 @@ public abstract class HomeWizardEnergySocketStateHandler extends HomeWizardEnerg
      * @param command The command to send.
      */
     protected @Nullable HomeWizardEnergySocketStatePayload sendStateCommand(String command) {
-        try (InputStream is = new ByteArrayInputStream(command.getBytes())) {
-            String updatedState = HttpUtil.executeUrl("PUT", apiURL + "v1/state", is, "application/json", 30000);
-            return gson.fromJson(updatedState, HomeWizardEnergySocketStatePayload.class);
-        } catch (IOException | JsonSyntaxException e) {
-            logger.warn("Failed to send command {} to {}", command, apiURL + "state");
-            return null;
+        String updatedState = "";
+        try {
+            updatedState = putDataTo(apiURL + STATE_URL, command).getContentAsString();
+        } catch (Exception ex) {
+            logger.warn("Failed to send command {} to {}", command, apiURL + STATE_URL);
         }
+
+        return gson.fromJson(updatedState, HomeWizardEnergySocketStatePayload.class);
     }
 
     /*
      * This overrides the original polling loop by including a request for the current state..
      */
     @Override
-    protected void pollingCode() {
-        pollData();
+    protected void retrieveData() {
+        retrieveMeasurementData();
         pollState();
     }
 }
