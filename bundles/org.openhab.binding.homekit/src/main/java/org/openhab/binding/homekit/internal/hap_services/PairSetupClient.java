@@ -69,7 +69,7 @@ public class PairSetupClient {
      * @throws Exception if any step of the pairing process fails
      */
     public Ed25519PublicKeyParameters pair() throws Exception {
-        SRPclient client = doStepM1();
+        SRPclient client = m1Execute();
         return client.getAccessoryLongTermPublicKey();
     }
 
@@ -80,14 +80,14 @@ public class PairSetupClient {
      * @throws InterruptedException if the operation is interrupted
      * @throws Exception if an error occurs during execution
      */
-    private SRPclient doStepM1() throws Exception {
-        logger.debug("Starting Pair-Setup M1");
+    private SRPclient m1Execute() throws Exception {
+        logger.debug("Pair-Setup M1: Send pairing start request to server");
         Map<Integer, byte[]> tlv = Map.of( //
                 TlvType.STATE.key, new byte[] { PairingState.M1.value }, //
                 TlvType.METHOD.key, new byte[] { PairingMethod.SETUP.value });
         Validator.validate(PairingMethod.SETUP, tlv);
         byte[] response1 = ipTransport.post(ENDPOINT_PAIR_SETUP, CONTENT_TYPE_TLV8, Tlv8Codec.encode(tlv));
-        return doStepM2(response1);
+        return m2Execute(response1);
     }
 
     /**
@@ -97,15 +97,15 @@ public class PairSetupClient {
      * @param response1 byte array containing the response from step M1
      * @throws Exception if an error occurs during processing
      */
-    private SRPclient doStepM2(byte[] response1) throws Exception {
-        logger.debug("Starting Pair-Setup M2");
+    private SRPclient m2Execute(byte[] response1) throws Exception {
+        logger.debug("Pair-Setup M2: Read server salt and PK; initialize SRP client");
         Map<Integer, byte[]> tlv = Tlv8Codec.decode(response1);
         Validator.validate(PairingMethod.SETUP, tlv);
         byte[] serverSalt = tlv.get(TlvType.SALT.key);
         byte[] serverPublicKey = tlv.get(TlvType.PUBLIC_KEY.key);
         SRPclient client = new SRPclient(password, Objects.requireNonNull(serverSalt),
                 Objects.requireNonNull(serverPublicKey));
-        return doStepM3(client);
+        return m3Execute(client);
     }
 
     /**
@@ -114,15 +114,15 @@ public class PairSetupClient {
      * @return byte array containing the response from the accessory
      * @throws Exception if an error occurs during processing
      */
-    private SRPclient doStepM3(SRPclient client) throws Exception {
-        logger.debug("Starting Pair-Setup M3");
+    private SRPclient m3Execute(SRPclient client) throws Exception {
+        logger.debug("Pair-Setup M3: Send client PK and M1 proof to server");
         Map<Integer, byte[]> tlv = Map.of( //
                 TlvType.STATE.key, new byte[] { PairingState.M3.value }, //
                 TlvType.PUBLIC_KEY.key, CryptoUtils.toUnsigned(client.A, 384), //
                 TlvType.PROOF.key, client.M1);
         Validator.validate(PairingMethod.SETUP, tlv);
         byte[] response3 = ipTransport.post(ENDPOINT_PAIR_SETUP, CONTENT_TYPE_TLV8, Tlv8Codec.encode(tlv));
-        return doStepM4(client, response3);
+        return m4Execute(client, response3);
     }
 
     /**
@@ -131,30 +131,31 @@ public class PairSetupClient {
      * @param response3 byte array containing the response from step M3
      * @throws Exception if an error occurs during processing
      */
-    private SRPclient doStepM4(SRPclient client, byte[] response3) throws Exception {
-        logger.debug("Starting Pair-Setup M4");
+    private SRPclient m4Execute(SRPclient client, byte[] response3) throws Exception {
+        logger.debug("Pair-Setup M4: Read server M2 proof; and verify it");
         Map<Integer, byte[]> tlv = Tlv8Codec.decode(response3);
         Validator.validate(PairingMethod.SETUP, tlv);
         byte[] proof = tlv.get(TlvType.PROOF.key);
-        client.verifyServerProof(Objects.requireNonNull(proof));
-        return doStepM5(client);
+        client.m4VerifyServerProof(Objects.requireNonNull(proof));
+        return m5Execute(client);
     }
 
     /**
      * Executes step M5 of the pairing process: Exchange encrypted identifiers.
+     * Sends the session key, pairing identifier, client LTPK, and signature to the accessory.
      *
      * @return byte array containing the response from the accessory
      * @throws Exception if an error occurs during processing
      */
-    private SRPclient doStepM5(SRPclient client) throws Exception {
-        logger.debug("Starting Pair-Setup M5");
-        byte[] cipherText = client.createEncryptedControllerInfo(pairingId, clientLongTermPrivateKey);
+    private SRPclient m5Execute(SRPclient client) throws Exception {
+        logger.debug("Pair-Setup M5: Send client session key, pairing id, LTPK, and sig to server");
+        byte[] cipherText = client.m5EncodeClientInfoAndSign(pairingId, clientLongTermPrivateKey);
         Map<Integer, byte[]> tlv = Map.of( //
                 TlvType.STATE.key, new byte[] { PairingState.M5.value }, //
                 TlvType.ENCRYPTED_DATA.key, cipherText);
         Validator.validate(PairingMethod.SETUP, tlv);
         byte[] response5 = ipTransport.post(ENDPOINT_PAIR_SETUP, CONTENT_TYPE_TLV8, Tlv8Codec.encode(tlv));
-        return doStepM6(client, response5);
+        return m6Execute(client, response5);
     }
 
     /**
@@ -164,12 +165,12 @@ public class PairSetupClient {
      * @param response5 byte array containing the response from step M5
      * @throws Exception if an error occurs during processing
      */
-    private SRPclient doStepM6(SRPclient client, byte[] response5) throws Exception {
-        logger.debug("Starting Pair-Setup M6");
+    private SRPclient m6Execute(SRPclient client, byte[] response5) throws Exception {
+        logger.debug("Pair-Setup M6: Read server session key, pairing id, LTPK, and sig; and verify it");
         Map<Integer, byte[]> tlv = Tlv8Codec.decode(response5);
         Validator.validate(PairingMethod.SETUP, tlv);
         byte[] ciphertext = tlv.get(TlvType.ENCRYPTED_DATA.key);
-        client.verifyEncryptedAccessoryInfo(Objects.requireNonNull(ciphertext));
+        client.m6DecodeServerInfoAndVerify(Objects.requireNonNull(ciphertext));
         return client;
     }
 

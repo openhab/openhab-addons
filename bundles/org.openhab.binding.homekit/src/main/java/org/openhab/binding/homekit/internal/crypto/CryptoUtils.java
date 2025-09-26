@@ -35,8 +35,6 @@ import org.bouncycastle.crypto.params.X25519PublicKeyParameters;
 import org.bouncycastle.crypto.signers.Ed25519Signer;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Utility class for cryptographic operations used in HomeKit communication.
@@ -45,7 +43,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class CryptoUtils {
-    private static final Logger logger = LoggerFactory.getLogger(CryptoUtils.class);
 
     public static byte[] concat(byte[]... parts) {
         int total = Arrays.stream(parts).mapToInt(p -> p.length).sum();

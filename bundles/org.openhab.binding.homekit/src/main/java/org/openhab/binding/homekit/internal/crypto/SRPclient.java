@@ -52,6 +52,19 @@ public class SRPclient {
     private @Nullable Ed25519PublicKeyParameters serverLongTermPublicKey = null;
 
     /**
+     * M1 - Simplified constructor when user and client private key are not provided.
+     *
+     * @param password the password (P) used for authentication.
+     * @param serverSalt the salt (s) provided by the server.
+     * @param serverPublicKey the server's public SRP key (B).
+     *
+     * @throws Exception if an error occurs during initialization.
+     */
+    public SRPclient(String password, byte[] serverSalt, byte[] serverPublicKey) throws Exception {
+        this(password, serverSalt, serverPublicKey, null, null);
+    }
+
+    /**
      * M2 — Initializes the SRP client with the given password, salt and server public SRP key.
      *
      * @param password the password (P) used for authentication.
@@ -110,22 +123,42 @@ public class SRPclient {
         M2 = sha512(concat(toUnsigned(A, 384), M1, K));
     }
 
-    /**
-     * M1 - Simplified constructor when user and client private key are not provided.
-     *
-     * @param password the password (P) used for authentication.
-     * @param serverSalt the salt (s) provided by the server.
-     * @param serverPublicKey the server's public SRP key (B).
-     *
-     * @throws Exception if an error occurs during initialization.
-     */
-    public SRPclient(String password, byte[] serverSalt, byte[] serverPublicKey) throws Exception {
-        this(password, serverSalt, serverPublicKey, null, null);
+    public Ed25519PublicKeyParameters getAccessoryLongTermPublicKey() throws Exception {
+        Ed25519PublicKeyParameters serverLongTermPublicKey = this.serverLongTermPublicKey;
+        if (serverLongTermPublicKey == null) {
+            throw new IllegalStateException("Accessory long-term public key not yet available");
+        }
+        return serverLongTermPublicKey;
     }
 
-    public byte[] createEncryptedControllerInfo(byte[] pairingId,
-            Ed25519PrivateKeyParameters controllerLongTermPrivateKey) throws Exception {
-        byte[] sharedKey = generateHkdfKey(toUnsigned(S, 384), PAIR_CONTROLLER_SIGN_SALT, PAIR_CONTROLLER_SIGN_INFO);
+    public byte[] getScramblingParameter() {
+        return toUnsigned(u, 64);
+    }
+
+    public byte[] getSymmetricKey() {
+        return generateHkdfKey(K, PAIR_SETUP_ENCRYPT_SALT, PAIR_SETUP_ENCRYPT_INFO);
+    }
+
+    public void m4VerifyServerProof(byte[] serverProof) throws Exception {
+        if (!Arrays.equals(M2, serverProof)) {
+            throw new SecurityException("SRP server proof mismatch");
+        }
+    }
+
+    /**
+     * M5 - Creates an encrypted TLV containing controller information to be sent to the accessory.
+     * The TLV includes the client's pairing Id and the client's LTPK, plus also a signature over a
+     * concatenation of { shared session key, client pairing identifier, client LTPK } created by
+     * the client's long term secret key.
+     *
+     * @param pairingId the pairing identifier.
+     * @param controllerLongTermPrivateKey the controller's long-term private key for signing.
+     * @return the encrypted controller information as a byte array.
+     * @throws Exception if an error occurs during the encryption or signing process.
+     */
+    public byte[] m5EncodeClientInfoAndSign(byte[] pairingId, Ed25519PrivateKeyParameters controllerLongTermPrivateKey)
+            throws Exception {
+        byte[] sharedKey = generateHkdfKey(K, PAIR_CONTROLLER_SIGN_SALT, PAIR_CONTROLLER_SIGN_INFO);
         byte[] signingKey = controllerLongTermPrivateKey.generatePublicKey().getEncoded();
         byte[] payload = concat(sharedKey, pairingId, signingKey);
         byte[] signature = signMessage(controllerLongTermPrivateKey, payload);
@@ -140,23 +173,16 @@ public class SRPclient {
         return ciphertext;
     }
 
-    public Ed25519PublicKeyParameters getAccessoryLongTermPublicKey() throws Exception {
-        Ed25519PublicKeyParameters serverLongTermPublicKey = this.serverLongTermPublicKey;
-        if (serverLongTermPublicKey == null) {
-            throw new IllegalStateException("Accessory long-term public key not yet available");
-        }
-        return serverLongTermPublicKey;
-    }
-
-    public byte[] getSymmetricKey() {
-        return generateHkdfKey(toUnsigned(S, 384), PAIR_SETUP_ENCRYPT_SALT, PAIR_SETUP_ENCRYPT_INFO);
-    }
-
-    public byte[] getScramblingParameter() {
-        return toUnsigned(u, 64);
-    }
-
-    public void verifyEncryptedAccessoryInfo(byte[] cipherText) throws Exception {
+    /**
+     * M6 - Decrypts the accessory's sub TLV containing information received in M6. Extracts the
+     * server pairing identifier, server LTPK, and server signature. Then validates the server
+     * signature against a local copy created using the provided LTPK over a locally created
+     * concatentation of { shared key, pairing identifier, accessory LTPK} .
+     *
+     * @param cipherText the encrypted accessory information received from the accessory.
+     * @throws Exception if an error occurs during decryption or signature verification.
+     */
+    public void m6DecodeServerInfoAndVerify(byte[] cipherText) throws Exception {
         byte[] plainText = decrypt(getSymmetricKey(), PS_M6_NONCE, cipherText);
 
         Map<Integer, byte[]> subTlv = Tlv8Codec.decode(plainText);
@@ -168,17 +194,13 @@ public class SRPclient {
             throw new SecurityException("Missing accessory credentials in M6");
         }
 
-        byte[] sharedKey = generateHkdfKey(toUnsigned(S, 384), PAIR_ACCESSORY_SIGN_SALT, PAIR_ACCESSORY_SIGN_INFO);
+        byte[] sharedKey = generateHkdfKey(K, PAIR_ACCESSORY_SIGN_SALT, PAIR_ACCESSORY_SIGN_INFO);
         byte[] payload = concat(sharedKey, pairingId, signingKey);
 
         Ed25519PublicKeyParameters serverLongTermPublicKey = new Ed25519PublicKeyParameters(signingKey, 0);
-        verifySignature(serverLongTermPublicKey, payload, signature);
-        this.serverLongTermPublicKey = serverLongTermPublicKey;
-    }
-
-    public void verifyServerProof(byte[] serverProof) throws Exception {
-        if (!Arrays.equals(M2, serverProof)) {
-            throw new SecurityException("SRP server proof mismatch");
+        if (!verifySignature(serverLongTermPublicKey, payload, signature)) {
+            throw new SecurityException("Accessory signature verification failed");
         }
+        this.serverLongTermPublicKey = serverLongTermPublicKey;
     }
 }

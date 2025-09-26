@@ -87,7 +87,7 @@ public class SRPserver {
         B = k.multiply(v).add(gb).mod(N);
     }
 
-    public byte[] createServerProof(byte[] clientPublicKeyA) throws Exception {
+    public byte[] m3CreateServerProof(byte[] clientPublicKeyA) throws Exception {
         BigInteger clientPublicA = new BigInteger(1, clientPublicKeyA);
         if (clientPublicA.mod(N).equals(BigInteger.ZERO)) {
             throw new SecurityException("Invalid client public key");
@@ -118,8 +118,8 @@ public class SRPserver {
         return sha512(concat(toUnsigned(clientPublicA, 384), M1, K));
     }
 
-    public byte[] createEncryptedAccessoryInfo() throws Exception {
-        byte[] sharedKey = generateHkdfKey(toUnsigned(S, 384), PAIR_CONTROLLER_SIGN_SALT, PAIR_CONTROLLER_SIGN_INFO);
+    public byte[] m5EncodeServerInfoAndSign() throws Exception {
+        byte[] sharedKey = generateHkdfKey(K, PAIR_ACCESSORY_SIGN_SALT, PAIR_ACCESSORY_SIGN_INFO);
         byte[] signingKey = serverLongTermPrivateKey.generatePublicKey().getEncoded();
         byte[] payload = concat(sharedKey, serverPairingId, signingKey);
         byte[] signature = signMessage(serverLongTermPrivateKey, payload);
@@ -134,6 +134,6 @@ public class SRPserver {
     }
 
     public byte[] getSymmetricKey() {
-        return generateHkdfKey(toUnsigned(S, 384), PAIR_SETUP_ENCRYPT_SALT, PAIR_SETUP_ENCRYPT_INFO);
+        return generateHkdfKey(K, PAIR_SETUP_ENCRYPT_SALT, PAIR_SETUP_ENCRYPT_INFO);
     }
 }

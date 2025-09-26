@@ -114,9 +114,9 @@ class TestPairSetup {
 
             // process the message based on the pairing process Mx state
             return switch (state[0]) {
-                case 1 -> getServerResponseM1(server, serverSalt);
-                case 3 -> getServerResponseM3(server, tlv, client);
-                case 5 -> getServerResponseM5(server);
+                case 1 -> m1GetServerResponse(server, serverSalt);
+                case 3 -> m3GetServerResponse(server, tlv, client);
+                case 5 -> m5GetServerResponse(server);
                 default -> throw new IllegalArgumentException("Unexpected state");
             };
 
@@ -126,7 +126,7 @@ class TestPairSetup {
         client.pair();
     }
 
-    private byte[] getServerResponseM1(SRPserver server, byte[] serverSalt) {
+    private byte[] m1GetServerResponse(SRPserver server, byte[] serverSalt) {
         Map<Integer, byte[]> tlv = Map.of( //
                 TlvType.STATE.key, new byte[] { PairingState.M2.value }, //
                 TlvType.SALT.key, serverSalt, // salt
@@ -136,10 +136,10 @@ class TestPairSetup {
         return Tlv8Codec.encode(tlv);
     }
 
-    private byte[] getServerResponseM3(SRPserver server, Map<Integer, byte[]> tlv2, PairSetupClient client)
+    private byte[] m3GetServerResponse(SRPserver server, Map<Integer, byte[]> tlv2, PairSetupClient client)
             throws Exception {
         clientPublicKey = tlv2.get(TlvType.PUBLIC_KEY.key);
-        byte[] serverProof = server.createServerProof(Objects.requireNonNull(clientPublicKey));
+        byte[] serverProof = server.m3CreateServerProof(Objects.requireNonNull(clientPublicKey));
         Map<Integer, byte[]> tlv3 = Map.of( //
                 TlvType.STATE.key, new byte[] { PairingState.M4.value }, //
                 TlvType.PROOF.key, serverProof // server proof
@@ -148,11 +148,11 @@ class TestPairSetup {
         return Tlv8Codec.encode(tlv3);
     }
 
-    private byte[] getServerResponseM5(SRPserver server) throws Exception {
-        byte[] cipertext = server.createEncryptedAccessoryInfo();
+    private byte[] m5GetServerResponse(SRPserver server) throws Exception {
+        byte[] cipherText = server.m5EncodeServerInfoAndSign();
         Map<Integer, byte[]> tlv = Map.of( //
                 TlvType.STATE.key, new byte[] { PairingState.M6.value }, //
-                TlvType.ENCRYPTED_DATA.key, cipertext);
+                TlvType.ENCRYPTED_DATA.key, cipherText);
         PairSetupClient.Validator.validate(PairingMethod.SETUP, tlv);
         return Tlv8Codec.encode(tlv);
     }

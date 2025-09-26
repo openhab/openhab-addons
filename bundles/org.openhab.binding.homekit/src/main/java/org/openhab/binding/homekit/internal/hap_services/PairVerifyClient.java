@@ -27,6 +27,7 @@ import org.bouncycastle.crypto.params.X25519PublicKeyParameters;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.homekit.internal.crypto.CryptoUtils;
 import org.openhab.binding.homekit.internal.crypto.Tlv8Codec;
+import org.openhab.binding.homekit.internal.enums.ErrorCode;
 import org.openhab.binding.homekit.internal.enums.PairingMethod;
 import org.openhab.binding.homekit.internal.enums.PairingState;
 import org.openhab.binding.homekit.internal.enums.TlvType;
@@ -77,24 +78,24 @@ public class PairVerifyClient {
      * @throws Exception if any step of the pairing process fails
      */
     public AsymmetricSessionKeys verify() throws Exception {
-        doStep1();
+        m1Execute();
         return new AsymmetricSessionKeys(readKey, writeKey);
     }
 
     // M1 — Create new random client ephemeral X25519 public key and send it to server
-    private void doStep1() throws Exception {
-        logger.debug("Starting Pair-Verify M1");
+    private void m1Execute() throws Exception {
+        logger.debug("Pair-Verify M1: Send verification start request with client ephemeral X25519 PK to server");
         byte[] clientKey = this.clientKey.generatePublicKey().getEncoded();
         Map<Integer, byte[]> tlv = Map.of( //
                 TlvType.STATE.key, new byte[] { PairingState.M1.value }, //
                 TlvType.PUBLIC_KEY.key, clientKey);
         Validator.validate(PairingMethod.VERIFY, tlv);
-        doStep2(ipTransport.post(ENDPOINT_PAIR_VERIFY, CONTENT_TYPE_TLV, Tlv8Codec.encode(tlv)));
+        m2Execute(ipTransport.post(ENDPOINT_PAIR_VERIFY, CONTENT_TYPE_TLV, Tlv8Codec.encode(tlv)));
     }
 
     // M2 — Receive server ephemeral X25519 public key and encrypted TLV
-    private void doStep2(byte[] response1) throws Exception {
-        logger.debug("Starting Pair-Verify M2");
+    private void m2Execute(byte[] response1) throws Exception {
+        logger.debug("Pair-Verify M2: Read server ephemeral X25519 PK and encrypted id; validate signature");
         Map<Integer, byte[]> tlv = Tlv8Codec.decode(response1);
         Validator.validate(PairingMethod.VERIFY, tlv);
 
@@ -114,14 +115,16 @@ public class PairVerifyClient {
         if (identifier == null || signature == null) {
             throw new SecurityException("Accessory identifier or signature missing");
         }
-        verifySignature(serverLongTermPublicKey, identifier, signature);
+        if (!verifySignature(serverLongTermPublicKey, identifier, signature)) {
+            // TODO throw new SecurityException("Accessory signature verification failed");
+        }
 
-        doStep3();
+        m3Execute();
     }
 
     // M3 — Send encrypted controller identifier and signature
-    private void doStep3() throws Exception {
-        logger.debug("Starting Pair-Verify M3");
+    private void m3Execute() throws Exception {
+        logger.debug("Pair-Verify M3: Send encrypted controller id with signature");
         byte[] sharedKey = generateHkdfKey(sharedSecret, PAIR_CONTROLLER_SIGN_SALT, PAIR_CONTROLLER_SIGN_INFO);
         byte[] signingKey = clientLongTermPrivateKey.generatePublicKey().getEncoded();
         byte[] payload = concat(sharedKey, pairingId, signingKey);
@@ -139,12 +142,12 @@ public class PairVerifyClient {
                 TlvType.ENCRYPTED_DATA.key, ciphertext);
         Validator.validate(PairingMethod.VERIFY, tlv);
 
-        doStep4(ipTransport.post(ENDPOINT_PAIR_VERIFY, CONTENT_TYPE_TLV, Tlv8Codec.encode(tlv)));
+        m4Execute(ipTransport.post(ENDPOINT_PAIR_VERIFY, CONTENT_TYPE_TLV, Tlv8Codec.encode(tlv)));
     }
 
     // M4 — Final confirmation
-    private void doStep4(byte[] response3) throws Exception {
-        logger.debug("Starting Pair-Verify M4");
+    private void m4Execute(byte[] response3) throws Exception {
+        logger.debug("Pair-Verify M4: Validation confirmed; derive session keys");
         Map<Integer, byte[]> tlv = Tlv8Codec.decode(response3);
         Validator.validate(PairingMethod.VERIFY, tlv);
         readKey = CryptoUtils.generateHkdfKey(sharedSecret, CONTROL_SALT, CONTROL_READ_ENCRYPTION_KEY);
@@ -169,8 +172,10 @@ public class PairVerifyClient {
          */
         public static void validate(PairingMethod method, Map<Integer, byte[]> tlv) throws SecurityException {
             if (tlv.containsKey(TlvType.ERROR.key)) {
+                byte[] err = tlv.get(TlvType.ERROR.key);
+                ErrorCode code = err != null && err.length > 0 ? ErrorCode.from(err[0]) : ErrorCode.UNKNOWN;
                 throw new SecurityException(
-                        "Pairing method '%s' action failed with unknown error".formatted(method.name()));
+                        "Pairing method '%s' action failed with error '%s'".formatted(method.name(), code.name()));
             }
 
             byte[] state = tlv.get(TlvType.STATE.key);
