@@ -20,6 +20,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
@@ -87,7 +90,7 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
     }
 
     protected void commonInitialize(JsonObject state) {
-        ThingBuilder builder = editThing();
+        List<Channel> newChannels = new ArrayList<>();
 
         for (Map.Entry<@Nullable String, @Nullable JsonElement> entry : state.entrySet()) {
             String key = entry.getKey();
@@ -102,10 +105,15 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
                 continue;
             }
 
-            createChannel(thingKey, builder, value);
+            @Nullable
+            Channel channel = createChannel(thingKey, value);
+            if (null != channel) {
+                newChannels.add(channel);
+            }
         }
 
-        updateThing(builder.build());
+        newChannels.sort(Comparator.comparing(channel -> channel.getUID().getId()));
+        updateThing(editThing().withChannels(newChannels).build());
         updateStatus(ThingStatus.ONLINE);
         isInitialized = true;
         Optional.ofNullable(bridgeHandler).ifPresentOrElse(handler -> handler.register(this),
@@ -145,7 +153,8 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
         }
     }
 
-    private void createChannel(String thingKey, ThingBuilder builder, JsonElement value) {
+    @Nullable
+    protected Channel createChannel(String thingKey, JsonElement value) {
         ChannelTypeUID channelTypeUID = new ChannelTypeUID(BINDING_ID, thingKey);
         ItemTypeUnit typeUnit = getItemType(channelTypeUID);
         String itemType = typeUnit.itemType;
@@ -155,12 +164,14 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
             Channel channel = ChannelBuilder.create(new ChannelUID(getThing().getUID(), thingKey)).withLabel(label)
                     .withType(channelTypeUID).withAcceptedItemType(itemType).build();
             if (getThing().getChannels().stream().noneMatch(c -> c.getUID().equals(channel.getUID()))) {
-                builder.withChannel(channel);
+                return channel;
+                // builder.withChannel(channel);
             }
         } else {
             String valString = Objects.requireNonNullElse(value.toString(), "Null");
             logUnknownChannelXmlAsync(thingKey, "Hint for type: " + valString);
         }
+        return null;
     }
 
     private String getChannelLabel(String thingKey) {
@@ -191,7 +202,7 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
         return new ItemTypeUnit(channelType, Units.ONE);
     }
 
-    private void setItemValue(ItemTypeUnit itemTypeUnit, ChannelUID channelUID, JsonElement value) {
+    protected void setItemValue(ItemTypeUnit itemTypeUnit, ChannelUID channelUID, JsonElement value) {
         if (value.isJsonNull() || itemTypeUnit.itemType.isEmpty()) {
             return;
         }
@@ -249,8 +260,7 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
         return (type + "-" + Utils.sanitizeChannelID(key));
     }
 
-    @Override
-    public void updateFromEvccState(JsonObject state) {
+    public void updateStatesFromApiResponse(JsonObject state) {
         if (!isInitialized || state.isEmpty()) {
             return;
         }
@@ -267,8 +277,15 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
             Channel existingChannel = getThing().getChannel(channelUID.getId());
             if (existingChannel == null) {
                 ThingBuilder builder = editThing();
-                createChannel(thingKey, builder, value);
-                updateThing(builder.build());
+                List<Channel> channels = getThing().getChannels();
+                builder.withoutChannels(channels);
+                @Nullable
+                Channel newChannel = createChannel(thingKey, value);
+                if (null != newChannel) {
+                    channels.add(newChannel);
+                    channels.sort(Comparator.comparing(channel -> channel.getUID().getId()));
+                    updateThing(builder.withChannels(channels).build());
+                }
             }
             setItemValue(getItemType(new ChannelTypeUID(BINDING_ID, channelUID.getId())), channelUID, value);
         }
@@ -367,7 +384,7 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
         }
     }
 
-    private static class ItemTypeUnit {
+    protected static class ItemTypeUnit {
         private final Unit<?> unit;
         private final String unitHint;
         private final String itemType;
