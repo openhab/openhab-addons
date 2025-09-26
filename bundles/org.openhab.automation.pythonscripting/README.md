@@ -66,7 +66,7 @@ Web based config dialog can be found via Web UI => Settings / Add-on Settings / 
 
 Additionally, you can configure the Add-on via a config file `/openhab/services/pythonscripting.cfg` like below.
 
-```
+```text
 # Use scope and import wrapper
 #
 # This enables a scope module and and import wrapper.
@@ -189,7 +189,7 @@ As first, you must enable [VEnv](#enabling-venv). After this is enabled, you can
     /openhab/userdata/cache/org.openhab.automation.pythonscripting/venv/bin/pip install requests
     ```
 
-### Enable Pyhton Autocompletion
+### Enable Python Autocompletion
 
 Before you can enable autocompletion, you must generate the required type hint stub files. Login into [openHAB console](https://www.openhab.org/docs/administration/console.html) and run
 
@@ -215,7 +215,7 @@ As a final step, the folders `/openhab/conf/automation/python/libs/` and `/openh
 2025-07-25 12:10:06.001 [ERROR] [g.internal.PythonScriptEngineFactory] - Graal python language not initialized. Restart openhab to initialize available graal languages properly.
 ```
 
-This can happen after a new Add-on installation, if JSScripting is active at the same time.
+This can happen after a new Add-on installation, if JavaScript Scripting is active at the same time.
 
 Just restart openhab to initialize available graal languages properly.
 
@@ -270,7 +270,7 @@ You should also check your logs for a message related to the helper lib deployme
 SystemError, Option python.NativeModules is set to 'true' and a second GraalPy context attempted to load a native module '<xyz>' from path '<lib_path>.so'. At least one context in this process runs with 'IsolateNativeModules' set to false. Depending on the order of context creation, this means some contexts in the process cannot use native module, all other contexts must fall back and set python.NativeModules to 'false' to run native extensions in LLVM mode. This is recommended only for extensions included in the Python standard library. Running a 3rd party extension in LLVM mode requires a custom build of the extension and is generally discouraged due to compatibility reasons.
 ```
 
-These errors can occur if you use a native library in your external module but forgot to enable "native modules". Check the [Add-on configuration](#configuration) and enable 
+These errors can occur if you use a native library in your external module but forgot to enable "native modules". Check the [Add-on configuration](#configuration) and enable "native modules".
 
 ## Limitations
 
