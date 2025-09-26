@@ -52,7 +52,8 @@ public class FSInternetRadioHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(FSInternetRadioHandler.class);
 
-    public @Nullable FrontierSiliconRadio radio;
+    @Nullable
+    FrontierSiliconRadio radio;
     private final HttpClient httpClient;
 
     /** Job that runs {@link #updateRunnable}. */
