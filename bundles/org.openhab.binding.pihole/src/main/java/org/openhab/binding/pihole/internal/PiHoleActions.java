@@ -53,15 +53,11 @@ public class PiHoleActions implements ThingActions {
             return;
         }
 
-        if (timeUnit == null) {
-            timeUnit = SECONDS;
-        }
-
         var local = handler;
         if (local == null) {
             return;
         }
-        local.disableBlocking(timeUnit.toSeconds(time));
+        local.disableBlocking((timeUnit == null ? SECONDS : timeUnit).toSeconds(time));
     }
 
     public static void disableBlocking(@Nullable ThingActions actions, long time, @Nullable TimeUnit timeUnit)
