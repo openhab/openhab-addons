@@ -12,36 +12,49 @@
  */
 package org.openhab.binding.smartthings.internal;
 
-import static org.openhab.binding.smartthings.internal.SmartthingsBindingConstants.*;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.Dictionary;
-import java.util.HashMap;
 import java.util.Hashtable;
-import java.util.Map;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.http.HttpMethod;
+import org.openhab.binding.smartthings.internal.api.SmartthingsApi;
+import org.openhab.binding.smartthings.internal.api.SmartthingsNetworkConnector;
+import org.openhab.binding.smartthings.internal.dto.AppResponse;
+import org.openhab.binding.smartthings.internal.dto.ConfigurationResponse;
+import org.openhab.binding.smartthings.internal.dto.ConfigurationResponse.ConfigurationData.Initialize;
+import org.openhab.binding.smartthings.internal.dto.ConfigurationResponse.ConfigurationData.Page;
+import org.openhab.binding.smartthings.internal.dto.LifeCycle;
+import org.openhab.binding.smartthings.internal.dto.LifeCycle.Data;
+import org.openhab.binding.smartthings.internal.dto.SMEvent;
+import org.openhab.binding.smartthings.internal.dto.SMEvent.device;
+import org.openhab.binding.smartthings.internal.dto.SmartthingsDevice;
+import org.openhab.binding.smartthings.internal.dto.SmartthingsLocation;
+import org.openhab.binding.smartthings.internal.handler.SmartthingsBridgeHandler;
+import org.openhab.binding.smartthings.internal.handler.SmartthingsThingHandler;
+import org.openhab.binding.smartthings.internal.type.SmartthingsException;
+import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.binding.ThingHandler;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Deactivate;
-import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.event.Event;
-import org.osgi.service.event.EventAdmin;
 import org.osgi.service.http.HttpService;
 import org.osgi.service.http.NamespaceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 
 /**
  * Receives all Http data from the Smartthings Hub
@@ -50,125 +63,243 @@ import com.google.gson.Gson;
  */
 @NonNullByDefault
 @SuppressWarnings("serial")
-@Component(service = HttpServlet.class)
-public class SmartthingsServlet extends HttpServlet {
+public class SmartthingsServlet extends SmartthingsBaseServlet {
     private static final String PATH = "/smartthings";
+
     private final Logger logger = LoggerFactory.getLogger(SmartthingsServlet.class);
-    private @NonNullByDefault({}) HttpService httpService;
-    private @Nullable EventAdmin eventAdmin;
+
     private Gson gson = new Gson();
 
+    // Page templates
+
+    private String installedAppId = "";
+    private String installedLocation = "";
+
+    public Boolean setupInProgress = false;
+
+    public SmartthingsServlet(SmartthingsBridgeHandler bridgeHandler, HttpService httpService,
+            SmartthingsNetworkConnector networkConnector) {
+        super(bridgeHandler, httpService, networkConnector);
+    }
+
     @Activate
-    protected void activate(Map<String, Object> config) {
-        if (httpService == null) {
-            logger.warn("SmartthingsServlet.activate: httpService is unexpectedly null");
-            return;
-        }
+    public void activate() {
         try {
-            Dictionary<String, String> servletParams = new Hashtable<>();
+            Dictionary<String, String> servletParams = new Hashtable<String, String>();
+            logger.info("registerServlet:" + PATH);
             httpService.registerServlet(PATH, this, servletParams, httpService.createDefaultHttpContext());
+            httpService.registerResources(PATH + "/img", "img", null);
+            httpService.registerResources(PATH + "/web", "web", null);
         } catch (ServletException | NamespaceException e) {
             logger.warn("Could not start Smartthings servlet service: {}", e.getMessage());
         }
     }
 
-    @Deactivate
     protected void deactivate(ComponentContext componentContext) {
-        if (httpService != null) {
-            try {
-                httpService.unregister(PATH);
-            } catch (IllegalArgumentException ignored) {
-            }
+        try {
+            httpService.unregister(PATH);
+        } catch (IllegalArgumentException e) {
+            logger.warn("Could not stop Smartthings servlet service: {}", e.getMessage());
         }
     }
 
-    @Reference
-    protected void setHttpService(HttpService httpService) {
-        this.httpService = httpService;
-    }
-
-    protected void unsetHttpService(HttpService httpService) {
-        this.httpService = null;
-    }
-
-    @Reference
-    protected void setEventAdmin(EventAdmin eventAdmin) {
-        this.eventAdmin = eventAdmin;
-    }
-
-    protected void unsetEventAdmin(EventAdmin eventAdmin) {
-        this.eventAdmin = null;
+    @Override
+    public void init(@Nullable ServletConfig servletConfig) throws ServletException {
+        logger.info("SmartthingsServlet:init");
     }
 
     @Override
     protected void service(@Nullable HttpServletRequest req, @Nullable HttpServletResponse resp)
             throws ServletException, IOException {
+        SmartthingsApi api = bridgeHandler.getSmartthingsApi();
+
         if (req == null) {
             logger.debug("SmartthingsServlet.service unexpectedly received a null request. Request not processed");
             return;
         }
-        String path = req.getRequestURI();
-
-        // See what is in the path
-        String[] pathParts = path.replace(PATH + "/", "").split("/");
-        if (pathParts.length != 1) {
-            logger.warn(
-                    "Smartthing servlet received a path with zero or more than one parts. Only one part is allowed. path {}",
-                    path);
+        if (resp == null) {
             return;
         }
 
-        BufferedReader rdr = new BufferedReader(req.getReader());
-        String s = rdr.lines().collect(Collectors.joining());
-        switch (pathParts[0]) {
-            case "state":
-                // This is device state info returned from Smartthings
-                logger.debug("Smartthing servlet processing \"state\" request. data: {}", s);
-                publishEvent(STATE_EVENT_TOPIC, "data", s);
-                break;
-            case "discovery":
-                // This is discovery data returned from Smartthings
-                logger.trace("Smartthing servlet processing \"discovery\" request. data: {}", s);
-                publishEvent(DISCOVERY_EVENT_TOPIC, "data", s);
-                break;
-            case "error":
-                // This is an error message from smartthings
-                Map<String, String> map = new HashMap<>();
-                map = gson.fromJson(s, map.getClass());
-                logger.warn("Error message from Smartthings: {}", map.get("message"));
-                break;
-            default:
-                logger.warn("Smartthings servlet received a path that is not supported {}", pathParts[0]);
-        }
+        logger.info("SmartthingsServlet:service");
+        String path = req.getRequestURI();
 
-        // A user @fx submitted a pull request stating:
-        // It appears that the HubAction queue will choke for a timeout of 6-8s~ if a http action doesn't return a body
-        // (or possibly on the 204 http code, I didn't test them separately.)
-        // I tested the following scenarios:
-        // 1. Return status 204 with a response of OK
-        // 2. Return status 202 with no response
-        // 3. No response.
-        // In all cases the time was about the same - 3.5 sec/request
-        // Both the 202 and 204 responses resulted in the hub logging an error: received a request with an unknown path:
-        // HTTP/1.1 200 OK, content-Length: 0
-        // Therefore I am opting to return nothing since no error message occurs.
-        // resp.setStatus(HttpServletResponse.SC_NO_CONTENT);
-        // resp.setStatus(HttpServletResponse.SC_OK);
-        // resp.getWriter().write("OK");
-        // resp.getWriter().flush();
-        // resp.getWriter().close();
+        if (path != null && path.contains("/smartthings/cb")) {
+            BufferedReader rdr = new BufferedReader(req.getReader());
+            String s = rdr.lines().collect(Collectors.joining());
+
+            LifeCycle resultObj = gson.fromJson(s, LifeCycle.class);
+
+            // ========================================
+            // Event from webhook CB
+            // ========================================
+            if (resultObj != null) {
+                if (resultObj.lifecycle.equals(SmartthingsBindingConstants.LIFECYCLE_EVENT)) {
+                    Data data = resultObj.eventData;
+                    String deviceId = data.events[0].deviceEvent.deviceId;
+                    String componentId = data.events[0].deviceEvent.componentId;
+                    String capa = data.events[0].deviceEvent.capability;
+                    String attr = data.events[0].deviceEvent.attribute;
+                    String value = data.events[0].deviceEvent.value;
+
+                    Bridge bridge = bridgeHandler.getThing();
+                    List<Thing> things = bridge.getThings();
+
+                    Optional<Thing> theThingOpt = things.stream().filter(x -> x.getProperties().containsValue(deviceId))
+                            .findFirst();
+                    if (theThingOpt.isPresent()) {
+                        Thing theThing = theThingOpt.get();
+
+                        ThingHandler handler = theThing.getHandler();
+                        SmartthingsThingHandler smarthingsHandler = (SmartthingsThingHandler) handler;
+                        if (smarthingsHandler != null) {
+                            smarthingsHandler.refreshDevice(theThing.getThingTypeUID().getId(), componentId, capa, attr,
+                                    value);
+                        }
+                    }
+
+                    logger.info("EVENT: {} {} {} {} {}", deviceId, componentId, capa, attr, value);
+                } else if (resultObj.lifecycle.equals(SmartthingsBindingConstants.LIFECYCLE_INSTALL)) {
+                    installedAppId = resultObj.installData.installedApp.installedAppId;
+                    String locationId = resultObj.installData.installedApp.locationId;
+
+                    try {
+                        SmartthingsLocation loc = api.getLocation(locationId);
+                        installedLocation = loc.name;
+                    } catch (SmartthingsException ex) {
+                        installedLocation = "Unable to retrieve location!!";
+                    }
+
+                    // registerSubscriptions(tokenInstallUpdate, locationId);
+
+                    setupInProgress = false;
+                    logger.info("INSTALL");
+                } else if (resultObj.lifecycle.equals(SmartthingsBindingConstants.LIFECYCLE_UPDATE)) {
+                    installedAppId = resultObj.updateData.installedApp.installedAppId;
+
+                    // String subscriptionUri = "https://api.smartthings.com/v1/installedapps/" + installedAppId
+                    // + "/subscriptions";
+                    // registerSubscriptions(tokenInstallUpdate, locationId);
+
+                    logger.info("UPDATE");
+                } else if (resultObj.lifecycle.equals(SmartthingsBindingConstants.LIFECYCLE_EXECUTE)) {
+                    logger.info("EXCUTE");
+                } else if (resultObj.lifecycle.equals(SmartthingsBindingConstants.LIFECYCLE_CONFIGURATION)
+                        && resultObj.configurationData.phase().equals(SmartthingsBindingConstants.PHASE_INITIALIZE)) {
+                    ConfigurationResponse response = new ConfigurationResponse();
+                    response.configurationData = response.new ConfigurationData();
+
+                    Initialize init = response.configurationData.new Initialize();
+                    response.configurationData.initialize = init;
+                    init.name = "Openhab";
+                    init.description = "Openhab";
+                    init.firstPageId = "1";
+                    init.id = "Openhab";
+
+                    init.permissions = new String[1];
+                    init.permissions[0] = "r:devices:*";
+
+                    String responseSt = gson.toJson(response);
+                    resp.getWriter().print(responseSt);
+                } else if (resultObj.lifecycle.equals(SmartthingsBindingConstants.LIFECYCLE_CONFIGURATION)
+                        && resultObj.configurationData.phase().equals(SmartthingsBindingConstants.PHASE_PAGE)) {
+                    ConfigurationResponse response = new ConfigurationResponse();
+                    response.configurationData = response.new ConfigurationData();
+
+                    Page page1 = response.configurationData.new Page();
+                    response.configurationData.page = page1;
+                    page1.pageId = "1";
+                    page1.nextPageId = null;
+                    page1.previousPageId = null;
+                    page1.name = "Openhab";
+                    page1.complete = true;
+
+                    String responseSt = gson.toJson(response);
+                    resp.getWriter().print(responseSt);
+                } else if (resultObj.lifecycle.equals("CONFIRMATION")) {
+                    String appId = resultObj.confirmationData.appId();
+                    String confirmUrl = resultObj.confirmationData.confirmationUrl();
+
+                    bridgeHandler.setAppId(appId);
+
+                    String responseSt = "{";
+
+                    responseSt = responseSt + "\"targetUrl\": \"" + confirmUrl + "\"";
+                    responseSt = responseSt + "}";
+                    resp.getWriter().print(responseSt);
+
+                    try {
+                        Thread.sleep(2000);
+                        this.networkConnector.doBasicRequest(String.class, confirmUrl, null, "", "", HttpMethod.GET);
+                    } catch (Exception ex) {
+                        logger.error("error during confirmation {}", confirmUrl);
+                    }
+
+                    try {
+                        api.createAppOAuth(appId);
+                    } catch (SmartthingsException ex) {
+                        logger.error("Unable to setup app oauth settings!!");
+                    }
+
+                    logger.trace("CONFIRMATION {}", confirmUrl);
+                }
+            }
+        }
         logger.trace("Smartthings servlet returning.");
-        return;
     }
 
-    private void publishEvent(String topic, String name, String data) {
-        Dictionary<String, String> props = new Hashtable<>();
-        props.put(name, data);
-        Event event = new Event(topic, props);
-        if (eventAdmin != null) {
-            eventAdmin.postEvent(event);
-        } else {
-            logger.debug("SmartthingsServlet:publishEvent eventAdmin is unexpectedly null");
+    protected void registerSubscriptions(String tokenInstallUpdate, String locationId) {
+        try {
+            String subscriptionUri = "https://api.smartthings.com/v1/installedapps/" + installedAppId
+                    + "/subscriptions";
+
+            // Remove old subscriptions before recreating them
+            networkConnector.doRequest(JsonObject.class, subscriptionUri, null, tokenInstallUpdate, "",
+                    HttpMethod.DELETE);
+
+            networkConnector.doRequest(JsonObject.class, subscriptionUri, null, tokenInstallUpdate, "", HttpMethod.GET);
+
+            SmartthingsApi api = bridgeHandler.getSmartthingsApi();
+
+            SmartthingsDevice[] devices = api.getAllDevices();
+            for (SmartthingsDevice dev : devices) {
+                try {
+                    if (!dev.locationId.equals(locationId)) {
+                        continue;
+                    }
+
+                    SMEvent evt = new SMEvent();
+                    evt.sourceType = SmartthingsBindingConstants.EVT_TYPE_DEVICE;
+                    evt.device = new device(dev.deviceId, SmartthingsBindingConstants.GROUPD_ID_MAIN, true, null);
+
+                    String body = gson.toJson(evt);
+                    networkConnector.doRequest(JsonObject.class, subscriptionUri, null, tokenInstallUpdate, body,
+                            HttpMethod.POST);
+                } catch (SmartthingsException ex) {
+                    logger.error("Unable to register subscriptions: {} {} ", ex.getMessage(), dev.deviceId);
+                }
+            }
+
+        } catch (SmartthingsException ex) {
+            logger.error("Unable to register subscriptions: {}", ex.getMessage());
         }
+    }
+
+    protected void setupApp(String redirectUrl) {
+        SmartthingsApi api = bridgeHandler.getSmartthingsApi();
+
+        try {
+            AppResponse appResponse = api.setupApp(redirectUrl);
+            if (appResponse.oauthClientId != null && appResponse.oauthClientSecret != null) {
+                bridgeHandler.updateConfig(appResponse.oauthClientId, appResponse.oauthClientSecret);
+            }
+            bridgeHandler.setAppId(appResponse.app.appId);
+        } catch (SmartthingsException ex) {
+            logger.info("Unable to setup Smartthings app !!");
+        }
+    }
+
+    public String getInstalledLocation() {
+        return installedLocation;
     }
 }
