@@ -112,7 +112,7 @@ public class AutomowerWebSocketAdapter {
                 JsonObject event = JsonParser.parseString(message).getAsJsonObject();
                 if (event.has("id")) {
                     String id = event.get("id").getAsString();
-                    AutomowerHandler automowerHandler = handler.getAutomowerHandlerByThingId(id);
+                    AutomowerHandler automowerHandler = handler.getAutomowerHandlerByMowerId(id);
                     if (automowerHandler != null) {
                         logger.debug("Message from WebSocket for known AutomowerHandler: {}", message);
                         automowerHandler.processWebSocketMessage(event);

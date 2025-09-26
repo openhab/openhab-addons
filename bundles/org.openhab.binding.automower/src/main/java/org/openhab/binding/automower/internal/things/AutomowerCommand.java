@@ -23,6 +23,7 @@ import org.openhab.core.thing.ChannelUID;
 
 /**
  * @author Markus Pfleger - Initial contribution
+ * @author MikeTheTux - API Extension, WSS Support, Refactoring
  */
 @NonNullByDefault
 public enum AutomowerCommand {
