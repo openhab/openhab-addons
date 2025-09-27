@@ -14,11 +14,11 @@ package org.openhab.binding.sungrow.internal.impl;
 
 import java.net.URI;
 import java.time.Duration;
+import java.util.HashMap;
+import java.util.Map;
 
-import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.sungrow.internal.SungrowBindingConstants;
 import org.openhab.binding.sungrow.internal.SungrowConfiguration;
-import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.*;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
@@ -30,7 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.afrouper.server.sungrow.api.SungrowClient;
-import de.afrouper.server.sungrow.api.SungrowClientFactory;
+import de.afrouper.server.sungrow.api.SungrowClientBuilder;
 import de.afrouper.server.sungrow.api.dto.*;
 
 /**
@@ -43,17 +43,22 @@ public class SungrowBridgeHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(SungrowBridgeHandler.class);
 
-    private final HttpClient commonHttpClient;
-
     private volatile SungrowConfiguration configuration = new SungrowConfiguration();
 
     private ThingRegistry thingRegistry;
 
+    private SungrowClientBuilder.Builder sungrowClientBuilder;
+
     private SungrowClient sungrowClient;
 
-    public SungrowBridgeHandler(Bridge bridge, HttpClient commonHttpClient) {
+    private final Map<ThingUID, Plant> plants;
+
+    private final Map<ThingUID, Device> devices;
+
+    public SungrowBridgeHandler(Bridge bridge) {
         super(bridge);
-        this.commonHttpClient = commonHttpClient;
+        this.plants = new HashMap<>();
+        this.devices = new HashMap<>();
     }
 
     @Override
@@ -71,8 +76,9 @@ public class SungrowBridgeHandler extends BaseBridgeHandler {
             if (configuration.getHostname() != null && !configuration.getHostname().isEmpty()) {
                 baseUrl = new URI(configuration.getHostname());
             }
-            sungrowClient = SungrowClientFactory.createSungrowClient(baseUrl, configuration.getAppKey(),
-                    configuration.getAppSecret(), Duration.ofSeconds(10), Duration.ofSeconds(30));
+            sungrowClientBuilder = new SungrowClientBuilder().builder(baseUrl)
+                    .withCredentials(configuration.getAppKey(), configuration.getSecretKey())
+                    .withConnectTimeout(Duration.ofSeconds(10)).withRequestTimeout(Duration.ofSeconds(30));
             scheduler.execute(this::createPlants);
         } catch (Exception e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR, e.getMessage());
@@ -88,6 +94,8 @@ public class SungrowBridgeHandler extends BaseBridgeHandler {
     @Override
     public void dispose() {
         super.dispose();
+        this.plants.clear();
+        this.devices.clear();
         logger.info("Bridge disposed.");
     }
 
@@ -99,9 +107,17 @@ public class SungrowBridgeHandler extends BaseBridgeHandler {
         return configuration;
     }
 
+    Plant getPlant(ThingUID thingUID) {
+        return plants.get(thingUID);
+    }
+
+    Device getDevice(ThingUID thingUID) {
+        return devices.get(thingUID);
+    }
+
     private void createPlants() {
         try {
-            sungrowClient.login(configuration.getUsername(), configuration.getPassword());
+            sungrowClient = sungrowClientBuilder.withLogin(configuration.getUsername(), configuration.getPassword());
             updateStatus(ThingStatus.ONLINE);
 
             PlantList plants = sungrowClient.getPlants();
@@ -117,18 +133,15 @@ public class SungrowBridgeHandler extends BaseBridgeHandler {
         ThingUID thingUID = new ThingUID(SungrowBindingConstants.THING_TYPE_PLANT.getBindingId(), getThing().getUID(),
                 plant.plantId());
 
+        plants.put(thingUID, plant);
+
         if (thingRegistry.get(thingUID) != null) {
             logger.warn("Plant Thing with UID {} already exists. Skipping creation.", thingUID);
             return;
         }
 
-        Configuration plantConfiguration = new Configuration();
-        plantConfiguration.put("plant", plant);
-
         Thing plantThing = ThingBuilder.create(SungrowBindingConstants.THING_TYPE_PLANT, thingUID)
-                .withBridge(getThing().getUID()).withLabel(plant.plantName()).withConfiguration(plantConfiguration)
-                .build();
-
+                .withBridge(getThing().getUID()).withLabel(plant.plantName()).build();
         thingRegistry.add(plantThing);
 
         DeviceList devices = sungrowClient.getDevices(plant.plantId());
@@ -140,18 +153,15 @@ public class SungrowBridgeHandler extends BaseBridgeHandler {
     private void addDeviceThing(Device device) {
         ThingUID thingUID = new ThingUID(SungrowBindingConstants.THING_TYPE_DEVICE.getBindingId(), getThing().getUID(),
                 device.plantDeviceId());
+        this.devices.put(thingUID, device);
 
         if (thingRegistry.get(thingUID) != null) {
             logger.warn("Device Thing with UID {} already exists. Skipping creation.", thingUID);
             return;
         }
 
-        Configuration deviceConfiguration = new Configuration();
-        deviceConfiguration.put("device", device);
-
         Thing plantThing = ThingBuilder.create(SungrowBindingConstants.THING_TYPE_DEVICE, thingUID)
-                .withBridge(getThing().getUID()).withLabel(device.deviceName()).withConfiguration(deviceConfiguration)
-                .build();
+                .withBridge(getThing().getUID()).withLabel(device.deviceName()).build();
 
         thingRegistry.add(plantThing);
     }

@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="tibber"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<!-- https://community.openhab.org/t/using-the-new-currency-units-of-measurement-in-4-1/152338/ -->
+	<channel-type id="numberType">
+		<item-type>String</item-type>
+		<label>Information</label>
+		<description>Information</description>
+		<state readOnly="true" pattern="%s"/>
+	</channel-type>
+	<channel-type id="stringType">
+		<item-type>Number</item-type>
+		<label>Information</label>
+		<description>Information</description>
+		<state readOnly="true" pattern="%s"/>
+	</channel-type>
+	<channel-type id="moneyType">
+		<item-type>Number:Currency</item-type>
+		<label>Money</label>
+		<description>Costs + Income</description>
+		<category>Money</category>
+		<state readOnly="true" pattern="%.2f %unit%"></state>
+	</channel-type>
+	<channel-type id="energyType">
+		<item-type>Number:Energy</item-type>
+		<label>Energy consumption or production</label>
+		<description>Energy consumption or production</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
+		<state readOnly="true" pattern="%.3f %unit%"></state>
+	</channel-type>
+	<channel-type id="powerType">
+		<item-type>Number:Power</item-type>
+		<label>Power</label>
+		<description>Power consumption/production</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f %unit%"></state>
+	</channel-type>
+	<channel-type id="voltageType">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Voltage</label>
+		<description>Voltage on the given phase</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f %unit%"></state>
+	</channel-type>
+	<channel-type id="currentType">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Current</label>
+		<description>Current on the given phase</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f %unit%"></state>
+	</channel-type>
+	<channel-type id="co2Type">
+		<item-type>Number:Mass</item-type>
+		<label>Mass</label>
+		<description>Current mass</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>CO2</tag>
+		</tags>
+		<state readOnly="true" pattern="%.2f %unit%"></state>
+	</channel-type>
+</thing:thing-descriptions>

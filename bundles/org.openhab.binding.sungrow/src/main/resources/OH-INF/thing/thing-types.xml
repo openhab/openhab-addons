@@ -63,22 +63,29 @@
 		<label>Sungrow Plant</label>
 		<description>Sungrow Plant as defined in iSolarCloud</description>
 
-		<channels>
-			<channel id="channel1" typeId="sample-channel"/>
-		</channels>
+		<channel-groups>
+			<channel-group id="plant" typeId="plant"/>
+		</channel-groups>
 
-		<config-description>
-			<parameter name="plantId" type="text" required="true">
-				<label>Plant ID</label>
-				<description>Plant ID</description>
-			</parameter>
-		</config-description>
+		<properties>
+			<property name="vendor">Sungrow</property>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 	</thing-type>
 
+	<!--
+		<thing-type id="sungrow-device">
+		<supported-bridge-type-refs>
+		<bridge-type-ref id="sungrow-bridge"/>
+		</supported-bridge-type-refs>
 
-	<channel-type id="sample-channel">
-		<item-type>Number:Temperature</item-type>
-		<label>Example Temperature</label><!-- Use uppercase words, except prepositions. 2-3 words, max 25 chars -->
-		<description>Sample channel for Sungrow Binding</description>
-	</channel-type>
+		<label>Sungrow Device</label>
+		<description>Device in a sungrow installation</description>
+
+		<properties>
+		<property name="vendor">Sungrow</property>
+		<property name="thingTypeVersion">1</property>
+		</properties>
+		</thing-type>
+	-->
 </thing:thing-descriptions>

@@ -14,7 +14,7 @@ package org.openhab.binding.sungrow.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
-import de.afrouper.server.sungrow.api.SungrowClientFactory;
+import de.afrouper.server.sungrow.api.SungrowClientBuilder;
 
 /**
  * The {@link SungrowConfiguration} class contains fields mapping thing configuration parameters.
@@ -26,7 +26,7 @@ public class SungrowConfiguration {
 
     private String appKey = "";
 
-    private String appSecret = "";
+    private String secretKey = "";
 
     private String username = "";
 
@@ -34,7 +34,7 @@ public class SungrowConfiguration {
 
     private Integer interval = Integer.valueOf(60);
 
-    private SungrowClientFactory.Region region = SungrowClientFactory.Region.EUROPE;
+    private SungrowClientBuilder.Region region = SungrowClientBuilder.Region.EUROPE;
 
     private String hostname = "";
 
@@ -42,8 +42,8 @@ public class SungrowConfiguration {
         return appKey;
     }
 
-    public String getAppSecret() {
-        return appSecret;
+    public String getSecretKey() {
+        return secretKey;
     }
 
     public String getUsername() {
@@ -58,7 +58,7 @@ public class SungrowConfiguration {
         return interval;
     }
 
-    public SungrowClientFactory.Region getRegion() {
+    public SungrowClientBuilder.Region getRegion() {
         return region;
     }
 
@@ -67,13 +67,13 @@ public class SungrowConfiguration {
     }
 
     public boolean isValid() {
-        return appKey != null && appSecret != null && username != null && password != null && interval != null
+        return appKey != null && secretKey != null && username != null && password != null && interval != null
                 && region != null;
     }
 
     @Override
     public String toString() {
-        return "SungrowConfiguration{" + "appKey='" + logFormat(appKey) + '\'' + ", appSecret='" + logFormat(appSecret)
+        return "SungrowConfiguration{" + "appKey='" + logFormat(appKey) + '\'' + ", appSecret='" + logFormat(secretKey)
                 + '\'' + ", username='" + username + '\'' + ", password='" + logFormat(password) + '\'' + ", interval="
                 + interval + ", region=" + region + ", hostname='" + hostname + '\'' + '}';
     }

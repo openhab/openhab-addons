@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.sungrow.internal.impl;
 
-import static org.openhab.binding.sungrow.internal.SungrowBindingConstants.CHANNEL_1;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -28,11 +26,11 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.BridgeHandler;
 import org.openhab.core.types.Command;
-import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.afrouper.server.sungrow.api.dto.*;
+import de.afrouper.server.sungrow.api.dto.v1.DevicePointList;
 
 /**
  * The {@link SungrowDeviceHandler} is responsible for handling commands, which are
@@ -44,7 +42,7 @@ public class SungrowDeviceHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(SungrowDeviceHandler.class);
 
-    private volatile DeviceConfiguration deviceConfiguration = new DeviceConfiguration();
+    private Device device;
 
     private SungrowBridgeHandler sungrowBridgeHandler;
 
@@ -57,27 +55,10 @@ public class SungrowDeviceHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (CHANNEL_1.equals(channelUID.getId())) {
-            if (command instanceof RefreshType) {
-                // TODO: handle data refresh
-            }
-
-            // TODO: handle command
-
-            // Note: if communication with thing fails for some reason,
-            // indicate that by setting the status with detail information:
-            // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-            // "Could not control device at IP address x.x.x.x");
-        }
     }
 
     @Override
     public void initialize() {
-        deviceConfiguration = getConfigAs(DeviceConfiguration.class);
-        if (!deviceConfiguration.isValid()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Invalid configuration.");
-            return;
-        }
         sungrowBridgeHandler = getSungrowBridgeHandler();
         if (sungrowBridgeHandler != null) {
             Integer interval = sungrowBridgeHandler.getConfiguration().getInterval();
@@ -86,10 +67,10 @@ public class SungrowDeviceHandler extends BaseThingHandler {
         } else {
             updateStatus(ThingStatus.UNINITIALIZED, ThingStatusDetail.BRIDGE_UNINITIALIZED);
         }
+        device = sungrowBridgeHandler.getDevice(getThing().getUID());
     }
 
     private void readPoints() {
-        Device device = deviceConfiguration.getDevice();
         openPointInfo = getSungrowBridgeHandler().getSungrowClient().getOpenPointInfo(device.deviceType(),
                 device.deviceModelId());
         devicePointIds = openPointInfo.devicePointInfoList().stream().filter(Objects::nonNull)
@@ -98,7 +79,6 @@ public class SungrowDeviceHandler extends BaseThingHandler {
 
     private void updateDevice() {
         try {
-            Device device = deviceConfiguration.getDevice();
             DevicePointList devicePointList = getSungrowBridgeHandler().getSungrowClient().getDeviceRealTimeData(
                     device.deviceType(), Collections.singletonList(device.plantDeviceId()), devicePointIds);
             devicePointList.devicePointList().stream().map(DevicePoint::pointIds).filter(Objects::nonNull)

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="tibber"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<channel-group-type id="plant">
+		<label>Plant</label>
+		<description>Plant information</description>
+		<channels>
+			<channel id="name" typeId="stringType">
+				<label>Plant Name</label>
+				<description>Plant Name</description>
+			</channel>
+			<channel id="type" typeId="stringType">
+				<label>Plant Type</label>
+				<description>Plant Type</description>
+			</channel>
+			<channel id="connect-type" typeId="stringType">
+				<label>Connect Type</label>
+				<description>Connect Type</description>
+			</channel>
+			<channel id="total-energy" typeId="energyType">
+				<label>Total energy</label>
+				<description>Total energy</description>
+			</channel>
+			<channel id="today-energy" typeId="energyType">
+				<label>Today energy</label>
+				<description>Today energy</description>
+			</channel>
+			<channel id="current-power" typeId="powerType">
+				<label>Current Power</label>
+				<description>Current Power</description>
+			</channel>
+			<channel id="total-co2-reduce" typeId="co2Type">
+				<label>Total co2 reduce</label>
+				<description>Total co2 reduce</description>
+			</channel>
+			<channel id="today-co2-reduce" typeId="co2Type">
+				<label>Today co2 reduce</label>
+				<description>Today co2 reduce</description>
+			</channel>
+			<channel id="total-income" typeId="moneyType">
+				<label>Total income</label>
+				<description>Total income</description>
+			</channel>
+			<channel id="today-income" typeId="moneyType">
+				<label>Today income</label>
+				<description>Today income</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+</thing:thing-descriptions>

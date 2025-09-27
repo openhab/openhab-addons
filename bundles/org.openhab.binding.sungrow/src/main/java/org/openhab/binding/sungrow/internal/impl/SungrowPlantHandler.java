@@ -12,10 +12,11 @@
  */
 package org.openhab.binding.sungrow.internal.impl;
 
-import static org.openhab.binding.sungrow.internal.SungrowBindingConstants.CHANNEL_1;
-
 import java.util.concurrent.TimeUnit;
 
+import org.openhab.binding.sungrow.internal.SungrowBindingConstants;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -23,12 +24,13 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.BridgeHandler;
 import org.openhab.core.types.Command;
-import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.afrouper.server.sungrow.api.dto.BasicPlantInfo;
+import de.afrouper.server.sungrow.api.dto.Plant;
 import de.afrouper.server.sungrow.api.dto.SungrowApiException;
+import de.afrouper.server.sungrow.api.dto.UnitValuePair;
 
 /**
  * The {@link SungrowPlantHandler} is responsible for handling commands, which are
@@ -40,7 +42,7 @@ public class SungrowPlantHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(SungrowPlantHandler.class);
 
-    private volatile PlantConfiguration plantConfiguration = new PlantConfiguration();
+    private Plant plant;
 
     private SungrowBridgeHandler sungrowBridgeHandler;
 
@@ -50,24 +52,15 @@ public class SungrowPlantHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (CHANNEL_1.equals(channelUID.getId())) {
-            if (command instanceof RefreshType) {
-                // TODO: handle data refresh
-            }
-
-        }
     }
 
     @Override
     public void initialize() {
-        plantConfiguration = getConfigAs(PlantConfiguration.class);
-        if (!plantConfiguration.isValid()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Invalid configuration.");
-            return;
-        }
         sungrowBridgeHandler = getSungrowBridgeHandler();
+        plant = sungrowBridgeHandler.getPlant(getThing().getUID());
 
         if (sungrowBridgeHandler != null) {
+            scheduler.execute(this::initPlant);
             Integer interval = sungrowBridgeHandler.getConfiguration().getInterval();
             scheduler.scheduleWithFixedDelay(this::updatePlant, interval, interval, TimeUnit.SECONDS);
             updateStatus(ThingStatus.ONLINE);
@@ -76,10 +69,22 @@ public class SungrowPlantHandler extends BaseThingHandler {
         }
     }
 
+    private void initPlant() {
+        updateStringChannel("name", plant.plantName());
+        updateStringChannel("type", plant.plantType().name());
+        updateStringChannel("connect-type", plant.connectType().name());
+        updateQuantityChannel("total-energy", format(plant.totalEnergy()));
+        updateQuantityChannel("today-energy", format(plant.todayEnergy()));
+        updateQuantityChannel("current-power", format(plant.currentPower()));
+        updateQuantityChannel("total-co2-reduce", format(plant.co2ReduceTotal()));
+        updateQuantityChannel("today-co2-reduce", format(plant.co2Reduce()));
+        updateQuantityChannel("total-income", format(plant.totalIncome()));
+        updateQuantityChannel("today-income", format(plant.todayIncome()));
+    }
+
     private void updatePlant() {
         try {
-            BasicPlantInfo basicPlantInfo = sungrowBridgeHandler.getSungrowClient()
-                    .getBasicPlantInfo(plantConfiguration.getPlant().plantId());
+            BasicPlantInfo basicPlantInfo = sungrowBridgeHandler.getSungrowClient().getBasicPlantInfo(plant.plantId());
 
             // ToDo Update channel
 
@@ -89,6 +94,21 @@ public class SungrowPlantHandler extends BaseThingHandler {
         }
     }
 
+    private void updateQuantityChannel(String channelId, String value) {
+        updateState(new ChannelUID(thing.getUID(), SungrowBindingConstants.CHANNEL_GROUP_PLANT, channelId),
+                QuantityType.valueOf(value));
+    }
+
+    private void updateStringChannel(String channelId, String value) {
+        updateState(new ChannelUID(thing.getUID(), SungrowBindingConstants.CHANNEL_GROUP_PLANT, channelId),
+                StringType.valueOf(value));
+    }
+
+    private void updateNumberChannel(String channelId, String value) {
+        updateState(new ChannelUID(thing.getUID(), SungrowBindingConstants.CHANNEL_GROUP_PLANT, channelId),
+                QuantityType.valueOf(value));
+    }
+
     private SungrowBridgeHandler getSungrowBridgeHandler() {
         BridgeHandler bridgeHandler = getBridge().getHandler();
         if (bridgeHandler instanceof SungrowBridgeHandler) {
@@ -96,6 +116,14 @@ public class SungrowPlantHandler extends BaseThingHandler {
         } else {
             logger.error("Sungrow Bridge not initialized");
             return null;
+        }
+    }
+
+    private String format(UnitValuePair pair) {
+        if (pair == null) {
+            return null;
+        } else {
+            return pair.value() + " " + pair.unit();
         }
     }
 }

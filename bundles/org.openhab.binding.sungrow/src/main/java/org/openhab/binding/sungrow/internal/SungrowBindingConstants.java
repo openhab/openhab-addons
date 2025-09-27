@@ -30,8 +30,7 @@ public class SungrowBindingConstants {
     public static final ThingTypeUID THING_TYPE_PLANT = new ThingTypeUID(BINDING_ID, "sungrow-plant");
     public static final ThingTypeUID THING_TYPE_DEVICE = new ThingTypeUID(BINDING_ID, "sungrow-device");
 
-    // List of all Channel ids
-    public static final String CHANNEL_1 = "channel1";
+    public static final String CHANNEL_GROUP_PLANT = "plant";
 
     public static final int TIMEOUT = 30;
 }

@@ -21,7 +21,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.sungrow.internal.impl.SungrowBridgeHandler;
 import org.openhab.binding.sungrow.internal.impl.SungrowDeviceHandler;
 import org.openhab.binding.sungrow.internal.impl.SungrowPlantHandler;
-import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -30,7 +29,6 @@ import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
 
 /**
  * The {@link SungrowHandlerFactory} is responsible for creating things and thing
@@ -43,11 +41,9 @@ import org.osgi.service.component.annotations.Reference;
 public class SungrowHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> THING_IDS = Set.of(THING_TYPE_BRIDGE, THING_TYPE_PLANT);
-    private final HttpClientFactory httpFactory;
 
     @Activate
-    public SungrowHandlerFactory(final @Reference HttpClientFactory httpFactory) {
-        this.httpFactory = httpFactory;
+    public SungrowHandlerFactory() {
     }
 
     @Override
@@ -62,7 +58,7 @@ public class SungrowHandlerFactory extends BaseThingHandlerFactory {
         if (THING_TYPE_PLANT.equals(thingTypeUID)) {
             return new SungrowPlantHandler(thing);
         } else if (THING_TYPE_BRIDGE.equals(thingTypeUID)) {
-            return new SungrowBridgeHandler((Bridge) thing, httpFactory.getCommonHttpClient());
+            return new SungrowBridgeHandler((Bridge) thing);
         } else if (THING_TYPE_DEVICE.equals(thingTypeUID)) {
             return new SungrowDeviceHandler(thing);
         } else {
