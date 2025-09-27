@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="modbus"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="boiler">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="tcp"/>
+		</supported-bridge-type-refs>
+
+		<label>Boiler</label>
+		<description>Lambda Boiler connected through modbus</description>
+
+		<channel-groups>
+			<channel-group id="boiler-group" typeId="boiler"/>
+		</channel-groups>
+
+		<config-description>
+			<parameter name="refresh" type="integer" min="1" max="3600">
+				<label>Refresh Interval</label>
+				<description>Poll interval in seconds. Increase this if you encounter connection errors.</description>
+				<default>30</default>
+			</parameter>
+			<parameter name="maxTries" type="integer" min="1" max="10">
+				<label>Maximum Tries</label>
+				<description>Number of retries before giving up reading from this thing.</description>
+				<default>3</default>
+			</parameter>
+			<parameter name="subindex" type="integer" min="0" max="4" required="true">
+				<label>Subindex</label>
+				<description>Subindex for multiple boiler components</description>
+				<default>0</default>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<channel-group-type id="boiler">
+		<label>Boiler</label>
+		<channels>
+			<channel id="boiler-error-number" typeId="boiler-error-number-channel"/>
+			<channel id="boiler-operating-state" typeId="boiler-operating-state-channel"/>
+			<channel id="boiler-actual-high-temperature" typeId="boiler-actual-high-temperature-channel"/>
+			<channel id="boiler-actual-low-temperature" typeId="boiler-actual-low-temperature-channel"/>
+			<channel id="maximum-boiler-temperature" typeId="maximum-boiler-temperature-channel"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="boiler-error-number-channel">
+		<item-type>Number</item-type>
+		<label>Error Number</label>
+		<state readOnly="true">
+			<options>
+				<option value="0">No Error</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="boiler-operating-state-channel">
+		<item-type>Number</item-type>
+		<label>Operating State</label>
+		<state readOnly="true">
+			<options>
+				<option value="0">STBY</option>
+				<option value="1">DHW</option>
+				<option value="2">LEGIO</option>
+				<option value="3">SUMMER</option>
+				<option value="4">FROST</option>
+				<option value="5">HOLIDAY</option>
+				<option value="6">PRIO-STOP</option>
+				<option value="7">ERROR</option>
+				<option value="8">OFF</option>
+				<option value="9">PROMPT-DHW</option>
+				<option value="10">TRAILING-STOP</option>
+				<option value="11">TEMP-LOCK</option>
+				<option value="12">STBY-FROST</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="boiler-actual-high-temperature-channel">
+		<item-type>Number:Temperature</item-type>
+		<label>Boiler Actual High Temperature</label>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="boiler-actual-low-temperature-channel">
+		<item-type>Number:Temperature</item-type>
+		<label>Boiler Actual Low Temperature</label>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="boiler-actual-circulation-temperature-channel">
+		<item-type>Number:Temperature</item-type>
+		<label>Boiler Actual Circulation Temperature</label>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="boiler-actual-circulation-pump-state-channel">
+		<item-type>Number</item-type>
+		<label>Boiler Actual Circulation Pump State</label>
+		<state readOnly="true">
+			<options>
+				<option value="0">OFF</option>
+				<option value="1">ON</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="maximum-boiler-temperature-channel">
+		<item-type>Number:Temperature</item-type>
+		<label>Max. Boiler Temperature</label>
+		<state readOnly="false" pattern="%.1f %unit%"/>
+	</channel-type>
+
+</thing:thing-descriptions>
