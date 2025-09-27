@@ -67,6 +67,11 @@ public class FtpUploadHandler extends BaseThingHandler implements FtpServerEvent
         configuration = getConfigAs(FtpUploadConfig.class);
         logger.debug("Using configuration: {}", configuration.toString());
 
+        if (configuration.userName.isBlank() || configuration.password.isBlank()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/configuration-user-password-error");
+            return;
+        }
         ftpServer.addEventListener(this);
         try {
             ftpServer.addAuthenticationCredentials(configuration.userName, configuration.password);
