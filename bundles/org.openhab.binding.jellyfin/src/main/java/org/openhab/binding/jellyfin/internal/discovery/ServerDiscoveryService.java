@@ -45,13 +45,17 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 @Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.jellyfin")
 public class ServerDiscoveryService extends AbstractDiscoveryService {
+    private static final int DEFAULT_SCAN_TIMEOUT_SECONDS = 60; // Timeout for discovery scan in seconds
+    private static final boolean DEFAULT_BACKGROUND_SCAN = false; // Disable background scan
+
     private final Logger logger = LoggerFactory.getLogger(ServerDiscoveryService.class);
     private final ConfigurationAdmin configurationService;
 
     @Activate
     public ServerDiscoveryService(final @Reference ConfigurationAdmin configurationService)
             throws IllegalArgumentException {
-        super(Set.of(Constants.THING_TYPE_SERVER), 60, false);
+        // Use named constants for scan timeout and background scan
+        super(Set.of(Constants.THING_TYPE_SERVER), DEFAULT_SCAN_TIMEOUT_SECONDS, DEFAULT_BACKGROUND_SCAN);
         this.configurationService = configurationService;
     }
 
@@ -63,41 +67,51 @@ public class ServerDiscoveryService extends AbstractDiscoveryService {
         List<ServerDiscoveryResult> servers = discoverer.discoverServers();
 
         if (!servers.isEmpty()) {
-            for (ServerDiscoveryResult server : servers) {
+            servers.parallelStream().forEach(server -> {
                 logger.debug("Server {} @ {}", server.getName(), server.getAddress());
 
                 var uid = new ThingUID(Constants.THING_TYPE_SERVER, server.getId());
-                var properties = this.getProperties(server);
-                var resultBuilder = DiscoveryResultBuilder.create(uid).withProperties(properties)
-                        .withRepresentationProperty(Thing.PROPERTY_SERIAL_NUMBER).withLabel(server.getName())
-                        .withTTL(Constants.DISCOVERY_RESULT_TTL_SEC);
+                try {
+                    var properties = this.getProperties(server);
+                    var resultBuilder = DiscoveryResultBuilder.create(uid).withProperties(properties)
+                            .withRepresentationProperty(Thing.PROPERTY_SERIAL_NUMBER).withLabel(server.getName())
+                            .withTTL(Constants.DISCOVERY_RESULT_TTL_SEC);
 
-                var result = resultBuilder.build();
+                    var result = resultBuilder.build();
 
-                this.thingDiscovered(result);
-            }
+                    this.thingDiscovered(result);
+                } catch (Exception e) {
+                    logger.warn("Failed to retrieve system info from Jellyfin server at {}: {}", server.getAddress(),
+                            e.getMessage());
+                    logger.info("Discovered server {} @ {} will be ignored.", server.getName(), server.getAddress());
+                }
+            });
         }
     }
 
-    private Map<String, Object> getProperties(ServerDiscoveryResult server) {
+    /**
+     * Get properties of the Jellyfin server.
+     * 
+     * @param server The discovered server
+     * @return Map of server properties
+     * @throws ApiException If the API call to get additional server information fails
+     */
+    private Map<String, Object> getProperties(ServerDiscoveryResult server) throws ApiException {
         Map<String, Object> properties = new HashMap<>();
 
-        try {
-            var uri = server.getAddress();
-            var client = new ApiClient();
-            client.updateBaseUri(uri);
+        var uri = server.getAddress();
+        var client = new ApiClient();
+        client.updateBaseUri(uri);
 
-            var systemApi = new SystemApi(client);
-            var systemInformation = systemApi.getPublicSystemInfo();
+        var systemApi = new SystemApi(client);
+        var systemInformation = systemApi.getPublicSystemInfo();
 
-            properties.put(Thing.PROPERTY_SERIAL_NUMBER, systemInformation.getId());
-            properties.put(Thing.PROPERTY_FIRMWARE_VERSION, systemInformation.getVersion());
-            properties.put(Thing.PROPERTY_VENDOR, "https://jellyfin.org");
+        properties.put(Thing.PROPERTY_SERIAL_NUMBER, systemInformation.getId());
+        properties.put(Thing.PROPERTY_FIRMWARE_VERSION, systemInformation.getVersion());
+        properties.put(Thing.PROPERTY_VENDOR, "https://jellyfin.org");
 
-            properties.put(Constants.ServerProperties.SERVER_URI, uri);
-        } catch (ApiException e) {
-            logger.warn("Unable to get device properties: {}", e);
-        }
+        properties.put(Constants.ServerProperties.SERVER_URI, uri);
+
         return properties;
     }
 }
