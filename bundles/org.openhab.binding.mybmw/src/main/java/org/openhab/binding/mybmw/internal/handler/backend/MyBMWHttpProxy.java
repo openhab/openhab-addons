@@ -21,6 +21,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -392,8 +393,8 @@ public class MyBMWHttpProxy implements MyBMWProxy {
         AccessTokenResponse tokenResponse = myBMWTokenController.getToken();
         String bearerToken = tokenResponse.getAccessToken();
         bearerToken = (bearerToken == null) || bearerToken.isEmpty() ? Constants.EMPTY
-                : new StringBuilder(tokenResponse.getTokenType()).append(Constants.SPACE).append(bearerToken)
-                        .toString();
+                : new StringBuilder(Objects.requireNonNullElse(tokenResponse.getTokenType(), ""))
+                        .append(Constants.SPACE).append(bearerToken).toString();
         if (tokenResponse.isExpired(Instant.now(), 1)) {
             logger.warn("The login failed, no token is available");
             throw new NetworkException("The login failed, no token is available");

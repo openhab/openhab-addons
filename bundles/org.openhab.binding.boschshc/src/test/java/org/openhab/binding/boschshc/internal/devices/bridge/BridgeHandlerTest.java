@@ -122,7 +122,7 @@ class BridgeHandlerTest {
         fixture.setCallback(thingHandlerCallback);
 
         bridgeConfiguration = new Configuration();
-        Map<@Nullable String, @Nullable Object> properties = new HashMap<>();
+        Map<String, Object> properties = new HashMap<>();
         properties.put("ipAddress", "localhost");
         properties.put("password", "test");
         bridgeConfiguration.setProperties(properties);

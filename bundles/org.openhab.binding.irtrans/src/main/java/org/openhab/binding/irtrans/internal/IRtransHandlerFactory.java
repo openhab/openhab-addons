@@ -79,6 +79,9 @@ public class IRtransHandlerFactory extends BaseThingHandlerFactory {
             Configuration configuration) {
         if (thingUID == null) {
             String ipAddress = (String) configuration.get(EthernetBridgeHandler.IP_ADDRESS);
+            if (ipAddress == null || ipAddress.isEmpty()) {
+                throw new IllegalArgumentException("IP address must be specified for Ethernet bridge.");
+            }
             return new ThingUID(thingTypeUID, ipAddress);
         }
         return thingUID;

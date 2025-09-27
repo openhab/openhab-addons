@@ -135,10 +135,14 @@ public class WolfSmartsetAccountBridgeHandler extends BaseBridgeHandler {
     @Override
     public void childHandlerInitialized(ThingHandler systemHandler, Thing systemThing) {
         String systemId = (String) systemThing.getConfiguration().get(CONFIG_SYSTEM_ID);
-        systemHandlers.put(systemId, (WolfSmartsetSystemBridgeHandler) systemHandler);
-        systemIds.add(systemId);
-        scheduleRefreshJob();
-        logger.debug("AccountBridge: Adding system handler for {} with id {}", systemThing.getUID(), systemId);
+        if (systemId != null) {
+            systemHandlers.put(systemId, (WolfSmartsetSystemBridgeHandler) systemHandler);
+            systemIds.add(systemId);
+            scheduleRefreshJob();
+            logger.debug("AccountBridge: Adding system handler for {} with id {}", systemThing.getUID(), systemId);
+        } else {
+            logger.warn("AccountBridge: SystemID not configured");
+        }
     }
 
     @Override

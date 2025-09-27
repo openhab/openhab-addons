@@ -163,11 +163,15 @@ public class SonosHandlerFactory extends BaseThingHandlerFactory {
         }
     }
 
-    private ThingUID getPlayerUID(ThingTypeUID thingTypeUID, @Nullable ThingUID thingUID, Configuration configuration) {
+    private ThingUID getPlayerUID(ThingTypeUID thingTypeUID, @Nullable ThingUID thingUID, Configuration configuration)
+            throws IllegalArgumentException {
         if (thingUID != null) {
             return thingUID;
         } else {
             String udn = (String) configuration.get(UDN);
+            if (udn == null || udn.isEmpty()) {
+                throw new IllegalArgumentException("The UDN is not set or empty in the configuration");
+            }
             return new ThingUID(thingTypeUID, udn);
         }
     }

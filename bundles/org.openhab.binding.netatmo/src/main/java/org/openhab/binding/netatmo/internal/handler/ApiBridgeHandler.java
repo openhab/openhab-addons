@@ -27,6 +27,7 @@ import java.util.Collection;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
@@ -209,7 +210,8 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
             return false;
         }
 
-        connectApi.setAccessToken(accessTokenResponse.getAccessToken(), accessTokenResponse.getScope());
+        connectApi.setAccessToken(accessTokenResponse.getAccessToken(),
+                Objects.requireNonNullElse(accessTokenResponse.getScope(), ""));
         return true;
     }
 
@@ -448,7 +450,8 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
     }
 
     public String getId() {
-        return (String) getThing().getConfiguration().get(ApiHandlerConfiguration.CLIENT_ID);
+        return Objects.requireNonNullElse((String) getThing().getConfiguration().get(ApiHandlerConfiguration.CLIENT_ID),
+                "");
     }
 
     public UriBuilder formatAuthorizationUrl() {

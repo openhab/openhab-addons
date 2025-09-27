@@ -77,7 +77,7 @@ public class Websocket extends RestApi {
     private final AccountHandler accountHandler;
     private final Map<String, Instant> pingPongMap = new HashMap<>();
     private final ScheduledExecutorService scheduler = ThreadPoolManager
-            .getPoolBasedSequentialScheduledExecutorService("mercedesme-websocket", null);
+            .getPoolBasedSequentialScheduledExecutorService("mercedesme-websocket", "websocket");
 
     private @Nullable ScheduledFuture<?> refresher;
     private @Nullable WebSocketClient webSocketClient;

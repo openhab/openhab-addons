@@ -169,6 +169,10 @@ public class ExecHandler extends BaseThingHandler {
 
     public void execute() {
         String commandLine = (String) getConfig().get(COMMAND);
+        if (commandLine == null || commandLine.isEmpty()) {
+            logger.warn("No command is configured, '{}'", commandLine);
+            return;
+        }
         if (!execWhitelistWatchService.isWhitelisted(commandLine)) {
             logger.warn("Tried to execute '{}', but it is not contained in whitelist.", commandLine);
             return;
