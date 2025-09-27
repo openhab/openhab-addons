@@ -91,6 +91,7 @@ public class LinkyHandler extends BaseThingHandler {
 
     private @NonNullByDefault({}) String prmId;
     private @NonNullByDefault({}) String userId;
+    private @NonNullByDefault({}) String segment;
 
     private enum Target {
         FIRST,
@@ -213,7 +214,8 @@ public class LinkyHandler extends BaseThingHandler {
                     PRM_ID, prmInfo.idPrm));
 
             prmId = thing.getProperties().get(PRM_ID);
-            userId = thing.getProperties().get(USER_ID);
+            userId = api.getIdPersonne();
+            segment = details.segment;
         }
     }
 
@@ -395,7 +397,7 @@ public class LinkyHandler extends BaseThingHandler {
         EnedisHttpApi api = this.enedisApi;
         if (api != null) {
             try {
-                Consumption consumption = api.getEnergyData(userId, prmId, from, to);
+                Consumption consumption = api.getEnergyData(userId, prmId, segment, from, to);
                 updateStatus(ThingStatus.ONLINE);
                 return consumption;
             } catch (LinkyException e) {
@@ -412,7 +414,7 @@ public class LinkyHandler extends BaseThingHandler {
         EnedisHttpApi api = this.enedisApi;
         if (api != null) {
             try {
-                Consumption consumption = api.getPowerData(userId, prmId, from, to);
+                Consumption consumption = api.getPowerData(userId, prmId, segment, from, to);
                 updateStatus(ThingStatus.ONLINE);
                 return consumption;
             } catch (LinkyException e) {
