@@ -14,6 +14,7 @@ package org.openhab.binding.mqtt.homeassistant.internal;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -109,9 +110,9 @@ public class HaID {
      * @return newly created HaID
      */
     public static HaID fromConfig(String baseTopic, Configuration config) {
-        String component = (String) config.get("component");
-        String nodeID = (String) config.getProperties().getOrDefault("nodeid", "");
-        String objectID = (String) config.get("objectid");
+        String component = Objects.requireNonNull((String) config.get("component"));
+        String nodeID = Objects.requireNonNull((String) config.getProperties().getOrDefault("nodeid", ""));
+        String objectID = Objects.requireNonNull((String) config.get("objectid"));
         return new HaID(baseTopic, objectID, nodeID, component);
     }
 
