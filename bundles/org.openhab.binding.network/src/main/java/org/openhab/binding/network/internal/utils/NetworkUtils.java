@@ -12,9 +12,7 @@
  */
 package org.openhab.binding.network.internal.utils;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.ConnectException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -39,6 +37,10 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.FutureTask;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -380,12 +382,35 @@ public class NetworkUtils {
         }
 
         // Consume the output while the process runs
-        List<String> output = new ArrayList<>();
-        try (InputStreamReader isr = new InputStreamReader(proc.getInputStream(), StandardCharsets.UTF_8);
-                BufferedReader br = new BufferedReader(isr)) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                output.add(line);
+        FutureTask<List<String>> consumer = OutputConsumptionUtil.consumeText(proc.getInputStream(),
+                StandardCharsets.UTF_8);
+
+        if (!proc.waitFor(timeout.toMillis() * 10L, TimeUnit.MILLISECONDS)) {
+            logger.warn("Timed out while waiting for the ping process to execute");
+            proc.destroy();
+            return new PingResult(false, Duration.between(execStartTime, Instant.now()));
+        }
+        int result = proc.exitValue();
+        Instant execStopTime = Instant.now();
+        List<String> output;
+        try {
+            if (Thread.currentThread().isInterrupted()) {
+                consumer.cancel(true);
+                output = List.of();
+            }
+            output = consumer.get(5, TimeUnit.SECONDS);
+        } catch (ExecutionException e) {
+            output = List.of();
+            logger.warn("An exception occurred while consuming ping process output: {}", e.getMessage());
+            logger.trace("", e);
+        } catch (TimeoutException e) {
+            // This should never happen, since the output should be available as soon as the process has finished
+            output = List.of();
+            logger.warn("Timed out while retrieving ping process output");
+            logger.trace("", e);
+        }
+        if (logger.isTraceEnabled()) {
+            for (String line : output) {
                 logger.trace("Network [ping output]: '{}'", line);
             }
         }
@@ -395,9 +420,6 @@ public class NetworkUtils {
         // not ready.
         // Exception: return code is also 0 in Windows for all requests on the local subnet.
         // see https://superuser.com/questions/403905/ping-from-windows-7-get-no-reply-but-sets-errorlevel-to-0
-
-        int result = proc.waitFor();
-        Instant execStopTime = Instant.now();
         if (result != 0) {
             return new PingResult(false, Duration.between(execStartTime, execStopTime));
         }
@@ -474,20 +496,41 @@ public class NetworkUtils {
         }
 
         // Consume the output while the process runs
-        List<String> output = new ArrayList<>();
-        try (InputStreamReader isr = new InputStreamReader(proc.getInputStream(), StandardCharsets.UTF_8);
-                BufferedReader br = new BufferedReader(isr)) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                output.add(line);
+        FutureTask<List<String>> consumer = OutputConsumptionUtil.consumeText(proc.getInputStream(),
+                StandardCharsets.UTF_8);
+
+        if (!proc.waitFor(timeout.toMillis() * 10L, TimeUnit.MILLISECONDS)) {
+            logger.warn("Timed out while waiting for the arping process to execute");
+            proc.destroy();
+            return new PingResult(false, Duration.between(execStartTime, Instant.now()));
+        }
+        int result = proc.exitValue();
+        Instant execStopTime = Instant.now();
+        List<String> output;
+        try {
+            if (Thread.currentThread().isInterrupted()) {
+                consumer.cancel(true);
+                output = List.of();
+            }
+            output = consumer.get(5, TimeUnit.SECONDS);
+        } catch (ExecutionException e) {
+            output = List.of();
+            logger.warn("An exception occurred while consuming arping process output: {}", e.getMessage());
+            logger.trace("", e);
+        } catch (TimeoutException e) {
+            // This should never happen, since the output should be available as soon as the process has finished
+            output = List.of();
+            logger.warn("Timed out while retrieving arping process output");
+            logger.trace("", e);
+        }
+        if (logger.isTraceEnabled()) {
+            for (String line : output) {
                 logger.trace("Network [arping output]: '{}'", line);
             }
         }
 
         // The return code is 0 for a successful ping. 1 if device didn't respond and 2 if there is another error like
         // network interface not ready.
-        int result = proc.waitFor();
-        Instant execStopTime = Instant.now();
         if (result != 0) {
             return new PingResult(false, Duration.between(execStartTime, execStopTime));
         }
