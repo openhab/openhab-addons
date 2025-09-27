@@ -93,7 +93,7 @@ public class EnedisHttpApi {
     }
 
     public void initialize() throws LinkyException {
-        logger.info("Starting login process 2 for user: {}", config.username);
+        logger.debug("Starting login process for user: {}", config.username);
 
         try {
             ContentResponse result = null;
