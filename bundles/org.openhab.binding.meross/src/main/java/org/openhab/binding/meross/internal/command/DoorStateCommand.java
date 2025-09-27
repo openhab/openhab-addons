@@ -19,46 +19,45 @@ import org.openhab.binding.meross.internal.api.MerossEnum;
 import org.openhab.binding.meross.internal.dto.MqttMessageBuilder;
 
 /**
- * The {@link TogglexCommand} class is responsible for the concrete implementation of togglex commands which control
- * smart plugs and bulbs
+ * The {@link DoorStateCommand} class is responsible for the concrete implementation of door state commands with garage
+ * doors
  *
- * @author Giovanni Fabiani - Initial contribution
- * @author Mark Herwege - Refactored for extra parameters
+ * @author Mark Herwege - Initial contribution
  */
 @NonNullByDefault
-public class TogglexCommand {
+public class DoorStateCommand {
 
     abstract static class Base implements MerossCommand {
-        protected final int onOffValue;
         protected int deviceChannel;
+        protected final int openValue;
 
-        protected Base(int deviceChannel, int onOffValue) {
+        protected Base(int deviceChannel, int openValue) {
             this.deviceChannel = deviceChannel;
-            this.onOffValue = onOffValue;
+            this.openValue = openValue;
         }
 
         @Override
         public byte[] command(String deviceUUID) {
-            Map<String, Object> payload = Map.of("togglex", Map.of("onoff", onOffValue, "channel", deviceChannel));
-            return MqttMessageBuilder.buildMqttMessage("SET", MerossEnum.Namespace.CONTROL_TOGGLEX.value(), deviceUUID,
-                    payload);
+            Map<String, Object> payload = Map.of("state", Map.of("open", openValue, "channel", deviceChannel));
+            return MqttMessageBuilder.buildMqttMessage("SET", MerossEnum.Namespace.GARAGE_DOOR_STATE.value(),
+                    deviceUUID, payload);
         }
     }
 
     /**
-     * defines command turn on
+     * defines command up
      */
-    public static class TurnOn extends Base {
-        public TurnOn(int deviceChannel) {
+    public static class Up extends Base {
+        public Up(int deviceChannel) {
             super(deviceChannel, 1);
         }
     }
 
     /**
-     * defines command turn off
+     * defines command down
      */
-    public static class TurnOff extends Base {
-        public TurnOff(int deviceChannel) {
+    public static class Down extends Base {
+        public Down(int deviceChannel) {
             super(deviceChannel, 0);
         }
     }
