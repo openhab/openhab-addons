@@ -534,8 +534,8 @@ public class AccessControlCluster extends BaseCluster {
         ADDED(1, "Added"),
         REMOVED(2, "Removed");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private ChangeTypeEnum(Integer value, String label) {
             this.value = value;
@@ -564,8 +564,8 @@ public class AccessControlCluster extends BaseCluster {
         MANAGE(4, "Manage"),
         ADMINISTER(5, "Administer");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private AccessControlEntryPrivilegeEnum(Integer value, String label) {
             this.value = value;
@@ -589,8 +589,8 @@ public class AccessControlCluster extends BaseCluster {
         COMMAND_FORBIDDEN(2, "Command Forbidden"),
         EVENT_FORBIDDEN(3, "Event Forbidden");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private AccessRestrictionTypeEnum(Integer value, String label) {
             this.value = value;
@@ -613,8 +613,8 @@ public class AccessControlCluster extends BaseCluster {
         CASE(2, "Case"),
         GROUP(3, "Group");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private AccessControlEntryAuthModeEnum(Integer value, String label) {
             this.value = value;

@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.RestManager;
 import org.openhab.binding.netatmo.internal.api.dto.Device;
 import org.openhab.binding.netatmo.internal.api.dto.Module;
@@ -33,7 +34,7 @@ import org.openhab.binding.netatmo.internal.handler.CommonInterface;
  */
 @NonNullByDefault
 public abstract class RestCapability<T extends RestManager> extends DeviceCapability {
-    private Optional<T> api = Optional.empty();
+    private @Nullable T api;
     private Class<T> restManagerClass;
 
     RestCapability(CommonInterface handler, Class<T> restManagerClazz) {
@@ -65,12 +66,12 @@ public abstract class RestCapability<T extends RestManager> extends DeviceCapabi
     }
 
     protected Optional<T> getApi() {
-        if (api.isEmpty()) {
+        if (api == null) {
             ApiBridgeHandler bridgeApi = handler.getAccountHandler();
             if (bridgeApi != null) {
-                api = Optional.ofNullable(bridgeApi.getRestManager(restManagerClass));
+                api = bridgeApi.getRestManager(restManagerClass);
             }
         }
-        return api;
+        return Optional.ofNullable(api);
     }
 }

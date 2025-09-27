@@ -27,7 +27,6 @@ import com.google.gson.annotations.SerializedName;
 @NonNullByDefault
 public class GetVolumeCommand extends IotDeviceCommand<Integer> {
     public GetVolumeCommand() {
-        super();
     }
 
     @Override

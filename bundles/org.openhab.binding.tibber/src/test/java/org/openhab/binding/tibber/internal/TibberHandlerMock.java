@@ -31,6 +31,11 @@ import org.osgi.framework.BundleContext;
 @NonNullByDefault
 public class TibberHandlerMock extends TibberHandler {
 
+    public TibberHandlerMock(Thing thing, HttpClient httpClient, CronScheduler cron, BundleContext bundleContext,
+            TimeZoneProvider timeZoneProvider) {
+        super(thing, httpClient, cron, bundleContext, timeZoneProvider);
+    }
+
     public TibberHandlerMock() {
         super(mock(Thing.class), mock(HttpClient.class), mock(CronScheduler.class), mock(BundleContext.class),
                 mock(TimeZoneProvider.class));
@@ -38,5 +43,10 @@ public class TibberHandlerMock extends TibberHandler {
 
     public void setPriceCalculator(PriceCalculator calc) {
         super.calculator = calc;
+    }
+
+    @Override
+    public void managePriceChannels(boolean add) {
+        super.managePriceChannels(add);
     }
 }

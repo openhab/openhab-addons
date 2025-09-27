@@ -25,7 +25,6 @@ public class AuthenticationException extends Exception {
     private static final long serialVersionUID = -7851429815600130535L;
 
     public AuthenticationException() {
-        super();
     }
 
     public AuthenticationException(String message) {

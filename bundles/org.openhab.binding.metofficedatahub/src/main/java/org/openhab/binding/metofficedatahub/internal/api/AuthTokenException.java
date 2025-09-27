@@ -28,7 +28,6 @@ public class AuthTokenException extends I18Exception {
     private static final long serialVersionUID = -7786449325604153947L;
 
     public AuthTokenException() {
-        super();
     }
 
     public AuthTokenException(final String message) {

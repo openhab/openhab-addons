@@ -60,7 +60,6 @@ public class D2_50 extends _VLDMessage {
     protected static final byte THRESHOLD_NOACTION = 127;
 
     public D2_50() {
-        super();
     }
 
     public D2_50(ERP1Message packet) {

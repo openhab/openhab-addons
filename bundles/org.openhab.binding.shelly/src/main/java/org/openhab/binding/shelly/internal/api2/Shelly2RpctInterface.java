@@ -14,7 +14,6 @@ package org.openhab.binding.shelly.internal.api2;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
-import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcNotifyEvent;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcNotifyStatus;
 
 /**
@@ -31,7 +30,7 @@ public interface Shelly2RpctInterface {
 
     void onNotifyStatus(Shelly2RpcNotifyStatus message) throws ShellyApiException;
 
-    void onNotifyEvent(Shelly2RpcNotifyEvent message) throws ShellyApiException;
+    void onNotifyEvent(String json) throws ShellyApiException;
 
     void onClose(int statusCode, String reason);
 

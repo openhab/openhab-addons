@@ -44,7 +44,7 @@ public class FroniusWattpilotHandlerFactory extends BaseThingHandlerFactory {
 
     @Activate
     public FroniusWattpilotHandlerFactory(@Reference final HttpClientFactory httpClientFactory) {
-        this.httpClient = httpClientFactory.createHttpClient("fronius-wattpilot");
+        this.httpClient = httpClientFactory.createHttpClient("froniusWattpilot");
     }
 
     @Override

@@ -99,6 +99,7 @@ public class FroniusBindingConstants {
 
     // List of all Urls
     public static final String INVERTER_REALTIME_DATA_URL = "%SCHEME%://%IP%/solar_api/v1/GetInverterRealtimeData.cgi?Scope=Device&DeviceId=%DEVICEID%&DataCollection=CommonInverterData";
+    public static final String INVERTER_INFO_URL = "%SCHEME%://%IP%/solar_api/v1/GetInverterInfo.cgi";
     public static final String POWERFLOW_REALTIME_DATA_URL = "%SCHEME%://%IP%/solar_api/v1/GetPowerFlowRealtimeData.fcgi";
     public static final String METER_REALTIME_DATA_URL = "%SCHEME%://%IP%/solar_api/v1/GetMeterRealtimeData.cgi?Scope=Device&DeviceId=%DEVICEID%&DataCollection=MeterRealtimeData";
     public static final String OHMPILOT_REALTIME_DATA_URL = "%SCHEME%://%IP%/solar_api/v1/GetOhmPilotRealtimeData.cgi?Scope=Device&DeviceId=%DEVICEID%";
@@ -108,6 +109,10 @@ public class FroniusBindingConstants {
 
     public static String getInverterDataUrl(String scheme, String ip, int deviceId) {
         return parseUrl(INVERTER_REALTIME_DATA_URL, scheme, ip, deviceId);
+    }
+
+    public static String getInverterInfoUrl(String scheme, String ip) {
+        return parseUrl(INVERTER_INFO_URL, scheme, ip);
     }
 
     public static String getPowerFlowDataUrl(String scheme, String ip) {

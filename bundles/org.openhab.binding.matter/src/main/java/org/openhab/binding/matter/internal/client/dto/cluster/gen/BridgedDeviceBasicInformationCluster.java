@@ -355,8 +355,8 @@ public class BridgedDeviceBasicInformationCluster extends BaseCluster {
         RUGGED(4, "Rugged"),
         FABRIC(5, "Fabric");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private ProductFinishEnum(Integer value, String label) {
             this.value = value;
@@ -400,8 +400,8 @@ public class BridgedDeviceBasicInformationCluster extends BaseCluster {
         SILVER(19, "Silver"),
         GOLD(20, "Gold");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private ColorEnum(Integer value, String label) {
             this.value = value;

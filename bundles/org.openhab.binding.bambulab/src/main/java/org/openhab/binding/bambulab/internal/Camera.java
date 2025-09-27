@@ -16,6 +16,7 @@ import static java.lang.Thread.interrupted;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.openhab.binding.bambulab.internal.BambuLabBindingConstants.NO_CAMERA_CERT;
 import static org.openhab.binding.bambulab.internal.BambuLabBindingConstants.PrinterChannel.*;
+import static org.openhab.binding.bambulab.internal.PrinterConfiguration.CLOUD_MODE_HOSTNAME;
 import static org.openhab.binding.bambulab.internal.PrinterConfiguration.Series.X;
 import static org.openhab.core.library.types.OnOffType.*;
 import static org.openhab.core.thing.ThingStatus.*;
@@ -57,8 +58,12 @@ class Camera implements AutoCloseable {
     void handleCommand(OnOffType command) {
         if (this.config.series == X) {
             logger.warn("Bambulab binding does not support camera for X series!");
-            thingHandler.updateState(CHANNEL_CAMERA_RECORD.getName(), OFF);
-            thingHandler.updateState(CHANNEL_CAMERA_IMAGE.getName(), UNDEF);
+            turnOffChannels();
+            return;
+        }
+        if (CLOUD_MODE_HOSTNAME.equalsIgnoreCase(this.config.hostname)) {
+            logger.warn("Bambulab binding does not support camera for cloud mode!");
+            turnOffChannels();
             return;
         }
         close();
@@ -80,8 +85,7 @@ class Camera implements AutoCloseable {
                 this.cameraFuture = thingHandler.getScheduler().submit(() -> job(camera));
             } catch (Exception e) {
                 logger.debug("Cannot connect to camera!", e);
-                thingHandler.updateState(CHANNEL_CAMERA_RECORD.getName(), OFF);
-                thingHandler.updateState(CHANNEL_CAMERA_IMAGE.getName(), UNDEF);
+                turnOffChannels();
                 thingHandler.updateStatus(OFFLINE, COMMUNICATION_ERROR,
                         "@text/printer.handler.init.cannotConnectCamera[\"%s\"]".formatted(e.getLocalizedMessage()));
                 return;
@@ -92,6 +96,11 @@ class Camera implements AutoCloseable {
         }
 
         thingHandler.updateStatus(ONLINE);
+    }
+
+    private void turnOffChannels() {
+        thingHandler.updateState(CHANNEL_CAMERA_RECORD.getName(), OFF);
+        thingHandler.updateState(CHANNEL_CAMERA_IMAGE.getName(), UNDEF);
     }
 
     private void job(TlsCamera camera) {
@@ -109,8 +118,7 @@ class Camera implements AutoCloseable {
             logger.debug("Generic exception occurred", e);
         } finally {
             logger.debug("The camera has no more elements, turning off the image channel");
-            thingHandler.updateState(CHANNEL_CAMERA_RECORD.getName(), OFF);
-            thingHandler.updateState(CHANNEL_CAMERA_IMAGE.getName(), UNDEF);
+            turnOffChannels();
         }
     }
 

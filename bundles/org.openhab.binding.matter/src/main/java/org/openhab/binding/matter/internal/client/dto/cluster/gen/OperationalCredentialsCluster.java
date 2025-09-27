@@ -174,8 +174,8 @@ public class OperationalCredentialsCluster extends BaseCluster {
         DAC_CERTIFICATE(1, "Dac Certificate"),
         PAI_CERTIFICATE(2, "Pai Certificate");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private CertificateChainTypeEnum(Integer value, String label) {
             this.value = value;
@@ -209,8 +209,8 @@ public class OperationalCredentialsCluster extends BaseCluster {
         LABEL_CONFLICT(10, "Label Conflict"),
         INVALID_FABRIC_INDEX(11, "Invalid Fabric Index");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private NodeOperationalCertStatusEnum(Integer value, String label) {
             this.value = value;

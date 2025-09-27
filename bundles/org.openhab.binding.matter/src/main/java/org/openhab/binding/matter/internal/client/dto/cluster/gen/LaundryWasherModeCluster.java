@@ -127,8 +127,8 @@ public class LaundryWasherModeCluster extends BaseCluster {
         GENERIC_FAILURE(2, "Generic Failure"),
         INVALID_IN_MODE(3, "Invalid In Mode");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private ModeChangeStatus(Integer value, String label) {
             this.value = value;
@@ -162,8 +162,8 @@ public class LaundryWasherModeCluster extends BaseCluster {
         HEAVY(16386, "Heavy"),
         WHITES(16387, "Whites");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private ModeTag(Integer value, String label) {
             this.value = value;

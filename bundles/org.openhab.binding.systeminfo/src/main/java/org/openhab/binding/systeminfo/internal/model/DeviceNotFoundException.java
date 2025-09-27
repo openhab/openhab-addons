@@ -32,7 +32,6 @@ public class DeviceNotFoundException extends IOException {
      * as its error detail message.
      */
     public DeviceNotFoundException() {
-        super();
     }
 
     /**

@@ -87,8 +87,8 @@ public class AudioOutputCluster extends BaseCluster {
         INTERNAL(4, "Internal"),
         OTHER(5, "Other");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private OutputTypeEnum(Integer value, String label) {
             this.value = value;

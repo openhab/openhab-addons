@@ -522,8 +522,8 @@
 		<label>Power Priority</label>
 		<state>
 			<options>
-				<option value="prioIsSupply">@text/ecoflow.supply-priority.prio-supply</option>
-				<option value="prioIsStorage">@text/ecoflow.supply-priority.prio-storage</option>
+				<option value="prioIsSupply">Prioritize supply to loads</option>
+				<option value="prioIsStorage">Prioritize charging</option>
 			</options>
 		</state>
 	</channel-type>

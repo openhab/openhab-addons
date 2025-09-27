@@ -36,7 +36,6 @@ import org.openhab.core.types.State;
 public class D2_01_09_Permundo extends D2_01 {
 
     public D2_01_09_Permundo() {
-        super();
     }
 
     public D2_01_09_Permundo(ERP1Message packet) {

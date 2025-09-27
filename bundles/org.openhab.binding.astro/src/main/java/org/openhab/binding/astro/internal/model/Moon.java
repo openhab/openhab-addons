@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.astro.internal.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Holds the calculated moon data.
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class Moon extends RiseSet implements Planet {
     private MoonPhase phase = new MoonPhase();
     private MoonDistance apogee = new MoonDistance();

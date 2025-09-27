@@ -15,19 +15,24 @@ package org.openhab.binding.modbus.stiebeleltron.internal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link StiebelEltronConfiguration} class contains fields mapping
- * thing configuration parameters.
+ * The {@link StiebelEltronConfiguration} class contains basic modbus configuration parameters for Stiebel Eltron Heat
+ * Pump
  *
  * @author Paul Frank - Initial contribution
+ * @author Thomas Burri - Small changes
  */
 @NonNullByDefault
 public class StiebelEltronConfiguration {
-    /**
-     * Refresh interval in seconds
-     */
-    private long refresh;
 
-    private int maxTries = 3;// backwards compatibility and tests
+    /**
+     * Poll interval in seconds. Increase this if you encounter connection errors
+     */
+    private long refresh = 5;
+
+    /**
+     * Number of retries before giving up reading from this thing
+     */
+    private int maxTries = 3;
 
     /**
      * Gets refresh period in milliseconds
@@ -36,10 +41,16 @@ public class StiebelEltronConfiguration {
         return refresh * 1000;
     }
 
+    /**
+     * Gets the maximal retries number
+     */
     public int getMaxTries() {
         return maxTries;
     }
 
+    /**
+     * Sets the maximal retries number
+     */
     public void setMaxTries(int maxTries) {
         this.maxTries = maxTries;
     }

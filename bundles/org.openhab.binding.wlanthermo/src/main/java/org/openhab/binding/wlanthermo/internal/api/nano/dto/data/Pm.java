@@ -68,7 +68,6 @@ public class Pm {
      */
     public Pm(Integer id, Integer channel, Integer pid, Integer value, Double set, String typ, String setColor,
             String valueColor) {
-        super();
         this.id = id;
         this.channel = channel;
         this.pid = pid;

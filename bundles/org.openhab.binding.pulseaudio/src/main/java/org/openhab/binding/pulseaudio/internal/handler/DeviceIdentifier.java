@@ -36,7 +36,6 @@ public class DeviceIdentifier {
 
     public DeviceIdentifier(String nameOrDescription, @Nullable String additionalFilters)
             throws PatternSyntaxException {
-        super();
         this.nameOrDescription = nameOrDescription;
         if (additionalFilters != null && !additionalFilters.isEmpty()) {
             Arrays.asList(additionalFilters.split("###")).stream()

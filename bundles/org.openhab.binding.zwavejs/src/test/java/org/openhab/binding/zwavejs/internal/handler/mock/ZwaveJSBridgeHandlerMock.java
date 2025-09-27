@@ -62,6 +62,7 @@ public class ZwaveJSBridgeHandlerMock extends ZwaveJSBridgeHandler {
             final Bridge thing) {
         WebSocketFactory wsFactory = mock(WebSocketFactory.class);
         final ZwaveJSBridgeHandlerMock handler = spy(new ZwaveJSBridgeHandlerMock(thing, wsFactory));
+        when(handler.getThing()).thenReturn(thing);
 
         handler.setCallback(callback);
         handler.initialize();

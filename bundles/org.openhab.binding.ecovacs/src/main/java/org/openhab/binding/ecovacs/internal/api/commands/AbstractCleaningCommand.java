@@ -34,7 +34,6 @@ abstract class AbstractCleaningCommand extends AbstractNoResponseCommand {
     private final Optional<CleanMode> mode;
 
     protected AbstractCleaningCommand(String xmlAction, String jsonAction, @Nullable CleanMode mode) {
-        super();
         this.xmlAction = xmlAction;
         this.jsonAction = jsonAction;
         this.mode = Optional.ofNullable(mode);

@@ -45,16 +45,19 @@ import dev.digiried.wattpilot.WattpilotClient;
 import dev.digiried.wattpilot.WattpilotClientListener;
 import dev.digiried.wattpilot.WattpilotInfo;
 import dev.digiried.wattpilot.WattpilotStatus;
+import dev.digiried.wattpilot.commands.SetBoostCommand;
+import dev.digiried.wattpilot.commands.SetBoostSoCLimitCommand;
 import dev.digiried.wattpilot.commands.SetChargingCurrentCommand;
 import dev.digiried.wattpilot.commands.SetChargingModeCommand;
 import dev.digiried.wattpilot.commands.SetEnforcedChargingStateCommand;
 import dev.digiried.wattpilot.commands.SetSurplusPowerThresholdCommand;
+import dev.digiried.wattpilot.commands.SetSurplusSoCThresholdCommand;
 import dev.digiried.wattpilot.dto.ChargingMode;
 import dev.digiried.wattpilot.dto.EnforcedChargingState;
 
 /**
  * The {@link FroniusWattpilotHandler} is responsible for handling commands, which are
- * sent to one of the channels.
+ * sent to one of the channels, and updating the channels with the current states.
  *
  * @author Florian Hotze - Initial contribution
  */
@@ -69,6 +72,26 @@ public class FroniusWattpilotHandler extends BaseThingHandler implements Wattpil
         super(thing);
         client = new WattpilotClient(httpClient);
         client.addListener(this);
+    }
+
+    private @Nullable Integer getPercent(Command command) {
+        switch (command) {
+            case QuantityType<?> qt -> {
+                qt = qt.toUnit(Units.PERCENT);
+                if (qt == null) {
+                    logger.debug("Failed to convert QuantityType to PERCENT!");
+                    return null;
+                }
+                return qt.intValue();
+            }
+            case DecimalType dt -> {
+                return dt.intValue();
+            }
+            default -> {
+                logger.debug("Command has wrong type, QuantityType or DecimalType required!");
+                return null;
+            }
+        }
     }
 
     @Override
@@ -132,6 +155,25 @@ public class FroniusWattpilotHandler extends BaseThingHandler implements Wattpil
                         }
                     }
                     client.sendCommand(new SetSurplusPowerThresholdCommand(watts));
+                    break;
+                case CHANNEL_PV_SURPLUS_SOC:
+                    Integer surplusSoC = getPercent(command);
+                    if (surplusSoC != null) {
+                        client.sendCommand(new SetSurplusSoCThresholdCommand(surplusSoC));
+                    }
+                    break;
+                case CHANNEL_BOOST_ENABLED:
+                    if (command instanceof OnOffType oft) {
+                        client.sendCommand(new SetBoostCommand(oft == OnOffType.ON));
+                    } else {
+                        logger.debug("Command has wrong type, OnOffType required!");
+                    }
+                    break;
+                case CHANNEL_BOOST_SOC:
+                    Integer boostSoc = getPercent(command);
+                    if (boostSoc != null) {
+                        client.sendCommand(new SetBoostSoCLimitCommand(boostSoc));
+                    }
                     break;
                 default:
                     logger.debug("Unknown channel id: {}", channelId);
@@ -224,6 +266,7 @@ public class FroniusWattpilotHandler extends BaseThingHandler implements Wattpil
         final ThingUID uid = getThing().getUID();
         ChannelUID channel;
 
+        // generic charging control
         channel = new ChannelUID(uid, CHANNEL_GROUP_ID_CONTROL, CHANNEL_CHARGING_ALLOWED);
         updateState(channel,
                 status.getEnforcedChargingState() == EnforcedChargingState.OFF ? OnOffType.OFF : OnOffType.ON);
@@ -234,8 +277,19 @@ public class FroniusWattpilotHandler extends BaseThingHandler implements Wattpil
         channel = new ChannelUID(uid, CHANNEL_GROUP_ID_CONTROL, CHANNEL_CHARGING_CURRENT);
         updateState(channel, new QuantityType<>(status.getChargingCurrent(), Units.AMPERE));
 
+        // PV surplus charging
         channel = new ChannelUID(uid, CHANNEL_GROUP_ID_CONTROL, CHANNEL_PV_SURPLUS_THRESHOLD);
         updateState(channel, new QuantityType<>(status.getSurplusPowerThreshold(), Units.WATT));
+
+        channel = new ChannelUID(uid, CHANNEL_GROUP_ID_CONTROL, CHANNEL_PV_SURPLUS_SOC);
+        updateState(channel, new DecimalType(status.getSurplusSoCThreshold()));
+
+        // boost charging
+        channel = new ChannelUID(uid, CHANNEL_GROUP_ID_CONTROL, CHANNEL_BOOST_ENABLED);
+        updateState(channel, status.isBoostEnabled() ? OnOffType.ON : OnOffType.OFF);
+
+        channel = new ChannelUID(uid, CHANNEL_GROUP_ID_CONTROL, CHANNEL_BOOST_SOC);
+        updateState(channel, new DecimalType(status.getBoostSoCLimit()));
     }
 
     private void updateChannelsStatus(WattpilotStatus status) {

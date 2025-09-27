@@ -98,10 +98,13 @@ public class ShellyDeviceProfile {
     public boolean isSensor = false; // true for HT & Smoke
     public boolean hasBattery = false; // true if battery device
     public boolean isSense = false; // true if thing is a Shelly Sense
-    public boolean isMotion = false; // true if thing is a Shelly Sense
     public boolean isHT = false; // true for H&T
     public boolean isDW = false; // true for Door Window sensor
     public boolean isButton = false; // true for a Shelly Button 1
+    public boolean isMultiButton = false; // true for a Shelly BLU Wall Switch 4 or RC Button 4
+    public boolean isMotion = false; // true if thing is a Shelly Motion
+    public boolean isDistance = false; // true if thing is a Shelly BLU Distance
+    public boolean isRemote = false; // true if thing is a Shelly BLU Remote
     public boolean isIX = false; // true for a Shelly IX
     public boolean isTRV = false; // true for a Shelly TRV
     public boolean isSmoke = false; // true for Shelly Smoke
@@ -217,15 +220,18 @@ public class ShellyDeviceProfile {
         isDW = GROUP_DOORWINDOW_THING_TYPES.contains(thingTypeUID);
         isMotion = GROUP_MOTION_THING_TYPES.contains(thingTypeUID);
         isSense = THING_TYPE_SHELLYSENSE.equals(thingTypeUID);
+        isDistance = THING_TYPE_SHELLYBLUDISTANCE.equals(thingTypeUID);
+        isRemote = THING_TYPE_SHELLYBLUREMOTE.equals(thingTypeUID);
         isIX = GROUP_IX_THING_TYPES.contains(thingTypeUID);
         isButton = GROUP_BUTTON_THING_TYPES.contains(thingTypeUID);
+        isMultiButton = GROUP_MULTIBUTTON_THING_TYPES.contains(thingTypeUID);
         isTRV = THING_TYPE_SHELLYTRV.equals(thingTypeUID);
         isWall = GROUP_WALLDISPLAY_THING_TYPES.contains(thingTypeUID);
         is3EM = GROUP_3EM_THING_TYPES.contains(thingTypeUID);
         isEM50 = THING_TYPE_SHELLYPROEM50.equals(thingTypeUID);
 
-        isSensor = isHT || isFlood || isDW || isSmoke || isGas || isButton || isUNI || isMotion || isSense || isTRV
-                || isWall;
+        isSensor = isHT || isFlood || isDW || isSmoke || isGas || isButton || isMultiButton || isUNI || isMotion
+                || isSense || isTRV || isWall;
         hasBattery = isHT || isFlood || isDW || isSmoke || isButton || isMotion || isTRV || isBlu;
         alwaysOn = !hasBattery || (isMotion && !isBlu) || isSense; // true means: device is reachable all the time (no
                                                                    // sleep mode)
@@ -281,6 +287,8 @@ public class ShellyDeviceProfile {
             return CHANNEL_GROUP_LIGHT_CONTROL;
         } else if (isButton) {
             return CHANNEL_GROUP_STATUS;
+        } else if (isMultiButton) {
+            return CHANNEL_GROUP_STATUS + idx;
         } else if (isSensor) {
             return CHANNEL_GROUP_SENSOR;
         }
@@ -297,7 +305,7 @@ public class ShellyDeviceProfile {
         int idx = i + 1; // group names are 1-based
         if (isRGBW2) {
             return CHANNEL_GROUP_LIGHT_CONTROL;
-        } else if (isIX) {
+        } else if (isIX || isMultiButton) {
             return CHANNEL_GROUP_STATUS + idx;
         } else if (isButton) {
             return CHANNEL_GROUP_STATUS;
@@ -311,7 +319,7 @@ public class ShellyDeviceProfile {
 
     public String getInputSuffix(int i) {
         int idx = i + 1; // channel names are 1-based
-        if (isRGBW2 || isIX) {
+        if (isRGBW2 || isIX || isMultiButton) {
             return ""; // RGBW2 has only 1 channel
         } else if (isRoller || isDimmer) {
             // Roller has 2 relays, but it will be mapped to 1 roller with 2 inputs
@@ -333,9 +341,9 @@ public class ShellyDeviceProfile {
         List<ShellySettingsDimmer> dimmers = settings.dimmers;
         List<ShellySettingsRelay> relays = settings.relays;
         List<ShellySettingsRgbwLight> lights = settings.lights;
-        if (isButton) {
+        if (isButton || isMultiButton) {
             return true;
-        } else if (isIX && inputs != null && idx < inputs.size()) {
+        } else if ((isIX || isBlu) && inputs != null && idx < inputs.size()) {
             ShellySettingsInput input = inputs.get(idx);
             btnType = getString(input.btnType);
         } else if (isDimmer) {

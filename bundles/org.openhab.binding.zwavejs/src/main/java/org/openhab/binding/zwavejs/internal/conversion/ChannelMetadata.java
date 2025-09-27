@@ -52,7 +52,7 @@ public class ChannelMetadata extends BaseMetadata {
             "113-alarmLevel", //
             "113-System"); //
     private static final List<String> INVERTIBLE_ITEM_TYPES = List.of(CoreItemFactory.DIMMER, CoreItemFactory.CONTACT,
-            CoreItemFactory.SWITCH);
+            CoreItemFactory.SWITCH, CoreItemFactory.ROLLERSHUTTER);
 
     public @Nullable State state;
     public @Nullable StateDescriptionFragment statePattern;

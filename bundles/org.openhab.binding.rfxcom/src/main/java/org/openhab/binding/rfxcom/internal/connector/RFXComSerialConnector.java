@@ -47,7 +47,6 @@ public class RFXComSerialConnector extends RFXComBaseConnector implements Serial
     private Thread readerThread;
 
     public RFXComSerialConnector(SerialPortManager serialPortManager, String readerThreadName) {
-        super();
         this.serialPortManager = serialPortManager;
         this.readerThreadName = readerThreadName;
     }
