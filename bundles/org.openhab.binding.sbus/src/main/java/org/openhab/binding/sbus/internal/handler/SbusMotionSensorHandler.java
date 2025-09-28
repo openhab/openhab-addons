@@ -126,7 +126,8 @@ public class SbusMotionSensorHandler extends AbstractSbusHandler {
 
         SbusResponse response = adapter.executeTransaction(request);
         if (!(response instanceof ReadNineInOneStatusResponse statusResponse)) {
-            throw new IllegalStateException("Unexpected response type: " + response.getClass().getSimpleName());
+            throw new IllegalStateException(
+                    "Unexpected response type: " + (response != null ? response.getClass().getSimpleName() : "null"));
         }
 
         return statusResponse;
@@ -140,10 +141,12 @@ public class SbusMotionSensorHandler extends AbstractSbusHandler {
             if (response instanceof MotionSensorStatusReport report) {
                 // Process motion sensor status report (0x02CA broadcast)
                 updateChannelStatesFromReport(report);
+                updateStatus(ThingStatus.ONLINE);
                 logger.debug("Processed async motion sensor status report for handler {}", getThing().getUID());
             } else if (response instanceof ReadNineInOneStatusResponse statusResponse) {
                 // Process 9-in-1 status response (0xDB01)
                 updateChannelStatesFromResponse(statusResponse);
+                updateStatus(ThingStatus.ONLINE);
                 logger.debug("Processed async 9-in-1 status response for handler {}", getThing().getUID());
             }
         } catch (IllegalStateException | IllegalArgumentException e) {
