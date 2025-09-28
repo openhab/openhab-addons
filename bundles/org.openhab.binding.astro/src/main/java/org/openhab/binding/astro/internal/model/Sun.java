@@ -13,7 +13,9 @@
 package org.openhab.binding.astro.internal.model;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
+import java.util.TimeZone;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -32,7 +34,7 @@ public class Sun extends RiseSet implements Planet {
 
     private @Nullable SunZodiac zodiac;
 
-    private Season season = new Season();
+    private Season season = new Season(TimeZone.getDefault(), Locale.getDefault());
 
     private Eclipse eclipse = new Eclipse(EclipseKind.PARTIAL, EclipseKind.TOTAL, EclipseKind.RING);
 

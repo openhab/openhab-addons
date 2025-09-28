@@ -257,6 +257,6 @@ public class SerialBindingHandlerTest {
         bin.appendBuffer(new byte[] { 'T', 'E', 'S', 'T', '1', '\n', 'T', 'E', 'S', 'T', '2' });
         sb = new StringBuilder();
         handler.receiveAndProcess(sb, false);
-        assertEquals("54 45 53 54 31 0A\n54 45 53 54 32", sb.toString());
+        assertEquals("54 45 53 54 31 0A" + System.lineSeparator() + "54 45 53 54 32", sb.toString());
     }
 }

@@ -28,7 +28,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
@@ -433,16 +432,19 @@ public class Clip2Bridge implements Closeable {
      * forced to wait if the session is being created via its single thread access 'write' lock.
      */
     private class SessionSynchronizer implements AutoCloseable {
-        private final Optional<Lock> lockOptional;
+        private final @Nullable Lock lock;
 
         SessionSynchronizer(boolean requireExclusiveAccess) throws InterruptedException {
             Lock lock = requireExclusiveAccess ? sessionUseCreateLock.writeLock() : sessionUseCreateLock.readLock();
-            lockOptional = lock.tryLock(TIMEOUT_SECONDS, TimeUnit.SECONDS) ? Optional.of(lock) : Optional.empty();
+            this.lock = lock.tryLock(TIMEOUT_SECONDS, TimeUnit.SECONDS) ? lock : null;
         }
 
         @Override
         public void close() {
-            lockOptional.ifPresent(lock -> lock.unlock());
+            Lock lock = this.lock;
+            if (lock != null) {
+                lock.unlock();
+            }
         }
     }
 
@@ -469,8 +471,8 @@ public class Clip2Bridge implements Closeable {
      * <p>
      * The Hue Bridge can get confused if they receive too many HTTP requests in a short period of time (e.g. on start
      * up), or if too many HTTP sessions are opened at the same time, which cause it to respond with an HTML error page.
-     * So this class a) waits to acquire permitCount (or no more than MAX_CONCURRENT_SESSIONS) stream permits, and b)
-     * throttles the requests to a maximum of one per REQUEST_INTERVAL_MILLISECS.
+     * So this class a) waits to acquire permitCount (or no more than {@link #MAX_CONCURRENT_STREAMS}) stream permits,
+     * and b) throttles the requests to a maximum of one per {@link #REQUEST_INTERVAL}.
      */
     private class Throttler implements AutoCloseable {
         private final int permitCount;
@@ -482,13 +484,14 @@ public class Clip2Bridge implements Closeable {
         Throttler(int permitCount) throws InterruptedException {
             this.permitCount = permitCount;
             streamMutex.acquire(permitCount);
-            long delay;
+            Duration delay;
             synchronized (Clip2Bridge.this) {
+                Instant lastRequestTime = Clip2Bridge.this.lastRequestTime;
                 Instant now = Instant.now();
-                delay = Objects.requireNonNull(lastRequestTime
-                        .map(t -> Math.max(0, Duration.between(now, t).toMillis() + REQUEST_INTERVAL_MILLISECS))
-                        .orElse(0L));
-                lastRequestTime = Optional.of(now.plusMillis(delay));
+                delay = lastRequestTime != null ? REQUEST_INTERVAL.minus(Duration.between(lastRequestTime, now))
+                        : Duration.ZERO;
+                delay = delay.isNegative() ? Duration.ZERO : delay;
+                Clip2Bridge.this.lastRequestTime = now.plus(delay);
             }
             Thread.sleep(delay);
         }
@@ -514,7 +517,7 @@ public class Clip2Bridge implements Closeable {
 
     public static final int TIMEOUT_SECONDS = 10;
     private static final int CHECK_ALIVE_SECONDS = 300;
-    private static final int REQUEST_INTERVAL_MILLISECS = 50;
+    private static final Duration REQUEST_INTERVAL = Duration.ofMillis(50);
     private static final int MAX_CONCURRENT_STREAMS = 3;
 
     private static final ResourceReference BRIDGE = new ResourceReference().setType(ResourceType.BRIDGE);
@@ -567,7 +570,7 @@ public class Clip2Bridge implements Closeable {
     private boolean recreatingSession;
     private boolean closing;
     private State onlineState = State.CLOSED;
-    private Optional<Instant> lastRequestTime = Optional.empty();
+    private @Nullable Instant lastRequestTime;
     private Instant sessionExpireTime = Instant.MAX;
 
     private @Nullable Session http2Session;
