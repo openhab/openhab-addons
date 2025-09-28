@@ -33,6 +33,12 @@
 				<advanced>true</advanced>
 				<default>300</default>
 			</parameter>
+			<parameter name="lazyScan" type="boolean">
+				<label>Lazy Scan</label>
+				<description>Disables re-querying of GATT services from already known devices when scanning</description>
+				<advanced>true</advanced>
+				<default>true</default>
+			</parameter>
 		</config-description>
 
 	</bridge-type>

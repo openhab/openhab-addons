@@ -74,4 +74,10 @@ public class DeviceManagerWrapper {
             return List.of();
         }
     }
+
+    void setLazyScan(boolean lazyScan) {
+        if (deviceManager != null) {
+            deviceManager.setLazyScan(lazyScan);
+        }
+    }
 }
