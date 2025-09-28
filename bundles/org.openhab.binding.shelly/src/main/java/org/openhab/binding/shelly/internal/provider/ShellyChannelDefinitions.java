@@ -146,6 +146,7 @@ public class ShellyChannelDefinitions {
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_HEARTBEAT, "heartBeat", ITEMT_DATETIME))
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_UPDATE, "updateAvailable", ITEMT_SWITCH))
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_CALIBRATED, "calibrated", ITEMT_SWITCH))
+                .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_FIRMWARE, "deviceFirmware", ITEMT_STRING))
 
                 // Relay
                 .add(new ShellyChannel(m, CHGR_RELAY, CHANNEL_OUTPUT_NAME, "outputName", ITEMT_STRING))
@@ -240,6 +241,15 @@ public class ShellyChannelDefinitions {
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_SLEEPTIME, "sensorSleepTime", ITEMT_NUMBER))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSE_KEY, "senseKey", ITEMT_STRING)) // Sense
 
+                // BLU Remote
+                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_CHANNEL, "sensorChannel", ITEMT_NUMBER))
+                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_ROTATIONX, "sensorRotationX", ITEMT_ANGLE))
+                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_ROTATIONY, "sensorRotationY", ITEMT_ANGLE))
+                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_ROTATIONZ, "sensorRotationZ", ITEMT_ANGLE))
+                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_DIRECTION, "sensorDirection", ITEMT_STRING))
+                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_STEPS, "sensorSteps", ITEMT_NUMBER))
+                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_DISTANCE, "sensorDistance", ITEMT_DISTANCE))
+
                 // Button/ix3
                 .add(new ShellyChannel(m, CHGR_STATUS, CHANNEL_INPUT, "inputState", ITEMT_SWITCH))
                 .add(new ShellyChannel(m, CHGR_STATUS, CHANNEL_STATUS_EVENTTYPE, "lastEvent", ITEMT_STRING))
@@ -312,6 +322,8 @@ public class ShellyChannelDefinitions {
     public static Map<String, Channel> createDeviceChannels(final Thing thing, final ShellyDeviceProfile profile,
             final ShellySettingsStatus status) {
         Map<String, Channel> add = new LinkedHashMap<>();
+
+        addChannel(thing, add, !profile.fwVersion.isEmpty() || profile.isBlu, CHGR_DEVST, CHANNEL_DEVST_FIRMWARE);
 
         addChannel(thing, add, profile.settings.name != null, CHGR_DEVST, CHANNEL_DEVST_NAME);
         addChannel(thing, add, !profile.gateway.isEmpty() || profile.isBlu, CHGR_DEVST, CHANNEL_DEVST_GATEWAY);
@@ -455,7 +467,8 @@ public class ShellyChannelDefinitions {
             for (int i = 0; i < profile.numInputs; i++) {
                 String group = profile.getInputGroup(i);
                 String suffix = profile.getInputSuffix(i); // multi ? String.valueOf(i + 1) : "";
-                addChannel(thing, add, !profile.isButton, group, CHANNEL_INPUT + suffix);
+                addChannel(thing, add, !profile.isBlu && !profile.isButton && !profile.isMultiButton, group,
+                        CHANNEL_INPUT + suffix);
                 addChannel(thing, add, true, group,
                         (!profile.isRoller ? CHANNEL_BUTTON_TRIGGER + suffix : CHANNEL_EVENT_TRIGGER));
                 if (profile.inButtonMode(i)) {
@@ -564,10 +577,18 @@ public class ShellyChannelDefinitions {
                     CHANNEL_SENSOR_VIBRATION);
         }
 
-        // Create tilt for DW/DW2, for BLU DW create channel even tilt is currently not reported
+        // Shelly DW/DW2/BLU DW
+        // Depending on timing the device only reports tilt or illuminance in the 1st packet only distance or vibration
+        // In this case create both channels, also if only one is included in the first packet
         if (sdata.accel != null || (profile.isBlu && profile.isDW && sdata.lux != null)) {
             addChannel(thing, newChannels, sdata.lux != null || sdata.accel.tilt != null, CHANNEL_GROUP_SENSOR,
                     CHANNEL_SENSOR_TILT);
+        }
+
+        // Depending on timing Shelly BLU distance reports in the 1st packet only distance or vibration
+        // In this case create both channels, also if only one is included in the first packet
+        if (sdata.distance != null || profile.isDistance) {
+            addChannel(thing, newChannels, sdata.distance != null, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_DISTANCE);
         }
 
         // Gas
@@ -584,6 +605,16 @@ public class ShellyChannelDefinitions {
 
         // Sense
         addChannel(thing, newChannels, profile.isSense, CHANNEL_GROUP_SENSOR, CHANNEL_SENSE_KEY);
+
+        // BLU Remote
+        if (profile.isRemote) {
+            addChannel(thing, newChannels, true, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_CHANNEL);
+            addChannel(thing, newChannels, true, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_ROTATIONX);
+            addChannel(thing, newChannels, true, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_ROTATIONY);
+            addChannel(thing, newChannels, true, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_ROTATIONZ);
+            addChannel(thing, newChannels, true, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_DIRECTION);
+            addChannel(thing, newChannels, true, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_STEPS);
+        }
 
         // UNI
         addChannel(thing, newChannels, sdata.adcs != null, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_VOLTAGE);

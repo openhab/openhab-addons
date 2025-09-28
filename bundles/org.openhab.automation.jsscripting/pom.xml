@@ -17,7 +17,7 @@
   <properties>
     <!-- Remember to check if the fix https://github.com/openhab/openhab-core/pull/4437 still works when upgrading GraalJS -->
     <graaljs.version>24.2.1</graaljs.version>
-    <ohjs.version>openhab@5.13.0</ohjs.version>
+    <ohjs.version>openhab@5.14.0</ohjs.version>
   </properties>
 
   <dependencies>

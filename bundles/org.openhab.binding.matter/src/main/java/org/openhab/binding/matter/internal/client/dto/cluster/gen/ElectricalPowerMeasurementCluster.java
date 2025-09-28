@@ -398,8 +398,8 @@ public class ElectricalPowerMeasurementCluster extends BaseCluster {
         DC(1, "Dc"),
         AC(2, "Ac");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private PowerModeEnum(Integer value, String label) {
             this.value = value;

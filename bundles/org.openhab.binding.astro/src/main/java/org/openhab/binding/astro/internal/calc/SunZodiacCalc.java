@@ -16,8 +16,10 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import java.util.TimeZone;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.astro.internal.model.SunZodiac;
@@ -32,6 +34,14 @@ import org.openhab.binding.astro.internal.util.DateTimeUtils;
 @NonNullByDefault
 public class SunZodiacCalc {
     private Map<Integer, List<SunZodiac>> zodiacsByYear = new HashMap<>();
+
+    private final TimeZone zone;
+    private final Locale locale;
+
+    public SunZodiacCalc(TimeZone zone, Locale locale) {
+        this.zone = zone;
+        this.locale = locale;
+    }
 
     /**
      * Returns the zodiac for the specified calendar.
@@ -58,31 +68,31 @@ public class SunZodiacCalc {
         List<SunZodiac> zodiacs = new ArrayList<>();
 
         zodiacs.add(new SunZodiac(ZodiacSign.ARIES,
-                DateTimeUtils.getRange(year, Calendar.MARCH, 21, year, Calendar.APRIL, 19)));
+                DateTimeUtils.getRange(year, Calendar.MARCH, 21, year, Calendar.APRIL, 19, zone, locale)));
         zodiacs.add(new SunZodiac(ZodiacSign.TAURUS,
-                DateTimeUtils.getRange(year, Calendar.APRIL, 20, year, Calendar.MAY, 20)));
+                DateTimeUtils.getRange(year, Calendar.APRIL, 20, year, Calendar.MAY, 20, zone, locale)));
         zodiacs.add(new SunZodiac(ZodiacSign.GEMINI,
-                DateTimeUtils.getRange(year, Calendar.MAY, 21, year, Calendar.JUNE, 20)));
+                DateTimeUtils.getRange(year, Calendar.MAY, 21, year, Calendar.JUNE, 20, zone, locale)));
         zodiacs.add(new SunZodiac(ZodiacSign.CANCER,
-                DateTimeUtils.getRange(year, Calendar.JUNE, 21, year, Calendar.JULY, 22)));
+                DateTimeUtils.getRange(year, Calendar.JUNE, 21, year, Calendar.JULY, 22, zone, locale)));
         zodiacs.add(new SunZodiac(ZodiacSign.LEO,
-                DateTimeUtils.getRange(year, Calendar.JULY, 23, year, Calendar.AUGUST, 22)));
+                DateTimeUtils.getRange(year, Calendar.JULY, 23, year, Calendar.AUGUST, 22, zone, locale)));
         zodiacs.add(new SunZodiac(ZodiacSign.VIRGO,
-                DateTimeUtils.getRange(year, Calendar.AUGUST, 23, year, Calendar.SEPTEMBER, 22)));
+                DateTimeUtils.getRange(year, Calendar.AUGUST, 23, year, Calendar.SEPTEMBER, 22, zone, locale)));
         zodiacs.add(new SunZodiac(ZodiacSign.LIBRA,
-                DateTimeUtils.getRange(year, Calendar.SEPTEMBER, 23, year, Calendar.OCTOBER, 22)));
+                DateTimeUtils.getRange(year, Calendar.SEPTEMBER, 23, year, Calendar.OCTOBER, 22, zone, locale)));
         zodiacs.add(new SunZodiac(ZodiacSign.SCORPIO,
-                DateTimeUtils.getRange(year, Calendar.OCTOBER, 23, year, Calendar.NOVEMBER, 21)));
+                DateTimeUtils.getRange(year, Calendar.OCTOBER, 23, year, Calendar.NOVEMBER, 21, zone, locale)));
         zodiacs.add(new SunZodiac(ZodiacSign.SAGITTARIUS,
-                DateTimeUtils.getRange(year, Calendar.NOVEMBER, 22, year, Calendar.DECEMBER, 21)));
+                DateTimeUtils.getRange(year, Calendar.NOVEMBER, 22, year, Calendar.DECEMBER, 21, zone, locale)));
         zodiacs.add(new SunZodiac(ZodiacSign.CAPRICORN,
-                DateTimeUtils.getRange(year, Calendar.DECEMBER, 22, year + 1, Calendar.JANUARY, 19)));
+                DateTimeUtils.getRange(year, Calendar.DECEMBER, 22, year + 1, Calendar.JANUARY, 19, zone, locale)));
         zodiacs.add(new SunZodiac(ZodiacSign.CAPRICORN,
-                DateTimeUtils.getRange(year - 1, Calendar.DECEMBER, 22, year, Calendar.JANUARY, 19)));
+                DateTimeUtils.getRange(year - 1, Calendar.DECEMBER, 22, year, Calendar.JANUARY, 19, zone, locale)));
         zodiacs.add(new SunZodiac(ZodiacSign.AQUARIUS,
-                DateTimeUtils.getRange(year, Calendar.JANUARY, 20, year, Calendar.FEBRUARY, 18)));
+                DateTimeUtils.getRange(year, Calendar.JANUARY, 20, year, Calendar.FEBRUARY, 18, zone, locale)));
         zodiacs.add(new SunZodiac(ZodiacSign.PISCES,
-                DateTimeUtils.getRange(year, Calendar.FEBRUARY, 19, year, Calendar.MARCH, 20)));
+                DateTimeUtils.getRange(year, Calendar.FEBRUARY, 19, year, Calendar.MARCH, 20, zone, locale)));
 
         return zodiacs;
     }

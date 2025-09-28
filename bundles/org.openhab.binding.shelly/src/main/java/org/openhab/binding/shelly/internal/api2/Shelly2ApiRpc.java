@@ -16,6 +16,7 @@ import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 import static org.openhab.binding.shelly.internal.ShellyDevices.THING_TYPE_CAP_NUM_METERS;
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.*;
+import static org.openhab.binding.shelly.internal.api2.ShellyBluJsonDTO.SHELLY2_BLU_GWSCRIPT;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import java.io.BufferedReader;
@@ -319,7 +320,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         }
         profile.status.lights = profile.isBulb ? new ArrayList<>() : null;
         if (profile.isRGBW2) {
-            ArrayList<ShellySettingsRgbwLight> rgbwLights = new ArrayList<>();
+            ArrayList<@Nullable ShellySettingsRgbwLight> rgbwLights = new ArrayList<>();
             rgbwLights.add(new ShellySettingsRgbwLight());
             profile.settings.lights = rgbwLights;
             profile.status.lights = new ArrayList<>();
@@ -678,9 +679,10 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     }
 
     @Override
-    public void onNotifyEvent(Shelly2RpcNotifyEvent message) throws ShellyApiException {
-        logger.debug("{}: NotifyEvent  received: {}", thingName, gson.toJson(message));
+    public void onNotifyEvent(String eventJSON) throws ShellyApiException {
+        logger.debug("{}: NotifyEvent  received: {}", thingName, eventJSON);
         ShellyDeviceProfile profile = getProfile();
+        Shelly2RpcNotifyEvent message = fromJson(gson, eventJSON, Shelly2RpcNotifyEvent.class);
 
         getThing().incProtMessages();
         getThing().restartWatchdog();
@@ -785,7 +787,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
 
     @Override
     public void onError(Throwable cause) {
-        logger.debug("{}: WebSocket error: {}", thingName, cause.getMessage());
+        logger.debug("{}: WebSocket error", thingName, cause);
         ShellyThingInterface thing = this.thing;
         if (thing != null && thing.getProfile().alwaysOn) {
             thingOffline("WebSocket error");

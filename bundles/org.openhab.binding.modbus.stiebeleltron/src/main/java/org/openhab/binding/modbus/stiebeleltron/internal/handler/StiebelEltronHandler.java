@@ -30,7 +30,7 @@ import org.openhab.binding.modbus.stiebeleltron.internal.dto.SystemInformationBl
 import org.openhab.binding.modbus.stiebeleltron.internal.dto.SystemParameterBlock;
 import org.openhab.binding.modbus.stiebeleltron.internal.dto.SystemStateBlock;
 import org.openhab.binding.modbus.stiebeleltron.internal.parser.EnergyBlockParser;
-import org.openhab.binding.modbus.stiebeleltron.internal.parser.SystemInfromationBlockParser;
+import org.openhab.binding.modbus.stiebeleltron.internal.parser.SystemInformationBlockParser;
 import org.openhab.binding.modbus.stiebeleltron.internal.parser.SystemParameterBlockParser;
 import org.openhab.binding.modbus.stiebeleltron.internal.parser.SystemStateBlockParser;
 import org.openhab.core.io.transport.modbus.AsyncModbusFailure;
@@ -63,6 +63,7 @@ import org.slf4j.LoggerFactory;
  * which are sent to one of the channels and for polling the modbus.
  *
  * @author Paul Frank - Initial contribution
+ * @author Thomas Burri - Fixed Eclipse warning
  */
 @NonNullByDefault
 public class StiebelEltronHandler extends BaseThingHandler {
@@ -134,7 +135,7 @@ public class StiebelEltronHandler extends BaseThingHandler {
     /**
      * Parser used to convert incoming raw messages into system blocks
      */
-    private final SystemInfromationBlockParser systemInformationBlockParser = new SystemInfromationBlockParser();
+    private final SystemInformationBlockParser systemInformationBlockParser = new SystemInformationBlockParser();
     /**
      * Parser used to convert incoming raw messages into system state blocks
      */
@@ -218,7 +219,7 @@ public class StiebelEltronHandler extends BaseThingHandler {
      *         the stiebel eltron modbus documentation)
      */
     private short getScaledInt16Value(Command command) throws StiebelEltronException {
-        if (command instanceof QuantityType quantityCommand) {
+        if (command instanceof QuantityType<?> quantityCommand) {
             QuantityType<?> c = quantityCommand.toUnit(CELSIUS);
             if (c != null) {
                 return (short) (c.doubleValue() * 10);
@@ -298,10 +299,9 @@ public class StiebelEltronHandler extends BaseThingHandler {
                 if (hasConfigurationError() || getThing().getStatus() == ThingStatus.OFFLINE) {
                     return;
                 }
-                String cls = error.getClass().getName();
-                String msg = error.getMessage();
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        String.format("Error with: %s: %s", cls, msg));
+                String statusMsg = String.format("@text/offline.com-error [ \"%s\", \"%s\" ]",
+                        error.getClass().getName(), error.getMessage());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, statusMsg);
             }
         }
     }
@@ -329,7 +329,7 @@ public class StiebelEltronHandler extends BaseThingHandler {
 
         ModbusEndpointThingHandler slaveEndpointThingHandler = getEndpointThingHandler();
         if (slaveEndpointThingHandler == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Bridge is offline");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "@text/offline.bridge-offline");
             return;
         }
 
@@ -342,10 +342,9 @@ public class StiebelEltronHandler extends BaseThingHandler {
         }
 
         if (comms == null) {
-            @SuppressWarnings("null")
             String label = Optional.ofNullable(getBridge()).map(b -> b.getLabel()).orElse("<null>");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
-                    String.format("Bridge '%s' not completely initialized", label));
+                    String.format("@text/offline.bridge-not-initialized [ \"%s\" ]", label));
             return;
         }
 
@@ -523,9 +522,9 @@ public class StiebelEltronHandler extends BaseThingHandler {
         updateState(channelUID(GROUP_SYSTEM_INFO, CHANNEL_FEK_DEWPOINT), getScaled(block.dewpointFek, CELSIUS));
         updateState(channelUID(GROUP_SYSTEM_INFO, CHANNEL_OUTDOOR_TEMPERATURE),
                 getScaled(block.temperatureOutdoor, CELSIUS));
-        updateState(channelUID(GROUP_SYSTEM_INFO, CHANNEL_HK1_TEMPERATURE), getScaled(block.temperatureHk1, CELSIUS));
+        updateState(channelUID(GROUP_SYSTEM_INFO, CHANNEL_HK1_TEMPERATURE), getScaled(block.temperatureHc1, CELSIUS));
         updateState(channelUID(GROUP_SYSTEM_INFO, CHANNEL_HK1_TEMPERATURE_SETPOINT),
-                getScaled(block.temperatureHk1SetPoint, CELSIUS));
+                getScaled(block.temperatureHc1SetPoint, CELSIUS));
         updateState(channelUID(GROUP_SYSTEM_INFO, CHANNEL_SUPPLY_TEMPERATURE),
                 getScaled(block.temperatureSupply, CELSIUS));
         updateState(channelUID(GROUP_SYSTEM_INFO, CHANNEL_RETURN_TEMPERATURE),
@@ -646,10 +645,9 @@ public class StiebelEltronHandler extends BaseThingHandler {
         if (hasConfigurationError() || getThing().getStatus() == ThingStatus.OFFLINE) {
             return;
         }
-        String msg = failure.getCause().getMessage();
-        String cls = failure.getCause().getClass().getName();
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                String.format("Error with read: %s: %s", cls, msg));
+        String statusMsg = String.format("@text/offline.com-error-read [ \"%s\", \"%s\" ]",
+                failure.getCause().getMessage(), failure.getCause().getClass().getName());
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, statusMsg);
     }
 
     /**
@@ -660,10 +658,9 @@ public class StiebelEltronHandler extends BaseThingHandler {
         if (hasConfigurationError() || getThing().getStatus() == ThingStatus.OFFLINE) {
             return;
         }
-        String msg = failure.getCause().getMessage();
-        String cls = failure.getCause().getClass().getName();
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                String.format("Error with write: %s: %s", cls, msg));
+        String statusMsg = String.format("@text/offline.com-error-write [ \"%s\", \"%s\" ]",
+                failure.getCause().getMessage(), failure.getCause().getClass().getName());
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, statusMsg);
     }
 
     /**

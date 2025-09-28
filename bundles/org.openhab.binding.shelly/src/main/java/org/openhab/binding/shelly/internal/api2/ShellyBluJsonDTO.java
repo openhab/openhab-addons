@@ -16,11 +16,18 @@ package org.openhab.binding.shelly.internal.api2;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * {@link ShellyBluEventDataDTO} implements BLU data format
+ * {@link ShellyBluJsonDTO} includes contans and structures used for BluApi's JSON mapping and processing.
  *
  * @author Markus Michels - Initial contribution
  */
-public class ShellyBluEventDataDTO {
+public class ShellyBluJsonDTO {
+
+    // BLU events
+    public static final String SHELLY2_BLU_GWSCRIPT = "oh-blu-scanner.js";
+    public static final String SHELLY2_EVENT_BLUPREFIX = "oh-blu.";
+    public static final String SHELLY2_EVENT_BLUSCAN = SHELLY2_EVENT_BLUPREFIX + "scan_result";
+    public static final String SHELLY2_EVENT_BLUDATA = SHELLY2_EVENT_BLUPREFIX + "data";
+
     // BTHome samples
     // BLU Button 1
     // {"component":"script:2", "id":2, "event":"oh-blu.scan_result",
@@ -37,6 +44,12 @@ public class ShellyBluEventDataDTO {
     // "ts":1682877414.25}
 
     public static class Shelly2NotifyBluEventData {
+        public static class Shelly2NotifyBluEventDimmer {
+            public Integer direction;
+            public Integer steps;
+        }
+
+        public String packet;
         public String addr;
         public String name;
         public Boolean encryption;
@@ -51,16 +64,24 @@ public class ShellyBluEventDataDTO {
         public Integer illuminance;
         @SerializedName("Window")
         public Integer windowState;
-        @SerializedName("Rotation")
-        public Double rotation;
         @SerializedName("Motion")
         public Integer motionState;
         @SerializedName("Temperature")
         public Double[] temperatures;
         @SerializedName("Humidity")
         public Double humidity;
-        @SerializedName("Firmware32") // BLU Remote
-        public Long firmware;
+        @SerializedName("Vibration") // BLU Distance
+        public Integer vibration;
+        @SerializedName("Distance_mm") // BLU Distance
+        public Double distance;
+        @SerializedName("Channel") // BLU Remote
+        public Integer channel;
+        @SerializedName("Rotation") // BLU Remote
+        public Double[] rotations;
+        @SerializedName("Dimmer") // BLU Remote
+        public Shelly2NotifyBluEventDimmer dimmer;
+        @SerializedName("Firmware32")
+        public Long firmware32;
 
         public Integer rssi;
         public Integer tx_power;

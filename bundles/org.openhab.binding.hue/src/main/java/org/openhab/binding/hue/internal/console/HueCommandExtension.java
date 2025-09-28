@@ -21,7 +21,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -98,12 +97,12 @@ public class HueCommandExtension extends AbstractConsoleCommandExtension impleme
             Clip2BridgeHandler clip2BridgeHandler = null;
             if (thing != null) {
                 thingHandler = thing.getHandler();
-                if (thingHandler instanceof Clip2BridgeHandler) {
-                    clip2BridgeHandler = (Clip2BridgeHandler) thingHandler;
-                } else if (thingHandler instanceof HueBridgeHandler) {
-                    bridgeHandler = (HueBridgeHandler) thingHandler;
-                } else if (thingHandler instanceof HueGroupHandler) {
-                    groupHandler = (HueGroupHandler) thingHandler;
+                if (thingHandler instanceof Clip2BridgeHandler clip2Bridge) {
+                    clip2BridgeHandler = clip2Bridge;
+                } else if (thingHandler instanceof HueBridgeHandler hueBridge) {
+                    bridgeHandler = hueBridge;
+                } else if (thingHandler instanceof HueGroupHandler hueGroup) {
+                    groupHandler = hueGroup;
                 }
             }
             if (thing == null) {
@@ -246,7 +245,7 @@ public class HueCommandExtension extends AbstractConsoleCommandExtension impleme
                     .filter(t -> THING_TYPE_BRIDGE.equals(t.getThingTypeUID())
                             || THING_TYPE_BRIDGE_API2.equals(t.getThingTypeUID())
                             || THING_TYPE_GROUP.equals(t.getThingTypeUID()))
-                    .map(t -> t.getUID().getAsString()).collect(Collectors.toList()), true)
+                    .map(t -> t.getUID().getAsString()).toList(), true)
                     .complete(args, cursorArgumentIndex, cursorPosition, candidates);
         } else if (cursorArgumentIndex == 1) {
             Thing thing = getThing(args[0]);

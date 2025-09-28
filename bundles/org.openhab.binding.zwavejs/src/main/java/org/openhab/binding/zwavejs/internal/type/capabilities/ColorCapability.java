@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.zwavejs.internal.config;
+package org.openhab.binding.zwavejs.internal.type.capabilities;
 
 import java.util.HashSet;
 import java.util.Set;

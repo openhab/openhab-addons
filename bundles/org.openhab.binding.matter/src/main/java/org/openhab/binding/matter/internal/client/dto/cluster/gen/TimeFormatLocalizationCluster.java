@@ -65,8 +65,8 @@ public class TimeFormatLocalizationCluster extends BaseCluster {
         V24HR(1, "24 Hr"),
         USE_ACTIVE_LOCALE(255, "Use Active Locale");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private HourFormatEnum(Integer value, String label) {
             this.value = value;
@@ -99,8 +99,8 @@ public class TimeFormatLocalizationCluster extends BaseCluster {
         TAIWANESE(11, "Taiwanese"),
         USE_ACTIVE_LOCALE(255, "Use Active Locale");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private CalendarTypeEnum(Integer value, String label) {
             this.value = value;

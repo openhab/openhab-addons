@@ -188,8 +188,8 @@ public class WaterHeaterManagementCluster extends BaseCluster {
         INACTIVE(0, "Inactive"),
         ACTIVE(1, "Active");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private BoostStateEnum(Integer value, String label) {
             this.value = value;

@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
  * @author Kai Kreuzer - Initial contribution and API
  */
 @NonNullByDefault
-public class ConnectedBluetoothHandler extends BeaconBluetoothHandler {
+public abstract class ConnectedBluetoothHandler extends BeaconBluetoothHandler {
 
     private final Logger logger = LoggerFactory.getLogger(ConnectedBluetoothHandler.class);
     private @Nullable Future<?> reconnectJob;

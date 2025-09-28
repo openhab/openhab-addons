@@ -17,6 +17,7 @@ import static org.mockito.Mockito.*;
 import static org.openhab.binding.zwavejs.internal.BindingConstants.*;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
@@ -27,12 +28,14 @@ import org.mockito.invocation.InvocationOnMock;
 import org.openhab.binding.zwavejs.internal.BindingConstants;
 import org.openhab.binding.zwavejs.internal.DataUtil;
 import org.openhab.binding.zwavejs.internal.api.dto.messages.ResultMessage;
+import org.openhab.binding.zwavejs.internal.config.ZwaveJSChannelConfiguration;
 import org.openhab.binding.zwavejs.internal.handler.ZwaveJSNodeHandler;
 import org.openhab.binding.zwavejs.internal.type.ZwaveJSChannelTypeProvider;
 import org.openhab.binding.zwavejs.internal.type.ZwaveJSConfigDescriptionProvider;
 import org.openhab.binding.zwavejs.internal.type.ZwaveJSConfigDescriptionProviderImpl;
 import org.openhab.binding.zwavejs.internal.type.ZwaveJSTypeGenerator;
 import org.openhab.binding.zwavejs.internal.type.ZwaveJSTypeGeneratorImpl;
+import org.openhab.binding.zwavejs.internal.type.capabilities.RollerShutterCapability;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -157,5 +160,23 @@ public class ZwaveJSNodeHandlerMock extends ZwaveJSNodeHandler {
         when(bridge.getConfiguration()).thenReturn(createBridgeConfig(configAsChannel));
         when(handler.getThing()).thenReturn(bridge);
         return bridge;
+    }
+
+    // Expose rollerShutterCapabilities for testing
+    public Map<Integer, RollerShutterCapability> getRollerShutterCapabilities() {
+        return this.rollerShutterCapabilities;
+    }
+
+    // Set inversion for a specific RollerShutterCapability
+    public void setRollerShutterInversion(RollerShutterCapability capability, boolean isUpDownInverted) {
+
+        // Find the channel config for the roller shutter channel and set inverted
+        this.thing.getChannels().stream().filter(c -> c.getUID().getId().equals(capability.rollerShutterChannelId))
+                .findFirst().ifPresent(channel -> {
+                    ZwaveJSChannelConfiguration config = channel.getConfiguration()
+                            .as(ZwaveJSChannelConfiguration.class);
+                    config.isUpDownInverted = isUpDownInverted;
+                    when(this.getChannelConfiguration(any())).thenReturn(config);
+                });
     }
 }
