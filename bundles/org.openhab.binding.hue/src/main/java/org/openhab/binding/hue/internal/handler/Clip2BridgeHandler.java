@@ -86,6 +86,8 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class Clip2BridgeHandler extends BaseBridgeHandler {
 
+    private static final String BRIDGE_V3_MODEL_ID = "BSB003"; // model name of bridge v3 (black bridge)
+
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_BRIDGE_API2);
 
     private static final int FAST_SCHEDULE_MILLI_SECONDS = 500;
@@ -494,7 +496,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
                 return;
             }
 
-            boolean isBridgeV3 = "BSB003".equals(thing.getProperties().get(Thing.PROPERTY_MODEL_ID));
+            boolean isBridgeV3 = BRIDGE_V3_MODEL_ID.equals(thing.getProperties().get(Thing.PROPERTY_MODEL_ID));
             HueTlsTrustManagerProvider trustManagerProvider = new HueTlsTrustManagerProvider(ipAddress + ":443",
                     config.useSelfSignedCertificate, isBridgeV3);
 
