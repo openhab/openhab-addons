@@ -494,8 +494,9 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
                 return;
             }
 
+            boolean isBridgeV3 = "BSB003".equals(thing.getProperties().get(Thing.PROPERTY_MODEL_ID));
             HueTlsTrustManagerProvider trustManagerProvider = new HueTlsTrustManagerProvider(ipAddress + ":443",
-                    config.useSelfSignedCertificate);
+                    config.useSelfSignedCertificate, isBridgeV3);
 
             if (Objects.isNull(trustManagerProvider.getPEMTrustManager())) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,

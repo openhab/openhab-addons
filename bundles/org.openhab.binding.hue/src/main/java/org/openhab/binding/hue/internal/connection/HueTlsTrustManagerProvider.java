@@ -39,16 +39,19 @@ import org.slf4j.LoggerFactory;
 public class HueTlsTrustManagerProvider implements TlsTrustManagerProvider {
 
     private static final String PEM_FILENAME = "huebridge_cacert.pem";
+    private static final String PEM3_FILENAME = "huebridge3_cacert.pem";
     private final String hostname;
     private final boolean useSelfSignedCertificate;
+    private final boolean isBridgeV3;
 
     private final Logger logger = LoggerFactory.getLogger(HueTlsTrustManagerProvider.class);
 
     private @Nullable PEMTrustManager trustManager;
 
-    public HueTlsTrustManagerProvider(String hostname, boolean useSelfSignedCertificate) {
+    public HueTlsTrustManagerProvider(String hostname, boolean useSelfSignedCertificate, boolean isBridgeV3) {
         this.hostname = hostname;
         this.useSelfSignedCertificate = useSelfSignedCertificate;
+        this.isBridgeV3 = isBridgeV3;
     }
 
     @Override
@@ -78,7 +81,7 @@ public class HueTlsTrustManagerProvider implements TlsTrustManagerProvider {
             } else {
                 logger.trace("Use Signify private CA Certificate for Hue Bridges from resources.");
                 // use Signify private CA Certificate for Hue Bridges from resources
-                localTrustManager = getInstanceFromResource(PEM_FILENAME);
+                localTrustManager = getInstanceFromResource(isBridgeV3 ? PEM3_FILENAME : PEM_FILENAME);
             }
             this.trustManager = localTrustManager;
         } catch (CertificateException | MalformedURLException e) {
