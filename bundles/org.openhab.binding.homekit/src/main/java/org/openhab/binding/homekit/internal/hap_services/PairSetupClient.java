@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.homekit.internal.hap_services;
 
+import static org.openhab.binding.homekit.internal.HomekitBindingConstants.*;
+import static org.openhab.binding.homekit.internal.crypto.CryptoUtils.toHex;
+
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Objects;
@@ -43,23 +46,20 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class PairSetupClient {
 
-    private static final String ENDPOINT_PAIR_SETUP = "/pair-setup";
-    private static final String CONTENT_TYPE_TLV8 = "application/pairing+tlv8";
-
     private final Logger logger = LoggerFactory.getLogger(PairSetupClient.class);
 
     private final IpTransport ipTransport;
     private final String password;
-    private final byte[] pairingId;
-    private final Ed25519PrivateKeyParameters clientLongTermPrivateKey;
+    private final byte[] clientPairingId;
+    private final Ed25519PrivateKeyParameters clientLongTermSecretKey;
 
-    public PairSetupClient(IpTransport ipTransport, String pairingId,
-            Ed25519PrivateKeyParameters clientLongTermPrivateKey, String pairingCode) throws Exception {
-        logger.debug("Created with pairingId:{}, pairingCode:{}", pairingId, pairingCode);
+    public PairSetupClient(IpTransport ipTransport, String clientPairingId,
+            Ed25519PrivateKeyParameters clientLongTermSecretKey, String pairingCode) throws Exception {
+        logger.debug("Created with client pairingId:{}, pairingCode:{}", clientPairingId, pairingCode);
         this.ipTransport = ipTransport;
         this.password = pairingCode;
-        this.pairingId = pairingId.getBytes(StandardCharsets.UTF_8);
-        this.clientLongTermPrivateKey = clientLongTermPrivateKey;
+        this.clientPairingId = clientPairingId.getBytes(StandardCharsets.UTF_8);
+        this.clientLongTermSecretKey = clientLongTermSecretKey;
     }
 
     /**
@@ -70,7 +70,7 @@ public class PairSetupClient {
      */
     public Ed25519PublicKeyParameters pair() throws Exception {
         SRPclient client = m1Execute();
-        return client.getAccessoryLongTermPublicKey();
+        return client.getServerLongTermPublicKey();
     }
 
     /**
@@ -86,57 +86,60 @@ public class PairSetupClient {
                 TlvType.STATE.key, new byte[] { PairingState.M1.value }, //
                 TlvType.METHOD.key, new byte[] { PairingMethod.SETUP.value });
         Validator.validate(PairingMethod.SETUP, tlv);
-        byte[] response1 = ipTransport.post(ENDPOINT_PAIR_SETUP, CONTENT_TYPE_TLV8, Tlv8Codec.encode(tlv));
-        return m2Execute(response1);
+        byte[] m1Response = ipTransport.post(ENDPOINT_PAIR_SETUP, CONTENT_TYPE_PAIRING, Tlv8Codec.encode(tlv));
+        return m2Execute(m1Response);
     }
 
     /**
      * Executes step M2 of the pairing process: Receive salt & accessory SRP public key.
      * And initializes the SRP client with the received parameters.
      *
-     * @param response1 byte array containing the response from step M1
+     * @param m1Response byte array containing the response from step M1
      * @throws Exception if an error occurs during processing
      */
-    private SRPclient m2Execute(byte[] response1) throws Exception {
-        logger.debug("Pair-Setup M2: Read server salt and PK; initialize SRP client");
-        Map<Integer, byte[]> tlv = Tlv8Codec.decode(response1);
+    private SRPclient m2Execute(byte[] m1Response) throws Exception {
+        logger.debug("Pair-Setup M2: Read server salt and ephemeral PK; initialize SRP client");
+        Map<Integer, byte[]> tlv = Tlv8Codec.decode(m1Response);
         Validator.validate(PairingMethod.SETUP, tlv);
         byte[] serverSalt = tlv.get(TlvType.SALT.key);
         byte[] serverPublicKey = tlv.get(TlvType.PUBLIC_KEY.key);
+        logger.trace("ServerSalt: {}", toHex(serverSalt));
+        logger.trace("ServerPKey: {}", toHex(serverPublicKey));
         SRPclient client = new SRPclient(password, Objects.requireNonNull(serverSalt),
                 Objects.requireNonNull(serverPublicKey));
         return m3Execute(client);
     }
 
     /**
-     * Executes step M3 of the pairing process: Send client SRP public key & proof.
+     * Executes step M3 of the pairing process: Send client SRP public key & M1 proof.
      *
      * @return byte array containing the response from the accessory
      * @throws Exception if an error occurs during processing
      */
     private SRPclient m3Execute(SRPclient client) throws Exception {
-        logger.debug("Pair-Setup M3: Send client PK and M1 proof to server");
+        logger.debug("Pair-Setup M3: Send client epehemeral PK and M1 proof to server");
         Map<Integer, byte[]> tlv = Map.of( //
                 TlvType.STATE.key, new byte[] { PairingState.M3.value }, //
                 TlvType.PUBLIC_KEY.key, CryptoUtils.toUnsigned(client.A, 384), //
                 TlvType.PROOF.key, client.M1);
         Validator.validate(PairingMethod.SETUP, tlv);
-        byte[] response3 = ipTransport.post(ENDPOINT_PAIR_SETUP, CONTENT_TYPE_TLV8, Tlv8Codec.encode(tlv));
-        return m4Execute(client, response3);
+        byte[] m3Response = ipTransport.post(ENDPOINT_PAIR_SETUP, CONTENT_TYPE_PAIRING, Tlv8Codec.encode(tlv));
+        return m4Execute(client, m3Response);
     }
 
     /**
      * Executes step M4 of the pairing process: Verify accessory SRP proof.
      *
-     * @param response3 byte array containing the response from step M3
+     * @param m3Response byte array containing the response from step M3
      * @throws Exception if an error occurs during processing
      */
-    private SRPclient m4Execute(SRPclient client, byte[] response3) throws Exception {
+    private SRPclient m4Execute(SRPclient client, byte[] m3Response) throws Exception {
         logger.debug("Pair-Setup M4: Read server M2 proof; and verify it");
-        Map<Integer, byte[]> tlv = Tlv8Codec.decode(response3);
+        Map<Integer, byte[]> tlv = Tlv8Codec.decode(m3Response);
         Validator.validate(PairingMethod.SETUP, tlv);
-        byte[] proof = tlv.get(TlvType.PROOF.key);
-        client.m4VerifyServerProof(Objects.requireNonNull(proof));
+        byte[] serverProofM2 = tlv.get(TlvType.PROOF.key);
+        logger.trace("ServerM2: {}", toHex(serverProofM2));
+        client.m4VerifyServerProof(Objects.requireNonNull(serverProofM2));
         return m5Execute(client);
     }
 
@@ -149,28 +152,28 @@ public class PairSetupClient {
      */
     private SRPclient m5Execute(SRPclient client) throws Exception {
         logger.debug("Pair-Setup M5: Send client session key, pairing id, LTPK, and sig to server");
-        byte[] cipherText = client.m5EncodeClientInfoAndSign(pairingId, clientLongTermPrivateKey);
+        byte[] cipherText = client.m5EncodeClientInfoAndSign(clientPairingId, clientLongTermSecretKey);
         Map<Integer, byte[]> tlv = Map.of( //
                 TlvType.STATE.key, new byte[] { PairingState.M5.value }, //
                 TlvType.ENCRYPTED_DATA.key, cipherText);
         Validator.validate(PairingMethod.SETUP, tlv);
-        byte[] response5 = ipTransport.post(ENDPOINT_PAIR_SETUP, CONTENT_TYPE_TLV8, Tlv8Codec.encode(tlv));
-        return m6Execute(client, response5);
+        byte[] m5Response = ipTransport.post(ENDPOINT_PAIR_SETUP, CONTENT_TYPE_PAIRING, Tlv8Codec.encode(tlv));
+        return m6Execute(client, m5Response);
     }
 
     /**
      * Executes step M6 of the pairing process: Final confirmation & accessory credentials.
      * Derives and returns the session keys.
      *
-     * @param response5 byte array containing the response from step M5
+     * @param m5Response byte array containing the response from step M5
      * @throws Exception if an error occurs during processing
      */
-    private SRPclient m6Execute(SRPclient client, byte[] response5) throws Exception {
+    private SRPclient m6Execute(SRPclient client, byte[] m5Response) throws Exception {
         logger.debug("Pair-Setup M6: Read server session key, pairing id, LTPK, and sig; and verify it");
-        Map<Integer, byte[]> tlv = Tlv8Codec.decode(response5);
+        Map<Integer, byte[]> tlv = Tlv8Codec.decode(m5Response);
         Validator.validate(PairingMethod.SETUP, tlv);
-        byte[] ciphertext = tlv.get(TlvType.ENCRYPTED_DATA.key);
-        client.m6DecodeServerInfoAndVerify(Objects.requireNonNull(ciphertext));
+        byte[] cipherText = tlv.get(TlvType.ENCRYPTED_DATA.key);
+        client.m6DecodeServerInfoAndVerify(Objects.requireNonNull(cipherText));
         return client;
     }
 

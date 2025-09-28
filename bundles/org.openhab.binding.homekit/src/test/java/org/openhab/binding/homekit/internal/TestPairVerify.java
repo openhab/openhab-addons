@@ -24,7 +24,6 @@ import java.util.Objects;
 import org.bouncycastle.crypto.params.Ed25519PrivateKeyParameters;
 import org.bouncycastle.crypto.params.X25519PrivateKeyParameters;
 import org.bouncycastle.crypto.params.X25519PublicKeyParameters;
-import org.bouncycastle.util.Arrays;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.homekit.internal.crypto.Tlv8Codec;
@@ -51,7 +50,6 @@ class TestPairVerify {
             """;
 
     private final String clientPairingIdentifier = "11:22:33:44:55:66";
-    private final byte[] clientPairingId = clientPairingIdentifier.getBytes(StandardCharsets.UTF_8);
     private final String serverPairingIdentifier = "66:55:44:33:22:11";
     private final byte[] serverPairingId = serverPairingIdentifier.getBytes(StandardCharsets.UTF_8);
 
@@ -61,13 +59,13 @@ class TestPairVerify {
     private final Ed25519PrivateKeyParameters serverLongTermPrivateKey = new Ed25519PrivateKeyParameters(
             toBytes(SERVER_PRIVATE_HEX));
 
-    private @NonNullByDefault({}) X25519PrivateKeyParameters serverKey;
-    private @NonNullByDefault({}) X25519PublicKeyParameters clientKey;
-    private @NonNullByDefault({}) byte[] sessionKey;
+    private @NonNullByDefault({}) X25519PrivateKeyParameters serverEphemeralSecretKey;
+    private @NonNullByDefault({}) X25519PublicKeyParameters clientEphemeralPublicKey;
+    private @NonNullByDefault({}) byte[] sharedKey;
 
     @Test
     void testPairVerify() throws Exception {
-        serverKey = generateX25519KeyPair();
+        serverEphemeralSecretKey = generateX25519KeyPair();
 
         // create mock
         IpTransport mockTransport = mock(IpTransport.class);
@@ -90,8 +88,8 @@ class TestPairVerify {
 
             // process the message based on the pair verification process Mx state
             return switch (state[0]) {
-                case 1 -> getServerResponseM1(tlv);
-                case 3 -> getServerResponseM3(tlv);
+                case 1 -> m1GetServerResponse(tlv);
+                case 3 -> m3GetServerResponse(tlv);
                 default -> throw new IllegalArgumentException("Unexpected state");
             };
 
@@ -101,53 +99,56 @@ class TestPairVerify {
         client.verify();
     }
 
-    private byte[] getServerResponseM1(Map<Integer, byte[]> tlv) throws Exception {
-        byte[] clientKeyBytes = tlv.get(TlvType.PUBLIC_KEY.key);
-        byte[] serverKeyBytes = serverKey.generatePublicKey().getEncoded();
-        byte[] payload = concat(serverKeyBytes, serverPairingId, Objects.requireNonNull(clientKeyBytes));
-        byte[] signature = signMessage(serverLongTermPrivateKey, payload);
+    private byte[] m1GetServerResponse(Map<Integer, byte[]> tlv) throws Exception {
+        byte[] clientEphemeralPublicKey = tlv.get(TlvType.PUBLIC_KEY.key);
+        byte[] serverEphemeralPublicKey = this.serverEphemeralSecretKey.generatePublicKey().getEncoded();
+        if (clientEphemeralPublicKey == null) {
+            throw new SecurityException("Client public key missing");
+        }
+        byte[] serverSignature = signMessage(serverLongTermPrivateKey,
+                concat(serverEphemeralPublicKey, serverPairingId, clientEphemeralPublicKey));
 
         Map<Integer, byte[]> tlvInner = Map.of( //
                 TlvType.IDENTIFIER.key, serverPairingId, //
-                TlvType.SIGNATURE.key, signature);
+                TlvType.SIGNATURE.key, serverSignature);
 
-        clientKey = new X25519PublicKeyParameters(clientKeyBytes);
+        this.clientEphemeralPublicKey = new X25519PublicKeyParameters(clientEphemeralPublicKey);
 
-        byte[] sharedSecret = generateSharedSecret(serverKey, clientKey);
-        sessionKey = generateHkdfKey(sharedSecret, PAIR_VERIFY_ENCRYPT_SALT, PAIR_VERIFY_ENCRYPT_INFO);
+        byte[] sharedSecret = generateSharedSecret(serverEphemeralSecretKey, this.clientEphemeralPublicKey);
+        sharedKey = generateHkdfKey(sharedSecret, PAIR_VERIFY_ENCRYPT_SALT, PAIR_VERIFY_ENCRYPT_INFO);
 
-        byte[] plaintext = Tlv8Codec.encode(tlvInner);
-        byte[] ciphertext = encrypt(sessionKey, PV_M2_NONCE, plaintext);
+        byte[] plainText = Tlv8Codec.encode(tlvInner);
+        byte[] cipherText = encrypt(sharedKey, PV_M2_NONCE, plainText);
 
         Map<Integer, byte[]> tlvOut = Map.of( //
                 TlvType.STATE.key, new byte[] { PairingState.M2.value }, //
-                TlvType.PUBLIC_KEY.key, serverKey.generatePublicKey().getEncoded(), //
-                TlvType.ENCRYPTED_DATA.key, ciphertext);
+                TlvType.PUBLIC_KEY.key, serverEphemeralPublicKey, //
+                TlvType.ENCRYPTED_DATA.key, cipherText);
 
         return Tlv8Codec.encode(tlvOut);
     }
 
-    private byte[] getServerResponseM3(Map<Integer, byte[]> tlv) throws Exception {
-        if (sessionKey.length == 0) {
+    private byte[] m3GetServerResponse(Map<Integer, byte[]> tlv) throws Exception {
+        if (sharedKey.length == 0) {
             throw new IllegalStateException("Session key not established");
         }
-        byte[] ciphertext = tlv.get(TlvType.ENCRYPTED_DATA.key);
-        if (ciphertext == null) {
-            throw new SecurityException("Missing ciphertext in M3");
+        byte[] cipherText = tlv.get(TlvType.ENCRYPTED_DATA.key);
+        if (cipherText == null) {
+            throw new SecurityException("Server cipher text missing");
         }
-        byte[] plaintext = decrypt(sessionKey, PV_M3_NONCE, Objects.requireNonNull(ciphertext));
+        byte[] plainText = decrypt(sharedKey, PV_M3_NONCE, Objects.requireNonNull(cipherText));
 
-        Map<Integer, byte[]> subTlv = Tlv8Codec.decode(plaintext);
-        byte[] information = subTlv.get(TlvType.IDENTIFIER.key);
-        byte[] signature = subTlv.get(TlvType.SIGNATURE.key);
-        if (information == null || signature == null) {
-            throw new SecurityException("Client pairing ID or signature missing");
+        Map<Integer, byte[]> subTlv = Tlv8Codec.decode(plainText);
+        byte[] clientPairingId = subTlv.get(TlvType.IDENTIFIER.key);
+        byte[] clientSignature = subTlv.get(TlvType.SIGNATURE.key);
+        if (clientPairingId == null || clientSignature == null) {
+            throw new SecurityException("Client pairing Id or signature missing");
         }
 
-        verifySignature(clientLongTermPrivateKey.generatePublicKey(), plaintext, Objects.requireNonNull(signature));
-        byte[] pairingId = Arrays.copyOfRange(information, 32, information.length - 32);
-        if (!Arrays.areEqual(clientPairingId, pairingId)) {
-            throw new SecurityException("Client pairing ID does not match");
+        if (!verifySignature(clientLongTermPrivateKey.generatePublicKey(), clientSignature,
+                concat(clientEphemeralPublicKey.getEncoded(), clientPairingId,
+                        serverEphemeralSecretKey.generatePublicKey().getEncoded()))) {
+            throw new SecurityException("Client signature invalid");
         }
 
         Map<Integer, byte[]> tlvOut = Map.of(TlvType.STATE.key, new byte[] { PairingState.M4.value });

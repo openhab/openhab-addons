@@ -71,9 +71,9 @@ class TestPairSetup {
     void testSrpClient() throws Exception {
         byte[] plainText0 = "the quick brown dog".getBytes(StandardCharsets.UTF_8);
         SRPclient client = new SRPclient("password123", toBytes(SALT_HEX), toBytes(SERVER_PRIVATE_HEX));
-        byte[] key = client.getSymmetricKey();
-        byte[] cipherText = encrypt(key, PS_M5_NONCE, plainText0);
-        byte[] plainText1 = decrypt(key, PS_M5_NONCE, cipherText);
+        byte[] sharedKey = client.getSharedKey();
+        byte[] cipherText = encrypt(sharedKey, PS_M5_NONCE, plainText0);
+        byte[] plainText1 = decrypt(sharedKey, PS_M5_NONCE, cipherText);
         assertArrayEquals(plainText0, plainText1);
     }
 
@@ -81,24 +81,23 @@ class TestPairSetup {
     void testPairSetup() throws Exception {
         // initialize test parameters
         String password = "password123";
-        String clientPairingIdentifier = "11:22:33:44:55:66";
+        String clientPairingId = "11:22:33:44:55:66";
         String serverPairingIdentifier = "66:55:44:33:22:11";
         byte[] serverSalt = toBytes(SALT_HEX);
         byte[] serverPairingId = serverPairingIdentifier.getBytes(StandardCharsets.UTF_8);
 
         // initialize signing keys
-        Ed25519PrivateKeyParameters clientPrivateSigningKey = new Ed25519PrivateKeyParameters(
+        Ed25519PrivateKeyParameters clientLongTermSecretKey = new Ed25519PrivateKeyParameters(
                 toBytes(CLIENT_PRIVATE_HEX));
-        Ed25519PrivateKeyParameters serverPrivateSigningKey = new Ed25519PrivateKeyParameters(
+        Ed25519PrivateKeyParameters serverLongTermSecretKey = new Ed25519PrivateKeyParameters(
                 toBytes(SERVER_PRIVATE_HEX));
 
         // create mock
         IpTransport mockTransport = mock(IpTransport.class);
 
         // create SRP client and server
-        SRPserver server = new SRPserver(password, serverSalt, serverPairingId, serverPrivateSigningKey, null, null);
-        PairSetupClient client = new PairSetupClient(mockTransport, clientPairingIdentifier, clientPrivateSigningKey,
-                password);
+        SRPserver server = new SRPserver(password, serverSalt, serverPairingId, serverLongTermSecretKey, null, null);
+        PairSetupClient client = new PairSetupClient(mockTransport, clientPairingId, clientLongTermSecretKey, password);
 
         // mock the HTTP transport to simulate the SRP exchange
         doAnswer(invocation -> {

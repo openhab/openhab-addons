@@ -49,13 +49,15 @@ public class HomekitBindingConstants {
     public static final String PROPERTY_ACCESSORY_UID = "accessoryUID";
     public static final String PROPERTY_PROTOCOL_VERSION = "protocolVersion";
     public static final String PROPERTY_ACCESSORY_CATEGORY = "accessoryCategory";
-    public static final String PROPERTY_CONTROLLER_PRIVATE_KEY = "controllerPrivateKey";
+    public static final String PROPERTY_CONTROLLER_PRIVATE_KEY = "controllerSecretKey";
     public static final String PROPERTY_ACCESSORY_PUBLIC_KEY = "accessoryPublicKey";
 
     // HomeKit HTTP URI endpoints and content types
-    public static final String ENDPOINT_PAIRING = "pair-setup";
-    public static final String ENDPOINT_ACCESSORIES = "accessories";
-    public static final String ENDPOINT_CHARACTERISTICS = "characteristics";
+    public static final String ENDPOINT_ACCESSORIES = "/accessories";
+    public static final String ENDPOINT_CHARACTERISTICS = "/characteristics";
+    public static final String ENDPOINT_PAIR_SETUP = "/pair-setup";
+    public static final String ENDPOINT_PAIR_VERIFY = "/pair-verify";
+
     public static final String CONTENT_TYPE_PAIRING = "application/pairing+tlv8";
     public static final String CONTENT_TYPE_HAP = "application/hap+json";
 }

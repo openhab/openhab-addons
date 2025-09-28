@@ -33,6 +33,7 @@ import org.bouncycastle.crypto.params.KeyParameter;
 import org.bouncycastle.crypto.params.X25519PrivateKeyParameters;
 import org.bouncycastle.crypto.params.X25519PublicKeyParameters;
 import org.bouncycastle.crypto.signers.Ed25519Signer;
+import org.bouncycastle.util.encoders.Hex;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -106,10 +107,10 @@ public class CryptoUtils {
     }
 
     // Compute shared secret using ECDH
-    public static byte[] generateSharedSecret(X25519PrivateKeyParameters clientPrivateKey,
-            X25519PublicKeyParameters serverPublicKey) {
+    public static byte[] generateSharedSecret(X25519PrivateKeyParameters clientEphemeralSecretKey,
+            X25519PublicKeyParameters serverEphemeralPublicKey) {
         byte[] secret = new byte[32];
-        clientPrivateKey.generateSecret(serverPublicKey, secret, 0);
+        clientEphemeralSecretKey.generateSecret(serverEphemeralPublicKey, secret, 0);
         return secret;
     }
 
@@ -125,9 +126,9 @@ public class CryptoUtils {
     }
 
     // Sign message with Ed25519
-    public static byte[] signMessage(Ed25519PrivateKeyParameters privateKey, byte[] message) {
+    public static byte[] signMessage(Ed25519PrivateKeyParameters secretKey, byte[] message) {
         Ed25519Signer signer = new Ed25519Signer();
-        signer.init(true, privateKey);
+        signer.init(true, secretKey);
         signer.update(message, 0, message.length);
         return signer.generateSignature();
     }
@@ -160,14 +161,7 @@ public class CryptoUtils {
     }
 
     public static String toHex(byte @Nullable [] bytes) {
-        if (bytes == null) {
-            return "null";
-        }
-        StringBuilder sb = new StringBuilder();
-        for (byte b : bytes) {
-            sb.append(String.format("%02X", b)).append(' ');
-        }
-        return sb.toString().trim(); // remove trailing space
+        return bytes == null ? "null" : Hex.toHexString(bytes);
     }
 
     /**
@@ -205,7 +199,7 @@ public class CryptoUtils {
         return padded;
     }
 
-    public static boolean verifySignature(Ed25519PublicKeyParameters publicKey, byte[] payLoad, byte[] signature) {
+    public static boolean verifySignature(Ed25519PublicKeyParameters publicKey, byte[] signature, byte[] payLoad) {
         Ed25519Signer verifier = new Ed25519Signer();
         verifier.init(false, publicKey);
         verifier.update(payLoad, 0, payLoad.length);

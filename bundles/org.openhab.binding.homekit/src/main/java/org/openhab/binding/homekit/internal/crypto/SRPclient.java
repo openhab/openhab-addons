@@ -54,45 +54,45 @@ public class SRPclient {
     /**
      * M1 - Simplified constructor when user and client private key are not provided.
      *
-     * @param password the password (P) used for authentication.
+     * @param passwordP the password (P) used for authentication.
      * @param serverSalt the salt (s) provided by the server.
-     * @param serverPublicKey the server's public SRP key (B).
+     * @param serverEphemeralPublicKey the server's public SRP key (B).
      *
      * @throws Exception if an error occurs during initialization.
      */
-    public SRPclient(String password, byte[] serverSalt, byte[] serverPublicKey) throws Exception {
-        this(password, serverSalt, serverPublicKey, null, null);
+    public SRPclient(String passwordP, byte[] serverSalt, byte[] serverEphemeralPublicKey) throws Exception {
+        this(passwordP, serverSalt, serverEphemeralPublicKey, null, null);
     }
 
     /**
      * M2 — Initializes the SRP client with the given password, salt and server public SRP key.
      *
-     * @param password the password (P) used for authentication.
+     * @param password_p the password (P) used for authentication.
      * @param serverSalt the salt (s) provided by the server.
-     * @param serverPublicKey the server's public SRP key (B).
-     * @param user the username (I). If null, "Pair-Setup" is used.
-     * @param clientPrivateKey the client's private SRP key (a). If null, a random key is generated.
+     * @param serverEphemeralPublicKey the server's public SRP key (B).
+     * @param user_I the username (I). If null, "Pair-Setup" is used.
+     * @param clientEphemeralSecretKey the client's private SRP key (a). If null, a random key is generated.
      *
      * @throws Exception if an error occurs during initialization.
      */
-    public SRPclient(String password, byte[] serverSalt, byte[] serverPublicKey, @Nullable String user,
-            byte @Nullable [] clientPrivateKey) throws Exception {
+    public SRPclient(String password_p, byte[] serverSalt, byte[] serverEphemeralPublicKey, @Nullable String user_I,
+            byte @Nullable [] clientEphemeralSecretKey) throws Exception {
         // set username, salt and server public key
         s = serverSalt;
-        B = new BigInteger(1, serverPublicKey);
-        I = user != null ? user : PAIR_SETUP; // default username is "Pair-Setup"
+        B = new BigInteger(1, serverEphemeralPublicKey);
+        I = user_I != null ? user_I : PAIR_SETUP; // default username is "Pair-Setup"
 
         // Apply or create ephemeral a and compute public A
-        byte[] clientKey = clientPrivateKey;
-        if (clientKey == null) {
-            clientKey = new byte[32];
-            new SecureRandom().nextBytes(clientKey);
+        byte[] client_a = clientEphemeralSecretKey;
+        if (client_a == null) {
+            client_a = new byte[32];
+            new SecureRandom().nextBytes(client_a);
         }
-        a = new BigInteger(1, clientKey);
+        a = new BigInteger(1, client_a);
         A = g.modPow(a, N);
 
         // Compute hash x = H(salt || H(username || ":" || password))
-        byte[] hIP = sha512((I + ":" + password).getBytes(StandardCharsets.UTF_8));
+        byte[] hIP = sha512((I + ":" + password_p).getBytes(StandardCharsets.UTF_8));
         byte[] xHash = sha512(concat(serverSalt, hIP));
         x = new BigInteger(1, xHash);
 
@@ -123,7 +123,11 @@ public class SRPclient {
         M2 = sha512(concat(toUnsigned(A, 384), M1, K));
     }
 
-    public Ed25519PublicKeyParameters getAccessoryLongTermPublicKey() throws Exception {
+    public byte[] getScramblingParameter() {
+        return toUnsigned(u, 64);
+    }
+
+    public Ed25519PublicKeyParameters getServerLongTermPublicKey() throws Exception {
         Ed25519PublicKeyParameters serverLongTermPublicKey = this.serverLongTermPublicKey;
         if (serverLongTermPublicKey == null) {
             throw new IllegalStateException("Accessory long-term public key not yet available");
@@ -131,11 +135,7 @@ public class SRPclient {
         return serverLongTermPublicKey;
     }
 
-    public byte[] getScramblingParameter() {
-        return toUnsigned(u, 64);
-    }
-
-    public byte[] getSymmetricKey() {
+    public byte[] getSharedKey() {
         return generateHkdfKey(K, PAIR_SETUP_ENCRYPT_SALT, PAIR_SETUP_ENCRYPT_INFO);
     }
 
@@ -152,25 +152,24 @@ public class SRPclient {
      * the client's long term secret key.
      *
      * @param pairingId the pairing identifier.
-     * @param controllerLongTermPrivateKey the controller's long-term private key for signing.
+     * @param clientLongTermSecretKey the controller's long-term private key for signing.
      * @return the encrypted controller information as a byte array.
      * @throws Exception if an error occurs during the encryption or signing process.
      */
-    public byte[] m5EncodeClientInfoAndSign(byte[] pairingId, Ed25519PrivateKeyParameters controllerLongTermPrivateKey)
+    public byte[] m5EncodeClientInfoAndSign(byte[] pairingId, Ed25519PrivateKeyParameters clientLongTermSecretKey)
             throws Exception {
         byte[] sharedKey = generateHkdfKey(K, PAIR_CONTROLLER_SIGN_SALT, PAIR_CONTROLLER_SIGN_INFO);
-        byte[] signingKey = controllerLongTermPrivateKey.generatePublicKey().getEncoded();
-        byte[] payload = concat(sharedKey, pairingId, signingKey);
-        byte[] signature = signMessage(controllerLongTermPrivateKey, payload);
+        byte[] clientSigningKey = clientLongTermSecretKey.generatePublicKey().getEncoded();
+        byte[] clientSignature = signMessage(clientLongTermSecretKey, concat(sharedKey, pairingId, clientSigningKey));
 
         Map<Integer, byte[]> subTlv = Map.of( //
                 TlvType.IDENTIFIER.key, pairingId, //
-                TlvType.PUBLIC_KEY.key, signingKey, //
-                TlvType.SIGNATURE.key, signature);
+                TlvType.PUBLIC_KEY.key, clientSigningKey, //
+                TlvType.SIGNATURE.key, clientSignature);
 
-        byte[] plaintext = Tlv8Codec.encode(subTlv);
-        byte[] ciphertext = encrypt(getSymmetricKey(), PS_M5_NONCE, plaintext);
-        return ciphertext;
+        byte[] plainText = Tlv8Codec.encode(subTlv);
+        byte[] cipherText = encrypt(getSharedKey(), PS_M5_NONCE, plainText);
+        return cipherText;
     }
 
     /**
@@ -183,22 +182,22 @@ public class SRPclient {
      * @throws Exception if an error occurs during decryption or signature verification.
      */
     public void m6DecodeServerInfoAndVerify(byte[] cipherText) throws Exception {
-        byte[] plainText = decrypt(getSymmetricKey(), PS_M6_NONCE, cipherText);
+        byte[] plainText = decrypt(getSharedKey(), PS_M6_NONCE, cipherText);
 
         Map<Integer, byte[]> subTlv = Tlv8Codec.decode(plainText);
-        byte[] pairingId = subTlv.get(TlvType.IDENTIFIER.key);
-        byte[] signingKey = subTlv.get(TlvType.PUBLIC_KEY.key);
-        byte[] signature = subTlv.get(TlvType.SIGNATURE.key);
+        byte[] serverPairingId = subTlv.get(TlvType.IDENTIFIER.key);
+        byte[] serverSigningKey = subTlv.get(TlvType.PUBLIC_KEY.key);
+        byte[] serverSignature = subTlv.get(TlvType.SIGNATURE.key);
 
-        if (pairingId == null || signingKey == null || signature == null) {
+        if (serverPairingId == null || serverSigningKey == null || serverSignature == null) {
             throw new SecurityException("Missing accessory credentials in M6");
         }
 
         byte[] sharedKey = generateHkdfKey(K, PAIR_ACCESSORY_SIGN_SALT, PAIR_ACCESSORY_SIGN_INFO);
-        byte[] payload = concat(sharedKey, pairingId, signingKey);
 
-        Ed25519PublicKeyParameters serverLongTermPublicKey = new Ed25519PublicKeyParameters(signingKey, 0);
-        if (!verifySignature(serverLongTermPublicKey, payload, signature)) {
+        Ed25519PublicKeyParameters serverLongTermPublicKey = new Ed25519PublicKeyParameters(serverSigningKey, 0);
+        if (!verifySignature(serverLongTermPublicKey, serverSignature,
+                concat(sharedKey, serverPairingId, serverSigningKey))) {
             throw new SecurityException("Accessory signature verification failed");
         }
         this.serverLongTermPublicKey = serverLongTermPublicKey;

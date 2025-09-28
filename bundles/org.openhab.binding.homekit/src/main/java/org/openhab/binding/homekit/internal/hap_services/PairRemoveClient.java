@@ -18,6 +18,7 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.homekit.internal.crypto.Tlv8Codec;
+import org.openhab.binding.homekit.internal.enums.ErrorCode;
 import org.openhab.binding.homekit.internal.enums.PairingMethod;
 import org.openhab.binding.homekit.internal.enums.PairingState;
 import org.openhab.binding.homekit.internal.enums.TlvType;
@@ -39,20 +40,20 @@ public class PairRemoveClient {
     private final Logger logger = LoggerFactory.getLogger(PairRemoveClient.class);
 
     private final IpTransport ipTransport;
-    private final String pairingId;
+    private final String serverPairingId;
 
-    public PairRemoveClient(IpTransport ipTransport, String pairingId) {
-        logger.debug("Created with pairingId:{}", pairingId);
+    public PairRemoveClient(IpTransport ipTransport, String serverPairingId) {
+        logger.debug("Created with pairingId:{}", serverPairingId);
         this.ipTransport = ipTransport;
-        this.pairingId = pairingId;
+        this.serverPairingId = serverPairingId;
     }
 
     public void remove() throws Exception {
-        logger.debug("Starting Pair-Remove");
+        logger.debug("Pair-Remove: starting removal");
         Map<Integer, byte[]> tlv = Map.of( //
                 TlvType.STATE.key, new byte[] { PairingState.M1.value }, //
                 TlvType.METHOD.key, new byte[] { PairingMethod.REMOVE.value }, //
-                TlvType.IDENTIFIER.key, pairingId.getBytes(StandardCharsets.UTF_8));
+                TlvType.IDENTIFIER.key, serverPairingId.getBytes(StandardCharsets.UTF_8));
         Validator.validate(PairingMethod.REMOVE, tlv);
 
         byte[] response = ipTransport.post(ENDPOINT_PAIR_REMOVE, CONTENT_TYPE, Tlv8Codec.encode(tlv));
@@ -76,8 +77,10 @@ public class PairRemoveClient {
          */
         public static void validate(PairingMethod method, Map<Integer, byte[]> tlv) throws SecurityException {
             if (tlv.containsKey(TlvType.ERROR.key)) {
+                byte[] err = tlv.get(TlvType.ERROR.key);
+                ErrorCode code = err != null && err.length > 0 ? ErrorCode.from(err[0]) : ErrorCode.UNKNOWN;
                 throw new SecurityException(
-                        "Pairing method '%s' action failed with unknown error".formatted(method.name()));
+                        "Pairing method '%s' action failed with error '%s'".formatted(method.name(), code.name()));
             }
 
             byte[] state = tlv.get(TlvType.STATE.key);
