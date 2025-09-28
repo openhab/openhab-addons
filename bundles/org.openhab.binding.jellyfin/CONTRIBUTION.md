@@ -8,20 +8,31 @@ The following diagram shows the main classes and their relationships within the 
 
 ```mermaid
 classDiagram
+    %% Class inheritance relationships
     HandlerFactory <|-- BaseThingHandlerFactory
     ServerHandler <|-- BaseBridgeHandler
     ServerDiscoveryService <|-- AbstractDiscoveryService
     ExceptionHandler ..|> ExceptionHandlerType
+    AbstractTask <|-- ConnectionTask
+    AbstractTask <|-- RegistrationTask
+    AbstractTask <|-- UpdateTask
+    AbstractTask <|-- UsersListTask
+    AbstractTask <|-- ClientScanTask
+    ApiClient <|-- org.openhab.binding.jellyfin.internal.api.generated.ApiClient
     
+    %% Class dependencies and usage relationships
     HandlerFactory --> ApiClientFactory : uses
     ServerHandler --> ApiClient : uses
     ServerHandler --> ExceptionHandler : uses
     ServerHandler --> Configuration : uses
+    ServerHandler --> TaskFactory : uses
+    TaskFactory ..> AbstractTask : creates
     ServerDiscoveryService --> ServerDiscovery : uses
     ServerDiscovery ..> ServerDiscoveryResult : creates
     ApiClientFactory ..> ApiClient : creates
     HandlerFactory ..> ServerHandler : creates
     
+    %% Class definitions with key attributes and methods
     class HandlerFactory {
         -ApiClientFactory apiClientFactory
         +supportsThingType(ThingTypeUID) boolean
@@ -33,6 +44,7 @@ classDiagram
         -ExceptionHandler exceptionHandler
         -ApiClient apiClient
         -Configuration configuration
+        -Map~String,ScheduledFuture~ scheduledTasks
         +initialize()
         +handleCommand()
         +dispose()
@@ -44,15 +56,37 @@ classDiagram
     
     class ApiClient {
         +authenticateWithToken(String)
+        +updateBaseUri(String)
     }
     
     class ServerDiscoveryService {
         -Logger logger
+        -ServerDiscovery serverDiscovery
         +startScan()
     }
     
     class ServerDiscovery {
+        -int port
+        -int timeout
         +discoverServers() List
+    }
+    
+    class AbstractTask {
+        <<abstract>>
+        -String id
+        -int startupDelay
+        -int interval
+        +getId() String
+        +getStartupDelay() int
+        +getInterval() int
+        +run()
+    }
+    
+    class TaskFactory {
+        <<static>>
+        +createConnectionTask(ApiClient, Consumer, ExceptionHandlerType) ConnectionTask
+        +createRegistrationTask(ApiClient, ExceptionHandlerType) RegistrationTask
+        +createUpdateTask(ApiClient, ExceptionHandlerType) UpdateTask
     }
     
     class ExceptionHandlerType {
@@ -68,6 +102,14 @@ classDiagram
         +String hostname
         +int port
         +boolean ssl
+        +String path
+    }
+    
+    class BindingConfiguration {
+        +int discoveryPort
+        +int discoveryTimeout
+        +String discoveryMessage
+        +static getConfiguration(ConfigurationAdmin) BindingConfiguration
     }
 ```
 
@@ -75,10 +117,23 @@ classDiagram
 
 1. **HandlerFactory**: Creates thing handlers for the binding.
 2. **ServerHandler**: Main bridge handler for Jellyfin servers.
-3. **ApiClientFactory**: Creates API client instances.
-4. **ApiClient**: Handles communication with the Jellyfin server.
-5. **ServerDiscoveryService**: Discovers Jellyfin servers on the network.
-6. **ExceptionHandler**: Handles exceptions that occur during binding operation.
+3. **ApiClientFactory**: Creates API client instances for different API versions.
+4. **ApiClient**: Handles communication with the Jellyfin server and manages authentication.
+5. **ServerDiscoveryService**: Discovers Jellyfin servers on the network using UDP broadcasts.
+6. **TaskFactory**: Creates various task instances used for server communication.
+7. **AbstractTask**: Base class for all tasks that can be scheduled for execution.
+8. **BindingConfiguration**: Contains configuration settings for the binding.
+9. **ExceptionHandler**: Handles exceptions that occur during binding operation.
+
+## API Version Support
+
+The Jellyfin binding is designed to work with multiple server API versions.
+The current implementation supports:
+
+1. **Current API**: For Jellyfin server versions 10.9.0 and newer (including 10.10.x)
+
+The API client code is automatically generated from the OpenAPI specifications using the OpenAPI Generator.
+This approach allows for easier adaptation to API changes and better maintainability compared to using external SDKs.
 
 ## Development Workflow
 

@@ -25,7 +25,9 @@ import org.openhab.binding.jellyfin.internal.Constants;
 import org.openhab.binding.jellyfin.internal.api.ApiClient;
 import org.openhab.binding.jellyfin.internal.api.generated.current.model.SystemInfo;
 import org.openhab.binding.jellyfin.internal.exceptions.ExceptionHandler;
+import org.openhab.binding.jellyfin.internal.handler.tasks.AbstractTask;
 import org.openhab.binding.jellyfin.internal.handler.tasks.ConnectionTask;
+import org.openhab.binding.jellyfin.internal.handler.tasks.TaskFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
@@ -52,18 +54,7 @@ public class ServerHandler extends BaseBridgeHandler {
     private final ApiClient apiClient;
     private final Configuration configuration;
 
-    Map<String, @Nullable ScheduledFuture<?>> tasks = new HashMap<>();
-
-    private static class TASKS {
-        public static final String CONNECT = "Connect";
-        public static final String REGISTER = "Registration";
-        public static final String POLL = "Update";
-
-        public static Map<String, Integer> delays = Map.ofEntries(Map.entry(TASKS.CONNECT, 0),
-                Map.entry(TASKS.REGISTER, 5), Map.entry(TASKS.POLL, 10));
-        public static Map<String, Integer> intervals = Map.ofEntries(Map.entry(TASKS.CONNECT, 10),
-                Map.entry(TASKS.REGISTER, 1), Map.entry(TASKS.POLL, 10));
-    }
+    Map<String, @Nullable ScheduledFuture<?>> scheduledTasks = new HashMap<>();
 
     public ServerHandler(Bridge bridge, ApiClient apiClient) {
         super(bridge);
@@ -129,29 +120,30 @@ public class ServerHandler extends BaseBridgeHandler {
     }
 
     private synchronized void startTasks() {
-        String taskId = TASKS.CONNECT;
-        Runnable task = null;
-
-        long delay = TASKS.delays.get(taskId);
-        long interval = TASKS.intervals.get(taskId);
-
-        this.logger.trace("startTasks - [{}, delay: {}s, interval: {}s]", taskId, delay, interval);
-
         Configuration config = this.getConfigAs(Configuration.class);
         this.apiClient.authenticateWithToken(config.token);
 
-        switch (taskId) {
-            case TASKS.CONNECT -> {
-                task = new ConnectionTask(this.apiClient, systemInfo -> this.handleConnection(systemInfo),
-                        this.exceptionHandler);
-                break;
-            }
-        }
-
-        if (task != null) {
-            logger.info("Starting task [{}]", taskId);
-            this.tasks.put(taskId, this.executeTask(task, delay, interval));
-        }
+        // Create and start the connection task
+        AbstractTask connectionTask = TaskFactory.createConnectionTask(
+            this.apiClient, 
+            systemInfo -> this.handleConnection(systemInfo),
+            this.exceptionHandler
+        );
+        
+        startTask(connectionTask);
+        
+        // Additional tasks can be started here in the future
+    }
+    
+    private synchronized void startTask(AbstractTask task) {
+        String taskId = task.getId();
+        int delay = task.getStartupDelay();
+        int interval = task.getInterval();
+        
+        this.logger.trace("Starting task [{}] with delay: {}s, interval: {}s", taskId, delay, interval);
+        logger.info("Starting task [{}]", taskId);
+        
+        this.scheduledTasks.put(taskId, this.scheduleTask(task, delay, interval));
     }
 
     private Object handleConnection(SystemInfo systemInfo) {
@@ -185,21 +177,21 @@ public class ServerHandler extends BaseBridgeHandler {
     }
 
     private synchronized void stopTasks() {
-        logger.info("Stopping {} task(s): {}", this.tasks.values().size(), String.join(",", this.tasks.keySet()));
+        logger.info("Stopping {} task(s): {}", this.scheduledTasks.values().size(), String.join(",", this.scheduledTasks.keySet()));
 
-        this.tasks.values().forEach(task -> this.stopTask(task));
-        this.tasks.clear();
+        this.scheduledTasks.values().forEach(this::stopScheduledTask);
+        this.scheduledTasks.clear();
     }
 
-    private synchronized void stopTask(@Nullable ScheduledFuture<?> task) {
-        if (task == null || task.isCancelled() || task.isDone()) {
+    private synchronized void stopScheduledTask(@Nullable ScheduledFuture<?> scheduledTask) {
+        if (scheduledTask == null || scheduledTask.isCancelled() || scheduledTask.isDone()) {
             return;
         }
 
-        task.cancel(true);
+        scheduledTask.cancel(true);
     }
 
-    private @Nullable ScheduledFuture<?> executeTask(Runnable task, long initialDelay, long interval) {
+    private @Nullable ScheduledFuture<?> scheduleTask(Runnable task, long initialDelay, long interval) {
         return scheduler.scheduleWithFixedDelay(task, initialDelay, interval, TimeUnit.SECONDS);
     }
 }
