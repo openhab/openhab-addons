@@ -17,14 +17,14 @@ You must register your ViCare account at the [Viessmann developer portal](https:
 
 ## Supported Things
 
-- `account` – Connects to the Viessmann API to link the `gateway` thing.
-- `bridge` – (deprecated) Connects directly to the Viessmann API and links the first installed gateway.
+- `account` – Connects to the Viessmann API to link the `gateway` thing; discovers gateways and devices.
 - `gateway` – Connects to the `account` thing (Discovery).
-- `device` – Represents individual devices (Discovery).
+- `device` – Represents individual devices (Discovery). Connected via `gateway` or `bridge`
+- `bridge` – (deprecated) Connects directly to the Viessmann API and links the first installed gateway.
 
 ## Thing Hierarchy
 
-```
+```text
 Account Thing
    │
    └── Gateway Thing (discovered via Account)
@@ -36,13 +36,6 @@ Bridge Thing (connects directly to API) (deprecated)
    │
    └── Device Things (discovered via Bridge)
 ```
-
-### Explanation
-
-- **Account Thing** – Central connection to Viessmann API; discovers gateways and devices.
-- **Gateway Thing** – Discovered via Account; devices discovered automatically.
-- **Bridge Thing** – (deprecated) Connects directly to API; discovers devices via first installed gateway at your heating system.
-- **Device Thing** – Represents individual devices; connected via Gateway or Bridge.
 
 ## Binding Configuration
 
@@ -76,12 +69,12 @@ Bridge Thing (connects directly to API) (deprecated)
 
 ### Gateway Thing
 
-| Parameter           | Required | Default | Description |
-|--------------------|----------|---------|-------------|
-| `installationId`    | No       | –       | Optional, will be discovered |
-| `gatewaySerial`     | No       | –       | Optional, will be discovered |
-| `pollingIntervalErrors` | No   | 60      | Interval in minutes to query errors |
-| `disablePolling`    | No       | OFF     | Disables automatic polling |
+| Parameter               | Required | Default | Description                         |
+|-------------------------|----------|---------|-------------------------------------|
+| `installationId`        | No       | –       | Optional, will be discovered        |
+| `gatewaySerial`         | No       | –       | Optional, will be discovered        |
+| `pollingIntervalErrors` | No       | 60      | Interval in minutes to query errors |
+| `disablePolling`        | No       | OFF     | Disables automatic polling          |
 
 (*) Used to calculate refresh time in seconds  
 (**) If set to 0, interval is calculated automatically by the binding.
@@ -121,7 +114,7 @@ Channels are generated automatically for available features.
 
 ### Account Thing
 
-```javascript
+```java
 Thing viessmann:account:myaccount "Viessmann Account" @ "Home" [
     apiKey="YOUR_CLIENT_ID",
     user="YOUR_EMAIL",
@@ -131,7 +124,7 @@ Thing viessmann:account:myaccount "Viessmann Account" @ "Home" [
 
 ### Bridge Thing (deprecated)
 
-```javascript
+```java
 Thing viessmann:bridge:mybridge "Viessmann Bridge" @ "Home" [
     apiKey="YOUR_CLIENT_ID",
     user="YOUR_EMAIL",
@@ -141,7 +134,7 @@ Thing viessmann:bridge:mybridge "Viessmann Bridge" @ "Home" [
 
 ### Gateway Thing
 
-```javascript
+```java
 Thing viessmann:gateway:mygateway "Viessmann Gateway" @ "Home" [
     installationId="YOUR_INSTALLATION_ID",
     gatewaySerial="YOUR_GATEWAY_SERIAL"
@@ -150,13 +143,11 @@ Thing viessmann:gateway:mygateway "Viessmann Gateway" @ "Home" [
 
 ### Device Thing
 
-```javascript
+```java
 Thing viessmann:device:heating "Heating Device" @ "Home" [
     deviceId="YOUR_DEVICE_ID"
 ]
 ```
-
----
 
 ## Breaking Changes
 
@@ -165,3 +156,11 @@ Thing viessmann:device:heating "Heating Device" @ "Home" [
 - Added new `account` and `gateway` things for gateway selection.  
   Existing `device` things can be switched manually to the new `gateway` as bridge.  
   After that, the `bridge` thing can be removed.
+- Reorganization of channel-types: Starting the binding takes about 3 minutes   
+  and results in the following warnings, which will not occur on the next restart:
+
+```text
+[WARN ] [.core.thing.internal.ThingManagerImpl] - Failed to normalize configuration for thing 'viessmann:device:abcdefg:xxxxxxxxx:0': 
+{thing/channel=Type description viessmann:type-string for viessmann:device:abcdefg:xxxxxxxxx:0:heating-circuits-0-operating-programs-active not found, 
+although we checked the presence before.}
+```

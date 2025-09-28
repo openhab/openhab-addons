@@ -73,7 +73,6 @@ public class ViessmannHandlerFactory extends BaseThingHandlerFactory {
             final @Reference ViessmannDynamicStateDescriptionProvider stateDescriptionProvider,
             final @Reference ItemChannelLinkRegistry linkRegistry, final @Reference LocaleProvider localeProvider,
             final @Reference TranslationProvider i18Provider) {
-        // this.httpClient = httpClientFactory.getCommonHttpClient();
         this.httpClientFactory = httpClientFactory;
         this.bindingServlet = new BindingServlet(httpService);
         this.storageService = storageService;
@@ -108,15 +107,15 @@ public class ViessmannHandlerFactory extends BaseThingHandlerFactory {
         if (THING_TYPE_ACCOUNT.equals(thingTypeUID)) {
             Storage<String> storage = storageService.getStorage(thing.getUID().toString(),
                     String.class.getClassLoader());
-            return new ViessmannAccountHandler((Bridge) thing, storage, httpClientFactory, createCallbackUrl(),
-                    linkRegistry);
+            return new ViessmannAccountHandler((Bridge) thing, storage, httpClientFactory.getCommonHttpClient(),
+                    createCallbackUrl(), linkRegistry);
         } else if (THING_TYPE_GATEWAY.equals(thingTypeUID)) {
             return new ViessmannGatewayHandler((Bridge) thing, linkRegistry);
         } else if (THING_TYPE_BRIDGE.equals(thingTypeUID)) {
             Storage<String> storage = storageService.getStorage(thing.getUID().toString(),
                     String.class.getClassLoader());
-            return new ViessmannBridgeHandler((Bridge) thing, storage, httpClientFactory, createCallbackUrl(),
-                    linkRegistry);
+            return new ViessmannBridgeHandler((Bridge) thing, storage, httpClientFactory.getCommonHttpClient(),
+                    createCallbackUrl(), linkRegistry);
         } else if (THING_TYPE_DEVICE.equals(thingTypeUID)) {
             return new DeviceHandler(thing, stateDescriptionProvider, linkRegistry, i18Provider, localeProvider);
         }

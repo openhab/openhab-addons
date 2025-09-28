@@ -37,6 +37,8 @@ public class FeatureCommands {
     public FeatureSetTargetTemperature setMax;
     public FeatureSetLevels setLevels;
     public FeatureSetHysteresis setHysteresis;
+    public FeatureSetHysteresis setHysteresisSwitchOnValue;
+    public FeatureSetHysteresis setHysteresisSwitchOffValue;
 
     public ArrayList<String> getUsedCommands() {
         ArrayList<String> list = new ArrayList<>();
@@ -75,6 +77,12 @@ public class FeatureCommands {
         }
         if (setHysteresis != null) {
             list.add("setHysteresis");
+        }
+        if (setHysteresisSwitchOnValue != null) {
+            list.add("setHysteresisSwitchOnValue");
+        }
+        if (setHysteresisSwitchOffValue != null) {
+            list.add("setHysteresisSwitchOffValue");
         }
         return list;
     }
@@ -116,6 +124,12 @@ public class FeatureCommands {
         }
         if (setHysteresis != null) {
             uris.put("setHysteresisUri", setHysteresis.uri);
+        }
+        if (setHysteresisSwitchOnValue != null) {
+            uris.put("setHysteresisSwitchOnValueUri", setHysteresisSwitchOnValue.uri);
+        }
+        if (setHysteresisSwitchOffValue != null) {
+            uris.put("setHysteresisSwitchOffValueUri", setHysteresisSwitchOffValue.uri);
         }
 
         return uris;

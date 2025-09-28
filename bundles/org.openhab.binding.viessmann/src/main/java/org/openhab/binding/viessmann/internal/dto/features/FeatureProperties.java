@@ -50,6 +50,8 @@ public class FeatureProperties {
     public FeatureInteger min;
     public FeatureInteger max;
     public FeatureString phase;
+    public FeatureString switchOnValue;
+    public FeatureString switchOffValue;
 
     public ArrayList<String> getUsedEntries() {
         ArrayList<String> list = new ArrayList<>();
@@ -140,6 +142,12 @@ public class FeatureProperties {
         }
         if (phase != null) {
             list.add("phase");
+        }
+        if (switchOnValue != null) {
+            list.add("switchOnValue");
+        }
+        if (switchOffValue != null) {
+            list.add("switchOffValue");
         }
 
         return list;

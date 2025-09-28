@@ -21,5 +21,5 @@ public class FeatureSetHysteresis {
     public String uri;
     public String name;
     public Boolean isExecutable;
-    public FeatureSetHeatingCurve params;
+    public FeatureSetHysteresisParams params;
 }

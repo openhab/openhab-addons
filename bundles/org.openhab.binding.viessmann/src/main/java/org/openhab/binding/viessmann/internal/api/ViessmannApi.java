@@ -391,6 +391,8 @@ public class ViessmannApi {
             if ("INTERNAL_SERVER_ERROR".equals(viError.getErrorType())) {
                 logger.debug("ViError: {} | Device not reachable INTERNAL_SERVER_ERROR", viError.getMessage());
                 throw new ViessmannCommunicationException("INTERNAL_SERVER_ERROR");
+            } else if ("PACKAGE_NOT_PAID_FOR".equals(viError.getErrorType())) {
+                logger.warn("ViError: User does not have access to given feature.");
             } else {
                 switch (viError.getStatusCode()) {
                     case HttpStatus.TOO_MANY_REQUESTS_429:

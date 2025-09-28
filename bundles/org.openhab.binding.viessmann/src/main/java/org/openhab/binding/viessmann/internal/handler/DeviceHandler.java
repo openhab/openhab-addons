@@ -134,32 +134,70 @@ public class DeviceHandler extends ViessmannThingHandler {
             String newId = ViessmannUtil.camelToHyphen(oldId);
             boolean updateChannelType = false;
             String channelLabel = channel.getLabel();
-            String channelType = ViessmannUtil
+            String oldChannelType = ViessmannUtil
                     .camelToHyphen(Objects.requireNonNull(channel.getChannelTypeUID()).toString());
-            channelType = channelType.replace(BINDING_ID + ":", "");
-
-            if ("type-energy".equals(channelType)) {
+            oldChannelType = oldChannelType.replace(BINDING_ID + ":", "");
+            String newChannelType = oldChannelType;
+            if ("type-energy".equals(oldChannelType) || "energy".equals(oldChannelType)) {
                 logger.trace("Migrate channelType");
                 if (newId.contains("gas")) {
-                    channelType = "type-gas-energy";
+                    newChannelType = "gas-energy";
                 }
                 if (newId.contains("power")) {
-                    channelType = "type-power-energy";
+                    newChannelType = "power-energy";
                 }
                 updateChannelType = true;
             }
 
+            if ("type-volume".equals(oldChannelType) || "volume".equals(oldChannelType)) {
+                if (newId.contains("gas")) {
+                    newChannelType = "gas-volume";
+                    updateChannelType = true;
+                }
+            }
+
+            if ("type-minute".equals(oldChannelType) || "minute".equals(oldChannelType)
+                    || "hours".equals(oldChannelType) || "type-hours".equals(oldChannelType)) {
+                newChannelType = "duration";
+                updateChannelType = true;
+            }
+
+            if ("type-settemperature".equals(oldChannelType) || "settemperature".equals(oldChannelType)) {
+                newChannelType = "set-temperature";
+                updateChannelType = true;
+            }
+
+            if (oldChannelType.contains("type-")) {
+                newChannelType = newChannelType.replace("type-", "");
+                updateChannelType = true;
+            }
+
+            if ("slope".equals(oldId) && oldChannelType.contains("decimal")) {
+                newChannelType = "slope";
+                updateChannelType = true;
+            }
+
+            if ("shift".equals(oldId) && oldChannelType.contains("number")) {
+                newChannelType = "shift";
+                updateChannelType = true;
+            }
+
             if (!newId.equals(oldId) || updateChannelType) {
-                logger.info("Migrating channel '{}' -> '{}'", oldId, newId);
+                logger.info("Migrating channel '{}' -> '{}' | channel-type  '{}' -> '{}'", oldId, newId, oldChannelType,
+                        newChannelType);
 
                 ChannelUID oldUid = channel.getUID();
                 ChannelUID newUid = new ChannelUID(thing.getUID(), newId);
+                String channelDescription = channel.getDescription();
+                if (channelDescription == null) {
+                    channelDescription = "";
+                }
 
-                ChannelTypeUID channelTypeUID = new ChannelTypeUID(BINDING_ID, channelType);
+                ChannelTypeUID channelTypeUID = new ChannelTypeUID(BINDING_ID, newChannelType);
                 if (channelLabel != null) {
                     Channel newChannel = ChannelBuilder.create(newUid, channel.getAcceptedItemType())
-                            .withLabel(channelLabel).withType(channelTypeUID).withProperties(channel.getProperties())
-                            .build();
+                            .withLabel(channelLabel).withDescription(channelDescription).withType(channelTypeUID)
+                            .withProperties(channel.getProperties()).build();
 
                     newChannels.add(newChannel);
                     renameMap.put(oldUid, newUid);
@@ -288,7 +326,15 @@ public class DeviceHandler extends ViessmannThingHandler {
                                         heatingCircuits.put(circuitId, heatingCircuit);
                                     }
                                 }
+                                break;
                             }
+                            if (str.contains("setHysteresis")) {
+                                String f = command.toString();
+                                uri = prop.get(str + "Uri");
+                                param = "{\"" + prop.get(str + "Params") + "\":" + f + "}";
+                                break;
+                            }
+
                         }
                     } else if (command instanceof QuantityType<?>) {
                         QuantityType<?> value = (QuantityType<?>) command;
@@ -379,18 +425,17 @@ public class DeviceHandler extends ViessmannThingHandler {
                     switch (entry) {
                         case "value":
                             viUnit = prop.value.unit;
-                            if ("celsius".equals(viUnit)) {
-                                typeEntry = "temperature";
-                            } else if ("percent".equals(viUnit) || "minute".equals(viUnit) || "kelvin".equals(viUnit)
-                                    || "liter".equals(viUnit)) {
-                                typeEntry = viUnit;
-                            } else {
-                                typeEntry = prop.value.type;
-                            }
+                            typeEntry = switch (viUnit) {
+                                case "celsius" -> "temperature";
+                                case "percent", "kelvin", "liter" -> viUnit;
+                                case "minute" -> "duration";
+                                case "kilowattHour/year" -> "house-heating-load";
+                                case null, default -> prop.value.type;
+                            };
                             if ("liter/hour".equals(viUnit)) {
                                 valueEntry = String.valueOf(Double.parseDouble(prop.value.value) / 60);
                                 viUnit = "liter/minute";
-                                typeEntry = "literPerMinute";
+                                typeEntry = "liter-per-minute";
                             } else {
                                 valueEntry = prop.value.value;
                             }
@@ -417,14 +462,14 @@ public class DeviceHandler extends ViessmannThingHandler {
                             valueEntry = prop.name.value;
                             break;
                         case "shift":
-                            typeEntry = prop.shift.type;
+                            typeEntry = "shift";
                             valueEntry = prop.shift.value.toString();
                             heatingCircuit.setSlope(prop.slope.value.toString());
                             heatingCircuit.setShift(prop.shift.value.toString());
                             heatingCircuits.put(msg.getCircuitId(), heatingCircuit);
                             break;
                         case "slope":
-                            typeEntry = "decimal";
+                            typeEntry = "slope";
                             valueEntry = prop.slope.value.toString();
                             heatingCircuit.setSlope(prop.slope.value.toString());
                             heatingCircuit.setShift(prop.shift.value.toString());
@@ -523,32 +568,32 @@ public class DeviceHandler extends ViessmannThingHandler {
                             viUnit = prop.starts.unit;
                             break;
                         case "hours":
-                            typeEntry = entry;
+                            typeEntry = "duration";
                             valueEntry = prop.hours.value.toString();
                             viUnit = "hour";
                             break;
                         case "hoursLoadClassOne":
-                            typeEntry = "hours";
+                            typeEntry = "duration";
                             valueEntry = prop.hoursLoadClassOne.value.toString();
                             viUnit = "hour";
                             break;
                         case "hoursLoadClassTwo":
-                            typeEntry = "hours";
+                            typeEntry = "duration";
                             valueEntry = prop.hoursLoadClassTwo.value.toString();
                             viUnit = "hour";
                             break;
                         case "hoursLoadClassThree":
-                            typeEntry = "hours";
+                            typeEntry = "duration";
                             valueEntry = prop.hoursLoadClassThree.value.toString();
                             viUnit = "hour";
                             break;
                         case "hoursLoadClassFour":
-                            typeEntry = "hours";
+                            typeEntry = "duration";
                             valueEntry = prop.hoursLoadClassFour.value.toString();
                             viUnit = "hour";
                             break;
                         case "hoursLoadClassFive":
-                            typeEntry = "hours";
+                            typeEntry = "duration";
                             valueEntry = prop.hoursLoadClassFive.value.toString();
                             viUnit = "hour";
                             break;
@@ -567,12 +612,22 @@ public class DeviceHandler extends ViessmannThingHandler {
                             valueEntry = prop.phase.value;
                             viUnit = "";
                             break;
+                        case "switchOnValue":
+                            typeEntry = prop.switchOnValue.type;
+                            valueEntry = prop.switchOnValue.value;
+                            viUnit = prop.switchOffValue.unit;
+                            break;
+                        case "switchOffValue":
+                            typeEntry = prop.switchOffValue.type;
+                            valueEntry = prop.switchOffValue.value;
+                            viUnit = prop.switchOffValue.unit;
+                            break;
                         default:
                             break;
                     }
                     msg.setType(typeEntry);
                     msg.setValue(valueEntry);
-                    msg.setChannelType("type-" + typeEntry);
+                    msg.setChannelType(typeEntry);
 
                     if (msg.getDeviceId().contains(config.deviceId) && !"unit".equals(entry)) {
                         if (!"[]".equals(valueEntry)) {
@@ -641,7 +696,7 @@ public class DeviceHandler extends ViessmannThingHandler {
                             switch (entry) {
                                 case "entries":
                                     subMsg.setSuffix("produced");
-                                    subMsg.setChannelType("type-boolean-read-only");
+                                    subMsg.setChannelType("boolean-read-only");
                                     createSubChannel(subMsg);
                                     break;
                                 case "day":
@@ -675,7 +730,7 @@ public class DeviceHandler extends ViessmannThingHandler {
                                 case "active":
                                     if (featureDataDTO.feature.contains("oneTimeCharge")) {
                                         subMsg.setSuffix("status");
-                                        subMsg.setChannelType("type-boolean-read-only");
+                                        subMsg.setChannelType("boolean-read-only");
                                         createSubChannel(subMsg);
                                     }
                                 default:
@@ -691,7 +746,7 @@ public class DeviceHandler extends ViessmannThingHandler {
                                 case "hours":
                                 case "kelvin":
                                 case "liter":
-                                case "literPerMinute":
+                                case "liter-per-minute":
                                     updateChannelState(msg.getChannelId(), msg.getValue(), unit);
                                     break;
                                 case "boolean":
@@ -700,6 +755,9 @@ public class DeviceHandler extends ViessmannThingHandler {
                                     if (featureDataDTO.feature.contains("oneTimeCharge")) {
                                         updateState(subMsg.getChannelId(), state);
                                     }
+                                    break;
+                                case "house-heating-load":
+                                    updateState(msg.getChannelId(), new DecimalType(msg.getValue()));
                                     break;
                                 case "string":
                                 case "array":
@@ -781,7 +839,29 @@ public class DeviceHandler extends ViessmannThingHandler {
      * @param msg contains everything is needed of the channel to be created.
      */
     private void createSubChannel(ThingMessageDTO msg) {
-        if (thing.getChannel(msg.getChannelId()) == null) {
+        Channel channel = thing.getChannel(msg.getChannelId());
+        boolean updateChannel = false;
+        if (channel != null) {
+            String channelDescription = channel.getDescription();
+            if (channelDescription != null) {
+                if (!channelDescription.equals(msg.getFeatureDescription())) {
+                    logger.trace("Sub-Channel Description is different. The channel is now being updated.");
+                    updateChannel = true;
+                }
+            }
+
+            String channelLabel = channel.getLabel();
+            if (channelLabel != null) {
+                if (!channelLabel.equals(msg.getFeatureName())) {
+                    logger.trace("Sub-Channel Label is different. The channel is now being updated.");
+                    updateChannel = true;
+                }
+            }
+        } else {
+            updateChannel = true;
+        }
+
+        if (updateChannel) {
             ChannelUID channelUID = new ChannelUID(thing.getUID(), msg.getChannelId());
             ThingHandlerCallback callback = getCallback();
             if (callback == null) {
@@ -797,9 +877,10 @@ public class DeviceHandler extends ViessmannThingHandler {
             if (msg.getFeatureName().contains("active")) {
                 logger.trace("Feature: {} ChannelType: {}", msg.getFeatureClear(), channelType);
             }
-            Channel channel = callback.createChannelBuilder(channelUID, channelTypeUID).withLabel(msg.getFeatureName())
-                    .withDescription(msg.getFeatureDescription()).withProperties(prop).build();
-            updateThing(editThing().withoutChannel(channelUID).withChannel(channel).build());
+            Channel newChannel = callback.createChannelBuilder(channelUID, channelTypeUID)
+                    .withLabel(msg.getFeatureName()).withDescription(msg.getFeatureDescription()).withProperties(prop)
+                    .build();
+            updateThing(editThing().withoutChannel(channelUID).withChannel(newChannel).build());
         }
     }
 
@@ -978,6 +1059,20 @@ public class DeviceHandler extends ViessmannThingHandler {
                             prop.put("command", "setHysteresis");
                             prop.put("setHysteresisParams", "hysteresis");
                             break;
+                        case "setHysteresisSwitchOnValue":
+                            if (msg.getSuffix().contains("switchOnValue")) {
+                                prop.put("setHysteresisSwitchOnValueUri", commands.setHysteresisSwitchOnValue.uri);
+                                prop.put("command", "setHysteresisSwitchOnValue");
+                                prop.put("setHysteresisSwitchOnValueParams", "hysteresis");
+                            }
+                            break;
+                        case "setHysteresisSwitchOffValue":
+                            if (msg.getSuffix().contains("switchOffValue")) {
+                                prop.put("setHysteresisSwitchOffValueUri", commands.setHysteresisSwitchOffValue.uri);
+                                prop.put("command", "setHysteresisSwitchOffValue");
+                                prop.put("setHysteresisSwitchOffValueParams", "hysteresis");
+                            }
+                            break;
                         default:
                             break;
                     }
@@ -1001,52 +1096,57 @@ public class DeviceHandler extends ViessmannThingHandler {
         FeatureCommands commands = msg.getCommands();
         if (commands != null) {
             List<String> com = commands.getUsedCommands();
-            if (!com.isEmpty() && !"type-boolean-read-only".equals(channelType)) {
+            if (!com.isEmpty() && !"boolean-read-only".equals(channelType)) {
                 for (String command : com) {
                     switch (command) {
                         case "setTemperature":
                         case "setTargetTemperature":
-                            if (!"type-boolean".equals(channelType)) {
-                                channelType = "type-settemperature";
+                            if (!"boolean".equals(channelType)) {
+                                channelType = "set-temperature";
                             }
                             break;
                         case "setMin":
                             if (msg.getSuffix().contains("min")) {
-                                channelType = "type-set-min";
+                                channelType = "set-min";
                             }
                             break;
                         case "setMax":
                             if (msg.getSuffix().contains("max")) {
-                                channelType = "type-set-max";
+                                channelType = "set-max";
                             }
                             break;
-                        case "setHysteresis":
-                            channelType = "type-set-target-hysteresis";
+                        case "setHysteresis", "setHysteresisSwitchOnValue":
+                            channelType = "set-target-hysteresis";
+                            break;
+                        case "setHysteresisSwitchOffValue":
+                            if (msg.getSuffix().contains("switchOffValue")) {
+                                channelType = "set-hysteresis-off";
+                            }
                             break;
                         case "setMode":
-                            channelType = "type-set-mode";
+                            channelType = "set-mode";
                             break;
                         case "setSchedule":
                         case "setName":
                             if (msg.getSuffix().contains("active")) {
-                                channelType = "type-boolean-read-only";
+                                channelType = "boolean-read-only";
                             }
                             break;
                         default:
                             break;
                     }
                 }
-            } else if ("type-boolean".equals(channelType)) {
+            } else if ("boolean".equals(channelType)) {
                 channelType = channelType + "-read-only";
             }
-        } else if ("type-boolean".equals(channelType)) {
+        } else if ("boolean".equals(channelType)) {
             channelType = channelType + "-read-only";
         }
         return channelType.toLowerCase();
     }
 
     private void setStateDescriptionOptions(ThingMessageDTO msg) {
-        if ("type-set-mode".equals(convertChannelType(msg))) {
+        if ("set-mode".equals(convertChannelType(msg))) {
             List<String> modes = msg.commands.setMode.params.mode.constraints.enumValue;
             if (modes != null) {
                 Locale locale = localeProvider.getLocale();

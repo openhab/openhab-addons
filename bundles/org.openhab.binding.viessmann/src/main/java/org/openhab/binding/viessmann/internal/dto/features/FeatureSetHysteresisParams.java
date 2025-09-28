@@ -18,8 +18,5 @@ package org.openhab.binding.viessmann.internal.dto.features;
  * @author Ronny Grun - Initial contribution
  */
 public class FeatureSetHysteresisParams {
-    public String uri;
-    public String name;
-    public Boolean isExecutable;
-    public FeatureSetHysteresisParamsHysteresis params;
+    public FeatureDefaultSetterParamsDouble hysteresis;
 }

@@ -10,7 +10,7 @@
 		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 
 		<channels>
-			<channel id="count-api-calls" typeId="type-number">
+			<channel id="count-api-calls" typeId="number">
 				<label>Count API Calls</label>
 			</channel>
 		</channels>
@@ -120,13 +120,13 @@
 		</config-description>
 	</bridge-type>
 
-	<bridge-type id="bridge">
-		<label>Viessmann Connect Bridge</label>
+	<bridge-type id="bridge" listed="false">
+		<label>Bridge (DEPRECATED)</label>
 		<description>The bridge to communicate with the Viessmann API</description>
 		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 
 		<channels>
-			<channel id="count-api-calls" typeId="type-number">
+			<channel id="count-api-calls" typeId="number">
 				<label>Count API Calls</label>
 			</channel>
 			<channel id="error-is-active" typeId="error-is-active">
@@ -143,7 +143,7 @@
 			</channel>
 		</channels>
 		<properties>
-			<property name="thingTypeVersion">4</property>
+			<property name="thingTypeVersion">3</property>
 		</properties>
 		<config-description>
 			<parameter name="apiKey" type="text" required="true">
@@ -230,7 +230,7 @@
 	</thing-type>
 
 	<!-- Channel Types -->
-	<channel-type id="type-temperature">
+	<channel-type id="temperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
 		<category>Temperature</category>
@@ -241,7 +241,7 @@
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="type-settemperature">
+	<channel-type id="set-temperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Set Temperature</label>
 		<category>Temperature</category>
@@ -249,10 +249,10 @@
 			<tag>Setpoint</tag>
 			<tag>Temperature</tag>
 		</tags>
-		<state min="4" max="37" step="1" pattern="%d %unit%" readOnly="false"/>
+		<state min="3" max="37" step="1" pattern="%d %unit%" readOnly="false"/>
 	</channel-type>
 
-	<channel-type id="type-set-target-temperature">
+	<channel-type id="set-target-temperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Set Target Temperature</label>
 		<category>Temperature</category>
@@ -263,18 +263,29 @@
 		<state min="10" max="60" step="1" pattern="%d %unit%" readOnly="false"/>
 	</channel-type>
 
-	<channel-type id="type-set-target-hysteresis">
-		<item-type>Number:Temperature</item-type>
+	<channel-type id="set-target-hysteresis">
+		<item-type>Number</item-type>
 		<label>Set Target Hysteresis</label>
 		<category>Temperature</category>
 		<tags>
 			<tag>Setpoint</tag>
 			<tag>Temperature</tag>
 		</tags>
-		<state min="1" max="10" step="0.5" pattern="%.1f %unit%" readOnly="false"/>
+		<state min="1" max="10" step="0.5" pattern="%.1f K" readOnly="false"/>
 	</channel-type>
 
-	<channel-type id="type-set-min">
+	<channel-type id="set-hysteresis-off">
+		<item-type>Number</item-type>
+		<label>DHW Hysteresis Switch-Off</label>
+		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state min="0" max="2.5" step="0.5" pattern="%.1f K" readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="set-min">
 		<item-type>Number:Temperature</item-type>
 		<label>Set Target Temp. Min</label>
 		<category>Temperature</category>
@@ -285,7 +296,7 @@
 		<state min="1" max="30" step="1" pattern="%d %unit%" readOnly="false"/>
 	</channel-type>
 
-	<channel-type id="type-set-max">
+	<channel-type id="set-max">
 		<item-type>Number:Temperature</item-type>
 		<label>Set Target Temp. Max</label>
 		<category>Temperature</category>
@@ -296,7 +307,7 @@
 		<state min="10" max="70" step="1" pattern="%d %unit%" readOnly="false"/>
 	</channel-type>
 
-	<channel-type id="type-power-energy">
+	<channel-type id="power-energy">
 		<item-type>Number:Energy</item-type>
 		<label>Energy</label>
 		<category>Energy</category>
@@ -307,7 +318,7 @@
 		<state pattern="%.3f %unit%" readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="type-gas-energy">
+	<channel-type id="gas-energy">
 		<item-type>Number:Energy</item-type>
 		<label>Gas Energy</label>
 		<category>Gas</category>
@@ -318,7 +329,14 @@
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="type-volume">
+	<channel-type id="house-heating-load">
+		<item-type>Number</item-type>
+		<label>Specific Heating Demand</label>
+		<category>Number</category>
+		<state pattern="%.1f kWh/m²·a"/>
+	</channel-type>
+
+	<channel-type id="volume">
 		<item-type>Number:Volume</item-type>
 		<label>Volume</label>
 		<category>Number</category>
@@ -328,7 +346,17 @@
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="type-decimal">
+	<channel-type id="gas-volume">
+		<item-type>Number:Volume</item-type>
+		<label>Volume</label>
+		<category>Gas</category>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="decimal">
 		<item-type>Number</item-type>
 		<label>Number</label>
 		<category>Number</category>
@@ -338,7 +366,7 @@
 		<state pattern="%.1f" readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="type-number">
+	<channel-type id="number">
 		<item-type>Number</item-type>
 		<label>Number</label>
 		<category>Number</category>
@@ -348,7 +376,7 @@
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="type-minute">
+	<channel-type id="duration">
 		<item-type>Number:Time</item-type>
 		<label>Minutes</label>
 		<category>Time</category>
@@ -359,18 +387,7 @@
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="type-hours">
-		<item-type>Number:Time</item-type>
-		<label>Hours</label>
-		<category>Time</category>
-		<tags>
-			<tag>Status</tag>
-			<tag>Duration</tag>
-		</tags>
-		<state pattern="%d %unit%" readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="type-percent">
+	<channel-type id="percent">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Percentage</label>
 		<category>Number</category>
@@ -380,7 +397,7 @@
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="type-liter">
+	<channel-type id="liter">
 		<item-type>Number:Volume</item-type>
 		<label>Liter</label>
 		<category>Number</category>
@@ -390,7 +407,7 @@
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="type-liter-per-minute">
+	<channel-type id="liter-per-minute">
 		<item-type>Number:VolumetricFlowRate</item-type>
 		<label>Liter Per Minute</label>
 		<category>Number</category>
@@ -400,14 +417,14 @@
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="type-string">
+	<channel-type id="string">
 		<item-type>String</item-type>
 		<label>String</label>
 		<category>Text</category>
 		<state readOnly="false"/>
 	</channel-type>
 
-	<channel-type id="type-schedule">
+	<channel-type id="schedule">
 		<item-type>String</item-type>
 		<label>Schedule</label>
 		<category>Time</category>
@@ -416,19 +433,19 @@
 		</tags>
 	</channel-type>
 
-	<channel-type id="type-array">
+	<channel-type id="array">
 		<item-type>String</item-type>
 		<label>Array</label>
 		<category>Text</category>
 	</channel-type>
 
-	<channel-type id="type-boolean">
+	<channel-type id="boolean">
 		<item-type>Switch</item-type>
 		<label>Switch</label>
 		<category>Switch</category>
 	</channel-type>
 
-	<channel-type id="type-boolean-read-only">
+	<channel-type id="boolean-read-only">
 		<item-type>Switch</item-type>
 		<label>Status</label>
 		<category>Switch</category>
@@ -469,7 +486,7 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="type-set-mode">
+	<channel-type id="set-mode">
 		<item-type>String</item-type>
 		<label>Set Mode</label>
 		<category>heating</category>
@@ -479,4 +496,29 @@
 		</tags>
 		<state readOnly="false"/>
 	</channel-type>
+
+	<channel-type id="bar">
+		<item-type>Number:Pressure</item-type>
+		<label>Pressure</label>
+		<category>Pressure</category>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state pattern="%.1f bar" readOnly="true"/>
+	</channel-type>
+
+	<!-- Heating Curve: slope -->
+	<channel-type id="slope">
+		<item-type>Number</item-type>
+		<label>Heating Curve Slope</label>
+		<state min="0.2" max="3.5" step="0.1" pattern="%.1f" readOnly="false"/>
+	</channel-type>
+
+	<!-- Heating Curve: shift -->
+	<channel-type id="shift">
+		<item-type>Number</item-type>
+		<label>Heating Curve Shift</label>
+		<state min="-13" max="40" step="1" pattern="%d" readOnly="false"/>
+	</channel-type>
+
 </thing:thing-descriptions>

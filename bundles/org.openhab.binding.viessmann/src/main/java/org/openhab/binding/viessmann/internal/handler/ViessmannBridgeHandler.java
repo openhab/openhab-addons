@@ -43,7 +43,6 @@ import org.openhab.binding.viessmann.internal.interfaces.ApiInterface;
 import org.openhab.binding.viessmann.internal.interfaces.BridgeInterface;
 import org.openhab.binding.viessmann.internal.util.ViessmannUtil;
 import org.openhab.core.config.core.Configuration;
-import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
@@ -82,7 +81,7 @@ public class ViessmannBridgeHandler extends BaseBridgeHandler implements BridgeI
     private static final Set<String> ERROR_CHANNELS = Set.of("last-error-message", "error-is-active");
     private static final String STORED_API_CALLS = "apiCalls";
 
-    private final HttpClientFactory httpClientFactory;
+    private final HttpClient httpClient;
     private final @Nullable String callbackUrl;
 
     private @NonNullByDefault({}) ViessmannApi api;
@@ -107,11 +106,11 @@ public class ViessmannBridgeHandler extends BaseBridgeHandler implements BridgeI
 
     private BridgeConfiguration config = new BridgeConfiguration();
 
-    public ViessmannBridgeHandler(Bridge bridge, Storage<String> stateStorage, HttpClientFactory httpClientFactory,
+    public ViessmannBridgeHandler(Bridge bridge, Storage<String> stateStorage, HttpClient httpClient,
             @Nullable String callbackUrl, ItemChannelLinkRegistry linkRegistry) {
         super(bridge);
         this.stateStorage = stateStorage;
-        this.httpClientFactory = httpClientFactory;
+        this.httpClient = httpClient;
         this.callbackUrl = callbackUrl;
         this.linkRegistry = linkRegistry;
     }
@@ -189,8 +188,6 @@ public class ViessmannBridgeHandler extends BaseBridgeHandler implements BridgeI
         newInstallationId = "";
         newGatewaySerial = "";
 
-        HttpClient httpClient = httpClientFactory.getCommonHttpClient();
-
         api = new ViessmannApi(this.config.apiKey, httpClient, this.config.user, this.config.password,
                 this.config.installationId, this.config.gatewaySerial, callbackUrl);
         api.createOAuthClientService(this);
@@ -224,21 +221,24 @@ public class ViessmannBridgeHandler extends BaseBridgeHandler implements BridgeI
         for (Channel channel : oldChannels) {
             String oldId = channel.getUID().getId();
             String newId = ViessmannUtil.camelToHyphen(oldId);
+            boolean updateChannelType = false;
+            String channelLabel = channel.getLabel();
+            String channelType = ViessmannUtil
+                    .camelToHyphen(Objects.requireNonNull(channel.getChannelTypeUID()).toString());
+            channelType = channelType.replace(BINDING_ID + ":", "");
 
-            if (!newId.equals(oldId)) {
+            if (channelType.contains("type-")) {
+                channelType = channelType.replace("type-", "");
+                updateChannelType = true;
+            }
+
+            if (!newId.equals(oldId) || updateChannelType) {
                 logger.info("Migrating channel '{}' -> '{}'", oldId, newId);
 
                 ChannelUID oldUid = channel.getUID();
                 ChannelUID newUid = new ChannelUID(thing.getUID(), newId);
 
-                String channelLabel = channel.getLabel();
-
-                String channelType = ViessmannUtil
-                        .camelToHyphen(Objects.requireNonNull(channel.getChannelTypeUID()).toString());
-                channelType = channelType.replace(BINDING_ID + ":", "");
-
                 ChannelTypeUID channelTypeUID = new ChannelTypeUID(BINDING_ID, channelType);
-
                 if (channelLabel != null) {
                     Channel newChannel = ChannelBuilder.create(newUid, channel.getAcceptedItemType())
                             .withLabel(channelLabel).withType(channelTypeUID).withProperties(channel.getProperties())

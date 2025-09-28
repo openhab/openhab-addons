@@ -63,6 +63,7 @@ public class ViessmannBindingConstants {
     public static final Map<String, String> UNIT_MAP = Map.ofEntries(entry("celsius", SIUnits.CELSIUS.getSymbol()), //
             entry("kelvin", Units.KELVIN.toString()), //
             entry("kilowattHour", Units.KILOWATT_HOUR.toString()), //
+            entry("kilowattHour/year", "kilowattHour/year"), //
             entry("gas-kilowattHour", Units.KILOWATT_HOUR.toString()), //
             entry("power-kilowattHour", Units.KILOWATT_HOUR.toString()), //
             entry("percent", Units.PERCENT.toString()), //
@@ -71,12 +72,15 @@ public class ViessmannBindingConstants {
             entry("hours", Units.HOUR.toString()), //
             entry("liter", Units.LITRE.toString()), //
             entry("liter/minute", Units.LITRE_PER_MINUTE.toString()), //
-            entry("cubicMeter", SIUnits.CUBIC_METRE.toString()));
+            entry("cubicMeter", SIUnits.CUBIC_METRE.toString()), //
+            entry("gas-cubicMeter", SIUnits.CUBIC_METRE.toString()), //
+            entry("bar", Units.BAR.toString()));
 
     public static final Map<String, String> SUB_CHANNEL_TYPE_MAP = Map.of( //
-            "cubicMeter", "type-volume", //
-            "gas-kilowattHour", "type-gas-energy", //
-            "power-kilowattHour", "type-power-energy");
+            "cubicMeter", "volume", //
+            "gas-kilowattHour", "gas-energy", //
+            "power-kilowattHour", "power-energy", //
+            "gas-cubicMeter", "gas-volume");
 
     public static final String CHANNEL_LAST_ERROR_MESSAGE = "last-error-message";
     public static final String CHANNEL_ERROR_IS_ACTIVE = "error-is-active";
