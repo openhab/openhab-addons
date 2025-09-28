@@ -151,7 +151,7 @@ public abstract class HomekitBaseServerHandler extends BaseThingHandler {
                     storeLongTermKeys();
                     updateStatus(ThingStatus.REMOVED);
                 } catch (Exception e) {
-                    logger.warn("Failed to remove pairing for accessory {}", accessoryId);
+                    logger.warn("Failed to remove pairing for {}", thing.getUID());
                 }
             });
         }
@@ -211,23 +211,24 @@ public abstract class HomekitBaseServerHandler extends BaseThingHandler {
         restoreLongTermKeys();
         Ed25519PrivateKeyParameters controllerLongTermSecretKey = this.controllerLongTermSecretKey;
         Ed25519PublicKeyParameters accessoryLongTermPublicKey = this.accessoryLongTermPublicKey;
+        String controllerPairingId = thing.getUID().toString();
 
         if (controllerLongTermSecretKey != null && accessoryLongTermPublicKey != null) {
             try {
-                logger.debug("Starting Pair-Verify with existing key for accessory {}", accessoryId);
-                PairVerifyClient client = new PairVerifyClient(ipTransport, accessoryId.toString(),
+                logger.debug("Starting Pair-Verify with existing key for {}", controllerPairingId);
+                PairVerifyClient client = new PairVerifyClient(ipTransport, controllerPairingId,
                         controllerLongTermSecretKey, accessoryLongTermPublicKey);
 
                 ipTransport.setSessionKeys(client.verify());
                 rwService = new CharacteristicReadWriteService(ipTransport);
 
-                logger.debug("Restored pairing was verified for accessory {}", accessoryId);
+                logger.debug("Restored pairing was verified for {}", controllerPairingId);
                 fetchAccessories();
                 updateStatus(ThingStatus.ONLINE);
 
                 return;
             } catch (Exception e) {
-                logger.debug("Restored pairing was not verified for accessory {}", accessoryId, e);
+                logger.debug("Restored pairing was not verified for {}", controllerPairingId, e);
                 this.controllerLongTermSecretKey = null;
                 storeLongTermKeys();
                 // fall through to create new pairing
@@ -236,20 +237,20 @@ public abstract class HomekitBaseServerHandler extends BaseThingHandler {
 
         // Create new controller private key
         controllerLongTermSecretKey = new Ed25519PrivateKeyParameters(new SecureRandom());
-        logger.debug("Created new controller long term private key for accessory {}", accessoryId);
+        logger.debug("Created new controller long term private key for {}", controllerPairingId);
 
         try {
-            logger.debug("Starting Pair-Setup for accessory {}", accessoryId);
-            PairSetupClient pairSetupClient = new PairSetupClient(ipTransport, thing.getUID().toString(),
+            logger.debug("Starting Pair-Setup for {}", controllerPairingId);
+            PairSetupClient pairSetupClient = new PairSetupClient(ipTransport, controllerPairingId,
                     controllerLongTermSecretKey, pairingCode);
 
             accessoryLongTermPublicKey = pairSetupClient.pair();
             this.accessoryLongTermPublicKey = accessoryLongTermPublicKey;
 
-            logger.debug("Pair-Setup completed; starting Pair-Verify for accessory {}", accessoryId);
+            logger.debug("Pair-Setup completed; starting Pair-Verify for {}", controllerPairingId);
 
             // Perform Pair-Verify immediately after Pair-Setup
-            PairVerifyClient pairVerifyClient = new PairVerifyClient(ipTransport, accessoryId.toString(),
+            PairVerifyClient pairVerifyClient = new PairVerifyClient(ipTransport, controllerPairingId,
                     controllerLongTermSecretKey, accessoryLongTermPublicKey);
 
             ipTransport.setSessionKeys(pairVerifyClient.verify());
@@ -257,14 +258,14 @@ public abstract class HomekitBaseServerHandler extends BaseThingHandler {
 
             this.controllerLongTermSecretKey = controllerLongTermSecretKey;
 
-            logger.debug("Pairing and verification completed for accessory {}", accessoryId);
+            logger.debug("Pairing and verification completed for {}", controllerPairingId);
             storeLongTermKeys();
             fetchAccessories();
             updateStatus(ThingStatus.ONLINE);
 
         } catch (Exception e) {
-            logger.warn("Pairing and verification failed for accessory {}", accessoryId, e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Pairing / Verification failed");
+            logger.warn("Pairing / verification failed for {}", controllerPairingId, e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Pairing / verification failed");
         }
     }
 
