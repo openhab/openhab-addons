@@ -10,9 +10,8 @@ The binding supports various device types including RGB/RGBW controllers, temper
 - `rgbw` - RGB/RGBW Controllers for color and brightness control
 - `temperature` - Temperature Sensors for monitoring environmental conditions
 - `switch` - Switch Controllers for basic on/off and dimming control
-- `contact-sensor` - Contact Sensors for monitoring open/closed states
-- `motion-sensor` - Motion Sensors for detecting movement (9-in-1 devices)
-- `lux-sensor` - Light Level Sensors for monitoring illuminance (LUX values)
+- `contact-sensor` - Traditional Contact Sensors for monitoring open/closed states
+- `multi-sensor` - Multi-Sensor (9-in-1) devices with motion, lux, and dry contact capabilities
 
 ## Discovery
 
@@ -39,7 +38,7 @@ The Sbus Bridge has the following configuration parameters:
 
 ### Device Configuration
 
-All device types (RGBW Controller, Contact Sensor, Switch, Temperature, Motion Sensor, Lux Sensor) share the same configuration parameters:
+All device types share the same basic configuration parameters:
 
 | Name    | Type    | Description                                          | Default | Required | Advanced  |
 |:--------|:--------|:-----------------------------------------------------|:-------:|:--------:|:---------:|
@@ -47,7 +46,12 @@ All device types (RGBW Controller, Contact Sensor, Switch, Temperature, Motion S
 | id      | integer | Device ID                                            | N/A     | yes      | no        |
 | refresh | integer | Refresh interval in seconds (0 = listen-only mode)   | 30      | no       | yes       |
 
-**Note:** Setting `refresh=0` enables listen-only mode for all device types. In this mode, handlers only process asynchronous broadcast messages without actively polling the devices. This is particularly useful for Motion Sensor and Lux Sensor devices that broadcast status updates (0x02CA) from 9-in-1 devices.
+**Device Type Specific Notes:**
+
+- **Traditional Contact Sensors (`contact-sensor`)**: Use ReadDryChannelsRequest protocol for simple contact monitoring
+- **Multi-Sensor Devices (`multi-sensor`)**: Use ReadNineInOneStatusRequest protocol and support motion, lux, and dry contact channels from a single physical device
+
+**Listen-Only Mode:** Setting `refresh=0` enables listen-only mode where handlers only process asynchronous broadcast messages (MotionSensorStatusReport) without actively polling. This is particularly useful for 9-in-1 sensor devices that broadcast status updates.
 
 ## Channels
 
@@ -79,23 +83,29 @@ The color channel of RGBW controllers supports these additional parameters:
 | dimmer  | Dimmer         | RW         | ON/OFF state with timer transition                        |
 | paired  | Rollershutter  | RW         | UP/DOWN/STOP control for two paired channels (e.g., rollershutters)|
 
-### Contact Sensor Channels
+### Contact Sensor Channels (Traditional)
 
 | Channel | Type    | Read/Write | Description                                               |
 |:--------|:--------|:----------:|:----------------------------------------------------------|
-| contact | Contact | R          | Contact state (OPEN/CLOSED)                               |
+| contact | Contact | R          | Contact state (OPEN/CLOSED) for traditional contact sensors |
 
-### Motion Sensor Channels
+### Multi-Sensor (9-in-1) Channels
 
-| Channel | Type   | Read/Write | Description                                               |
-|:--------|:-------|:----------:|:----------------------------------------------------------|
-| motion  | Switch | R          | Motion detection state (ON=motion detected, OFF=no motion) |
+Multi-sensor devices support multiple channel types from a single physical device:
 
-### Lux Sensor Channels
+| Channel | Type    | Read/Write | Description                                               |
+|:--------|:--------|:----------:|:----------------------------------------------------------|
+| contact | Contact | R          | Dry contact state (OPEN/CLOSED) - use channelNumber parameter to specify which contact (1 or 2) |
+| motion  | Switch  | R          | Motion detection state (ON=motion detected, OFF=no motion)|
+| lux     | Number  | R          | Light level in LUX units                                  |
 
-| Channel | Type   | Read/Write | Description                                               |
-|:--------|:-------|:----------:|:----------------------------------------------------------|
-| lux     | Number | R          | Light level in LUX units                                  |
+The contact channel supports these additional parameters:
+
+| Parameter     | Type    | Description                                          | Default | Required | Advanced  |
+|:--------------|:--------|:-----------------------------------------------------|:-------:|:--------:|:---------:|
+| channelNumber | integer | The dry contact number on the 9-in-1 device (1 or 2) | 1       | no       | no        |
+
+**Note:** You can configure any combination of these channels on a single `multi-sensor` thing to match your 9-in-1 device capabilities.
 
 ## Full Example
 
@@ -127,18 +137,25 @@ Bridge sbus:udp:mybridge [ host="192.168.1.255", port=5000, timeout=5000 ] {
             Type paired-channel : third_switch [ channelNumber=3, pairedChannelNumber=4 ]
     }
     
+    // Traditional contact sensor
     Thing contact-sensor contact1 [ id=80, refresh=30 ] {
         Channels:
             Type contact-channel : contact [ channelNumber=1 ]
     }
     
-    Thing motion-sensor motion1 [ id=85, refresh=0 ] {
+    // 9-in-1 multi-sensor device with all capabilities
+    Thing multi-sensor multisensor1 [ id=85, refresh=0 ] {
         Channels:
-            Type motion-channel : motion
+            Type contact-channel : contact1 [ channelNumber=1 ]  // First dry contact
+            Type contact-channel : contact2 [ channelNumber=2 ]  // Second dry contact  
+            Type motion-channel : motion                         // Motion detection
+            Type lux-channel : lux                              // Light level
     }
     
-    Thing lux-sensor lux1 [ id=85, refresh=0 ] {
+    // 9-in-1 sensor with only motion and lux (no contacts)
+    Thing multi-sensor motionlux1 [ id=86, refresh=0 ] {
         Channels:
+            Type motion-channel : motion
             Type lux-channel : lux
     }
 }
@@ -161,14 +178,18 @@ Group   gLight      "RGBW Light"    <light>     ["Lighting"]
 Color   rgbwColor    "Color"        <colorwheel> (gLight)   ["Control", "Light"]    { channel="sbus:rgbw:mybridge:colorctrl:color" }
 Switch  rgbwPower    "Power"        <switch>     (gLight)   ["Switch", "Light"]     { channel="sbus:rgbw:mybridge:colorctrl:power" }
 
-// Contact Sensor
+// Traditional Contact Sensor
 Contact Door_Contact "Door [%s]" <door> { channel="sbus:contact-sensor:mybridge:contact1:contact" }
 
-// Motion Sensor (listen-only mode)
-Switch Motion_Sensor "Motion [%s]" <motion> { channel="sbus:motion-sensor:mybridge:motion1:motion" }
+// 9-in-1 Multi-Sensor Items
+Contact Sensor_Contact1 "Sensor Contact 1 [%s]" <door> { channel="sbus:multi-sensor:mybridge:multisensor1:contact1" }
+Contact Sensor_Contact2 "Sensor Contact 2 [%s]" <door> { channel="sbus:multi-sensor:mybridge:multisensor1:contact2" }
+Switch Motion_Sensor "Motion [%s]" <motion> { channel="sbus:multi-sensor:mybridge:multisensor1:motion" }
+Number Lux_Sensor "Light Level [%.0f lux]" <sun> { channel="sbus:multi-sensor:mybridge:multisensor1:lux" }
 
-// Lux Sensor (listen-only mode)
-Number Lux_Sensor "Light Level [%.0f lux]" <sun> { channel="sbus:lux-sensor:mybridge:lux1:lux" }
+// Motion and Lux only sensor
+Switch Motion_Only "Motion [%s]" <motion> { channel="sbus:multi-sensor:mybridge:motionlux1:motion" }
+Number Lux_Only "Light Level [%.0f lux]" <sun> { channel="sbus:multi-sensor:mybridge:motionlux1:lux" }
 ```
 
 ### Sitemap Configuration
@@ -177,15 +198,47 @@ Number Lux_Sensor "Light Level [%.0f lux]" <sun> { channel="sbus:lux-sensor:mybr
 sitemap sbus label="Sbus Demo"
 {
     Frame label="Sbus Controls" {
-        Colorpicker item=Light_RGB
+        Colorpicker item=rgbwColor
+        Switch item=rgbwPower
         Text item=Temp_Sensor
         Switch item=Light_Switch
         Rollershutter item=Rollershutter_Switch
+    }
+    
+    Frame label="Sensors" {
         Text item=Door_Contact
+        Text item=Sensor_Contact1
+        Text item=Sensor_Contact2
+        Text item=Motion_Sensor
+        Text item=Lux_Sensor
     }
 }
 
 ## Usage Notes
+
+### Sensor Device Types
+
+The binding supports two distinct types of sensor devices:
+
+#### Traditional Contact Sensors (`contact-sensor`)
+- **Protocol**: Uses `ReadDryChannelsRequest/Response` 
+- **Use Case**: Simple contact sensors with basic open/closed detection
+- **Channels**: Contact channels only
+- **Configuration**: Standard device configuration with channel numbers
+
+#### Multi-Sensor (9-in-1) Devices (`multi-sensor`)
+- **Protocol**: Uses `ReadNineInOneStatusRequest/Response` and `MotionSensorStatusReport` broadcasts
+- **Use Case**: Advanced sensor devices combining multiple sensor types in one physical unit
+- **Channels**: Any combination of contact, motion, and lux channels
+- **Configuration**: Single device configuration with multiple channel types
+- **Benefits**: 
+  - Single polling job for all sensor data
+  - Efficient communication with one physical device
+  - Supports broadcast status updates for real-time responsiveness
+
+**Choosing the Right Type:**
+- Use `contact-sensor` for traditional, simple contact sensors
+- Use `multi-sensor` for 9-in-1 devices that provide motion detection, light level sensing, and/or dry contact monitoring
 
 ### RGB vs. RGBW Mode
 

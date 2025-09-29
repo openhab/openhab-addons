@@ -129,45 +129,14 @@
 		</config-description>
 	</thing-type>
 
-	<!-- Motion Sensor Device -->
-	<thing-type id="motion-sensor">
+	<!-- Multi-Sensor Device (9-in-1) -->
+	<thing-type id="multi-sensor">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="udp"/>
 		</supported-bridge-type-refs>
-		<label>Motion Sensor</label>
-		<description>Sbus motion sensor device (9-in-1 devices)</description>
-		<semantic-equipment-tag>MotionDetector</semantic-equipment-tag>
-		<config-description>
-			<parameter name="subnetId" type="integer">
-				<label>SubnetId</label>
-				<description>Slave subnet id. Can take any value between 1 and 255. 255 for broadcast.</description>
-				<default>1</default>
-				<options>
-					<option value="1">1</option>
-					<option value="255">255</option>
-				</options>
-			</parameter>
-			<parameter name="id" type="integer" required="true">
-				<label>Device ID</label>
-				<description>The ID of the Sbus device</description>
-			</parameter>
-			<parameter name="refresh" type="integer">
-				<label>Refresh Interval</label>
-				<description>Refresh interval in seconds (0 = listen-only mode for broadcast messages)</description>
-				<default>0</default>
-				<unitLabel>s</unitLabel>
-			</parameter>
-		</config-description>
-	</thing-type>
-
-	<!-- Lux Sensor Device -->
-	<thing-type id="lux-sensor">
-		<supported-bridge-type-refs>
-			<bridge-type-ref id="udp"/>
-		</supported-bridge-type-refs>
-		<label>Lux Sensor</label>
-		<description>Sbus light level sensor device (9-in-1 devices)</description>
-		<semantic-equipment-tag>IlluminanceSensor</semantic-equipment-tag>
+		<label>Multi-Sensor (9-in-1)</label>
+		<description>Sbus 9-in-1 sensor device with motion, lux, and dry contact capabilities</description>
+		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
 		<config-description>
 			<parameter name="subnetId" type="integer">
 				<label>SubnetId</label>
