@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0
+		https://openhab.org/schemas/config-description-1.0.0.xsd">
+	<config-description uri="binding:unifiprotect">
+		<parameter name="downloadBinaries" type="boolean">
+			<label>Download Stream Binaries</label>
+			<description>Download the stream binaries for go2rtc and ffmpeg if not already present on the system PATH</description>
+			<default>true</default>
+			<required>true</required>
+		</parameter>
+		<parameter name="useStun" type="boolean">
+			<label>Use STUN for external IP discovery</label>
+			<description>Use STUN for external IP discovery. This will allow camera streams to work behind NATs when outside your
+				local network (e.g. when using the openHAB cloud service). STUN will incur an approximately 5 second delay starting
+				the stream as it discovers your external IP.</description>
+			<default>true</default>
+			<required>true</required>
+		</parameter>
+	</config-description>
+</config-description:config-descriptions>
