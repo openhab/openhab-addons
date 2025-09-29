@@ -61,8 +61,6 @@ public class HeatpumpHandler extends BaseThingHandler {
 
     public abstract class AbstractBasePoller {
 
-        private final Logger logger = LoggerFactory.getLogger(HeatpumpHandler.class);
-
         private volatile @Nullable PollTask pollTask;
 
         public synchronized void unregisterPollTask() {
@@ -184,21 +182,23 @@ public class HeatpumpHandler extends BaseThingHandler {
      * @param command get the value of this command.
      * 
      * @return short the value of the command as short
+     * 
+     *         private short getInt16Value(Command command) throws LambdaException {
+     *         if (command instanceof QuantityType quantityCommand) {
+     *         QuantityType<?> c = quantityCommand.toUnit(WATT);
+     *         if (c != null) {
+     *         return c.shortValue();
+     *         } else {
+     *         throw new LambdaException("Unsupported unit");
+     *         }
+     *         }
+     *         if (command instanceof DecimalType c) {
+     *         return c.shortValue();
+     *         }
+     *         throw new LambdaException("Unsupported command type");
+     *         }
+     * 
      */
-    private short getInt16Value(Command command) throws LambdaException {
-        if (command instanceof QuantityType quantityCommand) {
-            QuantityType<?> c = quantityCommand.toUnit(WATT);
-            if (c != null) {
-                return c.shortValue();
-            } else {
-                throw new LambdaException("Unsupported unit");
-            }
-        }
-        if (command instanceof DecimalType c) {
-            return c.shortValue();
-        }
-        throw new LambdaException("Unsupported command type");
-    }
 
     private short getScaledInt16Value(Command command) throws LambdaException {
         if (command instanceof QuantityType quantityCommand) {
@@ -233,6 +233,7 @@ public class HeatpumpHandler extends BaseThingHandler {
                         break;
                 }
                 if (poller != null) {
+                    logger.trace("Heatpump: Polling initiated");
                     poller.poll();
                 }
             }

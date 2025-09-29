@@ -222,6 +222,7 @@ public class GeneralHandler extends BaseThingHandler {
                         break;
                 }
                 if (poller != null) {
+                    logger.trace("General: Polling initiated");
                     poller.poll();
                 }
             }

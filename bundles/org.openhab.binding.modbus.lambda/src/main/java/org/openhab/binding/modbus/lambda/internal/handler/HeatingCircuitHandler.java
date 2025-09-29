@@ -243,6 +243,7 @@ public class HeatingCircuitHandler extends BaseThingHandler {
                         break;
                 }
                 if (poller != null) {
+                    logger.trace("HeatingCircuit: Polling initiated");
                     poller.poll();
                 }
             }

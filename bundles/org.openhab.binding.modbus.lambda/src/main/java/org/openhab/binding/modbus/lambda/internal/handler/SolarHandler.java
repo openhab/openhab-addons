@@ -14,7 +14,7 @@ package org.openhab.binding.modbus.lambda.internal.handler;
 
 import static org.openhab.binding.modbus.lambda.internal.LambdaBindingConstants.*;
 import static org.openhab.core.library.unit.SIUnits.CELSIUS;
-import static org.openhab.core.library.unit.Units.*;
+// import static org.openhab.core.library.unit.Units.*;
 
 import javax.measure.Unit;
 
@@ -63,8 +63,6 @@ import org.slf4j.LoggerFactory;
 public class SolarHandler extends BaseThingHandler {
 
     public abstract class AbstractBasePoller {
-
-        private final Logger logger = LoggerFactory.getLogger(SolarHandler.class);
 
         private volatile @Nullable PollTask pollTask;
 
@@ -167,21 +165,24 @@ public class SolarHandler extends BaseThingHandler {
         });
     }
 
-    private short getInt16Value(Command command) throws LambdaException {
-        if (command instanceof QuantityType quantityCommand) {
-            QuantityType<?> c = quantityCommand.toUnit(WATT);
-            if (c != null) {
-                return c.shortValue();
-            } else {
-                throw new LambdaException("Unsupported unit");
-            }
-        }
-        if (command instanceof DecimalType c) {
-            return c.shortValue();
-        }
-        throw new LambdaException("Unsupported command type");
-    }
-
+    /**
+     * 
+     * private short getInt16Value(Command command) throws LambdaException {
+     * if (command instanceof QuantityType quantityCommand) {
+     * QuantityType<?> c = quantityCommand.toUnit(WATT);
+     * if (c != null) {
+     * return c.shortValue();
+     * } else {
+     * throw new LambdaException("Unsupported unit");
+     * }
+     * }
+     * if (command instanceof DecimalType c) {
+     * return c.shortValue();
+     * }
+     * throw new LambdaException("Unsupported command type");
+     * }
+     * 
+     */
     private short getScaledInt16Value(Command command) throws LambdaException {
         if (command instanceof QuantityType quantityCommand) {
             QuantityType<?> c = quantityCommand.toUnit(CELSIUS);
@@ -215,7 +216,7 @@ public class SolarHandler extends BaseThingHandler {
                         break;
                 }
                 if (poller != null) {
-                    logger.trace("Solar: Polling in progress");
+                    logger.trace("Solar: Polling initiated");
                     poller.poll();
                 }
             }

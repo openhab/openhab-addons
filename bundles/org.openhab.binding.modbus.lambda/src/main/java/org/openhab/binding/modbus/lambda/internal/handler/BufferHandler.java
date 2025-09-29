@@ -63,8 +63,6 @@ public class BufferHandler extends BaseThingHandler {
 
     public abstract class AbstractBasePoller {
 
-        private final Logger logger = LoggerFactory.getLogger(BufferHandler.class);
-
         private volatile @Nullable PollTask pollTask;
 
         public synchronized void unregisterPollTask() {
@@ -240,6 +238,7 @@ public class BufferHandler extends BaseThingHandler {
                         break;
                 }
                 if (poller != null) {
+                    logger.trace("Buffer: Polling initiated");
                     poller.poll();
                 }
             }
