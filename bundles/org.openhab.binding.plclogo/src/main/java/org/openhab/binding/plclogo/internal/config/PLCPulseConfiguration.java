@@ -35,7 +35,7 @@ public class PLCPulseConfiguration extends PLCMemoryConfiguration {
      * @return Observed Siemens LOGO! block name or memory address
      */
     public String getObservedBlock() {
-        String result = observe;
+        var result = observe;
         if (result == null) {
             result = getBlockName();
             observe = result;
@@ -53,13 +53,13 @@ public class PLCPulseConfiguration extends PLCMemoryConfiguration {
     }
 
     public String getObservedChannelType() {
-        String kind = getObservedBlockKind();
-        boolean isInput = kind.equalsIgnoreCase(I_DIGITAL) || kind.equalsIgnoreCase(NI_DIGITAL);
+        final var kind = getObservedBlockKind();
+        final var isInput = kind.equalsIgnoreCase(I_DIGITAL) || kind.equalsIgnoreCase(NI_DIGITAL);
         return isInput ? DIGITAL_INPUT_ITEM : DIGITAL_OUTPUT_ITEM;
     }
 
     public String getObservedBlockKind() {
-        String result = observe;
+        var result = observe;
         if (result == null) {
             result = getBlockName();
             observe = result;
