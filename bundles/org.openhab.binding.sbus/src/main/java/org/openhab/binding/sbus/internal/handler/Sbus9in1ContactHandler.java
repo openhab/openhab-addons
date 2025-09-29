@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.sbus.internal.handler;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.sbus.BindingConstants;
 import org.openhab.binding.sbus.internal.SbusService;
 import org.openhab.binding.sbus.internal.config.SbusChannelConfig;
@@ -40,6 +40,7 @@ import ro.ciprianpascu.sbus.msg.SbusResponse;
  *
  * @author Ciprian Pascu - Initial contribution
  */
+@NonNullByDefault
 public class Sbus9in1ContactHandler extends AbstractSbusHandler {
 
     private final Logger logger = LoggerFactory.getLogger(Sbus9in1ContactHandler.class);
@@ -146,7 +147,7 @@ public class Sbus9in1ContactHandler extends AbstractSbusHandler {
     }
 
     @Override
-    public void handleCommand(@NonNull ChannelUID channelUID, @NonNull Command command) {
+    public void handleCommand(ChannelUID channelUID, Command command) {
         // 9-in-1 contact sensors are read-only devices, no commands to handle
         logger.debug("9-in-1 contact sensor is read-only, ignoring command {} for channel {}", command, channelUID);
     }
