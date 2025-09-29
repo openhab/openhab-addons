@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.sbus.internal.handler;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.sbus.BindingConstants;
 import org.openhab.binding.sbus.internal.SbusService;
 import org.openhab.binding.sbus.internal.config.SbusChannelConfig;
@@ -40,7 +39,6 @@ import ro.ciprianpascu.sbus.msg.SbusResponse;
  *
  * @author Ciprian Pascu - Initial contribution
  */
-@NonNullByDefault
 public class Sbus9in1ContactHandler extends AbstractSbusHandler {
 
     private final Logger logger = LoggerFactory.getLogger(Sbus9in1ContactHandler.class);
@@ -54,7 +52,8 @@ public class Sbus9in1ContactHandler extends AbstractSbusHandler {
         // Create contact channels based on configured channels
         for (Channel channel : getThing().getChannels()) {
             ChannelUID channelUID = channel.getUID();
-            if (BindingConstants.CHANNEL_TYPE_CONTACT.equals(channel.getChannelTypeUID())) {
+            if (channel.getChannelTypeUID() != null
+                    && BindingConstants.CHANNEL_TYPE_CONTACT.equals(channel.getChannelTypeUID().getId())) {
                 // Contact channels are already defined in the thing configuration
                 logger.debug("Initialized contact channel: {}", channelUID.getId());
             }
@@ -93,7 +92,8 @@ public class Sbus9in1ContactHandler extends AbstractSbusHandler {
         // Update contact channels from 9-in-1 response
         for (Channel channel : getThing().getChannels()) {
             ChannelUID channelUID = channel.getUID();
-            if (BindingConstants.CHANNEL_TYPE_CONTACT.equals(channel.getChannelTypeUID())) {
+            if (channel.getChannelTypeUID() != null
+                    && BindingConstants.CHANNEL_TYPE_CONTACT.equals(channel.getChannelTypeUID().getId())) {
                 SbusChannelConfig channelConfig = channel.getConfiguration().as(SbusChannelConfig.class);
 
                 // Use channelNumber to determine which dry contact (1 or 2, default to 1)
@@ -124,7 +124,8 @@ public class Sbus9in1ContactHandler extends AbstractSbusHandler {
         // Update contact channels from motion sensor status report
         for (Channel channel : getThing().getChannels()) {
             ChannelUID channelUID = channel.getUID();
-            if (BindingConstants.CHANNEL_TYPE_CONTACT.equals(channel.getChannelTypeUID())) {
+            if (channel.getChannelTypeUID() != null
+                    && BindingConstants.CHANNEL_TYPE_CONTACT.equals(channel.getChannelTypeUID().getId())) {
                 SbusChannelConfig channelConfig = channel.getConfiguration().as(SbusChannelConfig.class);
 
                 // Use channelNumber to determine which dry contact (1 or 2, default to 1)

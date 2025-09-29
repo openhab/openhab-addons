@@ -17,7 +17,6 @@ import static org.openhab.binding.sbus.BindingConstants.BINDING_ID;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.sbus.internal.SbusService;
 import org.openhab.binding.sbus.internal.config.SbusDeviceConfig;
@@ -44,7 +43,6 @@ import ro.ciprianpascu.sbus.net.SbusMessageListener;
  *
  * @author Ciprian Pascu - Initial contribution
  */
-@NonNullByDefault
 public abstract class AbstractSbusHandler extends BaseThingHandler implements SbusMessageListener {
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());

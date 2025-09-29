@@ -15,7 +15,7 @@ package org.openhab.binding.sbus.internal.handler;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.sbus.internal.SbusService;
 import org.openhab.binding.sbus.internal.config.SbusDeviceConfig;
 import org.openhab.core.thing.ChannelUID;
@@ -40,15 +40,14 @@ import ro.ciprianpascu.sbus.msg.SbusResponse;
  *
  * @author Ciprian Pascu - Initial contribution
  */
-@NonNullByDefault
 public class Sbus9in1SensorsHandler extends AbstractSbusHandler {
 
     private final Logger logger = LoggerFactory.getLogger(Sbus9in1SensorsHandler.class);
 
     // Specialized handlers for different sensor types
-    private Sbus9in1ContactHandler contactHandler;
-    private SbusMotionSensorHandler motionHandler;
-    private SbusLuxSensorHandler luxHandler;
+    private @Nullable Sbus9in1ContactHandler contactHandler;
+    private @Nullable SbusMotionSensorHandler motionHandler;
+    private @Nullable SbusLuxSensorHandler luxHandler;
 
     public Sbus9in1SensorsHandler(Thing thing) {
         super(thing);
