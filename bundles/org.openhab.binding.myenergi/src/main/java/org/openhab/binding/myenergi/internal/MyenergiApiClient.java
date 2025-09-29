@@ -26,7 +26,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.Authentication;
-import org.eclipse.jetty.client.api.AuthenticationStore;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.DigestAuthentication;
@@ -100,7 +99,7 @@ public class MyenergiApiClient {
      *
      * @param hubSerialNumber the serial number of the myenergi hub
      * @param password the password for this hub in the myenergi mobile app.
-     * @throws MyEnergiApiException
+     * @throws ApiException
      */
     public void initialize(final String hubSerialNumber, final String password) throws ApiException {
         this.username = hubSerialNumber;
@@ -109,31 +108,34 @@ public class MyenergiApiClient {
         if (factory == null) {
             throw new ApiException("No HttpClientFactory provided");
         } else {
-            HttpClient client = this.httpClient;
-            // close down existing client
+            // close down existing client if exist
             stop();
 
-            // create a new httpClient, so that we can add our own digest authentication
-            client = factory.createHttpClient(MyenergiApiClient.class.getSimpleName());
-            AuthenticationStore auth = client.getAuthenticationStore();
-            auth.clearAuthentications();
-            auth.clearAuthenticationResults();
-            if ("".equals(host)) {
-                host = new MyenergiGetHostFromDirector().getHostName(client, hubSerialNumber);
-            }
             try {
+                // create a new httpClient, so that we can add our own digest authentication
+                logger.debug("creating new HTTP client with provided authentication credentials");
+                HttpClient client = factory.createHttpClient(MyenergiApiClient.class.getSimpleName());
+
+                if (!client.isStarted()) {
+                    logger.debug("starting HTTP client");
+                    client.start();
+                }
+
+                if ("".equals(host)) {
+                    logger.debug("getting host from director");
+                    host = new MyenergiGetHostFromDirector().getHostName(client, hubSerialNumber);
+                }
+
                 baseURI = new URI("https", host, "/", null);
                 URI uri = baseURI;
                 if (uri == null) {
                     throw new ApiException("No base URI could be constructed");
                 }
                 logger.debug("API base URI: {}", uri.toString());
+
                 client.getAuthenticationStore().addAuthentication(
                         new DigestAuthentication(uri, Authentication.ANY_REALM, hubSerialNumber, password));
                 logger.debug("Digest authentication added: {}", hubSerialNumber);
-                if (!client.isStarted()) {
-                    client.start();
-                }
                 httpClient = client;
             } catch (MalformedURLException | URISyntaxException e) {
                 throw new ApiException("Invalid URL for API call", e);
@@ -413,7 +415,7 @@ public class MyenergiApiClient {
     private String executeApiCall(String path) throws ApiException {
         String result = "";
         try {
-            URI uri = this.baseURI;
+            URI uri = baseURI;
             if (uri == null) {
                 throw new ApiException("No base URI available for API call");
             }

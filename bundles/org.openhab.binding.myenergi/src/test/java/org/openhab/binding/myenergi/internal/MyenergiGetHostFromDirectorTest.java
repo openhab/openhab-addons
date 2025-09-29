@@ -34,7 +34,7 @@ class MyenergiGetHostFromDirectorTest {
         @Override
         public HttpClient createHttpClient(String consumerName) {
             SslContextFactory.Client sslContextFactory = new SslContextFactory.Client();
-            sslContextFactory.setTrustAll(true); // you might want to think about this first
+            // sslContextFactory.setTrustAll(true); // you might want to think about this first
             return new HttpClient(sslContextFactory);
         }
 

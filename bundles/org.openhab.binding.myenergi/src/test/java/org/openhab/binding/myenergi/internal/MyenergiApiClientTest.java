@@ -113,7 +113,6 @@ class MyenergiApiClientTest {
         when(httpClient.getAuthenticationStore()).thenReturn(authenticationStore);
         when(httpClient.newRequest(anyString())).thenReturn(request);
         when(httpClient.isStarted()).thenReturn(true);
-        // doNothing().when(httpClient).stop();
 
         when(request.method(HttpMethod.GET)).thenReturn(request);
 

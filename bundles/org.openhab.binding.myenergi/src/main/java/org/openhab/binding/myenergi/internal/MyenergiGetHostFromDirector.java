@@ -21,6 +21,7 @@ import javax.validation.constraints.NotNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.Authentication;
+import org.eclipse.jetty.client.api.AuthenticationStore;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.DigestAuthentication;
@@ -31,8 +32,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link MyenergiGetHostFromDirector} is a helper class to get the hostname on
- * myenergi.net for the the myenergi API.
+ * The {@link MyenergiGetHostFromDirector} is a helper class to get the hostname
+ * on myenergi.net for the the myenergi API.
  * It finds the server for a given hub serial number
  *
  * @author Volkmar Nissen - Initial contribution
@@ -55,8 +56,11 @@ public class MyenergiGetHostFromDirector {
         String directorHostname = "director.myenergi.net";
         try {
             URL directorURL = new URI("https", directorHostname, "/", null).toURL();
-            // No password is needed at director.myenergie.net
-            httpClient.getAuthenticationStore().addAuthentication(
+            // We reset the authentication store as no password is needed for director.myenergie.net
+            AuthenticationStore auth = httpClient.getAuthenticationStore();
+            auth.clearAuthentications();
+            auth.clearAuthenticationResults();
+            auth.addAuthentication(
                     new DigestAuthentication(directorURL.toURI(), Authentication.ANY_REALM, hubSerialNumber, ""));
             int innerLoop = 0;
             while ((innerLoop < 2)) {
