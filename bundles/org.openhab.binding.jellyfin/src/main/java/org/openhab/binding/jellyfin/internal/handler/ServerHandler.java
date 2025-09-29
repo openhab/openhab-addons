@@ -26,7 +26,6 @@ import org.openhab.binding.jellyfin.internal.api.ApiClient;
 import org.openhab.binding.jellyfin.internal.api.generated.current.model.SystemInfo;
 import org.openhab.binding.jellyfin.internal.exceptions.ExceptionHandler;
 import org.openhab.binding.jellyfin.internal.handler.tasks.AbstractTask;
-import org.openhab.binding.jellyfin.internal.handler.tasks.ConnectionTask;
 import org.openhab.binding.jellyfin.internal.handler.tasks.TaskFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -124,25 +123,22 @@ public class ServerHandler extends BaseBridgeHandler {
         this.apiClient.authenticateWithToken(config.token);
 
         // Create and start the connection task
-        AbstractTask connectionTask = TaskFactory.createConnectionTask(
-            this.apiClient, 
-            systemInfo -> this.handleConnection(systemInfo),
-            this.exceptionHandler
-        );
-        
+        AbstractTask connectionTask = TaskFactory.createConnectionTask(this.apiClient,
+                systemInfo -> this.handleConnection(systemInfo), this.exceptionHandler);
+
         startTask(connectionTask);
-        
+
         // Additional tasks can be started here in the future
     }
-    
+
     private synchronized void startTask(AbstractTask task) {
         String taskId = task.getId();
         int delay = task.getStartupDelay();
         int interval = task.getInterval();
-        
+
         this.logger.trace("Starting task [{}] with delay: {}s, interval: {}s", taskId, delay, interval);
         logger.info("Starting task [{}]", taskId);
-        
+
         this.scheduledTasks.put(taskId, this.scheduleTask(task, delay, interval));
     }
 
@@ -177,7 +173,8 @@ public class ServerHandler extends BaseBridgeHandler {
     }
 
     private synchronized void stopTasks() {
-        logger.info("Stopping {} task(s): {}", this.scheduledTasks.values().size(), String.join(",", this.scheduledTasks.keySet()));
+        logger.info("Stopping {} task(s): {}", this.scheduledTasks.values().size(),
+                String.join(",", this.scheduledTasks.keySet()));
 
         this.scheduledTasks.values().forEach(this::stopScheduledTask);
         this.scheduledTasks.clear();

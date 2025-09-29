@@ -59,23 +59,20 @@ public class UsersListTask implements Runnable {
         try {
             // Since we couldn't find a direct method in the API, we'll use a direct HTTP request
             // to the /Users endpoint which returns a list of users
-            HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(client.getBaseUri() + "/Users"))
-                .header("Accept", "application/json")
-                .GET()
-                .build();
+            HttpRequest request = HttpRequest.newBuilder().uri(URI.create(client.getBaseUri() + "/Users"))
+                    .header("Accept", "application/json").GET().build();
 
-            HttpResponse<String> response = client.getHttpClient()
-                .send(request, HttpResponse.BodyHandlers.ofString());
-                
+            HttpResponse<String> response = client.getHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
+
             if (response.statusCode() != 200) {
                 throw new ApiException(response.statusCode(), "Failed to retrieve users: " + response.body());
             }
-            
+
             // Parse the response into a list of UserDto objects
-            List<UserDto> users = client.getObjectMapper().readValue(response.body(), 
-                new TypeReference<ArrayList<UserDto>>() {});
-                
+            List<UserDto> users = client.getObjectMapper().readValue(response.body(),
+                    new TypeReference<ArrayList<UserDto>>() {
+                    });
+
             // Pass the result to the handler
             this.usersHandler.accept(users);
         } catch (IOException | InterruptedException e) {

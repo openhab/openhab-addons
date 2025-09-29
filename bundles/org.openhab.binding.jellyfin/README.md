@@ -1,8 +1,9 @@
 # Jellyfin Binding
 
 This is the binding for [Jellyfin](https://jellyfin.org), the volunteer built media solution that puts you in control of your media.
-This binding allows you to connect to Jellyfin clients that supports remote control, it's built on top of the official Jellyfin Kotlin SDK.
-It is compatible with Jellyfin servers from version `10.8.1`, recommended is `10.8.13`.
+This binding allows you to interact with Jellyfin clients that supports remote control.
+It is compatible and test with Jellyfin servers from version `10.10.7`.
+Earlier versions use a different API and are not supported.
 
 ## Binding - Configuration
 

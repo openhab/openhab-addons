@@ -39,7 +39,7 @@ public class TaskFactory {
             ExceptionHandlerType exceptionHandler) {
         return new ConnectionTask(client, connectionHandler, exceptionHandler);
     }
-    
+
     /**
      * Creates a registration task with the specified parameters.
      * 
@@ -50,7 +50,7 @@ public class TaskFactory {
     public static RegistrationTask createRegistrationTask(ApiClient client, ExceptionHandlerType exceptionHandler) {
         return new RegistrationTask(client, exceptionHandler);
     }
-    
+
     /**
      * Creates an update task with the specified parameters.
      * 

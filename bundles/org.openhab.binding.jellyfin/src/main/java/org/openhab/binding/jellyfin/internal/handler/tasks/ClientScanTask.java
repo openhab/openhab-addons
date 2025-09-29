@@ -57,7 +57,7 @@ public class ClientScanTask implements Runnable {
         try {
             var devicesApi = new DevicesApi(client);
             DeviceInfoDtoQueryResult devices = devicesApi.getDevices(userId);
-            
+
             this.devicesHandler.accept(devices.getItems());
         } catch (Exception e) {
             this.exceptionHandler.handle(e);

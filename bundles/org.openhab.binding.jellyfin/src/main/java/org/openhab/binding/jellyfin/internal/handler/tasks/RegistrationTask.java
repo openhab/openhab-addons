@@ -33,7 +33,7 @@ public class RegistrationTask extends AbstractTask {
     public static final int DEFAULT_STARTUP_DELAY = 5;
     /** Default interval for the registration task in seconds */
     public static final int DEFAULT_INTERVAL = 1;
-    
+
     private final Logger logger = LoggerFactory.getLogger(RegistrationTask.class);
     private final ApiClient client;
     private final ExceptionHandlerType exceptionHandler;

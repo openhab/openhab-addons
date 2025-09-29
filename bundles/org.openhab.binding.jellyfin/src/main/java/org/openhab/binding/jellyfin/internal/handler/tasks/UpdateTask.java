@@ -33,7 +33,7 @@ public class UpdateTask extends AbstractTask {
     public static final int DEFAULT_STARTUP_DELAY = 10;
     /** Default interval for the update task in seconds */
     public static final int DEFAULT_INTERVAL = 10;
-    
+
     private final Logger logger = LoggerFactory.getLogger(UpdateTask.class);
     private final ApiClient client;
     private final ExceptionHandlerType exceptionHandler;
