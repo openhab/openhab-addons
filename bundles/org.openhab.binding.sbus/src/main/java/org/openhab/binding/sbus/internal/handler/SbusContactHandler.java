@@ -25,15 +25,18 @@ import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ro.ciprianpascu.sbus.msg.MotionSensorStatusReport;
 import ro.ciprianpascu.sbus.msg.ReadDryChannelsRequest;
 import ro.ciprianpascu.sbus.msg.ReadDryChannelsResponse;
+import ro.ciprianpascu.sbus.msg.ReadNineInOneStatusResponse;
 import ro.ciprianpascu.sbus.msg.ReadStatusChannelsResponse;
 import ro.ciprianpascu.sbus.msg.SbusResponse;
 import ro.ciprianpascu.sbus.procimg.InputRegister;
 
 /**
  * The {@link SbusContactHandler} is responsible for handling commands for Sbus contact devices.
- * It supports reading the current contact state (open/closed).
+ * It supports reading the current contact state (open/closed) from both traditional contact sensors
+ * and dry contact information from 9-in-1 sensor devices.
  *
  * @author Ciprian Pascu - Initial contribution
  */
@@ -125,10 +128,16 @@ public class SbusContactHandler extends AbstractSbusHandler {
             if (response instanceof ReadStatusChannelsResponse statusResponse) {
                 // Process status channel response using existing logic
                 boolean[] statuses = extractContactStatuses(statusResponse);
-
-                // Update channel states based on async message
                 updateChannelStatesFromStatuses(statuses);
                 logger.debug("Processed async contact status message for handler {}", getThing().getUID());
+            } else if (response instanceof MotionSensorStatusReport report) {
+                // Process dry contact information from 9-in-1 sensor broadcast
+                updateContactsFromMotionReport(report);
+                logger.debug("Processed async motion sensor status report for contact handler {}", getThing().getUID());
+            } else if (response instanceof ReadNineInOneStatusResponse statusResponse) {
+                // Process dry contact information from 9-in-1 sensor polling
+                updateContactsFromNineInOneResponse(statusResponse);
+                logger.debug("Processed async 9-in-1 status response for contact handler {}", getThing().getUID());
             }
         } catch (IllegalStateException | IllegalArgumentException e) {
             logger.warn("Error processing async message in contact handler {}: {}", getThing().getUID(),
@@ -138,13 +147,20 @@ public class SbusContactHandler extends AbstractSbusHandler {
 
     @Override
     protected boolean isMessageRelevant(SbusResponse response) {
-        if (!(response instanceof ReadStatusChannelsResponse)) {
-            return false;
+        SbusDeviceConfig config = getConfigAs(SbusDeviceConfig.class);
+
+        if (response instanceof ReadStatusChannelsResponse) {
+            // Traditional contact sensor messages
+            return response.getSubnetID() == config.subnetId && response.getUnitID() == config.id;
+        } else if (response instanceof MotionSensorStatusReport) {
+            // 9-in-1 sensor broadcast messages - check source device
+            return response.getSourceSubnetID() == config.subnetId && response.getSourceUnitID() == config.id;
+        } else if (response instanceof ReadNineInOneStatusResponse) {
+            // 9-in-1 sensor polling responses
+            return response.getSubnetID() == config.subnetId && response.getUnitID() == config.id;
         }
 
-        // Check if the message is for this device based on subnet and unit ID
-        SbusDeviceConfig config = getConfigAs(SbusDeviceConfig.class);
-        return response.getSubnetID() == config.subnetId && response.getUnitID() == config.id;
+        return false;
     }
 
     /**
@@ -177,5 +193,65 @@ public class SbusContactHandler extends AbstractSbusHandler {
             statuses[i] = (registers[i].getValue() & 0xff) > 0; // Convert to boolean
         }
         return statuses;
+    }
+
+    // 9-in-1 Sensor Dry Contact Support Methods
+
+    /**
+     * Update contact channels from motion sensor status report dry contact data.
+     *
+     * @param report the motion sensor status report containing dry contact data
+     */
+    private void updateContactsFromMotionReport(MotionSensorStatusReport report) {
+        // Update contact channels based on dry contact status from motion sensor status report
+        for (Channel channel : getThing().getChannels()) {
+            if (!isLinked(channel.getUID())) {
+                continue;
+            }
+
+            // Only process contact channels
+            if (channel.getChannelTypeUID() != null && "contact-channel".equals(channel.getChannelTypeUID().getId())) {
+                SbusChannelConfig channelConfig = channel.getConfiguration().as(SbusChannelConfig.class);
+
+                // Motion sensor status report has dry contact status - use channel number or default to 0
+                int contactIndex = channelConfig.channelNumber > 0 ? channelConfig.channelNumber - 1 : 0;
+                boolean isOpen = report.getDryContactStatus(contactIndex) > 0;
+                updateState(channel.getUID(), isOpen ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
+            }
+        }
+
+        logger.debug("Updated contact states from motion sensor status report");
+    }
+
+    /**
+     * Update contact channels from 9-in-1 sensor response dry contact data.
+     *
+     * @param response the 9-in-1 sensor response containing dry contact data
+     */
+    private void updateContactsFromNineInOneResponse(ReadNineInOneStatusResponse response) {
+        // Update contact channels based on dry contact status from 9-in-1 sensor
+        for (Channel channel : getThing().getChannels()) {
+            if (!isLinked(channel.getUID())) {
+                continue;
+            }
+
+            // Only process contact channels
+            if (channel.getChannelTypeUID() != null && "contact-channel".equals(channel.getChannelTypeUID().getId())) {
+                SbusChannelConfig channelConfig = channel.getConfiguration().as(SbusChannelConfig.class);
+                boolean isOpen = false;
+
+                // Map channel number to appropriate dry contact (1 or 2)
+                if (channelConfig.channelNumber == 1) {
+                    isOpen = response.getDryContact1Status() > 0;
+                } else if (channelConfig.channelNumber == 2) {
+                    isOpen = response.getDryContact2Status() > 0;
+                }
+
+                updateState(channel.getUID(), isOpen ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
+            }
+        }
+
+        logger.debug("Updated contact states from 9-in-1 sensor response - DryContact1: {}, DryContact2: {}",
+                response.getDryContact1Status(), response.getDryContact2Status());
     }
 }
