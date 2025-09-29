@@ -37,9 +37,11 @@ public class SolarmanRawProtocol implements SolarmanProtocol {
         this.solarmanLoggerConfiguration = solarmanLoggerConfiguration;
     }
 
+    @Override
     public Map<Integer, byte[]> readRegisters(SolarmanLoggerConnection solarmanLoggerConnection, byte mbFunctionCode,
             int firstReg, int lastReg) throws SolarmanException {
-        byte[] solarmanRawFrame = buildSolarmanRawFrame(mbFunctionCode, firstReg, lastReg);
+        int regCount = lastReg - firstReg + 1;
+        byte[] solarmanRawFrame = buildSolarmanRawReadFrame(mbFunctionCode, firstReg, regCount);
         byte[] respFrame = solarmanLoggerConnection.sendRequest(solarmanRawFrame);
         if (respFrame.length > 0) {
             byte[] modbusRespFrame = extractModbusRawResponseFrame(respFrame, solarmanRawFrame);
@@ -47,6 +49,73 @@ public class SolarmanRawProtocol implements SolarmanProtocol {
         } else {
             throw new SolarmanConnectionException("Response frame was empty");
         }
+    }
+
+    @Override
+    public boolean writeRegisters(SolarmanLoggerConnection solarmanLoggerConnection, int firstReg, byte[] data)
+            throws SolarmanException {
+        if (data.length % 2 != 0) {
+            throw new SolarmanException("Data to be written should be packed as two bytes per register!");
+        }
+
+        byte[] solarmanRawFrame = buildSolarmanRawWriteFrame(firstReg, data);
+        byte[] respFrame = solarmanLoggerConnection.sendRequest(solarmanRawFrame);
+        if (respFrame.length > 0) {
+            byte[] modbusRespFrame = extractModbusRawResponseFrame(respFrame, solarmanRawFrame);
+            parseRawModbusWriteHoldingRegistersResponse(modbusRespFrame, data);
+            return true;
+        } else {
+            throw new SolarmanConnectionException("Response frame was empty");
+        }
+    }
+
+    /**
+     * Builds a SolarMAN Raw frame to request data write from firstReg.
+     * Frame format is based on
+     * <a href="https://github.com/StephanJoubert/home_assistant_solarman/issues/247">Solarman RAW Protocol</a>
+     *
+     * @param firstReg - the start register
+     * @param data - the data to be written
+     * @return byte array containing the Solarman Raw frame
+     */
+    private byte[] buildSolarmanRawWriteFrame(int firstReg, byte[] data) throws SolarmanException {
+        byte[] requestPayload = buildSolarmanRawWriteFrameRequestPayload(DEFAULT_SLAVE_ID, firstReg, data);
+        byte[] header = buildSolarmanRawFrameHeader(requestPayload.length);
+
+        return ByteBuffer.allocate(header.length + requestPayload.length).put(header).put(requestPayload).array();
+    }
+
+    /**
+     * Builds a SolarMAN Raw write frame payload
+     * Frame format is based on
+     * <a href="https://www.modbustools.com/modbus.html#function16">Modbus RTU Write Multiple Registers</a>
+     *
+     * @param slaveId - Modbus slave ID
+     * @param firstReg - the start register
+     * @param data - the data to be written
+     * @return byte array containing the Modbus RTU Raw frame payload
+     */
+    private byte[] buildSolarmanRawWriteFrameRequestPayload(byte slaveId, int firstReg, byte[] data)
+            throws SolarmanException {
+        if (data.length % 2 != 0) {
+            throw new SolarmanException("Data to be written should be packed as two bytes per register!");
+        }
+
+        // slaveId (1 byte)
+        // mbFunction (1 byte)
+        // firstRegister (2 bytes)
+        // registerCount (2 bytes)
+        // data length (1 byte)
+        // data
+        int bufferSize = 1 + 1 + 2 + 2 + 1 + data.length;
+        int registerCount = data.length / 2;
+
+        byte[] req = ByteBuffer.allocate(bufferSize).put(slaveId).put(WRITE_REGISTERS_FUNCTION_CODE)
+                .putShort((short) firstReg).putShort((short) registerCount).put((byte) data.length).put(data).array();
+        byte[] crc = ByteBuffer.allocate(Short.BYTES).order(ByteOrder.LITTLE_ENDIAN)
+                .putShort((short) CRC16Modbus.calculate(req)).array();
+
+        return ByteBuffer.allocate(req.length + crc.length).put(req).put(crc).array();
     }
 
     protected byte[] extractModbusRawResponseFrame(byte @Nullable [] responseFrame, byte[] requestFrame)
@@ -81,6 +150,36 @@ public class SolarmanRawProtocol implements SolarmanProtocol {
         return registers;
     }
 
+    private void parseRawModbusWriteHoldingRegistersResponse(byte[] frame, byte[] data)
+            throws SolarmanProtocolException {
+        int expectedRegistersCount = data.length / 2;
+
+        // slaveId (1 byte)
+        // modbusFunction (1 byte)
+        // firstRegister (2 bytes)
+        // registerCount (2 bytes)
+        int expectedFrameDataLen = 1 + 1 + 2 + 2;
+        if (frame == null || frame.length < expectedFrameDataLen + 2) {
+            throw new SolarmanProtocolException("Modbus frame is too short or empty");
+        }
+
+        int actualCrc = ByteBuffer.wrap(frame, expectedFrameDataLen, 2).order(ByteOrder.LITTLE_ENDIAN).getShort()
+                & 0xFFFF;
+        int expectedCrc = CRC16Modbus.calculate(Arrays.copyOfRange(frame, 0, expectedFrameDataLen));
+
+        if (actualCrc != expectedCrc) {
+            throw new SolarmanProtocolException(
+                    String.format("Modbus frame crc is not valid. Expected %04x, got %04x", expectedCrc, actualCrc));
+        }
+
+        short registersWrittenCount = ByteBuffer.wrap(frame, 4, 2).getShort();
+        if (registersWrittenCount != expectedRegistersCount) {
+            throw new SolarmanProtocolException(
+                    String.format("Modbus written registers count is not valid. Expected %04x, got %04x",
+                            expectedRegistersCount, registersWrittenCount));
+        }
+    }
+
     /**
      * Builds a SolarMAN Raw frame to request data from firstReg to lastReg.
      * Frame format is based on
@@ -94,14 +193,14 @@ public class SolarmanRawProtocol implements SolarmanProtocol {
      * Payload 0003: 1st register address
      * Payload 006e: Nb of registers to read
      * Trailer 3426: CRC-16 ModBus
-     * 
-     * @param mbFunctionCode
+     *
+     * @param mbFunctionCode - Modbus function code
      * @param firstReg - the start register
-     * @param lastReg - the end register
+     * @param regCount - the registers count
      * @return byte array containing the Solarman Raw frame
      */
-    protected byte[] buildSolarmanRawFrame(byte mbFunctionCode, int firstReg, int lastReg) {
-        byte[] requestPayload = buildSolarmanRawFrameRequestPayload(mbFunctionCode, firstReg, lastReg);
+    protected byte[] buildSolarmanRawReadFrame(byte mbFunctionCode, int firstReg, int regCount) {
+        byte[] requestPayload = buildSolarmanRawReadFrameRequestPayload(mbFunctionCode, firstReg, regCount);
         byte[] header = buildSolarmanRawFrameHeader(requestPayload.length);
 
         return ByteBuffer.allocate(header.length + requestPayload.length).put(header).put(requestPayload).array();
@@ -115,7 +214,7 @@ public class SolarmanRawProtocol implements SolarmanProtocol {
      * Header 03e8: Transaction identifier
      * Header 0000: Protocol identifier
      * Header 0006: Message length (w/o CRC)
-     * 
+     *
      * @param payloadSize th
      * @return byte array containing the Solarman Raw frame header
      */
@@ -136,7 +235,7 @@ public class SolarmanRawProtocol implements SolarmanProtocol {
     }
 
     /**
-     * Builds a SolarMAN Raw frame payload
+     * Builds a SolarMAN Raw read frame payload
      * Frame format is based on
      * <a href="https://github.com/StephanJoubert/home_assistant_solarman/issues/247">Solarman RAW Protocol</a>
      * Request send:
@@ -145,14 +244,13 @@ public class SolarmanRawProtocol implements SolarmanProtocol {
      * Payload 0003: 1st register address
      * Payload 006e: Nb of registers to read
      * Trailer 3426: CRC-16 ModBus
-     * 
-     * @param mbFunctionCode
+     *
+     * @param mbFunctionCode - Modbus function code
      * @param firstReg - the start register
-     * @param lastReg - the end register
+     * @param regCount - the registers count
      * @return byte array containing the Solarman Raw frame payload
      */
-    protected byte[] buildSolarmanRawFrameRequestPayload(byte mbFunctionCode, int firstReg, int lastReg) {
-        int regCount = lastReg - firstReg + 1;
+    protected byte[] buildSolarmanRawReadFrameRequestPayload(byte mbFunctionCode, int firstReg, int regCount) {
         byte[] req = ByteBuffer.allocate(6).put((byte) 0x01).put(mbFunctionCode).putShort((short) firstReg)
                 .putShort((short) regCount).array();
         byte[] crc = ByteBuffer.allocate(Short.BYTES).order(ByteOrder.LITTLE_ENDIAN)

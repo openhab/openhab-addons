@@ -45,8 +45,19 @@ class SolarmanV5ProtocolTest {
     private SolarmanV5Protocol solarmanV5Protocol = new SolarmanV5Protocol(loggerConfiguration);
 
     @Test
+    void tesBuildModbusReadHoldingRegistersFrame() {
+        byte[] modbusFrame = solarmanV5Protocol.buildModbusReadHoldingRegistersFrame((byte) 0x01, (byte) 0x03, 0x0000,
+                0x0021);
+        byte[] expectedFrame = { (byte) 0x01, (byte) 0x03, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x21,
+                (byte) 0x85, (byte) 0xD2 };
+        assertArrayEquals(modbusFrame, expectedFrame);
+    }
+
+    @Test
     void testbuildSolarmanV5Frame() {
-        byte[] requestFrame = solarmanV5Protocol.buildSolarmanV5Frame((byte) 0x03, 0x0000, 0x0020);
+        byte[] modbusFrame = solarmanV5Protocol.buildModbusReadHoldingRegistersFrame((byte) 0x01, (byte) 0x03, 0x0000,
+                0x0021);
+        byte[] requestFrame = solarmanV5Protocol.buildSolarmanV5Frame(modbusFrame);
 
         byte[] expectedFrame = { (byte) 0xA5, (byte) 0x17, (byte) 0x00, (byte) 0x10, (byte) 0x45, (byte) 0x00,
                 (byte) 0x00, (byte) 0xD2, (byte) 0x02, (byte) 0x96, (byte) 0x49, (byte) 0x02, (byte) 0x00, (byte) 0x00,
