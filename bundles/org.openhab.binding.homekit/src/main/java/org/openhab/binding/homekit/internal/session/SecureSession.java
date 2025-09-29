@@ -14,11 +14,13 @@ package org.openhab.binding.homekit.internal.session;
 
 import static org.openhab.binding.homekit.internal.crypto.CryptoUtils.*;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
-import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -48,38 +50,133 @@ public class SecureSession {
     }
 
     /**
-     * Encrypts the given plaintext using the write key and a unique nonce and sends it.
+     * Sends multiple data frames over the output stream. Splits the plaintext into chunks <= 1024 bytes,
+     * encrypts them, and sends them as separate frames.
      *
-     * @param plaintext the plaintext to be encrypted and sent.
-     * @throws Exception
+     * @param plainTextIn the complete plaintext message to be sent.
+     * @throws Exception if an error occurs during encryption or sending.
      */
-    public void send(byte[] plaintext) throws Exception {
-        byte[] nonce = generateNonce(writeCounter.getAndIncrement());
-        byte[] ciphertext = encrypt(writeKey, nonce, plaintext);
-        ByteBuffer buf = ByteBuffer.allocate(2 + ciphertext.length);
-        buf.order(java.nio.ByteOrder.LITTLE_ENDIAN);
-        buf.putShort((short) ciphertext.length);
-        buf.put(ciphertext);
-        out.write(buf.array());
+    public void send(byte[] plainTextIn) throws Exception {
+        ByteArrayInputStream plainText = new ByteArrayInputStream(plainTextIn);
+        while (plainText.available() > 0) {
+            sendFrame(plainText);
+        }
         out.flush();
     }
 
     /**
-     * Reads the cipertext and decrypts it using the read key and a unique nonce.
+     * Sends a single data frame over the output stream. This method reads up to 1024 bytes from the
+     * input plaintext, encrypts it, and sends it as a frame with a 2-byte length prefix, and a 16 byte
+     * tag. The length prefix is included in the cipher AAD to ensure integrity. The write counter is
+     * incremented after sending the frame to ensure nonce uniqueness.
      *
-     * @return the received ciphertext decrypted.
-     * @throws Exception
+     * @param plainText the input stream containing the plaintext to be sent.
+     * @throws Exception if an error occurs during encryption or sending.
+     */
+    private void sendFrame(ByteArrayInputStream plainText) throws Exception {
+        int frameLen = Math.min(1024, plainText.available());
+        byte[] frameAad = new byte[] { (byte) (frameLen & 0xFF), (byte) ((frameLen >> 8) & 0xFF) };
+        out.write(frameAad, 0, frameAad.length);
+        byte[] chunk = plainText.readNBytes(frameLen);
+        byte[] nonce = generateNonce(writeCounter.getAndIncrement());
+        out.write(encrypt(writeKey, nonce, chunk, frameAad)); // AAD = lenBytes; outputs extra 16 byte tag
+    }
+
+    /**
+     * Reads multiple data frames from the input stream until a complete HTTP message is reconstructed.
+     * Repeatedly calls receiveFrame() to read and decrypt individual frames. It accumulates the decrypted
+     * plaintext until it detects the end of the HTTP message. The end of the message is determined by checking
+     * for the presence of complete HTTP headers and a Content-Length header.
+     *
+     * @return the complete decrypted HTTP message as a byte array.
+     * @throws Exception if an error occurs during reading or decryption.
      */
     public byte[] receive() throws Exception {
-        int lo = in.read();
-        int hi = in.read();
-        if (lo < 0 || hi < 0) {
-            throw new IllegalStateException("Stream closed");
+        HttpPayloadParser httpParser = new HttpPayloadParser();
+        ByteArrayOutputStream plainText = new ByteArrayOutputStream();
+        do {
+            byte[] frame = receiveFrame();
+            httpParser.accept(frame);
+            plainText.write(frame);
+        } while (!httpParser.isComplete());
+        return plainText.toByteArray();
+    }
+
+    /**
+     * Reads a single frame from the input stream, decrypts it, and returns the plaintext. Reads the 2-byte length
+     * prefix, retrieves the corresponding ciphertext, and decrypts it. The length prefix is included in the cipher
+     * AAD to ensure integrity. The read counter is incremented after reading the frame to ensure nonce uniqueness.
+     *
+     * @return the decrypted plaintext of the single frame.
+     * @throws Exception if an error occurs during reading or decryption.
+     */
+    private byte[] receiveFrame() throws Exception {
+        byte[] frameAad = in.readNBytes(2);
+        int frameLen = (frameAad[0] & 0xFF) + ((frameAad[1] & 0xFF) << 8);
+        if (frameLen < 0 || frameLen > 1024) {
+            throw new SecurityException("Invalid frame length");
         }
-        int length = (lo & 0xFF) | ((hi & 0xFF) << 8);
-        byte[] ciphertext = in.readNBytes(length);
+        byte[] cipherText = in.readNBytes(frameLen + 16); // read 16 extra bytes for the auth tag
         byte[] nonce = generateNonce(readCounter.getAndIncrement());
-        byte[] plaintext = decrypt(readKey, nonce, ciphertext);
-        return plaintext;
+        return decrypt(readKey, nonce, cipherText, frameAad);
+    }
+
+    /**
+     * Internal helper class to parse incoming HTTP messages and determine when a complete message has been received.
+     * It accumulates header data until the end of headers is detected, then reads the Content-Length header to
+     * determine how many bytes of body to expect. It tracks the number of body bytes read to know when the full
+     * message has been received.
+     */
+    private static class HttpPayloadParser {
+        private final ByteArrayOutputStream headerBuffer = new ByteArrayOutputStream();
+        private int contentLength = -1;
+        private int bodyBytesRead = 0;
+        private boolean headersComplete = false;
+
+        public void accept(byte[] data) {
+            int offset = 0;
+
+            if (!headersComplete) {
+                for (int i = 0; i < data.length - 3; i++) {
+                    if (data[i] == '\r' && data[i + 1] == '\n' && data[i + 2] == '\r' && data[i + 3] == '\n') {
+                        headersComplete = true;
+                        offset = i + 4;
+                        headerBuffer.write(data, 0, offset);
+                        parseHeaders();
+                        break;
+                    }
+                }
+                if (!headersComplete) {
+                    try {
+                        headerBuffer.write(data);
+                    } catch (IOException e) {
+                        // should never happen with ByteArrayOutputStream
+                    }
+                    return;
+                }
+            }
+
+            if (headersComplete && contentLength != -1) {
+                bodyBytesRead += data.length - offset;
+            }
+        }
+
+        private void parseHeaders() {
+            String headers = headerBuffer.toString(StandardCharsets.UTF_8);
+            for (String line : headers.split("\r\n")) {
+                if (line.regionMatches(true, 0, "Content-Length:", 0, 15)) {
+                    try {
+                        contentLength = Integer.parseInt(line.substring(15).trim());
+                    } catch (NumberFormatException ignored) {
+                        contentLength = -1;
+                    }
+                    break;
+                }
+            }
+        }
+
+        public boolean isComplete() {
+            return headersComplete && contentLength != -1 && bodyBytesRead >= contentLength;
+        }
     }
 }

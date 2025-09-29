@@ -62,8 +62,8 @@ class TestPairSetup {
         byte[] key = new byte[32]; // 256 bits = 32 bytes
         byte[] nonce = generateNonce(123);
         new SecureRandom().nextBytes(key);
-        byte[] cipherText = encrypt(key, nonce, plainText0);
-        byte[] plainText1 = decrypt(key, nonce, cipherText);
+        byte[] cipherText = encrypt(key, nonce, plainText0, new byte[0]);
+        byte[] plainText1 = decrypt(key, nonce, cipherText, new byte[0]);
         assertArrayEquals(plainText0, plainText1);
     }
 
@@ -72,8 +72,8 @@ class TestPairSetup {
         byte[] plainText0 = "the quick brown dog".getBytes(StandardCharsets.UTF_8);
         SRPclient client = new SRPclient("password123", toBytes(SALT_HEX), toBytes(SERVER_PRIVATE_HEX));
         byte[] sharedKey = client.getSharedKey();
-        byte[] cipherText = encrypt(sharedKey, PS_M5_NONCE, plainText0);
-        byte[] plainText1 = decrypt(sharedKey, PS_M5_NONCE, cipherText);
+        byte[] cipherText = encrypt(sharedKey, PS_M5_NONCE, plainText0, new byte[0]);
+        byte[] plainText1 = decrypt(sharedKey, PS_M5_NONCE, cipherText, new byte[0]);
         assertArrayEquals(plainText0, plainText1);
     }
 

@@ -168,7 +168,7 @@ public class SRPclient {
                 TlvType.SIGNATURE.key, clientSignature);
 
         byte[] plainText = Tlv8Codec.encode(subTlv);
-        byte[] cipherText = encrypt(getSharedKey(), PS_M5_NONCE, plainText);
+        byte[] cipherText = encrypt(getSharedKey(), PS_M5_NONCE, plainText, new byte[0]);
         return cipherText;
     }
 
@@ -182,7 +182,7 @@ public class SRPclient {
      * @throws Exception if an error occurs during decryption or signature verification.
      */
     public void m6DecodeServerInfoAndVerify(byte[] cipherText) throws Exception {
-        byte[] plainText = decrypt(getSharedKey(), PS_M6_NONCE, cipherText);
+        byte[] plainText = decrypt(getSharedKey(), PS_M6_NONCE, cipherText, new byte[0]);
 
         Map<Integer, byte[]> subTlv = Tlv8Codec.decode(plainText);
         byte[] serverPairingId = subTlv.get(TlvType.IDENTIFIER.key);

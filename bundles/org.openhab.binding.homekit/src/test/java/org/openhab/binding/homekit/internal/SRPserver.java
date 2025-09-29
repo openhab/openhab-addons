@@ -130,7 +130,7 @@ public class SRPserver {
                 TlvType.SIGNATURE.key, signature);
 
         byte[] plaintext = Tlv8Codec.encode(subTlv);
-        return CryptoUtils.encrypt(getSymmetricKey(), PS_M6_NONCE, plaintext);
+        return CryptoUtils.encrypt(getSymmetricKey(), PS_M6_NONCE, plaintext, new byte[0]);
     }
 
     public byte[] getSymmetricKey() {

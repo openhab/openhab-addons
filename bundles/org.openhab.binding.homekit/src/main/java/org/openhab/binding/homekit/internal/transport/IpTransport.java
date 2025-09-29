@@ -28,7 +28,6 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.homekit.internal.crypto.CryptoUtils;
 import org.openhab.binding.homekit.internal.session.AsymmetricSessionKeys;
 import org.openhab.binding.homekit.internal.session.SecureSession;
 import org.slf4j.Logger;
@@ -91,10 +90,10 @@ public class IpTransport implements AutoCloseable {
 
     private byte[] execute(String method, String endpoint, String contentType, byte[] body)
             throws IOException, InterruptedException, TimeoutException, ExecutionException {
-        logger.trace("{} {} Content-Type:{} Body:{}", method, endpoint, contentType, CryptoUtils.toHex(body));
         try {
             byte[] request = buildRequest(method, endpoint, contentType, body);
             byte[] response;
+            logger.trace("Request:\n{}", new String(request, StandardCharsets.UTF_8));
 
             SecureSession secureSession = this.secureSession;
             if (secureSession != null) {
@@ -108,7 +107,7 @@ public class IpTransport implements AutoCloseable {
                 response = readPlainResponse(in);
             }
 
-            logger.trace("Response: {}", CryptoUtils.toHex(response));
+            logger.trace("Response:\n{}", new String(response, StandardCharsets.UTF_8));
             return parseResponse(response);
         } catch (IOException | InterruptedException | TimeoutException e) {
             throw e;

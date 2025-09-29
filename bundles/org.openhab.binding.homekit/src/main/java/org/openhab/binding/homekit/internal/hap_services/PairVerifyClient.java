@@ -103,7 +103,7 @@ public class PairVerifyClient {
         sharedKey = generateHkdfKey(sharedSecret, PAIR_VERIFY_ENCRYPT_SALT, PAIR_VERIFY_ENCRYPT_INFO);
 
         byte[] cipherText = tlv.get(TlvType.ENCRYPTED_DATA.key);
-        byte[] plainText = CryptoUtils.decrypt(sharedKey, PV_M2_NONCE, Objects.requireNonNull(cipherText));
+        byte[] plainText = CryptoUtils.decrypt(sharedKey, PV_M2_NONCE, Objects.requireNonNull(cipherText), new byte[0]);
 
         // validate identifier + signature
         Map<Integer, byte[]> subTlv = Tlv8Codec.decode(plainText);
@@ -133,7 +133,7 @@ public class PairVerifyClient {
                 TlvType.SIGNATURE.key, clientSignature);
 
         byte[] plainText = Tlv8Codec.encode(subTlv);
-        byte[] cipherText = encrypt(sharedKey, PV_M3_NONCE, plainText);
+        byte[] cipherText = encrypt(sharedKey, PV_M3_NONCE, plainText, new byte[0]);
 
         Map<Integer, byte[]> tlv = Map.of( //
                 TlvType.STATE.key, new byte[] { PairingState.M3.value }, //

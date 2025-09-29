@@ -118,7 +118,7 @@ class TestPairVerify {
         sharedKey = generateHkdfKey(sharedSecret, PAIR_VERIFY_ENCRYPT_SALT, PAIR_VERIFY_ENCRYPT_INFO);
 
         byte[] plainText = Tlv8Codec.encode(tlvInner);
-        byte[] cipherText = encrypt(sharedKey, PV_M2_NONCE, plainText);
+        byte[] cipherText = encrypt(sharedKey, PV_M2_NONCE, plainText, new byte[0]);
 
         Map<Integer, byte[]> tlvOut = Map.of( //
                 TlvType.STATE.key, new byte[] { PairingState.M2.value }, //
@@ -136,7 +136,7 @@ class TestPairVerify {
         if (cipherText == null) {
             throw new SecurityException("Server cipher text missing");
         }
-        byte[] plainText = decrypt(sharedKey, PV_M3_NONCE, Objects.requireNonNull(cipherText));
+        byte[] plainText = decrypt(sharedKey, PV_M3_NONCE, Objects.requireNonNull(cipherText), new byte[0]);
 
         Map<Integer, byte[]> subTlv = Tlv8Codec.decode(plainText);
         byte[] clientPairingId = subTlv.get(TlvType.IDENTIFIER.key);

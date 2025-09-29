@@ -57,8 +57,8 @@ public class CryptoUtils {
     }
 
     // Decrypt with ChaCha20-Poly1305
-    public static byte[] decrypt(byte[] key, byte[] nonce, byte[] cipherText) throws InvalidCipherTextException {
-        byte[] aad = new byte[0]; // AAD = none
+    public static byte[] decrypt(byte[] key, byte[] nonce, byte[] cipherText, byte[] aad)
+            throws InvalidCipherTextException {
         byte[] nonce96 = new byte[12]; // 96 bit nonce
         System.arraycopy(nonce, 0, nonce96, 4, 8);
         ChaCha20Poly1305 cipher = new ChaCha20Poly1305();
@@ -71,8 +71,8 @@ public class CryptoUtils {
     }
 
     // Encrypt with ChaCha20-Poly1305
-    public static byte[] encrypt(byte[] key, byte[] nonce, byte[] plainText) throws InvalidCipherTextException {
-        byte[] aad = new byte[0]; // AAD = none
+    public static byte[] encrypt(byte[] key, byte[] nonce, byte[] plainText, byte[] aad)
+            throws InvalidCipherTextException {
         byte[] nonce96 = new byte[12]; // 96 bit nonce
         System.arraycopy(nonce, 0, nonce96, 4, 8);
         ChaCha20Poly1305 cipher = new ChaCha20Poly1305();
