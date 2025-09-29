@@ -27,7 +27,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 /**
- * The {@link myenergiBindingConstants} class defines common constants, which are
+ * The {@link MyenergiBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
  * @author Rene Scherer - Initial contribution
@@ -37,6 +37,10 @@ import com.google.gson.GsonBuilder;
 public class MyenergiBindingConstants {
 
     private static final String BINDING_ID = "myenergi";
+
+    public static final String PROP_SERIAL_NUMBER = "serialNumber";
+    public static final String PROP_FIRMWARE_VERSION = "firmwareVersion";
+    public static final String PROP_NUMBER_OF_PHASES = "numberOfPhases";
 
     public static final Gson GSON = new GsonBuilder()
             .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
@@ -56,10 +60,9 @@ public class MyenergiBindingConstants {
     public static final String ZAPPI_CHANNEL_LAST_UPDATED_TIME = "last-updated-time";
     public static final String ZAPPI_CHANNEL_SUPPLY_VOLTAGE = "supply-voltage";
     public static final String ZAPPI_CHANNEL_SUPPLY_FREQUENCY = "supply-frequency";
-    public static final String ZAPPI_CHANNEL_NUMBER_OF_PHASES = "number-of-phases";
     public static final String ZAPPI_CHANNEL_LOCKING_MODE = "locking-mode";
     public static final String ZAPPI_CHANNEL_CHARGING_MODE = "charging-mode";
-    public static final String ZAPPI_CHANNEL_STATUS = "status";
+    public static final String ZAPPI_CHANNEL_CHARGER_STATUS = "charger-status";
     public static final String ZAPPI_CHANNEL_PLUG_STATUS = "plug-status";
     public static final String ZAPPI_CHANNEL_COMMAND_TRIES = "command-tries";
     public static final String ZAPPI_CHANNEL_DIVERTER_PRIORITY = "diverter-priority";
@@ -69,9 +72,9 @@ public class MyenergiBindingConstants {
     public static final String ZAPPI_CHANNEL_DIVERTED_POWER = "diverted-power";
     public static final String ZAPPI_CHANNEL_CONSUMED_POWER = "consumed-power";
     public static final String ZAPPI_CHANNEL_CHARGE_ADDED = "charge-added";
-    public static final String ZAPPI_CHANNEL_SMART_BOOST_TIME = "smart-boost-time";
+    public static final String ZAPPI_CHANNEL_SMART_BOOST_DURATION = "smart-boost-duration";
     public static final String ZAPPI_CHANNEL_SMART_BOOST_CHARGE = "smart-boost-charge";
-    public static final String ZAPPI_CHANNEL_TIMED_BOOST_TIME = "timed-boost-time";
+    public static final String ZAPPI_CHANNEL_TIMED_BOOST_DURATION = "timed-boost-duration";
     public static final String ZAPPI_CHANNEL_TIMED_BOOST_CHARGE = "timed-boost-charge";
     public static final String ZAPPI_CHANNEL_CLAMP_NAME_1 = "clamp-name1";
     public static final String ZAPPI_CHANNEL_CLAMP_NAME_2 = "clamp-name2";
@@ -100,28 +103,27 @@ public class MyenergiBindingConstants {
 
     // Eddi Channel Names
     public static final String EDDI_CHANNEL_LAST_UPDATED_TIME = "last-updated-time";
-    public static final String EDDI_CHANNEL_DAYLIGHT_SAVINGS = "daylight-savings";
-    public static final String EDDI_CHANNEL_BOOST_MODE = "boost-mode";
-    public static final String EDDI_CHANNEL_BOOST_REMAINING = "boost-remaining";
-    public static final String EDDI_CHANNEL_ENERGY_TRANSFERRED = "energy-transferred";
-    public static final String EDDI_CHANNEL_DIVERTED_POWER = "diverted-power";
-    public static final String EDDI_CHANNEL_GENERATED_POWER = "generated-power";
-    public static final String EDDI_CHANNEL_GRID_POWER = "grid-power";
-    public static final String EDDI_CHANNEL_CLAMP_POWER_1 = "clamp-power1";
-    public static final String EDDI_CHANNEL_CLAMP_POWER_2 = "clamp-power2";
-    public static final String EDDI_CHANNEL_CLAMP_POWER_3 = "clamp-power3";
-    public static final String EDDI_CHANNEL_CLAMP_NAME_1 = "clamp-name1";
-    public static final String EDDI_CHANNEL_CLAMP_NAME_2 = "clamp-name2";
-    public static final String EDDI_CHANNEL_CLAMP_NAME_3 = "clamp-name3";
-    public static final String EDDI_CHANNEL_ACTIVE_HEATER = "active-heater";
-    public static final String EDDI_CHANNEL_HEATER_NAME_1 = "heater-name1";
-    public static final String EDDI_CHANNEL_HEATER_NAME_2 = "heater-name2";
-    public static final String EDDI_CHANNEL_PHASE = "phase";
-    public static final String EDDI_CHANNEL_DIVERTER_PRIORITY = "diverter-priority";
-    public static final String EDDI_CHANNEL_HEATER_PRIORITY = "heater-priority";
-    public static final String EDDI_CHANNEL_STATUS = "status";
-    public static final String EDDI_CHANNEL_TEMPERATURE_1 = "temperature1";
-    public static final String EDDI_CHANNEL_TEMPERATURE_2 = "temperature2";
     public static final String EDDI_CHANNEL_SUPPLY_VOLTAGE = "supply-voltage";
     public static final String EDDI_CHANNEL_SUPPLY_FREQUENCY = "supply-frequency";
+    public static final String EDDI_CHANNEL_DIVERTER_STATUS = "diverter-status";
+    public static final String EDDI_CHANNEL_DIVERTER_PRIORITY = "diverter-priority";
+    public static final String EDDI_CHANNEL_PHASE = "phase";
+    public static final String EDDI_CHANNEL_GRID_POWER = "grid-power";
+    public static final String EDDI_CHANNEL_BOOST_MODE = "boost-mode";
+    public static final String EDDI_CHANNEL_ENERGY_TRANSFERRED = "energy-transferred";
+    public static final String EDDI_CHANNEL_GENERATED_POWER = "generated-power";
+    public static final String EDDI_CHANNEL_DIVERTED_POWER = "diverted-power";
+    public static final String EDDI_CHANNEL_BOOST_REMAINING = "boost-remaining";
+    public static final String EDDI_CHANNEL_ACTIVE_HEATER = "active-heater";
+    public static final String EDDI_CHANNEL_HEATER_PRIORITY = "heater-priority";
+    public static final String EDDI_CHANNEL_HEATER_NAME_1 = "heater-name1";
+    public static final String EDDI_CHANNEL_HEATER_NAME_2 = "heater-name2";
+    public static final String EDDI_CHANNEL_TEMPERATURE_1 = "temperature1";
+    public static final String EDDI_CHANNEL_TEMPERATURE_2 = "temperature2";
+    public static final String EDDI_CHANNEL_CLAMP_NAME_1 = "clamp-name1";
+    public static final String EDDI_CHANNEL_CLAMP_POWER_1 = "clamp-power1";
+    public static final String EDDI_CHANNEL_CLAMP_NAME_2 = "clamp-name2";
+    public static final String EDDI_CHANNEL_CLAMP_POWER_2 = "clamp-power2";
+    public static final String EDDI_CHANNEL_CLAMP_NAME_3 = "clamp-name3";
+    public static final String EDDI_CHANNEL_CLAMP_POWER_3 = "clamp-power3";
 }

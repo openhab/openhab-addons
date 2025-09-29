@@ -24,7 +24,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link MyenergiEddiActions} class implements actions on the MyEnergi eddi energy diverter
+ * The {@link MyenergiEddiActions} class implements actions on the MyEnergi eddi
+ * energy diverter
  *
  * @author Stephen Cook - Initial contribution
  */
@@ -55,7 +56,12 @@ public class MyenergiEddiActions implements ThingActions {
             MyenergiEddiHandler h = handler;
             if (h != null) {
                 logger.debug("calling setEddiBoost({},{},{})", h.serialNumber, heater, duration);
-                h.apiClient.setEddiBoost(h.serialNumber, heater, duration);
+                MyenergiBridgeHandler bh = h.getBridgeHandler();
+                if (bh == null) {
+                    logger.warn("No bridge handler available");
+                    throw new ApiException("No bridge handler available");
+                }
+                bh.setEddiBoost(h.serialNumber, heater, duration);
             }
         } catch (ApiException e) {
             logger.warn("Couldn't set boost - {}", e.getMessage());
@@ -78,7 +84,12 @@ public class MyenergiEddiActions implements ThingActions {
             MyenergiEddiHandler h = handler;
             if (h != null) {
                 logger.debug("calling cancelEddiBoost({},{})", h.serialNumber, heater);
-                h.apiClient.cancelEddiBoost(h.serialNumber, heater);
+                MyenergiBridgeHandler bh = h.getBridgeHandler();
+                if (bh == null) {
+                    logger.warn("No bridge handler available");
+                    throw new ApiException("No bridge handler available");
+                }
+                bh.cancelEddiBoost(h.serialNumber, heater);
             }
         } catch (ApiException e) {
             logger.warn("Couldn't cancel boost - {}", e.getMessage());

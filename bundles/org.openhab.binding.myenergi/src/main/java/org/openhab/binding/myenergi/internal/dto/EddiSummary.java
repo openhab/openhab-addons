@@ -12,9 +12,6 @@
  */
 package org.openhab.binding.myenergi.internal.dto;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -25,8 +22,6 @@ import com.google.gson.annotations.SerializedName;
  *
  */
 public class EddiSummary extends BaseSummary {
-
-    private final Logger logger = LoggerFactory.getLogger(EddiSummary.class);
 
     // {"eddi":[{"sno":21164284,"dat":"12-11-2022","tim":"21:26:25","ectt1":"Internal
     // Load","ectt2":"None","ectt3":"None","bsm":0,"bst":0,
@@ -109,23 +104,5 @@ public class EddiSummary extends BaseSummary {
     public String toString() {
         return "EddiSummary [serialNumber=" + serialNumber + ", dat=" + dat + ", tim=" + tim + ", firmwareVersion="
                 + firmwareVersion + "]";
-    }
-
-    public void toLogger() {
-        logger.info("EddiSummary:");
-        logger.info("serialNumber={}", serialNumber);
-        logger.info("date/time={} {}, dst={}", dat, tim, dst);
-        logger.info("supplyVoltage={}, supplyFrequency={}", supplyVoltageInTenthVolt, supplyFrequency);
-        logger.info("status={}", status);
-        logger.info("commandTries={}", commandTries);
-        logger.info("diverterPriority={} heaterPriority{}", diverterPriority, heaterPriority);
-        logger.info("gridPower={}, generatedPower={}, divertedPower={}", gridPower, generatedPower, divertedPower);
-        logger.info("energyTransferred={}", energyTransferred);
-        logger.info("boostTime={}", boostTime);
-        logger.info("clamp1={}, power={}", clampName1, clampPower1);
-        logger.info("clamp2={}, power={}", clampName2, clampPower2);
-        logger.info("clamp3={}, power={}", clampName3, clampPower3);
-        logger.info("Tank 1 temperature={}, Tank 2 temperature={}", temperature1, temperature2);
-        logger.info("firmwareVersion={}", firmwareVersion);
     }
 }

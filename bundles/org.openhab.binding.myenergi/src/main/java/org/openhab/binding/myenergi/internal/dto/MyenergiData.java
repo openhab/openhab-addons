@@ -72,7 +72,7 @@ public class MyenergiData {
         this.firmwareVersion = firmwareVersion;
     }
 
-    public synchronized HarviSummary getHarviBySerialNumber(long serialNumber) throws RecordNotFoundException {
+    public HarviSummary getHarviBySerialNumber(long serialNumber) throws RecordNotFoundException {
         for (HarviSummary device : harvis) {
             if (serialNumber == device.serialNumber) {
                 return device;
@@ -81,7 +81,7 @@ public class MyenergiData {
         throw new RecordNotFoundException();
     }
 
-    public synchronized ZappiSummary getZappiBySerialNumber(long zappiSerialNumber) throws RecordNotFoundException {
+    public ZappiSummary getZappiBySerialNumber(long zappiSerialNumber) throws RecordNotFoundException {
         for (ZappiSummary device : zappis) {
             if (zappiSerialNumber == device.serialNumber) {
                 return device;
@@ -90,7 +90,7 @@ public class MyenergiData {
         throw new RecordNotFoundException();
     }
 
-    public synchronized EddiSummary getEddiBySerialNumber(long serialNumber) throws RecordNotFoundException {
+    public EddiSummary getEddiBySerialNumber(long serialNumber) throws RecordNotFoundException {
         for (EddiSummary device : eddis) {
             if (serialNumber == device.serialNumber) {
                 return device;
@@ -99,38 +99,38 @@ public class MyenergiData {
         throw new RecordNotFoundException();
     }
 
-    public synchronized void clear() {
+    public void clear() {
         harvis = new ArrayList<HarviSummary>();
         zappis = new ArrayList<ZappiSummary>();
         activeServer = "";
         firmwareVersion = "";
     }
 
-    public synchronized void addHarvi(HarviSummary device) {
+    public void addHarvi(HarviSummary device) {
         harvis.add(device);
     }
 
-    public synchronized void addZappi(ZappiSummary device) {
+    public void addZappi(ZappiSummary device) {
         zappis.add(device);
     }
 
-    public synchronized void addEddi(EddiSummary device) {
+    public void addEddi(EddiSummary device) {
         eddis.add(device);
     }
 
-    public synchronized void addAllHarvis(List<HarviSummary> list) {
+    public void addAllHarvis(List<HarviSummary> list) {
         harvis.addAll(list);
     }
 
-    public synchronized void addAllZappis(List<ZappiSummary> list) {
+    public void addAllZappis(List<ZappiSummary> list) {
         zappis.addAll(list);
     }
 
-    public synchronized void addAllEddis(List<EddiSummary> list) {
+    public void addAllEddis(List<EddiSummary> list) {
         eddis.addAll(list);
     }
 
-    public synchronized void updateEddi(EddiSummary device) {
+    public void updateEddi(EddiSummary device) {
         try {
             eddis.remove(getEddiBySerialNumber(device.serialNumber));
         } catch (RecordNotFoundException e) {
@@ -139,7 +139,7 @@ public class MyenergiData {
         eddis.add(device);
     }
 
-    public synchronized void updateZappi(ZappiSummary device) {
+    public void updateZappi(ZappiSummary device) {
         try {
             zappis.remove(getZappiBySerialNumber(device.serialNumber));
         } catch (RecordNotFoundException e) {
@@ -148,7 +148,7 @@ public class MyenergiData {
         zappis.add(device);
     }
 
-    public synchronized void updateHarvi(HarviSummary device) {
+    public void updateHarvi(HarviSummary device) {
         try {
             harvis.remove(getHarviBySerialNumber(device.serialNumber));
         } catch (RecordNotFoundException e) {

@@ -14,6 +14,7 @@ package org.openhab.binding.myenergi.internal;
 
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.time.ZonedDateTime;
@@ -55,8 +56,10 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.JsonSyntaxException;
 
 /**
- * The {@link MyenergiApiClient} is a helper class to abstract the myenergi API. It handles authentication and
- * all JSON API calls. If an API call fails it automatically refreshes the authentication token and retries.
+ * The {@link MyenergiApiClient} is a helper class to abstract the myenergi API.
+ * It handles authentication and
+ * all JSON API calls. If an API call fails it automatically refreshes the
+ * authentication token and retries.
  *
  * @author Rene Scherer - Initial contribution
  * @author Stephen Cook - Eddi Support
@@ -79,7 +82,7 @@ public class MyenergiApiClient {
 
     // API
     private String host = "";
-    private @Nullable URL baseURL;
+    private @Nullable URI baseURI;
     private String username = "";
     private String password = "";
 
@@ -119,12 +122,14 @@ public class MyenergiApiClient {
                 host = new MyenergiGetHostFromDirector().getHostName(client, hubSerialNumber);
             }
             try {
-                URL baseURL = new URL("https", host, "/");
-                logger.debug("API base URL: {}", baseURL.toString());
-
+                baseURI = new URI("https", host, "/", null);
+                URI uri = baseURI;
+                if (uri == null) {
+                    throw new ApiException("No base URI could be constructed");
+                }
+                logger.debug("API base URI: {}", uri.toString());
                 client.getAuthenticationStore().addAuthentication(
-                        new DigestAuthentication(baseURL.toURI(), Authentication.ANY_REALM, hubSerialNumber, password));
-                this.baseURL = baseURL;
+                        new DigestAuthentication(uri, Authentication.ANY_REALM, hubSerialNumber, password));
                 logger.debug("Digest authentication added: {}", hubSerialNumber);
                 if (!client.isStarted()) {
                     client.start();
@@ -154,7 +159,7 @@ public class MyenergiApiClient {
         return data;
     }
 
-    public synchronized void updateTopologyCache() throws ApiException {
+    public void updateTopologyCache() throws ApiException {
         data.clear();
         for (DeviceSummary summary : getDeviceSummaryList()) {
             if (summary.activeServer != null) {
@@ -168,8 +173,7 @@ public class MyenergiApiClient {
         }
     }
 
-    public synchronized ZappiSummary updateZappiSummary(long serialNumber)
-            throws ApiException, RecordNotFoundException {
+    public ZappiSummary updateZappiSummary(long serialNumber) throws ApiException, RecordNotFoundException {
         String response = executeApiCall("/cgi-jstatus-Z" + serialNumber);
         try {
             DeviceSummary ds = MyenergiBindingConstants.GSON.fromJson(response, DeviceSummary.class);
@@ -187,8 +191,7 @@ public class MyenergiApiClient {
         }
     }
 
-    public synchronized HarviSummary updateHarviSummary(long serialNumber)
-            throws ApiException, RecordNotFoundException {
+    public HarviSummary updateHarviSummary(long serialNumber) throws ApiException, RecordNotFoundException {
         String response = executeApiCall("/cgi-jstatus-H" + serialNumber);
         try {
             DeviceSummary ds = MyenergiBindingConstants.GSON.fromJson(response, DeviceSummary.class);
@@ -206,7 +209,7 @@ public class MyenergiApiClient {
         }
     }
 
-    public synchronized EddiSummary updateEddiSummary(long serialNumber) throws ApiException, RecordNotFoundException {
+    public EddiSummary updateEddiSummary(long serialNumber) throws ApiException, RecordNotFoundException {
         String response = executeApiCall("/cgi-jstatus-E" + serialNumber);
         try {
             DeviceSummary ds = MyenergiBindingConstants.GSON.fromJson(response, DeviceSummary.class);
@@ -410,7 +413,11 @@ public class MyenergiApiClient {
     private String executeApiCall(String path) throws ApiException {
         String result = "";
         try {
-            URL url = new URL(baseURL, path);
+            URI uri = this.baseURI;
+            if (uri == null) {
+                throw new ApiException("No base URI available for API call");
+            }
+            URL url = uri.resolve(path).toURL();
             logger.debug("executeApiCall - url: {}", url.toString());
             result = executeApiCallHttpClient(url);
         } catch (MalformedURLException e) {
@@ -419,7 +426,7 @@ public class MyenergiApiClient {
         return result;
     }
 
-    private String executeApiCallHttpClient(URL url) throws ApiException {
+    private synchronized String executeApiCallHttpClient(URL url) throws ApiException {
         HttpClient client = httpClient;
         if (client != null) {
             try {

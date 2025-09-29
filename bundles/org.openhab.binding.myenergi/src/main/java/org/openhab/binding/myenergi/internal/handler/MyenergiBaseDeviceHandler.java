@@ -20,15 +20,16 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import javax.measure.Unit;
+import javax.measure.quantity.Dimensionless;
 import javax.measure.quantity.ElectricPotential;
 import javax.measure.quantity.Energy;
 import javax.measure.quantity.Frequency;
 import javax.measure.quantity.Power;
 import javax.measure.quantity.Temperature;
+import javax.measure.quantity.Time;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.myenergi.internal.MyenergiApiClient;
 import org.openhab.binding.myenergi.internal.MyenergiDeviceConfiguration;
 import org.openhab.binding.myenergi.internal.exception.ApiException;
 import org.openhab.core.cache.ExpiringCache;
@@ -38,10 +39,13 @@ import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.Units;
+import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
@@ -49,7 +53,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link MyenergiBaseDeviceHandler} is an abstract base class for any MyEnergi things. It contains an expiring
+ * The {@link MyenergiBaseDeviceHandler} is an abstract base class for any
+ * MyEnergi things. It contains an expiring
  * cache which ensures thing properties are not unnecessarily updated.
  *
  * @author Rene Scherer - Initial Contribution
@@ -62,15 +67,13 @@ public abstract class MyenergiBaseDeviceHandler extends BaseThingHandler impleme
     private final Logger logger = LoggerFactory.getLogger(MyenergiBaseDeviceHandler.class);
     private @Nullable ScheduledFuture<?> measurementPollingJob = null;
 
-    protected MyenergiApiClient apiClient;
     protected long serialNumber;
 
     protected ExpiringCache<Integer> updateThingCache = new ExpiringCache<Integer>(UPDATE_THING_CACHE_TIMEOUT,
             this::refreshCache);
 
-    public MyenergiBaseDeviceHandler(Thing thing, MyenergiApiClient apiClient) {
+    public MyenergiBaseDeviceHandler(Thing thing) {
         super(thing);
-        this.apiClient = apiClient;
     }
 
     @Override
@@ -127,6 +130,20 @@ public abstract class MyenergiBaseDeviceHandler extends BaseThingHandler impleme
     }
 
     @Override
+    public synchronized void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
+        logger.info("bridgeStatusChanged for {}. Reseting handler", this.getThing().getUID());
+        logger.info("bridgeStatusChanged to: {}", bridgeStatusInfo.getStatus().toString());
+        logger.info("bridgeStatusChanged to: {}", bridgeStatusInfo.getStatus().toString());
+        if (bridgeStatusInfo.getStatus() != ThingStatus.ONLINE) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "@text/offline.bridge-offline");
+            // this.dispose();
+        } else {
+            updateStatus(ThingStatus.ONLINE);
+            // this.initialize();
+        }
+    }
+
+    @Override
     public void configUpdated(@Nullable ConfigStatusSource configStatusSource) {
         logger.debug("Configuration has been updated for {}", serialNumber);
     }
@@ -135,6 +152,17 @@ public abstract class MyenergiBaseDeviceHandler extends BaseThingHandler impleme
     public void updateProperties(@Nullable Map<String, String> properties) {
         logger.debug("Updating thing properties");
         super.updateProperties(properties);
+    }
+
+    protected synchronized @Nullable MyenergiBridgeHandler getBridgeHandler() {
+        Bridge bridge = getBridge();
+        if (bridge == null) {
+            return null;
+        }
+        if (bridge.getHandler() instanceof MyenergiBridgeHandler bridgeHandler) {
+            return bridgeHandler;
+        }
+        return null;
     }
 
     protected void updatePowerState(final String channelId, @Nullable Integer value, Unit<Power> unit) {
@@ -188,9 +216,39 @@ public abstract class MyenergiBaseDeviceHandler extends BaseThingHandler impleme
         updateState(channelId, quantity);
     }
 
+    protected void updateDurationState(final String channelId, @Nullable Integer hours, @Nullable Integer minutes) {
+        if (hours != null && minutes != null) {
+            updateState(channelId, new QuantityType<Time>(hours * 60 + minutes, Units.MINUTE));
+        } else {
+            updateState(channelId, new QuantityType<Time>(0, Units.MINUTE));
+        }
+    }
+
+    protected void updateShortDurationState(final String channelId, @Nullable Integer seconds) {
+        if (seconds != null) {
+            updateState(channelId, new QuantityType<Time>(seconds, Units.SECOND));
+        } else {
+            updateState(channelId, new QuantityType<Time>(0, Units.SECOND));
+        }
+    }
+
+    protected void updatePercentageState(final String channelId, @Nullable Integer percent) {
+        if (percent != null) {
+            updateState(channelId, new QuantityType<Dimensionless>(percent, Units.PERCENT));
+        } else {
+            updateState(channelId, new QuantityType<Dimensionless>(0, Units.PERCENT));
+        }
+    }
+
     protected void updateStringState(final String channelId, @Nullable String value) {
         if (value != null) {
             updateState(channelId, new StringType(value));
+        }
+    }
+
+    protected void updateSwitchState(final String channelId, @Nullable String value) {
+        if (value != null) {
+            updateState(channelId, org.openhab.core.library.types.OnOffType.from(value));
         }
     }
 

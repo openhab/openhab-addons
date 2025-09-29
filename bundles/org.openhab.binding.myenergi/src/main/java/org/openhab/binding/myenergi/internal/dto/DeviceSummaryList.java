@@ -16,8 +16,7 @@ import java.util.ArrayList;
 
 /**
  * The {@link DeviceSummaryList} is a DTO class used to represent the highlevel status of all myenergy devices. It's
- * used to
- * deserialize JSON API results.
+ * used to deserialize JSON API results.
  *
  * @author Rene Scherer - Initial contribution
  */

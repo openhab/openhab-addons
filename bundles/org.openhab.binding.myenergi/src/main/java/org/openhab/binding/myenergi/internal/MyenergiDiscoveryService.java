@@ -43,8 +43,7 @@ import org.slf4j.LoggerFactory;
  * @author Rene Scherer - Initial contribution
  */
 @NonNullByDefault
-public class MyenergiDiscoveryService extends AbstractDiscoveryService
-        implements DiscoveryService, ThingHandlerService {
+public class MyenergiDiscoveryService extends AbstractDiscoveryService implements ThingHandlerService {
 
     private final Logger logger = LoggerFactory.getLogger(MyenergiDiscoveryService.class);
 
@@ -87,8 +86,7 @@ public class MyenergiDiscoveryService extends AbstractDiscoveryService
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof MyenergiBridgeHandler) {
-            bridgeHandler = (MyenergiBridgeHandler) handler;
+        if (handler instanceof MyenergiBridgeHandler bridgeHandler) {
             bridgeUID = bridgeHandler.getUID();
         }
     }

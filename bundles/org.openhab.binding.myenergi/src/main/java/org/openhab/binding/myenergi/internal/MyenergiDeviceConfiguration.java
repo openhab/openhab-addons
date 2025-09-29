@@ -22,5 +22,5 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class MyenergiDeviceConfiguration {
 
-    public long refreshInterval = 30L; // by default, we refresh the device measurements every 30 secs.
+    public int refreshInterval = 30; // by default, we refresh the device measurements every 30 secs.
 }

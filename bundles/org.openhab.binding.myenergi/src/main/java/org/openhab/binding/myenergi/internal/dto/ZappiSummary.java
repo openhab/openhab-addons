@@ -12,8 +12,10 @@
  */
 package org.openhab.binding.myenergi.internal.dto;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.Map;
+
+import org.eclipse.jdt.annotation.NonNull;
+import org.openhab.binding.myenergi.internal.MyenergiBindingConstants;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -25,8 +27,6 @@ import com.google.gson.annotations.SerializedName;
  *
  */
 public class ZappiSummary extends BaseSummary {
-
-    private final Logger logger = LoggerFactory.getLogger(ZappiSummary.class);
 
     // {"dat":"27-11-2020","tim":"16:02:06","ectp2":843,"ectt1":"Internal
     // Load","ectt2":"Grid","ectt3":"None","frq":50.12,"grd":841,"pha":1,"sno":17028110,"sta":1,"vol":2350,"pri":1,"cmt":254,"zmo":1,"tbk":5,"che":0.00,"pst":"A","mgl":50,"sbh":17,"sbk":5,"ectt4":"None","ectt5":"None","ectt6":"None","fwv":"3560S3.054","dst":1,"lck":16}
@@ -113,6 +113,13 @@ public class ZappiSummary extends BaseSummary {
     }
 
     @Override
+    public Map<@NonNull String, String> getThingProperties() {
+        Map<@NonNull String, String> properties = super.getThingProperties();
+        properties.put(MyenergiBindingConstants.PROP_NUMBER_OF_PHASES, String.valueOf(numberOfPhases));
+        return properties;
+    }
+
+    @Override
     public String toString() {
         return "ZappiSummary [serialNumber=" + serialNumber + ", dat=" + dat + ", tim=" + tim + ", dst=" + dst
                 + ", supplyVoltage=" + supplyVoltageInTenthVolt + ", supplyFrequency=" + supplyFrequency
@@ -128,31 +135,5 @@ public class ZappiSummary extends BaseSummary {
                 + clampPower1 + ", clampPower2=" + clampPower2 + ", clampPower3=" + clampPower3 + ", clampPower4="
                 + clampPower4 + ", clampPower5=" + clampPower5 + ", clampPower6=" + clampPower6 + ", firmwareVersion="
                 + firmwareVersion + "]";
-    }
-
-    public void toLogger() {
-        logger.info("ZappiSummary:");
-        logger.info("serialNumber={}", serialNumber);
-        logger.info("date/time={} {}, dst={}", dat, tim, dst);
-        logger.info("supplyVoltage={}, supplyFrequency={}, numberOfPhases={}", supplyVoltageInTenthVolt,
-                supplyFrequency, numberOfPhases);
-        logger.info("lockingMode={}", lockingMode);
-        logger.info("chargingMode={}", chargingMode);
-        logger.info("status={}", status);
-        logger.info("plugStatus={}", plugStatus);
-        logger.info("commandTries={}", commandTries);
-        logger.info("diverterPriority={}", diverterPriority);
-        logger.info("minimumGreenLevel={}", minimumGreenLevel);
-        logger.info("gridPower={}, generatedPower={}, divertedPower={}", gridPower, generatedPower, divertedPower);
-        logger.info("chargeAdded={}", chargeAdded);
-        logger.info("smartBoostTime={}:{}, Charge={}", smartBoostHour, smartBoostMinute, smartBoostCharge);
-        logger.info("timedBoostTime={}:{}, Charge={}", timedBoostHour, timedBoostMinute, timedBoostCharge);
-        logger.info("clamp1={}, power={}", clampName1, clampPower1);
-        logger.info("clamp2={}, power={}", clampName2, clampPower2);
-        logger.info("clamp3={}, power={}", clampName3, clampPower3);
-        logger.info("clamp4={}, power={}", clampName4, clampPower4);
-        logger.info("clamp5={}, power={}", clampName5, clampPower5);
-        logger.info("clamp6={}, power={}", clampName6, clampPower6);
-        logger.info("firmwareVersion={}", firmwareVersion);
     }
 }

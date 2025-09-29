@@ -10,5 +10,6 @@
 		Harvi remote device for CT sensors,
 		Eddi solar energy diverter.
 	</description>
+	<connection>cloud</connection>
 
 </addon:addon>

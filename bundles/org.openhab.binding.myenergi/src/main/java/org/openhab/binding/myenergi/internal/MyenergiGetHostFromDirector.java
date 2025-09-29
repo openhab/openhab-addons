@@ -12,7 +12,9 @@
  */
 package org.openhab.binding.myenergi.internal;
 
+import java.net.URI;
 import java.net.URL;
+import java.util.concurrent.TimeUnit;
 
 import javax.validation.constraints.NotNull;
 
@@ -43,42 +45,44 @@ public class MyenergiGetHostFromDirector {
 
     /**
      * Finds the server for a given hub serial number
-     *
-     * @param httpClientFactory the client to be used.
+     * 
+     * @param httpClient the client to be used.
+     * @param hubSerialNumber
+     * @return the hostname to be used in the base URI
      * @throws ApiException
      */
-
     public String getHostName(@NotNull HttpClient httpClient, @NotNull String hubSerialNumber) throws ApiException {
         String directorHostname = "director.myenergi.net";
         try {
-            URL directorURL = new URL("https", directorHostname, "/");
+            URL directorURL = new URI("https", directorHostname, "/", null).toURL();
             // No password is needed at director.myenergie.net
             httpClient.getAuthenticationStore().addAuthentication(
                     new DigestAuthentication(directorURL.toURI(), Authentication.ANY_REALM, hubSerialNumber, ""));
             int innerLoop = 0;
             while ((innerLoop < 2)) {
                 innerLoop++;
-                if (!httpClient.isStarted()) {
-                    httpClient.start();
-                }
                 Request request = httpClient.newRequest(directorURL.toString()).method(HttpMethod.GET);
                 logger.trace("sending get hostname request: {}", innerLoop);
-                ContentResponse response = request.send();
-                String hostname = response.getHeaders().get(MY_ENERGI_RESPONSE_FIELD);
-                if (null != hostname) {
-                    return hostname;
-                }
-
-                if (logger.isTraceEnabled()) {
-                    for (HttpField field : response.getHeaders()) {
-                        logger.trace("HTTP header: {}", field.toString());
+                try {
+                    request.timeout(10, TimeUnit.SECONDS);
+                    ContentResponse response = request.send();
+                    String hostname = response.getHeaders().get(MY_ENERGI_RESPONSE_FIELD);
+                    if (null != hostname) {
+                        return hostname;
                     }
+
+                    if (logger.isTraceEnabled()) {
+                        for (HttpField field : response.getHeaders()) {
+                            logger.trace("HTTP header: {}", field.toString());
+                        }
+                    }
+                } catch (java.util.concurrent.TimeoutException e) {
+                    logger.warn("Time out during API execution, will try again");
                 }
             }
         } catch (Exception e) {
             throw new ApiException("Exception caught during API execution", e);
         }
-        // This code will never be executed, because the ApiException will be thrown earlier
-        return "";
+        throw new ApiException("No valid hostname retrieved after several tries");
     }
 }

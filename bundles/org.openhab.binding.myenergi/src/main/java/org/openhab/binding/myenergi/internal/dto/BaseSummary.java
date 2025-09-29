@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.openhab.binding.myenergi.internal.MyenergiBindingConstants;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -52,23 +53,20 @@ public class BaseSummary {
     public ZonedDateTime getLastUpdateTime() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
         LocalDateTime ldt = LocalDateTime.parse(dat + " " + tim, formatter);
-        ZonedDateTime dateTime = ZonedDateTime.of(ldt, ZoneId.systemDefault());
-        return dateTime;
+        return ZonedDateTime.of(ldt, ZoneId.systemDefault());
     }
 
     public Map<@NonNull String, String> getThingProperties() {
         Map<String, String> properties = new HashMap<String, String>();
-        properties.put("serialNumber", String.valueOf(serialNumber));
-        properties.put("firmwareVersion", firmwareVersion);
+        properties.put(MyenergiBindingConstants.PROP_SERIAL_NUMBER, String.valueOf(serialNumber));
+        properties.put(MyenergiBindingConstants.PROP_FIRMWARE_VERSION, firmwareVersion);
         return properties;
     }
 
     @Override
     public int hashCode() {
         final int prime = 31;
-        int result = 1;
-        result = prime * result + ((serialNumber == null) ? 0 : serialNumber.hashCode());
-        return result;
+        return prime + ((serialNumber == null) ? 0 : serialNumber.hashCode());
     }
 
     @Override

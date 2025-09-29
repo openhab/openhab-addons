@@ -27,7 +27,7 @@ import org.openhab.binding.myenergi.internal.exception.InvalidDataException;
 @NonNullByDefault
 public class DaysOfWeekMap {
 
-    public static final String ALL_DAYS_OFF = "00000000";
+    private static final String ALL_DAYS_OFF = "00000000";
     private static final Pattern MAP_PATTERN = Pattern.compile("^[0-1]+$");
 
     private String map = ALL_DAYS_OFF;
@@ -49,7 +49,7 @@ public class DaysOfWeekMap {
 
     public void setMap(String map) throws InvalidDataException {
         Matcher m = MAP_PATTERN.matcher(map);
-        if ((map.length() == 8) && (m.matches())) {
+        if (map.length() == 8 && m.matches()) {
             this.map = map;
         } else {
             throw new InvalidDataException("Invalid DaysOfWeekMap: " + map);

@@ -12,11 +12,19 @@
  */
 package org.openhab.binding.myenergi.internal.handler;
 
-import static org.openhab.binding.myenergi.internal.MyenergiBindingConstants.*;
+import static org.openhab.binding.myenergi.internal.MyenergiBindingConstants.HARVI_CHANNEL_CLAMP_NAME_1;
+import static org.openhab.binding.myenergi.internal.MyenergiBindingConstants.HARVI_CHANNEL_CLAMP_NAME_2;
+import static org.openhab.binding.myenergi.internal.MyenergiBindingConstants.HARVI_CHANNEL_CLAMP_NAME_3;
+import static org.openhab.binding.myenergi.internal.MyenergiBindingConstants.HARVI_CHANNEL_CLAMP_PHASE_1;
+import static org.openhab.binding.myenergi.internal.MyenergiBindingConstants.HARVI_CHANNEL_CLAMP_PHASE_2;
+import static org.openhab.binding.myenergi.internal.MyenergiBindingConstants.HARVI_CHANNEL_CLAMP_PHASE_3;
+import static org.openhab.binding.myenergi.internal.MyenergiBindingConstants.HARVI_CHANNEL_CLAMP_POWER_1;
+import static org.openhab.binding.myenergi.internal.MyenergiBindingConstants.HARVI_CHANNEL_CLAMP_POWER_2;
+import static org.openhab.binding.myenergi.internal.MyenergiBindingConstants.HARVI_CHANNEL_CLAMP_POWER_3;
+import static org.openhab.binding.myenergi.internal.MyenergiBindingConstants.HARVI_CHANNEL_LAST_UPDATED_TIME;
 import static org.openhab.core.library.unit.Units.WATT;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.myenergi.internal.MyenergiApiClient;
 import org.openhab.binding.myenergi.internal.dto.HarviSummary;
 import org.openhab.binding.myenergi.internal.exception.ApiException;
 import org.openhab.binding.myenergi.internal.exception.RecordNotFoundException;
@@ -28,7 +36,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link MyenergiHarviHandler} is responsible for handling things created to represent Harvis.
+ * The {@link MyenergiHarviHandler} is responsible for handling things created
+ * to represent Harvis.
  *
  * @author Rene Scherer - Initial Contribution
  */
@@ -37,8 +46,8 @@ public class MyenergiHarviHandler extends MyenergiBaseDeviceHandler {
 
     private final Logger logger = LoggerFactory.getLogger(MyenergiHarviHandler.class);
 
-    public MyenergiHarviHandler(Thing thing, MyenergiApiClient apiClient) {
-        super(thing, apiClient);
+    public MyenergiHarviHandler(Thing thing) {
+        super(thing);
     }
 
     @Override
@@ -52,7 +61,12 @@ public class MyenergiHarviHandler extends MyenergiBaseDeviceHandler {
     protected void updateThing() {
         HarviSummary device;
         try {
-            device = apiClient.getData().getHarviBySerialNumber(Long.parseLong(thing.getUID().getId()));
+            MyenergiBridgeHandler bh = getBridgeHandler();
+            if (bh == null) {
+                logger.warn("No bridge handler available");
+                return;
+            }
+            device = bh.getData().getHarviBySerialNumber(Long.parseLong(thing.getUID().getId()));
             logger.debug("Updating all thing channels for device : {}", device.serialNumber);
 
             updateDateTimeState(HARVI_CHANNEL_LAST_UPDATED_TIME, device.getLastUpdateTime());
@@ -76,7 +90,12 @@ public class MyenergiHarviHandler extends MyenergiBaseDeviceHandler {
     @Override
     protected void refreshMeasurements() throws ApiException {
         try {
-            apiClient.updateHarviSummary(serialNumber);
+            MyenergiBridgeHandler bh = getBridgeHandler();
+            if (bh == null) {
+                logger.warn("No bridge handler available");
+                throw new ApiException("No bridge handler available");
+            }
+            bh.updateHarviSummary(serialNumber);
         } catch (RecordNotFoundException e) {
             logger.warn("invalid serial number: {}", serialNumber, e);
         }

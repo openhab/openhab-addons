@@ -32,13 +32,14 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link myenergiHandlerFactory} is responsible for creating things and thing
+ * The {@link MyenergiHandlerFactory} is responsible for creating things and thing
  * handlers.
  *
  * @author Rene Scherer - Initial contribution
@@ -56,6 +57,11 @@ public class MyenergiHandlerFactory extends BaseThingHandlerFactory {
             .of(BRIDGE_THING_TYPES_UIDS, MyenergiBindingConstants.SUPPORTED_THING_TYPES_UIDS)
             .flatMap(Collection::stream).collect(Collectors.toSet());
 
+    @Activate
+    public MyenergiHandlerFactory(final @Reference HttpClientFactory httpClientFactory) {
+        apiClient.setHttpClientFactory(httpClientFactory);
+    }
+
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
@@ -69,21 +75,12 @@ public class MyenergiHandlerFactory extends BaseThingHandlerFactory {
         if (THING_TYPE_BRIDGE.equals(thingTypeUID)) {
             return new MyenergiBridgeHandler((Bridge) thing, apiClient);
         } else if (THING_TYPE_ZAPPI.equals(thingTypeUID)) {
-            return new MyenergiZappiHandler(thing, apiClient);
+            return new MyenergiZappiHandler(thing);
         } else if (THING_TYPE_HARVI.equals(thingTypeUID)) {
-            return new MyenergiHarviHandler(thing, apiClient);
+            return new MyenergiHarviHandler(thing);
         } else if (THING_TYPE_EDDI.equals(thingTypeUID)) {
-            return new MyenergiEddiHandler(thing, apiClient);
+            return new MyenergiEddiHandler(thing);
         }
         return null;
-    }
-
-    @Reference
-    protected void setHttpClientFactory(HttpClientFactory httpClientFactory) {
-        apiClient.setHttpClientFactory(httpClientFactory);
-    }
-
-    protected void unsetHttpClientFactory(HttpClientFactory httpClientFactory) {
-        apiClient.setHttpClientFactory(null);
     }
 }

@@ -22,11 +22,15 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.myenergi.internal.MyenergiApiClient;
 import org.openhab.binding.myenergi.internal.MyenergiBridgeConfiguration;
 import org.openhab.binding.myenergi.internal.MyenergiDiscoveryService;
+import org.openhab.binding.myenergi.internal.dto.CommandStatus;
 import org.openhab.binding.myenergi.internal.dto.EddiSummary;
 import org.openhab.binding.myenergi.internal.dto.HarviSummary;
+import org.openhab.binding.myenergi.internal.dto.MyenergiData;
 import org.openhab.binding.myenergi.internal.dto.ZappiSummary;
 import org.openhab.binding.myenergi.internal.exception.ApiException;
 import org.openhab.binding.myenergi.internal.exception.AuthenticationException;
+import org.openhab.binding.myenergi.internal.exception.RecordNotFoundException;
+import org.openhab.binding.myenergi.internal.util.ZappiChargingMode;
 import org.openhab.core.config.core.status.ConfigStatusCallback;
 import org.openhab.core.config.core.status.ConfigStatusSource;
 import org.openhab.core.thing.Bridge;
@@ -41,7 +45,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link MyenergiBridgeHandler} is responsible for handling commands, which are
+ * The {@link MyenergiBridgeHandler} is responsible for handling commands, which
+ * are
  * sent to one of the channels.
  *
  * @author Rene Scherer - Initial contribution
@@ -140,16 +145,44 @@ public class MyenergiBridgeHandler extends BaseBridgeHandler implements ConfigSt
         logger.debug("Configuration has been updated for bridge");
     }
 
+    public EddiSummary updateEddiSummary(long serialNumber) throws ApiException, RecordNotFoundException {
+        return apiClient.updateEddiSummary(serialNumber);
+    }
+
     public Iterable<EddiSummary> listEddis() {
         return apiClient.getData().getEddis();
+    }
+
+    public ZappiSummary updateZappiSummary(long serialNumber) throws ApiException, RecordNotFoundException {
+        return apiClient.updateZappiSummary(serialNumber);
     }
 
     public Iterable<ZappiSummary> listZappis() {
         return apiClient.getData().getZappis();
     }
 
+    public HarviSummary updateHarviSummary(long serialNumber) throws ApiException, RecordNotFoundException {
+        return apiClient.updateHarviSummary(serialNumber);
+    }
+
     public Iterable<HarviSummary> listHarvis() {
         return apiClient.getData().getHarvis();
+    }
+
+    public MyenergiData getData() {
+        return apiClient.getData();
+    }
+
+    public CommandStatus setZappiChargingMode(long zappiSerialNumber, ZappiChargingMode mode) throws ApiException {
+        return apiClient.setZappiChargingMode(zappiSerialNumber, mode);
+    }
+
+    public CommandStatus setEddiBoost(long eddiSerialNumber, int heater, int duration) throws ApiException {
+        return apiClient.setEddiBoost(eddiSerialNumber, heater, duration);
+    }
+
+    public CommandStatus cancelEddiBoost(long eddiSerialNumber, int heater) throws ApiException {
+        return apiClient.cancelEddiBoost(eddiSerialNumber, heater);
     }
 
     private void refreshDevices() throws ApiException {
