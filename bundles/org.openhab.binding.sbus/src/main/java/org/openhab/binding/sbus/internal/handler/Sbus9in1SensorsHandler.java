@@ -12,9 +12,6 @@
  */
 package org.openhab.binding.sbus.internal.handler;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.sbus.internal.SbusService;
 import org.openhab.binding.sbus.internal.config.SbusDeviceConfig;

@@ -213,6 +213,7 @@ sitemap sbus label="Sbus Demo"
         Text item=Lux_Sensor
     }
 }
+```
 
 ## Usage Notes
 
