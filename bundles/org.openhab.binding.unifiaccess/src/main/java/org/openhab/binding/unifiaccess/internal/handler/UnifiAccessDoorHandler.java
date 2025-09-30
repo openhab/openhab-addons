@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.unifiaccess.internal.handler;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -249,7 +250,6 @@ public class UnifiAccessDoorHandler extends BaseThingHandler {
 
     public void triggerLogInsight(String payload) {
         try {
-            // shared channel id 'log-insight'
             triggerChannel(UnifiAccessBindingConstants.CHANNEL_BRIDGE_LOG_INSIGHT, payload);
         } catch (Exception ignored) {
         }
@@ -271,7 +271,7 @@ public class UnifiAccessDoorHandler extends BaseThingHandler {
         }
         if (whenEpochMs > 0) {
             updateState(UnifiAccessBindingConstants.CHANNEL_LAST_UNLOCK,
-                    new DateTimeType(java.time.Instant.ofEpochMilli(whenEpochMs)));
+                    new DateTimeType(Instant.ofEpochMilli(whenEpochMs)));
         }
     }
 
@@ -295,6 +295,6 @@ public class UnifiAccessDoorHandler extends BaseThingHandler {
             return null;
         }
         var h = b.getHandler();
-        return (h instanceof UnifiAccessBridgeHandler) ? (UnifiAccessBridgeHandler) h : null;
+        return (h instanceof UnifiAccessBridgeHandler handler) ? handler : null;
     }
 }

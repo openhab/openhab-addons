@@ -18,6 +18,7 @@ import org.openhab.binding.unifiaccess.internal.UnifiAccessBindingConstants;
 import org.openhab.binding.unifiaccess.internal.api.UniFiAccessApiClient;
 import org.openhab.binding.unifiaccess.internal.config.UnifiAccessDeviceConfiguration;
 import org.openhab.binding.unifiaccess.internal.dto.DeviceAccessMethodSettings;
+import org.openhab.binding.unifiaccess.internal.dto.DoorEmergencySettings;
 import org.openhab.binding.unifiaccess.internal.dto.Notification.LocationState;
 import org.openhab.binding.unifiaccess.internal.dto.Notification.RemoteViewChangeData;
 import org.openhab.binding.unifiaccess.internal.dto.Notification.RemoteViewData;
@@ -74,68 +75,79 @@ public class UnifiAccessDeviceHandler extends BaseThingHandler {
                 boolean enable = onOff == OnOffType.ON;
                 switch (channelId) {
                     case UnifiAccessBindingConstants.CHANNEL_DEVICE_NFC_ENABLED:
-                        if (current.nfc == null)
+                        if (current.nfc == null) {
                             current.nfc = new DeviceAccessMethodSettings.Nfc();
+                        }
                         current.nfc.enabled = enable;
                         updated = true;
                         break;
                     case UnifiAccessBindingConstants.CHANNEL_DEVICE_PIN_ENABLED:
-                        if (current.pinCode == null)
+                        if (current.pinCode == null) {
                             current.pinCode = new DeviceAccessMethodSettings.PinCode();
+                        }
                         current.pinCode.enabled = enable;
                         updated = true;
                         break;
                     case UnifiAccessBindingConstants.CHANNEL_DEVICE_PIN_SHUFFLE:
-                        if (current.pinCode == null)
+                        if (current.pinCode == null) {
                             current.pinCode = new DeviceAccessMethodSettings.PinCode();
+                        }
                         current.pinCode.pinCodeShuffle = enable;
                         updated = true;
                         break;
                     case UnifiAccessBindingConstants.CHANNEL_DEVICE_FACE_ENABLED:
-                        if (current.face == null)
+                        if (current.face == null) {
                             current.face = new DeviceAccessMethodSettings.Face();
+                        }
                         current.face.enabled = enable;
                         updated = true;
                         break;
                     case UnifiAccessBindingConstants.CHANNEL_DEVICE_MOBILE_TAP_ENABLED:
-                        if (current.btTap == null)
+                        if (current.btTap == null) {
                             current.btTap = new DeviceAccessMethodSettings.Bt();
+                        }
                         current.btTap.enabled = enable;
                         updated = true;
                         break;
                     case UnifiAccessBindingConstants.CHANNEL_DEVICE_MOBILE_BUTTON_ENABLED:
-                        if (current.btButton == null)
+                        if (current.btButton == null) {
                             current.btButton = new DeviceAccessMethodSettings.Bt();
+                        }
                         current.btButton.enabled = enable;
                         updated = true;
                         break;
                     case UnifiAccessBindingConstants.CHANNEL_DEVICE_MOBILE_SHAKE_ENABLED:
-                        if (current.btShake == null)
+                        if (current.btShake == null) {
                             current.btShake = new DeviceAccessMethodSettings.Bt();
+                        }
                         current.btShake.enabled = enable;
                         updated = true;
                         break;
                     case UnifiAccessBindingConstants.CHANNEL_DEVICE_MOBILE_WAVE_ENABLED:
-                        if (current.mobileWave == null)
+                        if (current.mobileWave == null) {
                             current.mobileWave = new DeviceAccessMethodSettings.MobileWave();
+                        }
                         current.mobileWave.enabled = enable;
                         updated = true;
                         break;
                     case UnifiAccessBindingConstants.CHANNEL_DEVICE_WAVE_ENABLED:
-                        if (current.wave == null)
+                        if (current.wave == null) {
                             current.wave = new DeviceAccessMethodSettings.Wave();
+                        }
                         current.wave.enabled = enable;
                         updated = true;
                         break;
                     case UnifiAccessBindingConstants.CHANNEL_DEVICE_QR_CODE_ENABLED:
-                        if (current.qrCode == null)
+                        if (current.qrCode == null) {
                             current.qrCode = new DeviceAccessMethodSettings.QrCode();
+                        }
                         current.qrCode.enabled = enable;
                         updated = true;
                         break;
                     case UnifiAccessBindingConstants.CHANNEL_DEVICE_TOUCH_PASS_ENABLED:
-                        if (current.touchPass == null)
+                        if (current.touchPass == null) {
                             current.touchPass = new DeviceAccessMethodSettings.TouchPass();
+                        }
                         current.touchPass.enabled = enable;
                         updated = true;
                         break;
@@ -146,20 +158,22 @@ public class UnifiAccessDeviceHandler extends BaseThingHandler {
                 String value = command.toString();
                 switch (channelId) {
                     case UnifiAccessBindingConstants.CHANNEL_DEVICE_FACE_ANTI_SPOOFING:
-                        if (current.face == null)
+                        if (current.face == null) {
                             current.face = new DeviceAccessMethodSettings.Face();
+                        }
                         current.face.antiSpoofingLevel = value; // expects high|medium|no
                         updated = true;
                         break;
                     case UnifiAccessBindingConstants.CHANNEL_DEVICE_FACE_DETECT_DISTANCE:
-                        if (current.face == null)
+                        if (current.face == null) {
                             current.face = new DeviceAccessMethodSettings.Face();
+                        }
                         current.face.detectDistance = value; // expects near|medium|far
                         updated = true;
                         break;
                     case UnifiAccessBindingConstants.CHANNEL_DEVICE_EMERGENCY_STATUS:
                         String normalized = value.toLowerCase();
-                        org.openhab.binding.unifiaccess.internal.dto.DoorEmergencySettings des = new org.openhab.binding.unifiaccess.internal.dto.DoorEmergencySettings();
+                        DoorEmergencySettings des = new DoorEmergencySettings();
                         if ("lockdown".equals(normalized)) {
                             des.lockdown = Boolean.TRUE;
                             des.evacuation = Boolean.FALSE;
@@ -281,7 +295,7 @@ public class UnifiAccessDeviceHandler extends BaseThingHandler {
         // status = "evacuation";
         // }
         // updateState(UnifiAccessBindingConstants.CHANNEL_DEVICE_EMERGENCY_STATUS,
-        // new org.openhab.core.library.types.StringType(status));
+        // new StringType(status));
         // }
     }
 

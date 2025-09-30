@@ -158,7 +158,6 @@ public class UnifiAccessBridgeHandler extends BaseBridgeHandler {
                 updateStatus(ThingStatus.ONLINE);
                 scheduler.execute(UnifiAccessBridgeHandler.this::syncDevices);
             }, notification -> {
-
                 logger.debug("Notification event: {} data: {}", notification.event, notification.data);
                 try {
                     switch (notification.event) {
