@@ -56,6 +56,7 @@ public class HomekitChildDiscoveryService extends AbstractDiscoveryService {
                         .withLabel(THING_LABEL_FMT.formatted(accessory.getAccessoryInstanceLabel(), bridge.getLabel())) //
                         .withProperty(CONFIG_HOST, "n/a") //
                         .withProperty(CONFIG_PAIRING_CODE, "n/a") //
+                        .withProperty(PROPERTY_ACCESSORY_UID, uid.toString()) //
                         .withRepresentationProperty(PROPERTY_ACCESSORY_UID).build());
             }
         });

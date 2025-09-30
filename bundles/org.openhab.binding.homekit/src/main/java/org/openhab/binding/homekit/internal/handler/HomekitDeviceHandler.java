@@ -285,6 +285,7 @@ public class HomekitDeviceHandler extends HomekitBaseServerHandler {
                         String value = channelDef.getLabel();
                         if (value != null) {
                             properties.put(name, value);
+                            logger.trace("Discovered property {}={} for thing {}", name, value, thing.getUID());
                         }
                     } else {
                         ChannelType channelType = typeProvider.getChannelType(channelDef.getChannelTypeUID(), null);
@@ -296,6 +297,8 @@ public class HomekitDeviceHandler extends HomekitBaseServerHandler {
                             Optional.ofNullable(channelDef.getLabel()).ifPresent(builder::withLabel);
                             Optional.ofNullable(channelDef.getDescription()).ifPresent(builder::withDescription);
                             channels.add(builder.build());
+                            logger.trace("Discovered channel {} of type {} for thing {}", channelUID,
+                                    channelType.getUID(), thing.getUID());
                         }
                     }
                 });
@@ -346,7 +349,7 @@ public class HomekitDeviceHandler extends HomekitBaseServerHandler {
                 writer.writeCharacteristic(aid.toString(), channelUID.getId(), object);
             }
         } catch (Exception e) {
-            logger.warn("Failed to send command '{}' as object '{}' to accessory for '{}", command, object, channelUID,
+            logger.warn("Failed to send command '{}' as object '{}' to accessory for '{}'", command, object, channelUID,
                     e);
         }
     }

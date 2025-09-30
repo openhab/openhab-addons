@@ -521,7 +521,6 @@ public class Characteristic {
             case SATURATION:
                 itemType = CoreItemFactory.DIMMER;
                 propertyTag = Property.COLOR;
-                itemType = CoreItemFactory.COLOR;
                 category = "color";
                 break;
 

@@ -80,9 +80,7 @@ public class HomekitBridgeHandler extends HomekitBaseServerHandler implements Br
 
     @Override
     public void childHandlerInitialized(ThingHandler childHandler, Thing childThing) {
-        if (childHandler instanceof HomekitDeviceHandler homekitDeviceHandler) {
-            homekitDeviceHandler.accessoriesLoaded();
-        }
+        // do nothing
     }
 
     @Override
