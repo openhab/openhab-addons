@@ -14,7 +14,6 @@ package org.openhab.binding.modbus.lambda.internal.handler;
 
 import static org.openhab.binding.modbus.lambda.internal.LambdaBindingConstants.*;
 import static org.openhab.core.library.unit.SIUnits.CELSIUS;
-// import static org.openhab.core.library.unit.Units.*;
 
 import javax.measure.Unit;
 
@@ -165,7 +164,7 @@ public class SolarHandler extends BaseThingHandler {
         });
     }
 
-    /**
+    /** May be used in the future
      * 
      * private short getInt16Value(Command command) throws LambdaException {
      * if (command instanceof QuantityType quantityCommand) {
@@ -183,6 +182,7 @@ public class SolarHandler extends BaseThingHandler {
      * }
      * 
      */
+
     private short getScaledInt16Value(Command command) throws LambdaException {
         if (command instanceof QuantityType quantityCommand) {
             QuantityType<?> c = quantityCommand.toUnit(CELSIUS);
