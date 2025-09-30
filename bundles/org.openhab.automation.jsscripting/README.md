@@ -1264,6 +1264,8 @@ See [openhab-js : utils](https://openhab.github.io/openhab-js/utils.html) for fu
 ## File Based Rules
 
 The JavaScript Scripting automation add-on will load `.js` scripts from `automation/js` in the user configuration directory.
+All rules from the same `.js` file, created by [JSRule](#jsrule) or the [Rule Builder](#rule-builder), share a single ScriptEngine, therefore only a single of these rules can run at a time.
+When writing rules that query persistence or wait for other I/O, it can make sense to split them across multiple files to allow parallel execution of those.
 The system will automatically reload a script when changes are detected to the script file.
 Local variable state is not persisted among reloads, see using the [cache](#cache) for a convenient way to persist objects.
 
