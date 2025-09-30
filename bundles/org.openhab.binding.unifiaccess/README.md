@@ -10,26 +10,27 @@ It connects to your UniFi Access controller over HTTPS and listens for live door
 - `unifiaccess:bridge` (Bridge): The UniFi Access controller instance.
   Required to discover and manage door things.
 - `unifiaccess:door`: A UniFi Access door with status and control channels.
+- `unifiaccess:device`: A UniFi Access device (reader, hub, or camera) with device-level status and controls.
 
 ## Discovery
 
 - Add the `Bridge` by entering the controller Hostname or IP and an API Token.
 - Once the Bridge is ONLINE, Doors are discovered automatically and appear in the Inbox.
-- Approve discovered doors to add them to your system, or create them manually using `deviceId`.
+- Approve discovered doors and devices to add them to your system, or create them manually using `deviceId`.
 
 ## Binding Configuration
 
 There are no global binding settings.
-All configuration is on the Bridge and on individual Door things.
+All configuration is on the Bridge and on individual Door and Device things.
 
 ## Thing Configuration
 
 ### Bridge `unifiaccess:bridge`
 
-| Name | Type | Description | Default | Required | Advanced |
-|------|------|-------------|---------|----------|----------|
-| host | text | Hostname or IP address of the UniFi Access controller. | N/A | yes | no |
-| authToken | text | API token used for HTTPS and WebSocket authentication. | N/A | yes | no |
+| Name      | Type | Description                                            | Default | Required | Advanced |
+|-----------|------|--------------------------------------------------------|---------|----------|----------|
+| host      | text | Hostname or IP address of the UniFi Access controller. | N/A     | yes      | no       |
+| authToken | text | API token used for HTTPS and WebSocket authentication. | N/A     | yes      | no       |
 
 How to get the API Token.
 Open the UniFi Access controller and create an API token with permissions suitable for reading doors and remote unlocking.
@@ -41,26 +42,62 @@ Then paste the token into the Bridge configuration.
 
 ### Door `unifiaccess:door`
 
-| Name | Type | Description | Default | Required | Advanced |
-|------|------|-------------|---------|----------|----------|
-| deviceId | text | Unique door identifier from the UniFi Access controller. | N/A | yes | no |
+| Name     | Type | Description                                              | Default | Required | Advanced |
+|----------|------|----------------------------------------------------------|---------|----------|----------|
+| deviceId | text | Unique door identifier from the UniFi Access controller. | N/A     | yes      | no       |
+
+### Device `unifiaccess:device`
+| Name     | Type | Description                                                | Default | Required | Advanced |
+|----------|------|------------------------------------------------------------|---------|----------|----------|
+| deviceId | text | Unique device identifier from the UniFi Access controller. | N/A     | yes      | no       |
 
 ## Channels
 
-The channels below are provided by the `unifiaccess:door` thing.
-Some channels are write-only actions and do not keep a state.
+### Door Channels
 
-| Channel ID | Item Type | RW | Description |
-|------------|-----------|----|-------------|
-| lock | Switch | RW | Lock state. ON locks the door, OFF unlocks immediately. |
-| position | Contact | R | Door position sensor. OPEN when the door is open, CLOSED otherwise. |
-| last-unlock | DateTime | R | Timestamp of the last unlock event. |
-| last-actor | String | R | Name of the user who last unlocked the door. |
-| lock-rule | String | R | Current lock rule. One of `schedule`, `custom`, `keep_unlock`, `keep_lock`. |
-| keep-unlocked | Switch | W | Keep the door unlocked until changed. Send ON to apply. |
-| keep-locked | Switch | W | Keep the door locked until changed. Send ON to apply. |
-| unlock-minutes | Number:Time | W | Unlock for a number of minutes. Send a value in minutes. |
-| door-thumbnail | Image | R | Door thumbnail. |
+| Channel ID     | Item Type   | RW | Description                                                                 |
+|----------------|-------------|----|-----------------------------------------------------------------------------|
+| lock           | Switch      | RW | Lock state. ON locks the door, OFF unlocks immediately.                     |
+| position       | Contact     | R  | Door position sensor. OPEN when the door is open, CLOSED otherwise.         |
+| last-unlock    | DateTime    | R  | Timestamp of the last unlock event.                                         |
+| last-actor     | String      | R  | Name of the user who last unlocked the door.                                |
+| lock-rule      | String      | R  | Current lock rule. One of `schedule`, `custom`, `keep_unlock`, `keep_lock`. |
+| keep-unlocked  | Switch      | W  | Keep the door unlocked until changed. Send ON to apply.                     |
+| keep-locked    | Switch      | W  | Keep the door locked until changed. Send ON to apply.                       |
+| unlock-minutes | Number:Time | W  | Unlock for a number of minutes. Send a value in minutes.                    |
+| door-thumbnail | Image       | R  | Door thumbnail.                                                             |
+
+### Device Channels
+
+Channels
+
+| Channel ID            | Item Type | RW | Description                                                 |
+|-----------------------|-----------|----|-------------------------------------------------------------|
+| nfc-enabled           | Switch    | RW | Enable or disable NFC access on this device.                |
+| pin-enabled           | Switch    | RW | Enable or disable PIN code access.                          |
+| pin-shuffle           | Switch    | RW | Shuffle keypad digits for PIN entry.                        |
+| face-enabled          | Switch    | RW | Enable or disable face unlock.                              |
+| mobile-tap-enabled    | Switch    | RW | Allow mobile tap to unlock.                                 |
+| mobile-button-enabled | Switch    | RW | Allow mobile app unlock button.                             |
+| mobile-shake-enabled  | Switch    | RW | Allow mobile shake to unlock.                               |
+| mobile-wave-enabled   | Switch    | RW | Allow mobile wave gesture to unlock.                        |
+| wave-enabled          | Switch    | RW | Allow hand wave gesture to unlock.                          |
+| qr-code-enabled       | Switch    | RW | Allow QR-code unlock.                                       |
+| touch-pass-enabled    | Switch    | RW | Allow Touch Pass unlock.                                    |
+| face-anti-spoofing    | String    | RW | One of `high`, `medium`, `no`.                              |
+| face-detect-distance  | String    | RW | One of `near`, `medium`, `far`.                             |
+| emergency-status      | String    | R  | Device emergency state: `normal`, `lockdown`, `evacuation`. |
+| door-sensor           | Contact   | R  | Door position sensor.                                       |
+| doorbell-contact      | Contact   | R  | Doorbell contact.                                           |
+
+
+Triggers
+
+| Channel ID      | Events / Payload                                                                                                                                     | Description                                    |
+|-----------------|------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------|
+| doorbell        | Events: `incoming`, `incoming-ren`, `completed`                                                                                                      | Fires on doorbell events.                      |
+| doorbell-status | Events: `DOORBELL_TIMED_OUT`, `ADMIN_REJECTED_UNLOCK`, `ADMIN_UNLOCK_SUCCEEDED`, `VISITOR_CANCELED_DOORBELL`, `ANSWERED_BY_ANOTHER_ADMIN`, `UNKNOWN` | Fires on doorbell status changes.              |
+| log-insight     | Payload: JSON with `logKey`, `eventType`, `message`, `published`, `result`, common refs                                                              | Fires for insights log events for this device. |
 
 ## Full Examples (Textual Configuration)
 
