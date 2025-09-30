@@ -6,7 +6,7 @@ This binding allows pairing with HomeKit accessory devices and importing their s
 
 There are two types of Things supported:
 
-- `accessory`: This integrates a single HomeKit accessory, whereby its services appear as channel groups their respective service- characteristics appear as channels.
+- `accessory`: This integrates a single HomeKit accessory, whereby its services appear as channel groups, and the respective characteristics appear as channels.
 - `bridge`: This integrates a HomeKit bridge accessory containing multiple child `accessory` Things.
   So Things of type `accessory` either represent a stand-alone accessories or a child of a `bridge` Thing.
 
@@ -16,7 +16,7 @@ Whereas child `accessory` Things communicate via their respective `bridge` Thing
 ## Discovery
 
 Both `bridge` and stand-alone `accessory` Things will be auto discovered via mDNS.
-And once a `bridge` Thing has been instantiated, and paired, its child `accessory` Things will also be auto discovered.
+Once a `bridge` Thing has been instantiated and paired, its child `accessory` Things will also be auto- discovered.
 
 ## Thing Configuration
 
@@ -33,7 +33,7 @@ However the following are the .
 | `pairingCode`     | text    | Code used for pairing with the HomeKit accessory. | N/A     | see below | see below |
 | `refreshInterval` | integer | Interval at which the accessory is polled in sec. | 60      | no        | yes       |
 
-Things of type `bridge` and stand-alone `accessory` Things require both an `host` and a `pairingCode`.
+Things of type `bridge` and stand-alone `accessory` Things require both a `host` and a `pairingCode`.
 The `host` is set by the mDNS auto- discovery process.
 And the `pairingCode` must be entered manually.
 
@@ -42,7 +42,7 @@ Therefore these parameters are preset to `n/a`.
 
 ## Channels
 
-Channels will be auto- created depending on the services and respective service- characteristis of the HomeKit accessory.
+Channels will be auto-created depending on the services and characteristics published by the HomeKit accessory.
 
 ### Thing Configuration
 
