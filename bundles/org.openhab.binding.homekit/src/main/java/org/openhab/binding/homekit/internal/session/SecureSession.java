@@ -20,6 +20,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -53,13 +55,13 @@ public class SecureSession {
      * Sends multiple data frames over the output stream. Splits the plaintext into chunks <= 1024 bytes,
      * encrypts them, and sends them as separate frames.
      *
-     * @param plainTextIn the complete plaintext message to be sent.
+     * @param plainText the complete plaintext message to be sent.
      * @throws Exception if an error occurs during encryption or sending.
      */
-    public void send(byte[] plainTextIn) throws Exception {
-        ByteArrayInputStream plainText = new ByteArrayInputStream(plainTextIn);
-        while (plainText.available() > 0) {
-            sendFrame(plainText);
+    public void send(byte[] plainText) throws Exception {
+        ByteArrayInputStream plainTextStream = new ByteArrayInputStream(plainText);
+        while (plainTextStream.available() > 0) {
+            sendFrame(plainTextStream);
         }
         out.flush();
     }
@@ -70,16 +72,16 @@ public class SecureSession {
      * tag. The length prefix is included in the cipher AAD to ensure integrity. The write counter is
      * incremented after sending the frame to ensure nonce uniqueness.
      *
-     * @param plainText the input stream containing the plaintext to be sent.
+     * @param plainTextStream the input stream containing the plaintext to be sent.
      * @throws Exception if an error occurs during encryption or sending.
      */
-    private void sendFrame(ByteArrayInputStream plainText) throws Exception {
-        int frameLen = Math.min(1024, plainText.available());
-        byte[] frameAad = new byte[] { (byte) (frameLen & 0xFF), (byte) ((frameLen >> 8) & 0xFF) };
-        out.write(frameAad, 0, frameAad.length);
-        byte[] chunk = plainText.readNBytes(frameLen);
-        byte[] nonce = generateNonce(writeCounter.getAndIncrement());
-        out.write(encrypt(writeKey, nonce, chunk, frameAad)); // AAD = lenBytes; outputs extra 16 byte tag
+    private void sendFrame(ByteArrayInputStream plainTextStream) throws Exception {
+        short frameLen = (short) Math.min(1024, plainTextStream.available());
+        ByteBuffer frameAad = ByteBuffer.allocate(2).order(ByteOrder.LITTLE_ENDIAN).putShort(frameLen);
+        out.write(frameAad.array(), 0, frameAad.array().length); // send length prefix
+        byte[] plainText = plainTextStream.readNBytes(frameLen);
+        byte[] nonce64 = generateNonce64(writeCounter.getAndIncrement());
+        out.write(encrypt(writeKey, nonce64, plainText, frameAad.array())); // AAD = lenBytes; outputs extra 16 byte tag
     }
 
     /**
@@ -112,13 +114,13 @@ public class SecureSession {
      */
     private byte[] receiveFrame() throws Exception {
         byte[] frameAad = in.readNBytes(2);
-        int frameLen = (frameAad[0] & 0xFF) + ((frameAad[1] & 0xFF) << 8);
+        short frameLen = ByteBuffer.wrap(frameAad).order(ByteOrder.LITTLE_ENDIAN).getShort();
         if (frameLen < 0 || frameLen > 1024) {
             throw new SecurityException("Invalid frame length");
         }
         byte[] cipherText = in.readNBytes(frameLen + 16); // read 16 extra bytes for the auth tag
-        byte[] nonce = generateNonce(readCounter.getAndIncrement());
-        return decrypt(readKey, nonce, cipherText, frameAad);
+        byte[] nonce64 = generateNonce64(readCounter.getAndIncrement());
+        return decrypt(readKey, nonce64, cipherText, frameAad);
     }
 
     /**

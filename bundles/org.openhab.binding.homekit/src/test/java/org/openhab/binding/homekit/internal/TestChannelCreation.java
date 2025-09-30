@@ -15,9 +15,12 @@ package org.openhab.binding.homekit.internal;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
+import static org.openhab.binding.homekit.internal.HomekitBindingConstants.FAKE_PROPERTY_CHANNEL_TYPE_UID;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
@@ -25,6 +28,7 @@ import org.openhab.binding.homekit.internal.dto.Accessories;
 import org.openhab.binding.homekit.internal.dto.Accessory;
 import org.openhab.binding.homekit.internal.dto.Characteristic;
 import org.openhab.binding.homekit.internal.dto.Service;
+import org.openhab.binding.homekit.internal.enums.ServiceType;
 import org.openhab.binding.homekit.internal.persistence.HomekitTypeProvider;
 import org.openhab.core.thing.type.ChannelDefinition;
 import org.openhab.core.thing.type.ChannelGroupDefinition;
@@ -42,7 +46,7 @@ import com.google.gson.JsonElement;
 @NonNullByDefault
 class TestChannelCreation {
 
-    // Chapter 6.6.4 Example Accessory Attribute Database in JSON
+    // Apple HomeKit Specification Chapter 6.6.4 Example Accessory Attribute Database in JSON
     private static final String TEST_JSON = """
             {
                 "accessories": [
@@ -382,9 +386,9 @@ class TestChannelCreation {
         List<ChannelGroupDefinition> channelGroupDefinitions = accessory
                 .buildAndRegisterChannelGroupDefinitions(typeProvider);
 
-        // There should be one channel group definition for the Light Bulb service and one for the properties
+        // There should be just one channel group definition for the Light Bulb service
         assertNotNull(channelGroupDefinitions);
-        assertEquals(2, channelGroupDefinitions.size());
+        assertEquals(1, channelGroupDefinitions.size());
 
         // Check that the channel group definition and its type UID and label are set
         for (ChannelGroupDefinition groupDef : channelGroupDefinitions) {
@@ -393,31 +397,12 @@ class TestChannelCreation {
             assertNotNull(groupDef.getLabel());
         }
 
-        // There should be one channel group type for the Light Bulb service and one for the properties
-        assertEquals(2, channelGroupTypes.size());
-
-        // Check that the public-hap-service-accessory-information channel group type and its UID and label are set
-        ChannelGroupType channelGroupType = channelGroupTypes.stream()
-                .filter(cgt -> "accessory-information".equals(cgt.getUID().getId())).findFirst().orElse(null);
-        assertNotNull(channelGroupType);
-        // There should be four fake channel definitions for the Accessory Information service
-        assertEquals(4, channelGroupType.getChannelDefinitions().size());
-
-        // Check the Name fake channel definition
-        ChannelDefinition channelDefinition = channelGroupType.getChannelDefinitions().stream()
-                .filter(cd -> "name".equals(cd.getId())).findFirst().orElse(null);
-        assertNotNull(channelDefinition);
-        assertEquals("Acme LED Light Bulb", channelDefinition.getLabel());
-
-        // Check the Serial Number fake channel definition
-        channelDefinition = channelGroupType.getChannelDefinitions().stream()
-                .filter(cd -> "serialNumber".equals(cd.getId())).findFirst().orElse(null);
-        assertNotNull(channelDefinition);
-        assertEquals("099DB48E9E28", channelDefinition.getLabel());
+        // There should be just one channel group type for the Light Bulb service
+        assertEquals(1, channelGroupTypes.size());
 
         // Check that the channel group type and its UID and label are set
-        channelGroupType = channelGroupTypes.stream().filter(cgt -> "lightbulb".equals(cgt.getUID().getId()))
-                .findFirst().orElse(null);
+        ChannelGroupType channelGroupType = channelGroupTypes.stream()
+                .filter(cgt -> "lightbulb".equals(cgt.getUID().getId())).findFirst().orElse(null);
         assertNotNull(channelGroupType);
         assertEquals("Channel group type: Light Bulb", channelGroupType.getLabel());
         assertEquals("lightbulb", channelGroupType.getUID().getId());
@@ -426,7 +411,7 @@ class TestChannelCreation {
         assertEquals(2, channelGroupType.getChannelDefinitions().size());
 
         // Check the Brightness channel definition and its properties
-        channelDefinition = channelGroupType.getChannelDefinitions().stream()
+        ChannelDefinition channelDefinition = channelGroupType.getChannelDefinitions().stream()
                 .filter(cd -> "Brightness".equals(cd.getLabel())).findFirst().orElse(null);
         assertNotNull(channelDefinition);
         assertEquals("brightness", channelDefinition.getChannelTypeUID().getId());
@@ -451,5 +436,33 @@ class TestChannelCreation {
         assertEquals("light", channelType.getCategory());
         assertTrue(channelType.getTags().contains("Control"));
         assertTrue(channelType.getTags().contains("Brightness"));
+
+        // get the accessory information for the bridge (accessory 1) and create properties from it
+        accessory = accessories.getAccessory(1);
+        assertNotNull(accessory);
+        Map<String, String> properties = new HashMap<>();
+        for (Service service : accessory.services) {
+            if (ServiceType.ACCESSORY_INFORMATION == service.getServiceType()) {
+                for (Characteristic characteristic : service.characteristics) {
+                    ChannelDefinition channelDef = characteristic.buildAndRegisterChannelDefinition(typeProvider);
+                    if (channelDef != null && FAKE_PROPERTY_CHANNEL_TYPE_UID.equals(channelDef.getChannelTypeUID())) {
+                        String name = channelDef.getId();
+                        String value = channelDef.getLabel();
+                        if (value != null) {
+                            properties.put(name, value);
+                        }
+                    }
+                }
+                break;
+            }
+        }
+
+        // there should be five properties
+        assertEquals(5, properties.size());
+        assertEquals("Acme Light Bridge", properties.get("name"));
+        assertEquals("Acme", properties.get("manufacturer"));
+        assertEquals("037A2BABF19D", properties.get("serialNumber"));
+        assertEquals("Bridge1,1", properties.get("model"));
+        assertEquals("100.1.1", properties.get("firmwareRevision"));
     }
 }

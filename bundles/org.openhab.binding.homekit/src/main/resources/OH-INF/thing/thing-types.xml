@@ -35,18 +35,12 @@
 			<parameter name="host" type="text" required="true">
 				<context>network-address</context>
 				<label>IP Address</label>
-				<description>IP v4 address of the HomeKit accessory.</description>
+				<description>IP v4 address of the HomeKit bridge.</description>
 			</parameter>
 			<parameter name="pairingCode" type="text" required="true">
 				<context>password</context>
 				<label>Pairing Code</label>
-				<description>Code used for pairing with the HomeKit accessory.</description>
-			</parameter>
-			<parameter name="refreshInterval" type="integer" unit="s" min="10" required="false">
-				<label>Refresh Interval</label>
-				<description>Interval at which the accessory is polled in sec.</description>
-				<default>60</default>
-				<advanced>true</advanced>
+				<description>Code used for pairing with the HomeKit bridge.</description>
 			</parameter>
 		</config-description>
 	</bridge-type>

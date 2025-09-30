@@ -60,10 +60,10 @@ class TestPairSetup {
     void testBareCrypto() throws Exception {
         byte[] plainText0 = "the quick brown dog".getBytes(StandardCharsets.UTF_8);
         byte[] key = new byte[32]; // 256 bits = 32 bytes
-        byte[] nonce = generateNonce(123);
+        byte[] nonce64 = generateNonce64(123);
         new SecureRandom().nextBytes(key);
-        byte[] cipherText = encrypt(key, nonce, plainText0, new byte[0]);
-        byte[] plainText1 = decrypt(key, nonce, cipherText, new byte[0]);
+        byte[] cipherText = encrypt(key, nonce64, plainText0, new byte[0]);
+        byte[] plainText1 = decrypt(key, nonce64, cipherText, new byte[0]);
         assertArrayEquals(plainText0, plainText1);
     }
 

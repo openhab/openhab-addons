@@ -12,14 +12,22 @@
  */
 package org.openhab.binding.homekit.internal.handler;
 
+import static org.openhab.binding.homekit.internal.HomekitBindingConstants.FAKE_PROPERTY_CHANNEL_TYPE_UID;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.homekit.internal.discovery.HomekitChildDiscoveryService;
+import org.openhab.binding.homekit.internal.dto.Accessory;
+import org.openhab.binding.homekit.internal.dto.Characteristic;
+import org.openhab.binding.homekit.internal.dto.Service;
+import org.openhab.binding.homekit.internal.enums.ServiceType;
+import org.openhab.binding.homekit.internal.persistence.HomekitTypeProvider;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.binding.BridgeHandler;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.builder.BridgeBuilder;
+import org.openhab.core.thing.type.ChannelDefinition;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,8 +48,9 @@ public class HomekitBridgeHandler extends HomekitBaseServerHandler implements Br
     private final Logger logger = LoggerFactory.getLogger(HomekitBridgeHandler.class);
     private final HomekitChildDiscoveryService discoveryService;
 
-    public HomekitBridgeHandler(Bridge bridge, HomekitChildDiscoveryService discoveryService) {
-        super(bridge);
+    public HomekitBridgeHandler(Bridge bridge, HomekitTypeProvider typeProvider,
+            HomekitChildDiscoveryService discoveryService) {
+        super(bridge, typeProvider);
         this.discoveryService = discoveryService;
     }
 
@@ -85,10 +94,45 @@ public class HomekitBridgeHandler extends HomekitBaseServerHandler implements Br
     protected void accessoriesLoaded() {
         logger.debug("Bridge accessories loaded {}", accessories.size());
         discoveryService.devicesDiscovered(thing, accessories.values()); // discover child accessories
+        createProperties(); // create properties from accessory information
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         // do nothing
+    }
+
+    /**
+     * Creates properties for the bridge based on the characteristics within the ACCESSORY_INFORMATION
+     * service (if any).
+     */
+    private void createProperties() {
+        if (accessories.isEmpty()) {
+            return;
+        }
+        Integer accessoryId = getAccessoryId();
+        if (accessoryId == null) {
+            return;
+        }
+        Accessory accessory = accessories.get(accessoryId);
+        if (accessory == null) {
+            return;
+        }
+        // search for the accessory information service and collect its properties
+        for (Service service : accessory.services) {
+            if (ServiceType.ACCESSORY_INFORMATION == service.getServiceType()) {
+                for (Characteristic characteristic : service.characteristics) {
+                    ChannelDefinition channelDef = characteristic.buildAndRegisterChannelDefinition(typeProvider);
+                    if (channelDef != null && FAKE_PROPERTY_CHANNEL_TYPE_UID.equals(channelDef.getChannelTypeUID())) {
+                        String name = channelDef.getId();
+                        String value = channelDef.getLabel();
+                        if (value != null) {
+                            thing.setProperty(name, value);
+                        }
+                    }
+                }
+                break; // only one accessory information service per accessory
+            }
+        }
     }
 }

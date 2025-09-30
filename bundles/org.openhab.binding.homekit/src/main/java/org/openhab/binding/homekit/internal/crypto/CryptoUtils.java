@@ -57,10 +57,10 @@ public class CryptoUtils {
     }
 
     // Decrypt with ChaCha20-Poly1305
-    public static byte[] decrypt(byte[] key, byte[] nonce, byte[] cipherText, byte[] aad)
+    public static byte[] decrypt(byte[] key, byte[] nonce64, byte[] cipherText, byte[] aad)
             throws InvalidCipherTextException {
         byte[] nonce96 = new byte[12]; // 96 bit nonce
-        System.arraycopy(nonce, 0, nonce96, 4, 8);
+        System.arraycopy(nonce64, 0, nonce96, 4, 8);
         ChaCha20Poly1305 cipher = new ChaCha20Poly1305();
         AEADParameters params = new AEADParameters(new KeyParameter(key), 128, nonce96, aad);
         cipher.init(false, params);
@@ -71,10 +71,10 @@ public class CryptoUtils {
     }
 
     // Encrypt with ChaCha20-Poly1305
-    public static byte[] encrypt(byte[] key, byte[] nonce, byte[] plainText, byte[] aad)
+    public static byte[] encrypt(byte[] key, byte[] nonce64, byte[] plainText, byte[] aad)
             throws InvalidCipherTextException {
         byte[] nonce96 = new byte[12]; // 96 bit nonce
-        System.arraycopy(nonce, 0, nonce96, 4, 8);
+        System.arraycopy(nonce64, 0, nonce96, 4, 8);
         ChaCha20Poly1305 cipher = new ChaCha20Poly1305();
         AEADParameters params = new AEADParameters(new KeyParameter(key), 128, nonce96, aad);
         cipher.init(true, params);
@@ -94,16 +94,13 @@ public class CryptoUtils {
     }
 
     /**
-     * Generates an 64 bit nonce using the given counter.
+     * Generates a 64 bit nonce using the given counter.
      *
      * @param counter The counter value.
      * @return The generated nonce.
      */
-    public static byte[] generateNonce(int counter) {
-        ByteBuffer buf = ByteBuffer.allocate(8).order(ByteOrder.BIG_ENDIAN);
-        buf.putInt(0); // high 4 bytes = zero
-        buf.putInt(counter); // low 4 bytes = counter
-        return buf.array(); // total = 8 bytes
+    public static byte[] generateNonce64(int counter) {
+        return ByteBuffer.allocate(8).order(ByteOrder.LITTLE_ENDIAN).putLong(counter).array();
     }
 
     // Compute shared secret using ECDH

@@ -73,7 +73,7 @@ public class HomekitHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (THING_TYPE_BRIDGE.equals(thingTypeUID)) {
-            return new HomekitBridgeHandler((Bridge) thing, registerDiscoveryService());
+            return new HomekitBridgeHandler((Bridge) thing, typeProvider, registerDiscoveryService());
         } else if (THING_TYPE_ACCESSORY.equals(thingTypeUID)) {
             return new HomekitDeviceHandler(thing, typeProvider);
         }

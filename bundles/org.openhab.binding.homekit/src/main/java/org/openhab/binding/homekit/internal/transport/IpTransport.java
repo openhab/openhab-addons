@@ -88,7 +88,7 @@ public class IpTransport implements AutoCloseable {
         return execute("PUT", endpoint, contentType, content);
     }
 
-    private byte[] execute(String method, String endpoint, String contentType, byte[] body)
+    private synchronized byte[] execute(String method, String endpoint, String contentType, byte[] body)
             throws IOException, InterruptedException, TimeoutException, ExecutionException {
         try {
             byte[] request = buildRequest(method, endpoint, contentType, body);

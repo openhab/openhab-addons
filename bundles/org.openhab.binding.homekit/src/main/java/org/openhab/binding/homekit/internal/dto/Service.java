@@ -43,6 +43,7 @@ public class Service {
     public @NonNullByDefault({}) Integer iid; // e.g. 10
     public @NonNullByDefault({}) String name;
     public @NonNullByDefault({}) List<Characteristic> characteristics;
+    public @NonNullByDefault({}) Boolean primary;
 
     /**
      * Builds a ChannelGroupDefinition and a ChannelGroupType based on the service properties.
@@ -55,7 +56,7 @@ public class Service {
      */
     public @Nullable ChannelGroupDefinition buildAndRegisterChannelGroupDefinition(HomekitTypeProvider typeProvider) {
         ServiceType serviceType = getServiceType();
-        if (serviceType == null) {
+        if (serviceType == null || ServiceType.ACCESSORY_INFORMATION == serviceType) {
             return null;
         }
 

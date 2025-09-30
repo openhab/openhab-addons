@@ -34,6 +34,7 @@ import org.openhab.binding.homekit.internal.hap_services.CharacteristicReadWrite
 import org.openhab.binding.homekit.internal.hap_services.PairRemoveClient;
 import org.openhab.binding.homekit.internal.hap_services.PairSetupClient;
 import org.openhab.binding.homekit.internal.hap_services.PairVerifyClient;
+import org.openhab.binding.homekit.internal.persistence.HomekitTypeProvider;
 import org.openhab.binding.homekit.internal.transport.IpTransport;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -63,6 +64,7 @@ public abstract class HomekitBaseServerHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(HomekitBaseServerHandler.class);
 
     protected final Map<Integer, Accessory> accessories = new HashMap<>();
+    protected final HomekitTypeProvider typeProvider;
 
     protected boolean isChildAccessory = false;
 
@@ -74,8 +76,9 @@ public abstract class HomekitBaseServerHandler extends BaseThingHandler {
     protected @Nullable Ed25519PrivateKeyParameters controllerLongTermSecretKey = null;
     protected @Nullable Ed25519PublicKeyParameters accessoryLongTermPublicKey = null;
 
-    public HomekitBaseServerHandler(Thing thing) {
+    public HomekitBaseServerHandler(Thing thing, HomekitTypeProvider typeProvider) {
         super(thing);
+        this.typeProvider = typeProvider;
     }
 
     @Override

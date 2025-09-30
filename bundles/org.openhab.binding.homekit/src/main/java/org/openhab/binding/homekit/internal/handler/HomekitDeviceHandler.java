@@ -19,12 +19,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import javax.measure.Unit;
 import javax.measure.format.MeasurementParseException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homekit.internal.dto.Accessory;
 import org.openhab.binding.homekit.internal.dto.Characteristic;
 import org.openhab.binding.homekit.internal.dto.Service;
@@ -50,6 +52,7 @@ import org.openhab.core.thing.type.ChannelGroupType;
 import org.openhab.core.thing.type.ChannelType;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.openhab.core.types.util.UnitUtils;
@@ -69,12 +72,14 @@ import com.google.gson.JsonPrimitive;
 @NonNullByDefault
 public class HomekitDeviceHandler extends HomekitBaseServerHandler {
 
+    private static final int INITIAL_DELAY_SECONDS = 2;
+
     private final Logger logger = LoggerFactory.getLogger(HomekitDeviceHandler.class);
-    private final HomekitTypeProvider typeProvider;
+
+    private @Nullable ScheduledFuture<?> refreshTask;
 
     public HomekitDeviceHandler(Thing thing, HomekitTypeProvider typeProvider) {
-        super(thing);
-        this.typeProvider = typeProvider;
+        super(thing, typeProvider);
     }
 
     @Override
@@ -93,7 +98,11 @@ public class HomekitDeviceHandler extends HomekitBaseServerHandler {
             try {
                 int refreshIntervalSeconds = Integer.parseInt(refreshInterval.toString());
                 if (refreshIntervalSeconds > 0) {
-                    scheduler.scheduleWithFixedDelay(this::refresh, 0, refreshIntervalSeconds, TimeUnit.SECONDS);
+                    ScheduledFuture<?> task = refreshTask;
+                    if (task == null || task.isCancelled() || task.isDone()) {
+                        refreshTask = scheduler.scheduleWithFixedDelay(this::refresh, INITIAL_DELAY_SECONDS,
+                                refreshIntervalSeconds, TimeUnit.SECONDS);
+                    }
                     return;
                 }
             } catch (NumberFormatException e) {
@@ -264,7 +273,7 @@ public class HomekitDeviceHandler extends HomekitBaseServerHandler {
             return;
         }
 
-        // create the channels
+        // create the channels and properties
         List<Channel> channels = new ArrayList<>();
         Map<String, String> properties = new HashMap<>(thing.getProperties()); // keep existing properties
         accessory.buildAndRegisterChannelGroupDefinitions(typeProvider).forEach(groupDef -> {
@@ -321,6 +330,9 @@ public class HomekitDeviceHandler extends HomekitBaseServerHandler {
             logger.warn("Received command for unknown channel: {}", channelUID);
             return;
         }
+        if (command == RefreshType.REFRESH) {
+            return;
+        }
         CharacteristicReadWriteService writer = this.rwService;
         if (writer == null) {
             logger.warn("No writer service available to handle command for channel: {}", channelUID);
@@ -344,6 +356,16 @@ public class HomekitDeviceHandler extends HomekitBaseServerHandler {
         super.initialize();
     }
 
+    @Override
+    public void dispose() {
+        ScheduledFuture<?> task = refreshTask;
+        if (task != null) {
+            task.cancel(true);
+        }
+        refreshTask = null;
+        super.dispose();
+    }
+
     /**
      * Polls the accessory for its current state and updates the corresponding channels.
      * This method is called periodically by a scheduled executor.
@@ -353,17 +375,26 @@ public class HomekitDeviceHandler extends HomekitBaseServerHandler {
         if (rwService != null) {
             try {
                 Integer aid = getAccessoryId();
-                List<String> queries = thing.getChannels().stream()
-                        .map(c -> "%s.%s".formatted(aid, Integer.valueOf(c.getUID().getId()))).toList();
+                List<String> queries = new ArrayList<>();
+                thing.getChannels().stream().forEach(c -> {
+                    String iid = c.getProperties().get("iid");
+                    if (iid != null) {
+                        queries.add("%s.%s".formatted(aid, iid));
+                    }
+                });
                 if (queries.isEmpty()) {
                     return;
                 }
                 String jsonResponse = rwService.readCharacteristic(String.join(",", queries));
                 Service service = GSON.fromJson(jsonResponse, Service.class);
                 if (service != null && service.characteristics instanceof List<Characteristic> characteristics) {
-                    for (Characteristic characteristic : characteristics) {
-                        for (Channel channel : thing.getChannels()) {
-                            if (channel.getUID().getId().equals(String.valueOf(characteristic.iid))
+                    for (Channel channel : thing.getChannels()) {
+                        String iid = channel.getProperties().get("iid");
+                        if (iid == null) {
+                            continue;
+                        }
+                        for (Characteristic characteristic : characteristics) {
+                            if (iid.equals(String.valueOf(characteristic.iid))
                                     && characteristic.value instanceof JsonElement element) {
                                 updateState(channel.getUID(), convertJsonToState(element, channel));
                             }
