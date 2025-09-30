@@ -24,31 +24,20 @@ import com.google.gson.annotations.SerializedName;
  */
 public class Visitor {
     public String id;
-    @SerializedName("first_name")
     public String firstName;
-    @SerializedName("last_name")
     public String lastName;
     public String remarks;
-    @SerializedName("mobile_phone")
     public String mobilePhone;
     public String email;
-    @SerializedName("visitor_company")
     public String visitorCompany;
-    @SerializedName("start_time")
     public Long startTime;
-    @SerializedName("end_time")
     public Long endTime;
-    @SerializedName("visit_reason")
     public VisitReason visitReason;
-    @SerializedName("nfc_cards")
     public List<NfcCard> nfcCards;
-    @SerializedName("pin_code")
     public PinCode pinCode;
-    @SerializedName("schedule_id")
     public String scheduleId;
     public Schedule schedule;
     public List<Resource> resources;
-    @SerializedName("license_plates")
     public List<LicensePlate> licensePlates;
 
     public Instant startInstant() {

@@ -20,34 +20,21 @@ import com.google.gson.annotations.SerializedName;
 /**
  * Touch Pass model (Section 6.11 "Touch Pass Schemas").
  *
- * <p>
- * Represents a mobile credential with optional device bundles and user linkage.
- * </p>
  *
  * @author Dan Cunningham - Initial contribution
  */
 public class TouchPass {
-    @SerializedName("activated_at")
     public Object activatedAt;
-    @SerializedName("card_id")
     public String cardId;
-    @SerializedName("card_name")
     public String cardName;
-    @SerializedName("expired_at")
     public Object expiredAt;
     public String id;
-    @SerializedName("last_activity")
     public String lastActivity;
     public Status status;
-    @SerializedName("user_avatar")
     public String userAvatar;
-    @SerializedName("user_email")
     public String userEmail;
-    @SerializedName("user_id")
     public String userId;
-    @SerializedName("user_name")
     public String userName;
-    @SerializedName("user_status")
     public UserStatus userStatus;
     public List<Bundle> bundles;
 
@@ -74,15 +61,10 @@ public class TouchPass {
     }
 
     public static class Bundle {
-        @SerializedName("bundle_id")
         public String bundleId;
-        @SerializedName("bundle_status")
         public BundleStatus bundleStatus;
-        @SerializedName("device_id")
         public String deviceId;
-        @SerializedName("device_name")
         public String deviceName;
-        @SerializedName("device_type")
         public Integer deviceType;
         public Source source;
     }

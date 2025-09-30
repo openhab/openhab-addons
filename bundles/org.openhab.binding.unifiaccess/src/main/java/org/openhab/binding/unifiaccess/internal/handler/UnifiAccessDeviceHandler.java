@@ -27,7 +27,6 @@ import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
@@ -39,7 +38,7 @@ import org.slf4j.LoggerFactory;
  * @author Dan Cunningham - Initial contribution
  */
 @NonNullByDefault
-public class UnifiAccessDeviceHandler extends BaseThingHandler {
+public class UnifiAccessDeviceHandler extends UnifiAccessBaseHandler {
 
     private final Logger logger = LoggerFactory.getLogger(UnifiAccessDeviceHandler.class);
 
@@ -58,11 +57,11 @@ public class UnifiAccessDeviceHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        String channelId = channelUID.getId();
         if (command instanceof RefreshType) {
-            scheduler.execute(this::refreshAll);
+            refreshState(channelId);
             return;
         }
-        String channelId = channelUID.getId();
         UnifiAccessBridgeHandler bridge = getBridgeHandler();
         UniFiAccessApiClient api = bridge != null ? bridge.getApiClient() : null;
         if (api == null) {
@@ -297,28 +296,5 @@ public class UnifiAccessDeviceHandler extends BaseThingHandler {
         // updateState(UnifiAccessBindingConstants.CHANNEL_DEVICE_EMERGENCY_STATUS,
         // new StringType(status));
         // }
-    }
-
-    private void refreshAll() {
-        UnifiAccessBridgeHandler bridge = getBridgeHandler();
-        UniFiAccessApiClient api = bridge != null ? bridge.getApiClient() : null;
-        if (api == null) {
-            return;
-        }
-        try {
-            DeviceAccessMethodSettings settings = api.getDeviceAccessMethodSettings(deviceId);
-            updateFromSettings(settings);
-        } catch (Exception e) {
-            logger.debug("Failed to refresh device {}: {}", deviceId, e.getMessage());
-        }
-    }
-
-    private @Nullable UnifiAccessBridgeHandler getBridgeHandler() {
-        var b = getBridge();
-        if (b == null) {
-            return null;
-        }
-        var h = b.getHandler();
-        return (h instanceof UnifiAccessBridgeHandler) ? (UnifiAccessBridgeHandler) h : null;
     }
 }

@@ -39,7 +39,6 @@ import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
@@ -53,7 +52,7 @@ import com.google.gson.Gson;
  * @author Dan Cunningham - Initial contribution
  */
 @NonNullByDefault
-public class UnifiAccessDoorHandler extends BaseThingHandler {
+public class UnifiAccessDoorHandler extends UnifiAccessBaseHandler {
 
     public static final String CONFIG_DOOR_ID = UnifiAccessBindingConstants.CONFIG_DEVICE_ID;
 
@@ -73,11 +72,11 @@ public class UnifiAccessDoorHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        String channelId = channelUID.getId();
         if (command instanceof RefreshType) {
-            scheduler.execute(this::refreshAll);
+            refreshState(channelId);
             return;
         }
-        String channelId = channelUID.getId();
         UnifiAccessBridgeHandler bridge = getBridgeHandler();
         UniFiAccessApiClient api = bridge != null ? bridge.getApiClient() : null;
         if (api == null) {
@@ -134,7 +133,7 @@ public class UnifiAccessDoorHandler extends BaseThingHandler {
         if (getThing().getStatus() != ThingStatus.ONLINE) {
             updateStatus(ThingStatus.ONLINE);
         }
-        refreshAll();
+        updateAll();
     }
 
     public void handleLocationState(LocationState locationState) {
@@ -275,7 +274,7 @@ public class UnifiAccessDoorHandler extends BaseThingHandler {
         }
     }
 
-    private void refreshAll() {
+    private void updateAll() {
         Door door = this.door;
         if (door == null) {
             return;
@@ -287,14 +286,5 @@ public class UnifiAccessDoorHandler extends BaseThingHandler {
         if (door.doorPositionStatus != null) {
             updatePosition(door.doorPositionStatus);
         }
-    }
-
-    private @Nullable UnifiAccessBridgeHandler getBridgeHandler() {
-        var b = getBridge();
-        if (b == null) {
-            return null;
-        }
-        var h = b.getHandler();
-        return (h instanceof UnifiAccessBridgeHandler handler) ? handler : null;
     }
 }
