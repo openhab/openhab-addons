@@ -123,6 +123,17 @@ public abstract class AbstractSbusHandler extends BaseThingHandler implements Sb
     }
 
     /**
+     * Public method for helpers to update channel states.
+     * This exposes the protected updateState method to helper classes.
+     *
+     * @param channelUID the channel to update
+     * @param state the new state value
+     */
+    public void updateChannelState(ChannelUID channelUID, org.openhab.core.types.State state) {
+        updateState(channelUID, state);
+    }
+
+    /**
      * Start polling the device for updates based on the configured refresh interval.
      */
     protected void startPolling() {

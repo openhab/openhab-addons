@@ -15,6 +15,9 @@ package org.openhab.binding.sbus.internal.handler;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.sbus.internal.SbusService;
 import org.openhab.binding.sbus.internal.config.SbusDeviceConfig;
+import org.openhab.binding.sbus.internal.helper.SbusContactHelper;
+import org.openhab.binding.sbus.internal.helper.SbusLuxHelper;
+import org.openhab.binding.sbus.internal.helper.SbusMotionHelper;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -41,10 +44,10 @@ public class Sbus9in1SensorsHandler extends AbstractSbusHandler {
 
     private final Logger logger = LoggerFactory.getLogger(Sbus9in1SensorsHandler.class);
 
-    // Specialized handlers for different sensor types
-    private @Nullable Sbus9in1ContactHandler contactHandler;
-    private @Nullable SbusMotionSensorHandler motionHandler;
-    private @Nullable SbusLuxSensorHandler luxHandler;
+    // Specialized helpers for different sensor types
+    private @Nullable SbusContactHelper contactHelper;
+    private @Nullable SbusMotionHelper motionHelper;
+    private @Nullable SbusLuxHelper luxHelper;
 
     public Sbus9in1SensorsHandler(Thing thing) {
         super(thing);
@@ -52,18 +55,18 @@ public class Sbus9in1SensorsHandler extends AbstractSbusHandler {
 
     @Override
     protected void initializeChannels() {
-        // Create specialized handlers based on configured channels
-        createSpecializedHandlers();
+        // Create specialized helpers based on configured channels
+        createSpecializedHelpers();
 
-        // Initialize channels for each specialized handler
-        if (contactHandler != null) {
-            contactHandler.initializeChannels();
+        // Initialize helpers
+        if (contactHelper != null) {
+            contactHelper.initialize();
         }
-        if (motionHandler != null) {
-            motionHandler.initializeChannels();
+        if (motionHelper != null) {
+            motionHelper.initialize();
         }
-        if (luxHandler != null) {
-            luxHandler.initializeChannels();
+        if (luxHelper != null) {
+            luxHelper.initialize();
         }
     }
 
@@ -80,8 +83,8 @@ public class Sbus9in1SensorsHandler extends AbstractSbusHandler {
             SbusDeviceConfig config = getConfigAs(SbusDeviceConfig.class);
             ReadNineInOneStatusResponse response = readNineInOneStatus(adapter, config.subnetId, config.id);
 
-            // Route the response to all active specialized handlers
-            routeResponseToHandlers(response);
+            // Route the response to all active specialized helpers
+            routeMessageToHelpers(response);
 
             updateStatus(ThingStatus.ONLINE);
         } catch (IllegalStateException e) {
@@ -101,13 +104,13 @@ public class Sbus9in1SensorsHandler extends AbstractSbusHandler {
     protected void processAsyncMessage(SbusResponse response) {
         try {
             if (response instanceof MotionSensorStatusReport report) {
-                // Route motion sensor status report to all active handlers
-                routeReportToHandlers(report);
+                // Route motion sensor status report to all active helpers
+                routeMessageToHelpers(report);
                 updateStatus(ThingStatus.ONLINE);
                 logger.debug("Processed async motion sensor status report for sensor handler {}", getThing().getUID());
             } else if (response instanceof ReadNineInOneStatusResponse statusResponse) {
-                // Route 9-in-1 status response to all active handlers
-                routeResponseToHandlers(statusResponse);
+                // Route 9-in-1 status response to all active helpers
+                routeMessageToHelpers(statusResponse);
                 updateStatus(ThingStatus.ONLINE);
                 logger.debug("Processed async 9-in-1 status response for sensor handler {}", getThing().getUID());
             }
@@ -132,74 +135,51 @@ public class Sbus9in1SensorsHandler extends AbstractSbusHandler {
     }
 
     /**
-     * Create specialized handlers based on the configured channels.
+     * Create specialized helpers based on the configured channels.
      */
-    private void createSpecializedHandlers() {
-        // Check configured channels and create appropriate handlers
-        for (org.openhab.core.thing.Channel channel : getThing().getChannels()) {
-            if (channel.getChannelTypeUID() != null) {
-                String channelType = channel.getChannelTypeUID().getId();
+    private void createSpecializedHelpers() {
+        // Create contact helper if there are contact channels
+        SbusContactHelper tempContactHelper = new SbusContactHelper(getThing(), this);
+        if (tempContactHelper.hasRelevantChannels()) {
+            contactHelper = tempContactHelper;
+            logger.debug("Created contact helper for sensor {}", getThing().getUID());
+        }
 
-                // Create contact handler for contact channels
-                if ("contact-channel".equals(channelType) && contactHandler == null) {
-                    contactHandler = new Sbus9in1ContactHandler(getThing());
-                    logger.debug("Created 9-in-1 contact handler for sensor {}", getThing().getUID());
-                }
+        // Create motion helper if there are motion channels
+        SbusMotionHelper tempMotionHelper = new SbusMotionHelper(getThing(), this);
+        if (tempMotionHelper.hasRelevantChannels()) {
+            motionHelper = tempMotionHelper;
+            logger.debug("Created motion helper for sensor {}", getThing().getUID());
+        }
 
-                // Create motion handler for motion channels
-                if ("motion-channel".equals(channelType) && motionHandler == null) {
-                    motionHandler = new SbusMotionSensorHandler(getThing());
-                    logger.debug("Created motion handler for sensor {}", getThing().getUID());
-                }
-
-                // Create lux handler for lux channels
-                if ("lux-channel".equals(channelType) && luxHandler == null) {
-                    luxHandler = new SbusLuxSensorHandler(getThing());
-                    logger.debug("Created lux handler for sensor {}", getThing().getUID());
-                }
-            }
+        // Create lux helper if there are lux channels
+        SbusLuxHelper tempLuxHelper = new SbusLuxHelper(getThing(), this);
+        if (tempLuxHelper.hasRelevantChannels()) {
+            luxHelper = tempLuxHelper;
+            logger.debug("Created lux helper for sensor {}", getThing().getUID());
         }
     }
 
     // Message Routing Methods
 
     /**
-     * Route ReadNineInOneStatusResponse to appropriate specialized handlers.
+     * Route SBUS async messages to appropriate specialized helpers.
+     * This method uses the generic processAsyncMessage() method in each helper.
      */
-    private void routeResponseToHandlers(ReadNineInOneStatusResponse response) {
-        // Route to contact handler if it exists
-        if (contactHandler != null) {
-            contactHandler.processAsyncMessage(response);
+    private void routeMessageToHelpers(SbusResponse response) {
+        // Route to contact helper if it exists
+        if (contactHelper != null) {
+            contactHelper.processMessage(response);
         }
 
-        // Route to motion handler if it exists
-        if (motionHandler != null) {
-            motionHandler.processAsyncMessage(response);
+        // Route to motion helper if it exists
+        if (motionHelper != null) {
+            motionHelper.processMessage(response);
         }
 
-        // Route to lux handler if it exists
-        if (luxHandler != null) {
-            luxHandler.processAsyncMessage(response);
-        }
-    }
-
-    /**
-     * Route MotionSensorStatusReport to appropriate specialized handlers.
-     */
-    private void routeReportToHandlers(MotionSensorStatusReport report) {
-        // Route to contact handler if it exists
-        if (contactHandler != null) {
-            contactHandler.processAsyncMessage(report);
-        }
-
-        // Route to motion handler if it exists
-        if (motionHandler != null) {
-            motionHandler.processAsyncMessage(report);
-        }
-
-        // Route to lux handler if it exists
-        if (luxHandler != null) {
-            luxHandler.processAsyncMessage(report);
+        // Route to lux helper if it exists
+        if (luxHelper != null) {
+            luxHelper.processMessage(response);
         }
     }
 
@@ -231,18 +211,18 @@ public class Sbus9in1SensorsHandler extends AbstractSbusHandler {
 
     @Override
     public void dispose() {
-        // Dispose specialized handlers
-        if (contactHandler != null) {
-            contactHandler.dispose();
-            contactHandler = null;
+        // Dispose specialized helpers
+        if (contactHelper != null) {
+            contactHelper.dispose();
+            contactHelper = null;
         }
-        if (motionHandler != null) {
-            motionHandler.dispose();
-            motionHandler = null;
+        if (motionHelper != null) {
+            motionHelper.dispose();
+            motionHelper = null;
         }
-        if (luxHandler != null) {
-            luxHandler.dispose();
-            luxHandler = null;
+        if (luxHelper != null) {
+            luxHelper.dispose();
+            luxHelper = null;
         }
 
         super.dispose();
