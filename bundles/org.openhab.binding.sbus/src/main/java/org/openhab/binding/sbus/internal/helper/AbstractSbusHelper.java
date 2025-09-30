@@ -23,7 +23,7 @@ import ro.ciprianpascu.sbus.msg.SbusResponse;
  * The {@link AbstractSbusHelper} is a base class for SBUS sensor helpers.
  * Unlike full handlers, these helpers are lightweight processors that only handle
  * data processing without managing their own lifecycle, polling, or message listening.
- * They are managed by the main Sbus9in1SensorsHandler coordinator.
+ * They are managed by the main Sbus*Handler coordinator.
  *
  * @author Ciprian Pascu - Initial contribution
  */
