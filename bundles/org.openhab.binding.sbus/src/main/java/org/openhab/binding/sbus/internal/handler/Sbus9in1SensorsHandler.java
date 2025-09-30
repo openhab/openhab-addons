@@ -164,21 +164,6 @@ public class Sbus9in1SensorsHandler extends AbstractSbusHandler {
         }
     }
 
-    private List<String> getConfiguredChannelTypes() {
-        List<String> channelTypes = new ArrayList<>();
-
-        getThing().getChannels().forEach(channel -> {
-            if (channel.getChannelTypeUID() != null) {
-                String channelType = channel.getChannelTypeUID().getId();
-                if (!channelTypes.contains(channelType)) {
-                    channelTypes.add(channelType);
-                }
-            }
-        });
-
-        return channelTypes;
-    }
-
     // Message Routing Methods
 
     /**
