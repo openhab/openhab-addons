@@ -19,7 +19,7 @@ If you create an empty file called `test.py`, you will see a log line with infor
 ... [INFO ] [ort.loader.AbstractScriptFileWatcher] - (Re-)Loading script '/openhab/conf/automation/python/test.py'
 ```
 
-To enable debug logging, use the [console logging](https://openhab.org/docs/administration/logging.html) commands to
+Use the [console logging](https://openhab.org/docs/administration/logging.html) commands to
 enable debug logging for the automation functionality:
 
 ```text
@@ -28,7 +28,7 @@ log:set DEBUG org.openhab.automation.pythonscripting
 
 ## Scripting Basics
 
-Lets start with a simple script
+Let’s start with a simple script
 
 ```python
 from openhab import rule
@@ -308,7 +308,7 @@ The type of the event can also be queried via [AbstractEvent.getTopic](https://w
 
 ### module scope
 
-The scope module encapsulates all [default jsr223 objects/presents](https://www.openhab.org/docs/configuration/jsr223.html#default-preset-importpreset-not-required) into a new object.
+The scope module encapsulates all [default jsr223 objects/presets](https://www.openhab.org/docs/configuration/jsr223.html#default-preset-importpreset-not-required) into a new object.
 You can use it like below
 
 ```python
@@ -329,7 +329,7 @@ import scope # this imports just the module
 print(scope.ON)
 ```
 
-You can also import additional [jsr223 presents](https://www.openhab.org/docs/configuration/jsr223.html#rulesimple-preset) like
+You can also import additional [jsr223 presets](https://www.openhab.org/docs/configuration/jsr223.html#rulesimple-preset) like
 
 ```python
 from scope import RuleSimple
@@ -526,7 +526,7 @@ Timer.createTimeout(60, test)
 
 Below is a complex example of 2 sensor values that are expected to be transmitted in a certain time window (e.g. one after the other).
 
-After the first state change, the timer wait 5 seconds, before it updates the final target value.
+After the first state change, the timer waits 5 seconds, before it updates the final target value.
 If the second value arrives before this time frame, the final target value is updated immediately.
 
 ```python
