@@ -53,7 +53,7 @@ public class ServerHandler extends BaseBridgeHandler {
     private final ApiClient apiClient;
     private final Configuration configuration;
 
-    Map<String, @Nullable ScheduledFuture<?>> scheduledTasks = new HashMap<>();
+    private Map<String, @Nullable ScheduledFuture<?>> scheduledTasks = new HashMap<>();
 
     public ServerHandler(Bridge bridge, ApiClient apiClient) {
         super(bridge);
@@ -68,49 +68,38 @@ public class ServerHandler extends BaseBridgeHandler {
         try {
             scheduler.execute(initializeHandler());
         } catch (Exception e) {
-            this.logger.warn("{}", e.getMessage());
+            this.logger.warn("Exception during initialization: {}", e.getMessage());
+            this.exceptionHandler.handle(e);
         }
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        // No channels on the server bridge require command handling.
+        // This method is intentionally left blank.
     }
 
     @Override
     public void dispose() {
+        // No additional cleanup required
         super.dispose();
     }
 
     private synchronized Runnable initializeHandler() {
         return () -> {
             try {
-                if (Configuration.configurationExists(this.getThing())) {
-                    var uriObject = new URI(this.configuration.ssl ? "https" : "http", null, // userInfo
-                            this.configuration.hostname, this.configuration.port, this.configuration.path, null, // query
-                            null // fragment
-                    );
-
-                    var uriString = uriObject.toString();
-
-                    this.apiClient.updateBaseUri(uriString);
-                } else {
-                    var uriString = thing.getProperties().get(Constants.ServerProperties.SERVER_URI);
-                    var uriObject = new URI(uriString);
-
-                    this.configuration.hostname = uriObject.getHost();
-                    this.configuration.port = uriObject.getPort();
-                    this.configuration.ssl = "https".equalsIgnoreCase(uriObject.getScheme());
-                    this.configuration.path = uriObject.getPath();
-
-                    this.apiClient.updateBaseUri(uriString);
-
+                // Initialize discovered server
+                if (thing.getProperties().containsKey(Constants.ServerProperties.SERVER_URI)) {
+                    updateConfiguration(new URI(thing.getProperties().get(Constants.ServerProperties.SERVER_URI)));
                     thing.getProperties().remove(Constants.ServerProperties.SERVER_URI);
-
-                    logger.info("Creating initial configuration for discovered server at {}:{}",
-                            this.configuration.hostname, this.configuration.port);
                 }
-                this.stopTasks();
-                this.startTasks();
+                URI serverUri = this.configuration.getServerURI();
+                this.apiClient.updateBaseUri(serverUri.toString());
+
+                if (this.configuration.token != null && !this.configuration.token.isEmpty()) {
+                    this.apiClient.authenticateWithToken(this.configuration.token);
+                    this.startTasks();
+                }
             } catch (Exception e) {
                 this.logger.error("Error during initialization: {}", e.getMessage(), e);
                 this.exceptionHandler.handle(e);
@@ -119,9 +108,6 @@ public class ServerHandler extends BaseBridgeHandler {
     }
 
     private synchronized void startTasks() {
-        Configuration config = this.getConfigAs(Configuration.class);
-        this.apiClient.authenticateWithToken(config.token);
-
         // Create and start the connection task
         AbstractTask connectionTask = TaskFactory.createConnectionTask(this.apiClient,
                 systemInfo -> this.handleConnection(systemInfo), this.exceptionHandler);
@@ -153,14 +139,12 @@ public class ServerHandler extends BaseBridgeHandler {
             this.thing.getProperties().put(Constants.ServerProperties.SERVER_VERSION, systemInfo.getVersion());
 
             logger.info("  Product Name: {}", systemInfo.getProductName());
-            // Note: getOperatingSystem() is deprecated but still available for logging
-            @SuppressWarnings("deprecation")
-            String operatingSystem = systemInfo.getOperatingSystem();
-            logger.info("  Operating System: {}", operatingSystem);
-
             logger.info("  Server ID: {}", systemInfo.getId());
             logger.info("  Startup Wizard Completed: {}", systemInfo.getStartupWizardCompleted());
             logger.info("  Web Socket Port: {}", systemInfo.getWebSocketPortNumber());
+
+            // Update configuration with systemInfo data if available
+            this.updateConfiguration(systemInfo);
 
             ThingStatusInfo statusInfo = new ThingStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, "");
             this.getThing().setStatusInfo(statusInfo);
@@ -190,5 +174,68 @@ public class ServerHandler extends BaseBridgeHandler {
 
     private @Nullable ScheduledFuture<?> scheduleTask(Runnable task, long initialDelay, long interval) {
         return scheduler.scheduleWithFixedDelay(task, initialDelay, interval, TimeUnit.SECONDS);
+    }
+
+    /**
+     * Updates configuration from a URI
+     * 
+     * @param uri The URI containing server information
+     */
+    private void updateConfiguration(URI uri) {
+        // Track if any config value has changed
+        boolean configChanged = false;
+
+        // Only update values if they differ from current configuration
+        if (uri.getHost() != null && !uri.getHost().equals(this.configuration.hostname)) {
+            this.configuration.hostname = uri.getHost();
+            configChanged = true;
+        }
+
+        if (uri.getPort() > 0 && uri.getPort() != this.configuration.port) {
+            this.configuration.port = uri.getPort();
+            configChanged = true;
+        }
+
+        if (uri.getScheme() != null) {
+            boolean newSslValue = "https".equalsIgnoreCase(uri.getScheme());
+            if (newSslValue != this.configuration.ssl) {
+                this.configuration.ssl = newSslValue;
+                configChanged = true;
+            }
+        }
+
+        if (uri.getPath() != null && !uri.getPath().isEmpty() && !uri.getPath().equals(this.configuration.path)) {
+            this.configuration.path = uri.getPath();
+            configChanged = true;
+        }
+
+        // Only save if something has changed
+        if (configChanged) {
+            logger.info("Configuration changed, updating Thing configuration");
+
+            org.openhab.core.config.core.Configuration config = editConfiguration();
+
+            config.put("hostname", this.configuration.hostname);
+            config.put("port", this.configuration.port);
+            config.put("ssl", this.configuration.ssl);
+            config.put("path", this.configuration.path);
+
+            updateConfiguration(config);
+        } else {
+            logger.debug("No configuration changes needed");
+        }
+    }
+
+    private void updateConfiguration(SystemInfo systemInfo) {
+        var localAddress = systemInfo.getLocalAddress();
+
+        if (localAddress != null && !localAddress.isEmpty()) {
+            try {
+                updateConfiguration(new URI(localAddress));
+            } catch (Exception e) {
+                logger.debug("Failed to parse local address URI: {}", e.getMessage());
+                // Don't use exception handler for debug-level issues
+            }
+        }
     }
 }

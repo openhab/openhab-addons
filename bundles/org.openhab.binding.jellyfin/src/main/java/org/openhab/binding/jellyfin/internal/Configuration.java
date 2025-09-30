@@ -12,8 +12,10 @@
  */
 package org.openhab.binding.jellyfin.internal;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.thing.Thing;
 
 /**
  * The {@link Configuration} class contains fields mapping thing configuration parameters.
@@ -57,18 +59,19 @@ public class Configuration {
     public String userId = "";
 
     /**
-     * Checks if a configuration exists for the given thing.
+     * Creates a URI from the configuration information stored in this instance.
+     * This URI can be used with the API client.
      *
-     * @param thing the thing to check the configuration for
-     * @return true if the configuration is complete, false otherwise
+     * @return The server URI with scheme, host, port, and path
+     * @throws URISyntaxException if there is an issue constructing the URI
      */
-    public static boolean configurationExists(Thing thing) {
-        Configuration config = thing.getConfiguration().as(Configuration.class);
-        return config != null && !config.hostname.isEmpty();
-    }
+    public URI getServerURI() throws URISyntaxException {
+        String scheme = ssl ? "https" : "http";
+        String cleanPath = path.isEmpty() ? "" : (path.startsWith("/") ? path : "/" + path);
 
-    public static boolean tokenExists(Thing thing) {
-        Configuration config = thing.getConfiguration().as(Configuration.class);
-        return config != null && !config.token.isEmpty();
+        return new URI(scheme, null, // userInfo
+                hostname, port, cleanPath, null, // query
+                null // fragment
+        );
     }
 }
