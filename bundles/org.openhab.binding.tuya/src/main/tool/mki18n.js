@@ -56,7 +56,13 @@ function optionToLabel(option) {
         // No space after
         .replaceAll(/(?:^|(?<= ))anti (\w+)(?= |$)/gi, "Anti$1")
 
-        .replaceAll(/(?:^|(?<=\W))(?:[a-z]+|[A-Z]{3,}|ON)(?=\W|$)/g, function (txt) { // Title case
+        // Specific, case sensitive expansions
+        .replace(/^NC$/, "Normally Closed")
+        .replace(/^NO$/, "Normally Open")
+        .replace(/^OF$/, "Off")
+
+        // Title case
+        .replaceAll(/(?:^|(?<=\W))(?:[a-z]+|[A-Z]{3,}|ON)(?=\W|$)/g, function (txt) {
             return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
         })
 
@@ -73,8 +79,11 @@ function optionToLabel(option) {
 
         // Abbreviations
         .replaceAll(/(?:^|(?<= ))Abs(?= |$)/g, "ABS")
+        .replaceAll(/(?:^|(?<= ))Af(?= |$)/g, "AF")
+        .replaceAll(/(?:^|(?<= ))Al(?= |$)/g, "AL")
         .replaceAll(/(?:^|(?<= ))Aux(?= |$)/g, "AUX")
         .replaceAll(/(?:^|(?<= ))Cd(?= |$)/g, "CD")
+        .replaceAll(/(?:^|(?<= ))Co(?= |$)/g, "CO")
         .replaceAll(/(?:^|(?<= ))Cmd(?= |$)/g, "Command")
         .replaceAll(/(?:^|(?<= ))Crt(?= |$)/g, "CRT")
         .replaceAll(/(?:^|(?<= ))Dc(?= |$)/g, "DC")
@@ -92,9 +101,14 @@ function optionToLabel(option) {
         .replaceAll(/(?:^|(?<= ))Gsa(?= |$)/g, "GSA")
         .replaceAll(/(?:^|(?<= ))Gsd(?= |$)/g, "GSD")
         .replaceAll(/(?:^|(?<= ))Gsm(?= |$)/g, "GSM")
+        .replaceAll(/(?:^|(?<= ))Hi(?= |$)/g, "High")
         .replaceAll(/(?:^|(?<= ))Hips(?= |$)/g, "HIPS")
         .replaceAll(/(?:^|(?<= ))Lan(?= |$)/g, "LAN")
         .replaceAll(/(?:^|(?<= ))Led(?= |$)/g, "LED")
+        .replaceAll(/(?:^|(?<= ))Lo(?= |$)/g, "Low")
+        .replaceAll(/(?:^|(?<= ))Nc(?= |$)/g, "NC")
+        .replaceAll(/(?:^|(?<= ))No(?= |$)/g, "NO")
+        .replaceAll(/(?:^|(?<= ))Ou(?= |$)/g, "OU")
         .replaceAll(/(?:^|(?<= ))Pc(?= |$)/g, "PC")
         .replaceAll(/(?:^|(?<= ))Petg(?= |$)/g, "PETG")
         .replaceAll(/(?:^|(?<= ))Pir(?= |$)/g, "PIR")
@@ -111,6 +125,7 @@ function optionToLabel(option) {
         .replaceAll(/(?:^|(?<= ))Sa(?= |$)/g, "Saturday")
         .replaceAll(/(?:^|(?<= ))Sim(?= |$)/g, "SIM")
         .replaceAll(/(?:^|(?<= ))Sp(?= |$)/g, "SP")
+        .replaceAll(/(?:^|(?<= ))St(?= |$)/g, "ST")
         .replaceAll(/(?:^|(?<= ))Su(?= |$)/g, "Sunday")
         .replaceAll(/(?:^|(?<= ))Tpu(?= |$)/g, "TPU")
         .replaceAll(/(?:^|(?<= ))Tv(?= |$)/g, "TV")
@@ -126,12 +141,14 @@ function optionToLabel(option) {
         .replaceAll(/(?:^|(?<= ))Ca$/g, "CA")
         .replaceAll(/(?:^|(?<= ))Cz$/g, "CZ")
         .replaceAll(/(?:^|(?<= ))De$/g, "DE")
+        .replaceAll(/(?:^|(?<= ))Dk$/g, "DK")
         .replaceAll(/(?:^|(?<= ))Es$/g, "ES")
         .replaceAll(/(?:^|(?<= ))Eu$/g, "EU")
         .replaceAll(/(?:^|(?<= ))Eur$/g, "EU")
         .replaceAll(/(?:^|(?<= ))In$/g, "IN")
         .replaceAll(/(?:^|(?<= ))Jp$/g, "JP")
         .replaceAll(/(?:^|(?<= ))Mx$/g, "MX")
+        .replaceAll(/(?:^|(?<= ))Pt$/g, "PT")
         .replaceAll(/(?:^|(?<= ))Ru$/g, "RU")
         .replaceAll(/(?:^|(?<= ))Uk$/g, "UK")
         .replaceAll(/(?:^|(?<= ))Us$/g, "US")
@@ -143,7 +160,8 @@ function optionToLabel(option) {
         .replaceAll(/(?:^|(?<= ))Db(?= |$)/g, "dB")
         .replaceAll(/(?:^|(?<= ))F(?= |$)/g, "Fahrenheit")
         .replaceAll(/(?:^|(?<= ))(\d) G(?= |$)/g, "$1 GHz")
-        .replaceAll(/(?:^|(?<= ))Hpa| H Pa(?= |$)/g, "hPa")
+        .replaceAll(/(?:^|(?<= ))Hpa|H Pa(?= |$)/g, "hPa")
+        .replaceAll(/(?:^|(?<= ))(In Hg|Inhg)(?= |$)/g, "inHg")
         .replaceAll(/(?:^|(?<= ))K(?= |$)/g, "k") // More likely a kilo- abbreviation than Kelvin?
         .replaceAll(/(?:^|(?<= ))Kg(?= |$)/g, "kg")
         .replaceAll(/(?:^|(?<= ))Khz(?= |$)/g, "kHz")
@@ -204,7 +222,8 @@ function optionToLabel(option) {
         .replaceAll(/(?:^|(?<= ))Mem(?= |$)/g, "Memory")
         .replaceAll(/(?:^|(?<= ))Middly(?= |$)/g, "Middle")
         .replaceAll(/(?:^|(?<= ))Mov(?= |$)/g, "Move")
-        .replaceAll(/(?:^|(?<= ))NO(?= |$)/g, "No")
+        .replaceAll(/(?:^|(?<= ))NO(?= )/g, "No")
+        .replaceAll(/(?<= )NO(?=$)/g, "No")
         .replaceAll(/(?:^|(?<= ))No Connec?t(?= |$)/g, "No Connection")
         .replaceAll(/(?:^|(?<= ))No Esponse(?= |$)/g, "No Response")
         .replaceAll(/(?:^|(?<= ))Nomal(?= |$)/g, "Normal")
@@ -256,17 +275,20 @@ function optionToLabel(option) {
         .replaceAll(/(?:^|(?<= ))Ratio (\d+)\.(\d+)(?= |$)/g, "Ratio $1:$2")
         .replaceAll(/(?:^|(?<= ))Remotectl(?= |$)/g, "Remote Control")
         .replaceAll(/(?:^|(?<= ))Tem (?=°)/g, "Temp ")
+        .replaceAll(/(?:^|(?<= ))UP(?= |$)/g, "Up")
     ;
 }
 
 
 function codeToLabel(code) {
     let label = code
-        .replaceAll(/(?:^|(?<= ))C_F|CF(?= |$)/g, "°C/°F")
-        .replaceAll(/(?:^|(?<= ))G_m(?= |$)/g, "g/m")
-        .replaceAll(/(?:^|(?<= ))P_K(?= |$)/g, "P/K")
+        // Some things need early handling to avoid more general rules later
+        .replaceAll(/(?:^|(?<= ))(C_F|CF|c_f|cf)(?=_|$)/g, "°C/°F")
+        .replaceAll(/(?:^|(?<= ))G_m(?=_|$)/g, "g/m")
+        .replaceAll(/(?:^|(?<= ))P_K(?=_|$)/g, "P/K")
+        .replaceAll(/^c_min$/g, "Minimum Charge")
 
-        .replaceAll(/^([A-Z])_(.*)/g, "$2 ($1)") // Move leading capital to the end
+        .replaceAll(/^([A-Za-z])_(.*)/g, "$2 ($1)") // Move leading single letter to the end
         .replaceAll(/_+/g, " ").trim()
         .replaceAll(/\s+/g, " ")
         .replaceAll(/(?<=[^\d ])(?=\d)/g, " ") // Space before digits
@@ -279,9 +301,10 @@ function codeToLabel(code) {
         .replaceAll(/(?<=\w)onoff(?= |$)/g, " On/Off") // Space before "onoff"
         .replaceAll(/(?:^|(?<= ))light(colour|control|loop|mic|mode|pixel|state|status|switch)(?= |$)/g, "Light $1")
 
-        .replaceAll(/(?:^|(?<=\W))(?:[a-z]+|[A-Z]{3,}|ON)(?=\W|$)/g, function (txt) { // Title case
+        // Title case
+        .replaceAll(/(?:^|(?<=\W))(?:[a-z]+|[A-Z]{3,}|ON)(?=\W|$)/g, function (txt) {
                 return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
-            })
+         })
 
         .replaceAll(/(?:^|(?<= ))(onoff|ID|RGB|SIM|SMS|SOS|UV)(?=\w)/g, "$1 ") // Space after these abbreviations
         .replaceAll(/(?<=[a-z])(onoff|ID|RGB|SIM|SMS|SOS|UV)(?= )/g, " $1") // and space before these abbreviations
@@ -324,9 +347,11 @@ function codeToLabel(code) {
         .replaceAll(/(?:^|(?<= ))(?:Ch|Channel)(?= |$)/g, "Channel")
         .replaceAll(/(?:^|(?<= ))Cfg(?= |$)/g, "Configuration")
         .replaceAll(/(?:^|(?<= ))Chg(?= |$)/g, "Charge")
+        .replaceAll(/(?:^|(?<= ))Charge Discharge(?= |$)/g, "Charge/Discharge")
         .replaceAll(/(?:^|(?<= ))Cnt(?= |$)/g, "Count")
         .replaceAll(/(?:^|(?<= ))Claen(?= |$)/g, "Clean")
         .replaceAll(/(?:^|(?<= ))Classicmode(?= |$)/g, "Classic Mode")
+        .replaceAll(/(?:^|(?<= ))Cleartime(?= |$)/g, "Clear Time")
         .replaceAll(/(?:^|(?<= ))Closedoor(?= |$)/g, "Close Door")
         .replaceAll(/(?:^|(?<= ))Clr(?= |$)/g, "Clear")
         .replaceAll(/(?:^|(?<= ))Cmd(?= |$)/g, "Command")
@@ -338,13 +363,16 @@ function codeToLabel(code) {
         .replaceAll(/(?:^|(?<= ))Comp(?:enst)?(?= |$)/g, "Compensation")
         .replaceAll(/(?:^|(?<= ))Comsumption(?= |$)/g, "Consumption")
         .replaceAll(/(?:^|(?<= ))Continu(?= |$)/g, "Continue")
+        .replaceAll(/(?:^|(?<= ))Cp(?= |$)/g, "CP")
         .replaceAll(/(?:^|(?<= ))Ctrl|Contorl|Contrl(?= |$)/g, "Control")
         .replaceAll(/(?:^|(?<= ))Cout(down)?(?= |$)/g, "Count$1")
         .replaceAll(/(?:^|(?<= ))Cpu(?= |$)/g, "CPU")
         .replaceAll(/(?:^|(?<= ))Creat(?= |$)/g, "Create")
+        .replaceAll(/(?:^|(?<= ))Ctime(?= |$)/g, "CTime")
         .replaceAll(/(?:^|(?<= ))(?:Curr?|Curent|Curren)(?= |$)/g, "Current")
         .replaceAll(/(?:^|(?<= ))([CF])value(?= |$)/g, "$1")
         .replaceAll(/(?:^|(?<= ))Cyclt(?= |$)/g, "Cycle")
+        .replaceAll(/(?:^|(?<= ))Day Hour Minute(?= |$)/g, "Day/Hour/Minute")
         .replaceAll(/(?:^|(?<= ))Dc(?= |$)/g, "DC")
         .replaceAll(/(?:^|(?<= ))Delaytime(?= |$)/g, "Delay Time")
         .replaceAll(/(?:^|(?<= ))Deo(?= |$)/g, "Deodorization")
@@ -380,6 +408,7 @@ function codeToLabel(code) {
         .replaceAll(/(?:^|(?<= ))Gradi?c(?= |$)/g, "Gradient")
         .replaceAll(/(?:^|(?<= ))Gsm?c(?= |$)/g, "GSM")
         .replaceAll(/(?:^|(?<= ))Heat Cool(?= |$)/g, "Heat/Cool")
+        .replaceAll(/(?:^|(?<= ))Heattemp(?= |$)/g, "Heat Temperature")
         .replaceAll(/(?:^|(?<= ))Hi(?= |$)/g, "High")
         .replaceAll(/(?:^|(?<= ))Hin(?= |$)/g, "H In")
         .replaceAll(/(?:^|(?<= ))His(?= |$)/g, "History")
@@ -419,6 +448,7 @@ function codeToLabel(code) {
         .replaceAll(/(?:^|(?<= ))Ledlight(?= |$)/g, "LED Light")
         .replaceAll(/(?:^|(?<= ))Lefttime(?= |$)/g, "Left Time")
         .replaceAll(/(?:^|(?<= ))Leftright(?= |$)/g, "Left/Right")
+        .replaceAll(/(?:^|(?<= ))LeveL(?= |$)/g, "Level")
         .replaceAll(/(?:^|(?<= ))Ligth(?= |$)/g, "Light")
         .replaceAll(/(?:^|(?<= ))Lim(?= |$)/g, "Limit")
         .replaceAll(/(?:^|(?<= ))Lowhu(?= |$)/g, "Low Humidity")
@@ -431,6 +461,7 @@ function codeToLabel(code) {
         .replaceAll(/(?:^|(?<= ))Maproominfo(?= |$)/g, "Map Room Info")
         .replaceAll(/(?:^|(?<= ))Mach(?= |$)/g, "Machine")
         .replaceAll(/(?:^|(?<= ))Max(?= |$)/g, "Maximum")
+        .replaceAll(/(?:^|(?<= ))Max Min(?= |$)/g, "Maximum/Minimum")
         .replaceAll(/(?:^|(?<= ))Maxco 2(?= |$)/g, "Maximum CO₂")
         .replaceAll(/(?:^|(?<= ))Maxheattemp(?= |$)/g, "Maximum Heat Temperature")
         .replaceAll(/(?:^|(?<= ))Maxhum(?= |$)/g, "Maximum Humidity")
@@ -439,6 +470,7 @@ function codeToLabel(code) {
         .replaceAll(/(?:^|(?<= ))Micro?(?= |$)/g, "Mic")
         .replaceAll(/(?:^|(?<= ))Minc(?= |$)/g, "Minimum C")
         .replaceAll(/(?:^|(?<= ))Minf(?= |$)/g, "Minimum F")
+        .replaceAll(/(?<=\d )Min(?= |$)/g, "Minute")
         .replaceAll(/(?:^|(?<= ))Mini?(?= |$)/g, "Minimum")
         .replaceAll(/(?:^|(?<= ))Minbright(?= |$)/g, "Minimum Brightness")
         .replaceAll(/(?:^|(?<= ))Minheattemp(?= |$)/g, "Minimum Heat Temperature")
@@ -481,17 +513,18 @@ function codeToLabel(code) {
         .replaceAll(/(?:^|(?<= ))Ota(?= |$)/g, "OTA")
         .replaceAll(/(?:^|(?<= ))Otc(?= |$)/g, "OTC")
         .replaceAll(/(?:^|(?<= ))Outerlimit(?= |$)/g, "Outer Limit")
+        .replaceAll(/(?:^|(?<= ))Ov Uv(?= |$)/g, "Over/Under Voltage")
         .replaceAll(/(?:^|(?<= ))Ov(?= |$)/g, "Over Voltage")
         .replaceAll(/(?:^|(?<= ))Overheattemp(?= |$)/g, "Overheat Temperature")
         .replaceAll(/(?:^|(?<= ))Overtemp(?= |$)/g, "Over Temperature")
-        .replaceAll(/(?:^|(?<= ))Overvol(?= |$)/g, "Over VOltage")
+        .replaceAll(/(?:^|(?<= ))Overvol(?= |$)/g, "Over Voltage")
         .replaceAll(/(?:^|(?<= ))Paly(?= |$)/g, "Play")
         .replaceAll(/(?:^|(?<= ))Param(?:ater)?(?= |$)/g, "Parameter")
         .replaceAll(/(?:^|(?<= ))Pct(?= |$)/g, "Percent")
         .replaceAll(/(?:^|(?<= ))Pir(?= |$)/g, "PIR")
         .replaceAll(/(?:^|(?<= ))Playtrack(?= |$)/g, "Play Track")
         .replaceAll(/(?:^|(?<= ))Pencent(?= |$)/g, "Percent")
-        .replaceAll(/(?:^|(?<= ))Pm (\d+)?(?= |$)/g, "PM$1")
+        .replaceAll(/(?:^|(?<= ))P[mM] (\d+)(?= |$)/g, "PM$1")
         .replaceAll(/(?:^|(?<= ))Pos(?= |$)/g, "Position")
         .replaceAll(/(?:^|(?<= ))Pow?(?= |$)/g, "Power")
         .replaceAll(/(?:^|(?<= ))Powerofftime(?= |$)/g, "Power Off Time")
@@ -516,6 +549,7 @@ function codeToLabel(code) {
         .replaceAll(/(?:^|(?<= ))resetLIfe Span(?= |$)/g, "Reset Lifespan")
         .replaceAll(/(?:^|(?<= ))Rf(?= |$)/g, "RF")
         .replaceAll(/(?:^|(?<= ))Rfstudy(?= |$)/g, "RF Study")
+        .replaceAll(/(?:^|(?<= ))Runtime(?= |$)/g, "Run Time")
         .replaceAll(/(?:^|(?<= ))Pxiels?(?= |$)/g, "Pixels")
         .replaceAll(/(?:^|(?<= ))Rad(?= Temp)/g, "Radiator")
         .replaceAll(/(?:^|(?<= ))Remoter(?= |$)/g, "Remote")
@@ -556,9 +590,12 @@ function codeToLabel(code) {
         .replaceAll(/(?:^|(?<= ))Sensibility(?= |$)/g, "Sensitivity")
         .replaceAll(/(?:^|(?<= ))Sensorstatus(?= |$)/g, "Sensor Status")
         .replaceAll(/(?:^|(?<= ))Selfclean(?= |$)/g, "Self Clean")
+        .replaceAll(/(?:^|(?<= ))Set ?[Dd]n ?[Ll]imit(?= |$)/g, "Set Down Limit")
         .replaceAll(/(?:^|(?<= ))Set(?:temp|TEMP)(?= |$)/g, "Set Temperature")
+        .replaceAll(/(?:^|(?<= ))Setmode(?= |$)/g, "Set Mode")
         .replaceAll(/(?:^|(?<= ))Settemplow(?= |$)/g, "Set Temperature Low")
         .replaceAll(/(?:^|(?<= ))Settempup(?= |$)/g, "Set Temperature Up")
+        .replaceAll(/(?:^|(?<= ))Set ?[Uu]p ?[Ll]imit(?= |$)/g, "Set Up Limit")
         .replaceAll(/(?:^|(?<= ))Sigle(?= |$)/g, "Single")
         .replaceAll(/(?:^|(?<= ))Shotdown(?= |$)/g, "Shutdown")
         .replaceAll(/(?:^|(?<= ))Sku(?= |$)/g, "SKU")
@@ -566,6 +603,7 @@ function codeToLabel(code) {
         .replaceAll(/(?:^|(?<= ))Slowchargeset(?= |$)/g, "Slow Charge Set")
         .replaceAll(/(?:^|(?<= ))Sms(?= |$)/g, "SMS")
         .replaceAll(/(?:^|(?<= ))Snesitivity(?= |$)/g, "Sensitivity")
+        .replaceAll(/(?:^|(?<= ))S[Nn](?= |$)/g, "Serial No.")
         .replaceAll(/(?:^|(?<= ))Sos(?= |$)/g, "SOS")
         .replaceAll(/(?:^|(?<= ))Soud(?= |$)/g, "Sound")
         .replaceAll(/(?:^|(?<= ))Soundmode(?= |$)/g, "Sound Mode")
@@ -586,16 +624,20 @@ function codeToLabel(code) {
         .replaceAll(/(?:^|(?<= ))Syn(?= |$)/g, "Sync")
         .replaceAll(/(?:^|(?<= ))Telphoone(?= |$)/g, "Telephone")
         .replaceAll(/(?:^|(?<= ))Tem(?:erature|p|pe|per)?(?= |$)/g, "Temperature")
+        .replaceAll(/(?:^|(?<= ))Tempcurrent(?= |$)/g, "Temperature")
         .replaceAll(/(?:^|(?<= ))Temperalarm(?= |$)/g, "Temperature Alarm")
         .replaceAll(/(?:^|(?<= ))Temperature In(?= |$)/g, "Temperature Indoor")
         .replaceAll(/(?:^|(?<= ))Temperature Out(?= |$)/g, "Temperature Outdoor")
         .replaceAll(/(?:^|(?<= ))Temperature Outc(?= |$)/g, "Temperature Outdoor C")
         .replaceAll(/(?:^|(?<= ))Temperature Outf(?= |$)/g, "Temperature Outdoor F")
         .replaceAll(/(?:^|(?<= ))Temperatureswitch(?= |$)/g, "Temperature Switch")
-        .replaceAll(/(?:^|(?<= ))Tempset(?= |$)/g, "Set Temperature")
+        .replaceAll(/(?:^|(?<= ))Tempset(?= |$)/g, "Temperature Set")
         .replaceAll(/(?:^|(?<= ))Thr H(?= |$)/g, "Threshold High")
         .replaceAll(/(?:^|(?<= ))Thr L(?= |$)/g, "Threshold Low")
+        .replaceAll(/(?:^|(?<= ))Thresh(?= |$)/g, "Threshold")
         .replaceAll(/(?:^|(?<= ))Thur(?= |$)/g, "Thu")
+        .replaceAll(/(?:^|(?<= ))Th(?= |$)/g, "TH")
+        .replaceAll(/(?:^|(?<= ))Timesync(?= |$)/g, "Time Sync")
         .replaceAll(/(?:^|(?<= ))Time([AB])(Hour|Minute)(?= |$)/g, "Time $1 $2")
         .replaceAll(/(?:^|(?<= ))Timg(?= |$)/g, "Timing")
         .replaceAll(/(?:^|(?<= ))Tls(?= |$)/g, "TLS")
@@ -622,12 +664,20 @@ function codeToLabel(code) {
         .replaceAll(/(?:^|(?<= ))Weightcount(?= |$)/g, "Weight Count")
         .replaceAll(/(?:^|(?<= ))Wi ?[fF]i(?= |$)/g, "WiFi")
         .replaceAll(/(?:^|(?<= ))Windchill(?= |$)/g, "Windows Chill")
-        .replaceAll(/(?:^|(?<= ))Windowsopen[fF]i(?= |$)/g, "Windows Open")
+        .replaceAll(/(?:^|(?<= ))Windowsopen(?= |$)/g, "Windows Open")
+        .replaceAll(/(?:^|(?<= ))Windspeed(?= |$)/g, "Wind Speed")
+        .replaceAll(/(?:^|(?<= ))W[Ii]n ?[Tt]emp(?:erature)?(?= |$)/g, "W In Temperature")
         .replaceAll(/(?:^|(?<= ))Woke(?= |$)/g, "Work")
+        .replaceAll(/(?:^|(?<= ))Workmode(?= |$)/g, "Work Mode")
+        .replaceAll(/(?:^|(?<= ))Workstatus(?= |$)/g, "Work Status")
         .replaceAll(/(?:^|(?<= ))Worktime(?= |$)/g, "Work Time")
+        .replaceAll(/(?:^|(?<= ))Zonealarmlink(?= |$)/g, "Zone Alarm Link")
 
         .replaceAll(/(?:^|(?<= ))Current (\w* )(Humidity|Temperature)(?= |$)/g, "$1$2")
         .replaceAll(/(?:^|(?<= ))(Humidity|Temperature) (?:Current|Value)(?= |$)/g, "$1")
+
+        .replaceAll(/(?:^|(?<= ))Op(?= Set| Threshold| Enable| Reclosing)(?= |$)/g, "Over Power")
+        .replaceAll(/(?:^|(?<= ))UV(?= Set| Threshold| Enable| Status)(?= |$)/g, "Under Voltage")
 
         .replaceAll(/(?<=Temperature(?: Comp| Diff| Floor| Maximum| Minimum| Sensitivity|(?: Set(?:ting)?(?: Quick)?))? )([CF])(?= |$)/g, "°$1") // FIXME: there are some Temperature_[ABC]
 
@@ -775,7 +825,6 @@ function codeToLabel(code) {
     return label;
 }
 
-
 let labels = new Map([
     // These have been seen in remote schemas but do not appear in the local schemas
     // so will not be generated.
@@ -784,6 +833,7 @@ let labels = new Map([
 ]);
 
 let commands = new Map();
+let codes = new Map();
 
 for (product in schemas) {
     for (code in schemas[product]) {
@@ -791,9 +841,10 @@ for (product in schemas) {
         let value = codeToLabel(code);
         if (labels.has(key)) {
             if (value !== labels.get(key)) {
-                process.stderr.write("Conflict for " + key + " labels: \"" + labels.get(key) + "\" and \"" + value + "\"");
+                process.stderr.write("Conflict for " + key + ": \"" + code + "\" => \"" + labels.get(key) + "\" and \"" + codes.get(key) + "\" => \"" + value + "\"\n");
             }
         } else {
+            codes.set(key, code);
             labels.set(key, value);
         }
 
