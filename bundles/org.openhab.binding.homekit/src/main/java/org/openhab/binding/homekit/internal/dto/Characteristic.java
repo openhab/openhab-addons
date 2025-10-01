@@ -675,8 +675,11 @@ public class Characteristic {
          * NOTE: different accessories may have the same characteristicType, but their other
          * properties e.g. min, max, step, unit may be different
          */
-        ChannelTypeUID uid = new ChannelTypeUID(BINDING_ID, characteristicType.getOpenhabType());
-        String typeLabel = CHANNEL_TYPE_LABEL_FMT.formatted(characteristicType.toString());
+        ChannelTypeUID channelTypeUid = new ChannelTypeUID(BINDING_ID,
+                CHANNEL_TYPE_ID_FMT.formatted(characteristicType.getOpenhabType()));
+
+        String channelTypeLabel = CHANNEL_TYPE_LABEL_FMT.formatted(characteristicType.toString());
+
         ChannelType channelType;
         if (isStateChannel) {
             if (itemType == null) {
@@ -690,7 +693,7 @@ public class Characteristic {
                 }
                 return null;
             }
-            StateChannelTypeBuilder builder = ChannelTypeBuilder.state(uid, typeLabel, itemType);
+            StateChannelTypeBuilder builder = ChannelTypeBuilder.state(channelTypeUid, channelTypeLabel, itemType);
             Optional.ofNullable(category).ifPresent(builder::withCategory);
             if (pointTag != null) {
                 if (propertyTag != null) {
@@ -701,7 +704,7 @@ public class Characteristic {
             }
             channelType = builder.build();
         } else {
-            channelType = ChannelTypeBuilder.trigger(uid, typeLabel).build();
+            channelType = ChannelTypeBuilder.trigger(channelTypeUid, channelTypeLabel).build();
         }
 
         // persist the channel _type_
@@ -722,8 +725,8 @@ public class Characteristic {
         Optional.ofNullable(ev).map(b -> b.toString()).ifPresent(s -> properties.put("ev", s));
 
         // return the definition of a specific _instance_ of the channel _type_
-        return new ChannelDefinitionBuilder(characteristicType.getOpenhabType(), uid).withProperties(properties)
-                .withLabel(getChannelInstanceLabel()).build();
+        return new ChannelDefinitionBuilder(characteristicType.getOpenhabType(), channelTypeUid)
+                .withProperties(properties).withLabel(getChannelInstanceLabel()).build();
     }
 
     /*

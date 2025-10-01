@@ -35,9 +35,13 @@ public class HomekitBindingConstants {
     public static final ChannelTypeUID FAKE_PROPERTY_CHANNEL_TYPE_UID = new ChannelTypeUID(BINDING_ID,
             FAKE_PROPERTY_CHANNEL);
 
+    // prefixes for channel-group-type and channel-type UIDs
+    public static final String CHANNEL_GROUP_TYPE_ID_FMT = "channel-group-type-%s";
+    public static final String CHANNEL_TYPE_ID_FMT = "channel-type-%s";
+
     // labels
     public static final String THING_LABEL_FMT = "%s on %s";
-    public static final String GROUP_TYPE_LABEL_FMT = "Channel group type: %s";
+    public static final String CHANNEL_GROUP_TYPE_LABEL_FMT = "Channel group type: %s";
     public static final String CHANNEL_TYPE_LABEL_FMT = "Channel type: %s";
 
     // configuration parameters

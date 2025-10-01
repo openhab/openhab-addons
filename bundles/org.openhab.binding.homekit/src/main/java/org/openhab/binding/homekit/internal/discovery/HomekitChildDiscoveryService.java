@@ -15,10 +15,12 @@ package org.openhab.binding.homekit.internal.discovery;
 import static org.openhab.binding.homekit.internal.HomekitBindingConstants.*;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.homekit.internal.dto.Accessory;
+import org.openhab.binding.homekit.internal.handler.HomekitBridgeHandler;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
@@ -28,7 +30,6 @@ import org.osgi.service.component.annotations.Component;
 
 /**
  * Discovery service component that publishes newly discovered child accessories of a HomeKit bridge accessory.
- * No active scanning is performed; it relies on being informed of new accessories by the bridge handler.
  * Discovered accessories are published with a ThingUID based on their accessory ID (aid) and service ID (iid).
  *
  * @author Andrew Fiddian-Green - Initial Contribution
@@ -37,16 +38,31 @@ import org.osgi.service.component.annotations.Component;
 @Component(service = DiscoveryService.class)
 public class HomekitChildDiscoveryService extends AbstractDiscoveryService {
 
+    private static final int TIMEOUT_SECONDS = 10;
+
+    private final Set<HomekitBridgeHandler> bridgeHandlers = new HashSet<>();
+
     public HomekitChildDiscoveryService() {
-        super(Set.of(THING_TYPE_ACCESSORY), 10, false);
+        super(Set.of(THING_TYPE_ACCESSORY), TIMEOUT_SECONDS);
+    }
+
+    public void addBridgeHandler(HomekitBridgeHandler handler) {
+        bridgeHandlers.add(handler);
+        startScan();
+    }
+
+    public void removeBridgeHandler(HomekitBridgeHandler handler) {
+        bridgeHandlers.remove(handler);
     }
 
     @Override
     protected void startScan() {
-        // no scanning is done; we rely on being informed of new accessories
+        for (HomekitBridgeHandler handler : bridgeHandlers) {
+            discoverChildren(handler.getThing(), handler.getAccessories());
+        }
     }
 
-    public void devicesDiscovered(Thing bridge, Collection<Accessory> accessories) {
+    private void discoverChildren(Thing bridge, Collection<Accessory> accessories) {
         accessories.forEach(accessory -> {
             if (accessory.aid != null && accessory.services != null) {
                 // accessory ID should be unique per bridge

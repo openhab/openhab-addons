@@ -91,13 +91,19 @@ public class HomekitBridgeHandler extends HomekitBaseServerHandler implements Br
     @Override
     protected void accessoriesLoaded() {
         logger.debug("Bridge accessories loaded {}", accessories.size());
-        discoveryService.devicesDiscovered(thing, accessories.values()); // discover child accessories
+        discoveryService.addBridgeHandler(this); // discover child accessories
         createProperties(); // create properties from accessory information
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         // do nothing
+    }
+
+    @Override
+    public void dispose() {
+        discoveryService.removeBridgeHandler(this);
+        super.dispose();
     }
 
     /**

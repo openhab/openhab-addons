@@ -402,10 +402,10 @@ class TestChannelCreation {
 
         // Check that the channel group type and its UID and label are set
         ChannelGroupType channelGroupType = channelGroupTypes.stream()
-                .filter(cgt -> "lightbulb".equals(cgt.getUID().getId())).findFirst().orElse(null);
+                .filter(cgt -> "channel-group-type-lightbulb".equals(cgt.getUID().getId())).findFirst().orElse(null);
         assertNotNull(channelGroupType);
         assertEquals("Channel group type: Light Bulb", channelGroupType.getLabel());
-        assertEquals("lightbulb", channelGroupType.getUID().getId());
+        assertEquals("channel-group-type-lightbulb", channelGroupType.getUID().getId());
 
         // There should be two channel definitions for the Light Bulb service: On and Brightness
         assertEquals(2, channelGroupType.getChannelDefinitions().size());
@@ -414,7 +414,7 @@ class TestChannelCreation {
         ChannelDefinition channelDefinition = channelGroupType.getChannelDefinitions().stream()
                 .filter(cd -> "Brightness".equals(cd.getLabel())).findFirst().orElse(null);
         assertNotNull(channelDefinition);
-        assertEquals("brightness", channelDefinition.getChannelTypeUID().getId());
+        assertEquals("channel-type-brightness", channelDefinition.getChannelTypeUID().getId());
         assertEquals("Brightness", channelDefinition.getLabel());
         assertEquals("%", channelDefinition.getProperties().get("unit"));
         assertEquals("int", channelDefinition.getProperties().get("format"));
@@ -430,7 +430,7 @@ class TestChannelCreation {
         ChannelType channelType = channelTypes.stream().filter(ct -> "Dimmer".equals(ct.getItemType())).findFirst()
                 .orElse(null);
         assertNotNull(channelType);
-        assertEquals("brightness", channelType.getUID().getId());
+        assertEquals("channel-type-brightness", channelType.getUID().getId());
         assertEquals("Channel type: Brightness", channelType.getLabel());
         assertEquals("Dimmer", channelType.getItemType());
         assertEquals("light", channelType.getCategory());

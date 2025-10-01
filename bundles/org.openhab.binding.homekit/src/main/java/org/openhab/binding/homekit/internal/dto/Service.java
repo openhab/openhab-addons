@@ -67,15 +67,19 @@ public class Service {
             return null;
         }
 
-        ChannelGroupTypeUID groupTypeUID = new ChannelGroupTypeUID(BINDING_ID, serviceType.getOpenhabType());
-        String typeLabel = GROUP_TYPE_LABEL_FMT.formatted(serviceType.toString());
-        ChannelGroupType groupType = ChannelGroupTypeBuilder.instance(groupTypeUID, typeLabel) //
+        ChannelGroupTypeUID channelGroupTypeUID = new ChannelGroupTypeUID(BINDING_ID,
+                CHANNEL_GROUP_TYPE_ID_FMT.formatted(serviceType.getOpenhabType()));
+
+        String channelGroupTypeLabel = CHANNEL_GROUP_TYPE_LABEL_FMT.formatted(serviceType.toString());
+
+        ChannelGroupType channelGroupType = ChannelGroupTypeBuilder.instance(channelGroupTypeUID, channelGroupTypeLabel) //
                 .withChannelDefinitions(channelDefinitions) //
                 .build();
 
         // persist the group _type_, and return the definition of a specific _instance_ of that type
-        typeProvider.putChannelGroupType(groupType);
-        return new ChannelGroupDefinition(serviceType.getOpenhabType(), groupTypeUID, getGroupInstanceLabel(), null);
+        typeProvider.putChannelGroupType(channelGroupType);
+        return new ChannelGroupDefinition(serviceType.getOpenhabType(), channelGroupTypeUID,
+                getChannelGroupInstanceLabel(), null);
     }
 
     /*
@@ -83,7 +87,7 @@ public class Service {
      * CharacteristicType.NAME and if present returns that value. Otherwise returns the service
      * type in Title Case..
      */
-    public String getGroupInstanceLabel() {
+    public String getChannelGroupInstanceLabel() {
         if (name != null && !name.isBlank()) {
             return name;
         }

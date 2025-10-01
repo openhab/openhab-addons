@@ -17,6 +17,7 @@ import static org.openhab.binding.homekit.internal.HomekitBindingConstants.*;
 import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 import java.util.Base64;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -298,5 +299,9 @@ public abstract class HomekitBaseServerHandler extends BaseThingHandler {
         Ed25519PublicKeyParameters accessoryKey = this.accessoryLongTermPublicKey;
         property = accessoryKey == null ? null : Base64.getEncoder().encodeToString(accessoryKey.getEncoded());
         thing.setProperty(PROPERTY_ACCESSORY_PUBLIC_KEY, property);
+    }
+
+    public Collection<Accessory> getAccessories() {
+        return accessories.values();
     }
 }
