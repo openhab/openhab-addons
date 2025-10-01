@@ -49,7 +49,9 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.type.ChannelGroupType;
+import org.openhab.core.thing.type.ChannelGroupTypeRegistry;
 import org.openhab.core.thing.type.ChannelType;
+import org.openhab.core.thing.type.ChannelTypeRegistry;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
@@ -75,11 +77,16 @@ public class HomekitDeviceHandler extends HomekitBaseServerHandler {
     private static final int INITIAL_DELAY_SECONDS = 2;
 
     private final Logger logger = LoggerFactory.getLogger(HomekitDeviceHandler.class);
+    private final ChannelTypeRegistry channelTypeRegistry;
+    private final ChannelGroupTypeRegistry channelGroupTypeRegistry;
 
     private @Nullable ScheduledFuture<?> refreshTask;
 
-    public HomekitDeviceHandler(Thing thing, HomekitTypeProvider typeProvider) {
+    public HomekitDeviceHandler(Thing thing, HomekitTypeProvider typeProvider, ChannelTypeRegistry channelTypeRegistry,
+            ChannelGroupTypeRegistry channelGroupTypeRegistry) {
         super(thing, typeProvider);
+        this.channelTypeRegistry = channelTypeRegistry;
+        this.channelGroupTypeRegistry = channelGroupTypeRegistry;
     }
 
     @Override
@@ -277,28 +284,27 @@ public class HomekitDeviceHandler extends HomekitBaseServerHandler {
         List<Channel> channels = new ArrayList<>();
         Map<String, String> properties = new HashMap<>(thing.getProperties()); // keep existing properties
         accessory.buildAndRegisterChannelGroupDefinitions(typeProvider).forEach(groupDef -> {
-            ChannelGroupType groupType = typeProvider.getChannelGroupType(groupDef.getTypeUID(), null);
-            if (groupType != null) {
-                groupType.getChannelDefinitions().forEach(channelDef -> {
-                    if (FAKE_PROPERTY_CHANNEL_TYPE_UID.equals(channelDef.getChannelTypeUID())) {
-                        String name = channelDef.getId();
-                        String value = channelDef.getLabel();
+            ChannelGroupType channelGroupType = channelGroupTypeRegistry.getChannelGroupType(groupDef.getTypeUID());
+            if (channelGroupType != null) {
+                channelGroupType.getChannelDefinitions().forEach(chanDef -> {
+                    if (FAKE_PROPERTY_CHANNEL_TYPE_UID.equals(chanDef.getChannelTypeUID())) {
+                        String name = chanDef.getId();
+                        String value = chanDef.getLabel();
                         if (value != null) {
                             properties.put(name, value);
-                            logger.trace("Discovered property {}={} for thing {}", name, value, thing.getUID());
+                            logger.trace("Built property {}={} for thing {}", name, value, thing.getUID());
                         }
                     } else {
-                        ChannelType channelType = typeProvider.getChannelType(channelDef.getChannelTypeUID(), null);
+                        ChannelType channelType = channelTypeRegistry.getChannelType(chanDef.getChannelTypeUID());
                         if (channelType != null) {
-                            ChannelUID channelUID = new ChannelUID(thing.getUID(), groupDef.getId(),
-                                    channelDef.getId());
+                            ChannelUID channelUID = new ChannelUID(thing.getUID(), groupDef.getId(), chanDef.getId());
                             ChannelBuilder builder = ChannelBuilder.create(channelUID).withType(channelType.getUID())
-                                    .withProperties(channelDef.getProperties());
-                            Optional.ofNullable(channelDef.getLabel()).ifPresent(builder::withLabel);
-                            Optional.ofNullable(channelDef.getDescription()).ifPresent(builder::withDescription);
+                                    .withProperties(chanDef.getProperties());
+                            Optional.ofNullable(chanDef.getLabel()).ifPresent(builder::withLabel);
+                            Optional.ofNullable(chanDef.getDescription()).ifPresent(builder::withDescription);
                             channels.add(builder.build());
-                            logger.trace("Discovered channel {} of type {} for thing {}", channelUID,
-                                    channelType.getUID(), thing.getUID());
+                            logger.trace("Built channel {} of type {} for thing {}", channelUID, channelType.getUID(),
+                                    thing.getUID());
                         }
                     }
                 });
@@ -312,9 +318,6 @@ public class HomekitDeviceHandler extends HomekitBaseServerHandler {
         SemanticTag newTag = accessory.getSemanticEquipmentTag();
 
         if (newLabel != null || newChannels != null || newProperties != null || newTag != null) {
-            logger.debug("Updating thing {} channels, {} properties, label {}, tag {}", channels.size(),
-                    properties.size(), newLabel, newTag);
-
             ThingBuilder builder = editThing().withProperties(properties).withChannels(channels);
             Optional.ofNullable(newLabel).ifPresent(builder::withLabel);
             Optional.ofNullable(newChannels).ifPresent(builder::withChannels);
@@ -322,6 +325,9 @@ public class HomekitDeviceHandler extends HomekitBaseServerHandler {
             Optional.ofNullable(newTag).ifPresent(builder::withSemanticEquipmentTag);
 
             updateThing(builder.build());
+            logger.debug("Updated thing {} channels, {} properties, label {}, tag {}", channels.size(),
+                    properties.size(), newLabel, newTag);
+
             channelsAndPropertiesLoaded();
         }
     }

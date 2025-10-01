@@ -16,9 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.storage.StorageService;
 import org.openhab.core.thing.binding.AbstractStorageBasedTypeProvider;
 import org.openhab.core.thing.type.ChannelGroupTypeProvider;
-import org.openhab.core.thing.type.ChannelGroupTypeRegistry;
 import org.openhab.core.thing.type.ChannelTypeProvider;
-import org.openhab.core.thing.type.ChannelTypeRegistry;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -33,16 +31,8 @@ import org.osgi.service.component.annotations.Reference;
 @Component(service = { ChannelTypeProvider.class, ChannelGroupTypeProvider.class, HomekitTypeProvider.class })
 public class HomekitTypeProvider extends AbstractStorageBasedTypeProvider {
 
-    /**
-     * Creates a HomekitTypeProvider which uses the given {@link StorageService} to persist the types. It forces
-     * that OSGI loads {@link StorageService}, {@link ChannelTypeRegistry}, and {@link ChannelGroupTypeRegistry}
-     * before this component gets loaded. Which ensures this component is active before the handler factory gets
-     * loaded, and therefore before any thing handlers are created and could start creating channels.
-     */
     @Activate
-    public HomekitTypeProvider(@Reference StorageService storageService,
-            @Reference ChannelTypeRegistry channelTypeRegistry,
-            @Reference ChannelGroupTypeRegistry channelGroupTypeRegistry) {
+    public HomekitTypeProvider(@Reference StorageService storageService) {
         super(storageService);
     }
 }

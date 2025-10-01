@@ -30,6 +30,8 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
+import org.openhab.core.thing.type.ChannelGroupTypeRegistry;
+import org.openhab.core.thing.type.ChannelTypeRegistry;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
@@ -49,13 +51,19 @@ public class HomekitHandlerFactory extends BaseThingHandlerFactory {
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_BRIDGE, THING_TYPE_ACCESSORY);
 
     private final HomekitTypeProvider typeProvider;
+    private final ChannelTypeRegistry channelTypeRegistry;
+    private final ChannelGroupTypeRegistry channelGroupTypeRegistry;
 
     private @Nullable ServiceRegistration<?> discoveryServiceRegistration;
     private @Nullable HomekitChildDiscoveryService discoveryService;
 
     @Activate
-    public HomekitHandlerFactory(@Reference HomekitTypeProvider typeProvider) {
+    public HomekitHandlerFactory(@Reference HomekitTypeProvider typeProvider,
+            @Reference ChannelTypeRegistry channelTypeRegistry,
+            @Reference ChannelGroupTypeRegistry channelGroupTypeRegistry) {
         this.typeProvider = typeProvider;
+        this.channelTypeRegistry = channelTypeRegistry;
+        this.channelGroupTypeRegistry = channelGroupTypeRegistry;
     }
 
     @Override
@@ -75,7 +83,7 @@ public class HomekitHandlerFactory extends BaseThingHandlerFactory {
         if (THING_TYPE_BRIDGE.equals(thingTypeUID)) {
             return new HomekitBridgeHandler((Bridge) thing, typeProvider, registerDiscoveryService());
         } else if (THING_TYPE_ACCESSORY.equals(thingTypeUID)) {
-            return new HomekitDeviceHandler(thing, typeProvider);
+            return new HomekitDeviceHandler(thing, typeProvider, channelTypeRegistry, channelGroupTypeRegistry);
         }
         return null;
     }
