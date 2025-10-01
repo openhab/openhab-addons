@@ -19,7 +19,7 @@ If you create an empty file called `test.py`, you will see a log line with infor
 ... [INFO ] [ort.loader.AbstractScriptFileWatcher] - (Re-)Loading script '/openhab/conf/automation/python/test.py'
 ```
 
-To enable debug logging, use the [console logging](https://openhab.org/docs/administration/logging.html) commands to
+Use the [console logging](https://openhab.org/docs/administration/logging.html) commands to
 enable debug logging for the automation functionality:
 
 ```text
@@ -28,7 +28,7 @@ log:set DEBUG org.openhab.automation.pythonscripting
 
 ### Rules
 
-Lets start with a simple rule
+Let’s start with a simple script
 
 ```python
 from openhab import rule
