@@ -278,8 +278,7 @@ public enum AmplifierModel {
     }
 
     public String getZoneName(String zoneId) {
-        final String zoneName = zoneIdMap.get(zoneId);
-        return zoneName != null ? zoneName : "";
+        return zoneIdMap.getOrDefault(zoneId, "");
     }
 
     public String getCmdPrefix() {

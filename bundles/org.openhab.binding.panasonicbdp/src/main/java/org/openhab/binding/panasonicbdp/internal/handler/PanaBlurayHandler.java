@@ -158,7 +158,7 @@ public class PanaBlurayHandler extends BaseThingHandler {
                 // update playerMode if different
                 if (!playerMode.equals(playerStatusArr[3])) {
                     playerMode = playerStatusArr[3];
-                    final String i18nKey = STATUS_MAP.get(playerMode) != null ? STATUS_MAP.get(playerMode) : "unknown";
+                    final String i18nKey = STATUS_MAP.getOrDefault(playerMode, "unknown");
                     updateState(PLAYER_STATUS, new StringType(translationProvider.getText(bundle, "status." + i18nKey,
                             i18nKey, localeProvider.getLocale())));
                     updateState(CONTROL, PLAY_STATUS.equals(playerMode) ? PlayPauseType.PLAY : PlayPauseType.PAUSE);
