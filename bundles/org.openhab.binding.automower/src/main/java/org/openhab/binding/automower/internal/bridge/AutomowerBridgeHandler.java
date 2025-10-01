@@ -30,9 +30,11 @@ import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.eclipse.jetty.websocket.common.WebSocketSession;
+import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.Capabilities;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.Mower;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.MowerListResult;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.StayOutZone;
+import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.StayOutZones;
 import org.openhab.binding.automower.internal.rest.exceptions.AutomowerCommunicationException;
 import org.openhab.binding.automower.internal.things.AutomowerHandler;
 import org.openhab.binding.automower.internal.things.AutomowerStayoutZoneHandler;
@@ -180,8 +182,14 @@ public class AutomowerBridgeHandler extends BaseBridgeHandler {
                 // Update all known AutomowerHandlers with the data from the REST API
                 for (Mower mower : mowers) {
                     String mowerId = mower.getId();
-                    for (StayOutZone stayOutZone : mower.getAttributes().getStayOutZones().getZones()) {
-                        registerMowerIdForZoneId(stayOutZone.getId(), mowerId);
+                    Capabilities capabilities = mower.getAttributes().getCapabilities();
+                    if (capabilities.hasStayOutZones()) {
+                        StayOutZones stayOutZones = mower.getAttributes().getStayOutZones();
+                        if (stayOutZones != null) {
+                            for (StayOutZone stayOutZone : stayOutZones.getZones()) {
+                                registerMowerIdForZoneId(stayOutZone.getId(), mowerId);
+                            }
+                        }
                     }
                     AutomowerHandler automowerHandler = getAutomowerHandlerByMowerId(mowerId);
                     if (automowerHandler != null) {

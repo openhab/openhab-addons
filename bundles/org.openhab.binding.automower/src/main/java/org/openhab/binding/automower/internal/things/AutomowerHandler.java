@@ -1090,7 +1090,7 @@ public class AutomowerHandler extends BaseThingHandler {
             if (stayOutZones != null) {
                 updateState(CHANNEL_STAYOUTZONE_DIRTY, OnOffType.from(stayOutZones.isDirty()));
 
-                List<StayOutZone> stayOutZoneList = mower.getAttributes().getStayOutZones().getZones();
+                List<StayOutZone> stayOutZoneList = stayOutZones.getZones();
                 if (stayOutZoneList != null) {
                     AutomowerBridgeHandler automowerBridgeHandler = getAutomowerBridgeHandler();
                     if (automowerBridgeHandler != null) {
