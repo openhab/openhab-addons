@@ -9,16 +9,11 @@ The following diagram shows the main classes and their relationships within the 
 ```mermaid
 classDiagram
     %% Class inheritance relationships
-    HandlerFactory <|-- BaseThingHandlerFactory
-    ServerHandler <|-- BaseBridgeHandler
-    ServerDiscoveryService <|-- AbstractDiscoveryService
-    ExceptionHandler ..|> ExceptionHandlerType
     AbstractTask <|-- ConnectionTask
     AbstractTask <|-- RegistrationTask
     AbstractTask <|-- UpdateTask
     AbstractTask <|-- UsersListTask
     AbstractTask <|-- ClientScanTask
-    ApiClient <|-- org.openhab.binding.jellyfin.internal.api.generated.ApiClient
     
     %% Class dependencies and usage relationships
     HandlerFactory --> ApiClientFactory : uses
@@ -26,25 +21,19 @@ classDiagram
     ServerHandler --> ExceptionHandler : uses
     ServerHandler --> Configuration : uses
     ServerHandler --> TaskFactory : uses
+    ServerDiscoveryService ..> ServerDiscovery : creates
+    ServerDiscoveryService --> BindingConfiguration : uses
     TaskFactory ..> AbstractTask : creates
-    ServerDiscoveryService --> ServerDiscovery : uses
     ServerDiscovery ..> ServerDiscoveryResult : creates
     ApiClientFactory ..> ApiClient : creates
     HandlerFactory ..> ServerHandler : creates
     
     %% Class definitions with key attributes and methods
     class HandlerFactory {
-        -ApiClientFactory apiClientFactory
-        +supportsThingType(ThingTypeUID) boolean
         +createHandler(Thing) ThingHandler
     }
     
     class ServerHandler {
-        -Logger logger
-        -ExceptionHandler exceptionHandler
-        -ApiClient apiClient
-        -Configuration configuration
-        -Map~String,ScheduledFuture~ scheduledTasks
         +initialize()
         +handleCommand()
         +dispose()
@@ -55,27 +44,25 @@ classDiagram
     }
     
     class ApiClient {
+        <<interface>>
         +authenticateWithToken(String)
         +updateBaseUri(String)
     }
     
     class ServerDiscoveryService {
-        -Logger logger
-        -ServerDiscovery serverDiscovery
         +startScan()
+        -createServerDiscovery() ServerDiscovery
     }
     
     class ServerDiscovery {
         -int port
         -int timeout
+        +ServerDiscovery(int port, int timeout)
         +discoverServers() List
     }
     
     class AbstractTask {
         <<abstract>>
-        -String id
-        -int startupDelay
-        -int interval
         +getId() String
         +getStartupDelay() int
         +getInterval() int
@@ -84,14 +71,9 @@ classDiagram
     
     class TaskFactory {
         <<static>>
-        +createConnectionTask(ApiClient, Consumer, ExceptionHandlerType) ConnectionTask
-        +createRegistrationTask(ApiClient, ExceptionHandlerType) RegistrationTask
-        +createUpdateTask(ApiClient, ExceptionHandlerType) UpdateTask
-    }
-    
-    class ExceptionHandlerType {
-        <<interface>>
-        +handle(Exception)
+        +createConnectionTask(ApiClient, Consumer, ExceptionHandler) ConnectionTask
+        +createRegistrationTask(ApiClient, ExceptionHandler) RegistrationTask
+        +createUpdateTask(ApiClient, ExceptionHandler) UpdateTask
     }
     
     class ExceptionHandler {
@@ -103,13 +85,27 @@ classDiagram
         +int port
         +boolean ssl
         +String path
+        +String token
+        +getServerURI() URI
     }
     
     class BindingConfiguration {
+        <<binding config>>
         +int discoveryPort
         +int discoveryTimeout
         +String discoveryMessage
         +static getConfiguration(ConfigurationAdmin) BindingConfiguration
+    }
+    
+    class ServerDiscoveryResult {
+        +String id
+        +String name
+        +String uri
+        +String version
+    }
+    
+    class ConnectionTask {
+        %% Inherits run() from AbstractTask
     }
 ```
 

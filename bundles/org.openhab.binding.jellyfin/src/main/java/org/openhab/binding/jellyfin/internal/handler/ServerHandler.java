@@ -27,6 +27,7 @@ import org.openhab.binding.jellyfin.internal.api.generated.current.model.SystemI
 import org.openhab.binding.jellyfin.internal.exceptions.ExceptionHandler;
 import org.openhab.binding.jellyfin.internal.handler.tasks.AbstractTask;
 import org.openhab.binding.jellyfin.internal.handler.tasks.TaskFactory;
+import org.openhab.binding.jellyfin.internal.i18n.ResourceHelper;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
@@ -88,17 +89,27 @@ public class ServerHandler extends BaseBridgeHandler {
     private synchronized Runnable initializeHandler() {
         return () -> {
             try {
+                URI serverUri = this.configuration.getServerURI();
+
                 // Initialize discovered server
                 if (thing.getProperties().containsKey(Constants.ServerProperties.SERVER_URI)) {
-                    updateConfiguration(new URI(thing.getProperties().get(Constants.ServerProperties.SERVER_URI)));
-                    thing.getProperties().remove(Constants.ServerProperties.SERVER_URI);
+                    serverUri = new URI(thing.getProperties().get(Constants.ServerProperties.SERVER_URI));
+                    updateConfiguration(serverUri);
+                } else {
+                    // Add the server URI to the properties for non-discovery results
+                    updateThingProperty(Constants.ServerProperties.SERVER_URI, serverUri.toString());
                 }
-                URI serverUri = this.configuration.getServerURI();
+
                 this.apiClient.updateBaseUri(serverUri.toString());
 
                 if (this.configuration.token != null && !this.configuration.token.isEmpty()) {
                     this.apiClient.authenticateWithToken(this.configuration.token);
                     this.startTasks();
+                } else {
+                    ThingStatusInfo statusInfo = new ThingStatusInfo(ThingStatus.OFFLINE,
+                            ThingStatusDetail.CONFIGURATION_ERROR,
+                            ResourceHelper.getResourceString("error.configuration.no-access-token"));
+                    this.getThing().setStatusInfo(statusInfo);
                 }
             } catch (Exception e) {
                 this.logger.error("Error during initialization: {}", e.getMessage(), e);
@@ -136,7 +147,8 @@ public class ServerHandler extends BaseBridgeHandler {
             logger.info("  Local Address: {}", systemInfo.getLocalAddress());
             logger.info("  Version: {}", systemInfo.getVersion());
 
-            this.thing.getProperties().put(Constants.ServerProperties.SERVER_VERSION, systemInfo.getVersion());
+            // Update properties with server version
+            updateThingProperty(Constants.ServerProperties.SERVER_VERSION, systemInfo.getVersion());
 
             logger.info("  Product Name: {}", systemInfo.getProductName());
             logger.info("  Server ID: {}", systemInfo.getId());
@@ -237,5 +249,18 @@ public class ServerHandler extends BaseBridgeHandler {
                 // Don't use exception handler for debug-level issues
             }
         }
+    }
+
+    /**
+     * Helper method to update a single Thing property.
+     * Creates a new properties map with the updated property and calls updateProperties.
+     * 
+     * @param key The property key
+     * @param value The property value
+     */
+    private void updateThingProperty(String key, String value) {
+        Map<String, String> properties = new HashMap<>(thing.getProperties());
+        properties.put(key, value);
+        updateProperties(properties);
     }
 }
