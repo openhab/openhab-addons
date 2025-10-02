@@ -13,6 +13,7 @@
 package org.openhab.binding.jellyfin.internal.handler;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
@@ -26,8 +27,8 @@ import org.openhab.binding.jellyfin.internal.api.ApiClient;
 import org.openhab.binding.jellyfin.internal.api.generated.current.model.SystemInfo;
 import org.openhab.binding.jellyfin.internal.exceptions.ExceptionHandler;
 import org.openhab.binding.jellyfin.internal.handler.tasks.AbstractTask;
+import org.openhab.binding.jellyfin.internal.handler.tasks.ConnectionTask;
 import org.openhab.binding.jellyfin.internal.handler.tasks.TaskFactory;
-import org.openhab.binding.jellyfin.internal.i18n.ResourceHelper;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
@@ -49,12 +50,56 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class ServerHandler extends BaseBridgeHandler {
+
+    /**
+     * Enum representing the possible states of the server handler
+     */
+    public enum ServerState {
+        /**
+         * Initial state when the handler is created
+         */
+        INITIALIZING,
+
+        /**
+         * State for a newly discovered server that needs configuration
+         */
+        DISCOVERED,
+
+        /**
+         * State when server URI is known but no authentication token is available
+         */
+        NEEDS_AUTHENTICATION,
+
+        /**
+         * State when server is fully configured with URI and token
+         */
+        CONFIGURED,
+
+        /**
+         * State when server is connected and online
+         */
+        CONNECTED,
+
+        /**
+         * State when server is in error state
+         */
+        ERROR,
+
+        /**
+         * State when the handler has been disposed
+         */
+        DISPOSED
+    }
+
     private final Logger logger = LoggerFactory.getLogger(ServerHandler.class);
     private final ExceptionHandler exceptionHandler;
     private final ApiClient apiClient;
     private final Configuration configuration;
 
-    private Map<String, @Nullable ScheduledFuture<?>> scheduledTasks = new HashMap<>();
+    private ServerState state = ServerState.INITIALIZING;
+
+    private final Map<String, AbstractTask> tasks = new HashMap<>();
+    private final Map<String, @Nullable ScheduledFuture<?>> scheduledTasks = new HashMap<>();
 
     public ServerHandler(Bridge bridge, ApiClient apiClient) {
         super(bridge);
@@ -62,15 +107,78 @@ public class ServerHandler extends BaseBridgeHandler {
         this.exceptionHandler = new ExceptionHandler();
         this.configuration = this.getConfigAs(Configuration.class);
         this.apiClient = apiClient;
+
+        // Create all tasks in the constructor
+        this.tasks.put(ConnectionTask.TASK_ID, TaskFactory.createConnectionTask(this.apiClient,
+                systemInfo -> this.handleConnection(systemInfo), this.exceptionHandler));
+
+        // Additional tasks can be added here in the future
+    }
+
+    /**
+     * Get the current state of the server handler
+     * 
+     * @return The current state
+     */
+    public ServerState getState() {
+        return state;
+    }
+
+    /**
+     * Set the state of the server handler
+     * 
+     * @param newState The new state
+     */
+    private synchronized void setState(ServerState newState) {
+        ServerState oldState = this.state;
+        this.state = newState;
+        logger.debug("Server state changed: {} -> {}", oldState, newState);
+    }
+
+    /**
+     * Determines the current state based on the available configuration
+     * 
+     * @return The determined state
+     */
+    private ServerState determineState() {
+        // If the current state is DISPOSED, return it immediately
+        if (this.state == ServerState.DISPOSED) {
+            return ServerState.DISPOSED;
+        }
+
+        // Check if we have a discovered server
+        boolean isDiscovered = thing.getProperties().containsKey(Constants.ServerProperties.SERVER_URI);
+
+        // Check if we have authentication token
+        boolean hasToken = (this.configuration.token != null && !this.configuration.token.isEmpty());
+
+        try {
+            URI serverURI = this.configuration.getServerURI();
+            if (isDiscovered && !hasToken) {
+                return ServerState.DISCOVERED;
+            } else if (serverURI != null && !hasToken) {
+                return ServerState.NEEDS_AUTHENTICATION;
+            } else if (serverURI != null && hasToken) {
+                return ServerState.CONFIGURED;
+            }
+        } catch (URISyntaxException e) {
+            logger.warn("Invalid server URI configuration: {}", e.getMessage());
+            this.exceptionHandler.handle(e);
+            return ServerState.ERROR;
+        }
+
+        return ServerState.INITIALIZING;
     }
 
     @Override
     public void initialize() {
         try {
+            setState(ServerState.INITIALIZING);
             scheduler.execute(initializeHandler());
         } catch (Exception e) {
             this.logger.warn("Exception during initialization: {}", e.getMessage());
             this.exceptionHandler.handle(e);
+            setState(ServerState.ERROR);
         }
     }
 
@@ -82,50 +190,87 @@ public class ServerHandler extends BaseBridgeHandler {
 
     @Override
     public void dispose() {
+        // Set state to indicate disposal
+        setState(ServerState.DISPOSED);
         // No additional cleanup required
         super.dispose();
     }
 
+    /**
+     * Processes server initialization with a state-driven approach
+     * 
+     * @return A runnable that handles the initialization process
+     */
     private synchronized Runnable initializeHandler() {
         return () -> {
             try {
+                // Determine the initial state based on configuration
+                ServerState initialState = determineState();
+                setState(initialState);
+
                 URI serverUri = this.configuration.getServerURI();
 
-                // Initialize discovered server
-                if (thing.getProperties().containsKey(Constants.ServerProperties.SERVER_URI)) {
-                    serverUri = new URI(thing.getProperties().get(Constants.ServerProperties.SERVER_URI));
-                    updateConfiguration(serverUri);
-                } else {
-                    // Add the server URI to the properties for non-discovery results
-                    updateThingProperty(Constants.ServerProperties.SERVER_URI, serverUri.toString());
+                // Step 1: Handle server URI based on state
+                switch (initialState) {
+                    case DISCOVERED:
+                        // Initialize discovered server - get URI from properties
+                        serverUri = new URI(thing.getProperties().get(Constants.ServerProperties.SERVER_URI));
+                        updateConfiguration(serverUri);
+                        break;
+                    case INITIALIZING:
+                    case NEEDS_AUTHENTICATION:
+                    case CONFIGURED:
+                        // Add the server URI to the properties for non-discovery results
+                        updateThingProperty(Constants.ServerProperties.SERVER_URI, serverUri.toString());
+                        break;
+                    case ERROR:
+                    case CONNECTED:
+                    case DISPOSED:
+                        // These states are not applicable during initialization
+                        logger.warn("Unexpected state during initialization: {}", initialState);
+                        break;
                 }
 
+                // Step 2: Update API client with server URI for all states
                 this.apiClient.updateBaseUri(serverUri.toString());
 
-                if (this.configuration.token != null && !this.configuration.token.isEmpty()) {
-                    this.apiClient.authenticateWithToken(this.configuration.token);
-                    this.startTasks();
-                } else {
-                    ThingStatusInfo statusInfo = new ThingStatusInfo(ThingStatus.OFFLINE,
-                            ThingStatusDetail.CONFIGURATION_ERROR,
-                            ResourceHelper.getResourceString("error.configuration.no-access-token"));
-                    this.getThing().setStatusInfo(statusInfo);
+                // Step 3: Handle authentication based on state
+                switch (initialState) {
+                    case CONFIGURED:
+                        // Has token, authenticate and start tasks
+                        this.apiClient.authenticateWithToken(this.configuration.token);
+                        this.startTasks();
+                        break;
+                    case DISCOVERED:
+                    case NEEDS_AUTHENTICATION:
+                        // No token, set offline with configuration error
+                        ThingStatusInfo statusInfo = new ThingStatusInfo(ThingStatus.OFFLINE,
+                                ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.configuration.no-access-token");
+                        this.getThing().setStatusInfo(statusInfo);
+                        break;
+                    case INITIALIZING:
+                    case ERROR:
+                    case CONNECTED:
+                    case DISPOSED:
+                        // No specific authentication action for these states
+                        break;
                 }
+
             } catch (Exception e) {
                 this.logger.error("Error during initialization: {}", e.getMessage(), e);
                 this.exceptionHandler.handle(e);
+                setState(ServerState.ERROR);
             }
         };
     }
 
     private synchronized void startTasks() {
-        // Create and start the connection task
-        AbstractTask connectionTask = TaskFactory.createConnectionTask(this.apiClient,
-                systemInfo -> this.handleConnection(systemInfo), this.exceptionHandler);
+        // Start all pre-created tasks
+        for (AbstractTask task : tasks.values()) {
+            startTask(task);
+        }
 
-        startTask(connectionTask);
-
-        // Additional tasks can be started here in the future
+        // Additional task starting logic can be added here in the future
     }
 
     private synchronized void startTask(AbstractTask task) {
@@ -158,12 +303,17 @@ public class ServerHandler extends BaseBridgeHandler {
             // Update configuration with systemInfo data if available
             this.updateConfiguration(systemInfo);
 
+            // Update state to connected
+            setState(ServerState.CONNECTED);
+
+            // Set thing status to online
             ThingStatusInfo statusInfo = new ThingStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, "");
             this.getThing().setStatusInfo(statusInfo);
 
             this.stopTasks();
         } catch (Exception e) {
             logger.warn("Failed to process system information: {}", e.getMessage(), e);
+            setState(ServerState.ERROR);
         }
         return null;
     }
