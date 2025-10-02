@@ -128,9 +128,8 @@ public class HomekitDeviceHandler extends HomekitBaseServerHandler {
      *
      * @return the converted object suitable for HomeKit characteristic
      */
-    private Object convertCommandToObject(Command command, Channel channel) {
+    private JsonPrimitive commandToJsonPrimitive(Command command, Channel channel) {
         Object object = command;
-        Map<String, String> properties = channel.getProperties();
 
         // handle HSBType as not directly supported by HomeKit
         if (object instanceof HSBType) {
@@ -140,7 +139,7 @@ public class HomekitDeviceHandler extends HomekitBaseServerHandler {
 
         // convert QuantityTypes to the characteristic's unit
         if (object instanceof QuantityType<?> quantity) {
-            if (properties.get("unit") instanceof String unit) {
+            if (channel.getProperties().get(PROPERTY_UNIT) instanceof String unit) {
                 try {
                     QuantityType<?> temp = quantity.toUnit(unit);
                     object = temp != null ? temp : quantity;
@@ -152,20 +151,22 @@ public class HomekitDeviceHandler extends HomekitBaseServerHandler {
 
         if (object instanceof Number number) {
             // clamp numbers to characteristic's min/max limits
-            Double min = Optional.ofNullable(properties.get("minValue")).map(s -> Double.valueOf(s)).orElse(null);
+            Double min = Optional.ofNullable(channel.getProperties().get(PROPERTY_MIN_VALUE))
+                    .map(s -> Double.valueOf(s)).orElse(null);
             if (min != null && number.doubleValue() < min.doubleValue()) {
                 object = min;
             }
-            Double max = Optional.ofNullable(properties.get("maxValue")).map(s -> Double.valueOf(s)).orElse(null);
+            Double max = Optional.ofNullable(channel.getProperties().get(PROPERTY_MAX_VALUE))
+                    .map(s -> Double.valueOf(s)).orElse(null);
             if (max != null && number.doubleValue() > max.doubleValue()) {
                 object = max;
             }
 
             // comply with characteristic's data format
-            String format = properties.get("format");
+            String format = channel.getProperties().get(PROPERTY_FORMAT);
             if (format != null) {
                 try {
-                    object = switch (DataFormatType.valueOf(format)) {
+                    object = switch (DataFormatType.from(format)) {
                         case UINT8, UINT16, UINT32, UINT64, INT -> Integer.valueOf(number.intValue());
                         case FLOAT -> Float.valueOf(number.floatValue());
                         case STRING -> String.valueOf(number);
@@ -173,7 +174,7 @@ public class HomekitDeviceHandler extends HomekitBaseServerHandler {
                         default -> object;
                     };
                 } catch (IllegalArgumentException e) {
-                    logger.warn("Unexpected format {} for channel {}", format, channel.getUID());
+                    logger.warn("Unexpected format {} for channel {}", format, channel.getUID(), e);
                 }
             }
         }
@@ -193,7 +194,8 @@ public class HomekitDeviceHandler extends HomekitBaseServerHandler {
             object = dateTime.toFullString();
         }
 
-        return object;
+        return object instanceof Number num ? new JsonPrimitive(num)
+                : object instanceof Boolean bool ? new JsonPrimitive(bool) : new JsonPrimitive(object.toString());
     }
 
     /**
@@ -242,8 +244,8 @@ public class HomekitDeviceHandler extends HomekitBaseServerHandler {
                         int index = acceptedItemType.indexOf(":");
                         if (index > 0) {
                             String targetDimension = acceptedItemType.substring(index + 1);
-                            Unit<?> sourceUnit = UnitUtils
-                                    .parseUnit(Optional.ofNullable(channel.getProperties().get("unit")).orElse(null));
+                            Unit<?> sourceUnit = UnitUtils.parseUnit(
+                                    Optional.ofNullable(channel.getProperties().get(PROPERTY_UNIT)).orElse(null));
                             if (sourceUnit != null && targetDimension.equals(UnitUtils.getDimensionName(sourceUnit))) {
                                 yield QuantityType.valueOf(value.getAsNumber().doubleValue(), sourceUnit);
                             }
@@ -347,22 +349,36 @@ public class HomekitDeviceHandler extends HomekitBaseServerHandler {
             logger.warn("No writer service available to handle command for channel: {}", channelUID);
             return;
         }
-        Object object = null;
         try {
             Integer aid = getAccessoryId();
-            if (aid != null) {
-                object = convertCommandToObject(command, channel);
-                writer.writeCharacteristic(aid.toString(), channelUID.getId(), object);
+            String iid = channel.getProperties().get(PROPERTY_IID);
+            if (aid != null && iid != null) {
+                Service service = new Service();
+                Characteristic characteristic = new Characteristic();
+                characteristic.aid = aid;
+                characteristic.iid = Integer.parseInt(iid);
+                characteristic.value = commandToJsonPrimitive(command, channel);
+                service.characteristics = List.of(characteristic);
+                writer.writeCharacteristic(GSON.toJson(service));
             }
         } catch (Exception e) {
-            logger.warn("Failed to send command '{}' as object '{}' to accessory for '{}'", command, object, channelUID,
-                    e);
+            logger.warn("Failed to send command '{}' to '{}'", command, channelUID, e);
         }
     }
 
     @Override
     public void initialize() {
         super.initialize();
+    }
+
+    @Override
+    public void handleRemoval() {
+        ScheduledFuture<?> task = refreshTask;
+        if (task != null) {
+            task.cancel(true);
+        }
+        refreshTask = null;
+        super.handleRemoval();
     }
 
     @Override
@@ -386,7 +402,7 @@ public class HomekitDeviceHandler extends HomekitBaseServerHandler {
                 Integer aid = getAccessoryId();
                 List<String> queries = new ArrayList<>();
                 thing.getChannels().stream().forEach(c -> {
-                    String iid = c.getProperties().get("iid");
+                    String iid = c.getProperties().get(PROPERTY_IID);
                     if (iid != null) {
                         queries.add("%s.%s".formatted(aid, iid));
                     }
@@ -398,7 +414,7 @@ public class HomekitDeviceHandler extends HomekitBaseServerHandler {
                 Service service = GSON.fromJson(jsonResponse, Service.class);
                 if (service != null && service.characteristics instanceof List<Characteristic> characteristics) {
                     for (Channel channel : thing.getChannels()) {
-                        String iid = channel.getProperties().get("iid");
+                        String iid = channel.getProperties().get(PROPERTY_IID);
                         if (iid == null) {
                             continue;
                         }

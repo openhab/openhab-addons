@@ -59,6 +59,7 @@ public class Characteristic {
     public @NonNullByDefault({}) JsonElement value; // e.g. true, 23, "Some String"
     public @NonNullByDefault({}) String description;
     public @NonNullByDefault({}) Boolean ev; // e.g. true
+    public @NonNullByDefault({}) Integer aid; // e.g. 10
 
     /**
      * Builds a ChannelType and a ChannelDefinition based on the characteristic properties.
@@ -715,14 +716,14 @@ public class Characteristic {
          * through properties instead e.g. minValue, maxValue, minStep, format, unit, perms, ev
          */
         Map<String, String> properties = new HashMap<>();
-        Optional.ofNullable(iid).map(v -> v.toString()).ifPresent(s -> properties.put("iid", s));
-        Optional.ofNullable(minValue).map(v -> v.toString()).ifPresent(s -> properties.put("minValue", s));
-        Optional.ofNullable(maxValue).map(v -> v.toString()).ifPresent(s -> properties.put("maxValue", s));
-        Optional.ofNullable(minStep).map(v -> v.toString()).ifPresent(s -> properties.put("minStep", s));
-        Optional.ofNullable(format).ifPresent(s -> properties.put("format", s));
-        Optional.ofNullable(uom).ifPresent(s -> properties.put("unit", s));
-        Optional.ofNullable(perms).map(l -> String.join(",", l)).ifPresent(s -> properties.put("perms", s));
-        Optional.ofNullable(ev).map(b -> b.toString()).ifPresent(s -> properties.put("ev", s));
+        Optional.ofNullable(iid).map(v -> v.toString()).ifPresent(s -> properties.put(PROPERTY_IID, s));
+        Optional.ofNullable(minValue).map(v -> v.toString()).ifPresent(s -> properties.put(PROPERTY_MIN_VALUE, s));
+        Optional.ofNullable(maxValue).map(v -> v.toString()).ifPresent(s -> properties.put(PROPERTY_MAX_VALUE, s));
+        Optional.ofNullable(minStep).map(v -> v.toString()).ifPresent(s -> properties.put(PROPERTY_MIN_STEP, s));
+        Optional.ofNullable(format).ifPresent(s -> properties.put(PROPERTY_FORMAT, s));
+        Optional.ofNullable(uom).ifPresent(s -> properties.put(PROPERTY_UNIT, s));
+        Optional.ofNullable(perms).map(l -> String.join(",", l)).ifPresent(s -> properties.put(PROPERTY_PERMS, s));
+        Optional.ofNullable(ev).map(b -> b.toString()).ifPresent(s -> properties.put(PROPERTY_EV, s));
 
         // return the definition of a specific _instance_ of the channel _type_
         return new ChannelDefinitionBuilder(characteristicType.getOpenhabType(), channelTypeUid)

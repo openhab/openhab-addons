@@ -28,8 +28,6 @@ import org.openhab.binding.homekit.internal.transport.IpTransport;
 @NonNullByDefault
 public class CharacteristicReadWriteService {
 
-    private static final String JSON_TEMPLATE = "{\"%s\":[{\"aid\":%s,\"iid\":%s,\"value\":%s}]}";
-
     private final IpTransport ipTransport;
 
     public CharacteristicReadWriteService(IpTransport ipTransport) {
@@ -52,23 +50,10 @@ public class CharacteristicReadWriteService {
     /**
      * Writes a characteristic to the accessory.
      *
-     * @param aid Accessory ID
-     * @param iid Instance ID
-     * @param value Value to write (String, Number, Boolean)
+     * @param json the JSON string to write.
      * @throws Exception on communication or encryption errors
      */
-    public void writeCharacteristic(String aid, String iid, Object value) throws Exception {
-        String json = JSON_TEMPLATE.formatted(ENDPOINT_CHARACTERISTICS, aid, iid, formatValue(value));
-        ipTransport.put(ENDPOINT_CHARACTERISTICS, CONTENT_TYPE_HAP, json.getBytes());
-    }
-
-    /*
-     * Formats the value for JSON. Strings are quoted, numbers and booleans are not.
-     */
-    private String formatValue(Object value) {
-        if (value instanceof Boolean || value instanceof Number) {
-            return value.toString();
-        }
-        return "\"" + value.toString() + "\"";
+    public void writeCharacteristic(String json) throws Exception {
+        ipTransport.put(ENDPOINT_CHARACTERISTICS, CONTENT_TYPE_HAP, json.getBytes(StandardCharsets.UTF_8));
     }
 }

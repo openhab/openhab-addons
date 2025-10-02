@@ -64,9 +64,8 @@ public class HomekitChildDiscoveryService extends AbstractDiscoveryService {
 
     private void discoverChildren(Thing bridge, Collection<Accessory> accessories) {
         accessories.forEach(accessory -> {
-            if (accessory.aid != null && accessory.services != null) {
-                // accessory ID should be unique per bridge
-                ThingUID uid = new ThingUID(THING_TYPE_ACCESSORY, bridge.getUID(), accessory.aid.toString());
+            if (accessory.aid instanceof Integer aid && aid != 1 && accessory.services != null) {
+                ThingUID uid = new ThingUID(THING_TYPE_ACCESSORY, bridge.getUID(), aid.toString());
                 thingDiscovered(DiscoveryResultBuilder.create(uid) //
                         .withBridge(bridge.getUID()) //
                         .withLabel(THING_LABEL_FMT.formatted(accessory.getAccessoryInstanceLabel(), bridge.getLabel())) //

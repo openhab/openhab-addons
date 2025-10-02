@@ -89,13 +89,9 @@ public class HomekitMdnsDiscoveryParticipant implements MDNSDiscoveryParticipant
                         .withProperty(CONFIG_HOST, host) //
                         .withProperty(Thing.PROPERTY_MAC_ADDRESS, mac) //
                         .withProperty(PROPERTY_ACCESSORY_CATEGORY, cat.toString()) //
+                        .withProperty(PROPERTY_ACCESSORY_UID, new ThingUID(THING_TYPE_ACCESSORY, "1").toString()) //
                         .withRepresentationProperty(Thing.PROPERTY_MAC_ADDRESS);
 
-                if (AccessoryCategory.BRIDGE == cat) {
-                    // setting to '1' means force the first (i.e. only) accessory
-                    ThingUID accessoryUid = new ThingUID(THING_TYPE_ACCESSORY, "1");
-                    builder.withProperty(PROPERTY_ACCESSORY_UID, accessoryUid.toString());
-                }
                 String model = properties.get("md");
                 if (model != null) {
                     builder.withProperty(Thing.PROPERTY_MODEL_ID, model);

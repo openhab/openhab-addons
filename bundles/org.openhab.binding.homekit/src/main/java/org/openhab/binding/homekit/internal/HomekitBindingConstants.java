@@ -49,12 +49,22 @@ public class HomekitBindingConstants {
     public static final String CONFIG_PAIRING_CODE = "pairingCode";
     public static final String CONFIG_REFRESH_INTERVAL = "refreshInterval";
 
-    // properties
+    // thing properties
     public static final String PROPERTY_ACCESSORY_UID = "accessoryUID";
     public static final String PROPERTY_PROTOCOL_VERSION = "protocolVersion";
     public static final String PROPERTY_ACCESSORY_CATEGORY = "accessoryCategory";
     public static final String PROPERTY_CONTROLLER_PRIVATE_KEY = "controllerSecretKey";
     public static final String PROPERTY_ACCESSORY_PUBLIC_KEY = "accessoryPublicKey";
+
+    // channel properties
+    public static final String PROPERTY_IID = "iid";
+    public static final String PROPERTY_MIN_VALUE = "minValue";
+    public static final String PROPERTY_MAX_VALUE = "maxValue";
+    public static final String PROPERTY_MIN_STEP = "minStep";
+    public static final String PROPERTY_FORMAT = "format";
+    public static final String PROPERTY_UNIT = "unit";
+    public static final String PROPERTY_PERMS = "perms";
+    public static final String PROPERTY_EV = "ev";
 
     // HomeKit HTTP URI endpoints and content types
     public static final String ENDPOINT_ACCESSORIES = "/accessories";
