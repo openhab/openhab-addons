@@ -79,7 +79,6 @@ public class TuyaSchemaDB {
 
                 if (listDps != null) {
                     put(key1, listDps);
-                    // persistent.remove(key2);
                 }
 
                 result = cache.get(key1);
