@@ -36,9 +36,14 @@ public class TuyaBindingConstants {
 
     public static final String CONFIG_LOCAL_KEY = "localKey";
     public static final String CONFIG_DEVICE_ID = "deviceId";
+    public static final String CONFIG_DP = "dp";
+    public static final String CONFIG_DP2 = "dp2";
     public static final String CONFIG_PRODUCT_ID = "productId";
     public static final String CONFIG_IP = "ip";
+    public static final String CONFIG_MIN = "min";
+    public static final String CONFIG_MAX = "max";
     public static final String CONFIG_PROTOCOL = "protocol";
+    public static final String CONFIG_RANGE = "range";
 
     public static final ChannelTypeUID CHANNEL_TYPE_UID_NUMBER = new ChannelTypeUID(BINDING_ID, "number");
     public static final ChannelTypeUID CHANNEL_TYPE_UID_IR_CODE = new ChannelTypeUID(BINDING_ID, "ir-code");

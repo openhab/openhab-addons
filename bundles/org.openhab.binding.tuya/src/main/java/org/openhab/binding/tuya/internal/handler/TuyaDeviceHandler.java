@@ -15,8 +15,14 @@ package org.openhab.binding.tuya.internal.handler;
 import static org.openhab.binding.tuya.internal.TuyaBindingConstants.BINDING_ID;
 import static org.openhab.binding.tuya.internal.TuyaBindingConstants.CHANNEL_TYPE_UID_IR_CODE;
 import static org.openhab.binding.tuya.internal.TuyaBindingConstants.CHANNEL_TYPE_UID_NUMBER;
+import static org.openhab.binding.tuya.internal.TuyaBindingConstants.CONFIG_DP;
+import static org.openhab.binding.tuya.internal.TuyaBindingConstants.CONFIG_DP2;
 import static org.openhab.binding.tuya.internal.TuyaBindingConstants.CONFIG_IP;
+import static org.openhab.binding.tuya.internal.TuyaBindingConstants.CONFIG_MAX;
+import static org.openhab.binding.tuya.internal.TuyaBindingConstants.CONFIG_MIN;
+import static org.openhab.binding.tuya.internal.TuyaBindingConstants.CONFIG_PRODUCT_ID;
 import static org.openhab.binding.tuya.internal.TuyaBindingConstants.CONFIG_PROTOCOL;
+import static org.openhab.binding.tuya.internal.TuyaBindingConstants.CONFIG_RANGE;
 import static org.openhab.binding.tuya.internal.TuyaBindingConstants.DIMMER_CHANNEL_CODES;
 import static org.openhab.core.library.CoreItemFactory.COLOR;
 import static org.openhab.core.library.CoreItemFactory.DIMMER;
@@ -126,9 +132,8 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
             TuyaDynamicStateDescriptionProvider dynamicStateDescriptionProvider, EventLoopGroup eventLoopGroup,
             UdpDiscoveryListener udpDiscoveryListener) {
         super(thing);
-        this.schemaDps = Objects.requireNonNullElse(
-                TuyaSchemaDB.getOrConvert((String) thing.getConfiguration().get("productId"), thing.getUID().getId()),
-                Map.of());
+        this.schemaDps = Objects.requireNonNullElse(TuyaSchemaDB.getOrConvert(
+                (String) thing.getConfiguration().get(CONFIG_PRODUCT_ID), thing.getUID().getId()), Map.of());
         this.gson = gson;
         this.udpDiscoveryListener = udpDiscoveryListener;
         this.eventLoopGroup = eventLoopGroup;
@@ -624,28 +629,28 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
             ChannelUID channelUID = new ChannelUID(thingUID, channelId);
 
             Map<@Nullable String, @Nullable Object> configuration = new HashMap<>();
-            configuration.put("dp", schemaDp.id);
+            configuration.put(CONFIG_DP, schemaDp.id);
 
             if (DIMMER_CHANNEL_CODES.contains(channelId)) {
-                configuration.put("min", schemaDp.min);
-                configuration.put("max", schemaDp.max);
+                configuration.put(CONFIG_MIN, schemaDp.min);
+                configuration.put(CONFIG_MAX, schemaDp.max);
             } else if ("enum".equals(schemaDp.type)) {
                 List<String> range = Objects.requireNonNullElse(schemaDp.range, List.of());
-                configuration.put("range", String.join(",", range));
+                configuration.put(CONFIG_RANGE, String.join(",", range));
             } else if ("value".equals(schemaDp.type)) {
                 if (schemaDp.scale > 0) {
                     Double d = schemaDp.min;
                     if (d != null) {
-                        configuration.put("min", new BigDecimal(d).movePointLeft(schemaDp.scale));
+                        configuration.put(CONFIG_MIN, new BigDecimal(d).movePointLeft(schemaDp.scale));
                     }
 
                     d = schemaDp.max;
                     if (d != null) {
-                        configuration.put("max", new BigDecimal(d).movePointLeft(schemaDp.scale));
+                        configuration.put(CONFIG_MAX, new BigDecimal(d).movePointLeft(schemaDp.scale));
                     }
                 } else {
-                    configuration.put("min", schemaDp.min);
-                    configuration.put("max", schemaDp.max);
+                    configuration.put(CONFIG_MIN, schemaDp.min);
+                    configuration.put(CONFIG_MAX, schemaDp.max);
                 }
             }
 
@@ -667,11 +672,11 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
                 boolean remove = false;
 
                 if (colourChannel != null) {
-                    colourChannel.getConfiguration().put("dp2", config.dp);
+                    colourChannel.getConfiguration().put(CONFIG_DP2, config.dp);
                     remove = true;
                 }
                 if (brightChannel != null) {
-                    brightChannel.getConfiguration().put("dp2", config.dp);
+                    brightChannel.getConfiguration().put(CONFIG_DP2, config.dp);
                     remove = true;
                 }
 
