@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.foobot.internal.json;
+package org.openhab.binding.foobot.internal.dto;
 
 /**
  * The {@link FoobotDevice} is the Java class used to map the JSON response to the foobot.io request.
