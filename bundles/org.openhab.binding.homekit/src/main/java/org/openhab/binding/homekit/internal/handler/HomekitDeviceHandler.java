@@ -31,7 +31,7 @@ import org.openhab.binding.homekit.internal.dto.Accessory;
 import org.openhab.binding.homekit.internal.dto.Characteristic;
 import org.openhab.binding.homekit.internal.dto.Service;
 import org.openhab.binding.homekit.internal.enums.DataFormatType;
-import org.openhab.binding.homekit.internal.hap_services.CharacteristicReadWriteService;
+import org.openhab.binding.homekit.internal.hap_services.CharacteristicReadWriteClient;
 import org.openhab.binding.homekit.internal.persistence.HomekitTypeProvider;
 import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.DateTimeType;
@@ -344,7 +344,7 @@ public class HomekitDeviceHandler extends HomekitBaseServerHandler {
         if (command == RefreshType.REFRESH) {
             return;
         }
-        CharacteristicReadWriteService writer = this.rwService;
+        CharacteristicReadWriteClient writer = this.rwService;
         if (writer == null) {
             logger.warn("No writer service available to handle command for channel: {}", channelUID);
             return;
@@ -396,7 +396,7 @@ public class HomekitDeviceHandler extends HomekitBaseServerHandler {
      * This method is called periodically by a scheduled executor.
      */
     private void refresh() {
-        CharacteristicReadWriteService rwService = this.rwService;
+        CharacteristicReadWriteClient rwService = this.rwService;
         if (rwService != null) {
             try {
                 Integer aid = getAccessoryId();

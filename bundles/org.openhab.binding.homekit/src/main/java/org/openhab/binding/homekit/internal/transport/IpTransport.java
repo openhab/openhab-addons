@@ -172,7 +172,7 @@ public class IpTransport implements AutoCloseable {
             headers.put(name, value);
         }
 
-        if (status != 200) {
+        if (status >= 300) {
             throw new IOException("HTTP " + status);
         }
 

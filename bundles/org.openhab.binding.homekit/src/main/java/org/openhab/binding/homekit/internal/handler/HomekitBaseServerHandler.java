@@ -31,7 +31,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homekit.internal.dto.Accessories;
 import org.openhab.binding.homekit.internal.dto.Accessory;
-import org.openhab.binding.homekit.internal.hap_services.CharacteristicReadWriteService;
+import org.openhab.binding.homekit.internal.hap_services.CharacteristicReadWriteClient;
 import org.openhab.binding.homekit.internal.hap_services.PairRemoveClient;
 import org.openhab.binding.homekit.internal.hap_services.PairSetupClient;
 import org.openhab.binding.homekit.internal.hap_services.PairVerifyClient;
@@ -69,7 +69,7 @@ public abstract class HomekitBaseServerHandler extends BaseThingHandler {
 
     protected boolean isChildAccessory = false;
 
-    protected @NonNullByDefault({}) CharacteristicReadWriteService rwService;
+    protected @NonNullByDefault({}) CharacteristicReadWriteClient rwService;
     protected @NonNullByDefault({}) String pairingCode;
     protected @NonNullByDefault({}) Integer accessoryId;
     protected @NonNullByDefault({}) IpTransport ipTransport;
@@ -224,7 +224,7 @@ public abstract class HomekitBaseServerHandler extends BaseThingHandler {
                         controllerLongTermSecretKey, accessoryLongTermPublicKey);
 
                 ipTransport.setSessionKeys(client.verify());
-                rwService = new CharacteristicReadWriteService(ipTransport);
+                rwService = new CharacteristicReadWriteClient(ipTransport);
 
                 logger.debug("Restored pairing was verified for {}", controllerPairingId);
                 fetchAccessories();
@@ -258,7 +258,7 @@ public abstract class HomekitBaseServerHandler extends BaseThingHandler {
                     controllerLongTermSecretKey, accessoryLongTermPublicKey);
 
             ipTransport.setSessionKeys(pairVerifyClient.verify());
-            rwService = new CharacteristicReadWriteService(ipTransport);
+            rwService = new CharacteristicReadWriteClient(ipTransport);
 
             this.controllerLongTermSecretKey = controllerLongTermSecretKey;
 

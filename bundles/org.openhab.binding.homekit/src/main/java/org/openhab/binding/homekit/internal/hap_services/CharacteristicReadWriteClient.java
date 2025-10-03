@@ -26,11 +26,11 @@ import org.openhab.binding.homekit.internal.transport.IpTransport;
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-public class CharacteristicReadWriteService {
+public class CharacteristicReadWriteClient {
 
     private final IpTransport ipTransport;
 
-    public CharacteristicReadWriteService(IpTransport ipTransport) {
+    public CharacteristicReadWriteClient(IpTransport ipTransport) {
         this.ipTransport = ipTransport;
     }
 
