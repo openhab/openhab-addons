@@ -70,6 +70,23 @@
 				<advanced>true</advanced>
 			</parameter>
 
+			<parameter name="useArpPing" type="boolean" required="true">
+				<label>Use ARP Ping</label>
+				<default>true</default>
+				<description>Set to true if the presence detection is allowed to use arp ping. This can speed up presence detection,
+					but may lead to inaccurate ping latency measurements. Switch off if you want to use this for ping latency
+					monitoring.</description>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="useIcmpPing" type="boolean" required="true">
+				<label>Use ICMP Ping</label>
+				<default>true</default>
+				<description>Set to true if the presence detection is allowed to use icmp ping. If you are monitoring network
+					latency using arping, you should switch this off to prevent mixing results with arp ping results.</description>
+				<advanced>true</advanced>
+			</parameter>
+
 		</config-description>
 	</thing-type>
 

@@ -33,6 +33,7 @@ import org.openhab.binding.network.internal.NetworkBindingConstants;
 import org.openhab.binding.network.internal.PresenceDetectionValue;
 import org.openhab.core.config.discovery.DiscoveryListener;
 import org.openhab.core.config.discovery.DiscoveryResult;
+import org.osgi.service.cm.ConfigurationAdmin;
 
 /**
  * Tests cases for {@see PresenceDetectionValue}
@@ -57,8 +58,9 @@ public class DiscoveryTest {
     }
 
     @Test
-    public void pingDeviceDetected() {
-        NetworkDiscoveryService d = new NetworkDiscoveryService();
+    public void pingDeviceDetected() throws InterruptedException {
+        ConfigurationAdmin configAdmin = mock(ConfigurationAdmin.class);
+        NetworkDiscoveryService d = new NetworkDiscoveryService(configAdmin);
         d.addDiscoveryListener(listener);
 
         ArgumentCaptor<DiscoveryResult> result = ArgumentCaptor.forClass(DiscoveryResult.class);
@@ -67,6 +69,7 @@ public class DiscoveryTest {
         when(value.isPingReachable()).thenReturn(true);
         when(value.isTcpServiceReachable()).thenReturn(false);
         d.partialDetectionResult(value);
+        Thread.sleep(200L);
         verify(listener).thingDiscovered(any(), result.capture());
         DiscoveryResult dresult = result.getValue();
         assertThat(dresult.getThingUID(), is(NetworkDiscoveryService.createPingUID(ip)));
@@ -74,8 +77,9 @@ public class DiscoveryTest {
     }
 
     @Test
-    public void tcpDeviceDetected() {
-        NetworkDiscoveryService d = new NetworkDiscoveryService();
+    public void tcpDeviceDetected() throws InterruptedException {
+        ConfigurationAdmin configAdmin = mock(ConfigurationAdmin.class);
+        NetworkDiscoveryService d = new NetworkDiscoveryService(configAdmin);
         d.addDiscoveryListener(listener);
 
         ArgumentCaptor<DiscoveryResult> result = ArgumentCaptor.forClass(DiscoveryResult.class);
@@ -85,6 +89,7 @@ public class DiscoveryTest {
         when(value.isTcpServiceReachable()).thenReturn(true);
         when(value.getReachableTcpPorts()).thenReturn(List.of(1010));
         d.partialDetectionResult(value);
+        Thread.sleep(200L);
         verify(listener).thingDiscovered(any(), result.capture());
         DiscoveryResult dresult = result.getValue();
         assertThat(dresult.getThingUID(), is(NetworkDiscoveryService.createServiceUID(ip, 1010)));

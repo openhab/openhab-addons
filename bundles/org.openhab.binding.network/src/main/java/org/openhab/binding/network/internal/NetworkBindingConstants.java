@@ -28,6 +28,7 @@ import org.openhab.core.thing.ThingTypeUID;
 public class NetworkBindingConstants {
 
     public static final String BINDING_ID = "network";
+    public static final String BINDING_CONFIGURATION_PID = "binding.network";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID BACKWARDS_COMPATIBLE_DEVICE = new ThingTypeUID(BINDING_ID, "device");
