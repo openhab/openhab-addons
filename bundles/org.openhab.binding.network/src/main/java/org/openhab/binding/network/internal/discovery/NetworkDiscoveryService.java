@@ -80,6 +80,9 @@ public class NetworkDiscoveryService extends AbstractDiscoveryService implements
 
     /* All access must be guarded by "this" */
     private @Nullable ExecutorService executorService;
+
+    /* All access must be guarded by "this" */
+    private @Nullable ExecutorService resolver;
     private final NetworkUtils networkUtils = new NetworkUtils();
     private final ConfigurationAdmin admin;
 
@@ -99,6 +102,10 @@ public class NetworkDiscoveryService extends AbstractDiscoveryService implements
             if (executorService != null) {
                 executorService.shutdownNow();
                 executorService = null;
+            }
+            if (resolver != null) {
+                resolver.shutdownNow();
+                resolver = null;
             }
         }
         super.deactivate();
@@ -140,6 +147,13 @@ public class NetworkDiscoveryService extends AbstractDiscoveryService implements
         }
     }
 
+    private ExecutorService createDiscoveryResolver() {
+        AtomicInteger count = new AtomicInteger(1);
+        return Executors.newCachedThreadPool(r -> {
+            return new Thread(r, "OH-binding-network-discoveryResolver-" + count.getAndIncrement());
+        });
+    }
+
     /**
      * Starts the DiscoveryThread for each IP on each interface on the network
      */
@@ -147,13 +161,18 @@ public class NetworkDiscoveryService extends AbstractDiscoveryService implements
     protected void startScan() {
         NetworkBindingConfiguration configuration = getConfig();
         final ExecutorService service;
+        final ExecutorService resolver;
         synchronized (this) {
             if (executorService == null) {
                 executorService = createDiscoveryExecutor(configuration);
             }
             service = executorService;
+            if (this.resolver == null) {
+                this.resolver = createDiscoveryResolver();
+            }
+            resolver = this.resolver;
         }
-        if (service == null) {
+        if (service == null || resolver == null) {
             return;
         }
 
@@ -178,7 +197,7 @@ public class NetworkDiscoveryService extends AbstractDiscoveryService implements
                 final int targetCount = networkIPs.size();
 
                 for (String ip : networkIPs) {
-                    final PresenceDetection pd = new PresenceDetection(this, Duration.ofSeconds(2), service);
+                    final PresenceDetection pd = new PresenceDetection(this, Duration.ofSeconds(2), resolver);
                     pd.setHostname(ip);
                     pd.setIOSDevice(true);
                     pd.setUseDhcpSniffing(false);
@@ -211,26 +230,34 @@ public class NetworkDiscoveryService extends AbstractDiscoveryService implements
         });
     }
 
+    @SuppressWarnings("sync-override")
     @Override
     protected void stopScan() {
         final ExecutorService service;
+        final ExecutorService resolver;
         synchronized (this) {
             super.stopScan();
             service = executorService;
-            if (service == null) {
-                return;
-            }
             executorService = null;
+            resolver = this.resolver;
+            this.resolver = null;
         }
         logger.debug("Stopping Network Device Discovery");
 
-        service.shutdownNow(); // Initiate shutdown
-        try {
-            if (!service.awaitTermination(PING_TIMEOUT.toMillis(), TimeUnit.MILLISECONDS)) {
-                logger.warn("Network discovery scan failed to stop within the timeout of {}", PING_TIMEOUT);
+        if (service != null) {
+            service.shutdownNow(); // Initiate shutdown
+        }
+        if (resolver != null) {
+            resolver.shutdown(); // Initiate shutdown, but let it complete queued tasks
+        }
+        if (service != null) {
+            try {
+                if (!service.awaitTermination(PING_TIMEOUT.toMillis(), TimeUnit.MILLISECONDS)) {
+                    logger.warn("Network discovery scan failed to stop within the timeout of {}", PING_TIMEOUT);
+                }
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
             }
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
         }
     }
 

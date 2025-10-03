@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -84,14 +85,16 @@ public class NetworkHandler extends BaseThingHandler
     // Retry counter. Will be reset as soon as a device presence detection succeed.
     private volatile int retryCounter = 0;
     private final ScheduledExecutorService executor;
+    private final ExecutorService resolver;
 
     /**
      * Creates a new instance using the specified parameters.
      */
-    public NetworkHandler(Thing thing, ScheduledExecutorService executor, boolean isTCPServiceDevice,
-            NetworkBindingConfiguration configuration) {
+    public NetworkHandler(Thing thing, ScheduledExecutorService executor, ExecutorService resolver,
+            boolean isTCPServiceDevice, NetworkBindingConfiguration configuration) {
         super(thing);
         this.executor = executor;
+        this.resolver = resolver;
         this.isTCPServiceDevice = isTCPServiceDevice;
         this.configuration = configuration;
         this.configuration.addNetworkBindingConfigurationListener(this);
@@ -225,8 +228,8 @@ public class NetworkHandler extends BaseThingHandler
             wakeOnLanPacketSender = new WakeOnLanPacketSender(config.macAddress, config.hostname, config.port,
                     config.networkInterfaceNames);
             if (config.refreshInterval > 0) {
-                refreshJob = executor.scheduleWithFixedDelay(presenceDetection::refresh, 0, config.refreshInterval,
-                        TimeUnit.MILLISECONDS);
+                refreshJob = executor.scheduleWithFixedDelay(presenceDetection::refresh, (long) (Math.random() * 5000),
+                        config.refreshInterval, TimeUnit.MILLISECONDS);
             }
         }
 
@@ -256,7 +259,7 @@ public class NetworkHandler extends BaseThingHandler
         updateStatus(ThingStatus.UNKNOWN);
         executor.submit(() -> {
             initialize(new PresenceDetection(this, Duration.ofMillis(configuration.cacheDeviceStateTimeInMS.intValue()),
-                    executor));
+                    resolver));
         });
     }
 
