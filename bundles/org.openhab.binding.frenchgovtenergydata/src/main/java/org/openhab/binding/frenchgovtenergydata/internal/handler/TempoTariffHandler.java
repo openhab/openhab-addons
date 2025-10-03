@@ -31,8 +31,8 @@ import org.openhab.core.thing.Thing;
  */
 @NonNullByDefault
 public class TempoTariffHandler extends TariffHandler<TempoTariff> {
-    private static final String EMPTY_LINE = ";;;;;;;;;;;;;;;;";
     private static final String DATASET_ID = "0c3d1d36-c412-4620-8566-e5cbb4fa2b5a";
+    private static final String EMPTY_LINE = ";".repeat(TempoTariff.LEN_CONTROL - 1);
 
     public TempoTariffHandler(Thing thing) {
         super(thing, DATASET_ID);
