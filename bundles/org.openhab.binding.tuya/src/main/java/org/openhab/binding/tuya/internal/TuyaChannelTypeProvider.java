@@ -194,7 +194,7 @@ public class TuyaChannelTypeProvider implements ChannelTypeProvider {
     private ChannelType clone(ChannelTypeUID channelTypeUID, ChannelType orig) {
         String itemType = orig.getItemType();
         if (itemType == null) { // It isn't. We created orig ourselves!
-            itemType = "String";
+            itemType = STRING;
         }
 
         StateChannelTypeBuilder builder = ChannelTypeBuilder.state(channelTypeUID, orig.getLabel(), itemType)
