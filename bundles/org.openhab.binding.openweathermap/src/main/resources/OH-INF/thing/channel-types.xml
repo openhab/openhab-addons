@@ -767,7 +767,7 @@
 		<tags>
 			<tag>Measurement</tag>
 		</tags>
-		<state readOnly="true" min="0" max="100" pattern="%d %unit%"/>
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="forecasted-cloudiness">
@@ -778,7 +778,7 @@
 		<tags>
 			<tag>Forecast</tag>
 		</tags>
-		<state readOnly="true" min="0" max="100" pattern="%d %unit%"/>
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="rain">
@@ -1076,7 +1076,7 @@
 			<tag>Forecast</tag>
 			<tag>Rain</tag>
 		</tags>
-		<state readOnly="true" min="0" max="100" pattern="%.1f %unit%"/>
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="alert-event">
