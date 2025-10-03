@@ -38,20 +38,32 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class HueTlsTrustManagerProvider implements TlsTrustManagerProvider {
 
-    private static final String PEM_FILENAME = "huebridge_cacert.pem";
-    private static final String PEM3_FILENAME = "huebridge3_cacert.pem";
+    private static final String PEM_CACERT_V1_FILENAME = "huebridge_cacert.pem";
+    private static final String PEM_CACERT_V2_FILENAME = "huebridge_cacert_v2.pem";
     private final String hostname;
     private final boolean useSelfSignedCertificate;
-    private final boolean isBridgeV3;
+    private final boolean useSignifyCaCertificateV2;
 
     private final Logger logger = LoggerFactory.getLogger(HueTlsTrustManagerProvider.class);
 
     private @Nullable PEMTrustManager trustManager;
 
-    public HueTlsTrustManagerProvider(String hostname, boolean useSelfSignedCertificate, boolean isBridgeV3) {
+    /**
+     * Creates a new instance of {@link HueTlsTrustManagerProvider}.
+     * See {@link https://developers.meethue.com/develop/application-design-guidance/using-https/} for more
+     * details about 'Signify private CA Certificates V1 and V2 for Hue Bridges'.
+     *
+     * @param hostname the hostname of the Hue Bridge
+     * @param useSelfSignedCertificate true, to use the self-signed certificate downloaded from the Hue Bridge;
+     *            false, to use the Signify private CA Certificate V1 or V2 for Hue Bridges from resources
+     * @param useSignifyCaCerteficateV2 true, to use the 'Signify private CA Certificate V2 for Hue Bridges';
+     *            false, to use the 'Signify private CA Certificate V1 for Hue Bridges'
+     */
+    public HueTlsTrustManagerProvider(String hostname, boolean useSelfSignedCertificate,
+            boolean useSignifyCaCerteficateV2) {
         this.hostname = hostname;
         this.useSelfSignedCertificate = useSelfSignedCertificate;
-        this.isBridgeV3 = isBridgeV3;
+        this.useSignifyCaCertificateV2 = useSignifyCaCerteficateV2;
     }
 
     @Override
@@ -80,8 +92,9 @@ public class HueTlsTrustManagerProvider implements TlsTrustManagerProvider {
                 localTrustManager = PEMTrustManager.getInstanceFromServer("https://" + getHostName());
             } else {
                 logger.trace("Use Signify private CA Certificate for Hue Bridges from resources.");
-                // use Signify private CA Certificate for Hue Bridges from resources
-                localTrustManager = getInstanceFromResource(isBridgeV3 ? PEM3_FILENAME : PEM_FILENAME);
+                // use Signify private CA Certificate V1 or V2 for Hue Bridges from resources
+                localTrustManager = getInstanceFromResource(
+                        useSignifyCaCertificateV2 ? PEM_CACERT_V2_FILENAME : PEM_CACERT_V1_FILENAME);
             }
             this.trustManager = localTrustManager;
         } catch (CertificateException | MalformedURLException e) {

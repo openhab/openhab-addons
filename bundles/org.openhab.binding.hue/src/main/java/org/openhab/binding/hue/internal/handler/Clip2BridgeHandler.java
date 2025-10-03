@@ -45,6 +45,7 @@ import org.openhab.binding.hue.internal.config.Clip2BridgeConfig;
 import org.openhab.binding.hue.internal.connection.Clip2Bridge;
 import org.openhab.binding.hue.internal.connection.HueTlsTrustManagerProvider;
 import org.openhab.binding.hue.internal.discovery.Clip2ThingDiscoveryService;
+import org.openhab.binding.hue.internal.discovery.HueBridgeMDNSDiscoveryParticipant;
 import org.openhab.binding.hue.internal.exceptions.ApiException;
 import org.openhab.binding.hue.internal.exceptions.AssetNotLoadedException;
 import org.openhab.binding.hue.internal.exceptions.HttpUnauthorizedException;
@@ -85,8 +86,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class Clip2BridgeHandler extends BaseBridgeHandler {
-
-    private static final String BRIDGE_V3_MODEL_ID = "BSB003"; // model name of bridge v3 (black bridge)
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_BRIDGE_API2);
 
@@ -496,9 +495,10 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
                 return;
             }
 
-            boolean isBridgeV3 = BRIDGE_V3_MODEL_ID.equals(thing.getProperties().get(Thing.PROPERTY_MODEL_ID));
+            boolean useSignifyCaCertificateVersion2 = HueBridgeMDNSDiscoveryParticipant
+                    .modelIsOrAboveBSB003(thing.getProperties().get(Thing.PROPERTY_MODEL_ID));
             HueTlsTrustManagerProvider trustManagerProvider = new HueTlsTrustManagerProvider(ipAddress + ":443",
-                    config.useSelfSignedCertificate, isBridgeV3);
+                    config.useSelfSignedCertificate, useSignifyCaCertificateVersion2);
 
             if (Objects.isNull(trustManagerProvider.getPEMTrustManager())) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,

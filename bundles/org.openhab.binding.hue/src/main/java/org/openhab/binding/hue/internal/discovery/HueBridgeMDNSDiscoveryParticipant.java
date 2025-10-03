@@ -56,10 +56,29 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class HueBridgeMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
+    private static final Pattern BSB_MODEL_ID_PATTERN = Pattern.compile("^BSB(\\d{3})$");
+
+    /**
+     * Checks if the given model ID is a BSB model and if its version is 003 or above.
+     *
+     * @param modelId the model ID to check
+     * @return true if the model ID is a BSB model with version 003 or above, false otherwise
+     */
+    public static boolean modelIsOrAboveBSB003(@Nullable String modelId) {
+        if (modelId == null) {
+            return false;
+        }
+        Matcher matcher = BSB_MODEL_ID_PATTERN.matcher(modelId);
+        if (!matcher.matches()) {
+            return false;
+        }
+        int version = Integer.parseInt(matcher.group(1));
+        return version >= 3;
+    }
+
     private static final String SERVICE_TYPE = "_hue._tcp.local.";
     private static final String MDNS_PROPERTY_BRIDGE_ID = "bridgeid";
     private static final String MDNS_PROPERTY_MODEL_ID = "modelid";
-    private static final Pattern BSB_MODEL_ID_PATTERN = Pattern.compile("^BSB(\\d{3})$");
 
     private final Logger logger = LoggerFactory.getLogger(HueBridgeMDNSDiscoveryParticipant.class);
     protected final ThingRegistry thingRegistry;
@@ -164,7 +183,7 @@ public class HueBridgeMDNSDiscoveryParticipant implements MDNSDiscoveryParticipa
         String id = service.getPropertyString(MDNS_PROPERTY_BRIDGE_ID);
         if (id != null && !id.isBlank()) {
             id = id.toLowerCase();
-            if (isOrAboveBSB003(service.getPropertyString(MDNS_PROPERTY_MODEL_ID))) {
+            if (modelIsOrAboveBSB003(service.getPropertyString(MDNS_PROPERTY_MODEL_ID))) {
                 return new ThingUID(THING_TYPE_BRIDGE_API2, id);
             }
             try {
@@ -176,15 +195,6 @@ public class HueBridgeMDNSDiscoveryParticipant implements MDNSDiscoveryParticipa
             }
         }
         return null;
-    }
-
-    private boolean isOrAboveBSB003(@Nullable String modelId) {
-        Matcher matcher = BSB_MODEL_ID_PATTERN.matcher(modelId);
-        if (!matcher.matches()) {
-            return false;
-        }
-        int version = Integer.parseInt(matcher.group(1));
-        return version >= 3;
     }
 
     @Override
