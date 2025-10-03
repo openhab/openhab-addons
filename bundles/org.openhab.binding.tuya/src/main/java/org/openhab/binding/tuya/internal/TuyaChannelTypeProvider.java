@@ -260,7 +260,7 @@ public class TuyaChannelTypeProvider implements ChannelTypeProvider {
             acceptedItemType = DIMMER;
             category = "slider";
             configurationRef = "channel-type:tuya:dimmer";
-            tags.add(schemaDp.readOnly ? "Point" : "Control");
+            tags.add(schemaDp.readOnly ? "Status" : "Control");
             tags.add("Brightness");
         } else if ("bool".equals(schemaDp.type)) {
             acceptedItemType = SWITCH;
@@ -284,7 +284,7 @@ public class TuyaChannelTypeProvider implements ChannelTypeProvider {
                 acceptedItemType = COLOR;
                 category = "colorlight";
                 configurationRef = "channel-type:tuya:color";
-                tags.add(schemaDp.readOnly ? "Point" : "Control");
+                tags.add(schemaDp.readOnly ? "Status" : "Control");
                 tags.add("Color");
             } else {
                 acceptedItemType = STRING;
@@ -319,11 +319,11 @@ public class TuyaChannelTypeProvider implements ChannelTypeProvider {
                         logger.warn("Channel {} has unit \"{}\" but openHAB doesn't know the dimension", channelTypeId,
                                 schemaDp.unit);
 
-                        tags.add(schemaDp.readOnly ? "Point" : "Setpoint");
+                        tags.add(schemaDp.readOnly ? "Status" : "Setpoint");
                     }
                 }
             } else {
-                tags.add(schemaDp.readOnly ? "Point" : "Setpoint");
+                tags.add(schemaDp.readOnly ? "Status" : "Setpoint");
             }
 
             stateDescriptionFragmentBuilder = StateDescriptionFragmentBuilder.create() //
