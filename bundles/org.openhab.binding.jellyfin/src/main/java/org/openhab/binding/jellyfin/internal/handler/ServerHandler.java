@@ -29,6 +29,7 @@ import org.openhab.binding.jellyfin.internal.exceptions.ExceptionHandler;
 import org.openhab.binding.jellyfin.internal.handler.tasks.AbstractTask;
 import org.openhab.binding.jellyfin.internal.handler.tasks.ConnectionTask;
 import org.openhab.binding.jellyfin.internal.handler.tasks.TaskFactory;
+import org.openhab.binding.jellyfin.internal.types.ServerState;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
@@ -50,46 +51,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class ServerHandler extends BaseBridgeHandler {
-
-    /**
-     * Enum representing the possible states of the server handler
-     */
-    public enum ServerState {
-        /**
-         * Initial state when the handler is created
-         */
-        INITIALIZING,
-
-        /**
-         * State for a newly discovered server that needs configuration
-         */
-        DISCOVERED,
-
-        /**
-         * State when server URI is known but no authentication token is available
-         */
-        NEEDS_AUTHENTICATION,
-
-        /**
-         * State when server is fully configured with URI and token
-         */
-        CONFIGURED,
-
-        /**
-         * State when server is connected and online
-         */
-        CONNECTED,
-
-        /**
-         * State when server is in error state
-         */
-        ERROR,
-
-        /**
-         * State when the handler has been disposed
-         */
-        DISPOSED
-    }
 
     private final Logger logger = LoggerFactory.getLogger(ServerHandler.class);
     private final ExceptionHandler exceptionHandler;
