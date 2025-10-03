@@ -82,9 +82,9 @@ public class GraalJSScriptEngineConfiguration {
                     wrapperEnabled ? "Enabled" : "Disabled");
         }
         if (oldEventConversionEnabled != eventConversionEnabled) {
-            if (eventConversionEnabled && (!isInjectionEnabledForUiBasedScript() || !wrapperEnabled)) {
+            if (eventConversionEnabled && (!isInjectionEnabledForUiBasedScript())) {
                 logger.warn(
-                        "Enabled event conversion for UI-based scripts, but auto-injection or wrapper is disabled. Event conversion will not work.");
+                        "Enabled event conversion for UI-based scripts, but auto-injection is disabled. Event conversion will not work.");
             }
             if (!eventConversionEnabled) {
                 logger.info(

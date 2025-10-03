@@ -44,7 +44,7 @@
 			<description><![CDATA[
             Converting the event data from Java to JavaScript types in UI-based scripts allows working with event data in a native JS way without special handling for Java types.<br>
             With this option enabled, the event data available in UI-based scripts is all JS types and the same as in file-based scripts.<br>
-            Please note that this option <strong>requires both auto-injection & wrapper enabled</strong> and only applies to UI-based scripts and does not affect file-based scripts.
+            Please note that this option <strong>requires auto-injection enabled at least for UI-based scripts</strong>.
             ]]></description>
 			<default>true</default>
 			<advanced>true</advanced>
