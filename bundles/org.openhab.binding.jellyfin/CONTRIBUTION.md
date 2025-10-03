@@ -10,7 +10,6 @@ The following diagram shows the main classes and their relationships within the 
 classDiagram
     %% Class inheritance relationships
     AbstractTask <|-- ConnectionTask
-    AbstractTask <|-- RegistrationTask
     AbstractTask <|-- UpdateTask
     AbstractTask <|-- UsersListTask
     AbstractTask <|-- ClientScanTask
@@ -95,7 +94,6 @@ classDiagram
     class TaskFactory {
         <<static>>
         +createConnectionTask(ApiClient, Consumer, ExceptionHandler) ConnectionTask
-        +createRegistrationTask(ApiClient, ExceptionHandler) RegistrationTask
         +createUpdateTask(ApiClient, ExceptionHandler) UpdateTask
     }
     

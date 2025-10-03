@@ -41,17 +41,6 @@ public class TaskFactory {
     }
 
     /**
-     * Creates a registration task with the specified parameters.
-     * 
-     * @param client The API client to use for registration
-     * @param exceptionHandler The handler for exceptions
-     * @return A configured registration task
-     */
-    public static RegistrationTask createRegistrationTask(ApiClient client, ExceptionHandlerType exceptionHandler) {
-        return new RegistrationTask(client, exceptionHandler);
-    }
-
-    /**
      * Creates an update task with the specified parameters.
      * 
      * @param client The API client to use for updates

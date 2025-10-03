@@ -27,7 +27,6 @@ import org.openhab.binding.jellyfin.internal.api.generated.current.model.SystemI
 import org.openhab.binding.jellyfin.internal.exceptions.ExceptionHandler;
 import org.openhab.binding.jellyfin.internal.handler.tasks.AbstractTask;
 import org.openhab.binding.jellyfin.internal.handler.tasks.ConnectionTask;
-import org.openhab.binding.jellyfin.internal.handler.tasks.RegistrationTask;
 import org.openhab.binding.jellyfin.internal.handler.tasks.TaskFactory;
 import org.openhab.binding.jellyfin.internal.handler.tasks.UpdateTask;
 import org.openhab.binding.jellyfin.internal.types.ServerState;
@@ -73,8 +72,6 @@ public class ServerHandler extends BaseBridgeHandler {
         // Create all tasks in the constructor
         this.tasks.put(ConnectionTask.TASK_ID, TaskFactory.createConnectionTask(this.apiClient,
                 systemInfo -> this.handleConnection(systemInfo), this.exceptionHandler));
-        this.tasks.put(RegistrationTask.TASK_ID,
-                TaskFactory.createRegistrationTask(this.apiClient, this.exceptionHandler));
         this.tasks.put(UpdateTask.TASK_ID, TaskFactory.createUpdateTask(this.apiClient, this.exceptionHandler));
 
         // Additional tasks can be added here in the future
