@@ -61,12 +61,18 @@ public class IpTransport implements AutoCloseable {
         logger.debug("Connecting to {}", host);
         this.host = host;
         String[] parts = host.split(":");
+        if (parts.length < 1) {
+            throw new IllegalArgumentException("Missing host: " + host);
+        }
+        if (parts.length < 2) {
+            throw new IllegalArgumentException("Missing port: " + host);
+        }
         String ipAddress = parts[0];
-        int port = parts.length > 1 ? Integer.parseInt(parts[1]) : 0;
+        int port = Integer.parseInt(parts[1]);
         socket = new Socket();
         socket.connect(new InetSocketAddress(ipAddress, port), CONNECT_TIMEOUT);
         socket.setKeepAlive(false); // HAP spec forbids TCP keepalive
-        logger.debug("Connected to {}:{}", ipAddress, port);
+        logger.debug("Connected to {}", host);
     }
 
     public void setSessionKeys(AsymmetricSessionKeys keys) throws Exception {
