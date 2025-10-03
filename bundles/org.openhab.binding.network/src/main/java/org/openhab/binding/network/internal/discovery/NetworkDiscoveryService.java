@@ -150,8 +150,7 @@ public class NetworkDiscoveryService extends AbstractDiscoveryService implements
     private ExecutorService createDiscoveryResolver() {
         AtomicInteger count = new AtomicInteger(1);
         return Executors.newCachedThreadPool(r -> {
-            Thread t = new Thread(r, "OH-binding-network-discoveryResolver-" + count.getAndIncrement());
-            return t;
+            return new Thread(r, "OH-binding-network-discoveryResolver-" + count.getAndIncrement());
         });
     }
 
