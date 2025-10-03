@@ -32,6 +32,7 @@ import org.openhab.core.thing.Thing;
 @NonNullByDefault
 public class BaseTariffHandler extends TariffHandler<BaseTariff> {
     private static final String DATASET_ID = "c13d05e5-9e55-4d03-bf7e-042a2ade7e49";
+    private static final String EMPTY_LINE = ";".repeat(BaseTariff.LEN_CONTROL - 1);
 
     public BaseTariffHandler(Thing thing) {
         super(thing, DATASET_ID);
@@ -39,7 +40,7 @@ public class BaseTariffHandler extends TariffHandler<BaseTariff> {
 
     @Override
     protected Stream<BaseTariff> interpretLines(List<String> lines) {
-        return lines.stream().map(BaseTariff::new);
+        return lines.stream().filter(line -> !line.equals(EMPTY_LINE)).map(BaseTariff::new);
     }
 
     @Override

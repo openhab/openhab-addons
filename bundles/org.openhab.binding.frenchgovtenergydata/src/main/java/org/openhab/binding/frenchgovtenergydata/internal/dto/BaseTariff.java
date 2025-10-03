@@ -24,8 +24,10 @@ public class BaseTariff extends Tariff {
     public final double variableHT;
     public final double variableTTC;
 
+    public static final int LEN_CONTROL = 7;
+
     public BaseTariff(String line) {
-        super(line, 7);
+        super(line, LEN_CONTROL);
         try {
             this.variableHT = parseDouble(values[5]);
             this.variableTTC = parseDouble(values[6]);
