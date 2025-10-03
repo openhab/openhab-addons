@@ -21,9 +21,13 @@ classDiagram
     ServerHandler --> ExceptionHandler : uses
     ServerHandler --> Configuration : uses
     ServerHandler --> TaskFactory : uses
+    ServerHandler --> TaskManager : uses
+    ServerHandler --> ServerState : uses
     ServerDiscoveryService ..> ServerDiscovery : creates
     ServerDiscoveryService --> BindingConfiguration : uses
     TaskFactory ..> AbstractTask : creates
+    TaskManager --> AbstractTask : manages
+    TaskManager --> ServerState : evaluates
     ServerDiscovery ..> ServerDiscoveryResult : creates
     ApiClientFactory ..> ApiClient : creates
     HandlerFactory ..> ServerHandler : creates
@@ -37,6 +41,25 @@ classDiagram
         +initialize()
         +handleCommand()
         +dispose()
+        -transitionToState(ServerState)
+    }
+    
+    class TaskManager {
+        <<utility>>
+        +static getTaskIdsForState(ServerState) Set~String~
+        +static transitionTasksForState(Map, ServerState, ScheduledExecutorService)
+        +static startTask(Map, String, ScheduledExecutorService)
+        +static stopTask(Map, String)
+        +static stopAllTasks(Map)
+    }
+    
+    class ServerState {
+        <<enumeration>>
+        INITIALIZING
+        ONLINE
+        OFFLINE
+        ERROR
+        +getRequiredTasks() Set~String~
     }
     
     class ApiClientFactory {
@@ -112,14 +135,26 @@ classDiagram
 ## Key Components
 
 1. **HandlerFactory**: Creates thing handlers for the binding.
-2. **ServerHandler**: Main bridge handler for Jellyfin servers.
-3. **ApiClientFactory**: Creates API client instances for different API versions.
-4. **ApiClient**: Handles communication with the Jellyfin server and manages authentication.
-5. **ServerDiscoveryService**: Discovers Jellyfin servers on the network using UDP broadcasts.
-6. **TaskFactory**: Creates various task instances used for server communication.
-7. **AbstractTask**: Base class for all tasks that can be scheduled for execution.
-8. **BindingConfiguration**: Contains configuration settings for the binding.
-9. **ExceptionHandler**: Handles exceptions that occur during binding operation.
+2. **ServerHandler**: Main bridge handler for Jellyfin servers that orchestrates server communication and state management.
+3. **TaskManager**: Stateless utility class that manages task lifecycle operations based on server state transitions.
+4. **ServerState**: Enumeration defining server states (INITIALIZING, ONLINE, OFFLINE, ERROR) and their required task sets.
+5. **ApiClientFactory**: Creates API client instances for different API versions.
+6. **ApiClient**: Handles communication with the Jellyfin server and manages authentication.
+7. **ServerDiscoveryService**: Discovers Jellyfin servers on the network using UDP broadcasts.
+8. **TaskFactory**: Creates various task instances used for server communication.
+9. **AbstractTask**: Base class for all tasks that can be scheduled for execution.
+10. **BindingConfiguration**: Contains configuration settings for the binding.
+11. **ExceptionHandler**: Handles exceptions that occur during binding operation.
+
+## Architecture Overview
+
+The binding follows a state-driven architecture where:
+
+- **ServerHandler** manages the overall server connection lifecycle and delegates task management to the **TaskManager** utility
+- **TaskManager** provides stateless operations for starting, stopping, and transitioning tasks based on **ServerState**
+- **ServerState** enum defines which tasks should be active for each server state
+- Tasks are created by **TaskFactory** and extend **AbstractTask** for scheduled execution
+- **ApiClient** provides the communication layer with version-specific implementations
 
 ## API Version Support
 
