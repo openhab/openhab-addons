@@ -13,6 +13,7 @@ classDiagram
     AbstractTask <|-- UpdateTask
     AbstractTask <|-- UsersListTask
     AbstractTask <|-- ClientScanTask
+    ExceptionHandlerType <|.. ExceptionHandler
     
     %% Class dependencies and usage relationships
     HandlerFactory --> ApiClientFactory : uses
@@ -45,7 +46,7 @@ classDiagram
     
     class TaskManager {
         <<utility>>
-        +static getTaskIdsForState(ServerState) Set~String~
+        +static getTaskIdsForState(ServerState) List~String~
         +static transitionTasksForState(Map, ServerState, ScheduledExecutorService)
         +static startTask(Map, String, ScheduledExecutorService)
         +static stopTask(Map, String)
@@ -55,10 +56,12 @@ classDiagram
     class ServerState {
         <<enumeration>>
         INITIALIZING
-        ONLINE
-        OFFLINE
+        DISCOVERED
+        NEEDS_AUTHENTICATION
+        CONFIGURED
+        CONNECTED
         ERROR
-        +getRequiredTasks() Set~String~
+        DISPOSED
     }
     
     class ApiClientFactory {
@@ -93,8 +96,14 @@ classDiagram
     
     class TaskFactory {
         <<static>>
-        +createConnectionTask(ApiClient, Consumer, ExceptionHandler) ConnectionTask
-        +createUpdateTask(ApiClient, ExceptionHandler) UpdateTask
+        +createTask(String taskType, ApiClient, ...) AbstractTask
+        +createConnectionTask(...) AbstractTask
+        +createUpdateTask(...) AbstractTask
+    }
+    
+    class ExceptionHandlerType {
+        <<interface>>
+        +handle(Exception)
     }
     
     class ExceptionHandler {
@@ -128,6 +137,20 @@ classDiagram
     class ConnectionTask {
         %% Inherits run() from AbstractTask
     }
+    
+    class UpdateTask {
+        %% Inherits run() from AbstractTask
+    }
+    
+    class UsersListTask {
+        %% Inherits run() from AbstractTask
+        %% Available but not currently used
+    }
+    
+    class ClientScanTask {
+        %% Inherits run() from AbstractTask
+        %% Available but not currently used
+    }
 ```
 
 ## Key Components
@@ -135,14 +158,15 @@ classDiagram
 1. **HandlerFactory**: Creates thing handlers for the binding.
 2. **ServerHandler**: Main bridge handler for Jellyfin servers that orchestrates server communication and state management.
 3. **TaskManager**: Stateless utility class that manages task lifecycle operations based on server state transitions.
-4. **ServerState**: Enumeration defining server states (INITIALIZING, ONLINE, OFFLINE, ERROR) and their required task sets.
+4. **ServerState**: Enumeration defining server states (INITIALIZING, DISCOVERED, NEEDS_AUTHENTICATION, CONFIGURED, CONNECTED, ERROR, DISPOSED) and their required task sets.
 5. **ApiClientFactory**: Creates API client instances for different API versions.
 6. **ApiClient**: Handles communication with the Jellyfin server and manages authentication.
 7. **ServerDiscoveryService**: Discovers Jellyfin servers on the network using UDP broadcasts.
 8. **TaskFactory**: Creates various task instances used for server communication.
 9. **AbstractTask**: Base class for all tasks that can be scheduled for execution.
 10. **BindingConfiguration**: Contains configuration settings for the binding.
-11. **ExceptionHandler**: Handles exceptions that occur during binding operation.
+11. **ExceptionHandlerType**: Interface defining the contract for exception handling.
+12. **ExceptionHandler**: Implementation of ExceptionHandlerType that handles exceptions during binding operation.
 
 ## Architecture Overview
 

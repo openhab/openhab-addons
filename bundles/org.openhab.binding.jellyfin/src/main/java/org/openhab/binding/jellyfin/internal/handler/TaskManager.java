@@ -29,8 +29,9 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Stateless utility class for managing tasks based on server states.
- * This class handles all task-related operations including starting, stopping,
- * and determining which tasks should run for specific server states.
+ * This class handles state-driven task management, automatically starting and stopping
+ * tasks based on server state transitions. Individual task control is handled internally
+ * through state transitions only.
  * 
  * @author Patrik Gfeller - Initial contribution
  */
@@ -85,74 +86,22 @@ public final class TaskManager {
      * @param scheduledTasks Map of currently scheduled tasks
      * @param scheduler The scheduler service to use for task scheduling
      */
-    public static void transitionTasksForState(ServerState serverState, Map<String, AbstractTask> availableTasks,
+    public static void processStateChange(ServerState serverState, Map<String, AbstractTask> availableTasks,
             Map<String, @Nullable ScheduledFuture<?>> scheduledTasks, ScheduledExecutorService scheduler) {
         List<String> taskIdsToStart = getTaskIdsForState(serverState);
 
         // Stop any running tasks that are not needed for this state
         for (String runningTaskId : List.copyOf(scheduledTasks.keySet())) {
             if (!taskIdsToStart.contains(runningTaskId)) {
-                stopTask(runningTaskId, scheduledTasks);
+                stopTaskInternal(runningTaskId, scheduledTasks);
             }
         }
 
         // Start tasks needed for this state
         for (String taskId : taskIdsToStart) {
             if (!scheduledTasks.containsKey(taskId)) {
-                startTask(taskId, availableTasks, scheduledTasks, scheduler);
+                startTaskInternal(taskId, availableTasks, scheduledTasks, scheduler);
             }
-        }
-    }
-
-    /**
-     * Starts a task by its ID.
-     * 
-     * @param taskId The ID of the task to start
-     * @param availableTasks Map of available tasks by their IDs
-     * @param scheduledTasks Map of currently scheduled tasks
-     * @param scheduler The scheduler service to use for task scheduling
-     */
-    public static void startTask(String taskId, Map<String, AbstractTask> availableTasks,
-            Map<String, @Nullable ScheduledFuture<?>> scheduledTasks, ScheduledExecutorService scheduler) {
-        AbstractTask task = availableTasks.get(taskId);
-        if (task != null) {
-            startTask(task, scheduledTasks, scheduler);
-        } else {
-            logger.warn("Task with ID '{}' not found", taskId);
-        }
-    }
-
-    /**
-     * Starts a specific task.
-     * 
-     * @param task The task to start
-     * @param scheduledTasks Map of currently scheduled tasks
-     * @param scheduler The scheduler service to use for task scheduling
-     */
-    public static void startTask(AbstractTask task, Map<String, @Nullable ScheduledFuture<?>> scheduledTasks,
-            ScheduledExecutorService scheduler) {
-        String taskId = task.getId();
-        int delay = task.getStartupDelay();
-        int interval = task.getInterval();
-
-        logger.trace("Starting task [{}] with delay: {}s, interval: {}s", taskId, delay, interval);
-        logger.info("Starting task [{}]", taskId);
-
-        ScheduledFuture<?> scheduledTask = scheduleTask(task, delay, interval, scheduler);
-        scheduledTasks.put(taskId, scheduledTask);
-    }
-
-    /**
-     * Stops a task by its ID.
-     * 
-     * @param taskId The ID of the task to stop
-     * @param scheduledTasks Map of currently scheduled tasks
-     */
-    public static void stopTask(String taskId, Map<String, @Nullable ScheduledFuture<?>> scheduledTasks) {
-        ScheduledFuture<?> scheduledTask = scheduledTasks.remove(taskId);
-        if (scheduledTask != null) {
-            logger.info("Stopping task [{}]", taskId);
-            stopScheduledTask(scheduledTask);
         }
     }
 
@@ -167,6 +116,58 @@ public final class TaskManager {
 
         scheduledTasks.values().forEach(TaskManager::stopScheduledTask);
         scheduledTasks.clear();
+    }
+
+    /**
+     * Starts a task by its ID (internal method for state transitions).
+     * 
+     * @param taskId The ID of the task to start
+     * @param availableTasks Map of available tasks by their IDs
+     * @param scheduledTasks Map of currently scheduled tasks
+     * @param scheduler The scheduler service to use for task scheduling
+     */
+    private static void startTaskInternal(String taskId, Map<String, AbstractTask> availableTasks,
+            Map<String, @Nullable ScheduledFuture<?>> scheduledTasks, ScheduledExecutorService scheduler) {
+        AbstractTask task = availableTasks.get(taskId);
+        if (task != null) {
+            startTaskInternal(task, scheduledTasks, scheduler);
+        } else {
+            logger.warn("Task with ID '{}' not found", taskId);
+        }
+    }
+
+    /**
+     * Starts a specific task (internal method for state transitions).
+     * 
+     * @param task The task to start
+     * @param scheduledTasks Map of currently scheduled tasks
+     * @param scheduler The scheduler service to use for task scheduling
+     */
+    private static void startTaskInternal(AbstractTask task, Map<String, @Nullable ScheduledFuture<?>> scheduledTasks,
+            ScheduledExecutorService scheduler) {
+        String taskId = task.getId();
+        int delay = task.getStartupDelay();
+        int interval = task.getInterval();
+
+        logger.trace("Starting task [{}] with delay: {}s, interval: {}s", taskId, delay, interval);
+        logger.info("Starting task [{}]", taskId);
+
+        ScheduledFuture<?> scheduledTask = scheduleTask(task, delay, interval, scheduler);
+        scheduledTasks.put(taskId, scheduledTask);
+    }
+
+    /**
+     * Stops a task by its ID (internal method for state transitions).
+     * 
+     * @param taskId The ID of the task to stop
+     * @param scheduledTasks Map of currently scheduled tasks
+     */
+    private static void stopTaskInternal(String taskId, Map<String, @Nullable ScheduledFuture<?>> scheduledTasks) {
+        ScheduledFuture<?> scheduledTask = scheduledTasks.remove(taskId);
+        if (scheduledTask != null) {
+            logger.info("Stopping task [{}]", taskId);
+            stopScheduledTask(scheduledTask);
+        }
     }
 
     /**

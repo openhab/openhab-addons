@@ -87,15 +87,6 @@ public class ServerHandler extends BaseBridgeHandler {
     }
 
     /**
-     * Start tasks for the specified server state, stopping any tasks that shouldn't run in that state.
-     * 
-     * @param serverState The server state to start tasks for
-     */
-    private synchronized void startTasksForState(ServerState serverState) {
-        TaskManager.transitionTasksForState(serverState, tasks, scheduledTasks, scheduler);
-    }
-
-    /**
      * Set the state of the server handler
      * 
      * @param newState The new state
@@ -106,7 +97,7 @@ public class ServerHandler extends BaseBridgeHandler {
         logger.debug("Server state changed: {} -> {}", oldState, newState);
 
         // Update running tasks based on the new state
-        startTasksForState(newState);
+        TaskManager.processStateChange(newState, tasks, scheduledTasks, scheduler);
     }
 
     /**
@@ -263,16 +254,11 @@ public class ServerHandler extends BaseBridgeHandler {
             ThingStatusInfo statusInfo = new ThingStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, "");
             this.getThing().setStatusInfo(statusInfo);
 
-            this.stopTasks();
         } catch (Exception e) {
             logger.warn("Failed to process system information: {}", e.getMessage(), e);
             setState(ServerState.ERROR);
         }
         return null;
-    }
-
-    private synchronized void stopTasks() {
-        TaskManager.stopAllTasks(scheduledTasks);
     }
 
     /**
