@@ -6,4 +6,4 @@ logs
 /.apt_generated_tests/
 # Temporary (wip)
 .vscode
-.direcory
+.directory

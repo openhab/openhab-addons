@@ -2,7 +2,7 @@
 
 This is the binding for [Jellyfin](https://jellyfin.org), the volunteer built media solution that puts you in control of your media.
 This binding allows you to interact with Jellyfin clients that supports remote control.
-It is compatible and test with Jellyfin servers from version `10.10.7`.
+It is compatible and tested with Jellyfin servers from version `10.10.7`.
 Earlier versions use a different API and are not supported.
 
 ## Binding - Configuration
