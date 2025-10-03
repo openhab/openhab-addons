@@ -45,13 +45,24 @@ public class FreeboxOsSession {
     private static final String API_VERSION_PATH = "api_version";
 
     private final Logger logger = LoggerFactory.getLogger(FreeboxOsSession.class);
+
+    // All access must be guarded by "this"
     private final Map<Class<? extends RestManager>, RestManager> restManagers = new HashMap<>();
     private final ApiHandler apiHandler;
 
-    private @NonNullByDefault({}) UriBuilder uriBuilder;
+    private final Object uriBuilderLock = new Object();
+
+    // All access must be guarded by "uriBuilderLock"
+    private @Nullable UriBuilder uriBuilder;
+
+    // All access must be guarded by "this"
     private @Nullable Session session;
+
+    // All access must be guarded by "this"
     private String appToken = "";
-    private int wsReconnectInterval;
+    private volatile int wsReconnectInterval;
+
+    // All access must be guarded by "this"
     @Nullable
     private Boolean vmSupported;
 
@@ -85,7 +96,9 @@ public class FreeboxOsSession {
     public void initialize(FreeboxOsConfiguration config) throws FreeboxException, InterruptedException {
         ApiVersion version = apiHandler.executeUri(config.getUriBuilder(API_VERSION_PATH).build(), HttpMethod.GET,
                 ApiVersion.class, null, null);
-        this.uriBuilder = config.getUriBuilder(version.baseUrl());
+        synchronized (uriBuilderLock) {
+            this.uriBuilder = config.getUriBuilder(version.baseUrl());
+        }
         this.wsReconnectInterval = config.wsReconnectInterval;
         this.vmSupported = null;
         getManager(LoginManager.class);
@@ -98,13 +111,24 @@ public class FreeboxOsSession {
     }
 
     public void openSession(String appToken) throws FreeboxException {
-        Session newSession = getManager(LoginManager.class).openSession(appToken);
-        session = newSession;
-        this.appToken = appToken;
-        if (vmSupported == null) {
-            vmSupported = getManager(SystemManager.class).getConfig().modelInfo().hasVm();
+        Boolean vmSupported;
+        Session session;
+        synchronized (this) {
+            session = this.session;
+            if (session != null) {
+                closeSession();
+            }
+            session = getManager(LoginManager.class).openSession(appToken);
+            this.session = session;
+            this.appToken = appToken;
+            if (this.vmSupported == null) {
+                vmSupported = getManager(SystemManager.class).getConfig().modelInfo().hasVm();
+                this.vmSupported = vmSupported;
+            } else {
+                vmSupported = this.vmSupported;
+            }
         }
-        getManager(WebSocketManager.class).openSession(newSession.sessionToken(), wsReconnectInterval,
+        getManager(WebSocketManager.class).openSession(session.sessionToken(), wsReconnectInterval,
                 Boolean.TRUE.equals(vmSupported));
     }
 
@@ -113,28 +137,45 @@ public class FreeboxOsSession {
     }
 
     public void closeSession() {
-        Session currentSession = session;
-        if (currentSession != null) {
+        Session currentSession;
+        WebSocketManager webSocketManager = null;
+        LoginManager loginManager = null;
+        synchronized (this) {
+            currentSession = session;
+            if (currentSession != null) {
+                try {
+                    webSocketManager = getManager(WebSocketManager.class);
+                    loginManager = getManager(LoginManager.class);
+                } catch (FreeboxException e) {
+                    logger.warn("Error closing session: {}", e.getMessage());
+                    logger.trace("", e);
+                }
+            }
+            session = null;
+            appToken = "";
+            restManagers.clear();
+        }
+        if (webSocketManager != null) {
+            webSocketManager.dispose();
+        }
+        if (loginManager != null) {
             try {
-                getManager(WebSocketManager.class).dispose();
-                getManager(LoginManager.class).closeSession();
-                session = null;
+                loginManager.closeSession();
             } catch (FreeboxException e) {
                 logger.warn("Error closing session: {}", e.getMessage());
+                logger.trace("", e);
             }
         }
-        appToken = "";
-        restManagers.clear();
     }
 
-    private synchronized <F, T extends Response<F>> List<F> execute(URI uri, HttpMethod method, Class<T> clazz,
-            boolean retryAuth, int retryCount, @Nullable Object aPayload) throws FreeboxException {
+    private <F, T extends Response<F>> List<F> execute(URI uri, HttpMethod method, Class<T> clazz, boolean retryAuth,
+            int retryCount, @Nullable Object aPayload) throws FreeboxException {
         try {
             T response = apiHandler.executeUri(uri, method, clazz, getSessionToken(), aPayload);
             if (response.getErrorCode() == ErrorCode.INTERNAL_ERROR && retryCount > 0) {
                 return execute(uri, method, clazz, false, retryCount - 1, aPayload);
             } else if (retryAuth && response.getErrorCode() == ErrorCode.AUTH_REQUIRED) {
-                openSession(appToken);
+                openSession(getAppToken());
                 return execute(uri, method, clazz, false, retryCount, aPayload);
             }
             if (!response.isSuccess()) {
@@ -143,7 +184,7 @@ public class FreeboxOsSession {
             return response.getResult();
         } catch (FreeboxException e) {
             if (ErrorCode.AUTH_REQUIRED.equals(e.getErrorCode())) {
-                openSession(appToken);
+                openSession(getAppToken());
                 return execute(uri, method, clazz, false, retryCount, aPayload);
             }
             throw e;
@@ -177,22 +218,44 @@ public class FreeboxOsSession {
         return (T) manager;
     }
 
-    public <T extends RestManager> T addManager(Class<T> clazz, T manager) {
+    public synchronized String getAppToken() {
+        return appToken;
+    }
+
+    public synchronized <T extends RestManager> T addManager(Class<T> clazz, T manager) {
         restManagers.put(clazz, manager);
         return manager;
     }
 
     boolean hasPermission(LoginManager.Permission required) {
-        Session currentSession = session;
+        Session currentSession;
+        synchronized (this) {
+            currentSession = session;
+        }
         return currentSession != null ? currentSession.hasPermission(required) : false;
     }
 
     private @Nullable String getSessionToken() {
-        Session currentSession = session;
+        Session currentSession;
+        synchronized (this) {
+            currentSession = session;
+        }
         return currentSession != null ? currentSession.sessionToken() : null;
     }
 
+    /**
+     * @return The {@link UriBuilder} instance.
+     *
+     * @throws IllegalStateException if the {@link UriBuilder} hasn't been instantiated.
+     */
     public UriBuilder getUriBuilder() {
+        UriBuilder uriBuilder;
+        synchronized (uriBuilderLock) {
+            uriBuilder = this.uriBuilder;
+        }
+        if (uriBuilder == null) {
+            throw new IllegalStateException(getClass().getSimpleName() + " hasn't been initialized yet");
+        }
         return uriBuilder.clone();
     }
 
