@@ -237,11 +237,13 @@ public class TuyaChannelTypeProvider implements ChannelTypeProvider {
         }
 
         String label = schemaDp.label;
-        if (label.isEmpty()) {
-            String l = StringUtils.capitalizeByWhitespace(channelTypeId.replaceAll("_", " "));
+        if (label.isBlank()) {
+            label = channelTypeId.replaceAll("_", " ");
+
+            String l = StringUtils.capitalizeByWhitespace(label);
             if (l != null) {
                 l = l.trim();
-                if (!l.isEmpty()) {
+                if (!l.isBlank()) {
                     label = l;
                 }
             }
