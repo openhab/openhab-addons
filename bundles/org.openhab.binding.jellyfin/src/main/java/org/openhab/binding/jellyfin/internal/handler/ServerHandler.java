@@ -17,7 +17,6 @@ import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -28,7 +27,9 @@ import org.openhab.binding.jellyfin.internal.api.generated.current.model.SystemI
 import org.openhab.binding.jellyfin.internal.exceptions.ExceptionHandler;
 import org.openhab.binding.jellyfin.internal.handler.tasks.AbstractTask;
 import org.openhab.binding.jellyfin.internal.handler.tasks.ConnectionTask;
+import org.openhab.binding.jellyfin.internal.handler.tasks.RegistrationTask;
 import org.openhab.binding.jellyfin.internal.handler.tasks.TaskFactory;
+import org.openhab.binding.jellyfin.internal.handler.tasks.UpdateTask;
 import org.openhab.binding.jellyfin.internal.types.ServerState;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -72,6 +73,9 @@ public class ServerHandler extends BaseBridgeHandler {
         // Create all tasks in the constructor
         this.tasks.put(ConnectionTask.TASK_ID, TaskFactory.createConnectionTask(this.apiClient,
                 systemInfo -> this.handleConnection(systemInfo), this.exceptionHandler));
+        this.tasks.put(RegistrationTask.TASK_ID,
+                TaskFactory.createRegistrationTask(this.apiClient, this.exceptionHandler));
+        this.tasks.put(UpdateTask.TASK_ID, TaskFactory.createUpdateTask(this.apiClient, this.exceptionHandler));
 
         // Additional tasks can be added here in the future
     }
@@ -86,6 +90,15 @@ public class ServerHandler extends BaseBridgeHandler {
     }
 
     /**
+     * Start tasks for the specified server state, stopping any tasks that shouldn't run in that state.
+     * 
+     * @param serverState The server state to start tasks for
+     */
+    private synchronized void startTasksForState(ServerState serverState) {
+        TaskManager.transitionTasksForState(serverState, tasks, scheduledTasks, scheduler);
+    }
+
+    /**
      * Set the state of the server handler
      * 
      * @param newState The new state
@@ -94,6 +107,9 @@ public class ServerHandler extends BaseBridgeHandler {
         ServerState oldState = this.state;
         this.state = newState;
         logger.debug("Server state changed: {} -> {}", oldState, newState);
+
+        // Update running tasks based on the new state
+        startTasksForState(newState);
     }
 
     /**
@@ -198,9 +214,8 @@ public class ServerHandler extends BaseBridgeHandler {
                 // Step 3: Handle authentication based on state
                 switch (initialState) {
                     case CONFIGURED:
-                        // Has token, authenticate and start tasks
+                        // Has token, authenticate (tasks will be started by setState)
                         this.apiClient.authenticateWithToken(this.configuration.token);
-                        this.startTasks();
                         break;
                     case DISCOVERED:
                     case NEEDS_AUTHENTICATION:
@@ -223,26 +238,6 @@ public class ServerHandler extends BaseBridgeHandler {
                 setState(ServerState.ERROR);
             }
         };
-    }
-
-    private synchronized void startTasks() {
-        // Start all pre-created tasks
-        for (AbstractTask task : tasks.values()) {
-            startTask(task);
-        }
-
-        // Additional task starting logic can be added here in the future
-    }
-
-    private synchronized void startTask(AbstractTask task) {
-        String taskId = task.getId();
-        int delay = task.getStartupDelay();
-        int interval = task.getInterval();
-
-        this.logger.trace("Starting task [{}] with delay: {}s, interval: {}s", taskId, delay, interval);
-        logger.info("Starting task [{}]", taskId);
-
-        this.scheduledTasks.put(taskId, this.scheduleTask(task, delay, interval));
     }
 
     private Object handleConnection(SystemInfo systemInfo) {
@@ -280,23 +275,7 @@ public class ServerHandler extends BaseBridgeHandler {
     }
 
     private synchronized void stopTasks() {
-        logger.info("Stopping {} task(s): {}", this.scheduledTasks.values().size(),
-                String.join(",", this.scheduledTasks.keySet()));
-
-        this.scheduledTasks.values().forEach(this::stopScheduledTask);
-        this.scheduledTasks.clear();
-    }
-
-    private synchronized void stopScheduledTask(@Nullable ScheduledFuture<?> scheduledTask) {
-        if (scheduledTask == null || scheduledTask.isCancelled() || scheduledTask.isDone()) {
-            return;
-        }
-
-        scheduledTask.cancel(true);
-    }
-
-    private @Nullable ScheduledFuture<?> scheduleTask(Runnable task, long initialDelay, long interval) {
-        return scheduler.scheduleWithFixedDelay(task, initialDelay, interval, TimeUnit.SECONDS);
+        TaskManager.stopAllTasks(scheduledTasks);
     }
 
     /**
