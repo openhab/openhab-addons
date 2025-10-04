@@ -36,9 +36,9 @@ The Sbus Bridge has the following configuration parameters:
 | port    | integer | UDP port number                                      | 6000    | no       | no        |
 | timeout | integer | Response timeout in milliseconds                     | 3000    | no       | yes       |
 
-### Device Configuration
+### Device Thing Configuration
 
-All device types share the same basic configuration parameters:
+All device thing types share the same basic configuration parameters:
 
 | Name    | Type    | Description                                          | Default | Required | Advanced  |
 |:--------|:--------|:-----------------------------------------------------|:-------:|:--------:|:---------:|
@@ -46,7 +46,7 @@ All device types share the same basic configuration parameters:
 | id      | integer | Device ID                                            | N/A     | yes      | no        |
 | refresh | integer | Refresh interval in seconds (0 = listen-only mode)   | 30      | no       | yes       |
 
-**Device Type Specific Notes:**
+**Thing Type Specific Notes:**
 
 - **Contact Sensors (`contact-sensor`)**: For standalone contact/dry contact sensor devices that monitor open/closed states
 - **Multi-Sensor Devices (`multi-sensor`)**: For multi-function sensor devices that combine motion detection, light level measurement, and dry contact monitoring in a single device
