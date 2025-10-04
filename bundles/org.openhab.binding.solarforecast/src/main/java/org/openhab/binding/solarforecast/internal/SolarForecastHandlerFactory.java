@@ -18,9 +18,11 @@ import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.solarforecast.internal.forecastsolar.handler.AdjustableForecastSolarPlaneHandler;
 import org.openhab.binding.solarforecast.internal.forecastsolar.handler.ForecastSolarBridgeHandler;
 import org.openhab.binding.solarforecast.internal.forecastsolar.handler.ForecastSolarPlaneHandler;
+import org.openhab.binding.solarforecast.internal.forecastsolar.handler.SmartForecastSolarBridgeHandler;
+import org.openhab.binding.solarforecast.internal.forecastsolar.handler.SmartForecastSolarPlaneHandler;
 import org.openhab.binding.solarforecast.internal.solcast.handler.SolcastBridgeHandler;
 import org.openhab.binding.solarforecast.internal.solcast.handler.SolcastPlaneHandler;
 import org.openhab.binding.solarforecast.internal.utils.Utils;
@@ -28,6 +30,7 @@ import org.openhab.core.i18n.LocationProvider;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.library.types.PointType;
+import org.openhab.core.persistence.PersistenceServiceRegistry;
 import org.openhab.core.storage.Storage;
 import org.openhab.core.storage.StorageService;
 import org.openhab.core.thing.Bridge;
@@ -46,20 +49,26 @@ import org.osgi.service.component.annotations.Reference;
  *
  * @author Bernd Weymann - Initial contribution
  * @author Bernd Weymann - Provide storage towards sc-plane
+ * @author Bernd Weymann - Forward persistence to forecast.solar plane handler
+ * @author Bernd Weymann - Provide available persistence service as configuration options
  */
 @NonNullByDefault
-@Component(configurationPid = "binding.solarforecast", service = ThingHandlerFactory.class)
+@Component(configurationPid = "binding.solarforecast", service = { ThingHandlerFactory.class })
+
 public class SolarForecastHandlerFactory extends BaseThingHandlerFactory {
     private final TimeZoneProvider timeZoneProvider;
-    private final HttpClient httpClient;
+    private final HttpClientFactory httpClientFactory;
+    private final PersistenceServiceRegistry persistenceRegistry;
     private Optional<PointType> location = Optional.empty();
     private Storage<String> storage;
 
     @Activate
     public SolarForecastHandlerFactory(final @Reference HttpClientFactory hcf, final @Reference LocationProvider lp,
-            final @Reference TimeZoneProvider tzp, final @Reference StorageService storageService) {
+            final @Reference TimeZoneProvider tzp, final @Reference StorageService storageService,
+            final @Reference PersistenceServiceRegistry psr) {
+        persistenceRegistry = psr;
         timeZoneProvider = tzp;
-        httpClient = hcf.getCommonHttpClient();
+        httpClientFactory = hcf;
         Utils.setTimeZoneProvider(tzp);
         PointType pt = lp.getLocation();
         if (pt != null) {
@@ -76,14 +85,22 @@ public class SolarForecastHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
-        if (FORECAST_SOLAR_SITE.equals(thingTypeUID)) {
+        if (FORECAST_SOLAR_SITE.equals(thingTypeUID) || ADJUSTABLE_FORECAST_SOLAR_SITE.equals(thingTypeUID)) {
             return new ForecastSolarBridgeHandler((Bridge) thing, location);
+        } else if (SMART_FORECAST_SOLAR_SITE.equals(thingTypeUID)) {
+            return new SmartForecastSolarBridgeHandler((Bridge) thing, location);
         } else if (FORECAST_SOLAR_PLANE.equals(thingTypeUID)) {
-            return new ForecastSolarPlaneHandler(thing, httpClient);
+            return new ForecastSolarPlaneHandler(thing, httpClientFactory.getCommonHttpClient());
+        } else if (ADJUSTABLE_FORECAST_SOLAR_PLANE.equals(thingTypeUID)) {
+            return new AdjustableForecastSolarPlaneHandler(thing, httpClientFactory.getCommonHttpClient(),
+                    persistenceRegistry);
+        } else if (SMART_FORECAST_SOLAR_PLANE.equals(thingTypeUID)) {
+            return new SmartForecastSolarPlaneHandler(thing, httpClientFactory.getCommonHttpClient(),
+                    persistenceRegistry);
         } else if (SOLCAST_SITE.equals(thingTypeUID)) {
             return new SolcastBridgeHandler((Bridge) thing, timeZoneProvider);
         } else if (SOLCAST_PLANE.equals(thingTypeUID)) {
-            return new SolcastPlaneHandler(thing, httpClient, storage);
+            return new SolcastPlaneHandler(thing, httpClientFactory.getCommonHttpClient(), storage);
         }
         return null;
     }
