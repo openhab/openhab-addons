@@ -23,12 +23,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.bouncycastle.crypto.params.Ed25519PrivateKeyParameters;
 import org.bouncycastle.crypto.params.Ed25519PublicKeyParameters;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.homekit.internal.crypto.CryptoUtils;
 import org.openhab.binding.homekit.internal.dto.Accessories;
 import org.openhab.binding.homekit.internal.dto.Accessory;
 import org.openhab.binding.homekit.internal.hap_services.CharacteristicReadWriteClient;
@@ -62,6 +64,13 @@ public abstract class HomekitBaseServerHandler extends BaseThingHandler {
 
     protected static final Gson GSON = new Gson();
 
+    // pattern matcherfor pairing code XXX-XX-XXX
+    protected static final Pattern PAIRING_CODE_PATTERN = Pattern.compile("^\\d{3}-\\d{2}-\\d{3}$");
+
+    // pattern matcher for host ipv4 address 123.123.123.123:12345
+    protected static final Pattern HOST_PATTERN = Pattern.compile(
+            "^(((25[0-5]|2[0-4]\\d|1\\d{2}|[1-9]?\\d)\\.){3}(25[0-5]|2[0-4]\\d|1\\d{2}|[1-9]?\\d)):(6553[0-5]|655[0-2]\\d|65[0-4]\\d{2}|6[0-4]\\d{3}|[1-5]?\\d{1,4})$");
+
     private final Logger logger = LoggerFactory.getLogger(HomekitBaseServerHandler.class);
 
     protected final Map<Integer, Accessory> accessories = new HashMap<>();
@@ -73,6 +82,7 @@ public abstract class HomekitBaseServerHandler extends BaseThingHandler {
     protected @NonNullByDefault({}) String pairingCode;
     protected @NonNullByDefault({}) Integer accessoryId;
     protected @NonNullByDefault({}) IpTransport ipTransport;
+    protected @NonNullByDefault({}) byte[] clientPairingId;
 
     protected @Nullable Ed25519PrivateKeyParameters controllerLongTermSecretKey = null;
     protected @Nullable Ed25519PublicKeyParameters accessoryLongTermPublicKey = null;
@@ -105,10 +115,10 @@ public abstract class HomekitBaseServerHandler extends BaseThingHandler {
     private void fetchAccessories() {
         try {
             String json = new String(ipTransport.get(ENDPOINT_ACCESSORIES, CONTENT_TYPE_HAP), StandardCharsets.UTF_8);
-            Accessories container = GSON.fromJson(json, Accessories.class);
-            if (container != null && container.accessories instanceof List<Accessory> accessoryList) {
+            Accessories acc0 = GSON.fromJson(json, Accessories.class);
+            if (acc0 instanceof Accessories acc1 && acc1.accessories instanceof List<Accessory> acc2) {
                 accessories.clear();
-                accessories.putAll(accessoryList.stream().filter(a -> Objects.nonNull(a.aid))
+                accessories.putAll(acc2.stream().filter(a -> Objects.nonNull(a.aid))
                         .collect(Collectors.toMap(a -> a.aid, Function.identity())));
             }
             logger.debug("Fetched {} accessories", accessories.size());
@@ -149,7 +159,7 @@ public abstract class HomekitBaseServerHandler extends BaseThingHandler {
             scheduler.submit(() -> {
                 // unpair and clear stored keys if this is NOT a child accessory
                 try {
-                    PairRemoveClient service = new PairRemoveClient(ipTransport, thing.getUID().toString());
+                    PairRemoveClient service = new PairRemoveClient(ipTransport, clientPairingId);
                     service.remove();
                     accessoryLongTermPublicKey = null;
                     storeLongTermKeys();
@@ -179,7 +189,7 @@ public abstract class HomekitBaseServerHandler extends BaseThingHandler {
             // standalone accessory or bridge accessory, so do pairing and session setup here
             isChildAccessory = false;
             Object host = getConfig().get(CONFIG_HOST);
-            if (host == null || !(host instanceof String hostString) || hostString.isEmpty()) {
+            if (host == null || !(host instanceof String hostString) || !HOST_PATTERN.matcher(hostString).matches()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Invalid host");
                 return;
             }
@@ -187,8 +197,7 @@ public abstract class HomekitBaseServerHandler extends BaseThingHandler {
                 ipTransport = new IpTransport(hostString);
             } catch (Exception e) {
                 logger.debug("Failed to create transport", e);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Failed to connect to accessory");
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Failed to connect");
                 return;
             }
             scheduler.execute(() -> initializePairing()); // return fast, do pairing in background thread
@@ -201,11 +210,20 @@ public abstract class HomekitBaseServerHandler extends BaseThingHandler {
      */
     private void initializePairing() {
         Object pairingConfig = getConfig().get(CONFIG_PAIRING_CODE);
-        if (pairingConfig == null || !(pairingConfig instanceof String pairingCode) || pairingCode.isEmpty()) {
+        if (pairingConfig == null || !(pairingConfig instanceof String pairingCode)
+                || !PAIRING_CODE_PATTERN.matcher(pairingCode).matches()) {
+            logger.debug("Pairing code must match XXX-XX-XXX");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Invalid pairing code");
             return;
         }
         this.pairingCode = pairingCode;
+        try {
+            clientPairingId = CryptoUtils.sha64(thing.getUID().toString().getBytes(StandardCharsets.UTF_8));
+        } catch (Exception e) {
+            logger.debug("Eroor creating client Id", e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Error creating client Id");
+            return;
+        }
         this.accessoryId = getAccessoryId();
         if (accessoryId == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Invalid accessory ID");
@@ -215,24 +233,23 @@ public abstract class HomekitBaseServerHandler extends BaseThingHandler {
         restoreLongTermKeys();
         Ed25519PrivateKeyParameters controllerLongTermSecretKey = this.controllerLongTermSecretKey;
         Ed25519PublicKeyParameters accessoryLongTermPublicKey = this.accessoryLongTermPublicKey;
-        String controllerPairingId = thing.getUID().toString();
 
         if (controllerLongTermSecretKey != null && accessoryLongTermPublicKey != null) {
             try {
-                logger.debug("Starting Pair-Verify with existing key for {}", controllerPairingId);
-                PairVerifyClient client = new PairVerifyClient(ipTransport, controllerPairingId,
+                logger.debug("Starting Pair-Verify with existing key for {}", clientPairingId);
+                PairVerifyClient client = new PairVerifyClient(ipTransport, clientPairingId,
                         controllerLongTermSecretKey, accessoryLongTermPublicKey);
 
                 ipTransport.setSessionKeys(client.verify());
                 rwService = new CharacteristicReadWriteClient(ipTransport);
 
-                logger.debug("Restored pairing was verified for {}", controllerPairingId);
+                logger.debug("Restored pairing was verified for {}", clientPairingId);
                 fetchAccessories();
                 updateStatus(ThingStatus.ONLINE);
 
                 return;
             } catch (Exception e) {
-                logger.debug("Restored pairing was not verified for {}", controllerPairingId, e);
+                logger.debug("Restored pairing was not verified for {}", clientPairingId, e);
                 this.controllerLongTermSecretKey = null;
                 storeLongTermKeys();
                 // fall through to create new pairing
@@ -241,20 +258,20 @@ public abstract class HomekitBaseServerHandler extends BaseThingHandler {
 
         // Create new controller private key
         controllerLongTermSecretKey = new Ed25519PrivateKeyParameters(new SecureRandom());
-        logger.debug("Created new controller long term private key for {}", controllerPairingId);
+        logger.debug("Created new controller long term private key for {}", clientPairingId);
 
         try {
-            logger.debug("Starting Pair-Setup for {}", controllerPairingId);
-            PairSetupClient pairSetupClient = new PairSetupClient(ipTransport, controllerPairingId,
+            logger.debug("Starting Pair-Setup for {}", clientPairingId);
+            PairSetupClient pairSetupClient = new PairSetupClient(ipTransport, clientPairingId,
                     controllerLongTermSecretKey, pairingCode);
 
             accessoryLongTermPublicKey = pairSetupClient.pair();
             this.accessoryLongTermPublicKey = accessoryLongTermPublicKey;
 
-            logger.debug("Pair-Setup completed; starting Pair-Verify for {}", controllerPairingId);
+            logger.debug("Pair-Setup completed; starting Pair-Verify for {}", clientPairingId);
 
             // Perform Pair-Verify immediately after Pair-Setup
-            PairVerifyClient pairVerifyClient = new PairVerifyClient(ipTransport, controllerPairingId,
+            PairVerifyClient pairVerifyClient = new PairVerifyClient(ipTransport, clientPairingId,
                     controllerLongTermSecretKey, accessoryLongTermPublicKey);
 
             ipTransport.setSessionKeys(pairVerifyClient.verify());
@@ -262,13 +279,13 @@ public abstract class HomekitBaseServerHandler extends BaseThingHandler {
 
             this.controllerLongTermSecretKey = controllerLongTermSecretKey;
 
-            logger.debug("Pairing and verification completed for {}", controllerPairingId);
+            logger.debug("Pairing and verification completed for {}", clientPairingId);
             storeLongTermKeys();
             fetchAccessories();
             updateStatus(ThingStatus.ONLINE);
 
         } catch (Exception e) {
-            logger.warn("Pairing / verification failed for {}", controllerPairingId, e);
+            logger.warn("Pairing / verification failed for {}", clientPairingId, e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Pairing / verification failed");
         }
     }

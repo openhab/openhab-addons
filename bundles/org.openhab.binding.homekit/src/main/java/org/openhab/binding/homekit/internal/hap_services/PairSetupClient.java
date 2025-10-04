@@ -15,7 +15,6 @@ package org.openhab.binding.homekit.internal.hap_services;
 import static org.openhab.binding.homekit.internal.HomekitBindingConstants.*;
 import static org.openhab.binding.homekit.internal.crypto.CryptoUtils.toHex;
 
-import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -53,12 +52,15 @@ public class PairSetupClient {
     private final byte[] clientPairingId;
     private final Ed25519PrivateKeyParameters clientLongTermSecretKey;
 
-    public PairSetupClient(IpTransport ipTransport, String clientPairingId,
+    public PairSetupClient(IpTransport ipTransport, byte[] clientPairingId,
             Ed25519PrivateKeyParameters clientLongTermSecretKey, String pairingCode) throws Exception {
-        logger.debug("Created with client pairingId:{}, pairingCode:{}", clientPairingId, pairingCode);
+        if (clientPairingId.length != 8) {
+            throw new IllegalArgumentException("Client Id must be exactly 8 bytes");
+        }
+        logger.debug("Created with pairingCode:{}", pairingCode);
         this.ipTransport = ipTransport;
         this.password = pairingCode;
-        this.clientPairingId = clientPairingId.getBytes(StandardCharsets.UTF_8);
+        this.clientPairingId = clientPairingId;
         this.clientLongTermSecretKey = clientLongTermSecretKey;
     }
 

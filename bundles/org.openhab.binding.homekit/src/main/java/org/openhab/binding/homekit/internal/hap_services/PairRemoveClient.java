@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.homekit.internal.hap_services;
 
-import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Set;
 
@@ -40,12 +39,15 @@ public class PairRemoveClient {
     private final Logger logger = LoggerFactory.getLogger(PairRemoveClient.class);
 
     private final IpTransport ipTransport;
-    private final String serverPairingId;
+    private final byte[] clientPairingId;
 
-    public PairRemoveClient(IpTransport ipTransport, String serverPairingId) {
-        logger.debug("Created with pairingId:{}", serverPairingId);
+    public PairRemoveClient(IpTransport ipTransport, byte[] clientPairingId) throws Exception {
+        if (clientPairingId.length != 8) {
+            throw new IllegalArgumentException("Client Id must be exactly 8 bytes");
+        }
+        logger.debug("Created..");
         this.ipTransport = ipTransport;
-        this.serverPairingId = serverPairingId;
+        this.clientPairingId = clientPairingId;
     }
 
     public void remove() throws Exception {
@@ -53,7 +55,7 @@ public class PairRemoveClient {
         Map<Integer, byte[]> tlv = Map.of( //
                 TlvType.STATE.key, new byte[] { PairingState.M1.value }, //
                 TlvType.METHOD.key, new byte[] { PairingMethod.REMOVE.value }, //
-                TlvType.IDENTIFIER.key, serverPairingId.getBytes(StandardCharsets.UTF_8));
+                TlvType.IDENTIFIER.key, clientPairingId);
         Validator.validate(PairingMethod.REMOVE, tlv);
 
         byte[] response = ipTransport.post(ENDPOINT_PAIR_REMOVE, CONTENT_TYPE, Tlv8Codec.encode(tlv));

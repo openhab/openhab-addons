@@ -17,7 +17,6 @@ import static org.mockito.Mockito.*;
 import static org.openhab.binding.homekit.internal.crypto.CryptoConstants.*;
 import static org.openhab.binding.homekit.internal.crypto.CryptoUtils.*;
 
-import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Objects;
 
@@ -49,9 +48,8 @@ class TestPairVerify {
             E487CB59 D31AC550 471E81F0 0F6928E0 1DDA08E9 74A004F4 9E61F5D1 05284D20
             """;
 
-    private final String clientPairingIdentifier = "11:22:33:44:55:66";
-    private final String serverPairingIdentifier = "66:55:44:33:22:11";
-    private final byte[] serverPairingId = serverPairingIdentifier.getBytes(StandardCharsets.UTF_8);
+    byte[] clientPairingId = new byte[] { 11, 22, 33, 44, 55, 66, 77, 88 };
+    byte[] serverPairingId = new byte[] { 88, 77, 66, 55, 44, 33, 22, 11 };
 
     private final Ed25519PrivateKeyParameters clientLongTermPrivateKey = new Ed25519PrivateKeyParameters(
             toBytes(CLIENT_PRIVATE_HEX));
@@ -71,7 +69,7 @@ class TestPairVerify {
         IpTransport mockTransport = mock(IpTransport.class);
 
         // create SRP client and server
-        PairVerifyClient client = new PairVerifyClient(mockTransport, clientPairingIdentifier, clientLongTermPrivateKey,
+        PairVerifyClient client = new PairVerifyClient(mockTransport, clientPairingId, clientLongTermPrivateKey,
                 serverLongTermPrivateKey.generatePublicKey());
 
         // mock the HTTP transport to simulate the SRP exchange

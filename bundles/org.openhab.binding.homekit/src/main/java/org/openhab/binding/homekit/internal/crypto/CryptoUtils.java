@@ -122,6 +122,12 @@ public class CryptoUtils {
         return md.digest(data);
     }
 
+    // Create 64 bit (8-byte) hash
+    public static byte[] sha64(byte[] data) throws Exception {
+        MessageDigest md = MessageDigest.getInstance("SHA-256");
+        return Arrays.copyOf(md.digest(data), 8);
+    }
+
     // Sign message with Ed25519
     public static byte[] signMessage(Ed25519PrivateKeyParameters secretKey, byte[] message) {
         Ed25519Signer signer = new Ed25519Signer();

@@ -81,10 +81,9 @@ class TestPairSetup {
     void testPairSetup() throws Exception {
         // initialize test parameters
         String password = "password123";
-        String clientPairingId = "11:22:33:44:55:66";
-        String serverPairingIdentifier = "66:55:44:33:22:11";
+        byte[] clientPairingId = new byte[] { 11, 22, 33, 44, 55, 66, 77, 88 };
         byte[] serverSalt = toBytes(SALT_HEX);
-        byte[] serverPairingId = serverPairingIdentifier.getBytes(StandardCharsets.UTF_8);
+        byte[] serverPairingId = new byte[] { 88, 77, 66, 55, 44, 33, 22, 11 };
 
         // initialize signing keys
         Ed25519PrivateKeyParameters clientLongTermSecretKey = new Ed25519PrivateKeyParameters(
