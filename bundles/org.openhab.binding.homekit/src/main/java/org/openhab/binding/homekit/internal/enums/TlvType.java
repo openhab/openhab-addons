@@ -38,9 +38,9 @@ public enum TlvType {
     FLAGS(0x13),
     SEPARATOR((byte) 0xFF);
 
-    public final int key;
+    public final int value;
 
-    TlvType(int key) {
-        this.key = key;
+    TlvType(int value) {
+        this.value = value;
     }
 }

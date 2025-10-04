@@ -125,9 +125,9 @@ public class SRPserver {
         byte[] signature = signMessage(serverLongTermPrivateKey, payload);
 
         Map<Integer, byte[]> subTlv = Map.of( //
-                TlvType.IDENTIFIER.key, serverPairingId, //
-                TlvType.PUBLIC_KEY.key, signingKey, //
-                TlvType.SIGNATURE.key, signature);
+                TlvType.IDENTIFIER.value, serverPairingId, //
+                TlvType.PUBLIC_KEY.value, signingKey, //
+                TlvType.SIGNATURE.value, signature);
 
         byte[] plaintext = Tlv8Codec.encode(subTlv);
         return CryptoUtils.encrypt(getSymmetricKey(), PS_M6_NONCE, plaintext, new byte[0]);

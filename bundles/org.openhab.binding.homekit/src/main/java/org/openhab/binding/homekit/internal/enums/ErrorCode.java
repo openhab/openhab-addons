@@ -36,12 +36,12 @@ public enum ErrorCode {
         this.value = (byte) value;
     }
 
-    public static ErrorCode from(byte b) {
+    public static ErrorCode from(byte value) {
         for (ErrorCode state : values()) {
-            if (state.value == b) {
+            if (state.value == value) {
                 return state;
             }
         }
-        throw new IllegalArgumentException("Unknown error code: " + b);
+        throw new IllegalArgumentException("Unknown error code: " + value);
     }
 }

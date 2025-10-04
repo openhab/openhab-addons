@@ -34,12 +34,12 @@ public enum PairingState {
         this.value = (byte) value;
     }
 
-    public static PairingState from(byte b) {
+    public static PairingState from(byte value) {
         for (PairingState state : values()) {
-            if (state.value == b) {
+            if (state.value == value) {
                 return state;
             }
         }
-        throw new IllegalArgumentException("Unknown pairing state: " + b);
+        throw new IllegalArgumentException("Unknown pairing state: " + value);
     }
 }

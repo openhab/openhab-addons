@@ -19,6 +19,7 @@ import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.bouncycastle.crypto.params.Ed25519PrivateKeyParameters;
@@ -162,10 +163,10 @@ public class SRPclient {
         byte[] clientSigningKey = clientLongTermSecretKey.generatePublicKey().getEncoded();
         byte[] clientSignature = signMessage(clientLongTermSecretKey, concat(sharedKey, pairingId, clientSigningKey));
 
-        Map<Integer, byte[]> subTlv = Map.of( //
-                TlvType.IDENTIFIER.key, pairingId, //
-                TlvType.PUBLIC_KEY.key, clientSigningKey, //
-                TlvType.SIGNATURE.key, clientSignature);
+        Map<Integer, byte[]> subTlv = new LinkedHashMap<>();
+        subTlv.put(TlvType.IDENTIFIER.value, pairingId);
+        subTlv.put(TlvType.PUBLIC_KEY.value, clientSigningKey);
+        subTlv.put(TlvType.SIGNATURE.value, clientSignature);
 
         byte[] plainText = Tlv8Codec.encode(subTlv);
         byte[] cipherText = encrypt(getSharedKey(), PS_M5_NONCE, plainText, new byte[0]);
@@ -185,9 +186,9 @@ public class SRPclient {
         byte[] plainText = decrypt(getSharedKey(), PS_M6_NONCE, cipherText, new byte[0]);
 
         Map<Integer, byte[]> subTlv = Tlv8Codec.decode(plainText);
-        byte[] serverPairingId = subTlv.get(TlvType.IDENTIFIER.key);
-        byte[] serverSigningKey = subTlv.get(TlvType.PUBLIC_KEY.key);
-        byte[] serverSignature = subTlv.get(TlvType.SIGNATURE.key);
+        byte[] serverPairingId = subTlv.get(TlvType.IDENTIFIER.value);
+        byte[] serverSigningKey = subTlv.get(TlvType.PUBLIC_KEY.value);
+        byte[] serverSignature = subTlv.get(TlvType.SIGNATURE.value);
 
         if (serverPairingId == null || serverSigningKey == null || serverSignature == null) {
             throw new SecurityException("Missing accessory credentials in M6");

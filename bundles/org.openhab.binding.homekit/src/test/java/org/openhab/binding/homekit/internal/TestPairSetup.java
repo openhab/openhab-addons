@@ -105,7 +105,7 @@ class TestPairSetup {
             // decode and validate the incoming TLV
             Map<Integer, byte[]> tlv = Tlv8Codec.decode(arg);
             PairSetupClient.Validator.validate(PairingMethod.SETUP, tlv);
-            byte[] state = tlv.get(TlvType.STATE.key);
+            byte[] state = tlv.get(TlvType.STATE.value);
             if (state == null || state.length != 1) {
                 throw new IllegalArgumentException("State missing or invalid");
             }
@@ -126,9 +126,9 @@ class TestPairSetup {
 
     private byte[] m1GetServerResponse(SRPserver server, byte[] serverSalt) {
         Map<Integer, byte[]> tlv = Map.of( //
-                TlvType.STATE.key, new byte[] { PairingState.M2.value }, //
-                TlvType.SALT.key, serverSalt, // salt
-                TlvType.PUBLIC_KEY.key, toUnsigned(server.B, 384) // server public key
+                TlvType.STATE.value, new byte[] { PairingState.M2.value }, //
+                TlvType.SALT.value, serverSalt, // salt
+                TlvType.PUBLIC_KEY.value, toUnsigned(server.B, 384) // server public key
         );
         PairSetupClient.Validator.validate(PairingMethod.SETUP, tlv);
         return Tlv8Codec.encode(tlv);
@@ -136,11 +136,11 @@ class TestPairSetup {
 
     private byte[] m3GetServerResponse(SRPserver server, Map<Integer, byte[]> tlv2, PairSetupClient client)
             throws Exception {
-        clientPublicKey = tlv2.get(TlvType.PUBLIC_KEY.key);
+        clientPublicKey = tlv2.get(TlvType.PUBLIC_KEY.value);
         byte[] serverProof = server.m3CreateServerProof(Objects.requireNonNull(clientPublicKey));
         Map<Integer, byte[]> tlv3 = Map.of( //
-                TlvType.STATE.key, new byte[] { PairingState.M4.value }, //
-                TlvType.PROOF.key, serverProof // server proof
+                TlvType.STATE.value, new byte[] { PairingState.M4.value }, //
+                TlvType.PROOF.value, serverProof // server proof
         );
         PairSetupClient.Validator.validate(PairingMethod.SETUP, tlv3);
         return Tlv8Codec.encode(tlv3);
@@ -149,8 +149,8 @@ class TestPairSetup {
     private byte[] m5GetServerResponse(SRPserver server) throws Exception {
         byte[] cipherText = server.m5EncodeServerInfoAndSign();
         Map<Integer, byte[]> tlv = Map.of( //
-                TlvType.STATE.key, new byte[] { PairingState.M6.value }, //
-                TlvType.ENCRYPTED_DATA.key, cipherText);
+                TlvType.STATE.value, new byte[] { PairingState.M6.value }, //
+                TlvType.ENCRYPTED_DATA.value, cipherText);
         PairSetupClient.Validator.validate(PairingMethod.SETUP, tlv);
         return Tlv8Codec.encode(tlv);
     }

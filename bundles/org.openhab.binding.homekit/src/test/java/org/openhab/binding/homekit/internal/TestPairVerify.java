@@ -79,7 +79,7 @@ class TestPairVerify {
             // decode and validate the incoming TLV
             Map<Integer, byte[]> tlv = Tlv8Codec.decode(arg);
             PairVerifyClient.Validator.validate(PairingMethod.VERIFY, tlv);
-            byte[] state = tlv.get(TlvType.STATE.key);
+            byte[] state = tlv.get(TlvType.STATE.value);
             if (state == null || state.length != 1) {
                 throw new IllegalArgumentException("State missing or invalid");
             }
@@ -98,7 +98,7 @@ class TestPairVerify {
     }
 
     private byte[] m1GetServerResponse(Map<Integer, byte[]> tlv) throws Exception {
-        byte[] clientEphemeralPublicKey = tlv.get(TlvType.PUBLIC_KEY.key);
+        byte[] clientEphemeralPublicKey = tlv.get(TlvType.PUBLIC_KEY.value);
         byte[] serverEphemeralPublicKey = this.serverEphemeralSecretKey.generatePublicKey().getEncoded();
         if (clientEphemeralPublicKey == null) {
             throw new SecurityException("Client public key missing");
@@ -107,8 +107,8 @@ class TestPairVerify {
                 concat(serverEphemeralPublicKey, serverPairingId, clientEphemeralPublicKey));
 
         Map<Integer, byte[]> tlvInner = Map.of( //
-                TlvType.IDENTIFIER.key, serverPairingId, //
-                TlvType.SIGNATURE.key, serverSignature);
+                TlvType.IDENTIFIER.value, serverPairingId, //
+                TlvType.SIGNATURE.value, serverSignature);
 
         this.clientEphemeralPublicKey = new X25519PublicKeyParameters(clientEphemeralPublicKey);
 
@@ -119,9 +119,9 @@ class TestPairVerify {
         byte[] cipherText = encrypt(sharedKey, PV_M2_NONCE, plainText, new byte[0]);
 
         Map<Integer, byte[]> tlvOut = Map.of( //
-                TlvType.STATE.key, new byte[] { PairingState.M2.value }, //
-                TlvType.PUBLIC_KEY.key, serverEphemeralPublicKey, //
-                TlvType.ENCRYPTED_DATA.key, cipherText);
+                TlvType.STATE.value, new byte[] { PairingState.M2.value }, //
+                TlvType.PUBLIC_KEY.value, serverEphemeralPublicKey, //
+                TlvType.ENCRYPTED_DATA.value, cipherText);
 
         return Tlv8Codec.encode(tlvOut);
     }
@@ -130,15 +130,15 @@ class TestPairVerify {
         if (sharedKey.length == 0) {
             throw new IllegalStateException("Session key not established");
         }
-        byte[] cipherText = tlv.get(TlvType.ENCRYPTED_DATA.key);
+        byte[] cipherText = tlv.get(TlvType.ENCRYPTED_DATA.value);
         if (cipherText == null) {
             throw new SecurityException("Server cipher text missing");
         }
         byte[] plainText = decrypt(sharedKey, PV_M3_NONCE, Objects.requireNonNull(cipherText), new byte[0]);
 
         Map<Integer, byte[]> subTlv = Tlv8Codec.decode(plainText);
-        byte[] clientPairingId = subTlv.get(TlvType.IDENTIFIER.key);
-        byte[] clientSignature = subTlv.get(TlvType.SIGNATURE.key);
+        byte[] clientPairingId = subTlv.get(TlvType.IDENTIFIER.value);
+        byte[] clientSignature = subTlv.get(TlvType.SIGNATURE.value);
         if (clientPairingId == null || clientSignature == null) {
             throw new SecurityException("Client pairing Id or signature missing");
         }
@@ -149,7 +149,7 @@ class TestPairVerify {
             throw new SecurityException("Client signature invalid");
         }
 
-        Map<Integer, byte[]> tlvOut = Map.of(TlvType.STATE.key, new byte[] { PairingState.M4.value });
+        Map<Integer, byte[]> tlvOut = Map.of(TlvType.STATE.value, new byte[] { PairingState.M4.value });
         PairVerifyClient.Validator.validate(PairingMethod.VERIFY, tlvOut);
 
         // no further messages from server

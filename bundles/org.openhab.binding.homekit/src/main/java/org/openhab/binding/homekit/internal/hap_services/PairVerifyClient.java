@@ -16,6 +16,7 @@ import static org.openhab.binding.homekit.internal.HomekitBindingConstants.*;
 import static org.openhab.binding.homekit.internal.crypto.CryptoConstants.*;
 import static org.openhab.binding.homekit.internal.crypto.CryptoUtils.*;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -86,9 +87,9 @@ public class PairVerifyClient {
     // M1 — Create new random client ephemeral X25519 public key and send it to server
     private void m1Execute() throws Exception {
         logger.debug("Pair-Verify M1: Send verification start request with client ephemeral X25519 PK to server");
-        Map<Integer, byte[]> tlv = Map.of( //
-                TlvType.STATE.key, new byte[] { PairingState.M1.value }, //
-                TlvType.PUBLIC_KEY.key, clientEphemeralSecretKey.generatePublicKey().getEncoded());
+        Map<Integer, byte[]> tlv = new LinkedHashMap<>();
+        tlv.put(TlvType.STATE.value, new byte[] { PairingState.M1.value });
+        tlv.put(TlvType.PUBLIC_KEY.value, clientEphemeralSecretKey.generatePublicKey().getEncoded());
         Validator.validate(PairingMethod.VERIFY, tlv);
         byte[] m1Response = ipTransport.post(ENDPOINT_PAIR_VERIFY, CONTENT_TYPE_PAIRING, Tlv8Codec.encode(tlv));
         m2Execute(m1Response);
@@ -100,17 +101,17 @@ public class PairVerifyClient {
         Map<Integer, byte[]> tlv = Tlv8Codec.decode(m1Response);
         Validator.validate(PairingMethod.VERIFY, tlv);
 
-        serverEphemeralPublicKey = new X25519PublicKeyParameters(tlv.get(TlvType.PUBLIC_KEY.key), 0);
+        serverEphemeralPublicKey = new X25519PublicKeyParameters(tlv.get(TlvType.PUBLIC_KEY.value), 0);
         sharedSecret = generateSharedSecret(clientEphemeralSecretKey, serverEphemeralPublicKey);
         sharedKey = generateHkdfKey(sharedSecret, PAIR_VERIFY_ENCRYPT_SALT, PAIR_VERIFY_ENCRYPT_INFO);
 
-        byte[] cipherText = tlv.get(TlvType.ENCRYPTED_DATA.key);
+        byte[] cipherText = tlv.get(TlvType.ENCRYPTED_DATA.value);
         byte[] plainText = CryptoUtils.decrypt(sharedKey, PV_M2_NONCE, Objects.requireNonNull(cipherText), new byte[0]);
 
         // validate identifier + signature
         Map<Integer, byte[]> subTlv = Tlv8Codec.decode(plainText);
-        byte[] serverPairingId = subTlv.get(TlvType.IDENTIFIER.key);
-        byte[] serverSignature = subTlv.get(TlvType.SIGNATURE.key);
+        byte[] serverPairingId = subTlv.get(TlvType.IDENTIFIER.value);
+        byte[] serverSignature = subTlv.get(TlvType.SIGNATURE.value);
         if (serverPairingId == null || serverSignature == null) {
             throw new SecurityException("Accessory identifier or signature missing");
         }
@@ -130,16 +131,16 @@ public class PairVerifyClient {
                 concat(clientEphemeralSecretKey.generatePublicKey().getEncoded(), clientPairingId,
                         serverEphemeralPublicKey.getEncoded()));
 
-        Map<Integer, byte[]> subTlv = Map.of( //
-                TlvType.IDENTIFIER.key, clientPairingId, //
-                TlvType.SIGNATURE.key, clientSignature);
+        Map<Integer, byte[]> subTlv = new LinkedHashMap<>();
+        subTlv.put(TlvType.IDENTIFIER.value, clientPairingId);
+        subTlv.put(TlvType.SIGNATURE.value, clientSignature);
 
         byte[] plainText = Tlv8Codec.encode(subTlv);
         byte[] cipherText = encrypt(sharedKey, PV_M3_NONCE, plainText, new byte[0]);
 
-        Map<Integer, byte[]> tlv = Map.of( //
-                TlvType.STATE.key, new byte[] { PairingState.M3.value }, //
-                TlvType.ENCRYPTED_DATA.key, cipherText);
+        Map<Integer, byte[]> tlv = new LinkedHashMap<>();
+        tlv.put(TlvType.STATE.value, new byte[] { PairingState.M3.value });
+        tlv.put(TlvType.ENCRYPTED_DATA.value, cipherText);
         Validator.validate(PairingMethod.VERIFY, tlv);
 
         byte[] m3Response = ipTransport.post(ENDPOINT_PAIR_VERIFY, CONTENT_TYPE_PAIRING, Tlv8Codec.encode(tlv));
@@ -161,10 +162,10 @@ public class PairVerifyClient {
     public static class Validator {
 
         private static final Map<PairingState, Set<Integer>> SPECIFICATION_REQUIRED_KEYS = Map.of( //
-                PairingState.M1, Set.of(TlvType.STATE.key, TlvType.PUBLIC_KEY.key), // TLVType.METHOD not required
-                PairingState.M2, Set.of(TlvType.STATE.key, TlvType.PUBLIC_KEY.key, TlvType.ENCRYPTED_DATA.key), //
-                PairingState.M3, Set.of(TlvType.STATE.key, TlvType.ENCRYPTED_DATA.key), //
-                PairingState.M4, Set.of(TlvType.STATE.key));
+                PairingState.M1, Set.of(TlvType.STATE.value, TlvType.PUBLIC_KEY.value), // TLVType.METHOD not required
+                PairingState.M2, Set.of(TlvType.STATE.value, TlvType.PUBLIC_KEY.value, TlvType.ENCRYPTED_DATA.value), //
+                PairingState.M3, Set.of(TlvType.STATE.value, TlvType.ENCRYPTED_DATA.value), //
+                PairingState.M4, Set.of(TlvType.STATE.value));
 
         /**
          * Validates the TLV map for the specification required pairing state.
@@ -172,14 +173,14 @@ public class PairVerifyClient {
          * @throws SecurityException if required keys are missing or state is invalid
          */
         public static void validate(PairingMethod method, Map<Integer, byte[]> tlv) throws SecurityException {
-            if (tlv.containsKey(TlvType.ERROR.key)) {
-                byte[] err = tlv.get(TlvType.ERROR.key);
+            if (tlv.containsKey(TlvType.ERROR.value)) {
+                byte[] err = tlv.get(TlvType.ERROR.value);
                 ErrorCode code = err != null && err.length > 0 ? ErrorCode.from(err[0]) : ErrorCode.UNKNOWN;
                 throw new SecurityException(
                         "Pairing method '%s' action failed with error '%s'".formatted(method.name(), code.name()));
             }
 
-            byte[] state = tlv.get(TlvType.STATE.key);
+            byte[] state = tlv.get(TlvType.STATE.value);
             if (state == null || state.length != 1) {
                 throw new SecurityException("Missing or invalid 'STATE' TLV (0x06)");
             }

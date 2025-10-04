@@ -34,12 +34,12 @@ public enum PairingMethod {
         this.value = (byte) value;
     }
 
-    public static PairingMethod from(byte b) {
+    public static PairingMethod from(byte value) {
         for (PairingMethod state : values()) {
-            if (state.value == b) {
+            if (state.value == value) {
                 return state;
             }
         }
-        throw new IllegalArgumentException("Unknown pairing method: " + b);
+        throw new IllegalArgumentException("Unknown pairing method: " + value);
     }
 }

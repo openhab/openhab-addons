@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.homekit.internal.hap_services;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -52,10 +53,10 @@ public class PairRemoveClient {
 
     public void remove() throws Exception {
         logger.debug("Pair-Remove: starting removal");
-        Map<Integer, byte[]> tlv = Map.of( //
-                TlvType.STATE.key, new byte[] { PairingState.M1.value }, //
-                TlvType.METHOD.key, new byte[] { PairingMethod.REMOVE.value }, //
-                TlvType.IDENTIFIER.key, clientPairingId);
+        Map<Integer, byte[]> tlv = new LinkedHashMap<>();
+        tlv.put(TlvType.STATE.value, new byte[] { PairingState.M1.value });
+        tlv.put(TlvType.METHOD.value, new byte[] { PairingMethod.REMOVE.value });
+        tlv.put(TlvType.IDENTIFIER.value, clientPairingId);
         Validator.validate(PairingMethod.REMOVE, tlv);
 
         byte[] response = ipTransport.post(ENDPOINT_PAIR_REMOVE, CONTENT_TYPE, Tlv8Codec.encode(tlv));
@@ -69,8 +70,8 @@ public class PairRemoveClient {
     protected static class Validator {
 
         private static final Map<PairingState, Set<Integer>> SPECIFICATION_REQUIRED_KEYS = Map.of( //
-                PairingState.M1, Set.of(TlvType.STATE.key, TlvType.METHOD.key, TlvType.IDENTIFIER.key), //
-                PairingState.M2, Set.of(TlvType.STATE.key));
+                PairingState.M1, Set.of(TlvType.STATE.value, TlvType.METHOD.value, TlvType.IDENTIFIER.value), //
+                PairingState.M2, Set.of(TlvType.STATE.value));
 
         /**
          * Validates the TLV map for the specification required pairing state.
@@ -78,14 +79,14 @@ public class PairRemoveClient {
          * @throws SecurityException if required keys are missing or state is invalid
          */
         public static void validate(PairingMethod method, Map<Integer, byte[]> tlv) throws SecurityException {
-            if (tlv.containsKey(TlvType.ERROR.key)) {
-                byte[] err = tlv.get(TlvType.ERROR.key);
+            if (tlv.containsKey(TlvType.ERROR.value)) {
+                byte[] err = tlv.get(TlvType.ERROR.value);
                 ErrorCode code = err != null && err.length > 0 ? ErrorCode.from(err[0]) : ErrorCode.UNKNOWN;
                 throw new SecurityException(
                         "Pairing method '%s' action failed with error '%s'".formatted(method.name(), code.name()));
             }
 
-            byte[] state = tlv.get(TlvType.STATE.key);
+            byte[] state = tlv.get(TlvType.STATE.value);
             if (state == null || state.length != 1) {
                 throw new SecurityException("Missing or invalid 'STATE' TLV (0x06)");
             }
