@@ -358,7 +358,7 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
         } else {
             logger.debug("{}: disconnected", thing.getUID().getId());
 
-            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "Waiting for device wake up");
+            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "@text/online.wait-for-device");
 
             ScheduledFuture<?> pollingJob = this.pollingJob;
             if (pollingJob != null) {
@@ -570,12 +570,12 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
         thing.getChannels().forEach(this::configureChannel);
 
         if (!configuration.ip.isBlank()) {
-            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "Waiting for device wake up");
+            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "@text/online.wait-for-device");
 
             this.tuyaDevice = new TuyaDevice(gson, this, eventLoopGroup, configuration.deviceId,
                     configuration.localKey.getBytes(StandardCharsets.UTF_8), configuration.ip, configuration.protocol);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "Waiting for IP address");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "@text/offline.wait-for-ip");
         }
 
         udpDiscoveryListener.registerListener(configuration.deviceId, this);
