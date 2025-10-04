@@ -98,8 +98,8 @@ public class IpTransport implements AutoCloseable {
             throws IOException, InterruptedException, TimeoutException, ExecutionException {
         try {
             byte[] request = buildRequest(method, endpoint, contentType, body);
+            logger.trace("Request:\n{}", new String(request, StandardCharsets.ISO_8859_1));
             byte[] response;
-            logger.trace("Request:\n{}", new String(request, StandardCharsets.UTF_8));
 
             SecureSession secureSession = this.secureSession;
             if (secureSession != null) {
@@ -113,7 +113,7 @@ public class IpTransport implements AutoCloseable {
                 response = readPlainResponse(in);
             }
 
-            logger.trace("Response:\n{}", new String(response, StandardCharsets.UTF_8));
+            logger.trace("Response:\n{}", new String(response, StandardCharsets.ISO_8859_1));
             return parseResponse(response);
         } catch (IOException | InterruptedException | TimeoutException e) {
             throw e;
