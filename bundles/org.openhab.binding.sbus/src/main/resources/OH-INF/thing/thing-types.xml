@@ -129,13 +129,13 @@
 		</config-description>
 	</thing-type>
 
-	<!-- Multi-Sensor Device (9-in-1) -->
+	<!-- Multi-Sensor Device -->
 	<thing-type id="multi-sensor">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="udp"/>
 		</supported-bridge-type-refs>
-		<label>Multi-Sensor (9-in-1)</label>
-		<description>Sbus 9-in-1 sensor device with motion, lux, and dry contact capabilities</description>
+		<label>Multi-Sensor</label>
+		<description>Sbus multi-sensor device with motion, lux, and dry contact capabilities</description>
 		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
 		<config-description>
 			<parameter name="subnetId" type="integer">

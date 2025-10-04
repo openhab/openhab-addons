@@ -11,7 +11,7 @@ The binding supports various device types including RGB/RGBW controllers, temper
 - `temperature` - Temperature Sensors for monitoring environmental conditions
 - `switch` - Switch Controllers for basic on/off and dimming control
 - `contact-sensor` - Traditional Contact Sensors for monitoring open/closed states
-- `multi-sensor` - Multi-Sensor (9-in-1) devices with motion, lux, and dry contact capabilities
+- `multi-sensor` - Multi-Sensor devices with motion, lux, and dry contact capabilities
 
 ## Discovery
 
@@ -48,10 +48,10 @@ All device types share the same basic configuration parameters:
 
 **Device Type Specific Notes:**
 
-- **Traditional Contact Sensors (`contact-sensor`)**: Use ReadDryChannelsRequest protocol for simple contact monitoring
-- **Multi-Sensor Devices (`multi-sensor`)**: Use ReadNineInOneStatusRequest protocol and support motion, lux, and dry contact channels from a single physical device
+- **Contact Sensors (`contact-sensor`)**: For standalone contact/dry contact sensor devices that monitor open/closed states
+- **Multi-Sensor Devices (`multi-sensor`)**: For multi-function sensor devices that combine motion detection, light level measurement, and dry contact monitoring in a single device
 
-**Listen-Only Mode:** Setting `refresh=0` enables listen-only mode where handlers only process asynchronous broadcast messages (MotionSensorStatusReport) without actively polling. This is particularly useful for 9-in-1 sensor devices that broadcast status updates.
+**Listen-Only Mode:** Setting `refresh=0` enables listen-only mode where the binding only processes broadcast messages from the device without actively polling. This is useful for devices that automatically broadcast their status updates.
 
 ## Channels
 
@@ -89,7 +89,7 @@ The color channel of RGBW controllers supports these additional parameters:
 |:--------|:--------|:----------:|:----------------------------------------------------------|
 | contact | Contact | R          | Contact state (OPEN/CLOSED) for traditional contact sensors |
 
-### Multi-Sensor (9-in-1) Channels
+### Multi-Sensor Channels
 
 Multi-sensor devices support multiple channel types from a single physical device:
 
@@ -103,9 +103,9 @@ The contact channel supports these additional parameters:
 
 | Parameter     | Type    | Description                                          | Default | Required | Advanced  |
 |:--------------|:--------|:-----------------------------------------------------|:-------:|:--------:|:---------:|
-| channelNumber | integer | The dry contact number on the 9-in-1 device (1 or 2) | 1       | no       | no        |
+| channelNumber | integer | The dry contact number on the multi-sensor device    | 1       | no       | no        |
 
-**Note:** You can configure any combination of these channels on a single `multi-sensor` thing to match your 9-in-1 device capabilities.
+**Note:** You can configure any combination of these channels on a single `multi-sensor` thing to match your device capabilities.
 
 ## Full Example
 
@@ -143,7 +143,7 @@ Bridge sbus:udp:mybridge [ host="192.168.1.255", port=5000, timeout=5000 ] {
             Type contact-channel : contact [ channelNumber=1 ]
     }
     
-    // 9-in-1 multi-sensor device with all capabilities
+    // multi-sensor device with all capabilities
     Thing multi-sensor multisensor1 [ id=85, refresh=0 ] {
         Channels:
             Type contact-channel : contact1 [ channelNumber=1 ]  // First dry contact
@@ -152,7 +152,7 @@ Bridge sbus:udp:mybridge [ host="192.168.1.255", port=5000, timeout=5000 ] {
             Type lux-channel : lux                              // Light level
     }
     
-    // 9-in-1 sensor with only motion and lux (no contacts)
+    // multi-sensor with only motion and lux (no contacts)
     Thing multi-sensor motionlux1 [ id=86, refresh=0 ] {
         Channels:
             Type motion-channel : motion
@@ -181,7 +181,7 @@ Switch  rgbwPower    "Power"        <switch>     (gLight)   ["Switch", "Light"] 
 // Traditional Contact Sensor
 Contact Door_Contact "Door [%s]" <door> { channel="sbus:contact-sensor:mybridge:contact1:contact" }
 
-// 9-in-1 Multi-Sensor Items
+// Multi-Sensor Items
 Contact Sensor_Contact1 "Sensor Contact 1 [%s]" <door> { channel="sbus:multi-sensor:mybridge:multisensor1:contact1" }
 Contact Sensor_Contact2 "Sensor Contact 2 [%s]" <door> { channel="sbus:multi-sensor:mybridge:multisensor1:contact2" }
 Switch Motion_Sensor "Motion [%s]" <motion> { channel="sbus:multi-sensor:mybridge:multisensor1:motion" }
@@ -227,7 +227,7 @@ The binding supports two distinct types of sensor devices:
 - **Channels**: Contact channels only
 - **Configuration**: Standard device configuration with channel numbers
 
-#### Multi-Sensor (9-in-1) Devices (`multi-sensor`)
+#### Multi-Sensor Devices (`multi-sensor`)
 - **Protocol**: Uses `ReadNineInOneStatusRequest/Response` and `MotionSensorStatusReport` broadcasts
 - **Use Case**: Advanced sensor devices combining multiple sensor types in one physical unit
 - **Channels**: Any combination of contact, motion, and lux channels
@@ -239,7 +239,7 @@ The binding supports two distinct types of sensor devices:
 
 **Choosing the Right Type:**
 - Use `contact-sensor` for traditional, simple contact sensors
-- Use `multi-sensor` for 9-in-1 devices that provide motion detection, light level sensing, and/or dry contact monitoring
+- Use `multi-sensor` for devices that provide motion detection, light level sensing, and/or dry contact monitoring
 
 ### RGB vs. RGBW Mode
 
