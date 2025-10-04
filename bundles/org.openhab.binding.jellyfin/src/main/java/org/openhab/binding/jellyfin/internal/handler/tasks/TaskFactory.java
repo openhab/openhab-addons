@@ -12,11 +12,13 @@
  */
 package org.openhab.binding.jellyfin.internal.handler.tasks;
 
+import java.util.List;
 import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.jellyfin.internal.api.ApiClient;
 import org.openhab.binding.jellyfin.internal.api.generated.current.model.SystemInfo;
+import org.openhab.binding.jellyfin.internal.api.generated.current.model.UserDto;
 import org.openhab.binding.jellyfin.internal.types.ExceptionHandlerType;
 
 /**
@@ -49,5 +51,18 @@ public class TaskFactory {
      */
     public static UpdateTask createUpdateTask(ApiClient client, ExceptionHandlerType exceptionHandler) {
         return new UpdateTask(client, exceptionHandler);
+    }
+
+    /**
+     * Creates a users list task with the specified parameters.
+     * 
+     * @param client The API client to use for the users list request
+     * @param usersHandler The handler for processing the retrieved users list
+     * @param exceptionHandler The handler for exceptions
+     * @return A configured users list task
+     */
+    public static UsersListTask createUsersListTask(ApiClient client, Consumer<List<UserDto>> usersHandler,
+            ExceptionHandlerType exceptionHandler) {
+        return new UsersListTask(client, usersHandler, exceptionHandler);
     }
 }

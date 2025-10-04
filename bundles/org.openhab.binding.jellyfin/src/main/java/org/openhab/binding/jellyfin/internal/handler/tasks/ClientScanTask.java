@@ -29,7 +29,14 @@ import org.openhab.binding.jellyfin.internal.types.ExceptionHandlerType;
  * @author Patrik Gfeller - Initial contribution
  */
 @NonNullByDefault
-public class ClientScanTask implements Runnable {
+public class ClientScanTask extends AbstractTask {
+
+    /** Task ID for the client scan task */
+    public static final String TASK_ID = "ClientScan";
+    /** Default startup delay for the client scan task in seconds */
+    public static final int DEFAULT_STARTUP_DELAY = 2;
+    /** Default interval for the client scan task in seconds */
+    public static final int DEFAULT_INTERVAL = 30;
 
     private final Consumer<List<DeviceInfoDto>> devicesHandler;
     private final ExceptionHandlerType exceptionHandler;
@@ -46,6 +53,8 @@ public class ClientScanTask implements Runnable {
      */
     public ClientScanTask(ApiClient client, UUID userId, Consumer<List<DeviceInfoDto>> devicesHandler,
             ExceptionHandlerType exceptionHandler) {
+        super(TASK_ID, DEFAULT_STARTUP_DELAY, DEFAULT_INTERVAL);
+
         this.devicesHandler = devicesHandler;
         this.exceptionHandler = exceptionHandler;
         this.client = client;

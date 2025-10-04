@@ -13,21 +13,18 @@ classDiagram
     AbstractTask <|-- UpdateTask
     AbstractTask <|-- UsersListTask
     AbstractTask <|-- ClientScanTask
-    ExceptionHandlerType <|.. ExceptionHandler
+
     
     %% Class dependencies and usage relationships
     HandlerFactory --> ApiClientFactory : uses
     ServerHandler --> ApiClient : uses
-    ServerHandler --> ExceptionHandler : uses
     ServerHandler --> Configuration : uses
     ServerHandler --> TaskFactory : uses
     ServerHandler --> TaskManager : uses
-    ServerHandler --> ServerState : uses
     ServerDiscoveryService ..> ServerDiscovery : creates
     ServerDiscoveryService --> BindingConfiguration : uses
     TaskFactory ..> AbstractTask : creates
     TaskManager --> AbstractTask : manages
-    TaskManager --> ServerState : evaluates
     ServerDiscovery ..> ServerDiscoveryResult : creates
     ApiClientFactory ..> ApiClient : creates
     HandlerFactory ..> ServerHandler : creates
@@ -41,7 +38,6 @@ classDiagram
         +initialize()
         +handleCommand()
         +dispose()
-        -transitionToState(ServerState)
     }
     
     class TaskManager {
@@ -51,17 +47,6 @@ classDiagram
         +static startTask(Map, String, ScheduledExecutorService)
         +static stopTask(Map, String)
         +static stopAllTasks(Map)
-    }
-    
-    class ServerState {
-        <<enumeration>>
-        INITIALIZING
-        DISCOVERED
-        NEEDS_AUTHENTICATION
-        CONFIGURED
-        CONNECTED
-        ERROR
-        DISPOSED
     }
     
     class ApiClientFactory {
@@ -76,7 +61,6 @@ classDiagram
     
     class ServerDiscoveryService {
         +startScan()
-        -createServerDiscovery() ServerDiscovery
     }
     
     class ServerDiscovery {
@@ -99,15 +83,6 @@ classDiagram
         +createTask(String taskType, ApiClient, ...) AbstractTask
         +createConnectionTask(...) AbstractTask
         +createUpdateTask(...) AbstractTask
-    }
-    
-    class ExceptionHandlerType {
-        <<interface>>
-        +handle(Exception)
-    }
-    
-    class ExceptionHandler {
-        +handle(Exception)
     }
     
     class Configuration {
@@ -158,15 +133,12 @@ classDiagram
 1. **HandlerFactory**: Creates thing handlers for the binding.
 2. **ServerHandler**: Main bridge handler for Jellyfin servers that orchestrates server communication and state management.
 3. **TaskManager**: Stateless utility class that manages task lifecycle operations based on server state transitions.
-4. **ServerState**: Enumeration defining server states (INITIALIZING, DISCOVERED, NEEDS_AUTHENTICATION, CONFIGURED, CONNECTED, ERROR, DISPOSED) and their required task sets.
-5. **ApiClientFactory**: Creates API client instances for different API versions.
-6. **ApiClient**: Handles communication with the Jellyfin server and manages authentication.
-7. **ServerDiscoveryService**: Discovers Jellyfin servers on the network using UDP broadcasts.
-8. **TaskFactory**: Creates various task instances used for server communication.
-9. **AbstractTask**: Base class for all tasks that can be scheduled for execution.
-10. **BindingConfiguration**: Contains configuration settings for the binding.
-11. **ExceptionHandlerType**: Interface defining the contract for exception handling.
-12. **ExceptionHandler**: Implementation of ExceptionHandlerType that handles exceptions during binding operation.
+4. **ApiClientFactory**: Creates API client instances for different API versions.
+5. **ApiClient**: Handles communication with the Jellyfin server and manages authentication.
+6. **ServerDiscoveryService**: Discovers Jellyfin servers on the network using UDP broadcasts.
+7. **TaskFactory**: Creates various task instances used for server communication.
+8. **AbstractTask**: Base class for all tasks that can be scheduled for execution.
+9. **BindingConfiguration**: Contains configuration settings for the binding.
 
 ## Architecture Overview
 

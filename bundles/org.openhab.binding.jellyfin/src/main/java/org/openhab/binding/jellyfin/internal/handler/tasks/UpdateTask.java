@@ -35,6 +35,7 @@ public class UpdateTask extends AbstractTask {
     public static final int DEFAULT_INTERVAL = 10;
 
     private final Logger logger = LoggerFactory.getLogger(UpdateTask.class);
+    @SuppressWarnings("unused") // TODO: Will be used when update logic is implemented
     private final ApiClient client;
     private final ExceptionHandlerType exceptionHandler;
 

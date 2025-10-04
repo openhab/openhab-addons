@@ -32,7 +32,7 @@ public class ConnectionTask extends AbstractTask {
     /** Default startup delay for the connection task in seconds */
     public static final int DEFAULT_STARTUP_DELAY = 0;
     /** Default interval for the connection task in seconds */
-    public static final int DEFAULT_INTERVAL = 10;
+    public static final int DEFAULT_INTERVAL = 30;
 
     private final Consumer<SystemInfo> acceptedHandler;
     private final ExceptionHandlerType exceptionHandler;

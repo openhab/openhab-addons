@@ -15,6 +15,7 @@ package org.openhab.binding.jellyfin.internal.handler;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 
@@ -24,11 +25,13 @@ import org.openhab.binding.jellyfin.internal.Configuration;
 import org.openhab.binding.jellyfin.internal.Constants;
 import org.openhab.binding.jellyfin.internal.api.ApiClient;
 import org.openhab.binding.jellyfin.internal.api.generated.current.model.SystemInfo;
+import org.openhab.binding.jellyfin.internal.api.generated.current.model.UserDto;
 import org.openhab.binding.jellyfin.internal.exceptions.ExceptionHandler;
 import org.openhab.binding.jellyfin.internal.handler.tasks.AbstractTask;
 import org.openhab.binding.jellyfin.internal.handler.tasks.ConnectionTask;
 import org.openhab.binding.jellyfin.internal.handler.tasks.TaskFactory;
 import org.openhab.binding.jellyfin.internal.handler.tasks.UpdateTask;
+import org.openhab.binding.jellyfin.internal.handler.tasks.UsersListTask;
 import org.openhab.binding.jellyfin.internal.types.ServerState;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -73,6 +76,8 @@ public class ServerHandler extends BaseBridgeHandler {
         this.tasks.put(ConnectionTask.TASK_ID, TaskFactory.createConnectionTask(this.apiClient,
                 systemInfo -> this.handleConnection(systemInfo), this.exceptionHandler));
         this.tasks.put(UpdateTask.TASK_ID, TaskFactory.createUpdateTask(this.apiClient, this.exceptionHandler));
+        this.tasks.put(UsersListTask.TASK_ID, TaskFactory.createUsersListTask(this.apiClient,
+                users -> this.handleUsersList(users), this.exceptionHandler));
 
         // Additional tasks can be added here in the future
     }
@@ -124,6 +129,7 @@ public class ServerHandler extends BaseBridgeHandler {
             } else if (serverURI != null && !hasToken) {
                 return ServerState.NEEDS_AUTHENTICATION;
             } else if (serverURI != null && hasToken) {
+                this.apiClient.authenticateWithToken(this.configuration.token);
                 return ServerState.CONFIGURED;
             }
         } catch (URISyntaxException e) {
@@ -259,6 +265,32 @@ public class ServerHandler extends BaseBridgeHandler {
             setState(ServerState.ERROR);
         }
         return null;
+    }
+
+    /**
+     * Handles the retrieved users list from the server
+     * 
+     * @param users The list of users retrieved from the server
+     */
+    private void handleUsersList(List<UserDto> users) {
+        try {
+            logger.info("Retrieved users list from Jellyfin server:");
+            logger.info("  Total users: {}", users.size());
+
+            for (UserDto user : users) {
+                logger.info("  User: {} (ID: {}, Server: {})", user.getName(), user.getId(), user.getServerName());
+
+                if (user.getLastLoginDate() != null) {
+                    logger.info("    Last login: {}", user.getLastLoginDate());
+                }
+                if (user.getLastActivityDate() != null) {
+                    logger.info("    Last activity: {}", user.getLastActivityDate());
+                }
+            }
+        } catch (Exception e) {
+            logger.warn("Failed to process users list: {}", e.getMessage(), e);
+            this.exceptionHandler.handle(e);
+        }
     }
 
     /**

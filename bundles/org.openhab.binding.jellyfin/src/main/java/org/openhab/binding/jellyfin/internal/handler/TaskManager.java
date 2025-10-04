@@ -22,7 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.jellyfin.internal.handler.tasks.AbstractTask;
 import org.openhab.binding.jellyfin.internal.handler.tasks.ConnectionTask;
-import org.openhab.binding.jellyfin.internal.handler.tasks.UpdateTask;
+import org.openhab.binding.jellyfin.internal.handler.tasks.UsersListTask;
 import org.openhab.binding.jellyfin.internal.types.ServerState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,7 +61,7 @@ public final class TaskManager {
             case CONNECTED:
                 // When connected, run update tasks to keep data synchronized
                 // Note: Connection task stops automatically when successful
-                return List.of(UpdateTask.TASK_ID);
+                return List.of(UsersListTask.TASK_ID);
             case DISCOVERED:
                 // For discovered servers, potentially run registration task in the future
                 return List.of();

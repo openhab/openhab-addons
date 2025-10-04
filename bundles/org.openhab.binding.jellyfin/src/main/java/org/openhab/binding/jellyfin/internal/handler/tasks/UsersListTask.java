@@ -34,7 +34,14 @@ import com.fasterxml.jackson.core.type.TypeReference;
  * @author Patrik Gfeller - Initial contribution
  */
 @NonNullByDefault
-public class UsersListTask implements Runnable {
+public class UsersListTask extends AbstractTask {
+
+    /** Task ID for the users list task */
+    public static final String TASK_ID = "UsersList";
+    /** Default startup delay for the users list task in seconds */
+    public static final int DEFAULT_STARTUP_DELAY = 5;
+    /** Default interval for the users list task in seconds */
+    public static final int DEFAULT_INTERVAL = 60;
 
     private final Consumer<List<UserDto>> usersHandler;
     private final ExceptionHandlerType exceptionHandler;
@@ -49,6 +56,8 @@ public class UsersListTask implements Runnable {
      */
     public UsersListTask(ApiClient client, Consumer<List<UserDto>> usersHandler,
             ExceptionHandlerType exceptionHandler) {
+        super(TASK_ID, DEFAULT_STARTUP_DELAY, DEFAULT_INTERVAL);
+
         this.usersHandler = usersHandler;
         this.exceptionHandler = exceptionHandler;
         this.client = client;
