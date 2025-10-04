@@ -30,10 +30,12 @@ public class ApiClientFactory {
     }
 
     /**
-     * Creates a new ApiClient instance configured with the HTTP client factory.
-     * 
-     * @param baseUrl The base URL for the Jellyfin server
-     * @return A configured ApiClient instance
+     * Creates and configures a new instance of {@link ApiClient}.
+     * <p>
+     * The client is initialized and can be further configured with an HTTP client factory and a base URL.
+     * Additional configuration steps can be added as needed.
+     *
+     * @return a newly created and partially configured {@link ApiClient} instance
      */
     public ApiClient createApiClient() {
         ApiClient client = new ApiClient();

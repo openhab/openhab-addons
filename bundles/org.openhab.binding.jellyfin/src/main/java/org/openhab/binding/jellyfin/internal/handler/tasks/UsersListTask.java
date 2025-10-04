@@ -68,9 +68,17 @@ public class UsersListTask extends AbstractTask {
         try {
             // Since we couldn't find a direct method in the API, we'll use a direct HTTP request
             // to the /Users endpoint which returns a list of users
-            HttpRequest request = HttpRequest.newBuilder().uri(URI.create(client.getBaseUri() + "/Users"))
-                    .header("Accept", "application/json").GET().build();
+            // The API client's interceptoris used to leverage the configured authentication token
+            HttpRequest.Builder requestBuilder = HttpRequest.newBuilder()
+                    .uri(URI.create(client.getBaseUri() + "/Users")).header("Accept", "application/json").GET();
 
+            // Apply the request interceptor to add authentication headers
+            Consumer<HttpRequest.Builder> interceptor = client.getRequestInterceptor();
+            if (interceptor != null) {
+                interceptor.accept(requestBuilder);
+            }
+
+            HttpRequest request = requestBuilder.build();
             HttpResponse<String> response = client.getHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
 
             if (response.statusCode() != 200) {
