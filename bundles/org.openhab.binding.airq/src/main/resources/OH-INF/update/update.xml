@@ -76,23 +76,23 @@
 			</update-channel>
 		</instruction-set>
 		<instruction-set targetVersion="3">
-            <add-channel id="virus">
-                <type>airq:virus</type>
-                <label>Virus Index</label>
-            </add-channel>
-            <add-channel id="virus_maxerr">
-                <type>airq:virus_maxerr</type>
-                <label>Max. Error Virus</label>
-            </add-channel>
-            <add-channel id="mold">
-                <type>airq:mold</type>
-                <label>Mold Index</label>
-            </add-channel>
-            <add-channel id="mold_maxerr">
-                <type>airq:mold_maxerr</type>
-                <label>Max. Error Mold</label>
-            </add-channel>
-        </instruction-set>
+			<add-channel id="virus">
+				<type>airq:virus</type>
+				<label>Virus Index</label>
+			</add-channel>
+			<add-channel id="virus_maxerr">
+				<type>airq:virus_maxerr</type>
+				<label>Max. Error Virus</label>
+			</add-channel>
+			<add-channel id="mold">
+				<type>airq:mold</type>
+				<label>Mold Index</label>
+			</add-channel>
+			<add-channel id="mold_maxerr">
+				<type>airq:mold_maxerr</type>
+				<label>Max. Error Mold</label>
+			</add-channel>
+		</instruction-set>
 	</thing-type>
 
 </update:update-descriptions>

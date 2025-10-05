@@ -74,7 +74,7 @@
 			<channel id="temperature_maxerr" typeId="temperature_maxerr"/>
 			<channel id="tvoc_maxerr" typeId="tvoc_maxerr"/>
 			<channel id="virus_maxerr" typeId="virus_maxerr"/>
-            <channel id="mold_maxerr" typeId="mold_maxerr"/>
+			<channel id="mold_maxerr" typeId="mold_maxerr"/>
 
 			<!-- configuration data -->
 			<channel id="wifi" typeId="Wifi"/>
@@ -351,18 +351,18 @@
 		<label>Uptime</label>
 		<state readOnly="true" pattern="%d %unit%"></state>
 	</channel-type>
-	
+
 	<channel-type id="virus" advanced="false">
-        <item-type unitHint="%">Number:Dimensionless</item-type>
-        <label>Virus Index</label>
-        <state readOnly="true" pattern="%.2f %unit%"></state>
-    </channel-type>
-    
-    <channel-type id="mold" advanced="false">
-        <item-type unitHint="%">Number:Dimensionless</item-type>
-        <label>Mold Index</label>
-        <state readOnly="true" pattern="%.2f %unit%"></state>
-    </channel-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Virus Index</label>
+		<state readOnly="true" pattern="%.2f %unit%"></state>
+	</channel-type>
+
+	<channel-type id="mold" advanced="false">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Mold Index</label>
+		<state readOnly="true" pattern="%.2f %unit%"></state>
+	</channel-type>
 
 	<!-- Maximum error -->
 	<channel-type id="cnt0_3_maxerr" advanced="true">
@@ -502,18 +502,18 @@
 		<label>Max. Error VOC Conc.</label>
 		<state readOnly="true" pattern="± %.2f %%"></state>
 	</channel-type>
-	
+
 	<channel-type id="virus_maxerr" advanced="true">
-        <item-type unitHint="%">Number:Dimensionless</item-type>
-        <label>Max. Error Virus</label>
-        <state readOnly="true" pattern="± %.2f %%"></state>
-    </channel-type>
-    
-    <channel-type id="mold_maxerr" advanced="true">
-        <item-type unitHint="%">Number:Dimensionless</item-type>
-        <label>Max. Error Mold</label>
-        <state readOnly="true" pattern="± %.2f %%"></state>
-    </channel-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Max. Error Virus</label>
+		<state readOnly="true" pattern="± %.2f %%"></state>
+	</channel-type>
+
+	<channel-type id="mold_maxerr" advanced="true">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Max. Error Mold</label>
+		<state readOnly="true" pattern="± %.2f %%"></state>
+	</channel-type>
 
 	<!-- settings -->
 
