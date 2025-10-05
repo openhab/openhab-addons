@@ -328,18 +328,20 @@ public class OpenhabGraalJSScriptEngine
 
     @Override
     protected String onScript(String script) {
-        if (isUiBasedScript() && configuration.isWrapperEnabled()) {
-            logger.debug("Wrapping script for engine '{}' ...", engineIdentifier);
-
-            String eventConversionScript = "";
-            if (configuration.isEventConversionEnabled()) {
-                eventConversionScript = EVENT_CONVERSION_CODE + System.lineSeparator();
-            }
-
-            return "(function() {" + System.lineSeparator() + eventConversionScript + script + System.lineSeparator()
-                    + "})()";
+        if (!isUiBasedScript()) {
+            return super.onScript(script);
         }
-        return super.onScript(script);
+
+        String newScript = script;
+        if (configuration.isEventConversionEnabled()) {
+            logger.debug("Injecting event conversion code into script for engine '{}'.", engineIdentifier);
+            newScript = EVENT_CONVERSION_CODE + System.lineSeparator() + newScript;
+        }
+        if (configuration.isWrapperEnabled()) {
+            logger.debug("Wrapping script for engine '{}' ...", engineIdentifier);
+            newScript = "(function() {" + System.lineSeparator() + newScript + System.lineSeparator() + "})()";
+        }
+        return super.onScript(newScript);
     }
 
     @Override
