@@ -133,7 +133,8 @@ public class HomekitMdnsDiscoveryParticipant implements MDNSDiscoveryParticipant
     }
 
     /**
-     * Work around for a known JmDNS bug when parsing TXT strings with a '0' byte terminator.
+     * The JmDNS library getProperties() method has a bug whereby it fails to return any properties
+     * in the case that the TXT record contains zero length parts. This is a drop in replacement.
      */
     private Map<String, String> getProperties(ServiceInfo service) {
         Map<String, String> map = new HashMap<>();
@@ -141,11 +142,11 @@ public class HomekitMdnsDiscoveryParticipant implements MDNSDiscoveryParticipant
         int i = 0;
         while (i < bytes.length) {
             int len = bytes[i++] & 0xFF;
-            if (len == 0) {
-                break;
+            if (len == 0) { // skip zero length parts
+                continue;
             }
             String[] parts = new String(bytes, i, len, StandardCharsets.UTF_8).split("=");
-            map.put(parts[0], parts.length > 1 ? parts[1] : "");
+            map.put(parts[0], parts.length < 2 ? "" : parts[1].replaceFirst("\u0000$", "")); // strip zero endings
             i += len;
         }
         return map;
