@@ -1,6 +1,6 @@
 # FENECON Binding
 
-The FENECON Binding integrates the [FENECON energy storage system](https://fenecon.de/) device into the openHAB system via [REST-API](https://docs.fenecon.de/_/de/fems/fems-app/OEM_App_REST_JSON.html).
+The FENECON Binding integrates the [FENECON energy storage system](https://fenecon.de/) device into the openHAB system via [REST-API](https://docs.fenecon.de/de/fems/fems-app/App_REST-JSON_Lesezugriff.html).
 
 With the binding, it is possible to request status information from FENECON Home to allow you home automation decisions based on the current energy management.
 
