@@ -30,7 +30,7 @@ public class GraalJSScriptEngineConfiguration {
 
     private static final String CFG_INJECTION_ENABLED = "injectionEnabledV2";
     private static final String CFG_INJECTION_CACHING_ENABLED = "injectionCachingEnabled";
-    private static final String CFG_WRAPPER_ENABLED = "wrapperEnabled";
+    private static final String CFG_SCRIPT_CONDITION_WRAPPER_ENABLED = "scriptConditionWrapperEnabled";
     private static final String CFG_EVENT_CONVERSION_ENABLED = "eventConversionEnabled";
     private static final String CFG_DEPENDENCY_TRACKING_ENABLED = "dependencyTrackingEnabled";
 
@@ -40,7 +40,7 @@ public class GraalJSScriptEngineConfiguration {
 
     private int injectionEnabled = INJECTION_ENABLED_FOR_ALL_SCRIPTS;
     private boolean injectionCachingEnabled = true;
-    private boolean wrapperEnabled = true;
+    private boolean scriptConditionWrapperEnabled = true;
     private boolean eventConversionEnabled = true;
     private boolean dependencyTrackingEnabled = true;
 
@@ -61,7 +61,7 @@ public class GraalJSScriptEngineConfiguration {
     void modified(Map<String, ?> config) {
         boolean oldInjectionEnabledForUiBasedScript = isInjectionEnabledForUiBasedScript();
         boolean oldDependencyTrackingEnabled = dependencyTrackingEnabled;
-        boolean oldWrapperEnabled = wrapperEnabled;
+        boolean oldScriptConditionWrapperEnabled = scriptConditionWrapperEnabled;
         boolean oldEventConversionEnabled = eventConversionEnabled;
 
         this.update(config);
@@ -76,10 +76,10 @@ public class GraalJSScriptEngineConfiguration {
                     "{} dependency tracking for JavaScript Scripting. Please resave your scripts to apply this change.",
                     dependencyTrackingEnabled ? "Enabled" : "Disabled");
         }
-        if (oldWrapperEnabled != wrapperEnabled) {
+        if (oldScriptConditionWrapperEnabled != scriptConditionWrapperEnabled) {
             logger.info(
-                    "{} wrapper for JavaScript Scripting. Please resave your UI-based scripts to apply this change.",
-                    wrapperEnabled ? "Enabled" : "Disabled");
+                    "{} script condition wrapper for JavaScript Scripting. Please resave your rules with JavaScript script conditions to apply this change.",
+                    scriptConditionWrapperEnabled ? "Enabled" : "Disabled");
         }
         if (oldEventConversionEnabled != eventConversionEnabled) {
             if (eventConversionEnabled && !isInjectionEnabledForUiBasedScript()) {
@@ -105,7 +105,8 @@ public class GraalJSScriptEngineConfiguration {
                 INJECTION_ENABLED_FOR_UI_BASED_SCRIPTS_ONLY);
         injectionCachingEnabled = ConfigParser.valueAsOrElse(config.get(CFG_INJECTION_CACHING_ENABLED), Boolean.class,
                 true);
-        wrapperEnabled = ConfigParser.valueAsOrElse(config.get(CFG_WRAPPER_ENABLED), Boolean.class, true);
+        scriptConditionWrapperEnabled = ConfigParser.valueAsOrElse(config.get(CFG_SCRIPT_CONDITION_WRAPPER_ENABLED),
+                Boolean.class, true);
         eventConversionEnabled = ConfigParser.valueAsOrElse(config.get(CFG_EVENT_CONVERSION_ENABLED), Boolean.class,
                 true);
         dependencyTrackingEnabled = ConfigParser.valueAsOrElse(config.get(CFG_DEPENDENCY_TRACKING_ENABLED),
@@ -128,8 +129,8 @@ public class GraalJSScriptEngineConfiguration {
         return injectionCachingEnabled;
     }
 
-    public boolean isWrapperEnabled() {
-        return wrapperEnabled;
+    public boolean isScriptConditionWrapperEnabled() {
+        return scriptConditionWrapperEnabled;
     }
 
     public boolean isEventConversionEnabled() {
