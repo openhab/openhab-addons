@@ -18,7 +18,7 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ServiceScope;
 
 /**
- * JellyfinApiClient is a API client for interacting with the Jellyfin server.
+ * Factory for creating and configuring {@link ApiClient} instances for Jellyfin server interactions.
  * 
  * @author Patrik Gfeller - Initial Contribution
  */

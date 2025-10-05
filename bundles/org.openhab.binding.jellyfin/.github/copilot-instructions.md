@@ -67,6 +67,7 @@ public class JellyfinServerDiscoveryService extends AbstractDiscoveryService {
 ### Code Generation
 - Jellyfin API classes are **generated** from OpenAPI specs (see `logs/endpoints/` for discovered endpoints)
 - **Never edit** files in `api/generated/` directly
+- **Ignore files with `._ suffix** - these are deprecated/backup files and should not be modified
 - Custom logic goes in wrapper classes like `ApiClient.java` and `ApiClientFactory.java`
 
 ## Domain-Specific Conventions
