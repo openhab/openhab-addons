@@ -8,26 +8,29 @@ The following diagram shows the main classes and their relationships within the 
 
 ```mermaid
 classDiagram
-    %% Class inheritance relationships
-    AbstractTask <|-- ConnectionTask
-    AbstractTask <|-- UpdateTask
-    AbstractTask <|-- UsersListTask
-    AbstractTask <|-- ClientScanTask
-
+    %% Interface implementations
+    ErrorEventListener <|.. ServerHandler
     
     %% Class dependencies and usage relationships
     HandlerFactory --> ApiClientFactory : uses
     ServerHandler --> ApiClient : uses
-    ServerHandler --> Configuration : uses
     ServerHandler --> TaskFactory : uses
     ServerHandler --> TaskManager : uses
+    ServerHandler --> ErrorEventBus : owns
     ServerDiscoveryService ..> ServerDiscovery : creates
     ServerDiscoveryService --> BindingConfiguration : uses
     TaskFactory ..> AbstractTask : creates
     TaskManager --> AbstractTask : manages
     ServerDiscovery ..> ServerDiscoveryResult : creates
     ApiClientFactory ..> ApiClient : creates
+    HandlerFactory --> ServerHandler : creates
+    ContextualExceptionHandler --> ErrorEventBus : publishes to
+    ErrorEventBus --> ErrorEventListener : notifies
+    TaskFactory --> ContextualExceptionHandler : creates
     HandlerFactory ..> ServerHandler : creates
+    EventDrivenExceptionHandler --> ErrorEventBus : publishes to
+    ErrorEventBus --> ErrorEventListener : notifies
+    TaskFactory --> EventDrivenExceptionHandler : creates
     
     %% Class definitions with key attributes and methods
     class HandlerFactory {
@@ -38,6 +41,7 @@ classDiagram
         +initialize()
         +handleCommand()
         +dispose()
+        +onErrorEvent(ErrorEvent)
     }
     
     class TaskManager {
@@ -64,9 +68,6 @@ classDiagram
     }
     
     class ServerDiscovery {
-        -int port
-        -int timeout
-        +ServerDiscovery(int port, int timeout)
         +discoverServers() List
     }
     
@@ -85,20 +86,8 @@ classDiagram
         +createUpdateTask(...) AbstractTask
     }
     
-    class Configuration {
-        +String hostname
-        +int port
-        +boolean ssl
-        +String path
-        +String token
-        +getServerURI() URI
-    }
-    
     class BindingConfiguration {
         <<binding config>>
-        +int discoveryPort
-        +int discoveryTimeout
-        +String discoveryMessage
         +static getConfiguration(ConfigurationAdmin) BindingConfiguration
     }
     
@@ -109,22 +98,19 @@ classDiagram
         +String version
     }
     
-    class ConnectionTask {
-        %% Inherits run() from AbstractTask
+    class ErrorEventListener {
+        <<interface>>
+        +onErrorEvent(ErrorEvent)
     }
     
-    class UpdateTask {
-        %% Inherits run() from AbstractTask
+    class ErrorEventBus {
+        +addListener(ErrorEventListener)
+        +removeListener(ErrorEventListener)
+        +publishEvent(ErrorEvent)
     }
     
-    class UsersListTask {
-        %% Inherits run() from AbstractTask
-        %% Available but not currently used
-    }
-    
-    class ClientScanTask {
-        %% Inherits run() from AbstractTask
-        %% Available but not currently used
+    class ContextualExceptionHandler {
+        +handle(Exception)
     }
 ```
 
@@ -132,6 +118,7 @@ classDiagram
 
 1. **HandlerFactory**: Creates thing handlers for the binding.
 2. **ServerHandler**: Main bridge handler for Jellyfin servers that orchestrates server communication and state management.
+   Implements `ErrorEventListener` for event-driven error handling.
 3. **TaskManager**: Stateless utility class that manages task lifecycle operations based on server state transitions.
 4. **ApiClientFactory**: Creates API client instances for different API versions.
 5. **ApiClient**: Handles communication with the Jellyfin server and manages authentication.
@@ -139,16 +126,24 @@ classDiagram
 7. **TaskFactory**: Creates various task instances used for server communication.
 8. **AbstractTask**: Base class for all tasks that can be scheduled for execution.
 9. **BindingConfiguration**: Contains configuration settings for the binding.
+10. **ErrorEventBus**: Central event bus for error events using the Observer pattern, providing loose coupling between error producers and consumers.
+11. **ContextualExceptionHandler**: Intelligent exception handler that categorizes exceptions by type and severity, then publishes events to the error event bus.
+12. **ErrorEvent**: Event object that encapsulates exception information with context, type, and severity for better error handling.
 
 ## Architecture Overview
 
-The binding follows a state-driven architecture where:
+The binding follows a state-driven architecture with event-driven error handling where:
 
 - **ServerHandler** manages the overall server connection lifecycle and delegates task management to the **TaskManager** utility
 - **TaskManager** provides stateless operations for starting, stopping, and transitioning tasks based on **ServerState**
 - **ServerState** enum defines which tasks should be active for each server state
 - Tasks are created by **TaskFactory** and extend **AbstractTask** for scheduled execution
 - **ApiClient** provides the communication layer with version-specific implementations
+- **Error Handling** uses the Observer pattern:
+  - **ContextualExceptionHandler** categorizes exceptions and publishes **ErrorEvent** objects
+  - **ErrorEventBus** manages event distribution using thread-safe operations
+  - **ServerHandler** implements **ErrorEventListener** to react to error events with appropriate state changes
+  - No circular dependencies: Tasks → ContextualExceptionHandler → ErrorEventBus → ServerHandler
 
 ## API Version Support
 

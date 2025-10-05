@@ -26,7 +26,10 @@ import org.openhab.binding.jellyfin.internal.Constants;
 import org.openhab.binding.jellyfin.internal.api.ApiClient;
 import org.openhab.binding.jellyfin.internal.api.generated.current.model.SystemInfo;
 import org.openhab.binding.jellyfin.internal.api.generated.current.model.UserDto;
-import org.openhab.binding.jellyfin.internal.exceptions.ExceptionHandler;
+import org.openhab.binding.jellyfin.internal.events.ErrorEvent;
+import org.openhab.binding.jellyfin.internal.events.ErrorEventBus;
+import org.openhab.binding.jellyfin.internal.events.ErrorEventListener;
+import org.openhab.binding.jellyfin.internal.exceptions.ContextualExceptionHandler;
 import org.openhab.binding.jellyfin.internal.handler.tasks.AbstractTask;
 import org.openhab.binding.jellyfin.internal.handler.tasks.ConnectionTask;
 import org.openhab.binding.jellyfin.internal.handler.tasks.TaskFactory;
@@ -53,10 +56,10 @@ import org.slf4j.LoggerFactory;
  * 
  */
 @NonNullByDefault
-public class ServerHandler extends BaseBridgeHandler {
+public class ServerHandler extends BaseBridgeHandler implements ErrorEventListener {
 
     private final Logger logger = LoggerFactory.getLogger(ServerHandler.class);
-    private final ExceptionHandler exceptionHandler;
+    private final ErrorEventBus errorEventBus;
     private final ApiClient apiClient;
     private final Configuration configuration;
 
@@ -68,16 +71,21 @@ public class ServerHandler extends BaseBridgeHandler {
     public ServerHandler(Bridge bridge, ApiClient apiClient) {
         super(bridge);
 
-        this.exceptionHandler = new ExceptionHandler();
         this.configuration = this.getConfigAs(Configuration.class);
         this.apiClient = apiClient;
 
-        // Create all tasks in the constructor
-        this.tasks.put(ConnectionTask.TASK_ID, TaskFactory.createConnectionTask(this.apiClient,
-                systemInfo -> this.handleConnection(systemInfo), this.exceptionHandler));
-        this.tasks.put(UpdateTask.TASK_ID, TaskFactory.createUpdateTask(this.apiClient, this.exceptionHandler));
+        // Create event bus and register as listener
+        this.errorEventBus = new ErrorEventBus();
+        this.errorEventBus.addListener(this);
+
+        // Create tasks with context-specific exception handlers
+        this.tasks.put(ConnectionTask.TASK_ID,
+                TaskFactory.createConnectionTask(this.apiClient, systemInfo -> this.handleConnection(systemInfo),
+                        new ContextualExceptionHandler(errorEventBus, "ConnectionTask")));
+        this.tasks.put(UpdateTask.TASK_ID, TaskFactory.createUpdateTask(this.apiClient,
+                new ContextualExceptionHandler(errorEventBus, "UpdateTask")));
         this.tasks.put(UsersListTask.TASK_ID, TaskFactory.createUsersListTask(this.apiClient,
-                users -> this.handleUsersList(users), this.exceptionHandler));
+                users -> this.handleUsersList(users), new ContextualExceptionHandler(errorEventBus, "UsersListTask")));
 
         // Additional tasks can be added here in the future
     }
@@ -103,6 +111,30 @@ public class ServerHandler extends BaseBridgeHandler {
 
         // Update running tasks based on the new state
         TaskManager.processStateChange(newState, tasks, scheduledTasks, scheduler);
+    }
+
+    @Override
+    public void onErrorEvent(ErrorEvent event) {
+        // Strategy pattern for handling different error types and severities
+        switch (event.getSeverity()) {
+            case WARNING:
+                // Just log, don't change state
+                logger.warn("Warning in {}: {}", event.getContext(), event.getException().getMessage());
+                break;
+
+            case RECOVERABLE:
+                // Set to error state but allow recovery
+                logger.error("Recoverable error in {}: {}", event.getContext(), event.getException().getMessage());
+                setState(ServerState.ERROR);
+                break;
+
+            case FATAL:
+                // Set to error state and require restart
+                logger.error("Fatal error in {}: {}", event.getContext(), event.getException().getMessage(),
+                        event.getException());
+                setState(ServerState.ERROR);
+                break;
+        }
     }
 
     /**
@@ -134,7 +166,9 @@ public class ServerHandler extends BaseBridgeHandler {
             }
         } catch (URISyntaxException e) {
             logger.warn("Invalid server URI configuration: {}", e.getMessage());
-            this.exceptionHandler.handle(e);
+            ErrorEvent event = new ErrorEvent(e, ErrorEvent.ErrorType.CONFIGURATION_ERROR,
+                    ErrorEvent.ErrorSeverity.FATAL, "determineState");
+            errorEventBus.publishEvent(event);
             return ServerState.ERROR;
         }
 
@@ -148,8 +182,9 @@ public class ServerHandler extends BaseBridgeHandler {
             scheduler.execute(initializeHandler());
         } catch (Exception e) {
             this.logger.warn("Exception during initialization: {}", e.getMessage());
-            this.exceptionHandler.handle(e);
-            setState(ServerState.ERROR);
+            ErrorEvent event = new ErrorEvent(e, ErrorEvent.ErrorType.UNKNOWN_ERROR, ErrorEvent.ErrorSeverity.FATAL,
+                    "initialize");
+            errorEventBus.publishEvent(event);
         }
     }
 
@@ -161,9 +196,12 @@ public class ServerHandler extends BaseBridgeHandler {
 
     @Override
     public void dispose() {
+        // Clean up event bus registration
+        if (errorEventBus != null) {
+            errorEventBus.removeListener(this);
+        }
         // Set state to indicate disposal
         setState(ServerState.DISPOSED);
-        // No additional cleanup required
         super.dispose();
     }
 
@@ -228,8 +266,9 @@ public class ServerHandler extends BaseBridgeHandler {
 
             } catch (Exception e) {
                 this.logger.error("Error during initialization: {}", e.getMessage(), e);
-                this.exceptionHandler.handle(e);
-                setState(ServerState.ERROR);
+                ErrorEvent event = new ErrorEvent(e, ErrorEvent.ErrorType.UNKNOWN_ERROR, ErrorEvent.ErrorSeverity.FATAL,
+                        "initializeHandler");
+                errorEventBus.publishEvent(event);
             }
         };
     }
@@ -248,7 +287,9 @@ public class ServerHandler extends BaseBridgeHandler {
 
         } catch (Exception e) {
             logger.warn("Failed to process system information: {}", e.getMessage(), e);
-            setState(ServerState.ERROR);
+            ErrorEvent event = new ErrorEvent(e, ErrorEvent.ErrorType.API_ERROR, ErrorEvent.ErrorSeverity.RECOVERABLE,
+                    "handleConnection");
+            errorEventBus.publishEvent(event);
         }
         return null;
     }
@@ -275,7 +316,9 @@ public class ServerHandler extends BaseBridgeHandler {
             }
         } catch (Exception e) {
             logger.warn("Failed to process users list: {}", e.getMessage(), e);
-            this.exceptionHandler.handle(e);
+            ErrorEvent event = new ErrorEvent(e, ErrorEvent.ErrorType.API_ERROR, ErrorEvent.ErrorSeverity.WARNING,
+                    "handleUsersList");
+            errorEventBus.publishEvent(event);
         }
     }
 
@@ -337,7 +380,9 @@ public class ServerHandler extends BaseBridgeHandler {
                 updateConfiguration(new URI(localAddress));
             } catch (Exception e) {
                 logger.debug("Failed to parse local address URI: {}", e.getMessage());
-                // Don't use exception handler for debug-level issues
+                ErrorEvent event = new ErrorEvent(e, ErrorEvent.ErrorType.CONFIGURATION_ERROR,
+                        ErrorEvent.ErrorSeverity.WARNING, "updateConfiguration");
+                errorEventBus.publishEvent(event);
             }
         }
     }

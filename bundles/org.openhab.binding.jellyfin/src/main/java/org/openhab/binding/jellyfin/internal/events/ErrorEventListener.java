@@ -10,23 +10,22 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.jellyfin.internal.exceptions;
+package org.openhab.binding.jellyfin.internal.events;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Exception handler implementation
+ * Listener interface for error events
  * 
  * @author Patrik Gfeller - Initial contribution
  */
 @NonNullByDefault
-public class ExceptionHandler implements org.openhab.binding.jellyfin.internal.types.ExceptionHandlerType {
+public interface ErrorEventListener {
 
-    public ExceptionHandler() {
-    }
-
-    @Override
-    public void handle(Exception exception) {
-        exception.printStackTrace();
-    }
+    /**
+     * Called when an error event occurs
+     * 
+     * @param event The error event
+     */
+    void onErrorEvent(ErrorEvent event);
 }

@@ -33,6 +33,18 @@ jellyfin:server (Bridge) -> jellyfin:client (Thing)
 - Implement async task patterns via `TaskManager` and `AbstractTask` subclasses in `handler/tasks/`
 - Bridge handlers must manage child discovery services registration/unregistration
 
+### Event-Driven Error Handling
+- **Observer Pattern**: Use `ErrorEventBus` with `ErrorEventListener` for loose coupling between error producers and consumers
+- **Strategy Pattern**: `ContextualExceptionHandler` intelligently categorizes exceptions by type and severity
+- **Error Events**: All errors are represented as `ErrorEvent` objects with context, type, and severity information
+- **No Circular Dependencies**: Tasks → ContextualExceptionHandler → ErrorEventBus → ServerHandler (one-way flow)
+- **Thread Safety**: `ErrorEventBus` uses `CopyOnWriteArrayList` for concurrent access
+
+### Error Classification
+- **Error Types**: CONNECTION_ERROR, AUTHENTICATION_ERROR, API_ERROR, CONFIGURATION_ERROR, UNKNOWN_ERROR
+- **Error Severities**: WARNING (log only), RECOVERABLE (error state, allow recovery), FATAL (error state, restart required)
+- **Context-Aware**: Each task gets its own exception handler with specific context for better debugging
+
 ### API Client Usage
 - **UUID Compatibility**: Jellyfin servers return inconsistent UUID formats - custom `UuidDeserializer` handles this in `ApiClient.java`
 - **Version Support**: Generated API supports both current (10.10.7+) and legacy versions - check `api/generated/current/` vs `api/generated/legacy/`
@@ -49,15 +61,17 @@ public class JellyfinServerDiscoveryService extends AbstractDiscoveryService {
 ### Task Management
 - Long-running operations use `TaskManager` with `AbstractTask` implementations
 - Connection tasks, update polling, and API calls all follow this pattern
-- Tasks handle their own error recovery and state management
+- Tasks handle their own error recovery via event-driven exception handlers
+- Each task receives a context-specific `ContextualExceptionHandler`
 
 ## Build & Test Workflow
 
 ### Build System
 - **Maven**: Standard openHAB addon build via `mvn clean install`
-- **Quick Build**: Use provided VS Code task "Build" or `.vscode/scripts/build.sh`
+- **Build Verification**: Always use Maven commands for checking modifications and compilation
 - **Java Version**: Requires Java 21 (configured in build script)
 - **Dependencies**: Jackson 2.19.0 for JSON processing, standard openHAB core dependencies
+- **Note**: Do not use VS Code tasks for build verification - use Maven directly
 
 ### Testing Patterns
 - Unit tests in `src/test/java/` focus on UUID deserialization and API client functionality
@@ -83,9 +97,10 @@ public class JellyfinServerDiscoveryService extends AbstractDiscoveryService {
 - Authentication state managed in `ServerHandler` with connection tasks
 
 ### Error Handling
-- Use `ExceptionHandler` and `ExceptionHandlerType` enum for consistent error categorization
-- Bridge status drives child thing status - children go offline when bridge disconnects
-- Failed API calls should not crash handlers - log and set appropriate Thing status
+- **Event-Driven Architecture**: Use `ErrorEventBus` and `ErrorEventListener` pattern instead of direct coupling
+- **Exception Classification**: `ContextualExceptionHandler` automatically categorizes exceptions by type and severity
+- **Context Preservation**: Each exception handler includes context information for better debugging
+- **Strategy Pattern**: Different error types and severities trigger different response strategies in listeners
 
 ### Media Search Syntax
 - Supports prefixed search: `<type:movie>`, `<season:1><episode:1>` 
