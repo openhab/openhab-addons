@@ -18,7 +18,6 @@ classDiagram
     ServerHandler --> TaskManager : uses
     ServerHandler --> ErrorEventBus : owns
     ServerDiscoveryService ..> ServerDiscovery : creates
-    ServerDiscoveryService --> BindingConfiguration : uses
     TaskFactory ..> AbstractTask : creates
     TaskManager --> AbstractTask : manages
     ServerDiscovery ..> ServerDiscoveryResult : creates
@@ -82,11 +81,6 @@ classDiagram
         +createUpdateTask(...) AbstractTask
     }
     
-    class BindingConfiguration {
-        <<binding config>>
-        +static getConfiguration(ConfigurationAdmin) BindingConfiguration
-    }
-    
     class ServerDiscoveryResult {
         +String id
         +String name
@@ -121,10 +115,9 @@ classDiagram
 6. **ServerDiscoveryService**: Discovers Jellyfin servers on the network using UDP broadcasts.
 7. **TaskFactory**: Creates various task instances used for server communication.
 8. **AbstractTask**: Base class for all tasks that can be scheduled for execution.
-9. **BindingConfiguration**: Contains configuration settings for the binding.
-10. **ErrorEventBus**: Central event bus for error events using the Observer pattern, providing loose coupling between error producers and consumers.
-11. **ContextualExceptionHandler**: Intelligent exception handler that categorizes exceptions by type and severity, then publishes events to the error event bus.
-12. **ErrorEvent**: Event object that encapsulates exception information with context, type, and severity for better error handling.
+9. **ErrorEventBus**: Central event bus for error events using the Observer pattern, providing loose coupling between error producers and consumers.
+10. **ContextualExceptionHandler**: Intelligent exception handler that categorizes exceptions by type and severity, then publishes events to the error event bus.
+11. **ErrorEvent**: Event object that encapsulates exception information with context, type, and severity for better error handling.
 
 ## Architecture Overview
 
