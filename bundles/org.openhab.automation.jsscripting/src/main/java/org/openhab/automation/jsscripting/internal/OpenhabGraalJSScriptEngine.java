@@ -46,6 +46,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.Engine;
 import org.graalvm.polyglot.HostAccess;
+import org.graalvm.polyglot.Language;
 import org.graalvm.polyglot.Source;
 import org.graalvm.polyglot.Value;
 import org.graalvm.polyglot.io.IOAccess;
@@ -76,13 +77,15 @@ public class OpenhabGraalJSScriptEngine
         extends InvocationInterceptingScriptEngineWithInvocableAndCompilableAndAutoCloseable<GraalJSScriptEngine>
         implements Lock {
 
+    // see private constant GraalJSScriptEngine.ID
+    private static final String LANGUAGE_ID = "js";
+
     private static final Source GLOBAL_SOURCE;
     static {
         try {
-            GLOBAL_SOURCE = Source
-                    .newBuilder("js", getFileAsReader(GraalJSScriptEngineFactory.NODE_DIR + "/@jsscripting-globals.js"),
-                            "@jsscripting-globals.js")
-                    .cached(true).build();
+            GLOBAL_SOURCE = Source.newBuilder(LANGUAGE_ID,
+                    getFileAsReader(GraalJSScriptEngineFactory.NODE_DIR + "/@jsscripting-globals.js"),
+                    "@jsscripting-globals.js").cached(true).build();
         } catch (IOException e) {
             throw new IllegalStateException("Failed to load @jsscripting-globals.js", e);
         }
@@ -91,10 +94,9 @@ public class OpenhabGraalJSScriptEngine
     private static final Source OPENHAB_JS_SOURCE;
     static {
         try {
-            OPENHAB_JS_SOURCE = Source
-                    .newBuilder("js", getFileAsReader(GraalJSScriptEngineFactory.NODE_DIR + "/@openhab-globals.js"),
-                            "@openhab-globals.js")
-                    .cached(true).build();
+            OPENHAB_JS_SOURCE = Source.newBuilder(LANGUAGE_ID,
+                    getFileAsReader(GraalJSScriptEngineFactory.NODE_DIR + "/@openhab-globals.js"),
+                    "@openhab-globals.js").cached(true).build();
         } catch (IOException e) {
             throw new IllegalStateException("Failed to load @openhab-globals.js", e);
         }
@@ -160,7 +162,7 @@ public class OpenhabGraalJSScriptEngine
         this.configuration = configuration;
         this.jsRuntimeFeatures = jsScriptServiceUtil.getJSRuntimeFeatures(lock);
 
-        delegate = GraalJSScriptEngine.create(ENGINE, Context.newBuilder("js") //
+        delegate = GraalJSScriptEngine.create(ENGINE, Context.newBuilder(LANGUAGE_ID) //
                 .allowIO(IOAccess.newBuilder() //
                         .fileSystem(new DelegatingFileSystem(FileSystems.getDefault().provider()) {
                             @Override
@@ -475,5 +477,14 @@ public class OpenhabGraalJSScriptEngine
     @Override
     public Condition newCondition() {
         return lock.newCondition();
+    }
+
+    /**
+     * Gets the Graal language of {@link OpenhabGraalJSScriptEngine}.
+     * 
+     * @return the Graal language of {@link OpenhabGraalJSScriptEngine} or {@code null} if not available
+     */
+    public static @Nullable Language getLanguage() {
+        return ENGINE.getLanguages().get(LANGUAGE_ID);
     }
 }

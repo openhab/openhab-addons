@@ -22,6 +22,7 @@ import javax.script.ScriptEngine;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.graalvm.polyglot.Language;
 import org.openhab.automation.jsscripting.internal.fs.watch.JSDependencyTracker;
 import org.openhab.core.OpenHAB;
 import org.openhab.core.automation.module.script.ScriptDependencyTracker;
@@ -79,6 +80,12 @@ public class GraalJSScriptEngineFactory implements ScriptEngineFactory {
         this.jsDependencyTracker = jsDependencyTracker;
         this.jsScriptServiceUtil = jsScriptServiceUtil;
         this.configuration = new GraalJSScriptEngineConfiguration(config);
+
+        Language language = OpenhabGraalJSScriptEngine.getLanguage();
+        if (language == null) {
+            logger.error(
+                    "Graal JavaScript language not initialized. Restart openHAB to initialize available Graal languages properly.");
+        }
     }
 
     @Modified
