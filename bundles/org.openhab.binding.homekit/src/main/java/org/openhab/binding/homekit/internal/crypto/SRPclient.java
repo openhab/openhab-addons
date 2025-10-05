@@ -27,6 +27,8 @@ import org.bouncycastle.crypto.params.Ed25519PublicKeyParameters;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homekit.internal.enums.TlvType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Manages the SRP (Stanford Secure Remote Password) protocol for pairing with a HomeKit accessory.
@@ -37,50 +39,52 @@ import org.openhab.binding.homekit.internal.enums.TlvType;
 @NonNullByDefault
 public class SRPclient {
 
+    private final Logger logger = LoggerFactory.getLogger(SRPclient.class);
+
     public final BigInteger A; // client SRP public key
     public final BigInteger a; // client SRP private ephemeral
     public final BigInteger B; // server SRP public key
-    public final byte[] K; // session key
+    public final byte[] S; // shared secret
+    public final byte[] K; // Apple SRP style session key = H(S)
     public final byte[] M1; // client proof
-    public final BigInteger S; // shared secret
     public final BigInteger u; // scrambling parameter
     public final BigInteger x; // SRP private key derived from password
 
     private final String I; // username
     private final byte[] s; // server salt
-    private final byte[] M2; // expected server proof
+    private final byte[] M2; // expected accessory server proof
 
-    private @Nullable Ed25519PublicKeyParameters serverLongTermPublicKey = null;
+    private @Nullable Ed25519PublicKeyParameters accessoryLongTermPublicKey = null;
 
     /**
      * M1 - Simplified constructor when user and client private key are not provided.
      *
-     * @param passwordP the password (P) used for authentication.
+     * @param password_P the password (P) used for authentication.
      * @param serverSalt the salt (s) provided by the server.
      * @param serverEphemeralPublicKey the server's public SRP key (B).
      *
      * @throws Exception if an error occurs during initialization.
      */
-    public SRPclient(String passwordP, byte[] serverSalt, byte[] serverEphemeralPublicKey) throws Exception {
-        this(passwordP, serverSalt, serverEphemeralPublicKey, null, null);
+    public SRPclient(String password_P, byte[] serverSalt, byte[] serverEphemeralPublicKey) throws Exception {
+        this(password_P, serverSalt, serverEphemeralPublicKey, null, null);
     }
 
     /**
      * M2 — Initializes the SRP client with the given password, salt and server public SRP key.
      *
-     * @param password_p the password (P) used for authentication.
+     * @param password_P the password (P) used for authentication.
      * @param serverSalt the salt (s) provided by the server.
-     * @param serverEphemeralPublicKey the server's public SRP key (B).
+     * @param accessoryEphemeralPublicKey the server's public SRP key (B).
      * @param user_I the username (I). If null, "Pair-Setup" is used.
      * @param clientEphemeralSecretKey the client's private SRP key (a). If null, a random key is generated.
      *
      * @throws Exception if an error occurs during initialization.
      */
-    public SRPclient(String password_p, byte[] serverSalt, byte[] serverEphemeralPublicKey, @Nullable String user_I,
+    public SRPclient(String password_P, byte[] serverSalt, byte[] accessoryEphemeralPublicKey, @Nullable String user_I,
             byte @Nullable [] clientEphemeralSecretKey) throws Exception {
         // set username, salt and server public key
         s = serverSalt;
-        B = new BigInteger(1, serverEphemeralPublicKey);
+        B = new BigInteger(1, accessoryEphemeralPublicKey);
         I = user_I != null ? user_I : PAIR_SETUP; // default username is "Pair-Setup"
 
         // Apply or create ephemeral a and compute public A
@@ -93,7 +97,7 @@ public class SRPclient {
         A = g.modPow(a, N);
 
         // Compute hash x = H(salt || H(username || ":" || password))
-        byte[] hIP = sha512((I + ":" + password_p).getBytes(StandardCharsets.UTF_8));
+        byte[] hIP = sha512((I + ":" + password_P).getBytes(StandardCharsets.UTF_8));
         byte[] xHash = sha512(concat(serverSalt, hIP));
         x = new BigInteger(1, xHash);
 
@@ -104,14 +108,14 @@ public class SRPclient {
             throw new SecurityException("Invalid scrambling parameter");
         }
 
-        // Compute shared secret S = (B - k·g^x)^(a + u·x) mod N
+        // Compute shared secret S = (B - k·g^x)^(a + u·x) mod N (384 bytes)
         BigInteger gx = g.modPow(x, N);
         BigInteger base = B.subtract(k.multiply(gx)).mod(N);
         BigInteger exp = a.add(u.multiply(x));
-        S = base.modPow(exp, N);
+        S = toUnsigned(base.modPow(exp, N), 384);
 
-        // Compute session key K = H(S)
-        K = sha512(toUnsigned(S, 384));
+        // Compute 'Apple SRP style' session key K = H(S) (64 bytes)
+        K = sha512(S);
 
         // Compute client proof M1 = H(H(N) xor H(g) || H(I) || s || A || B || K)
         byte[] HN = sha512(toUnsigned(N, 384));
@@ -122,25 +126,30 @@ public class SRPclient {
 
         // Compute expected server proof M2 = H(A || M1 || K)
         M2 = sha512(concat(toUnsigned(A, 384), M1, K));
+
+        if (logger.isTraceEnabled()) {
+            logger.trace(
+                    "Pair-Setup M2: SRP client initialized:\n - K: {}\n - S: {}\n - Controller M1: {}\n - Expected M2: {}\n",
+                    toHex(K), toHex(S), toHex(M1), toHex(M2));
+        }
     }
 
     public byte[] getScramblingParameter() {
         return toUnsigned(u, 64);
     }
 
-    public Ed25519PublicKeyParameters getServerLongTermPublicKey() throws Exception {
-        Ed25519PublicKeyParameters serverLongTermPublicKey = this.serverLongTermPublicKey;
-        if (serverLongTermPublicKey == null) {
+    public Ed25519PublicKeyParameters getAccessoryLongTermPublicKey() throws Exception {
+        Ed25519PublicKeyParameters accessoryLTPK = this.accessoryLongTermPublicKey;
+        if (accessoryLTPK == null) {
             throw new IllegalStateException("Accessory long-term public key not yet available");
         }
-        return serverLongTermPublicKey;
+        return accessoryLTPK;
     }
 
-    public byte[] getSharedKey() {
-        return generateHkdfKey(K, PAIR_SETUP_ENCRYPT_SALT, PAIR_SETUP_ENCRYPT_INFO);
-    }
-
-    public void m4VerifyServerProof(byte[] serverProof) throws Exception {
+    public void m4VerifyAccessoryProof(byte[] serverProof) throws Exception {
+        if (logger.isTraceEnabled()) {
+            logger.trace("Pair-Setup M4: Accessory info:\n - Accessory M2: {}", toHex(serverProof));
+        }
         if (!Arrays.equals(M2, serverProof)) {
             throw new SecurityException("SRP server proof mismatch");
         }
@@ -152,24 +161,37 @@ public class SRPclient {
      * concatenation of { shared session key, client pairing identifier, client LTPK } created by
      * the client's long term secret key.
      *
-     * @param pairingId the pairing identifier.
-     * @param clientLongTermSecretKey the controller's long-term private key for signing.
+     * @param iOSDeviceId the pairing identifier.
+     * @param iOSDeviceLongTermPrivateKey the controller's long-term private key for signing.
      * @return the encrypted controller information as a byte array.
      * @throws Exception if an error occurs during the encryption or signing process.
      */
-    public byte[] m5EncodeClientInfoAndSign(byte[] pairingId, Ed25519PrivateKeyParameters clientLongTermSecretKey)
-            throws Exception {
-        byte[] sharedKey = generateHkdfKey(K, PAIR_CONTROLLER_SIGN_SALT, PAIR_CONTROLLER_SIGN_INFO);
-        byte[] clientSigningKey = clientLongTermSecretKey.generatePublicKey().getEncoded();
-        byte[] clientSignature = signMessage(clientLongTermSecretKey, concat(sharedKey, pairingId, clientSigningKey));
+    public byte[] m5EncodeControllerInfoAndSign(byte[] iOSDeviceId,
+            Ed25519PrivateKeyParameters iOSDeviceLongTermPrivateKey) throws Exception {
+        byte[] iOSDeviceX = generateHkdfKey(K, PAIR_SETUP_CONTROLLER_SIGN_SALT, PAIR_SETUP_CONTROLLER_SIGN_INFO);
+        byte[] iOSDeviceLTPK = iOSDeviceLongTermPrivateKey.generatePublicKey().getEncoded();
+        byte[] iOSDeviceInfo = concat(iOSDeviceX, iOSDeviceId, iOSDeviceLTPK);
+        byte[] iOSDeviceSignature = signMessage(iOSDeviceLongTermPrivateKey, iOSDeviceInfo);
 
         Map<Integer, byte[]> subTlv = new LinkedHashMap<>();
-        subTlv.put(TlvType.IDENTIFIER.value, pairingId);
-        subTlv.put(TlvType.PUBLIC_KEY.value, clientSigningKey);
-        subTlv.put(TlvType.SIGNATURE.value, clientSignature);
+        subTlv.put(TlvType.IDENTIFIER.value, iOSDeviceId);
+        subTlv.put(TlvType.PUBLIC_KEY.value, iOSDeviceLTPK);
+        subTlv.put(TlvType.SIGNATURE.value, iOSDeviceSignature);
 
         byte[] plainText = Tlv8Codec.encode(subTlv);
-        byte[] cipherText = encrypt(getSharedKey(), PS_M5_NONCE, plainText, new byte[0]);
+        byte[] encryptKey = generateHkdfKey(K, PAIR_SETUP_ENCRYPT_SALT, PAIR_SETUP_ENCRYPT_INFO);
+
+        if (logger.isTraceEnabled()) {
+            logger.trace(
+                    "Pair-Setup M5: Controller info:\n - X: {}\n - LTPK: {}\n - Info: {}\n - Signature: {}\n - Plain text: {}\n - Key: {}", //
+                    toHex(iOSDeviceX), toHex(iOSDeviceLTPK), toHex(iOSDeviceInfo), toHex(iOSDeviceSignature),
+                    toHex(plainText), toHex(encryptKey));
+        }
+        byte[] cipherText = encrypt(encryptKey, PS_M5_NONCE, plainText, new byte[0]);
+
+        if (logger.isTraceEnabled()) {
+            logger.trace("Pair-Setup M5: Controller info:\n - Cipher text: {}", toHex(cipherText));
+        }
         return cipherText;
     }
 
@@ -182,25 +204,34 @@ public class SRPclient {
      * @param cipherText the encrypted accessory information received from the accessory.
      * @throws Exception if an error occurs during decryption or signature verification.
      */
-    public void m6DecodeServerInfoAndVerify(byte[] cipherText) throws Exception {
-        byte[] plainText = decrypt(getSharedKey(), PS_M6_NONCE, cipherText, new byte[0]);
+    public void m6DecodeAccessoryInfoAndVerify(byte[] cipherText) throws Exception {
+        byte[] decryptKey = generateHkdfKey(K, PAIR_SETUP_ENCRYPT_SALT, PAIR_SETUP_ENCRYPT_INFO);
+        if (logger.isTraceEnabled()) {
+            logger.trace("Pair-Setup M6: Accessory info:\n - Cipher text: {}\n - Key: {}", toHex(cipherText),
+                    toHex(decryptKey));
+        }
+        byte[] plainText = decrypt(decryptKey, PS_M6_NONCE, cipherText, new byte[0]);
 
         Map<Integer, byte[]> subTlv = Tlv8Codec.decode(plainText);
-        byte[] serverPairingId = subTlv.get(TlvType.IDENTIFIER.value);
-        byte[] serverSigningKey = subTlv.get(TlvType.PUBLIC_KEY.value);
-        byte[] serverSignature = subTlv.get(TlvType.SIGNATURE.value);
+        byte[] accessoryPairingId = subTlv.get(TlvType.IDENTIFIER.value);
+        byte[] accessoryLTPK = subTlv.get(TlvType.PUBLIC_KEY.value);
+        byte[] accessorySignature = subTlv.get(TlvType.SIGNATURE.value);
 
-        if (serverPairingId == null || serverSigningKey == null || serverSignature == null) {
+        if (accessoryPairingId == null || accessoryLTPK == null || accessorySignature == null) {
             throw new SecurityException("Missing accessory credentials in M6");
         }
 
-        byte[] sharedKey = generateHkdfKey(K, PAIR_ACCESSORY_SIGN_SALT, PAIR_ACCESSORY_SIGN_INFO);
+        Ed25519PublicKeyParameters accessoryLongTermPublicKey = new Ed25519PublicKeyParameters(accessoryLTPK, 0);
+        byte[] accessoryX = generateHkdfKey(K, PAIR_SETUP_ACCESSORY_SIGN_SALT, PAIR_SETUP_ACCESSORY_SIGN_INFO);
+        byte[] accessoryInfo = concat(accessoryX, accessoryPairingId, accessoryLTPK);
 
-        Ed25519PublicKeyParameters serverLongTermPublicKey = new Ed25519PublicKeyParameters(serverSigningKey, 0);
-        if (!verifySignature(serverLongTermPublicKey, serverSignature,
-                concat(sharedKey, serverPairingId, serverSigningKey))) {
-            throw new SecurityException("Accessory signature verification failed");
+        if (logger.isTraceEnabled()) {
+            logger.trace(
+                    "Pair-Setup M6: Accessory info:\n - Plain text: {}\n - X: {}\n - LTPK: {}\n - Info: {}\n - Signature: {}",
+                    toHex(plainText), toHex(accessoryX), toHex(accessoryLTPK), toHex(accessoryInfo),
+                    toHex(accessorySignature));
         }
-        this.serverLongTermPublicKey = serverLongTermPublicKey;
+        verifySignature(accessoryLongTermPublicKey, accessorySignature, accessoryInfo);
+        this.accessoryLongTermPublicKey = accessoryLongTermPublicKey;
     }
 }

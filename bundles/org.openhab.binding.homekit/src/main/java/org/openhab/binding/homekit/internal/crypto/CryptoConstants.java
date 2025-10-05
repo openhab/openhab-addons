@@ -53,11 +53,11 @@ public class CryptoConstants {
     public static final byte[] PS_M5_NONCE = "PS-Msg05".getBytes(StandardCharsets.UTF_8);
     public static final byte[] PS_M6_NONCE = "PS-Msg06".getBytes(StandardCharsets.UTF_8);
 
-    public static final byte[] PAIR_CONTROLLER_SIGN_SALT = "Pair-Setup-Controller-Sign-Salt".getBytes(StandardCharsets.UTF_8);
-    public static final byte[] PAIR_CONTROLLER_SIGN_INFO = "Pair-Setup-Controller-Sign-Info".getBytes(StandardCharsets.UTF_8);
+    public static final byte[] PAIR_SETUP_CONTROLLER_SIGN_SALT = "Pair-Setup-Controller-Sign-Salt".getBytes(StandardCharsets.UTF_8);
+    public static final byte[] PAIR_SETUP_CONTROLLER_SIGN_INFO = "Pair-Setup-Controller-Sign-Info".getBytes(StandardCharsets.UTF_8);
 
-    public static final byte[] PAIR_ACCESSORY_SIGN_SALT = "Pair-Setup-Accessory-Sign-Salt".getBytes(StandardCharsets.UTF_8);
-    public static final byte[] PAIR_ACCESSORY_SIGN_INFO = "Pair-Setup-Accessory-Sign-Info".getBytes(StandardCharsets.UTF_8);
+    public static final byte[] PAIR_SETUP_ACCESSORY_SIGN_SALT = "Pair-Setup-Accessory-Sign-Salt".getBytes(StandardCharsets.UTF_8);
+    public static final byte[] PAIR_SETUP_ACCESSORY_SIGN_INFO = "Pair-Setup-Accessory-Sign-Info".getBytes(StandardCharsets.UTF_8);
 
     public static final byte[] CONTROL_SALT = "Control-Salt".getBytes(StandardCharsets.UTF_8);
     public static final byte[] CONTROL_READ_ENCRYPTION_KEY = "Control-Read-Encryption-Key".getBytes(StandardCharsets.UTF_8);

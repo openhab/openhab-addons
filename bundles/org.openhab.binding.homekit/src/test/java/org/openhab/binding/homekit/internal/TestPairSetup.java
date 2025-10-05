@@ -15,7 +15,7 @@ package org.openhab.binding.homekit.internal;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
-import static org.openhab.binding.homekit.internal.crypto.CryptoConstants.PS_M5_NONCE;
+import static org.openhab.binding.homekit.internal.crypto.CryptoConstants.*;
 import static org.openhab.binding.homekit.internal.crypto.CryptoUtils.*;
 
 import java.nio.charset.StandardCharsets;
@@ -71,7 +71,7 @@ class TestPairSetup {
     void testSrpClient() throws Exception {
         byte[] plainText0 = "the quick brown dog".getBytes(StandardCharsets.UTF_8);
         SRPclient client = new SRPclient("password123", toBytes(SALT_HEX), toBytes(SERVER_PRIVATE_HEX));
-        byte[] sharedKey = client.getSharedKey();
+        byte[] sharedKey = generateHkdfKey(client.K, PAIR_SETUP_ENCRYPT_SALT, PAIR_SETUP_ENCRYPT_INFO);
         byte[] cipherText = encrypt(sharedKey, PS_M5_NONCE, plainText0, new byte[0]);
         byte[] plainText1 = decrypt(sharedKey, PS_M5_NONCE, cipherText, new byte[0]);
         assertArrayEquals(plainText0, plainText1);
@@ -81,22 +81,22 @@ class TestPairSetup {
     void testPairSetup() throws Exception {
         // initialize test parameters
         String password = "password123";
-        byte[] clientPairingId = new byte[] { 11, 22, 33, 44, 55, 66, 77, 88 };
+        byte[] iOSDeviceId = new byte[] { 11, 22, 33, 44, 55, 66, 77, 88 };
         byte[] serverSalt = toBytes(SALT_HEX);
-        byte[] serverPairingId = new byte[] { 88, 77, 66, 55, 44, 33, 22, 11 };
+        byte[] accessoryId = new byte[] { 88, 77, 66, 55, 44, 33, 22, 11 };
 
         // initialize signing keys
-        Ed25519PrivateKeyParameters clientLongTermSecretKey = new Ed25519PrivateKeyParameters(
+        Ed25519PrivateKeyParameters controllerLongTermSecretKey = new Ed25519PrivateKeyParameters(
                 toBytes(CLIENT_PRIVATE_HEX));
-        Ed25519PrivateKeyParameters serverLongTermSecretKey = new Ed25519PrivateKeyParameters(
+        Ed25519PrivateKeyParameters accessoryLongTermSecretKey = new Ed25519PrivateKeyParameters(
                 toBytes(SERVER_PRIVATE_HEX));
 
         // create mock
         IpTransport mockTransport = mock(IpTransport.class);
 
         // create SRP client and server
-        SRPserver server = new SRPserver(password, serverSalt, serverPairingId, serverLongTermSecretKey, null, null);
-        PairSetupClient client = new PairSetupClient(mockTransport, clientPairingId, clientLongTermSecretKey, password);
+        SRPserver server = new SRPserver(password, serverSalt, accessoryId, accessoryLongTermSecretKey, null, null);
+        PairSetupClient client = new PairSetupClient(mockTransport, iOSDeviceId, controllerLongTermSecretKey, password);
 
         // mock the HTTP transport to simulate the SRP exchange
         doAnswer(invocation -> {
@@ -112,9 +112,9 @@ class TestPairSetup {
 
             // process the message based on the pairing process Mx state
             return switch (state[0]) {
-                case 1 -> m1GetServerResponse(server, serverSalt);
-                case 3 -> m3GetServerResponse(server, tlv, client);
-                case 5 -> m5GetServerResponse(server);
+                case 1 -> m1GetAccessoryResponse(server, serverSalt);
+                case 3 -> m3GetAccessoryResponse(server, tlv, client);
+                case 5 -> m5GetAccessoryResponse(server, tlv);
                 default -> throw new IllegalArgumentException("Unexpected state");
             };
 
@@ -124,7 +124,7 @@ class TestPairSetup {
         client.pair();
     }
 
-    private byte[] m1GetServerResponse(SRPserver server, byte[] serverSalt) {
+    private byte[] m1GetAccessoryResponse(SRPserver server, byte[] serverSalt) {
         Map<Integer, byte[]> tlv = Map.of( //
                 TlvType.STATE.value, new byte[] { PairingState.M2.value }, //
                 TlvType.SALT.value, serverSalt, // salt
@@ -134,7 +134,7 @@ class TestPairSetup {
         return Tlv8Codec.encode(tlv);
     }
 
-    private byte[] m3GetServerResponse(SRPserver server, Map<Integer, byte[]> tlv2, PairSetupClient client)
+    private byte[] m3GetAccessoryResponse(SRPserver server, Map<Integer, byte[]> tlv2, PairSetupClient client)
             throws Exception {
         clientPublicKey = tlv2.get(TlvType.PUBLIC_KEY.value);
         byte[] serverProof = server.m3CreateServerProof(Objects.requireNonNull(clientPublicKey));
@@ -146,12 +146,13 @@ class TestPairSetup {
         return Tlv8Codec.encode(tlv3);
     }
 
-    private byte[] m5GetServerResponse(SRPserver server) throws Exception {
-        byte[] cipherText = server.m5EncodeServerInfoAndSign();
-        Map<Integer, byte[]> tlv = Map.of( //
+    private byte[] m5GetAccessoryResponse(SRPserver server, Map<Integer, byte[]> tlv5) throws Exception {
+        server.m5DecodeControllerInfoAndVerify(tlv5);
+        byte[] cipherText = server.m6EncodeAccessoryInfoAndSign();
+        Map<Integer, byte[]> tlv6 = Map.of( //
                 TlvType.STATE.value, new byte[] { PairingState.M6.value }, //
                 TlvType.ENCRYPTED_DATA.value, cipherText);
-        PairSetupClient.Validator.validate(PairingMethod.SETUP, tlv);
-        return Tlv8Codec.encode(tlv);
+        PairSetupClient.Validator.validate(PairingMethod.SETUP, tlv6);
+        return Tlv8Codec.encode(tlv6);
     }
 }

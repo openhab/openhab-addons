@@ -21,6 +21,7 @@ import java.security.SecureRandom;
 import java.util.Map;
 
 import org.bouncycastle.crypto.params.Ed25519PrivateKeyParameters;
+import org.bouncycastle.crypto.params.Ed25519PublicKeyParameters;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homekit.internal.crypto.CryptoUtils;
@@ -40,33 +41,33 @@ public class SRPserver {
     public @NonNullByDefault({}) BigInteger A; // client public SRP key
     public final BigInteger b; // server private SRP key
     public final BigInteger B; // server public SRP key
-    public @NonNullByDefault({}) byte[] K = null; // session key
-    public @NonNullByDefault({}) BigInteger S; // shared secret
+    public @NonNullByDefault({}) byte[] S = null; // shared secret
+    public @NonNullByDefault({}) byte[] K = null; // Apple SRP style session key = H(S)
     public @NonNullByDefault({}) BigInteger u; // scrambling parameter
     public final BigInteger v; // verifier
 
     private final String I; // username
     private final byte[] s; // salt
-    private final byte[] serverPairingId;
-    private final Ed25519PrivateKeyParameters serverLongTermPrivateKey;
+    private final byte[] accessoryId;
+    private final Ed25519PrivateKeyParameters accessoryLongTermPrivateKey;
 
     /**
      * Create a SRP server instance with the given parameters.
      *
      * @param password the password to use
      * @param serverSalt the salt to use
-     * @param serverPairingId the pairing ID of the server
-     * @param serverLongTermPrivateKey the long term private key of the server
+     * @param accessoryId the pairing ID of the server
+     * @param accessoryLongTermPrivateKey the long term private key of the server
      * @param username the username to use (or null for default "Pair-Setup")
-     * @param serverPrivateKey optional 32 byte private key to use for b, or null to generate a new one
+     * @param accessoryPrivateKey optional 32 byte private key to use for b, or null to generate a new one
      *
      * @throws Exception on any error
      */
-    public SRPserver(String password, byte[] serverSalt, byte[] serverPairingId,
-            Ed25519PrivateKeyParameters serverLongTermPrivateKey, @Nullable String username,
-            byte @Nullable [] serverPrivateKey) throws Exception {
-        this.serverPairingId = serverPairingId;
-        this.serverLongTermPrivateKey = serverLongTermPrivateKey;
+    public SRPserver(String password, byte[] serverSalt, byte[] accessoryId,
+            Ed25519PrivateKeyParameters accessoryLongTermPrivateKey, @Nullable String username,
+            byte @Nullable [] accessoryPrivateKey) throws Exception {
+        this.accessoryId = accessoryId;
+        this.accessoryLongTermPrivateKey = accessoryLongTermPrivateKey;
         I = username != null ? username : PAIR_SETUP;
         s = serverSalt;
 
@@ -77,7 +78,7 @@ public class SRPserver {
         v = g.modPow(x, N);
 
         // Apply or create ephemeral b and compute public B
-        byte[] serverKey = serverPrivateKey;
+        byte[] serverKey = accessoryPrivateKey;
         if (serverKey == null) {
             serverKey = new byte[32];
             new SecureRandom().nextBytes(serverKey);
@@ -101,11 +102,13 @@ public class SRPserver {
             throw new SecurityException("Invalid scrambling parameter");
         }
 
-        // S = (A * v^u)^b mod N
+        // S = (A * v^u)^b mod N (384 bytes)
         BigInteger vu = v.modPow(u, N);
         BigInteger base = A.multiply(vu).mod(N);
-        S = base.modPow(b, N);
-        K = sha512(toUnsigned(S, 384));
+        S = toUnsigned(base.modPow(b, N), 384);
+
+        // Compute 'Apple SRP style' session key K = H(S) (64 bytes)
+        K = sha512(S);
 
         // Compute M1 = H(H(N) xor H(g) || H(I) || salt || A || B || K)
         byte[] HN = sha512(toUnsigned(N, 384));
@@ -118,22 +121,44 @@ public class SRPserver {
         return sha512(concat(toUnsigned(clientPublicA, 384), M1, K));
     }
 
-    public byte[] m5EncodeServerInfoAndSign() throws Exception {
-        byte[] sharedKey = generateHkdfKey(K, PAIR_ACCESSORY_SIGN_SALT, PAIR_ACCESSORY_SIGN_INFO);
-        byte[] signingKey = serverLongTermPrivateKey.generatePublicKey().getEncoded();
-        byte[] payload = concat(sharedKey, serverPairingId, signingKey);
-        byte[] signature = signMessage(serverLongTermPrivateKey, payload);
+    public void m5DecodeControllerInfoAndVerify(Map<Integer, byte[]> tlv5) throws Exception {
+        byte[] cipherText = tlv5.get(TlvType.ENCRYPTED_DATA.value);
+        if (cipherText == null) {
+            throw new IllegalArgumentException("Missing encrypted data");
+        }
 
-        Map<Integer, byte[]> subTlv = Map.of( //
-                TlvType.IDENTIFIER.value, serverPairingId, //
-                TlvType.PUBLIC_KEY.value, signingKey, //
-                TlvType.SIGNATURE.value, signature);
+        byte[] decryptKey = generateHkdfKey(K, PAIR_SETUP_ENCRYPT_SALT, PAIR_SETUP_ENCRYPT_INFO);
+        byte[] plainText = CryptoUtils.decrypt(decryptKey, PS_M5_NONCE, cipherText, new byte[0]);
 
-        byte[] plaintext = Tlv8Codec.encode(subTlv);
-        return CryptoUtils.encrypt(getSymmetricKey(), PS_M6_NONCE, plaintext, new byte[0]);
+        Map<Integer, byte[]> subTlv = Tlv8Codec.decode(plainText);
+        byte[] iOSDeviceId = subTlv.get(TlvType.IDENTIFIER.value);
+        byte[] iOSDeviceLTPK = subTlv.get(TlvType.PUBLIC_KEY.value);
+        byte[] iOSDeviceSignature = subTlv.get(TlvType.SIGNATURE.value);
+
+        if (iOSDeviceId == null || iOSDeviceLTPK == null || iOSDeviceSignature == null) {
+            throw new IllegalArgumentException("Missing identifier, public key or signature");
+        }
+
+        byte[] iOSDeviceX = generateHkdfKey(K, PAIR_SETUP_CONTROLLER_SIGN_SALT, PAIR_SETUP_CONTROLLER_SIGN_INFO);
+        byte[] iOSDeviceInfo = concat(iOSDeviceX, iOSDeviceId, iOSDeviceLTPK);
+
+        Ed25519PublicKeyParameters iOSDeviceLongTermPublicKey = new Ed25519PublicKeyParameters(iOSDeviceLTPK, 0);
+        verifySignature(iOSDeviceLongTermPublicKey, iOSDeviceSignature, iOSDeviceInfo);
     }
 
-    public byte[] getSymmetricKey() {
-        return generateHkdfKey(K, PAIR_SETUP_ENCRYPT_SALT, PAIR_SETUP_ENCRYPT_INFO);
+    public byte[] m6EncodeAccessoryInfoAndSign() throws Exception {
+        byte[] accessoryX = generateHkdfKey(K, PAIR_SETUP_ACCESSORY_SIGN_SALT, PAIR_SETUP_ACCESSORY_SIGN_INFO);
+        byte[] accessoryLTPK = accessoryLongTermPrivateKey.generatePublicKey().getEncoded();
+        byte[] accessoryInfo = concat(accessoryX, accessoryId, accessoryLTPK);
+        byte[] accessorySignature = signMessage(accessoryLongTermPrivateKey, accessoryInfo);
+
+        Map<Integer, byte[]> subTlv = Map.of( //
+                TlvType.IDENTIFIER.value, accessoryId, //
+                TlvType.PUBLIC_KEY.value, accessoryLTPK, //
+                TlvType.SIGNATURE.value, accessorySignature);
+
+        byte[] plaintext = Tlv8Codec.encode(subTlv);
+        byte[] encryptKey = generateHkdfKey(K, PAIR_SETUP_ENCRYPT_SALT, PAIR_SETUP_ENCRYPT_INFO);
+        return CryptoUtils.encrypt(encryptKey, PS_M6_NONCE, plaintext, new byte[0]);
     }
 }

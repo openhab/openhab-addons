@@ -116,10 +116,8 @@ public class PairVerifyClient {
             throw new SecurityException("Accessory identifier or signature missing");
         }
 
-        if (!verifySignature(serverLongTermPublicKey, serverSignature, concat(serverEphemeralPublicKey.getEncoded(),
-                serverPairingId, clientEphemeralSecretKey.generatePublicKey().getEncoded()))) {
-            throw new SecurityException("Client signature invalid");
-        }
+        verifySignature(serverLongTermPublicKey, serverSignature, concat(serverEphemeralPublicKey.getEncoded(),
+                serverPairingId, clientEphemeralSecretKey.generatePublicKey().getEncoded()));
 
         m3Execute();
     }

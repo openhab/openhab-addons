@@ -48,29 +48,29 @@ class TestPairVerify {
             E487CB59 D31AC550 471E81F0 0F6928E0 1DDA08E9 74A004F4 9E61F5D1 05284D20
             """;
 
-    byte[] clientPairingId = new byte[] { 11, 22, 33, 44, 55, 66, 77, 88 };
-    byte[] serverPairingId = new byte[] { 88, 77, 66, 55, 44, 33, 22, 11 };
+    byte[] controllerId = new byte[] { 11, 22, 33, 44, 55, 66, 77, 88 };
+    byte[] accessoryId = new byte[] { 88, 77, 66, 55, 44, 33, 22, 11 };
 
-    private final Ed25519PrivateKeyParameters clientLongTermPrivateKey = new Ed25519PrivateKeyParameters(
+    private final Ed25519PrivateKeyParameters controllerLongTermPrivateKey = new Ed25519PrivateKeyParameters(
             toBytes(CLIENT_PRIVATE_HEX));
 
-    private final Ed25519PrivateKeyParameters serverLongTermPrivateKey = new Ed25519PrivateKeyParameters(
+    private final Ed25519PrivateKeyParameters accessoryLongTermPrivateKey = new Ed25519PrivateKeyParameters(
             toBytes(SERVER_PRIVATE_HEX));
 
-    private @NonNullByDefault({}) X25519PrivateKeyParameters serverEphemeralSecretKey;
-    private @NonNullByDefault({}) X25519PublicKeyParameters clientEphemeralPublicKey;
-    private @NonNullByDefault({}) byte[] sharedKey;
+    private @NonNullByDefault({}) X25519PrivateKeyParameters accessoryEphemeralSecretKey;
+    private @NonNullByDefault({}) X25519PublicKeyParameters controllerEphemeralPublicKey;
+    private @NonNullByDefault({}) byte[] cryptoKey;
 
     @Test
     void testPairVerify() throws Exception {
-        serverEphemeralSecretKey = generateX25519KeyPair();
+        accessoryEphemeralSecretKey = generateX25519KeyPair();
 
         // create mock
         IpTransport mockTransport = mock(IpTransport.class);
 
         // create SRP client and server
-        PairVerifyClient client = new PairVerifyClient(mockTransport, clientPairingId, clientLongTermPrivateKey,
-                serverLongTermPrivateKey.generatePublicKey());
+        PairVerifyClient client = new PairVerifyClient(mockTransport, controllerId, controllerLongTermPrivateKey,
+                accessoryLongTermPrivateKey.generatePublicKey());
 
         // mock the HTTP transport to simulate the SRP exchange
         doAnswer(invocation -> {
@@ -86,8 +86,8 @@ class TestPairVerify {
 
             // process the message based on the pair verification process Mx state
             return switch (state[0]) {
-                case 1 -> m1GetServerResponse(tlv);
-                case 3 -> m3GetServerResponse(tlv);
+                case 1 -> m1GetAccessoryResponse(tlv);
+                case 3 -> m3GetAccessoryResponse(tlv);
                 default -> throw new IllegalArgumentException("Unexpected state");
             };
 
@@ -97,57 +97,55 @@ class TestPairVerify {
         client.verify();
     }
 
-    private byte[] m1GetServerResponse(Map<Integer, byte[]> tlv) throws Exception {
-        byte[] clientEphemeralPublicKey = tlv.get(TlvType.PUBLIC_KEY.value);
-        byte[] serverEphemeralPublicKey = this.serverEphemeralSecretKey.generatePublicKey().getEncoded();
-        if (clientEphemeralPublicKey == null) {
+    private byte[] m1GetAccessoryResponse(Map<Integer, byte[]> tlv) throws Exception {
+        byte[] controllerEphemeralPublicKey = tlv.get(TlvType.PUBLIC_KEY.value);
+        byte[] accessoryEphemeralPublicKey = accessoryEphemeralSecretKey.generatePublicKey().getEncoded();
+        if (controllerEphemeralPublicKey == null) {
             throw new SecurityException("Client public key missing");
         }
-        byte[] serverSignature = signMessage(serverLongTermPrivateKey,
-                concat(serverEphemeralPublicKey, serverPairingId, clientEphemeralPublicKey));
+        byte[] accessorySignature = signMessage(accessoryLongTermPrivateKey,
+                concat(accessoryEphemeralPublicKey, accessoryId, controllerEphemeralPublicKey));
 
         Map<Integer, byte[]> tlvInner = Map.of( //
-                TlvType.IDENTIFIER.value, serverPairingId, //
-                TlvType.SIGNATURE.value, serverSignature);
+                TlvType.IDENTIFIER.value, accessoryId, //
+                TlvType.SIGNATURE.value, accessorySignature);
 
-        this.clientEphemeralPublicKey = new X25519PublicKeyParameters(clientEphemeralPublicKey);
+        this.controllerEphemeralPublicKey = new X25519PublicKeyParameters(controllerEphemeralPublicKey);
 
-        byte[] sharedSecret = generateSharedSecret(serverEphemeralSecretKey, this.clientEphemeralPublicKey);
-        sharedKey = generateHkdfKey(sharedSecret, PAIR_VERIFY_ENCRYPT_SALT, PAIR_VERIFY_ENCRYPT_INFO);
+        byte[] sharedSecret = generateSharedSecret(accessoryEphemeralSecretKey, this.controllerEphemeralPublicKey);
+        cryptoKey = generateHkdfKey(sharedSecret, PAIR_VERIFY_ENCRYPT_SALT, PAIR_VERIFY_ENCRYPT_INFO);
 
         byte[] plainText = Tlv8Codec.encode(tlvInner);
-        byte[] cipherText = encrypt(sharedKey, PV_M2_NONCE, plainText, new byte[0]);
+        byte[] cipherText = encrypt(cryptoKey, PV_M2_NONCE, plainText, new byte[0]);
 
         Map<Integer, byte[]> tlvOut = Map.of( //
                 TlvType.STATE.value, new byte[] { PairingState.M2.value }, //
-                TlvType.PUBLIC_KEY.value, serverEphemeralPublicKey, //
+                TlvType.PUBLIC_KEY.value, accessoryEphemeralPublicKey, //
                 TlvType.ENCRYPTED_DATA.value, cipherText);
 
         return Tlv8Codec.encode(tlvOut);
     }
 
-    private byte[] m3GetServerResponse(Map<Integer, byte[]> tlv) throws Exception {
-        if (sharedKey.length == 0) {
+    private byte[] m3GetAccessoryResponse(Map<Integer, byte[]> tlv) throws Exception {
+        if (cryptoKey.length == 0) {
             throw new IllegalStateException("Session key not established");
         }
         byte[] cipherText = tlv.get(TlvType.ENCRYPTED_DATA.value);
         if (cipherText == null) {
             throw new SecurityException("Server cipher text missing");
         }
-        byte[] plainText = decrypt(sharedKey, PV_M3_NONCE, Objects.requireNonNull(cipherText), new byte[0]);
+        byte[] plainText = decrypt(cryptoKey, PV_M3_NONCE, Objects.requireNonNull(cipherText), new byte[0]);
 
         Map<Integer, byte[]> subTlv = Tlv8Codec.decode(plainText);
-        byte[] clientPairingId = subTlv.get(TlvType.IDENTIFIER.value);
-        byte[] clientSignature = subTlv.get(TlvType.SIGNATURE.value);
-        if (clientPairingId == null || clientSignature == null) {
-            throw new SecurityException("Client pairing Id or signature missing");
+        byte[] controllerId = subTlv.get(TlvType.IDENTIFIER.value);
+        byte[] controllerSignature = subTlv.get(TlvType.SIGNATURE.value);
+        if (controllerId == null || controllerSignature == null) {
+            throw new SecurityException("Controller Id or signature missing");
         }
 
-        if (!verifySignature(clientLongTermPrivateKey.generatePublicKey(), clientSignature,
-                concat(clientEphemeralPublicKey.getEncoded(), clientPairingId,
-                        serverEphemeralSecretKey.generatePublicKey().getEncoded()))) {
-            throw new SecurityException("Client signature invalid");
-        }
+        byte[] controllerInfo = concat(controllerEphemeralPublicKey.getEncoded(), controllerId,
+                accessoryEphemeralSecretKey.generatePublicKey().getEncoded());
+        verifySignature(controllerLongTermPrivateKey.generatePublicKey(), controllerSignature, controllerInfo);
 
         Map<Integer, byte[]> tlvOut = Map.of(TlvType.STATE.value, new byte[] { PairingState.M4.value });
         PairVerifyClient.Validator.validate(PairingMethod.VERIFY, tlvOut);

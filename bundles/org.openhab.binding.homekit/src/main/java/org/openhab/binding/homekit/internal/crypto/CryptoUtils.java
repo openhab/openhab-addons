@@ -202,11 +202,14 @@ public class CryptoUtils {
         return padded;
     }
 
-    public static boolean verifySignature(Ed25519PublicKeyParameters publicKey, byte[] signature, byte[] payLoad) {
+    public static void verifySignature(Ed25519PublicKeyParameters publicKey, byte[] signature, byte[] payload)
+            throws Exception {
         Ed25519Signer verifier = new Ed25519Signer();
         verifier.init(false, publicKey);
-        verifier.update(payLoad, 0, payLoad.length);
-        return verifier.verifySignature(signature);
+        verifier.update(payload, 0, payload.length);
+        if (!verifier.verifySignature(signature)) {
+            throw new SecurityException("Signature verification failed");
+        }
     }
 
     public static byte[] xor(byte[] a, byte[] b) {

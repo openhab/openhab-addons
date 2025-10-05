@@ -58,7 +58,7 @@ public class PairSetupClient {
         if (clientPairingId.length != 8) {
             throw new IllegalArgumentException("Client Id must be exactly 8 bytes");
         }
-        logger.debug("Created with pairingCode:{}", pairingCode);
+        logger.debug("Created with pairing code: {}", pairingCode);
         this.ipTransport = ipTransport;
         this.password = pairingCode;
         this.clientPairingId = clientPairingId;
@@ -73,7 +73,7 @@ public class PairSetupClient {
      */
     public Ed25519PublicKeyParameters pair() throws Exception {
         SRPclient client = m1Execute();
-        return client.getServerLongTermPublicKey();
+        return client.getAccessoryLongTermPublicKey();
     }
 
     /**
@@ -101,13 +101,15 @@ public class PairSetupClient {
      * @throws Exception if an error occurs during processing
      */
     private SRPclient m2Execute(byte[] m1Response) throws Exception {
-        logger.debug("Pair-Setup M2: Read server salt and ephemeral PK; initialize SRP client");
+        logger.debug("Pair-Setup M2: Read server salt and accessory ephemeral PK; initialize SRP client");
         Map<Integer, byte[]> tlv = Tlv8Codec.decode(m1Response);
         Validator.validate(PairingMethod.SETUP, tlv);
         byte[] serverSalt = tlv.get(TlvType.SALT.value);
         byte[] serverPublicKey = tlv.get(TlvType.PUBLIC_KEY.value);
-        logger.trace("ServerSalt: {}", toHex(serverSalt));
-        logger.trace("ServerPKey: {}", toHex(serverPublicKey));
+        if (logger.isTraceEnabled()) {
+            logger.trace("Pair-Setup M2: Receive accessory data\n - Server salt: {}\n - Accessory PK: {}",
+                    toHex(serverSalt), toHex(serverPublicKey));
+        }
         SRPclient client = new SRPclient(password, Objects.requireNonNull(serverSalt),
                 Objects.requireNonNull(serverPublicKey));
         return m3Execute(client);
@@ -120,12 +122,16 @@ public class PairSetupClient {
      * @throws Exception if an error occurs during processing
      */
     private SRPclient m3Execute(SRPclient client) throws Exception {
-        logger.debug("Pair-Setup M3: Send client epehemeral PK and M1 proof to server");
+        logger.debug("Pair-Setup M3: Send controller ephemeral PK and M1 proof to accessory");
         Map<Integer, byte[]> tlv = new LinkedHashMap<>();
         tlv.put(TlvType.STATE.value, new byte[] { PairingState.M3.value });
         tlv.put(TlvType.PUBLIC_KEY.value, CryptoUtils.toUnsigned(client.A, 384));
         tlv.put(TlvType.PROOF.value, client.M1);
         Validator.validate(PairingMethod.SETUP, tlv);
+        if (logger.isTraceEnabled()) {
+            logger.trace("Pair-Setup M3: Send data\n - Controller PK: {}\n - Controller M1: {}",
+                    toHex(CryptoUtils.toUnsigned(client.A, 384)), toHex(client.M1));
+        }
         byte[] m3Response = ipTransport.post(ENDPOINT_PAIR_SETUP, CONTENT_TYPE_PAIRING, Tlv8Codec.encode(tlv));
         return m4Execute(client, m3Response);
     }
@@ -137,12 +143,11 @@ public class PairSetupClient {
      * @throws Exception if an error occurs during processing
      */
     private SRPclient m4Execute(SRPclient client, byte[] m3Response) throws Exception {
-        logger.debug("Pair-Setup M4: Read server M2 proof; and verify it");
+        logger.debug("Pair-Setup M4: Read accessory M2 proof; and verify it");
         Map<Integer, byte[]> tlv = Tlv8Codec.decode(m3Response);
         Validator.validate(PairingMethod.SETUP, tlv);
         byte[] serverProofM2 = tlv.get(TlvType.PROOF.value);
-        logger.trace("ServerM2: {}", toHex(serverProofM2));
-        client.m4VerifyServerProof(Objects.requireNonNull(serverProofM2));
+        client.m4VerifyAccessoryProof(Objects.requireNonNull(serverProofM2));
         return m5Execute(client);
     }
 
@@ -154,8 +159,8 @@ public class PairSetupClient {
      * @throws Exception if an error occurs during processing
      */
     private SRPclient m5Execute(SRPclient client) throws Exception {
-        logger.debug("Pair-Setup M5: Send client session key, pairing id, LTPK, and sig to server");
-        byte[] cipherText = client.m5EncodeClientInfoAndSign(clientPairingId, clientLongTermSecretKey);
+        logger.debug("Pair-Setup M5: Send controller id, LTPK, and signature to accessory");
+        byte[] cipherText = client.m5EncodeControllerInfoAndSign(clientPairingId, clientLongTermSecretKey);
         Map<Integer, byte[]> tlv = new LinkedHashMap<>();
         tlv.put(TlvType.STATE.value, new byte[] { PairingState.M5.value });
         tlv.put(TlvType.ENCRYPTED_DATA.value, cipherText);
@@ -172,11 +177,11 @@ public class PairSetupClient {
      * @throws Exception if an error occurs during processing
      */
     private SRPclient m6Execute(SRPclient client, byte[] m5Response) throws Exception {
-        logger.debug("Pair-Setup M6: Read server session key, pairing id, LTPK, and sig; and verify it");
+        logger.debug("Pair-Setup M6: Read accessory id, LTPK, and signature; and verify it");
         Map<Integer, byte[]> tlv = Tlv8Codec.decode(m5Response);
         Validator.validate(PairingMethod.SETUP, tlv);
         byte[] cipherText = tlv.get(TlvType.ENCRYPTED_DATA.value);
-        client.m6DecodeServerInfoAndVerify(Objects.requireNonNull(cipherText));
+        client.m6DecodeAccessoryInfoAndVerify(Objects.requireNonNull(cipherText));
         return client;
     }
 

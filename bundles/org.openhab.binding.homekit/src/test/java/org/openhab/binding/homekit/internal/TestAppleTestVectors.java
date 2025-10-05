@@ -210,7 +210,7 @@ class TestAppleTestVectors {
 
         assertArrayEquals(A, CryptoUtils.toUnsigned(client.A, 384));
         assertArrayEquals(u, CryptoUtils.toUnsigned(client.u, 64));
-        assertArrayEquals(S, CryptoUtils.toUnsigned(client.S, 384));
+        assertArrayEquals(S, client.S);
         assertArrayEquals(K, client.K);
     }
 
@@ -240,7 +240,7 @@ class TestAppleTestVectors {
 
         assertDoesNotThrow(() -> server.m3CreateServerProof(A));
         assertArrayEquals(u, CryptoUtils.toUnsigned(server.u, 64));
-        assertArrayEquals(S, CryptoUtils.toUnsigned(server.S, 384));
+        assertArrayEquals(S, server.S);
         assertArrayEquals(K, server.K);
     }
 }
