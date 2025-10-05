@@ -236,21 +236,7 @@ public class ServerHandler extends BaseBridgeHandler {
 
     private Object handleConnection(SystemInfo systemInfo) {
         try {
-            // Log all available server information at INFO level
-            logger.info("Jellyfin Server Information:");
-            logger.info("  Server Name: {}", systemInfo.getServerName());
-            logger.info("  Local Address: {}", systemInfo.getLocalAddress());
-            logger.info("  Version: {}", systemInfo.getVersion());
-
-            // Update properties with server version
-            updateThingProperty(Constants.ServerProperties.SERVER_VERSION, systemInfo.getVersion());
-
-            logger.info("  Product Name: {}", systemInfo.getProductName());
-            logger.info("  Server ID: {}", systemInfo.getId());
-            logger.info("  Startup Wizard Completed: {}", systemInfo.getStartupWizardCompleted());
-            logger.info("  Web Socket Port: {}", systemInfo.getWebSocketPortNumber());
-
-            // Update configuration with systemInfo data if available
+            this.updateThingProperty(Constants.ServerProperties.SERVER_VERSION, systemInfo.getVersion());
             this.updateConfiguration(systemInfo);
 
             // Update state to connected
