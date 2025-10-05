@@ -27,10 +27,6 @@ classDiagram
     ContextualExceptionHandler --> ErrorEventBus : publishes to
     ErrorEventBus --> ErrorEventListener : notifies
     TaskFactory --> ContextualExceptionHandler : creates
-    HandlerFactory ..> ServerHandler : creates
-    EventDrivenExceptionHandler --> ErrorEventBus : publishes to
-    ErrorEventBus --> ErrorEventListener : notifies
-    TaskFactory --> EventDrivenExceptionHandler : creates
     
     %% Class definitions with key attributes and methods
     class HandlerFactory {

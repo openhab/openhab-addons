@@ -25,6 +25,15 @@ jellyfin:server (Bridge) -> jellyfin:client (Thing)
 - Binding config: `src/main/resources/OH-INF/addon/addon.xml`
 - i18n properties: `src/main/resources/OH-INF/i18n/`
 
+## Documentation Consistency
+
+### Contribution Guide Maintenance
+- **Always verify** that class diagrams in `CONTRIBUTION.md` reflect actual code structure after making changes
+- **Update architecture diagrams** when adding, removing, or renaming classes/interfaces
+- **Focus on big picture**: Diagrams should show architectural concepts, not implementation details
+- **Avoid clutter**: Only include classes that represent core patterns or main architectural components
+- **Class naming consistency**: Ensure all references use current class names, not old/deprecated ones
+
 ## Critical Development Patterns
 
 ### Handler Implementation
@@ -106,6 +115,21 @@ public class JellyfinServerDiscoveryService extends AbstractDiscoveryService {
 - Supports prefixed search: `<type:movie>`, `<season:1><episode:1>` 
 - Default behavior: search by name starting with given text
 - Implementation in server handler's channel command processing
+
+## Architecture Diagram Guidelines
+
+### When Making Code Changes
+- **Always check** `CONTRIBUTION.md` class diagram consistency after structural changes
+- **Update diagrams** immediately when adding, removing, or renaming classes/interfaces
+- **Verify relationships** match actual code dependencies and patterns
+- **Remove outdated references** to deleted or renamed classes
+
+### Diagram Design Principles
+- **Big Picture Focus**: Show architectural concepts and patterns, not implementation details
+- **Core Components Only**: Include classes that represent main architectural components
+- **Pattern Visualization**: Emphasize design patterns (Observer, Strategy, Factory, etc.)
+- **Avoid Implementation Details**: No private methods, constants, or internal data structures
+- **Relationship Clarity**: Use clear, meaningful relationship labels (owns, creates, uses, etc.)
 
 ## Key Files for Understanding
 - `Constants.java` - All binding constants and channel definitions
