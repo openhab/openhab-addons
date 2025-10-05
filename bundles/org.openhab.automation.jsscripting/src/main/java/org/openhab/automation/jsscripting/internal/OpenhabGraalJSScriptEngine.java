@@ -156,7 +156,7 @@ public class OpenhabGraalJSScriptEngine
      */
     public OpenhabGraalJSScriptEngine(GraalJSScriptEngineConfiguration configuration,
             JSScriptServiceUtil jsScriptServiceUtil, JSDependencyTracker jsDependencyTracker) {
-        super(null); // delegate depends on fields not yet initialised, so we cannot set it immediately
+        super(null); // delegate depends on fields not yet initialized, so we cannot set it immediately
         this.configuration = configuration;
         this.jsRuntimeFeatures = jsScriptServiceUtil.getJSRuntimeFeatures(lock);
 
