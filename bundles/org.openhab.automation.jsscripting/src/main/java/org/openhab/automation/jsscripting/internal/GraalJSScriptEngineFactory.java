@@ -16,7 +16,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
 
 import javax.script.ScriptEngine;
 
@@ -35,8 +34,6 @@ import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.oracle.truffle.js.scriptengine.GraalJSEngineFactory;
-
 /**
  * An implementation of {@link ScriptEngineFactory} with customizations for GraalJS ScriptEngines.
  *
@@ -53,19 +50,13 @@ public class GraalJSScriptEngineFactory implements ScriptEngineFactory {
     public static final Path JS_LIB_PATH = JS_DEFAULT_PATH.resolve(NODE_DIR);
 
     public static final String SCRIPT_TYPE = "application/javascript";
+    public static final String SCRIPT_FILE_EXTENSION = "js";
 
     private static final String LANG_NOT_INITIALIZED_MSG = "Graal JavaScript language not initialized. Restart openHAB to initialize available Graal languages properly.";
 
-    private static final GraalJSEngineFactory FACTORY = new GraalJSEngineFactory();
-
-    private static final List<String> SCRIPT_TYPES = createScriptTypes();
-
-    private static List<String> createScriptTypes() {
-        // Add those for backward compatibility (existing scripts may rely on those MIME types)
-        List<String> backwardCompat = List.of("application/javascript;version=ECMAScript-2021", "graaljs");
-        return Stream.of(List.of(SCRIPT_TYPE), FACTORY.getMimeTypes(), FACTORY.getExtensions(), backwardCompat)
-                .flatMap(List::stream).distinct().toList();
-    }
+    private static final List<String> SCRIPT_TYPES = List.of(SCRIPT_TYPE, SCRIPT_FILE_EXTENSION, "graaljs",
+            // backward compatibility with the MIME type used in openHAB 3.x:
+            "application/javascript;version=ECMAScript-2021");
 
     private final Logger logger = LoggerFactory.getLogger(GraalJSScriptEngineFactory.class);
     private final GraalJSScriptEngineConfiguration configuration;
