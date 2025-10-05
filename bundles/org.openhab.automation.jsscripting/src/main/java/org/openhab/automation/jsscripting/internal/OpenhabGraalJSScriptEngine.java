@@ -30,6 +30,7 @@ import java.nio.file.attribute.FileAttribute;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.ZonedDateTime;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -38,6 +39,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.regex.Pattern;
 
 import javax.script.ScriptContext;
 import javax.script.ScriptException;
@@ -104,6 +106,8 @@ public class OpenhabGraalJSScriptEngine
     }
     private static final String OPENHAB_JS_INJECTION_CODE = "Object.assign(this, require('openhab'));";
     private static final String EVENT_CONVERSION_CODE = "this.event = (typeof this.rules?._getTriggeredData === 'function') ? rules._getTriggeredData(ctx, true) : this.event";
+    private static final Pattern USE_WRAPPER_DIRECTIVE = Pattern
+            .compile("^\\s*[\"']use wrapper(?:=(?<enabled>true|false))?[\"'];?");
 
     private static final String REQUIRE_WRAPPER_NAME = "__wraprequire__";
     /** Shared Polyglot {@link Engine} across all instances of {@link OpenhabGraalJSScriptEngine} */
@@ -345,7 +349,28 @@ public class OpenhabGraalJSScriptEngine
             newScript = EVENT_CONVERSION_CODE + System.lineSeparator() + newScript;
         }
 
-        if (isScriptAction() || (isScriptCondition() && configuration.isScriptConditionWrapperEnabled())) {
+        // keep this extendable for more directives by checking the first n lines (n = number or directives)
+        List<String> header = script.lines().limit(1).toList();
+        boolean useWrapper = configuration.isScriptConditionWrapperEnabled();
+        for (String line : header) {
+            var matcher = USE_WRAPPER_DIRECTIVE.matcher(line);
+            if (!matcher.matches()) {
+                continue;
+            }
+            var enabled = matcher.group("enabled");
+            if (enabled == null || enabled.isBlank()) {
+                useWrapper = true;
+            } else if ("false".equals(enabled)) {
+                useWrapper = false;
+            } else if ("true".equals(enabled)) {
+                useWrapper = true;
+            } else {
+                logger.warn("Invalid value '{}' for 'use wrapper' directive in script for engine '{}'.", enabled,
+                        engineIdentifier);
+            }
+        }
+
+        if (isScriptAction() || (isScriptCondition() && useWrapper)) {
             logger.debug("Wrapping script for engine '{}' ...", engineIdentifier);
             newScript = "(function() {" + System.lineSeparator() + newScript + System.lineSeparator() + "})()";
         }
