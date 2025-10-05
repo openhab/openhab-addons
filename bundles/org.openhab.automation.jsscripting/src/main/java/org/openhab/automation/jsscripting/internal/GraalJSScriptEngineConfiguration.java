@@ -99,7 +99,7 @@ public class GraalJSScriptEngineConfiguration {
      * @param config configuration parameters to apply to JavaScript
      */
     private void update(Map<String, ?> config) {
-        logger.trace("JavaScript Script Engine Configuration: {}", config);
+        logger.debug("JavaScript Script Engine Configuration: {}", config);
 
         injectionEnabled = ConfigParser.valueAsOrElse(config.get(CFG_INJECTION_ENABLED), Integer.class,
                 INJECTION_ENABLED_FOR_UI_BASED_SCRIPTS_ONLY);
