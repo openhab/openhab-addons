@@ -40,7 +40,7 @@ public class GraalJSScriptEngineConfiguration {
 
     private int injectionEnabled = INJECTION_ENABLED_FOR_ALL_SCRIPTS;
     private boolean injectionCachingEnabled = true;
-    private boolean scriptConditionWrapperEnabled = true;
+    private boolean scriptConditionWrapperEnabled = false;
     private boolean eventConversionEnabled = true;
     private boolean dependencyTrackingEnabled = true;
 

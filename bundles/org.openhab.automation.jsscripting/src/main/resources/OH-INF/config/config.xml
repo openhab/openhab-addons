@@ -36,7 +36,7 @@
 			as well as the use of <code>function</code> and <code>class</code> declarations.<br>
 			With this option enabled, you need to use <code>return</code> statements in your script condition to return true or false.
 			]]></description>
-			<default>true</default>
+			<default>false</default>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="eventConversionEnabled" type="boolean" required="true" groupName="environment">
