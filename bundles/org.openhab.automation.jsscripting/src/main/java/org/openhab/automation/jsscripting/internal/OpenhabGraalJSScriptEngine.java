@@ -100,7 +100,7 @@ public class OpenhabGraalJSScriptEngine
         }
     }
     private static final String OPENHAB_JS_INJECTION_CODE = "Object.assign(this, require('openhab'));";
-    private static final String EVENT_CONVERSION_CODE = "const event = (typeof this.rules?._getTriggeredData === 'function') ? rules._getTriggeredData(ctx, true) : this.event";
+    private static final String EVENT_CONVERSION_CODE = "this.event = (typeof this.rules?._getTriggeredData === 'function') ? rules._getTriggeredData(ctx, true) : this.event";
 
     private static final String REQUIRE_WRAPPER_NAME = "__wraprequire__";
     /** Shared Polyglot {@link Engine} across all instances of {@link OpenhabGraalJSScriptEngine} */
@@ -156,7 +156,7 @@ public class OpenhabGraalJSScriptEngine
      */
     public OpenhabGraalJSScriptEngine(GraalJSScriptEngineConfiguration configuration,
             JSScriptServiceUtil jsScriptServiceUtil, JSDependencyTracker jsDependencyTracker) {
-        super(null); // delegate depends on fields not yet initialised, so we cannot set it immediately
+        super(null); // delegate depends on fields not yet initialized, so we cannot set it immediately
         this.configuration = configuration;
         this.jsRuntimeFeatures = jsScriptServiceUtil.getJSRuntimeFeatures(lock);
 
@@ -328,18 +328,20 @@ public class OpenhabGraalJSScriptEngine
 
     @Override
     protected String onScript(String script) {
-        if (isUiBasedScript() && configuration.isWrapperEnabled()) {
-            logger.debug("Wrapping script for engine '{}' ...", engineIdentifier);
-
-            String eventConversionScript = "";
-            if (configuration.isEventConversionEnabled()) {
-                eventConversionScript = EVENT_CONVERSION_CODE + System.lineSeparator();
-            }
-
-            return "(function() {" + System.lineSeparator() + eventConversionScript + script + System.lineSeparator()
-                    + "})()";
+        if (!isUiBasedScript()) {
+            return super.onScript(script);
         }
-        return super.onScript(script);
+
+        String newScript = script;
+        if (configuration.isEventConversionEnabled()) {
+            logger.debug("Injecting event conversion code into script for engine '{}'.", engineIdentifier);
+            newScript = EVENT_CONVERSION_CODE + System.lineSeparator() + newScript;
+        }
+        if (configuration.isWrapperEnabled()) {
+            logger.debug("Wrapping script for engine '{}' ...", engineIdentifier);
+            newScript = "(function() {" + System.lineSeparator() + newScript + System.lineSeparator() + "})()";
+        }
+        return super.onScript(newScript);
     }
 
     @Override
