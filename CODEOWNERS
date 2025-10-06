@@ -466,6 +466,7 @@
 /bundles/org.openhab.persistence.mapdb/ @openhab/add-ons-maintainers
 /bundles/org.openhab.persistence.mongodb/ @openhab/add-ons-maintainers
 /bundles/org.openhab.persistence.rrd4j/ @openhab/add-ons-maintainers
+/bundles/org.openhab.persistence.victoriametrics/ @johnuopini
 /bundles/org.openhab.transform.basicprofiles/ @J-N-K
 /bundles/org.openhab.transform.bin2json/ @paulianttila
 /bundles/org.openhab.transform.exec/ @openhab/add-ons-maintainers
