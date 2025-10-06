@@ -19,7 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.event.Level;
 
 /**
- * ContextLogOutputStream implementation
+ * ContextOutputLogger is the default way of handling the Standard Output for pythonscripting.
  *
  * @author Holger Hees - Initial contribution
  */

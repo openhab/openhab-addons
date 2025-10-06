@@ -18,7 +18,7 @@ import java.io.OutputStream;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * ContextOutput implementation
+ * ContextOutput wraps an @nullable OutputStream, used as Standard Output for pythonscripting
  *
  * @author Holger Hees - Initial contribution
  */

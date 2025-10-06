@@ -36,9 +36,7 @@
 		</parameter>
 		<parameter name="injectionEnabled" type="integer" required="true" min="0" max="2" groupName="environment">
 			<label>Inject scope and helper objects into rules (requires helper modules)</label>
-			<description><![CDATA[
-			This injects the scope and helper Registry and logger into rules.
-			]]></description>
+			<description>This injects the scope and helper Registry and logger into rules.</description>
 			<options>
 				<option value="2">Auto injection enabled only for UI and Transformation scripts (preferred)</option>
 				<option value="1">Auto injection enabled for all scripts</option>
@@ -58,9 +56,7 @@
 		</parameter>
 		<parameter name="nativeModules" type="boolean" required="false" groupName="system">
 			<label>Enables native modules (requires a manually configured venv)</label>
-			<description>
-				<![CDATA[Native modules are sometimes necessary for pip modules which depends on native libraries.]]>
-			</description>
+			<description>Native modules are sometimes necessary for pip modules which depends on native libraries.</description>
 			<default>false</default>
 			<advanced>true</advanced>
 		</parameter>
@@ -82,7 +78,7 @@
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="jythonEmulation" type="boolean" required="true" groupName="system">
-			<label>Enable jython emulation</label>
+			<label>Enable Jython emulation</label>
 			<description><![CDATA[
 			This enables Jython emulation in GraalPy. It is strongly recommended to update code to GraalPy and Python 3 as the emulation can have performance degradation.
 			For tips and instructions, please refer to <a href="https://www.graalvm.org/latest/reference-manual/python/Modern-Python-on-JVM">Jython Migration Guide</a>.

@@ -27,6 +27,7 @@ import java.util.Locale;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.automation.pythonscripting.internal.PythonScriptEngineConfiguration;
+import org.openhab.automation.pythonscripting.internal.PythonScriptEngineHelper;
 import org.openhab.core.io.console.Console;
 
 import com.google.gson.JsonArray;
@@ -169,7 +170,7 @@ public class UpdateCmd {
                 String zipballUrl = releaseObj.get("zipball_url").getAsString();
 
                 try {
-                    config.initHelperLib(zipballUrl, releaseVersion);
+                    PythonScriptEngineHelper.installHelperLib(zipballUrl, releaseVersion, config);
                     console.println("Version '" + releaseVersion.toString() + "' installed successfully");
                 } catch (URISyntaxException | IOException e) {
                     console.println("Fetching release zip '" + zipballUrl + "' file failed. ");

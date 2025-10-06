@@ -93,8 +93,8 @@ final class GraalPythonBindings extends AbstractMap<String, Object> implements j
     /**
      * Closes the current context and makes it unusable.
      *
-     * Error happens in guest language will throw an {@link PolyglotException}.
-     * Operations performed after closing will throw an {@link IllegalStateException}.
+     * @throws PolyglotException when an error happens in guest language
+     * @throws IllegalStateException when an operation is performed after closing
      */
     @Override
     public void close() throws PolyglotException, IllegalStateException {

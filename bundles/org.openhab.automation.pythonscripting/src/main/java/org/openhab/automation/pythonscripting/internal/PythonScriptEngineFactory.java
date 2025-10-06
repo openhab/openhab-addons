@@ -72,7 +72,7 @@ public class PythonScriptEngineFactory implements ScriptEngineFactory, ScriptEng
         this.language = PythonScriptEngine.getLanguage();
         if (this.language == null) {
             logger.error(
-                    "Graal python language not initialized. Restart openhab to initialize available graal languages properly.");
+                    "Graal Python language not initialized. Restart openHAB to initialize available Graal languages properly.");
         }
 
         String defaultTimezone = ZoneId.systemDefault().getId();
@@ -81,7 +81,6 @@ public class PythonScriptEngineFactory implements ScriptEngineFactory, ScriptEng
             logger.warn(
                     "User timezone '{}' is different than openhab regional timezone '{}'. Python Scripting is running with timezone '{}'.",
                     defaultTimezone, providerTimezone, defaultTimezone);
-            // System.setProperty("user.timezone", "Australia/Tasmania");
         }
     }
 

@@ -19,7 +19,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * ContextInput implementation
+ * ContextInput wraps an @nullable InputStream, used as Standard Input for pythonscripting
  *
  * @author Holger Hees - Initial contribution
  */
