@@ -188,13 +188,13 @@ public class ViessmannAccountHandler extends BaseBridgeHandler implements ApiInt
             apiCalls = 0;
         }
 
+        migrateChannelIds();
+
         api = new ViessmannApi(this.config.apiKey, httpClient, this.config.user, this.config.password,
                 this.config.installationId, this.config.gatewaySerial, callbackUrl);
         api.createOAuthClientService(this);
 
         if (api.doAuthorize()) {
-            migrateChannelIds();
-
             getAllGateways();
             if (!gatewaysList.isEmpty()) {
                 updateBridgeStatus(ThingStatus.ONLINE);
@@ -442,7 +442,7 @@ public class ViessmannAccountHandler extends BaseBridgeHandler implements ApiInt
             }
         } catch (ViessmannCommunicationException e) {
             handler.updateThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    String.format("Device not reachable %s", e.getMessage()));
+                    String.format("@text/offline.comm-error.device-not-reachable [%s]", e.getMessage()));
         } catch (JsonSyntaxException | IllegalStateException e) {
             logger.warn("[updateFeaturesOfDevice] Parsing Viessmann response fails: {}", e.getMessage());
         }

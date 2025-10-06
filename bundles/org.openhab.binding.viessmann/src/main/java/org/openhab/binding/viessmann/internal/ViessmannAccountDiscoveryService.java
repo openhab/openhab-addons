@@ -102,7 +102,6 @@ public class ViessmannAccountDiscoveryService extends AbstractThingHandlerDiscov
             DiscoveryResult result = DiscoveryResultBuilder.create(uid).withBridge(bridgeUID).withProperties(properties)
                     .withRepresentationProperty(GATEWAY_SERIAL).withLabel(label).build();
             thingDiscovered(result);
-            logger.debug("Discovered Gateway {}", uid);
         }
     }
 }

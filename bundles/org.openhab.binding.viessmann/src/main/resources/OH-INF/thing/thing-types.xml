@@ -249,7 +249,7 @@
 			<tag>Setpoint</tag>
 			<tag>Temperature</tag>
 		</tags>
-		<state min="3" max="37" step="1" pattern="%d %unit%" readOnly="false"/>
+		<state min="3" max="99" step="1" pattern="%d %unit%" readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="set-target-temperature">
@@ -260,7 +260,7 @@
 			<tag>Setpoint</tag>
 			<tag>Temperature</tag>
 		</tags>
-		<state min="10" max="60" step="1" pattern="%d %unit%" readOnly="false"/>
+		<state min="10" max="140" step="1" pattern="%d %unit%" readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="set-target-hysteresis">
@@ -293,7 +293,7 @@
 			<tag>Setpoint</tag>
 			<tag>Temperature</tag>
 		</tags>
-		<state min="1" max="30" step="1" pattern="%d %unit%" readOnly="false"/>
+		<state min="1" max="86" step="1" pattern="%d %unit%" readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="set-max">
@@ -304,7 +304,7 @@
 			<tag>Setpoint</tag>
 			<tag>Temperature</tag>
 		</tags>
-		<state min="10" max="70" step="1" pattern="%d %unit%" readOnly="false"/>
+		<state min="10" max="158" step="1" pattern="%d %unit%" readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="power-energy">
@@ -325,6 +325,17 @@
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Energy</tag>
+		</tags>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="power">
+		<item-type unitHint="kW">Number:Power</item-type>
+		<label>Power</label>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
 		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
@@ -378,7 +389,7 @@
 
 	<channel-type id="duration">
 		<item-type>Number:Time</item-type>
-		<label>Minutes</label>
+		<label>Duration</label>
 		<category>Time</category>
 		<tags>
 			<tag>Status</tag>
@@ -498,13 +509,13 @@
 	</channel-type>
 
 	<channel-type id="bar">
-		<item-type>Number:Pressure</item-type>
+		<item-type unitHint="bar">Number:Pressure</item-type>
 		<label>Pressure</label>
 		<category>Pressure</category>
 		<tags>
 			<tag>Measurement</tag>
 		</tags>
-		<state pattern="%.1f bar" readOnly="true"/>
+		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<!-- Heating Curve: slope -->

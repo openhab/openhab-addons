@@ -154,6 +154,8 @@ public class ViessmannGatewayHandler extends BaseBridgeHandler implements Bridge
         this.gatewaySerial = config.gatewaySerial;
         this.installationId = config.installationId;
 
+        migrateChannelIds();
+
         if (!config.disablePolling && errorChannelsLinked()) {
             BridgeHandler bridgeHandler = getBridgeHandler();
             if (bridgeHandler != null) {
@@ -162,8 +164,6 @@ public class ViessmannGatewayHandler extends BaseBridgeHandler implements Bridge
             }
             startViessmannErrorsPolling(config.pollingIntervalErrors);
         }
-
-        migrateChannelIds();
 
         getAllDevices();
         if (!devicesList.isEmpty()) {
@@ -348,13 +348,14 @@ public class ViessmannGatewayHandler extends BaseBridgeHandler implements Bridge
                         }
                     } else {
                         logger.warn("Features of Device ID \"{}\" is empty.", deviceId);
-                        String statusMessage = String.format("Features of Device ID \"%s\" is empty.", deviceId);
+                        String statusMessage = String.format("@text/offline.comm-error.features-empty [%s]", deviceId);
                         handler.updateThingStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, statusMessage);
                     }
                 }
             } catch (ViessmannCommunicationException e) {
-                handler.updateThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        String.format("Device not reachable %s", e.getMessage()));
+                String statusMessage = String.format("@text/offline.comm-error.device-not-reachable [%s]",
+                        e.getMessage());
+                handler.updateThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, statusMessage);
             } catch (JsonSyntaxException | IllegalStateException e) {
                 logger.warn("Parsing Viessmann response fails: {}", e.getMessage());
             }

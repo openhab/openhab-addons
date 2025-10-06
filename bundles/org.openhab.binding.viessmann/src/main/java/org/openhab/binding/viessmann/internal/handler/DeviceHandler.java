@@ -56,7 +56,6 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
-import org.openhab.core.thing.binding.BridgeHandler;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.link.ItemChannelLink;
@@ -112,7 +111,8 @@ public class DeviceHandler extends ViessmannThingHandler {
         ThingsConfig config = getConfigAs(ThingsConfig.class);
         this.config = config;
         if (config.deviceId.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Invalid device id setting");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/offline.conf-error.device-id");
             return;
         }
         updateProperty(PROPERTY_ID, config.deviceId); // set representation property used by discovery
@@ -120,7 +120,6 @@ public class DeviceHandler extends ViessmannThingHandler {
         migrateChannelIds();
 
         initDeviceState();
-        logger.trace("Device handler finished initializing");
     }
 
     private void migrateChannelIds() {
@@ -235,21 +234,25 @@ public class DeviceHandler extends ViessmannThingHandler {
         }
     }
 
-    @Override
-    public void initChannelState() {
-        Bridge bridge = getBridge();
-        if (bridge != null) {
-            BridgeHandler bridgeHandler = bridge.getHandler();
-            if (bridgeHandler != null) {
-                if (bridgeHandler instanceof BridgeInterface bridgeInterface) {
-                    bridgeInterface.setConfigInstallationGatewayIdToDevice(this);
-                    bridgeInterface.updateFeaturesOfDevice(this);
-                } else {
-                    logger.error("BridgeHandler does not support bridgeInterface");
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Invalid bridge type");
-                }
+    private @Nullable BridgeInterface getBridgeInterface() {
+        if (getBridge() instanceof Bridge bridge) {
+            if (bridge.getHandler() instanceof BridgeInterface bridgeInterface) {
+                return bridgeInterface;
             }
         }
+        return null;
+    }
+
+    @Override
+    public void initChannelState() {
+        BridgeInterface bridgeInterface = getBridgeInterface();
+        if (bridgeInterface == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/offline.conf-error.bridge-type");
+            return;
+        }
+        bridgeInterface.setConfigInstallationGatewayIdToDevice(this);
+        bridgeInterface.updateFeaturesOfDevice(this);
     }
 
     public String getDeviceId() {
@@ -271,125 +274,122 @@ public class DeviceHandler extends ViessmannThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        Channel ch;
         try {
-            Channel ch = thing.getChannel(channelUID.getId());
-            if (ch != null) {
-                logger.trace("ChannelUID: {} | Properties: {}", ch.getUID(), ch.getProperties());
-                boolean initState = false;
-                Map<String, String> prop = ch.getProperties();
-                String commands = prop.get("command");
-                if (commands != null) {
-                    String uri = null;
-                    String param = null;
-                    int initStateDelay = 0;
-                    String[] com = commands.split(",");
-                    if (OnOffType.ON.equals(command)) {
-                        uri = prop.get("activateUri");
-                        param = "{}";
-                        String feature = prop.get("feature");
-                        if (feature != null) {
-                            if (feature.contains("oneTimeCharge")) {
-                                initStateDelay = 2;
-                                initState = true;
-                            }
-                        }
-                    } else if (OnOffType.OFF.equals(command)) {
-                        uri = prop.get("deactivateUri");
-                        param = "{}";
-                        String feature = prop.get("feature");
-                        if (feature != null) {
-                            if (feature.contains("oneTimeCharge")) {
-                                initStateDelay = 2;
-                                initState = true;
-                            }
-                        }
-                    } else if (command instanceof DecimalType) {
-                        logger.trace("Received DecimalType Command for Channel {}",
-                                thing.getChannel(channelUID.getId()));
-                        for (String str : com) {
-                            if (str.contains("setCurve")) {
-                                uri = prop.get(str + "Uri");
-                                String circuitId = prop.get("circuitId");
-                                HeatingCircuit heatingCircuit = heatingCircuits.get(circuitId);
-                                if (heatingCircuit != null) {
-                                    String slope = heatingCircuit.getSlope();
-                                    String shift = heatingCircuit.getShift();
-                                    String value = command.toString();
-                                    if (ch.getUID().toString().contains("shift")) {
-                                        param = "{\"slope\":" + slope + ", \"shift\":" + value + "}";
-                                        heatingCircuit.setShift(value);
-                                    } else if (ch.getUID().toString().contains("slope")) {
-                                        param = "{\"slope\":" + value + ", \"shift\":" + shift + "}";
-                                        heatingCircuit.setSlope(value);
-                                    }
-                                    if (circuitId != null) {
-                                        heatingCircuits.put(circuitId, heatingCircuit);
-                                    }
-                                }
-                                break;
-                            }
-                            if (str.contains("setHysteresis")) {
-                                String f = command.toString();
-                                uri = prop.get(str + "Uri");
-                                param = "{\"" + prop.get(str + "Params") + "\":" + f + "}";
-                                break;
-                            }
+            ch = thing.getChannel(channelUID.getId());
+        } catch (IllegalArgumentException e) {
+            logger.warn("Invalid ChannelUID: {}", channelUID, e);
+            return;
+        }
 
-                        }
-                    } else if (command instanceof QuantityType<?>) {
-                        QuantityType<?> value = (QuantityType<?>) command;
-                        double f = value.doubleValue();
-                        for (String str : com) {
-                            if (str.contains("Temperature") || str.contains("setHysteresis") || str.contains("setMin")
-                                    || str.contains("setMax") || str.contains("temperature")) {
-                                uri = prop.get(str + "Uri");
-                                param = "{\"" + prop.get(str + "Params") + "\":" + f + "}";
-                                break;
-                            }
-                        }
-                        logger.trace("Received QuantityType Command for Channel {} Command: {}",
-                                thing.getChannel(channelUID.getId()), value.floatValue());
-                    } else if (command instanceof StringType) {
-                        for (String str : com) {
-                            String s = command.toString();
-                            uri = prop.get(str + "Uri");
-                            if ("{".equals(s.substring(0, 1))) {
-                                param = "{\"" + prop.get(str + "Params") + "\":" + s + "}";
-                            } else {
-                                param = "{\"" + prop.get(str + "Params") + "\":\"" + s + "\"}";
-                            }
-                            break;
-                        }
-                        logger.trace("Received StringType Command for Channel {}",
-                                thing.getChannel(channelUID.getId()));
-                    }
-                    if (uri != null && param != null) {
-                        Bridge bridge = getBridge();
-                        if (bridge != null) {
-                            BridgeHandler bridgeHandler = bridge.getHandler();
-                            if (bridgeHandler != null) {
-                                if (bridgeHandler instanceof BridgeInterface bridgeInterface) {
-                                    try {
-                                        if (!bridgeInterface.setData(uri, param) || initState) {
-                                            scheduler.schedule(this::initChannelState, initStateDelay,
-                                                    TimeUnit.SECONDS);
-                                        }
-                                    } catch (ViessmannCommunicationException e) {
-                                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                                e.getMessage());
-                                    }
-                                } else {
-                                    logger.error("BridgeHandler does not support bridgeInterface");
-                                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                                            "Invalid bridge type");
-                                }
-                            }
-                        }
-                    }
+        if (ch == null) {
+            return;
+        }
+
+        logger.trace("ChannelUID: {} | Properties: {}", ch.getUID(), ch.getProperties());
+        boolean initState = false;
+        Map<String, String> prop = ch.getProperties();
+        String commands = prop.get("command");
+        if (commands == null) {
+            return;
+        }
+
+        String uri = null;
+        String param = null;
+        int initStateDelay = 0;
+        String[] com = commands.split(",");
+        if (OnOffType.ON.equals(command)) {
+            uri = prop.get("activateUri");
+            param = "{}";
+            String feature = prop.get("feature");
+            if (feature != null) {
+                if (feature.contains("oneTimeCharge")) {
+                    initStateDelay = 2;
+                    initState = true;
                 }
             }
-        } catch (IllegalArgumentException e) {
-            logger.warn("handleCommand fails", e);
+        } else if (OnOffType.OFF.equals(command)) {
+            uri = prop.get("deactivateUri");
+            param = "{}";
+            String feature = prop.get("feature");
+            if (feature != null) {
+                if (feature.contains("oneTimeCharge")) {
+                    initStateDelay = 2;
+                    initState = true;
+                }
+            }
+        } else if (command instanceof DecimalType) {
+            logger.trace("Received DecimalType Command for Channel {}", thing.getChannel(channelUID.getId()));
+            for (String str : com) {
+                if (str.contains("setCurve")) {
+                    uri = prop.get(str + "Uri");
+                    String circuitId = prop.get("circuitId");
+                    HeatingCircuit heatingCircuit = heatingCircuits.get(circuitId);
+                    if (heatingCircuit != null) {
+                        String slope = heatingCircuit.getSlope();
+                        String shift = heatingCircuit.getShift();
+                        String value = command.toString();
+                        if (ch.getUID().toString().contains("shift")) {
+                            param = "{\"slope\":" + slope + ", \"shift\":" + value + "}";
+                            heatingCircuit.setShift(value);
+                        } else if (ch.getUID().toString().contains("slope")) {
+                            param = "{\"slope\":" + value + ", \"shift\":" + shift + "}";
+                            heatingCircuit.setSlope(value);
+                        }
+                        if (circuitId != null) {
+                            heatingCircuits.put(circuitId, heatingCircuit);
+                        }
+                    }
+                    break;
+                }
+                if (str.contains("setHysteresis")) {
+                    String f = command.toString();
+                    uri = prop.get(str + "Uri");
+                    param = "{\"" + prop.get(str + "Params") + "\":" + f + "}";
+                    break;
+                }
+
+            }
+        } else if (command instanceof QuantityType<?> value) {
+            double f = value.doubleValue();
+            for (String str : com) {
+                if (str.contains("Temperature") || str.contains("setHysteresis") || str.contains("setMin")
+                        || str.contains("setMax") || str.contains("temperature")) {
+                    uri = prop.get(str + "Uri");
+                    param = "{\"" + prop.get(str + "Params") + "\":" + f + "}";
+                    break;
+                }
+            }
+            logger.trace("Received QuantityType Command for Channel {} Command: {}",
+                    thing.getChannel(channelUID.getId()), value.floatValue());
+        } else if (command instanceof StringType) {
+            for (String str : com) {
+                String s = command.toString();
+                uri = prop.get(str + "Uri");
+                if ("{".equals(s.substring(0, 1))) {
+                    param = "{\"" + prop.get(str + "Params") + "\":" + s + "}";
+                } else {
+                    param = "{\"" + prop.get(str + "Params") + "\":\"" + s + "\"}";
+                }
+                break;
+            }
+            logger.trace("Received StringType Command for Channel {}", thing.getChannel(channelUID.getId()));
+        }
+
+        if (uri != null && param != null) {
+            BridgeInterface bridgeInterface = getBridgeInterface();
+            if (bridgeInterface == null) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "@text/offline.conf-error.bridge-type");
+                return;
+            }
+            try {
+                if (!bridgeInterface.setData(uri, param) || initState) {
+                    scheduler.schedule(this::initChannelState, initStateDelay, TimeUnit.SECONDS);
+                }
+            } catch (ViessmannCommunicationException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            }
         }
     }
 
@@ -429,6 +429,7 @@ public class DeviceHandler extends ViessmannThingHandler {
                                 case "celsius" -> "temperature";
                                 case "percent", "kelvin", "liter" -> viUnit;
                                 case "minute" -> "duration";
+                                case "bar" -> "bar";
                                 case "kilowattHour/year" -> "house-heating-load";
                                 case null, default -> prop.value.type;
                             };
@@ -438,6 +439,11 @@ public class DeviceHandler extends ViessmannThingHandler {
                                 typeEntry = "liter-per-minute";
                             } else {
                                 valueEntry = prop.value.value;
+                            }
+                            if ("kilowatt".equals(viUnit)) {
+                                valueEntry = String.valueOf(Double.parseDouble(prop.value.value) * 1000);
+                                viUnit = "watt";
+                                typeEntry = "power";
                             }
                             break;
                         case "status":
@@ -747,6 +753,8 @@ public class DeviceHandler extends ViessmannThingHandler {
                                 case "kelvin":
                                 case "liter":
                                 case "liter-per-minute":
+                                case "bar":
+                                case "power":
                                     updateChannelState(msg.getChannelId(), msg.getValue(), unit);
                                     break;
                                 case "boolean":

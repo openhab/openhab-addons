@@ -166,9 +166,9 @@ public class ViessmannApi {
             }
         } catch (ViessmannAuthException e) {
             if (logger.isDebugEnabled()) {
-                logger.info("API: The Viessmann authorization process threw an exception", e);
+                logger.warn("API: The Viessmann authorization process threw an exception", e);
             } else {
-                logger.info("API: The Viessmann authorization process threw an exception: {}", e.getMessage());
+                logger.warn("API: The Viessmann authorization process threw an exception: {}", e.getMessage());
             }
             viessmannAuth.setState(ViessmannAuthState.NEED_AUTH);
         }
@@ -197,9 +197,9 @@ public class ViessmannApi {
             viessmannAuth.doAuthorization();
         } catch (ViessmannAuthException e) {
             if (logger.isDebugEnabled()) {
-                logger.info("API: The Viessmann authorization process threw an exception", e);
+                logger.warn("API: The Viessmann authorization process threw an exception", e);
             } else {
-                logger.info("API: The Viessmann authorization process threw an exception: {}", e.getMessage());
+                logger.warn("API: The Viessmann authorization process threw an exception: {}", e.getMessage());
             }
             viessmannAuth.setState(ViessmannAuthState.NEED_AUTH);
         }
@@ -340,9 +340,9 @@ public class ViessmannApi {
                 return null;
             }
         } catch (IOException e) {
-            logger.info("API IOException: Unable to execute GET: {}", e.getMessage());
+            logger.warn("API IOException: Unable to execute GET: {}", e.getMessage());
         } catch (ViessmannAuthException e) {
-            logger.info("API AuthException: Unable to execute GET: {}", e.getMessage());
+            logger.warn("API AuthException: Unable to execute GET: {}", e.getMessage());
             authorize();
         }
         return response;
@@ -362,9 +362,9 @@ public class ViessmannApi {
             }
             return true;
         } catch (IOException e) {
-            logger.info("API IOException: Unable to execute POST: {}", e.getMessage());
+            logger.warn("API IOException: Unable to execute POST: {}", e.getMessage());
         } catch (ViessmannAuthException e) {
-            logger.info("API AuthException: Unable to execute POST: {}", e.getMessage());
+            logger.warn("API AuthException: Unable to execute POST: {}", e.getMessage());
             authorize();
         }
         return false;

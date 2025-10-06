@@ -95,6 +95,5 @@ public class ViessmannDiscoveryService extends AbstractThingHandlerDiscoveryServ
         DiscoveryResult result = DiscoveryResultBuilder.create(uid).withBridge(bridgeUID).withProperties(properties)
                 .withRepresentationProperty(PROPERTY_ID).withLabel(label).build();
         thingDiscovered(result);
-        logger.debug("Discovered Device {}", uid);
     }
 }
