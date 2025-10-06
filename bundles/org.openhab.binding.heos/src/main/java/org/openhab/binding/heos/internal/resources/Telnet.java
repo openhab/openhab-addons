@@ -31,6 +31,7 @@ import java.util.concurrent.TimeoutException;
 
 import org.apache.commons.net.io.CRLFLineReader;
 import org.apache.commons.net.telnet.TelnetClient;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.common.NamedThreadFactory;
 import org.slf4j.Logger;
@@ -42,6 +43,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Johannes Einig - Initial contribution
  */
+@NonNullByDefault
 public class Telnet {
     private final Logger logger = LoggerFactory.getLogger(Telnet.class);
 
@@ -50,16 +52,16 @@ public class Telnet {
 
     private final HeosStringPropertyChangeListener eolNotifier = new HeosStringPropertyChangeListener();
     private final TelnetClient client = new TelnetClient();
-    private ExecutorService timedReaderExecutor;
+    private @Nullable ExecutorService timedReaderExecutor;
 
-    private String ip;
+    private @Nullable String ip;
     private int port;
 
     private String readResult = "";
 
-    private InetAddress address;
-    private DataOutputStream outStream;
-    private BufferedInputStream bufferedStream;
+    private @Nullable InetAddress address;
+    private @Nullable DataOutputStream outStream;
+    private @Nullable BufferedInputStream bufferedStream;
 
     /**
      * Connects to a host with the specified IP address and port
@@ -115,7 +117,8 @@ public class Telnet {
      * @throws IOException
      */
     private void sendClear(String command) throws IOException {
-        if (!client.isConnected()) {
+        DataOutputStream outStream = this.outStream;
+        if (!client.isConnected() || outStream == null) {
             return;
         }
 
@@ -134,7 +137,7 @@ public class Telnet {
      * @throws IOException
      * @see #readLine(int timeOut)
      */
-    public String readLine() throws ReadException, IOException {
+    public @Nullable String readLine() throws ReadException, IOException {
         return readLine(READ_TIMEOUT);
     }
 
@@ -168,8 +171,10 @@ public class Telnet {
                 Throwable cause = e.getCause();
                 if (cause instanceof IOException exception) {
                     throw exception;
-                } else {
+                } else if (cause != null) {
                     throw new ReadException(cause);
+                } else {
+                    throw new ReadException(e);
                 }
             }
         }
@@ -178,6 +183,10 @@ public class Telnet {
 
     private String timedCallable(Callable<String> callable, int timeOut)
             throws InterruptedException, ExecutionException, TimeoutException {
+        ExecutorService timedReaderExecutor = this.timedReaderExecutor;
+        if (timedReaderExecutor == null) {
+            throw new IllegalStateException("timedReaderExecutor is not initialized");
+        }
         Future<String> future = timedReaderExecutor.submit(callable);
         try {
             return future.get(timeOut, TimeUnit.MILLISECONDS);
@@ -194,7 +203,10 @@ public class Telnet {
      */
     public void disconnect() throws IOException {
         client.disconnect();
-        timedReaderExecutor.shutdown();
+        ExecutorService timedReaderExecutor = this.timedReaderExecutor;
+        if (timedReaderExecutor != null) {
+            timedReaderExecutor.shutdown();
+        }
     }
 
     /**
@@ -216,6 +228,11 @@ public class Telnet {
      * available data without any check
      */
     private void inputAvailableRead() {
+        BufferedInputStream bufferedStream = this.bufferedStream;
+        if (bufferedStream == null) {
+            return;
+        }
+
         try {
             int i = bufferedStream.available();
             byte[] buffer = new byte[i];
@@ -252,6 +269,7 @@ public class Telnet {
      * @return true if HEOS is reachable
      */
     public boolean isHostReachable() {
+        InetAddress address = this.address;
         try {
             return address != null && address.isReachable(IS_ALIVE_TIMEOUT);
         } catch (IOException e) {

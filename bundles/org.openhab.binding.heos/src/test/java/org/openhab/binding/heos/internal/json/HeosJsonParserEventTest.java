@@ -32,7 +32,7 @@ public class HeosJsonParserEventTest {
     private final HeosJsonParser subject = new HeosJsonParser();
 
     @Test
-    public void event_now_playing_changed() {
+    public void eventNowPlayingChanged() {
         HeosEventObject event = subject.parseEvent(
                 "{\"heos\": {\"command\": \"event/player_now_playing_changed\", \"message\": \"pid=1679855527\"}}");
 
@@ -42,7 +42,7 @@ public class HeosJsonParserEventTest {
     }
 
     @Test
-    public void event_now_playing_progress() {
+    public void eventNowPlayingProgress() {
         HeosEventObject event = subject.parseEvent(
                 "{\"heos\": {\"command\": \"event/player_now_playing_progress\", \"message\": \"pid=1679855527&cur_pos=224848000&duration=0\"}}");
 
@@ -54,7 +54,7 @@ public class HeosJsonParserEventTest {
     }
 
     @Test
-    public void event_state_changed() {
+    public void eventStateChanged() {
         HeosEventObject event = subject.parseEvent(
                 "{\"heos\": {\"command\": \"event/player_state_changed\", \"message\": \"pid=1679855527&state=play\"}}");
 
@@ -65,7 +65,7 @@ public class HeosJsonParserEventTest {
     }
 
     @Test
-    public void event_playback_error() {
+    public void eventPlaybackError() {
         HeosEventObject event = subject.parseEvent(
                 "{\"heos\": {\"command\": \"event/player_playback_error\", \"message\": \"pid=1679855527&error=Could Not Download\"}}");
 
@@ -76,7 +76,7 @@ public class HeosJsonParserEventTest {
     }
 
     @Test
-    public void event_volume_changed() {
+    public void eventVolumeChanged() {
         HeosEventObject event = subject.parseEvent(
                 "{\"heos\": {\"command\": \"event/player_volume_changed\", \"message\": \"pid=1958912779&level=23&mute=off\"}}");
 
@@ -88,7 +88,7 @@ public class HeosJsonParserEventTest {
     }
 
     @Test
-    public void event_shuffle_mode_changed() {
+    public void eventShuffleModeChanged() {
         HeosEventObject event = subject.parseEvent(
                 "{\"heos\": {\"command\": \"event/shuffle_mode_changed\", \"message\": \"pid=-831584083&shuffle=on\"}}");
 
@@ -99,7 +99,7 @@ public class HeosJsonParserEventTest {
     }
 
     @Test
-    public void event_sources_changed() {
+    public void eventSourcesChanged() {
         HeosEventObject event = subject.parseEvent("{\"heos\": {\"command\": \"event/sources_changed\"}}");
 
         assertEquals(HeosEvent.SOURCES_CHANGED, event.command);
@@ -107,7 +107,7 @@ public class HeosJsonParserEventTest {
     }
 
     @Test
-    public void event_user_changed() {
+    public void eventUserChanged() {
         HeosEventObject event = subject.parseEvent(
                 "{\"heos\": {\"command\": \"event/user_changed\", \"message\": \"signed_in&un=martinvw@mtin.nl\"}}");
 
@@ -118,7 +118,7 @@ public class HeosJsonParserEventTest {
     }
 
     @Test
-    public void event_unknown_event() {
+    public void eventUnknownEvent() {
         HeosEventObject event = subject.parseEvent("{\"heos\": {\"command\": \"event/does_not_exist\"}}");
 
         assertNull(event.command);
@@ -126,7 +126,7 @@ public class HeosJsonParserEventTest {
     }
 
     @Test
-    public void event_duplicate_attributes() {
+    public void eventDuplicateAttributes() {
         HeosEventObject event = subject.parseEvent(
                 "{\"heos\": {\"command\": \"event/does_not_exist\", \"message\": \"signed_in&un=test1&un=test2\"}}");
 
@@ -135,7 +135,7 @@ public class HeosJsonParserEventTest {
     }
 
     @Test
-    public void event_non_numeric() {
+    public void eventNonNumeric() {
         HeosEventObject event = subject
                 .parseEvent("{\"heos\": {\"command\": \"event/does_not_exist\", \"message\": \"pid=test\"}}");
 
@@ -144,7 +144,7 @@ public class HeosJsonParserEventTest {
     }
 
     @Test
-    public void event_numeric_missing() {
+    public void eventNumericMissing() {
         HeosEventObject event = subject.parseEvent("{\"heos\": {\"command\": \"event/does_not_exist\"}}");
 
         // the first one is ignored but it does not crash
