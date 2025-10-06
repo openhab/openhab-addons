@@ -313,8 +313,15 @@ public class OpenhabGraalJSScriptEngine
 
         if (logger.isDebugEnabled()) {
             logger.debug(
-                    "Engine '{}': isScriptFile(): {}, isScriptAction(): {}, isScriptCondition(): {}, isTransformation(): {}",
-                    engineIdentifier, isScriptFile(), isScriptAction(), isScriptCondition(), isTransformation());
+                    "Engine '{}': isScriptFile(): {}, isScriptModule(): {}, isScriptAction(): {}, isScriptCondition(): {}, isTransformation(): {}",
+                    engineIdentifier, isScriptFile(), isScriptModule(), isScriptAction(), isScriptCondition(),
+                    isTransformation());
+        }
+
+        if (!isScriptFile() && !isScriptModule() && !isTransformation()) {
+            logger.warn(
+                    "Unknown script environment detected for engine '{}': Neither script file, script module nor transformation.",
+                    engineIdentifier);
         }
 
         try {
@@ -322,7 +329,7 @@ public class OpenhabGraalJSScriptEngine
             delegate.getPolyglotContext().eval(GLOBAL_SOURCE);
 
             if (configuration.isInjectionEnabledForAllScripts()
-                    || (!isScriptFile() && configuration.isInjectionEnabledForScriptModules())
+                    || (isScriptModule() && configuration.isInjectionEnabledForScriptModules())
                     || (isTransformation() && configuration.isInjectionEnabledForTransformations())) {
                 if (configuration.isInjectionCachingEnabled()) {
                     logger.debug("Evaluating cached openhab-js injection for engine '{}' ...", engineIdentifier);
@@ -341,7 +348,7 @@ public class OpenhabGraalJSScriptEngine
 
     @Override
     protected String onScript(String script) {
-        if (isScriptFile() || isTransformation()) {
+        if (!isScriptModule()) {
             return super.onScript(script);
         }
 
@@ -446,6 +453,17 @@ public class OpenhabGraalJSScriptEngine
             return str;
         }
         return null;
+    }
+
+    /**
+     * Tests if the script is a script module, i.e. executed by an implementation of
+     * {@link AbstractScriptModuleHandler}.
+     * 
+     * @return true if the script is a script module, false otherwise
+     */
+    private boolean isScriptModule() {
+        String moduleTypeId = getModuleTypeId();
+        return moduleTypeId != null && moduleTypeId.startsWith("script.");
     }
 
     /**
