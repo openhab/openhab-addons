@@ -34,8 +34,8 @@ public class GraalJSScriptEngineConfiguration {
     private static final String CFG_EVENT_CONVERSION_ENABLED = "eventConversionEnabled";
     private static final String CFG_DEPENDENCY_TRACKING_ENABLED = "dependencyTrackingEnabled";
 
-    private static final int INJECTION_ENABLED_FOR_UI_BASED_SCRIPTS_ONLY = 1;
-    private static final int INJECTION_ENABLED_FOR_UI_BASED_SCRIPTS_AND_TRANSFORMATIONS = 2;
+    private static final int INJECTION_ENABLED_FOR_SCRIPT_MODULES_ONLY = 1;
+    private static final int INJECTION_ENABLED_FOR_SCRIPT_MODULES_AND_TRANSFORMATIONS = 2;
     private static final int INJECTION_ENABLED_FOR_ALL_SCRIPTS = 3;
 
     private int injectionEnabled = INJECTION_ENABLED_FOR_ALL_SCRIPTS;
@@ -59,15 +59,15 @@ public class GraalJSScriptEngineConfiguration {
      * @param config configuration parameters to apply to JavaScript
      */
     void modified(Map<String, ?> config) {
-        boolean oldInjectionEnabledForUiBasedScript = isInjectionEnabledForUiBasedScript();
+        boolean oldInjectionEnabledForUiBasedScript = isInjectionEnabledForScriptModules();
         boolean oldDependencyTrackingEnabled = dependencyTrackingEnabled;
         boolean oldScriptConditionWrapperEnabled = scriptConditionWrapperEnabled;
         boolean oldEventConversionEnabled = eventConversionEnabled;
 
         this.update(config);
 
-        if (oldInjectionEnabledForUiBasedScript != isInjectionEnabledForUiBasedScript()
-                && !isInjectionEnabledForUiBasedScript() && isEventConversionEnabled()) {
+        if (oldInjectionEnabledForUiBasedScript != isInjectionEnabledForScriptModules()
+                && !isInjectionEnabledForScriptModules() && isEventConversionEnabled()) {
             logger.warn(
                     "Injection disabled for UI-based scripts, but event conversion is enabled. Event conversion will not work.");
         }
@@ -82,7 +82,7 @@ public class GraalJSScriptEngineConfiguration {
                     scriptConditionWrapperEnabled ? "Enabled" : "Disabled");
         }
         if (oldEventConversionEnabled != eventConversionEnabled) {
-            if (eventConversionEnabled && !isInjectionEnabledForUiBasedScript()) {
+            if (eventConversionEnabled && !isInjectionEnabledForScriptModules()) {
                 logger.warn(
                         "Enabled event conversion for UI-based scripts, but auto-injection is disabled. Event conversion will not work.");
             }
@@ -102,7 +102,7 @@ public class GraalJSScriptEngineConfiguration {
         logger.debug("JavaScript Script Engine Configuration: {}", config);
 
         injectionEnabled = ConfigParser.valueAsOrElse(config.get(CFG_INJECTION_ENABLED), Integer.class,
-                INJECTION_ENABLED_FOR_UI_BASED_SCRIPTS_ONLY);
+                INJECTION_ENABLED_FOR_SCRIPT_MODULES_ONLY);
         injectionCachingEnabled = ConfigParser.valueAsOrElse(config.get(CFG_INJECTION_CACHING_ENABLED), Boolean.class,
                 true);
         scriptConditionWrapperEnabled = ConfigParser.valueAsOrElse(config.get(CFG_SCRIPT_CONDITION_WRAPPER_ENABLED),
@@ -113,14 +113,31 @@ public class GraalJSScriptEngineConfiguration {
                 Boolean.class, true);
     }
 
-    public boolean isInjectionEnabledForUiBasedScript() {
-        return injectionEnabled >= INJECTION_ENABLED_FOR_UI_BASED_SCRIPTS_ONLY;
+    /**
+     * Whether injection is enabled for script modules, i.e. scripts executed by an implementation of
+     * {@link org.openhab.core.automation.module.script.internal.handler.AbstractScriptModuleHandler}.
+     * 
+     * @return whether injection is enabled for script modules
+     */
+    public boolean isInjectionEnabledForScriptModules() {
+        return injectionEnabled >= INJECTION_ENABLED_FOR_SCRIPT_MODULES_ONLY;
     }
 
+    /**
+     * Whether injection is enabled for transformations, i.e. scripts executed by the
+     * {@link org.openhab.core.automation.module.script.ScriptTransformationService}.
+     * 
+     * @return whether injection is enabled for transformations
+     */
     public boolean isInjectionEnabledForTransformations() {
-        return injectionEnabled >= INJECTION_ENABLED_FOR_UI_BASED_SCRIPTS_AND_TRANSFORMATIONS;
+        return injectionEnabled >= INJECTION_ENABLED_FOR_SCRIPT_MODULES_AND_TRANSFORMATIONS;
     }
 
+    /**
+     * Whether injection is enabled for all scripts, i.e. script modules, transformations and script files.
+     * 
+     * @return whether injection is enabled for all scripts
+     */
     public boolean isInjectionEnabledForAllScripts() {
         return injectionEnabled == INJECTION_ENABLED_FOR_ALL_SCRIPTS;
     }
@@ -129,6 +146,12 @@ public class GraalJSScriptEngineConfiguration {
         return injectionCachingEnabled;
     }
 
+    /**
+     * Whether the wrapper is enabled for script conditions (see
+     * {@link org.openhab.core.automation.module.script.internal.handler.ScriptConditionHandler}).
+     * 
+     * @return whether the wrapper is enabled for script conditions
+     */
     public boolean isScriptConditionWrapperEnabled() {
         return scriptConditionWrapperEnabled;
     }

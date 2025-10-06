@@ -107,7 +107,7 @@ public class OpenhabGraalJSScriptEngine
     private static final String OPENHAB_JS_INJECTION_CODE = "Object.assign(this, require('openhab'));";
     private static final String EVENT_CONVERSION_CODE = "this.event = (typeof this.rules?._getTriggeredData === 'function') ? rules._getTriggeredData(ctx, true) : this.event";
     private static final Pattern USE_WRAPPER_DIRECTIVE = Pattern
-            .compile("^\\s*[\"']use wrapper(?:=(?<enabled>true|false))?[\"'];?");
+            .compile("^\\s*([\"'])use wrapper(?:=(?<enabled>true|false))?\\1;?\\s*$");
 
     private static final String REQUIRE_WRAPPER_NAME = "__wraprequire__";
     /** Shared Polyglot {@link Engine} across all instances of {@link OpenhabGraalJSScriptEngine} */
@@ -311,16 +311,18 @@ public class OpenhabGraalJSScriptEngine
 
         initialized = true;
 
-        logger.debug(
-                "Engine '{}': isScriptFile(): {}, isScriptAction(): {}, isScriptCondition(): {}, isTransformation(): {}",
-                engineIdentifier, isScriptFile(), isScriptAction(), isScriptCondition(), isTransformation());
+        if (logger.isDebugEnabled()) {
+            logger.debug(
+                    "Engine '{}': isScriptFile(): {}, isScriptAction(): {}, isScriptCondition(): {}, isTransformation(): {}",
+                    engineIdentifier, isScriptFile(), isScriptAction(), isScriptCondition(), isTransformation());
+        }
 
         try {
             logger.debug("Evaluating cached global script for engine '{}' ...", engineIdentifier);
             delegate.getPolyglotContext().eval(GLOBAL_SOURCE);
 
             if (configuration.isInjectionEnabledForAllScripts()
-                    || (!isScriptFile() && configuration.isInjectionEnabledForUiBasedScript())
+                    || (!isScriptFile() && configuration.isInjectionEnabledForScriptModules())
                     || (isTransformation() && configuration.isInjectionEnabledForTransformations())) {
                 if (configuration.isInjectionCachingEnabled()) {
                     logger.debug("Evaluating cached openhab-js injection for engine '{}' ...", engineIdentifier);
@@ -349,8 +351,9 @@ public class OpenhabGraalJSScriptEngine
             newScript = EVENT_CONVERSION_CODE + System.lineSeparator() + newScript;
         }
 
-        // keep this extendable for more directives by checking the first n lines (n = number or directives)
-        List<String> header = script.lines().limit(1).toList();
+        // keep this extendable for more directives by checking the first n lines (n = number of directives)
+        // up to two directives: "use strict" (handled by Graal) and "use wrapper"
+        List<String> header = script.lines().limit(2).toList();
         boolean useWrapper = configuration.isScriptConditionWrapperEnabled();
         for (String line : header) {
             var matcher = USE_WRAPPER_DIRECTIVE.matcher(line);
@@ -414,9 +417,9 @@ public class OpenhabGraalJSScriptEngine
     }
 
     /**
-     * Tests if the script is a script file, i.e. it is loaded from a file.
+     * Tests if the script is a script file, i.e. it is loaded from a JavaScript file.
      * 
-     * @return
+     * @return true if the script is loaded from a JavaScript file, false otherwise
      */
     private boolean isScriptFile() {
         ScriptContext ctx = delegate.getContext();
@@ -430,7 +433,7 @@ public class OpenhabGraalJSScriptEngine
     /**
      * Get the module type id (if any) of the module executing the script.
      * 
-     * @return
+     * @return the module type id (if any) of the module executing the script, or null if the script is not a module
      */
     private @Nullable String getModuleTypeId() {
         ScriptContext ctx = delegate.getContext();
@@ -448,7 +451,7 @@ public class OpenhabGraalJSScriptEngine
     /**
      * Tests if a script is a script action, i.e. executed by the ScriptActionHandler.
      * 
-     * @return
+     * @return true if the script is a script action, false otherwise
      */
     private boolean isScriptAction() {
         return ScriptActionHandler.TYPE_ID.equals(getModuleTypeId());
@@ -457,7 +460,7 @@ public class OpenhabGraalJSScriptEngine
     /**
      * Tests if the script is a script condition, i.e. executed by the ScriptConditionHandler.
      * 
-     * @return
+     * @return true if the script is a script condition, false otherwise
      */
     private boolean isScriptCondition() {
         return ScriptConditionHandler.TYPE_ID.equals(getModuleTypeId());
@@ -466,7 +469,7 @@ public class OpenhabGraalJSScriptEngine
     /**
      * Tests if the script is a transformation script, i.e. created from the script transformation service.
      * 
-     * @return
+     * @return true if it is a transformation script, false otherwise
      */
     private boolean isTransformation() {
         ScriptContext ctx = delegate.getContext();
