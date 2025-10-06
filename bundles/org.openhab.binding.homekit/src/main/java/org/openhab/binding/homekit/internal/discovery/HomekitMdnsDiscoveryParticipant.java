@@ -146,7 +146,7 @@ public class HomekitMdnsDiscoveryParticipant implements MDNSDiscoveryParticipant
                 continue;
             }
             String[] parts = new String(bytes, i, len, StandardCharsets.UTF_8).split("=");
-            map.put(parts[0], parts.length < 2 ? "" : parts[1].replaceFirst("\u0000$", "")); // strip zero endings
+            map.put(parts[0], parts.length < 2 ? "" : parts[1].replaceFirst("\\u0000$", "")); // strip zero endings
             i += len;
         }
         return map;

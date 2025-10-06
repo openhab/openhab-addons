@@ -146,8 +146,8 @@ public class PairSetupClient {
         logger.debug("Pair-Setup M4: Read accessory M2 proof; and verify it");
         Map<Integer, byte[]> tlv = Tlv8Codec.decode(m3Response);
         Validator.validate(PairingMethod.SETUP, tlv);
-        byte[] serverProofM2 = tlv.get(TlvType.PROOF.value);
-        client.m4VerifyAccessoryProof(Objects.requireNonNull(serverProofM2));
+        byte[] accessoryProofM2 = tlv.get(TlvType.PROOF.value);
+        client.m4VerifyAccessoryProof(Objects.requireNonNull(accessoryProofM2));
         return m5Execute(client);
     }
 

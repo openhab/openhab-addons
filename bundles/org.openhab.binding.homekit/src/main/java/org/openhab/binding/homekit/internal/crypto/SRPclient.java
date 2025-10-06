@@ -146,11 +146,12 @@ public class SRPclient {
         return accessoryLTPK;
     }
 
-    public void m4VerifyAccessoryProof(byte[] serverProof) throws Exception {
+    public void m4VerifyAccessoryProof(byte[] accessoryProof) throws Exception {
         if (logger.isTraceEnabled()) {
-            logger.trace("Pair-Setup M4: Accessory info:\n - Accessory M2: {}", toHex(serverProof));
+            logger.trace("Pair-Setup M4: Accessory info:\n - Controller M2: {}\n - Accessory M2:  {}", toHex(M2),
+                    toHex(accessoryProof));
         }
-        if (!Arrays.equals(M2, serverProof)) {
+        if (!Arrays.equals(M2, accessoryProof)) {
             throw new SecurityException("SRP server proof mismatch");
         }
     }

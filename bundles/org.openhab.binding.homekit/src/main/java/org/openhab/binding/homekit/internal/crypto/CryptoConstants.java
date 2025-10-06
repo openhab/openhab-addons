@@ -50,8 +50,8 @@ public class CryptoConstants {
     public static final byte[] PAIR_SETUP_ENCRYPT_INFO = "Pair-Setup-Encrypt-Info".getBytes(StandardCharsets.UTF_8);
     public static final byte[] PAIR_SETUP_ENCRYPT_SALT = "Pair-Setup-Encrypt-Salt".getBytes(StandardCharsets.UTF_8);
 
-    public static final byte[] PS_M5_NONCE = "PS-Msg05".getBytes(StandardCharsets.UTF_8);
-    public static final byte[] PS_M6_NONCE = "PS-Msg06".getBytes(StandardCharsets.UTF_8);
+    public static final byte[] PS_M5_NONCE = nonce("PS-Msg05");
+    public static final byte[] PS_M6_NONCE = nonce("PS-Msg06");
 
     public static final byte[] PAIR_SETUP_CONTROLLER_SIGN_SALT = "Pair-Setup-Controller-Sign-Salt".getBytes(StandardCharsets.UTF_8);
     public static final byte[] PAIR_SETUP_CONTROLLER_SIGN_INFO = "Pair-Setup-Controller-Sign-Info".getBytes(StandardCharsets.UTF_8);
@@ -66,18 +66,26 @@ public class CryptoConstants {
     public static final byte[] PAIR_VERIFY_ENCRYPT_INFO = "Pair-Verify-Encrypt-Info".getBytes(StandardCharsets.UTF_8);
     public static final byte[] PAIR_VERIFY_ENCRYPT_SALT = "Pair-Verify-Encrypt-Salt".getBytes(StandardCharsets.UTF_8);
 
-    public static final byte[] PV_M2_NONCE = "PV-Msg02".getBytes(StandardCharsets.UTF_8);
-    public static final byte[] PV_M3_NONCE = "PV-Msg03".getBytes(StandardCharsets.UTF_8);
+    public static final byte[] PV_M2_NONCE = nonce("PV-Msg02");
+    public static final byte[] PV_M3_NONCE = nonce("PV-Msg03");
     // @formatter:on
 
     private static BigInteger computeK() {
         try {
             byte[] paddedN = toUnsigned(N, 384);
             byte[] paddedG = toUnsigned(g, 384);
-            byte[] hash = sha512(CryptoUtils.concat(paddedN, paddedG));
+            byte[] hash = sha512(concat(paddedN, paddedG));
             return new BigInteger(1, hash);
         } catch (Exception e) {
             throw new SecurityException("Failed to compute k", e);
         }
+    }
+
+    private static byte[] nonce(String input) {
+        // ByteBuffer nonce = ByteBuffer.allocate(12);
+        // nonce.put(input.getBytes(StandardCharsets.UTF_8));
+        // nonce.putInt(0);
+        // return nonce.array(); // 12-byte nonce
+        return input.getBytes(StandardCharsets.UTF_8);
     }
 }
