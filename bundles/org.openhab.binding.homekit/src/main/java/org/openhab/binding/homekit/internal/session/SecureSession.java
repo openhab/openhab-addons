@@ -15,17 +15,13 @@ package org.openhab.binding.homekit.internal.session;
 import static org.openhab.binding.homekit.internal.crypto.CryptoUtils.*;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.nio.charset.StandardCharsets;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -90,20 +86,18 @@ public class SecureSession {
      * Reads multiple data frames from the input stream until a complete HTTP message is reconstructed.
      * Repeatedly calls receiveFrame() to read and decrypt individual frames. It accumulates the decrypted
      * plaintext until it detects the end of the HTTP message. The end of the message is determined by checking
-     * for the presence of complete HTTP headers and a Content-Length header.
+     * for the presence of complete HTTP headers and a completed Content-Length, or a complete chunked payload.
      *
-     * @return the complete decrypted HTTP message as a byte array.
+     * @return a 2D byte array where the first element is the HTTP headers and the second element is the content.
      * @throws Exception if an error occurs during reading or decryption.
      */
-    public byte[] receive() throws Exception {
+    public byte[][] receive() throws Exception {
         HttpPayloadParser httpParser = new HttpPayloadParser();
-        ByteArrayOutputStream plainText = new ByteArrayOutputStream();
         do {
             byte[] frame = receiveFrame();
-            plainText.write(frame);
             httpParser.accept(frame);
-        } while (!httpParser.readComplete());
-        return plainText.toByteArray();
+        } while (!httpParser.isComplete());
+        return new byte[][] { httpParser.getHeaders(), httpParser.getContent() };
     }
 
     /**
@@ -123,64 +117,5 @@ public class SecureSession {
         byte[] cipherText = in.readNBytes(frameLen + 16); // read 16 extra bytes for the auth tag
         byte[] nonce64 = generateNonce64(readCounter.getAndIncrement());
         return decrypt(readKey, nonce64, cipherText, frameAad);
-    }
-
-    /**
-     * Internal helper class to parse incoming HTTP messages and determine when a complete message has been received.
-     * It accumulates header data until the end of headers is detected, then reads the Content-Length header to
-     * determine how many bytes of body to expect. It tracks the number of body bytes read to know when the full
-     * message has been received.
-     */
-    private static class HttpPayloadParser {
-        private static final String NEWLINE_REGEX = "\\r?\\n";
-        private static final String END_OF_HEADERS = "\r\n\r\n";
-        private static final int MAX_CONTENT_LENGTH = 65536;
-        private static final int MAX_HEADER_BLOCK_SIZE = 2048;
-        private static final Pattern CONTENT_LENGTH_PATTERN = Pattern.compile("(?i)^content-length:\\s*(\\d+)$");
-
-        private final ByteArrayOutputStream headerBuffer = new ByteArrayOutputStream();
-        private boolean headersDone = false;
-        private int contentLength = 0;
-        private int bytesAccepted = 0;
-        private int headerLength = -1;
-
-        public void accept(byte[] data) throws SecurityException {
-            bytesAccepted += data.length;
-            if (headersDone) {
-                return;
-            }
-            try {
-                headerBuffer.write(data);
-            } catch (IOException e) {
-                // should never occur with ByteArrayOutputStream
-            }
-            if (headerBuffer.size() > MAX_HEADER_BLOCK_SIZE) {
-                throw new SecurityException("Header buffer overload");
-            }
-            String temp = new String(headerBuffer.toByteArray(), StandardCharsets.ISO_8859_1);
-            int offset = temp.indexOf(END_OF_HEADERS);
-            if (offset >= 0) {
-                headersDone = true;
-                headerLength = offset + END_OF_HEADERS.length();
-                for (String httpHeader : temp.split(NEWLINE_REGEX)) {
-                    Matcher matcher = CONTENT_LENGTH_PATTERN.matcher(httpHeader);
-                    if (matcher.find()) {
-                        try {
-                            contentLength = Integer.parseInt(matcher.group(1));
-                            if (contentLength < 0 || contentLength > MAX_CONTENT_LENGTH) {
-                                throw new SecurityException("Invalid Content-Length");
-                            }
-                        } catch (NumberFormatException e) {
-                            // should never occur due to regex
-                        }
-                        break;
-                    }
-                }
-            }
-        }
-
-        public boolean readComplete() {
-            return headersDone && (bytesAccepted - headerLength >= contentLength);
-        }
     }
 }

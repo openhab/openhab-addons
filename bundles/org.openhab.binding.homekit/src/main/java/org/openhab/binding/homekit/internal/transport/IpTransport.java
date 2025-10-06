@@ -21,14 +21,13 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homekit.internal.session.AsymmetricSessionKeys;
+import org.openhab.binding.homekit.internal.session.HttpPayloadParser;
 import org.openhab.binding.homekit.internal.session.SecureSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -94,12 +93,12 @@ public class IpTransport implements AutoCloseable {
         return execute("PUT", endpoint, contentType, content);
     }
 
-    private synchronized byte[] execute(String method, String endpoint, String contentType, byte[] body)
+    private synchronized byte[] execute(String method, String endpoint, String contentType, byte[] content)
             throws IOException, InterruptedException, TimeoutException, ExecutionException {
         try {
-            byte[] request = buildRequest(method, endpoint, contentType, body);
+            byte[] request = buildRequest(method, endpoint, contentType, content);
             logger.trace("Request:\n{}", new String(request, StandardCharsets.ISO_8859_1));
-            byte[] response;
+            byte[][] response;
 
             SecureSession secureSession = this.secureSession;
             if (secureSession != null) {
@@ -113,8 +112,12 @@ public class IpTransport implements AutoCloseable {
                 response = readPlainResponse(in);
             }
 
-            logger.trace("Response:\n{}", new String(response, StandardCharsets.ISO_8859_1));
-            return parseResponse(response);
+            if (logger.isTraceEnabled()) {
+                logger.trace("Response:\n{}{}", new String(response[0], StandardCharsets.ISO_8859_1),
+                        new String(response[1], StandardCharsets.ISO_8859_1));
+            }
+            checkHeaders(response[0]);
+            return response[1];
         } catch (IOException | InterruptedException | TimeoutException e) {
             throw e;
         } catch (Exception e) {
@@ -122,35 +125,52 @@ public class IpTransport implements AutoCloseable {
         }
     }
 
-    private byte[] buildRequest(String method, String endpoint, String contentType, byte[] body) throws IOException {
+    /**
+     * Builds an HTTP request with the given method, endpoint, content type, and content.
+     *
+     * @param method the HTTP method (e.g., "GET", "POST", "PUT")
+     * @param endpoint the endpoint to which the request is sent
+     * @param contentType the content type of the request
+     * @param content the content of the request
+     * @return the complete HTTP request as a byte array
+     * @throws IOException if an I/O error occurs
+     */
+    private byte[] buildRequest(String method, String endpoint, String contentType, byte[] content) throws IOException {
         StringBuilder sb = new StringBuilder();
         sb.append(method).append(" ").append(endpoint).append(" HTTP/1.1\r\n");
         sb.append("Host: ").append(host).append("\r\n");
         sb.append("Accept: ").append(contentType).append("\r\n");
-        if (!bodyIsEmpty(method)) {
+        if (!contentIsEmpty(method)) {
             sb.append("Content-Type: ").append(contentType).append("\r\n");
-            sb.append("Content-Length: ").append(body.length).append("\r\n");
+            sb.append("Content-Length: ").append(content.length).append("\r\n");
         } else {
             sb.append("Content-Length: 0\r\n");
         }
         sb.append("\r\n");
 
         byte[] headerBytes = sb.toString().getBytes(StandardCharsets.UTF_8);
-        if (bodyIsEmpty(method)) {
+        if (contentIsEmpty(method)) {
             return headerBytes;
         }
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         out.write(headerBytes);
-        out.write(body);
+        out.write(content);
         return out.toByteArray();
     }
 
-    private boolean bodyIsEmpty(String method) {
+    private boolean contentIsEmpty(String method) {
         return "GET".equals(method) || "DELETE".equals(method);
     }
 
-    private byte[] readPlainResponse(InputStream in) throws IOException {
+    /*
+     * Reads a plain (non-secure) HTTP response from the input stream.
+     *
+     * @return a 2D byte array where the first element is the HTTP headers and the second element is the content.
+     *
+     * @throws IOException if an I/O error occurs or if the response is invalid.
+     */
+    private byte[][] readPlainResponse(InputStream in) throws IOException {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         byte[] buf = new byte[4096];
         int read;
@@ -160,30 +180,40 @@ public class IpTransport implements AutoCloseable {
                 break; // crude EOF detection
             }
         }
-        return out.toByteArray();
+        byte[] data = out.toByteArray();
+        int headersEnd = HttpPayloadParser.indexOfDoubleCRLF(data, 0);
+        if (headersEnd < 0) {
+            throw new IOException("Invalid HTTP response");
+        }
+        headersEnd += 4; // move past the \r\n\r\n
+        byte[] headers = new byte[headersEnd];
+        byte[] content = new byte[data.length - headersEnd];
+        System.arraycopy(data, 0, headers, 0, headers.length);
+        System.arraycopy(data, headersEnd, content, 0, content.length);
+        return new byte[][] { headers, content };
     }
 
-    private byte[] parseResponse(byte[] raw) throws IOException {
-        ByteArrayInputStream in = new ByteArrayInputStream(raw);
+    /**
+     * Checks the HTTP headers for a successful response (status code < 300).
+     *
+     * @throws IOException if the response indicates an error.
+     */
+    private void checkHeaders(byte[] headers) throws IOException {
+        ByteArrayInputStream in = new ByteArrayInputStream(headers);
         String statusLine = readLine(in);
         String[] parts = statusLine.split(" ", 3);
-        int status = Integer.parseInt(parts[1]);
-
-        Map<String, String> headers = new HashMap<>();
-        String line;
-        while (!(line = readLine(in)).isEmpty()) {
-            int idx = line.indexOf(':');
-            String name = line.substring(0, idx).trim().toLowerCase();
-            String value = line.substring(idx + 1).trim();
-            headers.put(name, value);
+        if (parts.length < 3) {
+            throw new IOException("Invalid HTTP response: " + statusLine);
         }
-
+        int status;
+        try {
+            status = Integer.parseInt(parts[1]);
+        } catch (NumberFormatException e) {
+            throw new IOException("Invalid HTTP response: " + statusLine);
+        }
         if (status >= 300) {
             throw new IOException("HTTP " + status);
         }
-
-        int len = Integer.parseInt(headers.getOrDefault("content-length", "0"));
-        return in.readNBytes(len);
     }
 
     private static String readLine(ByteArrayInputStream in) throws IOException {
