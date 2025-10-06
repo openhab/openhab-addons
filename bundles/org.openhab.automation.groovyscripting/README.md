@@ -48,3 +48,14 @@ The script uses the [LoggerFactory](https://www.slf4j.org/apidocs/org/slf4j/Logg
 ```text
     ... [INFO ] [.openhab.core.automation.examples:-2   ] - Hello, World!
 ```
+## `scriptExtension.importPreset` limitation
+
+For explicit presets `scriptExtension.importPreset` imports instance variables, but not classes.
+After
+```groovy
+scriptExtension.importPreset("RuleSupport")
+import org.openhab.core.config.core.Configuration
+var r = TriggerBuilder.create().withId("trig2").withTypeUID("core.ItemStateChangeTrigger").build()
+var c = new Configuration()
+```
+the variable `automationManager` is available, `TriggerBuilder` can be used, the constructor of classes from the preset must fully qualified.
