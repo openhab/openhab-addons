@@ -167,10 +167,7 @@ public class OndiloBridge {
                 logger.warn("No lastMeasures available for Ondilo ICO with ID: {}", id);
                 ondiloHandler.clearLastMeasuresChannels();
             } else {
-                Instant valueTime = ondiloHandler.updateLastMeasuresChannels(lastMeasures);
-                if (lastValueTime == null || valueTime.isBefore(lastValueTime)) {
-                    lastValueTime = valueTime;
-                }
+                lastValueTime = ondiloHandler.updateLastMeasuresChannels(lastMeasures);
             }
 
             Recommendation[] recommendations = apiClient.request("GET", "/pools/" + id + "/recommendations",
