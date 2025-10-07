@@ -41,8 +41,6 @@ public class HomekitBindingConstants {
 
     // labels
     public static final String THING_LABEL_FMT = "%s on %s";
-    public static final String CHANNEL_GROUP_TYPE_LABEL_FMT = "Channel group type: %s";
-    public static final String CHANNEL_TYPE_LABEL_FMT = "Channel type: %s";
 
     // configuration parameters
     public static final String CONFIG_HOST = "host";

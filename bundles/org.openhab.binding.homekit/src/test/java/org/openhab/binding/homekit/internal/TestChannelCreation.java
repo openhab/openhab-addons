@@ -404,7 +404,7 @@ class TestChannelCreation {
         ChannelGroupType channelGroupType = channelGroupTypes.stream()
                 .filter(cgt -> "channel-group-type-lightbulb".equals(cgt.getUID().getId())).findFirst().orElse(null);
         assertNotNull(channelGroupType);
-        assertEquals("Channel group type: Light Bulb", channelGroupType.getLabel());
+        assertEquals("Light Bulb", channelGroupType.getLabel());
         assertEquals("channel-group-type-lightbulb", channelGroupType.getUID().getId());
 
         // There should be two channel definitions for the Light Bulb service: On and Brightness
@@ -431,7 +431,7 @@ class TestChannelCreation {
                 .orElse(null);
         assertNotNull(channelType);
         assertEquals("channel-type-brightness", channelType.getUID().getId());
-        assertEquals("Channel type: Brightness", channelType.getLabel());
+        assertEquals("Brightness", channelType.getLabel());
         assertEquals("Dimmer", channelType.getItemType());
         assertEquals("light", channelType.getCategory());
         assertTrue(channelType.getTags().contains("Control"));

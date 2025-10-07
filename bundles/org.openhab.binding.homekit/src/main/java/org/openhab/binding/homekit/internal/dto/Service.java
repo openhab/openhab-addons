@@ -70,7 +70,7 @@ public class Service {
         ChannelGroupTypeUID channelGroupTypeUID = new ChannelGroupTypeUID(BINDING_ID,
                 CHANNEL_GROUP_TYPE_ID_FMT.formatted(serviceType.getOpenhabType()));
 
-        String channelGroupTypeLabel = CHANNEL_GROUP_TYPE_LABEL_FMT.formatted(serviceType.toString());
+        String channelGroupTypeLabel = serviceType.toString();
 
         ChannelGroupType channelGroupType = ChannelGroupTypeBuilder.instance(channelGroupTypeUID, channelGroupTypeLabel) //
                 .withChannelDefinitions(channelDefinitions) //

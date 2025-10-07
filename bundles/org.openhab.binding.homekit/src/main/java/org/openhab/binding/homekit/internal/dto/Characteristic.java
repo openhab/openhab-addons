@@ -692,7 +692,7 @@ public class Characteristic {
         ChannelTypeUID channelTypeUid = new ChannelTypeUID(BINDING_ID,
                 CHANNEL_TYPE_ID_FMT.formatted(characteristicType.getOpenhabType()));
 
-        String channelTypeLabel = CHANNEL_TYPE_LABEL_FMT.formatted(characteristicType.toString());
+        String channelTypeLabel = characteristicType.toString();
 
         ChannelType channelType;
         if (isStateChannel) {
