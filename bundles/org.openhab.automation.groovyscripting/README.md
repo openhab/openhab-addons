@@ -58,4 +58,4 @@ import org.openhab.core.config.core.Configuration
 var r = TriggerBuilder.create().withId("trig2").withTypeUID("core.ItemStateChangeTrigger").build()
 var c = new Configuration()
 ```
-the variable `automationManager` is available, `TriggerBuilder` can be used, the constructor of classes from the preset must fully qualified.
+the variable `automationManager` is available, `TriggerBuilder` can be used, the constructor of classes from the preset must be fully qualified.
