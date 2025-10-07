@@ -72,18 +72,18 @@ import com.google.gson.JsonPrimitive;
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-public class HomekitDeviceHandler extends HomekitBaseServerHandler {
+public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
 
     private static final int INITIAL_DELAY_SECONDS = 2;
 
-    private final Logger logger = LoggerFactory.getLogger(HomekitDeviceHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(HomekitAccessoryHandler.class);
     private final ChannelTypeRegistry channelTypeRegistry;
     private final ChannelGroupTypeRegistry channelGroupTypeRegistry;
 
     private @Nullable ScheduledFuture<?> refreshTask;
 
-    public HomekitDeviceHandler(Thing thing, HomekitTypeProvider typeProvider, ChannelTypeRegistry channelTypeRegistry,
-            ChannelGroupTypeRegistry channelGroupTypeRegistry) {
+    public HomekitAccessoryHandler(Thing thing, HomekitTypeProvider typeProvider,
+            ChannelTypeRegistry channelTypeRegistry, ChannelGroupTypeRegistry channelGroupTypeRegistry) {
         super(thing, typeProvider);
         this.channelTypeRegistry = channelTypeRegistry;
         this.channelGroupTypeRegistry = channelGroupTypeRegistry;
@@ -141,7 +141,7 @@ public class HomekitDeviceHandler extends HomekitBaseServerHandler {
         if (object instanceof QuantityType<?> quantity) {
             if (channel.getProperties().get(PROPERTY_UNIT) instanceof String unit) {
                 try {
-                    QuantityType<?> temp = quantity.toUnit(unit);
+                    QuantityType<?> temp = quantity.toInvertibleUnit(unit);
                     object = temp != null ? temp : quantity;
                 } catch (MeasurementParseException e) {
                     logger.warn("Unexpected unit {} for channel {}", unit, channel.getUID());
@@ -192,6 +192,15 @@ public class HomekitDeviceHandler extends HomekitBaseServerHandler {
         // convert datetime to string
         if (object instanceof DateTimeType dateTime) {
             object = dateTime.toFullString();
+        }
+
+        // comply with the characteristic's boolean data type
+        if (object instanceof Boolean bool
+                && channel.getProperties().get(PROPERTY_BOOLEAN_DATA_TYPE) instanceof String booleanDataType) {
+            switch (booleanDataType) {
+                case "number" -> object = Integer.valueOf(bool ? 1 : 0);
+                case "string" -> object = bool ? "true" : "false";
+            }
         }
 
         return object instanceof Number num ? new JsonPrimitive(num)
@@ -286,27 +295,50 @@ public class HomekitDeviceHandler extends HomekitBaseServerHandler {
         List<Channel> channels = new ArrayList<>();
         Map<String, String> properties = new HashMap<>(thing.getProperties()); // keep existing properties
         accessory.buildAndRegisterChannelGroupDefinitions(typeProvider).forEach(groupDef -> {
+            logger.trace("+ChannelGroupDefinition id:{}, typeUID:{}, label:{}, description:{}", groupDef.getId(),
+                    groupDef.getTypeUID(), groupDef.getLabel(), groupDef.getDescription());
+
             ChannelGroupType channelGroupType = channelGroupTypeRegistry.getChannelGroupType(groupDef.getTypeUID());
             if (channelGroupType != null) {
+                logger.trace("++ChannelGroupType UID:{}, label:{}, category:{}, description:{}",
+                        channelGroupType.getUID(), channelGroupType.getLabel(), channelGroupType.getCategory(),
+                        channelGroupType.getDescription());
+
                 channelGroupType.getChannelDefinitions().forEach(chanDef -> {
+                    logger.trace(
+                            "+++ChannelDefinition id:{}, label:{}, description:{}, channelTypeUID:{}, autoUpdatePolicy:{}, properties:{}",
+                            chanDef.getId(), chanDef.getLabel(), chanDef.getDescription(), chanDef.getChannelTypeUID(),
+                            chanDef.getAutoUpdatePolicy(), chanDef.getProperties());
+
                     if (FAKE_PROPERTY_CHANNEL_TYPE_UID.equals(chanDef.getChannelTypeUID())) {
                         String name = chanDef.getId();
                         String value = chanDef.getLabel();
                         if (value != null) {
                             properties.put(name, value);
-                            logger.trace("Built property {}={} for thing {}", name, value, thing.getUID());
+                            logger.trace("++++Property '{}:{}'", name, value);
                         }
                     } else {
                         ChannelType channelType = channelTypeRegistry.getChannelType(chanDef.getChannelTypeUID());
                         if (channelType != null) {
+                            logger.trace(
+                                    "++++ChannelType category:{}, description:{}, itemType:{}, label:{}, autoUpdatePolicy:{}, itemType:{}, kind:{}, tags:{}, uid:{}, unitHint:{}",
+                                    channelType.getCategory(), channelType.getDescription(), channelType.getItemType(),
+                                    channelType.getLabel(), channelType.getAutoUpdatePolicy(),
+                                    channelType.getItemType(), channelType.getKind(), channelType.getTags(),
+                                    channelType.getUID(), channelType.getUnitHint());
+
                             ChannelUID channelUID = new ChannelUID(thing.getUID(), groupDef.getId(), chanDef.getId());
                             ChannelBuilder builder = ChannelBuilder.create(channelUID).withType(channelType.getUID())
                                     .withProperties(chanDef.getProperties());
                             Optional.ofNullable(chanDef.getLabel()).ifPresent(builder::withLabel);
                             Optional.ofNullable(chanDef.getDescription()).ifPresent(builder::withDescription);
-                            channels.add(builder.build());
-                            logger.trace("Built channel {} of type {} for thing {}", channelUID, channelType.getUID(),
-                                    thing.getUID());
+                            Channel channel = builder.build();
+                            channels.add(channel);
+
+                            logger.trace(
+                                    "+++++Channel acceptedItemType:{}, defaultTags:{}, description:{}, kind:{}, label:{}, properties:{}, uid:{}",
+                                    channel.getAcceptedItemType(), channel.getDefaultTags(), channel.getDescription(),
+                                    channel.getKind(), channel.getLabel(), channel.getProperties(), channel.getUID());
                         }
                     }
                 });

@@ -65,6 +65,7 @@ public class HomekitBindingConstants {
     public static final String PROPERTY_UNIT = "unit";
     public static final String PROPERTY_PERMS = "perms";
     public static final String PROPERTY_EV = "ev";
+    public static final String PROPERTY_BOOLEAN_DATA_TYPE = "booleanDataType";
 
     // HomeKit HTTP URI endpoints and content types
     public static final String ENDPOINT_ACCESSORIES = "/accessories";

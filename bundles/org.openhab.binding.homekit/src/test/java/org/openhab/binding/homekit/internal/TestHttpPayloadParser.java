@@ -33,6 +33,11 @@ class TestHttpPayloadParser {
     private static final String HEADERS_Z2 = "\n";
     private static final String HEADERS_Z = HEADERS_Z1 + HEADERS_Z2;
 
+    private static final String OK_204 = "HTTP/1.1 204 No Content\r\nDate: Tue, 07 Oct 2025 14:00:00 GMT\r\nConnection: close\r\n\r\n";
+    private static final String ERROR_403 = "HTTP/1.1 403 Forbidden\r\nTransfer-Encoding: chunked\r\n\r\n";
+    private static final String ERROR_404 = "HTTP/1.1 404 Not Found\r\nDate: Tue, 07 Oct 2025 14:00:00 GMT\r\nConnection: close\r\n\r\n";
+    private static final String ERROR_500 = "HTTP/1.1 500 Internal Server Error\r\nContent-Length: 0\r\nConnection: close\r\n\r\n";
+
     private static final String CONTENT = "0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789";
     private static final String CHUNK_1 = "%x\r";
     private static final String CHUNK_2 = "\n";
@@ -213,5 +218,51 @@ class TestHttpPayloadParser {
         assertEquals(0, content.length);
         byte[] headers = parser.getHeaders();
         assertEquals(h, new String(headers));
+    }
+
+    @Test
+    void testOk204() {
+        HttpPayloadParser parser = new HttpPayloadParser();
+        parser.accept(OK_204.getBytes());
+        assertTrue(parser.isComplete());
+        byte[] content = parser.getContent();
+        assertEquals(0, content.length);
+        byte[] headers = parser.getHeaders();
+        assertEquals(OK_204, new String(headers));
+    }
+
+    @Test
+    void testError403() {
+        HttpPayloadParser parser = new HttpPayloadParser();
+        parser.accept(ERROR_403.getBytes());
+        parser.accept(CHUNK.formatted(0).getBytes());
+        parser.accept(CRLF.getBytes());
+        assertTrue(parser.isComplete());
+        byte[] content = parser.getContent();
+        assertEquals(0, content.length);
+        byte[] headers = parser.getHeaders();
+        assertEquals(ERROR_403, new String(headers));
+    }
+
+    @Test
+    void testError404() {
+        HttpPayloadParser parser = new HttpPayloadParser();
+        parser.accept(ERROR_404.getBytes());
+        assertTrue(parser.isComplete());
+        byte[] content = parser.getContent();
+        assertEquals(0, content.length);
+        byte[] headers = parser.getHeaders();
+        assertEquals(ERROR_404, new String(headers));
+    }
+
+    @Test
+    void testError500() {
+        HttpPayloadParser parser = new HttpPayloadParser();
+        parser.accept(ERROR_500.getBytes());
+        assertTrue(parser.isComplete());
+        byte[] content = parser.getContent();
+        assertEquals(0, content.length);
+        byte[] headers = parser.getHeaders();
+        assertEquals(ERROR_500, new String(headers));
     }
 }

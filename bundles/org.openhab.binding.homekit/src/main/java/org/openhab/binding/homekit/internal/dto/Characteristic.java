@@ -37,6 +37,7 @@ import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.thing.type.StateChannelTypeBuilder;
 
 import com.google.gson.JsonElement;
+import com.google.gson.JsonPrimitive;
 
 /**
  * HomeKit characteristic DTO.
@@ -101,6 +102,18 @@ public class Characteristic {
             case "seconds" -> "s";
             default -> unit; // may be null or a custom unit
         };
+
+        String booleanDataType = null;
+        if ("bool".equals(format) && value != null && value.isJsonPrimitive()) {
+            // some characteristics have "bool" with non-boolean value types e.g. numbers 0,1 or strings "true","false"
+            JsonPrimitive prim = value.getAsJsonPrimitive();
+            if (prim.isNumber()) {
+                booleanDataType = "number";
+            }
+            if (prim.isString()) {
+                booleanDataType = "string";
+            }
+        }
 
         String itemType = null;
         String category = null;
@@ -724,6 +737,7 @@ public class Characteristic {
         Optional.ofNullable(uom).ifPresent(s -> properties.put(PROPERTY_UNIT, s));
         Optional.ofNullable(perms).map(l -> String.join(",", l)).ifPresent(s -> properties.put(PROPERTY_PERMS, s));
         Optional.ofNullable(ev).map(b -> b.toString()).ifPresent(s -> properties.put(PROPERTY_EV, s));
+        Optional.ofNullable(booleanDataType).ifPresent(s -> properties.put(PROPERTY_BOOLEAN_DATA_TYPE, s));
 
         // return the definition of a specific _instance_ of the channel _type_
         return new ChannelDefinitionBuilder(characteristicType.getOpenhabType(), channelTypeUid)
@@ -740,7 +754,9 @@ public class Characteristic {
 
     public @Nullable CharacteristicType getCharacteristicType() {
         try {
-            return CharacteristicType.from(Integer.parseInt(type, 16));
+            // convert "00000113-0000-1000-8000-0026BB765291" to "00000113"
+            String firstPart = type.split("-")[0];
+            return CharacteristicType.from(Integer.parseInt(firstPart, 16));
         } catch (IllegalArgumentException e) {
             return null;
         }

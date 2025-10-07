@@ -60,7 +60,7 @@ import com.google.gson.Gson;
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-public abstract class HomekitBaseServerHandler extends BaseThingHandler {
+public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler {
 
     protected static final Gson GSON = new Gson();
 
@@ -71,7 +71,7 @@ public abstract class HomekitBaseServerHandler extends BaseThingHandler {
     protected static final Pattern HOST_PATTERN = Pattern.compile(
             "^(((25[0-5]|2[0-4]\\d|1\\d{2}|[1-9]?\\d)\\.){3}(25[0-5]|2[0-4]\\d|1\\d{2}|[1-9]?\\d)):(6553[0-5]|655[0-2]\\d|65[0-4]\\d{2}|6[0-4]\\d{3}|[1-5]?\\d{1,4})$");
 
-    private final Logger logger = LoggerFactory.getLogger(HomekitBaseServerHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(HomekitBaseAccessoryHandler.class);
 
     protected final Map<Integer, Accessory> accessories = new HashMap<>();
     protected final HomekitTypeProvider typeProvider;
@@ -87,7 +87,7 @@ public abstract class HomekitBaseServerHandler extends BaseThingHandler {
     protected @Nullable Ed25519PrivateKeyParameters controllerLongTermSecretKey = null;
     protected @Nullable Ed25519PublicKeyParameters accessoryLongTermPublicKey = null;
 
-    public HomekitBaseServerHandler(Thing thing, HomekitTypeProvider typeProvider) {
+    public HomekitBaseAccessoryHandler(Thing thing, HomekitTypeProvider typeProvider) {
         super(thing);
         this.typeProvider = typeProvider;
     }

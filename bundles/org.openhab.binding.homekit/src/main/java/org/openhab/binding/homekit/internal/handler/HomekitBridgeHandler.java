@@ -38,12 +38,12 @@ import org.slf4j.LoggerFactory;
  * It uses the /accessories endpoint to discover embedded accessories and their services.
  * It notifies the {@link HomekitChildDiscoveryService} when accessories are discovered.
  * It does not currently handle commands for channels, that is left to the child accessory handlers.
- * It extends {@link HomekitBaseServerHandler} to handle pairing and secure session setup.
+ * It extends {@link HomekitBaseAccessoryHandler} to handle pairing and secure session setup.
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-public class HomekitBridgeHandler extends HomekitBaseServerHandler implements BridgeHandler {
+public class HomekitBridgeHandler extends HomekitBaseAccessoryHandler implements BridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(HomekitBridgeHandler.class);
     private final HomekitChildDiscoveryService discoveryService;

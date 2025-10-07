@@ -15,6 +15,7 @@ package org.openhab.binding.homekit.internal.session;
 import static org.openhab.binding.homekit.internal.crypto.CryptoUtils.*;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -88,16 +89,23 @@ public class SecureSession {
      * plaintext until it detects the end of the HTTP message. The end of the message is determined by checking
      * for the presence of complete HTTP headers and a completed Content-Length, or a complete chunked payload.
      *
-     * @return a 2D byte array where the first element is the HTTP headers and the second element is the content.
+     * @param trace if true, captures the raw decrypted frames for debugging purposes.
+     * @return a 3D byte array where the first element is the HTTP headers, the second element is the content,
+     *         and the third is the raw trace (if enabled).
      * @throws Exception if an error occurs during reading or decryption.
      */
-    public byte[][] receive() throws Exception {
+    public byte[][] receive(boolean trace) throws Exception {
         HttpPayloadParser httpParser = new HttpPayloadParser();
+        ByteArrayOutputStream raw = trace ? new ByteArrayOutputStream() : null;
         do {
             byte[] frame = receiveFrame();
+            if (raw != null) {
+                raw.write(frame);
+            }
             httpParser.accept(frame);
         } while (!httpParser.isComplete());
-        return new byte[][] { httpParser.getHeaders(), httpParser.getContent() };
+        return new byte[][] { httpParser.getHeaders(), httpParser.getContent(),
+                raw != null ? raw.toByteArray() : new byte[0] };
     }
 
     /**

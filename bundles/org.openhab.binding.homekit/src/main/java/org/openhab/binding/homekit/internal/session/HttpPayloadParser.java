@@ -37,6 +37,7 @@ public class HttpPayloadParser {
     private static final int MAX_HEADER_BLOCK_SIZE = 2048;
     private static final Pattern CONTENT_LENGTH_PATTERN = Pattern.compile("(?i)^content-length:\\s*(\\d+)$");
     private static final Pattern CHUNKED_ENCODING_PATTERN = Pattern.compile("(?i)^transfer-encoding:\\s*chunked$");
+    private static final Pattern STATUS_LINE_PATTERN = Pattern.compile("HTTP/\\d\\.\\d\\s+(\\d{3})");
 
     private final ByteArrayOutputStream headerBuffer = new ByteArrayOutputStream();
     private final ByteArrayOutputStream contentBuffer = new ByteArrayOutputStream();
@@ -136,7 +137,37 @@ public class HttpPayloadParser {
         if (contentLength >= 0) {
             return contentBuffer.size() >= contentLength;
         }
+        // no content-length and not chunked: check status code
+        int statusCode = getHttpStatusCode(headerBuffer.toByteArray());
+        if (statusCode == 204 || (statusCode >= 100 && statusCode < 200)) {
+            return true; // no-body responses
+        }
+        if (statusCode >= 400 && statusCode < 600) {
+            return true; // treat error responses as complete even without body
+        }
         return false;
+    }
+
+    /**
+     * Extracts the HTTP status code from the given header byte array.
+     * It looks for the status line in the format "HTTP/x.x xxx" and parses the three-digit status code.
+     * If no valid status line is found or if the status code is malformed, a SecurityException is thrown.
+     *
+     * @param headerBytes the byte array containing HTTP headers.
+     * @return the extracted HTTP status code as an integer.
+     * @throws SecurityException if no valid status line is found or if the status code is malformed.
+     */
+    public static int getHttpStatusCode(byte[] headerBytes) {
+        String headers = new String(headerBytes, StandardCharsets.ISO_8859_1);
+        Matcher matcher = STATUS_LINE_PATTERN.matcher(headers);
+        if (matcher.find()) {
+            try {
+                return Integer.parseInt(matcher.group(1));
+            } catch (NumberFormatException e) {
+                throw new SecurityException("Malformed HTTP status code: " + matcher.group(1));
+            }
+        }
+        throw new SecurityException("Missing HTTP status line");
     }
 
     /**

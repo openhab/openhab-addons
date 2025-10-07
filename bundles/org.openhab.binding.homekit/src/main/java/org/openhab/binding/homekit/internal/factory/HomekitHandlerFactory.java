@@ -20,8 +20,8 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homekit.internal.discovery.HomekitChildDiscoveryService;
+import org.openhab.binding.homekit.internal.handler.HomekitAccessoryHandler;
 import org.openhab.binding.homekit.internal.handler.HomekitBridgeHandler;
-import org.openhab.binding.homekit.internal.handler.HomekitDeviceHandler;
 import org.openhab.binding.homekit.internal.persistence.HomekitTypeProvider;
 import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.Bridge;
@@ -83,7 +83,7 @@ public class HomekitHandlerFactory extends BaseThingHandlerFactory {
         if (THING_TYPE_BRIDGE.equals(thingTypeUID)) {
             return new HomekitBridgeHandler((Bridge) thing, typeProvider, registerDiscoveryService());
         } else if (THING_TYPE_ACCESSORY.equals(thingTypeUID)) {
-            return new HomekitDeviceHandler(thing, typeProvider, channelTypeRegistry, channelGroupTypeRegistry);
+            return new HomekitAccessoryHandler(thing, typeProvider, channelTypeRegistry, channelGroupTypeRegistry);
         }
         return null;
     }

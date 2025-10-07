@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.homekit.internal.transport;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -44,7 +43,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class IpTransport implements AutoCloseable {
 
-    private static final int CONNECT_TIMEOUT = Duration.ofSeconds(5).toMillisPart();
+    private static final int SOCKET_TIMEOUT = Duration.ofSeconds(5).toMillisPart(); // milliseconds
 
     private final Logger logger = LoggerFactory.getLogger(IpTransport.class);
 
@@ -55,6 +54,8 @@ public class IpTransport implements AutoCloseable {
 
     /**
      * Creates a new IpTransport instance with the given socket and session keys.
+     *
+     * @param host the IP address and port of the HomeKit accessory
      */
     public IpTransport(String host) throws Exception {
         logger.debug("Connecting to {}", host);
@@ -69,7 +70,8 @@ public class IpTransport implements AutoCloseable {
         String ipAddress = parts[0];
         int port = Integer.parseInt(parts[1]);
         socket = new Socket();
-        socket.connect(new InetSocketAddress(ipAddress, port), CONNECT_TIMEOUT);
+        socket.connect(new InetSocketAddress(ipAddress, port), SOCKET_TIMEOUT); // connect timeout
+        socket.setSoTimeout(SOCKET_TIMEOUT); // read timeout
         socket.setKeepAlive(false); // HAP spec forbids TCP keepalive
         logger.debug("Connected to {}", host);
     }
@@ -97,25 +99,33 @@ public class IpTransport implements AutoCloseable {
             throws IOException, InterruptedException, TimeoutException, ExecutionException {
         try {
             byte[] request = buildRequest(method, endpoint, contentType, content);
-            logger.trace("Request:\n{}", new String(request, StandardCharsets.ISO_8859_1));
-            byte[][] response;
 
+            boolean trace = logger.isTraceEnabled();
+            if (trace) {
+                logger.trace("Request:\n{}", new String(request, StandardCharsets.ISO_8859_1));
+            }
+
+            byte[][] response; // 0 = headers, 1 = content, 2 = raw trace (if enabled)
             SecureSession secureSession = this.secureSession;
             if (secureSession != null) {
                 secureSession.send(request);
-                response = secureSession.receive();
+                response = secureSession.receive(trace);
             } else {
                 OutputStream out = socket.getOutputStream();
                 InputStream in = socket.getInputStream();
                 out.write(request);
                 out.flush();
-                response = readPlainResponse(in);
+                response = readPlainResponse(in, trace);
             }
 
-            if (logger.isTraceEnabled()) {
-                logger.trace("Response:\n{}{}", new String(response[0], StandardCharsets.ISO_8859_1),
-                        new String(response[1], StandardCharsets.ISO_8859_1));
+            if (response.length != 3) {
+                throw new IOException("Response must contain 3 arrays");
             }
+
+            if (trace) {
+                logger.trace("Response:\n{}", new String(response[2], StandardCharsets.ISO_8859_1));
+            }
+
             checkHeaders(response[0]);
             return response[1];
         } catch (IOException | InterruptedException | TimeoutException e) {
@@ -166,11 +176,14 @@ public class IpTransport implements AutoCloseable {
     /*
      * Reads a plain (non-secure) HTTP response from the input stream.
      *
-     * @return a 2D byte array where the first element is the HTTP headers and the second element is the content.
+     * @param trace if true, captures the raw data for debugging purposes.
+     *
+     * @return a 3D byte array where the first element is the HTTP headers, the second element is the content,
+     * and the third is the raw trace (if enabled).
      *
      * @throws IOException if an I/O error occurs or if the response is invalid.
      */
-    private byte[][] readPlainResponse(InputStream in) throws IOException {
+    private byte[][] readPlainResponse(InputStream in, boolean trace) throws IOException {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         byte[] buf = new byte[4096];
         int read;
@@ -190,7 +203,7 @@ public class IpTransport implements AutoCloseable {
         byte[] content = new byte[data.length - headersEnd];
         System.arraycopy(data, 0, headers, 0, headers.length);
         System.arraycopy(data, headersEnd, content, 0, content.length);
-        return new byte[][] { headers, content };
+        return new byte[][] { headers, content, trace ? data : new byte[0] };
     }
 
     /**
@@ -199,36 +212,10 @@ public class IpTransport implements AutoCloseable {
      * @throws IOException if the response indicates an error.
      */
     private void checkHeaders(byte[] headers) throws IOException {
-        ByteArrayInputStream in = new ByteArrayInputStream(headers);
-        String statusLine = readLine(in);
-        String[] parts = statusLine.split(" ", 3);
-        if (parts.length < 3) {
-            throw new IOException("Invalid HTTP response: " + statusLine);
+        int httpStatusCode = HttpPayloadParser.getHttpStatusCode(headers);
+        if (httpStatusCode >= 300) {
+            throw new IOException("HTTP " + httpStatusCode);
         }
-        int status;
-        try {
-            status = Integer.parseInt(parts[1]);
-        } catch (NumberFormatException e) {
-            throw new IOException("Invalid HTTP response: " + statusLine);
-        }
-        if (status >= 300) {
-            throw new IOException("HTTP " + status);
-        }
-    }
-
-    private static String readLine(ByteArrayInputStream in) throws IOException {
-        StringBuilder sb = new StringBuilder();
-        int ch;
-        while ((ch = in.read()) >= 0) {
-            if (ch == '\r') {
-                continue;
-            }
-            if (ch == '\n') {
-                break;
-            }
-            sb.append((char) ch);
-        }
-        return sb.toString();
     }
 
     @Override
