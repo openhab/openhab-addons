@@ -68,7 +68,7 @@ public class OndiloHandler extends BaseThingHandler {
 
     private @Nullable ScheduledFuture<?> bridgeRecoveryJob;
 
-    private @Nullable LastMeasure lastMeasures[] = new LastMeasure[0];
+    private @Nullable LastMeasure[] lastMeasures = new LastMeasure[0];
     private @Nullable Recommendation lastRecommendation = null;
 
     // Store last value and valueTime for trend calculation
@@ -244,7 +244,7 @@ public class OndiloHandler extends BaseThingHandler {
         lastMeasureState.time = valueTime;
     }
 
-    public @Nullable Instant updateLastMeasuresChannels(LastMeasure measures[]) {
+    public @Nullable Instant updateLastMeasuresChannels(LastMeasure[] measures) {
         Instant valueTime = null;
         for (LastMeasure measure : measures) {
             logger.trace("LastMeasure: type={}, value={}", measure.dataType, measure.value);
