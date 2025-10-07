@@ -99,19 +99,19 @@ Example using default interval:
 
 ```Java
 Bridge ondilo:account:ondiloAccount [ url="http://localhost:8080", refreshInterval=900 ] {
-    Thing ondilo 12345 [ id=12345 ] {   // 12345 is an example of the id received via discovery
-    }
+    Thing ondilo 12345 [ id=12345 ]    // 12345 is an example of the id received via discovery
+}
 ```
 
 ### Item Configuration
 
 ```java
 Number:Temperature        Ondilo_Temperature  "Pool Temperature [%.1f %unit%]"  { channel="ondilo:ondilo:ondiloAccount:12345:measure#temperature" }
-Number                    Ondilo_pH           "Pool pH [%d]"                    { channel="ondilo:ondilo:ondiloAccount:12345:measure#ph" }
-Number:ElectricPotential  Ondilo_ORP          "Pool ORP [%.1f %unit%]"          { channel="ondilo:ondilo:ondiloAccount:12345:measure#orp" }
+Number                    Ondilo_pH           "Pool pH [%.2f]"                  { channel="ondilo:ondilo:ondiloAccount:12345:measure#ph" }
+Number:ElectricPotential  Ondilo_ORP          "Pool ORP [%.0f %unit%]"          { channel="ondilo:ondilo:ondiloAccount:12345:measure#orp" }
 Number:Density            Ondilo_Salt         "Pool Salt [%.0f %unit%]"         { channel="ondilo:ondilo:ondiloAccount:12345:measure#salt" }
-Number:Dimensionless      Ondilo_Battery      "Pool Battery [%d %]"             { channel="ondilo:ondilo:ondiloAccount:12345:measure#battery" }
-Number:Dimensionless      Ondilo_RSSI         "Pool RSSI [%.0f]"                { channel="ondilo:ondilo:ondiloAccount:12345:measure#rssi" }
+Number:Dimensionless      Ondilo_Battery      "Pool Battery [%d %%]"            { channel="ondilo:ondilo:ondiloAccount:12345:measure#battery" }
+Number:Dimensionless      Ondilo_RSSI         "Pool RSSI [%d]"                  { channel="ondilo:ondilo:ondiloAccount:12345:measure#rssi" }
 
 String                    Ondilo_RecTitle     "Recommendation Title [%s]"       { channel="ondilo:ondilo:ondiloAccount:12345:recommendation#title" }
 String                    Ondilo_RecMessage   "Recommendation Message [%s]"     { channel="ondilo:ondilo:ondiloAccount:12345:recommendation#message" }
