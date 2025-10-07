@@ -94,14 +94,14 @@ public abstract class GraalPythonScriptEngine extends AbstractScriptEngine
 
     @Override
     public Bindings createBindings() {
-        // Creating a new binding to replace the current one is not needed i context of pythonscripting
-        throw new IllegalArgumentException("Creating new bindings is not supported in the context of pythonscripting");
+        // Creating a new binding to replace the current one is not needed for scripting addons
+        throw new IllegalArgumentException("Creating new bindings is not supported");
     }
 
     @Override
     public void setBindings(Bindings bindings, int scope) {
-        // Setting a new binding to replace the current one is not needed in context of pythonscripting
-        throw new IllegalArgumentException("Setting bindings is not supported in the context of pythonscripting");
+        // Setting a new binding to replace the current one is not needed for scripting addons
+        throw new IllegalArgumentException("Setting bindings is not supported");
     }
 
     @Override

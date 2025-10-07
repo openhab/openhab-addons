@@ -122,7 +122,7 @@ Additionally, you can configure the Add-on via a config file `/openhab/services/
 ```
 
 ::: tip Configuration note
-If you use the marketplace version of this Add-on, it is neccessary to use the config file. OpenHAB has a bug which prevents the web based config dialog to work correctly for `kar` file based Add-ons.
+If you use the marketplace version of this Add-on, it is necessary to use the config file. OpenHAB has a bug which prevents the web based config dialog to work correctly for `kar` file based Add-ons.
 :::
 
 ### Console
@@ -133,9 +133,9 @@ The [openHAB Console](https://www.openhab.org/docs/administration/console.html) 
 
 2. `pythonscripting console` provides an interactive python console where you can try live python features<br/><br/>![Pythonscripting console](doc/console_pythonscripting_console.png)
 
-3. `pythonscripting update` allowes you to check, list, update or downgrade your helper lib<br/><br/>![Pythonscripting update](doc/console_pythonscripting_update.png)
+3. `pythonscripting update` allows you to check, list, update or downgrade your helper lib<br/><br/>![Pythonscripting update](doc/console_pythonscripting_update.png)
 
-4. `pythonscripting pip` allowes you check, install or remove external python modules.<br/><br/>Check [pip usage](#using-pip-to-install-external-modules) for details
+4. `pythonscripting pip` allows you check, install or remove external python modules.<br/><br/>Check [pip usage](#using-pip-to-install-external-modules) for details
 
 5. `pythonscripting typing` generates python type hint stub files.<br/><br/>Check [python autocompletion](#enable-pyhton-autocompletion) for details
 

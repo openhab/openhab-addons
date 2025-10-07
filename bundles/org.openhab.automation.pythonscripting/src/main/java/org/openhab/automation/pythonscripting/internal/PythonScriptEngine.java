@@ -256,7 +256,7 @@ public class PythonScriptEngine extends InvocationInterceptingPythonScriptEngine
         if (engineIdentifier != null) {
             this.engineIdentifier = engineIdentifier;
         } else {
-            logger.warn("Failed to retrieve script indentifier");
+            logger.warn("Failed to retrieve script identifier");
         }
 
         logger.debug("Initializing GraalPython script engine '{}' ...", this.engineIdentifier);
