@@ -113,7 +113,7 @@ In case the event object does not provide type-conversed properties for your cho
 **NOTE:**
 `Group****Trigger`s use the equivalent `Item****Trigger` as trigger for each member.
 
-See [openhab-js : EventObject](https://openhab.github.io/openhab-js/rules.html#.EventObject) for full API documentation.
+See [openhab-js : EventObject](https://openhab.github.io/openhab-js/global.html#EventObject) for full API documentation.
 
 When disabling the option _Convert Event from Java to JavaScript type in UI-based scripts_, you will receive a raw Java event object instead of the `event` object described above.
 See the expandable section below for more details.
