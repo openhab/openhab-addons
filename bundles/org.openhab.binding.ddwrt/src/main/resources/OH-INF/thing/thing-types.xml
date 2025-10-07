@@ -16,38 +16,6 @@
 		</channels>
 
 		<config-description>
-			<parameter-group name="connection">
-				<label>Connection</label>
-				<description>Connection settings.</description>
-			</parameter-group>
-
-			<parameter-group name="authentication">
-				<label>Authentication</label>
-				<description>Authentication settings. To use keys instead of password place the keys in $USER_DATA/ddwrt/keys</description>
-			</parameter-group>
-
-			<parameter name="hostnames" type="text" required="true" groupName="connection">
-				<context>network-addresses</context>
-				<label>Hostname</label>
-				<description>Comma seperated list of hostnames or IP addresseses of the device</description>
-			</parameter>
-			<parameter name="port" type="integer" groupName="connection">
-				<label>SSH port</label>
-				<description>SSH port</description>
-				<default>22</default>
-				<advanced>true</advanced>
-			</parameter>
-			<parameter name="user" type="text" required="true" groupName="authentication">
-				<context>user</context>
-				<label>User</label>
-				<description>Username to access the devices</description>
-				<default>root</default>
-			</parameter>
-			<parameter name="password" type="text" required="false" groupName="authentication">
-				<context>password</context>
-				<label>Password</label>
-				<description>Password to access the devices</description>
-			</parameter>
 			<parameter name="refreshInterval" type="integer" unit="s" min="1">
 				<label>Refresh Interval</label>
 				<description>Interval the devices is polled in sec.</description>
@@ -68,8 +36,44 @@
 		<description>Sample thing for ddwrt Binding</description>
 
 		<channels>
-			<channel id="channel1" typeId="sample-channel"/>
+			<channel id="uptime" typeId="uptime"/>
 		</channels>
+
+		<config-description>
+			<parameter-group name="connection">
+				<label>Connection</label>
+				<description>Connection settings.</description>
+			</parameter-group>
+
+			<parameter-group name="authentication">
+				<label>Authentication</label>
+				<description>Authentication settings. To use keys instead of password place the keys in $USER_DATA/ddwrt/keys</description>
+			</parameter-group>
+
+			<parameter name="hostname" type="text" required="true" groupName="connection">
+				<context>network-addresses</context>
+				<label>Hostname</label>
+				<description>Hostname or IP addresseses of the device</description>
+			</parameter>
+			<parameter name="port" type="integer" min="1" max="65535" groupName="connection">
+				<label>SSH port</label>
+				<description>SSH port</description>
+				<default>22</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="user" type="text" required="true" groupName="authentication">
+				<context>user</context>
+				<label>User</label>
+				<description>Username to access the devices</description>
+				<default>root</default>
+			</parameter>
+			<parameter name="password" type="text" required="false" groupName="authentication">
+				<context>password</context>
+				<label>Password</label>
+				<description>Password to access the devices</description>
+			</parameter>
+		</config-description>
+
 	</thing-type>
 
 	<!-- Channels -->
@@ -92,6 +96,13 @@
 		<item-type>Number</item-type>
 		<label>Wired Clients</label>
 		<description>Number of wired clients connected</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="uptime">
+		<item-type>String</item-type>
+		<label>Uptime</label>
+		<description>System up since, in yyyy-mm-dd HH:MM:SS format</description>
 		<state readOnly="true"></state>
 	</channel-type>
 

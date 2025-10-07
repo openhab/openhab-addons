@@ -12,10 +12,12 @@
  */
 package org.openhab.binding.ddwrt.internal;
 
-import static org.openhab.binding.ddwrt.internal.ddwrtBindingConstants.*;
+import static org.openhab.binding.ddwrt.internal.DDWRTBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.ddwrt.internal.handler.DDWRTDeviceThingHandler;
+import org.openhab.binding.ddwrt.internal.handler.DDWRTNetworkBridgeHandler;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -25,14 +27,14 @@ import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.service.component.annotations.Component;
 
 /**
- * The {@link ddwrtHandlerFactory} is responsible for creating things and thing
+ * The {@link DDWRTHandlerFactory} is responsible for creating things and thing
  * handlers.
  *
  * @author Lee Ballard - Initial contribution
  */
 @NonNullByDefault
 @Component(configurationPid = "binding.ddwrt", service = ThingHandlerFactory.class)
-public class ddwrtHandlerFactory extends BaseThingHandlerFactory {
+public class DDWRTHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -43,8 +45,10 @@ public class ddwrtHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (THING_TYPE_NETWORK.equals(thingTypeUID)) {
-            return new ddwrtNetworkHandler((Bridge) thing);
+        if (BRIDGE_TYPE_NETWORK.equals(thingTypeUID)) {
+            return new DDWRTNetworkBridgeHandler((Bridge) thing);
+        } else if (THING_TYPE_DEVICE.equals(thingTypeUID)) {
+            return new DDWRTDeviceThingHandler(thing);
         }
 
         return null;
