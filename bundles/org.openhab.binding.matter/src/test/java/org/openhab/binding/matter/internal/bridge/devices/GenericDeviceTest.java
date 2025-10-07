@@ -17,8 +17,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Map;
@@ -31,8 +29,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.openhab.binding.matter.internal.bridge.BridgedEndpoint;
 import org.openhab.binding.matter.internal.bridge.MatterBridgeClient;
-import org.openhab.binding.matter.internal.bridge.devices.GenericDevice.MetaDataMapping;
+import org.openhab.binding.matter.internal.bridge.devices.BaseDevice.MetaDataMapping;
 import org.openhab.binding.matter.internal.util.ValueUtils;
 import org.openhab.core.items.GenericItem;
 import org.openhab.core.items.Metadata;
@@ -66,7 +65,7 @@ class GenericDeviceTest {
     private TestGenericDevice device;
 
     @SuppressWarnings("null")
-    private static class TestGenericDevice extends GenericDevice {
+    private static class TestGenericDevice extends BaseDevice {
         public TestGenericDevice(MetadataRegistry metadataRegistry, MatterBridgeClient client,
                 GenericItem primaryItem) {
             super(metadataRegistry, client, primaryItem);
@@ -79,7 +78,9 @@ class GenericDeviceTest {
 
         @Override
         public MatterDeviceOptions activate() {
-            return new MatterDeviceOptions(Map.of(), "test");
+            MetaDataMapping primaryMetadata = metaDataMapping(primaryItem);
+            Map<String, Object> attributeMap = primaryMetadata.getAttributeOptions();
+            return new MatterDeviceOptions(attributeMap, primaryMetadata.label);
         }
 
         @Override
@@ -102,11 +103,10 @@ class GenericDeviceTest {
         Map<String, Object> config = Map.of("label", "Test Label", "fixedLabels", "ON=1, OFF=0", "cluster.attribute",
                 "value");
         Metadata metadata = new Metadata(key, "attr1,attr2", config);
-        when(metadataRegistry.get(any(MetadataKey.class))).thenReturn(metadata);
-        when(client.addEndpoint(any(), any(), any(), any(), any(), any(), any()))
-                .thenReturn(CompletableFuture.completedFuture("success"));
-
         numberItem = new NumberItem("testNumber");
+        when(metadataRegistry.get(any(MetadataKey.class))).thenReturn(metadata);
+        when(client.addEndpoint(any(BridgedEndpoint.class))).thenReturn(CompletableFuture.completedFuture("success"));
+
         device = new TestGenericDevice(metadataRegistry, client, numberItem);
     }
 
@@ -160,10 +160,20 @@ class GenericDeviceTest {
     }
 
     @Test
-    void testRegisterDevice() {
-        device.registerDevice();
-        verify(client).addEndpoint(eq("TestDevice"), eq("testNumber"), eq("test"), eq("testNumber"), eq("Type Number"),
-                any(), any());
+    void testActivateBridgedEndpointValues() {
+        BridgedEndpoint endpoint = device.activateBridgedEndpoint();
+        assertEquals("TestDevice", endpoint.deviceType);
+        assertEquals("testNumber", endpoint.id);
+        assertEquals("Test Label", endpoint.nodeLabel);
+        assertEquals("testNumber", endpoint.productName);
+        assertEquals("Type Number", endpoint.productLabel);
+        assertEquals(String.valueOf(numberItem.getName().hashCode()), endpoint.serialNumber);
+    }
+
+    @Test
+    void testActivateBridgedEndpointTwiceThrows() {
+        device.activateBridgedEndpoint();
+        assertThrows(IllegalStateException.class, () -> device.activateBridgedEndpoint());
     }
 
     @Test

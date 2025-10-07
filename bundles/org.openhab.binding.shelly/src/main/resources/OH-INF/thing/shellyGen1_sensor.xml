@@ -302,6 +302,7 @@
 				<option value="L">@text/channel-type.shelly.lastEvent.state.option.L</option>
 				<option value="SL">@text/channel-type.shelly.lastEvent.state.option.SL</option>
 				<option value="LS">@text/channel-type.shelly.lastEvent.state.option.LS</option>
+				<option value="H">@text/channel-type.shelly.lastEvent.state.option.H</option>
 			</options>
 		</state>
 	</channel-type>
@@ -583,6 +584,61 @@
 		<label>@text/channel-type.shelly.sensorSleepTime.label</label>
 		<description>@text/channel-type.shelly.sensorSleepTime.description</description>
 		<state readOnly="false" min="0" max="86400" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="sensorChannel">
+		<item-type>Number</item-type>
+		<label>@text/channel-type.shelly.sensorChannel.label</label>
+		<description>@text/channel-type.shelly.sensorChannel.description</description>
+	</channel-type>
+
+	<channel-type id="sensorRotationX">
+		<item-type>Number:Angle</item-type>
+		<label>@text/channel-type.shelly.sensorRotationX.label</label>
+		<description>@text/channel-type.shelly.sensorRotationX.description</description>
+		<state readOnly="true" pattern="%0d %unit%"/>
+	</channel-type>
+	<channel-type id="sensorRotationY">
+		<item-type>Number:Angle</item-type>
+		<label>@text/channel-type.shelly.sensorRotationY.label</label>
+		<description>@text/channel-type.shelly.sensorRotationY.description</description>
+		<state readOnly="true" pattern="%0d %unit%"/>
+	</channel-type>
+	<channel-type id="sensorRotationZ">
+		<item-type>Number:Angle</item-type>
+		<label>@text/channel-type.shelly.sensorRotationZ.label</label>
+		<description>@text/channel-type.shelly.sensorRotationZ.description</description>
+		<state readOnly="true" pattern="%0d %unit%"/>
+	</channel-type>
+
+	<channel-type id="sensorSteps">
+		<item-type>Number</item-type>
+		<label>@text/channel-type.shelly.sensorSteps.label</label>
+		<description>@text/channel-type.shelly.sensorSteps.description</description>
+		<state readOnly="true" pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="sensorDirection">
+		<item-type>String</item-type>
+		<label>@text/channel-type.shelly.sensorDirection.label</label>
+		<description>@text/channel-type.shelly.sensorDirection.description</description>
+		<state pattern="%s" readOnly="true">
+			<options>
+				<option value="up">@text/channel-type.shelly.sensorDirection.state.option.up</option>
+				<option value="down">@text/channel-type.shelly.sensorDirection.state.option.down</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="sensorDistance">
+		<item-type unitHint="mm">Number:Length</item-type>
+		<label>@text/channel-type.shelly.sensorDistance.label</label>
+		<description>@text/channel-type.shelly.sensorDistance.description</description>
+		<category>Distance</category>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="senseKey">

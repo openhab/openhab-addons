@@ -542,6 +542,22 @@
 		<config-description-ref uri="thing-type:boschshc:device"/>
 	</thing-type>
 
+
+	<thing-type id="presence-simulation">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="shc"/>
+		</supported-bridge-type-refs>
+
+		<label>Presence Simulation</label>
+		<description>Simulates that someone is home.</description>
+		<semantic-equipment-tag>Application</semantic-equipment-tag>
+
+		<channels>
+			<channel id="presence-simulation-enabled" typeId="presence-simulation-enabled"/>
+		</channels>
+
+	</thing-type>
+
 	<!-- Channels -->
 
 	<channel-type id="system-availability">
@@ -1066,6 +1082,22 @@
 				<option value="NO_VIBRATION">No vibration</option>
 				<option value="VIBRATION_DETECTED">Vibration detected</option>
 				<option value="UNKNOWN">Unknown</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="presence-simulation-enabled">
+		<item-type>Switch</item-type>
+		<label>Presence Simulation State</label>
+		<description>Channel to enable or disable the presence simulation.</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Enabled</tag>
+		</tags>
+		<state readOnly="false">
+			<options>
+				<option value="ON">Enabled</option>
+				<option value="OFF">Disabled</option>
 			</options>
 		</state>
 	</channel-type>

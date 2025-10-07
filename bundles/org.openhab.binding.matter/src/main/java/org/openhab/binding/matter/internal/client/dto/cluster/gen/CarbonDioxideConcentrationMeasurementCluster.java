@@ -113,8 +113,8 @@ public class CarbonDioxideConcentrationMeasurementCluster extends BaseCluster {
         PM3(6, "Pm 3"),
         BQM3(7, "Bqm 3");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private MeasurementUnitEnum(Integer value, String label) {
             this.value = value;
@@ -137,8 +137,8 @@ public class CarbonDioxideConcentrationMeasurementCluster extends BaseCluster {
         WATER(1, "Water"),
         SOIL(2, "Soil");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private MeasurementMediumEnum(Integer value, String label) {
             this.value = value;
@@ -163,8 +163,8 @@ public class CarbonDioxideConcentrationMeasurementCluster extends BaseCluster {
         HIGH(3, "High"),
         CRITICAL(4, "Critical");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private LevelValueEnum(Integer value, String label) {
             this.value = value;

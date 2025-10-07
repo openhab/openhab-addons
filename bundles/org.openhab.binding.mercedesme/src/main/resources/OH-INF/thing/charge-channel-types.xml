@@ -138,7 +138,7 @@
 	</channel-type>
 	<channel-type id="max-soc">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
-		<label>Charge SoC Maximum</label>
+		<label>Maximum State of Charge</label>
 		<state pattern="%d %unit%"/>
 		<command>
 			<options>

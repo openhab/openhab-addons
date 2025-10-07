@@ -28,7 +28,6 @@ public class NotTapLinkGatewayException extends I18Exception {
     private static final long serialVersionUID = -7786449325604153487L;
 
     public NotTapLinkGatewayException() {
-        super();
     }
 
     public NotTapLinkGatewayException(final String message) {

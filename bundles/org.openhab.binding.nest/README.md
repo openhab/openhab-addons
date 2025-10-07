@@ -59,7 +59,7 @@ Now an OAuth 2.0 client is created and configured for using the SDM API by the b
     1. Choose "OAuth client ID"
     1. As "Application type" choose "Web application"
     1. Give it a name so you can remember what it is used for (e.g. `Nest Binding SDM`)
-    1. Add "https://www.google.com" to the "Authorized redirect URIs"
+    1. Add "<https://www.google.com>" to the "Authorized redirect URIs"
     1. Click "Create" to create the client
     1. Copy and save the generated **Client ID** (e.g. `12345-abcde.apps.googleusercontent.com`) and **Client Secret** (e.g. `xyz-987`) somewhere
 1. Configure the SDM project to use the created client:
@@ -139,7 +139,7 @@ Next an OAuth 2.0 client is created which is used to create a Pub/Sub subscripti
 1. Choose "OAuth client ID"
 1. As "Application type" choose "Web application"
 1. Give it a name so you can remember what it is used for (e.g. `Nest Binding Pub/Sub`)
-1. Add "https://www.google.com" to the "Authorized redirect URIs"
+1. Add "<https://www.google.com>" to the "Authorized redirect URIs"
 1. Click "Create" to create the client
 1. Copy and save the generated **Client ID** (e.g. `67890-fghij.apps.googleusercontent.com`) and **Client Secret** (e.g. `uvw-654`) somewhere
 

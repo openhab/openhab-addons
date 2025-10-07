@@ -28,7 +28,6 @@ public class MiCloudException extends Exception {
     private static final long serialVersionUID = -1280858607995252321L;
 
     public MiCloudException() {
-        super();
     }
 
     public MiCloudException(@Nullable String message) {

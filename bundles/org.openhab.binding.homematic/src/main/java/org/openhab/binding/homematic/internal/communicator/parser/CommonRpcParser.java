@@ -13,6 +13,7 @@
 package org.openhab.binding.homematic.internal.communicator.parser;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNull;
@@ -167,8 +168,8 @@ public abstract class CommonRpcParser<M, R> implements RpcParser<M, R> {
      * Assembles a datapoint with the given parameters.
      */
     protected HmDatapoint assembleDatapoint(String name, String unit, String type, String[] options, Object min,
-            Object max, Integer operations, Object defaultValue, HmParamsetType paramsetType, boolean isHmIpDevice)
-            throws IOException {
+            Object max, Integer operations, Object defaultValue, Map<String, Number> specialValues,
+            HmParamsetType paramsetType, boolean isHmIpDevice) throws IOException {
         HmDatapoint dp = new HmDatapoint();
         dp.setName(name);
         dp.setDescription(name);
@@ -219,6 +220,9 @@ public abstract class CommonRpcParser<M, R> implements RpcParser<M, R> {
             dp.setDefaultValue(dp.getOptionIndex(toString(defaultValue)));
         } else {
             dp.setDefaultValue(convertToType(dp, defaultValue));
+        }
+        if (dp.isNumberType() && specialValues != null) {
+            dp.setSpecialValues(specialValues);
         }
         dp.setValue(dp.getDefaultValue());
         return dp;

@@ -27,7 +27,6 @@ import com.google.gson.Gson;
 @NonNullByDefault
 public class GetDefaultCleanPassesCommand extends IotDeviceCommand<Integer> {
     public GetDefaultCleanPassesCommand() {
-        super();
     }
 
     @Override

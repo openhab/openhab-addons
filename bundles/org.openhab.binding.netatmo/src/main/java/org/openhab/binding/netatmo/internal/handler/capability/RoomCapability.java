@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.action.RoomActions;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.MeasureClass;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.SetpointMode;
@@ -39,17 +40,17 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class RoomCapability extends Capability {
     private final Logger logger = LoggerFactory.getLogger(RoomCapability.class);
-    private Optional<EnergyCapability> energyCapability = Optional.empty();
+    private @Nullable EnergyCapability energyCapability;
 
     public RoomCapability(CommonInterface handler) {
         super(handler);
     }
 
     protected Optional<EnergyCapability> getEnergyCapability() {
-        if (energyCapability.isEmpty()) {
-            energyCapability = handler.getHomeCapability(EnergyCapability.class);
+        if (energyCapability == null) {
+            handler.getHomeCapability(EnergyCapability.class).ifPresent(cap -> this.energyCapability = cap);
         }
-        return energyCapability;
+        return Optional.ofNullable(energyCapability);
     }
 
     @Override

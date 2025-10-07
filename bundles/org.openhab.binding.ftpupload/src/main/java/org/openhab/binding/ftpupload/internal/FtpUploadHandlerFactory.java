@@ -20,6 +20,8 @@ import java.util.Set;
 import org.apache.ftpserver.DataConnectionConfigurationFactory;
 import org.apache.ftpserver.FtpServerConfigurationException;
 import org.apache.ftpserver.ftplet.FtpException;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.ftpupload.internal.ftp.FtpServer;
 import org.openhab.binding.ftpupload.internal.handler.FtpUploadHandler;
 import org.openhab.core.thing.Thing;
@@ -41,6 +43,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Pauli Anttila - Initial contribution
  */
+@NonNullByDefault
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.ftpupload")
 public class FtpUploadHandlerFactory extends BaseThingHandlerFactory {
     private final Logger logger = LoggerFactory.getLogger(FtpUploadHandlerFactory.class);
@@ -50,7 +53,7 @@ public class FtpUploadHandlerFactory extends BaseThingHandlerFactory {
     private final int DEFAULT_PORT = 2121;
     private final int DEFAULT_IDLE_TIMEOUT = 60;
 
-    private FtpServer ftpServer;
+    private @Nullable FtpServer ftpServer;
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -58,7 +61,7 @@ public class FtpUploadHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Override
-    protected ThingHandler createHandler(Thing thing) {
+    protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(THING_TYPE_IMAGERECEIVER)) {
@@ -88,15 +91,16 @@ public class FtpUploadHandlerFactory extends BaseThingHandlerFactory {
 
     protected synchronized void modified(ComponentContext componentContext) {
         stopFtpServer();
-        Dictionary<String, Object> properties = componentContext.getProperties();
+        Dictionary<String, @Nullable Object> properties = componentContext.getProperties();
         DataConnectionConfigurationFactory dataConnectionConfigurationFactory = new DataConnectionConfigurationFactory();
 
         int port = DEFAULT_PORT;
         int idleTimeout = DEFAULT_IDLE_TIMEOUT;
 
-        if (properties.get("port") != null) {
-            String strPort = properties.get("port").toString();
-            if (!strPort.isEmpty()) {
+        Object objPort = properties.get("port");
+        if (objPort != null) {
+            String strPort = objPort.toString();
+            if (strPort != null && !strPort.isEmpty()) {
                 try {
                     port = Integer.valueOf(strPort);
                 } catch (NumberFormatException e) {
@@ -105,9 +109,10 @@ public class FtpUploadHandlerFactory extends BaseThingHandlerFactory {
             }
         }
 
-        if (properties.get("idleTimeout") != null) {
-            String strIdleTimeout = properties.get("idleTimeout").toString();
-            if (!strIdleTimeout.isEmpty()) {
+        Object objIdleTimeout = properties.get("idleTimeout");
+        if (objIdleTimeout != null) {
+            String strIdleTimeout = objPort.toString();
+            if (strIdleTimeout != null && !strIdleTimeout.isEmpty()) {
                 try {
                     idleTimeout = Integer.valueOf(strIdleTimeout);
                 } catch (NumberFormatException e) {

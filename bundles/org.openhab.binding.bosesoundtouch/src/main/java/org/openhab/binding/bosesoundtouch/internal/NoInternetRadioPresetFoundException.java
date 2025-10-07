@@ -24,7 +24,6 @@ public class NoInternetRadioPresetFoundException extends NoPresetFoundException 
     private static final long serialVersionUID = 1L;
 
     public NoInternetRadioPresetFoundException() {
-        super();
     }
 
     public NoInternetRadioPresetFoundException(String message) {

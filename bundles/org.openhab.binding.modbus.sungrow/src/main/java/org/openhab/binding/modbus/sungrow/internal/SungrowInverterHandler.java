@@ -49,12 +49,13 @@ public class SungrowInverterHandler extends BaseModbusThingHandler {
         private final Deque<SungrowInverterRegisters> registers;
         private final ModbusReadRequestBlueprint blueprint;
 
-        public ModbusRequest(Deque<SungrowInverterRegisters> registers, int slaveId) {
+        public ModbusRequest(Deque<SungrowInverterRegisters> registers, int slaveId, int tries) {
             this.registers = registers;
-            this.blueprint = initReadRequest(registers, slaveId);
+            this.blueprint = initReadRequest(registers, slaveId, tries);
         }
 
-        private ModbusReadRequestBlueprint initReadRequest(Deque<SungrowInverterRegisters> registers, int slaveId) {
+        private ModbusReadRequestBlueprint initReadRequest(Deque<SungrowInverterRegisters> registers, int slaveId,
+                int tries) {
             int firstRegister = registers.getFirst().getRegisterNumber();
             int lastRegister = registers.getLast().getRegisterNumber();
             int length = lastRegister - firstRegister + registers.getLast().getRegisterCount();
@@ -65,14 +66,13 @@ public class SungrowInverterHandler extends BaseModbusThingHandler {
                     ModbusReadFunctionCode.READ_INPUT_REGISTERS, //
                     firstRegister - 1, //
                     length, //
-                    TRIES //
+                    tries //
             );
         }
     }
 
     private final Logger logger = LoggerFactory.getLogger(SungrowInverterHandler.class);
 
-    private static final int TRIES = 1;
     private List<ModbusRequest> modbusRequests = new ArrayList<>();
 
     public SungrowInverterHandler(Thing thing) {
@@ -82,7 +82,7 @@ public class SungrowInverterHandler extends BaseModbusThingHandler {
     /**
      * Splits the SungrowInverterRegisters into multiple ModbusRequest, to ensure the max request size.
      */
-    private List<ModbusRequest> buildRequests() {
+    private List<ModbusRequest> buildRequests(int tries) {
         final List<ModbusRequest> requests = new ArrayList<>();
         Deque<SungrowInverterRegisters> currentRequest = new ArrayDeque<>();
         int currentRequestFirstRegister = 0;
@@ -96,7 +96,7 @@ public class SungrowInverterHandler extends BaseModbusThingHandler {
                 int sizeWithRegisterAdded = channel.getRegisterNumber() - currentRequestFirstRegister
                         + channel.getRegisterCount();
                 if (sizeWithRegisterAdded > ModbusConstants.MAX_REGISTERS_READ_COUNT) {
-                    requests.add(new ModbusRequest(currentRequest, getSlaveId()));
+                    requests.add(new ModbusRequest(currentRequest, getSlaveId(), tries));
                     currentRequest = new ArrayDeque<>();
 
                     currentRequest.add(channel);
@@ -108,7 +108,7 @@ public class SungrowInverterHandler extends BaseModbusThingHandler {
         }
 
         if (!currentRequest.isEmpty()) {
-            requests.add(new ModbusRequest(currentRequest, getSlaveId()));
+            requests.add(new ModbusRequest(currentRequest, getSlaveId(), tries));
         }
         logger.debug("Created {} modbus request templates.", requests.size());
         return requests;
@@ -137,9 +137,14 @@ public class SungrowInverterHandler extends BaseModbusThingHandler {
             return;
         }
 
-        this.updateStatus(ThingStatus.UNKNOWN);
+        if (config.maxTries <= 0) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Invalid Maximum Tries When Reading: " + config.maxTries);
+            return;
+        }
 
-        this.modbusRequests = this.buildRequests();
+        this.updateStatus(ThingStatus.UNKNOWN);
+        this.modbusRequests = this.buildRequests(config.maxTries);
 
         for (ModbusRequest request : modbusRequests) {
             registerRegularPoll( //

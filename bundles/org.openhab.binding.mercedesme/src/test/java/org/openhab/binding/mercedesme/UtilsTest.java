@@ -88,6 +88,7 @@ class UtilsTest {
         File configDir = new File("src/main/resources/OH-INF/thing");
         File[] configFiles = configDir.listFiles();
         // ensure channel name <= 20
+        assertNotNull(configFiles, "Config files should not be null");
         for (int i = 0; i < configFiles.length; i++) {
             if (configFiles[i].getName().endsWith("group.xml")) {
                 String content = FileReader.readFileInString(configFiles[i].toString());
@@ -105,6 +106,7 @@ class UtilsTest {
         File configDir = new File("src/main/resources/OH-INF/thing");
         File[] configFiles = configDir.listFiles();
         // ensure channel labels <= 25
+        assertNotNull(configFiles, "Config files should not be null");
         for (int i = 0; i < configFiles.length; i++) {
             if (configFiles[i].getName().endsWith("channel-types.xml")) {
                 String content = FileReader.readFileInString(configFiles[i].toString());

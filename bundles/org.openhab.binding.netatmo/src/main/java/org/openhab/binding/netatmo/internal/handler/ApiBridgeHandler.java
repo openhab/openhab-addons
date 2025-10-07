@@ -116,9 +116,9 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
     private final ChannelUID requestCountChannelUID;
 
     private @Nullable OAuthClientService oAuthClientService;
-    private Optional<ScheduledFuture<?>> connectJob = Optional.empty();
-    private Optional<WebhookServlet> webHookServlet = Optional.empty();
-    private Optional<GrantServlet> grantServlet = Optional.empty();
+    private @Nullable ScheduledFuture<?> connectJob;
+    private @Nullable WebhookServlet webHookServlet;
+    private @Nullable GrantServlet grantServlet;
 
     public ApiBridgeHandler(Bridge bridge, HttpClient httpClient, NADeserializer deserializer,
             BindingConfiguration configuration, HttpService httpService, OAuthFactory oAuthFactory) {
@@ -165,11 +165,13 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
         ApiHandlerConfiguration configuration = getConfiguration();
         if (!configuration.webHookUrl.isBlank()
                 && getRestManager(SecurityApi.class) instanceof SecurityApi securityApi) {
-            webHookServlet.ifPresent(servlet -> servlet.dispose());
-            WebhookServlet servlet = new WebhookServlet(this, httpService, deserializer, securityApi,
+            WebhookServlet webHookServlet = this.webHookServlet;
+            if (webHookServlet != null) {
+                webHookServlet.dispose();
+            }
+            webHookServlet = this.webHookServlet = new WebhookServlet(this, httpService, deserializer, securityApi,
                     configuration.webHookUrl, configuration.webHookPostfix);
-            servlet.startListening();
-            this.webHookServlet = Optional.of(servlet);
+            webHookServlet.startListening();
         }
 
         updateStatus(ThingStatus.ONLINE);
@@ -212,12 +214,11 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
     }
 
     private void startAuthorizationFlow() {
-        GrantServlet servlet = new GrantServlet(this, httpService);
-        servlet.startListening();
-        grantServlet = Optional.of(servlet);
+        GrantServlet grantServlet = this.grantServlet = new GrantServlet(this, httpService);
+        grantServlet.startListening();
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                 "@text/conf-error-grant-needed [ \"http(s)://<YOUROPENHAB>:<YOURPORT>%s\" ]"
-                        .formatted(servlet.getPath()));
+                        .formatted(grantServlet.getPath()));
         connectApi.dispose();
     }
 
@@ -232,26 +233,35 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
         }
         connectApi.dispose();
         freeConnectJob();
-        connectJob = Optional.of(scheduler.schedule(() -> openConnection(code, redirectUri), delay, TimeUnit.SECONDS));
+        connectJob = scheduler.schedule(() -> openConnection(code, redirectUri), delay, TimeUnit.SECONDS);
         logger.debug("Reconnection scheduled in {} seconds", delay);
     }
 
     private void freeConnectJob() {
-        connectJob.ifPresent(j -> j.cancel(true));
-        connectJob = Optional.empty();
+        ScheduledFuture<?> connectJob = this.connectJob;
+        if (connectJob != null) {
+            connectJob.cancel(true);
+        }
+        this.connectJob = null;
     }
 
     private void freeGrantServlet() {
-        grantServlet.ifPresent(servlet -> servlet.dispose());
-        grantServlet = Optional.empty();
+        GrantServlet grantServlet = this.grantServlet;
+        if (grantServlet != null) {
+            grantServlet.dispose();
+        }
+        this.grantServlet = null;
     }
 
     @Override
     public void dispose() {
         logger.debug("Shutting down Netatmo API bridge handler.");
 
-        webHookServlet.ifPresent(servlet -> servlet.dispose());
-        webHookServlet = Optional.empty();
+        WebhookServlet webHookServlet = this.webHookServlet;
+        if (webHookServlet != null) {
+            webHookServlet.dispose();
+        }
+        this.webHookServlet = null;
 
         freeGrantServlet();
 
@@ -451,6 +461,6 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
     }
 
     public Optional<WebhookServlet> getWebHookServlet() {
-        return webHookServlet;
+        return Optional.ofNullable(webHookServlet);
     }
 }

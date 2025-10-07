@@ -14,7 +14,6 @@ package org.openhab.binding.hue.internal.api.dto.clip2;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -40,7 +39,7 @@ public class Alerts {
     public List<ActionType> getActionValues() {
         List<String> actionValues = this.actionValues;
         if (Objects.nonNull(actionValues)) {
-            return actionValues.stream().map(ActionType::of).collect(Collectors.toList());
+            return actionValues.stream().map(ActionType::of).toList();
         }
         return List.of();
     }

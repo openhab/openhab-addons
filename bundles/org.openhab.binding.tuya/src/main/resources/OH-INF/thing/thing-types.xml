@@ -51,6 +51,7 @@
 					<option value="https://openapi.tuyaeu.com">Central Europe</option>
 					<option value="https://openapi-weaz.tuyaeu.com">Western Europe (Azure/MS)</option>
 					<option value="https://openapi.tuyain.com">India</option>
+					<option value="https://openapi-sg.iotbing.com">Singapore</option>
 				</options>
 				<limitToOptions>true</limitToOptions>
 			</parameter>
@@ -89,13 +90,9 @@
 				<limitToOptions>true</limitToOptions>
 				<advanced>true</advanced>
 			</parameter>
-			<parameter name="pollingInterval" type="integer" min="10" unit="s">
+			<parameter name="pollingInterval" type="integer" min="0" unit="s">
 				<label>Polling Interval</label>
-				<options>
-					<option value="0">disabled</option>
-				</options>
-				<default>0</default>
-				<limitToOptions>false</limitToOptions>
+				<default>10</default>
 				<advanced>true</advanced>
 			</parameter>
 		</config-description>
@@ -111,14 +108,8 @@
 			<tag>Control</tag>
 			<tag>Color</tag>
 		</tags>
-		<config-description>
-			<parameter name="dp" type="integer" required="true">
-				<label>Color DP</label>
-			</parameter>
-			<parameter name="dp2" type="integer">
-				<label>Switch DP</label>
-			</parameter>
-		</config-description>
+
+		<config-description-ref uri="channel-type:tuya:color"/>
 	</channel-type>
 
 	<channel-type id="switch">
@@ -131,11 +122,8 @@
 			<tag>Switch</tag>
 			<tag>Power</tag>
 		</tags>
-		<config-description>
-			<parameter name="dp" type="integer" required="true">
-				<label>DP</label>
-			</parameter>
-		</config-description>
+
+		<config-description-ref uri="channel-type:tuya:switch"/>
 	</channel-type>
 
 
@@ -149,27 +137,8 @@
 			<tag>Control</tag>
 			<tag>Brightness</tag>
 		</tags>
-		<config-description>
-			<parameter name="dp" type="integer" required="true">
-				<label>Value DP</label>
-			</parameter>
-			<parameter name="dp2" type="integer">
-				<label>Switch DP</label>
-				<description>Set only on brightness channels.</description>
-			</parameter>
-			<parameter name="min" type="integer">
-				<label>Minimum</label>
-			</parameter>
-			<parameter name="max" type="integer">
-				<label>Maximum</label>
-			</parameter>
-			<parameter name="reversed" type="boolean">
-				<label>Reversed</label>
-				<description>Changes the direction of the scale (e.g. 0 becomes 100, 100 becomes 0).</description>
-				<default>false</default>
-				<advanced>true</advanced>
-			</parameter>
-		</config-description>
+
+		<config-description-ref uri="channel-type:tuya:dimmer"/>
 	</channel-type>
 
 	<channel-type id="number">
@@ -178,23 +147,7 @@
 
 		<category>Number</category>
 
-		<config-description>
-			<parameter name="dp" type="integer" required="true">
-				<label>DP</label>
-			</parameter>
-			<parameter name="min" type="integer">
-				<label>Minimum</label>
-			</parameter>
-			<parameter name="max" type="integer">
-				<label>Maximum</label>
-			</parameter>
-			<parameter name="sendAsString" type="boolean">
-				<label>Send As String</label>
-				<description>Send the value as string instead of number.</description>
-				<default>false</default>
-				<advanced>true</advanced>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="channel-type:tuya:number"/>
 	</channel-type>
 
 	<channel-type id="quantity">
@@ -205,37 +158,14 @@
 
 		<state pattern="%.3f %unit%"></state>
 
-		<config-description>
-			<parameter name="dp" type="integer" required="true">
-				<label>DP</label>
-			</parameter>
-			<parameter name="min" type="integer">
-				<label>Minimum</label>
-			</parameter>
-			<parameter name="max" type="integer">
-				<label>Maximum</label>
-			</parameter>
-			<parameter name="sendAsString" type="boolean">
-				<label>Send As String</label>
-				<description>Send the value as string instead of number.</description>
-				<default>false</default>
-				<advanced>true</advanced>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="channel-type:tuya:quantity"/>
 	</channel-type>
 
 	<channel-type id="string">
 		<item-type>String</item-type>
 		<label>String</label>
 
-		<config-description>
-			<parameter name="dp" type="integer" required="true">
-				<label>DP</label>
-			</parameter>
-			<parameter name="range" type="text">
-				<label>Range</label>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="channel-type:tuya:string"/>
 	</channel-type>
 
 	<channel-type id="ir-code">

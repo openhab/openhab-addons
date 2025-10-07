@@ -19,6 +19,8 @@ import java.util.Calendar;
 
 import javax.measure.quantity.Length;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.library.types.QuantityType;
 
 /**
@@ -27,14 +29,16 @@ import org.openhab.core.library.types.QuantityType;
  * @author Gerhard Riegler - Initial contribution
  * @author Christoph Weitkamp - Introduced UoM
  */
+@NonNullByDefault
 public class MoonDistance {
 
-    private Calendar date;
+    private @Nullable Calendar date;
     private double distance;
 
     /**
      * Returns the date of the calculated distance.
      */
+    @Nullable
     public Calendar getDate() {
         return date;
     }
@@ -42,7 +46,7 @@ public class MoonDistance {
     /**
      * Sets the date of the calculated distance.
      */
-    public void setDate(Calendar date) {
+    public void setDate(@Nullable Calendar date) {
         this.date = date;
     }
 

@@ -22,6 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.Source;
 import org.graalvm.polyglot.Value;
+import org.openhab.automation.jsscripting.internal.scriptengine.helper.LifecycleTracker;
 import org.openhab.automation.jsscripting.internal.threading.ThreadsafeWrappingScriptedAutomationManagerDelegate;
 import org.openhab.core.automation.module.script.ScriptExtensionAccessor;
 import org.openhab.core.automation.module.script.rulesupport.shared.ScriptedAutomationManager;
@@ -30,22 +31,25 @@ import org.openhab.core.automation.module.script.rulesupport.shared.ScriptedAuto
  * Class providing script extensions via CommonJS modules (with module name `@runtime`).
  *
  * @author Jonathan Gilbert - Initial contribution
- * @author Florian Hotze - Pass in lock object for multi-thread synchronization; Switch to {@link Lock} for multi-thread
- *         synchronization
+ * @author Florian Hotze - Pass in a lock object for multi-thread synchronisation
+ * @author Florian Hotze - Switch to {@link Lock} for multi-thread synchronisation
+ * @author Florian Hotze - Overwrite lifecycleTracker with our own implementation
  */
-
 @NonNullByDefault
 public class ScriptExtensionModuleProvider {
 
     private static final String RUNTIME_MODULE_PREFIX = "@runtime";
     private static final String DEFAULT_MODULE_NAME = "Defaults";
     private final Lock lock;
+    private final LifecycleTracker lifecycleTracker;
 
     private final ScriptExtensionAccessor scriptExtensionAccessor;
 
-    public ScriptExtensionModuleProvider(ScriptExtensionAccessor scriptExtensionAccessor, Lock lock) {
+    public ScriptExtensionModuleProvider(ScriptExtensionAccessor scriptExtensionAccessor, Lock lock,
+            LifecycleTracker lifecycleTracker) {
         this.scriptExtensionAccessor = scriptExtensionAccessor;
         this.lock = lock;
+        this.lifecycleTracker = lifecycleTracker;
     }
 
     public ModuleLocator locatorFor(Context ctx, String engineIdentifier) {
@@ -68,6 +72,7 @@ public class ScriptExtensionModuleProvider {
 
         if (DEFAULT_MODULE_NAME.equals(name)) {
             symbols = scriptExtensionAccessor.findDefaultPresets(scriptIdentifier);
+            symbols.put("lifecycleTracker", lifecycleTracker);
         } else {
             symbols = scriptExtensionAccessor.findPreset(name, scriptIdentifier);
         }
@@ -102,9 +107,9 @@ public class ScriptExtensionModuleProvider {
         Map<String, Object> rv = new HashMap<>(values);
 
         for (Map.Entry<String, Object> entry : rv.entrySet()) {
-            if (entry.getValue() instanceof ScriptedAutomationManager) {
-                entry.setValue(new ThreadsafeWrappingScriptedAutomationManagerDelegate(
-                        (ScriptedAutomationManager) entry.getValue(), lock));
+            if (entry.getValue() instanceof ScriptedAutomationManager scriptedAutomationManager) {
+                entry.setValue(
+                        new ThreadsafeWrappingScriptedAutomationManagerDelegate(scriptedAutomationManager, lock));
             }
         }
 

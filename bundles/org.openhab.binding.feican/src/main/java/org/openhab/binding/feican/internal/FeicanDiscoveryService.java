@@ -131,9 +131,10 @@ public class FeicanDiscoveryService extends AbstractDiscoveryService {
      * synchronized context.
      */
     private void closeDiscoverSocket() {
+        DatagramSocket discoverSocket = this.discoverSocket;
         if (discoverSocket != null) {
             discoverSocket.close();
-            discoverSocket = null;
+            this.discoverSocket = null;
         }
     }
 

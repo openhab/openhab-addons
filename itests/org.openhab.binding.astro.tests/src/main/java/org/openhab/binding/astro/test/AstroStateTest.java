@@ -23,6 +23,8 @@ import java.time.ZonedDateTime;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Locale;
+import java.util.TimeZone;
 
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -67,7 +69,8 @@ public class AstroStateTest {
 
     private void assertStateUpdate(String thingID, String channelId, State expectedState) throws Exception {
         ChannelUID testItemChannelUID = new ChannelUID(getThingUID(thingID), channelId);
-        State state = PropertyUtils.getState(testItemChannelUID, new AstroChannelConfig(), getPlanet(thingID), ZONE_ID);
+        State state = PropertyUtils.getState(testItemChannelUID, new AstroChannelConfig(), getPlanet(thingID),
+                TimeZone.getTimeZone(ZONE_ID));
         assertEquals(expectedState, state);
     }
 
@@ -89,10 +92,12 @@ public class AstroStateTest {
         switch (thingID) {
             case (TEST_SUN_THING_ID):
                 SunCalc sunCalc = new SunCalc();
-                return sunCalc.getSunInfo(calendar, TEST_LATITUDE, TEST_LONGITUDE, null, false);
+                return sunCalc.getSunInfo(calendar, TEST_LATITUDE, TEST_LONGITUDE, null, false,
+                        TimeZone.getTimeZone(ZONE_ID), Locale.getDefault());
             case (TEST_MOON_THING_ID):
                 MoonCalc moonCalc = new MoonCalc();
-                return moonCalc.getMoonInfo(calendar, TEST_LATITUDE, TEST_LONGITUDE);
+                return moonCalc.getMoonInfo(calendar, TEST_LATITUDE, TEST_LONGITUDE, TimeZone.getTimeZone(ZONE_ID),
+                        Locale.getDefault());
             default:
                 return null;
         }

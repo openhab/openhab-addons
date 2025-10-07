@@ -34,9 +34,7 @@ import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
-import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceRegistration;
-import org.osgi.framework.wiring.BundleWiring;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -72,8 +70,7 @@ public class GroheOndusHandlerFactory extends BaseThingHandlerFactory {
 
         if (THING_TYPE_BRIDGE_ACCOUNT.equals(thingTypeUID)) {
             GroheOndusAccountHandler handler = new GroheOndusAccountHandler((Bridge) thing,
-                    storageService.getStorage(thing.getUID().toString(),
-                            FrameworkUtil.getBundle(getClass()).adapt(BundleWiring.class).getClassLoader()));
+                    storageService.getStorage(thing.getUID().toString(), String.class.getClassLoader()));
             onAccountCreated(thing, handler);
             return handler;
         } else if (THING_TYPE_SENSEGUARD.equals(thingTypeUID)) {

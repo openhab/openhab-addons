@@ -39,7 +39,6 @@ public abstract class _4BSMessage extends EEP {
     }
 
     public _4BSMessage() {
-        super();
     }
 
     public static final byte TEACHIN_BIT = 0x08;

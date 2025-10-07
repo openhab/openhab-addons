@@ -15,18 +15,19 @@
 			<description>This group defines JavaScript's system behaviour.</description>
 		</parameter-group>
 
-		<parameter name="injectionEnabledV2" type="integer" required="true" min="0" max="2" groupName="environment">
+		<parameter name="injectionEnabledV2" type="integer" required="true" min="0" max="3" groupName="environment">
 			<label>Inject Global Variables from Helper Library</label>
 			<description><![CDATA[
 			Import all variables from the openHAB JavaScript library for common services like items, things, actions, log, etc... <br>
-			If disabled, the openHAB JavaScript library can be imported manually using"<code>require('openhab')</code>.
+			If disabled, the openHAB JavaScript library can be imported manually using <code>require('openhab')</code>.
 			]]></description>
 			<options>
-				<option value="2">Auto injection enabled only for UI-based scripts (recommended)</option>
-				<option value="1">Auto injection enabled for all scripts, i.e. including file-based scripts</option>
+				<option value="3">Auto injection for all scripts, including file-based scripts and transformations</option>
+				<option value="2">Auto injection for UI-based scripts and transformations</option>
+				<option value="1">Auto injection only for UI-based scripts (recommended)</option>
 				<option value="0">Disable auto-injection and import manually instead</option>
 			</options>
-			<default>2</default>
+			<default>3</default>
 		</parameter>
 		<parameter name="wrapperEnabled" type="boolean" required="true" groupName="environment">
 			<label>Wrap UI-based scripts in Self-Executing Function</label>
@@ -35,6 +36,16 @@
 			as well as the use of <code>function</code> and <code>class</code> declarations.<br>
 			With this option enabled, you can also use <code>return</code> statements in your scripts to abort execution at any point.
 			]]></description>
+			<default>true</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="eventConversionEnabled" type="boolean" required="true" groupName="environment">
+			<label>Convert Event from Java to JavaScript type in UI-based scripts</label>
+			<description><![CDATA[
+            Converting the event data from Java to JavaScript types in UI-based scripts allows working with event data in a native JS way without special handling for Java types.<br>
+            With this option enabled, the event data available in UI-based scripts is all JS types and the same as in file-based scripts.<br>
+            Please note that this option <strong>requires auto-injection enabled at least for UI-based scripts</strong>.
+            ]]></description>
 			<default>true</default>
 			<advanced>true</advanced>
 		</parameter>

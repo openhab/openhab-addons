@@ -28,7 +28,6 @@ public class HueSceneWithLightstates extends HueSceneEntry {
     public Map<String, AbstractHueState> lightstates = new TreeMap<>();
 
     HueSceneWithLightstates() {
-        super();
     }
 
     public HueSceneWithLightstates(HueSceneEntry e) {

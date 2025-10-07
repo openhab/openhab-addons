@@ -44,7 +44,6 @@ public class GetTotalStatsCommand extends IotDeviceCommand<GetTotalStatsCommand.
     }
 
     public GetTotalStatsCommand() {
-        super();
     }
 
     @Override

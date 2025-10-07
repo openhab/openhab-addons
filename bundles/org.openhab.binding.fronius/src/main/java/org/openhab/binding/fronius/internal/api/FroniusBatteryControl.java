@@ -36,6 +36,7 @@ import org.openhab.binding.fronius.internal.api.dto.inverter.batterycontrol.Time
 import org.openhab.binding.fronius.internal.api.dto.inverter.batterycontrol.WeekdaysRecord;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
+import org.openhab.core.thing.firmware.types.SemverVersion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,6 +65,7 @@ public class FroniusBatteryControl {
     private final Logger logger = LoggerFactory.getLogger(FroniusBatteryControl.class);
     private final Gson gson = new Gson();
     private final HttpClient httpClient;
+    private final SemverVersion firmwareVersion;
     private final URI baseUri;
     private final String username;
     private final String password;
@@ -74,17 +76,29 @@ public class FroniusBatteryControl {
      * Creates a new instance of {@link FroniusBatteryControl}.
      * 
      * @param httpClient the HTTP client to use
-     * @param baseUri the base URI of the Fronius hybrid inverter, MUST NOT end with a slash
+     * @param firmwareVersion the firmware version of the inverter
+     * @param scheme http or https
+     * @param hostname the hostname or IP address of the inverter
      * @param username the username for the inverter Web UI
      * @param password the password for the inverter Web UI
      */
-    public FroniusBatteryControl(HttpClient httpClient, URI baseUri, String username, String password) {
+    public FroniusBatteryControl(HttpClient httpClient, SemverVersion firmwareVersion, String scheme, String hostname,
+            String username, String password) {
         this.httpClient = httpClient;
-        this.baseUri = baseUri;
+        this.firmwareVersion = firmwareVersion;
+        this.baseUri = getBaseUri(firmwareVersion, scheme, hostname);
         this.username = username;
         this.password = password;
         this.timeOfUseUri = URI.create(baseUri + TIME_OF_USE_ENDPOINT);
         this.batteriesUri = URI.create(baseUri + BATTERIES_ENDPOINT);
+    }
+
+    private static URI getBaseUri(SemverVersion firmwareVersion, String scheme, String hostname) {
+        String apiPrefix = "";
+        if (firmwareVersion.isGreaterThanOrEqualTo(SemverVersion.fromString("1.36.0"))) {
+            apiPrefix = "/api";
+        }
+        return URI.create(String.format("%s://%s%s", scheme, hostname, apiPrefix));
     }
 
     /**
@@ -96,8 +110,8 @@ public class FroniusBatteryControl {
      */
     private TimeOfUseRecords getTimeOfUse() throws FroniusCommunicationException, FroniusUnauthorizedException {
         // Login and get the auth header for the next request
-        String authHeader = FroniusConfigAuthUtil.login(httpClient, baseUri, username, password, HttpMethod.GET,
-                timeOfUseUri.getPath(), API_TIMEOUT);
+        String authHeader = FroniusConfigAuthUtil.login(httpClient, firmwareVersion, baseUri, username, password,
+                HttpMethod.GET, timeOfUseUri.getPath(), API_TIMEOUT);
         Properties headers = new Properties();
         headers.put(HttpHeader.AUTHORIZATION.asString(), authHeader);
         // Get the time of use settings
@@ -128,8 +142,8 @@ public class FroniusBatteryControl {
     private void setTimeOfUse(TimeOfUseRecords records)
             throws FroniusCommunicationException, FroniusUnauthorizedException {
         // Login and get the auth header for the next request
-        String authHeader = FroniusConfigAuthUtil.login(httpClient, baseUri, username, password, HttpMethod.POST,
-                timeOfUseUri.getPath(), API_TIMEOUT);
+        String authHeader = FroniusConfigAuthUtil.login(httpClient, firmwareVersion, baseUri, username, password,
+                HttpMethod.POST, timeOfUseUri.getPath(), API_TIMEOUT);
         Properties headers = new Properties();
         headers.put(HttpHeader.AUTHORIZATION.asString(), authHeader);
 
@@ -144,6 +158,35 @@ public class FroniusBatteryControl {
             throw new FroniusCommunicationException("Failed to write configuration to inverter");
         }
         logger.trace("Time of Use settings set successfully");
+    }
+
+    /**
+     * Adds a schedule to the time of use settings of the Fronius hybrid inverter.
+     * 
+     * @param from start time of the forced charge period
+     * @param until end time of the forced charge period
+     * @param scheduleType the type of the schedule
+     * @param power the power value for the schedule
+     * @throws FroniusCommunicationException when an error occurs during communication with the inverter
+     * @throws FroniusUnauthorizedException when the login fails due to invalid credentials
+     */
+    public void addSchedule(LocalTime from, LocalTime until, ScheduleType scheduleType, QuantityType<Power> power)
+            throws FroniusCommunicationException, FroniusUnauthorizedException {
+        TimeOfUseRecords currentTimeOfUse = getTimeOfUse();
+        TimeOfUseRecord[] timeOfUse = new TimeOfUseRecord[currentTimeOfUse.records().length + 1];
+        System.arraycopy(currentTimeOfUse.records(), 0, timeOfUse, 0, currentTimeOfUse.records().length);
+
+        QuantityType<Power> powerInWatts = power.toUnit(Units.WATT);
+        if (powerInWatts == null) {
+            throw new IllegalArgumentException("power must be convertible to Watt unit");
+        }
+        if (powerInWatts.intValue() < 0) {
+            throw new IllegalArgumentException("power must be non-negative");
+        }
+        TimeOfUseRecord holdCharge = new TimeOfUseRecord(true, powerInWatts.intValue(), scheduleType,
+                new TimeTableRecord(from.format(TIME_FORMATTER), until.format(TIME_FORMATTER)), ALL_WEEKDAYS_RECORD);
+        timeOfUse[timeOfUse.length - 1] = holdCharge;
+        setTimeOfUse(new TimeOfUseRecords(timeOfUse));
     }
 
     /**
@@ -179,14 +222,7 @@ public class FroniusBatteryControl {
      */
     public void addHoldBatteryChargeSchedule(LocalTime from, LocalTime until)
             throws FroniusCommunicationException, FroniusUnauthorizedException {
-        TimeOfUseRecord[] currentTimeOfUse = getTimeOfUse().records();
-        TimeOfUseRecord[] timeOfUse = new TimeOfUseRecord[currentTimeOfUse.length + 1];
-        System.arraycopy(currentTimeOfUse, 0, timeOfUse, 0, currentTimeOfUse.length);
-
-        TimeOfUseRecord holdCharge = new TimeOfUseRecord(true, 0, ScheduleType.DISCHARGE_MAX,
-                new TimeTableRecord(from.format(TIME_FORMATTER), until.format(TIME_FORMATTER)), ALL_WEEKDAYS_RECORD);
-        timeOfUse[timeOfUse.length - 1] = holdCharge;
-        setTimeOfUse(new TimeOfUseRecords(timeOfUse));
+        addSchedule(from, until, ScheduleType.DISCHARGE_MAX, new QuantityType<>(0, Units.WATT));
     }
 
     /**
@@ -213,18 +249,7 @@ public class FroniusBatteryControl {
      */
     public void addForcedBatteryChargingSchedule(LocalTime from, LocalTime until, QuantityType<Power> power)
             throws FroniusCommunicationException, FroniusUnauthorizedException {
-        TimeOfUseRecords currentTimeOfUse = getTimeOfUse();
-        TimeOfUseRecord[] timeOfUse = new TimeOfUseRecord[currentTimeOfUse.records().length + 1];
-        System.arraycopy(currentTimeOfUse.records(), 0, timeOfUse, 0, currentTimeOfUse.records().length);
-
-        QuantityType<Power> powerInWatts = power.toUnit(Units.WATT);
-        if (powerInWatts == null) {
-            throw new IllegalArgumentException("power must be convertible to Watt unit");
-        }
-        TimeOfUseRecord holdCharge = new TimeOfUseRecord(true, powerInWatts.intValue(), ScheduleType.CHARGE_MIN,
-                new TimeTableRecord(from.format(TIME_FORMATTER), until.format(TIME_FORMATTER)), ALL_WEEKDAYS_RECORD);
-        timeOfUse[timeOfUse.length - 1] = holdCharge;
-        setTimeOfUse(new TimeOfUseRecords(timeOfUse));
+        addSchedule(from, until, ScheduleType.CHARGE_MIN, power);
     }
 
     /**
@@ -248,14 +273,34 @@ public class FroniusBatteryControl {
      */
     public void addPreventBatteryChargingSchedule(LocalTime from, LocalTime until)
             throws FroniusCommunicationException, FroniusUnauthorizedException {
-        TimeOfUseRecords currentTimeOfUse = getTimeOfUse();
-        TimeOfUseRecord[] timeOfUse = new TimeOfUseRecord[currentTimeOfUse.records().length + 1];
-        System.arraycopy(currentTimeOfUse.records(), 0, timeOfUse, 0, currentTimeOfUse.records().length);
+        addSchedule(from, until, ScheduleType.CHARGE_MAX, new QuantityType<>(0, Units.WATT));
+    }
 
-        TimeOfUseRecord preventCharging = new TimeOfUseRecord(true, 0, ScheduleType.CHARGE_MAX,
-                new TimeTableRecord(from.format(TIME_FORMATTER), until.format(TIME_FORMATTER)), ALL_WEEKDAYS_RECORD);
-        timeOfUse[timeOfUse.length - 1] = preventCharging;
-        setTimeOfUse(new TimeOfUseRecords(timeOfUse));
+    /**
+     * Forces the battery to discharge right now with the specified power.
+     * 
+     * @param power the power to discharge the battery with
+     * @throws FroniusCommunicationException when an error occurs during communication with the inverter
+     * @throws FroniusUnauthorizedException when the login fails due to invalid credentials
+     */
+    public void forceBatteryDischarging(QuantityType<Power> power)
+            throws FroniusCommunicationException, FroniusUnauthorizedException {
+        reset();
+        addForcedBatteryDischargingSchedule(BEGIN_OF_DAY, END_OF_DAY, power);
+    }
+
+    /**
+     * Forces the battery to discharge during a specific time period with the specified power.
+     * 
+     * @param from start time of the prevented charging period
+     * @param until end time of the prevented charging period
+     * @param power the power to discharge the battery with
+     * @throws FroniusCommunicationException when an error occurs during communication with the inverter
+     * @throws FroniusUnauthorizedException when the login fails due to invalid credentials
+     */
+    public void addForcedBatteryDischargingSchedule(LocalTime from, LocalTime until, QuantityType<Power> power)
+            throws FroniusCommunicationException, FroniusUnauthorizedException {
+        addSchedule(from, until, ScheduleType.DISCHARGE_MIN, power);
     }
 
     /**
@@ -273,8 +318,8 @@ public class FroniusBatteryControl {
         }
 
         // Login and get the auth header for the next request
-        String authHeader = FroniusConfigAuthUtil.login(httpClient, baseUri, username, password, HttpMethod.POST,
-                batteriesUri.getPath(), API_TIMEOUT);
+        String authHeader = FroniusConfigAuthUtil.login(httpClient, firmwareVersion, baseUri, username, password,
+                HttpMethod.POST, batteriesUri.getPath(), API_TIMEOUT);
         Properties headers = new Properties();
         headers.put(HttpHeader.AUTHORIZATION.asString(), authHeader);
 

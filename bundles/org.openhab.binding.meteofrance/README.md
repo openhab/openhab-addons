@@ -2,8 +2,8 @@
 
 This binding provides information made available by Meteo France:
 
-* Alert level regarding major weather related risk factors (`vigilance` Thing) 
-* Rain intensity forecasts (`rain-forecast`Thing)
+- Alert level regarding major weather related risk factors (`vigilance` Thing)
+- Rain intensity forecasts (`rain-forecast`Thing)
 
 This binding provides its own icon set and provides appropriate static and dynamic SVG icons (see items examples below).
 
@@ -23,7 +23,7 @@ The `api` bridge has only one configuration parameter :
 |-----------|-------------------------------------------------------|
 | apikey    | Data-platform token to access the service. Mandatory. |
 
-To obtain an API key, you must create an account on https://portail-api.meteofrance.fr/web/fr/
+To obtain an API key, you must create an account on <https://portail-api.meteofrance.fr/web/fr/>
 Inside the API Portal, create an application on "Bulletin Vigilance" and generate they API key (set duration to 0).
 
 ## Thing Configuration
@@ -102,17 +102,17 @@ This binding has its own IconProvider and makes available the following list of 
 
 | Icon Name                       | Dynamic | Illustration |
 |---------------------------------|---------|--------------|
-| oh:meteofrance:vent             |   Yes   | ![](doc/images/vent.svg) |
-| oh:meteofrance:pluie-inondation |   Yes   | ![](doc/images/pluie-inondation.svg) |
-| oh:meteofrance:orage            |   Yes   | ![](doc/images/orage.svg) |
-| oh:meteofrance:inondation       |   Yes   | ![](doc/images/inondation.svg) |
-| oh:meteofrance:neige            |   Yes   | ![](doc/images/neige.svg) |
-| oh:meteofrance:canicule         |   Yes   | ![](doc/images/canicule.svg) |
-| oh:meteofrance:grand-froid      |   Yes   | ![](doc/images/grand-froid.svg) |
-| oh:meteofrance:avalanches       |   Yes   | ![](doc/images/avalanches.svg) |
-| oh:meteofrance:vague-submersion |   Yes   | ![](doc/images/vague-submersion.svg) |
-| oh:meteofrance:meteo_france     |   No    | ![](doc/images/meteo_france.svg) |
-| oh:meteofrance:intensity        |   Yes   | ![](doc/images/intensity.svg) |
+| oh:meteofrance:vent             |   Yes   | ![Vent](doc/images/vent.svg) |
+| oh:meteofrance:pluie-inondation |   Yes   | ![Pluie Inondation](doc/images/pluie-inondation.svg) |
+| oh:meteofrance:orage            |   Yes   | ![Orage](doc/images/orage.svg) |
+| oh:meteofrance:inondation       |   Yes   | ![Inondation](doc/images/inondation.svg) |
+| oh:meteofrance:neige            |   Yes   | ![Neige](doc/images/neige.svg) |
+| oh:meteofrance:canicule         |   Yes   | ![Canicule](doc/images/canicule.svg) |
+| oh:meteofrance:grand-froid      |   Yes   | ![Grand Froid](doc/images/grand-froid.svg) |
+| oh:meteofrance:avalanches       |   Yes   | ![Avalanches](doc/images/avalanches.svg) |
+| oh:meteofrance:vague-submersion |   Yes   | ![Vague Submersion](doc/images/vague-submersion.svg) |
+| oh:meteofrance:meteo_france     |   No    | ![Meteo France](doc/images/meteo_france.svg) |
+| oh:meteofrance:intensity        |   Yes   | ![Intensity](doc/images/intensity.svg) |
 
 ## Full Example
 

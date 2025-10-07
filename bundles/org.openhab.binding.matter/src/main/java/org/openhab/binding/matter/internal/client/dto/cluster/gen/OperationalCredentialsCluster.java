@@ -95,7 +95,7 @@ public class OperationalCredentialsCluster extends BaseCluster {
      * Note that the Trusted Root CA Certificate is not included in this structure. The roots are available in the
      * TrustedRootCertificates attribute of the Node Operational Credentials cluster.
      */
-    public class NOCStruct {
+    public static class NOCStruct {
         /**
          * This field shall contain the NOC for the struct’s associated fabric, encoded using Matter Certificate
          * Encoding.
@@ -118,7 +118,7 @@ public class OperationalCredentialsCluster extends BaseCluster {
     /**
      * This structure encodes a Fabric Reference for a fabric within which a given Node is currently commissioned.
      */
-    public class FabricDescriptorStruct {
+    public static class FabricDescriptorStruct {
         /**
          * This field shall contain the public key for the trusted root that scopes the fabric referenced by FabricIndex
          * and its associated operational credential (see Section 6.4.5.3, “Trusted Root CA Certificates”). The format
@@ -174,8 +174,8 @@ public class OperationalCredentialsCluster extends BaseCluster {
         DAC_CERTIFICATE(1, "Dac Certificate"),
         PAI_CERTIFICATE(2, "Pai Certificate");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private CertificateChainTypeEnum(Integer value, String label) {
             this.value = value;
@@ -209,8 +209,8 @@ public class OperationalCredentialsCluster extends BaseCluster {
         LABEL_CONFLICT(10, "Label Conflict"),
         INVALID_FABRIC_INDEX(11, "Invalid Fabric Index");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private NodeOperationalCertStatusEnum(Integer value, String label) {
             this.value = value;

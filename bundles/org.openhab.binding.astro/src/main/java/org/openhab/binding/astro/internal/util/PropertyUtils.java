@@ -15,7 +15,6 @@ package org.openhab.binding.astro.internal.util;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -52,7 +51,7 @@ public class PropertyUtils {
     /**
      * Returns the state of the channel.
      */
-    public static State getState(ChannelUID channelUID, AstroChannelConfig config, Object instance, ZoneId zoneId)
+    public static State getState(ChannelUID channelUID, AstroChannelConfig config, Object instance, TimeZone zone)
             throws Exception {
         Object value = getPropertyValue(channelUID, instance);
         if (value == null) {
@@ -61,7 +60,7 @@ public class PropertyUtils {
             return state;
         } else if (value instanceof Calendar cal) {
             GregorianCalendar gregorianCal = (GregorianCalendar) DateTimeUtils.applyConfig(cal, config);
-            cal.setTimeZone(TimeZone.getTimeZone(zoneId));
+            cal.setTimeZone(zone);
             ZonedDateTime zoned = gregorianCal.toZonedDateTime().withFixedOffsetZone();
             return new DateTimeType(zoned);
         } else if (value instanceof Number) {
