@@ -40,8 +40,7 @@ public class SbusHandlerFactory extends BaseThingHandlerFactory {
     private final Logger logger = LoggerFactory.getLogger(SbusHandlerFactory.class);
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_UDP_BRIDGE, THING_TYPE_SWITCH,
-            THING_TYPE_TEMPERATURE, THING_TYPE_RGBW, THING_TYPE_CONTACT_SENSOR, THING_TYPE_MOTION_SENSOR,
-            THING_TYPE_LUX_SENSOR);
+            THING_TYPE_TEMPERATURE, THING_TYPE_RGBW, THING_TYPE_CONTACT_SENSOR, THING_TYPE_MULTI_SENSOR);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -69,12 +68,9 @@ public class SbusHandlerFactory extends BaseThingHandlerFactory {
         } else if (thingTypeUID.equals(THING_TYPE_CONTACT_SENSOR)) {
             logger.debug("Creating Sbus contact sensor handler for thing {}", thing.getUID());
             return new SbusContactHandler(thing);
-        } else if (thingTypeUID.equals(THING_TYPE_MOTION_SENSOR)) {
-            logger.debug("Creating Sbus motion sensor handler for thing {}", thing.getUID());
-            return new SbusMotionSensorHandler(thing);
-        } else if (thingTypeUID.equals(THING_TYPE_LUX_SENSOR)) {
-            logger.debug("Creating Sbus lux sensor handler for thing {}", thing.getUID());
-            return new SbusLuxSensorHandler(thing);
+        } else if (thingTypeUID.equals(THING_TYPE_MULTI_SENSOR)) {
+            logger.debug("Creating Sbus multi-sensor handler for thing {}", thing.getUID());
+            return new Sbus9in1SensorsHandler(thing);
         }
 
         logger.debug("Unknown thing type: {}", thingTypeUID);
