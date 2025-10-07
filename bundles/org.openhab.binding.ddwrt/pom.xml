@@ -16,19 +16,21 @@
 
   <properties>
     <bnd.importpackage>org.apache.tomcat.jni;resolution:="optional",org.bouncycastle.*;resolution:="optional",sun.security.x509;resolution:="optional"</bnd.importpackage>
+    <sshd.version>2.15.0</sshd.version>
+    <eddsa.version>0.3.0</eddsa.version>
   </properties>
 
   <dependencies>
     <dependency>
       <groupId>org.apache.sshd</groupId>
       <artifactId>sshd-osgi</artifactId>
-      <version>2.15.0</version>
+      <version>${sshd.version}</version>
     </dependency>
     <!-- For ed25519 support -->
     <dependency>
       <groupId>net.i2p.crypto</groupId>
       <artifactId>eddsa</artifactId>
-      <version>0.3.0</version>
+      <version>${eddsa.version}</version>
     </dependency>
   </dependencies>
 

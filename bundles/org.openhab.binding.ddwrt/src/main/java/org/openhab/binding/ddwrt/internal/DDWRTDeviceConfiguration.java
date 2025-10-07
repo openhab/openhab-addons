@@ -15,12 +15,12 @@ package org.openhab.binding.ddwrt.internal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link ddwrtConfiguration} class contains fields mapping thing configuration parameters.
+ * The {@link DDWRTDeviceConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Lee Ballard - Initial contribution
  */
 @NonNullByDefault
-public class ddwrtConfiguration {
+public class DDWRTDeviceConfiguration {
 
     /**
      * Sample configuration parameters. Replace with your own.

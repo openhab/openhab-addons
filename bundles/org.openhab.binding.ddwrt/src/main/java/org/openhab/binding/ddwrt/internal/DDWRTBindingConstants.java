@@ -18,24 +18,30 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * The {@link ddwrtBindingConstants} class defines common constants, which are
+ * The {@link DDWRTBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
  * @author Lee Ballard - Initial contribution
  */
 @NonNullByDefault
-public class ddwrtBindingConstants {
+public class DDWRTBindingConstants {
+
+    private DDWRTBindingConstants() {
+    }
 
     private static final String BINDING_ID = "ddwrt";
 
     // List of all Thing Type UIDs
-    public static final ThingTypeUID THING_TYPE_NETWORK = new ThingTypeUID(BINDING_ID, "network");
+    public static final ThingTypeUID BRIDGE_TYPE_NETWORK = new ThingTypeUID(BINDING_ID, "network");
     public static final ThingTypeUID THING_TYPE_DEVICE = new ThingTypeUID(BINDING_ID, "device");
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_NETWORK, THING_TYPE_DEVICE);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(BRIDGE_TYPE_NETWORK, THING_TYPE_DEVICE);
 
     // List of network Channel ids
     public static final String CHANNEL_TOTAL_CLIENTS = "totalClients";
     public static final String CHANNEL_WIRELESS_CLIENTS = "wirelessClients";
     public static final String CHANNEL_WIRED_CLIENTS = "wiredClients";
+    public static final String CHANNEL_ONLINE = "online";
+    public static final String CHANNEL_UPTIME = "uptime";
+    public static final String CHANNEL_WAN_IP = "wanIp";
 }
