@@ -447,6 +447,7 @@ public class OpenhabGraalJSScriptEngine
         ScriptContext ctx = delegate.getContext();
         if (ctx == null) {
             logger.warn("Failed to retrieve script context from engine '{}'.", engineIdentifier);
+            return null;
         }
 
         Object value = ctx.getAttribute(AbstractScriptModuleHandler.CONTEXT_KEY_MODULE_TYPE_ID);

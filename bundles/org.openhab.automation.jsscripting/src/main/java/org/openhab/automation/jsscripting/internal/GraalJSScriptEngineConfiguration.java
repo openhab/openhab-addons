@@ -106,7 +106,7 @@ public class GraalJSScriptEngineConfiguration {
         injectionCachingEnabled = ConfigParser.valueAsOrElse(config.get(CFG_INJECTION_CACHING_ENABLED), Boolean.class,
                 true);
         scriptConditionWrapperEnabled = ConfigParser.valueAsOrElse(config.get(CFG_SCRIPT_CONDITION_WRAPPER_ENABLED),
-                Boolean.class, true);
+                Boolean.class, false);
         eventConversionEnabled = ConfigParser.valueAsOrElse(config.get(CFG_EVENT_CONVERSION_ENABLED), Boolean.class,
                 true);
         dependencyTrackingEnabled = ConfigParser.valueAsOrElse(config.get(CFG_DEPENDENCY_TRACKING_ENABLED),
