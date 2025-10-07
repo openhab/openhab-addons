@@ -361,7 +361,8 @@ public class OpenhabGraalJSScriptEngine
         // keep this extendable for more directives by checking the first n lines (n = number of directives)
         // up to two directives: "use strict" (handled by Graal) and "use wrapper"
         List<String> header = script.lines().limit(2).toList();
-        boolean useWrapper = configuration.isScriptConditionWrapperEnabled();
+        boolean useWrapper = isScriptAction()
+                || (isScriptCondition() && configuration.isScriptConditionWrapperEnabled());
         for (String line : header) {
             var matcher = USE_WRAPPER_DIRECTIVE.matcher(line);
             if (!matcher.matches()) {
@@ -380,7 +381,7 @@ public class OpenhabGraalJSScriptEngine
             }
         }
 
-        if (isScriptAction() || (isScriptCondition() && useWrapper)) {
+        if (useWrapper) {
             logger.debug("Wrapping script for engine '{}' ...", engineIdentifier);
             newScript = "(function() {" + System.lineSeparator() + newScript + System.lineSeparator() + "})()";
         }
