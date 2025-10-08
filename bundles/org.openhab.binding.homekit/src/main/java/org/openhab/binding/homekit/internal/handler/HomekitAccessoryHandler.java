@@ -14,6 +14,7 @@ package org.openhab.binding.homekit.internal.handler;
 
 import static org.openhab.binding.homekit.internal.HomekitBindingConstants.*;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -56,6 +57,8 @@ import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
+import org.openhab.core.types.StateDescription;
+import org.openhab.core.types.StateDescriptionFragment;
 import org.openhab.core.types.UnDefType;
 import org.openhab.core.types.util.UnitUtils;
 import org.slf4j.Logger;
@@ -137,28 +140,29 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
             logger.warn("HSBType command handling is not yet implemented for channel {}", channel.getUID());
         }
 
+        StateDescription stateDescription = getStateDescription(channel);
+
         // convert QuantityTypes to the characteristic's unit
         if (object instanceof QuantityType<?> quantity) {
-            if (channel.getProperties().get(PROPERTY_UNIT) instanceof String unit) {
+            if (stateDescription != null
+                    && UnitUtils.parseUnit(stateDescription.getPattern()) instanceof Unit<?> channelUnit) {
                 try {
-                    QuantityType<?> temp = quantity.toInvertibleUnit(unit);
+                    QuantityType<?> temp = quantity.toUnit(channelUnit);
                     object = temp != null ? temp : quantity;
                 } catch (MeasurementParseException e) {
-                    logger.warn("Unexpected unit {} for channel {}", unit, channel.getUID());
+                    logger.warn("Unexpected unit {} for channel {}", channelUnit, channel.getUID());
                 }
             }
         }
 
         if (object instanceof Number number) {
             // clamp numbers to characteristic's min/max limits
-            Double min = Optional.ofNullable(channel.getProperties().get(PROPERTY_MIN_VALUE))
-                    .map(s -> Double.valueOf(s)).orElse(null);
-            if (min != null && number.doubleValue() < min.doubleValue()) {
+            if (stateDescription != null && stateDescription.getMinimum() instanceof BigDecimal min
+                    && min.doubleValue() > number.doubleValue()) {
                 object = min;
             }
-            Double max = Optional.ofNullable(channel.getProperties().get(PROPERTY_MAX_VALUE))
-                    .map(s -> Double.valueOf(s)).orElse(null);
-            if (max != null && number.doubleValue() > max.doubleValue()) {
+            if (stateDescription != null && stateDescription.getMaximum() instanceof BigDecimal max
+                    && max.doubleValue() < number.doubleValue()) {
                 object = max;
             }
 
@@ -196,7 +200,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
 
         // comply with the characteristic's boolean data type
         if (object instanceof Boolean bool
-                && channel.getProperties().get(PROPERTY_BOOLEAN_DATA_TYPE) instanceof String booleanDataType) {
+                && channel.getProperties().get(PROPERTY_BOOL_TYPE) instanceof String booleanDataType) {
             switch (booleanDataType) {
                 case "number" -> object = Integer.valueOf(bool ? 1 : 0);
                 case "string" -> object = bool ? "true" : "false";
@@ -250,14 +254,12 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
                 case CoreItemFactory.NUMBER -> new DecimalType(value.getAsNumber());
                 default -> {
                     if (acceptedItemType.startsWith(CoreItemFactory.NUMBER)) {
-                        int index = acceptedItemType.indexOf(":");
-                        if (index > 0) {
-                            String targetDimension = acceptedItemType.substring(index + 1);
-                            Unit<?> sourceUnit = UnitUtils.parseUnit(
-                                    Optional.ofNullable(channel.getProperties().get(PROPERTY_UNIT)).orElse(null));
-                            if (sourceUnit != null && targetDimension.equals(UnitUtils.getDimensionName(sourceUnit))) {
-                                yield QuantityType.valueOf(value.getAsNumber().doubleValue(), sourceUnit);
-                            }
+                        String[] itemTypeParts = acceptedItemType.split(":");
+                        if (itemTypeParts.length > 1
+                                && getStateDescription(channel) instanceof StateDescriptionFragment stateDescription
+                                && UnitUtils.parseUnit(stateDescription.getPattern()) instanceof Unit<?> channelUnit
+                                && itemTypeParts[1].equalsIgnoreCase(UnitUtils.getDimensionName(channelUnit))) {
+                            yield QuantityType.valueOf(value.getAsNumber().doubleValue(), channelUnit);
                         }
                         yield new DecimalType(value.getAsNumber());
                     }
@@ -294,12 +296,14 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
         // create the channels and properties
         List<Channel> channels = new ArrayList<>();
         Map<String, String> properties = new HashMap<>(thing.getProperties()); // keep existing properties
-        accessory.buildAndRegisterChannelGroupDefinitions(typeProvider).forEach(groupDef -> {
+        accessory.buildAndRegisterChannelGroupDefinitions(thing.getUID(), typeProvider).forEach(groupDef -> {
             logger.trace("+ChannelGroupDefinition id:{}, typeUID:{}, label:{}, description:{}", groupDef.getId(),
                     groupDef.getTypeUID(), groupDef.getLabel(), groupDef.getDescription());
 
             ChannelGroupType channelGroupType = channelGroupTypeRegistry.getChannelGroupType(groupDef.getTypeUID());
-            if (channelGroupType != null) {
+            if (channelGroupType == null) {
+                logger.warn("Fata Error: ChannelGroupType {} is not registered", groupDef.getTypeUID());
+            } else {
                 logger.trace("++ChannelGroupType UID:{}, label:{}, category:{}, description:{}",
                         channelGroupType.getUID(), channelGroupType.getLabel(), channelGroupType.getCategory(),
                         channelGroupType.getDescription());
@@ -311,6 +315,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
                             chanDef.getAutoUpdatePolicy(), chanDef.getProperties());
 
                     if (FAKE_PROPERTY_CHANNEL_TYPE_UID.equals(chanDef.getChannelTypeUID())) {
+                        // this is a property, not a channel
                         String name = chanDef.getId();
                         String value = chanDef.getLabel();
                         if (value != null) {
@@ -318,8 +323,11 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
                             logger.trace("++++Property '{}:{}'", name, value);
                         }
                     } else {
+                        // this is a real channel
                         ChannelType channelType = channelTypeRegistry.getChannelType(chanDef.getChannelTypeUID());
-                        if (channelType != null) {
+                        if (channelType == null) {
+                            logger.warn("Fatal Error: ChannelType {} is not registered", chanDef.getChannelTypeUID());
+                        } else {
                             logger.trace(
                                     "++++ChannelType category:{}, description:{}, itemType:{}, label:{}, autoUpdatePolicy:{}, itemType:{}, kind:{}, tags:{}, uid:{}, unitHint:{}",
                                     channelType.getCategory(), channelType.getDescription(), channelType.getItemType(),
@@ -459,8 +467,23 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
                     }
                 }
             } catch (Exception e) {
-                logger.error("Failed to poll accessory state", e);
+                logger.warn("Failed to poll accessory state", e);
             }
         }
+    }
+
+    private @Nullable StateDescription getStateDescription(Channel channel) {
+        ChannelTypeUID uid = channel.getChannelTypeUID();
+        ChannelType ct = channelTypeRegistry.getChannelType(uid);
+        if (ct == null) {
+            logger.warn("Channel {} is missing a channel type", uid);
+            return null;
+        }
+        StateDescription st = ct.getState();
+        if (st == null) {
+            logger.warn("Channel {} of type {} is missing a state description", uid, ct.getUID());
+            return null;
+        }
+        return st;
     }
 }

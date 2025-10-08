@@ -22,6 +22,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homekit.internal.enums.CharacteristicType;
 import org.openhab.binding.homekit.internal.enums.ServiceType;
 import org.openhab.binding.homekit.internal.persistence.HomekitTypeProvider;
+import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.type.ChannelDefinition;
 import org.openhab.core.thing.type.ChannelGroupDefinition;
 import org.openhab.core.thing.type.ChannelGroupType;
@@ -51,17 +52,20 @@ public class Service {
      * Returns a ChannelGroupDefinition that is specific instance of ChannelGroupType.
      * Returns null if the service type is unknown or if no valid channel definitions can be created.
      *
+     * @param thingUID the ThingUID to associate the ChannelGroupDefinition with
      * @param typeProvider the HomekitStorageBasedTypeProvider to register the channel group type with
      * @return the created ChannelGroupDefinition or null if creation failed
      */
-    public @Nullable ChannelGroupDefinition buildAndRegisterChannelGroupDefinition(HomekitTypeProvider typeProvider) {
+    public @Nullable ChannelGroupDefinition buildAndRegisterChannelGroupDefinition(ThingUID thingUID,
+            HomekitTypeProvider typeProvider) {
         ServiceType serviceType = getServiceType();
         if (serviceType == null || ServiceType.ACCESSORY_INFORMATION == serviceType) {
             return null;
         }
 
         List<ChannelDefinition> channelDefinitions = characteristics.stream()
-                .map(c -> c.buildAndRegisterChannelDefinition(typeProvider)).filter(Objects::nonNull).toList();
+                .map(c -> c.buildAndRegisterChannelDefinition(thingUID, typeProvider)).filter(Objects::nonNull)
+                .toList();
 
         if (channelDefinitions.isEmpty()) {
             return null;

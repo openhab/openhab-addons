@@ -14,6 +14,8 @@ package org.openhab.binding.homekit.internal.dto;
 
 import static org.openhab.binding.homekit.internal.HomekitBindingConstants.*;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,15 +31,19 @@ import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.semantics.SemanticTag;
 import org.openhab.core.semantics.model.DefaultSemanticTags.Point;
 import org.openhab.core.semantics.model.DefaultSemanticTags.Property;
+import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.type.ChannelDefinition;
 import org.openhab.core.thing.type.ChannelDefinitionBuilder;
-import org.openhab.core.thing.type.ChannelType;
 import org.openhab.core.thing.type.ChannelTypeBuilder;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.thing.type.StateChannelTypeBuilder;
+import org.openhab.core.types.StateDescriptionFragment;
+import org.openhab.core.types.StateDescriptionFragmentBuilder;
+import org.openhab.core.types.StateOption;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
+import com.google.gson.annotations.SerializedName;
 
 /**
  * HomeKit characteristic DTO.
@@ -61,6 +67,8 @@ public class Characteristic {
     public @NonNullByDefault({}) String description;
     public @NonNullByDefault({}) Boolean ev; // e.g. true
     public @NonNullByDefault({}) Integer aid; // e.g. 10
+    public @NonNullByDefault({}) @SerializedName("valid-values") List<Integer> validValues;
+    public @NonNullByDefault({}) @SerializedName("valid-values-range") List<Integer> validValuesRange;
 
     /**
      * Builds a ChannelType and a ChannelDefinition based on the characteristic properties.
@@ -70,10 +78,12 @@ public class Characteristic {
      * Examines characteristic type, data format, permissions, and other properties
      * to determine appropriate channel type, item type, tags, category, and attributes.
      *
+     * @param thingUID the ThingUID to associate the ChannelDefinition with
      * @param typeProvider the HomekitTypeProvider to register the channel type with
      * @return the ChannelDefinition or null if it cannot be mapped
      */
-    public @Nullable ChannelDefinition buildAndRegisterChannelDefinition(HomekitTypeProvider typeProvider) {
+    public @Nullable ChannelDefinition buildAndRegisterChannelDefinition(ThingUID thingUID,
+            HomekitTypeProvider typeProvider) {
         CharacteristicType characteristicType = getCharacteristicType();
         if (characteristicType == null) {
             return null;
@@ -91,6 +101,7 @@ public class Characteristic {
         boolean isString = DataFormatType.STRING == dataFormatType;
         boolean isBoolean = DataFormatType.BOOL == dataFormatType;
         boolean isNumber = !isString && !isBoolean;
+        boolean isNumberWithSuffix = false;
         boolean isStateChannel = true;
         boolean isPercentage = "percentage".equals(unit);
 
@@ -103,15 +114,15 @@ public class Characteristic {
             default -> unit; // may be null or a custom unit
         };
 
-        String booleanDataType = null;
+        String boolType = null;
         if ("bool".equals(format) && value != null && value.isJsonPrimitive()) {
             // some characteristics have "bool" with non-boolean value types e.g. numbers 0,1 or strings "true","false"
             JsonPrimitive prim = value.getAsJsonPrimitive();
             if (prim.isNumber()) {
-                booleanDataType = "number";
+                boolType = "number";
             }
             if (prim.isString()) {
-                booleanDataType = "string";
+                boolType = "string";
             }
         }
 
@@ -235,7 +246,7 @@ public class Characteristic {
                 break;
 
             case COLOR_TEMPERATURE:
-                uom = "Mirek";
+                uom = "mired";
                 numberSuffix = "Temperature";
                 propertyTag = Property.COLOR_TEMPERATURE;
                 category = "light";
@@ -683,65 +694,124 @@ public class Characteristic {
 
         if (CoreItemFactory.NUMBER.equals(itemType) && numberSuffix != null) {
             itemType = itemType + ":" + numberSuffix;
+            isNumberWithSuffix = true;
         }
 
         /*
-         * NOTE: different accessories may have the same characteristicType, but their other
-         * properties e.g. min, max, step, unit may be different
+         * ================ CREATE FAKE PROPERTY CHANNEL =================
+         *
+         * create and return fake property channel for characteristics that
+         * are not mapped to a real channel
+         *
          */
-        ChannelTypeUID channelTypeUid = new ChannelTypeUID(BINDING_ID,
-                CHANNEL_TYPE_ID_FMT.formatted(characteristicType.getOpenhabType()));
+        if (FAKE_PROPERTY_CHANNEL.equals(itemType)) {
+            if (value != null && value.isJsonPrimitive()) {
+                // create fake property channels for characteristics that contain only static information
+                return new ChannelDefinitionBuilder(characteristicType.toCamelCase(), FAKE_PROPERTY_CHANNEL_TYPE_UID)
+                        .withLabel(value.getAsString()).build();
+            }
+            return null;
+        }
 
+        /*
+         * ================ CREATE AND PERSIST THE CHANNEL TYPE =================
+         *
+         * NOTE: different accessories may have the same characteristicType, but
+         * their other properties e.g. min, max, step, unit may be different, so
+         * we create and persist a unique channel type ID for each characteristic
+         * instance
+         */
+        String channelTypeId = CHANNEL_TYPE_ID_FMT.formatted(characteristicType.getOpenhabType());
+        if (thingUID.getBridgeIds().isEmpty()) {
+            channelTypeId += thingUID.getId();
+        } else {
+            channelTypeId += thingUID.getBridgeIds().getFirst() + "-" + thingUID.getId();
+        }
+        ChannelTypeUID channelTypeUid = new ChannelTypeUID(BINDING_ID, channelTypeId);
         String channelTypeLabel = characteristicType.toString();
 
-        ChannelType channelType;
-        if (isStateChannel) {
+        if (!isStateChannel) {
+            typeProvider.putChannelType(ChannelTypeBuilder.trigger(channelTypeUid, channelTypeLabel).build());
+
+        } else {
             if (itemType == null) {
                 return null;
             }
-            if (FAKE_PROPERTY_CHANNEL.equals(itemType)) {
-                if (value != null && value.isJsonPrimitive()) {
-                    // create fake property channels for characteristics that contain only static information
-                    return new ChannelDefinitionBuilder(characteristicType.toCamelCase(),
-                            FAKE_PROPERTY_CHANNEL_TYPE_UID).withLabel(value.getAsString()).build();
+
+            // build state description fragment
+            StateDescriptionFragmentBuilder fragBldr = StateDescriptionFragmentBuilder.create()
+                    .withReadOnly(isReadOnly);
+            if (isNumber) {
+                Optional.ofNullable(minValue).map(v -> BigDecimal.valueOf(v)).ifPresent(b -> fragBldr.withMinimum(b));
+                Optional.ofNullable(maxValue).map(v -> BigDecimal.valueOf(v)).ifPresent(b -> fragBldr.withMaximum(b));
+                Optional.ofNullable(minStep).map(v -> BigDecimal.valueOf(v)).ifPresent(b -> fragBldr.withStep(b));
+
+                if (isPercentage) {
+                    fragBldr.withPattern("%.0f %%");
+                } else if (uom != null) {
+                    fragBldr.withPattern("%.1f " + uom);
                 }
-                return null;
+
+                if (validValues != null && !validValues.isEmpty()) {
+                    List<StateOption> options = validValues.stream().map(v -> v.toString())
+                            .map(s -> new StateOption(s, s)).toList();
+                    fragBldr.withOptions(options);
+                } else
+                //
+                if (validValuesRange != null && validValuesRange.size() == 2) {
+                    int min = validValuesRange.stream().mapToInt(Integer::intValue).min().orElse(0); // size check above
+                    int max = validValuesRange.stream().mapToInt(Integer::intValue).max().orElse(0); // ditto
+                    int step = minStep != null ? minStep.intValue() : 1;
+                    List<StateOption> options = new ArrayList<>();
+                    for (int i = min; i <= max; i += step) {
+                        String s = Integer.toString(i);
+                        options.add(new StateOption(s, s));
+                    }
+                    fragBldr.withOptions(options);
+                }
             }
-            StateChannelTypeBuilder builder = ChannelTypeBuilder.state(channelTypeUid, channelTypeLabel, itemType);
-            Optional.ofNullable(category).ifPresent(builder::withCategory);
+            StateDescriptionFragment stateDescriptionFragment = fragBldr.build();
+
+            // build channel type
+            StateChannelTypeBuilder chanTypBldr = ChannelTypeBuilder.state(channelTypeUid, channelTypeLabel, itemType)
+                    .withStateDescriptionFragment(stateDescriptionFragment);
+            Optional.ofNullable(category).ifPresent(c -> chanTypBldr.withCategory(c));
+            if (isNumberWithSuffix && uom != null) {
+                chanTypBldr.withUnitHint(uom);
+            }
             if (pointTag != null) {
                 if (propertyTag != null) {
-                    builder.withTags(pointTag, propertyTag);
+                    chanTypBldr.withTags(pointTag, propertyTag);
                 } else {
-                    builder.withTags(pointTag);
+                    chanTypBldr.withTags(pointTag);
                 }
             }
-            channelType = builder.build();
-        } else {
-            channelType = ChannelTypeBuilder.trigger(channelTypeUid, channelTypeLabel).build();
+
+            // persist the (state) channel TYPE
+            typeProvider.putChannelType(chanTypBldr.build());
         }
 
-        // persist the channel _type_
-        typeProvider.putChannelType(channelType);
-
         /*
-         * expose the non ephemeral fields, that are not exposed via normal channel definition attributes,
-         * through properties instead e.g. minValue, maxValue, minStep, format, unit, perms, ev
+         * ================ CREATE AND RETURN CHANNEL DEFINITION =================
+         *
+         * The channel definition contains additional information beyond the what is
+         * in the channel type e.g. channel id, label, iid, format, boolType, etc.
+         * so we create and return a channel definition containing this information.
          */
-        Map<String, String> properties = new HashMap<>();
-        Optional.ofNullable(iid).map(v -> v.toString()).ifPresent(s -> properties.put(PROPERTY_IID, s));
-        Optional.ofNullable(minValue).map(v -> v.toString()).ifPresent(s -> properties.put(PROPERTY_MIN_VALUE, s));
-        Optional.ofNullable(maxValue).map(v -> v.toString()).ifPresent(s -> properties.put(PROPERTY_MAX_VALUE, s));
-        Optional.ofNullable(minStep).map(v -> v.toString()).ifPresent(s -> properties.put(PROPERTY_MIN_STEP, s));
-        Optional.ofNullable(format).ifPresent(s -> properties.put(PROPERTY_FORMAT, s));
-        Optional.ofNullable(uom).ifPresent(s -> properties.put(PROPERTY_UNIT, s));
-        Optional.ofNullable(perms).map(l -> String.join(",", l)).ifPresent(s -> properties.put(PROPERTY_PERMS, s));
-        Optional.ofNullable(ev).map(b -> b.toString()).ifPresent(s -> properties.put(PROPERTY_EV, s));
-        Optional.ofNullable(booleanDataType).ifPresent(s -> properties.put(PROPERTY_BOOLEAN_DATA_TYPE, s));
+        Map<String, String> props = new HashMap<>();
+        Optional.ofNullable(iid).map(v -> v.toString()).ifPresent(s -> props.put(PROPERTY_IID, s));
+        Optional.ofNullable(format).ifPresent(s -> props.put(PROPERTY_FORMAT, s));
+        Optional.ofNullable(boolType).ifPresent(s -> props.put(PROPERTY_BOOL_TYPE, s));
 
-        // return the definition of a specific _instance_ of the channel _type_
-        return new ChannelDefinitionBuilder(characteristicType.getOpenhabType(), channelTypeUid)
-                .withProperties(properties).withLabel(getChannelInstanceLabel()).build();
+        // Optional.ofNullable(minValue).map(v -> v.toString()).ifPresent(s -> props.put(PROPERTY_MIN_VALUE, s));
+        // Optional.ofNullable(maxValue).map(v -> v.toString()).ifPresent(s -> props.put(PROPERTY_MAX_VALUE, s));
+        // Optional.ofNullable(minStep).map(v -> v.toString()).ifPresent(s -> props.put(PROPERTY_MIN_STEP, s));
+        // Optional.ofNullable(uom).ifPresent(s -> props.put(PROPERTY_UNIT, s));
+        // Optional.ofNullable(perms).map(l -> String.join(",", l)).ifPresent(s -> props.put(PROPERTY_PERMS, s));
+        // Optional.ofNullable(ev).map(b -> b.toString()).ifPresent(s -> props.put(PROPERTY_EV, s));
+
+        return new ChannelDefinitionBuilder(characteristicType.getOpenhabType(), channelTypeUid).withProperties(props)
+                .withLabel(getChannelInstanceLabel()).build();
     }
 
     /*

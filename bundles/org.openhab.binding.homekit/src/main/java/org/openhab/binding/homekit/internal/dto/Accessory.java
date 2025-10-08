@@ -23,6 +23,7 @@ import org.openhab.binding.homekit.internal.enums.ServiceType;
 import org.openhab.binding.homekit.internal.persistence.HomekitTypeProvider;
 import org.openhab.core.semantics.SemanticTag;
 import org.openhab.core.semantics.model.DefaultSemanticTags.Equipment;
+import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.type.ChannelGroupDefinition;
 
 import com.google.gson.JsonElement;
@@ -53,11 +54,13 @@ public class Accessory {
      * Child services that do not map to a channel group definition are ignored.
      * Grandchild categories that do not map to a channel definition are ignored.
      *
+     * @param thingUID the ThingUID to associate the ChannelGroupDefinitions with
      * @param typeProvider the HomeKit type provider used to look up channel group definitions.
      * @return a list of channel group definition instances for the services of this accessory.
      */
-    public List<ChannelGroupDefinition> buildAndRegisterChannelGroupDefinitions(HomekitTypeProvider typeProvider) {
-        return services.stream().map(s -> s.buildAndRegisterChannelGroupDefinition(typeProvider))
+    public List<ChannelGroupDefinition> buildAndRegisterChannelGroupDefinitions(ThingUID thingUID,
+            HomekitTypeProvider typeProvider) {
+        return services.stream().map(s -> s.buildAndRegisterChannelGroupDefinition(thingUID, typeProvider))
                 .filter(Objects::nonNull).toList();
     }
 

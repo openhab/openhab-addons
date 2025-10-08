@@ -17,6 +17,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.openhab.binding.homekit.internal.HomekitBindingConstants.FAKE_PROPERTY_CHANNEL_TYPE_UID;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -30,10 +31,12 @@ import org.openhab.binding.homekit.internal.dto.Characteristic;
 import org.openhab.binding.homekit.internal.dto.Service;
 import org.openhab.binding.homekit.internal.enums.ServiceType;
 import org.openhab.binding.homekit.internal.persistence.HomekitTypeProvider;
+import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.type.ChannelDefinition;
 import org.openhab.core.thing.type.ChannelGroupDefinition;
 import org.openhab.core.thing.type.ChannelGroupType;
 import org.openhab.core.thing.type.ChannelType;
+import org.openhab.core.types.StateDescription;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
@@ -381,10 +384,11 @@ class TestChannelCreation {
         /*
          * Test the LED Light Bulb accessory #3 which has live data channels
          */
+        ThingUID thingUID = new ThingUID("hhh", "aaa", "bridge1", "accessory3");
         Accessory accessory = accessories.getAccessory(3);
         assertNotNull(accessory);
         List<ChannelGroupDefinition> channelGroupDefinitions = accessory
-                .buildAndRegisterChannelGroupDefinitions(typeProvider);
+                .buildAndRegisterChannelGroupDefinitions(thingUID, typeProvider);
 
         // There should be just one channel group definition for the Light Bulb service
         assertNotNull(channelGroupDefinitions);
@@ -414,14 +418,9 @@ class TestChannelCreation {
         ChannelDefinition channelDefinition = channelGroupType.getChannelDefinitions().stream()
                 .filter(cd -> "Brightness".equals(cd.getLabel())).findFirst().orElse(null);
         assertNotNull(channelDefinition);
-        assertEquals("channel-type-brightness", channelDefinition.getChannelTypeUID().getId());
+        assertEquals("channel-type-brightness-bridge1-accessory3", channelDefinition.getChannelTypeUID().getId());
         assertEquals("Brightness", channelDefinition.getLabel());
-        assertEquals("%", channelDefinition.getProperties().get("unit"));
         assertEquals("int", channelDefinition.getProperties().get("format"));
-        assertEquals("20.0", channelDefinition.getProperties().get("minValue"));
-        assertEquals("100.0", channelDefinition.getProperties().get("maxValue"));
-        assertEquals("1.0", channelDefinition.getProperties().get("minStep"));
-        assertNotNull(channelDefinition.getProperties().get("perms"));
 
         // There should be two channel types for the Light Bulb service: On and Brightness
         assertEquals(2, channelTypes.size());
@@ -430,12 +429,20 @@ class TestChannelCreation {
         ChannelType channelType = channelTypes.stream().filter(ct -> "Dimmer".equals(ct.getItemType())).findFirst()
                 .orElse(null);
         assertNotNull(channelType);
-        assertEquals("channel-type-brightness", channelType.getUID().getId());
+        assertEquals("channel-type-brightness-bridge1-accessory3", channelType.getUID().getId());
         assertEquals("Brightness", channelType.getLabel());
         assertEquals("Dimmer", channelType.getItemType());
         assertEquals("light", channelType.getCategory());
         assertTrue(channelType.getTags().contains("Control"));
         assertTrue(channelType.getTags().contains("Brightness"));
+
+        StateDescription state = channelType.getState();
+        assertNotNull(state);
+        assertEquals("%.0f %%", state.getPattern());
+        assertFalse(state.isReadOnly());
+        assertEquals(BigDecimal.valueOf(20.0), state.getMinimum());
+        assertEquals(BigDecimal.valueOf(100.0), state.getMaximum());
+        assertEquals(BigDecimal.valueOf(1.0), state.getStep());
 
         // get the accessory information for the bridge (accessory 1) and create properties from it
         accessory = accessories.getAccessory(1);
@@ -444,7 +451,8 @@ class TestChannelCreation {
         for (Service service : accessory.services) {
             if (ServiceType.ACCESSORY_INFORMATION == service.getServiceType()) {
                 for (Characteristic characteristic : service.characteristics) {
-                    ChannelDefinition channelDef = characteristic.buildAndRegisterChannelDefinition(typeProvider);
+                    ChannelDefinition channelDef = characteristic.buildAndRegisterChannelDefinition(thingUID,
+                            typeProvider);
                     if (channelDef != null && FAKE_PROPERTY_CHANNEL_TYPE_UID.equals(channelDef.getChannelTypeUID())) {
                         String name = channelDef.getId();
                         String value = channelDef.getLabel();

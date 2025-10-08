@@ -21,6 +21,10 @@ import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -43,9 +47,10 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class IpTransport implements AutoCloseable {
 
-    private static final int SOCKET_TIMEOUT = Duration.ofSeconds(5).toMillisPart(); // milliseconds
+    private static final int TIMEOUT_MILLI_SECONDS = (int) Duration.ofSeconds(10).toMillis();
 
     private final Logger logger = LoggerFactory.getLogger(IpTransport.class);
+    private final ExecutorService executor = Executors.newSingleThreadExecutor(r -> new Thread(r, "homekit-io"));
 
     private final String host; // ip address with optional port e.g. "192.168.1.42:9123"
     private final Socket socket;
@@ -70,8 +75,8 @@ public class IpTransport implements AutoCloseable {
         String ipAddress = parts[0];
         int port = Integer.parseInt(parts[1]);
         socket = new Socket();
-        socket.connect(new InetSocketAddress(ipAddress, port), SOCKET_TIMEOUT); // connect timeout
-        socket.setSoTimeout(SOCKET_TIMEOUT); // read timeout
+        socket.connect(new InetSocketAddress(ipAddress, port), TIMEOUT_MILLI_SECONDS); // connect timeout
+        socket.setSoTimeout(TIMEOUT_MILLI_SECONDS); // read timeout
         socket.setKeepAlive(false); // HAP spec forbids TCP keepalive
         logger.debug("Connected to {}", host);
     }
@@ -108,13 +113,25 @@ public class IpTransport implements AutoCloseable {
             byte[][] response; // 0 = headers, 1 = content, 2 = raw trace (if enabled)
             SecureSession secureSession = this.secureSession;
             if (secureSession != null) {
-                secureSession.send(request);
+                Future<@Nullable Void> sendTask = executor.submit(() -> {
+                    secureSession.send(request);
+                    return null;
+                });
+                // the Future.get() call applies a timeout to write operations
+                sendTask.get(TIMEOUT_MILLI_SECONDS, TimeUnit.MILLISECONDS);
+                // the socket applies its internal timeout to read operations
                 response = secureSession.receive(trace);
             } else {
                 OutputStream out = socket.getOutputStream();
                 InputStream in = socket.getInputStream();
-                out.write(request);
-                out.flush();
+                Future<@Nullable Void> sendTask = executor.submit(() -> {
+                    out.write(request);
+                    out.flush();
+                    return null;
+                });
+                // the Future.get() call applies a timeout to write operations
+                sendTask.get(TIMEOUT_MILLI_SECONDS, TimeUnit.MILLISECONDS);
+                // the socket applies its internal timeout to read operations
                 response = readPlainResponse(in, trace);
             }
 

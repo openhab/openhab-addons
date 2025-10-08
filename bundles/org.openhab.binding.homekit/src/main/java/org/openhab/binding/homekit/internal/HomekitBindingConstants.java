@@ -37,7 +37,7 @@ public class HomekitBindingConstants {
 
     // prefixes for channel-group-type and channel-type UIDs
     public static final String CHANNEL_GROUP_TYPE_ID_FMT = "channel-group-type-%s";
-    public static final String CHANNEL_TYPE_ID_FMT = "channel-type-%s";
+    public static final String CHANNEL_TYPE_ID_FMT = "channel-type-%s-";
 
     // labels
     public static final String THING_LABEL_FMT = "%s on %s";
@@ -56,14 +56,15 @@ public class HomekitBindingConstants {
 
     // channel properties
     public static final String PROPERTY_IID = "iid";
-    public static final String PROPERTY_MIN_VALUE = "minValue";
-    public static final String PROPERTY_MAX_VALUE = "maxValue";
-    public static final String PROPERTY_MIN_STEP = "minStep";
     public static final String PROPERTY_FORMAT = "format";
-    public static final String PROPERTY_UNIT = "unit";
-    public static final String PROPERTY_PERMS = "perms";
-    public static final String PROPERTY_EV = "ev";
-    public static final String PROPERTY_BOOLEAN_DATA_TYPE = "booleanDataType";
+    public static final String PROPERTY_BOOL_TYPE = "boolType";
+
+    // public static final String PROPERTY_MIN_VALUE = "minValue";
+    // public static final String PROPERTY_MAX_VALUE = "maxValue";
+    // public static final String PROPERTY_MIN_STEP = "minStep";
+    // public static final String PROPERTY_UNIT = "unit";
+    // public static final String PROPERTY_PERMS = "perms";
+    // public static final String PROPERTY_EV = "ev";
 
     // HomeKit HTTP URI endpoints and content types
     public static final String ENDPOINT_ACCESSORIES = "/accessories";
