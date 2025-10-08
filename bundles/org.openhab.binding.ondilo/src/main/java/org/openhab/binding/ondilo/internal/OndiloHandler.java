@@ -94,7 +94,7 @@ public class OndiloHandler extends BaseThingHandler {
             if (groupId == null) {
                 logger.warn("Received refresh command for unknown channel: {}", channelUID.getId());
             } else if (GROUP_MEASURES.startsWith(groupId)) {
-                if (lastMeasures == null || lastMeasures.length == 0) {
+                if (lastMeasures.length == 0) {
                     clearLastMeasuresChannels();
                 } else {
                     updateLastMeasuresChannels(lastMeasures);
@@ -116,9 +116,9 @@ public class OndiloHandler extends BaseThingHandler {
                     Recommendation.Status status = Recommendation.Status.valueOf(cmd.toString());
                     if (status == Recommendation.Status.ok) {
                         OndiloBridge ondiloBridge = getOndiloBridge();
-                        if (ondiloBridge != null && this.lastRecommendation != null
-                                && this.lastRecommendation.id != 0) {
-                            ondiloBridge.validateRecommendation(configPoolId, this.lastRecommendation.id);
+                        Recommendation lastRecommendation = this.lastRecommendation;
+                        if (ondiloBridge != null && lastRecommendation != null && lastRecommendation.id != 0) {
+                            ondiloBridge.validateRecommendation(configPoolId, lastRecommendation.id);
                         } else {
                             logger.warn(
                                     "Cannot validate recommendation, as the bridge is not initialized or no recommendation ID is set");
@@ -249,7 +249,7 @@ public class OndiloHandler extends BaseThingHandler {
         for (LastMeasure measure : measures) {
             logger.trace("LastMeasure: type={}, value={}", measure.dataType, measure.value);
             Instant valueTime = parseUtcTimeToInstant(measure.valueTime);
-            if (valueTime != null && (earliestValueTime == null || valueTime.isBefore(earliestValueTime))) {
+            if (earliestValueTime == null || valueTime.isBefore(earliestValueTime)) {
                 earliestValueTime = valueTime;
             }
             switch (measure.dataType) {
