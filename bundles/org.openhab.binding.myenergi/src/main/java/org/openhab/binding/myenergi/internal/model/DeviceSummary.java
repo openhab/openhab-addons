@@ -10,21 +10,25 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.myenergi.internal.dto;
+package org.openhab.binding.myenergi.internal.model;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link DeviceSummary} is a DTO class used to represent the highlevel status of all myenergi devices. It's
- * used to deserialize JSON API results.
+ * The {@link DeviceSummary} is a DTO class used to represent the highlevel
+ * status of all myenergi devices. It's used to deserialize JSON API results.
  *
  * A device summary can either be a list of eddis, zappis, harvis or
  *
  * @author Rene Scherer - Initial contribution
  */
+@NonNullByDefault
 public class DeviceSummary {
 
     @SerializedName("eddi")
@@ -37,6 +41,7 @@ public class DeviceSummary {
     public List<HarviSummary> harvis = new ArrayList<>();
 
     @SerializedName("asn")
+    @Nullable
     public String activeServer;
 
     @SerializedName("fwv")

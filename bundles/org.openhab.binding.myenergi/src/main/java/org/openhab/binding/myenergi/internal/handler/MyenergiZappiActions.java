@@ -15,7 +15,7 @@ package org.openhab.binding.myenergi.internal.handler;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.myenergi.internal.exception.ApiException;
-import org.openhab.binding.myenergi.internal.util.ZappiChargingMode;
+import org.openhab.binding.myenergi.internal.model.ZappiChargingMode;
 import org.openhab.core.automation.annotation.ActionInput;
 import org.openhab.core.automation.annotation.RuleAction;
 import org.openhab.core.thing.binding.ThingActions;

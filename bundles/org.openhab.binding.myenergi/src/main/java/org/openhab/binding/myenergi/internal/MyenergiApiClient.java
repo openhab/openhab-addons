@@ -32,33 +32,35 @@ import org.eclipse.jetty.client.util.DigestAuthentication;
 import org.eclipse.jetty.http.HttpField;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
-import org.openhab.binding.myenergi.internal.dto.CommandStatus;
-import org.openhab.binding.myenergi.internal.dto.DeviceSummary;
-import org.openhab.binding.myenergi.internal.dto.DeviceSummaryList;
-import org.openhab.binding.myenergi.internal.dto.EddiSummary;
-import org.openhab.binding.myenergi.internal.dto.HarviSummary;
-import org.openhab.binding.myenergi.internal.dto.MyenergiData;
-import org.openhab.binding.myenergi.internal.dto.ZappiBoostTimeSlot;
-import org.openhab.binding.myenergi.internal.dto.ZappiBoostTimes;
-import org.openhab.binding.myenergi.internal.dto.ZappiHourlyHistory;
-import org.openhab.binding.myenergi.internal.dto.ZappiMinuteHistory;
-import org.openhab.binding.myenergi.internal.dto.ZappiSummary;
 import org.openhab.binding.myenergi.internal.exception.ApiException;
 import org.openhab.binding.myenergi.internal.exception.AuthenticationException;
 import org.openhab.binding.myenergi.internal.exception.RecordNotFoundException;
-import org.openhab.binding.myenergi.internal.util.ZappiBoostMode;
-import org.openhab.binding.myenergi.internal.util.ZappiChargingMode;
-import org.openhab.core.io.net.http.HttpClientFactory;
+import org.openhab.binding.myenergi.internal.model.CommandStatus;
+import org.openhab.binding.myenergi.internal.model.DeviceSummary;
+import org.openhab.binding.myenergi.internal.model.DeviceSummaryList;
+import org.openhab.binding.myenergi.internal.model.EddiSummary;
+import org.openhab.binding.myenergi.internal.model.HarviSummary;
+import org.openhab.binding.myenergi.internal.model.MyenergiData;
+import org.openhab.binding.myenergi.internal.model.ZappiBoostMode;
+import org.openhab.binding.myenergi.internal.model.ZappiBoostTimeSlot;
+import org.openhab.binding.myenergi.internal.model.ZappiBoostTimes;
+import org.openhab.binding.myenergi.internal.model.ZappiChargingMode;
+import org.openhab.binding.myenergi.internal.model.ZappiHourlyHistory;
+import org.openhab.binding.myenergi.internal.model.ZappiMinuteHistory;
+import org.openhab.binding.myenergi.internal.model.ZappiSummary;
+import org.openhab.binding.myenergi.internal.util.ZappiHourlyHistoryTypeAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.FieldNamingPolicy;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
 
 /**
  * The {@link MyenergiApiClient} is a helper class to abstract the myenergi API.
- * It handles authentication and
- * all JSON API calls. If an API call fails it automatically refreshes the
- * authentication token and retries.
+ * It handles authentication and all JSON API calls. If an API call fails it
+ * automatically refreshes the authentication token and retries.
  *
  * @author Rene Scherer - Initial contribution
  * @author Stephen Cook - Eddi Support
@@ -72,11 +74,14 @@ public class MyenergiApiClient {
 
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE;
 
+    public static final Gson GSON = new GsonBuilder()
+            .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
+            .registerTypeAdapter(ZappiHourlyHistory.class, new ZappiHourlyHistoryTypeAdapter()).create();
+
     private final Logger logger = LoggerFactory.getLogger(MyenergiApiClient.class);
 
     private MyenergiData data = new MyenergiData();
 
-    private @Nullable HttpClientFactory httpClientFactory;
     private @Nullable HttpClient httpClient;
 
     // API
@@ -86,12 +91,12 @@ public class MyenergiApiClient {
     private String password = "";
 
     /**
-     * Sets the httpClientFactory object to be used to get httpClients.
+     * Constructor
      *
-     * @param httpClientFactory the client to be used.
+     * @param httpClient the client to be used.
      */
-    public void setHttpClientFactory(@Nullable HttpClientFactory httpClientFactory) {
-        this.httpClientFactory = httpClientFactory;
+    public MyenergiApiClient(@Nullable HttpClient httpClient) {
+        this.httpClient = httpClient;
     }
 
     /**
@@ -104,18 +109,14 @@ public class MyenergiApiClient {
     public void initialize(final String hubSerialNumber, final String password) throws ApiException {
         this.username = hubSerialNumber;
         this.password = password;
-        HttpClientFactory factory = httpClientFactory;
-        if (factory == null) {
-            throw new ApiException("No HttpClientFactory provided");
+        HttpClient client = this.httpClient;
+        if (client == null) {
+            throw new ApiException("No HttpClient provided");
         } else {
             // close down existing client if exist
             stop();
 
             try {
-                // create a new httpClient, so that we can add our own digest authentication
-                logger.debug("creating new HTTP client with provided authentication credentials");
-                HttpClient client = factory.createHttpClient(MyenergiApiClient.class.getSimpleName());
-
                 if (!client.isStarted()) {
                     logger.debug("starting HTTP client");
                     client.start();
@@ -126,17 +127,14 @@ public class MyenergiApiClient {
                     host = new MyenergiGetHostFromDirector().getHostName(client, hubSerialNumber);
                 }
 
-                baseURI = new URI("https", host, "/", null);
-                URI uri = baseURI;
-                if (uri == null) {
-                    throw new ApiException("No base URI could be constructed");
-                }
+                final URI uri = new URI("https", host, "/", null);
                 logger.debug("API base URI: {}", uri.toString());
 
                 client.getAuthenticationStore().addAuthentication(
                         new DigestAuthentication(uri, Authentication.ANY_REALM, hubSerialNumber, password));
                 logger.debug("Digest authentication added: {}", hubSerialNumber);
                 httpClient = client;
+                baseURI = uri;
             } catch (MalformedURLException | URISyntaxException e) {
                 throw new ApiException("Invalid URL for API call", e);
             } catch (Exception e) {
@@ -164,10 +162,11 @@ public class MyenergiApiClient {
     public void updateTopologyCache() throws ApiException {
         data.clear();
         for (DeviceSummary summary : getDeviceSummaryList()) {
-            if (summary.activeServer != null) {
-                data.setActiveServer(summary.activeServer);
+            String activeServer = summary.activeServer;
+            if (activeServer != null) {
+                data.setActiveServer(activeServer);
                 data.setFirmwareVersion(summary.firmwareVersion);
-                host = summary.activeServer;
+                host = activeServer;
             }
             data.addAllHarvis(summary.harvis);
             data.addAllZappis(summary.zappis);
@@ -178,7 +177,7 @@ public class MyenergiApiClient {
     public ZappiSummary updateZappiSummary(long serialNumber) throws ApiException, RecordNotFoundException {
         String response = executeApiCall("/cgi-jstatus-Z" + serialNumber);
         try {
-            DeviceSummary ds = MyenergiBindingConstants.GSON.fromJson(response, DeviceSummary.class);
+            DeviceSummary ds = GSON.fromJson(response, DeviceSummary.class);
             if (ds == null) {
                 throw new ApiException("Unexpected JSON response: " + response);
             } else if (ds.zappis.isEmpty()) {
@@ -196,7 +195,7 @@ public class MyenergiApiClient {
     public HarviSummary updateHarviSummary(long serialNumber) throws ApiException, RecordNotFoundException {
         String response = executeApiCall("/cgi-jstatus-H" + serialNumber);
         try {
-            DeviceSummary ds = MyenergiBindingConstants.GSON.fromJson(response, DeviceSummary.class);
+            DeviceSummary ds = GSON.fromJson(response, DeviceSummary.class);
             if (ds == null) {
                 throw new ApiException("Unexpected JSON response: " + response);
             } else if (ds.harvis.isEmpty()) {
@@ -214,7 +213,7 @@ public class MyenergiApiClient {
     public EddiSummary updateEddiSummary(long serialNumber) throws ApiException, RecordNotFoundException {
         String response = executeApiCall("/cgi-jstatus-E" + serialNumber);
         try {
-            DeviceSummary ds = MyenergiBindingConstants.GSON.fromJson(response, DeviceSummary.class);
+            DeviceSummary ds = GSON.fromJson(response, DeviceSummary.class);
             if (ds == null) {
                 throw new ApiException("Unexpected JSON response: " + response);
             } else if (ds.eddis.isEmpty()) {
@@ -232,7 +231,7 @@ public class MyenergiApiClient {
     public DeviceSummaryList getDeviceSummaryList() throws ApiException {
         String response = executeApiCall("/cgi-jstatus-*");
         try {
-            DeviceSummaryList summaryList = MyenergiBindingConstants.GSON.fromJson(response, DeviceSummaryList.class);
+            DeviceSummaryList summaryList = GSON.fromJson(response, DeviceSummaryList.class);
             if (summaryList != null) {
                 logger.trace("getDeviceSummaryList - summaryList: {} - {}", summaryList.size(), summaryList.toString());
                 return summaryList;
@@ -248,7 +247,7 @@ public class MyenergiApiClient {
         String response = executeApiCall(
                 "/cgi-eddi-boost-E" + eddiSerialNumber + "-" + "10" + "-" + heater + "-" + duration);
         try {
-            CommandStatus status = MyenergiBindingConstants.GSON.fromJson(response, CommandStatus.class);
+            CommandStatus status = GSON.fromJson(response, CommandStatus.class);
             if (status != null) {
                 return status;
             } else {
@@ -262,7 +261,7 @@ public class MyenergiApiClient {
     public CommandStatus cancelEddiBoost(long eddiSerialNumber, int heater) throws ApiException {
         String response = executeApiCall("/cgi-eddi-boost-E" + eddiSerialNumber + "-" + "10" + "-" + heater + "-0");
         try {
-            CommandStatus status = MyenergiBindingConstants.GSON.fromJson(response, CommandStatus.class);
+            CommandStatus status = GSON.fromJson(response, CommandStatus.class);
             if (status != null) {
                 return status;
             } else {
@@ -276,7 +275,7 @@ public class MyenergiApiClient {
     public CommandStatus setEddiPriority(long eddiSerialNumber, int heater) throws ApiException {
         String response = executeApiCall("/cgi-eddi-boost-E" + eddiSerialNumber + "-" + "10" + "-" + heater + "-0");
         try {
-            CommandStatus status = MyenergiBindingConstants.GSON.fromJson(response, CommandStatus.class);
+            CommandStatus status = GSON.fromJson(response, CommandStatus.class);
             if (status != null) {
                 return status;
             } else {
@@ -290,7 +289,7 @@ public class MyenergiApiClient {
     public CommandStatus setEddiHeaterPriority(long eddiSerialNumber, int heater) throws ApiException {
         String response = executeApiCall("/cgi-set-heater-priority-E" + eddiSerialNumber + "-" + heater);
         try {
-            CommandStatus status = MyenergiBindingConstants.GSON.fromJson(response, CommandStatus.class);
+            CommandStatus status = GSON.fromJson(response, CommandStatus.class);
             if (status != null) {
                 return status;
             } else {
@@ -304,7 +303,7 @@ public class MyenergiApiClient {
     public ZappiHourlyHistory getZappiHistoryByHour(long zappiSerialNumber, ZonedDateTime date) throws ApiException {
         String response = executeApiCall("/cgi-jdayhour-Z" + zappiSerialNumber + "-" + DATE_FORMATTER.format(date));
         try {
-            ZappiHourlyHistory history = MyenergiBindingConstants.GSON.fromJson(response, ZappiHourlyHistory.class);
+            ZappiHourlyHistory history = GSON.fromJson(response, ZappiHourlyHistory.class);
             if (history != null) {
                 return history;
             } else {
@@ -318,7 +317,7 @@ public class MyenergiApiClient {
     public ZappiMinuteHistory getZappiHistoryByMinute(long zappiSerialNumber, ZonedDateTime date) throws ApiException {
         String response = executeApiCall("/cgi-jday-Z" + zappiSerialNumber + "-" + DATE_FORMATTER.format(date));
         try {
-            ZappiMinuteHistory history = MyenergiBindingConstants.GSON.fromJson(response, ZappiMinuteHistory.class);
+            ZappiMinuteHistory history = GSON.fromJson(response, ZappiMinuteHistory.class);
             if (history != null) {
                 return history;
             } else {
@@ -333,7 +332,7 @@ public class MyenergiApiClient {
         String response = executeApiCall(
                 "/cgi-zappi-mode-Z" + zappiSerialNumber + "-" + mode.getIntValue() + "-0-0-0000");
         try {
-            CommandStatus status = MyenergiBindingConstants.GSON.fromJson(response, CommandStatus.class);
+            CommandStatus status = GSON.fromJson(response, CommandStatus.class);
             if (status != null) {
                 return status;
             } else {
@@ -347,7 +346,7 @@ public class MyenergiApiClient {
     public ZappiBoostTimes getZappiBoostTimes(long zappiSerialNumber) throws ApiException {
         String response = executeApiCall("/cgi-boost-time-Z" + zappiSerialNumber);
         try {
-            ZappiBoostTimes result = MyenergiBindingConstants.GSON.fromJson(response, ZappiBoostTimes.class);
+            ZappiBoostTimes result = GSON.fromJson(response, ZappiBoostTimes.class);
             if (result != null) {
                 return result;
             } else {
@@ -372,7 +371,7 @@ public class MyenergiApiClient {
                 slot.startHour, slot.startMinute, slot.durationHour, slot.durationMinute, slot.daysOfTheWeekMap);
         String response = executeApiCall(uri);
         try {
-            ZappiBoostTimes result = MyenergiBindingConstants.GSON.fromJson(response, ZappiBoostTimes.class);
+            ZappiBoostTimes result = GSON.fromJson(response, ZappiBoostTimes.class);
             if (result != null) {
                 return result;
             } else {
@@ -401,7 +400,7 @@ public class MyenergiApiClient {
         }
         String response = executeApiCall(uriStr.toString());
         try {
-            CommandStatus status = MyenergiBindingConstants.GSON.fromJson(response, CommandStatus.class);
+            CommandStatus status = GSON.fromJson(response, CommandStatus.class);
             if (status != null) {
                 return status;
             } else {

@@ -22,17 +22,18 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.myenergi.internal.MyenergiApiClient;
 import org.openhab.binding.myenergi.internal.MyenergiBridgeConfiguration;
 import org.openhab.binding.myenergi.internal.MyenergiDiscoveryService;
-import org.openhab.binding.myenergi.internal.dto.CommandStatus;
-import org.openhab.binding.myenergi.internal.dto.EddiSummary;
-import org.openhab.binding.myenergi.internal.dto.HarviSummary;
-import org.openhab.binding.myenergi.internal.dto.MyenergiData;
-import org.openhab.binding.myenergi.internal.dto.ZappiSummary;
 import org.openhab.binding.myenergi.internal.exception.ApiException;
 import org.openhab.binding.myenergi.internal.exception.AuthenticationException;
 import org.openhab.binding.myenergi.internal.exception.RecordNotFoundException;
-import org.openhab.binding.myenergi.internal.util.ZappiChargingMode;
+import org.openhab.binding.myenergi.internal.model.CommandStatus;
+import org.openhab.binding.myenergi.internal.model.EddiSummary;
+import org.openhab.binding.myenergi.internal.model.HarviSummary;
+import org.openhab.binding.myenergi.internal.model.MyenergiData;
+import org.openhab.binding.myenergi.internal.model.ZappiChargingMode;
+import org.openhab.binding.myenergi.internal.model.ZappiSummary;
 import org.openhab.core.config.core.status.ConfigStatusCallback;
 import org.openhab.core.config.core.status.ConfigStatusSource;
+import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
@@ -46,8 +47,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The {@link MyenergiBridgeHandler} is responsible for handling commands, which
- * are
- * sent to one of the channels.
+ * are sent to one of the channels.
  *
  * @author Rene Scherer - Initial contribution
  */
@@ -57,11 +57,15 @@ public class MyenergiBridgeHandler extends BaseBridgeHandler implements ConfigSt
     private final Logger logger = LoggerFactory.getLogger(MyenergiBridgeHandler.class);
 
     private final MyenergiApiClient apiClient;
+
     private @Nullable ScheduledFuture<?> devicePollingJob = null;
 
-    public MyenergiBridgeHandler(Bridge thing, MyenergiApiClient apiClient) {
+    public MyenergiBridgeHandler(Bridge thing, HttpClientFactory httpClientFactory) {
         super(thing);
-        this.apiClient = apiClient;
+
+        // create a new httpClient, so that we can add our own digest authentication
+        apiClient = new MyenergiApiClient(
+                httpClientFactory.createHttpClient(MyenergiBridgeHandler.class.getSimpleName()));
     }
 
     public ThingUID getUID() {
@@ -85,6 +89,7 @@ public class MyenergiBridgeHandler extends BaseBridgeHandler implements ConfigSt
         }
 
         updateStatus(ThingStatus.UNKNOWN);
+
         try {
             logger.debug("Login to MyEnergi API with hubSerialNumber: {}", config.hubSerialNumber);
             apiClient.initialize(config.hubSerialNumber, config.password);

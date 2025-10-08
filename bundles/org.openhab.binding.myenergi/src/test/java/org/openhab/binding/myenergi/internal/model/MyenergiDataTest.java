@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.myenergi.internal.dto;
+package org.openhab.binding.myenergi.internal.model;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

@@ -18,17 +18,11 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.myenergi.internal.dto.ZappiHourlyHistory;
-import org.openhab.binding.myenergi.internal.util.ZappiHourlyHistoryTypeAdapter;
 import org.openhab.core.thing.ThingTypeUID;
 
-import com.google.gson.FieldNamingPolicy;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
 /**
- * The {@link MyenergiBindingConstants} class defines common constants, which are
- * used across the whole binding.
+ * The {@link MyenergiBindingConstants} class defines common constants, which
+ * are used across the whole binding.
  *
  * @author Rene Scherer - Initial contribution
  * @author Stephen Cook - Eddi Support
@@ -41,10 +35,6 @@ public class MyenergiBindingConstants {
     public static final String PROP_SERIAL_NUMBER = "serialNumber";
     public static final String PROP_FIRMWARE_VERSION = "firmwareVersion";
     public static final String PROP_NUMBER_OF_PHASES = "numberOfPhases";
-
-    public static final Gson GSON = new GsonBuilder()
-            .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
-            .registerTypeAdapter(ZappiHourlyHistory.class, new ZappiHourlyHistoryTypeAdapter()).create();
 
     // List all Thing Type UIDs, related to the binding
     public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "bridge");
@@ -60,11 +50,14 @@ public class MyenergiBindingConstants {
     public static final String ZAPPI_CHANNEL_LAST_UPDATED_TIME = "last-updated-time";
     public static final String ZAPPI_CHANNEL_SUPPLY_VOLTAGE = "supply-voltage";
     public static final String ZAPPI_CHANNEL_SUPPLY_FREQUENCY = "supply-frequency";
-    public static final String ZAPPI_CHANNEL_LOCKING_MODE = "locking-mode";
+    public static final String ZAPPI_CHANNEL_CHARGER_IS_LOCKED = "charger-is-locked";
+    public static final String ZAPPI_CHANNEL_CHARGER_LOCKED_WHEN_PLUGGED = "charger-locked-when-plugged";
+    public static final String ZAPPI_CHANNEL_CHARGER_LOCKED_WHEN_UNPLUGGED = "charger-locked-when-unplugged";
+    public static final String ZAPPI_CHANNEL_CHARGE_WHEN_LOCKED = "charge-when-locked";
     public static final String ZAPPI_CHANNEL_CHARGING_MODE = "charging-mode";
     public static final String ZAPPI_CHANNEL_CHARGER_STATUS = "charger-status";
     public static final String ZAPPI_CHANNEL_PLUG_STATUS = "plug-status";
-    public static final String ZAPPI_CHANNEL_COMMAND_TRIES = "command-tries";
+    public static final String ZAPPI_CHANNEL_LAST_COMMAND_STATUS = "last-command-status";
     public static final String ZAPPI_CHANNEL_DIVERTER_PRIORITY = "diverter-priority";
     public static final String ZAPPI_CHANNEL_MINIMUM_GREEN_LEVEL = "minimum-green-level";
     public static final String ZAPPI_CHANNEL_GRID_POWER = "grid-power";

@@ -12,7 +12,11 @@
  */
 package org.openhab.binding.myenergi.internal;
 
-import static org.openhab.binding.myenergi.internal.MyenergiBindingConstants.*;
+import static org.openhab.binding.myenergi.internal.MyenergiBindingConstants.BRIDGE_THING_TYPES_UIDS;
+import static org.openhab.binding.myenergi.internal.MyenergiBindingConstants.THING_TYPE_BRIDGE;
+import static org.openhab.binding.myenergi.internal.MyenergiBindingConstants.THING_TYPE_EDDI;
+import static org.openhab.binding.myenergi.internal.MyenergiBindingConstants.THING_TYPE_HARVI;
+import static org.openhab.binding.myenergi.internal.MyenergiBindingConstants.THING_TYPE_ZAPPI;
 
 import java.util.Collection;
 import java.util.Set;
@@ -39,8 +43,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link MyenergiHandlerFactory} is responsible for creating things and thing
- * handlers.
+ * The {@link MyenergiHandlerFactory} is responsible for creating things and
+ * thing handlers.
  *
  * @author Rene Scherer - Initial contribution
  * @author Stephen Cook - Eddi Support
@@ -50,8 +54,7 @@ import org.slf4j.LoggerFactory;
 public class MyenergiHandlerFactory extends BaseThingHandlerFactory {
 
     private final Logger logger = LoggerFactory.getLogger(MyenergiHandlerFactory.class);
-
-    private MyenergiApiClient apiClient = new MyenergiApiClient();
+    private final HttpClientFactory httpClientFactory;
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream
             .of(BRIDGE_THING_TYPES_UIDS, MyenergiBindingConstants.SUPPORTED_THING_TYPES_UIDS)
@@ -59,7 +62,7 @@ public class MyenergiHandlerFactory extends BaseThingHandlerFactory {
 
     @Activate
     public MyenergiHandlerFactory(final @Reference HttpClientFactory httpClientFactory) {
-        apiClient.setHttpClientFactory(httpClientFactory);
+        this.httpClientFactory = httpClientFactory;
     }
 
     @Override
@@ -73,7 +76,7 @@ public class MyenergiHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_BRIDGE.equals(thingTypeUID)) {
-            return new MyenergiBridgeHandler((Bridge) thing, apiClient);
+            return new MyenergiBridgeHandler((Bridge) thing, httpClientFactory);
         } else if (THING_TYPE_ZAPPI.equals(thingTypeUID)) {
             return new MyenergiZappiHandler(thing);
         } else if (THING_TYPE_HARVI.equals(thingTypeUID)) {

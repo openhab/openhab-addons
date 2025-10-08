@@ -25,9 +25,9 @@ import static org.openhab.binding.myenergi.internal.MyenergiBindingConstants.HAR
 import static org.openhab.core.library.unit.Units.WATT;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.myenergi.internal.dto.HarviSummary;
 import org.openhab.binding.myenergi.internal.exception.ApiException;
 import org.openhab.binding.myenergi.internal.exception.RecordNotFoundException;
+import org.openhab.binding.myenergi.internal.model.HarviSummary;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;

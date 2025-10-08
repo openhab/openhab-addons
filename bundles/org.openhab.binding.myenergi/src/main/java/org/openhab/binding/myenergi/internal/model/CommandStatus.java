@@ -10,26 +10,33 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.myenergi.internal.dto;
+package org.openhab.binding.myenergi.internal.model;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link CommandStatus} is a DTO class used to represent a high level summary of a Zappi device. It's used to
- * deserialize JSON API results.
+ * The {@link CommandStatus} is a DTO class used to represent a high level
+ * summary of a Zappi device. It's used to deserialize JSON API results.
  *
  * @author Rene Scherer - Initial contribution
  *
  */
+@NonNullByDefault
 public class CommandStatus {
 
     // {"status":0,"statustext":"","asn":"s0.myenergi.net"}
 
+    @Nullable
     public Integer status;
 
     @SerializedName("statustext")
+    @Nullable
     public String statusText;
 
+    @Nullable
     public String asn;
 
     @Override

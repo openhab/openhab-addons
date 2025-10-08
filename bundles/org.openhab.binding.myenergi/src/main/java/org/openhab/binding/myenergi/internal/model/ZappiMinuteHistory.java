@@ -10,26 +10,30 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.myenergi.internal.dto;
+package org.openhab.binding.myenergi.internal.model;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
- * The {@link ZappiHourlyHistory} is a DTO class used to represent list of hourly historic data. It's used to
- * deserialize JSON API results.
+ * The {@link ZappiMinuteHistory} is a DTO class used to represent list of
+ * minute historic data. It's used to deserialize JSON API results.
  *
  * @author Rene Scherer - Initial contribution
  *
  */
-public class ZappiHourlyHistory {
+@NonNullByDefault
+public class ZappiMinuteHistory {
 
-    public String id;
+    public @Nullable String id;
 
-    public List<ZappiHourlyHistoryEntry> entries = new ArrayList<>();
+    public List<ZappiMinuteHistoryEntry> entries = new ArrayList<>();
 
     @Override
     public String toString() {
-        return "ZappiHourlyHistory [id=" + id + ", entries=" + entries + "]";
+        return "ZappiMinuteHistory [id=" + id + ", entries=" + entries + "]";
     }
 }

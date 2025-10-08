@@ -37,6 +37,7 @@ import org.openhab.core.config.core.status.ConfigStatusCallback;
 import org.openhab.core.config.core.status.ConfigStatusSource;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
@@ -246,10 +247,20 @@ public abstract class MyenergiBaseDeviceHandler extends BaseThingHandler impleme
         }
     }
 
+    protected void updateStringState(final String channelId, @Nullable Integer value) {
+        if (value != null) {
+            updateState(channelId, new StringType(value.toString()));
+        }
+    }
+
     protected void updateSwitchState(final String channelId, @Nullable String value) {
         if (value != null) {
-            updateState(channelId, org.openhab.core.library.types.OnOffType.from(value));
+            updateState(channelId, OnOffType.from(value));
         }
+    }
+
+    protected void updateSwitchState(final String channelId, boolean value) {
+        updateState(channelId, value ? OnOffType.ON : OnOffType.OFF);
     }
 
     protected void updateIntegerState(final String channelId, @Nullable Integer value) {

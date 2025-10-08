@@ -10,36 +10,41 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.myenergi.internal.dto;
+package org.openhab.binding.myenergi.internal.model;
 
 import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
-import java.util.Map;
 
-import org.eclipse.jdt.annotation.NonNull;
-import org.openhab.binding.myenergi.internal.MyenergiBindingConstants;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link BaseSummary} is a DTO class used to represent an abstract MyEnergi device.
+ * The {@link BaseSummary} is a DTO class used to represent an abstract MyEnergi
+ * device.
  *
  * @author Rene Scherer - Initial contribution
  *
  */
+@NonNullByDefault
 public class BaseSummary {
 
     @SerializedName("sno")
+    @Nullable
     public Long serialNumber = 0L;
 
-    public String dat; // raw date in DD-MM-YYYY format
-    public String tim; // raw time in HH:MM:SS format
+    @Nullable
+    public String dat; // raw date in DD-MM-YYYY format, always UTC as per API definition
+    @Nullable
+    public String tim; // raw time in HH:MM:SS format, always UTC as per API definition
+    @Nullable
     public Integer dst; // daylight saving time active
 
     @SerializedName("fwv")
+    @Nullable
     public String firmwareVersion;
 
     public BaseSummary() {
@@ -53,24 +58,18 @@ public class BaseSummary {
     public ZonedDateTime getLastUpdateTime() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
         LocalDateTime ldt = LocalDateTime.parse(dat + " " + tim, formatter);
-        return ZonedDateTime.of(ldt, ZoneId.systemDefault());
-    }
-
-    public Map<@NonNull String, String> getThingProperties() {
-        Map<String, String> properties = new HashMap<String, String>();
-        properties.put(MyenergiBindingConstants.PROP_SERIAL_NUMBER, String.valueOf(serialNumber));
-        properties.put(MyenergiBindingConstants.PROP_FIRMWARE_VERSION, firmwareVersion);
-        return properties;
+        return ZonedDateTime.of(ldt, ZoneOffset.UTC);
     }
 
     @Override
     public int hashCode() {
         final int prime = 31;
+        final Long serialNumber = this.serialNumber;
         return prime + ((serialNumber == null) ? 0 : serialNumber.hashCode());
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@Nullable Object obj) {
         if (this == obj) {
             return true;
         }
@@ -81,6 +80,7 @@ public class BaseSummary {
             return false;
         }
         BaseSummary other = (BaseSummary) obj;
+        Long serialNumber = this.serialNumber;
         if (serialNumber == null) {
             if (other.serialNumber != null) {
                 return false;

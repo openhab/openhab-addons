@@ -18,9 +18,9 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.myenergi.internal.MyenergiBindingConstants;
-import org.openhab.binding.myenergi.internal.dto.ZappiHourlyHistory;
-import org.openhab.binding.myenergi.internal.dto.ZappiHourlyHistoryEntry;
+import org.openhab.binding.myenergi.internal.MyenergiApiClient;
+import org.openhab.binding.myenergi.internal.model.ZappiHourlyHistory;
+import org.openhab.binding.myenergi.internal.model.ZappiHourlyHistoryEntry;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
@@ -30,7 +30,8 @@ import com.google.gson.JsonParseException;
 import com.google.gson.reflect.TypeToken;
 
 /**
- * The {@link ZappiHourlyHistoryTypeAdapter} is a GSON type adapter for {@link ZappiHourlyHistory}.
+ * The {@link ZappiHourlyHistoryTypeAdapter} is a GSON type adapter for
+ * {@link ZappiHourlyHistory}.
  *
  * @author Rene Scherer - Initial contribution
  */
@@ -42,16 +43,18 @@ public class ZappiHourlyHistoryTypeAdapter implements JsonDeserializer<ZappiHour
      * {"hr":1,"dow":"Sat","dom":28,"mon":11,"yr":2020,"imp":1652160}]}
      */
     @Override
-    public @Nullable ZappiHourlyHistory deserialize(JsonElement element, Type typeOfT,
-            JsonDeserializationContext context) throws JsonParseException {
+    public @Nullable ZappiHourlyHistory deserialize(@Nullable JsonElement element, @Nullable Type typeOfT,
+            @Nullable JsonDeserializationContext context) throws JsonParseException {
         ZappiHourlyHistory history = new ZappiHourlyHistory();
-
+        if (element == null || !element.isJsonObject()) {
+            throw new JsonParseException("Expected JSON object");
+        }
         JsonObject parentJsonObject = element.getAsJsonObject();
         Map.Entry<String, JsonElement> field = parentJsonObject.entrySet().iterator().next();
         history.id = field.getKey();
         Type listType = new TypeToken<List<ZappiHourlyHistoryEntry>>() {
         }.getType();
-        history.entries = MyenergiBindingConstants.GSON.fromJson(field.getValue(), listType);
+        history.entries = MyenergiApiClient.GSON.fromJson(field.getValue(), listType);
         return history;
     }
 }

@@ -46,9 +46,9 @@ import java.util.Collection;
 import java.util.Collections;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.myenergi.internal.dto.EddiSummary;
 import org.openhab.binding.myenergi.internal.exception.ApiException;
 import org.openhab.binding.myenergi.internal.exception.RecordNotFoundException;
+import org.openhab.binding.myenergi.internal.model.EddiSummary;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.binding.ThingHandlerService;
@@ -117,10 +117,13 @@ public class MyenergiEddiHandler extends MyenergiBaseDeviceHandler {
             updateIntegerState(EDDI_CHANNEL_DIVERTER_PRIORITY, summary.diverterPriority);
             updateIntegerState(EDDI_CHANNEL_HEATER_PRIORITY, summary.heaterPriority);
             updateShortDurationState(EDDI_CHANNEL_BOOST_REMAINING, summary.boostRemaining);
-            updateStringState(EDDI_CHANNEL_DIVERTER_STATUS, summary.status.toString());
+            updateStringState(EDDI_CHANNEL_DIVERTER_STATUS, summary.status);
             updateTemperatureState(EDDI_CHANNEL_TEMPERATURE_1, summary.temperature1, CELSIUS);
             updateTemperatureState(EDDI_CHANNEL_TEMPERATURE_2, summary.temperature2, CELSIUS);
-            updateElectricPotentialState(EDDI_CHANNEL_SUPPLY_VOLTAGE, summary.supplyVoltageInTenthVolt / 10.0f, VOLT);
+            final Float supplyVoltageInTenthVolt = summary.supplyVoltageInTenthVolt;
+            if (supplyVoltageInTenthVolt != null) {
+                updateElectricPotentialState(EDDI_CHANNEL_SUPPLY_VOLTAGE, supplyVoltageInTenthVolt / 10.0f, VOLT);
+            }
         } catch (RecordNotFoundException e) {
             logger.warn("Trying to update unknown device: {}", thing.getUID().getId());
         }

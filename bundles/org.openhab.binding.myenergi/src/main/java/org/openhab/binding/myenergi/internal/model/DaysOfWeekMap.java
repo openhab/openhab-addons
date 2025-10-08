@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.myenergi.internal.dto;
+package org.openhab.binding.myenergi.internal.model;
 
 import java.time.DayOfWeek;
 import java.util.regex.Matcher;
@@ -56,13 +56,13 @@ public class DaysOfWeekMap {
         }
     }
 
-    public synchronized void setDay(DayOfWeek activeDay, boolean active) {
+    public void setDay(DayOfWeek activeDay, boolean active) {
         StringBuilder newMap = new StringBuilder(map);
         newMap.setCharAt(activeDay.getValue(), active ? '1' : '0');
         map = newMap.toString();
     }
 
-    public synchronized void setDays(DayOfWeek[] activeDays, boolean active) {
+    public void setDays(DayOfWeek[] activeDays, boolean active) {
         char newChar = active ? '1' : '0';
         StringBuilder newMap = new StringBuilder(map);
         for (DayOfWeek activeDay : activeDays) {

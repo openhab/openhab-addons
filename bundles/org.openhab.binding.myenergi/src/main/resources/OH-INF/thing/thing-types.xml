@@ -69,11 +69,14 @@
 			<channel id="last-updated-time" typeId="last-updated-time"/>
 			<channel id="supply-voltage" typeId="voltage"/>
 			<channel id="supply-frequency" typeId="frequency"/>
-			<channel id="locking-mode" typeId="locking-mode"/>
+			<channel id="charger-is-locked" typeId="charger-is-locked"/>
+			<channel id="charger-locked-when-plugged" typeId="charger-locked-when-plugged"/>
+			<channel id="charger-locked-when-unplugged" typeId="charger-locked-when-unplugged"/>
+			<channel id="charge-when-locked" typeId="charge-when-locked"/>
 			<channel id="charging-mode" typeId="charging-mode"/>
 			<channel id="charger-status" typeId="charger-status"/>
 			<channel id="plug-status" typeId="plug-status"/>
-			<channel id="command-tries" typeId="command-tries"/>
+			<channel id="last-command-status" typeId="last-command-status"/>
 			<channel id="diverter-priority" typeId="diverter-priority"/>
 			<channel id="minimum-green-level" typeId="minimum-green-level"/>
 			<channel id="grid-power" typeId="grid-power"/>
@@ -270,12 +273,32 @@
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
-	<channel-type id="locking-mode">
-		<item-type>Number</item-type>
-		<label>Locking Mode</label>
-		<description>The current locking mode of the device as bitmap.Bit 0: Locked Now, Bit 1: Lock when plugged in, Bit 2:
-			Lock when unplugged, Bit 3: Charge when locked, Bit 4: Charge Session Allowed (Even if locked)</description>
-		<state readOnly="true" pattern="%d"/>
+	<channel-type id="charger-is-locked">
+		<item-type>Switch</item-type>
+		<label>Charger is locked</label>
+		<description>Indicates that the charger is currently locked (control panel buttons are disabled)</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="charger-locked-when-plugged">
+		<item-type>Switch</item-type>
+		<label>Lock charger when car plugged-in</label>
+		<description>The charger should be locked when a car is plugged in</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="charger-locked-when-unplugged">
+		<item-type>Switch</item-type>
+		<label>Lock charger when car is not plugged-in</label>
+		<description>The charger should be locked when no car is plugged in</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="charge-when-locked">
+		<item-type>Switch</item-type>
+		<label>Charge when locked</label>
+		<description>The car will be charged even if the charger is locked</description>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="charging-mode">
@@ -341,11 +364,11 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="command-tries">
-		<item-type>Number</item-type>
-		<label>Command Status/Retries</label>
-		<description>0-10 Trying, 253 Acked and Failed, 254 Acked and OK, 255 No command has ever been sent</description>
-		<state readOnly="true" pattern="%d"/>
+	<channel-type id="last-command-status">
+		<item-type>String</item-type>
+		<label>Last Command Status</label>
+		<description>A status message indicating the success or failure of the last submitted command</description>
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 	<channel-type id="diverter-priority">

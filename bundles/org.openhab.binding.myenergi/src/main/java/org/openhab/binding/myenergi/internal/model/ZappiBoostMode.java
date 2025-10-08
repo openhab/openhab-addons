@@ -10,12 +10,13 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.myenergi.internal.util;
+package org.openhab.binding.myenergi.internal.model;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link ZappiBoostMode} enumeration is used to model the various Zappi boost charging modes.
+ * The {@link ZappiBoostMode} enumeration is used to model the various Zappi
+ * boost charging modes.
  *
  * @author Rene Scherer - Initial contribution
  *

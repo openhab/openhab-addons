@@ -12,8 +12,12 @@
  */
 package org.openhab.binding.myenergi.internal.handler;
 
+import static org.openhab.binding.myenergi.internal.MyenergiBindingConstants.ZAPPI_CHANNEL_CHARGER_IS_LOCKED;
+import static org.openhab.binding.myenergi.internal.MyenergiBindingConstants.ZAPPI_CHANNEL_CHARGER_LOCKED_WHEN_PLUGGED;
+import static org.openhab.binding.myenergi.internal.MyenergiBindingConstants.ZAPPI_CHANNEL_CHARGER_LOCKED_WHEN_UNPLUGGED;
 import static org.openhab.binding.myenergi.internal.MyenergiBindingConstants.ZAPPI_CHANNEL_CHARGER_STATUS;
 import static org.openhab.binding.myenergi.internal.MyenergiBindingConstants.ZAPPI_CHANNEL_CHARGE_ADDED;
+import static org.openhab.binding.myenergi.internal.MyenergiBindingConstants.ZAPPI_CHANNEL_CHARGE_WHEN_LOCKED;
 import static org.openhab.binding.myenergi.internal.MyenergiBindingConstants.ZAPPI_CHANNEL_CHARGING_MODE;
 import static org.openhab.binding.myenergi.internal.MyenergiBindingConstants.ZAPPI_CHANNEL_CLAMP_NAME_1;
 import static org.openhab.binding.myenergi.internal.MyenergiBindingConstants.ZAPPI_CHANNEL_CLAMP_NAME_2;
@@ -27,14 +31,13 @@ import static org.openhab.binding.myenergi.internal.MyenergiBindingConstants.ZAP
 import static org.openhab.binding.myenergi.internal.MyenergiBindingConstants.ZAPPI_CHANNEL_CLAMP_POWER_4;
 import static org.openhab.binding.myenergi.internal.MyenergiBindingConstants.ZAPPI_CHANNEL_CLAMP_POWER_5;
 import static org.openhab.binding.myenergi.internal.MyenergiBindingConstants.ZAPPI_CHANNEL_CLAMP_POWER_6;
-import static org.openhab.binding.myenergi.internal.MyenergiBindingConstants.ZAPPI_CHANNEL_COMMAND_TRIES;
 import static org.openhab.binding.myenergi.internal.MyenergiBindingConstants.ZAPPI_CHANNEL_CONSUMED_POWER;
 import static org.openhab.binding.myenergi.internal.MyenergiBindingConstants.ZAPPI_CHANNEL_DIVERTED_POWER;
 import static org.openhab.binding.myenergi.internal.MyenergiBindingConstants.ZAPPI_CHANNEL_DIVERTER_PRIORITY;
 import static org.openhab.binding.myenergi.internal.MyenergiBindingConstants.ZAPPI_CHANNEL_GENERATED_POWER;
 import static org.openhab.binding.myenergi.internal.MyenergiBindingConstants.ZAPPI_CHANNEL_GRID_POWER;
+import static org.openhab.binding.myenergi.internal.MyenergiBindingConstants.ZAPPI_CHANNEL_LAST_COMMAND_STATUS;
 import static org.openhab.binding.myenergi.internal.MyenergiBindingConstants.ZAPPI_CHANNEL_LAST_UPDATED_TIME;
-import static org.openhab.binding.myenergi.internal.MyenergiBindingConstants.ZAPPI_CHANNEL_LOCKING_MODE;
 import static org.openhab.binding.myenergi.internal.MyenergiBindingConstants.ZAPPI_CHANNEL_MINIMUM_GREEN_LEVEL;
 import static org.openhab.binding.myenergi.internal.MyenergiBindingConstants.ZAPPI_CHANNEL_PLUG_STATUS;
 import static org.openhab.binding.myenergi.internal.MyenergiBindingConstants.ZAPPI_CHANNEL_SMART_BOOST_CHARGE;
@@ -52,11 +55,11 @@ import java.util.Collection;
 import java.util.Collections;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.myenergi.internal.dto.ZappiSummary;
 import org.openhab.binding.myenergi.internal.exception.ApiException;
 import org.openhab.binding.myenergi.internal.exception.InvalidDataException;
 import org.openhab.binding.myenergi.internal.exception.RecordNotFoundException;
-import org.openhab.binding.myenergi.internal.util.ZappiChargingMode;
+import org.openhab.binding.myenergi.internal.model.ZappiChargingMode;
+import org.openhab.binding.myenergi.internal.model.ZappiSummary;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
@@ -75,6 +78,11 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class MyenergiZappiHandler extends MyenergiBaseDeviceHandler {
+
+    private static final int LOCKING_MODE_BIT_CHARGER_IS_LOCKED = 0;
+    private static final int LOCKING_MODE_BIT_CHARGER_LOCKED_WHEN_PLUGGED = 1;
+    private static final int LOCKING_MODE_BIT_CHARGER_LOCKED_WHEN_UNPLUGGED = 2;
+    private static final int LOCKING_MODE_BIT_CHARGE_WHEN_LOCKED = 3;
 
     private final Logger logger = LoggerFactory.getLogger(MyenergiZappiHandler.class);
 
@@ -180,23 +188,48 @@ public class MyenergiZappiHandler extends MyenergiBaseDeviceHandler {
             ZappiSummary device = bh.getData().getZappiBySerialNumber(serialNumber);
 
             updateDateTimeState(ZAPPI_CHANNEL_LAST_UPDATED_TIME, device.getLastUpdateTime());
-            updateElectricPotentialState(ZAPPI_CHANNEL_SUPPLY_VOLTAGE, device.supplyVoltageInTenthVolt / 10.0f, VOLT);
+            final Float supplyVoltageInTenthVolt = device.supplyVoltageInTenthVolt;
+            if (supplyVoltageInTenthVolt != null) {
+                updateElectricPotentialState(ZAPPI_CHANNEL_SUPPLY_VOLTAGE, supplyVoltageInTenthVolt / 10.0f, VOLT);
+            }
             updateFrequencyState(ZAPPI_CHANNEL_SUPPLY_FREQUENCY, device.supplyFrequency, HERTZ);
 
-            updateIntegerState(ZAPPI_CHANNEL_LOCKING_MODE, device.lockingMode);
-            updateStringState(ZAPPI_CHANNEL_CHARGING_MODE, device.chargingMode.toString());
-            updateStringState(ZAPPI_CHANNEL_CHARGER_STATUS, device.status.toString());
+            final Integer lockingMode = device.lockingMode;
+            if (lockingMode != null) {
+                updateSwitchState(ZAPPI_CHANNEL_CHARGER_IS_LOCKED,
+                        ((lockingMode & (1 << LOCKING_MODE_BIT_CHARGER_IS_LOCKED)) != 0));
+                updateSwitchState(ZAPPI_CHANNEL_CHARGER_LOCKED_WHEN_PLUGGED,
+                        ((lockingMode & (1 << LOCKING_MODE_BIT_CHARGER_LOCKED_WHEN_PLUGGED)) != 0));
+                updateSwitchState(ZAPPI_CHANNEL_CHARGER_LOCKED_WHEN_UNPLUGGED,
+                        ((lockingMode & (1 << LOCKING_MODE_BIT_CHARGER_LOCKED_WHEN_UNPLUGGED)) != 0));
+                updateSwitchState(ZAPPI_CHANNEL_CHARGE_WHEN_LOCKED,
+                        ((lockingMode & (1 << LOCKING_MODE_BIT_CHARGE_WHEN_LOCKED)) != 0));
+            }
+            updateStringState(ZAPPI_CHANNEL_CHARGING_MODE, device.chargingMode);
+            updateStringState(ZAPPI_CHANNEL_CHARGER_STATUS, device.status);
             updateStringState(ZAPPI_CHANNEL_PLUG_STATUS, device.plugStatus);
 
-            updateIntegerState(ZAPPI_CHANNEL_COMMAND_TRIES, device.commandTries);
+            final Integer commandTries = device.commandTries;
+            if (commandTries != null) {
+                switch (commandTries) {
+                    case 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 -> updateStringState(ZAPPI_CHANNEL_LAST_COMMAND_STATUS,
+                            "Attempting to process a command (" + commandTries + " tries left)");
+                    case 253 -> updateStringState(ZAPPI_CHANNEL_LAST_COMMAND_STATUS, "Command acknowledged and Failed");
+                    case 254 -> updateStringState(ZAPPI_CHANNEL_LAST_COMMAND_STATUS, "Command acknowledged and OK");
+                    case 255 -> updateStringState(ZAPPI_CHANNEL_LAST_COMMAND_STATUS, "No command has ever been sent");
+                    default ->
+                        updateStringState(ZAPPI_CHANNEL_LAST_COMMAND_STATUS, "Unknown command status: " + commandTries);
+                }
+            }
             updateIntegerState(ZAPPI_CHANNEL_DIVERTER_PRIORITY, device.diverterPriority);
             updatePercentageState(ZAPPI_CHANNEL_MINIMUM_GREEN_LEVEL, device.minimumGreenLevel);
 
             updatePowerState(ZAPPI_CHANNEL_GRID_POWER, device.gridPower, WATT);
             updatePowerState(ZAPPI_CHANNEL_GENERATED_POWER, device.generatedPower, WATT);
             updatePowerState(ZAPPI_CHANNEL_DIVERTED_POWER, device.divertedPower, WATT);
-            int consumedPower = ((device.gridPower != null) ? device.gridPower : 0)
-                    + ((device.generatedPower != null) ? device.generatedPower : 0);
+            final Integer gridPower = device.gridPower;
+            final Integer generatedPower = device.generatedPower;
+            int consumedPower = ((gridPower != null) ? gridPower : 0) + ((generatedPower != null) ? generatedPower : 0);
             updatePowerState(ZAPPI_CHANNEL_CONSUMED_POWER, consumedPower, WATT);
 
             updateEnergyState(ZAPPI_CHANNEL_CHARGE_ADDED, device.chargeAdded, KILOWATT_HOUR);
@@ -219,7 +252,9 @@ public class MyenergiZappiHandler extends MyenergiBaseDeviceHandler {
             updatePowerState(ZAPPI_CHANNEL_CLAMP_POWER_4, device.clampPower4, WATT);
             updatePowerState(ZAPPI_CHANNEL_CLAMP_POWER_5, device.clampPower5, WATT);
             updatePowerState(ZAPPI_CHANNEL_CLAMP_POWER_6, device.clampPower6, WATT);
-        } catch (RecordNotFoundException e) {
+        } catch (
+
+        RecordNotFoundException e) {
             logger.debug("Trying to update unknown device: {}", thing.getUID().getId());
         }
     }

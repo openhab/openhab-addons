@@ -10,40 +10,53 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.myenergi.internal.dto;
+package org.openhab.binding.myenergi.internal.model;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link HarviSummary} is a DTO class used to represent a high level summary of a Harvi device. It's used to
- * deserialize JSON API results.
+ * The {@link HarviSummary} is a DTO class used to represent a high level
+ * summary of a Harvi device. It's used to deserialize JSON API results.
  *
  * @author Rene Scherer - Initial contribution
  *
  */
+@NonNullByDefault
 public class HarviSummary extends BaseSummary {
 
     // {"sno":10402186,"dat":"27-11-2020","tim":"15:26:57","ectp1":-11,"ectt1":"Generation","ectt2":"None","ectt3":"None","ect1p":1,"ect2p":1,"ect3p":1,"fwv":""}
 
     @SerializedName("ectt1")
+    @Nullable
     public String clampName1;
     @SerializedName("ectt2")
+    @Nullable
     public String clampName2;
     @SerializedName("ectt3")
+    @Nullable
     public String clampName3;
 
     @SerializedName("ectp1")
+    @Nullable
     public Integer clampPower1; // in Watts
     @SerializedName("ectp2")
+    @Nullable
     public Integer clampPower2;
     @SerializedName("ectp3")
+    @Nullable
     public Integer clampPower3;
 
     @SerializedName("ect1p")
+    @Nullable
     public Integer clampPhase1;
     @SerializedName("ect2p")
+    @Nullable
     public Integer clampPhase2;
     @SerializedName("ect3p")
+    @Nullable
     public Integer clampPhase3;
 
     @Override

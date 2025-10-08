@@ -10,16 +10,20 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.myenergi.internal.dto;
+package org.openhab.binding.myenergi.internal.model;
 
 import java.util.ArrayList;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
- * The {@link DeviceSummaryList} is a DTO class used to represent the highlevel status of all myenergy devices. It's
+ * The {@link DeviceSummaryList} is a DTO class used to represent the highlevel
+ * status of all myenergy devices. It's
  * used to deserialize JSON API results.
  *
  * @author Rene Scherer - Initial contribution
  */
+@NonNullByDefault
 public class DeviceSummaryList extends ArrayList<DeviceSummary> {
 
     private static final long serialVersionUID = -1997120707296007505L;

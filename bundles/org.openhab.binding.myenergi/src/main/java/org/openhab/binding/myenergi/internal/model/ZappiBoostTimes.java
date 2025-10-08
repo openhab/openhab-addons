@@ -10,17 +10,21 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.myenergi.internal.dto;
+package org.openhab.binding.myenergi.internal.model;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
- * The {@link ZappiBoostTimes} is a DTO class used to hold a list of boost times.
+ * The {@link ZappiBoostTimes} is a DTO class used to hold a list of boost
+ * times.
  *
  * @author Rene Scherer - Initial contribution
  *
  */
+@NonNullByDefault
 public class ZappiBoostTimes {
 
     public List<ZappiBoostTimeSlot> boostTimes = new ArrayList<>();

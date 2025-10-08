@@ -10,16 +10,20 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.myenergi.internal.dto;
+package org.openhab.binding.myenergi.internal.model;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link ZappiBoostTimeSlot} is a DTO class used to hold a slot of boost times.
+ * The {@link ZappiBoostTimeSlot} is a DTO class used to hold a slot of boost
+ * times.
  *
  * @author Rene Scherer - Initial contribution
  *
  */
+@NonNullByDefault
 public class ZappiBoostTimeSlot {
 
     private static final String ALL_DAYS_OFF = "00000000";
@@ -46,8 +50,8 @@ public class ZappiBoostTimeSlot {
     public int durationMinute;
 
     /**
-     * a string bitmap of 8 characters (either '0' or '1'). The first character is always '0', then followed by Mon,
-     * Tue, Wed, Thu, Fri, Sat and Sun bits.
+     * a string bitmap of 8 characters (either '0' or '1'). The first character is
+     * always '0', then followed by Mon, Tue, Wed, Thu, Fri, Sat and Sun bits.
      */
     @SerializedName("bdd")
     public String daysOfTheWeekMap = ALL_DAYS_OFF;

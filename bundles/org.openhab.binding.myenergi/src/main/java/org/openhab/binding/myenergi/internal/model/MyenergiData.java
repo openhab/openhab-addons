@@ -10,16 +10,18 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.myenergi.internal.dto;
+package org.openhab.binding.myenergi.internal.model;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.myenergi.internal.exception.RecordNotFoundException;
 
 /**
- * The {@link MyenergiData} is a structure to hold cached information from the API.
+ * The {@link MyenergiData} is a structure to hold cached information from the
+ * API.
  *
  * @author Rene Scherer - Initial contribution
  */
@@ -30,13 +32,13 @@ public class MyenergiData {
     private List<ZappiSummary> zappis = new ArrayList<ZappiSummary>();
     private List<EddiSummary> eddis = new ArrayList<EddiSummary>();
     private String activeServer = "";
-    private String firmwareVersion = "";
+    private @Nullable String firmwareVersion = "";
 
     public List<HarviSummary> getHarvis() {
         return harvis;
     }
 
-    public synchronized void setHarvis(List<HarviSummary> harvis) {
+    public void setHarvis(List<HarviSummary> harvis) {
         this.harvis = harvis;
     }
 
@@ -44,7 +46,7 @@ public class MyenergiData {
         return zappis;
     }
 
-    public synchronized void setZappis(List<ZappiSummary> zappis) {
+    public void setZappis(List<ZappiSummary> zappis) {
         this.zappis = zappis;
     }
 
@@ -52,7 +54,7 @@ public class MyenergiData {
         return eddis;
     }
 
-    public synchronized void setEddis(List<EddiSummary> eddis) {
+    public void setEddis(List<EddiSummary> eddis) {
         this.eddis = eddis;
     }
 
@@ -64,11 +66,11 @@ public class MyenergiData {
         this.activeServer = activeServer;
     }
 
-    public String getFirmwareVersion() {
+    public @Nullable String getFirmwareVersion() {
         return firmwareVersion;
     }
 
-    public void setFirmwareVersion(String firmwareVersion) {
+    public void setFirmwareVersion(@Nullable String firmwareVersion) {
         this.firmwareVersion = firmwareVersion;
     }
 
@@ -132,7 +134,10 @@ public class MyenergiData {
 
     public void updateEddi(EddiSummary device) {
         try {
-            eddis.remove(getEddiBySerialNumber(device.serialNumber));
+            Long serialNumber = device.serialNumber;
+            if (serialNumber != null) {
+                eddis.remove(getEddiBySerialNumber(serialNumber));
+            }
         } catch (RecordNotFoundException e) {
             // we don't do anything if the device doesn't already exist in the list.
         }
@@ -141,7 +146,10 @@ public class MyenergiData {
 
     public void updateZappi(ZappiSummary device) {
         try {
-            zappis.remove(getZappiBySerialNumber(device.serialNumber));
+            Long serialNumber = device.serialNumber;
+            if (serialNumber != null) {
+                zappis.remove(getZappiBySerialNumber(serialNumber));
+            }
         } catch (RecordNotFoundException e) {
             // we don't do anything if the device doesn't already exist in the list.
         }
@@ -150,7 +158,10 @@ public class MyenergiData {
 
     public void updateHarvi(HarviSummary device) {
         try {
-            harvis.remove(getHarviBySerialNumber(device.serialNumber));
+            Long serialNumber = device.serialNumber;
+            if (serialNumber != null) {
+                harvis.remove(getHarviBySerialNumber(serialNumber));
+            }
         } catch (RecordNotFoundException e) {
             // we don't do anything if the device doesn't already exist in the list.
         }

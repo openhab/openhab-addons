@@ -21,67 +21,34 @@ import java.net.HttpURLConnection;
 import java.time.DayOfWeek;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.HttpContentResponse;
 import org.eclipse.jetty.client.HttpRequest;
 import org.eclipse.jetty.client.api.AuthenticationStore;
 import org.eclipse.jetty.http.HttpFields;
 import org.eclipse.jetty.http.HttpMethod;
-import org.eclipse.jetty.http2.client.HTTP2Client;
-import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.openhab.binding.myenergi.internal.dto.DaysOfWeekMap;
-import org.openhab.binding.myenergi.internal.dto.EddiSummary;
-import org.openhab.binding.myenergi.internal.dto.HarviSummary;
-import org.openhab.binding.myenergi.internal.dto.ZappiBoostTimeSlot;
-import org.openhab.binding.myenergi.internal.dto.ZappiBoostTimes;
-import org.openhab.binding.myenergi.internal.dto.ZappiSummary;
 import org.openhab.binding.myenergi.internal.exception.ApiException;
 import org.openhab.binding.myenergi.internal.exception.AuthenticationException;
 import org.openhab.binding.myenergi.internal.exception.RecordNotFoundException;
-import org.openhab.binding.myenergi.internal.util.ZappiChargingMode;
-import org.openhab.core.io.net.http.HttpClientFactory;
+import org.openhab.binding.myenergi.internal.model.DaysOfWeekMap;
+import org.openhab.binding.myenergi.internal.model.EddiSummary;
+import org.openhab.binding.myenergi.internal.model.HarviSummary;
+import org.openhab.binding.myenergi.internal.model.ZappiBoostTimeSlot;
+import org.openhab.binding.myenergi.internal.model.ZappiBoostTimes;
+import org.openhab.binding.myenergi.internal.model.ZappiChargingMode;
+import org.openhab.binding.myenergi.internal.model.ZappiSummary;
 
 /**
- * The {@link MyenergiApiClientTest} is a test class for {@link MyEnergiApiClient}.
+ * The {@link MyenergiApiClientTest} is a test class for
+ * {@link MyEnergiApiClient}.
  *
  * @author Rene Scherer - Initial contribution
  * @author Stephen Cook - Eddi Support
  */
 @NonNullByDefault
 class MyenergiApiClientTest {
-
-    public static class HttpClientFactoryMock implements HttpClientFactory {
-
-        private SslContextFactory sslContextFactory = new SslContextFactory.Client();
-
-        @Override
-        public HttpClient createHttpClient(String consumerName) {
-            return new HttpClient(sslContextFactory);
-        }
-
-        @Override
-        public HttpClient getCommonHttpClient() {
-            return new HttpClient(sslContextFactory);
-        }
-
-        @Override
-        public HttpClient createHttpClient(String consumerName, @Nullable SslContextFactory sslContextFactory) {
-            return createHttpClient(consumerName);
-        }
-
-        @Override
-        public HTTP2Client createHttp2Client(String consumerName) {
-            return new HTTP2Client();
-        }
-
-        @Override
-        public HTTP2Client createHttp2Client(String consumerName, @Nullable SslContextFactory sslContextFactory) {
-            return new HTTP2Client();
-        }
-    }
 
     private static final String TEST_USERNAME = "12345678";
     private static final String TEST_PASSWORD_VALID = "validPassword";
@@ -97,19 +64,19 @@ class MyenergiApiClientTest {
     private static final int ZAPPI_SERIAL_NUMBER = 21287642;
     private static final int EDDI_SERIAL_NUMBER = 21364287;
 
-    private static MyenergiApiClient api = new MyenergiApiClient();
     private static HttpFields responseFields = mock(HttpFields.class);
 
     private static AuthenticationStore authenticationStore = mock(AuthenticationStore.class);
-    private static HttpClientFactory httpClientFactory = mock(HttpClientFactoryMock.class);
     private static HttpClient httpClient = mock(HttpClient.class);
     private static HttpRequest request = mock(HttpRequest.class);
     private static HttpContentResponse response = mock(HttpContentResponse.class);
 
+    private static MyenergiApiClient api = new MyenergiApiClient(httpClient);
+
     @BeforeAll
     static void setUp() throws Exception {
-        when(httpClientFactory.createHttpClient(anyString())).thenReturn(httpClient);
-        when(httpClientFactory.getCommonHttpClient()).thenReturn(httpClient);
+        // when(httpClientFactory.createHttpClient(anyString())).thenReturn(httpClient);
+        // when(httpClientFactory.getCommonHttpClient()).thenReturn(httpClient);
         when(httpClient.getAuthenticationStore()).thenReturn(authenticationStore);
         when(httpClient.newRequest(anyString())).thenReturn(request);
         when(httpClient.isStarted()).thenReturn(true);
@@ -121,7 +88,6 @@ class MyenergiApiClientTest {
         when(response.getReason()).thenReturn(RESPONSE_200_REASON);
         when(responseFields.get(MyenergiGetHostFromDirector.MY_ENERGI_RESPONSE_FIELD)).thenReturn("SomeHost");
         when(response.getHeaders()).thenReturn(responseFields);
-        api.setHttpClientFactory(httpClientFactory);
         api.initialize(TEST_USERNAME, TEST_PASSWORD_VALID);
     }
 

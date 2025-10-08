@@ -10,12 +10,13 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.myenergi.internal.util;
+package org.openhab.binding.myenergi.internal.model;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link ZappiChargingMode} enumeration is used to model the various Zappi charging modes.
+ * The {@link ZappiChargingMode} enumeration is used to model the various Zappi
+ * charging modes.
  *
  * @author Rene Scherer - Initial contribution
  *
