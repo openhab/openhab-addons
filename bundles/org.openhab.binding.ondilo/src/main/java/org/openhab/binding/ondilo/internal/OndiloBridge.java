@@ -111,15 +111,15 @@ public class OndiloBridge {
                 if (pools != null && !(pools.length == 0)) {
                     logger.trace("Polled {} Ondilo ICOs", pools.length);
                     // Poll last measures and recommendations for each pool
-                    Instant lastValueTime = null;
+                    Instant earliestValueTime = null;
                     for (Pool pool : pools) {
                         Instant valueTime = pollOndiloICO(pool.id);
-                        if (lastValueTime == null || (valueTime != null && valueTime.isBefore(lastValueTime))) {
-                            lastValueTime = valueTime;
+                        if (valueTime != null && (earliestValueTime == null || valueTime.isBefore(earliestValueTime))) {
+                            earliestValueTime = valueTime;
                         }
                     }
-                    if (lastValueTime != null) {
-                        adaptPollingToValueTime(lastValueTime, refreshInterval);
+                    if (earliestValueTime != null) {
+                        adaptPollingToValueTime(earliestValueTime, refreshInterval);
                     }
                 } else {
                     logger.warn("No Ondilo ICO found or failed to parse JSON response");
@@ -134,10 +134,10 @@ public class OndiloBridge {
         }
     }
 
-    private void adaptPollingToValueTime(Instant lastValueTime, int refreshInterval) {
+    private void adaptPollingToValueTime(Instant earliestValueTime, int refreshInterval) {
         // Adjusting the polling reduces the delay when new measures get available, without polling too frequently and
         // hitting API rate limits.
-        Instant nextValueTime = lastValueTime.plus(TARGET_REFRESH_INTERVAL);
+        Instant nextValueTime = earliestValueTime.plus(TARGET_REFRESH_INTERVAL);
         Instant now = Instant.now();
         Instant scheduledTime = now.plusSeconds(refreshInterval);
         if (nextValueTime.isBefore(scheduledTime)) {
@@ -157,7 +157,7 @@ public class OndiloBridge {
     public @Nullable Instant pollOndiloICO(int id) {
         OndiloHandler ondiloHandler = getOndiloHandlerForPool(id);
         OndiloApiClient apiClient = this.apiClient;
-        Instant lastValueTime = null;
+        Instant earliestValueTime = null;
         if (ondiloHandler != null && apiClient != null) {
             LastMeasure[] lastMeasures = apiClient.request("GET", "/pools/" + id
                     + "/lastmeasures?types[]=temperature&types[]=ph&types[]=orp&types[]=salt&types[]=tds&types[]=battery&types[]=rssi",
@@ -167,7 +167,7 @@ public class OndiloBridge {
                 logger.warn("No lastMeasures available for Ondilo ICO with ID: {}", id);
                 ondiloHandler.clearLastMeasuresChannels();
             } else {
-                lastValueTime = ondiloHandler.updateLastMeasuresChannels(lastMeasures);
+                earliestValueTime = ondiloHandler.updateLastMeasuresChannels(lastMeasures);
             }
 
             Recommendation[] recommendations = apiClient.request("GET", "/pools/" + id + "/recommendations",
@@ -210,7 +210,7 @@ public class OndiloBridge {
         } else {
             logger.debug("No OndiloHandler found for Ondilo ICO with ID: {}", id);
         }
-        return lastValueTime;
+        return earliestValueTime;
     }
 
     public void validateRecommendation(int poolId, int recommendationId) {

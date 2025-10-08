@@ -245,10 +245,13 @@ public class OndiloHandler extends BaseThingHandler {
     }
 
     public @Nullable Instant updateLastMeasuresChannels(LastMeasure[] measures) {
-        Instant valueTime = null;
+        Instant earliestValueTime = null;
         for (LastMeasure measure : measures) {
             logger.trace("LastMeasure: type={}, value={}", measure.dataType, measure.value);
-            valueTime = parseUtcTimeToInstant(measure.valueTime);
+            Instant valueTime = parseUtcTimeToInstant(measure.valueTime);
+            if (valueTime != null && (earliestValueTime == null || valueTime.isBefore(earliestValueTime))) {
+                earliestValueTime = valueTime;
+            }
             switch (measure.dataType) {
                 case "temperature":
                     updateTrendChannel(CHANNEL_TEMPERATURE, CHANNEL_TEMPERATURE_TREND, measure.value, valueTime,
@@ -281,13 +284,13 @@ public class OndiloHandler extends BaseThingHandler {
             }
         }
 
-        if (valueTime != null) {
+        if (earliestValueTime != null) {
             // Update value time channel (expect that it is the same for all measures)
-            updateState(CHANNEL_VALUE_TIME, new DateTimeType(valueTime));
+            updateState(CHANNEL_VALUE_TIME, new DateTimeType(earliestValueTime));
         }
 
         this.lastMeasures = measures;
-        return valueTime;
+        return earliestValueTime;
     }
 
     public void updateRecommendationChannels(Recommendation recommendation) {
