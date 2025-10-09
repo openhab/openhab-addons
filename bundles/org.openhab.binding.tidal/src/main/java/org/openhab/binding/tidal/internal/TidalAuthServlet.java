@@ -38,9 +38,7 @@ import org.slf4j.LoggerFactory;
  * The {@link TidalAuthServlet} manages the authorization with the Tidal Web API. The servlet implements the
  * Authorization Code flow and saves the resulting refreshToken with the bridge.
  *
- * @author Andreas Stenlund - Initial contribution
- * @author Matthew Bowman - Initial contribution
- * @author Hilbrand Bouwkamp - Rewrite, moved service part to service class. Uses templates, simplified calls.
+ * @author Laurent Arnal - Initial contribution
  */
 @NonNullByDefault
 public class TidalAuthServlet extends HttpServlet {

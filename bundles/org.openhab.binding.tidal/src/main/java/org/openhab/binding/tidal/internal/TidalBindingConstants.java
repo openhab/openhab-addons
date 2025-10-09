@@ -20,8 +20,7 @@ import org.openhab.core.thing.ThingTypeUID;
 /**
  * The {@link TidalBindingConstants} class defines common constants, which are used across the whole binding.
  *
- * @author Andreas Stenlund - Initial contribution
- * @author Hilbrand Bouwkamp - Added more constants
+ * @author Laurent Arnal - Initial contribution
  */
 public class TidalBindingConstants {
 

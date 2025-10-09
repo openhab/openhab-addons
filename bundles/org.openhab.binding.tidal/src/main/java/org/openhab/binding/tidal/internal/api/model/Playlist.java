@@ -15,7 +15,7 @@ package org.openhab.binding.tidal.internal.api.model;
 /**
  * Tidal Web Api Playlist data class.
  *
- * @author Hilbrand Bouwkamp - Initial contribution
+ * @author Laurent Arnal - Initial contribution
  */
 public class Playlist {
 

@@ -40,7 +40,7 @@ import com.google.gson.JsonSyntaxException;
  * Class to perform the actual call to the Tidal Api, interprets the returned Http status codes, and handles the error
  * codes returned by the Tidal Web Api.
  *
- * @author Hilbrand Bouwkamp - Initial contribution
+ * @author Laurent Arnal - Initial contribution
  */
 @NonNullByDefault
 class TidalConnector {

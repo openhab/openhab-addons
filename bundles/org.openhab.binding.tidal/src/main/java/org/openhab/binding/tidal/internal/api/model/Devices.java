@@ -17,8 +17,7 @@ import java.util.List;
 /**
  * Tidal Web Api Devices data class.
  *
- * @author Andreas Stenlund - Initial contribution
- * @author Hilbrand Bouwkamp - Moved to it's own class
+ * @author Laurent Arnal - Initial contribution
  */
 public class Devices {
 

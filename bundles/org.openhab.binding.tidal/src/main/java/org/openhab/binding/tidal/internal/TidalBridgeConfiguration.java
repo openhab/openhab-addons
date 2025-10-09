@@ -15,7 +15,7 @@ package org.openhab.binding.tidal.internal;
 /**
  * Configuration class for Tidal Bridge.
  *
- * @author Hilbrand Bouwkamp - Initial contribution
+ * @author Laurent Arnal - Initial contribution
  */
 public class TidalBridgeConfiguration {
 

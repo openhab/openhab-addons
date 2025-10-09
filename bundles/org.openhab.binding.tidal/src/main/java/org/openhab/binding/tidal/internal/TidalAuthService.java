@@ -45,8 +45,7 @@ import org.slf4j.LoggerFactory;
 /**
  * The {@link TidalAuthService} class to manage the servlets and bind authorization servlet to bridges.
  *
- * @author Andreas Stenlund - Initial contribution
- * @author Hilbrand Bouwkamp - Made this the service class instead of only interface. Added templates
+ * @author Laurent Arnal - Initial contribution
  */
 @Component(service = TidalAuthService.class, configurationPid = "binding.tidal.authService")
 @NonNullByDefault

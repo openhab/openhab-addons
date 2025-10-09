@@ -78,8 +78,7 @@ import org.slf4j.LoggerFactory;
 /**
  * The {@link TidalBridgeHandler} is the main class to manage Tidal WebAPI connection and update status of things.
  *
- * @author Andreas Stenlund - Initial contribution
- * @author Hilbrand Bouwkamp - Just a lot of refactoring
+ * @author Laurent Arnal - Initial contribution
  */
 @NonNullByDefault
 public class TidalBridgeHandler extends BaseBridgeHandler implements TidalAccountHandler, AccessTokenRefreshListener {

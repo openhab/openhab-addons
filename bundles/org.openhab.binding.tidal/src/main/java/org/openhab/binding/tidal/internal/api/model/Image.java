@@ -15,8 +15,7 @@ package org.openhab.binding.tidal.internal.api.model;
 /**
  * Tidal Web Api Image data class.
  *
- * @author Andreas Stenlund - Initial contribution
- * @author Hilbrand Bouwkamp - Moved to it's own class
+ * @author Laurent Arnal - Initial contribution
  */
 public class Image {
 

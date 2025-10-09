@@ -22,7 +22,7 @@ import org.openhab.core.thing.binding.ThingHandler;
 /**
  * Interface to decouple Tidal Bridge Handler implementation from other code.
  *
- * @author Hilbrand Bouwkamp - Initial contribution
+ * @author Laurent Arnal - Initial contribution
  */
 @NonNullByDefault
 public interface TidalAccountHandler extends ThingHandler {

@@ -15,7 +15,7 @@ package org.openhab.binding.tidal.internal.api.exception;
 /**
  * Generic Tidal exception class.
  *
- * @author Hilbrand Bouwkamp - Initial contribution
+ * @author Laurent Arnal - Initial contribution
  */
 public class TidalException extends RuntimeException {
 

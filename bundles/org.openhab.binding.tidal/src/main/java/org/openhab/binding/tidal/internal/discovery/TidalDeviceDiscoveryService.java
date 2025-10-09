@@ -12,8 +12,7 @@
  */
 package org.openhab.binding.tidal.internal.discovery;
 
-import static org.openhab.binding.tidal.internal.TidalBindingConstants.PROPERTY_TIDAL_DEVICE_NAME;
-import static org.openhab.binding.tidal.internal.TidalBindingConstants.THING_TYPE_DEVICE;
+import static org.openhab.binding.tidal.internal.TidalBindingConstants.*;
 
 import java.time.Duration;
 import java.util.HashMap;
@@ -41,8 +40,7 @@ import org.slf4j.LoggerFactory;
 /**
  * The {@link TidalDeviceDiscoveryService} queries the Tidal Web API for available devices.
  *
- * @author Andreas Stenlund - Initial contribution
- * @author Hilbrand Bouwkamp - Simplfied code to make call to shared code
+ * @author Laurent Arnal - Initial contribution
  */
 @Component(scope = ServiceScope.PROTOTYPE, service = TidalDeviceDiscoveryService.class)
 @NonNullByDefault

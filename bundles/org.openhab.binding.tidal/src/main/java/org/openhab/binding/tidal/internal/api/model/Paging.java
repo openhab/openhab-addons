@@ -17,7 +17,7 @@ import java.util.List;
 /**
  * Tidal Web Api generic paging object class.
  *
- * @author Hilbrand Bouwkamp - Initial contribution
+ * @author Laurent Arnal - Initial contribution
  */
 public class Paging<T> {
     List<T> items;

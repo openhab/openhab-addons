@@ -34,9 +34,7 @@ import org.osgi.service.component.annotations.Reference;
  * The {@link TidalHandlerFactory} is responsible for creating things and thing
  * handlers.
  *
- * @author Andreas Stenlund - Initial contribution
- * @author Matthew Bowman - Initial contribution
- * @author Hilbrand Bouwkamp - Added registration of discovery service to binding to this class
+ * @author Laurent Arnal - Initial contribution
  */
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.tidal")
 @NonNullByDefault

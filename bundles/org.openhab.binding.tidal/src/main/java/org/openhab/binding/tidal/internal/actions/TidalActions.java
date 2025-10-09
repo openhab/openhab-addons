@@ -27,7 +27,7 @@ import org.osgi.service.component.annotations.ServiceScope;
 /**
  * Tidal Rule Actions.
  *
- * @author Hilbrand Bouwkamp - Initial contribution
+ * @author Laurent Arnal - Initial contribution
  */
 @Component(scope = ServiceScope.PROTOTYPE, service = TidalActions.class)
 @ThingActionsScope(name = "tidal")

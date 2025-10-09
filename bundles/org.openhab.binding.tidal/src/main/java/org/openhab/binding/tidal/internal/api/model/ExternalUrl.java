@@ -17,8 +17,7 @@ import java.util.Map;
 /**
  * Tidal Web Api Url data class.
  *
- * @author Andreas Stenlund - Initial contribution
- * @author Hilbrand Bouwkamp - Moved to it's own class
+ * @author Laurent Arnal - Initial contribution
  */
 public class ExternalUrl {
 

@@ -35,8 +35,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Class to handle {@link Command} actions and call the Tidal Web Api.
  *
- * @author Andreas Stenlund - Initial contribution
- * @author Hilbrand Bouwkamp - Moved to separate class, general refactoring and bug fixes
+ * @author Laurent Arnal - Initial contribution
  */
 @NonNullByDefault
 class TidalHandleCommands {
