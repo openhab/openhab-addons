@@ -55,6 +55,7 @@ import org.openhab.binding.heos.internal.resources.HeosEventListener;
 import org.openhab.binding.heos.internal.resources.HeosMediaEventListener;
 import org.openhab.binding.heos.internal.resources.Telnet;
 import org.openhab.binding.heos.internal.resources.Telnet.ReadException;
+import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
@@ -378,8 +379,8 @@ public class HeosBridgeHandler extends BaseBridgeHandler implements HeosEventLis
             properties.put(PROP_NAME, playerName);
             properties.put(PID, pid);
 
-            Channel channel = ChannelBuilder.create(channelUID, "Switch").withLabel(playerName).withType(CH_TYPE_PLAYER)
-                    .withProperties(properties).build();
+            Channel channel = ChannelBuilder.create(channelUID, CoreItemFactory.SWITCH).withLabel(playerName)
+                    .withType(CH_TYPE_PLAYER).withProperties(properties).build();
             updateThingChannels(channelManager.addSingleChannel(channel));
         } catch (HeosNotFoundException e) {
             logger.debug("Group is not yet initialized fully");
