@@ -106,7 +106,6 @@ public class TidalDeviceDiscoveryService extends AbstractThingHandlerDiscoverySe
         if (thingHandler.isOnline()) {
             logger.debug("Starting Tidal Device discovery for bridge {}", bridgeUID);
             try {
-                thingHandler.listDevices().forEach(this::thingDiscovered);
             } catch (final RuntimeException e) {
                 logger.debug("Finding devices failed with message: {}", e.getMessage(), e);
             }

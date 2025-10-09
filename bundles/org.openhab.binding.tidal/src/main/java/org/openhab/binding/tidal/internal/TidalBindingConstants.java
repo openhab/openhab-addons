@@ -35,8 +35,7 @@ public class TidalBindingConstants {
     public static final String TIDAL_SCOPES = Stream.of("playlists.read", "entitlements.read", "collection.read",
             "playlists.write", "collection.write", "user.read", "recommendations.read", "playback")
             .collect(Collectors.joining(" "));
-    public static final String TIDAL_API_URL = "https://api.tidal.com/v1/me";
-    public static final String TIDAL_API_PLAYER_URL = TIDAL_API_URL + "/player";
+    public static final String TIDAL_API_URL = "https://openapi.tidal.com";
 
     // Authorization related Servlet and resources aliases.
     public static final String TIDAL_ALIAS = "/connecttidal";

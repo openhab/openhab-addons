@@ -101,13 +101,11 @@ class TidalHandleCommands {
                 break;
             case CHANNEL_DEVICESHUFFLE:
                 if (command instanceof OnOffType onOffCommand) {
-                    tidalApi.setShuffleState(deviceId, onOffCommand);
                     commandRun = true;
                 }
                 break;
             case CHANNEL_TRACKREPEAT:
                 if (command instanceof StringType) {
-                    tidalApi.setRepeatState(deviceId, command.toString());
                     commandRun = true;
                 }
                 break;
@@ -116,14 +114,12 @@ class TidalHandleCommands {
                     final PercentType volume = command instanceof PercentType percentType ? percentType
                             : new PercentType(decimalCommand.intValue());
 
-                    tidalApi.setVolume(deviceId, volume.intValue());
                     commandRun = true;
                 }
                 break;
             case CHANNEL_TRACKPLAY:
             case CHANNEL_PLAYLISTS:
                 if (command instanceof StringType) {
-                    tidalApi.playTrack(deviceId, command.toString(), 0, 0);
                     commandRun = true;
                 }
                 break;
@@ -131,8 +127,6 @@ class TidalHandleCommands {
                 if (command instanceof StringType) {
                     final String newName = command.toString();
 
-                    playlists.stream().filter(pl -> pl.getName().equals(newName)).findFirst()
-                            .ifPresent(pl -> tidalApi.playTrack(deviceId, pl.getUri(), 0, 0));
                     commandRun = true;
                 }
                 break;
@@ -142,9 +136,7 @@ class TidalHandleCommands {
 
     private void playDeviceId(String newDeviceId, boolean active, String currentDeviceId) {
         if (currentDeviceId.equals(newDeviceId) && active) {
-            tidalApi.play(newDeviceId);
         } else {
-            tidalApi.transferPlay(newDeviceId, true);
         }
     }
 
@@ -162,19 +154,14 @@ class TidalHandleCommands {
 
             if (active || deviceId.isEmpty()) {
                 if (play) {
-                    tidalApi.play(deviceId);
                 } else {
-                    tidalApi.pause(deviceId);
                 }
             } else {
-                tidalApi.transferPlay(deviceId, play);
             }
             return true;
         } else if (command instanceof NextPreviousType) {
             if (command == NextPreviousType.NEXT) {
-                tidalApi.next(deviceId);
             } else {
-                tidalApi.previous(deviceId);
             }
             return true;
         }
