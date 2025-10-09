@@ -33,6 +33,7 @@ import org.openhab.binding.homekit.internal.dto.Characteristic;
 import org.openhab.binding.homekit.internal.dto.Service;
 import org.openhab.binding.homekit.internal.enums.DataFormatType;
 import org.openhab.binding.homekit.internal.hap_services.CharacteristicReadWriteClient;
+import org.openhab.binding.homekit.internal.persistence.HomekitKeyStore;
 import org.openhab.binding.homekit.internal.persistence.HomekitTypeProvider;
 import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.DateTimeType;
@@ -86,8 +87,9 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
     private @Nullable ScheduledFuture<?> refreshTask;
 
     public HomekitAccessoryHandler(Thing thing, HomekitTypeProvider typeProvider,
-            ChannelTypeRegistry channelTypeRegistry, ChannelGroupTypeRegistry channelGroupTypeRegistry) {
-        super(thing, typeProvider);
+            ChannelTypeRegistry channelTypeRegistry, ChannelGroupTypeRegistry channelGroupTypeRegistry,
+            HomekitKeyStore keyStore) {
+        super(thing, typeProvider, keyStore);
         this.channelTypeRegistry = channelTypeRegistry;
         this.channelGroupTypeRegistry = channelGroupTypeRegistry;
     }

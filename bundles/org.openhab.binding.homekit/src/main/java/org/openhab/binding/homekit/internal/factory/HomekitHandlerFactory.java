@@ -22,6 +22,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homekit.internal.discovery.HomekitChildDiscoveryService;
 import org.openhab.binding.homekit.internal.handler.HomekitAccessoryHandler;
 import org.openhab.binding.homekit.internal.handler.HomekitBridgeHandler;
+import org.openhab.binding.homekit.internal.persistence.HomekitKeyStore;
 import org.openhab.binding.homekit.internal.persistence.HomekitTypeProvider;
 import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.Bridge;
@@ -53,6 +54,7 @@ public class HomekitHandlerFactory extends BaseThingHandlerFactory {
     private final HomekitTypeProvider typeProvider;
     private final ChannelTypeRegistry channelTypeRegistry;
     private final ChannelGroupTypeRegistry channelGroupTypeRegistry;
+    private final HomekitKeyStore keyStore;
 
     private @Nullable ServiceRegistration<?> discoveryServiceRegistration;
     private @Nullable HomekitChildDiscoveryService discoveryService;
@@ -60,10 +62,11 @@ public class HomekitHandlerFactory extends BaseThingHandlerFactory {
     @Activate
     public HomekitHandlerFactory(@Reference HomekitTypeProvider typeProvider,
             @Reference ChannelTypeRegistry channelTypeRegistry,
-            @Reference ChannelGroupTypeRegistry channelGroupTypeRegistry) {
+            @Reference ChannelGroupTypeRegistry channelGroupTypeRegistry, @Reference HomekitKeyStore keyStore) {
         this.typeProvider = typeProvider;
         this.channelTypeRegistry = channelTypeRegistry;
         this.channelGroupTypeRegistry = channelGroupTypeRegistry;
+        this.keyStore = keyStore;
     }
 
     @Override
@@ -81,9 +84,10 @@ public class HomekitHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (THING_TYPE_BRIDGE.equals(thingTypeUID)) {
-            return new HomekitBridgeHandler((Bridge) thing, typeProvider, registerDiscoveryService());
+            return new HomekitBridgeHandler((Bridge) thing, typeProvider, registerDiscoveryService(), keyStore);
         } else if (THING_TYPE_ACCESSORY.equals(thingTypeUID)) {
-            return new HomekitAccessoryHandler(thing, typeProvider, channelTypeRegistry, channelGroupTypeRegistry);
+            return new HomekitAccessoryHandler(thing, typeProvider, channelTypeRegistry, channelGroupTypeRegistry,
+                    keyStore);
         }
         return null;
     }

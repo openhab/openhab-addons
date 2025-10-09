@@ -51,8 +51,6 @@ public class HomekitBindingConstants {
     public static final String PROPERTY_ACCESSORY_UID = "accessoryUID";
     public static final String PROPERTY_PROTOCOL_VERSION = "protocolVersion";
     public static final String PROPERTY_ACCESSORY_CATEGORY = "accessoryCategory";
-    public static final String PROPERTY_CONTROLLER_PRIVATE_KEY = "controllerSecretKey";
-    public static final String PROPERTY_ACCESSORY_PUBLIC_KEY = "accessoryPublicKey";
 
     // channel properties
     public static final String PROPERTY_IID = "iid";

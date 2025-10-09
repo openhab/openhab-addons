@@ -20,6 +20,7 @@ import org.openhab.binding.homekit.internal.dto.Accessory;
 import org.openhab.binding.homekit.internal.dto.Characteristic;
 import org.openhab.binding.homekit.internal.dto.Service;
 import org.openhab.binding.homekit.internal.enums.ServiceType;
+import org.openhab.binding.homekit.internal.persistence.HomekitKeyStore;
 import org.openhab.binding.homekit.internal.persistence.HomekitTypeProvider;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -49,8 +50,8 @@ public class HomekitBridgeHandler extends HomekitBaseAccessoryHandler implements
     private final HomekitChildDiscoveryService discoveryService;
 
     public HomekitBridgeHandler(Bridge bridge, HomekitTypeProvider typeProvider,
-            HomekitChildDiscoveryService discoveryService) {
-        super(bridge, typeProvider);
+            HomekitChildDiscoveryService discoveryService, HomekitKeyStore keyStore) {
+        super(bridge, typeProvider, keyStore);
         this.discoveryService = discoveryService;
     }
 
