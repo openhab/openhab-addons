@@ -15,7 +15,7 @@ package org.openhab.binding.tidal.internal.api.model;
 /**
  * Tidal Web Api user data class.
  *
- * @author Hilbrand Bouwkamp - Initial contribution
+ * @author Laurent Arnal - Initial contribution
  */
 public class Me {
     private String displayName;

@@ -53,8 +53,7 @@ import com.google.gson.JsonSyntaxException;
 /**
  * Class to handle Tidal Web Api calls.
  *
- * @author Andreas Stenlund - Initial contribution
- * @author Hilbrand Bouwkamp - Refactored calling Web Api and simplified code
+ * @author Laurent Arnal - Initial contribution
  */
 @NonNullByDefault
 public class TidalApi {

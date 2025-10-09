@@ -15,7 +15,7 @@ package org.openhab.binding.tidal.internal.api.exception;
 /**
  * Tidal authorization problems exception class.
  *
- * @author Hilbrand Bouwkamp - Initial contribution
+ * @author Laurent Arnal - Initial contribution
  */
 public class TidalAuthorizationException extends RuntimeException {
 

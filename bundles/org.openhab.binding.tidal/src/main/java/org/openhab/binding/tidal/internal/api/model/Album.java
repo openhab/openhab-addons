@@ -17,8 +17,7 @@ import java.util.List;
 /**
  * Tidal Api Album data class.
  *
- * @author Andreas Stenlund - Initial contribution
- * @author Hilbrand Bouwkamp - Moved to it's own class
+ * @author Laurent Arnal - Initial contribution
  */
 public class Album {
 

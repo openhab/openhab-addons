@@ -15,7 +15,7 @@ package org.openhab.binding.tidal.internal.api.exception;
 /**
  * Tidal exception indicating the access token has expired.
  *
- * @author Hilbrand Bouwkamp - Initial contribution
+ * @author Laurent Arnal - Initial contribution
  */
 public class TidalTokenExpiredException extends TidalAuthorizationException {
 

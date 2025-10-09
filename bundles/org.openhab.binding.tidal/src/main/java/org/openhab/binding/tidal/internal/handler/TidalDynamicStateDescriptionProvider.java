@@ -30,7 +30,7 @@ import org.osgi.service.component.annotations.Component;
 /**
  * Dynamically create the users list of devices and playlists.
  *
- * @author Hilbrand Bouwkamp - Initial contribution
+ * @author Laurent Arnal - Initial contribution
  */
 @Component(service = { DynamicStateDescriptionProvider.class, TidalDynamicStateDescriptionProvider.class })
 @NonNullByDefault

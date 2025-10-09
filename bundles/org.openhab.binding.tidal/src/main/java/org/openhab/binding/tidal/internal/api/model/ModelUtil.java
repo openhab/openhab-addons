@@ -19,7 +19,7 @@ import com.google.gson.GsonBuilder;
 /**
  * Util class to get the Gson instance used to parse the Tidal data.
  *
- * @author Hilbrand Bouwkamp - Initial contribution
+ * @author Laurent Arnal - Initial contribution
  */
 public final class ModelUtil {
     private static final Gson GSON = new GsonBuilder()

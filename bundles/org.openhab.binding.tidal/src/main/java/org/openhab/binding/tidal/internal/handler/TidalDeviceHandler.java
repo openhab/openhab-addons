@@ -38,8 +38,7 @@ import org.slf4j.LoggerFactory;
 /**
  * The {@link TidalDeviceHandler} is responsible for handling commands, which are sent to one of the channels.
  *
- * @author Andreas Stenlund - Initial contribution
- * @author Hilbrand Bouwkamp - Code cleanup, moved channel state to this class, generic stability.
+ * @author Laurent Arnal - Initial contribution
  */
 @NonNullByDefault
 public class TidalDeviceHandler extends BaseThingHandler {
