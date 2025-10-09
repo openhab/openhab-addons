@@ -438,7 +438,7 @@ public class MdnsBrainDiscovery extends AbstractBrainDiscovery {
 
     @Override
     public void close() {
-        context.getMdnsClient().unregisterAllServices();
+        context.getMdnsClient().removeServiceListener(NeeoConstants.NEEO_MDNS_TYPE, mdnsListener);
         systemsLock.lock();
         try {
             save();
