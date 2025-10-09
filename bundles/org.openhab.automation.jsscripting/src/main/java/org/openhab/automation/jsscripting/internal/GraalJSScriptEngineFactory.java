@@ -54,6 +54,8 @@ public class GraalJSScriptEngineFactory implements ScriptEngineFactory {
 
     public static final String SCRIPT_TYPE = "application/javascript";
 
+    private static final String LANG_NOT_INITIALIZED_MSG = "Graal JavaScript language not initialized. Restart openHAB to initialize available Graal languages properly.";
+
     private static final GraalJSEngineFactory FACTORY = new GraalJSEngineFactory();
 
     private static final List<String> SCRIPT_TYPES = createScriptTypes();
@@ -79,6 +81,10 @@ public class GraalJSScriptEngineFactory implements ScriptEngineFactory {
         this.jsDependencyTracker = jsDependencyTracker;
         this.jsScriptServiceUtil = jsScriptServiceUtil;
         this.configuration = new GraalJSScriptEngineConfiguration(config);
+
+        if (OpenhabGraalJSScriptEngine.getLanguage() == null) {
+            logger.error(LANG_NOT_INITIALIZED_MSG);
+        }
     }
 
     @Modified
@@ -99,6 +105,10 @@ public class GraalJSScriptEngineFactory implements ScriptEngineFactory {
     @Override
     public @Nullable ScriptEngine createScriptEngine(String scriptType) {
         if (!SCRIPT_TYPES.contains(scriptType)) {
+            return null;
+        }
+        if (OpenhabGraalJSScriptEngine.getLanguage() == null) {
+            logger.error(LANG_NOT_INITIALIZED_MSG);
             return null;
         }
         return new DebuggingGraalScriptEngine<>(
