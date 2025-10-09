@@ -18,7 +18,7 @@ import java.net.URISyntaxException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link Configuration} class contains fields mapping thing configuration parameters.
+ * Contains configuration parameters for the Jellyfin binding.
  *
  * @author Miguel Álvarez - Initial contribution
  * @author Patrik Gfeller - Adjustments to work independently of the Android SDK and respective runtime
