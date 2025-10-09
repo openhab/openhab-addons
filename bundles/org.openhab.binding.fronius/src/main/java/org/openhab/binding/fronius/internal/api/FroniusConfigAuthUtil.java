@@ -212,7 +212,7 @@ public class FroniusConfigAuthUtil {
     public static synchronized String login(HttpClient httpClient, float firmwareVersion, URI baseUri, String username,
             String password, HttpMethod method, String relativeUrl, int timeout)
             throws FroniusCommunicationException, FroniusUnauthorizedException {
-        final String hashAlgorithm = firmwareVersion >= 1.38 ? "SHA-256" : "MD5";
+        final String hashAlgorithm = firmwareVersion > 1.37 ? "SHA-256" : "MD5";
         final URI loginUri = URI.create(baseUri + LOGIN_ENDPOINT + "?user=" + username);
         final String relativeLoginUrl = loginUri.getPath();
 
