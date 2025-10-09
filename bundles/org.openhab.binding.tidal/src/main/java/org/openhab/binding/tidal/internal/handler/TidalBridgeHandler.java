@@ -19,7 +19,6 @@ import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -52,7 +51,6 @@ import org.openhab.core.auth.client.oauth2.OAuthClientService;
 import org.openhab.core.auth.client.oauth2.OAuthException;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.auth.client.oauth2.OAuthResponseException;
-import org.openhab.core.cache.ExpiringCache;
 import org.openhab.core.io.net.http.HttpUtil;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -122,9 +120,6 @@ public class TidalBridgeHandler extends BaseBridgeHandler implements TidalAccoun
     private @NonNullByDefault({}) TidalApi tidalApi;
     private @NonNullByDefault({}) TidalBridgeConfiguration configuration;
     private @NonNullByDefault({}) TidalHandleCommands handleCommand;
-    private @NonNullByDefault({}) ExpiringCache<CurrentlyPlayingContext> playingContextCache;
-    private @NonNullByDefault({}) ExpiringCache<List<Playlist>> playlistCache;
-    private @NonNullByDefault({}) ExpiringCache<List<Device>> devicesCache;
 
     /**
      * Keep track if this instance is disposed. This avoids new scheduling to be started after dispose is called.
@@ -154,30 +149,7 @@ public class TidalBridgeHandler extends BaseBridgeHandler implements TidalAccoun
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
-            switch (channelUID.getId()) {
-                case CHANNEL_PLAYED_ALBUMIMAGE:
-                    albumUpdater.refreshAlbumImage(channelUID);
-                    break;
-                case CHANNEL_PLAYLISTS:
-                    playlistCache.invalidateValue();
-                    break;
-                case CHANNEL_ACCESSTOKEN:
-                    onAccessTokenResponse(getAccessTokenResponse());
-                    break;
-                default:
-                    lastTrackId = StringType.EMPTY;
-                    break;
-            }
-        } else {
-            try {
-                if (handleCommand != null
-                        && handleCommand.handleCommand(channelUID, command, lastKnownDeviceActive, lastKnownDeviceId)) {
-                    scheduler.schedule(this::scheduledPollingRestart, POLL_DELAY_AFTER_COMMAND_S, TimeUnit.SECONDS);
-                }
-            } catch (final TidalException e) {
-                logger.debug("Handle Tidal command failed: ", e);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, e.getMessage());
-            }
+            List<Playlist> playLists = getTidalApi().getPlaylists(0, 0);
         }
     }
 
@@ -317,12 +289,6 @@ public class TidalBridgeHandler extends BaseBridgeHandler implements TidalAccoun
         handleCommand = new TidalHandleCommands(tidalApi);
         final Duration expiringPeriod = Duration.ofSeconds(configuration.refreshPeriod);
 
-        playingContextCache = new ExpiringCache<>(expiringPeriod, tidalApi::getPlayerInfo);
-        final int offset = getIntChannelParameter(CHANNEL_PLAYLISTS, CHANNEL_PLAYLISTS_OFFSET, 0);
-        final int limit = getIntChannelParameter(CHANNEL_PLAYLISTS, CHANNEL_PLAYLISTS_LIMIT, 20);
-        playlistCache = new ExpiringCache<>(POLL_PLAY_LIST_HOURS, () -> tidalApi.getPlaylists(offset, limit));
-        devicesCache = new ExpiringCache<>(expiringPeriod, tidalApi::getDevices);
-
         // Start with update status by calling Tidal. If no credentials available no polling should be started.
         scheduler.execute(() -> {
             if (pollStatus()) {
@@ -341,13 +307,6 @@ public class TidalBridgeHandler extends BaseBridgeHandler implements TidalAccoun
         return index == null ? _default : index.intValue();
     }
 
-    @Override
-    public List<Device> listDevices() {
-        final List<Device> listDevices = devicesCache.getValue();
-
-        return listDevices == null ? Collections.emptyList() : listDevices;
-    }
-
     /**
      * Scheduled method to restart polling in case polling is not running.
      */
@@ -356,7 +315,6 @@ public class TidalBridgeHandler extends BaseBridgeHandler implements TidalAccoun
             try {
                 final boolean pollingNotRunning = pollingFuture == null || pollingFuture.isCancelled();
 
-                expireCache();
                 if (pollStatus() && pollingNotRunning) {
                     startPolling();
                 }
@@ -374,17 +332,10 @@ public class TidalBridgeHandler extends BaseBridgeHandler implements TidalAccoun
         synchronized (pollSynchronization) {
             cancelSchedulers();
             if (active) {
-                expireCache();
                 pollingFuture = scheduler.scheduleWithFixedDelay(this::pollStatus, 0, configuration.refreshPeriod,
                         TimeUnit.SECONDS);
             }
         }
-    }
-
-    private void expireCache() {
-        playingContextCache.invalidateValue();
-        playlistCache.invalidateValue();
-        devicesCache.invalidateValue();
     }
 
     /**
@@ -393,54 +344,8 @@ public class TidalBridgeHandler extends BaseBridgeHandler implements TidalAccoun
      * @return true if method completed without errors.
      */
     private boolean pollStatus() {
-        synchronized (pollSynchronization) {
-            try {
-                onAccessTokenResponse(getAccessTokenResponse());
-                // Collect currently playing context.
-                final CurrentlyPlayingContext pc = playingContextCache.getValue();
-                // If Tidal returned a 204. Meaning everything is ok, but we got no data.
-                // Happens when no song is playing. And we know no device was active
-                // No need to continue because no new information will be available.
-                final boolean hasPlayData = pc != null && pc.getDevice() != null;
-                final CurrentlyPlayingContext playingContext = pc == null ? EMPTY_CURRENTLY_PLAYING_CONTEXT : pc;
-
-                // Collect devices and populate selection with available devices.
-                if (hasPlayData) {
-                    final List<Device> ld = devicesCache.getValue();
-                    final List<Device> devices = ld == null ? Collections.emptyList() : ld;
-                    tidalDynamicStateDescriptionProvider.setDevices(devicesChannelUID, devices);
-                    handleCommand.setDevices(devices);
-                    updateDevicesStatus(devices, playingContext.isPlaying());
-                }
-
-                // Update play status information.
-                if (hasPlayData || getThing().getStatus() == ThingStatus.UNKNOWN) {
-                    final List<Playlist> lp = playlistCache.getValue();
-                    final List<Playlist> playlists = lp == null ? Collections.emptyList() : lp;
-                    handleCommand.setPlaylists(playlists);
-                    updatePlayerInfo(playingContext, playlists);
-                    tidalDynamicStateDescriptionProvider.setPlayLists(playlistsChannelUID, playlists);
-                }
-                updateStatus(ThingStatus.ONLINE);
-                return true;
-            } catch (final TidalAuthorizationException e) {
-                logger.debug("Authorization error during polling: ", e);
-
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
-                cancelSchedulers();
-                devicesCache.invalidateValue();
-            } catch (final TidalException e) {
-                logger.info("Tidal returned an error during polling: {}", e.getMessage());
-
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            } catch (final RuntimeException e) {
-                // This only should catch RuntimeException as the apiCall don't throw other exceptions.
-                logger.info("Unexpected error during polling status, please report if this keeps occurring: ", e);
-
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, e.getMessage());
-            }
-        }
-        return false;
+        List<Playlist> playLists = getTidalApi().getPlaylists(0, 0);
+        return true;
     }
 
     /**

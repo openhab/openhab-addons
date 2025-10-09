@@ -51,8 +51,6 @@ public class TidalActions implements ThingActions, ThingHandlerService {
             @ActionInput(name = "deviceId", label = "@text/actions.play.device_id.label", description = "@text/actions.play.device_id.description", type = "java.lang.String", defaultValue = "") @Nullable String deviceId,
             @ActionInput(name = "offset", label = "@text/actions.play.offset.label", description = "@text/actions.play.offset.description", type = "java.lang.Integer", defaultValue = "0") final int offset,
             @ActionInput(name = "positionMs", label = "@text/actions.play.positions_ms.label", description = "@text/actions.play.positions_ms.description", type = "java.lang.Integer", defaultValue = "0") final int positionMs) {
-        ((TidalBridgeHandler) getThingHandler()).getTidalApi().playTrack(deviceId == null ? "" : deviceId, contextUri,
-                offset, positionMs);
     }
 
     /**

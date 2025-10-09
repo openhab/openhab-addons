@@ -12,10 +12,7 @@
  */
 package org.openhab.binding.tidal.internal;
 
-import java.util.List;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.tidal.internal.api.model.Device;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandler;
 
@@ -46,11 +43,6 @@ public interface TidalAccountHandler extends ThingHandler {
      * @return Returns true if the Tidal Bridge is authorized.
      */
     boolean isAuthorized();
-
-    /**
-     * @return List of Tidal devices associated with this Tidal Account Handler
-     */
-    List<Device> listDevices();
 
     /**
      * @return Returns true if the device is online
