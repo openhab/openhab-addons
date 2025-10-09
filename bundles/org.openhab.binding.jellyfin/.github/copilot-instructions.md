@@ -3,6 +3,42 @@
 ## Project Overview
 This is an **openHAB binding** for Jellyfin media servers, built as an OSGi bundle in Java 21 following openHAB's addon architecture patterns. The binding enables home automation control of Jellyfin servers and their connected clients through openHAB's Thing/Channel model.
 
+## Mandatory Development Rules
+
+### File Organization Requirement
+**CRITICAL**: Every class, interface, and enum MUST be created in its own dedicated file. This is a non-negotiable requirement for:
+- **Classes**: Each public class gets its own `.java` file matching the class name
+- **Interfaces**: Each interface gets its own `.java` file matching the interface name  
+- **Enums**: Each enum gets its own `.java` file matching the enum name
+- **Exception Classes**: Each custom exception gets its own `.java` file
+- **Abstract Classes**: Each abstract class gets its own `.java` file
+
+This rule ensures:
+- Better code organization and maintainability
+- Easier navigation and IDE support
+- Cleaner version control and merge conflicts
+- Standard Java best practices compliance
+
+### Class Diagram Maintenance Requirement
+**CRITICAL**: After any structural changes to classes, interfaces, or architecture, the class diagram in `CONTRIBUTION.md` MUST be updated. This is a mandatory step for:
+- **Adding new classes/interfaces**: Include them in the diagram with proper relationships
+- **Removing classes/interfaces**: Remove them from the diagram and update relationships
+- **Changing relationships**: Update dependency arrows, implementations, and interactions
+- **Modifying method signatures**: Update key public methods shown in the diagram
+- **Architectural changes**: Reflect pattern changes (static → instance, factory → DI, etc.)
+
+This requirement ensures:
+- Documentation stays synchronized with actual code structure
+- Architecture decisions are visible and understandable
+- Code reviews can validate both implementation and documentation consistency
+- Future developers have accurate architectural guidance
+
+**Verification Process**: 
+1. Make code changes
+2. Update class diagram in `CONTRIBUTION.md`
+3. Verify diagram accuracy against actual code structure
+4. Test build to ensure no compilation errors
+
 ## Architecture Essentials
 
 ### Core Components Structure

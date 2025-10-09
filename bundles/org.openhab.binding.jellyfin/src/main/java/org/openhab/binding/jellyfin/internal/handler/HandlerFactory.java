@@ -16,6 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.jellyfin.internal.Constants;
 import org.openhab.binding.jellyfin.internal.api.ApiClientFactory;
+import org.openhab.binding.jellyfin.internal.handler.tasks.TaskFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -43,8 +44,6 @@ public class HandlerFactory extends BaseThingHandlerFactory {
 
     @Activate
     public HandlerFactory(@Reference final ApiClientFactory apiClientFactory) {
-        super();
-
         this.apiClientFactory = apiClientFactory;
     }
 
@@ -59,7 +58,9 @@ public class HandlerFactory extends BaseThingHandlerFactory {
 
         if (Constants.THING_TYPE_SERVER.equals(thingTypeUID)) {
             var client = this.apiClientFactory.createApiClient();
-            return new ServerHandler((Bridge) thing, client);
+            var taskFactory = new TaskFactory();
+            var taskManager = new TaskManager(taskFactory);
+            return new ServerHandler((Bridge) thing, client, taskManager);
         }
 
         return null;

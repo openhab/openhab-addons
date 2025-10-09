@@ -12,39 +12,117 @@
  */
 package org.openhab.binding.jellyfin.internal.handler;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.jellyfin.internal.api.ApiClient;
+import org.openhab.binding.jellyfin.internal.api.generated.current.model.SystemInfo;
+import org.openhab.binding.jellyfin.internal.api.generated.current.model.UserDto;
+import org.openhab.binding.jellyfin.internal.events.ErrorEventBus;
+import org.openhab.binding.jellyfin.internal.exceptions.ContextualExceptionHandler;
 import org.openhab.binding.jellyfin.internal.handler.tasks.AbstractTask;
 import org.openhab.binding.jellyfin.internal.handler.tasks.ConnectionTask;
+import org.openhab.binding.jellyfin.internal.handler.tasks.TaskFactoryInterface;
+import org.openhab.binding.jellyfin.internal.handler.tasks.UpdateTask;
 import org.openhab.binding.jellyfin.internal.handler.tasks.UsersListTask;
 import org.openhab.binding.jellyfin.internal.types.ServerState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Stateless utility class for managing tasks based on server states.
- * This class handles state-driven task management, automatically starting and stopping
- * tasks based on server state transitions. Individual task control is handled internally
- * through state transitions only.
+ * TaskManager that integrates TaskFactory for clean architecture.
+ * This class manages the complete lifecycle of tasks and acts as the single point
+ * of coordination for all task-related operations.
+ * 
+ * Uses dependency injection for TaskFactory to enable better testability and
+ * follows SOLID principles for maintainable code.
+ * 
+ * Key features:
+ * - Integrates TaskFactory responsibility
+ * - Provides single point of interaction for ServerHandler
+ * - Better encapsulation of task management logic
+ * - Maintains state-driven task management approach
+ * - Instance-based usage with dependency injection
  * 
  * @author Patrik Gfeller - Initial contribution
  */
 @NonNullByDefault
-public final class TaskManager {
+public class TaskManager implements TaskManagerInterface {
 
     private static final Logger logger = LoggerFactory.getLogger(TaskManager.class);
 
+    private final @Nullable TaskFactoryInterface taskFactory;
+
     /**
-     * Private constructor to prevent instantiation of this utility class.
+     * Constructor with dependency injection for TaskFactory (instance-based usage)
+     * 
+     * @param taskFactory The factory for creating tasks
      */
-    private TaskManager() {
-        // Utility class should not be instantiated
+    public TaskManager(TaskFactoryInterface taskFactory) {
+        this.taskFactory = taskFactory;
+    }
+
+    @Override
+    public Map<String, AbstractTask> initializeTasks(ApiClient apiClient, ErrorEventBus errorEventBus,
+            Consumer<SystemInfo> connectionHandler, Consumer<List<UserDto>> usersHandler) {
+
+        if (taskFactory == null) {
+            throw new IllegalStateException("TaskFactory not injected. Use constructor with TaskFactory parameter.");
+        }
+
+        Map<String, AbstractTask> tasks = new HashMap<>();
+
+        // Create tasks using the injected factory with context-specific exception handlers
+        tasks.put(ConnectionTask.TASK_ID, taskFactory.createConnectionTask(apiClient, connectionHandler,
+                new ContextualExceptionHandler(errorEventBus, "ConnectionTask")));
+
+        tasks.put(UpdateTask.TASK_ID,
+                taskFactory.createUpdateTask(apiClient, new ContextualExceptionHandler(errorEventBus, "UpdateTask")));
+
+        tasks.put(UsersListTask.TASK_ID, taskFactory.createUsersListTask(apiClient, usersHandler,
+                new ContextualExceptionHandler(errorEventBus, "UsersListTask")));
+
+        logger.debug("Initialized {} tasks: {}", tasks.size(), String.join(", ", tasks.keySet()));
+        return tasks;
+    }
+
+    @Override
+    public void processStateChange(ServerState serverState, Map<String, AbstractTask> availableTasks,
+            Map<String, @Nullable ScheduledFuture<?>> scheduledTasks, ScheduledExecutorService scheduler) {
+
+        List<String> taskIdsToStart = getTaskIdsForState(serverState);
+
+        // Stop any running tasks that are not needed for this state
+        for (String runningTaskId : List.copyOf(scheduledTasks.keySet())) {
+            if (!taskIdsToStart.contains(runningTaskId)) {
+                stopTaskInternal(runningTaskId, scheduledTasks);
+            }
+        }
+
+        // Start tasks needed for this state
+        for (String taskId : taskIdsToStart) {
+            if (!scheduledTasks.containsKey(taskId)) {
+                startTaskInternal(taskId, availableTasks, scheduledTasks, scheduler);
+            }
+        }
+    }
+
+    @Override
+    public void stopAllTasks(Map<String, @Nullable ScheduledFuture<?>> scheduledTasks) {
+        logger.info("Stopping {} task(s): {}", scheduledTasks.values().size(),
+                String.join(",", scheduledTasks.keySet()));
+
+        for (ScheduledFuture<?> scheduledTask : scheduledTasks.values()) {
+            stopScheduledTask(scheduledTask);
+        }
+        scheduledTasks.clear();
     }
 
     /**
@@ -53,7 +131,7 @@ public final class TaskManager {
      * @param serverState The server state to get task IDs for
      * @return List of task IDs that should be running for the given state
      */
-    public static List<String> getTaskIdsForState(ServerState serverState) {
+    private List<String> getTaskIdsForState(ServerState serverState) {
         switch (serverState) {
             case CONFIGURED:
                 // When configured but not connected, run connection task to establish connection
@@ -78,47 +156,6 @@ public final class TaskManager {
     }
 
     /**
-     * Manages task transitions for a server state change.
-     * Stops tasks that shouldn't run in the new state and starts tasks that should run.
-     * 
-     * @param serverState The new server state
-     * @param availableTasks Map of available tasks by their IDs
-     * @param scheduledTasks Map of currently scheduled tasks
-     * @param scheduler The scheduler service to use for task scheduling
-     */
-    public static void processStateChange(ServerState serverState, Map<String, AbstractTask> availableTasks,
-            Map<String, @Nullable ScheduledFuture<?>> scheduledTasks, ScheduledExecutorService scheduler) {
-        List<String> taskIdsToStart = getTaskIdsForState(serverState);
-
-        // Stop any running tasks that are not needed for this state
-        for (String runningTaskId : List.copyOf(scheduledTasks.keySet())) {
-            if (!taskIdsToStart.contains(runningTaskId)) {
-                stopTaskInternal(runningTaskId, scheduledTasks);
-            }
-        }
-
-        // Start tasks needed for this state
-        for (String taskId : taskIdsToStart) {
-            if (!scheduledTasks.containsKey(taskId)) {
-                startTaskInternal(taskId, availableTasks, scheduledTasks, scheduler);
-            }
-        }
-    }
-
-    /**
-     * Stops all currently running tasks.
-     * 
-     * @param scheduledTasks Map of currently scheduled tasks
-     */
-    public static void stopAllTasks(Map<String, @Nullable ScheduledFuture<?>> scheduledTasks) {
-        logger.info("Stopping {} task(s): {}", scheduledTasks.values().size(),
-                String.join(",", scheduledTasks.keySet()));
-
-        scheduledTasks.values().forEach(TaskManager::stopScheduledTask);
-        scheduledTasks.clear();
-    }
-
-    /**
      * Starts a task by its ID (internal method for state transitions).
      * 
      * @param taskId The ID of the task to start
@@ -126,7 +163,7 @@ public final class TaskManager {
      * @param scheduledTasks Map of currently scheduled tasks
      * @param scheduler The scheduler service to use for task scheduling
      */
-    private static void startTaskInternal(String taskId, Map<String, AbstractTask> availableTasks,
+    private void startTaskInternal(String taskId, Map<String, AbstractTask> availableTasks,
             Map<String, @Nullable ScheduledFuture<?>> scheduledTasks, ScheduledExecutorService scheduler) {
         AbstractTask task = availableTasks.get(taskId);
         if (task != null) {
@@ -143,7 +180,7 @@ public final class TaskManager {
      * @param scheduledTasks Map of currently scheduled tasks
      * @param scheduler The scheduler service to use for task scheduling
      */
-    private static void startTaskInternal(AbstractTask task, Map<String, @Nullable ScheduledFuture<?>> scheduledTasks,
+    private void startTaskInternal(AbstractTask task, Map<String, @Nullable ScheduledFuture<?>> scheduledTasks,
             ScheduledExecutorService scheduler) {
         String taskId = task.getId();
         int delay = task.getStartupDelay();
@@ -162,7 +199,7 @@ public final class TaskManager {
      * @param taskId The ID of the task to stop
      * @param scheduledTasks Map of currently scheduled tasks
      */
-    private static void stopTaskInternal(String taskId, Map<String, @Nullable ScheduledFuture<?>> scheduledTasks) {
+    private void stopTaskInternal(String taskId, Map<String, @Nullable ScheduledFuture<?>> scheduledTasks) {
         ScheduledFuture<?> scheduledTask = scheduledTasks.remove(taskId);
         if (scheduledTask != null) {
             logger.info("Stopping task [{}]", taskId);
@@ -179,7 +216,7 @@ public final class TaskManager {
      * @param scheduler The scheduler service to use
      * @return The scheduled future for the task
      */
-    private static @Nullable ScheduledFuture<?> scheduleTask(Runnable task, long initialDelay, long interval,
+    private @Nullable ScheduledFuture<?> scheduleTask(Runnable task, long initialDelay, long interval,
             ScheduledExecutorService scheduler) {
         return scheduler.scheduleWithFixedDelay(task, initialDelay, interval, TimeUnit.SECONDS);
     }
@@ -189,7 +226,7 @@ public final class TaskManager {
      * 
      * @param scheduledTask The scheduled task to stop
      */
-    private static void stopScheduledTask(@Nullable ScheduledFuture<?> scheduledTask) {
+    private void stopScheduledTask(@Nullable ScheduledFuture<?> scheduledTask) {
         if (scheduledTask == null || scheduledTask.isCancelled() || scheduledTask.isDone()) {
             return;
         }

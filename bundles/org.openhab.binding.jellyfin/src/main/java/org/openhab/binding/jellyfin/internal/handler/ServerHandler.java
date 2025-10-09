@@ -29,12 +29,7 @@ import org.openhab.binding.jellyfin.internal.api.generated.current.model.UserDto
 import org.openhab.binding.jellyfin.internal.events.ErrorEvent;
 import org.openhab.binding.jellyfin.internal.events.ErrorEventBus;
 import org.openhab.binding.jellyfin.internal.events.ErrorEventListener;
-import org.openhab.binding.jellyfin.internal.exceptions.ContextualExceptionHandler;
 import org.openhab.binding.jellyfin.internal.handler.tasks.AbstractTask;
-import org.openhab.binding.jellyfin.internal.handler.tasks.ConnectionTask;
-import org.openhab.binding.jellyfin.internal.handler.tasks.TaskFactory;
-import org.openhab.binding.jellyfin.internal.handler.tasks.UpdateTask;
-import org.openhab.binding.jellyfin.internal.handler.tasks.UsersListTask;
 import org.openhab.binding.jellyfin.internal.types.ServerState;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -62,32 +57,34 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
     private final ErrorEventBus errorEventBus;
     private final ApiClient apiClient;
     private final Configuration configuration;
+    private final TaskManagerInterface taskManager;
 
     private ServerState state = ServerState.INITIALIZING;
 
     private final Map<String, AbstractTask> tasks = new HashMap<>();
     private final Map<String, @Nullable ScheduledFuture<?>> scheduledTasks = new HashMap<>();
 
-    public ServerHandler(Bridge bridge, ApiClient apiClient) {
+    /**
+     * Constructor with dependency injection for TaskManager
+     * 
+     * @param bridge The openHAB bridge
+     * @param apiClient The API client for Jellyfin communication
+     * @param taskManager The task manager that handles all task operations
+     */
+    public ServerHandler(Bridge bridge, ApiClient apiClient, TaskManagerInterface taskManager) {
         super(bridge);
 
         this.configuration = this.getConfigAs(Configuration.class);
         this.apiClient = apiClient;
+        this.taskManager = taskManager;
 
         // Create event bus and register as listener
         this.errorEventBus = new ErrorEventBus();
         this.errorEventBus.addListener(this);
 
-        // Create tasks with context-specific exception handlers
-        this.tasks.put(ConnectionTask.TASK_ID,
-                TaskFactory.createConnectionTask(this.apiClient, systemInfo -> this.handleConnection(systemInfo),
-                        new ContextualExceptionHandler(errorEventBus, "ConnectionTask")));
-        this.tasks.put(UpdateTask.TASK_ID, TaskFactory.createUpdateTask(this.apiClient,
-                new ContextualExceptionHandler(errorEventBus, "UpdateTask")));
-        this.tasks.put(UsersListTask.TASK_ID, TaskFactory.createUsersListTask(this.apiClient,
-                users -> this.handleUsersList(users), new ContextualExceptionHandler(errorEventBus, "UsersListTask")));
-
-        // Additional tasks can be added here in the future
+        // Initialize tasks through the task manager
+        this.tasks.putAll(taskManager.initializeTasks(apiClient, errorEventBus,
+                systemInfo -> this.handleConnection(systemInfo), users -> this.handleUsersList(users)));
     }
 
     /**
@@ -110,7 +107,7 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
         logger.debug("Server state changed: {} -> {}", oldState, newState);
 
         // Update running tasks based on the new state
-        TaskManager.processStateChange(newState, tasks, scheduledTasks, scheduler);
+        taskManager.processStateChange(newState, tasks, scheduledTasks, scheduler);
     }
 
     @Override
@@ -200,7 +197,8 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
         if (errorEventBus != null) {
             errorEventBus.removeListener(this);
         }
-        // Set state to indicate disposal
+        // Use injected task manager
+        taskManager.stopAllTasks(scheduledTasks);
         setState(ServerState.DISPOSED);
         super.dispose();
     }

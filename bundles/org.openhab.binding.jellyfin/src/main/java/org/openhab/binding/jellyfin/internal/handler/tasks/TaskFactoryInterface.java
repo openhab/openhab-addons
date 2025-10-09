@@ -22,12 +22,13 @@ import org.openhab.binding.jellyfin.internal.api.generated.current.model.UserDto
 import org.openhab.binding.jellyfin.internal.types.ExceptionHandlerType;
 
 /**
- * Factory for creating tasks used in the Jellyfin binding.
+ * Interface for creating tasks used in the Jellyfin binding.
+ * This enables dependency inversion and better testability.
  *
- * @author Patrik Gfeller - Initial contribution
+ * @author Patrik Gfeller - Refactoring contribution
  */
 @NonNullByDefault
-public class TaskFactory implements TaskFactoryInterface {
+public interface TaskFactoryInterface {
 
     /**
      * Creates a connection task with the specified parameters.
@@ -37,11 +38,8 @@ public class TaskFactory implements TaskFactoryInterface {
      * @param exceptionHandler The handler for exceptions
      * @return A configured connection task
      */
-    @Override
-    public ConnectionTask createConnectionTask(ApiClient client, Consumer<SystemInfo> connectionHandler,
-            ExceptionHandlerType exceptionHandler) {
-        return new ConnectionTask(client, connectionHandler, exceptionHandler);
-    }
+    ConnectionTask createConnectionTask(ApiClient client, Consumer<SystemInfo> connectionHandler,
+            ExceptionHandlerType exceptionHandler);
 
     /**
      * Creates an update task with the specified parameters.
@@ -50,10 +48,7 @@ public class TaskFactory implements TaskFactoryInterface {
      * @param exceptionHandler The handler for exceptions
      * @return A configured update task
      */
-    @Override
-    public UpdateTask createUpdateTask(ApiClient client, ExceptionHandlerType exceptionHandler) {
-        return new UpdateTask(client, exceptionHandler);
-    }
+    UpdateTask createUpdateTask(ApiClient client, ExceptionHandlerType exceptionHandler);
 
     /**
      * Creates a users list task with the specified parameters.
@@ -63,9 +58,6 @@ public class TaskFactory implements TaskFactoryInterface {
      * @param exceptionHandler The handler for exceptions
      * @return A configured users list task
      */
-    @Override
-    public UsersListTask createUsersListTask(ApiClient client, Consumer<List<UserDto>> usersHandler,
-            ExceptionHandlerType exceptionHandler) {
-        return new UsersListTask(client, usersHandler, exceptionHandler);
-    }
+    UsersListTask createUsersListTask(ApiClient client, Consumer<List<UserDto>> usersHandler,
+            ExceptionHandlerType exceptionHandler);
 }
