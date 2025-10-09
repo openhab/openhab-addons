@@ -30,6 +30,7 @@ import java.nio.file.attribute.FileAttribute;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.ZonedDateTime;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -38,6 +39,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.regex.Pattern;
 
 import javax.script.ScriptContext;
 import javax.script.ScriptException;
@@ -57,6 +59,9 @@ import org.openhab.automation.jsscripting.internal.fs.watch.JSDependencyTracker;
 import org.openhab.automation.jsscripting.internal.scriptengine.InvocationInterceptingScriptEngineWithInvocableAndCompilableAndAutoCloseable;
 import org.openhab.automation.jsscripting.internal.scriptengine.helper.LifecycleTracker;
 import org.openhab.core.automation.module.script.ScriptExtensionAccessor;
+import org.openhab.core.automation.module.script.internal.handler.AbstractScriptModuleHandler;
+import org.openhab.core.automation.module.script.internal.handler.ScriptActionHandler;
+import org.openhab.core.automation.module.script.internal.handler.ScriptConditionHandler;
 import org.openhab.core.items.Item;
 import org.openhab.core.library.types.QuantityType;
 import org.slf4j.Logger;
@@ -103,6 +108,8 @@ public class OpenhabGraalJSScriptEngine
     }
     private static final String OPENHAB_JS_INJECTION_CODE = "Object.assign(this, require('openhab'));";
     private static final String EVENT_CONVERSION_CODE = "this.event = (typeof this.rules?._getTriggeredData === 'function') ? rules._getTriggeredData(ctx, true) : this.event";
+    private static final Pattern USE_WRAPPER_DIRECTIVE = Pattern
+            .compile("^\\s*([\"'])use wrapper(?:=(?<enabled>true|false))?\\1;?\\s*$");
 
     private static final String REQUIRE_WRAPPER_NAME = "__wraprequire__";
     /** Shared Polyglot {@link Engine} across all instances of {@link OpenhabGraalJSScriptEngine} */
@@ -306,13 +313,26 @@ public class OpenhabGraalJSScriptEngine
 
         initialized = true;
 
+        if (logger.isDebugEnabled()) {
+            logger.debug(
+                    "Engine '{}': isScriptFile(): {}, isScriptModule(): {}, isScriptAction(): {}, isScriptCondition(): {}, isTransformation(): {}",
+                    engineIdentifier, isScriptFile(), isScriptModule(), isScriptAction(), isScriptCondition(),
+                    isTransformation());
+        }
+
+        if (!isScriptFile() && !isScriptModule() && !isTransformation()) {
+            logger.warn(
+                    "Unknown script environment detected for engine '{}': Neither script file, script module nor transformation.",
+                    engineIdentifier);
+        }
+
         try {
             logger.debug("Evaluating cached global script for engine '{}' ...", engineIdentifier);
             delegate.getPolyglotContext().eval(GLOBAL_SOURCE);
 
             if (configuration.isInjectionEnabledForAllScripts()
-                    || (isUiBasedScript() && configuration.isInjectionEnabledForUiBasedScript())
-                    || (isTransformationScript() && configuration.isInjectionEnabledForTransformations())) {
+                    || (isScriptModule() && configuration.isInjectionEnabledForScriptModules())
+                    || (isTransformation() && configuration.isInjectionEnabledForTransformations())) {
                 if (configuration.isInjectionCachingEnabled()) {
                     logger.debug("Evaluating cached openhab-js injection for engine '{}' ...", engineIdentifier);
                     delegate.getPolyglotContext().eval(OPENHAB_JS_SOURCE);
@@ -330,7 +350,7 @@ public class OpenhabGraalJSScriptEngine
 
     @Override
     protected String onScript(String script) {
-        if (!isUiBasedScript()) {
+        if (!isScriptModule()) {
             return super.onScript(script);
         }
 
@@ -339,7 +359,31 @@ public class OpenhabGraalJSScriptEngine
             logger.debug("Injecting event conversion code into script for engine '{}'.", engineIdentifier);
             newScript = EVENT_CONVERSION_CODE + System.lineSeparator() + newScript;
         }
-        if (configuration.isWrapperEnabled()) {
+
+        // keep this extendable for more directives by checking the first n lines (n = number of directives)
+        // up to two directives: "use strict" (handled by Graal) and "use wrapper"
+        List<String> header = script.lines().limit(2).toList();
+        boolean useWrapper = isScriptAction()
+                || (isScriptCondition() && configuration.isScriptConditionWrapperEnabled());
+        for (String line : header) {
+            var matcher = USE_WRAPPER_DIRECTIVE.matcher(line);
+            if (!matcher.matches()) {
+                continue;
+            }
+            var enabled = matcher.group("enabled");
+            if (enabled == null || enabled.isBlank()) {
+                useWrapper = true;
+            } else if ("false".equals(enabled)) {
+                useWrapper = false;
+            } else if ("true".equals(enabled)) {
+                useWrapper = true;
+            } else {
+                logger.warn("Invalid value '{}' for 'use wrapper' directive in script for engine '{}'.", enabled,
+                        engineIdentifier);
+            }
+        }
+
+        if (useWrapper) {
             logger.debug("Wrapping script for engine '{}' ...", engineIdentifier);
             newScript = "(function() {" + System.lineSeparator() + newScript + System.lineSeparator() + "})()";
         }
@@ -383,27 +427,73 @@ public class OpenhabGraalJSScriptEngine
     }
 
     /**
-     * Tests if the current script is a UI-based script, i.e. it is neither loaded from a file nor a transformation.
+     * Tests if the script is a script file, i.e. it is loaded from a JavaScript file.
      * 
-     * @return true if the script is UI-based, false otherwise
+     * @return true if the script is loaded from a JavaScript file, false otherwise
      */
-    private boolean isUiBasedScript() {
+    private boolean isScriptFile() {
         ScriptContext ctx = delegate.getContext();
         if (ctx == null) {
             logger.warn("Failed to retrieve script context from engine '{}'.", engineIdentifier);
             return false;
         }
-        return ctx.getAttribute("javax.script.filename") == null
-                && !engineIdentifier.startsWith(OPENHAB_TRANSFORMATION_SCRIPT);
+        return ctx.getAttribute("javax.script.filename") != null;
     }
 
     /**
-     * Tests if the current script is a transformation script, i.e. it is created from the script transformation
-     * service.
+     * Get the module type id (if any) of the module executing the script.
      * 
-     * @return true if the script is a transformation script, false otherwise
+     * @return the module type id (if any) of the module executing the script, or null if the script is not a module
      */
-    private boolean isTransformationScript() {
+    private @Nullable String getModuleTypeId() {
+        ScriptContext ctx = delegate.getContext();
+        if (ctx == null) {
+            logger.warn("Failed to retrieve script context from engine '{}'.", engineIdentifier);
+            return null;
+        }
+
+        Object value = ctx.getAttribute(AbstractScriptModuleHandler.CONTEXT_KEY_MODULE_TYPE_ID);
+        if (value instanceof String str) {
+            return str;
+        }
+        return null;
+    }
+
+    /**
+     * Tests if the script is a script module, i.e. executed by an implementation of
+     * {@link AbstractScriptModuleHandler}.
+     * 
+     * @return true if the script is a script module, false otherwise
+     */
+    private boolean isScriptModule() {
+        String moduleTypeId = getModuleTypeId();
+        return moduleTypeId != null && moduleTypeId.startsWith("script.");
+    }
+
+    /**
+     * Tests if a script is a script action, i.e. executed by the ScriptActionHandler.
+     * 
+     * @return true if the script is a script action, false otherwise
+     */
+    private boolean isScriptAction() {
+        return ScriptActionHandler.TYPE_ID.equals(getModuleTypeId());
+    }
+
+    /**
+     * Tests if the script is a script condition, i.e. executed by the ScriptConditionHandler.
+     * 
+     * @return true if the script is a script condition, false otherwise
+     */
+    private boolean isScriptCondition() {
+        return ScriptConditionHandler.TYPE_ID.equals(getModuleTypeId());
+    }
+
+    /**
+     * Tests if the script is a transformation script, i.e. created from the script transformation service.
+     * 
+     * @return true if it is a transformation script, false otherwise
+     */
+    private boolean isTransformation() {
         ScriptContext ctx = delegate.getContext();
         if (ctx == null) {
             logger.warn("Failed to retrieve script context from engine '{}'.", engineIdentifier);

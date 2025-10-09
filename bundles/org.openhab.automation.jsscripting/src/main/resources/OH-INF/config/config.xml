@@ -29,14 +29,14 @@
 			</options>
 			<default>3</default>
 		</parameter>
-		<parameter name="wrapperEnabled" type="boolean" required="true" groupName="environment">
-			<label>Wrap UI-based scripts in Self-Executing Function</label>
+		<parameter name="scriptConditionWrapperEnabled" type="boolean" required="true" groupName="environment">
+			<label>Wrap Script Conditions in Self-Executing Function</label>
 			<description><![CDATA[
-			Wrapping UI-based scripts in a self-executing function allows the use of the <code>let</code> and <code>const</code> variable declarations,
+			Wrapping script conditions in a self-executing function allows the use of the <code>let</code> and <code>const</code> variable declarations,
 			as well as the use of <code>function</code> and <code>class</code> declarations.<br>
-			With this option enabled, you can also use <code>return</code> statements in your scripts to abort execution at any point.
+			With this option enabled, you need to use <code>return</code> statements in your script condition to return true or false.
 			]]></description>
-			<default>true</default>
+			<default>false</default>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="eventConversionEnabled" type="boolean" required="true" groupName="environment">
