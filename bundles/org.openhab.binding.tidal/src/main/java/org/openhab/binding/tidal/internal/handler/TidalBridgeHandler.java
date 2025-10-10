@@ -21,7 +21,6 @@ import java.time.Duration;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
@@ -36,11 +35,7 @@ import org.openhab.binding.tidal.internal.api.exception.TidalAuthorizationExcept
 import org.openhab.binding.tidal.internal.api.exception.TidalException;
 import org.openhab.binding.tidal.internal.api.model.Album;
 import org.openhab.binding.tidal.internal.api.model.Artist;
-import org.openhab.binding.tidal.internal.api.model.CurrentlyPlayingContext;
-import org.openhab.binding.tidal.internal.api.model.Device;
 import org.openhab.binding.tidal.internal.api.model.Image;
-import org.openhab.binding.tidal.internal.api.model.Item;
-import org.openhab.binding.tidal.internal.api.model.Me;
 import org.openhab.binding.tidal.internal.api.model.Playlist;
 import org.openhab.binding.tidal.internal.api.model.Track;
 import org.openhab.binding.tidal.internal.discovery.TidalDeviceDiscoveryService;
@@ -52,9 +47,6 @@ import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.auth.client.oauth2.OAuthResponseException;
 import org.openhab.core.io.net.http.HttpUtil;
 import org.openhab.core.library.types.DecimalType;
-import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.library.types.PercentType;
-import org.openhab.core.library.types.PlayPauseType;
 import org.openhab.core.library.types.RawType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Bridge;
@@ -80,11 +72,8 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class TidalBridgeHandler extends BaseBridgeHandler implements TidalAccountHandler, AccessTokenRefreshListener {
 
-    private static final CurrentlyPlayingContext EMPTY_CURRENTLY_PLAYING_CONTEXT = new CurrentlyPlayingContext();
     private static final Album EMPTY_ALBUM = new Album();
     private static final Artist EMPTY_ARTIST = new Artist();
-    private static final Item EMPTY_ITEM = new Item();
-    private static final Device EMPTY_DEVICE = new Device();
     private static final SimpleDateFormat MUSIC_TIME_FORMAT = new SimpleDateFormat("m:ss");
     private static final int MAX_IMAGE_SIZE = 500000;
     /**
@@ -263,13 +252,6 @@ public class TidalBridgeHandler extends BaseBridgeHandler implements TidalAccoun
 
     private String updateProperties(AccessTokenResponse credentials) {
         if (tidalApi != null) {
-            final Me me = tidalApi.getMe();
-            final String user = me.getDisplayName() == null ? me.getId() : me.getDisplayName();
-            final Map<String, String> props = editProperties();
-
-            props.put(PROPERTY_TIDAL_USER, user);
-            updateProperties(props);
-            return user;
         }
         return "";
     }
@@ -374,12 +356,7 @@ public class TidalBridgeHandler extends BaseBridgeHandler implements TidalAccoun
      * @param tidalDevices list of Tidal devices
      * @param playing true if the current active device is playing
      */
-    private void updateDevicesStatus(List<Device> tidalDevices, boolean playing) {
-        getThing().getThings().stream() //
-                .filter(thing -> thing.getHandler() instanceof TidalDeviceHandler) //
-                .filter(thing -> !tidalDevices.stream()
-                        .anyMatch(sd -> ((TidalDeviceHandler) thing.getHandler()).updateDeviceStatus(sd, playing)))
-                .forEach(thing -> ((TidalDeviceHandler) thing.getHandler()).setStatusGone());
+    private void updateDevicesStatus(boolean playing) {
     }
 
     /**
@@ -388,89 +365,10 @@ public class TidalBridgeHandler extends BaseBridgeHandler implements TidalAccoun
      * @param playerInfo The object with the current playing context
      * @param playlists List of available playlists
      */
-    private void updatePlayerInfo(CurrentlyPlayingContext playerInfo, List<Playlist> playlists) {
-        updateChannelState(CHANNEL_TRACKPLAYER, playerInfo.isPlaying() ? PlayPauseType.PLAY : PlayPauseType.PAUSE);
-        updateChannelState(CHANNEL_DEVICESHUFFLE, OnOffType.from(playerInfo.isShuffleState()));
-        updateChannelState(CHANNEL_TRACKREPEAT, playerInfo.getRepeatState());
-
-        final boolean hasItem = playerInfo.getItem() != null;
-        final Item item = hasItem ? playerInfo.getItem() : EMPTY_ITEM;
-        final State trackId = valueOrEmpty(item.getId());
-
-        progressUpdater.updateProgress(active, playerInfo.isPlaying(), item.getDurationMs(),
-                playerInfo.getProgressMs());
-        if (!lastTrackId.equals(trackId)) {
-            lastTrackId = trackId;
-            updateChannelState(CHANNEL_PLAYED_TRACKDURATION_MS, new DecimalType(item.getDurationMs()));
-            final String formattedProgress;
-            synchronized (MUSIC_TIME_FORMAT) {
-                // synchronize because SimpleDateFormat is not thread safe
-                formattedProgress = MUSIC_TIME_FORMAT.format(new Date(item.getDurationMs()));
-            }
-            updateChannelState(CHANNEL_PLAYED_TRACKDURATION_FMT, formattedProgress);
-
-            updateChannelsPlayList(playerInfo, playlists);
-            updateChannelState(CHANNEL_PLAYED_TRACKID, lastTrackId);
-            updateChannelState(CHANNEL_PLAYED_TRACKHREF, valueOrEmpty(item.getHref()));
-            updateChannelState(CHANNEL_PLAYED_TRACKURI, valueOrEmpty(item.getUri()));
-            updateChannelState(CHANNEL_PLAYED_TRACKNAME, valueOrEmpty(item.getName()));
-            updateChannelState(CHANNEL_PLAYED_TRACKTYPE, valueOrEmpty(item.getType()));
-            updateChannelState(CHANNEL_PLAYED_TRACKNUMBER, valueOrZero(item.getTrackNumber()));
-            updateChannelState(CHANNEL_PLAYED_TRACKDISCNUMBER, valueOrZero(item.getDiscNumber()));
-            updateChannelState(CHANNEL_PLAYED_TRACKPOPULARITY, valueOrZero(item.getPopularity()));
-            updateChannelState(CHANNEL_PLAYED_TRACKEXPLICIT, OnOffType.from(item.isExplicit()));
-
-            final boolean hasAlbum = hasItem && item.getAlbum() != null;
-            final Album album = hasAlbum ? item.getAlbum() : EMPTY_ALBUM;
-            updateChannelState(CHANNEL_PLAYED_ALBUMID, valueOrEmpty(album.getId()));
-            updateChannelState(CHANNEL_PLAYED_ALBUMTYPE, valueOrEmpty(album.getType()));
-            albumUpdater.updateAlbumImage(album);
-
-            final Artist firstArtist = hasItem && item.getArtists() != null && !item.getArtists().isEmpty()
-                    ? item.getArtists().get(0)
-                    : EMPTY_ARTIST;
-
-            updateChannelState(CHANNEL_PLAYED_ARTISTID, valueOrEmpty(firstArtist.getId()));
-            updateChannelState(CHANNEL_PLAYED_ARTISTTYPE, valueOrEmpty(firstArtist.getType()));
-        }
-        final Device device = playerInfo.getDevice() == null ? EMPTY_DEVICE : playerInfo.getDevice();
-        // Only update lastKnownDeviceId if it has a value, otherwise keep old value.
-        if (device.getId() != null) {
-            lastKnownDeviceId = device.getId();
-            updateChannelState(CHANNEL_DEVICEID, valueOrEmpty(lastKnownDeviceId));
-            updateChannelState(CHANNEL_DEVICES, valueOrEmpty(lastKnownDeviceId));
-            updateChannelState(CHANNEL_DEVICENAME, valueOrEmpty(device.getName()));
-        }
-        lastKnownDeviceActive = device.isActive();
-        updateChannelState(CHANNEL_DEVICEACTIVE, OnOffType.from(lastKnownDeviceActive));
-        updateChannelState(CHANNEL_DEVICETYPE, valueOrEmpty(device.getType()));
-
-        // experienced situations where volume seemed to be undefined...
-        updateChannelState(CHANNEL_DEVICEVOLUME,
-                device.getVolumePercent() == null ? UnDefType.UNDEF : new PercentType(device.getVolumePercent()));
+    private void updatePlayerInfo(List<Playlist> playlists) {
     }
 
-    private void updateChannelsPlayList(CurrentlyPlayingContext playerInfo, @Nullable List<Playlist> playlists) {
-        /*
-         * final Context context = playerInfo.getContext();
-         * final String playlistId;
-         * String playlistName = "";
-         *
-         * if (context != null && "playlist".equals(context.getType())) {
-         * playlistId = "tidal:playlist" + context.getUri().substring(context.getUri().lastIndexOf(':'));
-         *
-         * if (playlists != null) {
-         * final Optional<Playlist> optionalPlaylist = playlists.stream()
-         * .filter(pl -> playlistId.equals(pl.getUri())).findFirst();
-         *
-         * playlistName = optionalPlaylist.isPresent() ? optionalPlaylist.get().getName() : "";
-         * }
-         * } else {
-         * playlistId = "";
-         * }
-         * updateChannelState(CHANNEL_PLAYLISTS, valueOrEmpty(playlistId));
-         * updateChannelState(CHANNEL_PLAYLISTNAME, valueOrEmpty(playlistName));
-         */
+    private void updateChannelsPlayList(@Nullable List<Playlist> playlists) {
     }
 
     /**

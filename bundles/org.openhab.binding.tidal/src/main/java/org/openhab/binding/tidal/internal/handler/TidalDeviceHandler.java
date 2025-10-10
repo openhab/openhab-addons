@@ -17,11 +17,8 @@ import static org.openhab.binding.tidal.internal.TidalBindingConstants.*;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.tidal.internal.api.TidalApi;
 import org.openhab.binding.tidal.internal.api.exception.TidalException;
-import org.openhab.binding.tidal.internal.api.model.Device;
 import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.PlayPauseType;
-import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -31,7 +28,6 @@ import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
-import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -99,34 +95,6 @@ public class TidalDeviceHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Tidal Bridge Offline");
             logger.debug("TidalDevice {}: TidalBridge is not online: {}", getThing().getThingTypeUID(),
                     bridgeStatusInfo.getStatus());
-        }
-    }
-
-    /**
-     * Updates the status if the given device matches with this handler.
-     *
-     * @param device device with status information
-     * @param playing true if the current active device is playing
-     * @return returns true if given device matches with this handler
-     */
-    public boolean updateDeviceStatus(Device device, boolean playing) {
-        if (deviceName.equals(device.getName())) {
-            deviceId = device.getId() == null ? "" : device.getId();
-            logger.debug("Updating status of Thing: {} Device [ {} {}, {} ]", thing.getUID(), deviceId,
-                    device.getName(), device.getType());
-            final boolean online = setOnlineStatus(device.isRestricted());
-            updateChannelState(CHANNEL_DEVICEID, new StringType(deviceId));
-            updateChannelState(CHANNEL_DEVICENAME, new StringType(device.getName()));
-            updateChannelState(CHANNEL_DEVICETYPE, new StringType(device.getType()));
-            updateChannelState(CHANNEL_DEVICEVOLUME,
-                    device.getVolumePercent() == null ? UnDefType.UNDEF : new PercentType(device.getVolumePercent()));
-            active = device.isActive();
-            updateChannelState(CHANNEL_DEVICEACTIVE, OnOffType.from(active));
-            updateChannelState(CHANNEL_DEVICEPLAYER,
-                    online && active && playing ? PlayPauseType.PLAY : PlayPauseType.PAUSE);
-            return true;
-        } else {
-            return false;
         }
     }
 
