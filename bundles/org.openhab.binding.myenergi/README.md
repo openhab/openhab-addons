@@ -190,7 +190,6 @@ Number                      Eddi_Phase                           "MyEnergi Eddi 
 Number:Power                Eddi_GridPower                       "MyEnergi Eddi Grid Power [%.1f %unit%]"                                         <energy>    {channel="myenergi:eddi:api:54876211:grid-power"}
 Number:Power                Eddi_GeneratedPower                  "MyEnergi Eddi Generated Power [%.1f %unit%]"                                    <energy>    {channel="myenergi:eddi:api:54876211:generated-power"}
 Number:Power                Eddi_DivertedPower                   "MyEnergi Eddi Diverted Power [%.1f %unit%]"                                     <energy>    {channel="myenergi:eddi:api:54876211:diverted-power"}
-Number:Power                Eddi_ConsumedPower                   "MyEnergi Eddi Consumed Power [%.1f %unit%]"                                     <energy>    {channel="myenergi:eddi:api:54876211:consumed-power"}
 Number:Energy               Eddi_EnergyTransferred               "MyEnergi Eddi Energy Transferred [%.1f %unit%]"                                 <energy>    {channel="myenergi:eddi:api:54876211:energy-transferred"}
 Switch                      Eddi_BoostMode                       "MyEnergi Eddi Boost Mode [%s]"                                                              {channel="myenergi:eddi:api:54876211:boost-mode"}
 Number:Time                 Eddi_BoostRemaining                  "MyEnergi Eddi Boost Time Remaining [%1$tH:%1$tM:%1$tS]"                                     {channel="myenergi:eddi:api:54876211:boost-remaining"}
