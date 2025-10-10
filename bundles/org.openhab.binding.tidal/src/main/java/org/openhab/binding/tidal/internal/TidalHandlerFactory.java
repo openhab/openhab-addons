@@ -17,7 +17,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.tidal.internal.handler.TidalBridgeHandler;
 import org.openhab.binding.tidal.internal.handler.TidalDeviceHandler;
-import org.openhab.binding.tidal.internal.handler.TidalDynamicStateDescriptionProvider;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
@@ -43,16 +42,13 @@ public class TidalHandlerFactory extends BaseThingHandlerFactory {
     private final OAuthFactory oAuthFactory;
     private final HttpClient httpClient;
     private final TidalAuthService authService;
-    private final TidalDynamicStateDescriptionProvider tidalDynamicStateDescriptionProvider;
 
     @Activate
     public TidalHandlerFactory(@Reference OAuthFactory oAuthFactory,
-            @Reference final HttpClientFactory httpClientFactory, @Reference TidalAuthService authService,
-            @Reference TidalDynamicStateDescriptionProvider tidalDynamicStateDescriptionProvider) {
+            @Reference final HttpClientFactory httpClientFactory, @Reference TidalAuthService authService) {
         this.oAuthFactory = oAuthFactory;
         this.httpClient = httpClientFactory.getCommonHttpClient();
         this.authService = authService;
-        this.tidalDynamicStateDescriptionProvider = tidalDynamicStateDescriptionProvider;
     }
 
     @Override
@@ -66,8 +62,7 @@ public class TidalHandlerFactory extends BaseThingHandlerFactory {
         final ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (TidalBindingConstants.THING_TYPE_PLAYER.equals(thingTypeUID)) {
-            final TidalBridgeHandler handler = new TidalBridgeHandler((Bridge) thing, oAuthFactory, httpClient,
-                    tidalDynamicStateDescriptionProvider);
+            final TidalBridgeHandler handler = new TidalBridgeHandler((Bridge) thing, oAuthFactory, httpClient);
             authService.addTidalAccountHandler(handler);
             return handler;
         }
