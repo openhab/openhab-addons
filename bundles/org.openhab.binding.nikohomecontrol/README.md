@@ -24,7 +24,7 @@ The installation only needs to be 'connected' (registered on the Niko Home Contr
 For Niko Home Control I, the binding exposes all actions from the Niko Home Control System that can be triggered from the smartphone/tablet interface, as defined in the Niko Home Control I programming software.
 For Niko Home Control II, the binding exposes all devices in the system.
 
-Supported device types are switches, dimmers and rollershutters or blinds, thermostats, energy meters (Niko Home Control I only), access control (Niko Home Control II only) and car chargers (Niko Home Control II only).
+Supported device types are switches, dimmers and rollershutters or blinds, thermostats, energy meters, access control (Niko Home Control II only) and car chargers (Niko Home Control II only).
 Niko Home Control alarm and notice messages are retrieved and made available in the binding.
 
 ## Supported Things
@@ -41,14 +41,15 @@ The following thing types are available in the binding:
 | dimmer              |   x   |   x    | dimmable light action                                                             |
 | blind               |   x   |   x    | rollershutter, venetian blind                                                     |
 | thermostat          |   x   |   x    | thermostat                                                                        |
+| energyMeterHome     |       |   x    | home digital energy meter                                                         |
 | energyMeterLive     |   x   |   x    | energy meter with live power monitoring and aggregation                           |
-| energyMeter         |   x   |        | energy meter, aggregates readings with 10 min intervals                           |
-| gasMeter            |   x   |        | gas meter, aggregates readings with 10 min intervals                              |
-| waterMeter          |   x   |        | water meter, aggregates readings with 10 min intervals                            |
+| energyMeter         |   x   |   x    | energy meter, aggregates readings with 10 min intervals                           |
+| gasMeter            |   x   |   x    | gas meter, aggregates readings with 10 min intervals                              |
+| waterMeter          |   x   |   x    | water meter, aggregates readings with 10 min intervals                            |
 | access              |       |   x    | door with bell button and lock                                                    |
 | accessRingAndComeIn |       |   x    | door with bell button, lock and ring and come in functionality                    |
 | alarm               |       |   x    | alarm system                                                                      |
-| carCharger          |   x   |   x    | car charger device                                                                |
+| carCharger          |       |   x    | car charger device                                                                |
 
 ## Binding Configuration
 
@@ -138,7 +139,7 @@ The Thing configurations for **Niko Home Control actions, thermostats, energy me
 | invert        |   x   |   x    |          | blind, energyMeterLive, energyMeter, gasMeter, waterMeter | inverts rollershutter or blind direction. Inverts sign of meter reading. Default false |
 | thermostatId  |   x   |   x    |     x    | thermostat                       | unique ID for the thermostat in the controller                                    |
 | overruleTime  |   x   |   x    |          | thermostat                       | standard overrule duration in minutes when setting a new setpoint without providing an overrule duration, default value is 60 |
-| meterId       |   x   |   x    |     x    | energyMeterLive, energyMeter, gasMeter, waterMeter | unique ID for the energy meter in the controller                |
+| meterId       |   x   |   x    |     x    | energyMeterHome, energyMeterLive, energyMeter, gasMeter, waterMeter | unique ID for the energy meter in the controller                |
 | refresh       |   x   |   x    |          | energyMeterLive, energyMeter, gasMeter, waterMeter | refresh interval for meter reading in minutes, default 10 minutes. The value should not be lower than 5 minutes to avoid too many meter data retrieval calls |
 | accessId      |       |   x    |     x    | access, accessRingAndComeIn      | unique ID for the access device in the controller                                 |
 | alarmId       |       |   x    |     x    | alarm                            | unique ID for the alarm system in the controller                                  |
@@ -207,17 +208,17 @@ Thing nikohomecontrol:carCharger:mybridge:mycarcharger [ carChargerId="abcdef01-
 | overruletime      | RW |          | Number             | thermostat  | used to set the total duration in minutes to apply the setpoint temperature set in the `setpoint` channel before the thermostat returns to the setting from its mode |
 | heatingdemand     | R  |          | String             | thermostat  | indicating if the system is actively heating/cooling. This channel will have value Heating, Cooling or None. For NHC I this is set by the binding from the temperature difference between `setpoint` and `measured`. It therefore may incorrectly indicate cooling even when the system does not have active cooling capabilities |
 | demand            | R  |    X     | Number             | thermostat  | indicating if the system is actively heating/cooling, same as `heatingdemand` but numeric values (-1=Cooling, 0=None, 1=Heating) |
-| power             | R  |          | Number:Power       | energyMeterLive | instant power consumption/production (negative for production), refreshed every 2s. Linking this channel starts an intensive communication flow with the controller and should only be done when appropriate |
-| powerFromGrid     | R  |          | Number:Power       | energyMeterLive | power consumption grid for home energy meter, refreshed every 2s. Linking this channel starts an intensive communication flow with the controller and should only be done when appropriate |
-| powerToGrid       | R  |          | Number:Power       | energyMeterLive | power sent to grid for home energy meter, refreshed every 2s. Linking this channel starts an intensive communication flow with the controller and should only be done when appropriate |
-| peakPowerFromGrid | R  |          | Number:Power       | energyMeterLive | current month peak power as registered by the home energy meter                         |
-| energy            | R  |          | Number:Energy      | energyMeterLive, energyMeter | total energy meter reading                                                         |
-| energyday         | R  |          | Number:Energy      | energyMeterLive, energyMeter | day energy meter reading                                                           |
+| power             | R  |          | Number:Power       | energyMeterHome, energyMeterLive | instant power consumption/production (negative for production), refreshed every 2s. Linking this channel starts an intensive communication flow with the controller and should only be done when appropriate |
+| powerFromGrid     | R  |          | Number:Power       | energyMeterHome | power consumption grid for home energy meter, refreshed every 2s. Linking this channel starts an intensive communication flow with the controller and should only be done when appropriate |
+| powerToGrid       | R  |          | Number:Power       | energyMeterHome | power sent to grid for home energy meter, refreshed every 2s. Linking this channel starts an intensive communication flow with the controller and should only be done when appropriate |
+| peakPowerFromGrid | R  |          | Number:Power       | energyMeterHome | current month peak power as registered by the home energy meter                         |
+| energy            | R  |          | Number:Energy      | energyMeterHome, energyMeterLive, energyMeter | total energy meter reading                                                         |
+| energyday         | R  |          | Number:Energy      | energyMeterHome, energyMeterLive, energyMeter | day energy meter reading                                                           |
 | gas               | R  |          | Number:Volume      | gasMeter    | total gas meter reading                                                                             |
 | gasday            | R  |          | Number:Volume      | gasMeter    | day gas meter reading                                                                               |
 | water             | R  |          | Number:Volume      | waterMeter  | total water meter reading                                                                           |
 | waterday          | R  |          | Number:Volume      | waterMeter  | day water meter reading                                                                             |
-| measurementtime   | R  |          | DateTimeType       | energyMeterLive, energyMeter, gasMeter, waterMeter | last meter reading time                                      |
+| measurementtime   | R  |          | DateTimeType       | energyMeterHome, energyMeterLive, energyMeter, gasMeter, waterMeter | last meter reading time                                      |
 | bellbutton        | RW |          | Switch             | access, accessRingAndComeIn | bell button connected to access device, including buttons on video phone devices linked to an access device. The bell can also be triggered by an `ON` command, `autoupdate="false"` by default |
 | ringandcomein     | RW |          | Switch             | accessRingAndComeIn | provide state and turn automatic door unlocking at bell ring on/off                         |
 | lock              | RW |          | Switch             | access, accessRingAndComeIn | provide doorlock state and unlock the door by sending an `OFF` command. `autoupdate="false"` by default |

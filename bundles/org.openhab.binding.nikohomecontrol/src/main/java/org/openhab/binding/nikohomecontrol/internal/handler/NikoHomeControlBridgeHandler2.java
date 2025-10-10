@@ -23,8 +23,10 @@ import java.util.NoSuchElementException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.nikohomecontrol.internal.protocol.nhc2.NikoHomeControlCommunication2;
 import org.openhab.core.i18n.TimeZoneProvider;
+import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.net.NetworkAddressService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ThingStatus;
@@ -49,9 +51,12 @@ public class NikoHomeControlBridgeHandler2 extends NikoHomeControlBridgeHandler 
 
     private final Gson gson = new GsonBuilder().create();
 
+    private final HttpClient httpClient;
+
     public NikoHomeControlBridgeHandler2(Bridge nikoHomeControlBridge, NetworkAddressService networkAddressService,
-            TimeZoneProvider timeZoneProvider) {
+            TimeZoneProvider timeZoneProvider, HttpClientFactory httpClientFactory) {
         super(nikoHomeControlBridge, networkAddressService, timeZoneProvider);
+        httpClient = httpClientFactory.getCommonHttpClient();
     }
 
     @Override
@@ -85,7 +90,7 @@ public class NikoHomeControlBridgeHandler2 extends NikoHomeControlBridgeHandler 
         addr = (addr == null) ? "unknown" : addr.replace(".", "_");
         String clientId = addr + "-" + thing.getUID().toString().replace(":", "_");
         try {
-            nhcComm = new NikoHomeControlCommunication2(this, clientId, scheduler);
+            nhcComm = new NikoHomeControlCommunication2(this, clientId, scheduler, httpClient);
             startCommunication();
         } catch (CertificateException e) {
             // this should not happen unless there is a programming error
@@ -170,6 +175,10 @@ public class NikoHomeControlBridgeHandler2 extends NikoHomeControlBridgeHandler 
             logger.debug("no JWT token set.");
         }
         return token;
+    }
+
+    public HttpClient getHttpClient() {
+        return httpClient;
     }
 
     /**

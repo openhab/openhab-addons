@@ -17,8 +17,13 @@ import static org.openhab.binding.nikohomecontrol.internal.protocol.NikoHomeCont
 import java.lang.reflect.Type;
 import java.net.InetAddress;
 import java.security.cert.CertificateException;
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
@@ -31,8 +36,12 @@ import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import javax.measure.Unit;
+import javax.measure.quantity.Energy;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.nikohomecontrol.internal.protocol.NhcAccess;
 import org.openhab.binding.nikohomecontrol.internal.protocol.NhcAction;
 import org.openhab.binding.nikohomecontrol.internal.protocol.NhcAlarm;
@@ -49,10 +58,13 @@ import org.openhab.binding.nikohomecontrol.internal.protocol.nhc2.NhcDevice2.Nhc
 import org.openhab.binding.nikohomecontrol.internal.protocol.nhc2.NhcDevice2.NhcProperty;
 import org.openhab.binding.nikohomecontrol.internal.protocol.nhc2.NhcDevice2.NhcTrait;
 import org.openhab.binding.nikohomecontrol.internal.protocol.nhc2.NhcMessage2.NhcMessageParam;
+import org.openhab.binding.nikohomecontrol.internal.protocol.nhc2.NhcMeterReading2.NhcMeterValue;
 import org.openhab.core.io.transport.mqtt.MqttConnectionObserver;
 import org.openhab.core.io.transport.mqtt.MqttConnectionState;
 import org.openhab.core.io.transport.mqtt.MqttException;
 import org.openhab.core.io.transport.mqtt.MqttMessageSubscriber;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.Units;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -83,6 +95,8 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
     private final Logger logger = LoggerFactory.getLogger(NikoHomeControlCommunication2.class);
 
     private final NhcMqttConnection2 mqttConnection;
+    private final HttpClient httpClient;
+    private @Nullable NhcHttpConnection2 httpConnection;
 
     private final List<NhcService2> services = new CopyOnWriteArrayList<>();
 
@@ -107,9 +121,10 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
      *
      */
     public NikoHomeControlCommunication2(NhcControllerEvent handler, String clientId,
-            ScheduledExecutorService scheduler) throws CertificateException {
+            ScheduledExecutorService scheduler, HttpClient httpClient) throws CertificateException {
         super(handler, scheduler);
-        mqttConnection = new NhcMqttConnection2(clientId, this, this);
+        this.mqttConnection = new NhcMqttConnection2(clientId, this, this);
+        this.httpClient = httpClient;
     }
 
     @Override
@@ -135,6 +150,8 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
             stopCommunication();
             return;
         }
+
+        httpConnection = new NhcHttpConnection2(httpClient, addrString, token);
 
         try {
             mqttConnection.startConnection(addrString, port, profile, token);
@@ -378,6 +395,10 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
     }
 
     private void addDevice(NhcDevice2 device) {
+        List<NhcProperty> properties = device.properties;
+        if (properties == null || properties.isEmpty()) {
+            return;
+        }
         String location = null;
         List<NhcParameter> parameters = device.parameters;
         if (parameters != null) {
@@ -388,14 +409,14 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
             addVideoDevice(device);
         } else if ("accesscontrol".equals(device.model) || "bellbutton".equals(device.model)) {
             addAccessDevice(device, location);
-        } else if ("alarms".equals(device.model) && (device.properties != null)
-                && (device.properties.stream().anyMatch(p -> (p.alarmActive != null)))) {
+        } else if ("alarms".equals(device.model) && (properties.stream().anyMatch(p -> (p.alarmActive != null)))) {
             addAlarmDevice(device, location);
         } else if ("action".equals(device.type) || "relay".equals(device.type) || "virtual".equals(device.type)) {
             addActionDevice(device, location);
         } else if ("thermostat".equals(device.type) || "hvac".equals(device.type)) {
             addThermostatDevice(device, location);
-        } else if ("centralmeter".equals(device.type) || "energyhome".equals(device.type)) {
+        } else if ("centralmeter".equals(device.type) || "energyhome".equals(device.type)
+                || "smartplug".equals(device.type)) {
             addMeterDevice(device, location);
         } else if ("chargingstation".equals(device.type)) {
             addCarChargerDevice(device, location);
@@ -435,6 +456,8 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
             case "sunblind":
             case "venetianblind":
             case "gate":
+            case "reynaers":
+            case "velux":
                 actionType = ActionType.ROLLERSHUTTER;
                 break;
             default:
@@ -477,8 +500,19 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
             nhcMeter.setLocation(location);
         } else {
             logger.debug("adding energy meter device {} model {}, {}", device.uuid, device.model, device.name);
-            nhcMeter = new NhcMeter2(device.uuid, device.name, MeterType.ENERGY_LIVE, device.type, device.technology,
-                    device.model, null, location, this, scheduler);
+            MeterType meterType;
+            if ("energyhome".equals(device.type)) {
+                meterType = MeterType.ENERGY_HOME;
+            } else {
+                meterType = switch (device.model) {
+                    case "electricity-pulse" -> MeterType.ENERGY;
+                    case "gas" -> MeterType.GAS;
+                    case "water" -> MeterType.WATER;
+                    default -> MeterType.ENERGY_LIVE;
+                };
+            }
+            nhcMeter = new NhcMeter2(device.uuid, device.name, meterType, device.type, device.technology, device.model,
+                    null, location, this, scheduler);
         }
         meters.put(device.uuid, nhcMeter);
     }
@@ -728,22 +762,22 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
     }
 
     private void updateThermostatState(NhcThermostat2 thermostat, List<NhcProperty> deviceProperties) {
-        Optional<Boolean> overruleActiveProperty = deviceProperties.stream().map(p -> p.overruleActive)
-                .filter(Objects::nonNull).map(t -> Boolean.parseBoolean(t)).findFirst();
-        Optional<Integer> overruleSetpointProperty = deviceProperties.stream().map(p -> p.overruleSetpoint)
+        Boolean overruleActiveProperty = deviceProperties.stream().map(p -> p.overruleActive).filter(Objects::nonNull)
+                .map(t -> Boolean.parseBoolean(t)).findFirst().orElse(null);
+        Integer overruleSetpointProperty = deviceProperties.stream().map(p -> p.overruleSetpoint)
                 .map(s -> (!((s == null) || s.isEmpty())) ? Math.round(Float.parseFloat(s) * 10) : null)
-                .filter(Objects::nonNull).findFirst();
-        Optional<Integer> overruleTimeProperty = deviceProperties.stream().map(p -> p.overruleTime)
+                .filter(Objects::nonNull).findFirst().orElse(null);
+        Integer overruleTimeProperty = deviceProperties.stream().map(p -> p.overruleTime)
                 .map(s -> (!((s == null) || s.isEmpty())) ? Math.round(Float.parseFloat(s)) : null)
-                .filter(Objects::nonNull).findFirst();
-        Optional<Integer> setpointTemperatureProperty = deviceProperties.stream().map(p -> p.setpointTemperature)
+                .filter(Objects::nonNull).findFirst().orElse(null);
+        Integer setpointTemperatureProperty = deviceProperties.stream().map(p -> p.setpointTemperature)
                 .map(s -> (!((s == null) || s.isEmpty())) ? Math.round(Float.parseFloat(s) * 10) : null)
-                .filter(Objects::nonNull).findFirst();
-        Optional<Boolean> ecoSaveProperty = deviceProperties.stream().map(p -> p.ecoSave)
-                .map(s -> s != null ? Boolean.parseBoolean(s) : null).filter(Objects::nonNull).findFirst();
-        Optional<Integer> ambientTemperatureProperty = deviceProperties.stream().map(p -> p.ambientTemperature)
+                .filter(Objects::nonNull).findFirst().orElse(null);
+        Boolean ecoSaveProperty = deviceProperties.stream().map(p -> p.ecoSave)
+                .map(s -> s != null ? Boolean.parseBoolean(s) : null).filter(Objects::nonNull).findFirst().orElse(null);
+        Integer ambientTemperatureProperty = deviceProperties.stream().map(p -> p.ambientTemperature)
                 .map(s -> (!((s == null) || s.isEmpty())) ? Math.round(Float.parseFloat(s) * 10) : null)
-                .filter(Objects::nonNull).findFirst();
+                .filter(Objects::nonNull).findFirst().orElse(null);
         Optional<String> demandProperty = deviceProperties.stream().map(p -> p.demand).filter(Objects::nonNull)
                 .findFirst();
         Optional<String> operationModeProperty = deviceProperties.stream().map(p -> p.operationMode)
@@ -754,18 +788,18 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
         int mode = IntStream.range(0, THERMOSTATMODES.length).filter(i -> THERMOSTATMODES[i].equals(modeString))
                 .findFirst().orElse(thermostat.getMode());
 
-        int measured = ambientTemperatureProperty.orElse(thermostat.getMeasured());
-        int setpoint = setpointTemperatureProperty.orElse(thermostat.getSetpoint());
+        int measured = ambientTemperatureProperty != null ? ambientTemperatureProperty : thermostat.getMeasured();
+        int setpoint = setpointTemperatureProperty != null ? setpointTemperatureProperty : thermostat.getSetpoint();
 
         int overrule = 0;
         int overruletime = 0;
-        if (overruleActiveProperty.orElse(true)) {
-            overrule = overruleSetpointProperty.orElse(thermostat.getOverrule());
-            overruletime = overruleTimeProperty.orElse(thermostat.getRemainingOverruletime());
+        if (overruleActiveProperty == null || overruleActiveProperty) {
+            overrule = overruleSetpointProperty != null ? overruleSetpointProperty : thermostat.getOverrule();
+            overruletime = overruleTimeProperty != null ? overruleTimeProperty : thermostat.getRemainingOverruletime();
         }
 
         int ecosave = thermostat.getEcosave();
-        if (ecoSaveProperty.orElse(false)) {
+        if (ecoSaveProperty != null && ecoSaveProperty) {
             ecosave = 1;
         }
 
@@ -792,34 +826,38 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
 
     private void updateMeterState(NhcMeter2 meter, List<NhcProperty> deviceProperties) {
         try {
-            Optional<Integer> electricalPower = deviceProperties.stream().map(p -> p.electricalPower)
-                    .map(s -> (!((s == null) || s.isEmpty())) ? Math.round(Float.parseFloat(s)) : null)
-                    .filter(Objects::nonNull).findFirst();
-            Optional<Integer> powerFromGrid = deviceProperties.stream().map(p -> p.electricalPowerFromGrid)
-                    .map(s -> (!((s == null) || s.isEmpty())) ? Math.round(Float.parseFloat(s)) : null)
-                    .filter(Objects::nonNull).findFirst();
-            Optional<Integer> powerToGrid = deviceProperties.stream().map(p -> p.electricalPowerToGrid)
-                    .map(s -> (!((s == null) || s.isEmpty())) ? Math.round(Float.parseFloat(s)) : null)
-                    .filter(Objects::nonNull).findFirst();
-            int power = electricalPower.orElse(powerFromGrid.orElse(0) - powerToGrid.orElse(0));
+            Optional<Double> electricalPower = deviceProperties.stream().map(p -> p.electricalPower)
+                    .map(s -> (!((s == null) || s.isEmpty())) ? Double.parseDouble(s) : null).filter(Objects::nonNull)
+                    .findFirst();
+            @SuppressWarnings("null")
+            double powerFromGrid = deviceProperties.stream().map(p -> p.electricalPowerFromGrid)
+                    .map(s -> (!((s == null) || s.isEmpty())) ? Double.parseDouble(s) : null).filter(Objects::nonNull)
+                    .findFirst().orElse(0.0);
+            @SuppressWarnings("null")
+            double powerToGrid = deviceProperties.stream().map(p -> p.electricalPowerToGrid)
+                    .map(s -> (!((s == null) || s.isEmpty())) ? Double.parseDouble(s) : null).filter(Objects::nonNull)
+                    .findFirst().orElse(0.0);
+            @SuppressWarnings("null")
+            double power = electricalPower.orElse(powerFromGrid - powerToGrid);
             logger.trace("setting energy meter {} power to {}, powerFromGrid to {}, powerToGrid to {}", meter.getId(),
-                    power, powerFromGrid.orElse(null), powerToGrid.orElse(null));
-            meter.setPower(power, powerFromGrid.orElse(null), powerToGrid.orElse(null));
+                    power, powerFromGrid, powerToGrid);
+            meter.setPower(power, powerFromGrid, powerToGrid);
         } catch (NumberFormatException e) {
             logger.trace("wrong format in energy meter {} power reading", meter.getId());
             meter.setPower(null, null, null);
         }
 
         try {
-            Integer peakPowerFromGrid = deviceProperties.stream().map(p -> p.electricalMonthlyPeakPowerFromGrid)
-                    .map(s -> (!((s == null) || s.isEmpty())) ? Math.round(Float.parseFloat(s)) : null)
-                    .filter(Objects::nonNull).findFirst().orElse(null);
+            Double peakPowerFromGrid = deviceProperties.stream().map(p -> p.electricalMonthlyPeakPowerFromGrid)
+                    .map(s -> (!((s == null) || s.isEmpty())) ? Double.parseDouble(s) : null).filter(Objects::nonNull)
+                    .findFirst().orElse(null);
             if (peakPowerFromGrid != null) {
-                logger.trace("setting energy meter {} peakPowerFromGrid to {}", peakPowerFromGrid);
+                logger.trace("setting energy meter {} peakPowerFromGrid to {}", meter.getId(), peakPowerFromGrid);
                 meter.setPeakPowerFromGrid(peakPowerFromGrid);
             }
         } catch (NumberFormatException e) {
             logger.trace("wrong format in energy meter {} peakPowerFromGrid reading", meter.getId());
+            meter.setPeakPowerFromGrid(null);
         }
     }
 
@@ -1077,8 +1115,75 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
     }
 
     @Override
-    public void executeMeter(String meterId) {
-        // Nothing to do, individual meter readings not supported in NHC II at this point in time
+    public void executeMeter(String meterId, String startDate) {
+        NhcMeter meter = meters.get(meterId);
+        if (meter == null) {
+            return;
+        }
+
+        NhcHttpConnection2 httpConnection = this.httpConnection;
+        if (httpConnection == null) {
+            return;
+        }
+        LocalDateTime now = ZonedDateTime.now().withZoneSameInstant(getTimeZone()).toLocalDateTime();
+        LocalDateTime dayStart = now.truncatedTo(ChronoUnit.DAYS);
+        LocalDateTime meterStart = meter.getLastReading();
+        if (meterStart == null) {
+            meterStart = LocalDateTime.parse(startDate);
+        }
+
+        String response = httpConnection.getMeasurements(meterId, meterStart, now);
+        logger.trace("Meter measurement: {}", response);
+        final Map<String, Double> readings = response != null ? parseMeterReadings(response) : Map.of();
+
+        response = httpConnection.getMeasurements(meterId, dayStart, now);
+        logger.trace("Day measurement: {}", response);
+        final Map<String, Double> dayReadings = response != null ? parseMeterReadings(response) : Map.of();
+
+        meter.setReadings(readings, dayReadings, now);
+    }
+
+    private Map<String, Double> parseMeterReadings(String response) {
+        Map<String, Double> readings = new HashMap<>();
+
+        Type messageType = new TypeToken<NhcMeterReading2>() {
+        }.getType();
+        try {
+            NhcMeterReading2 message = gson.fromJson(response, messageType);
+            List<NhcMeterReading2.NhcProperty> meterReadingList = message != null ? message.properties : null;
+            if (meterReadingList == null) {
+                return Map.of();
+            }
+            meterReadingList.forEach(r -> {
+                String property = r.property;
+                String unit = r.unit;
+                List<NhcMeterValue> values = r.values;
+                if (property != null && values != null && !values.isEmpty()) {
+                    double value = values.getFirst().value;
+                    if (unit != null) {
+                        try {
+                            Unit<Energy> receivedUnit = Units.getInstance().getUnit(unit).asType(Energy.class);
+                            Unit<Energy> targetUnit = Units.getInstance().getUnit("kWh").asType(Energy.class);
+                            if (receivedUnit != null && targetUnit != null) {
+                                QuantityType<?> quantityValue = QuantityType.valueOf(value, receivedUnit)
+                                        .toUnit(targetUnit);
+                                if (quantityValue != null) {
+                                    value = quantityValue.doubleValue();
+                                }
+                            }
+                        } catch (ClassCastException e) {
+                            logger.debug("Unit conversion failed for unit {}: {}", unit, e.getMessage());
+                        }
+                    }
+                    readings.put(property, value);
+                }
+            });
+
+        } catch (JsonSyntaxException e) {
+            logger.debug("unexpected json {}", response);
+        }
+
+        return readings;
     }
 
     @Override

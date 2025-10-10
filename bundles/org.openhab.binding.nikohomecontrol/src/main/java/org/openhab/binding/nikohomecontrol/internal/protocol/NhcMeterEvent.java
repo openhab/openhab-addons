@@ -13,6 +13,7 @@
 package org.openhab.binding.nikohomecontrol.internal.protocol;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -33,7 +34,7 @@ public interface NhcMeterEvent extends NhcBaseEvent {
      *
      * @param power current power consumption/production in W (positive for consumption), null for an empty reading
      */
-    void meterPowerEvent(@Nullable Integer power);
+    void meterPowerEvent(@Nullable Double power);
 
     /**
      * This method is called when a meter event is received from the Niko Home Control controller and separate
@@ -43,9 +44,8 @@ public interface NhcMeterEvent extends NhcBaseEvent {
      * @param powerFromGrid current power consumption from grid in W, null for an empty reading
      * @param powerToGrid current power sent to grid in W, null for an empty reading
      */
-    default void meterPowerEvent(@Nullable Integer power, @Nullable Integer powerFromGrid,
-            @Nullable Integer powerToGrid) {
-        meterPowerEvent(power);
+    default void meterPowerEvent(@Nullable Double power, @Nullable Double powerFromGrid, @Nullable Double powerToGrid) {
+        meterPowerEvent(power, powerFromGrid, powerToGrid);
     }
 
     /**
@@ -53,7 +53,7 @@ public interface NhcMeterEvent extends NhcBaseEvent {
      *
      * @param peakPowerFromGrid current month peak power from grid
      */
-    default void meterPeakPowerFromGridEvent(int peakPowerFromGrid) {
+    default void meterPeakPowerFromGridEvent(double peakPowerFromGrid) {
     }
 
     /**
@@ -64,4 +64,15 @@ public interface NhcMeterEvent extends NhcBaseEvent {
      * @param lastReadingUTC last meter reading date and time, UTC
      */
     void meterReadingEvent(double reading, double dayReading, LocalDateTime lastReadingUTC);
+
+    /**
+     * This method is called when meter readinsg are received from the Niko Home Control controller.
+     * This method should be used for meters that register multiple measurements at the same time.
+     * The keys of the argument maps are the keys to the readings as received from the controller.
+     *
+     * @param readings meter readings
+     * @param dayReadings meter readings for current day
+     * @param lastReadingUTC last meter reading date and time, UTC
+     */
+    void meterReadingEvent(Map<String, Double> readings, Map<String, Double> dayReadings, LocalDateTime lastReadingUTC);
 }

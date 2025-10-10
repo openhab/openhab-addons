@@ -77,8 +77,6 @@ class NhcDevice2 {
 
         // fields for electricity metering
         @Nullable
-        String electricalEnergy;
-        @Nullable
         String electricalPower;
         @Nullable
         String electricalPowerToGrid;
@@ -96,6 +94,20 @@ class NhcDevice2 {
         String electricalPowerProductionThresholdExceeded;
         @Nullable
         String reportInstantUsage;
+        @Nullable
+        String electricalEnergy;
+        @Nullable
+        String electricalEnergyConsumption;
+        @Nullable
+        String electricalEnergyToGrid;
+        @Nullable
+        String electricalEnergyFromGrid;
+        @Nullable
+        String electricalEnergySelfConsumption;
+        @Nullable
+        String gasVolume;
+        @Nullable
+        String waterVolume;
 
         // fields for access control
         @Nullable

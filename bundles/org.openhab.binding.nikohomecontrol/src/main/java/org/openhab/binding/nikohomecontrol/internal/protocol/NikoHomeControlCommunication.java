@@ -244,8 +244,9 @@ public abstract class NikoHomeControlCommunication {
      * callback in {@link NhcMeterEvent}.
      *
      * @param meterId
+     * @param startDate 0 reference for the meter
      */
-    public abstract void executeMeter(String meterId);
+    public abstract void executeMeter(String meterId, String startDate);
 
     /**
      * Start retrieving energy meter data from Niko Home Control. The method is used to regularly retrigger the
@@ -287,10 +288,10 @@ public abstract class NikoHomeControlCommunication {
      * @param meterId
      * @param refresh reading frequency in minutes
      */
-    public void startMeter(String meterId, int refresh) {
+    public void startMeter(String meterId, int refresh, String startDate) {
         NhcMeter meter = getMeters().get(meterId);
         if (meter != null) {
-            meter.startMeter(refresh);
+            meter.startMeter(refresh, startDate);
         }
     }
 

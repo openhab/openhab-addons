@@ -25,6 +25,7 @@ import org.openhab.binding.nikohomecontrol.internal.handler.NikoHomeControlCarCh
 import org.openhab.binding.nikohomecontrol.internal.handler.NikoHomeControlMeterHandler;
 import org.openhab.binding.nikohomecontrol.internal.handler.NikoHomeControlThermostatHandler;
 import org.openhab.core.i18n.TimeZoneProvider;
+import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.net.NetworkAddressService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -50,12 +51,14 @@ public class NikoHomeControlHandlerFactory extends BaseThingHandlerFactory {
 
     private final NetworkAddressService networkAddressService;
     private final TimeZoneProvider timeZoneProvider;
+    private final HttpClientFactory httpClientFactory;
 
     @Activate
     public NikoHomeControlHandlerFactory(final @Reference NetworkAddressService networkAddressService,
-            final @Reference TimeZoneProvider timeZoneProvider) {
+            final @Reference TimeZoneProvider timeZoneProvider, final @Reference HttpClientFactory httpClientFactory) {
         this.networkAddressService = networkAddressService;
         this.timeZoneProvider = timeZoneProvider;
+        this.httpClientFactory = httpClientFactory;
     }
 
     @Override
@@ -67,7 +70,8 @@ public class NikoHomeControlHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         if (BRIDGE_THING_TYPES_UIDS.contains(thing.getThingTypeUID())) {
             if (BRIDGEII_THING_TYPE.equals(thing.getThingTypeUID())) {
-                return new NikoHomeControlBridgeHandler2((Bridge) thing, networkAddressService, timeZoneProvider);
+                return new NikoHomeControlBridgeHandler2((Bridge) thing, networkAddressService, timeZoneProvider,
+                        httpClientFactory);
             } else {
                 return new NikoHomeControlBridgeHandler1((Bridge) thing, networkAddressService, timeZoneProvider);
             }

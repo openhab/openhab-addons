@@ -44,11 +44,15 @@ public class NikoHomeControlConstants {
     // Meter types abstracted from NhcI and NhcII meter types
     public static enum MeterType {
         ENERGY_LIVE,
+        ENERGY_HOME,
         ENERGY,
         GAS,
         WATER,
         GENERIC
     }
+
+    // NhcII measurements base URL
+    public static final String NHC_MEASUREMENTS_BASEURL = "/measurements/v1/devices";
 
     // switch and dimmer constants in the Nhc layer
     public static final String NHCON = "On";
@@ -122,4 +126,13 @@ public class NikoHomeControlConstants {
             NHCNOCREDENTIALS, "NO CREDENTIALS", NHCINVALIDCREDENTIALS, "INVALID CREDENTIALS", NHCCONNECTIONERROR,
             "CONNECTION ERROR", NHCCONNECTIONTIMEOUT, "CONNECTION TIMEOUT", NHCAPIERROR, "API ERROR", NHCUNKNOWNERROR,
             "UNKNOWN ERROR");
+
+    // NhcII energy channels
+    public static final String NHC_ELECTRICAL_ENERGY = "electricalEnergy";
+    public static final String NHC_ELECTRICAL_ENERGY_CONSUMPTION = "electricalEnergyConsumption";
+    public static final String NHC_ELECTRICAL_ENERGY_TO_GRID = "electricalEnergyToGrid";
+    public static final String NHC_ELECTRICAL_ENERGY_FROM_GRID = "electricalEnergyFromGrid";
+    public static final String NHC_ELECTRICAL_ENERGY_SELF_CONSUMPTION = "electricalEnergySelfConsumption";
+    public static final String NHC_GAS_VOLUME = "gasVolume";
+    public static final String NHC_WATER_VOLUME = "waterVolume";
 }

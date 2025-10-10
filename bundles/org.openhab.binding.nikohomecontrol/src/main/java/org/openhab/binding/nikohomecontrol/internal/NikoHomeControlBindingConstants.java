@@ -47,6 +47,7 @@ public class NikoHomeControlBindingConstants {
     public static final ThingTypeUID THING_TYPE_THERMOSTAT = new ThingTypeUID(BINDING_ID, "thermostat");
     public static final ThingTypeUID THING_TYPE_ENERGYMETER_LIVE = new ThingTypeUID(BINDING_ID, "energyMeterLive");
     public static final ThingTypeUID THING_TYPE_ENERGYMETER = new ThingTypeUID(BINDING_ID, "energyMeter");
+    public static final ThingTypeUID THING_TYPE_ENERGYMETER_HOME = new ThingTypeUID(BINDING_ID, "energyMeterHome");
     public static final ThingTypeUID THING_TYPE_GASMETER = new ThingTypeUID(BINDING_ID, "gasMeter");
     public static final ThingTypeUID THING_TYPE_WATERMETER = new ThingTypeUID(BINDING_ID, "waterMeter");
     public static final ThingTypeUID THING_TYPE_ACCESS = new ThingTypeUID(BINDING_ID, "access");
@@ -61,7 +62,7 @@ public class NikoHomeControlBindingConstants {
             THING_TYPE_ON_OFF_LIGHT, THING_TYPE_DIMMABLE_LIGHT, THING_TYPE_BLIND);
     public static final Set<ThingTypeUID> THERMOSTAT_THING_TYPES_UIDS = Set.of(THING_TYPE_THERMOSTAT);
     public static final Set<ThingTypeUID> METER_THING_TYPES_UIDS = Set.of(THING_TYPE_ENERGYMETER_LIVE,
-            THING_TYPE_ENERGYMETER, THING_TYPE_GASMETER, THING_TYPE_WATERMETER);
+            THING_TYPE_ENERGYMETER, THING_TYPE_ENERGYMETER_HOME, THING_TYPE_GASMETER, THING_TYPE_WATERMETER);
     public static final Set<ThingTypeUID> ACCESS_THING_TYPES_UIDS = Set.of(THING_TYPE_ACCESS,
             THING_TYPE_ACCESS_RINGANDCOMEIN);
     public static final Set<ThingTypeUID> ALARM_THING_TYPES_UIDS = Set.of(THING_TYPE_ALARM);
@@ -90,11 +91,17 @@ public class NikoHomeControlBindingConstants {
     public static final String CHANNEL_POWER_TO_GRID = "powertogrid";
     public static final String CHANNEL_PEAK_POWER_FROM_GRID = "peakpowerfromgrid";
     public static final String CHANNEL_ENERGY = "energy";
+    public static final String CHANNEL_ENERGY_FROM_GRID = "energyfromgrid";
+    public static final String CHANNEL_ENERGY_TO_GRID = "energytogrid";
+    public static final String CHANNEL_ENERGY_SELF_CONSUMPTION = "energyselfconsumption";
     public static final String CHANNEL_GAS = "gas";
     public static final String CHANNEL_WATER = "water";
     public static final String CHANNEL_ENERGY_DAY = "energyday";
     public static final String CHANNEL_GAS_DAY = "gasday";
     public static final String CHANNEL_WATER_DAY = "waterday";
+    public static final String CHANNEL_ENERGY_FROM_GRID_DAY = "energyfromgridday";
+    public static final String CHANNEL_ENERGY_TO_GRID_DAY = "energytogridday";
+    public static final String CHANNEL_ENERGY_SELF_CONSUMPTION_DAY = "energyselfconsumptionday";
     public static final String CHANNEL_ENERGY_LAST = "energylast";
     public static final String CHANNEL_GAS_LAST = "gaslast";
     public static final String CHANNEL_WATER_LAST = "waterlast";
@@ -139,6 +146,7 @@ public class NikoHomeControlBindingConstants {
 
     public static final String METER_ID = "meterId";
     public static final String CONFIG_METER_REFRESH = "refresh";
+    public static final String CONFIG_METER_START_DATE = "startDate";
 
     public static final String CONFIG_ACCESS_ID = "accessId";
 

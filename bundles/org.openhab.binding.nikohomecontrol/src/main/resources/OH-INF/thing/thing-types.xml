@@ -186,6 +186,74 @@
 			</parameter>
 		</config-description>
 	</thing-type>
+	<thing-type id="energyMeterHome">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge2"/>
+		</supported-bridge-type-refs>
+		<label>@text/energyMeterHomeLabel</label>
+		<description>@text/energyMeterHomeDescription</description>
+		<semantic-equipment-tag>ElectricMeter</semantic-equipment-tag>
+		<channels>
+			<channel id="power" typeId="power"/>
+			<channel id="powerfromgrid" typeId="power">
+				<label>@text/channelPowerFromGridLabel</label>
+				<description>@text/channelPowerFromGridDescription</description>
+			</channel>
+			<channel id="powertogrid" typeId="power">
+				<label>@text/channelPowerToGridLabel</label>
+				<description>@text/channelPowerToGridDescription</description>
+			</channel>
+			<channel id="peakpowerfromgrid" typeId="power">
+				<label>@text/channelPeakPowerFromGridLabel</label>
+				<description>@text/channelPeakPowerFromGridDescription</description>
+			</channel>
+			<channel id="energy" typeId="energy"/>
+			<channel id="energyday" typeId="energyday"/>
+			<channel id="energyfromgrid" typeId="energy">
+				<label>@text/channelEnergyFromGridLabel</label>
+				<description>@text/channelEnergyFromGridDescription</description>
+			</channel>
+			<channel id="energyfromgridday" typeId="energyday">
+				<label>@text/channelEnergyFromGridDayLabel</label>
+				<description>@text/channelEnergyFromGridDescription</description>
+			</channel>
+			<channel id="energytogrid" typeId="energy">
+				<label>@text/channelEnergyFromGridLabel</label>
+				<description>@text/channelEnergyFromGridDayDescription</description>
+			</channel>
+			<channel id="energytogridday" typeId="energyday">
+				<label>@text/channelEnergyToGridLabel</label>
+				<description>@text/channelEnergyToGridDescription</description>
+			</channel>
+			<channel id="energyselfconsumption" typeId="energy">
+				<label>@text/channelEnergySelfConsumptionLabel</label>
+				<description>@text/channelEnergySelfConsumptionDescription</description>
+			</channel>
+			<channel id="energyselfconsumptionday" typeId="energyday">
+				<label>@text/channelEnergySelfConsumptionDayLabel</label>
+				<description>@text/channelEnergySelfConsumptionDayDescription</description>
+			</channel>
+			<channel id="energylast" typeId="measurementtime"/>
+		</channels>
+		<config-description>
+			<parameter name="meterId" type="text" required="true">
+				<label>@text/deviceConfigDeviceIdLabel</label>
+				<description>@text/deviceConfigDeviceIdDescription</description>
+			</parameter>
+			<parameter name="refresh" type="integer" min="5">
+				<label>@text/meterConfigRefreshLabel</label>
+				<description>@text/meterConfigRefreshDescription</description>
+				<default>10</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="startDate" type="text">
+				<context>datetime</context>
+				<label>@text/meterConfigStartDateLabel</label>
+				<description>@text/meterConfigStartDateDescription</description>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
 	<thing-type id="energyMeterLive">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge"/>
@@ -196,18 +264,6 @@
 		<semantic-equipment-tag>ElectricMeter</semantic-equipment-tag>
 		<channels>
 			<channel id="power" typeId="power"/>
-			<channel id="powerfromgrid" typeId="power-advanced">
-				<label>@text/channelPowerFromGridLabel</label>
-				<description>@text/channelPowerFromGridDescription</description>
-			</channel>
-			<channel id="powertogrid" typeId="power-advanced">
-				<label>@text/channelPowerToGridLabel</label>
-				<description>@text/channelPowerToGridDescription</description>
-			</channel>
-			<channel id="peakpowerfromGrid" typeId="power-advanced">
-				<label>@text/channelPeakPowerFromGridLabel</label>
-				<description>@text/channelPeakPowerFromGridDescription</description>
-			</channel>
 			<channel id="energy" typeId="energy"/>
 			<channel id="energyday" typeId="energyday"/>
 			<channel id="energylast" typeId="measurementtime"/>
@@ -223,6 +279,12 @@
 				<default>10</default>
 				<advanced>true</advanced>
 			</parameter>
+			<parameter name="startDate" type="text">
+				<context>datetime</context>
+				<label>@text/meterConfigStartDateLabel</label>
+				<description>@text/meterConfigStartDateDescription</description>
+				<advanced>true</advanced>
+			</parameter>
 			<parameter name="invert" type="boolean">
 				<label>@text/meterConfigInvertLabel</label>
 				<description>@text/meterConfigInvertDescription</description>
@@ -234,6 +296,7 @@
 	<thing-type id="energyMeter">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="bridge2"/>
 		</supported-bridge-type-refs>
 		<label>@text/energyMeterLabel</label>
 		<description>@text/energyMeterDescription</description>
@@ -254,6 +317,12 @@
 				<default>10</default>
 				<advanced>true</advanced>
 			</parameter>
+			<parameter name="startDate" type="text">
+				<context>datetime</context>
+				<label>@text/meterConfigStartDateLabel</label>
+				<description>@text/meterConfigStartDateDescription</description>
+				<advanced>true</advanced>
+			</parameter>
 			<parameter name="invert" type="boolean">
 				<label>@text/meterConfigInvertLabel</label>
 				<description>@text/meterConfigInvertDescription</description>
@@ -265,6 +334,7 @@
 	<thing-type id="gasMeter">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="bridge2"/>
 		</supported-bridge-type-refs>
 		<label>@text/gasMeterLabel</label>
 		<description>@text/gasMeterDescription</description>
@@ -296,6 +366,7 @@
 	<thing-type id="waterMeter">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="bridge2"/>
 		</supported-bridge-type-refs>
 		<label>@text/waterMeterLabel</label>
 		<description>@text/waterMeterDescription</description>
@@ -519,16 +590,6 @@
 	</channel-type>
 
 	<channel-type id="power">
-		<item-type>Number:Power</item-type>
-		<label>@text/channelPowerLabel</label>
-		<description>@text/channelPowerDescription</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
-		</tags>
-		<state readOnly="true" pattern="%.0f %unit%"/>
-	</channel-type>
-	<channel-type id="power-advanced" advanced="true">
 		<item-type>Number:Power</item-type>
 		<label>@text/channelPowerLabel</label>
 		<description>@text/channelPowerDescription</description>

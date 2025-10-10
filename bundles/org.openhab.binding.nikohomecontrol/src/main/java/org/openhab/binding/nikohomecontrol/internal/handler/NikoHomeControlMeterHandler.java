@@ -16,21 +16,27 @@ import static org.openhab.binding.nikohomecontrol.internal.NikoHomeControlBindin
 import static org.openhab.core.library.unit.Units.KILOWATT_HOUR;
 import static org.openhab.core.types.RefreshType.REFRESH;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.nikohomecontrol.internal.protocol.NhcMeter;
 import org.openhab.binding.nikohomecontrol.internal.protocol.NhcMeterEvent;
 import org.openhab.binding.nikohomecontrol.internal.protocol.NikoHomeControlCommunication;
+import org.openhab.binding.nikohomecontrol.internal.protocol.NikoHomeControlConstants;
 import org.openhab.binding.nikohomecontrol.internal.protocol.NikoHomeControlConstants.MeterType;
 import org.openhab.binding.nikohomecontrol.internal.protocol.nhc1.NhcMeter1;
 import org.openhab.binding.nikohomecontrol.internal.protocol.nhc2.NhcMeter2;
+import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.SIUnits;
@@ -60,6 +66,8 @@ public class NikoHomeControlMeterHandler extends NikoHomeControlBaseHandler impl
     private static final DateTimeFormatter DATE_TIME_FORMAT = DateTimeFormatter.ofPattern("yyyyMMddHHmm");
 
     private volatile @Nullable NhcMeter nhcMeter;
+
+    private final Map<String, Boolean> powerChannelLinked = new ConcurrentHashMap<>();
 
     public NikoHomeControlMeterHandler(Thing thing) {
         super(thing);
@@ -151,6 +159,27 @@ public class NikoHomeControlMeterHandler extends NikoHomeControlBaseHandler impl
             return;
         }
 
+        String startDate = getConfig().as(NikoHomeControlMeterConfig.class).startDate;
+        if (startDate.isEmpty()) {
+            LocalDateTime referenceDate = nhcMeter.getReferenceDate();
+            if (referenceDate != null) {
+                startDate = referenceDate.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+            } else {
+                startDate = Instant.now().atZone(nhcComm.getTimeZone()).truncatedTo(ChronoUnit.DAYS)
+                        .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+            }
+            Configuration config = editConfiguration();
+            config.put(CONFIG_METER_START_DATE, startDate);
+            updateConfiguration(config);
+        }
+        try {
+            LocalDateTime.parse(startDate);
+        } catch (DateTimeParseException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/offline.configuration-error.meterStartDate");
+            return;
+        }
+
         nhcMeter.setEventHandler(this);
 
         updateProperties(nhcMeter);
@@ -168,9 +197,17 @@ public class NikoHomeControlMeterHandler extends NikoHomeControlBaseHandler impl
 
     @Override
     void refresh() {
+        NhcMeter meter = nhcMeter;
+        if (meter != null) {
+            Double peakPower = meter.getPeakPowerFromGrid();
+            if (peakPower != null) {
+                meterPeakPowerFromGridEvent(peakPower);
+            }
+        }
         NikoHomeControlCommunication nhcComm = getCommunication(getBridgeHandler());
         if (nhcComm != null) {
-            nhcComm.startMeter(deviceId, getConfig().as(NikoHomeControlMeterConfig.class).refresh);
+            NikoHomeControlMeterConfig config = getConfig().as(NikoHomeControlMeterConfig.class);
+            nhcComm.startMeter(deviceId, config.refresh, config.startDate);
             // Subscribing to power readings starts an intensive data flow, therefore only do it when there is an item
             // linked to the channel
             if (isLinked(CHANNEL_POWER) || isLinked(CHANNEL_POWER_TO_GRID) || isLinked(CHANNEL_POWER_FROM_GRID)) {
@@ -213,13 +250,12 @@ public class NikoHomeControlMeterHandler extends NikoHomeControlBaseHandler impl
     }
 
     @Override
-    public void meterPowerEvent(@Nullable Integer power) {
+    public void meterPowerEvent(@Nullable Double power) {
         meterPowerEvent(power, null, null);
     }
 
     @Override
-    public void meterPowerEvent(@Nullable Integer power, @Nullable Integer powerFromGrid,
-            @Nullable Integer powerToGrid) {
+    public void meterPowerEvent(@Nullable Double power, @Nullable Double powerFromGrid, @Nullable Double powerToGrid) {
         NhcMeter nhcMeter = this.nhcMeter;
         if (nhcMeter == null) {
             logger.debug("meter with ID {} not initialized", deviceId);
@@ -236,7 +272,7 @@ public class NikoHomeControlMeterHandler extends NikoHomeControlBaseHandler impl
             updateState(CHANNEL_POWER, UnDefType.UNDEF);
         } else {
             boolean invert = getConfig().as(NikoHomeControlMeterConfig.class).invert;
-            int value = (invert ? -1 : 1) * power;
+            double value = (invert ? -1 : 1) * power;
             updateState(CHANNEL_POWER, new QuantityType<>(value, Units.WATT));
         }
         if (powerFromGrid == null) {
@@ -253,7 +289,7 @@ public class NikoHomeControlMeterHandler extends NikoHomeControlBaseHandler impl
     }
 
     @Override
-    public void meterPeakPowerFromGridEvent(int peakPowerFromGrid) {
+    public void meterPeakPowerFromGridEvent(double peakPowerFromGrid) {
         NhcMeter nhcMeter = this.nhcMeter;
         if (nhcMeter == null) {
             logger.debug("meter with ID {} not initialized", deviceId);
@@ -311,16 +347,84 @@ public class NikoHomeControlMeterHandler extends NikoHomeControlBaseHandler impl
     }
 
     @Override
+    public void meterReadingEvent(Map<String, Double> meterReadings, Map<String, Double> meterReadingsDay,
+            LocalDateTime lastReadingUTC) {
+        NhcMeter nhcMeter = this.nhcMeter;
+        if (nhcMeter == null) {
+            logger.debug("meter with ID {} not initialized", deviceId);
+            return;
+        }
+
+        NikoHomeControlBridgeHandler bridgeHandler = getBridgeHandler();
+        if (bridgeHandler == null) {
+            logger.debug("Cannot update meter channels, no bridge handler");
+            return;
+        }
+
+        boolean invert = getConfig().as(NikoHomeControlMeterConfig.class).invert;
+        meterReadings.forEach((reading, v) -> {
+            if (v != null) {
+                double value = (invert ? -1 : 1) * v;
+                Double dayValue = meterReadingsDay.get(reading);
+                if (dayValue != null) {
+                    dayValue = (invert ? -1 : 1) * dayValue;
+                }
+                switch (reading) {
+                    case NikoHomeControlConstants.NHC_ELECTRICAL_ENERGY:
+                    case NikoHomeControlConstants.NHC_ELECTRICAL_ENERGY_CONSUMPTION:
+                        updateState(CHANNEL_ENERGY, new QuantityType<>(value, KILOWATT_HOUR));
+                        if (dayValue != null) {
+                            updateState(CHANNEL_ENERGY_DAY, new QuantityType<>(value, KILOWATT_HOUR));
+                        }
+                        break;
+                    case NikoHomeControlConstants.NHC_ELECTRICAL_ENERGY_FROM_GRID:
+                        updateState(CHANNEL_ENERGY_FROM_GRID, new QuantityType<>(value, KILOWATT_HOUR));
+                        if (dayValue != null) {
+                            updateState(CHANNEL_ENERGY_FROM_GRID_DAY, new QuantityType<>(value, KILOWATT_HOUR));
+                        }
+                        break;
+                    case NikoHomeControlConstants.NHC_ELECTRICAL_ENERGY_TO_GRID:
+                        updateState(CHANNEL_ENERGY_TO_GRID, new QuantityType<>(value, KILOWATT_HOUR));
+                        if (dayValue != null) {
+                            updateState(CHANNEL_ENERGY_TO_GRID_DAY, new QuantityType<>(value, KILOWATT_HOUR));
+                        }
+                        break;
+                    case NikoHomeControlConstants.NHC_ELECTRICAL_ENERGY_SELF_CONSUMPTION:
+                        updateState(CHANNEL_ENERGY_SELF_CONSUMPTION, new QuantityType<>(value, KILOWATT_HOUR));
+                        if (dayValue != null) {
+                            updateState(CHANNEL_ENERGY_SELF_CONSUMPTION_DAY, new QuantityType<>(value, KILOWATT_HOUR));
+                        }
+                        break;
+                    case NikoHomeControlConstants.NHC_GAS_VOLUME:
+                        updateState(CHANNEL_GAS, new QuantityType<>(value, SIUnits.CUBIC_METRE));
+                        if (dayValue != null) {
+                            updateState(CHANNEL_GAS_DAY, new QuantityType<>(value, SIUnits.CUBIC_METRE));
+                        }
+                        break;
+                    case NikoHomeControlConstants.NHC_WATER_VOLUME:
+                        updateState(CHANNEL_WATER, new QuantityType<>(value, SIUnits.CUBIC_METRE));
+                        if (dayValue != null) {
+                            updateState(CHANNEL_WATER_DAY, new QuantityType<>(value, SIUnits.CUBIC_METRE));
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            }
+        });
+    }
+
+    @Override
     public void channelLinked(ChannelUID channelUID) {
         // Subscribing to power readings starts an intensive data flow, therefore only do it when there is an item
         // linked to the channel
         String channelId = channelUID.getId();
-        if (!CHANNEL_POWER.equals(channelId) || CHANNEL_POWER_FROM_GRID.equals(channelId)
-                || CHANNEL_POWER_TO_GRID.equals(channelId)) {
+        if (!(CHANNEL_POWER.equals(channelId) || CHANNEL_POWER_FROM_GRID.equals(channelId)
+                || CHANNEL_POWER_TO_GRID.equals(channelId))) {
             return;
         }
         NikoHomeControlCommunication nhcComm = getCommunication(getBridgeHandler());
-        if (nhcComm != null) {
+        if (nhcComm != null && !powerChannelLinked.values().stream().anyMatch(Boolean::booleanValue)) {
             // This can be expensive, therefore do it in a job.
             scheduler.submit(() -> {
                 if (!nhcComm.communicationActive()) {
@@ -332,15 +436,19 @@ public class NikoHomeControlMeterHandler extends NikoHomeControlBaseHandler impl
                 }
             });
         }
+        powerChannelLinked.put(channelId, true);
     }
 
     @Override
     public void channelUnlinked(ChannelUID channelUID) {
-        if (!CHANNEL_POWER.equals(channelUID.getId())) {
+        String channelId = channelUID.getId();
+        if (!(CHANNEL_POWER.equals(channelId) || CHANNEL_POWER_FROM_GRID.equals(channelId)
+                || CHANNEL_POWER_TO_GRID.equals(channelId))) {
             return;
         }
+        powerChannelLinked.put(channelId, false);
         NikoHomeControlCommunication nhcComm = getCommunication(getBridgeHandler());
-        if (nhcComm != null) {
+        if (nhcComm != null && !powerChannelLinked.values().stream().anyMatch(Boolean::booleanValue)) {
             // This can be expensive, therefore do it in a job.
             scheduler.submit(() -> {
                 if (!nhcComm.communicationActive()) {
@@ -352,6 +460,8 @@ public class NikoHomeControlMeterHandler extends NikoHomeControlBaseHandler impl
                     // as this is momentary power production/consumption, we set it UNDEF as we do not get readings
                     // anymore
                     updateState(CHANNEL_POWER, UnDefType.UNDEF);
+                    updateState(CHANNEL_POWER_FROM_GRID, UnDefType.UNDEF);
+                    updateState(CHANNEL_POWER_TO_GRID, UnDefType.UNDEF);
                 }
             });
         }

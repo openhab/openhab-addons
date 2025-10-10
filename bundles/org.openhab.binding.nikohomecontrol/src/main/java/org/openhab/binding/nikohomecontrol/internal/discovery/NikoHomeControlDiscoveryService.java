@@ -146,6 +146,10 @@ public class NikoHomeControlDiscoveryService
                     addDevice(new ThingUID(THING_TYPE_ENERGYMETER_LIVE, bridgeHandler.getThing().getUID(), deviceId),
                             METER_ID, deviceId, thingName, thingLocation);
                     break;
+                case ENERGY_HOME:
+                    addDevice(new ThingUID(THING_TYPE_ENERGYMETER_HOME, bridgeHandler.getThing().getUID(), deviceId),
+                            METER_ID, deviceId, thingName, thingLocation);
+                    break;
                 case ENERGY:
                     addDevice(new ThingUID(THING_TYPE_ENERGYMETER, bridgeHandler.getThing().getUID(), deviceId),
                             METER_ID, deviceId, thingName, thingLocation);
