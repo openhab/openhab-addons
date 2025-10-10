@@ -32,7 +32,6 @@ public class Album extends BaseEntry {
     private String[] availability;
     private String[] mediaTags;
     private Link[] externalLinks;
-    private RelationShip relationships;
 
     @Override
     public String getName() {
@@ -81,10 +80,6 @@ public class Album extends BaseEntry {
 
     public Link[] getExternalLinks() {
         return externalLinks;
-    }
-
-    public RelationShip getRelationShip() {
-        return relationships;
     }
 
 }

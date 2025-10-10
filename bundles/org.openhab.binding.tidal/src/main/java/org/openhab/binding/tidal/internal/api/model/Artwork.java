@@ -15,31 +15,23 @@ package org.openhab.binding.tidal.internal.api.model;
 import com.google.gson.annotations.JsonAdapter;
 
 /**
- * Tidal Api Artist data class.
+ * Tidal Api Album data class.
  *
  * @author Laurent Arnal - Initial contribution
  */
 @JsonAdapter(FlatteningTypeAdapterFactory.class)
-public class Artist extends BaseEntry {
-    private String name;
-    private double popularity;
-    private Link[] externalLinks;
+public class Artwork extends BaseEntry {
+
+    private String mediaType;
+    private File[] files;
 
     @Override
     public String getName() {
-        return name;
+        return super.getId();
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public double getPopularity() {
-        return popularity;
-    }
-
-    public Link[] getExternalLinks() {
-        return externalLinks;
+    public File[] getFiles() {
+        return files;
     }
 
 }

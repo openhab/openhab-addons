@@ -31,8 +31,8 @@ public class Playlist extends BaseEntry {
     public String lastModifiedAt;
     public String accessType;
     public String playlistType;
-    private RelationShip relationships;
 
+    @Override
     public String getName() {
         return name;
     }
@@ -71,10 +71,6 @@ public class Playlist extends BaseEntry {
 
     public String getPlaylistType() {
         return playlistType;
-    }
-
-    public RelationShip getRelationShip() {
-        return relationships;
     }
 
 }
