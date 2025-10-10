@@ -117,7 +117,8 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
     protected UpnpDynamicStateDescriptionProvider upnpStateDescriptionProvider;
     protected UpnpDynamicCommandDescriptionProvider upnpCommandDescriptionProvider;
 
-    public UpnpHandler(Thing thing, UpnpIOService upnpIOService, UpnpControlBindingConfiguration configuration,
+    public UpnpHandler(Thing thing, UpnpIOService upnpIOService, UpnpService upnpService,
+            UpnpControlBindingConfiguration configuration,
             UpnpDynamicStateDescriptionProvider upnpStateDescriptionProvider,
             UpnpDynamicCommandDescriptionProvider upnpCommandDescriptionProvider) {
         super(thing);

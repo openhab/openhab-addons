@@ -205,14 +205,8 @@ public class UpnpRendererHandlerTest extends UpnpHandlerTest {
         upnpEntryQueue = new UpnpEntryQueue(entries, "54321");
 
         handler = spy(new UpnpRendererHandler(requireNonNull(thing), requireNonNull(upnpIOService),
-<<<<<<< HEAD
                 requireNonNull(audioSinkReg), requireNonNull(upnpStateDescriptionProvider),
                 requireNonNull(upnpCommandDescriptionProvider), configuration, requireNonNull(mediaService)));
-=======
-                requireNonNull(handlerFactory), requireNonNull(upnpStateDescriptionProvider),
-                requireNonNull(upnpCommandDescriptionProvider), configuration, requireNonNull(mediaService)));
-
->>>>>>> 259d892f7a (fix compile : need to review review rebase step to be sure don't miss anything)
         initHandler(requireNonNull(handler));
 
         handler.initialize();
