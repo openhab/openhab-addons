@@ -12,8 +12,11 @@
  */
 package org.openhab.binding.homekit.internal.persistence;
 
+import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.security.SecureRandom;
 import java.util.Base64;
+import java.util.Enumeration;
 
 import org.bouncycastle.crypto.params.Ed25519PrivateKeyParameters;
 import org.bouncycastle.crypto.params.Ed25519PublicKeyParameters;
@@ -34,13 +37,13 @@ import org.osgi.service.component.annotations.Reference;
 @Component(service = HomekitKeyStore.class)
 public class HomekitKeyStore {
 
-    private static final String CONTROLLER_KEY_ID = "controller";
-
     private final Storage<String> storage;
+    private final String controllerId;
 
     @Activate
     public HomekitKeyStore(@Reference StorageService storageService) {
         storage = storageService.getStorage(getClass().getName(), getClass().getClassLoader());
+        controllerId = getMacAddress();
     }
 
     private String encode(byte[] bytes) {
@@ -64,12 +67,36 @@ public class HomekitKeyStore {
     }
 
     public Ed25519PrivateKeyParameters getControllerKey() {
-        String existing = storage.get(CONTROLLER_KEY_ID);
-        if (existing == null) {
-            Ed25519PrivateKeyParameters key = new Ed25519PrivateKeyParameters(new SecureRandom());
-            storage.put(CONTROLLER_KEY_ID, encode(key.getEncoded()));
-            return key;
+        String key = storage.get(controllerId);
+        if (key != null) {
+            return new Ed25519PrivateKeyParameters(decode(key), 0);
         }
-        return new Ed25519PrivateKeyParameters(decode(existing), 0);
+        Ed25519PrivateKeyParameters newKey = new Ed25519PrivateKeyParameters(new SecureRandom());
+        storage.put(controllerId, encode(newKey.getEncoded()));
+        return newKey;
+    }
+
+    /**
+     * Returns the MAC address of the first non-loopback network interface found.
+     *
+     * @return the MAC address as a String in the format "XX:XX:XX:XX:XX:XX"
+     * @throws IllegalStateException if no suitable network interface is found
+     */
+    private String getMacAddress() {
+        try {
+            Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
+            while (interfaces.hasMoreElements()) {
+                NetworkInterface ni = interfaces.nextElement();
+                if (ni.isUp() && !ni.isLoopback() && !ni.isVirtual() && ni.getHardwareAddress() instanceof byte[] mac) {
+                    String macAddr = "";
+                    for (int i = 0; i < mac.length; i++) {
+                        macAddr += String.format("%02X%s", mac[i], (i < mac.length - 1) ? ":" : "");
+                    }
+                    return macAddr;
+                }
+            }
+        } catch (SocketException e) {
+        }
+        throw new IllegalStateException("No suitable network interface found for deriving MAC address");
     }
 }
