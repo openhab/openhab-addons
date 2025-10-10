@@ -88,7 +88,7 @@ public class TidalAuthService {
      * @throws IOException thrown when an HTML template could not be read
      */
     private HttpServlet createServlet() throws IOException {
-        return new TidalAuthServlet(this, readTemplate(TEMPLATE_INDEX), readTemplate(TEMPLATE_PLAYER));
+        return new TidalAuthServlet(this, readTemplate(TEMPLATE_INDEX));
     }
 
     /**

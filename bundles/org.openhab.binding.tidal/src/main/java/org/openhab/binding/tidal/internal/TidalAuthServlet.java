@@ -48,7 +48,7 @@ public class TidalAuthServlet extends HttpServlet {
     private static final String CONTENT_TYPE = "text/html;charset=UTF-8";
 
     // Simple HTML templates for inserting messages.
-    private static final String HTML_EMPTY_PLAYERS = "<p class='block'>Manually add a Tidal Player Bridge to authorize it here.<p>";
+    private static final String HTML_NO_BRIDE = "<p class='block'>Manually add a Tidal Bridge to authorize it here.<p>";
     private static final String HTML_USER_AUTHORIZED = "<p class='block authorized'>Bridge authorized for user %s.</p>";
     private static final String HTML_ERROR = "<p class='block error'>Call to Tidal failed with error: %s</p>";
 
@@ -62,21 +62,19 @@ public class TidalAuthServlet extends HttpServlet {
     private static final String KEY_PLAYERS = "players";
     private static final String KEY_REDIRECT_URI = "redirectUri";
     // Keys present in the player.html
-    private static final String PLAYER_ID = "player.id";
-    private static final String PLAYER_NAME = "player.name";
-    private static final String PLAYER_TIDAL_USER_ID = "player.user";
-    private static final String PLAYER_AUTHORIZED_CLASS = "player.authorized";
-    private static final String PLAYER_AUTHORIZE = "player.authorize";
+    private static final String BRIDGE_ID = "bridge.id";
+    private static final String BRIDGE_NAME = "bridge.name";
+    private static final String BRIDGE_TIDAL_USER_ID = "bridge.user";
+    private static final String BRIDGE_AUTHORIZED_CLASS = "bridge.authorized";
+    private static final String BRIDGE_AUTHORIZE = "bridge.authorize";
 
     private final Logger logger = LoggerFactory.getLogger(TidalAuthServlet.class);
     private final TidalAuthService tidalAuthService;
     private final String indexTemplate;
-    private final String playerTemplate;
 
-    public TidalAuthServlet(TidalAuthService tidalAuthService, String indexTemplate, String playerTemplate) {
+    public TidalAuthServlet(TidalAuthService tidalAuthService, String indexTemplate) {
         this.tidalAuthService = tidalAuthService;
         this.indexTemplate = indexTemplate;
-        this.playerTemplate = playerTemplate;
     }
 
     @Override
@@ -86,11 +84,12 @@ public class TidalAuthServlet extends HttpServlet {
         final String servletBaseURL = req.getRequestURL().toString();
         final Map<String, String> replaceMap = new HashMap<>();
 
+        String template = indexTemplate;
         handleTidalRedirect(replaceMap, servletBaseURL, req.getQueryString());
         resp.setContentType(CONTENT_TYPE);
         replaceMap.put(KEY_REDIRECT_URI, servletBaseURL);
-        replaceMap.put(KEY_PLAYERS, formatPlayers(playerTemplate, servletBaseURL));
-        resp.getWriter().append(replaceKeysFromMap(indexTemplate, replaceMap));
+        template = formatAccountHandlers(template, servletBaseURL);
+        resp.getWriter().append(replaceKeysFromMap(template, replaceMap));
         resp.getWriter().close();
     }
 
@@ -117,8 +116,6 @@ public class TidalAuthServlet extends HttpServlet {
             final String reqState = params.getString("state");
             final String reqError = params.getString("error");
 
-            replaceMap.put(KEY_PAGE_REFRESH,
-                    params.isEmpty() ? "" : String.format(HTML_META_REFRESH_CONTENT, servletBaseURL));
             if (!StringUtil.isBlank(reqError)) {
                 logger.debug("Tidal redirected with an error: {}", reqError);
                 replaceMap.put(KEY_ERROR, String.format(HTML_ERROR, reqError));
@@ -141,11 +138,11 @@ public class TidalAuthServlet extends HttpServlet {
      * @param servletBaseURL the redirect_uri to be used in the authorization url created on the authorization button.
      * @return A String with the players formatted with the player template
      */
-    private String formatPlayers(String playerTemplate, String servletBaseURL) {
-        final List<TidalAccountHandler> players = tidalAuthService.getTidalAccountHandlers();
+    private String formatAccountHandlers(String template, String servletBaseURL) {
+        final List<TidalAccountHandler> accountHandlers = tidalAuthService.getTidalAccountHandlers();
 
-        return players.isEmpty() ? HTML_EMPTY_PLAYERS
-                : players.stream().map(p -> formatPlayer(playerTemplate, p, servletBaseURL))
+        return accountHandlers.isEmpty() ? HTML_NO_BRIDE
+                : accountHandlers.stream().map(p -> formatAccountHandler(template, p, servletBaseURL))
                         .collect(Collectors.joining());
     }
 
@@ -157,25 +154,25 @@ public class TidalAuthServlet extends HttpServlet {
      * @param servletBaseURL the redirect_uri to be used in the authorization url created on the authorization button.
      * @return A String with the player formatted with the player template
      */
-    private String formatPlayer(String playerTemplate, TidalAccountHandler handler, String servletBaseURL) {
+    private String formatAccountHandler(String playerTemplate, TidalAccountHandler handler, String servletBaseURL) {
         final Map<String, String> map = new HashMap<>();
 
-        map.put(PLAYER_ID, handler.getUID().getAsString());
-        map.put(PLAYER_NAME, handler.getLabel());
+        map.put(BRIDGE_ID, handler.getUID().getAsString());
+        map.put(BRIDGE_NAME, handler.getLabel());
         final String tidalUser = handler.getUser();
 
         if (handler.isAuthorized()) {
-            map.put(PLAYER_AUTHORIZED_CLASS, " authorized");
-            map.put(PLAYER_TIDAL_USER_ID, String.format(" (Authorized user: %s)", tidalUser));
+            map.put(BRIDGE_AUTHORIZED_CLASS, " authorized");
+            map.put(BRIDGE_TIDAL_USER_ID, String.format(" (Authorized user: %s)", tidalUser));
         } else if (!StringUtil.isBlank(tidalUser)) {
-            map.put(PLAYER_AUTHORIZED_CLASS, " Unauthorized");
-            map.put(PLAYER_TIDAL_USER_ID, String.format(" (Unauthorized user: %s)", tidalUser));
+            map.put(BRIDGE_AUTHORIZED_CLASS, " Unauthorized");
+            map.put(BRIDGE_TIDAL_USER_ID, String.format(" (Unauthorized user: %s)", tidalUser));
         } else {
-            map.put(PLAYER_AUTHORIZED_CLASS, "");
-            map.put(PLAYER_TIDAL_USER_ID, "");
+            map.put(BRIDGE_AUTHORIZED_CLASS, "");
+            map.put(BRIDGE_TIDAL_USER_ID, "");
         }
 
-        map.put(PLAYER_AUTHORIZE, handler.formatAuthorizationUrl(servletBaseURL));
+        map.put(BRIDGE_AUTHORIZE, handler.formatAuthorizationUrl(servletBaseURL));
         return replaceKeysFromMap(playerTemplate, map);
     }
 

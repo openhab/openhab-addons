@@ -16,10 +16,15 @@ import static org.openhab.binding.tidal.internal.TidalBindingConstants.*;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.SecureRandom;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
+import java.util.Base64;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
@@ -37,6 +42,7 @@ import org.openhab.binding.tidal.internal.api.model.Artist;
 import org.openhab.binding.tidal.internal.api.model.BaseEntry;
 import org.openhab.binding.tidal.internal.api.model.Playlist;
 import org.openhab.binding.tidal.internal.api.model.Track;
+import org.openhab.binding.tidal.internal.api.model.User;
 import org.openhab.core.auth.client.oauth2.AccessTokenRefreshListener;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
 import org.openhab.core.auth.client.oauth2.OAuthClientService;
@@ -80,6 +86,9 @@ public class TidalBridgeHandler extends BaseBridgeHandler
     private static final Artist EMPTY_ARTIST = new Artist();
     private static final SimpleDateFormat MUSIC_TIME_FORMAT = new SimpleDateFormat("m:ss");
     private static final int MAX_IMAGE_SIZE = 500000;
+    private String codeChallenge = "";
+    private String codeVerifier = "";
+
     /**
      * Only poll playlist once per hour (or when refresh is called).
      */
@@ -212,13 +221,65 @@ public class TidalBridgeHandler extends BaseBridgeHandler
             if (oAuthService == null) {
                 throw new OAuthException("OAuth service is not initialized");
             }
-            oAuthService.addExtraAuthField("test", "toto");
             String oAuthorizationUrl = oAuthService.getAuthorizationUrl(redirectUri, null,
                     thing.getUID().getAsString());
 
-            String cChallenge = "E9Melhoa2OwvFrEMTJguCHaoeKt8URWbuGJSstw-cM";
+            try {
+
+                byte[] randomBytes = new byte[32];
+                SecureRandom secureRandom = new SecureRandom();
+                secureRandom.nextBytes(randomBytes);
+
+                randomBytes[0] = (byte) 116;
+                randomBytes[1] = (byte) 24;
+                randomBytes[2] = (byte) 223;
+                randomBytes[3] = (byte) 180;
+                randomBytes[4] = (byte) 151;
+                randomBytes[5] = (byte) 153;
+                randomBytes[6] = (byte) 224;
+                randomBytes[7] = (byte) 37;
+                randomBytes[8] = (byte) 79;
+                randomBytes[9] = (byte) 250;
+                randomBytes[10] = (byte) 96;
+                randomBytes[11] = (byte) 125;
+                randomBytes[12] = (byte) 216;
+                randomBytes[13] = (byte) 173;
+                randomBytes[14] = (byte) 187;
+                randomBytes[15] = (byte) 186;
+                randomBytes[16] = (byte) 22;
+                randomBytes[17] = (byte) 212;
+                randomBytes[18] = (byte) 37;
+                randomBytes[19] = (byte) 77;
+                randomBytes[20] = (byte) 105;
+                randomBytes[21] = (byte) 214;
+                randomBytes[22] = (byte) 191;
+                randomBytes[23] = (byte) 240;
+                randomBytes[24] = (byte) 91;
+                randomBytes[25] = (byte) 88;
+                randomBytes[26] = (byte) 5;
+                randomBytes[27] = (byte) 88;
+                randomBytes[28] = (byte) 83;
+                randomBytes[29] = (byte) 132;
+                randomBytes[30] = (byte) 141;
+                randomBytes[31] = (byte) 121;
+
+                codeVerifier = Base64.getUrlEncoder().withoutPadding().encodeToString(randomBytes);
+                System.out.println("Base64 original : " + codeVerifier);
+
+                // 3. Hasher la séquence via SHA-256
+
+                byte[] hashBytes = MessageDigest.getInstance("SHA-256")
+                        .digest(codeVerifier.getBytes(StandardCharsets.UTF_8));
+
+                // 4. Encoder le hash en Base64
+                codeChallenge = Base64.getUrlEncoder().withoutPadding().encodeToString(hashBytes);
+                System.out.println("SHA-256 Base64 : " + codeChallenge);
+            } catch (Exception ex) {
+                logger.info(ex.toString());
+            }
+
             oAuthorizationUrl = oAuthorizationUrl + "&code_challenge_method=S256";
-            oAuthorizationUrl = oAuthorizationUrl + "&code_challenge=" + cChallenge;
+            oAuthorizationUrl = oAuthorizationUrl + "&code_challenge=" + codeChallenge;
             return oAuthorizationUrl;
         } catch (final OAuthException e) {
             logger.debug("Error constructing AuthorizationUrl: ", e);
@@ -234,6 +295,8 @@ public class TidalBridgeHandler extends BaseBridgeHandler
                 throw new OAuthException("OAuth service is not initialized");
             }
             logger.debug("Make call to Tidal to get access token.");
+            // oAuthService.clearExtraAuthField();
+            oAuthService.addExtraAuthField("code_verifier", codeVerifier);
             final AccessTokenResponse credentials = oAuthService.getAccessTokenResponseByAuthorizationCode(reqCode,
                     redirectUri);
             final String user = updateProperties(credentials);
@@ -250,6 +313,13 @@ public class TidalBridgeHandler extends BaseBridgeHandler
 
     private String updateProperties(AccessTokenResponse credentials) {
         if (tidalApi != null) {
+            final User user = tidalApi.getMe();
+            final String userName = user.getUserName() == null ? user.getId() : user.getUserName();
+            final Map<String, String> props = editProperties();
+
+            props.put(PROPERTY_TIDAL_USER, userName);
+            updateProperties(props);
+            return userName;
         }
         return "";
     }
@@ -261,9 +331,10 @@ public class TidalBridgeHandler extends BaseBridgeHandler
         configuration = getConfigAs(TidalBridgeConfiguration.class);
         OAuthClientService oAuthService = oAuthFactory.createOAuthClientService(thing.getUID().getAsString(),
                 TIDAL_API_TOKEN_URL, TIDAL_AUTHORIZE_URL, configuration.clientId, configuration.clientSecret,
-                TIDAL_SCOPES, true);
+                TIDAL_SCOPES, null);
         this.oAuthService = oAuthService;
         oAuthService.addAccessTokenRefreshListener(TidalBridgeHandler.this);
+
         tidalApi = new TidalApi(oAuthService, scheduler, httpClient);
         handleCommand = new TidalHandleCommands(tidalApi);
         final Duration expiringPeriod = Duration.ofSeconds(configuration.refreshPeriod);

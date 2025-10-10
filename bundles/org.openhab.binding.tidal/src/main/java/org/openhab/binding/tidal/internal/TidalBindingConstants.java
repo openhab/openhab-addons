@@ -32,8 +32,9 @@ public class TidalBindingConstants {
     /**
      * Tidal scopes needed by this binding to work.
      */
-    public static final String TIDAL_SCOPES = Stream.of("playlists.read", "entitlements.read", "collection.read",
-            "playlists.write", "collection.write", "user.read", "recommendations.read", "playback")
+    public static final String TIDAL_SCOPES = Stream
+            .of("playlists.read", "entitlements.read", "collection.read", "playlists.write", "collection.write",
+                    "user.read", "recommendations.read", "playback", "search.read", "search.write")
             .collect(Collectors.joining(" "));
     public static final String TIDAL_API_URL = "https://openapi.tidal.com";
 
