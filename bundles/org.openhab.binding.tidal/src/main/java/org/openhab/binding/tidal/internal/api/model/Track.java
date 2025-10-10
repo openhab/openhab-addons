@@ -32,7 +32,6 @@ public class Track extends BaseEntry {
     private String[] availability;
     private String[] mediaTags;
     private Link[] externalLinks;
-    private RelationShip relationships;
     private boolean spotlighted;
 
     @Override
@@ -78,10 +77,6 @@ public class Track extends BaseEntry {
 
     public Link[] getExternalLinks() {
         return externalLinks;
-    }
-
-    public RelationShip getRelationShip() {
-        return relationships;
     }
 
     public boolean getSpotlighted() {

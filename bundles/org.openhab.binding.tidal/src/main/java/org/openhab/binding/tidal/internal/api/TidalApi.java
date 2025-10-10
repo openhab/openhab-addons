@@ -16,7 +16,11 @@ import static org.eclipse.jetty.http.HttpMethod.GET;
 import static org.openhab.binding.tidal.internal.TidalBindingConstants.TIDAL_API_URL;
 
 import java.io.IOException;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ScheduledExecutorService;
@@ -35,9 +39,12 @@ import org.openhab.binding.tidal.internal.api.model.Album;
 import org.openhab.binding.tidal.internal.api.model.Albums;
 import org.openhab.binding.tidal.internal.api.model.Artist;
 import org.openhab.binding.tidal.internal.api.model.Artists;
+import org.openhab.binding.tidal.internal.api.model.BaseEntries;
+import org.openhab.binding.tidal.internal.api.model.BaseEntry;
 import org.openhab.binding.tidal.internal.api.model.ModelUtil;
 import org.openhab.binding.tidal.internal.api.model.Playlist;
 import org.openhab.binding.tidal.internal.api.model.Playlists;
+import org.openhab.binding.tidal.internal.api.model.RelationShip;
 import org.openhab.binding.tidal.internal.api.model.Track;
 import org.openhab.binding.tidal.internal.api.model.Tracks;
 import org.openhab.binding.tidal.internal.api.model.User;
@@ -102,7 +109,7 @@ public class TidalApi {
      * @return Returns the Spotify user information
      */
     public User getMe() {
-        return Objects.requireNonNull(request(GET, TIDAL_API_URL + "/v2/users/me", "", "data", User.class));
+        return Objects.requireNonNull(request(GET, TIDAL_API_URL + "/v2/users/me", "", User.class));
     }
 
     /**
@@ -110,8 +117,8 @@ public class TidalApi {
      */
     public List<Album> getAlbums(long offset, long limit) {
         final Albums albums = request(GET, TIDAL_API_URL
-                + "/v2/userCollections/192468940/relationships/albums?countryCode=FR&locale=fr-FR&include=albums", "",
-                "included", Albums.class);
+                + "/v2/userCollections/192468940/relationships/albums?countryCode=FR&locale=fr-FR&include=albums&include=albums.coverArt&include=albums.artists",
+                "", Albums.class);
 
         return albums == null ? Collections.emptyList() : albums;
     }
@@ -122,7 +129,7 @@ public class TidalApi {
     public List<Artist> getArtists(long offset, long limit) {
         final Artists artists = request(GET, TIDAL_API_URL
                 + "/v2/userCollections/192468940/relationships/artists?countryCode=FR&locale=fr-FR&include=artists", "",
-                "included", Artists.class);
+                Artists.class);
 
         return artists == null ? Collections.emptyList() : artists;
     }
@@ -133,7 +140,7 @@ public class TidalApi {
     public List<Track> getTracks(long offset, long limit) {
         final Tracks tracks = request(GET, TIDAL_API_URL
                 + "/v2/userCollections/192468940/relationships/tracks?countryCode=FR&locale=fr-FR&include=tracks", "",
-                "included", Tracks.class);
+                Tracks.class);
 
         return tracks == null ? Collections.emptyList() : tracks;
     }
@@ -144,7 +151,7 @@ public class TidalApi {
     public List<Playlist> getPlaylists(long offset, long limit) {
         final Playlists playlists = request(GET,
                 TIDAL_API_URL + "/v2/playlists?countryCode=FR&include=coverArt&filter%5Bowners.id%5D=192468940", "",
-                "data", Playlists.class);
+                Playlists.class);
 
         return playlists == null ? Collections.emptyList() : playlists;
     }
@@ -175,7 +182,7 @@ public class TidalApi {
      * @param clazz data type of return data, if null no data is expected to be returned.
      * @return the response give by Tidal
      */
-    private <T> @Nullable T request(HttpMethod method, String url, String requestData, String attr, Class<T> clazz) {
+    private <T> @Nullable T request(HttpMethod method, String url, String requestData, Class<T> clazz) {
         logger.debug("Request: ({}) {} - {}", method, url, requestData);
 
         final Function<HttpClient, Request> call = httpClient -> httpClient.newRequest(url).method(method);
@@ -202,10 +209,39 @@ public class TidalApi {
                 JsonElement data = jsonObj.get("data");
                 JsonElement included = jsonObj.get("included");
 
-                JsonElement decode = jsonObj.get(attr);
+                T result = gson.fromJson(data, clazz);
+                ArrayList<BaseEntry> resultCast = (ArrayList<BaseEntry>) result;
 
-                T result = gson.fromJson(decode, clazz);
+                Type superType = clazz.getGenericSuperclass();
+                Type typeArg = null;
+                if (superType instanceof ParameterizedType) {
+                    ParameterizedType pt = (ParameterizedType) superType;
+                    typeArg = pt.getActualTypeArguments()[0];
+                }
 
+                BaseEntries includedRessources = gson.fromJson(included, BaseEntries.class);
+                for (BaseEntry includedRessource : includedRessources) {
+                    if (typeArg != null && includedRessource.getClass() == typeArg) {
+                        String includedId = includedRessource.getId();
+                        resultCast.removeIf(entry -> entry.getId().equals(includedId));
+                        resultCast.add(includedRessource);
+                    }
+                }
+
+                Hashtable<String, BaseEntry> dict = new Hashtable<String, BaseEntry>();
+
+                for (BaseEntry includedRessource : includedRessources) {
+                    if (typeArg != null && includedRessource.getClass() != typeArg) {
+
+                        dict.put(includedRessource.getId(), includedRessource);
+                        logger.info("");
+                    }
+                }
+
+                for (BaseEntry entry : resultCast) {
+                    RelationShip relationShip = entry.getRelationShip();
+                    relationShip.resolveDeps(dict);
+                }
                 // return clazz == String.class ? (@Nullable T) response : fromJson(response, clazz);
                 return result;
             }

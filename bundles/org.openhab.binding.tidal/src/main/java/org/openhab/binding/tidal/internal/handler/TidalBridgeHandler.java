@@ -394,7 +394,7 @@ public class TidalBridgeHandler extends BaseBridgeHandler
                 // List<Album> albumns = getTidalApi().getAlbums(0, 0);
                 // List<Playlist> playLists = getTidalApi().getPlaylists(0, 0);
                 // List<Artist> artists = getTidalApi().getArtists(0, 0);
-                List<Track> tracks = getTidalApi().getTracks(0, 0);
+                // List<Track> tracks = getTidalApi().getTracks(0, 0);
 
                 pollingFuture = scheduler.scheduleWithFixedDelay(this::pollStatus, 0, configuration.refreshPeriod,
                         TimeUnit.SECONDS);
@@ -604,7 +604,11 @@ public class TidalBridgeHandler extends BaseBridgeHandler
                     res.setKey(key);
 
                     if (res instanceof MediaCollection) {
-                        ((MediaCollection) res).setArtUri("uri");
+                        String artWork = "";
+                        if (entry.getArtwork() != null) {
+                            artWork = entry.getArtwork();
+                        }
+                        ((MediaCollection) res).setArtUri(artWork);
                     }
                     return res;
                 } catch (Exception ex) {

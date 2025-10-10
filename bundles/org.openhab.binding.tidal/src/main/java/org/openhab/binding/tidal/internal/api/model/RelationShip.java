@@ -1,70 +1,82 @@
 package org.openhab.binding.tidal.internal.api.model;
 
-public class RelationShip {
-    private Link shares;
-    private Link albums;
-    private Link trackStatistics;
-    private Link similarTracks;
-    private Link similarAlbums;
-    private Link artists;
-    private Link genres;
-    private Link owners;
-    private Link lyrics;
-    private Link coverArt;
-    private Link items;
-    private Link providers;
-    private Link sourceFile;
-    private Link radio;
+import java.util.Hashtable;
 
-    public Link getRadio() {
+public class RelationShip {
+    private Link<BaseEntry> shares;
+    private Link<BaseEntry> albums;
+    private Link<BaseEntry> trackStatistics;
+    private Link<BaseEntry> similarTracks;
+    private Link<BaseEntry> similarAlbums;
+    private Link<Artist> artists;
+    private Link<BaseEntry> genres;
+    private Link<BaseEntry> owners;
+    private Link<BaseEntry> lyrics;
+    private Link<Artwork> coverArt;
+    private Link<BaseEntry> items;
+    private Link<BaseEntry> providers;
+    private Link<BaseEntry> sourceFile;
+    private Link<BaseEntry> radio;
+
+    public Link<BaseEntry> getRadio() {
         return radio;
     }
 
-    public Link getSourceFile() {
+    public Link<BaseEntry> getSourceFile() {
         return sourceFile;
     }
 
-    public Link getLyrics() {
+    public Link<BaseEntry> getLyrics() {
         return lyrics;
     }
 
-    public Link getTrackStatistics() {
+    public Link<BaseEntry> getTrackStatistics() {
         return trackStatistics;
     }
 
-    public Link getSimilarTracks() {
+    public Link<BaseEntry> getSimilarTracks() {
         return similarTracks;
     }
 
-    public Link getAlbums() {
+    public Link<BaseEntry> getAlbums() {
         return albums;
     }
 
-    public Link getSimilarAlbums() {
+    public Link<BaseEntry> getSimilarAlbums() {
         return similarAlbums;
     }
 
-    public Link getArtists() {
+    public Link<Artist> getArtists() {
         return artists;
     }
 
-    public Link getGenres() {
+    public Link<BaseEntry> getGenres() {
         return genres;
     }
 
-    public Link getOwners() {
+    public Link<BaseEntry> getOwners() {
         return owners;
     }
 
-    public Link getCoverArt() {
+    public Link<Artwork> getCoverArt() {
         return coverArt;
     }
 
-    public Link getItems() {
+    public Link<BaseEntry> getItems() {
         return items;
     }
 
-    public Link getProviders() {
+    public Link<BaseEntry> getProviders() {
         return providers;
+    }
+
+    public void resolveDeps(Hashtable<String, BaseEntry> dict) {
+        if (artists != null) {
+            artists.resolveDeps(dict);
+        }
+        if (coverArt != null) {
+            coverArt.resolveDeps(dict);
+        }
+
     }
 }
