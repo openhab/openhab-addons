@@ -55,8 +55,8 @@ public class PairSetupClient {
 
     public PairSetupClient(IpTransport ipTransport, byte[] clientPairingId,
             Ed25519PrivateKeyParameters clientLongTermSecretKey, String pairingCode) throws Exception {
-        if (clientPairingId.length != 8) {
-            throw new IllegalArgumentException("Client Id must be exactly 8 bytes");
+        if (clientPairingId.length != 16) {
+            throw new IllegalArgumentException("Client Id must be exactly 16 bytes");
         }
         logger.debug("Created with pairing code: {}", pairingCode);
         this.ipTransport = ipTransport;

@@ -21,13 +21,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.bouncycastle.crypto.params.Ed25519PublicKeyParameters;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.homekit.internal.crypto.CryptoUtils;
 import org.openhab.binding.homekit.internal.dto.Accessories;
 import org.openhab.binding.homekit.internal.dto.Accessory;
 import org.openhab.binding.homekit.internal.hap_services.CharacteristicReadWriteClient;
@@ -62,13 +60,6 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler {
 
     protected static final Gson GSON = new Gson();
 
-    // pattern matcherfor pairing code XXX-XX-XXX
-    protected static final Pattern PAIRING_CODE_PATTERN = Pattern.compile("^\\d{3}-\\d{2}-\\d{3}$");
-
-    // pattern matcher for host ipv4 address 123.123.123.123:12345
-    protected static final Pattern HOST_PATTERN = Pattern.compile(
-            "^(((25[0-5]|2[0-4]\\d|1\\d{2}|[1-9]?\\d)\\.){3}(25[0-5]|2[0-4]\\d|1\\d{2}|[1-9]?\\d)):(6553[0-5]|655[0-2]\\d|65[0-4]\\d{2}|6[0-4]\\d{3}|[1-5]?\\d{1,4})$");
-
     private final Logger logger = LoggerFactory.getLogger(HomekitBaseAccessoryHandler.class);
 
     protected final Map<Integer, Accessory> accessories = new HashMap<>();
@@ -81,7 +72,6 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler {
     protected @NonNullByDefault({}) String pairingCode;
     protected @NonNullByDefault({}) Integer accessoryId;
     protected @NonNullByDefault({}) IpTransport ipTransport;
-    protected @NonNullByDefault({}) byte[] clientPairingId;
 
     public HomekitBaseAccessoryHandler(Thing thing, HomekitTypeProvider typeProvider, HomekitKeyStore keyStore) {
         super(thing);
@@ -156,7 +146,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler {
             scheduler.submit(() -> {
                 // unpair and clear stored keys if this is NOT a child accessory
                 try {
-                    PairRemoveClient service = new PairRemoveClient(ipTransport, clientPairingId);
+                    PairRemoveClient service = new PairRemoveClient(ipTransport, keyStore.getControllerId());
                     service.remove();
                     String mac = getThing().getProperties().get(Thing.PROPERTY_MAC_ADDRESS);
                     if (mac != null) {
@@ -211,38 +201,31 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler {
      */
     private void initializePairing() {
         Object pairingConfig = getConfig().get(CONFIG_PAIRING_CODE);
-        if (pairingConfig == null || !(pairingConfig instanceof String pairingCode)
-                || !PAIRING_CODE_PATTERN.matcher(pairingCode).matches()) {
-            logger.debug("Pairing code must match XXX-XX-XXX");
+        if (pairingConfig == null || !(pairingConfig instanceof String pairingConfigString)
+                || !PAIRING_CODE_PATTERN.matcher(pairingConfigString).matches()) {
+            logger.debug("Pairing code must match XXX-XX-XXX or XXXX-XXXX or XXXXXXXX");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Invalid pairing code");
             return;
         }
-        this.pairingCode = pairingCode;
-        try {
-            clientPairingId = CryptoUtils.sha64(thing.getUID().toString().getBytes(StandardCharsets.UTF_8));
-        } catch (Exception e) {
-            logger.debug("Eroor creating client Id", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Error creating client Id");
-            return;
-        }
-        this.accessoryId = getAccessoryId();
+        pairingCode = normalizePairingCode(pairingConfigString);
+
+        accessoryId = getAccessoryId();
         if (accessoryId == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Invalid accessory ID");
             return;
         }
 
-        String mac = getThing().getProperties().get(Thing.PROPERTY_MAC_ADDRESS);
-        if (mac == null) {
+        final String macAddress = getThing().getProperties().get(Thing.PROPERTY_MAC_ADDRESS);
+        if (macAddress == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Missing MAC address");
             return;
         }
 
-        Ed25519PublicKeyParameters tempAccessoryLTPK = keyStore.getAccessoryKey(mac);
-        if (tempAccessoryLTPK != null) {
+        if (keyStore.getAccessoryKey(macAddress) != null) {
             try {
                 logger.debug("Starting Pair-Verify with existing key for {}", thing.getUID());
-                PairVerifyClient client = new PairVerifyClient(ipTransport, clientPairingId,
-                        keyStore.getControllerKey(), tempAccessoryLTPK);
+                PairVerifyClient client = new PairVerifyClient(ipTransport, keyStore.getControllerId(),
+                        keyStore.getControllerKey(), Objects.requireNonNull(keyStore.getAccessoryKey(macAddress)));
 
                 ipTransport.setSessionKeys(client.verify());
                 rwService = new CharacteristicReadWriteClient(ipTransport);
@@ -254,26 +237,26 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler {
                 return;
             } catch (Exception e) {
                 logger.debug("Restored pairing was not verified for {}", thing.getUID(), e);
-                keyStore.setAccessoryKey(mac, null);
+                keyStore.setAccessoryKey(macAddress, null);
                 // fall through to create new pairing
             }
         }
 
         try {
             logger.debug("Starting Pair-Setup for {}", thing.getUID());
-            PairSetupClient pairSetupClient = new PairSetupClient(ipTransport, clientPairingId,
+            PairSetupClient pairSetupClient = new PairSetupClient(ipTransport, keyStore.getControllerId(),
                     keyStore.getControllerKey(), pairingCode);
-            tempAccessoryLTPK = pairSetupClient.pair();
 
+            Ed25519PublicKeyParameters accessoryKey = pairSetupClient.pair();
             logger.debug("Pair-Setup completed; starting Pair-Verify for {}", thing.getUID());
 
             // Perform Pair-Verify immediately after Pair-Setup
-            PairVerifyClient pairVerifyClient = new PairVerifyClient(ipTransport, clientPairingId,
-                    keyStore.getControllerKey(), tempAccessoryLTPK);
+            PairVerifyClient pairVerifyClient = new PairVerifyClient(ipTransport, keyStore.getControllerId(),
+                    keyStore.getControllerKey(), accessoryKey);
 
             ipTransport.setSessionKeys(pairVerifyClient.verify());
             rwService = new CharacteristicReadWriteClient(ipTransport);
-            keyStore.setAccessoryKey(mac, tempAccessoryLTPK);
+            keyStore.setAccessoryKey(macAddress, accessoryKey);
 
             logger.debug("Pairing and verification completed for {}", thing.getUID());
             fetchAccessories();
@@ -287,5 +270,18 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler {
 
     public Collection<Accessory> getAccessories() {
         return accessories.values();
+    }
+
+    /**
+     * Normalize XXX-XX-XXX or XXXX-XXXX or XXXXXXXX to XXX-XX-XXX
+     */
+    private String normalizePairingCode(String input) {
+        // remove all non-digit character formatting
+        String digits = input.replaceAll("\\D", "");
+        if (digits.length() != 8) {
+            throw new IllegalArgumentException("Input must contain exactly 8 digits");
+        }
+        // re-format as XXX-XX-XXX
+        return String.format("%s-%s-%s", digits.substring(0, 3), digits.substring(3, 5), digits.substring(5, 8));
     }
 }

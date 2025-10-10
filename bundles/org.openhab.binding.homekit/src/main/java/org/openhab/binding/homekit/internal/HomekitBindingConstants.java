@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.homekit.internal;
 
+import java.util.regex.Pattern;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.type.ChannelTypeUID;
@@ -72,4 +74,11 @@ public class HomekitBindingConstants {
 
     public static final String CONTENT_TYPE_PAIRING = "application/pairing+tlv8";
     public static final String CONTENT_TYPE_HAP = "application/hap+json";
+
+    // pattern matcher for pairing code XXX-XX-XXX or XXXX-XXXX or XXXXXXXX
+    public static final Pattern PAIRING_CODE_PATTERN = Pattern.compile("\\d{3}-\\d{2}-\\d{3}|\\d{4}-\\d{4}|\\d{8}");
+
+    // pattern matcher for host ipv4 address 123.123.123.123:12345
+    public static final Pattern HOST_PATTERN = Pattern.compile(
+            "^(((25[0-5]|2[0-4]\\d|1\\d{2}|[1-9]?\\d)\\.){3}(25[0-5]|2[0-4]\\d|1\\d{2}|[1-9]?\\d)):(6553[0-5]|655[0-2]\\d|65[0-4]\\d{2}|6[0-4]\\d{3}|[1-5]?\\d{1,4})$");
 }

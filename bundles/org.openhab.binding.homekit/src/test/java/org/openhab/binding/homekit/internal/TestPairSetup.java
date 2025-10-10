@@ -81,9 +81,9 @@ class TestPairSetup {
     void testPairSetup() throws Exception {
         // initialize test parameters
         String password = "password123";
-        byte[] iOSDeviceId = new byte[] { 11, 22, 33, 44, 55, 66, 77, 88 };
+        byte[] iOSDeviceId = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 };
+        byte[] accessoryId = new byte[] { 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1 };
         byte[] serverSalt = toBytes(SALT_HEX);
-        byte[] accessoryId = new byte[] { 88, 77, 66, 55, 44, 33, 22, 11 };
 
         // initialize signing keys
         Ed25519PrivateKeyParameters controllerLongTermSecretKey = new Ed25519PrivateKeyParameters(
