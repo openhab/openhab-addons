@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * @author Markus Pfleger - Initial contribution
+ * @author MikeTheTux - API Extension, WSS Support, Refactoring
  */
 @Component(scope = ServiceScope.PROTOTYPE, service = AutomowerActions.class)
 @ThingActionsScope(name = "automower")
