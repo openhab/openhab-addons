@@ -37,7 +37,6 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import javax.measure.Unit;
-import javax.measure.quantity.Energy;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -64,6 +63,7 @@ import org.openhab.core.io.transport.mqtt.MqttConnectionState;
 import org.openhab.core.io.transport.mqtt.MqttException;
 import org.openhab.core.io.transport.mqtt.MqttMessageSubscriber;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -1162,14 +1162,13 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
                     double value = values.getFirst().value;
                     if (unit != null) {
                         try {
-                            Unit<Energy> receivedUnit = Units.getInstance().getUnit(unit).asType(Energy.class);
-                            Unit<Energy> targetUnit = Units.getInstance().getUnit("kWh").asType(Energy.class);
-                            if (receivedUnit != null && targetUnit != null) {
-                                QuantityType<?> quantityValue = QuantityType.valueOf(value, receivedUnit)
-                                        .toUnit(targetUnit);
-                                if (quantityValue != null) {
-                                    value = quantityValue.doubleValue();
-                                }
+                            Unit<?> receivedUnit = Units.getInstance().getUnit(unit);
+                            Unit<?> targetUnit = receivedUnit.isCompatible(SIUnits.CUBIC_METRE) ? SIUnits.CUBIC_METRE
+                                    : Units.KILOWATT_HOUR;
+                            QuantityType<?> quantityValue = QuantityType.valueOf(value, receivedUnit)
+                                    .toUnit(targetUnit);
+                            if (quantityValue != null) {
+                                value = quantityValue.doubleValue();
                             }
                         } catch (ClassCastException e) {
                             logger.debug("Unit conversion failed for unit {}: {}", unit, e.getMessage());

@@ -92,9 +92,7 @@ public class NikoHomeControlMeterHandler extends NikoHomeControlBaseHandler impl
                 case CHANNEL_ENERGY_DAY:
                 case CHANNEL_GAS_DAY:
                 case CHANNEL_WATER_DAY:
-                case CHANNEL_ENERGY_LAST:
-                case CHANNEL_GAS_LAST:
-                case CHANNEL_WATER_LAST:
+                case CHANNEL_MEASUREMENT_TIME:
                     LocalDateTime lastReadingUTC = nhcMeter.getLastReading();
                     if (lastReadingUTC != null) {
                         meterReadingEvent(nhcMeter.getReading(), nhcMeter.getDayReading(), lastReadingUTC);
@@ -326,19 +324,19 @@ public class NikoHomeControlMeterHandler extends NikoHomeControlBaseHandler impl
             case ENERGY:
                 updateState(CHANNEL_ENERGY, new QuantityType<>(value, KILOWATT_HOUR));
                 updateState(CHANNEL_ENERGY_DAY, new QuantityType<>(dayValue, KILOWATT_HOUR));
-                updateState(CHANNEL_ENERGY_LAST, new DateTimeType(lastReading));
+                updateState(CHANNEL_MEASUREMENT_TIME, new DateTimeType(lastReading));
                 updateStatus(ThingStatus.ONLINE);
                 break;
             case GAS:
                 updateState(CHANNEL_GAS, new QuantityType<>(value, SIUnits.CUBIC_METRE));
                 updateState(CHANNEL_GAS_DAY, new QuantityType<>(dayValue, SIUnits.CUBIC_METRE));
-                updateState(CHANNEL_GAS_LAST, new DateTimeType(lastReading));
+                updateState(CHANNEL_MEASUREMENT_TIME, new DateTimeType(lastReading));
                 updateStatus(ThingStatus.ONLINE);
                 break;
             case WATER:
                 updateState(CHANNEL_WATER, new QuantityType<>(value, SIUnits.CUBIC_METRE));
                 updateState(CHANNEL_WATER_DAY, new QuantityType<>(dayValue, SIUnits.CUBIC_METRE));
-                updateState(CHANNEL_WATER_LAST, new DateTimeType(lastReading));
+                updateState(CHANNEL_MEASUREMENT_TIME, new DateTimeType(lastReading));
                 updateStatus(ThingStatus.ONLINE);
                 break;
             default:
@@ -361,57 +359,63 @@ public class NikoHomeControlMeterHandler extends NikoHomeControlBaseHandler impl
             return;
         }
 
+        ZonedDateTime lastReading = lastReadingUTC.atZone(ZoneOffset.UTC)
+                .withZoneSameInstant(bridgeHandler.getTimeZone());
+
         boolean invert = getConfig().as(NikoHomeControlMeterConfig.class).invert;
         meterReadings.forEach((reading, v) -> {
-            if (v != null) {
-                double value = (invert ? -1 : 1) * v;
-                Double dayValue = meterReadingsDay.get(reading);
-                if (dayValue != null) {
-                    dayValue = (invert ? -1 : 1) * dayValue;
-                }
-                switch (reading) {
-                    case NikoHomeControlConstants.NHC_ELECTRICAL_ENERGY:
-                    case NikoHomeControlConstants.NHC_ELECTRICAL_ENERGY_CONSUMPTION:
-                        updateState(CHANNEL_ENERGY, new QuantityType<>(value, KILOWATT_HOUR));
-                        if (dayValue != null) {
-                            updateState(CHANNEL_ENERGY_DAY, new QuantityType<>(value, KILOWATT_HOUR));
-                        }
-                        break;
-                    case NikoHomeControlConstants.NHC_ELECTRICAL_ENERGY_FROM_GRID:
-                        updateState(CHANNEL_ENERGY_FROM_GRID, new QuantityType<>(value, KILOWATT_HOUR));
-                        if (dayValue != null) {
-                            updateState(CHANNEL_ENERGY_FROM_GRID_DAY, new QuantityType<>(value, KILOWATT_HOUR));
-                        }
-                        break;
-                    case NikoHomeControlConstants.NHC_ELECTRICAL_ENERGY_TO_GRID:
-                        updateState(CHANNEL_ENERGY_TO_GRID, new QuantityType<>(value, KILOWATT_HOUR));
-                        if (dayValue != null) {
-                            updateState(CHANNEL_ENERGY_TO_GRID_DAY, new QuantityType<>(value, KILOWATT_HOUR));
-                        }
-                        break;
-                    case NikoHomeControlConstants.NHC_ELECTRICAL_ENERGY_SELF_CONSUMPTION:
-                        updateState(CHANNEL_ENERGY_SELF_CONSUMPTION, new QuantityType<>(value, KILOWATT_HOUR));
-                        if (dayValue != null) {
-                            updateState(CHANNEL_ENERGY_SELF_CONSUMPTION_DAY, new QuantityType<>(value, KILOWATT_HOUR));
-                        }
-                        break;
-                    case NikoHomeControlConstants.NHC_GAS_VOLUME:
-                        updateState(CHANNEL_GAS, new QuantityType<>(value, SIUnits.CUBIC_METRE));
-                        if (dayValue != null) {
-                            updateState(CHANNEL_GAS_DAY, new QuantityType<>(value, SIUnits.CUBIC_METRE));
-                        }
-                        break;
-                    case NikoHomeControlConstants.NHC_WATER_VOLUME:
-                        updateState(CHANNEL_WATER, new QuantityType<>(value, SIUnits.CUBIC_METRE));
-                        if (dayValue != null) {
-                            updateState(CHANNEL_WATER_DAY, new QuantityType<>(value, SIUnits.CUBIC_METRE));
-                        }
-                        break;
-                    default:
-                        break;
-                }
+            double value = (invert ? -1 : 1) * v;
+            Double dayValue = meterReadingsDay.get(reading);
+            if (dayValue != null) {
+                dayValue = (invert ? -1 : 1) * dayValue;
+            }
+            switch (reading) {
+                case NikoHomeControlConstants.NHC_ELECTRICAL_ENERGY:
+                case NikoHomeControlConstants.NHC_ELECTRICAL_ENERGY_CONSUMPTION:
+                    updateState(CHANNEL_ENERGY, new QuantityType<>(value, KILOWATT_HOUR));
+                    if (dayValue != null) {
+                        updateState(CHANNEL_ENERGY_DAY, new QuantityType<>(value, KILOWATT_HOUR));
+                    }
+                    break;
+                case NikoHomeControlConstants.NHC_ELECTRICAL_ENERGY_FROM_GRID:
+                    updateState(CHANNEL_ENERGY_FROM_GRID, new QuantityType<>(value, KILOWATT_HOUR));
+                    if (dayValue != null) {
+                        updateState(CHANNEL_ENERGY_FROM_GRID_DAY, new QuantityType<>(value, KILOWATT_HOUR));
+                    }
+                    break;
+                case NikoHomeControlConstants.NHC_ELECTRICAL_ENERGY_TO_GRID:
+                    updateState(CHANNEL_ENERGY_TO_GRID, new QuantityType<>(value, KILOWATT_HOUR));
+                    if (dayValue != null) {
+                        updateState(CHANNEL_ENERGY_TO_GRID_DAY, new QuantityType<>(value, KILOWATT_HOUR));
+                    }
+                    break;
+                case NikoHomeControlConstants.NHC_ELECTRICAL_ENERGY_SELF_CONSUMPTION:
+                    updateState(CHANNEL_ENERGY_SELF_CONSUMPTION, new QuantityType<>(value, KILOWATT_HOUR));
+                    if (dayValue != null) {
+                        updateState(CHANNEL_ENERGY_SELF_CONSUMPTION_DAY, new QuantityType<>(value, KILOWATT_HOUR));
+                    }
+                    break;
+                case NikoHomeControlConstants.NHC_GAS_VOLUME:
+                    updateState(CHANNEL_GAS, new QuantityType<>(value, SIUnits.CUBIC_METRE));
+                    if (dayValue != null) {
+                        updateState(CHANNEL_GAS_DAY, new QuantityType<>(value, SIUnits.CUBIC_METRE));
+                    }
+                    break;
+                case NikoHomeControlConstants.NHC_WATER_VOLUME:
+                    updateState(CHANNEL_WATER, new QuantityType<>(value, SIUnits.CUBIC_METRE));
+                    if (dayValue != null) {
+                        updateState(CHANNEL_WATER_DAY, new QuantityType<>(value, SIUnits.CUBIC_METRE));
+                    }
+                    break;
+                default:
+                    break;
             }
         });
+
+        if (!meterReadings.isEmpty()) {
+            updateState(CHANNEL_MEASUREMENT_TIME, new DateTimeType(lastReading));
+            updateStatus(ThingStatus.ONLINE);
+        }
     }
 
     @Override

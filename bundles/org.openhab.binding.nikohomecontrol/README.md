@@ -214,10 +214,10 @@ Thing nikohomecontrol:carCharger:mybridge:mycarcharger [ carChargerId="abcdef01-
 | peakPowerFromGrid | R  |          | Number:Power       | energyMeterHome | current month peak power as registered by the home energy meter                         |
 | energy            | R  |          | Number:Energy      | energyMeterHome, energyMeterLive, energyMeter | total energy meter reading                                                         |
 | energyday         | R  |          | Number:Energy      | energyMeterHome, energyMeterLive, energyMeter | day energy meter reading                                                           |
-| gas               | R  |          | Number:Volume      | gasMeter    | total gas meter reading                                                                             |
-| gasday            | R  |          | Number:Volume      | gasMeter    | day gas meter reading                                                                               |
-| water             | R  |          | Number:Volume      | waterMeter  | total water meter reading                                                                           |
-| waterday          | R  |          | Number:Volume      | waterMeter  | day water meter reading                                                                             |
+| gas               | R  |          | Number:Volume      | energyMeterHome, gasMeter | total gas meter reading                                                                             |
+| gasday            | R  |          | Number:Volume      | energyMeterHome, gasMeter | day gas meter reading                                                                               |
+| water             | R  |          | Number:Volume      | energyMeterHome, waterMeter | total water meter reading                                                                           |
+| waterday          | R  |          | Number:Volume      | energyMeterHome, waterMeter | day water meter reading                                                                             |
 | measurementtime   | R  |          | DateTimeType       | energyMeterHome, energyMeterLive, energyMeter, gasMeter, waterMeter | last meter reading time                                      |
 | bellbutton        | RW |          | Switch             | access, accessRingAndComeIn | bell button connected to access device, including buttons on video phone devices linked to an access device. The bell can also be triggered by an `ON` command, `autoupdate="false"` by default |
 | ringandcomein     | RW |          | Switch             | accessRingAndComeIn | provide state and turn automatic door unlocking at bell ring on/off                         |

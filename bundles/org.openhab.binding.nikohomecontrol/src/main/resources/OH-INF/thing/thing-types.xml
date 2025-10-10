@@ -233,7 +233,11 @@
 				<label>@text/channelEnergySelfConsumptionDayLabel</label>
 				<description>@text/channelEnergySelfConsumptionDayDescription</description>
 			</channel>
-			<channel id="energylast" typeId="measurementtime"/>
+			<channel id="gas" typeId="gas"/>
+			<channel id="gasday" typeId="gasday"/>
+			<channel id="water" typeId="water"/>
+			<channel id="waterday" typeId="waterday"/>
+			<channel id="measurementtime" typeId="measurementtime"/>
 		</channels>
 		<config-description>
 			<parameter name="meterId" type="text" required="true">
@@ -266,8 +270,11 @@
 			<channel id="power" typeId="power"/>
 			<channel id="energy" typeId="energy"/>
 			<channel id="energyday" typeId="energyday"/>
-			<channel id="energylast" typeId="measurementtime"/>
+			<channel id="measurementtime" typeId="measurementtime"/>
 		</channels>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 		<config-description>
 			<parameter name="meterId" type="text" required="true">
 				<label>@text/deviceConfigDeviceIdLabel</label>
@@ -304,8 +311,11 @@
 		<channels>
 			<channel id="energy" typeId="energy"/>
 			<channel id="energyday" typeId="energyday"/>
-			<channel id="energylast" typeId="measurementtime"/>
+			<channel id="measurementtime" typeId="measurementtime"/>
 		</channels>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 		<config-description>
 			<parameter name="meterId" type="text" required="true">
 				<label>@text/deviceConfigDeviceIdLabel</label>
@@ -342,8 +352,11 @@
 		<channels>
 			<channel id="gas" typeId="gas"/>
 			<channel id="gasday" typeId="gasday"/>
-			<channel id="gaslast" typeId="measurementtime"/>
+			<channel id="measurementtime" typeId="measurementtime"/>
 		</channels>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 		<config-description>
 			<parameter name="meterId" type="text" required="true">
 				<label>@text/deviceConfigDeviceIdLabel</label>
@@ -353,6 +366,12 @@
 				<label>@text/meterConfigRefreshLabel</label>
 				<description>@text/meterConfigRefreshDescription</description>
 				<default>10</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="startDate" type="text">
+				<context>datetime</context>
+				<label>@text/meterConfigStartDateLabel</label>
+				<description>@text/meterConfigStartDateDescription</description>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="invert" type="boolean">
@@ -374,8 +393,11 @@
 		<channels>
 			<channel id="water" typeId="water"/>
 			<channel id="waterday" typeId="waterday"/>
-			<channel id="waterlast" typeId="measurementtime"/>
+			<channel id="measurementtime" typeId="measurementtime"/>
 		</channels>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 		<config-description>
 			<parameter name="meterId" type="text" required="true">
 				<label>@text/deviceConfigDeviceIdLabel</label>
@@ -385,6 +407,12 @@
 				<label>@text/meterConfigRefreshLabel</label>
 				<description>@text/meterConfigRefreshDescription</description>
 				<default>10</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="startDate" type="text">
+				<context>datetime</context>
+				<label>@text/meterConfigStartDateLabel</label>
+				<description>@text/meterConfigStartDateDescription</description>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="invert" type="boolean">

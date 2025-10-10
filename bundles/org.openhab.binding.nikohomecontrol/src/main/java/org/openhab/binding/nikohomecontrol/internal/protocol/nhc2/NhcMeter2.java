@@ -45,11 +45,6 @@ public class NhcMeter2 extends NhcMeter {
     protected Map<String, Double> readings = new ConcurrentHashMap<>();
     protected Map<String, Double> dayReadings = new ConcurrentHashMap<>();
 
-    protected volatile double fromGridReading;
-    protected volatile double fromGridDayReading;
-    protected volatile double toGridReading;
-    protected volatile double toGridDayReading;
-
     protected NhcMeter2(String id, String name, MeterType meterType, String deviceType, String deviceTechnology,
             String deviceModel, @Nullable LocalDateTime referenceDate, @Nullable String location,
             NikoHomeControlCommunication nhcComm, ScheduledExecutorService scheduler) {

@@ -102,9 +102,7 @@ public class NikoHomeControlBindingConstants {
     public static final String CHANNEL_ENERGY_FROM_GRID_DAY = "energyfromgridday";
     public static final String CHANNEL_ENERGY_TO_GRID_DAY = "energytogridday";
     public static final String CHANNEL_ENERGY_SELF_CONSUMPTION_DAY = "energyselfconsumptionday";
-    public static final String CHANNEL_ENERGY_LAST = "energylast";
-    public static final String CHANNEL_GAS_LAST = "gaslast";
-    public static final String CHANNEL_WATER_LAST = "waterlast";
+    public static final String CHANNEL_MEASUREMENT_TIME = "measurementtime";
 
     public static final String CHANNEL_BELL_BUTTON = "bellbutton";
     public static final String CHANNEL_RING_AND_COME_IN = "ringandcomein";
