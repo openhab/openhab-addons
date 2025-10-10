@@ -12,63 +12,85 @@
  */
 package org.openhab.binding.tidal.internal.api.model;
 
-import java.util.List;
+import com.google.gson.annotations.JsonAdapter;
 
 /**
  * Tidal Api Album data class.
  *
  * @author Laurent Arnal - Initial contribution
  */
+@JsonAdapter(FlatteningTypeAdapterFactory.class)
 public class Album {
-
-    private String albumType;
-    private List<Artist> artists;
-    private List<String> availableMarkets;
-    private ExternalUrl externalUrls;
-    private String href;
     private String id;
-    private List<Image> images;
-    private String name;
     private String type;
-    private String uri;
 
-    public String getAlbumType() {
-        return albumType;
-    }
-
-    public List<Artist> getArtists() {
-        return artists;
-    }
-
-    public List<String> getAvailableMarkets() {
-        return availableMarkets;
-    }
-
-    public ExternalUrl getExternalUrls() {
-        return externalUrls;
-    }
-
-    public String getHref() {
-        return href;
-    }
+    private String title;
+    private String barcodeId;
+    private int numberOfVolumes;
+    private int numberOfItems;
+    private String duration;
+    private boolean explicit;
+    private String releaseDate;
+    private double popularity;
+    private String[] availability;
+    private String[] mediaTags;
+    private Link[] externalLinks;
+    private RelationShip relationships;
 
     public String getId() {
         return id;
-    }
-
-    public List<Image> getImages() {
-        return images;
-    }
-
-    public String getName() {
-        return name;
     }
 
     public String getType() {
         return type;
     }
 
-    public String getUri() {
-        return uri;
+    public String getTitle() {
+        return title;
     }
+
+    public String getBarcodeId() {
+        return barcodeId;
+    }
+
+    public int getNumberOfVolumes() {
+        return numberOfVolumes;
+    }
+
+    public int getNumberOfItems() {
+        return numberOfItems;
+    }
+
+    public String getDuration() {
+        return duration;
+    }
+
+    public boolean getExplicit() {
+        return explicit;
+    }
+
+    public String getreleaseDate() {
+        return releaseDate;
+    }
+
+    public double getPopularity() {
+        return popularity;
+    }
+
+    public String[] getAvailability() {
+        return availability;
+    }
+
+    public String[] getMediaTags() {
+        return mediaTags;
+    }
+
+    public Link[] getExternalLinks() {
+        return externalLinks;
+    }
+
+    public RelationShip getRelationShip() {
+        return relationships;
+    }
+
 }

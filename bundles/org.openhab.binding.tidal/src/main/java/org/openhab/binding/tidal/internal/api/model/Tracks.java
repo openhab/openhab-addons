@@ -15,9 +15,9 @@ package org.openhab.binding.tidal.internal.api.model;
 import java.util.ArrayList;
 
 /**
- * Tidal Web Api Playlists data class.
+ * Tidal Web Api Albums data class.
  *
  * @author Laurent Arnal - Initial contribution
  */
-public class Playlists extends ArrayList<Playlist> {
+public class Tracks extends ArrayList<Track> {
 }

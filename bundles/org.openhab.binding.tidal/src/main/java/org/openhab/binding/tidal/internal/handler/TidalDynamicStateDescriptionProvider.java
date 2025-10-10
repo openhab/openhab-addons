@@ -52,16 +52,18 @@ public class TidalDynamicStateDescriptionProvider extends BaseDynamicStateDescri
     }
 
     public void setPlayLists(ChannelUID channelUID, List<Playlist> tidalPlaylists) {
-        final List<Playlist> playlists = playlistsByChannel.get(channelUID);
-
-        if (playlists == null || (tidalPlaylists.size() != playlists.size() || !tidalPlaylists.stream()
-                .allMatch(sp -> playlists.stream().anyMatch(p -> p.getUri() != null && p.getUri().equals(sp.getUri())
-                        && p.getName() != null && p.getName().equals(sp.getName()))))) {
-            playlistsByChannel.put(channelUID, tidalPlaylists);
-            setStateOptions(channelUID,
-                    tidalPlaylists.stream().map(playlist -> new StateOption(playlist.getUri(), playlist.getName()))
-                            .collect(Collectors.toList()));
-        }
+        /*
+         * final List<Playlist> playlists = playlistsByChannel.get(channelUID);
+         * 
+         * if (playlists == null || (tidalPlaylists.size() != playlists.size() || !tidalPlaylists.stream()
+         * .allMatch(sp -> playlists.stream().anyMatch(p -> p.getUri() != null && p.getUri().equals(sp.getUri())
+         * && p.getName() != null && p.getName().equals(sp.getName()))))) {
+         * playlistsByChannel.put(channelUID, tidalPlaylists);
+         * setStateOptions(channelUID,
+         * tidalPlaylists.stream().map(playlist -> new StateOption(playlist.getUri(), playlist.getName()))
+         * .collect(Collectors.toList()));
+         * }
+         */
     }
 
     @Override
