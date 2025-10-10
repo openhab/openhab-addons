@@ -19,7 +19,6 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.tidal.internal.api.TidalApi;
-import org.openhab.binding.tidal.internal.api.model.Device;
 import org.openhab.binding.tidal.internal.api.model.Playlist;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.NextPreviousType;
@@ -44,7 +43,6 @@ class TidalHandleCommands {
 
     private final TidalApi tidalApi;
 
-    private List<Device> devices = Collections.emptyList();
     private List<Playlist> playlists = Collections.emptyList();
 
     /**
@@ -56,8 +54,7 @@ class TidalHandleCommands {
         this.tidalApi = tidalApi;
     }
 
-    public void setDevices(final List<Device> devices) {
-        this.devices = devices;
+    public void setDevices() {
     }
 
     public void setPlaylists(final List<Playlist> playlists) {
@@ -80,13 +77,6 @@ class TidalHandleCommands {
 
         switch (channel) {
             case CHANNEL_DEVICENAME:
-                if (command instanceof StringType) {
-                    final String newName = command.toString();
-
-                    devices.stream().filter(d -> d.getName().equals(newName)).findFirst()
-                            .ifPresent(d -> playDeviceId(d.getId(), active, deviceId));
-                    commandRun = true;
-                }
                 break;
             case CHANNEL_DEVICEID:
             case CHANNEL_DEVICES:

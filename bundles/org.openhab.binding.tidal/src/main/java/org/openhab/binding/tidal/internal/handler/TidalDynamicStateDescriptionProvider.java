@@ -15,16 +15,12 @@ package org.openhab.binding.tidal.internal.handler;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.tidal.internal.api.model.Device;
 import org.openhab.binding.tidal.internal.api.model.Playlist;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.binding.BaseDynamicStateDescriptionProvider;
 import org.openhab.core.thing.type.DynamicStateDescriptionProvider;
-import org.openhab.core.types.StateOption;
 import org.osgi.service.component.annotations.Component;
 
 /**
@@ -36,40 +32,14 @@ import org.osgi.service.component.annotations.Component;
 @NonNullByDefault
 public class TidalDynamicStateDescriptionProvider extends BaseDynamicStateDescriptionProvider {
 
-    private final Map<ChannelUID, List<Device>> devicesByChannel = new HashMap<>();
     private final Map<ChannelUID, List<Playlist>> playlistsByChannel = new HashMap<>();
 
-    public void setDevices(ChannelUID channelUID, List<Device> tidalDevices) {
-        final List<Device> devices = devicesByChannel.get(channelUID);
-
-        if (devices == null || (tidalDevices.size() != devices.size() || !tidalDevices.stream()
-                .allMatch(sd -> devices.stream().anyMatch(d -> Objects.equals(sd.getId(), d.getId())
-                        && d.getName() != null && d.getName().equals(sd.getName()))))) {
-            devicesByChannel.put(channelUID, tidalDevices);
-            setStateOptions(channelUID, tidalDevices.stream()
-                    .map(device -> new StateOption(device.getId(), device.getName())).collect(Collectors.toList()));
-        }
-    }
-
     public void setPlayLists(ChannelUID channelUID, List<Playlist> tidalPlaylists) {
-        /*
-         * final List<Playlist> playlists = playlistsByChannel.get(channelUID);
-         * 
-         * if (playlists == null || (tidalPlaylists.size() != playlists.size() || !tidalPlaylists.stream()
-         * .allMatch(sp -> playlists.stream().anyMatch(p -> p.getUri() != null && p.getUri().equals(sp.getUri())
-         * && p.getName() != null && p.getName().equals(sp.getName()))))) {
-         * playlistsByChannel.put(channelUID, tidalPlaylists);
-         * setStateOptions(channelUID,
-         * tidalPlaylists.stream().map(playlist -> new StateOption(playlist.getUri(), playlist.getName()))
-         * .collect(Collectors.toList()));
-         * }
-         */
     }
 
     @Override
     public void deactivate() {
         super.deactivate();
-        devicesByChannel.clear();
         playlistsByChannel.clear();
     }
 }

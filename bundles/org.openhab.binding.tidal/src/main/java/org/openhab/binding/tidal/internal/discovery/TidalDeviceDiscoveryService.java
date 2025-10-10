@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.tidal.internal.discovery;
 
-import static org.openhab.binding.tidal.internal.TidalBindingConstants.*;
+import static org.openhab.binding.tidal.internal.TidalBindingConstants.THING_TYPE_DEVICE;
 
 import java.time.Duration;
 import java.util.HashMap;
@@ -24,11 +24,7 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.tidal.internal.TidalAccountHandler;
-import org.openhab.binding.tidal.internal.TidalBindingConstants;
-import org.openhab.binding.tidal.internal.api.model.Device;
 import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
-import org.openhab.core.config.discovery.DiscoveryResult;
-import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
@@ -112,17 +108,6 @@ public class TidalDeviceDiscoveryService extends AbstractThingHandlerDiscoverySe
         }
     }
 
-    private void thingDiscovered(Device device) {
-        final Map<String, Object> properties = new HashMap<>();
-
-        properties.put(PROPERTY_TIDAL_DEVICE_NAME, device.getName());
-        final ThingUID thing = new ThingUID(TidalBindingConstants.THING_TYPE_DEVICE, bridgeUID,
-                device.getId().substring(0, PLAYER_ID_LENGTH));
-
-        final DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thing).withBridge(bridgeUID)
-                .withProperties(properties).withRepresentationProperty(PROPERTY_TIDAL_DEVICE_NAME).withTTL(TTL_SECONDS)
-                .withLabel(device.getName()).build();
-
-        thingDiscovered(discoveryResult);
+    private void thingDiscovered() {
     }
 }

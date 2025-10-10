@@ -18,7 +18,6 @@ import static org.openhab.binding.tidal.internal.TidalBindingConstants.TIDAL_API
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.function.Function;
 
@@ -35,8 +34,6 @@ import org.openhab.binding.tidal.internal.api.model.Album;
 import org.openhab.binding.tidal.internal.api.model.Albums;
 import org.openhab.binding.tidal.internal.api.model.Artist;
 import org.openhab.binding.tidal.internal.api.model.Artists;
-import org.openhab.binding.tidal.internal.api.model.CurrentlyPlayingContext;
-import org.openhab.binding.tidal.internal.api.model.Me;
 import org.openhab.binding.tidal.internal.api.model.ModelUtil;
 import org.openhab.binding.tidal.internal.api.model.Playlist;
 import org.openhab.binding.tidal.internal.api.model.Playlists;
@@ -65,7 +62,6 @@ public class TidalApi {
     private static final String BEARER = "Bearer ";
     private static final char AMP = '&';
     private static final char QSM = '?';
-    private static final CurrentlyPlayingContext EMPTY_CURRENTLYPLAYINGCONTEXT = new CurrentlyPlayingContext();
     private static final String PLAY_TRACK_URIS = "{\"uris\":[%s],\"offset\":{\"position\":%d},\"position_ms\":%d}";
     private static final String PLAY_TRACK_CONTEXT_URI = "{\"context_uri\":\"%s\",\"offset\":{\"position\":%d},\"position_ms\":%d}}";
     private static final String TRANSFER_PLAY = "{\"device_ids\":[\"%s\"],\"play\":%b}";
@@ -85,13 +81,6 @@ public class TidalApi {
     public TidalApi(OAuthClientService oAuthClientService, ScheduledExecutorService scheduler, HttpClient httpClient) {
         this.oAuthClientService = oAuthClientService;
         connector = new TidalConnector(scheduler, httpClient);
-    }
-
-    /**
-     * @return Returns the Tidal user information
-     */
-    public Me getMe() {
-        return Objects.requireNonNull(request(GET, TIDAL_API_URL, "", "", Me.class));
     }
 
     /**
