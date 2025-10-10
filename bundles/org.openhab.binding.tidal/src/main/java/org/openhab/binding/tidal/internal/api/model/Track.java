@@ -15,19 +15,28 @@ package org.openhab.binding.tidal.internal.api.model;
 import com.google.gson.annotations.JsonAdapter;
 
 /**
- * Tidal Api Artist data class.
+ * Tidal Api Track data class.
  *
  * @author Laurent Arnal - Initial contribution
  */
+
 @JsonAdapter(FlatteningTypeAdapterFactory.class)
-public class Artist {
+public class Track {
 
     private String id;
     private String type;
-    private String name;
+    private String title;
+    private String version;
+    private String isrc;
+    private String duration;
+    private boolean explicit;
     private double popularity;
+    public String accessType;
+    private String[] availability;
+    private String[] mediaTags;
     private Link[] externalLinks;
     private RelationShip relationships;
+    private boolean spotlighted;
 
     public String getId() {
         return id;
@@ -37,12 +46,40 @@ public class Artist {
         return type;
     }
 
-    public String getName() {
-        return name;
+    public String getTitle() {
+        return title;
+    }
+
+    public String getVersion() {
+        return version;
+    }
+
+    public String getIsrc() {
+        return isrc;
+    }
+
+    public String getDuration() {
+        return duration;
+    }
+
+    public boolean getExplicit() {
+        return explicit;
     }
 
     public double getPopularity() {
         return popularity;
+    }
+
+    public String getAccessType() {
+        return accessType;
+    }
+
+    public String[] getAvailability() {
+        return availability;
+    }
+
+    public String[] getMediaTags() {
+        return mediaTags;
     }
 
     public Link[] getExternalLinks() {
@@ -51,5 +88,9 @@ public class Artist {
 
     public RelationShip getRelationShip() {
         return relationships;
+    }
+
+    public boolean getSpotlighted() {
+        return spotlighted;
     }
 }

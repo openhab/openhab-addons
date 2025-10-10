@@ -22,8 +22,7 @@ import com.google.gson.GsonBuilder;
  * @author Laurent Arnal - Initial contribution
  */
 public final class ModelUtil {
-    private static final Gson GSON = new GsonBuilder()
-            .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create();
+    private static final Gson GSON = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.IDENTITY).create();
 
     private ModelUtil() {
         // Util class

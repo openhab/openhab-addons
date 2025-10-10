@@ -22,7 +22,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
@@ -37,13 +36,13 @@ import org.openhab.binding.tidal.internal.api.exception.TidalAuthorizationExcept
 import org.openhab.binding.tidal.internal.api.exception.TidalException;
 import org.openhab.binding.tidal.internal.api.model.Album;
 import org.openhab.binding.tidal.internal.api.model.Artist;
-import org.openhab.binding.tidal.internal.api.model.Context;
 import org.openhab.binding.tidal.internal.api.model.CurrentlyPlayingContext;
 import org.openhab.binding.tidal.internal.api.model.Device;
 import org.openhab.binding.tidal.internal.api.model.Image;
 import org.openhab.binding.tidal.internal.api.model.Item;
 import org.openhab.binding.tidal.internal.api.model.Me;
 import org.openhab.binding.tidal.internal.api.model.Playlist;
+import org.openhab.binding.tidal.internal.api.model.Track;
 import org.openhab.binding.tidal.internal.discovery.TidalDeviceDiscoveryService;
 import org.openhab.core.auth.client.oauth2.AccessTokenRefreshListener;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
@@ -332,6 +331,11 @@ public class TidalBridgeHandler extends BaseBridgeHandler implements TidalAccoun
         synchronized (pollSynchronization) {
             cancelSchedulers();
             if (active) {
+                // List<Album> albumns = getTidalApi().getAlbums(0, 0);
+                // List<Playlist> playLists = getTidalApi().getPlaylists(0, 0);
+                // List<Artist> artists = getTidalApi().getArtists(0, 0);
+                List<Track> tracks = getTidalApi().getTracks(0, 0);
+
                 pollingFuture = scheduler.scheduleWithFixedDelay(this::pollStatus, 0, configuration.refreshPeriod,
                         TimeUnit.SECONDS);
             }
@@ -344,7 +348,7 @@ public class TidalBridgeHandler extends BaseBridgeHandler implements TidalAccoun
      * @return true if method completed without errors.
      */
     private boolean pollStatus() {
-        List<Playlist> playLists = getTidalApi().getPlaylists(0, 0);
+
         return true;
     }
 
@@ -419,9 +423,6 @@ public class TidalBridgeHandler extends BaseBridgeHandler implements TidalAccoun
             final boolean hasAlbum = hasItem && item.getAlbum() != null;
             final Album album = hasAlbum ? item.getAlbum() : EMPTY_ALBUM;
             updateChannelState(CHANNEL_PLAYED_ALBUMID, valueOrEmpty(album.getId()));
-            updateChannelState(CHANNEL_PLAYED_ALBUMHREF, valueOrEmpty(album.getHref()));
-            updateChannelState(CHANNEL_PLAYED_ALBUMURI, valueOrEmpty(album.getUri()));
-            updateChannelState(CHANNEL_PLAYED_ALBUMNAME, valueOrEmpty(album.getName()));
             updateChannelState(CHANNEL_PLAYED_ALBUMTYPE, valueOrEmpty(album.getType()));
             albumUpdater.updateAlbumImage(album);
 
@@ -430,9 +431,6 @@ public class TidalBridgeHandler extends BaseBridgeHandler implements TidalAccoun
                     : EMPTY_ARTIST;
 
             updateChannelState(CHANNEL_PLAYED_ARTISTID, valueOrEmpty(firstArtist.getId()));
-            updateChannelState(CHANNEL_PLAYED_ARTISTHREF, valueOrEmpty(firstArtist.getHref()));
-            updateChannelState(CHANNEL_PLAYED_ARTISTURI, valueOrEmpty(firstArtist.getUri()));
-            updateChannelState(CHANNEL_PLAYED_ARTISTNAME, valueOrEmpty(firstArtist.getName()));
             updateChannelState(CHANNEL_PLAYED_ARTISTTYPE, valueOrEmpty(firstArtist.getType()));
         }
         final Device device = playerInfo.getDevice() == null ? EMPTY_DEVICE : playerInfo.getDevice();
@@ -453,24 +451,26 @@ public class TidalBridgeHandler extends BaseBridgeHandler implements TidalAccoun
     }
 
     private void updateChannelsPlayList(CurrentlyPlayingContext playerInfo, @Nullable List<Playlist> playlists) {
-        final Context context = playerInfo.getContext();
-        final String playlistId;
-        String playlistName = "";
-
-        if (context != null && "playlist".equals(context.getType())) {
-            playlistId = "tidal:playlist" + context.getUri().substring(context.getUri().lastIndexOf(':'));
-
-            if (playlists != null) {
-                final Optional<Playlist> optionalPlaylist = playlists.stream()
-                        .filter(pl -> playlistId.equals(pl.getUri())).findFirst();
-
-                playlistName = optionalPlaylist.isPresent() ? optionalPlaylist.get().getName() : "";
-            }
-        } else {
-            playlistId = "";
-        }
-        updateChannelState(CHANNEL_PLAYLISTS, valueOrEmpty(playlistId));
-        updateChannelState(CHANNEL_PLAYLISTNAME, valueOrEmpty(playlistName));
+        /*
+         * final Context context = playerInfo.getContext();
+         * final String playlistId;
+         * String playlistName = "";
+         *
+         * if (context != null && "playlist".equals(context.getType())) {
+         * playlistId = "tidal:playlist" + context.getUri().substring(context.getUri().lastIndexOf(':'));
+         *
+         * if (playlists != null) {
+         * final Optional<Playlist> optionalPlaylist = playlists.stream()
+         * .filter(pl -> playlistId.equals(pl.getUri())).findFirst();
+         *
+         * playlistName = optionalPlaylist.isPresent() ? optionalPlaylist.get().getName() : "";
+         * }
+         * } else {
+         * playlistId = "";
+         * }
+         * updateChannelState(CHANNEL_PLAYLISTS, valueOrEmpty(playlistId));
+         * updateChannelState(CHANNEL_PLAYLISTNAME, valueOrEmpty(playlistName));
+         */
     }
 
     /**
@@ -592,26 +592,28 @@ public class TidalBridgeHandler extends BaseBridgeHandler implements TidalAccoun
          * @param album album data
          */
         public void updateAlbumImage(Album album) {
-            final Channel imageChannel = thing.getChannel(CHANNEL_PLAYED_ALBUMIMAGE);
-            final List<Image> images = album.getImages();
-
-            // Update album image url channel
-            final String albumImageUrlUrl = albumUrl(images, imageChannelAlbumImageUrlIndex);
-            updateChannelState(CHANNEL_PLAYED_ALBUMIMAGEURL,
-                    albumImageUrlUrl == null ? UnDefType.UNDEF : StringType.valueOf(albumImageUrlUrl));
-
-            // Trigger image refresh of album image channel
-            final String albumImageUrl = albumUrl(images, imageChannelAlbumImageIndex);
-            if (imageChannel != null && albumImageUrl != null) {
-                if (!lastAlbumImageUrl.equals(albumImageUrl)) {
-                    // Download the cover art in a different thread to not delay the other operations
-                    lastAlbumImageUrl = albumImageUrl;
-                    refreshAlbumImage(imageChannel.getUID());
-                } // else album image still the same so nothing to do
-            } else {
-                lastAlbumImageUrl = "";
-                updateChannelState(CHANNEL_PLAYED_ALBUMIMAGE, UnDefType.UNDEF);
-            }
+            /*
+             * final Channel imageChannel = thing.getChannel(CHANNEL_PLAYED_ALBUMIMAGE);
+             * final List<Image> images = album.getImages();
+             *
+             * // Update album image url channel
+             * final String albumImageUrlUrl = albumUrl(images, imageChannelAlbumImageUrlIndex);
+             * updateChannelState(CHANNEL_PLAYED_ALBUMIMAGEURL,
+             * albumImageUrlUrl == null ? UnDefType.UNDEF : StringType.valueOf(albumImageUrlUrl));
+             *
+             * // Trigger image refresh of album image channel
+             * final String albumImageUrl = albumUrl(images, imageChannelAlbumImageIndex);
+             * if (imageChannel != null && albumImageUrl != null) {
+             * if (!lastAlbumImageUrl.equals(albumImageUrl)) {
+             * // Download the cover art in a different thread to not delay the other operations
+             * lastAlbumImageUrl = albumImageUrl;
+             * refreshAlbumImage(imageChannel.getUID());
+             * } // else album image still the same so nothing to do
+             * } else {
+             * lastAlbumImageUrl = "";
+             * updateChannelState(CHANNEL_PLAYED_ALBUMIMAGE, UnDefType.UNDEF);
+             * }
+             */
         }
 
         private @Nullable String albumUrl(@Nullable List<Image> images, int index) {

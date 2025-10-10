@@ -12,21 +12,80 @@
  */
 package org.openhab.binding.tidal.internal.api.model;
 
+import com.google.gson.annotations.JsonAdapter;
+
 /**
  * Tidal Web Api Playlist data class.
  *
  * @author Laurent Arnal - Initial contribution
  */
+@JsonAdapter(FlatteningTypeAdapterFactory.class)
 public class Playlist {
 
+    private String id;
+    private String type;
     private String name;
-    private String uri;
+    private String description;
+    private boolean bounded;
+    private String duration;
+    private int numberOfItems;
+    private Link[] externalLinks;
+    public String createdAt;
+    public String lastModifiedAt;
+    public String accessType;
+    public String playlistType;
+    private RelationShip relationships;
+
+    public String getId() {
+        return id;
+    }
+
+    public String getType() {
+        return type;
+    }
 
     public String getName() {
         return name;
     }
 
-    public String getUri() {
-        return uri;
+    public String getDescription() {
+        return description;
     }
+
+    public boolean getBounded() {
+        return bounded;
+    }
+
+    public String getDuration() {
+        return duration;
+    }
+
+    public int getNumberOfItems() {
+        return numberOfItems;
+    }
+
+    public Link[] getExternalLinks() {
+        return externalLinks;
+    }
+
+    public String getCreatedAt() {
+        return createdAt;
+    }
+
+    public String getLastModifiedAt() {
+        return lastModifiedAt;
+    }
+
+    public String getAccessType() {
+        return accessType;
+    }
+
+    public String getPlaylistType() {
+        return playlistType;
+    }
+
+    public RelationShip getRelationShip() {
+        return relationships;
+    }
+
 }

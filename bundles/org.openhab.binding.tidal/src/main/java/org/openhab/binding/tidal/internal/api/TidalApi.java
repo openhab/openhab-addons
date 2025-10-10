@@ -27,22 +27,30 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.tidal.internal.api.exception.TidalAuthorizationException;
 import org.openhab.binding.tidal.internal.api.exception.TidalException;
 import org.openhab.binding.tidal.internal.api.exception.TidalTokenExpiredException;
+import org.openhab.binding.tidal.internal.api.model.Album;
+import org.openhab.binding.tidal.internal.api.model.Albums;
+import org.openhab.binding.tidal.internal.api.model.Artist;
+import org.openhab.binding.tidal.internal.api.model.Artists;
 import org.openhab.binding.tidal.internal.api.model.CurrentlyPlayingContext;
 import org.openhab.binding.tidal.internal.api.model.Me;
 import org.openhab.binding.tidal.internal.api.model.ModelUtil;
 import org.openhab.binding.tidal.internal.api.model.Playlist;
 import org.openhab.binding.tidal.internal.api.model.Playlists;
+import org.openhab.binding.tidal.internal.api.model.Track;
+import org.openhab.binding.tidal.internal.api.model.Tracks;
 import org.openhab.core.auth.client.oauth2.OAuthClientService;
 import org.openhab.core.auth.client.oauth2.OAuthException;
 import org.openhab.core.auth.client.oauth2.OAuthResponseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 
 /**
@@ -83,7 +91,7 @@ public class TidalApi {
      * @return Returns the Tidal user information
      */
     public Me getMe() {
-        return Objects.requireNonNull(request(GET, TIDAL_API_URL, "", Me.class));
+        return Objects.requireNonNull(request(GET, TIDAL_API_URL, "", "", Me.class));
     }
 
     /**
@@ -99,14 +107,51 @@ public class TidalApi {
     }
 
     /**
+     * @return Returns the albums of the user.
+     */
+    public List<Album> getAlbums(int offset, int limit) {
+        final Albums albums = request(GET, TIDAL_API_URL
+                + "/v2/userCollections/192468940/relationships/albums?countryCode=FR&locale=fr-FR&include=albums", "",
+                "included", Albums.class);
+
+        // return albums == null || albums.getItems() == null ? Collections.emptyList() : albums.getItems();
+        return Collections.emptyList();
+    }
+
+    /**
+     * @return Returns the albums of the user.
+     */
+    public List<Artist> getArtists(int offset, int limit) {
+        final Artists artists = request(GET, TIDAL_API_URL
+                + "/v2/userCollections/192468940/relationships/artists?countryCode=FR&locale=fr-FR&include=artists", "",
+                "included", Artists.class);
+
+        // return albums == null || albums.getItems() == null ? Collections.emptyList() : albums.getItems();
+        return Collections.emptyList();
+    }
+
+    /**
+     * @return Returns the albums of the user.
+     */
+    public List<Track> getTracks(int offset, int limit) {
+        final Tracks tracks = request(GET, TIDAL_API_URL
+                + "/v2/userCollections/192468940/relationships/tracks?countryCode=FR&locale=fr-FR&include=tracks", "",
+                "included", Tracks.class);
+
+        // return albums == null || albums.getItems() == null ? Collections.emptyList() : albums.getItems();
+        return Collections.emptyList();
+    }
+
+    /**
      * @return Returns the playlists of the user.
      */
     public List<Playlist> getPlaylists(int offset, int limit) {
         final Playlists playlists = request(GET,
                 TIDAL_API_URL + "/v2/playlists?countryCode=FR&include=coverArt&filter%5Bowners.id%5D=192468940", "",
-                Playlists.class);
+                "data", Playlists.class);
 
-        return playlists == null || playlists.getItems() == null ? Collections.emptyList() : playlists.getItems();
+        // return playlists == null || playlists.getItems() == null ? Collections.emptyList() : playlists.getItems();
+        return Collections.emptyList();
     }
 
     /**
@@ -135,14 +180,17 @@ public class TidalApi {
      * @param clazz data type of return data, if null no data is expected to be returned.
      * @return the response give by Tidal
      */
-    private <T> @Nullable T request(HttpMethod method, String url, String requestData, Class<T> clazz) {
+    private <T> @Nullable T request(HttpMethod method, String url, String requestData, String attr, Class<T> clazz) {
         logger.debug("Request: ({}) {} - {}", method, url, requestData);
-        final Function<HttpClient, Request> call = httpClient -> httpClient.newRequest(url).method(method)
-                .header("Accept", CONTENT_TYPE).content(new StringContentProvider(requestData), CONTENT_TYPE);
+
+        final Function<HttpClient, Request> call = httpClient -> httpClient.newRequest(url).method(method);
+
+        // .header("Accept", CONTENT_TYPE).content(new StringContentProvider(requestData), CONTENT_TYPE);
+
         try {
             // final AccessTokenResponse accessTokenResponse = oAuthClientService.getAccessTokenResponse();
             // String accessToken = accessTokenResponse == null ? null : accessTokenResponse.getAccessToken();
-            String accessToken = "eyJraWQiOiJ2OU1GbFhqWSIsImFsZyI6IkVTMjU2In0.eyJ0eXBlIjoibzJfYWNjZXNzIiwidWlkIjoxOTI0Njg5NDAsInNjb3BlIjoiZW50aXRsZW1lbnRzLnJlYWQgY29sbGVjdGlvbi5yZWFkIHBsYXlsaXN0cy53cml0ZSByZWNvbW1lbmRhdGlvbnMucmVhZCBwbGF5bGlzdHMucmVhZCBzZWFyY2gucmVhZCBjb2xsZWN0aW9uLndyaXRlIHBsYXliYWNrIHVzZXIucmVhZCBzZWFyY2gud3JpdGUiLCJnVmVyIjowLCJzVmVyIjowLCJjaWQiOjE0NzM1LCJ1Z3YiOjEsImV4cCI6MTc2MDA4MzEwNiwic2lkIjoiZjkwYTRlOTItMzhjNC00NmFhLThmZmYtODgzNDMyNWZhZmNkIiwiaXNzIjoiaHR0cHM6Ly9hdXRoLnRpZGFsLmNvbS92MSJ9.aEtXObW4ZhG1PZBJHHHLznoNfPuBdH4KTvIgMfwV3j3RxWaHXrzT_CEYxGOxqBMygOylKoY4gu5UEpZb3tZIBg";
+            String accessToken = "eyJraWQiOiJ2OU1GbFhqWSIsImFsZyI6IkVTMjU2In0.eyJ0eXBlIjoibzJfYWNjZXNzIiwidWlkIjoxOTI0Njg5NDAsInNjb3BlIjoicGxheWxpc3RzLndyaXRlIGNvbGxlY3Rpb24ucmVhZCBzZWFyY2gud3JpdGUgZW50aXRsZW1lbnRzLnJlYWQgcGxheWxpc3RzLnJlYWQgdXNlci5yZWFkIHNlYXJjaC5yZWFkIHJlY29tbWVuZGF0aW9ucy5yZWFkIHBsYXliYWNrIGNvbGxlY3Rpb24ud3JpdGUiLCJnVmVyIjowLCJzVmVyIjowLCJjaWQiOjE0NzM1LCJleHAiOjE3NjAxMTcyNzYsInNpZCI6ImY4NzQyODIzLWE1ZGMtNDg4Yi05Zjg0LWE2YTgxYzI1MjI3ZSIsImlzcyI6Imh0dHBzOi8vYXV0aC50aWRhbC5jb20vdjEifQ.BY1xj_10NEfyE4zAOz_8CJk5O5cTBLYTmJ79boYO3TUVntoH6uVoxdXtdslxDMP9uGL54xBla-BTA91C3JLx4A";
 
             if (accessToken == null || accessToken.isEmpty()) {
                 throw new TidalAuthorizationException(
@@ -150,7 +198,20 @@ public class TidalApi {
             } else {
                 final String response = requestWithRetry(call, accessToken).getContentAsString();
 
-                return clazz == String.class ? (@Nullable T) response : fromJson(response, clazz);
+                Gson gson = ModelUtil.gsonInstance();
+
+                JsonElement element = gson.fromJson(response, JsonElement.class);
+                JsonObject jsonObj = element.getAsJsonObject();
+
+                JsonElement data = jsonObj.get("data");
+                JsonElement included = jsonObj.get("included");
+
+                JsonElement decode = jsonObj.get(attr);
+
+                T result = gson.fromJson(decode, clazz);
+
+                // return clazz == String.class ? (@Nullable T) response : fromJson(response, clazz);
+                return result;
             }
         } catch (final IOException e) {
             throw new TidalException(e.getMessage(), e);
