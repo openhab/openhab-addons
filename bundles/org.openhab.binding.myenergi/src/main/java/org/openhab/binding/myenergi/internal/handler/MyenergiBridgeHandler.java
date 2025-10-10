@@ -64,8 +64,7 @@ public class MyenergiBridgeHandler extends BaseBridgeHandler implements ConfigSt
         super(thing);
 
         // create a new httpClient, so that we can add our own digest authentication
-        apiClient = new MyenergiApiClient(
-                httpClientFactory.createHttpClient(MyenergiBridgeHandler.class.getSimpleName()));
+        apiClient = new MyenergiApiClient(httpClientFactory.createHttpClient("MyenergiBridge"));
     }
 
     public ThingUID getUID() {
