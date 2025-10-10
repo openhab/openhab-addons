@@ -17,6 +17,7 @@ import static org.eclipse.jetty.http.HttpMethod.*;
 
 import java.io.StringReader;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -65,7 +66,8 @@ public class AzureActions {
             String azureAccessKey) {
         this.httpClient = httpClientFactory.getCommonHttpClient();
         try {
-            this.containerUri = new URL("https://" + accountName + ".blob.core.windows.net/" + containerName);
+            this.containerUri = URI.create("https://" + accountName + ".blob.core.windows.net/" + containerName)
+                    .toURL();
         } catch (MalformedURLException e) {
             throw new RuntimeException("Unable to parse service endpoint: " + e.getMessage());
         }
