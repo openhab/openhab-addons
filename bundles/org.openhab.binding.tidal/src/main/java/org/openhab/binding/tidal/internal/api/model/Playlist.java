@@ -20,10 +20,7 @@ import com.google.gson.annotations.JsonAdapter;
  * @author Laurent Arnal - Initial contribution
  */
 @JsonAdapter(FlatteningTypeAdapterFactory.class)
-public class Playlist {
-
-    private String id;
-    private String type;
+public class Playlist extends BaseEntry {
     private String name;
     private String description;
     private boolean bounded;
@@ -35,14 +32,6 @@ public class Playlist {
     public String accessType;
     public String playlistType;
     private RelationShip relationships;
-
-    public String getId() {
-        return id;
-    }
-
-    public String getType() {
-        return type;
-    }
 
     public String getName() {
         return name;

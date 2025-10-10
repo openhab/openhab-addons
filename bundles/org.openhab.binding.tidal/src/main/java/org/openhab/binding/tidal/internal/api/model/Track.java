@@ -21,10 +21,7 @@ import com.google.gson.annotations.JsonAdapter;
  */
 
 @JsonAdapter(FlatteningTypeAdapterFactory.class)
-public class Track {
-
-    private String id;
-    private String type;
+public class Track extends BaseEntry {
     private String title;
     private String version;
     private String isrc;
@@ -38,12 +35,9 @@ public class Track {
     private RelationShip relationships;
     private boolean spotlighted;
 
-    public String getId() {
-        return id;
-    }
-
-    public String getType() {
-        return type;
+    @Override
+    public String getName() {
+        return title;
     }
 
     public String getTitle() {

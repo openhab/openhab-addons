@@ -27,13 +27,14 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.tidal.internal.TidalAccountHandler;
+import org.openhab.binding.tidal.internal.TidalBindingConstants;
 import org.openhab.binding.tidal.internal.TidalBridgeConfiguration;
 import org.openhab.binding.tidal.internal.api.TidalApi;
 import org.openhab.binding.tidal.internal.api.exception.TidalAuthorizationException;
 import org.openhab.binding.tidal.internal.api.exception.TidalException;
 import org.openhab.binding.tidal.internal.api.model.Album;
 import org.openhab.binding.tidal.internal.api.model.Artist;
-import org.openhab.binding.tidal.internal.api.model.Image;
+import org.openhab.binding.tidal.internal.api.model.BaseEntry;
 import org.openhab.binding.tidal.internal.api.model.Playlist;
 import org.openhab.binding.tidal.internal.api.model.Track;
 import org.openhab.core.auth.client.oauth2.AccessTokenRefreshListener;
@@ -42,10 +43,17 @@ import org.openhab.core.auth.client.oauth2.OAuthClientService;
 import org.openhab.core.auth.client.oauth2.OAuthException;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.auth.client.oauth2.OAuthResponseException;
-import org.openhab.core.io.net.http.HttpUtil;
 import org.openhab.core.library.types.DecimalType;
-import org.openhab.core.library.types.RawType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.media.MediaListenner;
+import org.openhab.core.media.MediaService;
+import org.openhab.core.media.model.MediaAlbum;
+import org.openhab.core.media.model.MediaArtist;
+import org.openhab.core.media.model.MediaCollection;
+import org.openhab.core.media.model.MediaEntry;
+import org.openhab.core.media.model.MediaPlayList;
+import org.openhab.core.media.model.MediaRegistry;
+import org.openhab.core.media.model.MediaSource;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -56,7 +64,6 @@ import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
-import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,7 +73,8 @@ import org.slf4j.LoggerFactory;
  * @author Laurent Arnal - Initial contribution
  */
 @NonNullByDefault
-public class TidalBridgeHandler extends BaseBridgeHandler implements TidalAccountHandler, AccessTokenRefreshListener {
+public class TidalBridgeHandler extends BaseBridgeHandler
+        implements TidalAccountHandler, AccessTokenRefreshListener, MediaListenner {
 
     private static final Album EMPTY_ALBUM = new Album();
     private static final Artist EMPTY_ARTIST = new Artist();
@@ -91,7 +99,6 @@ public class TidalBridgeHandler extends BaseBridgeHandler implements TidalAccoun
     // Object to synchronize poll status on
     private final Object pollSynchronization = new Object();
     private final ProgressUpdater progressUpdater = new ProgressUpdater();
-    private final AlbumUpdater albumUpdater = new AlbumUpdater();
     private final OAuthFactory oAuthFactory;
     private final HttpClient httpClient;
     private final ChannelUID devicesChannelUID;
@@ -103,6 +110,7 @@ public class TidalBridgeHandler extends BaseBridgeHandler implements TidalAccoun
     private @NonNullByDefault({}) TidalApi tidalApi;
     private @NonNullByDefault({}) TidalBridgeConfiguration configuration;
     private @NonNullByDefault({}) TidalHandleCommands handleCommand;
+    private final MediaService mediaService;
 
     /**
      * Keep track if this instance is disposed. This avoids new scheduling to be started after dispose is called.
@@ -114,10 +122,12 @@ public class TidalBridgeHandler extends BaseBridgeHandler implements TidalAccoun
     private int imageChannelAlbumImageIndex;
     private int imageChannelAlbumImageUrlIndex;
 
-    public TidalBridgeHandler(Bridge bridge, OAuthFactory oAuthFactory, HttpClient httpClient) {
+    public TidalBridgeHandler(Bridge bridge, OAuthFactory oAuthFactory, HttpClient httpClient,
+            MediaService mediaService) {
         super(bridge);
         this.oAuthFactory = oAuthFactory;
         this.httpClient = httpClient;
+        this.mediaService = mediaService;
         devicesChannelUID = new ChannelUID(bridge.getUID(), CHANNEL_DEVICES);
         playlistsChannelUID = new ChannelUID(bridge.getUID(), CHANNEL_PLAYLISTS);
     }
@@ -257,6 +267,15 @@ public class TidalBridgeHandler extends BaseBridgeHandler implements TidalAccoun
         tidalApi = new TidalApi(oAuthService, scheduler, httpClient);
         handleCommand = new TidalHandleCommands(tidalApi);
         final Duration expiringPeriod = Duration.ofSeconds(configuration.refreshPeriod);
+
+        mediaService.addMediaListenner(TidalBindingConstants.BINDING_ID, this);
+
+        MediaRegistry mediaRegistry = mediaService.getMediaRegistry();
+
+        mediaRegistry.registerEntry(TidalBindingConstants.BINDING_ID, () -> {
+            return new MediaSource(TidalBindingConstants.BINDING_ID, TidalBindingConstants.BINDING_LABEL,
+                    "/static/Tidal.png");
+        });
 
         // Start with update status by calling Tidal. If no credentials available no polling should be started.
         scheduler.execute(() -> {
@@ -464,70 +483,63 @@ public class TidalBridgeHandler extends BaseBridgeHandler implements TidalAccoun
         }
     }
 
-    /**
-     * Class to manager Album image updates.
-     *
-     * @author Hilbrand Bouwkamp - Initial contribution
-     */
-    private class AlbumUpdater {
-        private String lastAlbumImageUrl = "";
+    @Override
+    public void refreshEntry(MediaEntry mediaEntry, long start, long size) {
+        if (mediaEntry.getKey().equals(TidalBindingConstants.BINDING_ID)) {
 
-        /**
-         * Updates the album image status, but only refreshes the image when a new image should be shown.
-         *
-         * @param album album data
-         */
-        public void updateAlbumImage(Album album) {
-            /*
-             * final Channel imageChannel = thing.getChannel(CHANNEL_PLAYED_ALBUMIMAGE);
-             * final List<Image> images = album.getImages();
-             *
-             * // Update album image url channel
-             * final String albumImageUrlUrl = albumUrl(images, imageChannelAlbumImageUrlIndex);
-             * updateChannelState(CHANNEL_PLAYED_ALBUMIMAGEURL,
-             * albumImageUrlUrl == null ? UnDefType.UNDEF : StringType.valueOf(albumImageUrlUrl));
-             *
-             * // Trigger image refresh of album image channel
-             * final String albumImageUrl = albumUrl(images, imageChannelAlbumImageIndex);
-             * if (imageChannel != null && albumImageUrl != null) {
-             * if (!lastAlbumImageUrl.equals(albumImageUrl)) {
-             * // Download the cover art in a different thread to not delay the other operations
-             * lastAlbumImageUrl = albumImageUrl;
-             * refreshAlbumImage(imageChannel.getUID());
-             * } // else album image still the same so nothing to do
-             * } else {
-             * lastAlbumImageUrl = "";
-             * updateChannelState(CHANNEL_PLAYED_ALBUMIMAGE, UnDefType.UNDEF);
-             * }
-             */
+            mediaEntry.registerEntry("Albums", () -> {
+                return new MediaCollection("Albums", "Albums", "/static/Albums.png");
+            });
+
+            mediaEntry.registerEntry("Artists", () -> {
+                return new MediaCollection("Artists", "Artists", "/static/Artists.png");
+            });
+
+            mediaEntry.registerEntry("Playlists", () -> {
+                return new MediaCollection("Playlists", "Playlists", "/static/playlist.png");
+            });
+
+            mediaEntry.registerEntry("Tracks", () -> {
+                return new MediaCollection("Tracks", "Tracks", "/static/Tracks.png");
+            });
+        } else if ("Playlists".equals(mediaEntry.getKey())) {
+            List<Playlist> playLists = tidalApi.getPlaylists(start, size);
+            RegisterCollections(mediaEntry, playLists, MediaPlayList.class);
+        } else if ("Albums".equals(mediaEntry.getKey())) {
+            List<Album> albums = tidalApi.getAlbums(start, size);
+            RegisterCollections(mediaEntry, albums, MediaAlbum.class);
+        } else if ("Artists".equals(mediaEntry.getKey())) {
+            List<Artist> artists = tidalApi.getArtists(start, size);
+            RegisterCollections(mediaEntry, artists, MediaArtist.class);
+        } else if ("Tracks".equals(mediaEntry.getKey())) {
+            List<Track> tracks = tidalApi.getTracks(start, size);
+            RegisterCollections(mediaEntry, tracks, MediaArtist.class);
         }
+    }
 
-        private @Nullable String albumUrl(@Nullable List<Image> images, int index) {
-            return images == null || index >= images.size() || images.isEmpty() ? null : images.get(index).getUrl();
-        }
-
-        /**
-         * Refreshes the image asynchronously, but only downloads the image if the channel is linked to avoid
-         * unnecessary downloading of the image.
-         *
-         * @param channelUID UID of the album channel
-         */
-        public void refreshAlbumImage(ChannelUID channelUID) {
-            if (!lastAlbumImageUrl.isEmpty() && isLinked(channelUID)) {
-                final String imageUrl = lastAlbumImageUrl;
-                scheduler.execute(() -> refreshAlbumAsynced(channelUID, imageUrl));
+    private <T extends BaseEntry, R extends MediaEntry> void RegisterCollections(MediaEntry parentEntry,
+            List<T> collection, Class<R> allocator) {
+        for (T entry : collection) {
+            if (entry == null) {
+                continue;
             }
-        }
+            String key = entry.getId();
+            String name = entry.getName();
 
-        private void refreshAlbumAsynced(ChannelUID channelUID, String imageUrl) {
-            try {
-                if (lastAlbumImageUrl.equals(imageUrl) && isLinked(channelUID)) {
-                    final RawType image = HttpUtil.downloadImage(imageUrl, true, MAX_IMAGE_SIZE);
-                    updateChannelState(CHANNEL_PLAYED_ALBUMIMAGE, image == null ? UnDefType.UNDEF : image);
+            parentEntry.registerEntry(key, () -> {
+                try {
+                    MediaEntry res = allocator.getDeclaredConstructor().newInstance();
+                    res.setName(name);
+                    res.setKey(key);
+
+                    if (res instanceof MediaCollection) {
+                        ((MediaCollection) res).setArtUri("uri");
+                    }
+                    return res;
+                } catch (Exception ex) {
+                    return null;
                 }
-            } catch (final RuntimeException e) {
-                logger.debug("Async call to refresh Album image failed: ", e);
-            }
+            });
         }
     }
 }

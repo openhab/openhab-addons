@@ -20,10 +20,7 @@ import com.google.gson.annotations.JsonAdapter;
  * @author Laurent Arnal - Initial contribution
  */
 @JsonAdapter(FlatteningTypeAdapterFactory.class)
-public class Album {
-    private String id;
-    private String type;
-
+public class Album extends BaseEntry {
     private String title;
     private String barcodeId;
     private int numberOfVolumes;
@@ -37,12 +34,9 @@ public class Album {
     private Link[] externalLinks;
     private RelationShip relationships;
 
-    public String getId() {
-        return id;
-    }
-
-    public String getType() {
-        return type;
+    @Override
+    public String getName() {
+        return title;
     }
 
     public String getTitle() {

@@ -19,6 +19,7 @@ import org.openhab.binding.tidal.internal.handler.TidalBridgeHandler;
 import org.openhab.binding.tidal.internal.handler.TidalDeviceHandler;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.io.net.http.HttpClientFactory;
+import org.openhab.core.media.MediaService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -42,13 +43,16 @@ public class TidalHandlerFactory extends BaseThingHandlerFactory {
     private final OAuthFactory oAuthFactory;
     private final HttpClient httpClient;
     private final TidalAuthService authService;
+    private final MediaService mediaService;
 
     @Activate
     public TidalHandlerFactory(@Reference OAuthFactory oAuthFactory,
-            @Reference final HttpClientFactory httpClientFactory, @Reference TidalAuthService authService) {
+            @Reference final HttpClientFactory httpClientFactory, @Reference TidalAuthService authService,
+            @Reference MediaService mediaService) {
         this.oAuthFactory = oAuthFactory;
         this.httpClient = httpClientFactory.getCommonHttpClient();
         this.authService = authService;
+        this.mediaService = mediaService;
     }
 
     @Override
@@ -62,7 +66,8 @@ public class TidalHandlerFactory extends BaseThingHandlerFactory {
         final ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (TidalBindingConstants.THING_TYPE_PLAYER.equals(thingTypeUID)) {
-            final TidalBridgeHandler handler = new TidalBridgeHandler((Bridge) thing, oAuthFactory, httpClient);
+            final TidalBridgeHandler handler = new TidalBridgeHandler((Bridge) thing, oAuthFactory, httpClient,
+                    mediaService);
             authService.addTidalAccountHandler(handler);
             return handler;
         }
