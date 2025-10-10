@@ -36,6 +36,7 @@ import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.jupnp.UpnpService;
 import org.jupnp.model.meta.RemoteDevice;
 import org.openhab.binding.upnpcontrol.internal.UpnpChannelName;
 import org.openhab.binding.upnpcontrol.internal.UpnpControlBindingConstants;
@@ -174,17 +175,18 @@ public class UpnpRendererHandler extends UpnpHandler {
     private volatile @Nullable ScheduledFuture<?> trackPositionRefresh;
     private volatile int posAtNotificationStart = 0;
 
-    public UpnpRendererHandler(Thing thing, UpnpIOService upnpIOService, UpnpControlHandlerFactory handlerFactory,
-            UpnpDynamicStateDescriptionProvider upnpStateDescriptionProvider,
+    public UpnpRendererHandler(Thing thing, UpnpIOService upnpIOService, UpnpService upnpService,
+            UpnpControlHandlerFactory handlerFactory, UpnpDynamicStateDescriptionProvider upnpStateDescriptionProvider,
             UpnpDynamicCommandDescriptionProvider upnpCommandDescriptionProvider,
             UpnpControlBindingConfiguration configuration, MediaService mediaService) {
-        super(thing, upnpIOService, configuration, upnpStateDescriptionProvider, upnpCommandDescriptionProvider);
+        super(thing, upnpIOService, upnpService, configuration, upnpStateDescriptionProvider,
+                upnpCommandDescriptionProvider);
 
         serviceSubscriptions.add(AV_TRANSPORT);
         serviceSubscriptions.add(RENDERING_CONTROL);
 
         this.handlerFactory = handlerFactory;
-        this.audioSinkReg = audioSinkReg;
+        this.audioSinkReg = handlerFactory;
         this.mediaService = mediaService;
     }
 
