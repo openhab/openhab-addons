@@ -18,7 +18,6 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Future;
@@ -29,7 +28,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.tidal.internal.TidalAccountHandler;
 import org.openhab.binding.tidal.internal.TidalBridgeConfiguration;
-import org.openhab.binding.tidal.internal.actions.TidalActions;
 import org.openhab.binding.tidal.internal.api.TidalApi;
 import org.openhab.binding.tidal.internal.api.exception.TidalAuthorizationException;
 import org.openhab.binding.tidal.internal.api.exception.TidalException;
@@ -38,7 +36,6 @@ import org.openhab.binding.tidal.internal.api.model.Artist;
 import org.openhab.binding.tidal.internal.api.model.Image;
 import org.openhab.binding.tidal.internal.api.model.Playlist;
 import org.openhab.binding.tidal.internal.api.model.Track;
-import org.openhab.binding.tidal.internal.discovery.TidalDeviceDiscoveryService;
 import org.openhab.core.auth.client.oauth2.AccessTokenRefreshListener;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
 import org.openhab.core.auth.client.oauth2.OAuthClientService;
@@ -56,7 +53,6 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
-import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
@@ -98,7 +94,6 @@ public class TidalBridgeHandler extends BaseBridgeHandler implements TidalAccoun
     private final AlbumUpdater albumUpdater = new AlbumUpdater();
     private final OAuthFactory oAuthFactory;
     private final HttpClient httpClient;
-    private final TidalDynamicStateDescriptionProvider tidalDynamicStateDescriptionProvider;
     private final ChannelUID devicesChannelUID;
     private final ChannelUID playlistsChannelUID;
 
@@ -119,19 +114,12 @@ public class TidalBridgeHandler extends BaseBridgeHandler implements TidalAccoun
     private int imageChannelAlbumImageIndex;
     private int imageChannelAlbumImageUrlIndex;
 
-    public TidalBridgeHandler(Bridge bridge, OAuthFactory oAuthFactory, HttpClient httpClient,
-            TidalDynamicStateDescriptionProvider tidalDynamicStateDescriptionProvider) {
+    public TidalBridgeHandler(Bridge bridge, OAuthFactory oAuthFactory, HttpClient httpClient) {
         super(bridge);
         this.oAuthFactory = oAuthFactory;
         this.httpClient = httpClient;
-        this.tidalDynamicStateDescriptionProvider = tidalDynamicStateDescriptionProvider;
         devicesChannelUID = new ChannelUID(bridge.getUID(), CHANNEL_DEVICES);
         playlistsChannelUID = new ChannelUID(bridge.getUID(), CHANNEL_PLAYLISTS);
-    }
-
-    @Override
-    public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return List.of(TidalActions.class, TidalDeviceDiscoveryService.class);
     }
 
     @Override
