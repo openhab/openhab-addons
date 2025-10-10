@@ -20,22 +20,11 @@ import com.google.gson.annotations.JsonAdapter;
  * @author Laurent Arnal - Initial contribution
  */
 @JsonAdapter(FlatteningTypeAdapterFactory.class)
-public class Artist {
-
-    private String id;
-    private String type;
+public class Artist extends BaseEntry {
     private String name;
     private double popularity;
     private Link[] externalLinks;
     private RelationShip relationships;
-
-    public String getId() {
-        return id;
-    }
-
-    public String getType() {
-        return type;
-    }
 
     public String getName() {
         return name;

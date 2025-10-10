@@ -98,49 +98,45 @@ public class TidalApi {
     /**
      * @return Returns the albums of the user.
      */
-    public List<Album> getAlbums(int offset, int limit) {
+    public List<Album> getAlbums(long offset, long limit) {
         final Albums albums = request(GET, TIDAL_API_URL
                 + "/v2/userCollections/192468940/relationships/albums?countryCode=FR&locale=fr-FR&include=albums", "",
                 "included", Albums.class);
 
-        // return albums == null || albums.getItems() == null ? Collections.emptyList() : albums.getItems();
-        return Collections.emptyList();
+        return albums == null ? Collections.emptyList() : albums;
     }
 
     /**
      * @return Returns the albums of the user.
      */
-    public List<Artist> getArtists(int offset, int limit) {
+    public List<Artist> getArtists(long offset, long limit) {
         final Artists artists = request(GET, TIDAL_API_URL
                 + "/v2/userCollections/192468940/relationships/artists?countryCode=FR&locale=fr-FR&include=artists", "",
                 "included", Artists.class);
 
-        // return albums == null || albums.getItems() == null ? Collections.emptyList() : albums.getItems();
-        return Collections.emptyList();
+        return artists == null ? Collections.emptyList() : artists;
     }
 
     /**
      * @return Returns the albums of the user.
      */
-    public List<Track> getTracks(int offset, int limit) {
+    public List<Track> getTracks(long offset, long limit) {
         final Tracks tracks = request(GET, TIDAL_API_URL
                 + "/v2/userCollections/192468940/relationships/tracks?countryCode=FR&locale=fr-FR&include=tracks", "",
                 "included", Tracks.class);
 
-        // return albums == null || albums.getItems() == null ? Collections.emptyList() : albums.getItems();
-        return Collections.emptyList();
+        return tracks == null ? Collections.emptyList() : tracks;
     }
 
     /**
      * @return Returns the playlists of the user.
      */
-    public List<Playlist> getPlaylists(int offset, int limit) {
+    public List<Playlist> getPlaylists(long offset, long limit) {
         final Playlists playlists = request(GET,
                 TIDAL_API_URL + "/v2/playlists?countryCode=FR&include=coverArt&filter%5Bowners.id%5D=192468940", "",
                 "data", Playlists.class);
 
-        // return playlists == null || playlists.getItems() == null ? Collections.emptyList() : playlists.getItems();
-        return Collections.emptyList();
+        return playlists == null ? Collections.emptyList() : playlists;
     }
 
     /**
