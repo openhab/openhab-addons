@@ -18,6 +18,7 @@ import static org.openhab.binding.tidal.internal.TidalBindingConstants.TIDAL_API
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.function.Function;
 
@@ -39,6 +40,8 @@ import org.openhab.binding.tidal.internal.api.model.Playlist;
 import org.openhab.binding.tidal.internal.api.model.Playlists;
 import org.openhab.binding.tidal.internal.api.model.Track;
 import org.openhab.binding.tidal.internal.api.model.Tracks;
+import org.openhab.binding.tidal.internal.api.model.User;
+import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
 import org.openhab.core.auth.client.oauth2.OAuthClientService;
 import org.openhab.core.auth.client.oauth2.OAuthException;
 import org.openhab.core.auth.client.oauth2.OAuthResponseException;
@@ -93,6 +96,13 @@ public class TidalApi {
      */
     private String optionalDeviceId(String deviceId, char prefix) {
         return deviceId.isEmpty() ? "" : String.format("%cdevice_id=%s", prefix, deviceId);
+    }
+
+    /**
+     * @return Returns the Spotify user information
+     */
+    public User getMe() {
+        return Objects.requireNonNull(request(GET, TIDAL_API_URL + "/v2/users/me", "", "data", User.class));
     }
 
     /**
@@ -173,9 +183,10 @@ public class TidalApi {
         // .header("Accept", CONTENT_TYPE).content(new StringContentProvider(requestData), CONTENT_TYPE);
 
         try {
-            // final AccessTokenResponse accessTokenResponse = oAuthClientService.getAccessTokenResponse();
-            // String accessToken = accessTokenResponse == null ? null : accessTokenResponse.getAccessToken();
-            String accessToken = "eyJraWQiOiJ2OU1GbFhqWSIsImFsZyI6IkVTMjU2In0.eyJ0eXBlIjoibzJfYWNjZXNzIiwidWlkIjoxOTI0Njg5NDAsInNjb3BlIjoicGxheWxpc3RzLndyaXRlIGNvbGxlY3Rpb24ucmVhZCBzZWFyY2gud3JpdGUgZW50aXRsZW1lbnRzLnJlYWQgcGxheWxpc3RzLnJlYWQgdXNlci5yZWFkIHNlYXJjaC5yZWFkIHJlY29tbWVuZGF0aW9ucy5yZWFkIHBsYXliYWNrIGNvbGxlY3Rpb24ud3JpdGUiLCJnVmVyIjowLCJzVmVyIjowLCJjaWQiOjE0NzM1LCJleHAiOjE3NjAxMTcyNzYsInNpZCI6ImY4NzQyODIzLWE1ZGMtNDg4Yi05Zjg0LWE2YTgxYzI1MjI3ZSIsImlzcyI6Imh0dHBzOi8vYXV0aC50aWRhbC5jb20vdjEifQ.BY1xj_10NEfyE4zAOz_8CJk5O5cTBLYTmJ79boYO3TUVntoH6uVoxdXtdslxDMP9uGL54xBla-BTA91C3JLx4A";
+            final AccessTokenResponse accessTokenResponse = oAuthClientService.getAccessTokenResponse();
+            String accessToken = accessTokenResponse == null ? null : accessTokenResponse.getAccessToken();
+            // String accessToken =
+            // "eyJraWQiOiJ2OU1GbFhqWSIsImFsZyI6IkVTMjU2In0.eyJ0eXBlIjoibzJfYWNjZXNzIiwidWlkIjoxOTI0Njg5NDAsInNjb3BlIjoicGxheWxpc3RzLndyaXRlIGNvbGxlY3Rpb24ucmVhZCBzZWFyY2gud3JpdGUgZW50aXRsZW1lbnRzLnJlYWQgcGxheWxpc3RzLnJlYWQgdXNlci5yZWFkIHNlYXJjaC5yZWFkIHJlY29tbWVuZGF0aW9ucy5yZWFkIHBsYXliYWNrIGNvbGxlY3Rpb24ud3JpdGUiLCJnVmVyIjowLCJzVmVyIjowLCJjaWQiOjE0NzM1LCJleHAiOjE3NjAxMTcyNzYsInNpZCI6ImY4NzQyODIzLWE1ZGMtNDg4Yi05Zjg0LWE2YTgxYzI1MjI3ZSIsImlzcyI6Imh0dHBzOi8vYXV0aC50aWRhbC5jb20vdjEifQ.BY1xj_10NEfyE4zAOz_8CJk5O5cTBLYTmJ79boYO3TUVntoH6uVoxdXtdslxDMP9uGL54xBla-BTA91C3JLx4A";
 
             if (accessToken == null || accessToken.isEmpty()) {
                 throw new TidalAuthorizationException(

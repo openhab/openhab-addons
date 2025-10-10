@@ -73,6 +73,15 @@ html {
 		The redirect URI to use with Tidal for this openHAB installation is
 		<a href="${redirectUri}">${redirectUri}</a>
 	</p>
-	${error} ${authorizedUser} ${players}
+	${error} ${authorizedUser}
+	
+	<div class="block${bridge.authorized}" id="${bridge.id}">
+		Connect to Tidal: <i>${bridge.name}${bridge.user}</i>
+		<p>
+			<div class="button">
+				<a href="${bridge.authorize}">Authorize Player</a>
+			</div>
+		</p>
+	</div>
 </body>
 </html>
