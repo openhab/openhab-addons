@@ -24,7 +24,7 @@ The FENECON Thing only needs to be configured with the `hostname`, all other par
 |-----------------|----------------------------------------------------------------------------------|
 | hostname        | Hostname or IP address of the FENECON device, e.g. 192.168.1.11                  |
 | password        | Password of the FENECON device. The password for guest access is set by default. |
-| port            | Port of the FENECON device. Default: 8084                                        |
+| port            | Port of the FENECON device. Default: 80                                          |
 | refreshInterval | Interval the device is polled in sec. Default 30 seconds                         |
 
 ## Channels
