@@ -40,15 +40,15 @@ public class PairRemoveClient {
     private final Logger logger = LoggerFactory.getLogger(PairRemoveClient.class);
 
     private final IpTransport ipTransport;
-    private final byte[] clientPairingId;
+    private final byte[] controllerId;
 
-    public PairRemoveClient(IpTransport ipTransport, byte[] clientPairingId) throws Exception {
-        if (clientPairingId.length != 8) {
-            throw new IllegalArgumentException("Client Id must be exactly 8 bytes");
+    public PairRemoveClient(IpTransport ipTransport, byte[] controllerId) throws Exception {
+        if (controllerId.length != 16) {
+            throw new IllegalArgumentException("Controller Id must be exactly 16 bytes");
         }
         logger.debug("Created..");
         this.ipTransport = ipTransport;
-        this.clientPairingId = clientPairingId;
+        this.controllerId = controllerId;
     }
 
     public void remove() throws Exception {
@@ -56,7 +56,7 @@ public class PairRemoveClient {
         Map<Integer, byte[]> tlv = new LinkedHashMap<>();
         tlv.put(TlvType.STATE.value, new byte[] { PairingState.M1.value });
         tlv.put(TlvType.METHOD.value, new byte[] { PairingMethod.REMOVE.value });
-        tlv.put(TlvType.IDENTIFIER.value, clientPairingId);
+        tlv.put(TlvType.IDENTIFIER.value, controllerId);
         Validator.validate(PairingMethod.REMOVE, tlv);
 
         byte[] response = ipTransport.post(ENDPOINT_PAIR_REMOVE, CONTENT_TYPE, Tlv8Codec.encode(tlv));

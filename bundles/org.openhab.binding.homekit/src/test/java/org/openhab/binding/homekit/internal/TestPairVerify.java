@@ -48,8 +48,8 @@ class TestPairVerify {
             E487CB59 D31AC550 471E81F0 0F6928E0 1DDA08E9 74A004F4 9E61F5D1 05284D20
             """;
 
-    byte[] controllerId = new byte[] { 11, 22, 33, 44, 55, 66, 77, 88 };
-    byte[] accessoryId = new byte[] { 88, 77, 66, 55, 44, 33, 22, 11 };
+    byte[] controllerId = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 };
+    byte[] accessoryId = new byte[] { 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1 };
 
     private final Ed25519PrivateKeyParameters controllerLongTermPrivateKey = new Ed25519PrivateKeyParameters(
             toBytes(CLIENT_PRIVATE_HEX));

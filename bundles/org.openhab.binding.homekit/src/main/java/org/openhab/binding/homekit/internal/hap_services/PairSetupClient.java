@@ -50,19 +50,19 @@ public class PairSetupClient {
 
     private final IpTransport ipTransport;
     private final String password;
-    private final byte[] clientPairingId;
-    private final Ed25519PrivateKeyParameters clientLongTermSecretKey;
+    private final byte[] controllerId;
+    private final Ed25519PrivateKeyParameters controllerKey;
 
-    public PairSetupClient(IpTransport ipTransport, byte[] clientPairingId,
-            Ed25519PrivateKeyParameters clientLongTermSecretKey, String pairingCode) throws Exception {
-        if (clientPairingId.length != 16) {
-            throw new IllegalArgumentException("Client Id must be exactly 16 bytes");
+    public PairSetupClient(IpTransport ipTransport, byte[] controllerId, Ed25519PrivateKeyParameters controllerKey,
+            String pairingCode) throws Exception {
+        if (controllerId.length != 16) {
+            throw new IllegalArgumentException("Controller Id must be exactly 16 bytes");
         }
         logger.debug("Created with pairing code: {}", pairingCode);
         this.ipTransport = ipTransport;
         this.password = pairingCode;
-        this.clientPairingId = clientPairingId;
-        this.clientLongTermSecretKey = clientLongTermSecretKey;
+        this.controllerId = controllerId;
+        this.controllerKey = controllerKey;
     }
 
     /**
@@ -160,7 +160,7 @@ public class PairSetupClient {
      */
     private SRPclient m5Execute(SRPclient client) throws Exception {
         logger.debug("Pair-Setup M5: Send controller id, LTPK, and signature to accessory");
-        byte[] cipherText = client.m5EncodeControllerInfoAndSign(clientPairingId, clientLongTermSecretKey);
+        byte[] cipherText = client.m5EncodeControllerInfoAndSign(controllerId, controllerKey);
         Map<Integer, byte[]> tlv = new LinkedHashMap<>();
         tlv.put(TlvType.STATE.value, new byte[] { PairingState.M5.value });
         tlv.put(TlvType.ENCRYPTED_DATA.value, cipherText);

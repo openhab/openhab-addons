@@ -49,7 +49,7 @@ public class SRPserver {
     private final String I; // username
     private final byte[] s; // salt
     private final byte[] accessoryId;
-    private final Ed25519PrivateKeyParameters accessoryLongTermPrivateKey;
+    private final Ed25519PrivateKeyParameters accessoryKey;
 
     /**
      * Create a SRP server instance with the given parameters.
@@ -57,17 +57,16 @@ public class SRPserver {
      * @param password the password to use
      * @param serverSalt the salt to use
      * @param accessoryId the pairing ID of the server
-     * @param accessoryLongTermPrivateKey the long term private key of the server
+     * @param accessoryKey the long term private key of the server
      * @param username the username to use (or null for default "Pair-Setup")
      * @param accessoryPrivateKey optional 32 byte private key to use for b, or null to generate a new one
      *
      * @throws Exception on any error
      */
-    public SRPserver(String password, byte[] serverSalt, byte[] accessoryId,
-            Ed25519PrivateKeyParameters accessoryLongTermPrivateKey, @Nullable String username,
-            byte @Nullable [] accessoryPrivateKey) throws Exception {
+    public SRPserver(String password, byte[] serverSalt, byte[] accessoryId, Ed25519PrivateKeyParameters accessoryKey,
+            @Nullable String username, byte @Nullable [] accessoryPrivateKey) throws Exception {
         this.accessoryId = accessoryId;
-        this.accessoryLongTermPrivateKey = accessoryLongTermPrivateKey;
+        this.accessoryKey = accessoryKey;
         I = username != null ? username : PAIR_SETUP;
         s = serverSalt;
 
@@ -148,9 +147,9 @@ public class SRPserver {
 
     public byte[] m6EncodeAccessoryInfoAndSign() throws Exception {
         byte[] accessoryX = generateHkdfKey(K, PAIR_SETUP_ACCESSORY_SIGN_SALT, PAIR_SETUP_ACCESSORY_SIGN_INFO);
-        byte[] accessoryLTPK = accessoryLongTermPrivateKey.generatePublicKey().getEncoded();
+        byte[] accessoryLTPK = accessoryKey.generatePublicKey().getEncoded();
         byte[] accessoryInfo = concat(accessoryX, accessoryId, accessoryLTPK);
-        byte[] accessorySignature = signMessage(accessoryLongTermPrivateKey, accessoryInfo);
+        byte[] accessorySignature = signMessage(accessoryKey, accessoryInfo);
 
         Map<Integer, byte[]> subTlv = Map.of( //
                 TlvType.IDENTIFIER.value, accessoryId, //

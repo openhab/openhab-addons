@@ -49,9 +49,9 @@ public class PairVerifyClient {
 
     private final IpTransport ipTransport;
     private final byte[] clientPairingId;
-    private final Ed25519PrivateKeyParameters clientLongTermSecretKey;
-    private final Ed25519PublicKeyParameters serverLongTermPublicKey;
-    private final X25519PrivateKeyParameters clientEphemeralSecretKey;
+    private final Ed25519PrivateKeyParameters controllerKey;
+    private final Ed25519PublicKeyParameters accessoryKey;
+    private final X25519PrivateKeyParameters controllerEphemeralSecretKey;
 
     private @NonNullByDefault({}) X25519PublicKeyParameters serverEphemeralPublicKey;
     private @NonNullByDefault({}) byte[] sharedSecret;
@@ -59,18 +59,17 @@ public class PairVerifyClient {
     private @NonNullByDefault({}) byte[] readKey;
     private @NonNullByDefault({}) byte[] writeKey;
 
-    public PairVerifyClient(IpTransport ipTransport, byte[] clientPairingId,
-            Ed25519PrivateKeyParameters clientLongTermSecretKey, Ed25519PublicKeyParameters serverLongTermPublicKey)
-            throws Exception {
-        if (clientPairingId.length != 8) {
-            throw new IllegalArgumentException("Client Id must be exactly 8 bytes");
+    public PairVerifyClient(IpTransport ipTransport, byte[] controllerId, Ed25519PrivateKeyParameters controllerKey,
+            Ed25519PublicKeyParameters accessoryKey) throws Exception {
+        if (controllerId.length != 16) {
+            throw new IllegalArgumentException("Controller Id must be exactly 16 bytes");
         }
         logger.debug("Created..");
         this.ipTransport = ipTransport;
-        this.clientPairingId = clientPairingId;
-        this.clientLongTermSecretKey = clientLongTermSecretKey;
-        this.serverLongTermPublicKey = serverLongTermPublicKey;
-        this.clientEphemeralSecretKey = CryptoUtils.generateX25519KeyPair();
+        this.clientPairingId = controllerId;
+        this.controllerKey = controllerKey;
+        this.accessoryKey = accessoryKey;
+        this.controllerEphemeralSecretKey = CryptoUtils.generateX25519KeyPair();
     }
 
     /**
@@ -89,7 +88,7 @@ public class PairVerifyClient {
         logger.debug("Pair-Verify M1: Send verification start request with client ephemeral X25519 PK to server");
         Map<Integer, byte[]> tlv = new LinkedHashMap<>();
         tlv.put(TlvType.STATE.value, new byte[] { PairingState.M1.value });
-        tlv.put(TlvType.PUBLIC_KEY.value, clientEphemeralSecretKey.generatePublicKey().getEncoded());
+        tlv.put(TlvType.PUBLIC_KEY.value, controllerEphemeralSecretKey.generatePublicKey().getEncoded());
         Validator.validate(PairingMethod.VERIFY, tlv);
         byte[] m1Response = ipTransport.post(ENDPOINT_PAIR_VERIFY, CONTENT_TYPE_PAIRING, Tlv8Codec.encode(tlv));
         m2Execute(m1Response);
@@ -102,7 +101,7 @@ public class PairVerifyClient {
         Validator.validate(PairingMethod.VERIFY, tlv);
 
         serverEphemeralPublicKey = new X25519PublicKeyParameters(tlv.get(TlvType.PUBLIC_KEY.value), 0);
-        sharedSecret = generateSharedSecret(clientEphemeralSecretKey, serverEphemeralPublicKey);
+        sharedSecret = generateSharedSecret(controllerEphemeralSecretKey, serverEphemeralPublicKey);
         sharedKey = generateHkdfKey(sharedSecret, PAIR_VERIFY_ENCRYPT_SALT, PAIR_VERIFY_ENCRYPT_INFO);
 
         byte[] cipherText = tlv.get(TlvType.ENCRYPTED_DATA.value);
@@ -116,8 +115,8 @@ public class PairVerifyClient {
             throw new SecurityException("Accessory identifier or signature missing");
         }
 
-        verifySignature(serverLongTermPublicKey, serverSignature, concat(serverEphemeralPublicKey.getEncoded(),
-                serverPairingId, clientEphemeralSecretKey.generatePublicKey().getEncoded()));
+        verifySignature(accessoryKey, serverSignature, concat(serverEphemeralPublicKey.getEncoded(), serverPairingId,
+                controllerEphemeralSecretKey.generatePublicKey().getEncoded()));
 
         m3Execute();
     }
@@ -125,8 +124,8 @@ public class PairVerifyClient {
     // M3 — Send encrypted controller identifier and signature
     private void m3Execute() throws Exception {
         logger.debug("Pair-Verify M3: Send encrypted controller id with signature");
-        byte[] clientSignature = signMessage(clientLongTermSecretKey,
-                concat(clientEphemeralSecretKey.generatePublicKey().getEncoded(), clientPairingId,
+        byte[] clientSignature = signMessage(controllerKey,
+                concat(controllerEphemeralSecretKey.generatePublicKey().getEncoded(), clientPairingId,
                         serverEphemeralPublicKey.getEncoded()));
 
         Map<Integer, byte[]> subTlv = new LinkedHashMap<>();
