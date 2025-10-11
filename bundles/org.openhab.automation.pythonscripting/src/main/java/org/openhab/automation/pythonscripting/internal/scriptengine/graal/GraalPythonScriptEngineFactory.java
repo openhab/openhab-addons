@@ -10,9 +10,8 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.automation.pythonscripting.internal.graal;
+package org.openhab.automation.pythonscripting.internal.scriptengine.graal;
 
-import java.lang.ref.WeakReference;
 import java.util.List;
 import java.util.Objects;
 
@@ -21,6 +20,7 @@ import javax.script.ScriptEngineFactory;
 
 import org.graalvm.polyglot.Engine;
 import org.graalvm.polyglot.Language;
+import org.openhab.automation.pythonscripting.internal.scriptengine.graal.GraalPythonScriptEngine.ScriptEngineProvider;
 
 /**
  * A Graal.Python implementation of the script engine factory to exposes metadata describing of the engine class.
@@ -29,46 +29,23 @@ import org.graalvm.polyglot.Language;
  * @author Jeff James - Initial contribution
  */
 public final class GraalPythonScriptEngineFactory implements ScriptEngineFactory {
-    private WeakReference<Engine> defaultEngine;
-    private final Engine userDefinedEngine;
-
     private static final String ENGINE_NAME = "Graal.py";
     private static final String NAME = "python3";
 
     private static final String[] EXTENSIONS = { "py" };
 
-    public GraalPythonScriptEngineFactory() {
-        this.userDefinedEngine = null;
+    private final Engine engine;
+    private final Language language;
+    private ScriptEngineProvider scriptEngineProvider;
 
-        defaultEngine = new WeakReference<>(createDefaultEngine());
+    public GraalPythonScriptEngineFactory(Engine engine, ScriptEngineProvider scriptEngineProvider) {
+        this.engine = engine;
+        this.scriptEngineProvider = scriptEngineProvider;
+        this.language = this.engine.getLanguages().get(GraalPythonScriptEngine.LANGUAGE_ID);
     }
 
-    public GraalPythonScriptEngineFactory(Engine engine) {
-        this.defaultEngine = null;
-        this.userDefinedEngine = engine;
-    }
-
-    private static Engine createDefaultEngine() {
-        return Engine.newBuilder() //
-                .allowExperimentalOptions(true) //
-                .option("engine.WarnInterpreterOnly", "false") //
-                .build();
-    }
-
-    /**
-     * Returns the underlying polyglot engine.
-     */
     public Engine getPolyglotEngine() {
-        if (userDefinedEngine != null) {
-            return userDefinedEngine;
-        } else {
-            Engine engine = defaultEngine == null ? null : defaultEngine.get();
-            if (engine == null) {
-                engine = createDefaultEngine();
-                defaultEngine = new WeakReference<>(engine);
-            }
-            return engine;
-        }
+        return engine;
     }
 
     @Override
@@ -78,7 +55,7 @@ public final class GraalPythonScriptEngineFactory implements ScriptEngineFactory
 
     @Override
     public String getEngineVersion() {
-        return getPolyglotEngine().getVersion();
+        return engine.getVersion();
     }
 
     @Override
@@ -88,25 +65,21 @@ public final class GraalPythonScriptEngineFactory implements ScriptEngineFactory
 
     @Override
     public List<String> getMimeTypes() {
-        Language language = getPolyglotEngine().getLanguages().get(GraalPythonScriptEngine.LANGUAGE_ID);
         return List.copyOf(language.getMimeTypes());
     }
 
     @Override
     public List<String> getNames() {
-        Language language = getPolyglotEngine().getLanguages().get(GraalPythonScriptEngine.LANGUAGE_ID);
         return List.of(language.getName(), GraalPythonScriptEngine.LANGUAGE_ID, language.getImplementationName());
     }
 
     @Override
     public String getLanguageName() {
-        Language language = getPolyglotEngine().getLanguages().get(GraalPythonScriptEngine.LANGUAGE_ID);
         return language.getName();
     }
 
     @Override
     public String getLanguageVersion() {
-        Language language = getPolyglotEngine().getLanguages().get(GraalPythonScriptEngine.LANGUAGE_ID);
         return language.getVersion();
     }
 
@@ -123,8 +96,8 @@ public final class GraalPythonScriptEngineFactory implements ScriptEngineFactory
     }
 
     @Override
-    public GraalPythonScriptEngine getScriptEngine() {
-        return new GraalPythonScriptEngine(this);
+    public ScriptEngine getScriptEngine() {
+        return scriptEngineProvider.createScriptEngine();
     }
 
     @Override

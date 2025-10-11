@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.automation.pythonscripting.internal.scope;
+package org.openhab.automation.pythonscripting.internal.provider;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -66,6 +66,7 @@ public abstract class AbstractScriptExtensionProvider implements ScriptExtension
         return types.keySet();
     }
 
+    @SuppressWarnings("null")
     @Override
     public @Nullable Object get(String scriptIdentifier, String type) throws IllegalArgumentException {
         Map<String, Object> forScript = idToTypes.computeIfAbsent(scriptIdentifier, k -> new HashMap<>());
