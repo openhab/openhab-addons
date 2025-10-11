@@ -12,14 +12,37 @@
  */
 package org.openhab.binding.mqtt.awtrixlight.internal.app;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.awtrixlight.internal.Helper;
+
+import com.google.gson.annotations.SerializedName;
+
+/**
+ * The {@link TextSegment} is the representation of a text segment in an App.
+ *
+ * @author Thomas Lauterbach - Initial contribution
+ */
+@NonNullByDefault
+class TextSegment {
+    @SerializedName("t")
+    public final String text;
+
+    @SerializedName("c")
+    public final String color;
+
+    public TextSegment(String text, String color) {
+        this.text = text;
+        this.color = color;
+    }
+}
 
 /**
  * The {@link AwtrixApp} is the representation of the current app configuration and provides a method to create a config
@@ -362,7 +385,12 @@ public class AwtrixApp {
 
     public Map<String, Object> getAppParams() {
         Map<String, Object> fields = new HashMap<String, Object>();
-        fields.put("text", this.text);
+        if (textHasColorTags(this.text)) {
+            fields.put("text", this.parseTextSegments());
+        } else {
+            fields.put("text", this.text);
+            fields.putAll(getTextEffectConfig());
+        }
         fields.put("textCase", this.textCase);
         fields.put("topText", this.topText);
         fields.put("textOffset", this.textOffset);
@@ -371,7 +399,6 @@ public class AwtrixApp {
         fields.put("lifetimeMode", this.lifetimeMode);
         fields.put("overlay", this.overlay);
         fields.putAll(getColorConfig());
-        fields.putAll(getTextEffectConfig());
         fields.putAll(getBackgroundConfig());
         fields.putAll(getIconConfig());
         fields.put("duration", this.duration);
@@ -513,6 +540,93 @@ public class AwtrixApp {
             }
         }
         return fields;
+    }
+
+    private static boolean textHasColorTags(String text) {
+        if (text.isEmpty()) {
+            return false;
+        }
+        // Extremely simple detection: we only look for our simple pattern parts
+        // This avoids brittle regex and supports multiple segments
+        return text.contains("<font") && text.contains("color=\"#") && text.contains("</font>");
+    }
+
+    private static String rgbToHex(int[] rgb) {
+        // Ensure values are in 0-255 range
+        int r = Math.min(255, Math.max(0, rgb[0]));
+        int g = Math.min(255, Math.max(0, rgb[1]));
+        int b = Math.min(255, Math.max(0, rgb[2]));
+
+        // Format as 6-digit hex string, padding with zeros if needed
+        return String.format("%02x%02x%02x", r, g, b);
+    }
+
+    private List<TextSegment> parseTextSegments() {
+        List<TextSegment> segments = new ArrayList<>();
+        if (this.text.isEmpty()) {
+            return segments;
+        }
+
+        String remaining = this.text;
+        String defaultColor = rgbToHex(this.color);
+
+        while (true) {
+            int startTag = remaining.indexOf("<font");
+            if (startTag < 0) {
+                // No more tags, add remaining text
+                if (!remaining.isEmpty()) {
+                    segments.add(new TextSegment(remaining, defaultColor));
+                }
+                break;
+            }
+
+            // Add text before the tag
+            if (startTag > 0) {
+                segments.add(new TextSegment(remaining.substring(0, startTag), defaultColor));
+            }
+
+            // Find the end of the opening tag
+            int endTag = remaining.indexOf(">", startTag);
+            if (endTag < 0) {
+                // Malformed tag, add everything and stop
+                segments.add(new TextSegment(remaining, defaultColor));
+                break;
+            }
+
+            // Extract color from tag (or use default)
+            String tag = remaining.substring(startTag, endTag + 1);
+            String color = extractColor(tag);
+            if (color == null) {
+                color = defaultColor;
+            }
+
+            // Find the closing tag
+            int closeTag = remaining.indexOf("</font>", endTag);
+            if (closeTag < 0) {
+                // No closing tag, add rest with color and stop
+                segments.add(new TextSegment(remaining.substring(endTag + 1), color));
+                break;
+            }
+
+            // Add text between tags
+            segments.add(new TextSegment(remaining.substring(endTag + 1, closeTag), color));
+
+            // Move past the closing tag
+            remaining = remaining.substring(closeTag + 7); // 7 = "</font>".length()
+        }
+
+        return segments;
+    }
+
+    @Nullable
+    private String extractColor(String tag) {
+        // Extract hex color from color="#XXXXXX" pattern
+        java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("color=\"#([0-9A-Fa-f]{6})\"");
+        java.util.regex.Matcher matcher = pattern.matcher(tag);
+        if (matcher.find()) {
+            return matcher.group(1).toLowerCase();
+        }
+        return null;
     }
 
     private Map<String, Object> getTextEffectConfig() {
