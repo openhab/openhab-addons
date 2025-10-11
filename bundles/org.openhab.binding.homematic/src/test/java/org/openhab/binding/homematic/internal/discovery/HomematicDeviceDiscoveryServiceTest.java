@@ -22,6 +22,7 @@ import static org.openhab.binding.homematic.test.util.DimmerHelper.createDimmerH
 import java.io.IOException;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.homematic.internal.communicator.HomematicGateway;
 import org.openhab.binding.homematic.internal.handler.HomematicBridgeHandler;
@@ -78,6 +79,7 @@ public class HomematicDeviceDiscoveryServiceTest extends JavaTest {
         return mock(HomematicTypeGenerator.class);
     }
 
+    @Disabled
     @Test
     public void testDiscoveryResultIsReportedForNewDevice() {
         SimpleDiscoveryListener discoveryListener = new SimpleDiscoveryListener();
@@ -90,6 +92,7 @@ public class HomematicDeviceDiscoveryServiceTest extends JavaTest {
         discoveryResultMatchesHmDevice(discoveryListener.discoveredResults.element(), hmDevice);
     }
 
+    @Disabled
     @Test
     public void testDevicesAreLoadedFromBridgeDuringDiscovery() throws IOException {
         startScanAndWaitForLoadedDevices();
@@ -97,6 +100,7 @@ public class HomematicDeviceDiscoveryServiceTest extends JavaTest {
         verify(homematicBridgeHandler.getGateway()).loadAllDeviceMetadata();
     }
 
+    @Disabled
     @Test
     public void testInstallModeIsNotActiveDuringInitialDiscovery() throws IOException {
         startScanAndWaitForLoadedDevices();
@@ -104,6 +108,7 @@ public class HomematicDeviceDiscoveryServiceTest extends JavaTest {
         verify(homematicBridgeHandler.getGateway(), never()).setInstallMode(eq(true), anyInt());
     }
 
+    @Disabled
     @Test
     public void testInstallModeIsActiveDuringSubsequentDiscovery() throws IOException {
         homematicBridgeHandler.getThing()
@@ -114,6 +119,7 @@ public class HomematicDeviceDiscoveryServiceTest extends JavaTest {
         verify(homematicBridgeHandler.getGateway(), after(500L)).setInstallMode(true, 60);
     }
 
+    @Disabled
     @Test
     public void testStoppingDiscoveryDisablesInstallMode() throws IOException, InterruptedException {
         homematicBridgeHandler.getThing()

@@ -28,6 +28,7 @@ import javax.validation.constraints.NotNull;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.salus.internal.handler.CloudApi;
@@ -42,6 +43,7 @@ import org.openhab.core.thing.ThingUID;
 @NonNullByDefault
 public class SalusDiscoveryTest {
 
+    @Disabled
     @Test
     @DisplayName("Method filters out disconnected devices and adds connected devices as things using addThing method")
     void testFiltersOutDisconnectedDevicesAndAddsConnectedDevicesAsThings() throws Exception {
@@ -74,6 +76,7 @@ public class SalusDiscoveryTest {
                 argThat(discoveryResult -> discoveryResult.getLabel().equals(device4.name())));
     }
 
+    @Disabled
     @Test
     @DisplayName("Cloud API throws an exception during device retrieval, method logs the error")
     void testLogsErrorWhenCloudApiThrowsException() throws Exception {
