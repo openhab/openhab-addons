@@ -70,7 +70,7 @@ Additionally, you can configure the Add-on via a config file `/openhab/services/
 # Use scope and import wrapper
 #
 # This enables a scope module and and import wrapper.
-# An scope module is an encapsulated module containing all openHAB jsr223 objects and can be imported with <code>import scope</code>
+# A scope module is an encapsulated module containing all openHAB jsr223 objects and can be imported with <code>import scope</code>
 # Additionally you can run an import like <code>from org.openhab.core import OpenHAB</code>
 #
 #org.openhab.automation.pythonscripting:scopeEnabled = true
