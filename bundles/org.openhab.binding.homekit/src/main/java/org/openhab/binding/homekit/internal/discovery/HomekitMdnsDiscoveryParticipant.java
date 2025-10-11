@@ -24,6 +24,8 @@ import javax.jmdns.ServiceInfo;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homekit.internal.enums.AccessoryCategory;
+import org.openhab.binding.homekit.internal.enums.AccessoryPairingFeature;
+import org.openhab.binding.homekit.internal.enums.AccessoryPairingStatus;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.mdns.MDNSDiscoveryParticipant;
@@ -75,20 +77,38 @@ public class HomekitMdnsDiscoveryParticipant implements MDNSDiscoveryParticipant
             if (port != 0) {
                 host = host + ":" + port;
             }
-            AccessoryCategory cat;
+            AccessoryCategory category;
             try {
                 String ci = properties.getOrDefault("ci", ""); // accessory category
-                cat = AccessoryCategory.from(Integer.parseInt(ci));
+                category = AccessoryCategory.from(Integer.parseInt(ci));
             } catch (IllegalArgumentException e) {
-                cat = null;
+                category = null;
             }
 
-            if (host != null && mac != null && cat != null) {
+            AccessoryPairingFeature pairFeature;
+            try {
+                String ff = properties.getOrDefault("ff", ""); // accessory feature flag
+                pairFeature = AccessoryPairingFeature.from(Integer.parseInt(ff));
+            } catch (IllegalArgumentException e) {
+                pairFeature = AccessoryPairingFeature.NO_HAP;
+            }
+
+            AccessoryPairingStatus pairStatus;
+            try {
+                String sf = properties.getOrDefault("sf", ""); // accessory status flag
+                pairStatus = AccessoryPairingStatus.from(Integer.parseInt(sf));
+            } catch (IllegalArgumentException e) {
+                pairStatus = AccessoryPairingStatus.UNPAIRED;
+            }
+
+            if (host != null && mac != null && category != null) {
                 DiscoveryResultBuilder builder = DiscoveryResultBuilder.create(uid);
                 builder.withLabel(THING_LABEL_FMT.formatted(service.getName(), host)) //
                         .withProperty(CONFIG_HOST, host) //
                         .withProperty(Thing.PROPERTY_MAC_ADDRESS, mac) //
-                        .withProperty(PROPERTY_ACCESSORY_CATEGORY, cat.toString()) //
+                        .withProperty(PROPERTY_ACCESSORY_PAIRING_FEATURE, pairFeature.toString()) //
+                        .withProperty(PROPERTY_ACCESSORY_PAIRED_STATE, pairStatus.toString()) //
+                        .withProperty(PROPERTY_ACCESSORY_CATEGORY, category.toString()) //
                         .withProperty(PROPERTY_ACCESSORY_UID, new ThingUID(THING_TYPE_ACCESSORY, "1").toString()) //
                         .withRepresentationProperty(Thing.PROPERTY_MAC_ADDRESS);
 
