@@ -35,7 +35,7 @@ public class LatencyParserTest {
         String input = "64 bytes from 192.168.1.1: icmp_seq=0 ttl=64 time=1.225 ms";
 
         // Act
-        Duration resultLatency = latencyParser.parseLatency(input);
+        Duration resultLatency = latencyParser.parseLatency(input, null);
 
         // Assert
         assertNotNull(resultLatency);
@@ -55,7 +55,7 @@ public class LatencyParserTest {
 
         for (String inputLine : inputLines) {
             // Act
-            Duration resultLatency = latencyParser.parseLatency(inputLine);
+            Duration resultLatency = latencyParser.parseLatency(inputLine, null);
 
             // Assert
             assertNull(resultLatency);
@@ -69,10 +69,15 @@ public class LatencyParserTest {
         String input = "Reply from 192.168.178.207: bytes=32 time=2ms TTL=64";
 
         // Act
-        Duration resultLatency = latencyParser.parseLatency(input);
+        Duration resultLatency = latencyParser.parseLatency(input, null);
 
         // Assert
         assertNotNull(resultLatency);
         assertEquals(2, durationToMillis(resultLatency), 0);
+
+        input = "Reply from 10.80.5.2: bytes=32 time<1ms TTL=64";
+        resultLatency = latencyParser.parseLatency(input, null);
+        assertNotNull(resultLatency);
+        assertEquals(1, durationToMillis(resultLatency), 0.0);
     }
 }

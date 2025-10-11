@@ -67,7 +67,7 @@ public class WakeOnLanPacketSender {
 
     public WakeOnLanPacketSender(String macAddress, @Nullable String hostname, @Nullable Integer port,
             Set<String> networkInterfaceNames) {
-        logger.debug("initialized WOL Packet Sender (mac: {}, hostname: {}, port: {}, networkInterfaceNames: {})",
+        logger.trace("initialized WOL Packet Sender (mac: {}, hostname: {}, port: {}, networkInterfaceNames: {})",
                 macAddress, hostname, port, networkInterfaceNames);
         this.macAddress = macAddress;
         this.hostname = hostname;

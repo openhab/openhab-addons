@@ -29,13 +29,17 @@ import org.openhab.binding.network.internal.utils.NetworkUtils.ArpPingUtilEnum;
 @NonNullByDefault
 public class NetworkBindingConfiguration {
 
+    public final static int DEFAULT_DISCOVERY_THREADS = 100;
+    public final static String DEFAULT_ARPING_TOOL_PATH = "arping";
+    public final static ArpPingUtilEnum DEFAULT_ARPING_METHOD = ArpPingUtilEnum.DISABLED;
     public boolean allowSystemPings = true;
     public boolean allowDHCPlisten = true;
     public BigDecimal cacheDeviceStateTimeInMS = BigDecimal.valueOf(2000);
-    public String arpPingToolPath = "arping";
-    public ArpPingUtilEnum arpPingUtilMethod = ArpPingUtilEnum.DISABLED;
+    public String arpPingToolPath = DEFAULT_ARPING_TOOL_PATH;
+    public ArpPingUtilEnum arpPingUtilMethod = DEFAULT_ARPING_METHOD;
     // For backwards compatibility reasons, the default is to use the ping method execution time as latency value
     public boolean preferResponseTimeAsLatency = false;
+    public int numberOfDiscoveryThreads = DEFAULT_DISCOVERY_THREADS;
 
     private List<NetworkBindingConfigurationListener> listeners = new ArrayList<>();
 
@@ -45,6 +49,7 @@ public class NetworkBindingConfiguration {
         this.cacheDeviceStateTimeInMS = newConfiguration.cacheDeviceStateTimeInMS;
         this.arpPingToolPath = newConfiguration.arpPingToolPath;
         this.preferResponseTimeAsLatency = newConfiguration.preferResponseTimeAsLatency;
+        this.numberOfDiscoveryThreads = newConfiguration.numberOfDiscoveryThreads;
 
         NetworkUtils networkUtils = new NetworkUtils();
         this.arpPingUtilMethod = networkUtils.determineNativeArpPingMethod(arpPingToolPath);
@@ -65,6 +70,6 @@ public class NetworkBindingConfiguration {
         return "NetworkBindingConfiguration{" + "allowSystemPings=" + allowSystemPings + ", allowDHCPlisten="
                 + allowDHCPlisten + ", cacheDeviceStateTimeInMS=" + cacheDeviceStateTimeInMS + ", arpPingToolPath='"
                 + arpPingToolPath + '\'' + ", arpPingUtilMethod=" + arpPingUtilMethod + ", preferResponseTimeAsLatency="
-                + preferResponseTimeAsLatency + '}';
+                + preferResponseTimeAsLatency + ", numberOfDiscoveryThreads=" + numberOfDiscoveryThreads + '}';
     }
 }
