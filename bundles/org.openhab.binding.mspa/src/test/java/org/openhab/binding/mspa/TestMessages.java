@@ -87,7 +87,7 @@ class TestMessages {
     }
 
     @Test
-    void testDiscovery() {
+    void testDiscovery() throws InterruptedException {
         Bridge thing = new BridgeImpl(THING_TYPE_OWNER_ACCOUNT, new ThingUID("mspa", "account"));
         Map<String, Object> configMap = new HashMap<>();
         MSpaDiscoveryService discovery = new MSpaDiscoveryService();
@@ -102,6 +102,7 @@ class TestMessages {
         try {
             String content = new String(Files.readAllBytes(Paths.get(fileName)));
             account.decodeDevices(content);
+            Thread.sleep(500L);
             List<DiscoveryResult> results = discoveryListener.getResults();
             assertEquals(1, results.size(), "Number of discovery results");
             DiscoveryResult result = results.get(0);
