@@ -10,22 +10,15 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.solarman.internal.channel;
-
-import java.math.BigDecimal;
+package org.openhab.binding.solarman.internal.enums;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * @author Catalin Sanda - Initial contribution
+ * @author Oleksandr Mishchuk - Initial contribution
  */
 @NonNullByDefault
-public class BaseChannelConfig {
-    public @Nullable String uom;
-    public BigDecimal scale = BigDecimal.ONE;
-    public Integer rule = 1;
-    public BigDecimal offset = BigDecimal.ZERO;
-    public String registers = "";
-    public boolean readOnly = true;
+public enum IntegerValueType {
+    UNSIGNED,
+    SIGNED
 }

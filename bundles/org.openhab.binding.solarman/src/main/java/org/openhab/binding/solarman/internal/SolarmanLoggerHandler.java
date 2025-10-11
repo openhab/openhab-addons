@@ -38,6 +38,8 @@ import org.openhab.binding.solarman.internal.modbus.SolarmanProtocol;
 import org.openhab.binding.solarman.internal.modbus.SolarmanProtocolFactory;
 import org.openhab.binding.solarman.internal.updater.SolarmanChannelUpdater;
 import org.openhab.binding.solarman.internal.updater.SolarmanProcessResult;
+import org.openhab.binding.solarman.internal.updater.SolarmanRegisterUpdater;
+import org.openhab.binding.solarman.internal.util.ParserUtils;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -63,6 +65,8 @@ public class SolarmanLoggerHandler extends BaseThingHandler {
     private final SolarmanChannelManager solarmanChannelManager;
     @Nullable
     private volatile ScheduledFuture<?> scheduledFuture;
+    @Nullable
+    private SolarmanRegisterUpdater solarmanRegisterUpdater;
 
     public SolarmanLoggerHandler(Thing thing) {
         super(thing);
@@ -72,6 +76,13 @@ public class SolarmanLoggerHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        logger.trace("Received command {} in channel {}", command, channelUID);
+
+        if (solarmanRegisterUpdater != null) {
+            solarmanRegisterUpdater.updateLoggerRegisters(channelUID, command);
+        } else {
+            logger.error("SolarmanRegisterUpdater is not initialized yet");
+        }
     }
 
     @Override
@@ -110,6 +121,8 @@ public class SolarmanLoggerHandler extends BaseThingHandler {
                 extractChannelMappingFromChannels(staticChannels),
                 setupChannelsForInverterDefinition(inverterDefinition));
 
+        solarmanRegisterUpdater = new SolarmanRegisterUpdater(paramToChannelMapping, solarmanLoggerConnector,
+                solarmanProtocol);
         SolarmanChannelUpdater solarmanChannelUpdater = new SolarmanChannelUpdater(this::updateState);
 
         scheduledFuture = scheduler
@@ -152,17 +165,11 @@ public class SolarmanLoggerHandler extends BaseThingHandler {
                 throw new IllegalStateException("Channel label should not be null");
             }
 
+            // TODO: Add lookup for static channels
             return new AbstractMap.SimpleEntry<>(new ParameterItem(label, "N/A", "N/A", bcc.uom, bcc.scale, bcc.rule,
-                    parseRegisters(bcc.registers), "N/A", new Validation(), bcc.offset, Boolean.FALSE, null),
-                    channel.getUID());
+                    ParserUtils.parseRegisters(bcc.registers), "N/A", new Validation(), bcc.offset, Boolean.FALSE,
+                    bcc.readOnly, null), channel.getUID());
         }).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-    }
-
-    private List<Integer> parseRegisters(String registers) {
-        String[] tokens = registers.split(",");
-        Pattern pattern = Pattern.compile("\\s*(0x[\\da-fA-F]+|[\\d]+)\\s*");
-        return Stream.of(tokens).map(pattern::matcher).filter(Matcher::matches).map(matcher -> matcher.group(1))
-                .map(SolarmanLoggerHandler::parseNumber).toList();
     }
 
     // For now just concatenate the list, in the future, merge overlapping requests
@@ -177,19 +184,15 @@ public class SolarmanLoggerHandler extends BaseThingHandler {
 
         return Stream.of(tokens).map(pattern::matcher).filter(Matcher::matches).map(matcher -> {
             try {
-                int functionCode = parseNumber(matcher.group(1));
-                int start = parseNumber(matcher.group(2));
-                int end = parseNumber(matcher.group(3));
+                int functionCode = ParserUtils.parseNumber(matcher.group(1));
+                int start = ParserUtils.parseNumber(matcher.group(2));
+                int end = ParserUtils.parseNumber(matcher.group(3));
                 return new Request(functionCode, start, end);
             } catch (NumberFormatException e) {
                 logger.debug("Invalid number format in token: {} , ignoring additional requests", matcher.group(), e);
-                return new Request(-1, 0, 0);
+                return Request.NONE;
             }
-        }).filter(request -> request.getMbFunctioncode() > 0).collect(Collectors.toList());
-    }
-
-    private static int parseNumber(String number) {
-        return number.startsWith("0x") ? Integer.parseInt(number.substring(2), 16) : Integer.parseInt(number);
+        }).filter(request -> !Request.NONE.equals(request)).collect(Collectors.toList());
     }
 
     private Map<ParameterItem, ChannelUID> setupChannelsForInverterDefinition(InverterDefinition inverterDefinition) {
