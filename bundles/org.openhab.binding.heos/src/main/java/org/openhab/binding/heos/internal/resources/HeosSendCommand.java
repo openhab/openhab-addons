@@ -14,6 +14,7 @@ package org.openhab.binding.heos.internal.resources;
 
 import java.io.IOException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.heos.internal.json.HeosJsonParser;
 import org.openhab.binding.heos.internal.json.dto.HeosResponseObject;
 import org.openhab.binding.heos.internal.resources.Telnet.ReadException;
@@ -26,6 +27,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Johannes Einig - Initial contribution
  */
+@NonNullByDefault
 public class HeosSendCommand {
     private final Logger logger = LoggerFactory.getLogger(HeosSendCommand.class);
 
@@ -41,9 +43,7 @@ public class HeosSendCommand {
         int attempt = 0;
 
         boolean send = client.send(command);
-        if (clazz == null) {
-            return null;
-        } else if (send) {
+        if (send) {
             String line = client.readLine();
             if (line == null) {
                 throw new IOException("No valid input was received");

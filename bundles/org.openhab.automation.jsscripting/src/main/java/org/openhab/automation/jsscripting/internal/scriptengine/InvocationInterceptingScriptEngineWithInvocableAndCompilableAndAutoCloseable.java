@@ -24,8 +24,8 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptException;
 
 /**
- * Delegate allowing AOP-style interception of calls, either before Invocation, or upon a {@link ScriptException} being
- * thrown.
+ * Delegate allowing AOP-style interception of calls, either before invocation, after invocation, upon a
+ * {@link ScriptException} being thrown, or on receiving the script code.
  *
  * @param <T> The delegate class
  * @author Jonathan Gilbert - Initial contribution
