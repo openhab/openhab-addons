@@ -78,19 +78,19 @@
 		<instruction-set targetVersion="3">
 			<add-channel id="virus_free">
 				<type>airq:virus_free</type>
-				<label>Virus-free Index</label>
+				<label>Virus-Free Index</label>
 			</add-channel>
 			<add-channel id="virus_free_maxerr">
 				<type>airq:virus-free_maxerr</type>
-				<label>Max. Error Virus-free</label>
+				<label>Max. Error Virus-Free</label>
 			</add-channel>
 			<add-channel id="mold_free">
 				<type>airq:mold_free</type>
-				<label>Mold-free Index</label>
+				<label>Mold-Free Index</label>
 			</add-channel>
 			<add-channel id="mold_free_maxerr">
 				<type>airq:mold_free_maxerr</type>
-				<label>Max. Error Mold-free</label>
+				<label>Max. Error Mold-Free</label>
 			</add-channel>
 		</instruction-set>
 	</thing-type>

@@ -354,13 +354,13 @@
 
 	<channel-type id="virus_free" advanced="false">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
-		<label>Virus-free Index</label>
+		<label>Virus-Free Index</label>
 		<state readOnly="true" pattern="%.2f %unit%"></state>
 	</channel-type>
 
 	<channel-type id="mold_free" advanced="false">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
-		<label>Mold-free Index</label>
+		<label>Mold-Free Index</label>
 		<state readOnly="true" pattern="%.2f %unit%"></state>
 	</channel-type>
 
@@ -505,13 +505,13 @@
 
 	<channel-type id="virus_free_maxerr" advanced="true">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
-		<label>Max. Error Virus-free</label>
+		<label>Max. Error Virus-Free</label>
 		<state readOnly="true" pattern="± %.2f %%"></state>
 	</channel-type>
 
 	<channel-type id="mold_free_maxerr" advanced="true">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
-		<label>Max. Error Mold-free</label>
+		<label>Max. Error Mold-Free</label>
 		<state readOnly="true" pattern="± %.2f %%"></state>
 	</channel-type>
 
