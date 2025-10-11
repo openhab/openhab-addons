@@ -12,9 +12,6 @@
  */
 package org.openhab.binding.heos.internal.resources;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -261,8 +258,8 @@ public class HeosCommands {
     }
 
     public static String signIn(String username, String password) {
-        String encodedUsername = urlEncode(username);
-        String encodedPassword = urlEncode(password);
+        String encodedUsername = encodeSpecialCharacters(username);
+        String encodedPassword = encodeSpecialCharacters(password);
         return "heos://system/sign_in?un=" + encodedUsername + "&pw=" + encodedPassword;
     }
 
@@ -320,9 +317,18 @@ public class HeosCommands {
         return toggleGroupMute + gid;
     }
 
-    private static String urlEncode(String username) {
-        String encoded = URLEncoder.encode(username, StandardCharsets.UTF_8);
-        // however it cannot handle escaped @ signs
-        return encoded.replace("%40", "@");
+    /**
+     * Encode string according to HEOS CLI Protocol Specification version 1.17,
+     * chapter 3.1 Commands:
+     * <p>
+     * Note: Special characters, i.e <code>&</code>, <code>=</code>, and <code>%</code> in attribute/value needs
+     * to be encoded to '%26(&)', '%3D(=)', and '%25(%)'.
+     * </p>
+     *
+     * @param str String to encode
+     * @return Encoded string
+     */
+    private static String encodeSpecialCharacters(String str) {
+        return str.replace("%", "%25").replace("&", "%26").replace("=", "%3D");
     }
 }
