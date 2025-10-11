@@ -47,7 +47,7 @@ public class HomematicDeviceDiscoveryService
     private final Logger logger = LoggerFactory.getLogger(HomematicDeviceDiscoveryService.class);
     private static final int DISCOVER_TIMEOUT_SECONDS = 300;
     private static final int MINIMAL_SCAN_TIMEOUT_SECONDS = 120;
-    private Future<?> loadDevicesFuture;
+    private volatile Future<?> loadDevicesFuture;
     private volatile boolean isInInstallMode = false;
     private volatile Object installModeSync = new Object();
 
@@ -147,8 +147,9 @@ public class HomematicDeviceDiscoveryService
     }
 
     private void waitForLoadDevicesFinished() throws InterruptedException, ExecutionException {
-        if (loadDevicesFuture != null) {
-            loadDevicesFuture.get();
+        Future<?> loadFuture;
+        if ((loadFuture = loadDevicesFuture) != null) {
+            loadFuture.get(); // TODO: Bug - doesn't always complete
         }
     }
 
@@ -166,9 +167,8 @@ public class HomematicDeviceDiscoveryService
             logger.error("Error waiting for device discovery scan: {}", ex.getMessage(), ex);
         }
         HomematicBridgeHandler bridgeHandler = thingHandler;
-        String gatewayId = bridgeHandler != null && bridgeHandler.getGateway() != null
-                ? bridgeHandler.getGateway().getId()
-                : "UNKNOWN";
+        HomematicGateway gateway = bridgeHandler.getGateway();
+        String gatewayId = gateway != null ? gateway.getId() : "UNKNOWN";
         logger.debug("Finished Homematic device discovery scan on gateway '{}'", gatewayId);
     }
 

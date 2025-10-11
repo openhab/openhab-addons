@@ -14,7 +14,7 @@ package org.openhab.binding.deconz;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -98,7 +98,7 @@ public class DeconzTest {
         discoveryService.initialize();
         discoveryService.addDiscoveryListener(discoveryListener);
         discoveryService.startScan();
-        Mockito.verify(discoveryListener, times(20)).thingDiscovered(any(), any());
+        Mockito.verify(discoveryListener, timeout(1000L).times(20)).thingDiscovered(any(), any());
     }
 
     public static <T> T getObjectFromJson(String filename, Class<T> clazz, Gson gson) throws IOException {
