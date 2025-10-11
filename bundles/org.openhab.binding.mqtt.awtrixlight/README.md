@@ -110,12 +110,44 @@ The button events can be used by rules to change the displayed app or perform an
 | `rainbow`             | Switch               | RW         | Enable rainbow effect: Uses a rainbow effect for the displayed text.                                                                                                                                                               |
 | `reset`*              | Switch               | RW         | Reset app to default state: All channels will be reset to their default values.                                                                                                                                                    |
 | `scroll-speed`        | Number:Dimensionless | RW         | Text scrolling speed: Provide as percentage value. The original speed is 100%. Values above 100% will increase the scrolling speed, values below 100% will decrease it. Setting this value to 0 will disable scrolling completely. |
-| `text`                | String               | RW         | Text to display.                                                                                                                                                                                                                   |
+| `text`                | String               | RW         | Text to display. Supports inline color formatting with font color tags (see Text Color Tags section below for details).                                                                                                            |
 | `text-case`           | Number:Dimensionless | RW         | Set text case (0=normal, 1=uppercase, 2=lowercase).                                                                                                                                                                                |
 | `text-offset`         | Number:Dimensionless | RW         | Text offset position: Horizontal offset of the text in pixels.                                                                                                                                                                     |
 | `top-text`            | String               | RW         | Draws the text on the top of the display.                                                                                                                                                                                          |
 
 \* Cannot be used with notification Actions (see section Actions)
+
+## Text Color Tags
+
+The `text` channel supports inline color formatting using simple HTML-like font color tags. This allows you to display text with multiple colors in a single app.
+
+### Syntax
+
+Use the following format to apply colors to specific parts of your text:
+
+```html
+<font color="#RRGGBB">colored text</font>
+```
+
+Where `RRGGBB` is a 6-digit hexadecimal color code (e.g., `FF0000` for red, `00FF00` for green, `0000FF` for blue).
+
+### Examples
+
+```java
+// Multiple colored segments - "Hello" and "in" will use the color from the color channel, "World" and "Color" will use the specified colors
+Custom_Text.sendCommand('Hello <font color="#FF0000">World</font> in <font color="#00FF00">Color</font>')
+
+// All text in custom color
+Custom_Text.sendCommand('<font color="#FF6600">Temperature: 25°C</font>')
+```
+
+### Important Notes
+
+- **Default color**: Text outside of `<font>` tags will be displayed in the color defined by the `color` channel.
+- **Text effects disabled**: When color tags are used, the `blink`, `fade`, and `rainbow` effects are automatically disabled, as each text segment has its own color. The `gradient-color` channel is also ignored.
+- **Tags cannot be nested**: `<font>` tags must not be placed inside other `<font>` tags. Nesting is not supported and will result in incorrect parsing.
+- **Case-insensitive hex values**: Both uppercase and lowercase hex values are supported (e.g., `#FF0000` or `#ff0000`).
+- **Malformed tags**: If a tag is malformed (e.g., missing closing tag), the parser will gracefully handle it by applying the default color.
 
 ## Actions
 
