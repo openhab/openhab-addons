@@ -93,7 +93,7 @@ class SatelDeviceDiscoveryServiceTest {
         testSubject.startScan();
 
         ArgumentCaptor<DiscoveryResult> resultCaptor = ArgumentCaptor.forClass(DiscoveryResult.class);
-        verify(listener, atLeastOnce()).thingDiscovered(any(), resultCaptor.capture());
+        verify(listener, timeout(1000L).atLeastOnce()).thingDiscovered(any(), resultCaptor.capture());
         List<DiscoveryResult> results = resultCaptor.getAllValues();
 
         assertEquals(2, results.size());
@@ -120,7 +120,7 @@ class SatelDeviceDiscoveryServiceTest {
         testSubject.startScan();
 
         ArgumentCaptor<DiscoveryResult> resultCaptor = ArgumentCaptor.forClass(DiscoveryResult.class);
-        verify(listener, atLeastOnce()).thingDiscovered(any(), resultCaptor.capture());
+        verify(listener, timeout(1000L).atLeastOnce()).thingDiscovered(any(), resultCaptor.capture());
         List<DiscoveryResult> results = resultCaptor.getAllValues();
         assertEquals(4,
                 results.stream().filter(result -> THING_TYPE_PARTITION.equals(result.getThingTypeUID())).count());
@@ -143,7 +143,7 @@ class SatelDeviceDiscoveryServiceTest {
         testSubject.startScan();
 
         ArgumentCaptor<DiscoveryResult> resultCaptor = ArgumentCaptor.forClass(DiscoveryResult.class);
-        verify(listener, atLeastOnce()).thingDiscovered(any(), resultCaptor.capture());
+        verify(listener, timeout(1000L).atLeastOnce()).thingDiscovered(any(), resultCaptor.capture());
         List<DiscoveryResult> results = resultCaptor.getAllValues().stream()
                 .filter(result -> THING_TYPE_SHUTTER.equals(result.getThingTypeUID())).toList();
         assertEquals(24, results.size());
@@ -162,7 +162,7 @@ class SatelDeviceDiscoveryServiceTest {
         testSubject.startScan();
 
         ArgumentCaptor<DiscoveryResult> resultCaptor = ArgumentCaptor.forClass(DiscoveryResult.class);
-        verify(listener, atLeastOnce()).thingDiscovered(any(), resultCaptor.capture());
+        verify(listener, timeout(1000L).atLeastOnce()).thingDiscovered(any(), resultCaptor.capture());
         List<DiscoveryResult> results = resultCaptor.getAllValues();
         assertEquals(0, results.stream().filter(result -> THING_TYPE_OUTPUT.equals(result.getThingTypeUID())).count());
         assertEquals(0, results.stream().filter(result -> THING_TYPE_SHUTTER.equals(result.getThingTypeUID())).count());
@@ -176,7 +176,7 @@ class SatelDeviceDiscoveryServiceTest {
         testSubject.startScan();
 
         ArgumentCaptor<DiscoveryResult> resultCaptor = ArgumentCaptor.forClass(DiscoveryResult.class);
-        verify(listener, atLeastOnce()).thingDiscovered(any(), resultCaptor.capture());
+        verify(listener, timeout(1000L).atLeastOnce()).thingDiscovered(any(), resultCaptor.capture());
         List<DiscoveryResult> results = resultCaptor.getAllValues();
         assertEquals(0, results.stream().filter(result -> THING_TYPE_OUTPUT.equals(result.getThingTypeUID())).count());
         assertEquals(0, results.stream().filter(result -> THING_TYPE_SHUTTER.equals(result.getThingTypeUID())).count());
