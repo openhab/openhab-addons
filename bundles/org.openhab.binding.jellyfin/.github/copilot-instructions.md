@@ -39,6 +39,57 @@ This requirement ensures:
 3. Verify diagram accuracy against actual code structure
 4. Test build to ensure no compilation errors
 
+### Java 21 Modern Development Standards
+**MANDATORY**: All code MUST leverage Java 21 language features and best practices for maintainability, readability, and performance:
+
+#### Stream API and Modern Collection Operations
+- **Use `var` keyword** for local variable type inference where it improves readability
+- **Prefer `List.of()`, `Set.of()`, `Map.of()`** over mutable collection constructors for immutable collections
+- **Use `Collection.toList()`** instead of `collect(Collectors.toList())` for simple conversions
+- **Use `Set.copyOf()`** instead of `new HashSet<>(collection)` for defensive copying
+- **Leverage method references** (`::methodName`) over lambda expressions where applicable
+- **Use `forEach()` with method references** instead of traditional for-loops where appropriate
+
+#### Modern Control Flow and Pattern Matching
+- **Extract complex filtering logic** into separate predicate methods with descriptive names
+- **Use switch expressions** (not statements) for cleaner conditional logic where applicable
+- **Prefer early returns** and guard clauses to reduce nesting levels
+- **Use pattern matching** for instanceof checks where available
+
+#### Modern null Safety and Optional Handling
+- **Use `Optional.ofNullable()`** for null-safe operations
+- **Chain Optional operations** (`map()`, `filter()`, `orElse()`) instead of explicit null checks
+- **Use null-safe operators** and modern null-checking patterns
+- **Avoid unnecessary null checks** when using modern collection factory methods
+
+#### Code Organization and Readability
+- **Keep methods focused** - extract complex operations into well-named helper methods
+- **Use descriptive variable names** with `var` for improved readability
+- **Prefer composition** over inheritance where applicable
+- **Use record classes** for simple data transfer objects where beneficial
+- **Minimize mutable state** and prefer immutable data structures
+
+#### Performance and Memory Efficiency
+- **Use parallel streams** only when beneficial (large datasets, CPU-intensive operations)
+- **Prefer lazy evaluation** with streams over eager collection operations
+- **Use `StringBuilder` or text blocks** for complex string construction
+- **Minimize object allocations** in hot paths using modern collection operations
+
+#### File Size and Code Organization Requirements
+- **Maximum file size**: Individual Java files MUST NOT exceed **450 lines** including comments and whitespace
+- **Utility class extraction**: When a class approaches the 450-line limit, extract cohesive utility classes following Single Responsibility Principle
+- **Recommended extraction targets**:
+  - Complex business logic into dedicated service/utility classes
+  - Configuration management into `ConfigurationManager` utility
+  - User/data processing into specialized manager classes
+  - State management logic into `StateManager` utilities
+- **Extraction guidelines**:
+  - Each extracted class should have a single, clear responsibility
+  - Use dependency injection to provide utility classes to main handlers
+  - Preserve all existing functionality during extraction
+  - Maintain comprehensive error handling and logging
+  - Follow existing package structure: `internal.handler.util.*` for utility classes
+
 ## Architecture Essentials
 
 ### Core Components Structure

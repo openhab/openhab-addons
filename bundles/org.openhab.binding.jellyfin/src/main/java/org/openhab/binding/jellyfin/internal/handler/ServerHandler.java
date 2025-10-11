@@ -13,7 +13,7 @@
 package org.openhab.binding.jellyfin.internal.handler;
 
 import java.net.URI;
-import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +30,9 @@ import org.openhab.binding.jellyfin.internal.events.ErrorEvent;
 import org.openhab.binding.jellyfin.internal.events.ErrorEventBus;
 import org.openhab.binding.jellyfin.internal.events.ErrorEventListener;
 import org.openhab.binding.jellyfin.internal.handler.tasks.AbstractTask;
+import org.openhab.binding.jellyfin.internal.handler.util.ConfigurationManager;
+import org.openhab.binding.jellyfin.internal.handler.util.ServerStateManager;
+import org.openhab.binding.jellyfin.internal.handler.util.UserManager;
 import org.openhab.binding.jellyfin.internal.types.ServerState;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -59,10 +62,16 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
     private final Configuration configuration;
     private final TaskManagerInterface taskManager;
 
+    // Utility classes for better separation of concerns
+    private final UserManager userManager;
+    private final ConfigurationManager configurationManager;
+    private final ServerStateManager serverStateManager;
+
     private ServerState state = ServerState.INITIALIZING;
 
     private final Map<String, AbstractTask> tasks = new HashMap<>();
     private final Map<String, @Nullable ScheduledFuture<?>> scheduledTasks = new HashMap<>();
+    private final List<String> activeUserIds = new ArrayList<>();
 
     /**
      * Constructor with dependency injection for TaskManager
@@ -77,6 +86,11 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
         this.configuration = this.getConfigAs(Configuration.class);
         this.apiClient = apiClient;
         this.taskManager = taskManager;
+
+        // Initialize utility classes for better separation of concerns
+        this.userManager = new UserManager();
+        this.configurationManager = new ConfigurationManager();
+        this.serverStateManager = new ServerStateManager();
 
         // Create event bus and register as listener
         this.errorEventBus = new ErrorEventBus();
@@ -140,36 +154,24 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
      * @return The determined state
      */
     private ServerState determineState() {
-        // If the current state is DISPOSED, return it immediately
-        if (this.state == ServerState.DISPOSED) {
-            return ServerState.DISPOSED;
-        }
-
-        // Check if we have a discovered server
-        boolean isDiscovered = thing.getProperties().containsKey(Constants.ServerProperties.SERVER_URI);
-
-        // Check if we have authentication token
-        boolean hasToken = (this.configuration.token != null && !this.configuration.token.isEmpty());
-
         try {
-            URI serverURI = this.configuration.getServerURI();
-            if (isDiscovered && !hasToken) {
-                return ServerState.DISCOVERED;
-            } else if (serverURI != null && !hasToken) {
-                return ServerState.NEEDS_AUTHENTICATION;
-            } else if (serverURI != null && hasToken) {
+            var stateAnalysis = serverStateManager.analyzeServerState(this.state, this.configuration, this.thing);
+
+            if (stateAnalysis.recommendedState() == ServerState.CONFIGURED && stateAnalysis.serverUri() != null) {
+                // Authenticate with token when moving to CONFIGURED state
                 this.apiClient.authenticateWithToken(this.configuration.token);
-                return ServerState.CONFIGURED;
             }
-        } catch (URISyntaxException e) {
-            logger.warn("Invalid server URI configuration: {}", e.getMessage());
+
+            logger.debug("State analysis: {} - {}", stateAnalysis.recommendedState(), stateAnalysis.reason());
+            return stateAnalysis.recommendedState();
+
+        } catch (Exception e) {
+            logger.warn("Error during state determination: {}", e.getMessage());
             ErrorEvent event = new ErrorEvent(e, ErrorEvent.ErrorType.CONFIGURATION_ERROR,
                     ErrorEvent.ErrorSeverity.FATAL, "determineState");
             errorEventBus.publishEvent(event);
             return ServerState.ERROR;
         }
-
-        return ServerState.INITIALIZING;
     }
 
     @Override
@@ -299,19 +301,15 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
      */
     private void handleUsersList(List<UserDto> users) {
         try {
-            logger.info("Retrieved users list from Jellyfin server:");
-            logger.info("  Total users: {}", users.size());
+            // Use UserManager to process users and detect changes
+            var userChangeResult = userManager.processUsersList(users, activeUserIds);
 
-            for (UserDto user : users) {
-                logger.info("  User: {} (ID: {}, Server: {})", user.getName(), user.getId(), user.getServerName());
-
-                if (user.getLastLoginDate() != null) {
-                    logger.info("    Last login: {}", user.getLastLoginDate());
-                }
-                if (user.getLastActivityDate() != null) {
-                    logger.info("    Last activity: {}", user.getLastActivityDate());
-                }
+            // Update the tracked list atomically
+            synchronized (activeUserIds) {
+                activeUserIds.clear();
+                activeUserIds.addAll(userChangeResult.currentUserIds());
             }
+
         } catch (Exception e) {
             logger.warn("Failed to process users list: {}", e.getMessage(), e);
             ErrorEvent event = new ErrorEvent(e, ErrorEvent.ErrorType.API_ERROR, ErrorEvent.ErrorSeverity.WARNING,
@@ -326,62 +324,48 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
      * @param uri The URI containing server information
      */
     private void updateConfiguration(URI uri) {
-        // Track if any config value has changed
-        boolean configChanged = false;
+        try {
+            var configUpdate = configurationManager.analyzeUriConfiguration(uri, this.configuration);
 
-        // Only update values if they differ from current configuration
-        if (uri.getHost() != null && !uri.getHost().equals(this.configuration.hostname)) {
-            this.configuration.hostname = uri.getHost();
-            configChanged = true;
-        }
+            if (configUpdate.hasChanges()) {
+                // Apply changes to the current configuration object
+                configurationManager.applyConfigurationChanges(this.configuration, configUpdate.configMap());
 
-        if (uri.getPort() > 0 && uri.getPort() != this.configuration.port) {
-            this.configuration.port = uri.getPort();
-            configChanged = true;
-        }
+                logger.info("Configuration changed, updating Thing configuration");
 
-        if (uri.getScheme() != null) {
-            boolean newSslValue = "https".equalsIgnoreCase(uri.getScheme());
-            if (newSslValue != this.configuration.ssl) {
-                this.configuration.ssl = newSslValue;
-                configChanged = true;
+                org.openhab.core.config.core.Configuration config = editConfiguration();
+                configUpdate.configMap().forEach(config::put);
+                updateConfiguration(config);
+            } else {
+                logger.debug("No configuration changes needed");
             }
-        }
-
-        if (uri.getPath() != null && !uri.getPath().isEmpty() && !uri.getPath().equals(this.configuration.path)) {
-            this.configuration.path = uri.getPath();
-            configChanged = true;
-        }
-
-        // Only save if something has changed
-        if (configChanged) {
-            logger.info("Configuration changed, updating Thing configuration");
-
-            org.openhab.core.config.core.Configuration config = editConfiguration();
-
-            config.put("hostname", this.configuration.hostname);
-            config.put("port", this.configuration.port);
-            config.put("ssl", this.configuration.ssl);
-            config.put("path", this.configuration.path);
-
-            updateConfiguration(config);
-        } else {
-            logger.debug("No configuration changes needed");
+        } catch (Exception e) {
+            logger.warn("Failed to update configuration from URI: {}", e.getMessage(), e);
+            ErrorEvent event = new ErrorEvent(e, ErrorEvent.ErrorType.CONFIGURATION_ERROR,
+                    ErrorEvent.ErrorSeverity.WARNING, "updateConfiguration");
+            errorEventBus.publishEvent(event);
         }
     }
 
     private void updateConfiguration(SystemInfo systemInfo) {
-        var localAddress = systemInfo.getLocalAddress();
+        try {
+            var configUpdate = configurationManager.analyzeSystemInfoConfiguration(systemInfo, this.configuration);
 
-        if (localAddress != null && !localAddress.isEmpty()) {
-            try {
-                updateConfiguration(new URI(localAddress));
-            } catch (Exception e) {
-                logger.debug("Failed to parse local address URI: {}", e.getMessage());
-                ErrorEvent event = new ErrorEvent(e, ErrorEvent.ErrorType.CONFIGURATION_ERROR,
-                        ErrorEvent.ErrorSeverity.WARNING, "updateConfiguration");
-                errorEventBus.publishEvent(event);
+            if (configUpdate.hasChanges()) {
+                // Apply changes to the current configuration object
+                configurationManager.applyConfigurationChanges(this.configuration, configUpdate.configMap());
+
+                logger.info("Configuration updated from SystemInfo");
+
+                org.openhab.core.config.core.Configuration config = editConfiguration();
+                configUpdate.configMap().forEach(config::put);
+                updateConfiguration(config);
             }
+        } catch (Exception e) {
+            logger.debug("Failed to update configuration from SystemInfo: {}", e.getMessage());
+            ErrorEvent event = new ErrorEvent(e, ErrorEvent.ErrorType.CONFIGURATION_ERROR,
+                    ErrorEvent.ErrorSeverity.WARNING, "updateConfiguration");
+            errorEventBus.publishEvent(event);
         }
     }
 
