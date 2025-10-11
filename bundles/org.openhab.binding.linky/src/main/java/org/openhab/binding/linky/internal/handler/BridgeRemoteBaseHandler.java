@@ -178,6 +178,8 @@ public abstract class BridgeRemoteBaseHandler extends BaseBridgeHandler {
 
     public abstract String getDailyConsumptionUrl();
 
+    public abstract String getDailyIndexUrl();
+
     public abstract String getMaxPowerUrl();
 
     public abstract String getLoadCurveUrl();
