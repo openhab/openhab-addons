@@ -111,23 +111,25 @@ public class HomematicDeviceDiscoveryServiceTest extends JavaTest {
 
         startScanAndWaitForLoadedDevices();
 
-        verify(homematicBridgeHandler.getGateway()).setInstallMode(true, 60);
+        verify(homematicBridgeHandler.getGateway(), after(500L)).setInstallMode(true, 60);
     }
 
     @Test
-    public void testStoppingDiscoveryDisablesInstallMode() throws IOException {
+    public void testStoppingDiscoveryDisablesInstallMode() throws IOException, InterruptedException {
         homematicBridgeHandler.getThing()
                 .setStatusInfo(new ThingStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, ""));
         homematicDeviceDiscoveryService.startScan();
 
+        Thread.sleep(500L);
+
         homematicDeviceDiscoveryService.stopScan();
 
-        verify(homematicBridgeHandler.getGateway()).setInstallMode(false, 0);
+        verify(homematicBridgeHandler.getGateway(), after(500L)).setInstallMode(false, 0);
     }
 
     private void startScanAndWaitForLoadedDevices() {
         homematicDeviceDiscoveryService.startScan();
-        waitForAssert(() -> verify(homematicBridgeHandler).setOfflineStatus(), 1000, 50);
+        waitForAssert(() -> verify(homematicBridgeHandler, after(500L)).setOfflineStatus(), 1000, 50);
     }
 
     private void discoveryResultMatchesHmDevice(DiscoveryResult result, HmDevice device) {
