@@ -1,0 +1,312 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="unifiaccess"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://www.openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- ========================= BRIDGE ========================= -->
+	<bridge-type id="bridge">
+		<label>UniFi Access Bridge</label>
+		<description>UniFi Access controller</description>
+		<channels>
+			<channel id="log-insight" typeId="log-insight"/>
+			<channel id="log" typeId="log"/>
+		</channels>
+		<config-description>
+			<parameter name="host" type="text" required="true">
+				<label>Host</label>
+				<description>Host or IP address of the UniFi Access controller</description>
+			</parameter>
+			<parameter name="authToken" type="text" required="true">
+				<label>Auth Token</label>
+				<description>API token from the UniFi Access controller</description>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<!-- ========================= THINGS ========================= -->
+
+	<!-- DOOR -->
+	<thing-type id="door">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+		<label>UniFi Access Door</label>
+		<description>Door with remote control and status</description>
+		<channels>
+			<channel id="lock" typeId="lock"/>
+			<channel id="position" typeId="door-position"/>
+			<channel id="last-unlock" typeId="last-unlock"/>
+			<channel id="last-actor" typeId="last-actor"/>
+			<channel id="lock-rule" typeId="lock-rule"/>
+			<channel id="keep-unlocked" typeId="keep-unlocked"/>
+			<channel id="keep-locked" typeId="keep-locked"/>
+			<channel id="unlock-minutes" typeId="unlock-minutes"/>
+			<channel id="thumbnail" typeId="door-thumbnail">
+				<label>Door Thumbnail</label>
+			</channel>
+			<channel id="log-insight" typeId="log-insight"/>
+			<channel id="access-attempt-success" typeId="door-access-attempt-success"/>
+			<channel id="access-attempt-failure" typeId="door-access-attempt-failure"/>
+			<channel id="remote-unlock" typeId="door-remote-unlock"/>
+			<channel id="doorbell-status" typeId="doorbell-status"/>
+		</channels>
+		<config-description>
+			<parameter name="deviceId" type="text" required="true">
+				<label>Door ID</label>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+
+	<thing-type id="device">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+		<label>UniFi Access Device</label>
+		<description>Reader / Hub / Camera</description>
+		<channels>
+			<channel id="nfc-enabled" typeId="device-access-toggle">
+				<label>NFC Enabled</label>
+			</channel>
+			<channel id="pin-enabled" typeId="device-access-toggle">
+				<label>PIN Enabled</label>
+			</channel>
+			<channel id="pin-shuffle" typeId="device-access-toggle">
+				<label>PIN Shuffle</label>
+			</channel>
+			<channel id="face-enabled" typeId="device-access-toggle">
+				<label>Face Unlock Enabled</label>
+			</channel>
+			<channel id="mobile-tap-enabled" typeId="device-access-toggle">
+				<label>Mobile Tap Enabled</label>
+			</channel>
+			<channel id="mobile-button-enabled" typeId="device-access-toggle">
+				<label>Mobile Unlock Button Enabled</label>
+			</channel>
+			<channel id="mobile-shake-enabled" typeId="device-access-toggle">
+				<label>Mobile Shake Enabled</label>
+			</channel>
+			<channel id="mobile-wave-enabled" typeId="device-access-toggle">
+				<label>Mobile Wave Enabled</label>
+			</channel>
+			<channel id="wave-enabled" typeId="device-access-toggle">
+				<label>Hand Wave Enabled</label>
+			</channel>
+			<channel id="qr-code-enabled" typeId="device-access-toggle">
+				<label>QR Code Enabled</label>
+			</channel>
+			<channel id="touch-pass-enabled" typeId="device-access-toggle">
+				<label>Touch Pass Enabled</label>
+			</channel>
+			<channel id="face-anti-spoofing" typeId="face-anti-spoofing"/>
+			<channel id="face-detect-distance" typeId="face-detect-distance"/>
+			<channel id="emergency-status" typeId="device-emergency-status"/>
+			<channel id="door-sensor" typeId="door-position"/>
+			<channel id="doorbell-contact" typeId="device-doorbell-contact">
+				<label>Doorbell</label>
+			</channel>
+			<channel id="doorbell" typeId="device-doorbell">
+				<label>Doorbell</label>
+			</channel>
+			<channel id="log-insight" typeId="log-insight">
+				<label>Insight Log</label>
+				<description>Fires for access.logs.insights.add referencing this device; event payload JSON includes logKey,
+					eventType, message, published, result, actorName, doorId, doorName, deviceId, cameraId.</description>
+			</channel>
+			<channel id="doorbell-status" typeId="doorbell-status"/>
+		</channels>
+
+		<config-description>
+			<parameter name="deviceId" type="text" required="true">
+				<label>Device ID</label>
+				<description>Device ID</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="device-access-toggle">
+		<item-type>Switch</item-type>
+		<label>Access Method Toggle</label>
+		<description>Toggles this access method</description>
+		<category>Switch</category>
+	</channel-type>
+
+	<channel-type id="face-anti-spoofing">
+		<item-type>String</item-type>
+		<label>Face Anti-Spoofing</label>
+		<description>Face Anti-Spoofing level</description>
+		<state>
+			<options>
+				<option value="high">High</option>
+				<option value="medium">Medium</option>
+				<option value="no">None</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="face-detect-distance">
+		<item-type>String</item-type>
+		<label>Face Detect Distance</label>
+		<description>Face Detect Distance</description>
+		<state>
+			<options>
+				<option value="near">Near</option>
+				<option value="medium">Medium</option>
+				<option value="far">Far</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="device-emergency-status">
+		<item-type>String</item-type>
+		<label>Emergency Status</label>
+		<description>Emergency Status</description>
+		<category>Alarm</category>
+		<state>
+			<options>
+				<option value="normal">Normal</option>
+				<option value="lockdown">Lockdown</option>
+				<option value="evacuation">Evacuation</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="device-doorbell" advanced="false">
+		<kind>trigger</kind>
+		<label>Doorbell</label>
+		<description>Fires on incoming and completed doorbell events</description>
+		<event>
+			<options>
+				<option value="incoming">Incoming</option>
+				<option value="incoming-ren">Incoming (REN)</option>
+				<option value="completed">Completed</option>
+			</options>
+		</event>
+	</channel-type>
+
+	<!-- Trigger channel types -->
+	<channel-type id="doorbell-status">
+		<kind>trigger</kind>
+		<label>Doorbell Status</label>
+		<description>Fires on doorbell status changes</description>
+		<event>
+			<options>
+				<option value="DOORBELL_TIMED_OUT">Doorbell Timed Out</option>
+				<option value="ADMIN_REJECTED_UNLOCK">Admin Rejected Unlock</option>
+				<option value="ADMIN_UNLOCK_SUCCEEDED">Admin Unlock Succeeded</option>
+				<option value="VISITOR_CANCELED_DOORBELL">Visitor Canceled Doorbell</option>
+				<option value="ANSWERED_BY_ANOTHER_ADMIN">Answered By Another Admin</option>
+				<option value="UNKNOWN">Unknown</option>
+			</options>
+		</event>
+	</channel-type>
+
+
+	<channel-type id="door-access-attempt-success">
+		<kind>trigger</kind>
+		<label>Access Attempt Success</label>
+		<description>Event payload is a JSON string with keys: doorId, doorName, actorName, credentialProvider, message,
+			published.</description>
+	</channel-type>
+
+	<channel-type id="door-access-attempt-failure">
+		<kind>trigger</kind>
+		<label>Access Attempt Failure</label>
+		<description>Event payload is a JSON string with keys: doorId, doorName, actorName, credentialProvider, message,
+			published.</description>
+	</channel-type>
+
+	<channel-type id="door-remote-unlock">
+		<kind>trigger</kind>
+		<label>Remote Unlock</label>
+		<description>Payload is a JSON string with keys: deviceId, name, fullName, level, workTimeId.</description>
+	</channel-type>
+
+	<channel-type id="log-insight">
+		<kind>trigger</kind>
+		<label>Insight Log</label>
+		<description>Fires for insights log events. Payload is a JSON string with keys: logKey, eventType,
+			message, published,
+			result, and common refs like actor/displayName, door/name.</description>
+	</channel-type>
+
+	<channel-type id="log">
+		<kind>trigger</kind>
+		<label>Log</label>
+		<description>Fires for access log events. Payload is a JSON string with keys: type, displayMessage,
+			result, published,
+			logKey, logCategory, actor/displayName, and targets.</description>
+	</channel-type>
+
+	<channel-type id="device-doorbell-contact">
+		<item-type>Contact</item-type>
+		<label>Doorbell</label>
+		<category>Door</category>
+	</channel-type>
+
+	<!-- Door status -->
+	<channel-type id="lock">
+		<item-type>Switch</item-type>
+		<label>Lock</label>
+		<category>Lock</category>
+	</channel-type>
+
+	<channel-type id="door-position">
+		<item-type>Contact</item-type>
+		<label>Door Position</label>
+		<category>Door</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="lock-rule">
+		<item-type>String</item-type>
+		<label>Lock Rule</label>
+		<state readOnly="true">
+			<options>
+				<option value="schedule">Schedule</option>
+				<option value="custom">Custom</option>
+				<option value="keep_unlock">Keep Unlocked</option>
+				<option value="keep_lock">Keep Locked</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="last-unlock">
+		<item-type>DateTime</item-type>
+		<label>Last Unlock</label>
+		<category>Time</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="last-actor">
+		<item-type>String</item-type>
+		<label>Last Actor</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="keep-unlocked">
+		<item-type>Switch</item-type>
+		<label>Keep Unlocked</label>
+		<category>Lock</category>
+	</channel-type>
+
+	<channel-type id="keep-locked">
+		<item-type>Switch</item-type>
+		<label>Keep Locked</label>
+		<category>Lock</category>
+	</channel-type>
+
+	<channel-type id="unlock-minutes">
+		<item-type>Number:Time</item-type>
+		<label>Unlock Minutes</label>
+		<category>Time</category>
+		<state pattern="%d min"/>
+	</channel-type>
+
+	<channel-type id="door-thumbnail">
+		<item-type>Image</item-type>
+		<label>Door Thumbnail</label>
+		<category>Door</category>
+	</channel-type>
+</thing:thing-descriptions>
