@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.velux.internal.handler.utils;
 
+import java.util.Objects;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.velux.internal.VeluxBindingConstants;
 import org.openhab.binding.velux.internal.VeluxBindingProperties;
@@ -62,8 +64,9 @@ public class Thing2VeluxActuator {
         String uniqueIndex = null;
         boolean invert = false;
         if (ThingConfiguration.exists(bridgeHandler, channelUID, VeluxBindingProperties.CONFIG_ACTUATOR_SERIALNUMBER)) {
-            String serial = (String) ThingConfiguration.getValue(bridgeHandler, channelUID,
-                    VeluxBindingProperties.CONFIG_ACTUATOR_SERIALNUMBER);
+            String serial = Objects.requireNonNullElse((String) ThingConfiguration.getValue(bridgeHandler, channelUID,
+                    VeluxBindingProperties.CONFIG_ACTUATOR_SERIALNUMBER), "");
+            ;
             invert = VeluxProductSerialNo.indicatesRevertedValues(serial);
             serial = VeluxProductSerialNo.cleaned(serial);
             uniqueIndex = ("".equals(serial) || serial.equals(VeluxProductSerialNo.UNKNOWN)) ? null : serial;

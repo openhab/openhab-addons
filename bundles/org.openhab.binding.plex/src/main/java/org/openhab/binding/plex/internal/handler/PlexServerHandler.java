@@ -197,7 +197,9 @@ public class PlexServerHandler extends BaseBridgeHandler implements PlexUpdateLi
     @Override
     public synchronized void childHandlerInitialized(ThingHandler childHandler, Thing childThing) {
         String playerID = (String) childThing.getConfiguration().get(CONFIG_PLAYER_ID);
-        playerHandlers.put(playerID, (PlexPlayerHandler) childHandler);
+        if (playerID != null) {
+            playerHandlers.put(playerID, (PlexPlayerHandler) childHandler);
+        }
         logger.debug("Bridge: Monitor handler was initialized for {} with id {}", childThing.getUID(), playerID);
     }
 

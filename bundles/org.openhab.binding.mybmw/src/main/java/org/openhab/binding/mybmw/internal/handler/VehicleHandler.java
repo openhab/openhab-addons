@@ -21,6 +21,7 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ScheduledExecutorService;
@@ -937,7 +938,7 @@ public class VehicleHandler extends BaseThingHandler {
     private void updateImage(byte[] imageContent) {
         if (imageContent.length > 0) {
             imageCache = Optional.of(imageContent);
-            String contentType = HttpUtil.guessContentTypeFromData(imageContent);
+            String contentType = Objects.requireNonNullElse(HttpUtil.guessContentTypeFromData(imageContent), "");
             updateChannel(CHANNEL_GROUP_VEHICLE_IMAGE, IMAGE_FORMAT, new RawType(imageContent, contentType),
                     IMAGE_FORMAT);
         } else {
