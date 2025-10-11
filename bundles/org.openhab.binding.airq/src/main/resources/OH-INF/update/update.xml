@@ -83,6 +83,7 @@
 			<add-channel id="virus_free_maxerr">
 				<type>airq:virus-free_maxerr</type>
 				<label>Max. Error Virus-Free</label>
+				<description>Maximum tolerated error in the Virus-Free Index measurement.</description>
 			</add-channel>
 			<add-channel id="mold_free">
 				<type>airq:mold_free</type>
@@ -91,6 +92,7 @@
 			<add-channel id="mold_free_maxerr">
 				<type>airq:mold_free_maxerr</type>
 				<label>Max. Error Mold-Free</label>
+				<description>Maximum tolerated error in the Mold-Free Index measurement.</description>
 			</add-channel>
 		</instruction-set>
 	</thing-type>

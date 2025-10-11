@@ -506,12 +506,14 @@
 	<channel-type id="virus_free_maxerr" advanced="true">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Max. Error Virus-Free</label>
+		<description>Maximum tolerated error in the Virus-Free Index measurement.</description>
 		<state readOnly="true" pattern="± %.2f %%"></state>
 	</channel-type>
 
 	<channel-type id="mold_free_maxerr" advanced="true">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Max. Error Mold-Free</label>
+		<description>Maximum tolerated error in the Mold-Free Index measurement.</description>
 		<state readOnly="true" pattern="± %.2f %%"></state>
 	</channel-type>
 
