@@ -113,14 +113,14 @@ public class AwtrixApp {
     // effectSettings properties
     private Map<String, Object> effectSettings;
 
-    private transient java.util.regex.Pattern textColorPattern;
+    private static final java.util.regex.Pattern TEXT_COLOR_PATTERN = java.util.regex.Pattern
+            .compile("color=\"#([0-9A-Fa-f]{6})\"");
 
     public AwtrixApp() {
         this.effectSettings = new HashMap<String, Object>();
         this.effectSettings.put("speed", DEFAULT_EFFECTSPEED);
         this.effectSettings.put("palette", DEFAULT_EFFECTPALETTE);
         this.effectSettings.put("blend", DEFAULT_EFFECTBLEND);
-        this.textColorPattern = java.util.regex.Pattern.compile("color=\"#([0-9A-Fa-f]{6})\"");
     }
 
     public void updateFields(Map<String, Object> params) {
@@ -553,7 +553,7 @@ public class AwtrixApp {
         }
         // Check for the basic structure and use regex to validate color format
         // We need both opening and closing tags, and at least one valid color attribute
-        return text.contains("<font") && text.contains("</font>") && textColorPattern.matcher(text).find();
+        return text.contains("<font") && text.contains("</font>") && TEXT_COLOR_PATTERN.matcher(text).find();
     }
 
     private static String rgbToHex(int[] rgb) {
@@ -625,7 +625,7 @@ public class AwtrixApp {
 
     @Nullable
     private String extractColor(String tag) {
-        java.util.regex.Matcher matcher = textColorPattern.matcher(tag);
+        java.util.regex.Matcher matcher = TEXT_COLOR_PATTERN.matcher(tag);
         if (matcher.find()) {
             // Group 1 contains the hex color value (without the #)
             return matcher.group(1).toLowerCase();
