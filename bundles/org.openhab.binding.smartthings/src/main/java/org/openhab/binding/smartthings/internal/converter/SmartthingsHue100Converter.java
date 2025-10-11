@@ -15,8 +15,8 @@ package org.openhab.binding.smartthings.internal.converter;
 import java.math.BigDecimal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.smartthings.internal.dto.SmartthingsStateData;
+import org.openhab.binding.smartthings.internal.SmartthingsBindingConstants;
+import org.openhab.binding.smartthings.internal.type.SmartthingsTypeRegistry;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.thing.ChannelUID;
@@ -38,64 +38,70 @@ import org.slf4j.LoggerFactory;
 public class SmartthingsHue100Converter extends SmartthingsConverter {
 
     private final Logger logger = LoggerFactory.getLogger(SmartthingsHue100Converter.class);
+    private final double conversionFactor = 3.60;
 
-    public SmartthingsHue100Converter(Thing thing) {
-        super(thing);
+    public SmartthingsHue100Converter(SmartthingsTypeRegistry typeRegistry) {
+        super(typeRegistry);
     }
 
     @Override
-    public String convertToSmartthings(ChannelUID channelUid, Command command) {
-        String jsonMsg;
-
+    public void convertToSmartthingsInternal(Thing thing, ChannelUID channelUid, Command command) {
         if (command instanceof HSBType hsbCommand) {
-            double hue = hsbCommand.getHue().doubleValue() / 3.60;
-            String value = String.format("[%.0f, %d, %d ]", hue, hsbCommand.getSaturation().intValue(),
-                    hsbCommand.getBrightness().intValue());
-            jsonMsg = String.format(
-                    "{\"capabilityKey\": \"%s\", \"deviceDisplayName\": \"%s\", \"capabilityAttribute\": \"%s\", \"value\": %s}",
-                    thingTypeId, smartthingsName, channelUid.getId(), value);
-        } else {
-            jsonMsg = defaultConvertToSmartthings(channelUid, command);
-        }
+            double hue = hsbCommand.getHue().doubleValue() / conversionFactor;
 
-        return jsonMsg;
+            String componentKey = SmartthingsBindingConstants.GROUPD_ID_MAIN;
+            String capaKey = SmartthingsBindingConstants.CAPA_COLOR_CONTROL;
+            String cmdName = SmartthingsBindingConstants.CMD_SET_HUE;
+            Object[] arguments = new Object[1];
+            arguments[0] = hue;
+
+            this.pushCommand(componentKey, capaKey, cmdName, arguments);
+        } else if (command instanceof DecimalType dec) {
+            double hue = dec.doubleValue() / conversionFactor;
+
+            String componentKey = SmartthingsBindingConstants.GROUPD_ID_MAIN;
+            String capaKey = SmartthingsBindingConstants.CAPA_COLOR_CONTROL;
+            String cmdName = SmartthingsBindingConstants.CMD_SET_HUE;
+            Object[] arguments = new Object[1];
+            arguments[0] = hue;
+
+            this.pushCommand(componentKey, capaKey, cmdName, arguments);
+        } else {
+            logger.info("");
+        }
     }
 
+    // <!-- The Smartthings colorControl:hue has a range of 0-100% where OH2 uses the normal 0-360 degrees -->
     @Override
-    public State convertToOpenHab(@Nullable String acceptedChannelType, SmartthingsStateData dataFromSmartthings) {
+    public State convertToOpenHabInternal(Thing thing, ChannelUID channelUid, Object dataFromSmartthings) {
         // Here we have to multiply the value from Smartthings by 3.6 to convert from 0-100 to 0-360
-        String deviceType = dataFromSmartthings.capabilityAttribute;
-        Object deviceValue = dataFromSmartthings.value;
 
-        if (deviceValue == null) {
-            logger.warn("Failed to convert Number {} because Smartthings returned a null value.", deviceType);
-            return UnDefType.UNDEF;
+        if (dataFromSmartthings instanceof Double value) {
+            value *= conversionFactor;
+
+            return new DecimalType(value);
+        } else if (dataFromSmartthings instanceof String value) {
+            double d = Double.parseDouble(value);
+            d *= conversionFactor;
+
+            return new DecimalType(d);
+        } else if (dataFromSmartthings instanceof Long value) {
+            double d = value.longValue();
+            d *= conversionFactor;
+
+            return new DecimalType(d);
+        } else if (dataFromSmartthings instanceof BigDecimal decimalValue) {
+            double d = decimalValue.doubleValue();
+            d *= conversionFactor;
+
+            return new DecimalType(d);
+        } else if (dataFromSmartthings instanceof Number numberValue) {
+            double d = numberValue.doubleValue();
+            d *= conversionFactor;
+
+            return new DecimalType(d);
         }
 
-        if (acceptedChannelType != null && "Number".contentEquals(acceptedChannelType)) {
-            if (deviceValue instanceof String stringCommand) {
-                double d = Double.parseDouble(stringCommand);
-                d *= 3.6;
-                return new DecimalType(d);
-            } else if (deviceValue instanceof Long) {
-                double d = ((Long) deviceValue).longValue();
-                d *= 3.6;
-                return new DecimalType(d);
-            } else if (deviceValue instanceof BigDecimal decimalValue) {
-                double d = decimalValue.doubleValue();
-                d *= 3.6;
-                return new DecimalType(d);
-            } else if (deviceValue instanceof Number numberValue) {
-                double d = numberValue.doubleValue();
-                d *= 3.6;
-                return new DecimalType(d);
-            } else {
-                logger.warn("Failed to convert Number {} with a value of {} from class {} to an appropriate type.",
-                        deviceType, deviceValue, deviceValue.getClass().getName());
-                return UnDefType.UNDEF;
-            }
-        } else {
-            return defaultConvertToOpenHab(acceptedChannelType, dataFromSmartthings);
-        }
+        return UnDefType.UNDEF;
     }
 }
