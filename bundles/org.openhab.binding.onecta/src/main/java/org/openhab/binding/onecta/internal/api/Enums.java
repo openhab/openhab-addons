@@ -187,7 +187,8 @@ public class Enums {
         LEVEL_2("fixed_2"),
         LEVEL_3("fixed_3"),
         LEVEL_4("fixed_4"),
-        LEVEL_5("fixed_5");
+        LEVEL_5("fixed_5"),
+        NOTAVAILABLE("notavailable");
 
         private static final Logger LOGGER = LoggerFactory.getLogger(FanSpeed.class);
         private final String value;

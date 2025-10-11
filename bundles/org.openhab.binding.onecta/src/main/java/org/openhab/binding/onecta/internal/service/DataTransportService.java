@@ -86,13 +86,24 @@ public class DataTransportService {
     }
 
     public Enums.FanSpeed getCurrentFanspeed() {
-        String fanMode = getManagementPoint(Enums.ManagementPoint.CLIMATECONTROL).getFanControl().getValue()
-                .getOperationModes().getFanOperationMode(getCurrentOperationMode()).getFanSpeed().getCurrentMode()
-                .getValue();
+        String fanMode = Optional.ofNullable(getManagementPoint(Enums.ManagementPoint.CLIMATECONTROL))
+                .map(ManagementPoint::getFanControl).map(FanControl::getValue).map(FanControlValue::getOperationModes)
+                .map(om -> om.getFanOperationMode(getCurrentOperationMode())).map(FanOnlyClass::getFanSpeed)
+                .map(AutoFanSpeed::getCurrentMode).map(FanCurrentMode::getValue).orElse("notavailable");
+
+        fanMode = (fanMode == null) ? "notavailable" : fanMode;
+
         if (Enums.FanSpeedMode.FIXED.getValue().equals(fanMode)) {
-            Integer fanSpeed = getManagementPoint(Enums.ManagementPoint.CLIMATECONTROL).getFanControl().getValue()
-                    .getOperationModes().getFanOperationMode(getCurrentOperationMode()).getFanSpeed().getModes()
-                    .getFixed().getValue();
+            Integer fanSpeed = Optional.ofNullable(getManagementPoint(Enums.ManagementPoint.CLIMATECONTROL))
+                    .map(ManagementPoint::getFanControl).map(FanControl::getValue)
+                    .map(FanControlValue::getOperationModes)
+                    .map(om -> om.getFanOperationMode(getCurrentOperationMode())).map(FanOnlyClass::getFanSpeed)
+                    .map(AutoFanSpeed::getModes).map(ActionTypesModes::getFixed).map(FanSpeedFixed::getValue)
+                    .orElse(null);
+
+            // getManagementPoint(Enums.ManagementPoint.CLIMATECONTROL).getFanControl().getValue()
+            // .getOperationModes().getFanOperationMode(getCurrentOperationMode()).getFanSpeed().getModes()
+            // .getFixed().getValue();
             return Enums.FanSpeed.fromValue(String.format("%s_%s", fanMode, fanSpeed.toString()));
         }
         return Enums.FanSpeed.fromValue(fanMode);
