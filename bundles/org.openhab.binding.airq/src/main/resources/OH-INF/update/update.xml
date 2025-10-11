@@ -75,6 +75,24 @@
 				<label>Fine Dust Count 10μm</label>
 			</update-channel>
 		</instruction-set>
+		<instruction-set targetVersion="3">
+			<add-channel id="virus_free">
+				<type>airq:virus_free</type>
+				<label>Virus-free Index</label>
+			</add-channel>
+			<add-channel id="virus_free_maxerr">
+				<type>airq:virus-free_maxerr</type>
+				<label>Max. Error Virus-free</label>
+			</add-channel>
+			<add-channel id="mold_free">
+				<type>airq:mold_free</type>
+				<label>Mold-free Index</label>
+			</add-channel>
+			<add-channel id="mold_free_maxerr">
+				<type>airq:mold_free_maxerr</type>
+				<label>Max. Error Mold-free</label>
+			</add-channel>
+		</instruction-set>
 	</thing-type>
 
 </update:update-descriptions>
