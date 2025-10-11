@@ -122,6 +122,7 @@ public class Telnet {
             return;
         }
 
+        logger.trace("Sending command: {}", command);
         outStream.writeBytes(command);
         outStream.flush();
     }
