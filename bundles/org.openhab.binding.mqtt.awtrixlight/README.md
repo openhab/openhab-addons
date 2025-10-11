@@ -325,7 +325,7 @@ String Doorbell_Icon "Doorbell Icon" (gAwtrixDoorbell) { channel="mqtt:awtrix-ap
 Color Doorbell_Color "Doorbell Color" (gAwtrixDoorbell) { channel="mqtt:awtrix-app:myBroker:myAwtrix:doorbell:color" }
 Switch Doorbell_Rainbow "Doorbell Rainbow Effect" (gAwtrixDoorbell) { channel="mqtt:awtrix-app:myBroker:myAwtrix:doorbell:rainbow" }
 
-// Media Player App App items with advanced features
+// Media Player App items with advanced features
 Group gAwtrixMediaPlayer "Media Player App"
 Switch MediaPlayer_Active "Media Player Active" (gAwtrixMediaPlayer) { channel="mqtt:awtrix-app:myBroker:myAwtrix:mediaplayer:active" }
 String MediaPlayer_Text "Media Player Text" (gAwtrixMediaPlayer) { channel="mqtt:awtrix-app:myBroker:myAwtrix:mediaplayer:text" }
