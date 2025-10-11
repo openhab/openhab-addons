@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -274,55 +275,37 @@ public class DeviceHandler extends ViessmannThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        Channel ch;
-        try {
-            ch = thing.getChannel(channelUID.getId());
-        } catch (IllegalArgumentException e) {
-            logger.warn("Invalid ChannelUID: {}", channelUID, e);
-            return;
-        }
-
+        Channel ch = thing.getChannel(channelUID.getId());
         if (ch == null) {
+            logger.warn("Invalid or missing ChannelUID: {}", channelUID);
             return;
         }
 
-        logger.trace("ChannelUID: {} | Properties: {}", ch.getUID(), ch.getProperties());
-        boolean initState = false;
         Map<String, String> prop = ch.getProperties();
         String commands = prop.get("command");
         if (commands == null) {
             return;
         }
 
+        logger.trace("ChannelUID: {} | Properties: {}", ch.getUID(), ch.getProperties());
+
         String uri = null;
         String param = null;
+        boolean initState = false;
         int initStateDelay = 0;
         String[] com = commands.split(",");
-        if (OnOffType.ON.equals(command)) {
-            uri = prop.get("activateUri");
-            param = "{}";
+
+        if (command instanceof OnOffType onOff) {
+            uri = prop.get(onOff == OnOffType.ON ? "activateUri" : "deactivateUri");
             String feature = prop.get("feature");
-            if (feature != null) {
-                if (feature.contains("oneTimeCharge")) {
-                    initStateDelay = 2;
-                    initState = true;
-                }
-            }
-        } else if (OnOffType.OFF.equals(command)) {
-            uri = prop.get("deactivateUri");
-            param = "{}";
-            String feature = prop.get("feature");
-            if (feature != null) {
-                if (feature.contains("oneTimeCharge")) {
-                    initStateDelay = 2;
-                    initState = true;
-                }
+            if (feature != null && feature.contains("oneTimeCharge")) {
+                initState = true;
+                initStateDelay = 2;
             }
         } else if (command instanceof DecimalType) {
-            logger.trace("Received DecimalType Command for Channel {}", thing.getChannel(channelUID.getId()));
+            logger.trace("Received DecimalType Command for Channel {}", ch.getUID());
             for (String str : com) {
                 if (str.contains("setCurve")) {
-                    uri = prop.get(str + "Uri");
                     String circuitId = prop.get("circuitId");
                     HeatingCircuit heatingCircuit = heatingCircuits.get(circuitId);
                     if (heatingCircuit != null) {
@@ -340,12 +323,12 @@ public class DeviceHandler extends ViessmannThingHandler {
                             heatingCircuits.put(circuitId, heatingCircuit);
                         }
                     }
+                    uri = prop.get(str + "Uri");
                     break;
                 }
                 if (str.contains("setHysteresis")) {
-                    String f = command.toString();
                     uri = prop.get(str + "Uri");
-                    param = "{\"" + prop.get(str + "Params") + "\":" + f + "}";
+                    param = "{\"" + prop.get(str + "Params") + "\":" + command.toString() + "}";
                     break;
                 }
 
@@ -353,27 +336,22 @@ public class DeviceHandler extends ViessmannThingHandler {
         } else if (command instanceof QuantityType<?> value) {
             double f = value.doubleValue();
             for (String str : com) {
-                if (str.contains("Temperature") || str.contains("setHysteresis") || str.contains("setMin")
-                        || str.contains("setMax") || str.contains("temperature")) {
+                if (str.matches(".*(Temperature|setHysteresis|setMin|setMax|temperature).*")) {
                     uri = prop.get(str + "Uri");
                     param = "{\"" + prop.get(str + "Params") + "\":" + f + "}";
                     break;
                 }
             }
-            logger.trace("Received QuantityType Command for Channel {} Command: {}",
-                    thing.getChannel(channelUID.getId()), value.floatValue());
+            logger.trace("Received QuantityType Command for Channel {} Command: {}", ch.getUID(), value.floatValue());
         } else if (command instanceof StringType) {
+            String s = command.toString();
             for (String str : com) {
-                String s = command.toString();
                 uri = prop.get(str + "Uri");
-                if ("{".equals(s.substring(0, 1))) {
-                    param = "{\"" + prop.get(str + "Params") + "\":" + s + "}";
-                } else {
-                    param = "{\"" + prop.get(str + "Params") + "\":\"" + s + "\"}";
-                }
+                String paramKey = prop.get(str + "Params");
+                param = s.startsWith("{") ? "{\"" + paramKey + "\":" + s + "}" : "{\"" + paramKey + "\":\"" + s + "\"}";
                 break;
             }
-            logger.trace("Received StringType Command for Channel {}", thing.getChannel(channelUID.getId()));
+            logger.trace("Received StringType Command for Channel {}", ch.getUID());
         }
 
         if (uri != null && param != null) {
@@ -451,7 +429,6 @@ public class DeviceHandler extends ViessmannThingHandler {
                             valueEntry = prop.status.value;
                             if ("off".equals(valueEntry)) {
                                 typeEntry = "boolean";
-                                bool = false;
                             } else if ("on".equals(valueEntry)) {
                                 typeEntry = "boolean";
                                 bool = true;
@@ -658,7 +635,7 @@ public class DeviceHandler extends ViessmannThingHandler {
                             Channel channel = thing.getChannel(msg.getChannelId());
                             if (channel == null) {
                                 logger.trace("Channel does not exist -> Channel is being created");
-                                createChannel(msg);
+                                createOrUpdateChannel(msg, false);
                             } else {
                                 Map<String, String> properties = channel.getProperties();
                                 for (String propKey : PROPERTIES_URIS) {
@@ -669,7 +646,7 @@ public class DeviceHandler extends ViessmannThingHandler {
                                         if (!Objects.equals(properties.get(propKey), uris.get(propKey))) {
                                             logger.trace(
                                                     "The command URI is different. The channel is now being updated.");
-                                            createChannel(msg);
+                                            createOrUpdateChannel(msg, false);
                                         }
                                     }
                                 }
@@ -678,7 +655,7 @@ public class DeviceHandler extends ViessmannThingHandler {
                                     if (!channelDescription.equals(msg.getFeatureDescription())) {
                                         logger.trace(
                                                 "Channel Description is different. The channel is now being updated.");
-                                        createChannel(msg);
+                                        createOrUpdateChannel(msg, false);
                                     }
                                 }
 
@@ -686,7 +663,7 @@ public class DeviceHandler extends ViessmannThingHandler {
                                 if (channelLabel != null) {
                                     if (!channelLabel.equals(msg.getFeatureName())) {
                                         logger.trace("Channel Label is different. The channel is now being updated.");
-                                        createChannel(msg);
+                                        createOrUpdateChannel(msg, false);
                                     }
                                 }
                             }
@@ -703,41 +680,41 @@ public class DeviceHandler extends ViessmannThingHandler {
                                 case "entries":
                                     subMsg.setSuffix("produced");
                                     subMsg.setChannelType("boolean-read-only");
-                                    createSubChannel(subMsg);
+                                    createOrUpdateChannel(subMsg, true);
                                     break;
                                 case "day":
                                     subMsg.setSuffix("today");
                                     subMsg.setChannelType(subChannelType);
-                                    createSubChannel(subMsg);
+                                    createOrUpdateChannel(subMsg, true);
                                     subMsg.setSuffix("yesterday");
-                                    createSubChannel(subMsg);
+                                    createOrUpdateChannel(subMsg, true);
                                     break;
                                 case "week":
                                     subMsg.setSuffix("this-week");
                                     subMsg.setChannelType(subChannelType);
-                                    createSubChannel(subMsg);
+                                    createOrUpdateChannel(subMsg, true);
                                     subMsg.setSuffix("last-week");
-                                    createSubChannel(subMsg);
+                                    createOrUpdateChannel(subMsg, true);
                                     break;
                                 case "month":
                                     subMsg.setSuffix("this-month");
                                     subMsg.setChannelType(subChannelType);
-                                    createSubChannel(subMsg);
+                                    createOrUpdateChannel(subMsg, true);
                                     subMsg.setSuffix("last-month");
-                                    createSubChannel(subMsg);
+                                    createOrUpdateChannel(subMsg, true);
                                     break;
                                 case "year":
                                     subMsg.setSuffix("this-year");
                                     subMsg.setChannelType(subChannelType);
-                                    createSubChannel(subMsg);
+                                    createOrUpdateChannel(subMsg, true);
                                     subMsg.setSuffix("last-year");
-                                    createSubChannel(subMsg);
+                                    createOrUpdateChannel(subMsg, true);
                                     break;
                                 case "active":
                                     if (featureDataDTO.feature.contains("oneTimeCharge")) {
                                         subMsg.setSuffix("status");
                                         subMsg.setChannelType("boolean-read-only");
-                                        createSubChannel(subMsg);
+                                        createOrUpdateChannel(subMsg, true);
                                     }
                                 default:
                                     break;
@@ -820,37 +797,57 @@ public class DeviceHandler extends ViessmannThingHandler {
     }
 
     /**
-     * Creates new channels for the thing.
+     * Creates new channels or updates existing channel for the thing.
      *
-     * @param msg contains everything is needed of the channel to be created.
+     * @param msg contains everything is needed of the channel to be created or updated.
      */
-    private void createChannel(ThingMessageDTO msg) {
-        ChannelUID channelUID = new ChannelUID(thing.getUID(), msg.getChannelId());
-        ThingHandlerCallback callback = getCallback();
-        if (callback == null) {
-            logger.warn("Thing '{}'not initialized, could not get callback.", thing.getUID());
-            return;
-        }
+    private void createOrUpdateChannel(ThingMessageDTO msg, boolean isSubChannel) {
+        getSafeCallback().ifPresent(cb -> {
+            ChannelUID channelUID = new ChannelUID(getThing().getUID(), msg.getChannelId());
+            ChannelTypeUID typeUID = new ChannelTypeUID(BINDING_ID, convertChannelType(msg));
 
-        Map<String, String> prop = buildProperties(msg);
-        String channelType = convertChannelType(msg);
+            Map<String, String> properties = new HashMap<>();
+            if (!isSubChannel) {
+                properties = buildProperties(msg);
+            }
 
-        ChannelTypeUID channelTypeUID = new ChannelTypeUID(BINDING_ID, channelType);
-        Channel channel = callback.createChannelBuilder(channelUID, channelTypeUID).withLabel(msg.getFeatureName())
-                .withDescription(msg.getFeatureDescription()).withProperties(prop).build();
-        updateThing(editThing().withoutChannel(channelUID).withChannel(channel).build());
+            if (isSubChannel && checkSubChannelLabelAndDescription(msg)) {
+                properties.put("feature", msg.getFeatureClear());
+            }
+
+            Channel channel = cb.createChannelBuilder(channelUID, typeUID)
+                    .withLabel(nvl(msg.getFeatureName(), msg.getChannelId()))
+                    .withDescription(nvl(msg.getFeatureDescription(), "")).withType(typeUID).withProperties(properties)
+                    .build();
+
+            Thing edited = editThing().withoutChannel(channelUID).withChannel(channel).build();
+            updateThing(edited);
+            logger.debug("Channel {} created/updated on Thing {}", channelUID, getThing().getUID());
+        });
     }
 
-    /**
-     * Creates new sub channels for the thing.
-     *
-     * @param msg contains everything is needed of the channel to be created.
-     */
-    private void createSubChannel(ThingMessageDTO msg) {
-        Channel channel = thing.getChannel(msg.getChannelId());
+    private Optional<ThingHandlerCallback> getSafeCallback() {
+        ThingHandlerCallback cb = getCallback();
+        if (cb == null) {
+            logger.warn("ThingHandlerCallback is null for Thing {} (Thing not initialized?)", getThing().getUID());
+            return Optional.empty();
+        }
+        return Optional.of(cb);
+    }
+
+    private static String nvl(@Nullable String a, String fallback) {
+        return a != null ? a : fallback;
+    }
+
+    private boolean checkSubChannelLabelAndDescription(ThingMessageDTO msg) {
         boolean updateChannel = false;
+
+        Channel channel = thing.getChannel(msg.getChannelId());
+
         if (channel != null) {
             String channelDescription = channel.getDescription();
+            String channelLabel = channel.getLabel();
+
             if (channelDescription != null) {
                 if (!channelDescription.equals(msg.getFeatureDescription())) {
                     logger.trace("Sub-Channel Description is different. The channel is now being updated.");
@@ -858,7 +855,6 @@ public class DeviceHandler extends ViessmannThingHandler {
                 }
             }
 
-            String channelLabel = channel.getLabel();
             if (channelLabel != null) {
                 if (!channelLabel.equals(msg.getFeatureName())) {
                     logger.trace("Sub-Channel Label is different. The channel is now being updated.");
@@ -868,28 +864,7 @@ public class DeviceHandler extends ViessmannThingHandler {
         } else {
             updateChannel = true;
         }
-
-        if (updateChannel) {
-            ChannelUID channelUID = new ChannelUID(thing.getUID(), msg.getChannelId());
-            ThingHandlerCallback callback = getCallback();
-            if (callback == null) {
-                logger.warn("Thing '{}'not initialized, could not get callback.", thing.getUID());
-                return;
-            }
-
-            Map<String, String> prop = new HashMap<>();
-            prop.put("feature", msg.getFeatureClear());
-            String channelType = msg.getChannelType();
-
-            ChannelTypeUID channelTypeUID = new ChannelTypeUID(BINDING_ID, channelType);
-            if (msg.getFeatureName().contains("active")) {
-                logger.trace("Feature: {} ChannelType: {}", msg.getFeatureClear(), channelType);
-            }
-            Channel newChannel = callback.createChannelBuilder(channelUID, channelTypeUID)
-                    .withLabel(msg.getFeatureName()).withDescription(msg.getFeatureDescription()).withProperties(prop)
-                    .build();
-            updateThing(editThing().withoutChannel(channelUID).withChannel(newChannel).build());
-        }
+        return updateChannel;
     }
 
     private String getFeatureName(String feature) {
@@ -928,40 +903,38 @@ public class DeviceHandler extends ViessmannThingHandler {
         int dayOfWeek = c.get(Calendar.DAY_OF_WEEK);
 
         ScheduleDTO schedule = GSON.fromJson(scheduleJson, ScheduleDTO.class);
-        if (schedule != null) {
-            List<DaySchedule> day = schedule.getMon();
-            switch (dayOfWeek) {
-                case 2:
-                    day = schedule.getMon();
-                    break;
-                case 3:
-                    day = schedule.getTue();
-                    break;
-                case 4:
-                    day = schedule.getWed();
-                    break;
-                case 5:
-                    day = schedule.getThu();
-                    break;
-                case 6:
-                    day = schedule.getFri();
-                    break;
-                case 7:
-                    day = schedule.getSat();
-                    break;
-                case 1:
-                    day = schedule.getSun();
-                    break;
-                default:
-                    break;
-            }
-            for (DaySchedule daySchedule : day) {
-                Date startTime = parseTime(daySchedule.getStart());
-                Date endTime = parseTime(daySchedule.getEnd());
+        List<DaySchedule> day = schedule.getMon();
+        switch (dayOfWeek) {
+            case 2:
+                day = schedule.getMon();
+                break;
+            case 3:
+                day = schedule.getTue();
+                break;
+            case 4:
+                day = schedule.getWed();
+                break;
+            case 5:
+                day = schedule.getThu();
+                break;
+            case 6:
+                day = schedule.getFri();
+                break;
+            case 7:
+                day = schedule.getSat();
+                break;
+            case 1:
+                day = schedule.getSun();
+                break;
+            default:
+                break;
+        }
+        for (DaySchedule daySchedule : day) {
+            Date startTime = parseTime(daySchedule.getStart());
+            Date endTime = parseTime(daySchedule.getEnd());
 
-                if (startTime.before(currTime) && endTime.after(currTime)) {
-                    return OnOffType.ON;
-                }
+            if (startTime.before(currTime) && endTime.after(currTime)) {
+                return OnOffType.ON;
             }
         }
         return OnOffType.OFF;
