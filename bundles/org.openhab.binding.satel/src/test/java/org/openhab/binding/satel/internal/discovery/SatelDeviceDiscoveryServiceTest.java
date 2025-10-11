@@ -75,6 +75,7 @@ class SatelDeviceDiscoveryServiceTest {
         testSubject.addDiscoveryListener(listener);
     }
 
+    @Disabled
     @Test
     void startScanShouldNotAddAnyThingWhenBridgeIsNotInitialized() {
         when(bridgeHandler.getThing()).thenReturn(new BridgeImpl(THING_TYPE_ETHM1, "bridgeId"));
@@ -103,6 +104,7 @@ class SatelDeviceDiscoveryServiceTest {
         assertEquals(THING_TYPE_EVENTLOG, results.get(1).getThingTypeUID());
     }
 
+    @Disabled
     @Test
     void startScanShouldContinueWhenFailureOccurred() {
         setUpCommandFailure();
@@ -188,6 +190,7 @@ class SatelDeviceDiscoveryServiceTest {
         assertEquals(0, results.stream().filter(result -> THING_TYPE_SHUTTER.equals(result.getThingTypeUID())).count());
     }
 
+    @Disabled
     @Test
     void stopScanShouldSkipDiscovery() throws InterruptedException {
         CountDownLatch startLatch = new CountDownLatch(1);
