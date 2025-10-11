@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="homekit"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="accessory">
+		<label>HomeKit Device</label>
+		<description>HomeKit Accessory Device</description>
+		<config-description>
+			<parameter name="host" type="text" required="true">
+				<context>network-address</context>
+				<label>IP Address</label>
+				<description>IP v4 address of the HomeKit accessory.</description>
+			</parameter>
+			<parameter name="pairingCode" type="text" required="true">
+				<context>password</context>
+				<label>Pairing Code</label>
+				<description>Code used for pairing with the HomeKit accessory.</description>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" unit="s" min="10" required="false">
+				<label>Refresh Interval</label>
+				<description>Interval at which the accessory is polled in sec.</description>
+				<default>60</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- Bridges are created dynamically; please ignore the warning from OH CI build.. -->
+	<bridge-type id="bridge">
+		<label>HomeKit Bridge</label>
+		<description>HomeKit Accessory Bridge</description>
+		<config-description>
+			<parameter name="host" type="text" required="true">
+				<context>network-address</context>
+				<label>IP Address</label>
+				<description>IP v4 address of the HomeKit bridge.</description>
+			</parameter>
+			<parameter name="pairingCode" type="text" required="true">
+				<context>password</context>
+				<label>Pairing Code</label>
+				<description>Code used for pairing with the HomeKit bridge.</description>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+</thing:thing-descriptions>
