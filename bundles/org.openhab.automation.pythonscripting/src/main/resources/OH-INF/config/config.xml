@@ -20,14 +20,14 @@
 			<label>Use scope and import wrapper</label>
 			<description><![CDATA[
 			This enables a scope module and and import wrapper.<br>
-			An scope module is an encapsulated module containing all openHAB jsr223 objects and can be imported with <code>import scope</code><br>
+			A scope module is an encapsulated module containing all openHAB jsr223 objects and can be imported with <code>import scope</code><br>
 			Additionally you can run an import like <code>from org.openhab.core import OpenHAB</code>
 			]]></description>
 			<default>true</default>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="helperEnabled" type="boolean" required="true" groupName="environment">
-			<label>Install openHAB Python helper modules and keep it updated (requires scope module)</label>
+			<label>Install openHAB Python helper modules and keep them updated (requires scope module)</label>
 			<description><![CDATA[
 			Deploy and update openHAB Python helper modules like rule, logger, Registry, Timer etc...<br>
 			If disabled, the openHAB Python helper module can be installed manually by copying it to /conf/automation/python/lib/openhab"
