@@ -90,7 +90,7 @@ public class HomekitMdnsDiscoveryParticipant implements MDNSDiscoveryParticipant
                 String ff = properties.getOrDefault("ff", ""); // accessory feature flag
                 pairFeature = AccessoryPairingFeature.from(Integer.parseInt(ff));
             } catch (IllegalArgumentException e) {
-                pairFeature = AccessoryPairingFeature.NO_HAP;
+                pairFeature = AccessoryPairingFeature.NO;
             }
 
             AccessoryPairingStatus pairStatus;

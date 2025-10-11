@@ -338,8 +338,11 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
                                     channelType.getUID(), channelType.getUnitHint());
 
                             ChannelUID channelUID = new ChannelUID(thing.getUID(), groupDef.getId(), chanDef.getId());
-                            ChannelBuilder builder = ChannelBuilder.create(channelUID).withType(channelType.getUID())
-                                    .withProperties(chanDef.getProperties());
+                            ChannelBuilder builder = ChannelBuilder.create(channelUID)
+                                    .withAcceptedItemType(channelType.getItemType())
+                                    .withAutoUpdatePolicy(channelType.getAutoUpdatePolicy())
+                                    .withDefaultTags(channelType.getTags()).withKind(channelType.getKind())
+                                    .withProperties(chanDef.getProperties()).withType(channelType.getUID());
                             Optional.ofNullable(chanDef.getLabel()).ifPresent(builder::withLabel);
                             Optional.ofNullable(chanDef.getDescription()).ifPresent(builder::withDescription);
                             Channel channel = builder.build();
