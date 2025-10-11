@@ -53,6 +53,8 @@ class TextSegment {
 @NonNullByDefault
 public class AwtrixApp {
 
+    private static final int CLOSING_TAG_LENGTH = 7; // 7 = "</font>".length()
+
     public static final String DEFAULT_TEXT = "New Awtrix App";
     public static final int DEFAULT_TEXTCASE = 0;
     public static final boolean DEFAULT_TOPTEXT = false;
@@ -111,11 +113,14 @@ public class AwtrixApp {
     // effectSettings properties
     private Map<String, Object> effectSettings;
 
+    private transient java.util.regex.Pattern textColorPattern;
+
     public AwtrixApp() {
         this.effectSettings = new HashMap<String, Object>();
         this.effectSettings.put("speed", DEFAULT_EFFECTSPEED);
         this.effectSettings.put("palette", DEFAULT_EFFECTPALETTE);
         this.effectSettings.put("blend", DEFAULT_EFFECTBLEND);
+        this.textColorPattern = java.util.regex.Pattern.compile("color=\"#([0-9A-Fa-f]{6})\"");
     }
 
     public void updateFields(Map<String, Object> params) {
@@ -542,13 +547,13 @@ public class AwtrixApp {
         return fields;
     }
 
-    private static boolean textHasColorTags(String text) {
+    private boolean textHasColorTags(String text) {
         if (text.isEmpty()) {
             return false;
         }
-        // Extremely simple detection: we only look for our simple pattern parts
-        // This avoids brittle regex and supports multiple segments
-        return text.contains("<font") && text.contains("color=\"#") && text.contains("</font>");
+        // Check for the basic structure and use regex to validate color format
+        // We need both opening and closing tags, and at least one valid color attribute
+        return text.contains("<font") && text.contains("</font>") && textColorPattern.matcher(text).find();
     }
 
     private static String rgbToHex(int[] rgb) {
@@ -612,7 +617,7 @@ public class AwtrixApp {
             segments.add(new TextSegment(remaining.substring(endTag + 1, closeTag), color));
 
             // Move past the closing tag
-            remaining = remaining.substring(closeTag + 7); // 7 = "</font>".length()
+            remaining = remaining.substring(closeTag + CLOSING_TAG_LENGTH);
         }
 
         return segments;
@@ -620,10 +625,9 @@ public class AwtrixApp {
 
     @Nullable
     private String extractColor(String tag) {
-        // Extract hex color from color="#XXXXXX" pattern
-        java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("color=\"#([0-9A-Fa-f]{6})\"");
-        java.util.regex.Matcher matcher = pattern.matcher(tag);
+        java.util.regex.Matcher matcher = textColorPattern.matcher(tag);
         if (matcher.find()) {
+            // Group 1 contains the hex color value (without the #)
             return matcher.group(1).toLowerCase();
         }
         return null;
