@@ -23,6 +23,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class HeosNotConnectedException extends IOException {
+    private static final long serialVersionUID = 1L;
+
     public HeosNotConnectedException() {
         super("HEOS not connected");
     }

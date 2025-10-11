@@ -65,7 +65,6 @@ public class HeosChannelHandlerInputs extends BaseHeosChannelHandler {
 
     private void handleCommand(Command command, String id) throws IOException, ReadException {
         if (command instanceof RefreshType) {
-            @Nullable
             Media payload = getApi().getNowPlayingMedia(id).payload;
             if (payload != null) {
                 eventListener.playerMediaChangeEvent(id, payload);
