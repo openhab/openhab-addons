@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.homekit.internal.persistence;
 
-import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 import java.util.Base64;
 import java.util.UUID;
@@ -36,7 +36,7 @@ import org.osgi.service.component.annotations.Reference;
 @Component(service = HomekitKeyStore.class)
 public class HomekitKeyStore {
 
-    private static final String CONTROLLER_ID = "controllerId";
+    private static final String CONTROLLER_UUID = "controllerUUID";
     private static final String CONTROLLER_KEY_ID = "controller";
 
     private final Storage<String> storage;
@@ -66,19 +66,14 @@ public class HomekitKeyStore {
         }
     }
 
-    public byte[] getControllerId() {
-        String controllerId = storage.get(CONTROLLER_ID);
-        if (controllerId != null) {
-            return decode(controllerId);
+    public byte[] getControllerUUID() {
+        String controllerUUID = storage.get(CONTROLLER_UUID);
+        if (controllerUUID != null) {
+            return decode(controllerUUID);
         }
-        // create a new 16 byte controller ID
-        ByteBuffer buf = ByteBuffer.allocate(16);
-        UUID uuid = UUID.randomUUID();
-        buf.putLong(uuid.getMostSignificantBits());
-        buf.putLong(uuid.getLeastSignificantBits());
-        byte[] newControllerId = buf.array();
-        storage.put(CONTROLLER_ID, encode(newControllerId));
-        return newControllerId;
+        byte[] newControllerUUID = UUID.randomUUID().toString().getBytes(StandardCharsets.UTF_8);
+        storage.put(CONTROLLER_UUID, encode(newControllerUUID));
+        return newControllerUUID;
     }
 
     public Ed25519PrivateKeyParameters getControllerKey() {

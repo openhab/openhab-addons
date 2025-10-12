@@ -146,7 +146,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler {
             scheduler.submit(() -> {
                 // unpair and clear stored keys if this is NOT a child accessory
                 try {
-                    PairRemoveClient service = new PairRemoveClient(ipTransport, keyStore.getControllerId());
+                    PairRemoveClient service = new PairRemoveClient(ipTransport, keyStore.getControllerUUID());
                     service.remove();
                     String mac = getThing().getProperties().get(Thing.PROPERTY_MAC_ADDRESS);
                     if (mac != null) {
@@ -224,7 +224,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler {
         if (keyStore.getAccessoryKey(macAddress) != null) {
             try {
                 logger.debug("Starting Pair-Verify with existing key for {}", thing.getUID());
-                PairVerifyClient client = new PairVerifyClient(ipTransport, keyStore.getControllerId(),
+                PairVerifyClient client = new PairVerifyClient(ipTransport, keyStore.getControllerUUID(),
                         keyStore.getControllerKey(), Objects.requireNonNull(keyStore.getAccessoryKey(macAddress)));
 
                 ipTransport.setSessionKeys(client.verify());
@@ -244,14 +244,14 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler {
 
         try {
             logger.debug("Starting Pair-Setup for {}", thing.getUID());
-            PairSetupClient pairSetupClient = new PairSetupClient(ipTransport, keyStore.getControllerId(),
+            PairSetupClient pairSetupClient = new PairSetupClient(ipTransport, keyStore.getControllerUUID(),
                     keyStore.getControllerKey(), pairingCode);
 
             Ed25519PublicKeyParameters accessoryKey = pairSetupClient.pair();
             logger.debug("Pair-Setup completed; starting Pair-Verify for {}", thing.getUID());
 
             // Perform Pair-Verify immediately after Pair-Setup
-            PairVerifyClient pairVerifyClient = new PairVerifyClient(ipTransport, keyStore.getControllerId(),
+            PairVerifyClient pairVerifyClient = new PairVerifyClient(ipTransport, keyStore.getControllerUUID(),
                     keyStore.getControllerKey(), accessoryKey);
 
             ipTransport.setSessionKeys(pairVerifyClient.verify());

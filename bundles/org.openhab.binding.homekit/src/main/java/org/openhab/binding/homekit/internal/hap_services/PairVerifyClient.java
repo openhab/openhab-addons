@@ -89,6 +89,7 @@ public class PairVerifyClient {
         Map<Integer, byte[]> tlv = new LinkedHashMap<>();
         tlv.put(TlvType.STATE.value, new byte[] { PairingState.M1.value });
         tlv.put(TlvType.PUBLIC_KEY.value, controllerEphemeralSecretKey.generatePublicKey().getEncoded());
+        loggerTraceTlv(tlv);
         Validator.validate(PairingMethod.VERIFY, tlv);
         byte[] m1Response = ipTransport.post(ENDPOINT_PAIR_VERIFY, CONTENT_TYPE_PAIRING, Tlv8Codec.encode(tlv));
         m2Execute(m1Response);
@@ -98,6 +99,7 @@ public class PairVerifyClient {
     private void m2Execute(byte[] m1Response) throws Exception {
         logger.debug("Pair-Verify M2: Read server ephemeral X25519 PK and encrypted id; validate signature");
         Map<Integer, byte[]> tlv = Tlv8Codec.decode(m1Response);
+        loggerTraceTlv(tlv);
         Validator.validate(PairingMethod.VERIFY, tlv);
 
         serverEphemeralPublicKey = new X25519PublicKeyParameters(tlv.get(TlvType.PUBLIC_KEY.value), 0);
@@ -138,6 +140,7 @@ public class PairVerifyClient {
         Map<Integer, byte[]> tlv = new LinkedHashMap<>();
         tlv.put(TlvType.STATE.value, new byte[] { PairingState.M3.value });
         tlv.put(TlvType.ENCRYPTED_DATA.value, cipherText);
+        loggerTraceTlv(tlv);
         Validator.validate(PairingMethod.VERIFY, tlv);
 
         byte[] m3Response = ipTransport.post(ENDPOINT_PAIR_VERIFY, CONTENT_TYPE_PAIRING, Tlv8Codec.encode(tlv));
@@ -148,9 +151,20 @@ public class PairVerifyClient {
     private void m4Execute(byte[] m3Response) throws Exception {
         logger.debug("Pair-Verify M4: Confirm validation; derive session keys");
         Map<Integer, byte[]> tlv = Tlv8Codec.decode(m3Response);
+        loggerTraceTlv(tlv);
         Validator.validate(PairingMethod.VERIFY, tlv);
         readKey = CryptoUtils.generateHkdfKey(sharedSecret, CONTROL_SALT, CONTROL_READ_ENCRYPTION_KEY);
         writeKey = CryptoUtils.generateHkdfKey(sharedSecret, CONTROL_SALT, CONTROL_WRITE_ENCRYPTION_KEY);
+    }
+
+    private void loggerTraceTlv(Map<Integer, byte[]> tlv) {
+        if (logger.isTraceEnabled()) {
+            StringBuilder sb = new StringBuilder();
+            for (Map.Entry<Integer, byte[]> entry : tlv.entrySet()) {
+                sb.append(String.format("\n - 0x%02x: %s", entry.getKey(), toHex(entry.getValue())));
+            }
+            logger.trace(sb.toString());
+        }
     }
 
     /**

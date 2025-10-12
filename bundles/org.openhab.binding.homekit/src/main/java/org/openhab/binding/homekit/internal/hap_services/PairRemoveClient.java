@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.homekit.internal.hap_services;
 
+import static org.openhab.binding.homekit.internal.crypto.CryptoUtils.toHex;
+
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
@@ -57,11 +59,24 @@ public class PairRemoveClient {
         tlv.put(TlvType.STATE.value, new byte[] { PairingState.M1.value });
         tlv.put(TlvType.METHOD.value, new byte[] { PairingMethod.REMOVE.value });
         tlv.put(TlvType.IDENTIFIER.value, controllerId);
+        loggerTraceTlv(tlv);
         Validator.validate(PairingMethod.REMOVE, tlv);
 
         byte[] response = ipTransport.post(ENDPOINT_PAIR_REMOVE, CONTENT_TYPE, Tlv8Codec.encode(tlv));
+        logger.debug("Pair-Remove: processing response");
         Map<Integer, byte[]> tlv2 = Tlv8Codec.decode(response);
+        loggerTraceTlv(tlv2);
         Validator.validate(PairingMethod.REMOVE, tlv2);
+    }
+
+    private void loggerTraceTlv(Map<Integer, byte[]> tlv) {
+        if (logger.isTraceEnabled()) {
+            StringBuilder sb = new StringBuilder();
+            for (Map.Entry<Integer, byte[]> entry : tlv.entrySet()) {
+                sb.append(String.format("\n - 0x%02x: %s", entry.getKey(), toHex(entry.getValue())));
+            }
+            logger.trace(sb.toString());
+        }
     }
 
     /**

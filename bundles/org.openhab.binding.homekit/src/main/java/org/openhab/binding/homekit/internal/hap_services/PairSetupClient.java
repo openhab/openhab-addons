@@ -88,6 +88,7 @@ public class PairSetupClient {
         Map<Integer, byte[]> tlv = new LinkedHashMap<>();
         tlv.put(TlvType.STATE.value, new byte[] { PairingState.M1.value });
         tlv.put(TlvType.METHOD.value, new byte[] { PairingMethod.SETUP.value });
+        loggerTraceTlv(tlv);
         Validator.validate(PairingMethod.SETUP, tlv);
         byte[] m1Response = ipTransport.post(ENDPOINT_PAIR_SETUP, CONTENT_TYPE_PAIRING, Tlv8Codec.encode(tlv));
         return m2Execute(m1Response);
@@ -103,13 +104,10 @@ public class PairSetupClient {
     private SRPclient m2Execute(byte[] m1Response) throws Exception {
         logger.debug("Pair-Setup M2: Read server salt and accessory ephemeral PK; initialize SRP client");
         Map<Integer, byte[]> tlv = Tlv8Codec.decode(m1Response);
+        loggerTraceTlv(tlv);
         Validator.validate(PairingMethod.SETUP, tlv);
         byte[] serverSalt = tlv.get(TlvType.SALT.value);
         byte[] serverPublicKey = tlv.get(TlvType.PUBLIC_KEY.value);
-        if (logger.isTraceEnabled()) {
-            logger.trace("Pair-Setup M2: Receive accessory data\n - Server salt: {}\n - Accessory PK: {}",
-                    toHex(serverSalt), toHex(serverPublicKey));
-        }
         SRPclient client = new SRPclient(password, Objects.requireNonNull(serverSalt),
                 Objects.requireNonNull(serverPublicKey));
         return m3Execute(client);
@@ -127,11 +125,8 @@ public class PairSetupClient {
         tlv.put(TlvType.STATE.value, new byte[] { PairingState.M3.value });
         tlv.put(TlvType.PUBLIC_KEY.value, CryptoUtils.toUnsigned(client.A, 384));
         tlv.put(TlvType.PROOF.value, client.M1);
+        loggerTraceTlv(tlv);
         Validator.validate(PairingMethod.SETUP, tlv);
-        if (logger.isTraceEnabled()) {
-            logger.trace("Pair-Setup M3: Send data\n - Controller PK: {}\n - Controller M1: {}",
-                    toHex(CryptoUtils.toUnsigned(client.A, 384)), toHex(client.M1));
-        }
         byte[] m3Response = ipTransport.post(ENDPOINT_PAIR_SETUP, CONTENT_TYPE_PAIRING, Tlv8Codec.encode(tlv));
         return m4Execute(client, m3Response);
     }
@@ -145,6 +140,7 @@ public class PairSetupClient {
     private SRPclient m4Execute(SRPclient client, byte[] m3Response) throws Exception {
         logger.debug("Pair-Setup M4: Read accessory M2 proof; and verify it");
         Map<Integer, byte[]> tlv = Tlv8Codec.decode(m3Response);
+        loggerTraceTlv(tlv);
         Validator.validate(PairingMethod.SETUP, tlv);
         byte[] accessoryProofM2 = tlv.get(TlvType.PROOF.value);
         client.m4VerifyAccessoryProof(Objects.requireNonNull(accessoryProofM2));
@@ -164,6 +160,7 @@ public class PairSetupClient {
         Map<Integer, byte[]> tlv = new LinkedHashMap<>();
         tlv.put(TlvType.STATE.value, new byte[] { PairingState.M5.value });
         tlv.put(TlvType.ENCRYPTED_DATA.value, cipherText);
+        loggerTraceTlv(tlv);
         Validator.validate(PairingMethod.SETUP, tlv);
         byte[] m5Response = ipTransport.post(ENDPOINT_PAIR_SETUP, CONTENT_TYPE_PAIRING, Tlv8Codec.encode(tlv));
         return m6Execute(client, m5Response);
@@ -179,10 +176,21 @@ public class PairSetupClient {
     private SRPclient m6Execute(SRPclient client, byte[] m5Response) throws Exception {
         logger.debug("Pair-Setup M6: Read accessory id, LTPK, and signature; and verify it");
         Map<Integer, byte[]> tlv = Tlv8Codec.decode(m5Response);
+        loggerTraceTlv(tlv);
         Validator.validate(PairingMethod.SETUP, tlv);
         byte[] cipherText = tlv.get(TlvType.ENCRYPTED_DATA.value);
         client.m6DecodeAccessoryInfoAndVerify(Objects.requireNonNull(cipherText));
         return client;
+    }
+
+    private void loggerTraceTlv(Map<Integer, byte[]> tlv) {
+        if (logger.isTraceEnabled()) {
+            StringBuilder sb = new StringBuilder();
+            for (Map.Entry<Integer, byte[]> entry : tlv.entrySet()) {
+                sb.append(String.format("\n - 0x%02x: %s", entry.getKey(), toHex(entry.getValue())));
+            }
+            logger.trace(sb.toString());
+        }
     }
 
     /**
