@@ -14,6 +14,9 @@ package org.openhab.binding.homekit.internal.handler;
 
 import static org.openhab.binding.homekit.internal.HomekitBindingConstants.FAKE_PROPERTY_CHANNEL_TYPE_UID;
 
+import java.util.Collection;
+import java.util.Set;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.homekit.internal.discovery.HomekitChildDiscoveryService;
 import org.openhab.binding.homekit.internal.dto.Accessory;
@@ -27,6 +30,7 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.binding.BridgeHandler;
 import org.openhab.core.thing.binding.ThingHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.thing.binding.builder.BridgeBuilder;
 import org.openhab.core.thing.type.ChannelDefinition;
 import org.openhab.core.types.Command;
@@ -47,12 +51,9 @@ import org.slf4j.LoggerFactory;
 public class HomekitBridgeHandler extends HomekitBaseAccessoryHandler implements BridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(HomekitBridgeHandler.class);
-    private final HomekitChildDiscoveryService discoveryService;
 
-    public HomekitBridgeHandler(Bridge bridge, HomekitTypeProvider typeProvider,
-            HomekitChildDiscoveryService discoveryService, HomekitKeyStore keyStore) {
+    public HomekitBridgeHandler(Bridge bridge, HomekitTypeProvider typeProvider, HomekitKeyStore keyStore) {
         super(bridge, typeProvider, keyStore);
-        this.discoveryService = discoveryService;
     }
 
     @Override
@@ -92,7 +93,6 @@ public class HomekitBridgeHandler extends HomekitBaseAccessoryHandler implements
     @Override
     protected void accessoriesLoaded() {
         logger.debug("Bridge accessories loaded {}", accessories.size());
-        discoveryService.addBridgeHandler(this); // discover child accessories
         createProperties(); // create properties from accessory information
     }
 
@@ -102,9 +102,8 @@ public class HomekitBridgeHandler extends HomekitBaseAccessoryHandler implements
     }
 
     @Override
-    public void dispose() {
-        discoveryService.removeBridgeHandler(this);
-        super.dispose();
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Set.of(HomekitChildDiscoveryService.class);
     }
 
     /**
