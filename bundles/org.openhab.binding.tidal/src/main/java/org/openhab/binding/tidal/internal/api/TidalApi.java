@@ -117,6 +117,19 @@ public class TidalApi {
     }
 
     /**
+     *
+     */
+
+    public @Nullable Album getAlbum(String albumId) {
+        String userId = bridgeHandler.getUserId();
+        String userCountry = bridgeHandler.getUserCountry();
+        String uri = String.format("%s/v2/albums/%s?countryCode=%s&locale=fr-FR&include=coverArt&include=items",
+                TIDAL_API_URL, albumId, userCountry);
+        final Album album = request(GET, uri, "", Album.class);
+        return album;
+    }
+
+    /**
      * @return Returns the albums of the user.
      */
     public List<Album> getAlbums(long offset, long limit) {
@@ -164,7 +177,7 @@ public class TidalApi {
     public List<Playlist> getPlaylists(long offset, long limit) {
         String userId = bridgeHandler.getUserId();
         String userCountry = bridgeHandler.getUserCountry();
-        String uri = String.format("%s/v2/playlists?countryCode=%s&include=coverArt&filter%5Bowners.id%5D=%s",
+        String uri = String.format("%s/v2/playlists?countryCode=%s&include=coverArt&filter[owners.id]=%s",
                 TIDAL_API_URL, userCountry, userId);
         final Playlists playlists = request(GET, uri, "", Playlists.class);
 
@@ -225,39 +238,59 @@ public class TidalApi {
                 JsonElement included = jsonObj.get("included");
 
                 T result = gson.fromJson(data, clazz);
-                ArrayList<BaseEntry> resultCast = (ArrayList<BaseEntry>) result;
+                if (result instanceof BaseEntry) {
+                    BaseEntry entry = (BaseEntry) result;
+                    BaseEntries includedRessources = gson.fromJson(included, BaseEntries.class);
 
-                Type superType = clazz.getGenericSuperclass();
-                Type typeArg = null;
-                if (superType instanceof ParameterizedType) {
-                    ParameterizedType pt = (ParameterizedType) superType;
-                    typeArg = pt.getActualTypeArguments()[0];
-                }
+                    Hashtable<String, BaseEntry> dict = new Hashtable<String, BaseEntry>();
 
-                BaseEntries includedRessources = gson.fromJson(included, BaseEntries.class);
-                for (BaseEntry includedRessource : includedRessources) {
-                    if (typeArg != null && includedRessource.getClass() == typeArg) {
-                        String includedId = includedRessource.getId();
-                        resultCast.removeIf(entry -> entry.getId().equals(includedId));
-                        resultCast.add(includedRessource);
-                    }
-                }
-
-                Hashtable<String, BaseEntry> dict = new Hashtable<String, BaseEntry>();
-
-                for (BaseEntry includedRessource : includedRessources) {
-                    if (typeArg != null && includedRessource.getClass() != typeArg) {
-
+                    for (BaseEntry includedRessource : includedRessources) {
                         dict.put(includedRessource.getId(), includedRessource);
                         logger.info("");
                     }
-                }
 
-                for (BaseEntry entry : resultCast) {
                     RelationShip relationShip = entry.getRelationShip();
                     relationShip.resolveDeps(dict);
+                    logger.info("");
+                } else if (result instanceof ArrayList<?>) {
+                    @SuppressWarnings("unchecked")
+                    ArrayList<BaseEntry> resultCast = (ArrayList<BaseEntry>) result;
+
+                    Type superType = clazz.getGenericSuperclass();
+                    Type typeArg = null;
+                    if (superType instanceof ParameterizedType) {
+                        ParameterizedType pt = (ParameterizedType) superType;
+                        typeArg = pt.getActualTypeArguments()[0];
+                    }
+
+                    BaseEntries includedRessources = gson.fromJson(included, BaseEntries.class);
+
+                    if (includedRessources != null) {
+                        for (BaseEntry includedRessource : includedRessources) {
+                            if (typeArg != null && includedRessource.getClass() == typeArg) {
+                                String includedId = includedRessource.getId();
+                                resultCast.removeIf(entry -> entry.getId().equals(includedId));
+                                resultCast.add(includedRessource);
+                            }
+                        }
+
+                        Hashtable<String, BaseEntry> dict = new Hashtable<String, BaseEntry>();
+
+                        for (BaseEntry includedRessource : includedRessources) {
+                            if (typeArg != null && includedRessource.getClass() != typeArg) {
+
+                                dict.put(includedRessource.getId(), includedRessource);
+                                logger.info("");
+                            }
+                        }
+
+                        for (BaseEntry entry : resultCast) {
+                            RelationShip relationShip = entry.getRelationShip();
+                            relationShip.resolveDeps(dict);
+                        }
+                    }
+                    // return clazz == String.class ? (@Nullable T) response : fromJson(response, clazz);
                 }
-                // return clazz == String.class ? (@Nullable T) response : fromJson(response, clazz);
                 return result;
             }
         } catch (final IOException e) {

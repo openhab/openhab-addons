@@ -61,6 +61,7 @@ import org.openhab.core.media.model.MediaEntry;
 import org.openhab.core.media.model.MediaPlayList;
 import org.openhab.core.media.model.MediaRegistry;
 import org.openhab.core.media.model.MediaSource;
+import org.openhab.core.media.model.MediaTrack;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -467,6 +468,28 @@ public class TidalBridgeHandler extends BaseBridgeHandler
         } else if ("Tracks".equals(mediaEntry.getKey())) {
             List<Track> tracks = tidalApi.getTracks(start, size);
             RegisterCollections(mediaEntry, tracks, MediaArtist.class);
+        } else if (mediaEntry instanceof MediaArtist) {
+            // MediaArtist mediaArtist = (MediaArtist) mediaEntry;
+            // List<Album> albumList = spotifyApi.getArtistAlbums(mediaArtist.getKey().replace("spotify:artist:", ""));
+            // RegisterCollections(mediaEntry, albumList, MediaAlbum.class);
+        } else if (mediaEntry instanceof MediaAlbum) {
+            // https://openapi.tidal.com/v2/albums/35096242?countryCode=US&include=coverArt&include=items
+            MediaAlbum mediaAlbum = (MediaAlbum) mediaEntry;
+            Album album = tidalApi.getAlbum(mediaEntry.getKey());
+
+            if (album != null) {
+                logger.info("");
+                List<Track> tracks = album.getTracks();
+                RegisterCollections(mediaEntry, tracks, MediaTrack.class);
+            }
+        } else if (mediaEntry instanceof MediaPlayList) {
+            // Playlist pl = spotifyApi.getPlaylist(mediaEntry.getKey());
+
+            // if (pl != null) {
+            // PlayListTracks playListTracks = pl.getTracks();
+            // List<Track> tracks = playListTracks.getTrack();
+            // RegisterCollections(mediaEntry, tracks, MediaTrack.class);
+            // }
         }
     }
 

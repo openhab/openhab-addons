@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.tidal.internal.api.model;
 
+import java.util.List;
+
 import com.google.gson.annotations.JsonAdapter;
 
 /**
@@ -80,6 +82,11 @@ public class Album extends BaseEntry {
 
     public Link[] getExternalLinks() {
         return externalLinks;
+    }
+
+    public List<Track> getTracks() {
+        List<BaseEntry> items = getRelationShip().getItems().getData();
+        return items.stream().map(entry -> (Track) entry).toList();
     }
 
 }
