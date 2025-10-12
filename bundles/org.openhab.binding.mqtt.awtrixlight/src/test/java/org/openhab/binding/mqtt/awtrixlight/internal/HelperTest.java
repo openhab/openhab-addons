@@ -125,9 +125,9 @@ public class HelperTest {
 
     private AwtrixApp getTestAppWithIncompatibleOptions() {
         AwtrixApp app = getTestApp();
-        app.setFadeText(100);
-        // Rainbow is incompatible with fadeText and will be ignored when generating the JSON
         app.setRainbow(true);
+        // fadeText will be overridden by rainbow and will be ignored when generating the JSON
+        app.setFadeText(100);
         return app;
     }
 
@@ -180,8 +180,8 @@ public class HelperTest {
         AwtrixApp app2 = Helper.decodeAppJson(json);
 
         // Incompatible options are not copied to the new app
-        assertNotEquals(app.getRainbow(), app2.getRainbow());
-        assertEquals(app.getFadeText(), app2.getFadeText());
+        assertEquals(app.getRainbow(), app2.getRainbow());
+        assertNotEquals(app.getFadeText(), app2.getFadeText());
 
         // But the generated json should still be the same
         assertEquals(json, app2.getAppConfig());
@@ -196,8 +196,8 @@ public class HelperTest {
         app2.updateFields(appParams);
 
         // Incompatible options are not copied to the new app
-        assertNotEquals(app.getRainbow(), app2.getRainbow());
-        assertEquals(app.getFadeText(), app2.getFadeText());
+        assertEquals(app.getRainbow(), app2.getRainbow());
+        assertNotEquals(app.getFadeText(), app2.getFadeText());
 
         // But the generated json should still be the same
         assertEquals(app.getAppConfig(), app2.getAppConfig());
