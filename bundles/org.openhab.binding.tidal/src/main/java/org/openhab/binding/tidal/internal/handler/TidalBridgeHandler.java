@@ -50,6 +50,7 @@ import org.openhab.core.auth.client.oauth2.OAuthException;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.auth.client.oauth2.OAuthResponseException;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.PlayPauseType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.media.MediaListenner;
 import org.openhab.core.media.MediaService;
@@ -145,6 +146,8 @@ public class TidalBridgeHandler extends BaseBridgeHandler
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
             List<Playlist> playLists = getTidalApi().getPlaylists(0, 0);
+        } else if (command instanceof PlayPauseType) {
+
         }
     }
 
@@ -196,7 +199,17 @@ public class TidalBridgeHandler extends BaseBridgeHandler
 
     @Override
     public String getUser() {
-        return thing.getProperties().getOrDefault(PROPERTY_TIDAL_USER, "");
+        return thing.getProperties().getOrDefault(PROPERTY_TIDAL_USER_NAME, "");
+    }
+
+    @Override
+    public String getUserId() {
+        return thing.getProperties().getOrDefault(PROPERTY_TIDAL_USER_ID, "");
+    }
+
+    @Override
+    public String getUserCountry() {
+        return thing.getProperties().getOrDefault(PROPERTY_TIDAL_USER_COUNTRY, "");
     }
 
     @Override
@@ -315,9 +328,13 @@ public class TidalBridgeHandler extends BaseBridgeHandler
         if (tidalApi != null) {
             final User user = tidalApi.getMe();
             final String userName = user.getUserName() == null ? user.getId() : user.getUserName();
+            final String userId = user.getId();
+            final String userCountry = user.getCountry();
             final Map<String, String> props = editProperties();
 
-            props.put(PROPERTY_TIDAL_USER, userName);
+            props.put(PROPERTY_TIDAL_USER_NAME, userName);
+            props.put(PROPERTY_TIDAL_USER_ID, userId);
+            props.put(PROPERTY_TIDAL_USER_COUNTRY, userCountry);
             updateProperties(props);
             return userName;
         }
@@ -333,9 +350,9 @@ public class TidalBridgeHandler extends BaseBridgeHandler
                 TIDAL_API_TOKEN_URL, TIDAL_AUTHORIZE_URL, configuration.clientId, configuration.clientSecret,
                 TIDAL_SCOPES, null);
         this.oAuthService = oAuthService;
-        oAuthService.addAccessTokenRefreshListener(TidalBridgeHandler.this);
+        oAuthService.addAccessTokenRefreshListener(this);
 
-        tidalApi = new TidalApi(oAuthService, scheduler, httpClient);
+        tidalApi = new TidalApi(oAuthService, scheduler, httpClient, this);
         handleCommand = new TidalHandleCommands(tidalApi);
         final Duration expiringPeriod = Duration.ofSeconds(configuration.refreshPeriod);
 

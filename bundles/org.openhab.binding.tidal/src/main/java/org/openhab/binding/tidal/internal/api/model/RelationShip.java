@@ -13,6 +13,7 @@ public class RelationShip {
     private Link<BaseEntry> owners;
     private Link<BaseEntry> lyrics;
     private Link<Artwork> coverArt;
+    private Link<Artwork> profileArt;
     private Link<BaseEntry> items;
     private Link<BaseEntry> providers;
     private Link<BaseEntry> sourceFile;
@@ -62,6 +63,10 @@ public class RelationShip {
         return coverArt;
     }
 
+    public Link<Artwork> getProfileArt() {
+        return profileArt;
+    }
+
     public Link<BaseEntry> getItems() {
         return items;
     }
@@ -76,6 +81,9 @@ public class RelationShip {
         }
         if (coverArt != null) {
             coverArt.resolveDeps(dict);
+        }
+        if (profileArt != null) {
+            profileArt.resolveDeps(dict);
         }
 
     }

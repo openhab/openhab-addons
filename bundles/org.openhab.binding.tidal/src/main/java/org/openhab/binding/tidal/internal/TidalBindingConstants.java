@@ -103,6 +103,8 @@ public class TidalBindingConstants {
     public static final String CONFIGURATION_CLIENT_ID = "clientId";
 
     // List of Bridge/Thing properties
-    public static final String PROPERTY_TIDAL_USER = "user";
+    public static final String PROPERTY_TIDAL_USER_NAME = "user";
+    public static final String PROPERTY_TIDAL_USER_ID = "userId";
+    public static final String PROPERTY_TIDAL_USER_COUNTRY = "userCountry";
     public static final String PROPERTY_TIDAL_DEVICE_NAME = "deviceName";
 }

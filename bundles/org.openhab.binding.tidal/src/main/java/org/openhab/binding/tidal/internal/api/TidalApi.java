@@ -48,6 +48,7 @@ import org.openhab.binding.tidal.internal.api.model.RelationShip;
 import org.openhab.binding.tidal.internal.api.model.Track;
 import org.openhab.binding.tidal.internal.api.model.Tracks;
 import org.openhab.binding.tidal.internal.api.model.User;
+import org.openhab.binding.tidal.internal.handler.TidalBridgeHandler;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
 import org.openhab.core.auth.client.oauth2.OAuthClientService;
 import org.openhab.core.auth.client.oauth2.OAuthException;
@@ -79,6 +80,7 @@ public class TidalApi {
     private final Logger logger = LoggerFactory.getLogger(TidalApi.class);
 
     private final OAuthClientService oAuthClientService;
+    private final TidalBridgeHandler bridgeHandler;
     private final TidalConnector connector;
 
     /**
@@ -88,8 +90,10 @@ public class TidalApi {
      * @param scheduler
      * @param httpClient The Tidal connector handling the Web Api calls to Tidal
      */
-    public TidalApi(OAuthClientService oAuthClientService, ScheduledExecutorService scheduler, HttpClient httpClient) {
+    public TidalApi(OAuthClientService oAuthClientService, ScheduledExecutorService scheduler, HttpClient httpClient,
+            TidalBridgeHandler bridgeHandler) {
         this.oAuthClientService = oAuthClientService;
+        this.bridgeHandler = bridgeHandler;
         connector = new TidalConnector(scheduler, httpClient);
     }
 
@@ -116,9 +120,12 @@ public class TidalApi {
      * @return Returns the albums of the user.
      */
     public List<Album> getAlbums(long offset, long limit) {
-        final Albums albums = request(GET, TIDAL_API_URL
-                + "/v2/userCollections/192468940/relationships/albums?countryCode=FR&locale=fr-FR&include=albums&include=albums.coverArt&include=albums.artists",
-                "", Albums.class);
+        String userId = bridgeHandler.getUserId();
+        String userCountry = bridgeHandler.getUserCountry();
+        String uri = String.format(
+                "%s/v2/userCollections/%s/relationships/albums?countryCode=%s&locale=fr-FR&include=albums&include=albums.coverArt&include=albums.artists",
+                TIDAL_API_URL, userId, userCountry);
+        final Albums albums = request(GET, uri, "", Albums.class);
 
         return albums == null ? Collections.emptyList() : albums;
     }
@@ -127,9 +134,12 @@ public class TidalApi {
      * @return Returns the albums of the user.
      */
     public List<Artist> getArtists(long offset, long limit) {
-        final Artists artists = request(GET, TIDAL_API_URL
-                + "/v2/userCollections/192468940/relationships/artists?countryCode=FR&locale=fr-FR&include=artists", "",
-                Artists.class);
+        String userId = bridgeHandler.getUserId();
+        String userCountry = bridgeHandler.getUserCountry();
+        String uri = String.format(
+                "%s/v2/userCollections/%s/relationships/artists?countryCode=%s&locale=fr-FR&include=artists&include=artists.profileArt",
+                TIDAL_API_URL, userId, userCountry);
+        final Artists artists = request(GET, uri, "", Artists.class);
 
         return artists == null ? Collections.emptyList() : artists;
     }
@@ -138,9 +148,12 @@ public class TidalApi {
      * @return Returns the albums of the user.
      */
     public List<Track> getTracks(long offset, long limit) {
-        final Tracks tracks = request(GET, TIDAL_API_URL
-                + "/v2/userCollections/192468940/relationships/tracks?countryCode=FR&locale=fr-FR&include=tracks", "",
-                Tracks.class);
+        String userId = bridgeHandler.getUserId();
+        String userCountry = bridgeHandler.getUserCountry();
+        String uri = String.format(
+                "%s/v2/userCollections/%s/relationships/tracks?countryCode=%s&locale=fr-FR&include=tracks&include=tracks.coverArt",
+                TIDAL_API_URL, userId, userCountry);
+        final Tracks tracks = request(GET, uri, "", Tracks.class);
 
         return tracks == null ? Collections.emptyList() : tracks;
     }
@@ -149,9 +162,11 @@ public class TidalApi {
      * @return Returns the playlists of the user.
      */
     public List<Playlist> getPlaylists(long offset, long limit) {
-        final Playlists playlists = request(GET,
-                TIDAL_API_URL + "/v2/playlists?countryCode=FR&include=coverArt&filter%5Bowners.id%5D=192468940", "",
-                Playlists.class);
+        String userId = bridgeHandler.getUserId();
+        String userCountry = bridgeHandler.getUserCountry();
+        String uri = String.format("%s/v2/playlists?countryCode=%s&include=coverArt&filter%5Bowners.id%5D=%s",
+                TIDAL_API_URL, userCountry, userId);
+        final Playlists playlists = request(GET, uri, "", Playlists.class);
 
         return playlists == null ? Collections.emptyList() : playlists;
     }

@@ -40,6 +40,16 @@ public interface TidalAccountHandler extends ThingHandler {
     String getUser();
 
     /**
+     * @return The Tidal user id associated with this Tidal Account Handler
+     */
+    String getUserId();
+
+    /**
+     * @return The Tidal user country associated with this Tidal Account Handler
+     */
+    String getUserCountry();
+
+    /**
      * @return Returns true if the Tidal Bridge is authorized.
      */
     boolean isAuthorized();

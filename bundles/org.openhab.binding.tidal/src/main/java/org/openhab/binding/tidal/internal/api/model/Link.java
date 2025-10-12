@@ -17,6 +17,9 @@ public class Link<T extends BaseEntry> {
     }
 
     public void resolveDeps(Hashtable<String, BaseEntry> dict) {
+        if (data == null) {
+            return;
+        }
         List<T> originalList = (List<T>) ((ArrayList<T>) data).clone();
 
         for (int idx = 0; idx < originalList.size(); idx++) {

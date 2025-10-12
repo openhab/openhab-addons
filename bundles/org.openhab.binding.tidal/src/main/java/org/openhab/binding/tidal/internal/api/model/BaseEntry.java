@@ -43,6 +43,10 @@ public abstract class BaseEntry {
         }
         Link<Artwork> artworksLink = relationships.getCoverArt();
         if (artworksLink == null) {
+            artworksLink = relationships.getProfileArt();
+        }
+
+        if (artworksLink == null) {
             return "";
         }
         List<Artwork> artworks = artworksLink.getData();
