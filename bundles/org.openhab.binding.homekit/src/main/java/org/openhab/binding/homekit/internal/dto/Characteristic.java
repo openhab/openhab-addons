@@ -220,7 +220,7 @@ public class Characteristic {
             case CARBON_DIOXIDE_LEVEL:
             case CARBON_DIOXIDE_PEAK_LEVEL:
                 uom = "ppm";
-                numberSuffix = "Density";
+                numberSuffix = "Dimensionless";
                 propertyTag = Property.CO2;
                 category = "co2";
                 break;
@@ -235,7 +235,7 @@ public class Characteristic {
             case CARBON_MONOXIDE_LEVEL:
             case CARBON_MONOXIDE_PEAK_LEVEL:
                 uom = "ppm";
-                numberSuffix = "Density";
+                numberSuffix = "Dimensionless";
                 propertyTag = Property.CO;
                 break;
 
@@ -650,6 +650,7 @@ public class Characteristic {
             case TEMPERATURE_HEATING_THRESHOLD:
             case TEMPERATURE_TARGET:
                 propertyTag = Property.TEMPERATURE;
+                numberSuffix = "Temperature";
                 category = "temperature";
                 break;
 
