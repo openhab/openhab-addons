@@ -189,7 +189,7 @@ public class PairSetupClient {
             for (Map.Entry<Integer, byte[]> entry : tlv.entrySet()) {
                 sb.append(String.format("\n - 0x%02x: %s", entry.getKey(), toHex(entry.getValue())));
             }
-            logger.trace(sb.toString());
+            logger.trace("{}", sb.toString());
         }
     }
 
