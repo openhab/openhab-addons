@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.tidal.internal.api.model;
 
+import java.util.List;
+
 import com.google.gson.annotations.JsonAdapter;
 
 /**
@@ -71,6 +73,11 @@ public class Playlist extends BaseEntry {
 
     public String getPlaylistType() {
         return playlistType;
+    }
+
+    public List<Track> getTracks() {
+        List<BaseEntry> items = getRelationShip().getItems().getData();
+        return items.stream().map(entry -> (Track) entry).toList();
     }
 
 }

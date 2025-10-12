@@ -117,9 +117,8 @@ public class TidalApi {
     }
 
     /**
-     *
+     * @return a specific album, with its tracks
      */
-
     public @Nullable Album getAlbum(String albumId) {
         String userId = bridgeHandler.getUserId();
         String userCountry = bridgeHandler.getUserCountry();
@@ -127,6 +126,18 @@ public class TidalApi {
                 TIDAL_API_URL, albumId, userCountry);
         final Album album = request(GET, uri, "", Album.class);
         return album;
+    }
+
+    /**
+     * @return a specific playlist, with its tracks
+     */
+    public @Nullable Playlist getPlaylist(String playlistId) {
+        String userId = bridgeHandler.getUserId();
+        String userCountry = bridgeHandler.getUserCountry();
+        String uri = String.format("%s/v2/playlists/%s?countryCode=%s&locale=fr-FR&include=coverArt&include=items",
+                TIDAL_API_URL, playlistId, userCountry);
+        final Playlist playlist = request(GET, uri, "", Playlist.class);
+        return playlist;
     }
 
     /**
