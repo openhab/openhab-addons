@@ -39,6 +39,28 @@ This requirement ensures:
 3. Verify diagram accuracy against actual code structure
 4. Test build to ensure no compilation errors
 
+### Git Operations and AI Agent Restrictions
+**CRITICAL**: AI agents are **PROHIBITED** from performing commit operations. This is a strict security and code governance requirement:
+
+#### Forbidden GitKraken MCP Operations
+- **NEVER use `mcp_gitkraken_git_add_or_commit`** with action "commit" - AI agents must not commit code
+- **Analysis and staging only**: AI agents may use git tools for analysis (status, diff, log) but NOT for committing changes
+- **Human oversight required**: All commits must be performed by human developers with proper review
+
+#### Allowed Git Operations for AI Agents
+- **Status checking**: `mcp_gitkraken_git_status` to understand current state
+- **Diff analysis**: `mcp_gitkraken_git_log_or_diff` to analyze changes
+- **Branch operations**: `mcp_gitkraken_git_branch` for branch management (list only, not create)
+- **File staging**: `mcp_gitkraken_git_add_or_commit` with action "add" for staging files (preparation only)
+
+#### Commit Message Generation Only
+- AI agents may **suggest commit messages** based on analyzed changes
+- AI agents may **prepare staging** for human review
+- **Human developers must execute** the actual commit operation
+- This ensures proper code review, accountability, and governance
+
+**Rationale**: Automated commits bypass essential human oversight, code review processes, and accountability measures required for production code changes.
+
 ### Java 21 Modern Development Standards
 **MANDATORY**: All code MUST leverage Java 21 language features and best practices for maintainability, readability, and performance:
 
