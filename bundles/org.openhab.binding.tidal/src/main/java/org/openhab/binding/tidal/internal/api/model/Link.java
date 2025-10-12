@@ -8,7 +8,7 @@ import com.google.gson.annotations.JsonAdapter;
 
 @JsonAdapter(FlatteningTypeAdapterFactory.class)
 public class Link<T extends BaseEntry> {
-    private List<T> data;
+    private ArrayList<T> data;
     private String href;
     private String self;
 
@@ -16,22 +16,28 @@ public class Link<T extends BaseEntry> {
         return data;
     }
 
-    public void resolveDeps(Hashtable<String, BaseEntry> dict) {
+    public void resolveDeps(Hashtable<String, T> dict) {
         if (data == null) {
             return;
         }
-        List<T> originalList = (List<T>) ((ArrayList<T>) data).clone();
 
-        for (int idx = 0; idx < originalList.size(); idx++) {
-            T entry = originalList.get(idx);
+        ArrayList<T> originalList = new ArrayList<>(data);
+
+        for (T entry : originalList) {
             String entryId = entry.getId();
 
             if (dict.containsKey(entryId)) {
-
-                data.remove(idx);
-                data.add((T) dict.get(entryId));
+                data.removeIf(entryToRemove -> entryToRemove.getId().equals(entryId));
+                data.add(dict.get(entryId));
             }
         }
+    }
 
+    public String getHref() {
+        return href;
+    }
+
+    public String getSelf() {
+        return self;
     }
 }

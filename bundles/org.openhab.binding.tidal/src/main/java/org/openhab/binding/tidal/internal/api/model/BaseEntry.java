@@ -41,7 +41,7 @@ public abstract class BaseEntry {
         if (relationships == null) {
             return "";
         }
-        Link<Artwork> artworksLink = relationships.getCoverArt();
+        Link<BaseEntry> artworksLink = relationships.getCoverArt();
         if (artworksLink == null) {
             artworksLink = relationships.getProfileArt();
         }
@@ -49,15 +49,20 @@ public abstract class BaseEntry {
         if (artworksLink == null) {
             return "";
         }
-        List<Artwork> artworks = artworksLink.getData();
+
+        List<BaseEntry> artworks = artworksLink.getData();
         if (artworks == null) {
             return "";
         }
-        Artwork art = artworks.getFirst();
-        if (art == null || art.getFiles() == null) {
-            return "";
+        BaseEntry baseEntry = artworks.getFirst();
+        if (baseEntry instanceof Artwork) {
+            Artwork art = (Artwork) baseEntry;
+            if (art == null || art.getFiles() == null) {
+                return "";
+            }
+            return art.getFiles()[0].getHref();
         }
-        return art.getFiles()[0].getHref();
+        return "";
     }
 
     public RelationShip getRelationShip() {
