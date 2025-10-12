@@ -41,6 +41,9 @@ public class BaseEntryAdapter extends TypeAdapter<BaseEntry> {
             case "playlists":
                 concreteClass = Playlist.class;
                 break;
+            case "videos":
+                concreteClass = Video.class;
+                break;
             default:
                 throw new JsonParseException("Type inconnu: " + type);
         }

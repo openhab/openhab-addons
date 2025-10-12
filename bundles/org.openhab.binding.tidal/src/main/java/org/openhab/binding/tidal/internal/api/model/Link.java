@@ -27,8 +27,13 @@ public class Link<T extends BaseEntry> {
             String entryId = entry.getId();
 
             if (dict.containsKey(entryId)) {
+                BaseEntry newEntry = dict.get(entryId);
                 data.removeIf(entryToRemove -> entryToRemove.getId().equals(entryId));
-                data.add(dict.get(entryId));
+                data.add((T) newEntry);
+
+                if (newEntry.getRelationShip() != null) {
+                    newEntry.getRelationShip().resolveDeps((Hashtable<String, BaseEntry>) dict);
+                }
             }
         }
     }
