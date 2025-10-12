@@ -45,9 +45,6 @@ public class PairRemoveClient {
     private final byte[] controllerId;
 
     public PairRemoveClient(IpTransport ipTransport, byte[] controllerId) throws Exception {
-        if (controllerId.length != 16) {
-            throw new IllegalArgumentException("Controller Id must be exactly 16 bytes");
-        }
         logger.debug("Created..");
         this.ipTransport = ipTransport;
         this.controllerId = controllerId;

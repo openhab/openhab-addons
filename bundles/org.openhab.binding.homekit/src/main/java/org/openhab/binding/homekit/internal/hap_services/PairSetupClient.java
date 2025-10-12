@@ -55,9 +55,6 @@ public class PairSetupClient {
 
     public PairSetupClient(IpTransport ipTransport, byte[] controllerId, Ed25519PrivateKeyParameters controllerKey,
             String pairingCode) throws Exception {
-        if (controllerId.length != 16) {
-            throw new IllegalArgumentException("Controller Id must be exactly 16 bytes");
-        }
         logger.debug("Created with pairing code: {}", pairingCode);
         this.ipTransport = ipTransport;
         this.password = pairingCode;

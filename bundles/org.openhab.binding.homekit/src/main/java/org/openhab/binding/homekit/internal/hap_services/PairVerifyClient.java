@@ -61,9 +61,6 @@ public class PairVerifyClient {
 
     public PairVerifyClient(IpTransport ipTransport, byte[] controllerId, Ed25519PrivateKeyParameters controllerKey,
             Ed25519PublicKeyParameters accessoryKey) throws Exception {
-        if (controllerId.length != 16) {
-            throw new IllegalArgumentException("Controller Id must be exactly 16 bytes");
-        }
         logger.debug("Created..");
         this.ipTransport = ipTransport;
         this.clientPairingId = controllerId;
