@@ -28,7 +28,7 @@ public class Playlist extends BaseEntry {
     private boolean bounded;
     private String duration;
     private int numberOfItems;
-    private Link[] externalLinks;
+    private Link<Playlist>[] externalLinks;
     public String createdAt;
     public String lastModifiedAt;
     public String accessType;
@@ -55,7 +55,7 @@ public class Playlist extends BaseEntry {
         return numberOfItems;
     }
 
-    public Link[] getExternalLinks() {
+    public Link<Playlist>[] getExternalLinks() {
         return externalLinks;
     }
 

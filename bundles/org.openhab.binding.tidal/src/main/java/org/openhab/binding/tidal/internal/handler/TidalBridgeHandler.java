@@ -469,9 +469,12 @@ public class TidalBridgeHandler extends BaseBridgeHandler
             List<Track> tracks = tidalApi.getTracks(start, size);
             RegisterCollections(mediaEntry, tracks, MediaArtist.class);
         } else if (mediaEntry instanceof MediaArtist) {
-            // MediaArtist mediaArtist = (MediaArtist) mediaEntry;
-            // List<Album> albumList = spotifyApi.getArtistAlbums(mediaArtist.getKey().replace("spotify:artist:", ""));
-            // RegisterCollections(mediaEntry, albumList, MediaAlbum.class);
+            Artist artist = tidalApi.getArtist(mediaEntry.getKey());
+
+            if (artist != null) {
+                List<Album> albums = artist.getAlbums();
+                RegisterCollections(mediaEntry, albums, MediaAlbum.class);
+            }
         } else if (mediaEntry instanceof MediaAlbum) {
             Album album = tidalApi.getAlbum(mediaEntry.getKey());
 

@@ -141,6 +141,19 @@ public class TidalApi {
     }
 
     /**
+     * @return a specific artist, with its albums
+     */
+    public @Nullable Artist getArtist(String albumId) {
+        String userId = bridgeHandler.getUserId();
+        String userCountry = bridgeHandler.getUserCountry();
+        String uri = String.format(
+                "%s/v2/artists/%s?countryCode=%s&locale=fr-FR&include=profileArt&include=albums&include=albums.coverArt",
+                TIDAL_API_URL, albumId, userCountry);
+        final Artist artist = request(GET, uri, "", Artist.class);
+        return artist;
+    }
+
+    /**
      * @return Returns the albums of the user.
      */
     public List<Album> getAlbums(long offset, long limit) {
@@ -231,8 +244,6 @@ public class TidalApi {
         try {
             final AccessTokenResponse accessTokenResponse = oAuthClientService.getAccessTokenResponse();
             String accessToken = accessTokenResponse == null ? null : accessTokenResponse.getAccessToken();
-            // String accessToken =
-            // "eyJraWQiOiJ2OU1GbFhqWSIsImFsZyI6IkVTMjU2In0.eyJ0eXBlIjoibzJfYWNjZXNzIiwidWlkIjoxOTI0Njg5NDAsInNjb3BlIjoicGxheWxpc3RzLndyaXRlIGNvbGxlY3Rpb24ucmVhZCBzZWFyY2gud3JpdGUgZW50aXRsZW1lbnRzLnJlYWQgcGxheWxpc3RzLnJlYWQgdXNlci5yZWFkIHNlYXJjaC5yZWFkIHJlY29tbWVuZGF0aW9ucy5yZWFkIHBsYXliYWNrIGNvbGxlY3Rpb24ud3JpdGUiLCJnVmVyIjowLCJzVmVyIjowLCJjaWQiOjE0NzM1LCJleHAiOjE3NjAxMTcyNzYsInNpZCI6ImY4NzQyODIzLWE1ZGMtNDg4Yi05Zjg0LWE2YTgxYzI1MjI3ZSIsImlzcyI6Imh0dHBzOi8vYXV0aC50aWRhbC5jb20vdjEifQ.BY1xj_10NEfyE4zAOz_8CJk5O5cTBLYTmJ79boYO3TUVntoH6uVoxdXtdslxDMP9uGL54xBla-BTA91C3JLx4A";
 
             if (accessToken == null || accessToken.isEmpty()) {
                 throw new TidalAuthorizationException(
@@ -300,7 +311,6 @@ public class TidalApi {
                             relationShip.resolveDeps(dict);
                         }
                     }
-                    // return clazz == String.class ? (@Nullable T) response : fromJson(response, clazz);
                 }
                 return result;
             }

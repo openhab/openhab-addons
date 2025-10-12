@@ -33,7 +33,7 @@ public class Album extends BaseEntry {
     private double popularity;
     private String[] availability;
     private String[] mediaTags;
-    private Link[] externalLinks;
+    private Link<Album>[] externalLinks;
 
     @Override
     public String getName() {
@@ -80,7 +80,7 @@ public class Album extends BaseEntry {
         return mediaTags;
     }
 
-    public Link[] getExternalLinks() {
+    public Link<Album>[] getExternalLinks() {
         return externalLinks;
     }
 

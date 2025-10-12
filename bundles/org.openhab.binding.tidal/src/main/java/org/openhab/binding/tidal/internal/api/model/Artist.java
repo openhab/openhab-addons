@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.tidal.internal.api.model;
 
+import java.util.List;
+
 import com.google.gson.annotations.JsonAdapter;
 
 /**
@@ -23,7 +25,7 @@ import com.google.gson.annotations.JsonAdapter;
 public class Artist extends BaseEntry {
     private String name;
     private double popularity;
-    private Link[] externalLinks;
+    private Link<Artist>[] externalLinks;
 
     @Override
     public String getName() {
@@ -38,8 +40,12 @@ public class Artist extends BaseEntry {
         return popularity;
     }
 
-    public Link[] getExternalLinks() {
+    public Link<Artist>[] getExternalLinks() {
         return externalLinks;
     }
 
+    public List<Album> getAlbums() {
+        List<BaseEntry> items = getRelationShip().getAlbums().getData();
+        return items.stream().map(entry -> (Album) entry).toList();
+    }
 }
