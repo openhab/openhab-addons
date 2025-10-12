@@ -158,7 +158,8 @@ public class PairVerifyClient {
         if (logger.isTraceEnabled()) {
             StringBuilder sb = new StringBuilder();
             for (Map.Entry<Integer, byte[]> entry : tlv.entrySet()) {
-                sb.append(String.format("\n - 0x%02x: %s", entry.getKey(), toHex(entry.getValue())));
+                sb.append(String.format("\n - 0x%02x: %s {%d}", entry.getKey(), toHex(entry.getValue()),
+                        entry.getValue().length));
             }
             logger.trace("{}", sb.toString());
         }
