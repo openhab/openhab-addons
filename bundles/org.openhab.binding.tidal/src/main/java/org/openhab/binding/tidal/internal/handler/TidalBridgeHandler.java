@@ -154,7 +154,6 @@ public class TidalBridgeHandler extends BaseBridgeHandler
     @Override
     public void dispose() {
         active = false;
-        cancelSchedulers();
         OAuthClientService oAuthService = this.oAuthService;
         if (oAuthService != null) {
             oAuthService.removeAccessTokenRefreshListener(this);
@@ -238,49 +237,14 @@ public class TidalBridgeHandler extends BaseBridgeHandler
                     thing.getUID().getAsString());
 
             try {
-
                 byte[] randomBytes = new byte[32];
                 SecureRandom secureRandom = new SecureRandom();
                 secureRandom.nextBytes(randomBytes);
-
-                randomBytes[0] = (byte) 116;
-                randomBytes[1] = (byte) 24;
-                randomBytes[2] = (byte) 223;
-                randomBytes[3] = (byte) 180;
-                randomBytes[4] = (byte) 151;
-                randomBytes[5] = (byte) 153;
-                randomBytes[6] = (byte) 224;
-                randomBytes[7] = (byte) 37;
-                randomBytes[8] = (byte) 79;
-                randomBytes[9] = (byte) 250;
-                randomBytes[10] = (byte) 96;
-                randomBytes[11] = (byte) 125;
-                randomBytes[12] = (byte) 216;
-                randomBytes[13] = (byte) 173;
-                randomBytes[14] = (byte) 187;
-                randomBytes[15] = (byte) 186;
-                randomBytes[16] = (byte) 22;
-                randomBytes[17] = (byte) 212;
-                randomBytes[18] = (byte) 37;
-                randomBytes[19] = (byte) 77;
-                randomBytes[20] = (byte) 105;
-                randomBytes[21] = (byte) 214;
-                randomBytes[22] = (byte) 191;
-                randomBytes[23] = (byte) 240;
-                randomBytes[24] = (byte) 91;
-                randomBytes[25] = (byte) 88;
-                randomBytes[26] = (byte) 5;
-                randomBytes[27] = (byte) 88;
-                randomBytes[28] = (byte) 83;
-                randomBytes[29] = (byte) 132;
-                randomBytes[30] = (byte) 141;
-                randomBytes[31] = (byte) 121;
 
                 codeVerifier = Base64.getUrlEncoder().withoutPadding().encodeToString(randomBytes);
                 System.out.println("Base64 original : " + codeVerifier);
 
                 // 3. Hasher la séquence via SHA-256
-
                 byte[] hashBytes = MessageDigest.getInstance("SHA-256")
                         .digest(codeVerifier.getBytes(StandardCharsets.UTF_8));
 
@@ -308,13 +272,11 @@ public class TidalBridgeHandler extends BaseBridgeHandler
                 throw new OAuthException("OAuth service is not initialized");
             }
             logger.debug("Make call to Tidal to get access token.");
-            // oAuthService.clearExtraAuthField();
             oAuthService.addExtraAuthField("code_verifier", codeVerifier);
             final AccessTokenResponse credentials = oAuthService.getAccessTokenResponseByAuthorizationCode(reqCode,
                     redirectUri);
-            final String user = updateProperties(credentials);
+            final String user = updateProperties();
             logger.debug("Authorized for user: {}", user);
-            startPolling();
             return user;
         } catch (RuntimeException | OAuthException | IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
@@ -324,7 +286,7 @@ public class TidalBridgeHandler extends BaseBridgeHandler
         }
     }
 
-    private String updateProperties(AccessTokenResponse credentials) {
+    private String updateProperties() {
         if (tidalApi != null) {
             final User user = tidalApi.getMe();
             final String userName = user.getUserName() == null ? user.getId() : user.getUserName();
@@ -353,6 +315,7 @@ public class TidalBridgeHandler extends BaseBridgeHandler
         oAuthService.addAccessTokenRefreshListener(this);
 
         tidalApi = new TidalApi(oAuthService, scheduler, httpClient, this);
+        updateProperties();
         handleCommand = new TidalHandleCommands(tidalApi);
         final Duration expiringPeriod = Duration.ofSeconds(configuration.refreshPeriod);
 
@@ -365,15 +328,10 @@ public class TidalBridgeHandler extends BaseBridgeHandler
                     "/static/Tidal.png");
         });
 
-        // Start with update status by calling Tidal. If no credentials available no polling should be started.
-        scheduler.execute(() -> {
-            if (pollStatus()) {
-                startPolling();
-            }
-        });
         imageChannelAlbumImageIndex = getIntChannelParameter(CHANNEL_PLAYED_ALBUMIMAGE, CHANNEL_CONFIG_IMAGE_INDEX, 0);
         imageChannelAlbumImageUrlIndex = getIntChannelParameter(CHANNEL_PLAYED_ALBUMIMAGEURL,
                 CHANNEL_CONFIG_IMAGE_INDEX, 0);
+        updateStatus(ThingStatus.ONLINE);
     }
 
     private int getIntChannelParameter(String channelName, String parameter, int _default) {
@@ -383,103 +341,10 @@ public class TidalBridgeHandler extends BaseBridgeHandler
         return index == null ? _default : index.intValue();
     }
 
-    /**
-     * Scheduled method to restart polling in case polling is not running.
-     */
-    private void scheduledPollingRestart() {
-        synchronized (pollSynchronization) {
-            try {
-                final boolean pollingNotRunning = pollingFuture == null || pollingFuture.isCancelled();
-
-                if (pollStatus() && pollingNotRunning) {
-                    startPolling();
-                }
-            } catch (final RuntimeException e) {
-                logger.debug("Restarting polling failed: ", e);
-            }
-        }
-    }
-
-    /**
-     * This method initiates a new thread for polling the available Tidal Connect devices and update the player
-     * information.
-     */
-    private void startPolling() {
-        synchronized (pollSynchronization) {
-            cancelSchedulers();
-            if (active) {
-                // List<Album> albumns = getTidalApi().getAlbums(0, 0);
-                // List<Playlist> playLists = getTidalApi().getPlaylists(0, 0);
-                // List<Artist> artists = getTidalApi().getArtists(0, 0);
-                // List<Track> tracks = getTidalApi().getTracks(0, 0);
-
-                pollingFuture = scheduler.scheduleWithFixedDelay(this::pollStatus, 0, configuration.refreshPeriod,
-                        TimeUnit.SECONDS);
-            }
-        }
-    }
-
-    /**
-     * Calls the Tidal API and collects user data. Returns true if method completed without errors.
-     *
-     * @return true if method completed without errors.
-     */
-    private boolean pollStatus() {
-
-        return true;
-    }
-
-    /**
-     * Cancels all running schedulers.
-     */
-    private synchronized void cancelSchedulers() {
-        if (pollingFuture != null) {
-            pollingFuture.cancel(true);
-        }
-        progressUpdater.cancelProgressScheduler();
-    }
-
     @Override
     public void onAccessTokenResponse(@Nullable AccessTokenResponse tokenResponse) {
         updateChannelState(CHANNEL_ACCESSTOKEN,
                 new StringType(tokenResponse == null ? null : tokenResponse.getAccessToken()));
-    }
-
-    /**
-     * Updates the status of all child Tidal Device Things.
-     *
-     * @param tidalDevices list of Tidal devices
-     * @param playing true if the current active device is playing
-     */
-    private void updateDevicesStatus(boolean playing) {
-    }
-
-    /**
-     * Update the player data.
-     *
-     * @param playerInfo The object with the current playing context
-     * @param playlists List of available playlists
-     */
-    private void updatePlayerInfo(List<Playlist> playlists) {
-    }
-
-    private void updateChannelsPlayList(@Nullable List<Playlist> playlists) {
-    }
-
-    /**
-     * @param value Integer value to return as {@link DecimalType}
-     * @return value as {@link DecimalType} or ZERO if the value is null
-     */
-    private DecimalType valueOrZero(@Nullable Integer value) {
-        return value == null ? DecimalType.ZERO : new DecimalType(value);
-    }
-
-    /**
-     * @param value String value to return as {@link StringType}
-     * @return value as {@link StringType} or EMPTY if the value is null or empty
-     */
-    private StringType valueOrEmpty(@Nullable String value) {
-        return value == null || value.isEmpty() ? StringType.EMPTY : new StringType(value);
     }
 
     /**

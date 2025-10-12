@@ -46,7 +46,6 @@ public class TidalBindingConstants {
     public static final String BINDING_ID = "tidal";
     public static final String BINDING_LABEL = "Tidal";
     public static final ThingTypeUID THING_TYPE_PLAYER = new ThingTypeUID(BINDING_ID, "player");
-    public static final ThingTypeUID THING_TYPE_DEVICE = new ThingTypeUID(BINDING_ID, "device");
 
     // List of all Channel ids
     public static final String CHANNEL_ACCESSTOKEN = "accessToken";

@@ -16,7 +16,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.tidal.internal.handler.TidalBridgeHandler;
-import org.openhab.binding.tidal.internal.handler.TidalDeviceHandler;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.media.MediaService;
@@ -57,8 +56,7 @@ public class TidalHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-        return TidalBindingConstants.THING_TYPE_PLAYER.equals(thingTypeUID)
-                || TidalBindingConstants.THING_TYPE_DEVICE.equals(thingTypeUID);
+        return TidalBindingConstants.THING_TYPE_PLAYER.equals(thingTypeUID);
     }
 
     @Override
@@ -70,9 +68,6 @@ public class TidalHandlerFactory extends BaseThingHandlerFactory {
                     mediaService);
             authService.addTidalAccountHandler(handler);
             return handler;
-        }
-        if (TidalBindingConstants.THING_TYPE_DEVICE.equals(thingTypeUID)) {
-            return new TidalDeviceHandler(thing);
         }
         return null;
     }
