@@ -64,6 +64,7 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.PlayPauseType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.RawType;
 import org.openhab.core.library.types.RewindFastforwardType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
@@ -81,6 +82,10 @@ import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 
 /**
  * The {@link UpnpRendererHandler} is responsible for handling commands sent to the UPnP Renderer. It extends
@@ -820,6 +825,32 @@ public class UpnpRendererHandler extends UpnpHandler {
             } else if (mediaTypeCommand == MediaCommandEnumType.PLAY
                     || mediaTypeCommand == MediaCommandEnumType.ENQUEUE) {
                 int idx = val.indexOf("/l");
+
+                if (val.contains("/Root/tidal")) {
+                    int p1 = val.lastIndexOf('/');
+                    String id = val.substring(p1 + 1);
+
+                    String uri = "https://api.tidal.com/v1/tracks/";
+                    uri = uri + id;
+                    uri = uri + "/urlpostpaywall?sessionId=";
+                    uri = uri + "a3df0f52-bd9b-4a54-b300-be2f10f8c8be";
+                    uri = uri
+                            + "&countryCode=FR&limit=1000&urlusagemode=STREAM&audioquality=LOSSLESS&assetpresentation=FULL";
+
+                    logger.info(uri);
+                    RawType tp = HttpUtil.downloadData(uri, null, false, 65536);
+                    String str = new String(tp.getBytes(), StandardCharsets.UTF_8);
+                    JsonElement elm = new Gson().fromJson(str, JsonElement.class);
+                    JsonObject obj = (JsonObject) elm;
+                    JsonElement elmUrl = obj.get("urls");
+                    String url = elmUrl.getAsString();
+
+                    setCurrentURI(url, "");
+                    play();
+                    logger.info("");
+                    return;
+                }
+
                 val = val.substring(idx);
 
                 if (serverHandlers.isEmpty()) {
