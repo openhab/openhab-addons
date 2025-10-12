@@ -87,7 +87,7 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
     public NetatmoHandlerFactory(final @Reference NetatmoDescriptionProvider stateDescriptionProvider,
             final @Reference HttpClientFactory factory, final @Reference NADeserializer deserializer,
             final @Reference HttpService httpService, final @Reference OAuthFactory oAuthFactory,
-            final @Reference TimeZoneProvider timeZoneProvider, Map<String, @Nullable Object> config) {
+            final @Reference TimeZoneProvider timeZoneProvider, Map<String, Object> config) {
         this.stateDescriptionProvider = stateDescriptionProvider;
         this.httpClient = factory.getCommonHttpClient();
         this.deserializer = deserializer;
@@ -98,7 +98,7 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Modified
-    public void configChanged(Map<String, @Nullable Object> config) {
+    public void configChanged(Map<String, Object> config) {
         BindingConfiguration newConf = ConfigParser.configurationAs(config, BindingConfiguration.class);
         if (newConf != null) {
             configuration.update(newConf);

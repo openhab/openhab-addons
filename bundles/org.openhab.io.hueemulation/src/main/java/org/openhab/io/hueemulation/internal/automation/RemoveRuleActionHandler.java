@@ -49,10 +49,11 @@ public class RemoveRuleActionHandler extends BaseModuleHandler<Action> implement
             throw new IllegalArgumentException("'Configuration' can not be empty.");
         }
 
-        ruleUID = (String) config.get(CFG_REMOVE_UID);
-        if (ruleUID == null) {
+        String tmpRuleUID = (String) config.get(CFG_REMOVE_UID);
+        if (tmpRuleUID == null) {
             throw new IllegalArgumentException("'ruleUIDs' property must not be null.");
         }
+        ruleUID = tmpRuleUID;
     }
 
     @Override

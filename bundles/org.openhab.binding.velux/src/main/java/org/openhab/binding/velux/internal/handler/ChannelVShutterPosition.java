@@ -15,6 +15,7 @@ package org.openhab.binding.velux.internal.handler;
 import static org.openhab.binding.velux.internal.VeluxBindingConstants.CHANNEL_VSHUTTER_POSITION;
 
 import java.math.BigDecimal;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -117,8 +118,8 @@ final class ChannelVShutterPosition extends ChannelHandlerTemplate {
             LOGGER.trace("handleCommand(): aborting processing as scene levels are not set.");
             return newValue;
         }
-        String sceneLevels = (String) ThingConfiguration.getValue(thisBridgeHandler, channelUID,
-                VeluxBindingProperties.PROPERTY_VSHUTTER_SCENELEVELS);
+        String sceneLevels = Objects.requireNonNullElse((String) ThingConfiguration.getValue(thisBridgeHandler,
+                channelUID, VeluxBindingProperties.PROPERTY_VSHUTTER_SCENELEVELS), "");
         // ThingProperty currentLevel
         if (!ThingConfiguration.exists(thisBridgeHandler, channelUID,
                 VeluxBindingProperties.PROPERTY_VSHUTTER_CURRENTLEVEL)) {

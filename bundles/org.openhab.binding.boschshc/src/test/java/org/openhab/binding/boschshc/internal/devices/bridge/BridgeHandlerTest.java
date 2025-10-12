@@ -34,7 +34,6 @@ import java.util.concurrent.TimeoutException;
 import java.util.function.BiFunction;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.http.HttpMethod;
@@ -122,7 +121,7 @@ class BridgeHandlerTest {
         fixture.setCallback(thingHandlerCallback);
 
         bridgeConfiguration = new Configuration();
-        Map<@Nullable String, @Nullable Object> properties = new HashMap<>();
+        Map<String, Object> properties = new HashMap<>();
         properties.put("ipAddress", "localhost");
         properties.put("password", "test");
         bridgeConfiguration.setProperties(properties);

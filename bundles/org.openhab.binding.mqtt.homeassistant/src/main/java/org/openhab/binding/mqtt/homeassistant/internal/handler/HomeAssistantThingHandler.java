@@ -180,7 +180,7 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
 
                 discoveryHomeAssistantIDs.add(haID);
                 ThingUID thingUID = channel.getUID().getThingUID();
-                String channelConfigurationJSON = (String) channelConfig.get("config");
+                String channelConfigurationJSON = Objects.requireNonNull((String) channelConfig.get("config"));
                 try {
                     AbstractComponent<?> component = ComponentFactory.createComponent(thingUID, haID,
                             channelConfigurationJSON, this, this, this, scheduler, gson, python, unitProvider);
