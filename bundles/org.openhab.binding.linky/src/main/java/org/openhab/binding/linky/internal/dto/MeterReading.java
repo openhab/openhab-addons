@@ -61,7 +61,7 @@ public class MeterReading {
 
     /**
      * This method will get data from old ConsumptionReport.Aggregate that is the format use by the Web API.
-     * And will result and IntervalReading[] that is the format of the new Endis API
+     * And will result to IntervalReading[] that is the format of the new Enedis API
      *
      * @param agregat
      * @param useIndex : tell if we are reading value from raw consumption or from index value
@@ -103,8 +103,12 @@ public class MeterReading {
                     dataObj.calendrier = agregat.datas.get(idx - 1).calendrier;
                 }
 
-                calendrierDistributor = dataObj.calendrier[0].idCalendrier;
-                calendrierSupplier = dataObj.calendrier[1].idCalendrier;
+                if (dataObj.calendrier[0] != null) {
+                    calendrierDistributor = dataObj.calendrier[0].idCalendrier;
+                }
+                if (dataObj.calendrier[1] != null) {
+                    calendrierSupplier = dataObj.calendrier[1].idCalendrier;
+                }
 
                 if (idx > 0) {
                     result[idx - 1] = new IntervalReading();
@@ -123,10 +127,10 @@ public class MeterReading {
                     }
                 }
 
-                initIndexValue(IndexMode.Supplier, dataObj.classesTemporellesSupplier, result, idx, calendrierSupplier,
+                initIndexValue(IndexMode.SUPPLIER, dataObj.classesTemporellesSupplier, result, idx, calendrierSupplier,
                         lastCalendrierSupplier, lastValueSupplier);
 
-                initIndexValue(IndexMode.Distributor, dataObj.classesTemporellesDistributor, result, idx,
+                initIndexValue(IndexMode.DISTRIBUTOR, dataObj.classesTemporellesDistributor, result, idx,
                         calendrierDistributor, lastCalendrierDistributor, lastValueDistributor);
 
                 lastVal = value;

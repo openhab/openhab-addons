@@ -642,11 +642,11 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
                 LinkyBindingConstants.CHANNEL_TYPE_CONSUMPTION);
         List<Channel> channels = new ArrayList<Channel>();
 
-        addDynamicChannelByLabel(channels, chanTypeUid, values, IndexMode.Supplier);
-        addDynamicChannelByLabel(channels, chanTypeUid, values, IndexMode.Distributor);
+        addDynamicChannelByLabel(channels, chanTypeUid, values, IndexMode.SUPPLIER);
+        addDynamicChannelByLabel(channels, chanTypeUid, values, IndexMode.DISTRIBUTOR);
 
-        addDynamicChannelByIdx(channels, chanTypeUid, IndexMode.Supplier);
-        addDynamicChannelByIdx(channels, chanTypeUid, IndexMode.Distributor);
+        addDynamicChannelByIdx(channels, chanTypeUid, IndexMode.SUPPLIER);
+        addDynamicChannelByIdx(channels, chanTypeUid, IndexMode.DISTRIBUTOR);
 
         // If we have channel change, update the thing
         if (!channels.isEmpty()) {
@@ -730,8 +730,8 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
     }
 
     private void updateEnergyIndex(IntervalReading[] irs, String groupName) {
-        updateEnergyIndex(irs, groupName, IndexMode.Supplier);
-        updateEnergyIndex(irs, groupName, IndexMode.Distributor);
+        updateEnergyIndex(irs, groupName, IndexMode.SUPPLIER);
+        updateEnergyIndex(irs, groupName, IndexMode.DISTRIBUTOR);
     }
 
     /**
@@ -764,7 +764,7 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
 
     private synchronized <T extends Quantity<T>> void updateTimeSeries(String groupId, String channelId,
             IntervalReading[] iv, int idx, Unit<T> unit) {
-        updateTimeSeries(groupId, channelId, iv, idx, unit, IndexMode.None);
+        updateTimeSeries(groupId, channelId, iv, idx, unit, IndexMode.NONE);
     }
 
     private synchronized <T extends Quantity<T>> void updateTimeSeries(String groupId, String channelId,
@@ -782,7 +782,7 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
 
                 Instant timestamp = iv[i].date.atZone(zoneId).toInstant();
 
-                if (indexMode == IndexMode.None) {
+                if (indexMode == IndexMode.NONE) {
                     if (Double.isNaN(iv[i].value)) {
                         continue;
                     }
@@ -1163,9 +1163,9 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
                         initIntervalReadingTarif(meterReading.monthValue[idxMonth]);
                         initIntervalReadingTarif(meterReading.yearValue[idxYear]);
 
-                        sumIndex(IndexMode.Supplier, meterReading, ir, idxWeek, weeksNum, idxMonth, monthsNum, idxYear,
+                        sumIndex(IndexMode.SUPPLIER, meterReading, ir, idxWeek, weeksNum, idxMonth, monthsNum, idxYear,
                                 yearsNum);
-                        sumIndex(IndexMode.Distributor, meterReading, ir, idxWeek, weeksNum, idxMonth, monthsNum,
+                        sumIndex(IndexMode.DISTRIBUTOR, meterReading, ir, idxWeek, weeksNum, idxMonth, monthsNum,
                                 idxYear, yearsNum);
                     }
                 }

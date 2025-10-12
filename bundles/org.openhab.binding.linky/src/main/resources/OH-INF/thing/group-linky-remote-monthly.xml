@@ -11,23 +11,18 @@
 				<label>This Month Consumption</label>
 				<description>The energy consumption for the current Month</description>
 			</channel>
-
 			<channel id="lastMonth" typeId="consumption">
 				<label>Last Month Consumption</label>
 				<description>The energy consumption for the previous Month</description>
 			</channel>
-
 			<channel id="month-2" typeId="consumption">
 				<label>Month -2 Consumption</label>
 				<description>The energy consumption for the Month -2</description>
 			</channel>
-
 			<channel id="consumption" typeId="consumption">
 				<label>Consumption</label>
 				<description>The energy consumption</description>
 			</channel>
-
-
 			<channel id="max-power" typeId="power">
 				<label>Peak Value</label>
 				<description>Maximum power usage value</description>

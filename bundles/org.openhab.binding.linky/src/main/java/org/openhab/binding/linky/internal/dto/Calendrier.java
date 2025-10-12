@@ -13,10 +13,9 @@
 package org.openhab.binding.linky.internal.dto;
 
 /**
- * The {@link Calendrier} holds informations about energy consumption
+ * The {@link Calendrier} holds informations about the available energy calendar
  *
- * @author Gaël L'hopital - Initial contribution
- * @author Laurent Arnal - Rewrite addon to use official dataconect API
+ * @author Laurent Arnal - Initial contribution
  */
 
 public class Calendrier {

@@ -23,7 +23,6 @@
 				<label>Consumption</label>
 				<description>The energy consumption</description>
 			</channel>
-
 			<channel id="max-power" typeId="power">
 				<label>Peak Value</label>
 				<description>Maximum power usage value</description>

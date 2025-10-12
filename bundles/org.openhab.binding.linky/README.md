@@ -27,7 +27,7 @@ Step are:
 1. Link your old thing to the new created bridge thing:
 
      ```java
-     Thing linky:linky:linkremotemelody "Linky Melody" (linky:enedis:local)
+     Thing linky:linky:linkremotexxxx "Linky xxxx" (linky:enedis:local)
      ```
 
 1. Start using the new channels added by the enhanced binding..
@@ -253,17 +253,16 @@ The retrieved information is available in multiple groups.
   
 #### Dynamic Thing Channels  
 
-Add-ons now support reading consumption indexes from the Enedis website.  
+The binding (as of openHAB 5.1.0) supports reading consumption indexes from the Enedis website.  
 This makes it possible to view consumption for different tariffs such as *heures pleines / heures creuses* or *tempo*.  
 
-To handle this, add-ons will create a new set of channels for daily, weekly, monthly, and yearly groups.  
+To handle this, binding will create a new set of channels for daily, weekly, monthly, and yearly groups.  
 
 You will have two different sets of indexes:  
 
 - **Raw consumption indexes:**  
   These are the default indexes returned by Enedis. The naming uses base indexes, so there is no direct way to know which tariff each index corresponds to.  
   Channels will be named as follows:  
-
 
 
   consumptionSupplierIdx0, consumptionSupplierIdx1, ..., consumptionSupplierIdx9
@@ -273,7 +272,7 @@ You will have two different sets of indexes:
   The supplier is the commercial company with which you have a contract (EDF, TotalEnergies, etc.). This is where your specific supplier tariff is defined.  
 
 - **Named consumption indexes:**  
-To make things simpler, the add-ons also expose tariff-named channels.  
+To make things simpler, the binding also expose tariff-named channels.  
 For example:  
 
    daily#heuresPleines, daily#heuresCreuses, daily#bleuHeuresCreuses,
@@ -301,11 +300,22 @@ Number:Energy ConsoMoisEnCours "Conso ce mois [%.0f %unit%]" <energy> { channel=
 Number:Energy ConsoMoisDernier "Conso mois dernier [%.0f %unit%]" <energy> { channel="linky:linky:linkyremotexxxx:monthly#lastMonth" }
 Number:Energy ConsoAnneeEnCours "Conso cette année [%.0f %unit%]" <energy> { channel="linky:linky:linkyremotexxxx:yearly#thisYear" }
 Number:Energy ConsoAnneeDerniere "Conso année dernière [%.0f %unit%]" <energy> { channel="linky:linky:linkyremotexxxx:yearly#lastYear" }
+
+Number:Energy ConsoDay "Linky Conso Day -x Histo [%d]" <energy> { channel="linky:linky:linkyremotexxxx:daily#consumption" }
+Number:Energy ConsoMonth "Linky Conso Month -x Histo [%d]" <energy> { channel="linky:linky:linkyremotexxxx:monthly#consumption" }
+
+Number:Energy ConsoMonthHeuresCreusesBlanc "Linky Conso Month Heures Creuses Bleue -x Histo [%d]" <energy> { channel="linky:linky:linkyremotexxxx:monthly#blancHeuresCreuses" }
+Number:Energy ConsoMonthHeuresCreusesBleue "Linky Conso Month Heures Creuses Blanc -x Histo [%d]" <energy> { channel="linky:linky:linkyremotexxxx:monthly#bleueHeuresCreuses" }
+Number:Energy ConsoMonthHeuresCreusesRouge "Linky Conso Month Heures Rouge -x Histo [%d]" <energy> { channel="linky:linky:linkyremotexxxx:monthly#rougeHeuresCreuses" }
+
+Number:Energy ConsoMonthHeuresPleinesBlanc "Linky Conso Month Heures Pleines Blanc -x Histo [%d]" <energy> { channel="linky:linky:linkyremotexxxx:monthly#blancHeuresPleines" }
+Number:Energy ConsoMonthHeuresPleinesBleue "Linky Conso Month Heures Pleines Bleue -x Histo [%d]" <energy> { channel="linky:linky:linkyremotexxxx:monthly#bleueHeuresPleines" }
+Number:Energy ConsoMonthHeuresPleinesRouge "Linky Conso Month Heures Pleines Rouge -x Histo [%d]" <energy> { channel="linky:linky:linkyremotexxxx:monthly#rougeHeuresPleines" }
 ```
 
 ### Displaying Information Graph
 
-Using the timeseries channel, you will be able to easily create a chart to show the consumption graph.
+Using the timeseries channel and the binding version in openHAB 5.1.0, you will be able to easily create a chart to show the consumption graph. 
 To do this, you need to enable a timeseries persistence framework.
 Graph definitions will look like this:
 
@@ -316,7 +326,7 @@ Sample code:
 ```java
 config:
   future: false
-  label: Linky Melody Conso Journalière
+  label: Conso Day
   order: "110"
   period: 2W
   sidebar: true
@@ -342,7 +352,7 @@ slots:
         areaStyle:
           opacity: 0.2
         gridIndex: 0
-        item: Linky_Melody_Daily_Conso_Day
+        item: ConsoDay
         label:
           formatter: =v=>Number.parseFloat(v.data[1]).toFixed(2) + " Kwh"
           position: inside
@@ -400,7 +410,7 @@ Sample code:
 ```java
 config:
   future: false
-  label: Linky Melody Conso Monthly 2
+  label: ConsoMonth
   order: "9999999"
   period: Y
   sidebar: true
@@ -427,7 +437,7 @@ slots:
       config:
         barGap: -100%
         gridIndex: 0
-        item: Linky_Melody_Monthly_Conso_Month
+        item: ConsoMonth
         label:
           formatter: =v=>Number.parseFloat(v.data[1]).toFixed(2) + " Kwh"
           position: top
@@ -443,7 +453,7 @@ slots:
       config:
         color: "#1010ff"
         gridIndex: 0
-        item: Linky_Melody_Monthly_Supplier_Conso_Month_Heures_Pleines_Bleue
+        item: ConsoMonthHeuresPleinesBleue
         label:
           formatter: =v=>v.data[1]!="0"?Number.parseFloat(v.data[1]).toFixed(2) + "
             Kwh":''
@@ -463,7 +473,7 @@ slots:
         emphasis:
           disabled: true
         gridIndex: 0
-        item: Linky_Melody_Monthly_Supplier_Conso_Month_Heures_Pleines_Blanc
+        item: ConsoMonthHeuresPleinesBlanc
         label:
           formatter: =v=>v.data[1]!="0"?Number.parseFloat(v.data[1]).toFixed(2) + "
             Kwh":''
@@ -483,7 +493,7 @@ slots:
         emphasis:
           disabled: true
         gridIndex: 0
-        item: Linky_Melody_Monthly_Supplier_Conso_Month_Heures_Creuses_Rouge
+        item: ConsoMonthHeuresCreusesRouge
         label:
           formatter: =v=>v.data[1]!="0"?Number.parseFloat(v.data[1]).toFixed(2) + "
             Kwh":''
@@ -503,7 +513,7 @@ slots:
         emphasis:
           disabled: true
         gridIndex: 0
-        item: Linky_Melody_Monthly_Supplier_Conso_Month_Heures_Creuses_Blanc
+        item: ConsoMonthHeuresCreusesBlanc
         label:
           formatter: =v=>v.data[1]!="0"?Number.parseFloat(v.data[1]).toFixed(2) + "
             Kwh":''
@@ -523,7 +533,7 @@ slots:
         emphasis:
           disabled: true
         gridIndex: 0
-        item: Linky_Melody_Monthly_Supplier_Conso_Month_Heures_Creuses_Bleue
+        item: ConsoMonthHeuresCreusesBleue
         label:
           formatter: =v=>v.data[1]!="0"?Number.parseFloat(v.data[1]).toFixed(2) + "
             Kwh":''
@@ -543,7 +553,7 @@ slots:
         emphasis:
           disabled: true
         gridIndex: 0
-        item: Linky_Melody_Monthly_Supplier_Conso_Month_Heures_Pleines_Rouge
+        item: ConsoMonthHeuresPleinesRouge
         label:
           formatter: =v=>v.data[1]!="0"?Number.parseFloat(v.data[1]).toFixed(2) + "
             Kwh":''
@@ -563,7 +573,7 @@ slots:
         emphasis:
           disabled: true
         gridIndex: 0
-        item: Linky_Melody_Monthly_Supplier_Conso_Month_Heures_Pleines
+        item: ConsoMonthHeuresPleines
         label:
           formatter: =v=>v.data[1]!="0"?Number.parseFloat(v.data[1]).toFixed(2) + "
             Kwh":''
@@ -583,7 +593,7 @@ slots:
         emphasis:
           disabled: true
         gridIndex: 0
-        item: Linky_Melody_Monthly_Supplier_Conso_Month_Heures_Creuses
+        item: ConsoMonthHeuresPleinesCreuses
         label:
           formatter: =v=>v.data[1]!="0"?Number.parseFloat(v.data[1]).toFixed(2) + "
             Kwh":''
