@@ -91,7 +91,7 @@ public class TPLinkSmartHomeDiscoveryServiceTest {
         setUp(filename);
         discoveryService.startScan();
         ArgumentCaptor<DiscoveryResult> discoveryResultCaptor = ArgumentCaptor.forClass(DiscoveryResult.class);
-        verify(discoveryListener).thingDiscovered(any(), discoveryResultCaptor.capture());
+        verify(discoveryListener, timeout(1000L)).thingDiscovered(any(), discoveryResultCaptor.capture());
         DiscoveryResult discoveryResult = discoveryResultCaptor.getValue();
         assertEquals(TPLinkSmartHomeBindingConstants.BINDING_ID, discoveryResult.getBindingId(),
                 "Check if correct binding id found");
