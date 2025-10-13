@@ -190,6 +190,11 @@ public class UpnpServerHandler extends UpnpHandler implements MediaListenner {
     }
 
     @Override
+    public String getStreamUri(String cmdVal) {
+        return "";
+    }
+
+    @Override
     public void dispose() {
         logger.debug("Disposing handler for media server device {}", thing.getLabel());
 
