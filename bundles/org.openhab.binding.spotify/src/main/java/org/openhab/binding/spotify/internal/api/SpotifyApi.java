@@ -376,8 +376,11 @@ public class SpotifyApi {
      * @return Returns the artists of the user.
      */
     public List<Track> getTracks(long offset, long limit) {
-        final UserTrackEntries userTracks = request(GET,
-                SPOTIFY_API_URL + "/tracks?offset" + offset + "&limit=" + limit, "", UserTrackEntries.class);
+        String url = SPOTIFY_API_URL + "/tracks?offset" + offset;
+        if (limit != 0) {
+            url = url + "&limit=" + limit;
+        }
+        final UserTrackEntries userTracks = request(GET, url, "", UserTrackEntries.class);
 
         return getTrackFromUserTrackEntries(userTracks);
     }

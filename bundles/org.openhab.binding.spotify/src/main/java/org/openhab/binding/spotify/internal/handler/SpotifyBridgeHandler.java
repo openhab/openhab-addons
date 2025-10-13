@@ -182,6 +182,11 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
     }
 
     @Override
+    public String getStreamUri(String cmdVal) {
+        return "";
+    }
+
+    @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
             switch (channelUID.getId()) {
