@@ -14,9 +14,17 @@ package org.openhab.binding.nikohomecontrol.internal.handler;
 
 import static org.openhab.binding.nikohomecontrol.internal.NikoHomeControlBindingConstants.*;
 import static org.openhab.binding.nikohomecontrol.internal.protocol.NikoHomeControlConstants.*;
+import static org.openhab.core.library.unit.Units.KILOWATT_HOUR;
 import static org.openhab.core.types.RefreshType.REFRESH;
 
 import java.math.BigDecimal;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,6 +34,7 @@ import org.openhab.binding.nikohomecontrol.internal.protocol.NhcCarCharger;
 import org.openhab.binding.nikohomecontrol.internal.protocol.NhcCarChargerEvent;
 import org.openhab.binding.nikohomecontrol.internal.protocol.NikoHomeControlCommunication;
 import org.openhab.binding.nikohomecontrol.internal.protocol.nhc2.NhcCarCharger2;
+import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -91,8 +100,16 @@ public class NikoHomeControlCarChargerHandler extends NikoHomeControlBaseHandler
                             nhcCarCharger.getTargetTime(), nhcCarCharger.isBoost(),
                             nhcCarCharger.getReachableDistance(), nhcCarCharger.getNextChargingTime());
                     break;
+                case CHANNEL_ENERGY:
+                case CHANNEL_ENERGY_DAY:
+                case CHANNEL_MEASUREMENT_TIME:
+                    LocalDateTime lastReadingUTC = nhcCarCharger.getLastReading();
+                    if (lastReadingUTC != null) {
+                        meterReadingEvent(nhcCarCharger.getReading(), nhcCarCharger.getDayReading(), lastReadingUTC);
+                    }
+                    break;
                 default:
-
+                    break;
             }
         } else {
             switch (channelUID.getId()) {
@@ -188,6 +205,22 @@ public class NikoHomeControlCarChargerHandler extends NikoHomeControlBaseHandler
             return;
         }
 
+        String startDate = getConfig().as(NikoHomeControlMeterConfig.class).startDate;
+        if (startDate.isEmpty()) {
+            startDate = Instant.now().atZone(nhcComm.getTimeZone()).truncatedTo(ChronoUnit.DAYS)
+                    .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+            Configuration config = editConfiguration();
+            config.put(CONFIG_METER_START_DATE, startDate);
+            updateConfiguration(config);
+        }
+        try {
+            LocalDateTime.parse(startDate);
+        } catch (DateTimeParseException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/offline.configuration-error.meterStartDate");
+            return;
+        }
+
         nhcCarCharger.setEventHandler(this);
 
         updateProperties(nhcCarCharger);
@@ -212,15 +245,21 @@ public class NikoHomeControlCarChargerHandler extends NikoHomeControlBaseHandler
             chargingStatusEvent(carCharger.getStatus(), carCharger.getChargingStatus(), carCharger.getEvStatus(),
                     carCharger.getCouplingStatus(), carCharger.getElectricalPower());
         }
+        NikoHomeControlCommunication nhcComm = getCommunication(getBridgeHandler());
+        if (nhcComm != null) {
+            NikoHomeControlMeterConfig config = getConfig().as(NikoHomeControlMeterConfig.class);
+            nhcComm.startMeter(deviceId, config.refresh, config.startDate);
+        }
     }
 
     @Override
     public void dispose() {
         NikoHomeControlCommunication nhcComm = getCommunication(getBridgeHandler());
         if (nhcComm != null) {
-            NhcCarCharger access = nhcComm.getCarChargerDevices().get(deviceId);
-            if (access != null) {
-                access.unsetEventHandler();
+            nhcComm.stopMeter(deviceId);
+            NhcCarCharger carCharger = nhcComm.getCarChargerDevices().get(deviceId);
+            if (carCharger != null) {
+                carCharger.unsetEventHandler();
             }
         }
         nhcCarCharger = null;
@@ -286,6 +325,32 @@ public class NikoHomeControlCarChargerHandler extends NikoHomeControlBaseHandler
         if (nextChargingTime != null) {
             updateState(CHANNEL_NEXT_CHARGING_TIME, DateTimeType.valueOf(nextChargingTime));
         }
+        updateStatus(ThingStatus.ONLINE);
+    }
+
+    @Override
+    public void meterReadingEvent(double reading, double dayReading, LocalDateTime lastReadingUTC) {
+        NhcCarCharger nhcCarCharger = this.nhcCarCharger;
+        if (nhcCarCharger == null) {
+            logger.debug("car charger device with ID {} not initialized", deviceId);
+            return;
+        }
+
+        NikoHomeControlBridgeHandler bridgeHandler = getBridgeHandler();
+        if (bridgeHandler == null) {
+            logger.debug("Cannot update char charger channels, no bridge handler");
+            return;
+        }
+
+        ZonedDateTime lastReading = lastReadingUTC.atZone(ZoneOffset.UTC)
+                .withZoneSameInstant(bridgeHandler.getTimeZone());
+
+        boolean invert = getConfig().as(NikoHomeControlCarChargerConfig.class).invert;
+        double value = (invert ? -1 : 1) * reading;
+        double dayValue = (invert ? -1 : 1) * dayReading;
+        updateState(CHANNEL_ENERGY, new QuantityType<>(value, KILOWATT_HOUR));
+        updateState(CHANNEL_ENERGY_DAY, new QuantityType<>(dayValue, KILOWATT_HOUR));
+        updateState(CHANNEL_MEASUREMENT_TIME, new DateTimeType(lastReading));
         updateStatus(ThingStatus.ONLINE);
     }
 }

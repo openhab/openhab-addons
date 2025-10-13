@@ -128,11 +128,11 @@ public class NikoHomeControlConstants {
             "UNKNOWN ERROR");
 
     // NhcII energy channels
-    public static final String NHC_ELECTRICAL_ENERGY = "electricalEnergy";
-    public static final String NHC_ELECTRICAL_ENERGY_CONSUMPTION = "electricalEnergyConsumption";
-    public static final String NHC_ELECTRICAL_ENERGY_TO_GRID = "electricalEnergyToGrid";
-    public static final String NHC_ELECTRICAL_ENERGY_FROM_GRID = "electricalEnergyFromGrid";
-    public static final String NHC_ELECTRICAL_ENERGY_SELF_CONSUMPTION = "electricalEnergySelfConsumption";
-    public static final String NHC_GAS_VOLUME = "gasVolume";
-    public static final String NHC_WATER_VOLUME = "waterVolume";
+    public static final String NHC_ELECTRICAL_ENERGY = "ElectricalEnergy";
+    public static final String NHC_ELECTRICAL_ENERGY_CONSUMPTION = "ElectricalEnergyConsumption";
+    public static final String NHC_ELECTRICAL_ENERGY_TO_GRID = "ElectricalEnergyToGrid";
+    public static final String NHC_ELECTRICAL_ENERGY_FROM_GRID = "ElectricalEnergyFromGrid";
+    public static final String NHC_ELECTRICAL_ENERGY_SELF_CONSUMPTION = "ElectricalEnergySelfConsumption";
+    public static final String NHC_GAS_VOLUME = "GasVolume";
+    public static final String NHC_WATER_VOLUME = "WaterVolume";
 }

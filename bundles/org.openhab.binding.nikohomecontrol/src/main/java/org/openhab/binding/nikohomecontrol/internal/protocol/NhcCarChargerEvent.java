@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.nikohomecontrol.internal.protocol;
 
+import java.time.LocalDateTime;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -52,4 +54,13 @@ public interface NhcCarChargerEvent extends NhcBaseEvent {
      */
     void chargingModeEvent(@Nullable String chargingMode, float targetDistance, @Nullable String targetTime,
             boolean boost, float reachableDistance, @Nullable String nextChargingTime);
+
+    /**
+     * This method is called when a meter reading is received from the Niko Home Control controller.
+     *
+     * @param reading meter reading
+     * @param dayReading meter reading for current day
+     * @param lastReadingUTC last meter reading date and time, UTC
+     */
+    void meterReadingEvent(double reading, double dayReading, LocalDateTime lastReadingUTC);
 }

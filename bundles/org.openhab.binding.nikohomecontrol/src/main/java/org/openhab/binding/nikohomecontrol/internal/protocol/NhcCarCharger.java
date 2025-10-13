@@ -12,6 +12,12 @@
  */
 package org.openhab.binding.nikohomecontrol.internal.protocol;
 
+import java.time.LocalDateTime;
+import java.util.Random;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
@@ -47,15 +53,24 @@ public abstract class NhcCarCharger {
     protected volatile boolean boost;
     protected volatile float reachableDistance;
     protected volatile @Nullable String nextChargingTime;
+    protected volatile double reading;
+    protected volatile double dayReading;
+    protected volatile @Nullable LocalDateTime lastReadingUTC;
 
-    @Nullable
-    private NhcCarChargerEvent eventHandler;
+    private @Nullable NhcCarChargerEvent eventHandler;
 
-    protected NhcCarCharger(String id, String name, @Nullable String location, NikoHomeControlCommunication nhcComm) {
+    private ScheduledExecutorService scheduler;
+    private volatile @Nullable ScheduledFuture<?> readingSchedule;
+
+    private Random r = new Random();
+
+    protected NhcCarCharger(String id, String name, @Nullable String location, NikoHomeControlCommunication nhcComm,
+            ScheduledExecutorService scheduler) {
         this.id = id;
         this.name = name;
         this.location = location;
         this.nhcComm = nhcComm;
+        this.scheduler = scheduler;
     }
 
     /**
@@ -267,6 +282,34 @@ public abstract class NhcCarCharger {
     }
 
     /**
+     * @return the meter reading in kWh
+     */
+    public double getReading() {
+        return reading;
+    }
+
+    /**
+     * @return the meter reading for the current day in kWh
+     */
+    public double getDayReading() {
+        return dayReading;
+    }
+
+    /**
+     * @return last processed meter reading in UTC zone
+     */
+    public @Nullable LocalDateTime getLastReading() {
+        return lastReadingUTC;
+    }
+
+    public void setReading(double reading, double dayReading, LocalDateTime lastReading) {
+        this.reading = reading;
+        this.dayReading = dayReading;
+        this.lastReadingUTC = lastReading;
+        updateReadingState();
+    }
+
+    /**
      * Updates the charging mode and related channels for the car charger thing.
      * If a parameter is {@code null}, the existing value is retained.
      * After updating, notifies the event handler (if present) with the new states.
@@ -300,9 +343,25 @@ public abstract class NhcCarCharger {
     }
 
     /**
+     * Update meter reading value of the meter without touching the meter definition (id, name) and without changing the
+     * ThingHandler callback.
+     *
+     */
+    protected void updateReadingState() {
+        NhcCarChargerEvent handler = eventHandler;
+        double reading = getReading();
+        double dayReading = getDayReading();
+        LocalDateTime lastReading = getLastReading();
+        if ((handler != null) && (lastReading != null)) {
+            logger.debug("update meter reading channels for {} with {}, day {}", id, reading, dayReading);
+            handler.meterReadingEvent(reading, dayReading, lastReading);
+        }
+    }
+
+    /**
      * Method called when car charger is removed from the Niko Home Control Controller.
      */
-    public void carChargerDeviceRemoved() {
+    public void carChargerRemoved() {
         logger.debug("car charger removed {}, {}", id, name);
         NhcCarChargerEvent eventHandler = this.eventHandler;
         if (eventHandler != null) {
@@ -341,11 +400,38 @@ public abstract class NhcCarCharger {
      * Executes a command to change the charging boost state for SMART charging of the car charger in the Niko Home
      * Control system.
      * When boost is true, the capacity limit may not be respected.
-     * 
+     *
      * @param boost true to enable charging boost, false to disable it
      */
     public void executeCarChargerChargingBoost(boolean boost) {
         logger.debug("change car charger boost for {} to {}", id, boost);
         nhcComm.executeCarChargerChargingBoost(id, boost);
+    }
+
+    /**
+     * Start receiving meter data at regular intervals. Initial delay will be random between 10 and 100s to reduce risk
+     * of overloading controller during initialization.
+     *
+     * @param refresh interval between meter queries in minutes
+     */
+    public void startMeter(int refresh, String startDate) {
+        stopMeter();
+        int firstRefreshDelay = 10 + r.nextInt(90);
+        logger.debug("schedule meter data refresh for {} every {} minutes, first refresh in {}s", id, refresh,
+                firstRefreshDelay);
+        readingSchedule = scheduler.scheduleWithFixedDelay(() -> {
+            nhcComm.executeMeter(id, startDate);
+        }, firstRefreshDelay, refresh * 60, TimeUnit.SECONDS);
+    }
+
+    /**
+     * Stop receiving meter data.
+     */
+    public void stopMeter() {
+        ScheduledFuture<?> schedule = readingSchedule;
+        if (schedule != null) {
+            schedule.cancel(true);
+            readingSchedule = null;
+        }
     }
 }

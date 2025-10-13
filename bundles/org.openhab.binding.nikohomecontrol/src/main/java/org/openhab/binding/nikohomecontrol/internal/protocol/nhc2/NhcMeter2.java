@@ -90,6 +90,8 @@ public class NhcMeter2 extends NhcMeter {
         if (readings.isEmpty() || dayReadings.isEmpty()) {
             return;
         }
+        this.readings = readings;
+        this.dayReadings = dayReadings;
         this.lastReadingUTC = lastReading;
         updateReadingState();
     }

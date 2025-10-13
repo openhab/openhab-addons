@@ -18,6 +18,7 @@ import java.lang.reflect.Type;
 import java.net.InetAddress;
 import java.security.cert.CertificateException;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -41,6 +42,7 @@ import javax.measure.Unit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.nikohomecontrol.internal.protocol.HttpClientInitializationException;
 import org.openhab.binding.nikohomecontrol.internal.protocol.NhcAccess;
 import org.openhab.binding.nikohomecontrol.internal.protocol.NhcAction;
 import org.openhab.binding.nikohomecontrol.internal.protocol.NhcAlarm;
@@ -151,14 +153,22 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
             return;
         }
 
-        httpConnection = new NhcHttpConnection2(httpClient, addrString, token);
+        try {
+            httpConnection = new NhcHttpConnection2(httpClient, addrString, token);
+        } catch (HttpClientInitializationException e) {
+            logger.debug("error initializing http communication");
+            handler.controllerOffline("@text/offline.communication-error");
+            scheduleRestartCommunication();
+            return;
+        }
 
         try {
             mqttConnection.startConnection(addrString, port, profile, token);
         } catch (MqttException e) {
-            logger.debug("error in mqtt communication");
+            logger.debug("error initializing mqtt communication");
             handler.controllerOffline("@text/offline.communication-error");
             scheduleRestartCommunication();
+            return;
         }
     }
 
@@ -634,7 +644,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
         } else {
             logger.debug("adding car charger device {} model {}, {}", device.uuid, device.model, device.name);
             nhcCarCharger = new NhcCarCharger2(device.uuid, device.name, device.type, device.technology, device.model,
-                    location, this);
+                    location, this, scheduler);
         }
         carChargerDevices.put(device.uuid, nhcCarCharger);
     }
@@ -666,7 +676,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
             alarm.alarmDeviceRemoved();
             alarmDevices.remove(device.uuid);
         } else if (carCharger != null) {
-            carCharger.carChargerDeviceRemoved();
+            carCharger.carChargerRemoved();
             carChargerDevices.remove(device.uuid);
         }
     }
@@ -1117,7 +1127,8 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
     @Override
     public void executeMeter(String meterId, String startDate) {
         NhcMeter meter = meters.get(meterId);
-        if (meter == null) {
+        NhcCarCharger carCharger = carChargerDevices.get(meterId);
+        if (meter == null && carCharger == null) {
             return;
         }
 
@@ -1125,12 +1136,10 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
         if (httpConnection == null) {
             return;
         }
-        LocalDateTime now = ZonedDateTime.now().withZoneSameInstant(getTimeZone()).toLocalDateTime();
+        ZonedDateTime nowUTC = ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC);
+        LocalDateTime now = nowUTC.withZoneSameInstant(getTimeZone()).toLocalDateTime();
+        LocalDateTime meterStart = LocalDateTime.parse(startDate);
         LocalDateTime dayStart = now.truncatedTo(ChronoUnit.DAYS);
-        LocalDateTime meterStart = meter.getLastReading();
-        if (meterStart == null) {
-            meterStart = LocalDateTime.parse(startDate);
-        }
 
         String response = httpConnection.getMeasurements(meterId, meterStart, now);
         logger.trace("Meter measurement: {}", response);
@@ -1140,7 +1149,16 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
         logger.trace("Day measurement: {}", response);
         final Map<String, Double> dayReadings = response != null ? parseMeterReadings(response) : Map.of();
 
-        meter.setReadings(readings, dayReadings, now);
+        if (meter != null) {
+            meter.setReadings(readings, dayReadings, nowUTC.toLocalDateTime());
+        }
+        if (carCharger != null) {
+            Double reading = readings.values().stream().findFirst().orElse(null);
+            Double dayReading = dayReadings.values().stream().findFirst().orElse(null);
+            if (reading != null && dayReading != null) {
+                carCharger.setReading(reading, dayReading, nowUTC.toLocalDateTime());
+            }
+        }
     }
 
     private Map<String, Double> parseMeterReadings(String response) {
@@ -1160,15 +1178,19 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
                 List<NhcMeterValue> values = r.values;
                 if (property != null && values != null && !values.isEmpty()) {
                     double value = values.getFirst().value;
-                    if (unit != null) {
+                    if (unit != null && !unit.isEmpty()) {
                         try {
                             Unit<?> receivedUnit = Units.getInstance().getUnit(unit);
-                            Unit<?> targetUnit = receivedUnit.isCompatible(SIUnits.CUBIC_METRE) ? SIUnits.CUBIC_METRE
-                                    : Units.KILOWATT_HOUR;
-                            QuantityType<?> quantityValue = QuantityType.valueOf(value, receivedUnit)
-                                    .toUnit(targetUnit);
-                            if (quantityValue != null) {
-                                value = quantityValue.doubleValue();
+                            if (receivedUnit != null) {
+                                Unit<?> targetUnit = receivedUnit.isCompatible(Units.KILOWATT_HOUR)
+                                        ? Units.KILOWATT_HOUR
+                                        : (receivedUnit.isCompatible(SIUnits.CUBIC_METRE) ? SIUnits.CUBIC_METRE
+                                                : receivedUnit);
+                                QuantityType<?> quantityValue = QuantityType.valueOf(value, receivedUnit)
+                                        .toUnit(targetUnit);
+                                if (quantityValue != null) {
+                                    value = quantityValue.doubleValue();
+                                }
                             }
                         } catch (ClassCastException e) {
                             logger.debug("Unit conversion failed for unit {}: {}", unit, e.getMessage());

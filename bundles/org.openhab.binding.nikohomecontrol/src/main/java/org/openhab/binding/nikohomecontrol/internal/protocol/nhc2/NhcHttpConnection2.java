@@ -25,6 +25,7 @@ import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
+import org.openhab.binding.nikohomecontrol.internal.protocol.HttpClientInitializationException;
 import org.openhab.binding.nikohomecontrol.internal.protocol.NikoHomeControlConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,19 +53,29 @@ public class NhcHttpConnection2 {
 
     private static final long TIMEOUT_MS = 1000;
 
-    NhcHttpConnection2(HttpClient httpClient, String cocoAddress, String token) {
+    NhcHttpConnection2(HttpClient httpClient, String cocoAddress, String token)
+            throws HttpClientInitializationException {
         this.httpClient = httpClient;
         this.token = token;
         this.hostname = cocoAddress;
-        measurementsBaseUrl = "https://" + cocoAddress + NikoHomeControlConstants.NHC_MEASUREMENTS_BASEURL;
+        measurementsBaseUrl = String.format("https://%s%s", cocoAddress,
+                NikoHomeControlConstants.NHC_MEASUREMENTS_BASEURL);
+        if (!httpClient.isStarted()) {
+            try {
+                httpClient.start();
+            } catch (Exception e) {
+                logger.debug("Failed to start http connection to Niko Home Control controller at {}", cocoAddress, e);
+                throw new HttpClientInitializationException("Failed to start HTTP client", e);
+            }
+        }
     }
 
     public @Nullable String getMeasurements(String deviceUuid, LocalDateTime start, LocalDateTime end) {
         String intervalStart = start.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
         String intervalEnd = end.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
-        String url = measurementsBaseUrl + "/" + deviceUuid + "/total?Aggregation=sum&IntervalStart=" + intervalStart
-                + "&IntervalEnd=" + intervalEnd;
-        logger.trace("Get Total Measurements: {}", url);
+        String url = String.format("%s/%s/total?Aggregation=sum&IntervalStart=%s&IntervalEnd=%s", measurementsBaseUrl,
+                deviceUuid, intervalStart, intervalEnd);
+        logger.trace("Get measurements: {}", url);
         Request request = httpClient.newRequest(url);
         ContentResponse response;
         try {
@@ -72,7 +83,7 @@ public class NhcHttpConnection2 {
                     .header(HttpHeader.HOST, hostname).header(HttpHeader.ACCEPT, "application/json")
                     .timeout(TIMEOUT_MS, TimeUnit.MILLISECONDS).send();
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            logger.debug("Error with query {}", url);
+            logger.debug("Error with query {}", url, e);
             return null;
         }
 

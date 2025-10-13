@@ -218,8 +218,8 @@
 				<description>@text/channelEnergyFromGridDescription</description>
 			</channel>
 			<channel id="energytogrid" typeId="energy">
-				<label>@text/channelEnergyFromGridLabel</label>
-				<description>@text/channelEnergyFromGridDayDescription</description>
+				<label>@text/channelEnergyToGridLabel</label>
+				<description>@text/channelEnergyToGridDayDescription</description>
 			</channel>
 			<channel id="energytogridday" typeId="energyday">
 				<label>@text/channelEnergyToGridLabel</label>
@@ -488,7 +488,10 @@
 		<description>@text/carChargerDescription</description>
 		<semantic-equipment-tag>EVSE</semantic-equipment-tag>
 		<channels>
-			<channel id="status" typeId="system.power"/>
+			<channel id="status" typeId="system.power">
+				<label>@text/channelCarChargerStatusLabel</label>
+				<description>@text/channelCarChargerStatusDescription</description>
+			</channel>
 			<channel id="chargingStatus" typeId="chargingStatus"/>
 			<channel id="evStatus" typeId="evStatus"/>
 			<channel id="couplingStatus" typeId="couplingStatus"/>
@@ -499,11 +502,32 @@
 			<channel id="boost" typeId="boost"/>
 			<channel id="reachableDistance" typeId="reachableDistance"/>
 			<channel id="nextChargingTime" typeId="nextChargingTime"/>
+			<channel id="energy" typeId="energy"/>
+			<channel id="energyday" typeId="energyday"/>
+			<channel id="measurementtime" typeId="measurementtime"/>
 		</channels>
 		<config-description>
 			<parameter name="carChargerId" type="text" required="true">
 				<label>@text/deviceConfigDeviceIdLabel</label>
 				<description>@text/deviceConfigDeviceIdDescription</description>
+			</parameter>
+			<parameter name="refresh" type="integer" min="5">
+				<label>@text/meterConfigRefreshLabel</label>
+				<description>@text/meterConfigRefreshDescription</description>
+				<default>10</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="startDate" type="text">
+				<context>datetime</context>
+				<label>@text/meterConfigStartDateLabel</label>
+				<description>@text/meterConfigStartDateDescription</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="invert" type="boolean">
+				<label>@text/meterConfigInvertLabel</label>
+				<description>@text/meterConfigInvertDescription</description>
+				<default>false</default>
+				<advanced>true</advanced>
 			</parameter>
 		</config-description>
 	</thing-type>

@@ -292,6 +292,12 @@ public abstract class NikoHomeControlCommunication {
         NhcMeter meter = getMeters().get(meterId);
         if (meter != null) {
             meter.startMeter(refresh, startDate);
+            return;
+        }
+        NhcCarCharger carCharger = getCarChargerDevices().get(meterId);
+        if (carCharger != null) {
+            carCharger.startMeter(refresh, startDate);
+            return;
         }
     }
 
@@ -302,6 +308,12 @@ public abstract class NikoHomeControlCommunication {
         NhcMeter meter = getMeters().get(meterId);
         if (meter != null) {
             meter.stopMeter();
+            return;
+        }
+        NhcCarCharger carCharger = getCarChargerDevices().get(meterId);
+        if (carCharger != null) {
+            carCharger.stopMeter();
+            return;
         }
     }
 
@@ -312,6 +324,9 @@ public abstract class NikoHomeControlCommunication {
         for (String meterId : getMeters().keySet()) {
             stopMeter(meterId);
             stopMeterLive(meterId);
+        }
+        for (String carChargerId : getCarChargerDevices().keySet()) {
+            stopMeter(carChargerId);
         }
     }
 

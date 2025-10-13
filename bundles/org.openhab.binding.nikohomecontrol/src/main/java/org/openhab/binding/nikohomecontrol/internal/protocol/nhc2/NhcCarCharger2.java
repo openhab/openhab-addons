@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.nikohomecontrol.internal.protocol.nhc2;
 
+import java.util.concurrent.ScheduledExecutorService;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.nikohomecontrol.internal.protocol.NhcCarCharger;
@@ -32,8 +34,8 @@ public class NhcCarCharger2 extends NhcCarCharger {
     private final String deviceModel;
 
     NhcCarCharger2(String id, String name, String deviceType, String deviceTechnology, String deviceModel,
-            @Nullable String location, NikoHomeControlCommunication nhcComm) {
-        super(id, name, location, nhcComm);
+            @Nullable String location, NikoHomeControlCommunication nhcComm, ScheduledExecutorService scheduler) {
+        super(id, name, location, nhcComm, scheduler);
         this.deviceType = deviceType;
         this.deviceTechnology = deviceTechnology;
         this.deviceModel = deviceModel;

@@ -150,8 +150,9 @@ public class NikoHomeControlMeterHandler extends NikoHomeControlBaseHandler impl
         }
 
         MeterType meterType = nhcMeter.getType();
-        if (!(MeterType.ENERGY_LIVE.equals(meterType) || MeterType.ENERGY.equals(meterType)
-                || MeterType.GAS.equals(meterType) || MeterType.WATER.equals(meterType))) {
+        if (!(MeterType.ENERGY_HOME.equals(meterType) || MeterType.ENERGY_LIVE.equals(meterType)
+                || MeterType.ENERGY.equals(meterType) || MeterType.GAS.equals(meterType)
+                || MeterType.WATER.equals(meterType))) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.configuration-error.meterType");
             return;
@@ -261,7 +262,7 @@ public class NikoHomeControlMeterHandler extends NikoHomeControlBaseHandler impl
         }
 
         MeterType meterType = nhcMeter.getType();
-        if (meterType != MeterType.ENERGY_LIVE) {
+        if (meterType != MeterType.ENERGY_LIVE && meterType != MeterType.ENERGY_HOME) {
             logger.debug("meter with ID {} does not support live readings", deviceId);
             return;
         }
@@ -374,37 +375,37 @@ public class NikoHomeControlMeterHandler extends NikoHomeControlBaseHandler impl
                 case NikoHomeControlConstants.NHC_ELECTRICAL_ENERGY_CONSUMPTION:
                     updateState(CHANNEL_ENERGY, new QuantityType<>(value, KILOWATT_HOUR));
                     if (dayValue != null) {
-                        updateState(CHANNEL_ENERGY_DAY, new QuantityType<>(value, KILOWATT_HOUR));
+                        updateState(CHANNEL_ENERGY_DAY, new QuantityType<>(dayValue, KILOWATT_HOUR));
                     }
                     break;
                 case NikoHomeControlConstants.NHC_ELECTRICAL_ENERGY_FROM_GRID:
                     updateState(CHANNEL_ENERGY_FROM_GRID, new QuantityType<>(value, KILOWATT_HOUR));
                     if (dayValue != null) {
-                        updateState(CHANNEL_ENERGY_FROM_GRID_DAY, new QuantityType<>(value, KILOWATT_HOUR));
+                        updateState(CHANNEL_ENERGY_FROM_GRID_DAY, new QuantityType<>(dayValue, KILOWATT_HOUR));
                     }
                     break;
                 case NikoHomeControlConstants.NHC_ELECTRICAL_ENERGY_TO_GRID:
                     updateState(CHANNEL_ENERGY_TO_GRID, new QuantityType<>(value, KILOWATT_HOUR));
                     if (dayValue != null) {
-                        updateState(CHANNEL_ENERGY_TO_GRID_DAY, new QuantityType<>(value, KILOWATT_HOUR));
+                        updateState(CHANNEL_ENERGY_TO_GRID_DAY, new QuantityType<>(dayValue, KILOWATT_HOUR));
                     }
                     break;
                 case NikoHomeControlConstants.NHC_ELECTRICAL_ENERGY_SELF_CONSUMPTION:
                     updateState(CHANNEL_ENERGY_SELF_CONSUMPTION, new QuantityType<>(value, KILOWATT_HOUR));
                     if (dayValue != null) {
-                        updateState(CHANNEL_ENERGY_SELF_CONSUMPTION_DAY, new QuantityType<>(value, KILOWATT_HOUR));
+                        updateState(CHANNEL_ENERGY_SELF_CONSUMPTION_DAY, new QuantityType<>(dayValue, KILOWATT_HOUR));
                     }
                     break;
                 case NikoHomeControlConstants.NHC_GAS_VOLUME:
                     updateState(CHANNEL_GAS, new QuantityType<>(value, SIUnits.CUBIC_METRE));
                     if (dayValue != null) {
-                        updateState(CHANNEL_GAS_DAY, new QuantityType<>(value, SIUnits.CUBIC_METRE));
+                        updateState(CHANNEL_GAS_DAY, new QuantityType<>(dayValue, SIUnits.CUBIC_METRE));
                     }
                     break;
                 case NikoHomeControlConstants.NHC_WATER_VOLUME:
                     updateState(CHANNEL_WATER, new QuantityType<>(value, SIUnits.CUBIC_METRE));
                     if (dayValue != null) {
-                        updateState(CHANNEL_WATER_DAY, new QuantityType<>(value, SIUnits.CUBIC_METRE));
+                        updateState(CHANNEL_WATER_DAY, new QuantityType<>(dayValue, SIUnits.CUBIC_METRE));
                     }
                     break;
                 default:
