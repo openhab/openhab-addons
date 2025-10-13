@@ -13,18 +13,9 @@
 package org.openhab.binding.spotify.internal.api.model;
 
 /**
- * Spotify Web Api Playlist data class.
+ * Spotify Web Api Shows data class : a collection of Podcast
  *
- * @author Hilbrand Bouwkamp - Initial contribution
+ * @author Laurent Arnal - Initial contribution
  */
-public class Playlist extends BaseEntry {
-
-    private String description;
-    private PlayListTracks tracks;
-    private String href;
-
-    public PlayListTracks getTracks() {
-        return tracks;
-    }
-
+public class Shows extends Paging<Show> {
 }
