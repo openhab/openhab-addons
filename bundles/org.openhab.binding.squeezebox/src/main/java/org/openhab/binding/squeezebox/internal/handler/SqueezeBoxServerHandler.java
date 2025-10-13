@@ -157,6 +157,11 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler implements MediaL
     }
 
     @Override
+    public String getStreamUri(String cmdVal) {
+        return "";
+    }
+
+    @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
     }
 
