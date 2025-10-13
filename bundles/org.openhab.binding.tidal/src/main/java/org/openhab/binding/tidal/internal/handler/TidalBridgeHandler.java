@@ -329,10 +329,21 @@ public class TidalBridgeHandler extends BaseBridgeHandler
                     "/static/Tidal.png");
         });
 
+        String res = tidalApi.getTrackStreamUrl("81951701");
+        logger.info("");
+
         imageChannelAlbumImageIndex = getIntChannelParameter(CHANNEL_PLAYED_ALBUMIMAGE, CHANNEL_CONFIG_IMAGE_INDEX, 0);
         imageChannelAlbumImageUrlIndex = getIntChannelParameter(CHANNEL_PLAYED_ALBUMIMAGEURL,
                 CHANNEL_CONFIG_IMAGE_INDEX, 0);
         updateStatus(ThingStatus.ONLINE);
+    }
+
+    @Override
+    public String getStreamUri(String cmdVal) {
+        int p1 = cmdVal.lastIndexOf('/');
+        String trackId = cmdVal.substring(p1 + 1);
+        String uri = tidalApi.getTrackStreamUrl(trackId);
+        return uri;
     }
 
     private int getIntChannelParameter(String channelName, String parameter, int _default) {

@@ -36,6 +36,7 @@ public class TidalBindingConstants {
             .of("playlists.read", "entitlements.read", "collection.read", "playlists.write", "collection.write",
                     "user.read", "recommendations.read", "playback", "search.read", "search.write")
             .collect(Collectors.joining(" "));
+    public static final String TIDAL_V1_API_URL = "https://api.tidal.com/v1";
     public static final String TIDAL_API_URL = "https://openapi.tidal.com";
 
     // Authorization related Servlet and resources aliases.

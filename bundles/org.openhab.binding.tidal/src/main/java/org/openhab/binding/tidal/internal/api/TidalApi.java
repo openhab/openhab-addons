@@ -32,6 +32,7 @@ import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.http.HttpMethod;
+import org.openhab.binding.tidal.internal.TidalBindingConstants;
 import org.openhab.binding.tidal.internal.api.exception.TidalAuthorizationException;
 import org.openhab.binding.tidal.internal.api.exception.TidalException;
 import org.openhab.binding.tidal.internal.api.exception.TidalTokenExpiredException;
@@ -45,6 +46,8 @@ import org.openhab.binding.tidal.internal.api.model.ModelUtil;
 import org.openhab.binding.tidal.internal.api.model.Playlist;
 import org.openhab.binding.tidal.internal.api.model.Playlists;
 import org.openhab.binding.tidal.internal.api.model.RelationShip;
+import org.openhab.binding.tidal.internal.api.model.Session;
+import org.openhab.binding.tidal.internal.api.model.Stream;
 import org.openhab.binding.tidal.internal.api.model.Track;
 import org.openhab.binding.tidal.internal.api.model.Tracks;
 import org.openhab.binding.tidal.internal.api.model.User;
@@ -225,6 +228,34 @@ public class TidalApi {
         }
     }
 
+    public @Nullable Session getSession() {
+        Session session = request(GET, TidalBindingConstants.TIDAL_V1_API_URL + "/sessions", "", Session.class);
+        return session;
+    }
+
+    public String getTrackStreamUrl(String trackId) {
+        String sessionId = getSession().getSessionId();
+        sessionId = "a3df0f52-bd9b-4a54-b300-be2f10f8c8be";
+        User me = getMe();
+        String uri = TidalBindingConstants.TIDAL_V1_API_URL + "/tracks/";
+        uri = uri + trackId;
+        uri = uri + "/urlpostpaywall?sessionId=" + sessionId;
+        uri = uri + "&countryCode=" + me.getCountry();
+        uri = uri + "&limit=1000";
+        uri = uri + "&urlusagemode=STREAM";
+        uri = uri + "&audioquality=LOSSLESS";
+        uri = uri + "&assetpresentation=FULL";
+
+        Stream stream = request(GET, uri, "", Stream.class);
+        String[] urls = stream.getUrls();
+
+        if (urls != null && urls.length > 0) {
+            return urls[0];
+        }
+
+        return "";
+    }
+
     /**
      * Calls the Tidal Web Api with the given method and given url as parameters of the call to Tidal.
      *
@@ -242,23 +273,31 @@ public class TidalApi {
         // .header("Accept", CONTENT_TYPE).content(new StringContentProvider(requestData), CONTENT_TYPE);
 
         try {
-            final AccessTokenResponse accessTokenResponse = oAuthClientService.getAccessTokenResponse();
-            String accessToken = accessTokenResponse == null ? null : accessTokenResponse.getAccessToken();
+            String accessToken = "";
+            if (clazz != Stream.class) {
+                final AccessTokenResponse accessTokenResponse = oAuthClientService.getAccessTokenResponse();
+                accessToken = accessTokenResponse == null ? null : accessTokenResponse.getAccessToken();
 
-            if (accessToken == null || accessToken.isEmpty()) {
-                throw new TidalAuthorizationException(
-                        "No Tidal accesstoken. Did you authorize Tidal via /connecttidal ?");
+                if (accessToken == null || accessToken.isEmpty()) {
+                    throw new TidalAuthorizationException(
+                            "No Tidal accesstoken. Did you authorize Tidal via /connecttidal ?");
+                }
+            }
+
+            final String response = requestWithRetry(call, accessToken).getContentAsString();
+
+            Gson gson = ModelUtil.gsonInstance();
+
+            JsonElement element = gson.fromJson(response, JsonElement.class);
+            JsonObject jsonObj = element.getAsJsonObject();
+
+            JsonElement data = jsonObj.get("data");
+            JsonElement included = jsonObj.get("included");
+
+            if (data == null) {
+                T result = gson.fromJson(response, clazz);
+                return result;
             } else {
-                final String response = requestWithRetry(call, accessToken).getContentAsString();
-
-                Gson gson = ModelUtil.gsonInstance();
-
-                JsonElement element = gson.fromJson(response, JsonElement.class);
-                JsonObject jsonObj = element.getAsJsonObject();
-
-                JsonElement data = jsonObj.get("data");
-                JsonElement included = jsonObj.get("included");
-
                 T result = gson.fromJson(data, clazz);
                 if (result instanceof BaseEntry) {
                     BaseEntry entry = (BaseEntry) result;
@@ -313,6 +352,7 @@ public class TidalApi {
                     }
                 }
                 return result;
+
             }
         } catch (final IOException e) {
             throw new TidalException(e.getMessage(), e);
