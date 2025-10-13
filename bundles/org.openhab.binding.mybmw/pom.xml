@@ -23,7 +23,7 @@
           <!-- must be on the classpath -->
           <groupId>org.jacoco</groupId>
           <artifactId>org.jacoco.agent</artifactId>
-          <version>0.8.13</version>
+          <version>0.8.14</version>
           <classifier>runtime</classifier>
           <scope>test</scope>
         </dependency>
@@ -42,7 +42,7 @@
           <plugin>
             <groupId>org.jacoco</groupId>
             <artifactId>jacoco-maven-plugin</artifactId>
-            <version>0.8.13</version>
+            <version>0.8.14</version>
             <executions>
               <execution>
                 <id>default-instrument</id>
