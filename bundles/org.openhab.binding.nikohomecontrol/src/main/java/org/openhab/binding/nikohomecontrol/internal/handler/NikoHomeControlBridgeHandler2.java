@@ -46,6 +46,7 @@ import com.google.gson.JsonSyntaxException;
  * to the framework.
  *
  * @author Mark Herwege - Initial Contribution
+ * @author Mark Herwege - Add http connection to controller
  */
 @NonNullByDefault
 public class NikoHomeControlBridgeHandler2 extends NikoHomeControlBridgeHandler {
