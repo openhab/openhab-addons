@@ -215,15 +215,15 @@
 			</channel>
 			<channel id="energyfromgridday" typeId="energyday">
 				<label>@text/channelEnergyFromGridDayLabel</label>
-				<description>@text/channelEnergyFromGridDescription</description>
+				<description>@text/channelEnergyFromGridDayDescription</description>
 			</channel>
 			<channel id="energytogrid" typeId="energy">
 				<label>@text/channelEnergyToGridLabel</label>
-				<description>@text/channelEnergyToGridDayDescription</description>
+				<description>@text/channelEnergyToGridDescription</description>
 			</channel>
 			<channel id="energytogridday" typeId="energyday">
-				<label>@text/channelEnergyToGridLabel</label>
-				<description>@text/channelEnergyToGridDescription</description>
+				<label>@text/channelEnergyToGridDayLabel</label>
+				<description>@text/channelEnergyToGridDayDescription</description>
 			</channel>
 			<channel id="energyselfconsumption" typeId="energy">
 				<label>@text/channelEnergySelfConsumptionLabel</label>
