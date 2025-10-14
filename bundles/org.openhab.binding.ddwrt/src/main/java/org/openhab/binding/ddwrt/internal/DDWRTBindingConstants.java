@@ -44,4 +44,10 @@ public class DDWRTBindingConstants {
     public static final String CHANNEL_ONLINE = "online";
     public static final String CHANNEL_UPTIME = "uptime";
     public static final String CHANNEL_WAN_IP = "wanIp";
+    
+    // List of all configuration parameters
+    public static final String HOSTNAME = "hostname";
+    public static final String PORT = "port";
+    public static final String USER = "user";
+    public static final String PASSWORD = "password";
 }

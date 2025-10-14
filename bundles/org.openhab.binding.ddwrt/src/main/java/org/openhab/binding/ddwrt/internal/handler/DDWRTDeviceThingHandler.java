@@ -62,11 +62,11 @@ public class DDWRTDeviceThingHandler extends BaseThingHandler {
         // disposing = false;
 
         DDWRTDeviceConfiguration c = getConfigAs(DDWRTDeviceConfiguration.class);
-        logger.debug("Initializing DDWRT Network Bridge handler for '{}'.", getThing().getUID());
+        logger.debug("Initializing DDWRT Device Thing handler for '{}'.", getThing().getUID());
 
-        if (isBlank(c.hostname) || isBlank(c.user) || (isBlank(c.password))) {
+        if (isBlank(c.hostname) || isBlank(c.user)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "host, username and password are required");
+                    "host and username are required");
             return;
         }
         // this.cfg = c;
