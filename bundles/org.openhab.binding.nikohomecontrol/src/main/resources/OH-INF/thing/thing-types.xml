@@ -495,7 +495,7 @@
 			<channel id="chargingStatus" typeId="chargingStatus"/>
 			<channel id="evStatus" typeId="evStatus"/>
 			<channel id="couplingStatus" typeId="couplingStatus"/>
-			<channel id="electricalPower" typeId="power"/>
+			<channel id="power" typeId="power"/>
 			<channel id="chargingMode" typeId="chargingMode"/>
 			<channel id="targetDistance" typeId="targetDistance"/>
 			<channel id="targetTime" typeId="targetTime"/>

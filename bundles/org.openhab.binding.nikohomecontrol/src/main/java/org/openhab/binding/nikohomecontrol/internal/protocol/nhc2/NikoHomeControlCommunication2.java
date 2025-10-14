@@ -940,21 +940,23 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
 
     private void updateCarChargerState(NhcCarCharger2 carChargerDevice, List<NhcProperty> deviceProperties) {
         Boolean status = deviceProperties.stream().map(p -> p.status).filter(Objects::nonNull).findFirst()
-                .map(s -> NHCON.equals(s)).orElse(carChargerDevice.getStatus());
+                .map(s -> NHCON.equals(s)).orElse(null);
         String chargingStatus = deviceProperties.stream().map(p -> p.chargingStatus).filter(Objects::nonNull)
-                .findFirst().orElse(carChargerDevice.getChargingStatus());
+                .findFirst().orElse(null);
         String evStatus = deviceProperties.stream().map(p -> p.evStatus).filter(Objects::nonNull).findFirst()
                 .orElse(null);
         String couplingStatus = deviceProperties.stream().map(p -> p.couplingStatus).filter(Objects::nonNull)
-                .findFirst().orElse(carChargerDevice.getCouplingStatus());
+                .findFirst().orElse(null);
         Integer electricalPower = deviceProperties.stream().map(p -> p.electricalPower)
                 .map(s -> (!((s == null) || s.isEmpty())) ? Math.round(Float.parseFloat(s)) : null)
-                .filter(Objects::nonNull).findFirst().orElse(carChargerDevice.getElectricalPower());
-        logger.debug(
-                "setting car charger device {} status to {}, charging status to {}, EV status to {}, coupling status to {}, electrical power to {}",
-                carChargerDevice.getId(), status, chargingStatus, evStatus, couplingStatus, electricalPower);
-        carChargerDevice.setStatus(status == null ? false : status, chargingStatus, evStatus, couplingStatus,
-                electricalPower);
+                .filter(Objects::nonNull).findFirst().orElse(null);
+        if (status != null || chargingStatus != null || evStatus != null || couplingStatus != null
+                || electricalPower != null) {
+            logger.debug(
+                    "setting car charger device {} status to {}, charging status to {}, EV status to {}, coupling status to {}, electrical power to {}",
+                    carChargerDevice.getId(), status, chargingStatus, evStatus, couplingStatus, electricalPower);
+            carChargerDevice.setStatus(status, chargingStatus, evStatus, couplingStatus, electricalPower);
+        }
 
         String chargingMode = deviceProperties.stream().map(p -> p.chargingMode).filter(Objects::nonNull).findFirst()
                 .orElse(carChargerDevice.getChargingMode());
@@ -968,12 +970,15 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
                 .findFirst().map(Float::parseFloat).orElse(carChargerDevice.getReachableDistance());
         String nextChargingTime = deviceProperties.stream().map(p -> p.nextChargingTime).filter(Objects::nonNull)
                 .findFirst().orElse(carChargerDevice.getNextChargingTime());
-        logger.debug(
-                "setting car charger device {} charging mode to {}, target distance to {}, target time to {}, boost to {}, reachable distance to {}, next charging time to {}",
-                carChargerDevice.getId(), chargingMode, targetDistance, targetTime, boost, reachableDistance,
-                nextChargingTime);
-        carChargerDevice.setChargingMode(chargingMode, targetDistance, targetTime, boost, reachableDistance,
-                nextChargingTime);
+        if (chargingMode != null || targetDistance != null || targetTime != null || boost != null
+                || reachableDistance != null || nextChargingTime != null) {
+            logger.debug(
+                    "setting car charger device {} charging mode to {}, target distance to {}, target time to {}, boost to {}, reachable distance to {}, next charging time to {}",
+                    carChargerDevice.getId(), chargingMode, targetDistance, targetTime, boost, reachableDistance,
+                    nextChargingTime);
+            carChargerDevice.setChargingMode(chargingMode, targetDistance, targetTime, boost, reachableDistance,
+                    nextChargingTime);
+        }
     }
 
     @Override

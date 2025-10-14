@@ -115,7 +115,7 @@ public class NikoHomeControlCarChargerHandler extends NikoHomeControlBaseHandler
             switch (channelUID.getId()) {
                 case CHANNEL_STATUS:
                     if (command instanceof OnOffType onOffCommand) {
-                        nhcCarCharger.executeCarChargerStatus(OnOffType.ON.equals(onOffCommand) ? true : false);
+                        nhcCarCharger.executeCarChargerStatus(OnOffType.ON.equals(onOffCommand));
                     }
                     break;
                 case CHANNEL_CHARGING_MODE:
@@ -152,10 +152,12 @@ public class NikoHomeControlCarChargerHandler extends NikoHomeControlBaseHandler
                     break;
                 case CHANNEL_BOOST:
                     if (command instanceof OnOffType onOffCommand) {
-                        nhcCarCharger.executeCarChargerChargingBoost(OnOffType.ON.equals(onOffCommand) ? true : false);
+                        nhcCarCharger.executeCarChargerChargingBoost(OnOffType.ON.equals(onOffCommand));
                     }
+                    break;
                 default:
                     logger.debug("unexpected command for channel {}", channelUID.getId());
+                    break;
             }
         }
     }

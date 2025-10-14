@@ -263,13 +263,13 @@ public abstract class NhcCarCharger {
      * @param couplingStatus the new coupling status, or {@code null} to keep the current value
      * @param electricalPower the new electrical power value, or {@code null} to keep the current value
      */
-    public void setStatus(boolean status, @Nullable String chargingStatus, @Nullable String evStatus,
+    public void setStatus(@Nullable Boolean status, @Nullable String chargingStatus, @Nullable String evStatus,
             @Nullable String couplingStatus, @Nullable Integer electricalPower) {
-        this.status = status;
-        this.chargingStatus = chargingStatus != null ? chargingStatus : this.chargingStatus;
-        this.evStatus = evStatus != null ? evStatus : this.evStatus;
-        this.couplingStatus = couplingStatus != null ? couplingStatus : this.couplingStatus;
-        this.electricalPower = electricalPower != null ? electricalPower : this.electricalPower;
+        this.status = (status != null) ? status : this.status;
+        this.chargingStatus = (chargingStatus != null) ? chargingStatus : this.chargingStatus;
+        this.evStatus = (evStatus != null) ? evStatus : this.evStatus;
+        this.couplingStatus = (couplingStatus != null) ? couplingStatus : this.couplingStatus;
+        this.electricalPower = (electricalPower != null) ? electricalPower : this.electricalPower;
 
         NhcCarChargerEvent eventHandler = this.eventHandler;
         if (eventHandler != null) {
@@ -324,12 +324,12 @@ public abstract class NhcCarCharger {
     public void setChargingMode(@Nullable String chargingMode, @Nullable Float targetDistance,
             @Nullable String targetTime, @Nullable Boolean boost, @Nullable Float reachableDistance,
             @Nullable String nextChargingTime) {
-        this.chargingMode = chargingMode != null ? chargingMode : this.chargingMode;
-        this.targetDistance = targetDistance != null ? targetDistance : this.targetDistance;
-        this.targetTime = targetTime != null && !targetTime.isEmpty() ? targetTime : this.targetTime;
-        this.boost = boost != null ? boost : this.boost;
-        this.reachableDistance = reachableDistance != null ? reachableDistance : this.reachableDistance;
-        this.nextChargingTime = nextChargingTime != null && !nextChargingTime.isEmpty() ? nextChargingTime
+        this.chargingMode = (chargingMode != null) ? chargingMode : this.chargingMode;
+        this.targetDistance = (targetDistance != null) ? targetDistance : this.targetDistance;
+        this.targetTime = (targetTime != null && !targetTime.isEmpty()) ? targetTime : this.targetTime;
+        this.boost = (boost != null) ? boost : this.boost;
+        this.reachableDistance = (reachableDistance != null) ? reachableDistance : this.reachableDistance;
+        this.nextChargingTime = (nextChargingTime != null && !nextChargingTime.isEmpty()) ? nextChargingTime
                 : this.nextChargingTime;
         NhcCarChargerEvent eventHandler = this.eventHandler;
         if (eventHandler != null) {
