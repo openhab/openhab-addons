@@ -31,6 +31,15 @@ public class Stream {
     private String codec;
     private String securityType;
     private String securityToken;
+    private String manifestMimeType;
+    private String manifestHash;
+    private String manifest;
+    private String albumReplayGain;
+    private String albumPeakAmplitude;
+    private String trackReplayGain;
+    private String trackPeakAmplitude;
+    private String bitDepth;
+    private String sampleRate;
 
     public String[] getUrls() {
         return urls;

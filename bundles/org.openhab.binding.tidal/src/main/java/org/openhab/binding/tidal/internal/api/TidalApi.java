@@ -235,7 +235,7 @@ public class TidalApi {
 
     public String getTrackStreamUrl(String trackId) {
         String sessionId = getSession().getSessionId();
-        sessionId = "a3df0f52-bd9b-4a54-b300-be2f10f8c8be";
+        sessionId = "b022c7a2-3016-4a64-a657-8afa88f5102c";
         User me = getMe();
         String uri = TidalBindingConstants.TIDAL_V1_API_URL + "/tracks/";
         uri = uri + trackId;
@@ -248,6 +248,18 @@ public class TidalApi {
 
         Stream stream = request(GET, uri, "", Stream.class);
         String[] urls = stream.getUrls();
+
+        // String uri = TidalBindingConstants.TIDAL_V1_API_URL + "/tracks/";
+        // uri = uri + trackId;
+        // uri = uri + "/playbackinfopostpaywall?sessionId=" + sessionId;
+        // uri = uri + "&countryCode=" + me.getCountry();
+        // uri = uri + "&limit=1000";
+        // uri = uri + "&playbackmode=STREAM";
+        // uri = uri + "&audioquality=LOSSLESS";
+        // uri = uri + "&assetpresentation=FULL";
+        //
+        // Stream stream = request(GET, uri, "", Stream.class);
+        // String[] urls = stream.getUrls();
 
         if (urls != null && urls.length > 0) {
             return urls[0];
@@ -274,7 +286,7 @@ public class TidalApi {
 
         try {
             String accessToken = "";
-            if (clazz != Stream.class) {
+            if (!(clazz == Stream.class)) {
                 final AccessTokenResponse accessTokenResponse = oAuthClientService.getAccessTokenResponse();
                 accessToken = accessTokenResponse == null ? null : accessTokenResponse.getAccessToken();
 

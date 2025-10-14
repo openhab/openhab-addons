@@ -84,11 +84,14 @@ public class TidalAuthServlet extends HttpServlet {
         final String servletBaseURL = req.getRequestURL().toString();
         final Map<String, String> replaceMap = new HashMap<>();
 
+        String redirectUri = servletBaseURL;
+        redirectUri = redirectUri.replace("http://", "https://");
+        // redirectUri = "https://tidal.com/android/login/auth";
         String template = indexTemplate;
-        handleTidalRedirect(replaceMap, servletBaseURL, req.getQueryString());
+        handleTidalRedirect(replaceMap, redirectUri, req.getQueryString());
         resp.setContentType(CONTENT_TYPE);
-        replaceMap.put(KEY_REDIRECT_URI, servletBaseURL);
-        template = formatAccountHandlers(template, servletBaseURL);
+        replaceMap.put(KEY_REDIRECT_URI, redirectUri);
+        template = formatAccountHandlers(template, redirectUri);
         resp.getWriter().append(replaceKeysFromMap(template, replaceMap));
         resp.getWriter().close();
     }
@@ -103,8 +106,7 @@ public class TidalAuthServlet extends HttpServlet {
      * @param servletBaseURL the servlet base, which should be used as the Tidal redirect_uri value
      * @param queryString the query part of the GET request this servlet is processing
      */
-    private void handleTidalRedirect(Map<String, String> replaceMap, String servletBaseURL,
-            @Nullable String queryString) {
+    private void handleTidalRedirect(Map<String, String> replaceMap, String redirectUri, @Nullable String queryString) {
         replaceMap.put(KEY_AUTHORIZED_USER, "");
         replaceMap.put(KEY_ERROR, "");
         replaceMap.put(KEY_PAGE_REFRESH, "");
@@ -122,7 +124,7 @@ public class TidalAuthServlet extends HttpServlet {
             } else if (!StringUtil.isBlank(reqState)) {
                 try {
                     replaceMap.put(KEY_AUTHORIZED_USER, String.format(HTML_USER_AUTHORIZED,
-                            tidalAuthService.authorize(servletBaseURL, reqState, reqCode)));
+                            tidalAuthService.authorize(redirectUri, reqState, reqCode)));
                 } catch (RuntimeException e) {
                     logger.debug("Exception during authorizaton: ", e);
                     replaceMap.put(KEY_ERROR, String.format(HTML_ERROR, e.getMessage()));
@@ -154,7 +156,7 @@ public class TidalAuthServlet extends HttpServlet {
      * @param servletBaseURL the redirect_uri to be used in the authorization url created on the authorization button.
      * @return A String with the player formatted with the player template
      */
-    private String formatAccountHandler(String playerTemplate, TidalAccountHandler handler, String servletBaseURL) {
+    private String formatAccountHandler(String playerTemplate, TidalAccountHandler handler, String redirectUri) {
         final Map<String, String> map = new HashMap<>();
 
         map.put(BRIDGE_ID, handler.getUID().getAsString());
@@ -172,7 +174,8 @@ public class TidalAuthServlet extends HttpServlet {
             map.put(BRIDGE_TIDAL_USER_ID, "");
         }
 
-        map.put(BRIDGE_AUTHORIZE, handler.formatAuthorizationUrl(servletBaseURL));
+        map.put(BRIDGE_AUTHORIZE, handler.formatAuthorizationUrl(redirectUri));
+
         return replaceKeysFromMap(playerTemplate, map);
     }
 

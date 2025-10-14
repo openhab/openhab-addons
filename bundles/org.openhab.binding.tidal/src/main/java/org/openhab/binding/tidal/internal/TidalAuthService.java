@@ -120,7 +120,7 @@ public class TidalAuthService {
      * @param code The Tidal returned code value
      * @return returns the name of the Tidal user that is authorized
      */
-    public String authorize(String servletBaseURL, String state, String code) {
+    public String authorize(String redirectUri, String state, String code) {
         final TidalAccountHandler listener = getTidalAuthListener(state);
 
         if (listener == null) {
@@ -129,7 +129,7 @@ public class TidalAuthService {
                     state);
             throw new TidalException(ERROR_UKNOWN_BRIDGE);
         } else {
-            return listener.authorize(servletBaseURL, code);
+            return listener.authorize(redirectUri, code);
         }
     }
 
