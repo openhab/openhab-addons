@@ -939,42 +939,41 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
     }
 
     private void updateCarChargerState(NhcCarCharger2 carChargerDevice, List<NhcProperty> deviceProperties) {
-        String status = deviceProperties.stream().map(p -> p.status).filter(Objects::nonNull).findFirst().orElse(null);
+        Boolean status = deviceProperties.stream().map(p -> p.status).filter(Objects::nonNull).findFirst()
+                .map(s -> NHCON.equals(s)).orElse(carChargerDevice.getStatus());
         String chargingStatus = deviceProperties.stream().map(p -> p.chargingStatus).filter(Objects::nonNull)
-                .findFirst().orElse(null);
+                .findFirst().orElse(carChargerDevice.getChargingStatus());
         String evStatus = deviceProperties.stream().map(p -> p.evStatus).filter(Objects::nonNull).findFirst()
                 .orElse(null);
         String couplingStatus = deviceProperties.stream().map(p -> p.couplingStatus).filter(Objects::nonNull)
-                .findFirst().orElse(null);
+                .findFirst().orElse(carChargerDevice.getCouplingStatus());
         Integer electricalPower = deviceProperties.stream().map(p -> p.electricalPower)
                 .map(s -> (!((s == null) || s.isEmpty())) ? Math.round(Float.parseFloat(s)) : null)
-                .filter(Objects::nonNull).findFirst().orElse(null);
-        if (status != null || chargingStatus != null || evStatus != null || couplingStatus != null
-                || electricalPower != null) {
-            logger.debug(
-                    "setting car charger device {} status to {}, charging status to {}, EV status to {}, coupling status to {}, electrical power to {}",
-                    carChargerDevice.getId(), status, chargingStatus, evStatus, couplingStatus, electricalPower);
-            carChargerDevice.setStatus(NHCON.equals(status) ? true : false, chargingStatus, evStatus, couplingStatus,
-                    electricalPower);
-        }
+                .filter(Objects::nonNull).findFirst().orElse(carChargerDevice.getElectricalPower());
+        logger.debug(
+                "setting car charger device {} status to {}, charging status to {}, EV status to {}, coupling status to {}, electrical power to {}",
+                carChargerDevice.getId(), status, chargingStatus, evStatus, couplingStatus, electricalPower);
+        carChargerDevice.setStatus(status == null ? false : status, chargingStatus, evStatus, couplingStatus,
+                electricalPower);
 
         String chargingMode = deviceProperties.stream().map(p -> p.chargingMode).filter(Objects::nonNull).findFirst()
-                .orElse(null);
+                .orElse(carChargerDevice.getChargingMode());
         Float targetDistance = deviceProperties.stream().map(p -> p.targetDistance).filter(Objects::nonNull).findFirst()
                 .map(Float::parseFloat).orElse(null);
         String targetTime = deviceProperties.stream().map(p -> p.targetTime).filter(Objects::nonNull).findFirst()
-                .orElse(null);
+                .orElse(carChargerDevice.getTargetTime());
         Boolean boost = deviceProperties.stream().map(p -> p.boost).filter(Objects::nonNull).findFirst()
-                .map(b -> NHCTRUE.equals(b) ? true : false).orElse(null);
+                .map(b -> NHCTRUE.equals(b) ? true : false).orElse(carChargerDevice.isBoost());
         Float reachableDistance = deviceProperties.stream().map(p -> p.reachableDistance).filter(Objects::nonNull)
-                .findFirst().map(Float::parseFloat).orElse(null);
+                .findFirst().map(Float::parseFloat).orElse(carChargerDevice.getReachableDistance());
         String nextChargingTime = deviceProperties.stream().map(p -> p.nextChargingTime).filter(Objects::nonNull)
-                .findFirst().orElse(null);
-        if (chargingMode != null || targetDistance != null || targetTime != null || boost != null
-                || reachableDistance != null || nextChargingTime != null) {
-            carChargerDevice.setChargingMode(chargingMode, targetDistance, targetTime, boost, reachableDistance,
-                    nextChargingTime);
-        }
+                .findFirst().orElse(carChargerDevice.getNextChargingTime());
+        logger.debug(
+                "setting car charger device {} charging mode to {}, target distance to {}, target time to {}, boost to {}, reachable distance to {}, next charging time to {}",
+                carChargerDevice.getId(), chargingMode, targetDistance, targetTime, boost, reachableDistance,
+                nextChargingTime);
+        carChargerDevice.setChargingMode(chargingMode, targetDistance, targetTime, boost, reachableDistance,
+                nextChargingTime);
     }
 
     @Override
