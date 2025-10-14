@@ -489,7 +489,7 @@
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="loadpoint-charge-voltage-l2">
-		<item-type unitHint="v">Number:ElectricPotential</item-type>
+		<item-type unitHint="V">Number:ElectricPotential</item-type>
 		<label>Charge Voltage 2</label>
 		<description>Actual charge voltage of charger phase L2</description>
 		<category>Energy</category>
