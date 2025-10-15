@@ -17,6 +17,7 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.modbus.handler.BaseModbusThingHandler;
@@ -72,6 +73,12 @@ public class SungrowInverterHandler extends BaseModbusThingHandler {
                     tries //
             );
         }
+
+        @Override
+        public String toString() {
+            return "first: " + registers.getFirst().getRegisterNumber() + ", last: "
+                    + registers.getLast().getRegisterNumber();
+        }
     }
 
     private final Logger logger = LoggerFactory.getLogger(SungrowInverterHandler.class);
@@ -112,7 +119,8 @@ public class SungrowInverterHandler extends BaseModbusThingHandler {
         if (!currentRequest.isEmpty()) {
             requests.add(new ModbusRequest(currentRequest, getSlaveId(), tries));
         }
-        logger.debug("Created {} modbus request templates.", requests.size());
+        logger.debug("Created {} modbus request templates:\n\t{}", requests.size(),
+                requests.stream().map(ModbusRequest::toString).collect(Collectors.joining("\n\t")));
         return requests;
     }
 
