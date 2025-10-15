@@ -17,6 +17,7 @@ Some values may not work, depending on
 - the model type of your inverter
 - the firmware version of your inverter
 - the connection type (internal LAN vs. WiNet-S Communication Module)
+- the inverter setup (amount of used MPPTs, usage of backup port, ...)
 
 ## Supported Things
 
