@@ -140,6 +140,7 @@ public class Sensors implements RegistryChangeListener<Item> {
         }
 
         if (!ALLOWED_ITEM_TYPES.contains(element.getType())) {
+            removed(element);
             return;
         }
 

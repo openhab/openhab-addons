@@ -143,10 +143,9 @@ public class LightsAndGroups implements RegistryChangeListener<Item> {
 
     @Override
     public synchronized void added(Item newElement) {
-        if (!(newElement instanceof GenericItem)) {
+        if (!(newElement instanceof GenericItem element)) {
             return;
         }
-        GenericItem element = (GenericItem) newElement;
 
         if (!(element instanceof GroupItem) && !ALLOWED_ITEM_TYPES.contains(element.getType())) {
             return;
@@ -210,18 +209,17 @@ public class LightsAndGroups implements RegistryChangeListener<Item> {
     @SuppressWarnings({ "null", "unused" })
     @Override
     public synchronized void updated(Item oldElement, Item newElement) {
-        if (!(newElement instanceof GenericItem)) {
+        if (!(newElement instanceof GenericItem element)) {
             return;
         }
-        GenericItem element = (GenericItem) newElement;
 
         String hueID = cs.mapItemUIDtoHueID(element);
 
         HueGroupEntry hueGroup = cs.ds.groups.get(hueID);
         if (hueGroup != null) {
             DeviceType t = StateUtils.determineTargetType(cs, element);
-            if (t != null && element instanceof GroupItem) {
-                hueGroup.updateItem((GroupItem) element);
+            if (t != null && element instanceof GroupItem groupElement) {
+                hueGroup.updateItem(groupElement);
             } else {
                 cs.ds.groups.remove(hueID);
             }
@@ -235,8 +233,9 @@ public class LightsAndGroups implements RegistryChangeListener<Item> {
         }
 
         // Check if type can still be determined (tags and category is still sufficient)
+        // and that it's still an allowed item type
         DeviceType t = StateUtils.determineTargetType(cs, element);
-        if (t == null) {
+        if (t == null || !ALLOWED_ITEM_TYPES.contains(element.getType())) {
             removed(element);
             return;
         }
