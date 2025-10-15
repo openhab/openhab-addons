@@ -1086,6 +1086,7 @@ public class UpnpRendererHandler extends UpnpHandler {
                     break;
                 case "CurrentTrackMetaData":
                 case "CurrentURIMetaData":
+                case "TrackMetaData":
                     onValueReceivedCurrentMetaData(value);
                     break;
                 case "NextAVTransportURIMetaData":
