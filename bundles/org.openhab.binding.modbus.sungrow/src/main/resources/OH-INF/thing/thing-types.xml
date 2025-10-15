@@ -393,10 +393,10 @@
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="sg-power-factor" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type>Number</item-type>
 		<label>Power Factor</label>
 		<category>Energy</category>
-		<state pattern="%.2f" readOnly="true"/>
+		<state pattern="%.3f" readOnly="true"/>
 	</channel-type>
 	<channel-type id="sg-export-limit-min" advanced="true">
 		<item-type>Number:Power</item-type>
