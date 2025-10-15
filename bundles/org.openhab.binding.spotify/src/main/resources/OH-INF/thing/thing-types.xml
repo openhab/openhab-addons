@@ -77,7 +77,7 @@
 					Spotify Account.</description>
 			</parameter>
 			<parameter name="refreshPeriod" type="integer" min="1" max="60" required="true">
-				<default>10</default>
+				<default>1</default>
 				<label>Connect Refresh Period (seconds)</label>
 				<description>This is the frequency of the polling requests to the Spotify Connect Web API. There are limits to the
 					number of requests that can be sent to the Web API. The more often you poll, the better status updates - at the
