@@ -204,8 +204,8 @@ public class MerossDeviceHandler extends BaseThingHandler implements MerossDevic
             return;
         }
 
-        String channelGroup = channelUID.getId().split("\\d+")[0]; // Trailing digits represent the channel if there are
-                                                                   // multiple
+        // Extract the channel group, removing any trailing digits
+        String channelGroup = channelUID.getId().replaceFirst("(\\d+)$", "");
         Namespace namespace = CHANNEL_NAMESPACE_MAP.get(channelGroup);
         if (namespace == null) {
             logger.debug("Unsupported channelUID {}", channelUID);
@@ -264,7 +264,7 @@ public class MerossDeviceHandler extends BaseThingHandler implements MerossDevic
         }
         // If the device has multiple channels, the channel number will be appended to the channel name starting
         // with _
-        String channelId = channelGroup + "_" + String.valueOf(deviceChannel);
+        String channelId = channelGroup + "_" + deviceChannel;
         if (thing.getChannel(channelId) == null && deviceChannel == 0) {
             channelId = channelGroup;
         }
