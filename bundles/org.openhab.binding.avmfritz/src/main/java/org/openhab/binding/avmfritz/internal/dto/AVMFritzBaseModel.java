@@ -111,6 +111,17 @@ public abstract class AVMFritzBaseModel implements BatteryModel {
     @XmlElement(name = "hkr")
     private HeatingModel heatingModel;
 
+    @XmlElement(name = "levelcontrol")
+    private @Nullable LevelControlModel levelControlModel;
+
+    public SwitchModel getSwitch() {
+        return switchModel;
+    }
+
+    public void setSwitch(SwitchModel switchModel) {
+        this.switchModel = switchModel;
+    }
+
     public @Nullable SimpleOnOffModel getSimpleOnOffUnit() {
         return simpleOnOffUnit;
     }
@@ -131,12 +142,12 @@ public abstract class AVMFritzBaseModel implements BatteryModel {
         this.heatingModel = heatingModel;
     }
 
-    public SwitchModel getSwitch() {
-        return switchModel;
+    public @Nullable LevelControlModel getLevelControlModel() {
+        return levelControlModel;
     }
 
-    public void setSwitch(SwitchModel switchModel) {
-        this.switchModel = switchModel;
+    public void setLevelcontrol(LevelControlModel levelControlModel) {
+        this.levelControlModel = levelControlModel;
     }
 
     public String getIdentifier() {
@@ -265,7 +276,8 @@ public abstract class AVMFritzBaseModel implements BatteryModel {
                 .append(productName).append(",fwversion=").append(firmwareVersion).append(",present=").append(present)
                 .append(",name=").append(name).append(",battery=").append(getBattery()).append(",batterylow=")
                 .append(getBatterylow()).append(",").append(getSwitch()).append(",").append(getSimpleOnOffUnit())
-                .append(",").append(getPowerMeter()).append(",").append(getHkr()).append(",").toString();
+                .append(",").append(getPowerMeter()).append(",").append(getHkr()).append(",").append(levelControlModel)
+                .append(",").toString();
     }
 
     public transient boolean isLinked;

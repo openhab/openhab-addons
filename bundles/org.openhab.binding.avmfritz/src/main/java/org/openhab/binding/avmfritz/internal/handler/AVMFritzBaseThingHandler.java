@@ -145,6 +145,9 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
             if (device.isHeatingThermostat()) {
                 updateHeatingThermostat(device.getHkr());
             }
+            if (device.isHANFUNBlinds()) {
+                updateLevelControl(device.getLevelControlModel());
+            }
             if (device instanceof DeviceModel deviceModel) {
                 if (deviceModel.isTemperatureSensor()) {
                     updateTemperatureSensor(deviceModel.getTemperature());
@@ -159,9 +162,7 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
                         updateHANFUNAlarmSensor(deviceModel.getAlert());
                     }
                 }
-                if (deviceModel.isHANFUNBlinds()) {
-                    updateLevelControl(deviceModel.getLevelControlModel());
-                } else if (deviceModel.isColorLight()) {
+                if (deviceModel.isColorLight()) {
                     updateColorLight(deviceModel.getColorControlModel(), deviceModel.getLevelControlModel(),
                             deviceModel.getSimpleOnOffUnit());
                 } else if (deviceModel.isDimmableLight() && !deviceModel.isHANFUNBlinds()) {
@@ -473,7 +474,7 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
                 } else if (command instanceof OnOffType) {
                     fritzBox.setSwitch(ain, OnOffType.ON.equals(command));
                 } else if (command instanceof IncreaseDecreaseType) {
-                    brightness = ((DeviceModel) currentDevice).getLevelControlModel().getLevelPercentage();
+                    brightness = currentDevice.getLevelControlModel().getLevelPercentage();
                     if (IncreaseDecreaseType.INCREASE.equals(command)) {
                         brightness.add(BigDecimal.TEN);
                     } else {

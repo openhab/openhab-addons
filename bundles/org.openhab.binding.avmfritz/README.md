@@ -113,10 +113,11 @@ The FRITZ!Box has to run at least on firmware FRITZ!OS 7.
 
 ### FRITZ! Groups
 
-The FRITZ!OS supports two different types of groups.
-On the one hand there are groups for heating thermostats on the other hand there are groups for switchable outlets and power meters.
+The FRITZ!OS supports three different types of groups.
+On the one hand there are groups for heating thermostats on the other hand there are groups for switchable outlets and power meters, a third group supports control of roller shutters and binds.
 The first one provides the same channels and actions like the [FRITZ!DECT 302 / FRITZ!DECT 301 / FRITZ!DECT 300 / Comet DECT](https://www.openhab.org/addons/bindings/avmfritz/#fritz-dect-302-fritz-dect-301-fritz-dect-300-comet-dect) devices.
 The latter provides the same channels like the [FRITZ!DECT 200 / FRITZ!DECT 210](https://www.openhab.org/addons/bindings/avmfritz/#fritz-dect-200-fritz-dect-210) / [FRITZ!Powerline 546E](https://www.openhab.org/addons/bindings/avmfritz/#fritz-powerline-546e) devices.
+A blind group provides the `rollershutter` channel similar to a `HAN_FUN_BLINDS` thing (e.g. [Becker BoxCTRL](https://becker-antriebe.shop/)).
 The FRITZ!Box has to run at least on firmware FRITZ!OS 6.69.
 
 ## Discovery
