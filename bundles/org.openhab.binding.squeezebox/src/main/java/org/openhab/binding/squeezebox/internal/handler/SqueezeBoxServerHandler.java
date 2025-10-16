@@ -44,6 +44,11 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.squeezebox.internal.SqueezeBoxBindingConstants;
 import org.openhab.binding.squeezebox.internal.config.SqueezeBoxServerConfig;
 import org.openhab.binding.squeezebox.internal.discovery.SqueezeBoxPlayerDiscoveryService;
+import org.openhab.binding.squeezebox.internal.dto.Album;
+import org.openhab.binding.squeezebox.internal.dto.Albums;
+import org.openhab.binding.squeezebox.internal.dto.Artist;
+import org.openhab.binding.squeezebox.internal.dto.Artists;
+import org.openhab.binding.squeezebox.internal.dto.BaseEntry;
 import org.openhab.binding.squeezebox.internal.dto.ButtonDTO;
 import org.openhab.binding.squeezebox.internal.dto.ButtonDTODeserializer;
 import org.openhab.binding.squeezebox.internal.dto.ButtonsDTO;
@@ -53,6 +58,8 @@ import org.openhab.core.io.net.http.HttpRequestBuilder;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.media.MediaListenner;
 import org.openhab.core.media.MediaService;
+import org.openhab.core.media.model.MediaAlbum;
+import org.openhab.core.media.model.MediaArtist;
 import org.openhab.core.media.model.MediaCollection;
 import org.openhab.core.media.model.MediaEntry;
 import org.openhab.core.media.model.MediaRegistry;
@@ -74,6 +81,8 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 
 /**
@@ -451,13 +460,104 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler implements MediaL
         updateStatus(ThingStatus.ONLINE);
     }
 
+    private @Nullable Albums getAlbums(long start, long size) {
+        String jsonRpcUrl = SqueezeBoxServerHandler.this.jsonRpcUrl;
+        if (jsonRpcUrl == null) {
+            throw new IllegalStateException("JSON-RPC URL is not initialized");
+        }
+        String response = executePost(jsonRpcUrl,
+                "{\"id\":1,\"method\":\"slim.request\",\"params\":[\"\",[\"albums\",\"" + start + "\",\"" + size
+                        + "\",\"tags:lyjta\"]]}");
+        if (response != null) {
+            JsonObject obj = gson.fromJson(response, JsonObject.class);
+            JsonElement elm = obj.get("result");
+            JsonElement childs = ((JsonObject) elm).get("albums_loop");
+
+            Albums albums = gson.fromJson(childs, Albums.class);
+            return albums;
+        }
+
+        return null;
+    }
+
+    private @Nullable Artists getArtists(long start, long size) {
+        String jsonRpcUrl = SqueezeBoxServerHandler.this.jsonRpcUrl;
+        if (jsonRpcUrl == null) {
+            throw new IllegalStateException("JSON-RPC URL is not initialized");
+        }
+        String response = executePost(jsonRpcUrl,
+                "{\"id\":1,\"method\":\"slim.request\",\"params\":[\"\",[\"artists\",\"" + start + "\",\"" + size
+                        + "\",\"tags:tyj4\"]]}");
+        if (response != null) {
+            JsonObject obj = gson.fromJson(response, JsonObject.class);
+            JsonElement elm = obj.get("result");
+            JsonElement childs = ((JsonObject) elm).get("artists_loop");
+
+            Artists artists = gson.fromJson(childs, Artists.class);
+            return artists;
+        }
+
+        return null;
+    }
+
     @Override
     public void refreshEntry(MediaEntry mediaEntry, long start, long size) {
         if (mediaEntry.getKey().equals(SqueezeBoxBindingConstants.BINDING_ID)) {
-            MediaCollection mediaPlaylist = mediaEntry.registerEntry("Playlists", () -> {
+            mediaEntry.registerEntry("Albums", () -> {
+                return new MediaCollection("Albums", "Albums", "/static/Albums.png");
+            });
+
+            mediaEntry.registerEntry("Artists", () -> {
+                return new MediaCollection("Artists", "Artists", "/static/Artists.png");
+            });
+
+            mediaEntry.registerEntry("Playlists", () -> {
                 return new MediaCollection("Playlists", "Playlists", "/static/playlist.png");
             });
 
+            mediaEntry.registerEntry("Tracks", () -> {
+                return new MediaCollection("Tracks", "Tracks", "/static/Tracks.png");
+            });
+        } else if ("Playlists".equals(mediaEntry.getKey())) {
+            // List<Playlist> playLists = spotifyApi.getPlaylists(start, size);
+            // RegisterCollections(mediaEntry, playLists, MediaPlayList.class);
+        } else if ("Albums".equals(mediaEntry.getKey())) {
+            List<Album> albums = getAlbums(start, size);
+            if (albums != null) {
+                RegisterCollections(mediaEntry, albums, MediaAlbum.class);
+            }
+        } else if ("Artists".equals(mediaEntry.getKey())) {
+            List<Artist> artists = getArtists(start, size);
+            if (artists != null) {
+                RegisterCollections(mediaEntry, artists, MediaArtist.class);
+            }
+        }
+    }
+
+    private <T extends BaseEntry, R extends MediaEntry> void RegisterCollections(MediaEntry parentEntry,
+            List<T> collection, Class<R> allocator) {
+        for (T entry : collection) {
+            if (entry == null) {
+                continue;
+            }
+            String key = entry.getId();
+            String name = entry.getName();
+            String uri = entry.getImagesUrl();
+
+            parentEntry.registerEntry(key, () -> {
+                try {
+                    MediaEntry res = allocator.getDeclaredConstructor().newInstance();
+                    res.setName(name);
+                    res.setKey(key);
+
+                    if (res instanceof MediaCollection) {
+                        ((MediaCollection) res).setArtUri(uri);
+                    }
+                    return res;
+                } catch (Exception ex) {
+                    return null;
+                }
+            });
         }
     }
 
@@ -527,6 +627,8 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler implements MediaL
 
                     if (message.startsWith("players 0")) {
                         handlePlayersList(message);
+                    } else if (message.startsWith("albums")) {
+                        handleAlbums(message);
                     } else if (message.startsWith("favorites")) {
                         handleFavorites(message);
                     } else {
@@ -1072,23 +1174,24 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler implements MediaL
             }
         }
 
-        private @Nullable String executePost(String url, String content) {
-            // @formatter:off
-            HttpRequestBuilder builder = HttpRequestBuilder.postTo(url)
-                .withTimeout(Duration.ofSeconds(5))
-                .withContent(content)
-                .withHeader("charset", "utf-8")
-                .withHeader("Content-Type", "application/json");
-            // @formatter:on
-            if (basicAuthorization != null) {
-                builder = builder.withHeader("Authorization", "Basic " + basicAuthorization);
-            }
-            try {
-                return builder.getContentAsString();
-            } catch (IOException e) {
-                logger.debug("Bridge: IOException on jsonrpc call: {}", e.getMessage(), e);
-                return null;
-            }
+    }
+
+    private @Nullable String executePost(String url, String content) {
+        // @formatter:off
+        HttpRequestBuilder builder = HttpRequestBuilder.postTo(url)
+            .withTimeout(Duration.ofSeconds(5))
+            .withContent(content)
+            .withHeader("charset", "utf-8")
+            .withHeader("Content-Type", "application/json");
+        // @formatter:on
+        if (basicAuthorization != null) {
+            builder = builder.withHeader("Authorization", "Basic " + basicAuthorization);
+        }
+        try {
+            return builder.getContentAsString();
+        } catch (IOException e) {
+            logger.debug("Bridge: IOException on jsonrpc call: {}", e.getMessage(), e);
+            return null;
         }
     }
 

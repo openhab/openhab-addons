@@ -165,8 +165,12 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
             squeezeBoxServerHandler.requestPlayers();
         }
 
-        mediaService.registerDevice(new MediaDevice("" + this.getThing().getLabel(), "" + this.getThing().getLabel(),
-                "", SqueezeBoxBindingConstants.BINDING_ID));
+        String modelId = thing.getProperties().get(Thing.PROPERTY_MODEL_ID);
+        if (modelId == null) {
+            modelId = "unknown";
+        }
+        mediaService.registerDevice(new MediaDevice("" + this.getThing().getUID().getId(),
+                "" + this.getThing().getLabel(), modelId, SqueezeBoxBindingConstants.BINDING_ID));
     }
 
     @Override
