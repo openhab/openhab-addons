@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><Configuration monitorInterval="10">
+
+    <Appenders>
+        <Console name="STDOUT">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%-5.5p] [%-36.36c] - %m%n"/>
+        </Console>
+    </Appenders>
+
+    <Loggers>
+        <!-- Root logger configuration -->
+        <Root level="DEBUG">
+            <AppenderRef ref="STDOUT"/>
+        </Root>
+
+        <Logger level="DEBUG" name="org.openhab.binding.myenergi.internal"/>
+    </Loggers>
+
+</Configuration>
