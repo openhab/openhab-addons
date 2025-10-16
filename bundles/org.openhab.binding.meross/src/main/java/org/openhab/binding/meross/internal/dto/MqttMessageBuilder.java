@@ -72,7 +72,7 @@ public class MqttMessageBuilder {
      * In general, the API subscribes to this topic in order to update its state as events happen on the physical
      * device.
      *
-     * @return The HTTP_CLIENT user topic
+     * @return The client user topic
      */
     public static String buildClientUserTopic() {
         return "/app/" + MqttMessageBuilder.userId + "/subscribe";

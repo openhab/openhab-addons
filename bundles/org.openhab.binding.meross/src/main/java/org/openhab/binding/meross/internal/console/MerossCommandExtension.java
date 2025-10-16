@@ -209,7 +209,7 @@ public class MerossCommandExtension extends AbstractConsoleCommandExtension impl
             if (!ThingStatus.ONLINE.equals(handler.getThing().getStatus()) || mqttConnector == null) {
                 console.println("Meross bridge for account not online, cannot create fingerprint");
             } else {
-                String accountPath = path + File.separator + "Account-" + String.valueOf(accountNdx);
+                String accountPath = path + File.separator + "Account-" + accountNdx;
                 List<Device> devices = handler.getDevices();
                 if (devices.isEmpty()) {
                     console.print("No devices found");
@@ -281,7 +281,7 @@ public class MerossCommandExtension extends AbstractConsoleCommandExtension impl
         String path = pathString + ((extension != null) ? ("." + extension) : "");
         int pathNdx = 1;
         while (Files.exists(Paths.get(path))) {
-            path = pathString + "_" + String.valueOf(pathNdx) + ((extension != null) ? ("." + extension) : "");
+            path = pathString + "_" + pathNdx + ((extension != null) ? ("." + extension) : "");
             pathNdx++;
         }
         return path;
@@ -348,8 +348,6 @@ public class MerossCommandExtension extends AbstractConsoleCommandExtension impl
                 buildCommandUsage(FINGERPRINT, "generate fingerprint for all devices on all accounts"),
                 buildCommandUsage(FINGERPRINT + " <userEmail>", "generate fingerprint for devices on account"),
                 buildCommandUsage(FINGERPRINT + " <userEmail> <device>",
-                        "generate fingerprint for a specific device with name or uuid on account"),
-                buildCommandUsage(FINGERPRINT + " <userEmail> <device>",
                         "generate fingerprint for a specific device with name or uuid on account") });
     }
 
@@ -374,7 +372,7 @@ public class MerossCommandExtension extends AbstractConsoleCommandExtension impl
                     .map(t -> t.getHandler()).findFirst().orElse(null);
             if (handler != null) {
                 return new StringsCompleter(((MerossBridgeHandler) handler).getDevices().stream()
-                        .flatMap(device -> Stream.<String> of(device.devName(), device.uuid()))
+                        .flatMap(device -> Stream.<String>of(device.devName(), device.uuid()))
                         .collect(Collectors.toSet()), false)
                         .complete(args, cursorArgumentIndex, cursorPosition, candidates);
             }
