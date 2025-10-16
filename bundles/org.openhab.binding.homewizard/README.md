@@ -87,7 +87,7 @@ For DSMR5 meters this is generally once per second, for older versions the frequ
 | state_of_charge        | Number:Dimensionless      | This channel provides access to the current state of charge in percent.                    | hwe-bat                           |
 | cycles                 | Number:Dimensionless      | This channel provides access to the number of battery cycles.                              | hwe-bat                           |
 | batteries_mode        | String     | This channel provides the control mode of the Plug-In Battery.                   | hwe-p1                           |
-| batteries_power                 | Number:Power     | This channel provides the current combined power consumption/production of the ontrolled Plug-In Batteries.                              | hwe-p1                           |
+| batteries_power                 | Number:Power     | This channel provides the current combined power consumption/production of the controlled Plug-In Batteries.                              | hwe-p1                           |
 | batteries_target_power                 | Number:Power     | This channel provides the target power consumption/production of the controlled Plug-In Batteries.                              | hwe-p1                           |
 | batteries_max_consumption                 | Number:Power     | This channel provides the maximum allowed consumption power of the controlled Plug-In Batteries.                             | hwe-p1                           |
 | batteries_max_production                 | Number:Power     | This channel provides the maximum allowed production power of the controlled Plug-In Batteries.                              | hwe-p1                           |
