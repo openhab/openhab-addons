@@ -523,26 +523,24 @@ public class AwtrixApp {
 
     private Map<String, Object> getColorConfig() {
         Map<String, Object> fields = new HashMap<String, Object>();
-        if (!this.rainbow) {
-            // When we don't have a valid gradient array, we just provide a color if available
-            if (this.gradient.length != 2) {
+        // When we don't have a valid gradient array, we just provide a color if available
+        if (this.gradient.length != 2) {
+            if (this.color.length == 3) {
+                fields.put("color", this.color);
+            }
+        } else {
+            // Here we have a gradient array. Use it unless it's not a valid gradient
+            if (!this.rainbow && this.gradient[0] != null && this.gradient[0].length == 3 && this.gradient[1] != null
+                    && this.gradient[1].length == 3) {
+                fields.put("gradient", this.gradient);
+            } else {
+                // If we don't have a valid gradient, we try to provide any color we find
                 if (this.color.length == 3) {
                     fields.put("color", this.color);
-                }
-            } else {
-                // Here we have a gradient array. Use it unless it's not a valid gradient
-                if (this.gradient[0] != null && this.gradient[0].length == 3 && this.gradient[1] != null
-                        && this.gradient[1].length == 3) {
-                    fields.put("gradient", this.gradient);
-                } else {
-                    // If we don't have a valid gradient, we try to provide any color we find
-                    if (this.color.length == 3) {
-                        fields.put("color", this.color);
-                    } else if (this.gradient[0] != null && this.gradient[0].length == 3) {
-                        fields.put("color", this.gradient);
-                    } else if (this.gradient[1] != null && this.gradient[1].length == 3) {
-                        fields.put("color", this.gradient);
-                    }
+                } else if (this.gradient[0] != null && this.gradient[0].length == 3) {
+                    fields.put("color", this.gradient[0]);
+                } else if (this.gradient[1] != null && this.gradient[1].length == 3) {
+                    fields.put("color", this.gradient[1]);
                 }
             }
         }
