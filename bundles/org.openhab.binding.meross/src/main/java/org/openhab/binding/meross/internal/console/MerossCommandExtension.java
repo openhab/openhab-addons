@@ -372,7 +372,7 @@ public class MerossCommandExtension extends AbstractConsoleCommandExtension impl
                     .map(t -> t.getHandler()).findFirst().orElse(null);
             if (handler != null) {
                 return new StringsCompleter(((MerossBridgeHandler) handler).getDevices().stream()
-                        .flatMap(device -> Stream.<String>of(device.devName(), device.uuid()))
+                        .flatMap(device -> Stream.<String> of(device.devName(), device.uuid()))
                         .collect(Collectors.toSet()), false)
                         .complete(args, cursorArgumentIndex, cursorPosition, candidates);
             }
