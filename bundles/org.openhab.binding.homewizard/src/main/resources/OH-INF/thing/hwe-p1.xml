@@ -11,9 +11,10 @@
 		<semantic-equipment-tag>ElectricMeter</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="energy" typeId="p1-energy-group"/>
+			<channel-group id="batteries" typeId="p1-batteries-group"/>
 		</channel-groups>
 		<properties>
-			<property name="thingTypeVersion">1</property>
+			<property name="thingTypeVersion">2</property>
 		</properties>
 
 		<config-description-ref uri="thing-type:homewizard:device"/>
@@ -122,6 +123,40 @@
 		</channels>
 	</channel-group-type>
 
+	<channel-group-type id="p1-batteries-group">
+		<label>Batteries</label>
+		<channels>
+			<channel id="batteries_mode" typeId="p1-batteries-mode"/>
+
+			<channel id="batteries_power" typeId="hw-power-advanced">
+				<label>Power</label>
+				<description>
+					This channel provides the current combined power consumption/production of the controlled Plug-In
+					Batteries.
+				</description>
+			</channel>
+			<channel id="batteries_target_power" typeId="hw-power-advanced">
+				<label>Target Power</label>
+				<description>
+					This channel provides the target power consumption/production of the controlled Plug-In Batteries.
+				</description>
+			</channel>
+			<channel id="batteries_max_consumption" typeId="hw-power-advanced">
+				<label>Maximum Consumption</label>
+				<description>
+					This channel provides the maximum allowed consumption power of the controlled Plug-In Batteries.
+				</description>
+			</channel>
+			<channel id="batteries_max_production" typeId="hw-power-advanced">
+				<label>Maximum Production</label>
+				<description>
+					This channel provides the maximum allowed production power of the controlled Plug-In Batteries.
+				</description>
+			</channel>
+
+		</channels>
+	</channel-group-type>
+
 	<channel-type id="p1-power-failures">
 		<item-type>Number</item-type>
 		<label>Power Failures</label>
@@ -147,6 +182,14 @@
 		<label>Gas Update Time Stamp</label>
 		<description>
 			This channel provides the time stamp of the total_gas measurement.
+		</description>
+	</channel-type>
+
+	<channel-type id="p1-batteries-mode">
+		<item-type>String</item-type>
+		<label>Battery Control Mode</label>
+		<description>
+			This channel provides the control mode of the Plug-In Battery.
 		</description>
 	</channel-type>
 

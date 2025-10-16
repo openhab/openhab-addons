@@ -16,9 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.homewizard.internal.HomeWizardBindingConstants;
 import org.openhab.binding.homewizard.internal.devices.HomeWizardEnergyMeterHandler;
 import org.openhab.core.library.types.DecimalType;
-import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
-import org.openhab.core.types.Command;
 
 /**
  * The {@link HomeWizardPlugInBatteryHandler} implements functionality to handle a HomeWizard P1 Meter.
@@ -41,20 +39,13 @@ public class HomeWizardPlugInBatteryHandler extends HomeWizardEnergyMeterHandler
     }
 
     /**
-     * Not listening to any commands.
-     */
-    @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
-    }
-
-    /**
      * Device specific handling of the returned data.
      *
      * @param payload The data obtained form the API call
      */
     @Override
-    protected void handleDataPayload(String data) {
-        super.handleDataPayload(data);
+    protected void handleMeasurementData(String data) {
+        super.handleMeasurementData(data);
 
         var payload = gson.fromJson(data, HomeWizardPlugInBatteryMeasurementPayload.class);
         if (payload != null) {

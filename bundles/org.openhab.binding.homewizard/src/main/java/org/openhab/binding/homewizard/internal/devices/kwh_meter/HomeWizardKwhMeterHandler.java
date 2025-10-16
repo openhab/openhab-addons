@@ -50,8 +50,8 @@ public class HomeWizardKwhMeterHandler extends HomeWizardEnergyMeterHandler {
      * @param payload The data obtained form the API call
      */
     @Override
-    protected void handleDataPayload(String data) {
-        super.handleDataPayload(data);
+    protected void handleMeasurementData(String data) {
+        super.handleMeasurementData(data);
 
         var payload = gson.fromJson(data, HomeWizardEnergySocketMeasurementPayload.class);
         if (payload != null) {
