@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.openhab.addons.itests</groupId>
     <artifactId>org.openhab.addons.reactor.itests</artifactId>
-    <version>5.0.2-SNAPSHOT</version>
+    <version>5.0.2</version>
   </parent>
 
   <artifactId>org.openhab.automation.groovyscripting.tests</artifactId>
