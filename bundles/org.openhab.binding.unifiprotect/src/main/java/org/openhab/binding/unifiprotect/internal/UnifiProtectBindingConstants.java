@@ -123,10 +123,10 @@ public class UnifiProtectBindingConstants {
     public static final String CHANNEL_SMART_DETECT_LOITER_SNAPSHOT_LABEL = "Smart Detect Loiter Snapshot";
 
     public static final String CHANNEL_RING = "ring";
-    public static final String CHANNEL_RING_START = "ring-start";
-    public static final String CHANNEL_RING_END = "ring-end";
+    public static final String CHANNEL_RING_LABEL = "Ring";
     public static final String CHANNEL_RING_CONTACT = "ring-contact";
     public static final String CHANNEL_RING_SNAPSHOT = "ring-snapshot";
+    public static final String CHANNEL_RING_SNAPSHOT_LABEL = "Ring Snapshot";
 
     // Light (floodlight)
     public static final String CHANNEL_LIGHT = "light";
