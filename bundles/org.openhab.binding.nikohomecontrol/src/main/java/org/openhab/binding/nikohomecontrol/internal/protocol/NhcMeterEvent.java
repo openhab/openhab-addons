@@ -45,7 +45,7 @@ public interface NhcMeterEvent extends NhcBaseEvent {
      * @param powerToGrid current power sent to grid in W, null for an empty reading
      */
     default void meterPowerEvent(@Nullable Double power, @Nullable Double powerFromGrid, @Nullable Double powerToGrid) {
-        meterPowerEvent(power, powerFromGrid, powerToGrid);
+        meterPowerEvent(power);
     }
 
     /**
@@ -66,7 +66,7 @@ public interface NhcMeterEvent extends NhcBaseEvent {
     void meterReadingEvent(double reading, double dayReading, LocalDateTime lastReadingUTC);
 
     /**
-     * This method is called when meter readinsg are received from the Niko Home Control controller.
+     * This method is called when meter readings are received from the Niko Home Control controller.
      * This method should be used for meters that register multiple measurements at the same time.
      * The keys of the argument maps are the keys to the readings as received from the controller.
      *

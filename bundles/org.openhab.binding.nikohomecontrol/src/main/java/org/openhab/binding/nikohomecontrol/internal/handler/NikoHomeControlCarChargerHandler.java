@@ -340,7 +340,7 @@ public class NikoHomeControlCarChargerHandler extends NikoHomeControlBaseHandler
 
         NikoHomeControlBridgeHandler bridgeHandler = getBridgeHandler();
         if (bridgeHandler == null) {
-            logger.debug("Cannot update char charger channels, no bridge handler");
+            logger.debug("Cannot update car charger channels, no bridge handler");
             return;
         }
 
