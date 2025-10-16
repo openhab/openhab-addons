@@ -51,18 +51,18 @@ public class OnOffLightDevice extends BaseDevice {
         switch (attributeName) {
             case OnOffCluster.ATTRIBUTE_ON_OFF: {
                 if (primaryItem instanceof GroupItem groupItem) {
-                    groupItem.send(OnOffType.from(Boolean.valueOf(data.toString())));
+                    groupItem.send(OnOffType.from(Boolean.valueOf(data.toString())), MATTER_SOURCE);
                 } else if (primaryItem instanceof SwitchItem switchItem) {
-                    switchItem.send(OnOffType.from(Boolean.valueOf(data.toString())));
+                    switchItem.send(OnOffType.from(Boolean.valueOf(data.toString())), MATTER_SOURCE);
                 }
             }
                 break;
             case LevelControlCluster.ATTRIBUTE_CURRENT_LEVEL: {
                 OnOffType onOff = OnOffType.from(((Double) data).intValue() > 0);
                 if (primaryItem instanceof GroupItem groupItem) {
-                    groupItem.send(onOff);
+                    groupItem.send(onOff, MATTER_SOURCE);
                 } else if (primaryItem instanceof SwitchItem switchItem) {
-                    switchItem.send(onOff);
+                    switchItem.send(onOff, MATTER_SOURCE);
                 }
             }
                 break;
