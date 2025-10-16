@@ -88,8 +88,8 @@ public class HomeWizardP1MeterBatteriesPayload {
     @Override
     public String toString() {
         return String.format("""
-                Data [mode: %s power: %f targetPower: %f"
-                maxConsumption: %f maxProduction: %d"
+                Data [mode: %s power: %f targetPower: %f
+                maxConsumption: %f maxProduction: %f
 
                 """, mode, power, targetPower, maxConsumption, maxProduction);
     }
