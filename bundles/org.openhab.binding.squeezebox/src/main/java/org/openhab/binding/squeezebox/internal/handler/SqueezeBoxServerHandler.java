@@ -52,7 +52,11 @@ import org.openhab.binding.squeezebox.internal.dto.BaseEntry;
 import org.openhab.binding.squeezebox.internal.dto.ButtonDTO;
 import org.openhab.binding.squeezebox.internal.dto.ButtonDTODeserializer;
 import org.openhab.binding.squeezebox.internal.dto.ButtonsDTO;
+import org.openhab.binding.squeezebox.internal.dto.Playlist;
+import org.openhab.binding.squeezebox.internal.dto.Playlists;
 import org.openhab.binding.squeezebox.internal.dto.StatusResponseDTO;
+import org.openhab.binding.squeezebox.internal.dto.Track;
+import org.openhab.binding.squeezebox.internal.dto.Tracks;
 import org.openhab.binding.squeezebox.internal.model.Favorite;
 import org.openhab.core.io.net.http.HttpRequestBuilder;
 import org.openhab.core.library.types.StringType;
@@ -62,8 +66,10 @@ import org.openhab.core.media.model.MediaAlbum;
 import org.openhab.core.media.model.MediaArtist;
 import org.openhab.core.media.model.MediaCollection;
 import org.openhab.core.media.model.MediaEntry;
+import org.openhab.core.media.model.MediaPlayList;
 import org.openhab.core.media.model.MediaRegistry;
 import org.openhab.core.media.model.MediaSource;
+import org.openhab.core.media.model.MediaTrack;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -172,6 +178,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler implements MediaL
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        logger.info("");
     }
 
     @Override
@@ -377,7 +384,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler implements MediaL
     /**
      * Send a command to the Squeeze Server.
      */
-    private synchronized void sendCommand(String command) {
+    public synchronized void sendCommand(String command) {
         if (getThing().getStatus() != ThingStatus.ONLINE) {
             return;
         }
@@ -460,6 +467,28 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler implements MediaL
         updateStatus(ThingStatus.ONLINE);
     }
 
+    private @Nullable Albums getArtistAlbums(String key) {
+        long start = 0;
+        long size = 10;
+        String jsonRpcUrl = SqueezeBoxServerHandler.this.jsonRpcUrl;
+        if (jsonRpcUrl == null) {
+            throw new IllegalStateException("JSON-RPC URL is not initialized");
+        }
+        String response = executePost(jsonRpcUrl,
+                "{\"id\":1,\"method\":\"slim.request\",\"params\":[\"\",[\"albums\",\"" + start + "\",\"" + size
+                        + "\",\"artist_id:" + key + "\",\"tags:lyjta\"]]}");
+        if (response != null) {
+            JsonObject obj = gson.fromJson(response, JsonObject.class);
+            JsonElement elm = obj.get("result");
+            JsonElement childs = ((JsonObject) elm).get("albums_loop");
+
+            Albums albums = gson.fromJson(childs, Albums.class);
+            return albums;
+        }
+
+        return null;
+    }
+
     private @Nullable Albums getAlbums(long start, long size) {
         String jsonRpcUrl = SqueezeBoxServerHandler.this.jsonRpcUrl;
         if (jsonRpcUrl == null) {
@@ -475,6 +504,110 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler implements MediaL
 
             Albums albums = gson.fromJson(childs, Albums.class);
             return albums;
+        }
+
+        return null;
+    }
+
+    private @Nullable Playlists getPlaylists(long start, long size) {
+        String jsonRpcUrl = SqueezeBoxServerHandler.this.jsonRpcUrl;
+        if (jsonRpcUrl == null) {
+            throw new IllegalStateException("JSON-RPC URL is not initialized");
+        }
+        String response = executePost(jsonRpcUrl,
+                "{\"id\":1,\"method\":\"slim.request\",\"params\":[\"\",[\"playlists\",\"" + start + "\",\"" + size
+                        + "\",\"tags:lyjta\"]]}");
+        if (response != null) {
+            JsonObject obj = gson.fromJson(response, JsonObject.class);
+            JsonElement elm = obj.get("result");
+            JsonElement childs = ((JsonObject) elm).get("playlists_loop");
+
+            Playlists playlist = gson.fromJson(childs, Playlists.class);
+            return playlist;
+        }
+
+        return null;
+    }
+
+    public @Nullable Track getTrack(String key) {
+        String jsonRpcUrl = SqueezeBoxServerHandler.this.jsonRpcUrl;
+        if (jsonRpcUrl == null) {
+            throw new IllegalStateException("JSON-RPC URL is not initialized");
+        }
+        String response = executePost(jsonRpcUrl,
+                "{\"id\":1,\"method\":\"slim.request\",\"params\":[\"\",[\"titles\",\"" + 0 + "\",\"" + 100
+                        + "\",\"track_id:" + key + "\",\"tags:u\"]]}");
+        if (response != null) {
+            JsonObject obj = gson.fromJson(response, JsonObject.class);
+            JsonElement elm = obj.get("result");
+            JsonElement childs = ((JsonObject) elm).get("titles_loop");
+
+            Tracks tracks = gson.fromJson(childs, Tracks.class);
+            return tracks.get(0);
+        }
+
+        return null;
+    }
+
+    private @Nullable Tracks getTracks(long start, long size) {
+        String jsonRpcUrl = SqueezeBoxServerHandler.this.jsonRpcUrl;
+        if (jsonRpcUrl == null) {
+            throw new IllegalStateException("JSON-RPC URL is not initialized");
+        }
+        String response = executePost(jsonRpcUrl,
+                "{\"id\":1,\"method\":\"slim.request\",\"params\":[\"\",[\"titles\",\"" + start + "\",\"" + size
+                        + "\",\"tags:ac\"]]}");
+        if (response != null) {
+            JsonObject obj = gson.fromJson(response, JsonObject.class);
+            JsonElement elm = obj.get("result");
+            JsonElement childs = ((JsonObject) elm).get("titles_loop");
+
+            Tracks tracks = gson.fromJson(childs, Tracks.class);
+            return tracks;
+        }
+
+        return null;
+    }
+
+    private @Nullable Tracks getAlbumTracks(String key) {
+        long start = 0;
+        long size = 10;
+        String jsonRpcUrl = SqueezeBoxServerHandler.this.jsonRpcUrl;
+        if (jsonRpcUrl == null) {
+            throw new IllegalStateException("JSON-RPC URL is not initialized");
+        }
+        String response = executePost(jsonRpcUrl,
+                "{\"id\":1,\"method\":\"slim.request\",\"params\":[\"\",[\"titles\",\"" + start + "\",\"" + size
+                        + "\",\"album_id:" + key + "\",\"ac\"]]}");
+        if (response != null) {
+            JsonObject obj = gson.fromJson(response, JsonObject.class);
+            JsonElement elm = obj.get("result");
+            JsonElement childs = ((JsonObject) elm).get("titles_loop");
+
+            Tracks tracks = gson.fromJson(childs, Tracks.class);
+            return tracks;
+        }
+
+        return null;
+    }
+
+    private @Nullable Tracks getPlaylistTrack(String key) {
+        long start = 0;
+        long size = 10;
+        String jsonRpcUrl = SqueezeBoxServerHandler.this.jsonRpcUrl;
+        if (jsonRpcUrl == null) {
+            throw new IllegalStateException("JSON-RPC URL is not initialized");
+        }
+        String response = executePost(jsonRpcUrl,
+                "{\"id\":1,\"method\":\"slim.request\",\"params\":[\"\",[\"playlists tracks\",\"" + start + "\",\""
+                        + size + "\",\"playlist_id:" + key + "\",\"ac\"]]}");
+        if (response != null) {
+            JsonObject obj = gson.fromJson(response, JsonObject.class);
+            JsonElement elm = obj.get("result");
+            JsonElement childs = ((JsonObject) elm).get("titles_loop");
+
+            Tracks tracks = gson.fromJson(childs, Tracks.class);
+            return tracks;
         }
 
         return null;
@@ -519,8 +652,15 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler implements MediaL
                 return new MediaCollection("Tracks", "Tracks", "/static/Tracks.png");
             });
         } else if ("Playlists".equals(mediaEntry.getKey())) {
-            // List<Playlist> playLists = spotifyApi.getPlaylists(start, size);
-            // RegisterCollections(mediaEntry, playLists, MediaPlayList.class);
+            List<Playlist> playlists = getPlaylists(start, size);
+            if (playlists != null) {
+                RegisterCollections(mediaEntry, playlists, MediaPlayList.class);
+            }
+        } else if ("Tracks".equals(mediaEntry.getKey())) {
+            List<Track> tracks = getTracks(start, size);
+            if (tracks != null) {
+                RegisterCollections(mediaEntry, tracks, MediaTrack.class);
+            }
         } else if ("Albums".equals(mediaEntry.getKey())) {
             List<Album> albums = getAlbums(start, size);
             if (albums != null) {
@@ -530,6 +670,24 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler implements MediaL
             List<Artist> artists = getArtists(start, size);
             if (artists != null) {
                 RegisterCollections(mediaEntry, artists, MediaArtist.class);
+            }
+        } else if (mediaEntry instanceof MediaArtist) {
+            MediaArtist mediaArtist = (MediaArtist) mediaEntry;
+            List<Album> albumList = getArtistAlbums(mediaArtist.getKey());
+            if (albumList != null) {
+                RegisterCollections(mediaEntry, albumList, MediaAlbum.class);
+            }
+        } else if (mediaEntry instanceof MediaAlbum) {
+            MediaAlbum album = (MediaAlbum) mediaEntry;
+            List<Track> trackList = getAlbumTracks(album.getKey());
+            if (trackList != null) {
+                RegisterCollections(mediaEntry, trackList, MediaTrack.class);
+            }
+        } else if (mediaEntry instanceof MediaPlayList) {
+            MediaPlayList playlist = (MediaPlayList) mediaEntry;
+            List<Track> trackList = getPlaylistTrack(playlist.getKey());
+            if (trackList != null) {
+                RegisterCollections(mediaEntry, trackList, MediaTrack.class);
             }
         }
     }
@@ -627,8 +785,6 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler implements MediaL
 
                     if (message.startsWith("players 0")) {
                         handlePlayersList(message);
-                    } else if (message.startsWith("albums")) {
-                        handleAlbums(message);
                     } else if (message.startsWith("favorites")) {
                         handleFavorites(message);
                     } else {

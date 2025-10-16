@@ -31,12 +31,15 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.squeezebox.internal.SqueezeBoxBindingConstants;
 import org.openhab.binding.squeezebox.internal.SqueezeBoxStateDescriptionOptionsProvider;
 import org.openhab.binding.squeezebox.internal.config.SqueezeBoxPlayerConfig;
+import org.openhab.binding.squeezebox.internal.dto.Track;
 import org.openhab.binding.squeezebox.internal.model.Favorite;
 import org.openhab.binding.squeezebox.internal.utils.SqueezeBoxTimeoutException;
 import org.openhab.core.cache.ExpiringCacheMap;
 import org.openhab.core.io.net.http.HttpUtil;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.IncreaseDecreaseType;
+import org.openhab.core.library.types.MediaCommandEnumType;
+import org.openhab.core.library.types.MediaCommandType;
 import org.openhab.core.library.types.NextPreviousType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
@@ -48,6 +51,8 @@ import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.media.MediaDevice;
 import org.openhab.core.media.MediaService;
+import org.openhab.core.media.model.MediaEntry;
+import org.openhab.core.media.model.MediaRegistry;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -304,6 +309,26 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
                     } else if (command.equals(RewindFastforwardType.FASTFORWARD)) {
                         squeezeBoxServerHandler.setPlayingTime(mac, currentPlayingTime() + 5);
                     }
+                }
+
+                if (command instanceof MediaCommandType md) {
+                    MediaCommandEnumType mediaCommandType = md.getCommand();
+                    String param = md.getParam().toString();
+                    String targetDevice = md.getDevice().toFullString();
+                    if (mediaCommandType == MediaCommandEnumType.PLAY) {
+                        MediaRegistry registry = mediaService.getMediaRegistry();
+                        MediaEntry mediaEntry = registry.getEntry(param);
+
+                        MediaEntry parentEntry = mediaEntry.getParent();
+
+                        Track track = squeezeBoxServerHandler.getTrack(mediaEntry.getKey());
+                        String playCommand = "b8:27:eb:f2:d8:03 playlist play " + track.getUrl();
+                        squeezeBoxServerHandler.sendCommand(playCommand);
+                        logger.info("");
+                    }
+
+                    logger.info("");
+
                 }
                 break;
             case CHANNEL_STREAM:
