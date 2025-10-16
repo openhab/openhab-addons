@@ -164,7 +164,6 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
     /**
      * Not listening to any commands.
      */
-    // @Override
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
     }
