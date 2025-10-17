@@ -54,6 +54,7 @@ import org.openhab.binding.squeezebox.internal.dto.ButtonDTODeserializer;
 import org.openhab.binding.squeezebox.internal.dto.ButtonsDTO;
 import org.openhab.binding.squeezebox.internal.dto.Playlist;
 import org.openhab.binding.squeezebox.internal.dto.Playlists;
+import org.openhab.binding.squeezebox.internal.dto.Request;
 import org.openhab.binding.squeezebox.internal.dto.StatusResponseDTO;
 import org.openhab.binding.squeezebox.internal.dto.Track;
 import org.openhab.binding.squeezebox.internal.dto.Tracks;
@@ -474,9 +475,9 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler implements MediaL
         if (jsonRpcUrl == null) {
             throw new IllegalStateException("JSON-RPC URL is not initialized");
         }
-        String response = executePost(jsonRpcUrl,
-                "{\"id\":1,\"method\":\"slim.request\",\"params\":[\"\",[\"albums\",\"" + start + "\",\"" + size
-                        + "\",\"artist_id:" + key + "\",\"tags:lyjta\"]]}");
+
+        Request req = Request.fromParams("albums", start, size, "artist_id:" + key, "tags:lyjta");
+        String response = executePost(jsonRpcUrl, req);
         if (response != null) {
             JsonObject obj = gson.fromJson(response, JsonObject.class);
             JsonElement elm = obj.get("result");
@@ -494,9 +495,9 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler implements MediaL
         if (jsonRpcUrl == null) {
             throw new IllegalStateException("JSON-RPC URL is not initialized");
         }
-        String response = executePost(jsonRpcUrl,
-                "{\"id\":1,\"method\":\"slim.request\",\"params\":[\"\",[\"albums\",\"" + start + "\",\"" + size
-                        + "\",\"tags:lyjta\"]]}");
+        Request req = Request.fromParams("albums", start, size, "tags:lyjta");
+        String response = executePost(jsonRpcUrl, req);
+
         if (response != null) {
             JsonObject obj = gson.fromJson(response, JsonObject.class);
             JsonElement elm = obj.get("result");
@@ -509,14 +510,35 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler implements MediaL
         return null;
     }
 
+    private @Nullable Tracks getCurrentPlaylist(long start, long size) {
+        String jsonRpcUrl = SqueezeBoxServerHandler.this.jsonRpcUrl;
+        if (jsonRpcUrl == null) {
+            throw new IllegalStateException("JSON-RPC URL is not initialized");
+        }
+
+        Request req = Request.fromParams("playlists", start, size, "tags:lyjta");
+        String response = executePost(jsonRpcUrl, req);
+
+        if (response != null) {
+            JsonObject obj = gson.fromJson(response, JsonObject.class);
+            JsonElement elm = obj.get("result");
+            JsonElement childs = ((JsonObject) elm).get("playlists_loop");
+
+            Playlists playlist = gson.fromJson(childs, Playlists.class);
+            return null;
+        }
+
+        return null;
+    }
+
     private @Nullable Playlists getPlaylists(long start, long size) {
         String jsonRpcUrl = SqueezeBoxServerHandler.this.jsonRpcUrl;
         if (jsonRpcUrl == null) {
             throw new IllegalStateException("JSON-RPC URL is not initialized");
         }
-        String response = executePost(jsonRpcUrl,
-                "{\"id\":1,\"method\":\"slim.request\",\"params\":[\"\",[\"playlists\",\"" + start + "\",\"" + size
-                        + "\",\"tags:lyjta\"]]}");
+
+        Request req = Request.fromParams("playlists", start, size, "tags:lyjta");
+        String response = executePost(jsonRpcUrl, req);
         if (response != null) {
             JsonObject obj = gson.fromJson(response, JsonObject.class);
             JsonElement elm = obj.get("result");
@@ -534,9 +556,9 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler implements MediaL
         if (jsonRpcUrl == null) {
             throw new IllegalStateException("JSON-RPC URL is not initialized");
         }
-        String response = executePost(jsonRpcUrl,
-                "{\"id\":1,\"method\":\"slim.request\",\"params\":[\"\",[\"titles\",\"" + 0 + "\",\"" + 100
-                        + "\",\"track_id:" + key + "\",\"tags:u\"]]}");
+
+        Request req = Request.fromParams("titles", 0, 100, "track_id:" + key, "tags:u");
+        String response = executePost(jsonRpcUrl, req);
         if (response != null) {
             JsonObject obj = gson.fromJson(response, JsonObject.class);
             JsonElement elm = obj.get("result");
@@ -554,9 +576,9 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler implements MediaL
         if (jsonRpcUrl == null) {
             throw new IllegalStateException("JSON-RPC URL is not initialized");
         }
-        String response = executePost(jsonRpcUrl,
-                "{\"id\":1,\"method\":\"slim.request\",\"params\":[\"\",[\"titles\",\"" + start + "\",\"" + size
-                        + "\",\"tags:ac\"]]}");
+
+        Request req = Request.fromParams("titles", start, size, "tags:ac");
+        String response = executePost(jsonRpcUrl, req);
         if (response != null) {
             JsonObject obj = gson.fromJson(response, JsonObject.class);
             JsonElement elm = obj.get("result");
@@ -576,9 +598,9 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler implements MediaL
         if (jsonRpcUrl == null) {
             throw new IllegalStateException("JSON-RPC URL is not initialized");
         }
-        String response = executePost(jsonRpcUrl,
-                "{\"id\":1,\"method\":\"slim.request\",\"params\":[\"\",[\"titles\",\"" + start + "\",\"" + size
-                        + "\",\"album_id:" + key + "\",\"ac\"]]}");
+
+        Request req = Request.fromParams("titles", start, size, "album_id:" + key, "tags:ac");
+        String response = executePost(jsonRpcUrl, req);
         if (response != null) {
             JsonObject obj = gson.fromJson(response, JsonObject.class);
             JsonElement elm = obj.get("result");
@@ -593,14 +615,13 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler implements MediaL
 
     private @Nullable Tracks getPlaylistTrack(String key) {
         long start = 0;
-        long size = 10;
+        long size = 100;
         String jsonRpcUrl = SqueezeBoxServerHandler.this.jsonRpcUrl;
         if (jsonRpcUrl == null) {
             throw new IllegalStateException("JSON-RPC URL is not initialized");
         }
-        String response = executePost(jsonRpcUrl,
-                "{\"id\":1,\"method\":\"slim.request\",\"params\":[\"\",[\"playlists\", \"tracks\",\"" + start + "\",\""
-                        + size + "\",\"playlist_id:" + key + "\",\"ac\"]]}");
+        Request req = Request.fromParams("playlists tracks", start, size, "playlist_id:" + key, "tags:ac");
+        String response = executePost(jsonRpcUrl, req);
         if (response != null) {
             JsonObject obj = gson.fromJson(response, JsonObject.class);
             JsonElement elm = obj.get("result");
@@ -618,9 +639,9 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler implements MediaL
         if (jsonRpcUrl == null) {
             throw new IllegalStateException("JSON-RPC URL is not initialized");
         }
-        String response = executePost(jsonRpcUrl,
-                "{\"id\":1,\"method\":\"slim.request\",\"params\":[\"\",[\"artists\",\"" + start + "\",\"" + size
-                        + "\",\"tags:tyj4\"]]}");
+
+        Request req = Request.fromParams("artists", start, size, "tags:tyj4");
+        String response = executePost(jsonRpcUrl, req);
         if (response != null) {
             JsonObject obj = gson.fromJson(response, JsonObject.class);
             JsonElement elm = obj.get("result");
@@ -1330,6 +1351,10 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler implements MediaL
             }
         }
 
+    }
+
+    private @Nullable String executePost(String url, Request req) {
+        return executePost(url, gson.toJson(req));
     }
 
     private @Nullable String executePost(String url, String content) {
