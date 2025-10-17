@@ -18,9 +18,50 @@
                     "state": {
                         "type": "string",
                         "description": "New state for item"
+                    },
+                    "answer": {
+                    "type": "string",
+                    "description": "Short natural language answer to display together with function call."
                     }
                 },
                 "required": ["type", "name", "state"]
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "create_intent",
+            "description": "Create an intent with entities for HABot, similar to OpenNLP's output",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "name": { 
+                        "type": "string", 
+                        "description": "Intent name, e.g., get-status or show-chart" 
+                    },
+                    "entities": {
+                        "type": "object",
+                        "description": "Entities map for the intent",
+                        "properties": {
+                            "object": { "type": "string", "description": "Object name from the request, e.g., lamp, temperature" },
+                            "location": { "type": "string", "description": "Location name from the request, e.g., kitchen, living room" },
+                            "period": { "type": "string", "description": "Time period for a chart, e.g., D, W, M" }
+                        }
+                    },
+                    "matched_items": {
+                        "type": "array",
+                        "description": "List of exact Item names from the system message relevant to this intent",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "answer": {
+                    "type": "string",
+                    "description": "Short natural language answer to display together with the card."
+                    }
+                },
+                "required": ["name"]
             }
         }
     }
