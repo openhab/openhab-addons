@@ -66,7 +66,7 @@ public class AVMFritzPowerMeterDeviceHandler extends DeviceHandler implements AV
 
     @Override
     public void enablePowerMeterHighRefresh(long deviceId) {
-        // TODO use Thing property "devieId" instead of passing an argument
+        // TODO use Thing property "deviceId" instead of passing an argument
         this.deviceId = deviceId;
         startPolling(deviceId);
     }

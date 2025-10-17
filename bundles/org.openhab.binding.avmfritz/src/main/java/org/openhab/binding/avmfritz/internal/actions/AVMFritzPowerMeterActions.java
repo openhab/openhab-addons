@@ -59,7 +59,7 @@ public class AVMFritzPowerMeterActions implements ThingActions {
         ((AVMFritzPowerMeterActions) actions).enablePowerMeterHighRefresh(deviceId);
     }
 
-    @RuleAction(label = "@text/disablePowerMeterHighRefreshActionLabel", description = "@text/disablePowerMeterHighRefreshDescription")
+    @RuleAction(label = "@text/disablePowerMeterHighRefreshActionLabel", description = "@text/disablePowerMeterHighRefreshActionDescription")
     public void disablePowerMeterHighRefresh() {
         AVMFritzPowerMeterActionsHandler actionsHandler = handler;
         if (actionsHandler == null) {
