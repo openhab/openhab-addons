@@ -31,7 +31,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.squeezebox.internal.SqueezeBoxBindingConstants;
 import org.openhab.binding.squeezebox.internal.SqueezeBoxStateDescriptionOptionsProvider;
 import org.openhab.binding.squeezebox.internal.config.SqueezeBoxPlayerConfig;
-import org.openhab.binding.squeezebox.internal.dto.Track;
 import org.openhab.binding.squeezebox.internal.model.Favorite;
 import org.openhab.binding.squeezebox.internal.utils.SqueezeBoxTimeoutException;
 import org.openhab.core.cache.ExpiringCacheMap;
@@ -52,8 +51,10 @@ import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.media.MediaDevice;
 import org.openhab.core.media.MediaService;
+import org.openhab.core.media.model.MediaAlbum;
 import org.openhab.core.media.model.MediaEntry;
 import org.openhab.core.media.model.MediaRegistry;
+import org.openhab.core.media.model.MediaTrack;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -338,10 +339,28 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
 
                         MediaEntry parentEntry = mediaEntry.getParent();
 
-                        Track track = squeezeBoxServerHandler.getTrack(mediaEntry.getKey());
-                        String playCommand = mac + " playlist play " + track.getUrl();
-                        squeezeBoxServerHandler.sendCommand(playCommand);
-                        logger.info("");
+                        if (mediaEntry instanceof MediaAlbum album) {
+                            String playCommand = mac + " playlist loadtracks album.id=" + album.getKey();
+                            squeezeBoxServerHandler.sendCommand(playCommand);
+                        } else if (mediaEntry instanceof MediaTrack track) {
+                            String playCommand = mac + " playlist loadtracks track.id=" + track.getKey();
+                            squeezeBoxServerHandler.sendCommand(playCommand);
+                        }
+                    } else if (mediaCommandType == MediaCommandEnumType.ENQUEUE) {
+                        MediaRegistry registry = mediaService.getMediaRegistry();
+                        MediaEntry mediaEntry = registry.getEntry(param);
+
+                        MediaEntry parentEntry = mediaEntry.getParent();
+
+                        if (mediaEntry instanceof MediaAlbum album) {
+                            String playCommand = mac + " playlist addtracks album.id=" + album.getKey();
+                            squeezeBoxServerHandler.sendCommand(playCommand);
+                        } else if (mediaEntry instanceof MediaTrack track) {
+                            String playCommand = mac + " playlist addtracks track.id=" + track.getKey();
+                            squeezeBoxServerHandler.sendCommand(playCommand);
+                        }
+                    } else if (mediaCommandType == MediaCommandEnumType.VOLUME) {
+                        squeezeBoxServerHandler.setVolume(mac, Integer.parseInt(param));
                     }
 
                     logger.info("");

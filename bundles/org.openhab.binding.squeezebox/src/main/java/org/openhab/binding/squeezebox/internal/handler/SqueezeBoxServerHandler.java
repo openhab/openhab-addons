@@ -571,7 +571,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler implements MediaL
 
     private @Nullable Tracks getAlbumTracks(String key) {
         long start = 0;
-        long size = 10;
+        long size = 100;
         String jsonRpcUrl = SqueezeBoxServerHandler.this.jsonRpcUrl;
         if (jsonRpcUrl == null) {
             throw new IllegalStateException("JSON-RPC URL is not initialized");
@@ -882,7 +882,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler implements MediaL
                     players.put(macAddress, player);
                     updatePlayer(listener -> listener.playerAdded(player));
                     // tell the server we want to subscribe to player updates
-                    sendCommand(player.macAddress + " status - 1 subscribe:10 tags:yagJlNKjcA");
+                    sendCommand(player.macAddress + " status - 1 subscribe:1 tags:yagJlNKjcA");
                 }
             }
             for (final SqueezeBoxPlayer player : players.values()) {
