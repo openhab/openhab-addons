@@ -99,11 +99,13 @@
 		</parameter>
 		<parameter name="on" type="text">
 			<label>Custom ON Command</label>
-			<description>A string (like "ON") that is sent to MQTT when an ON command is received, instead of an explicit 100%.</description>
+			<description>A string (like "ON") that is sent to MQTT when an ON command is received, instead of an explicit 100%.
+				The Outgoing Value Format is not applied to this value.</description>
 		</parameter>
 		<parameter name="off" type="text">
 			<label>Custom OFF Command</label>
-			<description>A string (like "OFF") that is sent to MQTT when an OFF command is received, instead of an explicit 0%.</description>
+			<description>A string (like "OFF") that is sent to MQTT when an OFF command is received, instead of an explicit 0%.
+				The Outgoing Value Format is not applied to this value.</description>
 		</parameter>
 	</config-description>
 </config-description:config-descriptions>
