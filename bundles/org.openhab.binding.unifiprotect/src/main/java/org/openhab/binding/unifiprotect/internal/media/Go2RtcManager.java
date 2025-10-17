@@ -61,11 +61,16 @@ public class Go2RtcManager {
     private final String listenHost;
     private final int listenPort;
     private final Duration healthTimeout = Duration.ofSeconds(2);
+    private final Duration startupGrace = Duration.ofSeconds(5);
+    private int consecutiveUnhealthyChecks = 0;
+    private final int maxConsecutiveUnhealthyChecks = 3;
     private boolean stopping = false;
     @Nullable
     private ScheduledFuture<?> tickFuture;
     @Nullable
     private Process process;
+    @Nullable
+    private Long lastStartNanos;
 
     public Go2RtcManager(Path binDir, Path configDir, Supplier<Path> go2rtcPathSupplier,
             Supplier<Path> ffmpegPathSupplier, String listenHost, int listenPort, String configFileName) {
@@ -143,6 +148,8 @@ public class Go2RtcManager {
                 cmd.stream().collect(Collectors.joining(" ")));
         Process process = pb.start();
         this.process = process;
+        this.lastStartNanos = System.nanoTime();
+        this.consecutiveUnhealthyChecks = 0;
         // Ensure we don't lose track of exit and clear reference deterministically
         process.onExit().thenAccept(p -> {
             synchronized (Go2RtcManager.this) {
@@ -204,6 +211,8 @@ public class Go2RtcManager {
         if (tickFuture != null) {
             tickFuture.cancel(true);
         }
+        this.lastStartNanos = null;
+        this.consecutiveUnhealthyChecks = 0;
         Process process = this.process;
         if (process != null) {
             try {
@@ -233,14 +242,30 @@ public class Go2RtcManager {
                 }
                 return;
             }
-            if (!isHealthy()) {
-                try {
-                    process.destroy();
-                    if (!process.waitFor(2, TimeUnit.SECONDS))
-                        process.destroyForcibly();
-                    startIfNeeded();
-                } catch (Exception ignored) {
+            // Allow a short grace period after starting before enforcing health checks
+            Long startedAt = this.lastStartNanos;
+            if (startedAt != null) {
+                Duration sinceStart = Duration.ofNanos(System.nanoTime() - startedAt);
+                if (sinceStart.compareTo(startupGrace) < 0) {
+                    return;
                 }
+            }
+            if (!isHealthy()) {
+                consecutiveUnhealthyChecks++;
+                if (consecutiveUnhealthyChecks >= maxConsecutiveUnhealthyChecks) {
+                    try {
+                        process.destroy();
+                        if (!process.waitFor(2, TimeUnit.SECONDS))
+                            process.destroyForcibly();
+                        startIfNeeded();
+                    } catch (Exception ignored) {
+                    } finally {
+                        consecutiveUnhealthyChecks = 0;
+                        this.lastStartNanos = System.nanoTime();
+                    }
+                }
+            } else {
+                consecutiveUnhealthyChecks = 0;
             }
         }
     }
