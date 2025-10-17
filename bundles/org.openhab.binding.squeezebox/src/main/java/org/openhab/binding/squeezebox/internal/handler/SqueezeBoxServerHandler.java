@@ -516,16 +516,20 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler implements MediaL
             throw new IllegalStateException("JSON-RPC URL is not initialized");
         }
 
-        Request req = Request.fromParams("playlists", start, size, "tags:lyjta");
+        Request req = Request.fromParams("playlist save currentPlayList").setPlayerId("00:04:20:16:20:80");
         String response = executePost(jsonRpcUrl, req);
+
+        req = Request.fromParams("playlist playlistsinfo id").setPlayerId("00:04:20:16:20:80");
+        response = executePost(jsonRpcUrl, req);
 
         if (response != null) {
             JsonObject obj = gson.fromJson(response, JsonObject.class);
             JsonElement elm = obj.get("result");
-            JsonElement childs = ((JsonObject) elm).get("playlists_loop");
+            JsonElement childs = ((JsonObject) elm).get("id");
+            String playlistId = childs.getAsString();
 
-            Playlists playlist = gson.fromJson(childs, Playlists.class);
-            return null;
+            Tracks tracks = getPlaylistTrack(playlistId);
+            return tracks;
         }
 
         return null;
@@ -669,10 +673,20 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler implements MediaL
                 return new MediaCollection("Playlists", "Playlists", "/static/playlist.png");
             });
 
+            mediaEntry.registerEntry("CurrentPlaylists", () -> {
+                return new MediaCollection("CurrentPlaylists", "CurrentPlaylists", "/static/playlist.png");
+            });
+
             mediaEntry.registerEntry("Tracks", () -> {
                 return new MediaCollection("Tracks", "Tracks", "/static/Tracks.png");
             });
+        } else if ("CurrentPlaylists".equals(mediaEntry.getKey())) {
+            Tracks tracks = getCurrentPlaylist(start, size);
+            if (tracks != null) {
+                RegisterCollections(mediaEntry, tracks, MediaTrack.class);
+            }
         } else if ("Playlists".equals(mediaEntry.getKey())) {
+            getCurrentPlaylist(start, size);
             List<Playlist> playlists = getPlaylists(start, size);
             if (playlists != null) {
                 RegisterCollections(mediaEntry, playlists, MediaPlayList.class);

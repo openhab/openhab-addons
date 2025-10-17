@@ -37,13 +37,18 @@ public class Request {
         params.add(subParams);
     }
 
-    public void setPlayerId(String playerId) {
+    public Request setPlayerId(String playerId) {
         params.remove(0);
         params.add(0, playerId);
+        return this;
     }
 
     public void addParams(String param) {
         subParams.add(param);
+    }
+
+    public static Request fromParams(String command) {
+        return fromParams(command, -1, -1, null);
     }
 
     public static Request fromParams(String command, long start, long size, String... args) {
@@ -52,10 +57,18 @@ public class Request {
         for (String cmd : commands) {
             req.addParams(cmd);
         }
-        req.addParams("" + start);
-        req.addParams("" + size);
-        for (String arg : args) {
-            req.addParams(arg);
+
+        if (start != -1) {
+            req.addParams("" + start);
+        }
+        if (size != -1) {
+            req.addParams("" + size);
+        }
+
+        if (args != null) {
+            for (String arg : args) {
+                req.addParams(arg);
+            }
         }
         return req;
     }
