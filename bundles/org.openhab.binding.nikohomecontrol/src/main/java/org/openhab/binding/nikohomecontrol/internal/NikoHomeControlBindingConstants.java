@@ -113,15 +113,15 @@ public class NikoHomeControlBindingConstants {
     public static final String CHANNEL_STATE = "state";
 
     public static final String CHANNEL_STATUS = "status";
-    public static final String CHANNEL_CHARGING_STATUS = "chargingStatus";
-    public static final String CHANNEL_EV_STATUS = "evStatus";
-    public static final String CHANNEL_COUPLING_STATUS = "couplingStatus";
-    public static final String CHANNEL_CHARGING_MODE = "chargingMode";
-    public static final String CHANNEL_TARGET_DISTANCE = "targetDistance";
-    public static final String CHANNEL_TARGET_TIME = "targetTime";
+    public static final String CHANNEL_CHARGING_STATUS = "chargingstatus";
+    public static final String CHANNEL_EV_STATUS = "evstatus";
+    public static final String CHANNEL_COUPLING_STATUS = "couplingstatus";
+    public static final String CHANNEL_CHARGING_MODE = "chargingmode";
+    public static final String CHANNEL_TARGET_DISTANCE = "targetdistance";
+    public static final String CHANNEL_TARGET_TIME = "targettime";
     public static final String CHANNEL_BOOST = "boost";
-    public static final String CHANNEL_REACHABLE_DISTANCE = "reachableDistance";
-    public static final String CHANNEL_NEXT_CHARGING_TIME = "nextChargingTime";
+    public static final String CHANNEL_REACHABLE_DISTANCE = "reachabledistance";
+    public static final String CHANNEL_NEXT_CHARGING_TIME = "nextchargingtime";
 
     public static final String CHANNEL_ALARM = "alarm";
     public static final String CHANNEL_NOTICE = "notice";

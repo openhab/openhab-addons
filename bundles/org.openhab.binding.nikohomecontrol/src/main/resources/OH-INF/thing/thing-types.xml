@@ -492,16 +492,16 @@
 				<label>@text/channelCarChargerStatusLabel</label>
 				<description>@text/channelCarChargerStatusDescription</description>
 			</channel>
-			<channel id="chargingStatus" typeId="chargingStatus"/>
-			<channel id="evStatus" typeId="evStatus"/>
-			<channel id="couplingStatus" typeId="couplingStatus"/>
+			<channel id="chargingstatus" typeId="chargingstatus"/>
+			<channel id="evstatus" typeId="evstatus"/>
+			<channel id="couplingstatus" typeId="couplingstatus"/>
 			<channel id="power" typeId="power"/>
-			<channel id="chargingMode" typeId="chargingMode"/>
-			<channel id="targetDistance" typeId="targetDistance"/>
-			<channel id="targetTime" typeId="targetTime"/>
+			<channel id="chargingmode" typeId="chargingmode"/>
+			<channel id="targetdistance" typeId="targetdistance"/>
+			<channel id="targettime" typeId="targettime"/>
 			<channel id="boost" typeId="boost"/>
-			<channel id="reachableDistance" typeId="reachableDistance"/>
-			<channel id="nextChargingTime" typeId="nextChargingTime"/>
+			<channel id="reachabledistance" typeId="reachabledistance"/>
+			<channel id="nextchargingtime" typeId="nextchargingtime"/>
 			<channel id="energy" typeId="energy"/>
 			<channel id="energyday" typeId="energyday"/>
 			<channel id="measurementtime" typeId="measurementtime"/>
@@ -786,7 +786,7 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="chargingStatus">
+	<channel-type id="chargingstatus">
 		<item-type>String</item-type>
 		<label>@text/channelChargingStatusLabel</label>
 		<description>@text/channelChargingStatusDescription</description>
@@ -802,7 +802,7 @@
 			</options>
 		</state>
 	</channel-type>
-	<channel-type id="evStatus">
+	<channel-type id="evstatus">
 		<item-type>String</item-type>
 		<label>@text/channelEvStatusLabel</label>
 		<description>@text/channelEvStatusDescription</description>
@@ -817,7 +817,7 @@
 			</options>
 		</state>
 	</channel-type>
-	<channel-type id="couplingStatus">
+	<channel-type id="couplingstatus">
 		<item-type>String</item-type>
 		<label>@text/channelCouplingStatusLabel</label>
 		<description>@text/channelCouplingStatusDescription</description>
@@ -837,7 +837,7 @@
 			</options>
 		</state>
 	</channel-type>
-	<channel-type id="chargingMode">
+	<channel-type id="chargingmode">
 		<item-type>String</item-type>
 		<label>@text/channelChargingModeLabel</label>
 		<description>@text/channelChargingModeDescription</description>
@@ -852,33 +852,50 @@
 			</options>
 		</state>
 	</channel-type>
-	<channel-type id="targetDistance">
+	<channel-type id="targetdistance">
 		<item-type unitHint="km">Number:Length</item-type>
 		<label>@text/channelTargetDistanceLabel</label>
 		<description>@text/channelTargetDistanceDescription</description>
+		<tags>
+			<tag>Setpoint</tag>
+		</tags>
 		<state pattern="%d %unit%"/>
 	</channel-type>
-	<channel-type id="targetTime">
+	<channel-type id="targettime">
 		<item-type>DateTime</item-type>
 		<label>@text/channelTargetTimeLabel</label>
 		<description>@text/channelTargetTimeDescription</description>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state pattern="%tR"/>
 	</channel-type>
 	<channel-type id="boost">
 		<item-type>Switch</item-type>
 		<label>@text/channelBoostLabel</label>
 		<description>@text/channelBoostDescription</description>
+		<tags>
+			<tag>Switch</tag>
+		</tags>
 	</channel-type>
-	<channel-type id="reachableDistance">
+	<channel-type id="reachabledistance">
 		<item-type unitHint="km">Number:Length</item-type>
 		<label>@text/channelReachableDistanceLabel</label>
 		<description>@text/channelReachableDistanceDescription</description>
+		<tags>
+			<tag>Calculation</tag>
+		</tags>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
-	<channel-type id="nextChargingTime">
+	<channel-type id="nextchargingtime">
 		<item-type>DateTime</item-type>
 		<label>@text/channelNextChargingTimeLabel</label>
 		<description>@text/channelNextChargingTimeDescription</description>
+		<tags>
+			<tag>Calculation</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state pattern="%tR" readOnly="true"/>
 	</channel-type>
 
