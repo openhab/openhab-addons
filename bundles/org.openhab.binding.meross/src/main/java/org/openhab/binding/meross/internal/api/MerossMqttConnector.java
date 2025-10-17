@@ -12,96 +12,255 @@
  */
 package org.openhab.binding.meross.internal.api;
 
-import java.nio.charset.StandardCharsets;
-import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.meross.internal.dto.MqttMessageBuilder;
-import org.openhab.binding.meross.internal.exception.MerossMqttConnackException;
+import org.openhab.binding.meross.internal.handler.MerossBridgeHandler;
+import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
+import org.openhab.core.io.transport.mqtt.MqttBrokerConnection.MqttVersion;
+import org.openhab.core.io.transport.mqtt.MqttBrokerConnection.Protocol;
+import org.openhab.core.io.transport.mqtt.MqttConnectionObserver;
+import org.openhab.core.io.transport.mqtt.MqttConnectionState;
+import org.openhab.core.io.transport.mqtt.MqttException;
+import org.openhab.core.io.transport.mqtt.MqttMessageSubscriber;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.hivemq.client.mqtt.MqttGlobalPublishFilter;
-import com.hivemq.client.mqtt.datatypes.MqttQos;
-import com.hivemq.client.mqtt.mqtt5.Mqtt5BlockingClient;
-import com.hivemq.client.mqtt.mqtt5.Mqtt5Client;
-import com.hivemq.client.mqtt.mqtt5.message.connect.connack.Mqtt5ConnAck;
-import com.hivemq.client.mqtt.mqtt5.message.connect.connack.Mqtt5ConnAckReasonCode;
-import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5Publish;
-import com.hivemq.client.mqtt.mqtt5.message.subscribe.Mqtt5Subscribe;
-
 /**
- * The {@link MerossMqttConnector} class is responsible for publishing
- * MQTT messages to the Meross broker.
+ * The {@link MerossMqttConnector} class is responsible for the connection to the Meross broker.
  *
  * @author Giovanni Fabiani - Initial contribution
+ * @author Mark Herwege - Subscribe to messages asynchronously
  */
 @NonNullByDefault
-public class MerossMqttConnector {
-    private static final Logger LOGGER = LoggerFactory.getLogger(MerossMqttConnector.class);
+public class MerossMqttConnector implements MqttConnectionObserver {
+
     private static final int SECURE_WEB_SOCKET_PORT = 443;
     private static final int RECEPTION_TIMEOUT_SECONDS = 5;
-    private static final int KEEP_ALIVE_SECONDS = 1;
+    private static final int MQTT_DISCONNECT_DELAY_SECONDS = 60;
+    private static final int KEEP_ALIVE_SECONDS = 30;
+    private static final int QOS_AT_MOST_ONCE = 0;
+    private static final int QOS_AT_LEAST_ONCE = 1;
+
+    private final Logger logger = LoggerFactory.getLogger(MerossMqttConnector.class);
+
+    private MerossBridgeHandler callback;
+    private ScheduledExecutorService scheduler;
+
+    private @Nullable MqttBrokerConnection mqttConnection;
+    private @Nullable CompletableFuture<Boolean> stoppedFuture;
+    private @Nullable ScheduledFuture<?> disconnectFuture;
+    private CompletableFuture<Boolean> connected = new CompletableFuture<>();
+
+    public MerossMqttConnector(MerossBridgeHandler callback, ScheduledExecutorService scheduler) {
+        this.callback = callback;
+        this.scheduler = scheduler;
+
+        String brokerAddress = MqttMessageBuilder.brokerAddress;
+        String clientId = MqttMessageBuilder.clientId;
+        String userId = MqttMessageBuilder.userId;
+        if (brokerAddress == null || clientId == null || userId == null) {
+            logger.debug("MQTT broker not configured");
+            return;
+        }
+        String clearPassword = "%s%s".formatted(MqttMessageBuilder.userId, MqttMessageBuilder.key);
+        String hashedPassword = MD5Util.getMD5String(clearPassword);
+
+        MqttBrokerConnection connection = mqttConnection = new MqttBrokerConnection(Protocol.TCP, MqttVersion.V5,
+                brokerAddress, SECURE_WEB_SOCKET_PORT, true, clientId);
+        connection.setCredentials(userId, hashedPassword);
+        connection.setQos(QOS_AT_LEAST_ONCE);
+        connection.setKeepAliveInterval(KEEP_ALIVE_SECONDS);
+        connection.addConnectionObserver(this);
+    }
+
+    /**
+     * Start the MQTT connection
+     *
+     * @throws MqttException
+     * @throws InterruptedException
+     */
+    synchronized public void startConnection() throws MqttException, InterruptedException {
+        MqttBrokerConnection mqttConnection = this.mqttConnection;
+        if (mqttConnection == null) {
+            logger.debug("MQTT broker connection not initialized");
+            return;
+        }
+
+        // Make sure stop finished before trying to restart
+        CompletableFuture<Boolean> future = stoppedFuture;
+        if (future != null) {
+            try {
+                future.get(RECEPTION_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+                logger.debug("finished stopping connection");
+            } catch (InterruptedException e) {
+                if (Thread.interrupted()) {
+                    throw new InterruptedException();
+                }
+            } catch (ExecutionException | TimeoutException ignore) {
+                // ignore
+            }
+            stoppedFuture = null;
+        }
+
+        logger.debug("Starting connection...");
+        try {
+            connected = new CompletableFuture<>();
+            if (!mqttConnection.start().get(RECEPTION_TIMEOUT_SECONDS, TimeUnit.SECONDS)) {
+                logger.debug("error connecting");
+                throw new MqttException("Connection execution exception");
+            }
+            connected.get(RECEPTION_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            logger.debug("connection interrupted exception");
+            if (Thread.interrupted()) {
+                throw new InterruptedException();
+            }
+            throw new MqttException("Connection interrupted exception");
+        } catch (ExecutionException e) {
+            logger.debug("connection execution exception", e.getCause());
+            throw new MqttException("Connection execution exception");
+        } catch (TimeoutException e) {
+            logger.debug("connection timeout exception");
+            throw new MqttException("Connection timeout exception");
+        }
+    }
+
+    /**
+     * Stop the MQTT connection.
+     */
+    public void stopConnection() {
+        MqttBrokerConnection mqttConnection = this.mqttConnection;
+        if (mqttConnection == null) {
+            logger.debug("MQTT broker connection not initialized");
+            return;
+        }
+
+        logger.debug("Stopping connection...");
+        connected.complete(false);
+        ScheduledFuture<?> disconnectFuture = this.disconnectFuture;
+        if (disconnectFuture != null) {
+            disconnectFuture.cancel(true);
+            this.disconnectFuture = null;
+        }
+        stoppedFuture = mqttConnection.stop();
+    }
 
     /**
      * @param message The mqtt message
      * @param requestTopic The request topic
-     * @throws MerossMqttConnackException in case connAck fails
-     * @return The mqtt response
+     * @throws InterruptedException
      */
-    @SuppressWarnings("null")
-    static synchronized String publishMqttMessage(byte[] message, String requestTopic)
-            throws MerossMqttConnackException {
-        String clearPassword = "%s%s".formatted(MqttMessageBuilder.userId, MqttMessageBuilder.key);
-        String hashedPassword = MD5Util.getMD5String(clearPassword);
-
-        Mqtt5BlockingClient client = Mqtt5Client.builder().identifier(MqttMessageBuilder.clientId)
-                .serverHost(MqttMessageBuilder.brokerAddress).serverPort(SECURE_WEB_SOCKET_PORT).sslWithDefaultConfig()
-                .automaticReconnectWithDefaultConfig().buildBlocking();
-        Mqtt5ConnAck connAck = client.connectWith().cleanStart(false).keepAlive(KEEP_ALIVE_SECONDS).simpleAuth()
-                .username(MqttMessageBuilder.userId).password(hashedPassword.getBytes(StandardCharsets.UTF_8))
-                .applySimpleAuth().send();
-        if (connAck.getReasonCode().getCode() != Mqtt5ConnAckReasonCode.SUCCESS.getCode()) {
-            if (connAck.getReasonString().isPresent()) {
-                LOGGER.debug("Mqtt5ConnAck failed: {}", connAck.getReasonString().get());
-                throw new MerossMqttConnackException("Mqtt5ConnAck failed" + connAck.getReasonString().get());
-            }
+    synchronized void publishMqttMessage(String requestTopic, byte[] message)
+            throws MqttException, InterruptedException {
+        MqttBrokerConnection mqttConnection = this.mqttConnection;
+        if (mqttConnection == null) {
+            logger.debug("MQTT broker connection not initialized");
+            return;
         }
-        Mqtt5Subscribe subscribeMessage = Mqtt5Subscribe.builder().addSubscription()
-                .topicFilter(MqttMessageBuilder.buildClientUserTopic()).qos(MqttQos.AT_LEAST_ONCE).applySubscription()
-                .addSubscription().topicFilter(MqttMessageBuilder.buildClientResponseTopic()).qos(MqttQos.AT_LEAST_ONCE)
-                .applySubscription().build();
 
-        client.subscribe(subscribeMessage);
-
-        Mqtt5Publish publishMessage = Mqtt5Publish.builder().topic(requestTopic).qos(MqttQos.AT_MOST_ONCE)
-                .payload(message).build();
-
-        client.publish(publishMessage);
-
-        String incomingResponse = null;
-        try (final Mqtt5BlockingClient.Mqtt5Publishes publishes = client
-                .publishes(MqttGlobalPublishFilter.SUBSCRIBED)) {
-            Optional<Mqtt5Publish> publishesResponse = publishes.receive(RECEPTION_TIMEOUT_SECONDS, TimeUnit.SECONDS);
-            if (publishesResponse.isPresent()) {
-                Mqtt5Publish mqtt5PublishResponse = publishesResponse.get();
-                if (mqtt5PublishResponse.getPayload().isPresent()) {
-                    incomingResponse = StandardCharsets.UTF_8.decode(mqtt5PublishResponse.getPayload().get())
-                            .toString();
-                } else {
-                    LOGGER.debug("Received an MQTT message without a payload");
-                }
+        try {
+            if (connected.get(RECEPTION_TIMEOUT_SECONDS, TimeUnit.SECONDS)) {
+                mqttConnection.publish(requestTopic, message, QOS_AT_MOST_ONCE, false);
             } else {
-                LOGGER.debug("Did not receive MQTT message within timeout");
+                throw new MqttException("Disconnected exception");
             }
         } catch (InterruptedException e) {
-            LOGGER.debug("InterruptedException: {}", e.getMessage());
+            logger.debug("connection interrupted exception");
+            if (Thread.interrupted()) {
+                throw new InterruptedException();
+            }
+            throw new MqttException("Connection interrupted exception");
+        } catch (ExecutionException e) {
+            logger.debug("connection execution exception", e.getCause());
+            throw new MqttException("Connection execution exception");
+        } catch (TimeoutException e) {
+            logger.debug("connection timeout exception");
+            throw new MqttException("Connection timeout exception");
         }
-        client.disconnect();
-        if (incomingResponse != null) {
-            return incomingResponse;
+    }
+
+    public void addClientUserTopicSubscriber(MqttMessageSubscriber subscriber) {
+        addTopicSubscriber(MqttMessageBuilder.buildClientUserTopic(), subscriber);
+    }
+
+    public void addClientResponseTopicSubscriber(MqttMessageSubscriber subscriber) {
+        addTopicSubscriber(MqttMessageBuilder.buildClientResponseTopic(), subscriber);
+    }
+
+    public void addDeviceRequestTopicSubscriber(MqttMessageSubscriber subscriber, String deviceUUID) {
+        addTopicSubscriber(MqttMessageBuilder.buildDeviceRequestTopic(deviceUUID), subscriber);
+    }
+
+    private void addTopicSubscriber(String topic, MqttMessageSubscriber subscriber) {
+        MqttBrokerConnection mqttConnection = this.mqttConnection;
+        if (mqttConnection == null) {
+            logger.debug("MQTT broker connection not initialized");
+            return;
         }
-        return "";
+
+        mqttConnection.subscribe(topic, subscriber);
+    }
+
+    public void removeClientUserTopicSubscriber(MqttMessageSubscriber subscriber) {
+        removeTopicSubscriber(MqttMessageBuilder.buildClientUserTopic(), subscriber);
+    }
+
+    public void removeClientResponseTopicSubscriber(MqttMessageSubscriber subscriber) {
+        removeTopicSubscriber(MqttMessageBuilder.buildClientResponseTopic(), subscriber);
+    }
+
+    public void removeDeviceRequestTopicSubscriber(MqttMessageSubscriber subscriber, String deviceUUID) {
+        removeTopicSubscriber(MqttMessageBuilder.buildDeviceRequestTopic(deviceUUID), subscriber);
+    }
+
+    private void removeTopicSubscriber(String topic, MqttMessageSubscriber subscriber) {
+        MqttBrokerConnection mqttConnection = this.mqttConnection;
+        if (mqttConnection == null) {
+            logger.debug("MQTT broker connection not initialized");
+            return;
+        }
+
+        mqttConnection.unsubscribe(topic, subscriber);
+    }
+
+    @Override
+    public void connectionStateChanged(MqttConnectionState state, @Nullable Throwable error) {
+        logger.trace("Connection state changed: {}", state);
+        switch (state) {
+            case MqttConnectionState.CONNECTING:
+                break;
+            case MqttConnectionState.CONNECTED:
+                ScheduledFuture<?> disconnectFuture = this.disconnectFuture;
+                if (disconnectFuture != null) {
+                    disconnectFuture.cancel(true);
+                    this.disconnectFuture = null;
+                }
+                callback.updateBridgeStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
+                connected.complete(true);
+                break;
+            case MqttConnectionState.DISCONNECTED:
+                connected = new CompletableFuture<Boolean>();
+                // The transport tries to reconnect anyway. If we put the bridge offline immediately, it will trigger a
+                // re-initialization of all devices creating a lot of traffic. Devices can still be commanded through
+                // local http connections even if the connection to the Meross MQTT broker is disrupted. So don't put
+                // the bridge offline immediately.
+                if (this.disconnectFuture == null) {
+                    this.disconnectFuture = scheduler.schedule(() -> {
+                        logger.trace("Disconnecting", error);
+                        callback.updateBridgeStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                    }, MQTT_DISCONNECT_DELAY_SECONDS, TimeUnit.SECONDS);
+                }
+                break;
+        }
     }
 }

@@ -15,12 +15,12 @@ package org.openhab.binding.meross.internal.command;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link Command} interface is responsible for implementing command type
+ * The {@link MerossCommand} interface is responsible for implementing command type
  *
  *
  * @author Giovanni Fabiani - Initial contribution
  */
 @NonNullByDefault
-public interface Command {
-    byte[] commandType(String type);
+public interface MerossCommand {
+    byte[] command(String deviceUUID);
 }

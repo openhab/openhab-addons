@@ -14,27 +14,27 @@ package org.openhab.binding.meross.internal.factory;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.meross.internal.command.DoorStateCommand;
 import org.openhab.binding.meross.internal.command.MerossCommand;
-import org.openhab.binding.meross.internal.command.TogglexCommand;
-import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.OpenClosedType;
+import org.openhab.core.library.types.UpDownType;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 
 /**
- * The {@link TypeFactory} class is responsible for switching among different togglex modes
+ * The {@link TypeFactory} class is responsible for converting to garage door state modes
  *
- * @author Giovanni Fabiani - Initial contribution
- * @author Mark Herwege - Add state update
+ * @author Mark Herwege - Initial contribution
  */
 @NonNullByDefault
-public class TogglexFactory extends ModeFactory {
+public class DoorStateFactory extends ModeFactory {
     @Override
     public MerossCommand commandMode(Command command, @Nullable Integer deviceChannel) {
         int channel = deviceChannel != null ? deviceChannel : 0;
         return switch (command) {
-            case OnOffType.ON -> new TogglexCommand.TurnOn(channel);
-            case OnOffType.OFF -> new TogglexCommand.TurnOff(channel);
+            case UpDownType.UP -> new DoorStateCommand.Up(channel);
+            case UpDownType.DOWN -> new DoorStateCommand.Down(channel);
             default -> throw new IllegalStateException("Unexpected value: " + command.toString());
         };
     }
@@ -42,8 +42,8 @@ public class TogglexFactory extends ModeFactory {
     @Override
     public State state(int merossState) {
         return switch (merossState) {
-            case 0 -> OnOffType.OFF;
-            case 1 -> OnOffType.ON;
+            case 0 -> OpenClosedType.OPEN;
+            case 1 -> OpenClosedType.CLOSED;
             default -> UnDefType.UNDEF;
         };
     }

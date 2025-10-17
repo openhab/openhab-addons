@@ -16,13 +16,14 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * The {@link MerossLightConfiguration} class contains fields mapping bulb and plug configuration parameters.
+ * The {@link MerossDeviceConfiguration} class is the base class with common configuration parameters.
  *
- * @author Giovanni Fabiani - Initial contribution
+ * @author Mark Herwege - Initial contribution
  */
 
 @NonNullByDefault
-public class MerossLightConfiguration extends MerossDeviceConfiguration {
-    @Deprecated
-    public @Nullable String lightName; // Deprecated, kept for backward compatibility
+public class MerossDeviceConfiguration {
+    public String name = "";
+    public String uuid = "";
+    public @Nullable String ipAddress;
 }

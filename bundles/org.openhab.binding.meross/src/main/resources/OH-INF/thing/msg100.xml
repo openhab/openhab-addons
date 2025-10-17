@@ -4,10 +4,18 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<bridge-type id="gateway">
-		<label>Meross Gateway</label>
-		<description>Meross Gateway</description>
+	<thing-type id="msg100">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="gateway"/>
+		</supported-bridge-type-refs>
 
-		<config-description-ref uri="thing-type:meross:gateway"/>
-	</bridge-type>
+		<label>Meross MSG100</label>
+		<description>Meross Garage Door</description>
+
+		<channels>
+			<channel id="door-state" typeId="door-state"/>
+		</channels>
+
+		<config-description-ref uri="thing-type:meross:device"/>
+	</thing-type>
 </thing:thing-descriptions>
