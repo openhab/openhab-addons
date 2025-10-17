@@ -28,6 +28,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
@@ -67,12 +68,14 @@ import com.google.gson.JsonObject;
 public class RemehaHeatingHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(RemehaHeatingHandler.class);
+    private final HttpClient httpClient;
     private @Nullable RemehaApiClient apiClient;
     private @Nullable ScheduledFuture<?> refreshJob;
     private @Nullable RemehaHeatingConfiguration config;
 
-    public RemehaHeatingHandler(Thing thing) {
+    public RemehaHeatingHandler(Thing thing, HttpClient httpClient) {
         super(thing);
+        this.httpClient = httpClient;
     }
 
     /**
@@ -87,8 +90,15 @@ public class RemehaHeatingHandler extends BaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
             updateData();
-        } else if (CHANNEL_TARGET_TEMPERATURE.equals(channelUID.getId()) && command instanceof DecimalType) {
-            setTargetTemperature(((DecimalType) command).doubleValue());
+        } else if (CHANNEL_TARGET_TEMPERATURE.equals(channelUID.getId())) {
+            if (command instanceof QuantityType<?> qt) {
+                QuantityType<?> celsius = qt.toUnit(SIUnits.CELSIUS);
+                if (celsius != null) {
+                    setTargetTemperature(celsius.doubleValue());
+                }
+            } else if (command instanceof DecimalType dt) {
+                setTargetTemperature(dt.doubleValue());
+            }
         } else if (CHANNEL_DHW_MODE.equals(channelUID.getId()) && command instanceof StringType) {
             setDhwMode(command.toString());
         }
@@ -112,14 +122,7 @@ public class RemehaHeatingHandler extends BaseThingHandler {
             }
 
             updateStatus(ThingStatus.UNKNOWN);
-            try {
-                apiClient = new RemehaApiClient();
-            } catch (RuntimeException e) {
-                logger.debug("Failed to create API client", e);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "API client initialization failed");
-                return;
-            }
+            apiClient = new RemehaApiClient(httpClient);
 
             scheduler.execute(() -> authenticateAndStart(email, password, refreshInterval));
         } catch (Exception e) {
@@ -147,20 +150,12 @@ public class RemehaHeatingHandler extends BaseThingHandler {
 
     /**
      * Cleans up resources when the handler is disposed.
-     * Stops the refresh job and closes the API client connection.
+     * Stops the refresh job.
      */
     @Override
     public void dispose() {
         stopRefreshJob();
-        RemehaApiClient client = apiClient;
         apiClient = null;
-        if (client != null) {
-            try {
-                client.close();
-            } catch (Exception e) {
-                logger.debug("Error closing API client", e);
-            }
-        }
         super.dispose();
     }
 

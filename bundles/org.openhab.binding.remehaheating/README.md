@@ -20,7 +20,7 @@ This binding supports Remeha boilers that are connected to the Remeha Home cloud
 
 - `boiler`: Represents a Remeha boiler with ThingTypeUID `remehaheating:boiler`
 
-The binding has been tested with Remeha Tzerra boilers but should work with any Remeha boiler that supports the Remeha Home cloud service.
+The binding has been tested with Remeha Calenta Ace boilers but should work with any Remeha boiler that supports the Remeha Home cloud service.
 
 ## Discovery
 
@@ -41,8 +41,8 @@ These are the same credentials you use for the Remeha Home mobile app.
 
 ### `boiler` Thing Configuration
 
-| Name            | Type    | Description                                    | Default | Required | Advanced |
-|-----------------|---------|------------------------------------------------|---------|----------|----------|
+| Name            | Type    | Description                                   | Default | Required | Advanced |
+|-----------------|---------|-----------------------------------------------|---------|----------|----------|
 | email           | text    | Remeha Home account email address             | N/A     | yes      | no       |
 | password        | text    | Remeha Home account password                  | N/A     | yes      | no       |
 | refreshInterval | integer | Interval the device is polled in seconds      | 60      | no       | yes      |

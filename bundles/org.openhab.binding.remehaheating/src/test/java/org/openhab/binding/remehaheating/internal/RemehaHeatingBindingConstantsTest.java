@@ -31,16 +31,16 @@ public class RemehaHeatingBindingConstantsTest {
 
     @Test
     public void testChannelConstants() {
-        assertEquals("roomTemperature", RemehaHeatingBindingConstants.CHANNEL_ROOM_TEMPERATURE);
-        assertEquals("targetTemperature", RemehaHeatingBindingConstants.CHANNEL_TARGET_TEMPERATURE);
-        assertEquals("dhwTemperature", RemehaHeatingBindingConstants.CHANNEL_DHW_TEMPERATURE);
-        assertEquals("dhwTarget", RemehaHeatingBindingConstants.CHANNEL_DHW_TARGET);
-        assertEquals("waterPressure", RemehaHeatingBindingConstants.CHANNEL_WATER_PRESSURE);
-        assertEquals("outdoorTemperature", RemehaHeatingBindingConstants.CHANNEL_OUTDOOR_TEMPERATURE);
+        assertEquals("room-temperature", RemehaHeatingBindingConstants.CHANNEL_ROOM_TEMPERATURE);
+        assertEquals("target-temperature", RemehaHeatingBindingConstants.CHANNEL_TARGET_TEMPERATURE);
+        assertEquals("dhw-temperature", RemehaHeatingBindingConstants.CHANNEL_DHW_TEMPERATURE);
+        assertEquals("dhw-target", RemehaHeatingBindingConstants.CHANNEL_DHW_TARGET);
+        assertEquals("water-pressure", RemehaHeatingBindingConstants.CHANNEL_WATER_PRESSURE);
+        assertEquals("outdoor-temperature", RemehaHeatingBindingConstants.CHANNEL_OUTDOOR_TEMPERATURE);
         assertEquals("status", RemehaHeatingBindingConstants.CHANNEL_STATUS);
-        assertEquals("dhwMode", RemehaHeatingBindingConstants.CHANNEL_DHW_MODE);
-        assertEquals("waterPressureOK", RemehaHeatingBindingConstants.CHANNEL_WATER_PRESSURE_OK);
-        assertEquals("dhwStatus", RemehaHeatingBindingConstants.CHANNEL_DHW_STATUS);
+        assertEquals("dhw-mode", RemehaHeatingBindingConstants.CHANNEL_DHW_MODE);
+        assertEquals("water-pressure-ok", RemehaHeatingBindingConstants.CHANNEL_WATER_PRESSURE_OK);
+        assertEquals("dhw-status", RemehaHeatingBindingConstants.CHANNEL_DHW_STATUS);
     }
 
     @Test

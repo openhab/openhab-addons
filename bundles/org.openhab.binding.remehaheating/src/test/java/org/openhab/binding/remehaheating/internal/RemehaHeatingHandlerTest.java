@@ -47,6 +47,8 @@ public class RemehaHeatingHandlerTest {
     private ThingHandlerCallback callback;
     @Mock
     private Configuration configuration;
+    @Mock
+    private org.eclipse.jetty.client.HttpClient httpClient;
     private RemehaHeatingHandler handler;
     private ThingUID thingUID;
     private ChannelUID channelUID;
@@ -59,7 +61,7 @@ public class RemehaHeatingHandlerTest {
         lenient().when(thing.getUID()).thenReturn(thingUID);
         lenient().when(thing.getConfiguration()).thenReturn(configuration);
 
-        handler = new RemehaHeatingHandler(thing);
+        handler = new RemehaHeatingHandler(thing, httpClient);
         handler.setCallback(callback);
     }
 

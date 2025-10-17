@@ -56,8 +56,6 @@ public class RemehaHeatingBindingConstants {
     public static final String CHANNEL_WATER_PRESSURE_OK = "water-pressure-ok";
     /** DHW status channel */
     public static final String CHANNEL_DHW_STATUS = "dhw-status";
-    /** DHW boost mode channel (currently disabled) */
-    // public static final String CHANNEL_DHW_BOOST = "dhw-boost";
 
     // Configuration parameter names
     /** Email configuration parameter */

@@ -12,14 +12,14 @@
  */
 package org.openhab.binding.remehaheating.internal;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.Mockito.verify;
 
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.http.HttpFields;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -45,20 +45,18 @@ public class RemehaApiClientTest {
     private Request request;
     @Mock
     private ContentResponse response;
-    @Mock
-    private HttpFields httpFields;
     private RemehaApiClient apiClient;
 
     @BeforeEach
     public void setUp() {
-        when(httpClientFactory.getCommonHttpClient()).thenReturn(httpClient);
-        apiClient = new RemehaApiClient(httpClientFactory);
+        apiClient = new RemehaApiClient(httpClient);
     }
 
     @Test
-    public void testConstructorWithHttpClientFactory() {
+    public void testConstructor() {
         assertNotNull(apiClient);
-        verify(httpClientFactory).getCommonHttpClient();
+        verify(httpClient).setRequestBufferSize(16384);
+        verify(httpClient).setResponseBufferSize(16384);
     }
 
     @Test
@@ -77,11 +75,5 @@ public class RemehaApiClientTest {
     public void testSetDhwMode() {
         boolean result = apiClient.setDhwMode("zone456", "schedule");
         assertFalse(result); // Should return false without access token
-    }
-
-    @Test
-    public void testClose() throws Exception {
-        // Should not throw exception
-        assertDoesNotThrow(() -> apiClient.close());
     }
 }

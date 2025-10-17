@@ -8,6 +8,7 @@
 		<label>Remeha Boiler</label>
 		<description>Remeha Home heating system boiler</description>
 		<category>heating</category>
+		<semantic-equipment-tag>Boiler</semantic-equipment-tag>
 
 		<channels>
 			<channel id="room-temperature" typeId="room-temperature"/>
@@ -35,7 +36,7 @@
 			</parameter>
 			<parameter name="refreshInterval" type="integer" min="30" max="3600" unit="s">
 				<label>Refresh Interval</label>
-				<description>Interval to refresh data from Remeha API</description>
+				<description>Interval to refresh data from Remeha API (from 30 to 3600 seconds)</description>
 				<default>60</default>
 			</parameter>
 		</config-description>

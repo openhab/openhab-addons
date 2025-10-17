@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.remehaheating.internal;
 
-import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -29,7 +28,6 @@ import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpFields;
 import org.eclipse.jetty.http.HttpMethod;
-import org.openhab.core.io.net.http.HttpClientFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,25 +56,13 @@ public class RemehaApiClient {
     private @Nullable String accessToken;
     private String codeVerifier = "";
     private static final SecureRandom SECURE_RANDOM = new SecureRandom();
+    private static final String API_BASE_URL = "https://api.bdrthermea.net/Mobile/api";
+    private static final String SUBSCRIPTION_KEY = "df605c5470d846fc91e848b1cc653ddf";
 
-    public RemehaApiClient(HttpClientFactory httpClientFactory) {
-        this.httpClient = httpClientFactory.getCommonHttpClient();
-    }
-
-    public RemehaApiClient() {
-        org.eclipse.jetty.util.ssl.SslContextFactory.Client sslContextFactory = new org.eclipse.jetty.util.ssl.SslContextFactory.Client();
-        sslContextFactory.setTrustAll(true);
-
-        this.httpClient = new HttpClient(sslContextFactory);
-
-        try {
-            this.httpClient.setRequestBufferSize(16384);
-            this.httpClient.setResponseBufferSize(16384);
-            this.httpClient.start();
-        } catch (Exception e) {
-            logger.debug("Failed to start HTTP client", e);
-            throw new IllegalStateException("HTTP client initialization failed", e);
-        }
+    public RemehaApiClient(HttpClient httpClient) {
+        httpClient.setRequestBufferSize(16384);
+        httpClient.setResponseBufferSize(16384);
+        this.httpClient = httpClient;
     }
 
     /**
@@ -149,9 +135,9 @@ public class RemehaApiClient {
             return null;
         }
         try {
-            ContentResponse response = httpClient.newRequest("https://api.bdrthermea.net/Mobile/api/homes/dashboard")
-                    .method(HttpMethod.GET).header("Authorization", "Bearer " + accessToken)
-                    .header("Ocp-Apim-Subscription-Key", "df605c5470d846fc91e848b1cc653ddf").send();
+            ContentResponse response = httpClient.newRequest(API_BASE_URL + "/homes/dashboard").method(HttpMethod.GET)
+                    .header("Authorization", "Bearer " + accessToken)
+                    .header("Ocp-Apim-Subscription-Key", SUBSCRIPTION_KEY).send();
             return gson.fromJson(response.getContentAsString(), JsonObject.class);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
@@ -222,7 +208,7 @@ public class RemehaApiClient {
                 Matcher matcher = CSRF_PATTERN.matcher(setCookieHeader);
                 if (matcher.find()) {
                     String token = matcher.group(1);
-                    logger.debug("Extracted CSRF token length: {}", token.length());
+                    logger.debug("CSRF token extracted from cookies");
                     return token;
                 }
             }
@@ -259,8 +245,7 @@ public class RemehaApiClient {
                     + URLEncoder.encode(email, StandardCharsets.UTF_8) + "&password="
                     + URLEncoder.encode(password, StandardCharsets.UTF_8);
 
-            // amazonq-ignore-next-line
-            logger.debug("Submitting credentials with CSRF token length: {}", csrfToken.length());
+            logger.debug("Submitting credentials with CSRF token");
 
             Request request = httpClient.newRequest(baseUrl).method(HttpMethod.POST)
                     .param("tx", "StateProperties=" + stateProperties).param("p", "B2C_1A_RPSignUpSignInNewRoomv3.1")
@@ -310,8 +295,7 @@ public class RemehaApiClient {
                     Matcher matcher = pattern.matcher(location);
                     if (matcher.find()) {
                         String authCode = matcher.group(1);
-                        logger.debug("Extracted auth code: {}...",
-                                authCode.substring(0, Math.min(10, authCode.length())));
+                        logger.debug("Authorization code successfully extracted.");
                         return authCode;
                     }
                 }
@@ -373,10 +357,9 @@ public class RemehaApiClient {
             return false;
         }
         try {
-            Request request = httpClient.newRequest("https://api.bdrthermea.net/Mobile/api" + path)
-                    .method(HttpMethod.POST).header("Authorization", "Bearer " + accessToken)
-                    .header("Ocp-Apim-Subscription-Key", "df605c5470d846fc91e848b1cc653ddf")
-                    .header("Content-Type", "application/json");
+            Request request = httpClient.newRequest(API_BASE_URL + path).method(HttpMethod.POST)
+                    .header("Authorization", "Bearer " + accessToken)
+                    .header("Ocp-Apim-Subscription-Key", SUBSCRIPTION_KEY).header("Content-Type", "application/json");
             if (jsonData != null) {
                 request.content(new StringContentProvider(jsonData));
             }
@@ -408,20 +391,5 @@ public class RemehaApiClient {
      */
     public boolean setDhwMode(String hotWaterZoneId, String mode) {
         return apiRequest("/hot-water-zones/" + hotWaterZoneId + "/modes/" + mode, null);
-    }
-
-    /**
-     * Closes the HTTP client and releases resources.
-     * 
-     * @throws IOException if error occurs during shutdown
-     */
-    public void close() throws IOException {
-        try {
-            if (httpClient != null && httpClient.isStarted()) {
-                httpClient.stop();
-            }
-        } catch (Exception e) {
-            logger.debug("Error stopping HTTP client: {}", e.getMessage());
-        }
     }
 }
