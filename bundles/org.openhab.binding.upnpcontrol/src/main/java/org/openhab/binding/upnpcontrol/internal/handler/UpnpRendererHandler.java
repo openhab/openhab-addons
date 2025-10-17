@@ -1217,8 +1217,12 @@ public class UpnpRendererHandler extends UpnpHandler {
                     break;
                 case "CurrentTrackMetaData":
                 case "CurrentURIMetaData":
+<<<<<<< HEAD
                 case "TrackMetaData": // Some (non-compliant) renderers emit TrackMetaData instead of
                                       // CurrentTrackMetaData/CurrentURIMetaData
+=======
+                case "TrackMetaData": // Some (non-compliant) renderers emit 	rackMetaData instead of CurrentTrackMetaData/CurrentURIMetaData
+>>>>>>> 8571fe1b02 (add TrackMetadata keys)
                     onValueReceivedCurrentMetaData(value);
                     break;
                 case "NextAVTransportURIMetaData":
