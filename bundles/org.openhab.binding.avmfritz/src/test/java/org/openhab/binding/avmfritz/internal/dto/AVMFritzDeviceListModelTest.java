@@ -193,7 +193,7 @@ public class AVMFritzDeviceListModelTest {
         assertFalse(device.isSwitchableOutlet());
         assertTrue(device.isTemperatureSensor());
         assertFalse(device.isHumiditySensor());
-        assertFalse(device.isPowermeter());
+        assertFalse(device.isPowerMeter());
         assertFalse(device.isHeatingThermostat());
         assertFalse(device.isHANFUNBlinds());
 
@@ -203,7 +203,7 @@ public class AVMFritzDeviceListModelTest {
         assertEquals(new BigDecimal("23.0"), device.getTemperature().getCelsius());
         assertEquals(new BigDecimal("0.0"), device.getTemperature().getOffset());
 
-        assertNull(device.getPowermeter());
+        assertNull(device.getPowerMeter());
 
         assertNull(device.getHkr());
 
@@ -230,7 +230,7 @@ public class AVMFritzDeviceListModelTest {
         assertFalse(device.isHANFUNAlarmSensor());
         assertFalse(device.isButton());
         assertFalse(device.isHeatingThermostat());
-        assertTrue(device.isPowermeter());
+        assertTrue(device.isPowerMeter());
         assertTrue(device.isTemperatureSensor());
         assertTrue(device.isSwitchableOutlet());
         assertFalse(device.isDectRepeater());
@@ -250,7 +250,7 @@ public class AVMFritzDeviceListModelTest {
         assertEquals(new BigDecimal("25.5"), device.getTemperature().getCelsius());
         assertEquals(new BigDecimal("0.0"), device.getTemperature().getOffset());
 
-        validatePowerMeter(device.getPowermeter());
+        validatePowerMeter(device.getPowerMeter());
 
         assertNull(device.getHkr());
 
@@ -277,7 +277,7 @@ public class AVMFritzDeviceListModelTest {
         assertFalse(device.isHANFUNAlarmSensor());
         assertFalse(device.isButton());
         assertFalse(device.isHeatingThermostat());
-        assertTrue(device.isPowermeter());
+        assertTrue(device.isPowerMeter());
         assertTrue(device.isTemperatureSensor());
         assertTrue(device.isSwitchableOutlet());
         assertFalse(device.isDectRepeater());
@@ -297,7 +297,7 @@ public class AVMFritzDeviceListModelTest {
         assertEquals(new BigDecimal("25.5"), device.getTemperature().getCelsius());
         assertEquals(new BigDecimal("0.0"), device.getTemperature().getOffset());
 
-        validatePowerMeter(device.getPowermeter());
+        validatePowerMeter(device.getPowerMeter());
 
         assertNull(device.getHkr());
 
@@ -319,7 +319,7 @@ public class AVMFritzDeviceListModelTest {
 
         assertEquals(1, device.getPresent());
         assertEquals("FRITZ!Smart Energy 250 #8", device.getName());
-        assertTrue(device.isPowermeter());
+        assertTrue(device.isPowerMeter());
 
         assertFalse(device.isHANFUNButton());
         assertFalse(device.isHANFUNAlarmSensor());
@@ -337,7 +337,7 @@ public class AVMFritzDeviceListModelTest {
         assertEquals(new BigDecimal("90"), device.getBattery());
         assertEquals(BatteryModel.BATTERY_OFF, device.getBatterylow());
 
-        PowerMeterModel powerMeter = device.getPowermeter();
+        PowerMeterModel powerMeter = device.getPowerMeter();
         assertNotNull(powerMeter);
         assertEquals(new BigDecimal("0.000"), powerMeter.getVoltage());
         assertEquals(new BigDecimal("532.000"), powerMeter.getPower());
@@ -367,7 +367,7 @@ public class AVMFritzDeviceListModelTest {
         assertFalse(device.isSwitchableOutlet());
         assertTrue(device.isTemperatureSensor());
         assertFalse(device.isHumiditySensor());
-        assertFalse(device.isPowermeter());
+        assertFalse(device.isPowerMeter());
         assertTrue(device.isHeatingThermostat());
         assertFalse(device.isHANFUNBlinds());
 
@@ -377,7 +377,7 @@ public class AVMFritzDeviceListModelTest {
         assertEquals(new BigDecimal("22.0"), device.getTemperature().getCelsius());
         assertEquals(new BigDecimal("-1.0"), device.getTemperature().getOffset());
 
-        assertNull(device.getPowermeter());
+        assertNull(device.getPowerMeter());
 
         validateHeatingModel(device.getHkr());
     }
@@ -405,7 +405,7 @@ public class AVMFritzDeviceListModelTest {
         assertFalse(device.isSwitchableOutlet());
         assertTrue(device.isTemperatureSensor());
         assertFalse(device.isHumiditySensor());
-        assertFalse(device.isPowermeter());
+        assertFalse(device.isPowerMeter());
         assertTrue(device.isHeatingThermostat());
         assertFalse(device.isHANFUNBlinds());
 
@@ -415,7 +415,7 @@ public class AVMFritzDeviceListModelTest {
         assertEquals(new BigDecimal("22.0"), device.getTemperature().getCelsius());
         assertEquals(new BigDecimal("-1.0"), device.getTemperature().getOffset());
 
-        assertNull(device.getPowermeter());
+        assertNull(device.getPowerMeter());
 
         validateHeatingModel(device.getHkr());
     }
@@ -443,7 +443,7 @@ public class AVMFritzDeviceListModelTest {
         assertFalse(device.isSwitchableOutlet());
         assertTrue(device.isTemperatureSensor());
         assertFalse(device.isHumiditySensor());
-        assertFalse(device.isPowermeter());
+        assertFalse(device.isPowerMeter());
         assertTrue(device.isHeatingThermostat());
         assertFalse(device.isHANFUNBlinds());
 
@@ -453,7 +453,7 @@ public class AVMFritzDeviceListModelTest {
         assertEquals(new BigDecimal("22.0"), device.getTemperature().getCelsius());
         assertEquals(new BigDecimal("-1.0"), device.getTemperature().getOffset());
 
-        assertNull(device.getPowermeter());
+        assertNull(device.getPowerMeter());
 
         validateHeatingModel(device.getHkr());
     }
@@ -481,7 +481,7 @@ public class AVMFritzDeviceListModelTest {
         assertFalse(device.isSwitchableOutlet());
         assertFalse(device.isTemperatureSensor());
         assertFalse(device.isHumiditySensor());
-        assertFalse(device.isPowermeter());
+        assertFalse(device.isPowerMeter());
         assertFalse(device.isHeatingThermostat());
         assertFalse(device.isHANFUNBlinds());
 
@@ -500,7 +500,7 @@ public class AVMFritzDeviceListModelTest {
 
         assertNull(device.getTemperature());
 
-        assertNull(device.getPowermeter());
+        assertNull(device.getPowerMeter());
 
         assertNull(device.getHkr());
 
@@ -530,7 +530,7 @@ public class AVMFritzDeviceListModelTest {
         assertFalse(device.isSwitchableOutlet());
         assertTrue(device.isTemperatureSensor());
         assertTrue(device.isHumiditySensor());
-        assertFalse(device.isPowermeter());
+        assertFalse(device.isPowerMeter());
         assertFalse(device.isHeatingThermostat());
         assertFalse(device.isHANFUNBlinds());
 
@@ -570,7 +570,7 @@ public class AVMFritzDeviceListModelTest {
         assertNotNull(device.getHumidity());
         assertEquals(new BigDecimal("43"), device.getHumidity().getRelativeHumidity());
 
-        assertNull(device.getPowermeter());
+        assertNull(device.getPowerMeter());
 
         assertNull(device.getHkr());
 
@@ -600,7 +600,7 @@ public class AVMFritzDeviceListModelTest {
         assertTrue(device.isSwitchableOutlet());
         assertFalse(device.isTemperatureSensor());
         assertFalse(device.isHumiditySensor());
-        assertTrue(device.isPowermeter());
+        assertTrue(device.isPowerMeter());
         assertFalse(device.isHeatingThermostat());
         assertFalse(device.isHANFUNBlinds());
 
@@ -612,7 +612,7 @@ public class AVMFritzDeviceListModelTest {
 
         assertNull(device.getTemperature());
 
-        validatePowerMeter(device.getPowermeter());
+        validatePowerMeter(device.getPowerMeter());
 
         assertNull(device.getHkr());
 
@@ -642,7 +642,7 @@ public class AVMFritzDeviceListModelTest {
         assertFalse(device.isSwitchableOutlet());
         assertFalse(device.isTemperatureSensor());
         assertFalse(device.isHumiditySensor());
-        assertFalse(device.isPowermeter());
+        assertFalse(device.isPowerMeter());
         assertFalse(device.isHeatingThermostat());
         assertFalse(device.isHANFUNBlinds());
 
@@ -655,7 +655,7 @@ public class AVMFritzDeviceListModelTest {
 
         assertNull(device.getTemperature());
 
-        assertNull(device.getPowermeter());
+        assertNull(device.getPowerMeter());
 
         assertNull(device.getHkr());
 
@@ -685,7 +685,7 @@ public class AVMFritzDeviceListModelTest {
         assertFalse(device.isSwitchableOutlet());
         assertFalse(device.isTemperatureSensor());
         assertFalse(device.isHumiditySensor());
-        assertFalse(device.isPowermeter());
+        assertFalse(device.isPowerMeter());
         assertFalse(device.isHeatingThermostat());
         assertFalse(device.isHANFUNBlinds());
 
@@ -698,7 +698,7 @@ public class AVMFritzDeviceListModelTest {
 
         assertNull(device.getTemperature());
 
-        assertNull(device.getPowermeter());
+        assertNull(device.getPowerMeter());
 
         assertNull(device.getHkr());
 
@@ -728,7 +728,7 @@ public class AVMFritzDeviceListModelTest {
         assertFalse(device.isSwitchableOutlet());
         assertFalse(device.isTemperatureSensor());
         assertFalse(device.isHumiditySensor());
-        assertFalse(device.isPowermeter());
+        assertFalse(device.isPowerMeter());
         assertFalse(device.isDectRepeater());
         assertFalse(device.isHeatingThermostat());
         assertFalse(device.hasMicrophone());
@@ -747,7 +747,7 @@ public class AVMFritzDeviceListModelTest {
 
         assertNull(device.getTemperature());
 
-        assertNull(device.getPowermeter());
+        assertNull(device.getPowerMeter());
 
         assertNull(device.getHkr());
 
@@ -780,7 +780,7 @@ public class AVMFritzDeviceListModelTest {
         assertFalse(device.isSwitchableOutlet());
         assertFalse(device.isTemperatureSensor());
         assertFalse(device.isHumiditySensor());
-        assertFalse(device.isPowermeter());
+        assertFalse(device.isPowerMeter());
         assertFalse(device.isDectRepeater());
         assertFalse(device.isHeatingThermostat());
         assertFalse(device.hasMicrophone());
@@ -798,7 +798,7 @@ public class AVMFritzDeviceListModelTest {
 
         assertNull(device.getTemperature());
 
-        assertNull(device.getPowermeter());
+        assertNull(device.getPowerMeter());
 
         assertNull(device.getHkr());
 
@@ -839,7 +839,7 @@ public class AVMFritzDeviceListModelTest {
         assertFalse(device.isSwitchableOutlet());
         assertFalse(device.isTemperatureSensor());
         assertFalse(device.isHumiditySensor());
-        assertFalse(device.isPowermeter());
+        assertFalse(device.isPowerMeter());
         assertFalse(device.isDectRepeater());
         assertFalse(device.isHeatingThermostat());
         assertFalse(device.hasMicrophone());
@@ -857,7 +857,7 @@ public class AVMFritzDeviceListModelTest {
 
         assertNull(device.getTemperature());
 
-        assertNull(device.getPowermeter());
+        assertNull(device.getPowerMeter());
 
         assertNull(device.getHkr());
 
@@ -887,7 +887,7 @@ public class AVMFritzDeviceListModelTest {
         assertFalse(device.isHANFUNAlarmSensor());
         assertFalse(device.isButton());
         assertFalse(device.isHeatingThermostat());
-        assertFalse(device.isPowermeter());
+        assertFalse(device.isPowerMeter());
         assertFalse(device.isTemperatureSensor());
         assertFalse(device.isSwitchableOutlet());
         assertFalse(device.isDectRepeater());
@@ -909,7 +909,7 @@ public class AVMFritzDeviceListModelTest {
         assertNotNull(model);
         assertEquals(false, model.state);
 
-        assertNull(device.getPowermeter());
+        assertNull(device.getPowerMeter());
 
         assertNull(device.getHkr());
 
@@ -939,13 +939,13 @@ public class AVMFritzDeviceListModelTest {
         assertFalse(group.isSwitchableOutlet());
         assertFalse(group.isTemperatureSensor());
         assertFalse(group.isHumiditySensor());
-        assertFalse(group.isPowermeter());
+        assertFalse(group.isPowerMeter());
         assertTrue(group.isHeatingThermostat());
         assertFalse(group.isHANFUNBlinds());
 
         assertNull(group.getSwitch());
 
-        assertNull(group.getPowermeter());
+        assertNull(group.getPowerMeter());
 
         validateHeatingModel(group.getHkr());
 
@@ -977,7 +977,7 @@ public class AVMFritzDeviceListModelTest {
         assertTrue(group.isSwitchableOutlet());
         assertFalse(group.isTemperatureSensor());
         assertFalse(group.isHumiditySensor());
-        assertTrue(group.isPowermeter());
+        assertTrue(group.isPowerMeter());
         assertFalse(group.isHeatingThermostat());
         assertFalse(group.isHANFUNBlinds());
 
@@ -987,7 +987,7 @@ public class AVMFritzDeviceListModelTest {
         assertEquals(BigDecimal.ZERO, group.getSwitch().getLock());
         assertEquals(BigDecimal.ZERO, group.getSwitch().getDevicelock());
 
-        validatePowerMeter(group.getPowermeter());
+        validatePowerMeter(group.getPowerMeter());
 
         assertNull(group.getHkr());
 
@@ -1024,7 +1024,7 @@ public class AVMFritzDeviceListModelTest {
         assertEquals(new BigDecimal("100"), model.getBattery());
         assertEquals(BatteryModel.BATTERY_OFF, model.getBatterylow());
         assertEquals(MODE_AUTO, model.getMode());
-        assertEquals(MODE_COMFORT, model.getRadiatorMode());
+        assertEquals(HEATING_MODE_COMFORT, model.getRadiatorMode());
 
         assertNotNull(model.getNextchange());
         assertEquals(1484341200, model.getNextchange().getEndperiod());

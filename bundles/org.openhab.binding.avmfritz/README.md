@@ -266,6 +266,11 @@ val actions = getActions("avmfritz","avmfritz:Comet_DECT:1:aaaaaabbbbbb")
 actions.setBoostMode(300)
 ```
 
+For power meter devices like FRITZ!DECT 200 or FRITZ!Smart Energy 250 there are actions to enable / disable high refresh polling: `enablePowerMeterHighRefresh(long)` and `disablePowerMeterHighRefresh()`.
+In general DECT devices submit their values every two minutes.
+Whenever a user visits the detail page of a device in FRITZ!OS the values are requested more often - every ten seconds.
+This action forces the high refresh interval of values by calling the related function on the FRITZ!Box interface.
+
 ## Full Example
 
 demo.things:

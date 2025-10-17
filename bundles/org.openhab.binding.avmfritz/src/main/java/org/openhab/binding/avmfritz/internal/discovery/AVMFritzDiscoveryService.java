@@ -13,7 +13,6 @@
 package org.openhab.binding.avmfritz.internal.discovery;
 
 import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.*;
-import static org.openhab.core.thing.Thing.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -32,6 +31,7 @@ import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TranslationProvider;
+import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.osgi.framework.Bundle;
@@ -59,10 +59,12 @@ public class AVMFritzDiscoveryService extends AbstractThingHandlerDiscoveryServi
     @Activate
     public AVMFritzDiscoveryService(final @Reference LocaleProvider localeProvider,
             final @Reference TranslationProvider i18nProvider) {
-        super(AVMFritzBaseBridgeHandler.class, Stream
-                .of(SUPPORTED_LIGHTING_THING_TYPES, SUPPORTED_BUTTON_THING_TYPES_UIDS, SUPPORTED_HEATING_THING_TYPES,
-                        SUPPORTED_DEVICE_THING_TYPES_UIDS, SUPPORTED_GROUP_THING_TYPES_UIDS)
-                .flatMap(Set::stream).collect(Collectors.toUnmodifiableSet()), 30);
+        super(AVMFritzBaseBridgeHandler.class,
+                Stream.of(SUPPORTED_LIGHTING_THING_TYPES, SUPPORTED_BUTTON_THING_TYPES_UIDS,
+                        SUPPORTED_HEATING_THING_TYPES, SUPPORTED_POWER_METER_THING_TYPES,
+                        SUPPORTED_DEVICE_THING_TYPES_UIDS, SUPPORTED_GROUP_THING_TYPES_UIDS).flatMap(Set::stream)
+                        .collect(Collectors.toUnmodifiableSet()),
+                30);
         this.localeProvider = localeProvider;
         this.i18nProvider = i18nProvider;
         this.bundle = FrameworkUtil.getBundle(AVMFritzDiscoveryService.class);
@@ -119,10 +121,11 @@ public class AVMFritzDiscoveryService extends AbstractThingHandlerDiscoveryServi
         if (device.getPresent() == 1) {
             Map<String, Object> properties = new HashMap<>();
             properties.put(CONFIG_AIN, device.getIdentifier());
-            properties.put(PROPERTY_VENDOR, device.getManufacturer());
-            properties.put(PRODUCT_NAME, device.getProductName());
-            properties.put(PROPERTY_SERIAL_NUMBER, device.getIdentifier());
-            properties.put(PROPERTY_FIRMWARE_VERSION, device.getFirmwareVersion());
+            properties.put(PROPERTY_DEVICE_ID, device.getDeviceId());
+            properties.put(Thing.PROPERTY_VENDOR, device.getManufacturer());
+            properties.put(PROPERTY_PRODUCT_NAME, device.getProductName());
+            properties.put(Thing.PROPERTY_SERIAL_NUMBER, device.getIdentifier());
+            properties.put(Thing.PROPERTY_FIRMWARE_VERSION, device.getFirmwareVersion());
             if (device instanceof GroupModel model && model.getGroupinfo() != null) {
                 properties.put(PROPERTY_MASTER, model.getGroupinfo().getMasterdeviceid());
                 properties.put(PROPERTY_MEMBERS, model.getGroupinfo().getMembers());
