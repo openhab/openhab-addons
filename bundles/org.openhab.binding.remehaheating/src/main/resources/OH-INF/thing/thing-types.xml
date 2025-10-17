@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="remehaheating"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="boiler">
+		<label>Remeha Boiler</label>
+		<description>Remeha Home heating system boiler</description>
+		<category>heating</category>
+
+		<channels>
+			<channel id="roomTemperature" typeId="roomTemperature"/>
+			<channel id="targetTemperature" typeId="targetTemperature"/>
+			<channel id="dhwTemperature" typeId="dhwTemperature"/>
+			<channel id="dhwTarget" typeId="dhwTarget"/>
+			<channel id="dhwMode" typeId="dhwMode"/>
+			<channel id="dhwStatus" typeId="dhwStatus"/>
+			<!-- <channel id="dhwBoost" typeId="dhwBoost"/> -->
+			<channel id="waterPressure" typeId="waterPressure"/>
+			<channel id="waterPressureOK" typeId="waterPressureOK"/>
+			<channel id="outdoorTemperature" typeId="outdoorTemperature"/>
+			<channel id="status" typeId="status"/>
+		</channels>
+
+		<config-description>
+			<parameter name="email" type="text" required="true">
+				<context>email</context>
+				<label>Email</label>
+				<description>Remeha Home account email</description>
+			</parameter>
+			<parameter name="password" type="text" required="true">
+				<context>password</context>
+				<label>Password</label>
+				<description>Remeha Home account password</description>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" min="30" max="3600" unit="s">
+				<label>Refresh Interval</label>
+				<description>Interval to refresh data from Remeha API</description>
+				<default>60</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="roomTemperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Room Temperature</label>
+		<description>Current room temperature</description>
+		<category>temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f °C"/>
+	</channel-type>
+
+	<channel-type id="targetTemperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Target Temperature</label>
+		<description>Target room temperature</description>
+		<category>temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state min="5" max="30" step="0.5" pattern="%.1f °C"/>
+	</channel-type>
+
+	<channel-type id="dhwTemperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Hot Water Temperature</label>
+		<description>Current hot water temperature</description>
+		<state readOnly="true" pattern="%.1f °C"/>
+	</channel-type>
+
+	<channel-type id="dhwTarget">
+		<item-type>Number:Temperature</item-type>
+		<label>Hot Water Target</label>
+		<description>Target hot water temperature</description>
+		<state readOnly="true" pattern="%.1f °C"/>
+	</channel-type>
+
+	<channel-type id="waterPressure">
+		<item-type>Number:Pressure</item-type>
+		<label>Water Pressure</label>
+		<description>System water pressure</description>
+		<category>pressure</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Pressure</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f bar"/>
+	</channel-type>
+
+	<channel-type id="outdoorTemperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Outdoor Temperature</label>
+		<description>Outdoor temperature</description>
+		<category>temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f °C"/>
+	</channel-type>
+
+	<channel-type id="status">
+		<item-type>String</item-type>
+		<label>Status</label>
+		<description>Boiler status</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="dhwMode">
+		<item-type>String</item-type>
+		<label>Hot Water Mode</label>
+		<description>Domestic hot water zone mode</description>
+		<state>
+			<options>
+				<option value="anti-frost">Anti-frost</option>
+				<option value="schedule">Schedule</option>
+				<option value="continuous-comfort">Continuous Comfort</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="dhwStatus">
+		<item-type>String</item-type>
+		<label>Hot Water Status</label>
+		<description>Hot water status</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="waterPressureOK">
+		<item-type>Switch</item-type>
+		<label>Water Pressure OK</label>
+		<description>Water pressure status</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+</thing:thing-descriptions>
