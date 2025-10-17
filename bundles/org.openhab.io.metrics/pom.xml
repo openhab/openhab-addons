@@ -15,8 +15,9 @@
   <name>openHAB Add-ons :: Bundles :: IO :: Metrics Service</name>
 
   <properties>
-    <micrometer.version>1.14.5</micrometer.version>
-    <bnd.importpackage>io.micrometer.core.*;resolution:=optional;io.prometheus.client.exemplars.tracer.*;resolution:=optional;resolution:=optional;io.prometheus.metrics.tracer.*;resolution:=optional;io.opentelemetry.*;resolution:=optional;ch.qos.logback.*;resolution:=optional,com.codahale.*;resolution:=optional,com.github.benmanes.caffeine.*;resolution:=optional;com.mongodb.*;resolution:=optional,com.netflix.*;resolution:=optional;com.sun.management.*;resolution:=optional,io.netty.*;resolution:=optional;javax.annotation.meta.*;resolution:=optional,javax.cache.*;resolution:=optional,javax.persistence.*;resolution:=optional,net.sf.ehcache.*;resolution:=optional,okhttp3.*;resolution:=optional,org.apache.catalina.*;resolution:=optional,org.apache.http.*;resolution:=optional,org.apache.kafka.*;resolution:=optional,org.apache.logging.*;resolution:=optional,org.aspectj.*;resolution:=optional,org.hibernate.*;resolution:=optional,org.jooq.*;resolution:=optional,org.reactivestreams.*;resolution:=optional,reactor.*;resolution:=optional,rx.*;resolution:=optional</bnd.importpackage>
+    <micrometer.version>1.16.0</micrometer.version>
+    <prometheus.version>1.4.3</prometheus.version>
+    <bnd.importpackage>io.micrometer.core.*;resolution:=optional;io.prometheus.client.exemplars.tracer.*;resolution:=optional;resolution:=optional;io.prometheus.metrics.tracer.*;resolution:=optional;io.opentelemetry.*;resolution:=optional;ch.qos.logback.*;resolution:=optional,com.codahale.*;resolution:=optional,com.github.benmanes.caffeine.*;resolution:=optional;com.mongodb.*;resolution:=optional,com.netflix.*;resolution:=optional;com.sun.management.*;resolution:=optional,io.netty.*;resolution:=optional;javax.annotation.meta.*;resolution:=optional,javax.cache.*;resolution:=optional,javax.persistence.*;resolution:=optional,net.sf.ehcache.*;resolution:=optional,okhttp3.*;resolution:=optional,org.apache.catalina.*;resolution:=optional,org.apache.http.*;resolution:=optional,org.apache.kafka.*;resolution:=optional,org.apache.logging.*;resolution:=optional,org.aspectj.*;resolution:=optional,org.hibernate.*;resolution:=optional,org.jooq.*;resolution:=optional,org.jspecify.annotations;resolution:=optional,org.reactivestreams.*;resolution:=optional,reactor.*;resolution:=optional,rx.*;resolution:=optional</bnd.importpackage>
   </properties>
 
   <dependencies>
@@ -48,7 +49,7 @@
     <dependency>
       <groupId>io.dropwizard.metrics</groupId>
       <artifactId>metrics-jmx</artifactId>
-      <version>4.2.30</version>
+      <version>4.2.37</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
@@ -84,27 +85,27 @@
     <dependency>
       <groupId>io.prometheus</groupId>
       <artifactId>prometheus-metrics-core</artifactId>
-      <version>1.3.6</version>
+      <version>${prometheus.version}</version>
     </dependency>
     <dependency>
       <groupId>io.prometheus</groupId>
       <artifactId>prometheus-metrics-model</artifactId>
-      <version>1.3.6</version>
+      <version>${prometheus.version}</version>
     </dependency>
     <dependency>
       <groupId>io.prometheus</groupId>
       <artifactId>prometheus-metrics-config</artifactId>
-      <version>1.3.6</version>
+      <version>${prometheus.version}</version>
     </dependency>
     <dependency>
       <groupId>io.prometheus</groupId>
       <artifactId>prometheus-metrics-exposition-formats</artifactId>
-      <version>1.3.6</version>
+      <version>${prometheus.version}</version>
     </dependency>
     <dependency>
       <groupId>io.prometheus</groupId>
       <artifactId>prometheus-metrics-exposition-textformats</artifactId>
-      <version>1.3.6</version>
+      <version>${prometheus.version}</version>
     </dependency>
     <dependency>
       <groupId>org.openhab.core.bundles</groupId>
