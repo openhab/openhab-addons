@@ -599,12 +599,12 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler implements MediaL
             throw new IllegalStateException("JSON-RPC URL is not initialized");
         }
         String response = executePost(jsonRpcUrl,
-                "{\"id\":1,\"method\":\"slim.request\",\"params\":[\"\",[\"playlists tracks\",\"" + start + "\",\""
+                "{\"id\":1,\"method\":\"slim.request\",\"params\":[\"\",[\"playlists\", \"tracks\",\"" + start + "\",\""
                         + size + "\",\"playlist_id:" + key + "\",\"ac\"]]}");
         if (response != null) {
             JsonObject obj = gson.fromJson(response, JsonObject.class);
             JsonElement elm = obj.get("result");
-            JsonElement childs = ((JsonObject) elm).get("titles_loop");
+            JsonElement childs = ((JsonObject) elm).get("playlisttracks_loop");
 
             Tracks tracks = gson.fromJson(childs, Tracks.class);
             return tracks;
