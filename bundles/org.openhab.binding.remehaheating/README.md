@@ -56,15 +56,15 @@ The binding provides the following channels for monitoring and controlling your 
 
 | Channel             | Type              | Read/Write | Description                                    |
 |---------------------|-------------------|------------|------------------------------------------------|
-| roomTemperature     | Number:Temperature| Read       | Current room temperature                       |
-| targetTemperature   | Number:Temperature| Read/Write | Target room temperature (5-30°C)              |
-| dhwTemperature      | Number:Temperature| Read       | Current hot water temperature                  |
-| dhwTarget           | Number:Temperature| Read       | Target hot water temperature                   |
-| dhwMode             | String            | Read/Write | DHW mode (anti-frost/schedule/continuous-comfort) |
-| dhwStatus           | String            | Read       | Hot water status                               |
-| waterPressure       | Number:Pressure   | Read       | System water pressure                          |
-| waterPressureOK     | Switch            | Read       | Water pressure status (ON=OK, OFF=Low)        |
-| outdoorTemperature  | Number:Temperature| Read       | Outdoor temperature                            |
+| room-temperature    | Number:Temperature| Read       | Current room temperature                       |
+| target-temperature  | Number:Temperature| Read/Write | Target room temperature (5-30°C)              |
+| dhw-temperature     | Number:Temperature| Read       | Current hot water temperature                  |
+| dhw-target          | Number:Temperature| Read       | Target hot water temperature                   |
+| dhw-mode            | String            | Read/Write | DHW mode (anti-frost/schedule/continuous-comfort) |
+| dhw-status          | String            | Read       | Hot water status                               |
+| water-pressure      | Number:Pressure   | Read       | System water pressure                          |
+| water-pressure-ok   | Switch            | Read       | Water pressure status (ON=OK, OFF=Low)        |
+| outdoor-temperature | Number:Temperature| Read       | Outdoor temperature                            |
 | status              | String            | Read       | Boiler error status                            |
 
 ## Full Example
@@ -83,19 +83,19 @@ Thing remehaheating:boiler:myboiler "Remeha Boiler" [
 
 ```java
 // Temperature monitoring
-Number:Temperature RoomTemp "Room Temperature [%.1f °C]" { channel="remehaheating:boiler:myboiler:roomTemperature" }
-Number:Temperature TargetTemp "Target Temperature [%.1f °C]" { channel="remehaheating:boiler:myboiler:targetTemperature" }
-Number:Temperature OutdoorTemp "Outdoor Temperature [%.1f °C]" { channel="remehaheating:boiler:myboiler:outdoorTemperature" }
+Number:Temperature RoomTemp "Room Temperature [%.1f °C]" { channel="remehaheating:boiler:myboiler:room-temperature" }
+Number:Temperature TargetTemp "Target Temperature [%.1f °C]" { channel="remehaheating:boiler:myboiler:target-temperature" }
+Number:Temperature OutdoorTemp "Outdoor Temperature [%.1f °C]" { channel="remehaheating:boiler:myboiler:outdoor-temperature" }
 
 // Hot water
-Number:Temperature DHWTemp "Hot Water Temperature [%.1f °C]" { channel="remehaheating:boiler:myboiler:dhwTemperature" }
-Number:Temperature DHWTarget "Hot Water Target [%.1f °C]" { channel="remehaheating:boiler:myboiler:dhwTarget" }
-String DHWMode "Hot Water Mode [%s]" { channel="remehaheating:boiler:myboiler:dhwMode" }
-String DHWStatus "Hot Water Status [%s]" { channel="remehaheating:boiler:myboiler:dhwStatus" }
+Number:Temperature DHWTemp "Hot Water Temperature [%.1f °C]" { channel="remehaheating:boiler:myboiler:dhw-temperature" }
+Number:Temperature DHWTarget "Hot Water Target [%.1f °C]" { channel="remehaheating:boiler:myboiler:dhw-target" }
+String DHWMode "Hot Water Mode [%s]" { channel="remehaheating:boiler:myboiler:dhw-mode" }
+String DHWStatus "Hot Water Status [%s]" { channel="remehaheating:boiler:myboiler:dhw-status" }
 
 // System status
-Number:Pressure WaterPressure "Water Pressure [%.1f bar]" { channel="remehaheating:boiler:myboiler:waterPressure" }
-Switch WaterPressureOK "Water Pressure OK" { channel="remehaheating:boiler:myboiler:waterPressureOK" }
+Number:Pressure WaterPressure "Water Pressure [%.1f bar]" { channel="remehaheating:boiler:myboiler:water-pressure" }
+Switch WaterPressureOK "Water Pressure OK" { channel="remehaheating:boiler:myboiler:water-pressure-ok" }
 String BoilerStatus "Boiler Status [%s]" { channel="remehaheating:boiler:myboiler:status" }
 ```
 

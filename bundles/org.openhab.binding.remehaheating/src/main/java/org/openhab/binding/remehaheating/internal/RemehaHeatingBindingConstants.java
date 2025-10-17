@@ -37,27 +37,27 @@ public class RemehaHeatingBindingConstants {
 
     // Channel identifiers
     /** Current room temperature channel */
-    public static final String CHANNEL_ROOM_TEMPERATURE = "roomTemperature";
+    public static final String CHANNEL_ROOM_TEMPERATURE = "room-temperature";
     /** Target room temperature channel (read/write) */
-    public static final String CHANNEL_TARGET_TEMPERATURE = "targetTemperature";
+    public static final String CHANNEL_TARGET_TEMPERATURE = "target-temperature";
     /** Current DHW temperature channel */
-    public static final String CHANNEL_DHW_TEMPERATURE = "dhwTemperature";
+    public static final String CHANNEL_DHW_TEMPERATURE = "dhw-temperature";
     /** Target DHW temperature channel */
-    public static final String CHANNEL_DHW_TARGET = "dhwTarget";
+    public static final String CHANNEL_DHW_TARGET = "dhw-target";
     /** System water pressure channel */
-    public static final String CHANNEL_WATER_PRESSURE = "waterPressure";
+    public static final String CHANNEL_WATER_PRESSURE = "water-pressure";
     /** Outdoor temperature channel */
-    public static final String CHANNEL_OUTDOOR_TEMPERATURE = "outdoorTemperature";
+    public static final String CHANNEL_OUTDOOR_TEMPERATURE = "outdoor-temperature";
     /** Boiler error status channel */
     public static final String CHANNEL_STATUS = "status";
     /** DHW operating mode channel (read/write) */
-    public static final String CHANNEL_DHW_MODE = "dhwMode";
+    public static final String CHANNEL_DHW_MODE = "dhw-mode";
     /** Water pressure OK status channel */
-    public static final String CHANNEL_WATER_PRESSURE_OK = "waterPressureOK";
+    public static final String CHANNEL_WATER_PRESSURE_OK = "water-pressure-ok";
     /** DHW status channel */
-    public static final String CHANNEL_DHW_STATUS = "dhwStatus";
+    public static final String CHANNEL_DHW_STATUS = "dhw-status";
     /** DHW boost mode channel (currently disabled) */
-    // public static final String CHANNEL_DHW_BOOST = "dhwBoost";
+    // public static final String CHANNEL_DHW_BOOST = "dhw-boost";
 
     // Configuration parameter names
     /** Email configuration parameter */

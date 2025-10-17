@@ -10,16 +10,15 @@
 		<category>heating</category>
 
 		<channels>
-			<channel id="roomTemperature" typeId="roomTemperature"/>
-			<channel id="targetTemperature" typeId="targetTemperature"/>
-			<channel id="dhwTemperature" typeId="dhwTemperature"/>
-			<channel id="dhwTarget" typeId="dhwTarget"/>
-			<channel id="dhwMode" typeId="dhwMode"/>
-			<channel id="dhwStatus" typeId="dhwStatus"/>
-			<!-- <channel id="dhwBoost" typeId="dhwBoost"/> -->
-			<channel id="waterPressure" typeId="waterPressure"/>
-			<channel id="waterPressureOK" typeId="waterPressureOK"/>
-			<channel id="outdoorTemperature" typeId="outdoorTemperature"/>
+			<channel id="room-temperature" typeId="room-temperature"/>
+			<channel id="target-temperature" typeId="target-temperature"/>
+			<channel id="dhw-temperature" typeId="dhw-temperature"/>
+			<channel id="dhw-target" typeId="dhw-target"/>
+			<channel id="dhw-mode" typeId="dhw-mode"/>
+			<channel id="dhw-status" typeId="dhw-status"/>
+			<channel id="water-pressure" typeId="water-pressure"/>
+			<channel id="water-pressure-ok" typeId="water-pressure-ok"/>
+			<channel id="outdoor-temperature" typeId="outdoor-temperature"/>
 			<channel id="status" typeId="status"/>
 		</channels>
 
@@ -42,8 +41,8 @@
 		</config-description>
 	</thing-type>
 
-	<channel-type id="roomTemperature">
-		<item-type>Number:Temperature</item-type>
+	<channel-type id="room-temperature">
+		<item-type unitHint="°C">Number:Temperature</item-type>
 		<label>Room Temperature</label>
 		<description>Current room temperature</description>
 		<category>temperature</category>
@@ -51,11 +50,11 @@
 			<tag>Measurement</tag>
 			<tag>Temperature</tag>
 		</tags>
-		<state readOnly="true" pattern="%.1f °C"/>
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
-	<channel-type id="targetTemperature">
-		<item-type>Number:Temperature</item-type>
+	<channel-type id="target-temperature">
+		<item-type unitHint="°C">Number:Temperature</item-type>
 		<label>Target Temperature</label>
 		<description>Target room temperature</description>
 		<category>temperature</category>
@@ -63,25 +62,35 @@
 			<tag>Setpoint</tag>
 			<tag>Temperature</tag>
 		</tags>
-		<state min="5" max="30" step="0.5" pattern="%.1f °C"/>
+		<state min="5" max="30" step="0.5" pattern="%.1f %unit%"/>
 	</channel-type>
 
-	<channel-type id="dhwTemperature">
-		<item-type>Number:Temperature</item-type>
+	<channel-type id="dhw-temperature">
+		<item-type unitHint="°C">Number:Temperature</item-type>
 		<label>Hot Water Temperature</label>
 		<description>Current hot water temperature</description>
-		<state readOnly="true" pattern="%.1f °C"/>
+		<category>temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
-	<channel-type id="dhwTarget">
-		<item-type>Number:Temperature</item-type>
+	<channel-type id="dhw-target">
+		<item-type unitHint="°C">Number:Temperature</item-type>
 		<label>Hot Water Target</label>
 		<description>Target hot water temperature</description>
-		<state readOnly="true" pattern="%.1f °C"/>
+		<category>temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
-	<channel-type id="waterPressure">
-		<item-type>Number:Pressure</item-type>
+	<channel-type id="water-pressure">
+		<item-type unitHint="bar">Number:Pressure</item-type>
 		<label>Water Pressure</label>
 		<description>System water pressure</description>
 		<category>pressure</category>
@@ -89,11 +98,11 @@
 			<tag>Measurement</tag>
 			<tag>Pressure</tag>
 		</tags>
-		<state readOnly="true" pattern="%.1f bar"/>
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
-	<channel-type id="outdoorTemperature">
-		<item-type>Number:Temperature</item-type>
+	<channel-type id="outdoor-temperature">
+		<item-type unitHint="°C">Number:Temperature</item-type>
 		<label>Outdoor Temperature</label>
 		<description>Outdoor temperature</description>
 		<category>temperature</category>
@@ -101,17 +110,20 @@
 			<tag>Measurement</tag>
 			<tag>Temperature</tag>
 		</tags>
-		<state readOnly="true" pattern="%.1f °C"/>
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="status">
 		<item-type>String</item-type>
 		<label>Status</label>
 		<description>Boiler status</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="dhwMode">
+	<channel-type id="dhw-mode">
 		<item-type>String</item-type>
 		<label>Hot Water Mode</label>
 		<description>Domestic hot water zone mode</description>
@@ -124,17 +136,20 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="dhwStatus">
+	<channel-type id="dhw-status">
 		<item-type>String</item-type>
 		<label>Hot Water Status</label>
 		<description>Hot water status</description>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="waterPressureOK">
+	<channel-type id="water-pressure-ok">
 		<item-type>Switch</item-type>
 		<label>Water Pressure OK</label>
 		<description>Water pressure status</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
