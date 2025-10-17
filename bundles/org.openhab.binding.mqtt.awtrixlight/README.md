@@ -88,7 +88,7 @@ The button events can be used by rules to change the displayed app or perform an
 | `autoscale`           | Switch               | RW         | Enable/disable autoscaling for bar and linechart.                                                                                                                                                                                  |
 | `background`          | Color                | RW         | Sets a background color.                                                                                                                                                                                                           |
 | `bar`                 | String               | RW         | Shows a bar chart: Send a string with values separated by commas (e.g. "value1,value2,value3"). Only the last 16 values will be displayed.                                                                                         |
-| `blink`               | Number:Time          | RW         | Blink text: Blink the text in the specified interval. Ignored if gradientColor or rainbow are set.                                                                                                                                 |
+| `blink`               | Number:Time          | RW         | Blink text: Blink the text in the specified interval. Ignored if rainbow or gradient-color is  set.                                                                                                                                 |
 | `center`              | Switch               | RW         | Center short text horizontally and disable scrolling.                                                                                                                                                                              |
 | `color`               | Color                | RW         | Text, bar or line chart color.                                                                                                                                                                                                     |
 | `duration`            | Number:Time          | RW         | Display duration in seconds.                                                                                                                                                                                                       |
@@ -96,7 +96,7 @@ The button events can be used by rules to change the displayed app or perform an
 | `effect-blend`        | Switch               | RW         | Enable smoother effect transitions. Only to be used with effect.                                                                                                                                                                   |
 | `effect-palette`      | String               | RW         | Color palette for effects (see <https://blueforcer.github.io/awtrix3/#/effects> for possible values and how to create custom palettes). Only to be used with effect.                                                                 |
 | `effect-speed`        | Number:Dimensionless | RW         | Effect animation speed: Higher means faster (see <https://blueforcer.github.io/awtrix3/#/effects>). Only to be used with effect.                                                                                                     |
-| `fade`                | Number:Time          | RW         | Fade text: Fades the text in and out in the specified interval. Ignored if gradientColor or rainbow are set.                                                                                                                       |
+| `fade`                | Number:Time          | RW         | Fade text: Fades the text in and out in the specified interval. Ignored if rainbow, gradient-color or blink is set.                                                                                                                       |
 | `gradient-color`      | Color                | RW         | Secondary color for gradient effects. Use color for setting the primary color.                                                                                                                                                     |
 | `icon`                | String               | RW         | Icon name to display: Install icons on the clock device first.                                                                                                                                                                     |
 | `lifetime`\*          | Number:Time          | RW         | App lifetime: Define how long the app will remain active on the clock.                                                                                                                                                             |
@@ -107,13 +107,13 @@ The button events can be used by rules to change the displayed app or perform an
 | `progress-background` | Color                | RW         | Progress bar background color: Background color for the progress bar.                                                                                                                                                              |
 | `progress-color`      | Color                | RW         | Progress bar color: Color for the progress bar.                                                                                                                                                                                    |
 | `push-icon`           | String               | RW         | Push icon animation (STATIC=Icon doesn't move, PUSHOUT=Icon moves with text and will not appear again, PUSHOUTRETURN=Icon moves with text but appears again when the text starts to scroll again).                                 |
-| `rainbow`             | Switch               | RW         | Enable rainbow effect: Uses a rainbow effect for the displayed text.                                                                                                                                                               |
+| `rainbow`             | Switch               | RW         | Enable rainbow effect: Uses a rainbow effect for the displayed text. Overrides color, gradient-color, blink and fade.                                                                                                                            |
 | `reset`*              | Switch               | RW         | Reset app to default state: All channels will be reset to their default values.                                                                                                                                                    |
 | `scroll-speed`        | Number:Dimensionless | RW         | Text scrolling speed: Provide as percentage value. The original speed is 100%. Values above 100% will increase the scrolling speed, values below 100% will decrease it. Setting this value to 0 will disable scrolling completely. |
 | `text`                | String               | RW         | Text to display. Supports inline color formatting with font color tags (see Text Color Tags section below for details).                                                                                                            |
 | `text-case`           | Number:Dimensionless | RW         | Set text case (0=normal, 1=uppercase, 2=lowercase).                                                                                                                                                                                |
 | `text-offset`         | Number:Dimensionless | RW         | Text offset position: Horizontal offset of the text in pixels.                                                                                                                                                                     |
-| `top-text`            | String               | RW         | Draws the text on the top of the display.                                                                                                                                                                                          |
+| `top-text`            | Switch               | RW         | Draws the text on the top of the display.                                                                                                                                                                                          |
 
 \* Cannot be used with notification Actions (see section Actions)
 
@@ -135,16 +135,16 @@ Where `RRGGBB` is a 6-digit hexadecimal color code (e.g., `FF0000` for red, `00F
 
 ```java
 // Multiple colored segments - "Hello" and "in" will use the color from the color channel, "World" and "Color" will use the specified colors
-Custom_Text.sendCommand('Hello <font color="#FF0000">World</font> in <font color="#00FF00">Color</font>')
+items.Custom_Text.sendCommand("Hello <font color=\"#FF0000\">World</font> in <font color=\"#00FF00\">Color</font>")
 
 // All text in custom color
-Custom_Text.sendCommand('<font color="#FF6600">Temperature: 25°C</font>')
+items.Custom_Text.sendCommand("<font color=\"#FF6600\">Temperature: 25°C</font>")
 ```
 
 ### Important Notes
 
 - **Default color**: Text outside of `<font>` tags will be displayed in the color defined by the `color` channel.
-- **Text effects disabled**: When color tags are used, the `blink`, `fade`, and `rainbow` effects are automatically disabled, as each text segment has its own color. The `gradient-color` channel is also ignored.
+- **Text effects**: When color tags are used, the `gradient-color` and `rainbow` channel are ignored. Therefore `blink` and `fade` will also work in conjunction with text color tags even when `rainbow` and/or `gradient-color` were set.
 - **Tags cannot be nested**: `<font>` tags must not be placed inside other `<font>` tags. Nesting is not supported and will result in incorrect parsing.
 - **Case-insensitive hex values**: Both uppercase and lowercase hex values are supported (e.g., `#FF0000` or `#ff0000`).
 - **Malformed tags**: If a tag is malformed (e.g., missing closing tag), the parser will gracefully handle it by applying the default color.
@@ -355,7 +355,7 @@ Switch Doorbell_Active "Doorbell Active" (gAwtrixDoorbell) { channel="mqtt:awtri
 String Doorbell_Text "Doorbell Text" (gAwtrixDoorbell) { channel="mqtt:awtrix-app:myBroker:myAwtrix:doorbell:text" }
 String Doorbell_Icon "Doorbell Icon" (gAwtrixDoorbell) { channel="mqtt:awtrix-app:myBroker:myAwtrix:doorbell:icon" }
 Color Doorbell_Color "Doorbell Color" (gAwtrixDoorbell) { channel="mqtt:awtrix-app:myBroker:myAwtrix:doorbell:color" }
-Switch Doorbell_Rainbow "Doorbell Rainbow Effect" (gAwtrixDoorbell) { channel="mqtt:awtrix-app:myBroker:myAwtrix:doorbell:rainbow" }
+Switch Doorbell_Top_Text "Doorbell Top Text" (gAwtrixDoorbell) { channel="mqtt:awtrix-app:myBroker:myAwtrix:doorbell:top-text" }
 
 // Media Player App items with advanced features
 Group gAwtrixMediaPlayer "Media Player App"
@@ -400,7 +400,7 @@ sitemap awtrix label="Awtrix Display" {
         Text item=Doorbell_Text
         Text item=Doorbell_Icon
         Colorpicker item=Doorbell_Color
-        Switch item=Doorbell_Rainbow
+        Switch item=Doorbell_Top_Text
     }
     
     Frame label="Media Player App" {

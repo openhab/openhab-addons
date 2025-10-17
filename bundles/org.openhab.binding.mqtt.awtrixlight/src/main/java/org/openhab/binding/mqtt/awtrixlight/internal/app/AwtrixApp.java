@@ -394,8 +394,8 @@ public class AwtrixApp {
             fields.put("text", this.parseTextSegments());
         } else {
             fields.put("text", this.text);
-            fields.putAll(getTextEffectConfig());
         }
+        fields.putAll(getTextEffectConfig());
         fields.put("textCase", this.textCase);
         fields.put("topText", this.topText);
         fields.put("textOffset", this.textOffset);
@@ -530,7 +530,7 @@ public class AwtrixApp {
             }
         } else {
             // Here we have a gradient array. Use it unless it's not a valid gradient
-            if (this.gradient[0] != null && this.gradient[0].length == 3 && this.gradient[1] != null
+            if (!this.rainbow && this.gradient[0] != null && this.gradient[0].length == 3 && this.gradient[1] != null
                     && this.gradient[1].length == 3) {
                 fields.put("gradient", this.gradient);
             } else {
@@ -538,9 +538,9 @@ public class AwtrixApp {
                 if (this.color.length == 3) {
                     fields.put("color", this.color);
                 } else if (this.gradient[0] != null && this.gradient[0].length == 3) {
-                    fields.put("color", this.gradient);
+                    fields.put("color", this.gradient[0]);
                 } else if (this.gradient[1] != null && this.gradient[1].length == 3) {
-                    fields.put("color", this.gradient);
+                    fields.put("color", this.gradient[1]);
                 }
             }
         }
@@ -635,13 +635,28 @@ public class AwtrixApp {
 
     private Map<String, Object> getTextEffectConfig() {
         Map<String, Object> fields = new HashMap<String, Object>();
-        if (Arrays.equals(this.color, DEFAULT_COLOR) && Arrays.equals(this.gradient, DEFAULT_GRADIENT)) {
+        // Rainbow makes no sense when the text has color tags so ignore in this case
+        if (textHasColorTags(this.text)) {
             if (this.blinkText > 0) {
                 fields.put("blinkText", this.blinkText);
             } else if (this.fadeText > 0) {
                 fields.put("fadeText", this.fadeText);
-            } else if (this.rainbow) {
+            }
+        } else {
+            // Rainbow overrides gradients, blink and fade because for a user a switch
+            // is much easier to use to override these effects than the other way round.
+            // This way you can easily switch rainbow on and off and fall back to the
+            // gradient, blink or fade effects without setting these to the default
+            // values.
+            if (this.rainbow) {
                 fields.put("rainbow", this.rainbow);
+            } else if (Arrays.equals(this.gradient, DEFAULT_GRADIENT)) {
+                // Gradient overrides the fade and blink effects. Blink overrides fade
+                if (this.blinkText > 0) {
+                    fields.put("blinkText", this.blinkText);
+                } else if (this.fadeText > 0) {
+                    fields.put("fadeText", this.fadeText);
+                }
             }
         }
         return fields;
