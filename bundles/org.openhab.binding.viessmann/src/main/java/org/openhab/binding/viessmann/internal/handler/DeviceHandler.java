@@ -405,9 +405,9 @@ public class DeviceHandler extends ViessmannThingHandler {
                             viUnit = prop.value.unit;
                             typeEntry = switch (viUnit) {
                                 case "celsius" -> "temperature";
-                                case "percent", "kelvin", "liter" -> viUnit;
+                                case "percent", "kelvin", "liter", "bar" -> viUnit;
                                 case "minute" -> "duration";
-                                case "bar" -> "bar";
+                                case "revolutionsPerSecond" -> "revolutions-per-second";
                                 case "kilowattHour/year" -> "house-heating-load";
                                 case null, default -> prop.value.type;
                             };
@@ -628,6 +628,7 @@ public class DeviceHandler extends ViessmannThingHandler {
                                         logger.warn(
                                                 "Unknown unit. Could not parse unit: {} of Feature: {} - Please open an issue on GitHub.",
                                                 viUnit, featureDataDTO.feature);
+                                        return;
                                     }
                                 }
                             }
@@ -732,6 +733,7 @@ public class DeviceHandler extends ViessmannThingHandler {
                                 case "liter-per-minute":
                                 case "bar":
                                 case "power":
+                                case "revolutions-per-second":
                                     updateChannelState(msg.getChannelId(), msg.getValue(), unit);
                                     break;
                                 case "boolean":

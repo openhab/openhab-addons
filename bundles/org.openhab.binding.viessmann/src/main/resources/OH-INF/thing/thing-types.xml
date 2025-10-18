@@ -532,4 +532,16 @@
 		<state min="-13" max="40" step="1" pattern="%d" readOnly="false"/>
 	</channel-type>
 
+
+	<channel-type id="revolutions-per-second">
+		<item-type>Number:Frequency</item-type>
+		<label>Frequency</label>
+		<category>iconify:mdi:speedometer</category>
+		<tags>
+			<tag>Measurement</tag>
+		</tags>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+
 </thing:thing-descriptions>
