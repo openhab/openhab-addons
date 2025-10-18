@@ -13,7 +13,6 @@ The binding supports various thing types including RGB/RGBW controllers, tempera
 - `contact-sensor` - Contact Sensors for monitoring open/closed states (supports both MIX24 and 9-in-1 sensor types)
 - `motion-sensor` - Motion Sensors for detecting movement
 - `lux-sensor` - Light Level Sensors for measuring illuminance
-- `multi-sensor` - (Deprecated) Multi-Sensor things with motion, lux, and dry contact capabilities
 
 ## Discovery
 

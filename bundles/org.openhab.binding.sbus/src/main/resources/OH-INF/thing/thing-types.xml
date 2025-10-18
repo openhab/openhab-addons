@@ -200,37 +200,6 @@
 		</config-description>
 	</thing-type>
 
-	<!-- Multi-Sensor Device (Deprecated - use individual sensor types instead) -->
-	<thing-type id="multi-sensor">
-		<supported-bridge-type-refs>
-			<bridge-type-ref id="udp"/>
-		</supported-bridge-type-refs>
-		<label>Multi-Sensor</label>
-		<description>Sbus multi-sensor device with motion, lux, and dry contact capabilities</description>
-		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
-		<config-description>
-			<parameter name="subnetId" type="integer">
-				<label>SubnetId</label>
-				<description>Slave subnet id. Can take any value between 1 and 255. 255 for broadcast.</description>
-				<default>1</default>
-				<options>
-					<option value="1">1</option>
-					<option value="255">255</option>
-				</options>
-			</parameter>
-			<parameter name="id" type="integer" required="true">
-				<label>Device ID</label>
-				<description>The ID of the Sbus device</description>
-			</parameter>
-			<parameter name="refresh" type="integer">
-				<label>Refresh Interval</label>
-				<description>Refresh interval in seconds (0 = listen-only mode for broadcast messages)</description>
-				<default>0</default>
-				<unitLabel>s</unitLabel>
-			</parameter>
-		</config-description>
-	</thing-type>
-
 	<!-- Channel Types -->
 	<channel-type id="switch-channel">
 		<item-type>Switch</item-type>
