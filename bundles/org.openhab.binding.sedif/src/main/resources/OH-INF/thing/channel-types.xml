@@ -1,28 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="sedif"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
-	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
-
+<thing:thing-descriptions bindingId="ahawastecollection"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+    xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+    
 	<channel-type id="numeric">
 		<item-type>Number</item-type>
 		<label>Numeric Type Consumption</label>
-		<state readOnly="true" pattern="%.0f"/>
 		<tags>
-			<tag>Measurement</tag>
-			<tag>Water</tag>
-		</tags>
+            <tag>Status</tag>
+            <tag>Timestamp</tag>
+        </tags>
+        <state readOnly="true" pattern="%.0f"/>
 	</channel-type>
 
 	<channel-type id="consumption">
 		<item-type>Number:Volume</item-type>
 		<label>Total Consumption</label>
 		<description>Consumption at given time interval</description>
-		<category>flow</category>
+        <category>flow</category>
+        <tags>
+            <tag>Status</tag>
+            <tag>Timestamp</tag>
+        </tags>
 		<state readOnly="true" pattern="%.3f %unit%"/>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Water</tag>
-		</tags>
 	</channel-type>
 </thing:thing-descriptions>
