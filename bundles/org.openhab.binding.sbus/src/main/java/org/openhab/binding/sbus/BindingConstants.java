@@ -37,7 +37,8 @@ public class BindingConstants {
     public static final ThingTypeUID THING_TYPE_TEMPERATURE = new ThingTypeUID(BINDING_ID, "temperature");
     public static final ThingTypeUID THING_TYPE_RGBW = new ThingTypeUID(BINDING_ID, "rgbw");
     public static final ThingTypeUID THING_TYPE_CONTACT_SENSOR = new ThingTypeUID(BINDING_ID, "contact-sensor");
-    public static final ThingTypeUID THING_TYPE_MULTI_SENSOR = new ThingTypeUID(BINDING_ID, "multi-sensor");
+    public static final ThingTypeUID THING_TYPE_MOTION_SENSOR = new ThingTypeUID(BINDING_ID, "motion-sensor");
+    public static final ThingTypeUID THING_TYPE_LUX_SENSOR = new ThingTypeUID(BINDING_ID, "lux-sensor");
 
     // Channel IDs for Switch Device
     public static final String CHANNEL_SWITCH_STATE = "state";

@@ -107,6 +107,15 @@
 		<description>Sbus contact sensor device</description>
 		<semantic-equipment-tag>ContactSensor</semantic-equipment-tag>
 		<config-description>
+			<parameter name="type" type="text">
+				<label>Device Type</label>
+				<description>Type of contact sensor device</description>
+				<options>
+					<option value="mix24">MIX24 (Traditional)</option>
+					<option value="9in1">9-in-1 Sensor</option>
+				</options>
+				<default>mix24</default>
+			</parameter>
 			<parameter name="subnetId" type="integer">
 				<label>SubnetId</label>
 				<description>Slave subnet id. Can take any value between 1 and 255. 255 for broadcast.</description>
@@ -129,7 +138,69 @@
 		</config-description>
 	</thing-type>
 
-	<!-- Multi-Sensor Device -->
+	<!-- Motion Sensor Device -->
+	<thing-type id="motion-sensor">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="udp"/>
+		</supported-bridge-type-refs>
+		<label>Motion Sensor</label>
+		<description>Sbus motion sensor device </description>
+		<semantic-equipment-tag>MotionDetector</semantic-equipment-tag>
+		<config-description>
+			<parameter name="subnetId" type="integer">
+				<label>SubnetId</label>
+				<description>Slave subnet id. Can take any value between 1 and 255. 255 for broadcast.</description>
+				<default>1</default>
+				<options>
+					<option value="1">1</option>
+					<option value="255">255</option>
+				</options>
+			</parameter>
+			<parameter name="id" type="integer" required="true">
+				<label>Device ID</label>
+				<description>The ID of the Sbus device</description>
+			</parameter>
+			<parameter name="refresh" type="integer">
+				<label>Refresh Interval</label>
+				<description>Refresh interval in seconds (0 = listen-only mode for broadcast messages)</description>
+				<default>0</default>
+				<unitLabel>s</unitLabel>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- Lux Sensor Device -->
+	<thing-type id="lux-sensor">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="udp"/>
+		</supported-bridge-type-refs>
+		<label>Lux Sensor</label>
+		<description>Sbus light level sensor device </description>
+		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
+		<config-description>
+			<parameter name="subnetId" type="integer">
+				<label>SubnetId</label>
+				<description>Slave subnet id. Can take any value between 1 and 255. 255 for broadcast.</description>
+				<default>1</default>
+				<options>
+					<option value="1">1</option>
+					<option value="255">255</option>
+				</options>
+			</parameter>
+			<parameter name="id" type="integer" required="true">
+				<label>Device ID</label>
+				<description>The ID of the Sbus device</description>
+			</parameter>
+			<parameter name="refresh" type="integer">
+				<label>Refresh Interval</label>
+				<description>Refresh interval in seconds (0 = listen-only mode for broadcast messages)</description>
+				<default>0</default>
+				<unitLabel>s</unitLabel>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- Multi-Sensor Device (Deprecated - use individual sensor types instead) -->
 	<thing-type id="multi-sensor">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="udp"/>
