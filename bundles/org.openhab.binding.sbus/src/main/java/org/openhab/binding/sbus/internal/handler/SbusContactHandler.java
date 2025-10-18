@@ -32,8 +32,9 @@ import ro.ciprianpascu.sbus.msg.SbusResponse;
 import ro.ciprianpascu.sbus.procimg.InputRegister;
 
 /**
- * The {@link SbusContactHandler} is responsible for handling commands for Sbus contact devices.
- * It supports reading the current contact state (open/closed).
+ * The {@link SbusContactHandler} is responsible for handling traditional Sbus contact sensor devices.
+ * It supports reading the current contact state (open/closed) using the ReadDryChannelsRequest protocol.
+ * For 9-in-1 sensor devices, use the Sbus9in1ContactHandler instead.
  *
  * @author Ciprian Pascu - Initial contribution
  */
@@ -105,7 +106,8 @@ public class SbusContactHandler extends AbstractSbusHandler {
         // Execute transaction and parse response
         SbusResponse response = adapter.executeTransaction(request);
         if (!(response instanceof ReadDryChannelsResponse statusResponse)) {
-            throw new IllegalStateException("Unexpected response type: " + response.getClass().getSimpleName());
+            throw new IllegalStateException(
+                    "Unexpected response type: " + (response != null ? response.getClass().getSimpleName() : "null"));
         }
 
         InputRegister[] registers = statusResponse.getRegisters();
@@ -124,9 +126,8 @@ public class SbusContactHandler extends AbstractSbusHandler {
             if (response instanceof ReadStatusChannelsResponse statusResponse) {
                 // Process status channel response using existing logic
                 boolean[] statuses = extractContactStatuses(statusResponse);
-
-                // Update channel states based on async message
                 updateChannelStatesFromStatuses(statuses);
+                updateStatus(ThingStatus.ONLINE);
                 logger.debug("Processed async contact status message for handler {}", getThing().getUID());
             }
         } catch (IllegalStateException | IllegalArgumentException e) {
@@ -137,13 +138,12 @@ public class SbusContactHandler extends AbstractSbusHandler {
 
     @Override
     protected boolean isMessageRelevant(SbusResponse response) {
-        if (!(response instanceof ReadStatusChannelsResponse)) {
-            return false;
+        if (response instanceof ReadStatusChannelsResponse) {
+            // Traditional contact sensor messages
+            SbusDeviceConfig config = getConfigAs(SbusDeviceConfig.class);
+            return response.getSubnetID() == config.subnetId && response.getUnitID() == config.id;
         }
-
-        // Check if the message is for this device based on subnet and unit ID
-        SbusDeviceConfig config = getConfigAs(SbusDeviceConfig.class);
-        return response.getSubnetID() == config.subnetId && response.getUnitID() == config.id;
+        return false;
     }
 
     /**

@@ -295,7 +295,8 @@ public class SbusRgbwHandler extends AbstractSbusHandler {
         // Execute transaction and parse response
         SbusResponse response = adapter.executeTransaction(request);
         if (!(response instanceof ReadStatusChannelsResponse statusResponse)) {
-            throw new IllegalStateException("Unexpected response type: " + response.getClass().getSimpleName());
+            throw new IllegalStateException(
+                    "Unexpected response type: " + (response != null ? response.getClass().getSimpleName() : "null"));
         }
         InputRegister[] registers = statusResponse.getRegisters();
         int[] statusValues = new int[registers.length];
@@ -328,7 +329,8 @@ public class SbusRgbwHandler extends AbstractSbusHandler {
         // Execute transaction and parse response
         SbusResponse response = adapter.executeTransaction(request);
         if (!(response instanceof ReadRgbwResponse rgbwResponse)) {
-            throw new IllegalStateException("Unexpected response type: " + response.getClass().getSimpleName());
+            throw new IllegalStateException(
+                    "Unexpected response type: " + (response != null ? response.getClass().getSimpleName() : "null"));
         }
         InputRegister[] registers = rgbwResponse.getRegisters();
         int[] rgbwValues = new int[Math.min(4, registers.length)];
