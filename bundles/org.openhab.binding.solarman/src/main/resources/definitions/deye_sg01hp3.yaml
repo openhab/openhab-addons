@@ -1,5 +1,4 @@
-# SUN-8/12K-SG04LP3-EU | 8/12KW | Three Phase | 2 MPPT | Hybrid Inverter | Low Voltage Battery
-# tested with LSW3_15_FFFF_1.0.91R + LSW3_15_FFFF_1.0.84
+# SUN-302K-SG01HP3-EU | 30KW | Three Phase | 3 MPPT | Hybrid Inverter | High Voltage Battery
 
 requests:
   - start: 0x0003
@@ -11,11 +10,11 @@ requests:
   - start: 0x0085
     end: 0x0085
     mb_functioncode: 0x03
-  - start: 0x0094
-    end: 0x009F
-    mb_functioncode: 0x03
   - start: 0x00A6
     end: 0x00B1
+    mb_functioncode: 0x03
+  - start: 0x0094
+    end: 0x009F
     mb_functioncode: 0x03
   - start: 0x0202
     end: 0x022E
@@ -36,7 +35,7 @@ requests:
     end: 0x029F
     mb_functioncode: 0x03
   - start: 0x02A0
-    end: 0x02A7
+    end: 0x02A8
     mb_functioncode: 0x03
 
 parameters:
@@ -46,7 +45,7 @@ parameters:
         class: "power"
         state_class: "measurement"
         uom: "W"
-        scale: 1
+        scale: 10
         rule: 1
         registers: [0x02A0]
         icon: "mdi:solar-power"
@@ -55,9 +54,18 @@ parameters:
         class: "power"
         state_class: "measurement"
         uom: "W"
-        scale: 1
+        scale: 10
         rule: 1
         registers: [0x02A1]
+        icon: "mdi:solar-power"
+
+      - name: "PV3 Power"
+        class: "power"
+        state_class: "measurement"
+        uom: "W"
+        scale: 10
+        rule: 1
+        registers: [ 0x02A2 ]
         icon: "mdi:solar-power"
 
       - name: "PV1 Voltage"
@@ -78,6 +86,15 @@ parameters:
         registers: [0x02A6]
         icon: "mdi:solar-power"
 
+      - name: "PV3 Voltage"
+        class: "voltage"
+        state_class: "measurement"
+        uom: "V"
+        scale: 0.1
+        rule: 1
+        registers: [ 0x02A7 ]
+        icon: "mdi:solar-power"
+
       - name: "PV1 Current"
         class: "current"
         state_class: "measurement"
@@ -94,6 +111,15 @@ parameters:
         scale: 0.1
         rule: 1
         registers: [0x02A7]
+        icon: "mdi:solar-power"
+
+      - name: "PV3 Current"
+        class: "current"
+        state_class: "measurement"
+        uom: "A"
+        scale: 0.1
+        rule: 1
+        registers: [ 0x02A9 ]
         icon: "mdi:solar-power"
 
       - name: "Daily Production"
@@ -161,7 +187,7 @@ parameters:
         uom: "V"
         scale: 0.01
         rule: 1
-        registers: [0x0066]
+        registers: [0x0067]
         icon: "mdi:battery"
 
       - name: "Battery Max A Charge"
@@ -222,7 +248,7 @@ parameters:
         class: "power"
         state_class: "measurement"
         uom: "W"
-        scale: 1
+        scale: 10
         rule: 2
         registers: [0x024E]
         icon: "mdi:battery"
@@ -644,11 +670,11 @@ parameters:
         uom: "W"
         scale: 1
         rule: 1
-        registers: [0x0298, 0x029C]
+        registers: [0x0298]
         icon: "mdi:home-lightning-bolt"
         validation:
           min: 0
-          max: 12000
+          max: 30000
 
       - name: "Phase power of Gen port B"
         class: "power"
@@ -656,11 +682,11 @@ parameters:
         uom: "W"
         scale: 1
         rule: 1
-        registers: [0x0299, 0x029D]
+        registers: [0x0299]
         icon: "mdi:home-lightning-bolt"
         validation:
           min: 0
-          max: 12000
+          max: 30000
 
       - name: "Phase power of Gen port C"
         class: "power"
@@ -668,11 +694,11 @@ parameters:
         uom: "W"
         scale: 1
         rule: 1
-        registers: [0x029A, 0x029E]
+        registers: [0x029A]
         icon: "mdi:home-lightning-bolt"
         validation:
           min: 0
-          max: 12000
+          max: 30000
 
       - name: "Total Power of Gen port"
         class: "power"
@@ -680,18 +706,18 @@ parameters:
         uom: "W"
         scale: 1
         rule: 1
-        registers: [0x029B, 0x029F]
-        icon: "mdi:home-l1ghtning-bolt"
+        registers: [0x029B]
+        icon: "mdi:home-lightning-bolt"
         validation:
           min: 0
-          max: 12000
+          max: 30000
 
       - name: "Generator daily power generation"
         class: "energy"
         state_class: "total_increasing"
         uom: "kWh"
         scale: 0.1
-        rule: 3
+        rule: 1
         registers: [0x0218]
         icon: "mdi:transmission-tower-import"
 
@@ -774,7 +800,7 @@ parameters:
         class: "energy"
         state_class: "measurement"
         uom: "W"
-        scale: 1
+        scale: 10
         rule: 1
         isReadOnly: false
         registers: [0x009A]
@@ -783,7 +809,7 @@ parameters:
         class: "energy"
         state_class: "measurement"
         uom: "W"
-        scale: 1
+        scale: 10
         rule: 1
         isReadOnly: false
         registers: [0x009B]
@@ -792,7 +818,7 @@ parameters:
         class: "energy"
         state_class: "measurement"
         uom: "W"
-        scale: 1
+        scale: 10
         rule: 1
         isReadOnly: false
         registers: [0x009C]
@@ -801,7 +827,7 @@ parameters:
         class: "energy"
         state_class: "measurement"
         uom: "W"
-        scale: 1
+        scale: 10
         rule: 1
         isReadOnly: false
         registers: [0x009D]
@@ -810,7 +836,7 @@ parameters:
         class: "energy"
         state_class: "measurement"
         uom: "W"
-        scale: 1
+        scale: 10
         rule: 1
         isReadOnly: false
         registers: [0x009E]
@@ -819,7 +845,7 @@ parameters:
         class: "energy"
         state_class: "measurement"
         uom: "W"
-        scale: 1
+        scale: 10
         rule: 1
         isReadOnly: false
         registers: [0x009F]
