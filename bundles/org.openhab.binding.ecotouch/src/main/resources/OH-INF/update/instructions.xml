@@ -4,9 +4,6 @@
 	xsi:schemaLocation="https://openhab.org/schemas/update-description/v1.0.0 https://openhab.org/schemas/update-description-1.0.0.xsd">
 
 	<thing-type uid="ecotouch:geo">
-		<properties>
-			<property name="thingTypeVersion">2</property>
-		</properties>
 		<instruction-set targetVersion="1">
 			<add-channel id="percent_water_limit_min">
 				<type>ecotouch:percent_water_limit_min</type>
@@ -29,9 +26,6 @@
 	</thing-type>
 
 	<thing-type uid="ecotouch:air">
-		<properties>
-			<property name="thingTypeVersion">2</property>
-		</properties>
 		<instruction-set targetVersion="1">
 			<add-channel id="percent_water_limit_min">
 				<type>ecotouch:percent_water_limit_min</type>
