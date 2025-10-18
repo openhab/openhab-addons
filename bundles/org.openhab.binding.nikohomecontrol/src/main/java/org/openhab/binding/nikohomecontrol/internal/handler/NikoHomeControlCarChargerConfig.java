@@ -15,13 +15,13 @@ package org.openhab.binding.nikohomecontrol.internal.handler;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * {@link NikoHomeControlMeterConfig} is the config class for Niko Home Control Meters.
+ * {@link NikoHomeControlCarChargerConfig} is the general config class for Niko Home Control Car Chargers.
  *
  * @author Mark Herwege - Initial Contribution
  */
 @NonNullByDefault
-public class NikoHomeControlMeterConfig {
-    public String meterId = "";
+public class NikoHomeControlCarChargerConfig {
+    public String carChargerId = "";
     public int refresh = 10;
     public String startDate = "";
     public boolean invert = false;

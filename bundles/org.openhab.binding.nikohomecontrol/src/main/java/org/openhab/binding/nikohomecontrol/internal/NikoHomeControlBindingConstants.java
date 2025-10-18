@@ -47,12 +47,14 @@ public class NikoHomeControlBindingConstants {
     public static final ThingTypeUID THING_TYPE_THERMOSTAT = new ThingTypeUID(BINDING_ID, "thermostat");
     public static final ThingTypeUID THING_TYPE_ENERGYMETER_LIVE = new ThingTypeUID(BINDING_ID, "energyMeterLive");
     public static final ThingTypeUID THING_TYPE_ENERGYMETER = new ThingTypeUID(BINDING_ID, "energyMeter");
+    public static final ThingTypeUID THING_TYPE_ENERGYMETER_HOME = new ThingTypeUID(BINDING_ID, "energyMeterHome");
     public static final ThingTypeUID THING_TYPE_GASMETER = new ThingTypeUID(BINDING_ID, "gasMeter");
     public static final ThingTypeUID THING_TYPE_WATERMETER = new ThingTypeUID(BINDING_ID, "waterMeter");
     public static final ThingTypeUID THING_TYPE_ACCESS = new ThingTypeUID(BINDING_ID, "access");
     public static final ThingTypeUID THING_TYPE_ACCESS_RINGANDCOMEIN = new ThingTypeUID(BINDING_ID,
             "accessRingAndComeIn");
     public static final ThingTypeUID THING_TYPE_ALARM = new ThingTypeUID(BINDING_ID, "alarm");
+    public static final ThingTypeUID THING_TYPE_CAR_CHARGER = new ThingTypeUID(BINDING_ID, "carCharger");
 
     // thing type sets
     public static final Set<ThingTypeUID> BRIDGE_THING_TYPES_UIDS = Set.of(BRIDGEI_THING_TYPE, BRIDGEII_THING_TYPE);
@@ -60,14 +62,14 @@ public class NikoHomeControlBindingConstants {
             THING_TYPE_ON_OFF_LIGHT, THING_TYPE_DIMMABLE_LIGHT, THING_TYPE_BLIND);
     public static final Set<ThingTypeUID> THERMOSTAT_THING_TYPES_UIDS = Set.of(THING_TYPE_THERMOSTAT);
     public static final Set<ThingTypeUID> METER_THING_TYPES_UIDS = Set.of(THING_TYPE_ENERGYMETER_LIVE,
-            THING_TYPE_ENERGYMETER, THING_TYPE_GASMETER, THING_TYPE_WATERMETER);
+            THING_TYPE_ENERGYMETER, THING_TYPE_ENERGYMETER_HOME, THING_TYPE_GASMETER, THING_TYPE_WATERMETER);
     public static final Set<ThingTypeUID> ACCESS_THING_TYPES_UIDS = Set.of(THING_TYPE_ACCESS,
             THING_TYPE_ACCESS_RINGANDCOMEIN);
     public static final Set<ThingTypeUID> ALARM_THING_TYPES_UIDS = Set.of(THING_TYPE_ALARM);
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream
-            .of(BRIDGE_THING_TYPES_UIDS.stream(), ACTION_THING_TYPES_UIDS.stream(),
-                    THERMOSTAT_THING_TYPES_UIDS.stream(), METER_THING_TYPES_UIDS.stream(),
-                    ACCESS_THING_TYPES_UIDS.stream(), ALARM_THING_TYPES_UIDS.stream())
+    public static final Set<ThingTypeUID> CAR_CHARGER_THING_TYPES_UIDS = Set.of(THING_TYPE_CAR_CHARGER);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream.of(BRIDGE_THING_TYPES_UIDS.stream(),
+            ACTION_THING_TYPES_UIDS.stream(), THERMOSTAT_THING_TYPES_UIDS.stream(), METER_THING_TYPES_UIDS.stream(),
+            ACCESS_THING_TYPES_UIDS.stream(), ALARM_THING_TYPES_UIDS.stream(), CAR_CHARGER_THING_TYPES_UIDS.stream())
             .flatMap(i -> i).collect(Collectors.toSet());
 
     // List of all Channel ids
@@ -85,15 +87,22 @@ public class NikoHomeControlBindingConstants {
     public static final String CHANNEL_HEATING_DEMAND = "heatingdemand";
 
     public static final String CHANNEL_POWER = "power";
+    public static final String CHANNEL_POWER_FROM_GRID = "powerfromgrid";
+    public static final String CHANNEL_POWER_TO_GRID = "powertogrid";
+    public static final String CHANNEL_PEAK_POWER_FROM_GRID = "peakpowerfromgrid";
     public static final String CHANNEL_ENERGY = "energy";
+    public static final String CHANNEL_ENERGY_FROM_GRID = "energyfromgrid";
+    public static final String CHANNEL_ENERGY_TO_GRID = "energytogrid";
+    public static final String CHANNEL_ENERGY_SELF_CONSUMPTION = "energyselfconsumption";
     public static final String CHANNEL_GAS = "gas";
     public static final String CHANNEL_WATER = "water";
     public static final String CHANNEL_ENERGY_DAY = "energyday";
     public static final String CHANNEL_GAS_DAY = "gasday";
     public static final String CHANNEL_WATER_DAY = "waterday";
-    public static final String CHANNEL_ENERGY_LAST = "energylast";
-    public static final String CHANNEL_GAS_LAST = "gaslast";
-    public static final String CHANNEL_WATER_LAST = "waterlast";
+    public static final String CHANNEL_ENERGY_FROM_GRID_DAY = "energyfromgridday";
+    public static final String CHANNEL_ENERGY_TO_GRID_DAY = "energytogridday";
+    public static final String CHANNEL_ENERGY_SELF_CONSUMPTION_DAY = "energyselfconsumptionday";
+    public static final String CHANNEL_MEASUREMENT_TIME = "measurementtime";
 
     public static final String CHANNEL_BELL_BUTTON = "bellbutton";
     public static final String CHANNEL_RING_AND_COME_IN = "ringandcomein";
@@ -102,6 +111,17 @@ public class NikoHomeControlBindingConstants {
     public static final String CHANNEL_ARM = "arm";
     public static final String CHANNEL_ARMED = "armed";
     public static final String CHANNEL_STATE = "state";
+
+    public static final String CHANNEL_STATUS = "status";
+    public static final String CHANNEL_CHARGING_STATUS = "chargingstatus";
+    public static final String CHANNEL_EV_STATUS = "evstatus";
+    public static final String CHANNEL_COUPLING_STATUS = "couplingstatus";
+    public static final String CHANNEL_CHARGING_MODE = "chargingmode";
+    public static final String CHANNEL_TARGET_DISTANCE = "targetdistance";
+    public static final String CHANNEL_TARGET_TIME = "targettime";
+    public static final String CHANNEL_BOOST = "boost";
+    public static final String CHANNEL_REACHABLE_DISTANCE = "reachabledistance";
+    public static final String CHANNEL_NEXT_CHARGING_TIME = "nextchargingtime";
 
     public static final String CHANNEL_ALARM = "alarm";
     public static final String CHANNEL_NOTICE = "notice";
@@ -124,10 +144,13 @@ public class NikoHomeControlBindingConstants {
 
     public static final String METER_ID = "meterId";
     public static final String CONFIG_METER_REFRESH = "refresh";
+    public static final String CONFIG_METER_START_DATE = "startDate";
 
     public static final String CONFIG_ACCESS_ID = "accessId";
 
     public static final String CONFIG_ALARM_ID = "alarmId";
+
+    public static final String CONFIG_CAR_CHARGER_ID = "carChargerId";
 
     // Thing properties
     public static final String PROPERTY_DEVICE_TYPE = "deviceType";

@@ -10,19 +10,21 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.nikohomecontrol.internal.handler;
+package org.openhab.binding.nikohomecontrol.internal.protocol;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * {@link NikoHomeControlMeterConfig} is the config class for Niko Home Control Meters.
+ * {@link HttpClientInitializationException} used for HTTP connection exceptions.
  *
  * @author Mark Herwege - Initial Contribution
  */
 @NonNullByDefault
-public class NikoHomeControlMeterConfig {
-    public String meterId = "";
-    public int refresh = 10;
-    public String startDate = "";
-    public boolean invert = false;
+public class HttpClientInitializationException extends Exception {
+
+    private static final long serialVersionUID = 6823948572039847561L;
+
+    public HttpClientInitializationException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }
