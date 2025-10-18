@@ -77,7 +77,7 @@ public class SbusHandlerFactory extends BaseThingHandlerFactory {
                 logger.debug("Creating Sbus 9-in-1 contact sensor handler for thing {}", thing.getUID());
                 return new Sbus9in1ContactHandler(thing);
             } else {
-                logger.debug("Creating Sbus MIX24 contact sensor handler for thing {}", thing.getUID());
+                logger.debug("Creating Sbus 24Z contact sensor handler for thing {}", thing.getUID());
                 return new SbusContactHandler(thing);
             }
         } else if (thingTypeUID.equals(THING_TYPE_MOTION_SENSOR)) {

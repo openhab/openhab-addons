@@ -25,7 +25,7 @@ public class SbusContactConfig extends SbusDeviceConfig {
      * Sensor type for contact sensor.
      * String value is used for configuration binding, converted to enum via ContactSensorType.fromConfigValue()
      */
-    public String type = ContactSensorType.MIX24.getConfigValue(); // Default to traditional behavior
+    public String type = ContactSensorType.SENSOR_24Z.getConfigValue(); // Default to traditional behavior
 
     /**
      * Get the sensor type as an enum.

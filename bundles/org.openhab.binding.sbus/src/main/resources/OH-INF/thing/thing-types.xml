@@ -111,10 +111,10 @@
 				<label>Device Type</label>
 				<description>Type of contact sensor device</description>
 				<options>
-					<option value="mix24">MIX24 (Traditional)</option>
+					<option value="24z">24Z (Traditional)</option>
 					<option value="9in1">9-in-1 Sensor</option>
 				</options>
-				<default>mix24</default>
+				<default>24z</default>
 			</parameter>
 			<parameter name="subnetId" type="integer">
 				<label>SubnetId</label>
@@ -341,6 +341,12 @@
 			<tag>Motion</tag>
 		</tags>
 		<state readOnly="true"/>
+		<config-description>
+			<parameter name="channelNumber" type="integer" required="true">
+				<label>Channel Number</label>
+				<description>The physical channel number on the Sbus device</description>
+			</parameter>
+		</config-description>
 	</channel-type>
 
 	<channel-type id="lux-channel">
@@ -353,6 +359,12 @@
 			<tag>Light</tag>
 		</tags>
 		<state readOnly="true" pattern="%.0f lux"/>
+		<config-description>
+			<parameter name="channelNumber" type="integer" required="true">
+				<label>Channel Number</label>
+				<description>The physical channel number on the Sbus device</description>
+			</parameter>
+		</config-description>
 	</channel-type>
 
 </thing:thing-descriptions>

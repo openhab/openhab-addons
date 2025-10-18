@@ -22,9 +22,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public enum ContactSensorType {
     /**
-     * Traditional MIX24 contact sensor using ReadDryChannelsRequest/Response protocol
+     * Traditional 24Z contact sensor using ReadDryChannelsRequest/Response protocol
      */
-    MIX24("mix24"),
+    SENSOR_24Z("24z"),
 
     /**
      * 9-in-1 sensor with dry contacts using ReadNineInOneStatusRequest/Response protocol
@@ -50,7 +50,7 @@ public enum ContactSensorType {
      * Parse a configuration value into a ContactSensorType.
      *
      * @param value the configuration value
-     * @return the corresponding ContactSensorType, or MIX24 if not recognized
+     * @return the corresponding ContactSensorType, or SENSOR_24Z if not recognized
      */
     public static ContactSensorType fromConfigValue(String value) {
         for (ContactSensorType type : values()) {
@@ -58,6 +58,6 @@ public enum ContactSensorType {
                 return type;
             }
         }
-        return MIX24; // Default to MIX24 for backward compatibility or null values
+        return SENSOR_24Z; // Default to 24Z for backward compatibility or null values
     }
 }
