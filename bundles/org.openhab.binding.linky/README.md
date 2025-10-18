@@ -272,7 +272,7 @@ You will have two different sets of indexes:
   The supplier is the commercial company with which you have a contract (EDF, TotalEnergies, etc.). This is where your specific supplier tariff is defined.  
 
 - **Named consumption indexes:**  
-To make things simpler, the binding also expose tariff-named channels.  
+To make things simpler, the binding also exposes tariff-named channels.  
 For example:  
 
    daily#heuresPleines, daily#heuresCreuses, daily#bleuHeuresCreuses,
@@ -304,6 +304,9 @@ Number:Energy ConsoAnneeDerniere "Conso année dernière [%.0f %unit%]" <energy>
 Number:Energy ConsoDay "Linky Conso Day -x Histo [%d]" <energy> { channel="linky:linky:linkyremotexxxx:daily#consumption" }
 Number:Energy ConsoMonth "Linky Conso Month -x Histo [%d]" <energy> { channel="linky:linky:linkyremotexxxx:monthly#consumption" }
 
+Number:Energy ConsoMonthHeuresPleines "Linky Conso Month Heures Pleines -x Histo [%d]" <energy> { channel="linky:linky:linkyremotexxxx:monthly#heuresPleines" }
+Number:Energy ConsoMonthHeuresCreuses "Linky Conso Month Heures Creuses -x Histo [%d]" <energy> { channel="linky:linky:linkyremotexxxx:monthly#heuresCreuses" }
+
 Number:Energy ConsoMonthHeuresCreusesBlanc "Linky Conso Month Heures Creuses Bleue -x Histo [%d]" <energy> { channel="linky:linky:linkyremotexxxx:monthly#blancHeuresCreuses" }
 Number:Energy ConsoMonthHeuresCreusesBleue "Linky Conso Month Heures Creuses Blanc -x Histo [%d]" <energy> { channel="linky:linky:linkyremotexxxx:monthly#bleueHeuresCreuses" }
 Number:Energy ConsoMonthHeuresCreusesRouge "Linky Conso Month Heures Rouge -x Histo [%d]" <energy> { channel="linky:linky:linkyremotexxxx:monthly#rougeHeuresCreuses" }
@@ -311,6 +314,8 @@ Number:Energy ConsoMonthHeuresCreusesRouge "Linky Conso Month Heures Rouge -x Hi
 Number:Energy ConsoMonthHeuresPleinesBlanc "Linky Conso Month Heures Pleines Blanc -x Histo [%d]" <energy> { channel="linky:linky:linkyremotexxxx:monthly#blancHeuresPleines" }
 Number:Energy ConsoMonthHeuresPleinesBleue "Linky Conso Month Heures Pleines Bleue -x Histo [%d]" <energy> { channel="linky:linky:linkyremotexxxx:monthly#bleueHeuresPleines" }
 Number:Energy ConsoMonthHeuresPleinesRouge "Linky Conso Month Heures Pleines Rouge -x Histo [%d]" <energy> { channel="linky:linky:linkyremotexxxx:monthly#rougeHeuresPleines" }
+
+Number Linky_Tempo "Linky Tempo Day [%s]" channel="linky:tempo-calendar:local:tempo-calendar#tempo-info-timeseries" }
 ```
 
 ### Displaying Information Graph
@@ -593,7 +598,7 @@ slots:
         emphasis:
           disabled: true
         gridIndex: 0
-        item: ConsoMonthHeuresPleinesCreuses
+        item: ConsoMonthHeuresCreuses
         label:
           formatter: =v=>v.data[1]!="0"?Number.parseFloat(v.data[1]).toFixed(2) + "
             Kwh":''
@@ -697,7 +702,7 @@ slots:
         aggregationFunction: average
         calendarIndex: 0
         coordinateSystem: calendar
-        item: Linky_Melody_Tempo
+        item: Linky_Tempo
         label:
           formatter: =v=> JSON.stringify(v.data[0]).substring(1,11)
           show: true

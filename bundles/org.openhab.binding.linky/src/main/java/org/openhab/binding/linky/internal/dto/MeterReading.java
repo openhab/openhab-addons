@@ -103,10 +103,10 @@ public class MeterReading {
                     dataObj.calendrier = agregat.datas.get(idx - 1).calendrier;
                 }
 
-                if (dataObj.calendrier[0] != null) {
+                if (dataObj.calendrier.length >= 1 && dataObj.calendrier[0] != null) {
                     calendrierDistributor = dataObj.calendrier[0].idCalendrier;
                 }
-                if (dataObj.calendrier[1] != null) {
+                if (dataObj.calendrier.length >= 2 && dataObj.calendrier[1] != null) {
                     calendrierSupplier = dataObj.calendrier[1].idCalendrier;
                 }
 

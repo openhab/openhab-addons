@@ -19,16 +19,18 @@ package org.openhab.binding.linky.internal.dto;
  */
 
 public enum IndexMode {
-    NONE(-1, 0),
-    SUPPLIER(0, 10),
-    DISTRIBUTOR(1, 4);
+    NONE(-1, 0, "None"),
+    SUPPLIER(0, 10, "Supplier"),
+    DISTRIBUTOR(1, 4, "Distributor");
 
     private final int idx;
     private final int size;
+    private final String label;
 
-    IndexMode(int idx, int size) {
+    IndexMode(int idx, int size, String label) {
         this.idx = idx;
         this.size = size;
+        this.label = label;
     }
 
     public int getIdx() {
@@ -37,5 +39,9 @@ public enum IndexMode {
 
     public int getSize() {
         return size;
+    }
+
+    public String getLabel() {
+        return label;
     }
 }
