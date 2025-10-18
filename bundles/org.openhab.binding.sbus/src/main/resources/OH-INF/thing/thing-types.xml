@@ -36,13 +36,44 @@
 		</config-description>
 	</thing-type>
 
-	<!-- Temperature Device -->
+	<!-- Temperature Sensor Device -->
+	<thing-type id="temperature-sensor">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="udp"/>
+		</supported-bridge-type-refs>
+		<label>Temperature Sensor</label>
+		<description>Sbus temperature sensor</description>
+		<semantic-equipment-tag>TemperatureSensor</semantic-equipment-tag>
+		<config-description>
+			<parameter name="subnetId" type="integer">
+				<label>SubnetId</label>
+				<description>Slave subnet id. Can take any value between 1 and 255. 255 for broadcast.</description>
+				<default>1</default>
+				<options>
+					<option value="1">1</option>
+					<option value="255">255</option>
+				</options>
+			</parameter>
+			<parameter name="id" type="integer" required="true">
+				<label>Device ID</label>
+				<description>The ID of the Sbus device</description>
+			</parameter>
+			<parameter name="refresh" type="integer">
+				<label>Refresh Interval</label>
+				<description>Refresh interval in seconds</description>
+				<default>30</default>
+				<unitLabel>s</unitLabel>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- Temperature Device (Deprecated - use temperature-sensor instead) -->
 	<thing-type id="temperature">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="udp"/>
 		</supported-bridge-type-refs>
-		<label>Sbus Temperature Sensor</label>
-		<description>Sbus temperature sensor device</description>
+		<label>Sbus Temperature Sensor (Deprecated)</label>
+		<description>Sbus temperature sensor device (deprecated, use temperature-sensor instead)</description>
 		<semantic-equipment-tag>TemperatureSensor</semantic-equipment-tag>
 		<config-description>
 			<parameter name="subnetId" type="integer">

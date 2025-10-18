@@ -8,11 +8,12 @@ The binding supports various thing types including RGB/RGBW controllers, tempera
 
 - `udp` - Sbus Bridge for UDP communication
 - `rgbw` - RGB/RGBW Controllers for color and brightness control
-- `temperature` - Temperature Sensors for monitoring environmental conditions
+- `temperature-sensor` - Temperature Sensors for monitoring environmental conditions
 - `switch` - Switch Controllers for basic on/off and dimming control
 - `contact-sensor` - Contact Sensors for monitoring open/closed states (supports both 24Z and 9-in-1 sensor types)
 - `motion-sensor` - Motion Sensors for detecting movement
 - `lux-sensor` - Light Level Sensors for measuring illuminance
+- `temperature` - (Deprecated) Use `temperature-sensor` instead
 
 ## Discovery
 
@@ -125,16 +126,16 @@ Bridge sbus:udp:mybridge [ host="192.168.1.255", port=5000, timeout=5000 ] {
             Type switch-channel : power [ channelNumber=1 ]
     }
     
-    Thing temperature temp1 [ id=62, refresh=30 ] {
-        Channels:
-            Type temperature-channel : temperature [ channelNumber=1 ]
-    }
-    
     Thing switch switch1 [ id=75, refresh=30 ] {
         Channels:
             Type switch-channel : first_switch  [ channelNumber=1 ]
             Type dimmer-channel : second_switch [ channelNumber=2 ]
             Type paired-channel : third_switch [ channelNumber=3, pairedChannelNumber=4 ]
+    }
+    
+    Thing temperature-sensor temp1 [ id=62, refresh=30 ] {
+        Channels:
+            Type temperature-channel : temperature [ channelNumber=1 ]
     }
     
     Thing contact-sensor contact1 [ type="24z", id=80, refresh=30 ] {
@@ -159,7 +160,7 @@ Bridge sbus:udp:mybridge [ host="192.168.1.255", port=5000, timeout=5000 ] {
 
 ```java
 // Temperature Sensor
-Number:Temperature Temp_Sensor "Temperature [%.1f °C]" { channel="sbus:temperature:mybridge:temp1:temperature" }
+Number:Temperature Temp_Sensor "Temperature [%.1f °C]" { channel="sbus:temperature-sensor:mybridge:temp1:temperature" }
 
 // Basic Switch
 Switch Light_Switch "Switch" { channel="sbus:switch:mybridge:switch1:switch" }
