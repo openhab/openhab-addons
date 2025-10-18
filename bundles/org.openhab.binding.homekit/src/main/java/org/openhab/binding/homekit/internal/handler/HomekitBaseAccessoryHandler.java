@@ -1,0 +1,287 @@
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+package org.openhab.binding.homekit.internal.handler;
+
+import static org.openhab.binding.homekit.internal.HomekitBindingConstants.*;
+
+import java.nio.charset.StandardCharsets;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import org.bouncycastle.crypto.params.Ed25519PublicKeyParameters;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.homekit.internal.dto.Accessories;
+import org.openhab.binding.homekit.internal.dto.Accessory;
+import org.openhab.binding.homekit.internal.hap_services.CharacteristicReadWriteClient;
+import org.openhab.binding.homekit.internal.hap_services.PairRemoveClient;
+import org.openhab.binding.homekit.internal.hap_services.PairSetupClient;
+import org.openhab.binding.homekit.internal.hap_services.PairVerifyClient;
+import org.openhab.binding.homekit.internal.persistence.HomekitKeyStore;
+import org.openhab.binding.homekit.internal.persistence.HomekitTypeProvider;
+import org.openhab.binding.homekit.internal.transport.IpTransport;
+import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingUID;
+import org.openhab.core.thing.binding.BaseThingHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.gson.Gson;
+
+/**
+ * Handles I/O with HomeKit server devices -- either simple accessories or bridge accessories that
+ * contain child accessories. If the handler is for a HomeKit bridge or a stand alone HomeKit accessory
+ * device it performs the pairing and secure session setup. If the handler is for a HomeKit accessory
+ * that is part of a bridge, it uses the pairing and session from the bridge handler.
+ * Subclasses should override the handleCommand method to handle commands for specific channels.
+ *
+ * @author Andrew Fiddian-Green - Initial contribution
+ */
+@NonNullByDefault
+public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler {
+
+    protected static final Gson GSON = new Gson();
+
+    private final Logger logger = LoggerFactory.getLogger(HomekitBaseAccessoryHandler.class);
+
+    protected final Map<Integer, Accessory> accessories = new HashMap<>();
+    protected final HomekitTypeProvider typeProvider;
+    protected final HomekitKeyStore keyStore;
+
+    protected boolean isChildAccessory = false;
+
+    protected @NonNullByDefault({}) CharacteristicReadWriteClient rwService;
+    protected @NonNullByDefault({}) String pairingCode;
+    protected @NonNullByDefault({}) Integer accessoryId;
+    protected @NonNullByDefault({}) IpTransport ipTransport;
+
+    public HomekitBaseAccessoryHandler(Thing thing, HomekitTypeProvider typeProvider, HomekitKeyStore keyStore) {
+        super(thing);
+        this.typeProvider = typeProvider;
+        this.keyStore = keyStore;
+    }
+
+    @Override
+    public void dispose() {
+        if (!isChildAccessory) {
+            try {
+                ipTransport.close();
+            } catch (Exception e) {
+            }
+        }
+        super.dispose();
+    }
+
+    /**
+     * Get information about embedded accessories and their respective channels.
+     * Uses the /accessories endpoint.
+     * Returns an empty list if there was a problem.
+     * Requires a valid secure session.
+     *
+     * @return list of accessories (may be empty)
+     * @see <a href="https://datatracker.ietf.org/doc/html/draft-ietf-homekit-http">HomeKit HTTP</a>
+     */
+    private void fetchAccessories() {
+        try {
+            String json = new String(ipTransport.get(ENDPOINT_ACCESSORIES, CONTENT_TYPE_HAP), StandardCharsets.UTF_8);
+            Accessories acc0 = GSON.fromJson(json, Accessories.class);
+            if (acc0 instanceof Accessories acc1 && acc1.accessories instanceof List<Accessory> acc2) {
+                accessories.clear();
+                accessories.putAll(acc2.stream().filter(a -> Objects.nonNull(a.aid))
+                        .collect(Collectors.toMap(a -> a.aid, Function.identity())));
+            }
+            logger.debug("Fetched {} accessories", accessories.size());
+            scheduler.submit(() -> accessoriesLoaded()); // notify subclass in scheduler thread
+        } catch (Exception e) {
+            logger.debug("Failed to get accessories", e);
+        }
+    }
+
+    /**
+     * Called when the thing handler has been initialized, the pairing verified, and the accessories have been loaded.
+     * Subclasses override this to perform any processing required.
+     * This method is called in the context of a scheduler thread, to avoid blocking operations.
+     */
+    protected abstract void accessoriesLoaded();
+
+    /**
+     * Extracts the accessory ID from the 'Accessory UID' property.
+     *
+     * @return the accessory ID, or null if it cannot be determined
+     */
+    protected @Nullable Integer getAccessoryId() {
+        String accessoryUid = thing.getProperties().get(PROPERTY_ACCESSORY_UID);
+        if (accessoryUid != null) {
+            try {
+                return Integer.parseInt(new ThingUID(accessoryUid).getId());
+            } catch (NumberFormatException e) {
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public void handleRemoval() {
+        if (isChildAccessory) {
+            updateStatus(ThingStatus.REMOVED);
+        } else {
+            scheduler.submit(() -> {
+                // unpair and clear stored keys if this is NOT a child accessory
+                try {
+                    PairRemoveClient service = new PairRemoveClient(ipTransport, keyStore.getControllerUUID());
+                    service.remove();
+                    String mac = getThing().getProperties().get(Thing.PROPERTY_MAC_ADDRESS);
+                    if (mac != null) {
+                        keyStore.setAccessoryKey(mac, null);
+                    } else {
+                        logger.warn("Could not clear key for {} due to missing mac address", thing.getUID());
+                    }
+                    updateStatus(ThingStatus.REMOVED);
+                } catch (Exception e) {
+                    logger.warn("Failed to remove pairing for {}", thing.getUID());
+                }
+            });
+        }
+    }
+
+    @Override
+    public void initialize() {
+        Bridge bridge = getBridge();
+        if (bridge != null && bridge.getHandler() instanceof HomekitBridgeHandler bridgeHandler) {
+            // accessory is hosted by a bridge, so use bridge's pairing session and read/write service
+            isChildAccessory = true;
+            ipTransport = bridgeHandler.ipTransport;
+            rwService = bridgeHandler.rwService;
+            if (rwService != null) {
+                fetchAccessories();
+                updateStatus(ThingStatus.ONLINE);
+            } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Bridge is not connected");
+            }
+        } else {
+            // standalone accessory or bridge accessory, so do pairing and session setup here
+            isChildAccessory = false;
+            Object host = getConfig().get(CONFIG_HOST);
+            if (host == null || !(host instanceof String hostString) || !HOST_PATTERN.matcher(hostString).matches()) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Invalid host");
+                return;
+            }
+            try {
+                ipTransport = new IpTransport(hostString);
+            } catch (Exception e) {
+                logger.debug("Failed to create transport", e);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Failed to connect");
+                return;
+            }
+            scheduler.execute(() -> initializePairing()); // return fast, do pairing in background thread
+        }
+    }
+
+    /**
+     * Restores an existing pairing or creates a new one if necessary.
+     * Updates the thing status accordingly.
+     */
+    private void initializePairing() {
+        Object pairingConfig = getConfig().get(CONFIG_PAIRING_CODE);
+        if (pairingConfig == null || !(pairingConfig instanceof String pairingConfigString)
+                || !PAIRING_CODE_PATTERN.matcher(pairingConfigString).matches()) {
+            logger.debug("Pairing code must match XXX-XX-XXX or XXXX-XXXX or XXXXXXXX");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Invalid pairing code");
+            return;
+        }
+        pairingCode = normalizePairingCode(pairingConfigString);
+
+        accessoryId = getAccessoryId();
+        if (accessoryId == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Invalid accessory ID");
+            return;
+        }
+
+        final String macAddress = getThing().getProperties().get(Thing.PROPERTY_MAC_ADDRESS);
+        if (macAddress == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Missing MAC address");
+            return;
+        }
+
+        if (keyStore.getAccessoryKey(macAddress) != null) {
+            try {
+                logger.debug("Starting Pair-Verify with existing key for {}", thing.getUID());
+                PairVerifyClient client = new PairVerifyClient(ipTransport, keyStore.getControllerUUID(),
+                        keyStore.getControllerKey(), Objects.requireNonNull(keyStore.getAccessoryKey(macAddress)));
+
+                ipTransport.setSessionKeys(client.verify());
+                rwService = new CharacteristicReadWriteClient(ipTransport);
+
+                logger.debug("Restored pairing was verified for {}", thing.getUID());
+                fetchAccessories();
+                updateStatus(ThingStatus.ONLINE);
+
+                return;
+            } catch (Exception e) {
+                logger.debug("Restored pairing was not verified for {}", thing.getUID(), e);
+                keyStore.setAccessoryKey(macAddress, null);
+                // fall through to create new pairing
+            }
+        }
+
+        try {
+            logger.debug("Starting Pair-Setup for {}", thing.getUID());
+            PairSetupClient pairSetupClient = new PairSetupClient(ipTransport, keyStore.getControllerUUID(),
+                    keyStore.getControllerKey(), pairingCode);
+
+            Ed25519PublicKeyParameters accessoryKey = pairSetupClient.pair();
+            logger.debug("Pair-Setup completed; starting Pair-Verify for {}", thing.getUID());
+
+            // Perform Pair-Verify immediately after Pair-Setup
+            PairVerifyClient pairVerifyClient = new PairVerifyClient(ipTransport, keyStore.getControllerUUID(),
+                    keyStore.getControllerKey(), accessoryKey);
+
+            ipTransport.setSessionKeys(pairVerifyClient.verify());
+            rwService = new CharacteristicReadWriteClient(ipTransport);
+            keyStore.setAccessoryKey(macAddress, accessoryKey);
+
+            logger.debug("Pairing and verification completed for {}", thing.getUID());
+            fetchAccessories();
+            updateStatus(ThingStatus.ONLINE);
+
+        } catch (Exception e) {
+            logger.warn("Pairing / verification failed for {}", thing.getUID(), e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Pairing / verification failed");
+        }
+    }
+
+    public Collection<Accessory> getAccessories() {
+        return accessories.values();
+    }
+
+    /**
+     * Normalize XXX-XX-XXX or XXXX-XXXX or XXXXXXXX to XXX-XX-XXX
+     */
+    private String normalizePairingCode(String input) {
+        // remove all non-digit character formatting
+        String digits = input.replaceAll("\\D", "");
+        if (digits.length() != 8) {
+            throw new IllegalArgumentException("Input must contain exactly 8 digits");
+        }
+        // re-format as XXX-XX-XXX
+        return String.format("%s-%s-%s", digits.substring(0, 3), digits.substring(3, 5), digits.substring(5, 8));
+    }
+}
