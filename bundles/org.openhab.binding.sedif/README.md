@@ -4,8 +4,6 @@ This binding enables you to retrieve water consumption data for consumers in the
 
 It is based on the new Sedif - Eau Ile de France website : https://www.sedif.com/.
 
-![SedifWebSite](doc/sedifWebSite.png)
-
 ## Supported Things
 
 The binding supports two different types of things: the `gateway` bridge and the `meter`.
@@ -21,24 +19,20 @@ You will need to create an account prior to configuring your bridge.
 Go to the login page and click on the "Je crée mon espace" button:  
 https://connexion.leaudiledefrance.fr/s/login/
 
-
 After this, add your bridge and fill in your username and password.
 
-      | Parameter      | Description                                |
-      |----------------|--------------------------------------------|
-      | username       | Your Sedif platform username.              |
-      | password       | Your Sedif platform password.              |
+| Parameter      | Description                                |
+|----------------|--------------------------------------------|
+| username       | Your Sedif platform username.              |
+| password       | Your Sedif platform password.              |
 
-    ```java
-    Bridge sedif:gateway:local "Gateway" [username="testuser@test.fr", password="mypassword"]
-    ```
+```java
+Bridge sedif:gateway:local "Gateway" [username="testuser@test.fr", password="mypassword"]
+```
 
 ### Water Meter Discovery
 
 After creating the bridge, the binding will populate the inbox with meters registered in your Sedif account.
-
-![Discovery](doc/WaterMeterDiscovery.png)
-
 
 ### Meter Thing Configuration
 
@@ -46,19 +40,17 @@ To create a meter thing, you will need your contractId.
 You can find it on the Sedif website, under the section "Tous mes contrats".
 You will see a list where the first column labeled "Contrat" is the contractId.
 
-If you have multiple meter on the same contract, you will also need to get your(s) meterId.
-MeterId are displayed in the contract details pages. 
+If you have multiple meters on the same contract, you will also need to get your(s) meterId.
+MeterId is displayed at the contract details pages. 
 Just click on the contract number in the contract list, and you will have a detailled pages with a label Compteur n°D08MAxxxxxx.
 
-Note that you are not forced to create the meter manually.
-Once you create the gateway, generally the inbox will be populated automatically with all meter that are registered on you accounts.
+Note that you do not need to create the meter manually.
+Once you create the gateway, the inbox will be populated automatically with all meter's that are registered on your account.
 
-
-
-| Name            | Type    | Description                                           | Default | Required | Advanced |
-|-----------------|---------|-------------------------------------------------------|---------|----------|----------|
-| contractId      | text    | The identifier of your contract                       | N/A     | yes      | no       |
-| meterId         | text    | The identifier of the meter associate with this thing | N/A     | no       | no       |
+| Name            | Type    | Description                                             | Default | Required | Advanced |
+|-----------------|---------|---------------------------------------------------------|---------|----------|----------|
+| contractId      | text    | The identifier of your contract                         | N/A     | yes      | no       |
+| meterId         | text    | The identifier of the meter associated  with this thing | N/A     | no       | no       |
 
 ```java
 Thing sedif:meter:meter1 "Sedif Meter 1" (sedif:gateway:local)
@@ -69,17 +61,15 @@ Thing sedif:meter:meter1 "Sedif Meter 1" (sedif:gateway:local)
 
 ### Meter Thing Channels
 
-
 | Channel                                     | Type         | Read/Write | Description                              |
 |---------------------------------------------|--------------|------------|------------------------------------------|
 | base#mean-water-price                       | numeric      | R          | The water mean price                     |
-
 
 - The daily group will give consumtion information with day granularity
 
 | Channel                                     | Item type      | Read/Write | Description                              |
 |---------------------------------------------|----------------|------------|------------------------------------------|
-| daily-consumption#yesterday                 | Number:Volume  | R          | The yeasterday water consumption         |
+| daily-consumption#yesterday                 | Number:Volume  | R          | The water consumption from yesterday     |
 | daily-consumption#day-2                     | Number:Volume  | R          | The day-2 water consumption              |
 | daily-consumption#day-3                     | Number:Volume  | R          | The day-3 water consumption              |
 | daily-consumption#consumption               | Number:Volume  | R          | Timeseries for water consumption         |
@@ -88,8 +78,8 @@ Thing sedif:meter:meter1 "Sedif Meter 1" (sedif:gateway:local)
 
 | Channel                                     | Item type      | Read/Write | Description                              |
 |---------------------------------------------|----------------|------------|------------------------------------------|
-| weekly-consumption#thisWeek                 | Number:Volume  | R          | The current week water consumption       |
-| weekly-consumption#lastWeek                 | Number:Volume  | R          | The last week water consumption          |
+| weekly-consumption#this-week                | Number:Volume  | R          | The current week water consumption       |
+| weekly-consumption#last-week                | Number:Volume  | R          | The last week water consumption          |
 | weekly-consumption#week-2                   | Number:Volume  | R          | The week-2 water consumption             |
 | weekly-consumption#consumption              | Number:Volume  | R          | Timeseries for weekly water consumption  |
 
@@ -97,8 +87,8 @@ Thing sedif:meter:meter1 "Sedif Meter 1" (sedif:gateway:local)
 
 | Channel                                     | Item type      | Read/Write | Description                              |
 |---------------------------------------------|----------------|------------|------------------------------------------|
-| monthly-consumption#thisMonth               | Number:Volume  | R          | The current month water consumption      |
-| monthly-consumption#lastMonth               | Number:Volume  | R          | The last month water consumption         |
+| monthly-consumption#this-month              | Number:Volume  | R          | The current month water consumption      |
+| monthly-consumption#last-month              | Number:Volume  | R          | The last month water consumption         |
 | monthly-consumption#month-2                 | Number:Volume  | R          | The month-2 water consumption            |
 | monthly-consumption#consumption             | Number:Volume  | R          | Timeseries for monthly water consumption |
 
@@ -106,8 +96,8 @@ Thing sedif:meter:meter1 "Sedif Meter 1" (sedif:gateway:local)
 
 | Channel                                     | Item type      | Read/Write | Description                              |
 |---------------------------------------------|----------------|------------|------------------------------------------|
-| yearly-consumption#thisYear                 | Number:Volume  | R          | The current year water consumption       |
-| yearly-consumption#lastYear                 | Number:Volume  | R          | The last year water consumption          |
+| yearly-consumption#this-year                | Number:Volume  | R          | The current year water consumption       |
+| yearly-consumption#last-year                | Number:Volume  | R          | The last year water consumption          |
 | yearly-consumption#year-2                   | Number:Volume  | R          | The year-2 water consumption             |
 | yearly-consumption#consumption              | Number:Volume  | R          | Timeseries for yearly water consumption  |
 
@@ -117,11 +107,11 @@ Thing sedif:meter:meter1 "Sedif Meter 1" (sedif:gateway:local)
 Bridge sedif:gateway:local "GatewayBridge" [username="testuser@test.fr", password="mypassword"]
 
 Thing sedif:meter:meter1 "Meter 1" (sedif:gateway:local)
-	[  
+[  
 		contractId="907....", meterId="D08MA......"
-	]  
-    {
-    }
+]  
+{
+}
 
 
 Number:Volume ConsoDaily       "Daily Conso [%.0f %unit%]"      <energy> { channel="sedif:meter:meter1:daily-consumption#consumption"   }
@@ -155,7 +145,7 @@ For example, a weekly graph might look like this:
 Here's the code to produce the graph.
 Note that you bind your series to one of the timeseries channels: ConsoDaily, ConsoWeekly, ConsoMonthly, or ConsoYearly.
 
-```
+```yaml
 config:
   label: Sedif Conso Weekly -x Histo
   order: "10000000"
@@ -206,7 +196,7 @@ slots:
         gridIndex: 0
 ```
 
-### Historical Data Retrieve
+### Historic Data Retrieval
 
 The first time you launch this binding, it will send multiple requests to the Sedif website to retrieve historical data.
 This is done in 3-month chunks, from the end to the beginning of the contract.
@@ -218,19 +208,18 @@ On subsequent runs, the binding only retrieves the most recent data and refreshe
 
 If something goes wrong, you can delete the sedif.json file to start fresh.
 
-
-### Multiple Contract
+### Multiple Contracts
 
 You may have multiple contracts on your Sedif account:
 
 Multiple properties with different meters:
-In this case, simply create as many sedif things as you have separate contracts.
+If this is the case, simply create one Sedif thing for each separate contract.
 
 Contract change on the same meter:
-In this case, you may have two contracts for the same meter.
-Create only one sedif thing and follow this process:
+Sometimes, you might have two contracts for the same meter. In this scenario, create only one Sedif thing and follow these steps:
 
-- Set the contractId to the older contract and let the binding retrieve the full historical data.
-- Then change the contractId to the new contract, and restart OpenHAB.
+Set the contractId to the older contract and let the binding retrieve the full historical data.
 
-This way, you will maintain the full history of the meter.
+Then, update the contractId to the new contract and restart OpenHAB.
+
+By following this process, you will preserve the full history of the meter.

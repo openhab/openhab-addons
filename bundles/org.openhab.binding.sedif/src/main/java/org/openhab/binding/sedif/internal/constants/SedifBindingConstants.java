@@ -55,16 +55,16 @@ public class SedifBindingConstants {
     public static final String CHANNEL_DAILY_DAY_MINUS_2_CONSUMPTION = "day-2";
     public static final String CHANNEL_DAILY_DAY_MINUS_3_CONSUMPTION = "day-3";
 
-    public static final String CHANNEL_WEEKLY_THIS_WEEK_CONSUMPTION = "thisWeek";
-    public static final String CHANNEL_WEEKLY_LAST_WEEK_CONSUMPTION = "lastWeek";
+    public static final String CHANNEL_WEEKLY_THIS_WEEK_CONSUMPTION = "this-week";
+    public static final String CHANNEL_WEEKLY_LAST_WEEK_CONSUMPTION = "last-week";
     public static final String CHANNEL_WEEKLY_WEEK_MINUS_2_CONSUMPTION = "week-2";
 
-    public static final String CHANNEL_MONTHLY_THIS_MONTH_CONSUMPTION = "thisMonth";
-    public static final String CHANNEL_MONTHLY_LAST_MONTH_CONSUMPTION = "lastMonth";
+    public static final String CHANNEL_MONTHLY_THIS_MONTH_CONSUMPTION = "this-month";
+    public static final String CHANNEL_MONTHLY_LAST_MONTH_CONSUMPTION = "last-month";
     public static final String CHANNEL_MONTHLY_MONTH_MINUS_2_CONSUMPTION = "month-2";
 
-    public static final String CHANNEL_YEARLY_THIS_YEAR_CONSUMPTION = "thisYear";
-    public static final String CHANNEL_YEARLY_LAST_YEAR_CONSUMPTION = "lastYear";
+    public static final String CHANNEL_YEARLY_THIS_YEAR_CONSUMPTION = "this-year";
+    public static final String CHANNEL_YEARLY_LAST_YEAR_CONSUMPTION = "last-year";
     public static final String CHANNEL_YEARLY_YEAR_MINUS_2_CONSUMPTION = "year-2";
 
     public static final String CHANNEL_PRIX_MOYEN_EAU = "mean-water-price";

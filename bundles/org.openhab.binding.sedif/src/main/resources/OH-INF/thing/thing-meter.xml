@@ -10,6 +10,7 @@
 		</supported-bridge-type-refs>
 
 		<label>Meter</label>
+		<semantic-equipment-tag>WaterMeter</semantic-equipment-tag>
 		<description>
 			Act as a gateway between a Meter and your Sedif web account.
 			In order to receive the data, you must

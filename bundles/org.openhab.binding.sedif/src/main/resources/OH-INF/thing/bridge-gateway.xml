@@ -6,10 +6,11 @@
 
 	<bridge-type id="gateway">
 		<label>Sedif Web Bridge</label>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
+		
 		<description>
 			Provides your water consumption data.
 			In order to receive the data, you must activate your account at ...
-
 		</description>
 
 		<config-description>
@@ -25,5 +26,4 @@
 			</parameter>
 		</config-description>
 	</bridge-type>
-
 </thing:thing-descriptions>

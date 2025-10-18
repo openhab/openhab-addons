@@ -8,6 +8,10 @@
 		<item-type>Number</item-type>
 		<label>Numeric Type Consumption</label>
 		<state readOnly="true" pattern="%.0f"/>
+        <tags>
+            <tag>Measurement</tag>
+            <tag>Water</tag>
+        </tags>
 	</channel-type>
 
 	<channel-type id="consumption">
@@ -16,5 +20,9 @@
 		<description>Consumption at given time interval</description>
 		<category>flow</category>
 		<state readOnly="true" pattern="%.3f %unit%"/>
+		<tags>
+            <tag>Measurement</tag>
+            <tag>Water</tag>
+        </tags>
 	</channel-type>
 </thing:thing-descriptions>

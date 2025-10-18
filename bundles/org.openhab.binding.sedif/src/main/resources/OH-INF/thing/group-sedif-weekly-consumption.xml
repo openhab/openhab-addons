@@ -7,10 +7,10 @@
 	<channel-group-type id="weekly-consumption">
 		<label>Weekly Consumption</label>
 		<channels>
-			<channel id="thisWeek" typeId="consumption">
+			<channel id="this-week" typeId="consumption">
 				<label>This Week Consumption</label>
 			</channel>
-			<channel id="lastWeek" typeId="consumption">
+			<channel id="last-week" typeId="consumption">
 				<label>Last Week Consumption</label>
 			</channel>
 			<channel id="week-2" typeId="consumption">

@@ -27,6 +27,6 @@ public class SedifBridgeConfiguration extends Configuration {
     public String password = "";
 
     public boolean seemsValid() {
-        return !(username.isBlank() || password.isBlank());
+        return !username.isBlank() && !password.isBlank();
     }
 }
