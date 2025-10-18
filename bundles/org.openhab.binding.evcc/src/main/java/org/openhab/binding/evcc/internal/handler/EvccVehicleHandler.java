@@ -66,9 +66,9 @@ public class EvccVehicleHandler extends EvccBaseThingHandler {
     }
 
     @Override
-    public void updateFromEvccState(JsonObject state) {
-        state = state.getAsJsonObject(JSON_MEMBER_VEHICLES).getAsJsonObject(vehicleId);
-        super.updateFromEvccState(state);
+    public void prepareApiResponseForChannelStateUpdate(JsonObject state) {
+        state = state.getAsJsonObject(JSON_KEY_VEHICLES).getAsJsonObject(vehicleId);
+        updateStatesFromApiResponse(state);
     }
 
     @Override
@@ -76,20 +76,20 @@ public class EvccVehicleHandler extends EvccBaseThingHandler {
         super.initialize();
         Optional.ofNullable(bridgeHandler).ifPresent(handler -> {
             endpoint = handler.getBaseURL() + API_PATH_VEHICLES;
-            JsonObject stateOpt = handler.getCachedEvccState();
+            JsonObject stateOpt = handler.getCachedEvccState().deepCopy();
             if (stateOpt.isEmpty()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
                 return;
             }
 
-            JsonObject state = stateOpt.getAsJsonObject(JSON_MEMBER_VEHICLES).getAsJsonObject(vehicleId);
+            JsonObject state = stateOpt.getAsJsonObject(JSON_KEY_VEHICLES).getAsJsonObject(vehicleId);
             commonInitialize(state);
         });
     }
 
     @Override
     public JsonObject getStateFromCachedState(JsonObject state) {
-        return state.has(JSON_MEMBER_VEHICLES) ? state.getAsJsonObject(JSON_MEMBER_VEHICLES).getAsJsonObject(vehicleId)
+        return state.has(JSON_KEY_VEHICLES) ? state.getAsJsonObject(JSON_KEY_VEHICLES).getAsJsonObject(vehicleId)
                 : new JsonObject();
     }
 }
