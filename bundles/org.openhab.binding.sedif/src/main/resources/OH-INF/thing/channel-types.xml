@@ -4,9 +4,9 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<channel-type id="numeric">
-		<item-type>Number</item-type>
-		<label>Numeric Type Consumption</label>
+	<channel-type id="water-price">
+		<item-type>Number:EnergyPrice</item-type>
+		<label>Water Energy Price</label>
 		<tags>
 			<tag>Status</tag>
 			<tag>Timestamp</tag>
