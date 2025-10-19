@@ -10,7 +10,7 @@ The binding supports various thing types including RGB/RGBW controllers, tempera
 - `rgbw` - RGB/RGBW Controllers for color and brightness control
 - `temperature-sensor` - Temperature Sensors for monitoring environmental conditions
 - `switch` - Switch Controllers for basic on/off and dimming control
-- `contact-sensor` - Contact Sensors for monitoring open/closed states (supports both 24Z and 9-in-1 sensor types)
+- `contact-sensor` - Contact Sensors for monitoring open/closed states (supports both 012C and DB00 sensor types)
 - `motion-sensor` - Motion Sensors for detecting movement
 - `lux-sensor` - Light Level Sensors for measuring illuminance
 - `temperature` - (Deprecated) Use `temperature-sensor` instead
@@ -54,7 +54,7 @@ The `contact-sensor` thing type has an additional `type` parameter:
 
 | Name    | Type    | Description                                          | Default | Required | Advanced  |
 |:--------|:--------|:-----------------------------------------------------|:-------:|:--------:|:---------:|
-| type    | text    | Sensor type: `24z` (traditional) or `9in1` (9-in-1 sensor) | 24z     | no       | no        |
+| type    | text    | Sensor type: `012c` (dry contact) or `db00` (multi-sensor) | 012c    | no       | no        |
 
 **Listen-Only Mode:** Setting `refresh=0` enables listen-only mode where the binding only processes broadcast messages without actively polling. This is useful for sensors that automatically broadcast their status updates.
 
@@ -138,7 +138,7 @@ Bridge sbus:udp:mybridge [ host="192.168.1.255", port=5000, timeout=5000 ] {
             Type temperature-channel : temperature [ channelNumber=1 ]
     }
     
-    Thing contact-sensor contact1 [ type="24z", id=80, refresh=30 ] {
+    Thing contact-sensor contact1 [ type="012c", id=80, refresh=30 ] {
         Channels:
             Type contact-channel : contact [ channelNumber=1 ]
     }
@@ -173,34 +173,14 @@ Group   gLight      "RGBW Light"    <light>     ["Lighting"]
 Color   rgbwColor    "Color"        <colorwheel> (gLight)   ["Control", "Light"]    { channel="sbus:rgbw:mybridge:colorctrl:color" }
 Switch  rgbwPower    "Power"        <switch>     (gLight)   ["Switch", "Light"]     { channel="sbus:rgbw:mybridge:colorctrl:power" }
 
-Contact Door_Contact "Door [%s]" <door> { channel="sbus:contact-sensor:mybridge:contact1:contact" }
+// Contact Sensor
+Contact Contact_Sensor "Contact [%s]" <contact> { channel="sbus:contact-sensor:mybridge:contact1:contact" }
 
+// Motion Sensor
 Switch Motion_Sensor "Motion [%s]" <motion> { channel="sbus:motion-sensor:mybridge:sensor_motion:motion" }
 
+// Lux Sensor
 Number Lux_Sensor "Light Level [%.0f lux]" <sun> { channel="sbus:lux-sensor:mybridge:sensor_lux:lux" }
-```
-
-### Sitemap Configuration
-
-```perl
-sitemap sbus label="Sbus Demo"
-{
-    Frame label="Sbus Controls" {
-        Colorpicker item=rgbwColor
-        Switch item=rgbwPower
-        Text item=Temp_Sensor
-        Switch item=Light_Switch
-        Rollershutter item=Rollershutter_Switch
-    }
-    
-    Frame label="Sensors" {
-        Text item=Door_Contact
-        Text item=Sensor_Contact1
-        Text item=Sensor_Contact2
-        Text item=Motion_Sensor
-        Text item=Lux_Sensor
-    }
-}
 ```
 
 ## Usage Notes
@@ -209,7 +189,7 @@ sitemap sbus label="Sbus Demo"
 
 9-in-1 sensors are multi-function sensors that combine motion detection, light level measurement, and dry contact monitoring in a single physical unit. To configure a 9-in-1 sensor in openHAB, you need to create **three separate things** that all reference the same physical sensor:
 
-1. **contact-sensor** (type: `9in1`) - For dry contact channels
+1. **contact-sensor** (type: `db00`) - For dry contact channels
 2. **motion-sensor** - For motion detection
 3. **lux-sensor** - For light level sensing
 
@@ -218,7 +198,7 @@ All three things must use the **same subnet ID and unit ID** to represent the sa
 **Example for a 9-in-1 sensor with ID 85:**
 
 ```java
-Thing contact-sensor sensor_contact [ type="9in1", id=85, refresh=0 ] {
+Thing contact-sensor sensor_contact [ type="db00", id=85, refresh=0 ] {
     Channels:
         Type contact-channel : contact1 [ channelNumber=1 ]
         Type contact-channel : contact2 [ channelNumber=2 ]
@@ -245,8 +225,8 @@ Thing lux-sensor sensor_lux [ id=85, refresh=0 ] {
 
 The `contact-sensor` thing type supports two different sensor types via the `type` parameter:
 
-- **`24z`** (default): Traditional 24Z contact sensors 
-- **`9in1`**: 9-in-1 sensor dry contacts 
+- **`012c`** (default): 012C dry contact sensors 
+- **`db00`**: DB00 multi-sensor dry contacts 
 
 Choose the appropriate type based on your hardware.
 

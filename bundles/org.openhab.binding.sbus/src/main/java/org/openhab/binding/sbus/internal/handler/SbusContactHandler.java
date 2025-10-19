@@ -27,7 +27,6 @@ import org.slf4j.LoggerFactory;
 
 import ro.ciprianpascu.sbus.msg.ReadDryChannelsRequest;
 import ro.ciprianpascu.sbus.msg.ReadDryChannelsResponse;
-import ro.ciprianpascu.sbus.msg.ReadStatusChannelsResponse;
 import ro.ciprianpascu.sbus.msg.SbusResponse;
 import ro.ciprianpascu.sbus.procimg.InputRegister;
 
@@ -110,11 +109,7 @@ public class SbusContactHandler extends AbstractSbusHandler {
                     "Unexpected response type: " + (response != null ? response.getClass().getSimpleName() : "null"));
         }
 
-        InputRegister[] registers = statusResponse.getRegisters();
-        boolean[] contactStates = new boolean[registers.length];
-        for (int i = 0; i < registers.length; i++) {
-            contactStates[i] = (registers[i].getValue() & 0xff) > 0; // Convert to boolean
-        }
+        boolean[] contactStates = extractContactStatuses(statusResponse);
         return contactStates;
     }
 
@@ -123,7 +118,7 @@ public class SbusContactHandler extends AbstractSbusHandler {
     @Override
     protected void processAsyncMessage(SbusResponse response) {
         try {
-            if (response instanceof ReadStatusChannelsResponse statusResponse) {
+            if (response instanceof ReadDryChannelsResponse statusResponse) {
                 // Process status channel response using existing logic
                 boolean[] statuses = extractContactStatuses(statusResponse);
                 updateChannelStatesFromStatuses(statuses);
@@ -138,7 +133,7 @@ public class SbusContactHandler extends AbstractSbusHandler {
 
     @Override
     protected boolean isMessageRelevant(SbusResponse response) {
-        if (response instanceof ReadStatusChannelsResponse) {
+        if (response instanceof ReadDryChannelsResponse) {
             // Traditional contact sensor messages
             SbusDeviceConfig config = getConfigAs(SbusDeviceConfig.class);
             return response.getSubnetID() == config.subnetId && response.getUnitID() == config.id;
@@ -165,10 +160,10 @@ public class SbusContactHandler extends AbstractSbusHandler {
     }
 
     /**
-     * Extract contact status values from ReadStatusChannelsResponse.
+     * Extract contact status values from ReadDryChannelsResponse.
      * Reuses existing logic from readContactStatusChannels method.
      */
-    private boolean[] extractContactStatuses(ReadStatusChannelsResponse response) {
+    private boolean[] extractContactStatuses(ReadDryChannelsResponse response) {
         InputRegister[] registers = response.getRegisters();
         boolean[] statuses = new boolean[registers.length];
 

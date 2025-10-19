@@ -22,14 +22,14 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public enum ContactSensorType {
     /**
-     * Traditional 24Z contact sensor using ReadDryChannelsRequest/Response protocol
+     * 012C dry contact sensor using ReadDryChannelsRequest/Response protocol
      */
-    SENSOR_24Z("24z"),
+    SENSOR_012C("012c"),
 
     /**
-     * 9-in-1 sensor with dry contacts using ReadNineInOneStatusRequest/Response protocol
+     * DB00 multi-sensor with dry contacts using ReadNineInOneStatusRequest/Response protocol
      */
-    NINE_IN_ONE("9in1");
+    MULTI_SENSOR_DB00("db00");
 
     private final String configValue;
 
@@ -58,6 +58,6 @@ public enum ContactSensorType {
                 return type;
             }
         }
-        return SENSOR_24Z; // Default to 24Z for backward compatibility or null values
+        return SENSOR_012C; // Default to 012C for backward compatibility or null values
     }
 }

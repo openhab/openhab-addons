@@ -96,11 +96,11 @@ public class Sbus9in1ContactHandler extends AbstractSbusHandler {
                 updateStatus(ThingStatus.ONLINE);
                 logger.debug("Processed async motion sensor status report for 9-in-1 contact handler {}",
                         getThing().getUID());
-            } else if (response instanceof ReadNineInOneStatusResponse statusResponse) {
-                // Process 9-in-1 status response
-                updateContactChannelsFromResponse(statusResponse);
-                updateStatus(ThingStatus.ONLINE);
-                logger.debug("Processed async 9-in-1 status response for contact handler {}", getThing().getUID());
+                // } else if (response instanceof ReadNineInOneStatusResponse statusResponse) {
+                // // Process 9-in-1 status response
+                // updateContactChannelsFromResponse(statusResponse);
+                // updateStatus(ThingStatus.ONLINE);
+                // logger.debug("Processed async 9-in-1 status response for contact handler {}", getThing().getUID());
             }
         } catch (IllegalStateException | IllegalArgumentException e) {
             logger.warn("Error processing async message in 9-in-1 contact handler {}: {}", getThing().getUID(),

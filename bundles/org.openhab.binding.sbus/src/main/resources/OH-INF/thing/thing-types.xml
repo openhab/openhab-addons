@@ -142,10 +142,10 @@
 				<label>Device Type</label>
 				<description>Type of contact sensor device</description>
 				<options>
-					<option value="24z">24Z (Traditional)</option>
-					<option value="9in1">9-in-1 Sensor</option>
+					<option value="012c">012C (Dry Contact Sensor)</option>
+					<option value="db00">DB00 (Multi-Sensor)</option>
 				</options>
-				<default>24z</default>
+				<default>012c</default>
 			</parameter>
 			<parameter name="subnetId" type="integer">
 				<label>SubnetId</label>
@@ -373,9 +373,10 @@
 		</tags>
 		<state readOnly="true"/>
 		<config-description>
-			<parameter name="channelNumber" type="integer" required="true">
+			<parameter name="channelNumber" type="integer">
 				<label>Channel Number</label>
 				<description>The physical channel number on the Sbus device</description>
+				<default>1</default>
 			</parameter>
 		</config-description>
 	</channel-type>
@@ -391,9 +392,10 @@
 		</tags>
 		<state readOnly="true" pattern="%.0f lux"/>
 		<config-description>
-			<parameter name="channelNumber" type="integer" required="true">
+			<parameter name="channelNumber" type="integer">
 				<label>Channel Number</label>
 				<description>The physical channel number on the Sbus device</description>
+				<default>1</default>
 			</parameter>
 		</config-description>
 	</channel-type>

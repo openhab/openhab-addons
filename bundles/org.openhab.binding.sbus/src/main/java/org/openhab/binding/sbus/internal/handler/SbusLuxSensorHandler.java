@@ -15,8 +15,10 @@ package org.openhab.binding.sbus.internal.handler;
 import org.eclipse.jdt.annotation.NonNull;
 import org.openhab.binding.sbus.BindingConstants;
 import org.openhab.binding.sbus.internal.SbusService;
+import org.openhab.binding.sbus.internal.config.SbusChannelConfig;
 import org.openhab.binding.sbus.internal.config.SbusDeviceConfig;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -48,8 +50,14 @@ public class SbusLuxSensorHandler extends AbstractSbusHandler {
 
     @Override
     protected void initializeChannels() {
-        // Create lux channel
-        createChannel(BindingConstants.CHANNEL_LUX, BindingConstants.CHANNEL_TYPE_LUX);
+        // Get all channel configurations from the thing
+        for (Channel channel : getThing().getChannels()) {
+            // Channels are already defined in thing-types.xml, just validate their configuration
+            SbusChannelConfig channelConfig = channel.getConfiguration().as(SbusChannelConfig.class);
+            if (channelConfig.channelNumber <= 0) {
+                logger.warn("Channel {} has invalid channel number configuration", channel.getUID());
+            }
+        }
     }
 
     @Override
@@ -81,12 +89,18 @@ public class SbusLuxSensorHandler extends AbstractSbusHandler {
      * @param response the sensor response containing lux data
      */
     private void updateChannelStatesFromResponse(ReadNineInOneStatusResponse response) {
-        // Update lux channel (byte 2: LUX value)
+        // Update lux channel (byte 2: LUX value - one byte unsigned, 0-255 range)
+        // Shift 8-bit value to 16-bit range, then normalize to 0-100%
         ChannelUID luxChannelUID = new ChannelUID(getThing().getUID(), BindingConstants.CHANNEL_LUX);
-        DecimalType luxValue = new DecimalType(response.getLuxValue());
+        int luxValueSigned = response.getLuxValue();
+        int luxValue8bit = luxValueSigned & 0xFF; // Convert to unsigned 8-bit value (0-255)
+        int luxValue16bit = luxValue8bit << 8; // Shift to 16-bit range (0-65280)
+        int luxPercentage = (luxValue16bit * 100) / 65535; // Normalize to 0-100%
+        DecimalType luxValue = new DecimalType(luxPercentage);
         updateState(luxChannelUID, luxValue);
 
-        logger.debug("Updated lux sensor state - LUX: {}", luxValue);
+        logger.debug("Updated lux sensor state - LUX: {}% (8-bit: {}, 16-bit: {}, raw: {})", luxPercentage,
+                luxValue8bit, luxValue16bit, luxValueSigned);
     }
 
     /**
@@ -95,12 +109,17 @@ public class SbusLuxSensorHandler extends AbstractSbusHandler {
      * @param report the motion sensor status report containing lux data
      */
     private void updateChannelStatesFromReport(MotionSensorStatusReport report) {
-        // Update lux channel (bytes 6-7: LUX value as 2-byte value)
+        // Update lux channel (bytes 6-7: LUX value - two bytes unsigned, 0-65535 range)
+        // Normalize to 0-100%
         ChannelUID luxChannelUID = new ChannelUID(getThing().getUID(), BindingConstants.CHANNEL_LUX);
-        DecimalType luxValue = new DecimalType(report.getLuxValue());
+        int luxValueSigned = report.getLuxValue();
+        int luxValue16bit = luxValueSigned & 0xFFFF; // Convert to unsigned 16-bit value (0-65535)
+        int luxPercentage = (luxValue16bit * 100) / 65535; // Normalize to 0-100%
+        DecimalType luxValue = new DecimalType(luxPercentage);
         updateState(luxChannelUID, luxValue);
 
-        logger.debug("Updated lux sensor state from report - LUX: {}", luxValue);
+        logger.debug("Updated lux sensor state from report - LUX: {}% (16-bit: {}, raw: {})", luxPercentage,
+                luxValue16bit, luxValueSigned);
     }
 
     @Override
@@ -143,11 +162,11 @@ public class SbusLuxSensorHandler extends AbstractSbusHandler {
                 updateChannelStatesFromReport(report);
                 updateStatus(ThingStatus.ONLINE);
                 logger.debug("Processed async motion sensor status report for lux handler {}", getThing().getUID());
-            } else if (response instanceof ReadNineInOneStatusResponse statusResponse) {
-                // Process 9-in-1 status response (0xDB01)
-                updateChannelStatesFromResponse(statusResponse);
-                updateStatus(ThingStatus.ONLINE);
-                logger.debug("Processed async 9-in-1 status response for lux handler {}", getThing().getUID());
+                // } else if (response instanceof ReadNineInOneStatusResponse statusResponse) {
+                // // Process 9-in-1 status response (0xDB01)
+                // updateChannelStatesFromResponse(statusResponse);
+                // updateStatus(ThingStatus.ONLINE);
+                // logger.debug("Processed async 9-in-1 status response for lux handler {}", getThing().getUID());
             }
         } catch (IllegalStateException | IllegalArgumentException e) {
             logger.warn("Error processing async message in lux sensor handler {}: {}", getThing().getUID(),

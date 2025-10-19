@@ -15,8 +15,10 @@ package org.openhab.binding.sbus.internal.handler;
 import org.eclipse.jdt.annotation.NonNull;
 import org.openhab.binding.sbus.BindingConstants;
 import org.openhab.binding.sbus.internal.SbusService;
+import org.openhab.binding.sbus.internal.config.SbusChannelConfig;
 import org.openhab.binding.sbus.internal.config.SbusDeviceConfig;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -48,8 +50,14 @@ public class SbusMotionSensorHandler extends AbstractSbusHandler {
 
     @Override
     protected void initializeChannels() {
-        // Create motion channel - this handler focuses only on motion detection
-        createChannel(BindingConstants.CHANNEL_MOTION, BindingConstants.CHANNEL_TYPE_MOTION);
+        // Get all channel configurations from the thing
+        for (Channel channel : getThing().getChannels()) {
+            // Channels are already defined in thing-types.xml, just validate their configuration
+            SbusChannelConfig channelConfig = channel.getConfiguration().as(SbusChannelConfig.class);
+            if (channelConfig.channelNumber <= 0) {
+                logger.warn("Channel {} has invalid channel number configuration", channel.getUID());
+            }
+        }
     }
 
     @Override
@@ -143,11 +151,11 @@ public class SbusMotionSensorHandler extends AbstractSbusHandler {
                 updateChannelStatesFromReport(report);
                 updateStatus(ThingStatus.ONLINE);
                 logger.debug("Processed async motion sensor status report for handler {}", getThing().getUID());
-            } else if (response instanceof ReadNineInOneStatusResponse statusResponse) {
-                // Process 9-in-1 status response (0xDB01)
-                updateChannelStatesFromResponse(statusResponse);
-                updateStatus(ThingStatus.ONLINE);
-                logger.debug("Processed async 9-in-1 status response for handler {}", getThing().getUID());
+                // } else if (response instanceof ReadNineInOneStatusResponse statusResponse) {
+                // // Process 9-in-1 status response (0xDB01)
+                // updateChannelStatesFromResponse(statusResponse);
+                // updateStatus(ThingStatus.ONLINE);
+                // logger.debug("Processed async 9-in-1 status response for handler {}", getThing().getUID());
             }
         } catch (IllegalStateException | IllegalArgumentException e) {
             logger.warn("Error processing async message in motion sensor handler {}: {}", getThing().getUID(),
