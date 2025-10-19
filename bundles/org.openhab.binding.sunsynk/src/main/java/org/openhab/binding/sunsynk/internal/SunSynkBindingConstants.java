@@ -70,6 +70,8 @@ public class SunSynkBindingConstants {
     public static final String CHANNEL_INVERTER_GRID_POWER = "inverter-grid-power";
     public static final String CHANNEL_INVERTER_GRID_VOLTAGE = "inverter-grid-voltage";
     public static final String CHANNEL_INVERTER_GRID_CURRENT = "inverter-grid-current";
+    public static final String CHANNEL_INVERTER_GRID_FREQUENCY = "inverter-grid-frequency";
+    public static final String CHANNEL_INVERTER_CAPACITY = "inverter-capacity";
 
     public static final String CHANNEL_INVERTER_AC_TEMPERATURE = "inverter-ac-temperature";
     public static final String CHANNEL_INVERTER_DC_TEMPERATURE = "inverter-dc-temperature";
@@ -81,8 +83,17 @@ public class SunSynkBindingConstants {
     public static final String CHANNEL_BATTERY_TEMPERATURE = "battery-temperature";
 
     public static final String CHANNEL_INVERTER_SOLAR_ENERGY_TODAY = "inverter-solar-energy-today";
+    public static final String CHANNEL_INVERTER_SOLAR_ENERGY_MONTH = "inverter-solar-energy-month";
+    public static final String CHANNEL_INVERTER_SOLAR_ENERGY_YEAR = "inverter-solar-energy-year";
     public static final String CHANNEL_INVERTER_SOLAR_ENERGY_TOTAL = "inverter-solar-energy-total";
-    public static final String CHANNEL_INVERTER_SOLAR_POWER_NOW = "inverter-solar-power-now";
+    public static final String CHANNEL_INVERTER_SOLAR_EFFICIENCY = "inverter-solar-efficiency";
+    public static final String CHANNEL_INVERTER_SOLAR_POWER = "inverter-solar-ac-power";
+    public static final String CHANNEL_INVERTER_SOLAR_STRING_VOLTAGE_1 = "inverter-solar-string-voltage-1";
+    public static final String CHANNEL_INVERTER_SOLAR_STRING_VOLTAGE_2 = "inverter-solar-string-voltage-2";
+    public static final String CHANNEL_INVERTER_SOLAR_STRING_CURRENT_1 = "inverter-solar-string-current-1";
+    public static final String CHANNEL_INVERTER_SOLAR_STRING_CURRENT_2 = "inverter-solar-string-current-2";
+    public static final String CHANNEL_INVERTER_SOLAR_STRING_POWER_1 = "inverter-solar-string-power-1";
+    public static final String CHANNEL_INVERTER_SOLAR_STRING_POWER_2 = "inverter-solar-string-power-2";
 
     public static final String CHANNEL_INVERTER_CONTROL_TIMER = "inverter-control-timer";
     public static final String CHANNEL_INVERTER_CONTROL_ENERGY_PATTERN = "inverter-control-energy-pattern";
@@ -92,4 +103,6 @@ public class SunSynkBindingConstants {
     public static final String CONFIG_GATE_SERIAL = "gsn";
     public static final String CONFIG_SERIAL = "serialnumber";
     public static final String CONFIG_NAME = "alias";
+    public static final String CONFIG_PLANT_ID = "plantId";
+    public static final String CONFIG_PLANT_NAME = "plantName";
 }

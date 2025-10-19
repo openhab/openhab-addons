@@ -17,7 +17,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 /**
  * The {@link Battery} is the internal class for battery information
  * from a Sun Synk Connect Account.
- * Currently only Lithium SunSynk batteries are known to work.
+ * Currently only Lithium Sun Synk batteries are known to work.
  * 
  * @author Lee Charlton - Initial contribution
  */
@@ -89,6 +89,14 @@ public class Battery {
         private String batt2Factory = "";
     }
 
+    public int getCode() {
+        return this.code;
+    }
+
+    public String getMsg() {
+        return this.msg;
+    }
+
     public double getBatteryVoltage() {
         return this.data.voltage;
     }
@@ -114,6 +122,6 @@ public class Battery {
     }
 
     public String toString() {
-        return "Content [code=" + code + ", msg=" + msg + "sucess=" + success + ", data=" + data + "]";
+        return "Content [code=" + code + ", msg=" + msg + "success=" + success + ", data=" + data + "]";
     }
 }

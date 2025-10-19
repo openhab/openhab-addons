@@ -84,9 +84,12 @@ public class AccountController {
     public void refreshAccount(String username) throws SunSynkAuthenticateException, SunSynkTokenException {
         Long expiresIn = this.sunAccount.getExpiresIn();
         Long issuedAt = this.sunAccount.getIssuedAt();
-        if ((issuedAt + expiresIn) - Instant.now().getEpochSecond() > 30) { // > 30 seconds
+        if ((issuedAt + expiresIn) - Instant.now().getEpochSecond() > 100) { // > 100 seconds
             logger.debug("Account configuration token not expired.");
             return;
+        }
+        if (this.sunAccount.getRefreshTokenString().isEmpty()) {
+            throw new SunSynkTokenException("No refresh token available, re-authentication required.");
         }
         logger.debug("Account configuration token expired : {}", this.sunAccount.getData().toString());
         String payload = makeRefreshBody(username, this.sunAccount.getRefreshTokenString());
@@ -110,21 +113,21 @@ public class AccountController {
             Client client = gson.fromJson(response, Client.class);
             if (client == null) {
                 throw new SunSynkAuthenticateException(
-                        "Sun Synk Account could not be authenticated: Try re-enabling account");
+                        "Sun Synk account could not be authenticated: Try re-enabling account");
             }
             this.sunAccount = client;
         } catch (IOException | JsonSyntaxException e) {
-            throw new SunSynkAuthenticateException("Sun Synk Account could not be authenticated", e);
+            throw new SunSynkAuthenticateException("Sun Synk account could not be authenticated", e);
         }
         if (this.sunAccount.getCode() == 102) {
-            logger.debug("Sun Synk Account could not be authenticated: {}.", this.sunAccount.getMsg());
+            logger.debug("Sun Synk account could not be authenticated: {}.", this.sunAccount.getMsg());
             throw new SunSynkAuthenticateException(
-                    "Sun Synk Accountfailed to authenticate: Check your password or email.");
+                    "Sun Synk account failed to authenticate: Check your password or email.");
         }
         if (this.sunAccount.getStatus() == 404) {
-            logger.debug("Sun Synk Account could not be authenticated: 404 {} {}.", this.sunAccount.getError(),
+            logger.debug("Sun Synk account could not be authenticated: 404 {} {}.", this.sunAccount.getError(),
                     this.sunAccount.getPath());
-            throw new SunSynkAuthenticateException("Sun Synk Accountfailed to authenticate: 404 Not Found.");
+            throw new SunSynkAuthenticateException("Sun Synk account failed to authenticate: 404 Not Found.");
         }
         getToken();
     }
@@ -148,13 +151,13 @@ public class AccountController {
             Gson gson = new Gson();
             Properties headers = new Properties();
             String response = "";
-
             String httpsURL = makeLoginURL(
                     "api/v1/inverters?page=1&limit=10&total=0&status=-1&sn=&plantId=&type=-2&softVer=&hmiVer=&agentCompanyId=-1&gsn=");
             headers.setProperty(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON);
             headers.setProperty(HttpHeaders.AUTHORIZATION, BEARER_TYPE + APIdata.staticAccessToken);
             response = HttpUtil.executeUrl(HttpMethod.GET.asString(), httpsURL, headers, null,
                     MediaType.APPLICATION_JSON, TIMEOUT_IN_MS);
+            logger.trace("Account Details Response: {}", response);
             @Nullable
             Details maybeDeats = gson.fromJson(response, Details.class);
             if (maybeDeats == null) {
@@ -163,10 +166,10 @@ public class AccountController {
             output = maybeDeats;
         } catch (IOException | JsonSyntaxException e) {
             if (logger.isDebugEnabled()) {
-                String message = Objects.requireNonNullElse(e.getMessage(), "unkown error message");
+                String message = Objects.requireNonNullElse(e.getMessage(), "unknown error message");
                 Throwable cause = e.getCause();
-                String causeMessage = cause != null ? Objects.requireNonNullElse(cause.getMessage(), "unkown cause")
-                        : "unkown cause";
+                String causeMessage = cause != null ? Objects.requireNonNullElse(cause.getMessage(), "unknown cause")
+                        : "unknown cause";
                 logger.debug("Error attempting to find inverters registered to account: Msg = {}. Cause = {}.", message,
                         causeMessage);
             }
