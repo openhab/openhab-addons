@@ -42,12 +42,12 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 
 /**
- * Test cases for loading channel creation data from JSON.
+ * Test cases for loading channel creation data from JSON provided in the Apple specification.
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-class TestChannelCreation {
+class TestChannelCreationForAppleJson {
 
     // Apple HomeKit Specification Chapter 6.6.4 Example Accessory Attribute Database in JSON
     private static final String TEST_JSON = """
