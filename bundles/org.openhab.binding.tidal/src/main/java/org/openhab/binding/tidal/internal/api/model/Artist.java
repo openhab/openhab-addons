@@ -23,18 +23,8 @@ import com.google.gson.annotations.JsonAdapter;
  */
 @JsonAdapter(FlatteningTypeAdapterFactory.class)
 public class Artist extends BaseEntry {
-    private String name;
     private double popularity;
     private Link<Artist>[] externalLinks;
-
-    @Override
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
 
     public double getPopularity() {
         return popularity;

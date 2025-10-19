@@ -14,6 +14,8 @@ package org.openhab.binding.tidal.internal.api.model;
 
 import java.util.List;
 
+import org.openhab.core.media.BaseDto;
+
 import com.google.gson.annotations.JsonAdapter;
 
 /**
@@ -22,20 +24,8 @@ import com.google.gson.annotations.JsonAdapter;
  * @author Laurent Arnal - Initial contribution
  */
 @JsonAdapter(BaseEntryAdapter.class)
-public abstract class BaseEntry {
-    private String id;
-    private String type;
+public abstract class BaseEntry extends BaseDto {
     private RelationShip relationships;
-
-    public String getId() {
-        return id;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public abstract String getName();
 
     public String getArtwork() {
         if (relationships == null) {

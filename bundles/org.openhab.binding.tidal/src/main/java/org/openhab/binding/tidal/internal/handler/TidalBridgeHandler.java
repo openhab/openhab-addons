@@ -39,7 +39,6 @@ import org.openhab.binding.tidal.internal.api.exception.TidalAuthorizationExcept
 import org.openhab.binding.tidal.internal.api.exception.TidalException;
 import org.openhab.binding.tidal.internal.api.model.Album;
 import org.openhab.binding.tidal.internal.api.model.Artist;
-import org.openhab.binding.tidal.internal.api.model.BaseEntry;
 import org.openhab.binding.tidal.internal.api.model.Playlist;
 import org.openhab.binding.tidal.internal.api.model.Track;
 import org.openhab.binding.tidal.internal.api.model.User;
@@ -448,8 +447,8 @@ public class TidalBridgeHandler extends BaseBridgeHandler
 
     @Override
     public void refreshEntry(MediaEntry mediaEntry, long start, long size) {
+        // Refresh root Entry, we register the collections we expose to users
         if (mediaEntry.getKey().equals(TidalBindingConstants.BINDING_ID)) {
-
             mediaEntry.registerEntry("Albums", () -> {
                 return new MediaCollection("Albums", "Albums", "/static/Albums.png");
             });
@@ -465,72 +464,49 @@ public class TidalBridgeHandler extends BaseBridgeHandler
             mediaEntry.registerEntry("Tracks", () -> {
                 return new MediaCollection("Tracks", "Tracks", "/static/Tracks.png");
             });
-        } else if ("Playlists".equals(mediaEntry.getKey())) {
+        }
+        // For each entry at 2nd level, we register the collection contents
+        else if ("Playlists".equals(mediaEntry.getKey())) {
             List<Playlist> playLists = tidalApi.getPlaylists(start, size);
-            RegisterCollections(mediaEntry, playLists, MediaPlayList.class);
+            mediaService.RegisterCollections(mediaEntry, playLists, MediaPlayList.class);
         } else if ("Albums".equals(mediaEntry.getKey())) {
             List<Album> albums = tidalApi.getAlbums(start, size);
-            RegisterCollections(mediaEntry, albums, MediaAlbum.class);
+            mediaService.RegisterCollections(mediaEntry, albums, MediaAlbum.class);
         } else if ("Artists".equals(mediaEntry.getKey())) {
             List<Artist> artists = tidalApi.getArtists(start, size);
-            RegisterCollections(mediaEntry, artists, MediaArtist.class);
+            mediaService.RegisterCollections(mediaEntry, artists, MediaArtist.class);
         } else if ("Tracks".equals(mediaEntry.getKey())) {
             List<Track> tracks = tidalApi.getTracks(start, size);
-            RegisterCollections(mediaEntry, tracks, MediaArtist.class);
-        } else if (mediaEntry instanceof MediaArtist) {
+            mediaService.RegisterCollections(mediaEntry, tracks, MediaArtist.class);
+        }
+        // 3rd level : we handle individually each content
+        else if (mediaEntry instanceof MediaArtist) {
             Artist artist = tidalApi.getArtist(mediaEntry.getKey());
 
             if (artist != null) {
                 List<Album> albums = artist.getAlbums();
-                RegisterCollections(mediaEntry, albums, MediaAlbum.class);
+                mediaService.RegisterCollections(mediaEntry, albums, MediaAlbum.class);
             }
         } else if (mediaEntry instanceof MediaAlbum) {
             Album album = tidalApi.getAlbum(mediaEntry.getKey());
 
             if (album != null) {
                 List<Track> tracks = album.getTracks();
-                RegisterCollections(mediaEntry, tracks, MediaTrack.class);
+                mediaService.RegisterCollections(mediaEntry, tracks, MediaTrack.class);
             }
         } else if (mediaEntry instanceof MediaPlayList) {
             Playlist playList = tidalApi.getPlaylist(mediaEntry.getKey());
 
             if (playList != null) {
                 List<Track> tracks = playList.getTracks();
-                RegisterCollections(mediaEntry, tracks, MediaTrack.class);
+                mediaService.RegisterCollections(mediaEntry, tracks, MediaTrack.class);
 
             }
-        } else if (mediaEntry instanceof MediaQueue) {
+        }
+        // Special case : SearchResult / MediaQueue
+        else if (mediaEntry instanceof MediaQueue) {
             logger.trace("MediaQueue");
         }
     }
 
-    private <T extends BaseEntry, R extends MediaEntry> void RegisterCollections(MediaEntry parentEntry,
-            List<T> collection, Class<R> allocator) {
-        for (T entry : collection) {
-            if (entry == null) {
-                continue;
-            }
-            String key = entry.getId();
-            String name = entry.getName();
-
-            parentEntry.registerEntry(key, () -> {
-                try {
-                    MediaEntry res = allocator.getDeclaredConstructor().newInstance();
-                    res.setName(name);
-                    res.setKey(key);
-
-                    if (res instanceof MediaCollection) {
-                        String artWork = "";
-                        if (entry.getArtwork() != null) {
-                            artWork = entry.getArtwork();
-                        }
-                        ((MediaCollection) res).setArtUri(artWork);
-                    }
-                    return res;
-                } catch (Exception ex) {
-                    return null;
-                }
-            });
-        }
-    }
 }

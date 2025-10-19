@@ -23,7 +23,6 @@ import com.google.gson.annotations.JsonAdapter;
  */
 @JsonAdapter(FlatteningTypeAdapterFactory.class)
 public class Playlist extends BaseEntry {
-    private String name;
     private String description;
     private boolean bounded;
     private String duration;
@@ -33,11 +32,6 @@ public class Playlist extends BaseEntry {
     public String lastModifiedAt;
     public String accessType;
     public String playlistType;
-
-    @Override
-    public String getName() {
-        return name;
-    }
 
     public String getDescription() {
         return description;
