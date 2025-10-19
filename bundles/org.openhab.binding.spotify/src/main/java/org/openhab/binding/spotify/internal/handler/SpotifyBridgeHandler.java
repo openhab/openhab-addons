@@ -44,6 +44,7 @@ import org.openhab.binding.spotify.internal.api.model.Artist;
 import org.openhab.binding.spotify.internal.api.model.BaseEntry;
 import org.openhab.binding.spotify.internal.api.model.Categorie;
 import org.openhab.binding.spotify.internal.api.model.Context;
+import org.openhab.binding.spotify.internal.api.model.CurrentPlay;
 import org.openhab.binding.spotify.internal.api.model.CurrentlyPlayingContext;
 import org.openhab.binding.spotify.internal.api.model.Device;
 import org.openhab.binding.spotify.internal.api.model.Image;
@@ -53,6 +54,7 @@ import org.openhab.binding.spotify.internal.api.model.PlayListTracks;
 import org.openhab.binding.spotify.internal.api.model.Playlist;
 import org.openhab.binding.spotify.internal.api.model.Show;
 import org.openhab.binding.spotify.internal.api.model.Track;
+import org.openhab.binding.spotify.internal.api.model.TrackObject;
 import org.openhab.binding.spotify.internal.api.model.Tracks;
 import org.openhab.binding.spotify.internal.discovery.SpotifyDeviceDiscoveryService;
 import org.openhab.core.auth.client.oauth2.AccessTokenRefreshListener;
@@ -81,6 +83,7 @@ import org.openhab.core.media.model.MediaCollection;
 import org.openhab.core.media.model.MediaEntry;
 import org.openhab.core.media.model.MediaPlayList;
 import org.openhab.core.media.model.MediaPodcast;
+import org.openhab.core.media.model.MediaQueue;
 import org.openhab.core.media.model.MediaRegistry;
 import org.openhab.core.media.model.MediaSearchResult;
 import org.openhab.core.media.model.MediaSource;
@@ -472,6 +475,14 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
                 List<Track> tracks = playListTracks.getTrack();
                 RegisterCollections(mediaEntry, tracks, MediaTrack.class);
             }
+        } else if (mediaEntry instanceof MediaQueue) {
+            logger.trace("MediaQueue");
+            CurrentPlay currentPlay = spotifyApi.getCurrentPlaylist(start, size);
+            ((MediaQueue) mediaEntry).Clear();
+            if (currentPlay != null) {
+                RegisterCollections(mediaEntry, currentPlay.getQueue(), MediaTrack.class);
+            }
+
         } else if (mediaEntry instanceof MediaSearchResult) {
             MediaSearchResult searchResult = (MediaSearchResult) mediaEntry;
 

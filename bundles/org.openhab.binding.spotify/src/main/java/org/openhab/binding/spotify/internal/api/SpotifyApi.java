@@ -44,6 +44,7 @@ import org.openhab.binding.spotify.internal.api.model.Artist;
 import org.openhab.binding.spotify.internal.api.model.Artists;
 import org.openhab.binding.spotify.internal.api.model.Categorie;
 import org.openhab.binding.spotify.internal.api.model.CategoriesResult;
+import org.openhab.binding.spotify.internal.api.model.CurrentPlay;
 import org.openhab.binding.spotify.internal.api.model.CurrentlyPlayingContext;
 import org.openhab.binding.spotify.internal.api.model.Device;
 import org.openhab.binding.spotify.internal.api.model.Devices;
@@ -253,6 +254,14 @@ public class SpotifyApi {
 
         return deviceList == null || deviceList.getDevices() == null ? Collections.emptyList()
                 : deviceList.getDevices();
+    }
+
+    /**
+     * @return Returns the playlists of the user.
+     */
+    public @Nullable CurrentPlay getCurrentPlaylist(long offset, long limit) {
+        final CurrentPlay currentPlay = request(GET, SPOTIFY_API_URL + "/player/queue", "", CurrentPlay.class);
+        return currentPlay;
     }
 
     /**
