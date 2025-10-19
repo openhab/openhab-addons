@@ -209,9 +209,9 @@ Thing nikohomecontrol:carCharger:mybridge:mycarcharger [ carChargerId="abcdef01-
 | heatingdemand     | R  |          | String             | thermostat  | indicating if the system is actively heating/cooling. This channel will have value Heating, Cooling or None. For NHC I this is set by the binding from the temperature difference between `setpoint` and `measured`. It therefore may incorrectly indicate cooling even when the system does not have active cooling capabilities |
 | demand            | R  |    X     | Number             | thermostat  | indicating if the system is actively heating/cooling, same as `heatingdemand` but numeric values (-1=Cooling, 0=None, 1=Heating) |
 | power             | R  |          | Number:Power       | energyMeterHome, energyMeterLive | instant power consumption/production (negative for production), refreshed every 2s. Linking this channel starts an intensive communication flow with the controller and should only be done when appropriate |
-| powerFromGrid     | R  |          | Number:Power       | energyMeterHome | power consumption grid for home energy meter, refreshed every 2s. Linking this channel starts an intensive communication flow with the controller and should only be done when appropriate |
-| powerToGrid       | R  |          | Number:Power       | energyMeterHome | power sent to grid for home energy meter, refreshed every 2s. Linking this channel starts an intensive communication flow with the controller and should only be done when appropriate |
-| peakPowerFromGrid | R  |          | Number:Power       | energyMeterHome | current month peak power as registered by the home energy meter                         |
+| powerfromgrid     | R  |          | Number:Power       | energyMeterHome | power consumption grid for home energy meter, refreshed every 2s. Linking this channel starts an intensive communication flow with the controller and should only be done when appropriate |
+| powertogrid       | R  |          | Number:Power       | energyMeterHome | power sent to grid for home energy meter, refreshed every 2s. Linking this channel starts an intensive communication flow with the controller and should only be done when appropriate |
+| peakpowerfromgrid | R  |          | Number:Power       | energyMeterHome | current month peak power as registered by the home energy meter                         |
 | energy            | R  |          | Number:Energy      | energyMeterHome, energyMeterLive, energyMeter, carCharger | total energy meter reading                                                         |
 | energyday         | R  |          | Number:Energy      | energyMeterHome, energyMeterLive, energyMeter, carCharger | day energy meter reading                                                           |
 | gas               | R  |          | Number:Volume      | energyMeterHome, gasMeter | total gas meter reading                                                                             |
@@ -226,16 +226,16 @@ Thing nikohomecontrol:carCharger:mybridge:mycarcharger [ carChargerId="abcdef01-
 | armed             | RW |          | Switch             | alarm       | state of the alarm system (on/off), will only turn on after pre-armed period when arming            |
 | state             | R  |          | String             | alarm       | state of the alarm system (DISARMED, PREARMED, ARMED, PREALARM, ALARM, DETECTOR PROBLEM)            |
 | status            | RW |          | Switch             | carCharger  | status of the car charger (on/off)                                                                  |
-| chargingStatus    | R  |          | String             | carCharger  | charging status of the car charger (ACTIVE, INACTIVE, BATTERY FULL or ERROR)                        |
-| evStatus          | R  |          | String             | carCharger  | status of the electric vehicle (IDLE, CONNECTED or CHARGING)                                        |
-| couplingStatus    | R  |          | String             | carCharger  | coupling status (OK, NO INTERNET, NO CREDENTIALS, INVALID CREDENTIALS, CONNECTION ERROR, CONNECTION TIMEOUT, API ERROR or UNKNOWN ERROR) |
-| electricalPower   | R  |          | Number:Power       | carCharger  | current charging power                                                                              |
-| chargingMode      | RW |          | String             | carCharger  | charging mode (SOLAR, NORMAL or SMART)                                                              |
-| targetDistance    | RW |          | Number:Length      | carCharger  | target distance to achieve in charging activity                                                     |
-| targetTime        | RW |          | DateTime           | carCharger  | time by which the target distance should be achieved                                                |
+| chargingstatus    | R  |          | String             | carCharger  | charging status of the car charger (ACTIVE, INACTIVE, BATTERY FULL or ERROR)                        |
+| evstatus          | R  |          | String             | carCharger  | status of the electric vehicle (IDLE, CONNECTED or CHARGING)                                        |
+| couplingstatus    | R  |          | String             | carCharger  | coupling status (OK, NO INTERNET, NO CREDENTIALS, INVALID CREDENTIALS, CONNECTION ERROR, CONNECTION TIMEOUT, API ERROR or UNKNOWN ERROR) |
+| electricalpower   | R  |          | Number:Power       | carCharger  | current charging power                                                                              |
+| chargingmode      | RW |          | String             | carCharger  | charging mode (SOLAR, NORMAL or SMART)                                                              |
+| targetdistance    | RW |          | Number:Length      | carCharger  | target distance to achieve in charging activity                                                     |
+| targettime        | RW |          | DateTime           | carCharger  | time by which the target distance should be achieved                                                |
 | boost             | RW |          | Switch             | carCharger  | boost charging to maximum achievable, not respecting capacity limit                                 |
-| reachableDistance | R  |          | Number:Length      | carCharger  | reachable distance in current charing activity                                                      |
-| nextChargingTime  | R  |          | DateTime           | carCharger  | next charging start in current charging activity                                                    |
+| reachabledistance | R  |          | Number:Length      | carCharger  | reachable distance in current charing activity                                                      |
+| nextchargingtime  | R  |          | DateTime           | carCharger  | next charging start in current charging activity                                                    |
 | alarm             |    |          |                    | bridge, alarm | trigger channel with alarm event message, can be used in rules                                    |
 | notice            |    |          |                    | bridge      | trigger channel with notice event message, can be used in rules                                     |
 
@@ -250,7 +250,8 @@ To help with further development, a number of console commands allow you to coll
 
 ## Limitations
 
-The binding has been tested with a Niko Home Control I IP-interface (550-00508) and the Niko Home Control Connected Controller (550-00003) for Niko Home Control I and II, and the Niko Home Control Wireless Smart Hub for Niko Home Control II.
+The binding has been tested with a Niko Home Control I IP-interface (550-00508) and the Niko Home Control Connected Controller (550-00003) for Niko Home Control I and II, and the Niko Home Control Wireless Smart Hub (552-00001) for Niko Home Control II.
+Also the Wireless Bridge (550-00640) for the Connected Controller is supported.
 
 Not all action and device types supported in Niko Home Control I and II controllers are supported by the binding.
 Refer to the list of things and their support for Niko Home Control I and II respectively.
