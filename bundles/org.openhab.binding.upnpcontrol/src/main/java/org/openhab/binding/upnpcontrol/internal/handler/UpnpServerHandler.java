@@ -54,6 +54,7 @@ import org.openhab.core.media.MediaService;
 import org.openhab.core.media.model.MediaAlbum;
 import org.openhab.core.media.model.MediaCollection;
 import org.openhab.core.media.model.MediaEntry;
+import org.openhab.core.media.model.MediaQueue;
 import org.openhab.core.media.model.MediaRegistry;
 import org.openhab.core.media.model.MediaSearchResult;
 import org.openhab.core.media.model.MediaSource;
@@ -243,7 +244,8 @@ public class UpnpServerHandler extends UpnpHandler implements MediaListenner {
         boolean browse = true;
         currentMediaEntry = mediaEntry;
         if (mediaEntry instanceof MediaSource || mediaEntry instanceof MediaSearchResult
-                || mediaEntry.getPath().indexOf("/Root/Search") >= 0) {
+                || mediaEntry instanceof MediaQueue || mediaEntry.getPath().indexOf("/Root/Search") >= 0
+                || mediaEntry.getPath().indexOf("/Root/CurrentQueue") >= 0) {
             browse = false;
 
         }
