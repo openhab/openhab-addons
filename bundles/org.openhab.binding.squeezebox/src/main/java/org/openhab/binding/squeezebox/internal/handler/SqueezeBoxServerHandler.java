@@ -68,7 +68,9 @@ import org.openhab.core.media.model.MediaArtist;
 import org.openhab.core.media.model.MediaCollection;
 import org.openhab.core.media.model.MediaEntry;
 import org.openhab.core.media.model.MediaPlayList;
+import org.openhab.core.media.model.MediaQueue;
 import org.openhab.core.media.model.MediaRegistry;
+import org.openhab.core.media.model.MediaSearchResult;
 import org.openhab.core.media.model.MediaSource;
 import org.openhab.core.media.model.MediaTrack;
 import org.openhab.core.thing.Bridge;
@@ -673,20 +675,10 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler implements MediaL
                 return new MediaCollection("Playlists", "Playlists", "/static/playlist.png");
             });
 
-            mediaEntry.registerEntry("CurrentPlaylists", () -> {
-                return new MediaCollection("CurrentPlaylists", "CurrentPlaylists", "/static/playlist.png");
-            });
-
             mediaEntry.registerEntry("Tracks", () -> {
                 return new MediaCollection("Tracks", "Tracks", "/static/Tracks.png");
             });
-        } else if ("CurrentPlaylists".equals(mediaEntry.getKey())) {
-            Tracks tracks = getCurrentPlaylist(start, size);
-            if (tracks != null) {
-                RegisterCollections(mediaEntry, tracks, MediaTrack.class);
-            }
         } else if ("Playlists".equals(mediaEntry.getKey())) {
-            getCurrentPlaylist(start, size);
             List<Playlist> playlists = getPlaylists(start, size);
             if (playlists != null) {
                 RegisterCollections(mediaEntry, playlists, MediaPlayList.class);
@@ -724,6 +716,15 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler implements MediaL
             if (trackList != null) {
                 RegisterCollections(mediaEntry, trackList, MediaTrack.class);
             }
+        } else if (mediaEntry instanceof MediaQueue) {
+            logger.trace("MediaQueue");
+            Tracks tracks = getCurrentPlaylist(start, size);
+            ((MediaQueue) mediaEntry).Clear();
+            if (tracks != null) {
+              RegisterCollections(mediaEntry, tracks, MediaTrack.class);
+            }
+        } else if (mediaEntry instanceof MediaSearchResult) {
+            MediaSearchResult searchResult = (MediaSearchResult) mediaEntry;
         }
     }
 
@@ -736,6 +737,11 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler implements MediaL
             String key = entry.getId();
             String name = entry.getName();
             String uri = entry.getImagesUrl();
+            String artist = "";
+            if (entry instanceof Track track) {
+                artist = track.getArtist();
+            }
+            final String artistF = artist;
 
             parentEntry.registerEntry(key, () -> {
                 try {
@@ -743,8 +749,11 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler implements MediaL
                     res.setName(name);
                     res.setKey(key);
 
-                    if (res instanceof MediaCollection) {
-                        ((MediaCollection) res).setArtUri(uri);
+                    if (res instanceof MediaCollection mediaCollection) {
+                        mediaCollection.setArtUri(uri);
+                    } else if (res instanceof MediaTrack mediaTrack) {
+                        mediaTrack.setArtUri(uri);
+                        mediaTrack.setArtist(artistF);
                     }
                     return res;
                 } catch (Exception ex) {

@@ -19,7 +19,8 @@ package org.openhab.binding.squeezebox.internal.dto;
  */
 public class Track extends BaseEntry {
     private String title;
-    private String artwork_track_id;
+    private String coverid;
+    private String artist;
     private String url;
 
     @Override
@@ -31,12 +32,16 @@ public class Track extends BaseEntry {
         return title;
     }
 
+    public String getArtist() {
+        return artist;
+    }
+
     public String getUrl() {
         return url;
     }
 
     @Override
     public String getImagesUrl() {
-        return "http://192.168.254.1:9000/music/" + artwork_track_id + "/cover.jpg";
+        return "http://192.168.254.1:9000/music/" + coverid + "/cover.jpg";
     }
 }
