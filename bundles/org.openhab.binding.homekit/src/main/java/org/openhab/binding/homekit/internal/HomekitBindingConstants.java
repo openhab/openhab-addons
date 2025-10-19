@@ -59,14 +59,7 @@ public class HomekitBindingConstants {
     // channel properties
     public static final String PROPERTY_IID = "iid";
     public static final String PROPERTY_FORMAT = "format";
-    public static final String PROPERTY_BOOL_TYPE = "boolType";
-
-    // public static final String PROPERTY_MIN_VALUE = "minValue";
-    // public static final String PROPERTY_MAX_VALUE = "maxValue";
-    // public static final String PROPERTY_MIN_STEP = "minStep";
-    // public static final String PROPERTY_UNIT = "unit";
-    // public static final String PROPERTY_PERMS = "perms";
-    // public static final String PROPERTY_EV = "ev";
+    public static final String PROPERTY_DATA_TYPE = "dataType";
 
     // HomeKit HTTP URI endpoints and content types
     public static final String ENDPOINT_ACCESSORIES = "/accessories";

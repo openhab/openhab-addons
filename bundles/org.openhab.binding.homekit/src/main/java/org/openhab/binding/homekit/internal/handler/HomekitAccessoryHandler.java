@@ -43,7 +43,9 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.StopMoveType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.types.UpDownType;
 import org.openhab.core.semantics.SemanticTag;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -60,6 +62,7 @@ import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.StateDescription;
 import org.openhab.core.types.StateDescriptionFragment;
+import org.openhab.core.types.StateOption;
 import org.openhab.core.types.UnDefType;
 import org.openhab.core.types.util.UnitUtils;
 import org.slf4j.Logger;
@@ -144,6 +147,21 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
 
         StateDescription stateDescription = getStateDescription(channel);
 
+        // process Rollershutter commands
+        if (CoreItemFactory.ROLLERSHUTTER.equals(channel.getAcceptedItemType())) {
+            if (object instanceof PercentType percent) {
+                object = new PercentType(100 - percent.intValue());
+            } else if (object instanceof OnOffType onOff) {
+                object = onOff == OnOffType.ON ? PercentType.ZERO : PercentType.HUNDRED;
+            } else if (object instanceof OpenClosedType openClosed) {
+                object = openClosed == OpenClosedType.OPEN ? PercentType.ZERO : PercentType.HUNDRED;
+            } else if (object instanceof UpDownType upDown) {
+                object = upDown == UpDownType.UP ? PercentType.ZERO : PercentType.HUNDRED;
+            } else if (object instanceof StopMoveType stopMove && stopMove == StopMoveType.STOP) {
+                // TODO forward as a command to the POSITION HOLD characteristic (if existing)
+            }
+        }
+
         // convert QuantityTypes to the characteristic's unit
         if (object instanceof QuantityType<?> quantity) {
             if (stateDescription != null
@@ -153,6 +171,23 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
                     object = temp != null ? temp : quantity;
                 } catch (MeasurementParseException e) {
                     logger.warn("Unexpected unit {} for channel {}", channelUnit, channel.getUID());
+                }
+            }
+        }
+
+        // convert StringType enums to integers
+        if (object instanceof StringType stringType) {
+            if (stateDescription != null && stateDescription.getOptions() instanceof List<StateOption> stateOptions) {
+                for (StateOption option : stateOptions) {
+                    if (stringType.toString().equals(option.getLabel())) {
+                        String val = option.getValue();
+                        try {
+                            object = Integer.parseInt(val);
+                        } catch (NumberFormatException e) {
+                            logger.warn("Unexpected state option value {} for channel {}", val, channel.getUID(), e);
+                        }
+                        break;
+                    }
                 }
             }
         }
@@ -200,10 +235,10 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
             object = dateTime.toFullString();
         }
 
-        // comply with the characteristic's boolean data type
+        // comply with the characteristic's data type
         if (object instanceof Boolean bool
-                && channel.getProperties().get(PROPERTY_BOOL_TYPE) instanceof String booleanDataType) {
-            switch (booleanDataType) {
+                && channel.getProperties().get(PROPERTY_DATA_TYPE) instanceof String dataType) {
+            switch (dataType) {
                 case "number" -> object = Integer.valueOf(bool ? 1 : 0);
                 case "string" -> object = bool ? "true" : "false";
             }
@@ -252,7 +287,8 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
                 case CoreItemFactory.SWITCH -> OnOffType.from(value.getAsInt() != 0);
                 case CoreItemFactory.CONTACT -> value.getAsInt() != 0 ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
                 case CoreItemFactory.DIMMER -> new PercentType(value.getAsInt());
-                case CoreItemFactory.ROLLERSHUTTER -> new PercentType(value.getAsInt());
+                // convert HomeKit open percent to roller shutter closed percent
+                case CoreItemFactory.ROLLERSHUTTER -> new PercentType(100 - value.getAsInt());
                 case CoreItemFactory.NUMBER -> new DecimalType(value.getAsNumber());
                 default -> {
                     if (acceptedItemType.startsWith(CoreItemFactory.NUMBER)) {
