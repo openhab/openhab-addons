@@ -66,9 +66,10 @@ public class HomekitChildDiscoveryService extends AbstractDiscoveryService {
         accessories.forEach(accessory -> {
             if (accessory.aid instanceof Integer aid && aid != 1 && accessory.services != null) {
                 ThingUID uid = new ThingUID(THING_TYPE_ACCESSORY, bridge.getUID(), aid.toString());
+                String thingLabel = "%s (%d)".formatted(accessory.getAccessoryInstanceLabel(), accessory.aid);
                 thingDiscovered(DiscoveryResultBuilder.create(uid) //
                         .withBridge(bridge.getUID()) //
-                        .withLabel(THING_LABEL_FMT.formatted(accessory.getAccessoryInstanceLabel(), bridge.getLabel())) //
+                        .withLabel(THING_LABEL_FMT.formatted(thingLabel, bridge.getLabel())) //
                         .withProperty(CONFIG_HOST, "n/a") //
                         .withProperty(CONFIG_PAIRING_CODE, "n/a") //
                         .withProperty(PROPERTY_ACCESSORY_UID, uid.toString()) //
