@@ -31,11 +31,11 @@ public class AVMFritzHeatingDeviceHandler extends DeviceHandler implements AVMFr
 
     @Override
     public void setBoostMode(long duration) {
-        handleAction(MODE_BOOST, duration);
+        handleAction(HEATING_MODE_BOOST, duration);
     }
 
     @Override
     public void setWindowOpenMode(long duration) {
-        handleAction(MODE_WINDOW_OPEN, duration);
+        handleAction(HEATING_MODE_WINDOW_OPEN, duration);
     }
 }
