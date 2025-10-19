@@ -12,19 +12,18 @@
  */
 package org.openhab.binding.spotify.internal.api.model;
 
+import java.util.List;
+
 /**
- * Spotify Web Api Playlist data class.
+ * Spotify Web Api Categorie data class.
  *
- * @author Hilbrand Bouwkamp - Initial contribution
+ * @author Laurent Arnal - Initial contribution
  */
-public class Playlist extends BaseEntry {
+public class CurrentPlay extends BaseEntry {
+    private TrackObject currently_playing;
+    private List<TrackObject> queue;
 
-    private String description;
-    private PlayListTracks tracks;
-    private String href;
-
-    public PlayListTracks getTracks() {
-        return tracks;
+    public List<TrackObject> getQueue() {
+        return queue;
     }
-
 }
