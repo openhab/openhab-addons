@@ -10,7 +10,7 @@ The binding supports various thing types including RGB/RGBW controllers, tempera
 - `rgbw` - RGB/RGBW Controllers for color and brightness control
 - `temperature-sensor` - Temperature Sensors for monitoring environmental conditions
 - `switch` - Switch Controllers for basic on/off and dimming control
-- `contact-sensor` - Contact Sensors for monitoring open/closed states (supports both 012C and DB00 sensor types)
+- `contact-sensor` - Contact Sensors for monitoring open/closed states (supports both 012C and 02CA sensor types)
 - `motion-sensor` - Motion Sensors for detecting movement
 - `lux-sensor` - Light Level Sensors for measuring illuminance
 - `temperature` - (Deprecated) Use `temperature-sensor` instead
@@ -54,7 +54,7 @@ The `contact-sensor` thing type has an additional `type` parameter:
 
 | Name    | Type    | Description                                          | Default | Required | Advanced  |
 |:--------|:--------|:-----------------------------------------------------|:-------:|:--------:|:---------:|
-| type    | text    | Sensor type: `012c` (dry contact) or `db00` (multi-sensor) | 012c    | no       | no        |
+| type    | text    | Sensor type: `012c` (dry contact) or `02ca` (multi-sensor) | 012c    | no       | no        |
 
 **Listen-Only Mode:** Setting `refresh=0` enables listen-only mode where the binding only processes broadcast messages without actively polling. This is useful for sensors that automatically broadcast their status updates.
 
@@ -189,7 +189,7 @@ Number Lux_Sensor "Light Level [%.0f lux]" <sun> { channel="sbus:lux-sensor:mybr
 
 9-in-1 sensors are multi-function sensors that combine motion detection, light level measurement, and dry contact monitoring in a single physical unit. To configure a 9-in-1 sensor in openHAB, you need to create **three separate things** that all reference the same physical sensor:
 
-1. **contact-sensor** (type: `db00`) - For dry contact channels
+1. **contact-sensor** (type: `02ca`) - For dry contact channels
 2. **motion-sensor** - For motion detection
 3. **lux-sensor** - For light level sensing
 
@@ -198,7 +198,7 @@ All three things must use the **same subnet ID and unit ID** to represent the sa
 **Example for a 9-in-1 sensor with ID 85:**
 
 ```java
-Thing contact-sensor sensor_contact [ type="db00", id=85, refresh=0 ] {
+Thing contact-sensor sensor_contact [ type="02ca", id=85, refresh=0 ] {
     Channels:
         Type contact-channel : contact1 [ channelNumber=1 ]
         Type contact-channel : contact2 [ channelNumber=2 ]
@@ -226,7 +226,7 @@ Thing lux-sensor sensor_lux [ id=85, refresh=0 ] {
 The `contact-sensor` thing type supports two different sensor types via the `type` parameter:
 
 - **`012c`** (default): 012C dry contact sensors 
-- **`db00`**: DB00 multi-sensor dry contacts 
+- **`02ca`**: 02CA multi-sensor dry contacts 
 
 Choose the appropriate type based on your hardware.
 

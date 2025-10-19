@@ -73,8 +73,8 @@ public class SbusHandlerFactory extends BaseThingHandlerFactory {
             SbusContactConfig config = thing.getConfiguration().as(SbusContactConfig.class);
             ContactSensorType sensorType = config.getSensorType();
 
-            if (sensorType == ContactSensorType.MULTI_SENSOR_DB00) {
-                logger.debug("Creating Sbus DB00 multi-sensor contact handler for thing {}", thing.getUID());
+            if (sensorType == ContactSensorType.MULTI_SENSOR_02CA) {
+                logger.debug("Creating Sbus 02CA multi-sensor contact handler for thing {}", thing.getUID());
                 return new Sbus9in1ContactHandler(thing);
             } else {
                 logger.debug("Creating Sbus 012C contact sensor handler for thing {}", thing.getUID());

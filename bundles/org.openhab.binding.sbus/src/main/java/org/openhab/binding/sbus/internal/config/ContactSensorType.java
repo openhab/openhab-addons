@@ -27,9 +27,10 @@ public enum ContactSensorType {
     SENSOR_012C("012c"),
 
     /**
-     * DB00 multi-sensor with dry contacts using ReadNineInOneStatusRequest/Response protocol
+     * 02CA multi-sensor with dry contacts using ReadNineInOneStatusRequest/Response protocol
+     * and MotionSensorStatusReport (0x02CA) broadcasts
      */
-    MULTI_SENSOR_DB00("db00");
+    MULTI_SENSOR_02CA("02ca");
 
     private final String configValue;
 

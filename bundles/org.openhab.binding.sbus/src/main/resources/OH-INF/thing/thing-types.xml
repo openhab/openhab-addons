@@ -143,7 +143,7 @@
 				<description>Type of contact sensor device</description>
 				<options>
 					<option value="012c">012C (Dry Contact Sensor)</option>
-					<option value="db00">DB00 (Multi-Sensor)</option>
+					<option value="02ca">02CA (Multi-Sensor)</option>
 				</options>
 				<default>012c</default>
 			</parameter>
