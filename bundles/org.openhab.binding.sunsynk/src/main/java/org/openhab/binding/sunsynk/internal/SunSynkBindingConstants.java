@@ -74,9 +74,9 @@ public class SunSynkBindingConstants {
     public static final String CHANNEL_INVERTER_AC_TEMPERATURE = "inverter-ac-temperature";
     public static final String CHANNEL_INVERTER_DC_TEMPERATURE = "inverter-dc-temperature";
 
-    public static final String CHANNEL_BATTERY_VOLTAGE = "battery-grid-voltage";
-    public static final String CHANNEL_BATTERY_CURRENT = "battery-grid-current";
-    public static final String CHANNEL_BATTERY_POWER = "battery-grid-power";
+    public static final String CHANNEL_BATTERY_VOLTAGE = "battery-dc-voltage";
+    public static final String CHANNEL_BATTERY_CURRENT = "battery-dc-current";
+    public static final String CHANNEL_BATTERY_POWER = "battery-dc-power";
     public static final String CHANNEL_BATTERY_SOC = "battery-soc";
     public static final String CHANNEL_BATTERY_TEMPERATURE = "battery-temperature";
 
