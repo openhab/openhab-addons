@@ -15,13 +15,12 @@ package org.openhab.binding.homekit.internal.discovery;
 import static org.openhab.binding.homekit.internal.HomekitBindingConstants.*;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.homekit.internal.dto.Accessory;
 import org.openhab.binding.homekit.internal.handler.HomekitBridgeHandler;
-import org.openhab.core.config.discovery.AbstractDiscoveryService;
+import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.Thing;
@@ -36,30 +35,17 @@ import org.osgi.service.component.annotations.Component;
  */
 @NonNullByDefault
 @Component(service = DiscoveryService.class)
-public class HomekitChildDiscoveryService extends AbstractDiscoveryService {
+public class HomekitChildDiscoveryService extends AbstractThingHandlerDiscoveryService<HomekitBridgeHandler> {
 
     private static final int TIMEOUT_SECONDS = 10;
 
-    private final Set<HomekitBridgeHandler> bridgeHandlers = new HashSet<>();
-
     public HomekitChildDiscoveryService() {
-        super(Set.of(THING_TYPE_ACCESSORY), TIMEOUT_SECONDS);
-    }
-
-    public void addBridgeHandler(HomekitBridgeHandler handler) {
-        bridgeHandlers.add(handler);
-        startScan();
-    }
-
-    public void removeBridgeHandler(HomekitBridgeHandler handler) {
-        bridgeHandlers.remove(handler);
+        super(HomekitBridgeHandler.class, Set.of(THING_TYPE_ACCESSORY), TIMEOUT_SECONDS);
     }
 
     @Override
-    protected void startScan() {
-        for (HomekitBridgeHandler handler : bridgeHandlers) {
-            discoverChildren(handler.getThing(), handler.getAccessories());
-        }
+    public void startScan() {
+        discoverChildren(thingHandler.getThing(), thingHandler.getAccessories());
     }
 
     private void discoverChildren(Thing bridge, Collection<Accessory> accessories) {
