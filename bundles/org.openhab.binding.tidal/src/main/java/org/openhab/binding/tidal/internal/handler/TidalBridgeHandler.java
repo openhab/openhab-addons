@@ -59,6 +59,7 @@ import org.openhab.core.media.model.MediaArtist;
 import org.openhab.core.media.model.MediaCollection;
 import org.openhab.core.media.model.MediaEntry;
 import org.openhab.core.media.model.MediaPlayList;
+import org.openhab.core.media.model.MediaQueue;
 import org.openhab.core.media.model.MediaRegistry;
 import org.openhab.core.media.model.MediaSource;
 import org.openhab.core.media.model.MediaTrack;
@@ -498,6 +499,8 @@ public class TidalBridgeHandler extends BaseBridgeHandler
                 RegisterCollections(mediaEntry, tracks, MediaTrack.class);
 
             }
+        } else if (mediaEntry instanceof MediaQueue) {
+            logger.trace("MediaQueue");
         }
     }
 
