@@ -776,7 +776,6 @@ public class UpnpServerHandler extends UpnpHandler implements MediaListenner {
             }
 
         }
-        logger.debug("aa");
 
         logger.debug("Filtering content on server {}: {}", thing.getLabel(), config.filter);
         List<UpnpEntry> resultList = config.filter ? filterEntries(titleList, true) : titleList;
