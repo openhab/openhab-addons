@@ -1596,6 +1596,5 @@ class TestChannelCreationForVeluxJson {
         // TODO test channel definitions for a venetian blind with tilt support
 
         // TODO test channel definitions for Temperature, Humidity, and CO2 sensors
-
     }
 }
