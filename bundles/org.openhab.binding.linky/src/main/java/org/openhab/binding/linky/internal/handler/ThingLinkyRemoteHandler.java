@@ -34,7 +34,6 @@ import java.util.concurrent.TimeUnit;
 import javax.measure.Quantity;
 import javax.measure.Unit;
 
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.linky.internal.api.EnedisHttpApi;
@@ -57,6 +56,7 @@ import org.openhab.binding.linky.internal.types.LinkyException;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TimeZoneProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.MetricPrefix;
@@ -75,6 +75,8 @@ import org.openhab.core.types.State;
 import org.openhab.core.types.TimeSeries;
 import org.openhab.core.types.TimeSeries.Policy;
 import org.openhab.core.types.UnDefType;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -95,6 +97,7 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
     private static final int NUMBER_OF_DATA_DAY = 1095;
 
     private final TimeZoneProvider timeZoneProvider;
+    private final TranslationProvider translationProvider;
     private final Logger logger = LoggerFactory.getLogger(ThingLinkyRemoteHandler.class);
 
     private final ExpiringDayCache<MetaData> metaData;
@@ -119,10 +122,12 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
         ALL
     }
 
-    public ThingLinkyRemoteHandler(Thing thing, LocaleProvider localeProvider, TimeZoneProvider timeZoneProvider) {
+    public ThingLinkyRemoteHandler(Thing thing, LocaleProvider localeProvider, TimeZoneProvider timeZoneProvider,
+            TranslationProvider translationProvider) {
         super(thing);
 
         this.timeZoneProvider = timeZoneProvider;
+        this.translationProvider = translationProvider;
 
         this.metaData = new ExpiringDayCache<>("metaData", REFRESH_HOUR_OF_DAY, REFRESH_MINUTE_OF_DAY, () -> {
             MetaData metaData = getMetaData();
@@ -535,21 +540,21 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
     /**
      * This method creates a new channel for a consumption index.
      *
-     * @param channels the resulting list of channels
-     */
-    private void addChannel(List<Channel> channels, ChannelTypeUID chanTypeUid, String channelGroup, String channelName,
-            String channelLabel) {
-        addChannel(channels, chanTypeUid, channelGroup, channelName, channelLabel, null);
-    }
-
-    /**
-     * This method creates a new channel for a consumption index.
-     *
-     * @param channels the resulting list of channels
+     * @param channels : the resulting list of channels
+     * @param channelTypeUid : the uid of the ChannelType associated to this channel
+     * @param channelGroup : the group associated to this channel
+     * @param channelName : the name of the channel
+     * @param channelLabel : the label of the channel
+     * @param channelDesc : the description of the channel
      */
     private void addChannel(List<Channel> channels, ChannelTypeUID chanTypeUid, String channelGroup, String channelName,
             String channelLabel, @Nullable String channelDesc) {
         ChannelUID channelUid = new ChannelUID(this.getThing().getUID(), channelGroup, channelName);
+
+        if (getThing().getChannel(channelUid) != null) {
+            return;
+        }
+
         ChannelBuilder builder = ChannelBuilder.create(channelUid).withType(chanTypeUid).withLabel(channelLabel);
 
         if (channelDesc != null) {
@@ -562,10 +567,6 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
             return;
         }
 
-        if (getThing().getChannel(channelUid) != null) {
-            return;
-        }
-
         channels.add(channel);
     }
 
@@ -575,6 +576,7 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
      * consumptionDistributorIdx0, consumptionDistributorIdx1, ..., consumptionDistributorIdx3
      *
      * @param channels the resulting list of channels
+     * @param channelTypeUid : the uid of the ChannelType associated to this channel
      * @param indexMode indicates whether this is Supplier or Distributor index mode
      */
     private void addDynamicChannelByIdx(List<Channel> channels, ChannelTypeUID chanTypeUid, IndexMode indexMode) {
@@ -582,16 +584,16 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
 
         for (int idx = 0; idx < indexMode.getSize(); idx++) {
             String channelName = channelPrefix + idx;
-            String channelLabel = indexMode.getLabel() + " Consumption " + idx;
+            String channelLabel = " Consumption " + idx;
+            Bundle bundle = FrameworkUtil.getBundle(this.getClass());
 
-            addChannel(channels, chanTypeUid, LINKY_REMOTE_DAILY_GROUP, channelName,
-                    StringUtils.capitalize(LINKY_REMOTE_DAILY_GROUP) + " " + channelLabel);
-            addChannel(channels, chanTypeUid, LINKY_REMOTE_WEEKLY_GROUP, channelName,
-                    StringUtils.capitalize(LINKY_REMOTE_WEEKLY_GROUP) + " " + channelLabel);
-            addChannel(channels, chanTypeUid, LINKY_REMOTE_MONTHLY_GROUP, channelName,
-                    StringUtils.capitalize(LINKY_REMOTE_MONTHLY_GROUP) + " " + channelLabel);
-            addChannel(channels, chanTypeUid, LINKY_REMOTE_YEARLY_GROUP, channelName,
-                    StringUtils.capitalize(LINKY_REMOTE_YEARLY_GROUP) + " " + channelLabel);
+            String channelDesc = translationProvider.getText(bundle, "consumptionindex.description", "", null) + " \""
+                    + indexMode.getLabel() + " Consumption " + idx + "\"";
+
+            addChannel(channels, chanTypeUid, LINKY_REMOTE_DAILY_GROUP, channelName, channelLabel, channelDesc);
+            addChannel(channels, chanTypeUid, LINKY_REMOTE_WEEKLY_GROUP, channelName, channelLabel, channelDesc);
+            addChannel(channels, chanTypeUid, LINKY_REMOTE_MONTHLY_GROUP, channelName, channelLabel, channelDesc);
+            addChannel(channels, chanTypeUid, LINKY_REMOTE_YEARLY_GROUP, channelName, channelLabel, channelDesc);
         }
     }
 
@@ -600,6 +602,8 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
      * heuresPleines, heuresCreuses, bleuHeuresCreuses, bleuHeuresPleines, ...
      *
      * @param channels the resulting list of channels
+     * @param channelTypeUid : the uid of the ChannelType associated to this channel
+     * @param values : the dataset from enedis.
      * @param indexMode indicates whether this is Supplier or Distributor index mode
      */
     private void addDynamicChannelByLabel(List<Channel> channels, ChannelTypeUID chanTypeUid, MeterReading values,
@@ -621,15 +625,15 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
 
                 String channelName = sanetizeId(st);
                 String channelLabel = st;
+                Bundle bundle = FrameworkUtil.getBundle(this.getClass());
 
-                addChannel(channels, chanTypeUid, LINKY_REMOTE_DAILY_GROUP, channelName,
-                        StringUtils.capitalize(LINKY_REMOTE_DAILY_GROUP) + " " + channelLabel);
-                addChannel(channels, chanTypeUid, LINKY_REMOTE_WEEKLY_GROUP, channelName,
-                        StringUtils.capitalize(LINKY_REMOTE_WEEKLY_GROUP) + " " + channelLabel);
-                addChannel(channels, chanTypeUid, LINKY_REMOTE_MONTHLY_GROUP, channelName,
-                        StringUtils.capitalize(LINKY_REMOTE_MONTHLY_GROUP) + " " + channelLabel);
-                addChannel(channels, chanTypeUid, LINKY_REMOTE_YEARLY_GROUP, channelName,
-                        StringUtils.capitalize(LINKY_REMOTE_YEARLY_GROUP) + " " + channelLabel);
+                String channelDesc = translationProvider.getText(bundle, "consumptionindex.description", "", null)
+                        + " \"" + st + "\"";
+
+                addChannel(channels, chanTypeUid, LINKY_REMOTE_DAILY_GROUP, channelName, channelLabel, channelDesc);
+                addChannel(channels, chanTypeUid, LINKY_REMOTE_WEEKLY_GROUP, channelName, channelLabel, channelDesc);
+                addChannel(channels, chanTypeUid, LINKY_REMOTE_MONTHLY_GROUP, channelName, channelLabel, channelDesc);
+                addChannel(channels, chanTypeUid, LINKY_REMOTE_YEARLY_GROUP, channelName, channelLabel, channelDesc);
             }
         }
     }
@@ -689,6 +693,7 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
      * making it easier to display them on a chart.
      *
      * @param irs the incoming data in the form of a single IntervalReading
+     * @param indexMode indicates whether this is Supplier or Distributor index mode
      * @return a list of subdatasets split on tariff change
      */
     private List<IntervalReading[]> splitOnTariffBound(IntervalReading[] irs, IndexMode indexMode) {
@@ -731,6 +736,7 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
      * - The tariff-labeled base time series.
      *
      * @param irs the incoming data in the form of a single IntervalReading
+     * @param groupName the group name associate to this channel
      * @param indexMode indicates whether this is Supplier or Distributor index mode
      */
     private void updateEnergyIndex(IntervalReading[] irs, String groupName, IndexMode indexMode) {
@@ -1033,6 +1039,12 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
      * @param indexMode the index mode: Supplier or Distributor
      * @param meterReading the incoming meter reading data
      * @param ir the incoming IntervalReading
+     * @param idxWeek : the index of the Week we wants to sum
+     * @param weeksNum : the maximum index for the Week
+     * @param idxMonth : the index of the Month we wants to sum
+     * @param monthsNum : the maximum index for the Month
+     * @param idxYear : the index of the Year we wants to sum
+     * @param yearsNum : the maximum index for the Year
      */
     public void sumIndex(IndexMode indexMode, MeterReading meterReading, IntervalReading ir, int idxWeek, int weeksNum,
             int idxMonth, int monthsNum, int idxYear, int yearsNum) {
