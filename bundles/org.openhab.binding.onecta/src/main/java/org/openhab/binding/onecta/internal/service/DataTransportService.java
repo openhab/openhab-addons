@@ -508,7 +508,7 @@ public class DataTransportService {
     }
 
     public Float[] getConsumptionCoolingDay() {
-        return Optional.ofNullable(getManagementPoint(Enums.ManagementPoint.CLIMATECONTROL))//
+        return Optional.ofNullable(getManagementPoint(this.managementPointType))//
                 .map(ManagementPoint::getConsumptionData)//
                 .map(ConsumptionData::getValue)//
                 .map(ConsumptionDataValue::getElectrical)//
@@ -518,7 +518,7 @@ public class DataTransportService {
     }
 
     public Float[] getConsumptionCoolingWeek() {
-        return Optional.ofNullable(getManagementPoint(Enums.ManagementPoint.CLIMATECONTROL))//
+        return Optional.ofNullable(getManagementPoint(this.managementPointType))//
                 .map(ManagementPoint::getConsumptionData)//
                 .map(ConsumptionData::getValue)//
                 .map(ConsumptionDataValue::getElectrical)//
@@ -528,7 +528,7 @@ public class DataTransportService {
     }
 
     public Float[] getConsumptionCoolingMonth() {
-        return Optional.ofNullable(getManagementPoint(Enums.ManagementPoint.CLIMATECONTROL))//
+        return Optional.ofNullable(getManagementPoint(this.managementPointType))//
                 .map(ManagementPoint::getConsumptionData)//
                 .map(ConsumptionData::getValue)//
                 .map(ConsumptionDataValue::getElectrical)//
@@ -538,7 +538,7 @@ public class DataTransportService {
     }
 
     public Float[] getConsumptionHeatingDay() {
-        return Optional.ofNullable(getManagementPoint(Enums.ManagementPoint.CLIMATECONTROL))//
+        return Optional.ofNullable(getManagementPoint(this.managementPointType))//
                 .map(ManagementPoint::getConsumptionData)//
                 .map(ConsumptionData::getValue)//
                 .map(ConsumptionDataValue::getElectrical)//
@@ -548,7 +548,7 @@ public class DataTransportService {
     }
 
     public Float[] getConsumptionHeatingWeek() {
-        return Optional.ofNullable(getManagementPoint(Enums.ManagementPoint.CLIMATECONTROL))//
+        return Optional.ofNullable(getManagementPoint(this.managementPointType))//
                 .map(ManagementPoint::getConsumptionData)//
                 .map(ConsumptionData::getValue)//
                 .map(ConsumptionDataValue::getElectrical)//
@@ -558,7 +558,7 @@ public class DataTransportService {
     }
 
     public Float[] getConsumptionHeatingMonth() {
-        return Optional.ofNullable(getManagementPoint(Enums.ManagementPoint.CLIMATECONTROL))//
+        return Optional.ofNullable(getManagementPoint(this.managementPointType))//
                 .map(ManagementPoint::getConsumptionData)//
                 .map(ConsumptionData::getValue)//
                 .map(ConsumptionDataValue::getElectrical)//

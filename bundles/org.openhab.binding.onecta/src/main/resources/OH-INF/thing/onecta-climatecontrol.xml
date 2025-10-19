@@ -239,7 +239,6 @@
 		</channels>
 	</channel-group-type>
 
-
 	<channel-type id="acunit-energy-heating-month-0" advanced="true">
 		<item-type>Number:Energy</item-type>
 		<label>Energy heating last year (00) January</label>

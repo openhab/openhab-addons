@@ -12,8 +12,14 @@
  */
 package org.openhab.binding.onecta.internal.handler;
 
+import static org.openhab.binding.onecta.internal.OnectaClimateControlConstants.*;
+import static org.openhab.binding.onecta.internal.OnectaClimateControlConstants.CHANNEL_AC_ENERGY_HEATING_CURRENT_DAY;
+import static org.openhab.binding.onecta.internal.OnectaClimateControlConstants.CHANNEL_AC_ENERGY_HEATING_CURRENT_YEAR;
 import static org.openhab.binding.onecta.internal.OnectaWaterTankConstants.*;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -23,6 +29,7 @@ import org.openhab.binding.onecta.internal.api.Enums;
 import org.openhab.binding.onecta.internal.service.ChannelsRefreshDelay;
 import org.openhab.binding.onecta.internal.service.DataTransportService;
 import org.openhab.binding.onecta.internal.type.TypeHandler;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.thing.ChannelUID;
@@ -31,6 +38,7 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -141,6 +149,33 @@ public class OnectaWaterTankHandler extends AbstractOnectaHandler {
 
             updateState(CHANNEL_HWT_SETPOINT_MODE, getSetpointMode());
 
+            // Energy consumption Heating Day
+            if (dataTransService.getConsumptionHeatingDay() != null) {
+                for (int i = 0; i < dataTransService.getConsumptionHeatingDay().length; i++) {
+                    updateState(String.format(CHANNEL_AC_ENERGY_HEATING_DAY, i),
+                            dataTransService.getConsumptionHeatingDay()[i] == null ? UnDefType.UNDEF
+                                    : new DecimalType(dataTransService.getConsumptionHeatingDay()[i]));
+                }
+            }
+            // Energy consumption Heating Week
+            if (dataTransService.getConsumptionHeatingWeek() != null) {
+                for (int i = 0; i < dataTransService.getConsumptionHeatingWeek().length; i++) {
+                    updateState(String.format(CHANNEL_AC_ENERGY_HEATING_WEEK, i),
+                            dataTransService.getConsumptionHeatingWeek()[i] == null ? UnDefType.UNDEF
+                                    : new DecimalType(dataTransService.getConsumptionHeatingWeek()[i]));
+                }
+            }
+            // Energy consumption Heating Month
+            if (dataTransService.getConsumptionHeatingMonth() != null) {
+                for (int i = 0; i < dataTransService.getConsumptionHeatingMonth().length; i++) {
+                    updateState(String.format(CHANNEL_AC_ENERGY_HEATING_MONTH, i),
+                            dataTransService.getConsumptionHeatingMonth()[i] == null ? UnDefType.UNDEF
+                                    : new DecimalType(dataTransService.getConsumptionHeatingMonth()[i]));
+                }
+            }
+            // calculate current day and year energy consumption
+            updateState(CHANNEL_AC_ENERGY_HEATING_CURRENT_DAY, getEnergyHeatingCurrentDay());
+            updateState(CHANNEL_AC_ENERGY_HEATING_CURRENT_YEAR, getEnergyHeatingCurrentYear());
         } else {
             updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_ERROR,
                     OnectaConfiguration.getTranslation().getText("unknown.unitid-not-exists"));
@@ -211,5 +246,43 @@ public class OnectaWaterTankHandler extends AbstractOnectaHandler {
 
     private State getCurrentTankTemperatureSetStep() {
         return TypeHandler.decimalType(dataTransService.getCurrentTankTemperatureSetStep());
+    }
+
+    private Boolean isFirst2HourOfYear() {
+        LocalDateTime localDateTime = LocalDateTime.now();
+        return localDateTime.getDayOfYear() == 1 && (localDateTime.getHour() == 0 || localDateTime.getHour() == 1);
+    }
+
+    private State getEnergyHeatingCurrentDay() {
+        State state = Optional.ofNullable(dataTransService.getConsumptionHeatingWeek())
+                .filter(consumptionArray -> consumptionArray.length > 7 + getCurrentDayOfWeek()) //
+                .map(consumptionArray -> consumptionArray[7 + getCurrentDayOfWeek()]) //
+                .map(TypeHandler::decimalType) //
+                .orElse(UnDefType.UNDEF); //
+        if (state == null) {
+            state = UnDefType.UNDEF;
+        }
+        return state;
+    }
+
+    private State getEnergyHeatingCurrentYear() {
+        double total = 0;
+        try {
+            if (!isFirst2HourOfYear()) {
+                for (int i = 12; i <= 23; i++) {
+                    if (dataTransService.getConsumptionHeatingMonth()[i] != null) {
+                        total += dataTransService.getConsumptionHeatingMonth()[i];
+                    }
+                }
+            }
+            return TypeHandler.decimalType(Math.round(total * 10) / 10D);
+        } catch (NullPointerException | IndexOutOfBoundsException e) {
+            return UnDefType.UNDEF;
+        }
+    }
+
+    private int getCurrentDayOfWeek() {
+        LocalDate today = LocalDate.now();
+        return today.getDayOfWeek().getValue() - 1;
     }
 }
