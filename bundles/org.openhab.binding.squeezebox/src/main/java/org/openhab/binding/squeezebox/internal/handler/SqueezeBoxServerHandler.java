@@ -48,7 +48,6 @@ import org.openhab.binding.squeezebox.internal.dto.Album;
 import org.openhab.binding.squeezebox.internal.dto.Albums;
 import org.openhab.binding.squeezebox.internal.dto.Artist;
 import org.openhab.binding.squeezebox.internal.dto.Artists;
-import org.openhab.binding.squeezebox.internal.dto.BaseEntry;
 import org.openhab.binding.squeezebox.internal.dto.ButtonDTO;
 import org.openhab.binding.squeezebox.internal.dto.ButtonDTODeserializer;
 import org.openhab.binding.squeezebox.internal.dto.ButtonsDTO;
@@ -681,85 +680,50 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler implements MediaL
         } else if ("Playlists".equals(mediaEntry.getKey())) {
             List<Playlist> playlists = getPlaylists(start, size);
             if (playlists != null) {
-                RegisterCollections(mediaEntry, playlists, MediaPlayList.class);
+                mediaService.RegisterCollections(mediaEntry, playlists, MediaPlayList.class);
             }
         } else if ("Tracks".equals(mediaEntry.getKey())) {
             List<Track> tracks = getTracks(start, size);
             if (tracks != null) {
-                RegisterCollections(mediaEntry, tracks, MediaTrack.class);
+                mediaService.RegisterCollections(mediaEntry, tracks, MediaTrack.class);
             }
         } else if ("Albums".equals(mediaEntry.getKey())) {
             List<Album> albums = getAlbums(start, size);
             if (albums != null) {
-                RegisterCollections(mediaEntry, albums, MediaAlbum.class);
+                mediaService.RegisterCollections(mediaEntry, albums, MediaAlbum.class);
             }
         } else if ("Artists".equals(mediaEntry.getKey())) {
             List<Artist> artists = getArtists(start, size);
             if (artists != null) {
-                RegisterCollections(mediaEntry, artists, MediaArtist.class);
+                mediaService.RegisterCollections(mediaEntry, artists, MediaArtist.class);
             }
         } else if (mediaEntry instanceof MediaArtist) {
             MediaArtist mediaArtist = (MediaArtist) mediaEntry;
             List<Album> albumList = getArtistAlbums(mediaArtist.getKey());
             if (albumList != null) {
-                RegisterCollections(mediaEntry, albumList, MediaAlbum.class);
+                mediaService.RegisterCollections(mediaEntry, albumList, MediaAlbum.class);
             }
         } else if (mediaEntry instanceof MediaAlbum) {
             MediaAlbum album = (MediaAlbum) mediaEntry;
             List<Track> trackList = getAlbumTracks(album.getKey());
             if (trackList != null) {
-                RegisterCollections(mediaEntry, trackList, MediaTrack.class);
+                mediaService.RegisterCollections(mediaEntry, trackList, MediaTrack.class);
             }
         } else if (mediaEntry instanceof MediaPlayList) {
             MediaPlayList playlist = (MediaPlayList) mediaEntry;
             List<Track> trackList = getPlaylistTrack(playlist.getKey());
             if (trackList != null) {
-                RegisterCollections(mediaEntry, trackList, MediaTrack.class);
+                mediaService.RegisterCollections(mediaEntry, trackList, MediaTrack.class);
             }
         } else if (mediaEntry instanceof MediaQueue) {
             logger.trace("MediaQueue");
             Tracks tracks = getCurrentPlaylist(start, size);
             ((MediaQueue) mediaEntry).Clear();
             if (tracks != null) {
-              RegisterCollections(mediaEntry, tracks, MediaTrack.class);
+                mediaService.RegisterCollections(mediaEntry, tracks, MediaTrack.class);
             }
         } else if (mediaEntry instanceof MediaSearchResult) {
             MediaSearchResult searchResult = (MediaSearchResult) mediaEntry;
-        }
-    }
-
-    private <T extends BaseEntry, R extends MediaEntry> void RegisterCollections(MediaEntry parentEntry,
-            List<T> collection, Class<R> allocator) {
-        for (T entry : collection) {
-            if (entry == null) {
-                continue;
-            }
-            String key = entry.getId();
-            String name = entry.getName();
-            String uri = entry.getImagesUrl();
-            String artist = "";
-            if (entry instanceof Track track) {
-                artist = track.getArtist();
-            }
-            final String artistF = artist;
-
-            parentEntry.registerEntry(key, () -> {
-                try {
-                    MediaEntry res = allocator.getDeclaredConstructor().newInstance();
-                    res.setName(name);
-                    res.setKey(key);
-
-                    if (res instanceof MediaCollection mediaCollection) {
-                        mediaCollection.setArtUri(uri);
-                    } else if (res instanceof MediaTrack mediaTrack) {
-                        mediaTrack.setArtUri(uri);
-                        mediaTrack.setArtist(artistF);
-                    }
-                    return res;
-                } catch (Exception ex) {
-                    return null;
-                }
-            });
         }
     }
 

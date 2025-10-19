@@ -12,12 +12,16 @@
  */
 package org.openhab.binding.squeezebox.internal.dto;
 
+import org.openhab.core.media.BaseDto;
+import org.openhab.core.media.model.MediaEntry;
+import org.openhab.core.media.model.MediaTrack;
+
 /**
  * Squeezebox Track data class.
  *
  * @author Laurent Arnal - Initial contribution
  */
-public class Track extends BaseEntry {
+public class Track extends BaseDto {
     private String title;
     private String coverid;
     private String artist;
@@ -41,7 +45,16 @@ public class Track extends BaseEntry {
     }
 
     @Override
-    public String getImagesUrl() {
+    public String getArtwork() {
         return "http://192.168.254.1:9000/music/" + coverid + "/cover.jpg";
+    }
+
+    @Override
+    public void initFields(MediaEntry entry) {
+        if (artist != null) {
+            if (entry instanceof MediaTrack track) {
+                track.setArtist(artist);
+            }
+        }
     }
 }

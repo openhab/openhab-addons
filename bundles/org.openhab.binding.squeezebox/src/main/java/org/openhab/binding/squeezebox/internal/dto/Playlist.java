@@ -12,12 +12,14 @@
  */
 package org.openhab.binding.squeezebox.internal.dto;
 
+import org.openhab.core.media.BaseDto;
+
 /**
  * Squeezebox Playlist data class.
  *
  * @author Laurent Arnal - Initial contribution
  */
-public class Playlist extends BaseEntry {
+public class Playlist extends BaseDto {
     private String playlist;
 
     @Override

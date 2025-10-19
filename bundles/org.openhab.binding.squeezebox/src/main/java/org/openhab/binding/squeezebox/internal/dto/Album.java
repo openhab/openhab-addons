@@ -12,12 +12,14 @@
  */
 package org.openhab.binding.squeezebox.internal.dto;
 
+import org.openhab.core.media.BaseDto;
+
 /**
  * Squeezebox Album data class.
  *
  * @author Laurent Arnal - Initial contribution
  */
-public class Album extends BaseEntry {
+public class Album extends BaseDto {
     private String album;
     private String title;
     private String year;
@@ -45,7 +47,7 @@ public class Album extends BaseEntry {
     }
 
     @Override
-    public String getImagesUrl() {
+    public String getArtwork() {
         return "http://192.168.254.1:9000/music/" + artwork_track_id + "/cover.jpg";
     }
 
