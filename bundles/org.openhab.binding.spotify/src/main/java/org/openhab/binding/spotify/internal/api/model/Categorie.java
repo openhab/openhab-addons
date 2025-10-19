@@ -14,6 +14,8 @@ package org.openhab.binding.spotify.internal.api.model;
 
 import java.util.List;
 
+import org.openhab.core.media.Image;
+
 /**
  * Spotify Web Api Categorie data class.
  *

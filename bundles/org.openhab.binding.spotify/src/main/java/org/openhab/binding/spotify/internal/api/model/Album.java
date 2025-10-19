@@ -27,7 +27,6 @@ public class Album extends BaseEntry {
     private List<String> availableMarkets;
     private ExternalUrl externalUrls;
     private String href;
-    private String type;
 
     private Tracks tracks;
 
@@ -49,10 +48,6 @@ public class Album extends BaseEntry {
 
     public String getHref() {
         return href;
-    }
-
-    public String getType() {
-        return type;
     }
 
     public Tracks getTracks() {

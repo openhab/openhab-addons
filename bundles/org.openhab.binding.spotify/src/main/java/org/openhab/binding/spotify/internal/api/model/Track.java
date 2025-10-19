@@ -14,6 +14,8 @@ package org.openhab.binding.spotify.internal.api.model;
 
 import java.util.List;
 
+import org.openhab.core.media.Image;
+
 /**
  * Spotify Web Api Track data class : A track entry.
  *
@@ -21,7 +23,7 @@ import java.util.List;
  */
 public class Track extends BaseEntry {
     private Album album;
-	private List<Artist> artists;
+    private List<Artist> artists;
 
     public Album getAlbum() {
         return album;

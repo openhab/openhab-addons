@@ -29,6 +29,9 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.PlayPauseType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.media.MediaService;
+import org.openhab.core.media.model.MediaEntry;
+import org.openhab.core.media.model.MediaRegistry;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
@@ -187,6 +190,11 @@ class SpotifyHandleCommands {
             String param = mediaType.getParam().toFullString();
             String targetDevice = mediaType.getDevice().toFullString().isEmpty() ? deviceId
                     : mediaType.getDevice().toFullString();
+
+            MediaService mediaService = bridgeHandler.getMediaService();
+            MediaRegistry registry = mediaService.getMediaRegistry();
+            MediaEntry mediaEntry = registry.getEntry(param);
+            MediaEntry parentEntry = mediaEntry.getParent();
 
             int px = param.lastIndexOf("/");
             if (px >= 0) {

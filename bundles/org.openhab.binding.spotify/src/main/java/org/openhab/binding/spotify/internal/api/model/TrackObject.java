@@ -14,6 +14,9 @@ package org.openhab.binding.spotify.internal.api.model;
 
 import java.util.List;
 
+import org.openhab.core.media.model.MediaEntry;
+import org.openhab.core.media.model.MediaTrack;
+
 /**
  * Spotify Web Api Categorie data class.
  *
@@ -25,5 +28,14 @@ public class TrackObject extends BaseEntry {
 
     public List<Artist> getArtists() {
         return artists;
+    }
+
+    @Override
+    public void initFields(MediaEntry entry) {
+        if (artists != null) {
+            if (entry instanceof MediaTrack track) {
+                track.setArtist(artists.getFirst().getName());
+            }
+        }
     }
 }

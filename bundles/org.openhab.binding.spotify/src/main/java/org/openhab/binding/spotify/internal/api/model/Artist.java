@@ -22,7 +22,6 @@ public class Artist extends BaseEntry {
 
     private ExternalUrl externalUrls;
     private String href;
-    private String type;
 
     public ExternalUrl getExternalUrls() {
         return externalUrls;
@@ -31,9 +30,4 @@ public class Artist extends BaseEntry {
     public String getHref() {
         return href;
     }
-
-    public String getType() {
-        return type;
-    }
-
 }

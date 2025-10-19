@@ -24,7 +24,6 @@ public class Show extends BaseEntry {
     private List<String> availableMarkets;
     private ExternalUrl externalUrls;
     private String href;
-    private String type;
 
     public List<String> getAvailableMarkets() {
         return availableMarkets;
@@ -37,9 +36,4 @@ public class Show extends BaseEntry {
     public String getHref() {
         return href;
     }
-
-    public String getType() {
-        return type;
-    }
-
 }

@@ -26,15 +26,10 @@ public class Audiobook extends BaseEntry {
     private String href;
     private String mediaType;
     private String publisher;
-    private String type;
     private int totalChapters;
 
     public String getHref() {
         return href;
-    }
-
-    public String getType() {
-        return type;
     }
 
     public String getDescription() {

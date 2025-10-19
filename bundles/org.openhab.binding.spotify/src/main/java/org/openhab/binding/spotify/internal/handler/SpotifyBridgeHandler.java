@@ -41,20 +41,17 @@ import org.openhab.binding.spotify.internal.api.exception.SpotifyException;
 import org.openhab.binding.spotify.internal.api.model.Album;
 import org.openhab.binding.spotify.internal.api.model.ApiSearchResult;
 import org.openhab.binding.spotify.internal.api.model.Artist;
-import org.openhab.binding.spotify.internal.api.model.BaseEntry;
 import org.openhab.binding.spotify.internal.api.model.Categorie;
 import org.openhab.binding.spotify.internal.api.model.Context;
 import org.openhab.binding.spotify.internal.api.model.CurrentPlay;
 import org.openhab.binding.spotify.internal.api.model.CurrentlyPlayingContext;
 import org.openhab.binding.spotify.internal.api.model.Device;
-import org.openhab.binding.spotify.internal.api.model.Image;
 import org.openhab.binding.spotify.internal.api.model.Item;
 import org.openhab.binding.spotify.internal.api.model.Me;
 import org.openhab.binding.spotify.internal.api.model.PlayListTracks;
 import org.openhab.binding.spotify.internal.api.model.Playlist;
 import org.openhab.binding.spotify.internal.api.model.Show;
 import org.openhab.binding.spotify.internal.api.model.Track;
-import org.openhab.binding.spotify.internal.api.model.TrackObject;
 import org.openhab.binding.spotify.internal.api.model.Tracks;
 import org.openhab.binding.spotify.internal.discovery.SpotifyDeviceDiscoveryService;
 import org.openhab.core.auth.client.oauth2.AccessTokenRefreshListener;
@@ -74,6 +71,7 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.RawType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
+import org.openhab.core.media.Image;
 import org.openhab.core.media.MediaDevice;
 import org.openhab.core.media.MediaListenner;
 import org.openhab.core.media.MediaService;
@@ -187,6 +185,10 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
     @Override
     public String getStreamUri(String cmdVal) {
         return "";
+    }
+
+    public MediaService getMediaService() {
+        return mediaService;
     }
 
     @Override
@@ -420,38 +422,38 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
             });
         } else if ("Playlists".equals(mediaEntry.getKey())) {
             List<Playlist> playLists = spotifyApi.getPlaylists(start, size);
-            RegisterCollections(mediaEntry, playLists, MediaPlayList.class);
+            mediaService.RegisterCollections(mediaEntry, playLists, MediaPlayList.class);
         } else if ("Albums".equals(mediaEntry.getKey())) {
             List<Album> albums = spotifyApi.getAlbums(start, size);
-            RegisterCollections(mediaEntry, albums, MediaAlbum.class);
+            mediaService.RegisterCollections(mediaEntry, albums, MediaAlbum.class);
         } else if ("Artists".equals(mediaEntry.getKey())) {
             List<Artist> artists = spotifyApi.getArtists(start, size);
-            RegisterCollections(mediaEntry, artists, MediaArtist.class);
+            mediaService.RegisterCollections(mediaEntry, artists, MediaArtist.class);
         } else if ("TopTracks".equals(mediaEntry.getKey())) {
             List<Track> tracks = spotifyApi.getTopTracks(start, size);
-            RegisterCollections(mediaEntry, tracks, MediaTrack.class);
+            mediaService.RegisterCollections(mediaEntry, tracks, MediaTrack.class);
         } else if ("TopArtists".equals(mediaEntry.getKey())) {
             List<Artist> artists = spotifyApi.getTopArtists(start, size);
-            RegisterCollections(mediaEntry, artists, MediaArtist.class);
+            mediaService.RegisterCollections(mediaEntry, artists, MediaArtist.class);
         } else if ("Podcasts".equals(mediaEntry.getKey())) {
             List<Show> shows = spotifyApi.getShows(start, size);
-            RegisterCollections(mediaEntry, shows, MediaPodcast.class);
+            mediaService.RegisterCollections(mediaEntry, shows, MediaPodcast.class);
         } else if ("Tracks".equals(mediaEntry.getKey())) {
             List<Track> tracks = spotifyApi.getTracks(start, size);
-            RegisterCollections(mediaEntry, tracks, MediaTrack.class);
+            mediaService.RegisterCollections(mediaEntry, tracks, MediaTrack.class);
         } else if ("NewReleases".equals(mediaEntry.getKey())) {
             List<Album> albums = spotifyApi.getNewReleases(start, size);
-            RegisterCollections(mediaEntry, albums, MediaAlbum.class);
+            mediaService.RegisterCollections(mediaEntry, albums, MediaAlbum.class);
         } else if ("RecentlyPlayed".equals(mediaEntry.getKey())) {
             List<Track> tracks = spotifyApi.getRecentlyPlayedTracks(start, size);
-            RegisterCollections(mediaEntry, tracks, MediaTrack.class);
+            mediaService.RegisterCollections(mediaEntry, tracks, MediaTrack.class);
         } else if ("Categories".equals(mediaEntry.getKey())) {
             List<Categorie> categories = spotifyApi.getCategories(start, size);
-            RegisterCollections(mediaEntry, categories, MediaPlayList.class);
+            mediaService.RegisterCollections(mediaEntry, categories, MediaPlayList.class);
         } else if (mediaEntry instanceof MediaArtist) {
             MediaArtist mediaArtist = (MediaArtist) mediaEntry;
             List<Album> albumList = spotifyApi.getArtistAlbums(mediaArtist.getKey().replace("spotify:artist:", ""));
-            RegisterCollections(mediaEntry, albumList, MediaAlbum.class);
+            mediaService.RegisterCollections(mediaEntry, albumList, MediaAlbum.class);
         } else if (mediaEntry instanceof MediaAlbum) {
             MediaAlbum mediaAlbum = (MediaAlbum) mediaEntry;
             List<Album> albums = spotifyApi.getAlbums(start, size);
@@ -461,11 +463,11 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
             if (optAlbum.isPresent()) {
                 Album album = optAlbum.get();
                 Tracks tracks = album.getTracks();
-                RegisterCollections(mediaAlbum, tracks.getItems(), MediaTrack.class);
+                mediaService.RegisterCollections(mediaAlbum, tracks.getItems(), MediaTrack.class);
             } else {
                 Album album = spotifyApi.getAlbum(mediaAlbum.getKey().replace("spotify:album:", ""));
                 Tracks tracks = album.getTracks();
-                RegisterCollections(mediaEntry, tracks.getItems(), MediaTrack.class);
+                mediaService.RegisterCollections(mediaEntry, tracks.getItems(), MediaTrack.class);
             }
         } else if (mediaEntry instanceof MediaPlayList) {
             Playlist pl = spotifyApi.getPlaylist(mediaEntry.getKey());
@@ -473,14 +475,14 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
             if (pl != null) {
                 PlayListTracks playListTracks = pl.getTracks();
                 List<Track> tracks = playListTracks.getTrack();
-                RegisterCollections(mediaEntry, tracks, MediaTrack.class);
+                mediaService.RegisterCollections(mediaEntry, tracks, MediaTrack.class);
             }
         } else if (mediaEntry instanceof MediaQueue) {
             logger.trace("MediaQueue");
             CurrentPlay currentPlay = spotifyApi.getCurrentPlaylist(start, size);
             ((MediaQueue) mediaEntry).Clear();
             if (currentPlay != null) {
-                RegisterCollections(mediaEntry, currentPlay.getQueue(), MediaTrack.class);
+                mediaService.RegisterCollections(mediaEntry, currentPlay.getQueue(), MediaTrack.class);
             }
 
         } else if (mediaEntry instanceof MediaSearchResult) {
@@ -524,40 +526,13 @@ public class SpotifyBridgeHandler extends BaseBridgeHandler
             mediaEpisodes.Clear();
             mediaAudiobooks.Clear();
 
-            RegisterCollections(mediaAlbums, apiSearchResult.albums.getItems(), MediaAlbum.class);
-            RegisterCollections(mediaArtists, apiSearchResult.artists.getItems(), MediaArtist.class);
-            RegisterCollections(mediaPlaylists, apiSearchResult.playlists.getItems(), MediaPlayList.class);
-            RegisterCollections(mediaTracks, apiSearchResult.tracks.getItems(), MediaTrack.class);
-            RegisterCollections(mediaShows, apiSearchResult.shows.getItems(), MediaTrack.class);
-            RegisterCollections(mediaEpisodes, apiSearchResult.episodes.getItems(), MediaTrack.class);
-            RegisterCollections(mediaAudiobooks, apiSearchResult.audiobooks.getItems(), MediaTrack.class);
-        }
-    }
-
-    private <T extends BaseEntry, R extends MediaEntry> void RegisterCollections(MediaEntry parentEntry,
-            List<T> collection, Class<R> allocator) {
-        for (T entry : collection) {
-            if (entry == null) {
-                continue;
-            }
-            String key = entry.getUri();
-            String name = entry.getName();
-            String uri = entry.getImagesUrl();
-
-            parentEntry.registerEntry(key, () -> {
-                try {
-                    MediaEntry res = allocator.getDeclaredConstructor().newInstance();
-                    res.setName(name);
-                    res.setKey(key);
-
-                    if (res instanceof MediaCollection) {
-                        ((MediaCollection) res).setArtUri(uri);
-                    }
-                    return res;
-                } catch (Exception ex) {
-                    return null;
-                }
-            });
+            mediaService.RegisterCollections(mediaAlbums, apiSearchResult.albums.getItems(), MediaAlbum.class);
+            mediaService.RegisterCollections(mediaArtists, apiSearchResult.artists.getItems(), MediaArtist.class);
+            mediaService.RegisterCollections(mediaPlaylists, apiSearchResult.playlists.getItems(), MediaPlayList.class);
+            mediaService.RegisterCollections(mediaTracks, apiSearchResult.tracks.getItems(), MediaTrack.class);
+            mediaService.RegisterCollections(mediaShows, apiSearchResult.shows.getItems(), MediaTrack.class);
+            mediaService.RegisterCollections(mediaEpisodes, apiSearchResult.episodes.getItems(), MediaTrack.class);
+            mediaService.RegisterCollections(mediaAudiobooks, apiSearchResult.audiobooks.getItems(), MediaTrack.class);
         }
     }
 

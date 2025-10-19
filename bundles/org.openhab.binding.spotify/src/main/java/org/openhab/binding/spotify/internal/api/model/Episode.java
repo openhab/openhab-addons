@@ -26,14 +26,8 @@ public class Episode extends BaseEntry {
     private boolean explicit;
     private String href;
 
-    private String type;
-
     public String getHref() {
         return href;
-    }
-
-    public String getType() {
-        return type;
     }
 
     public String getDescription() {
