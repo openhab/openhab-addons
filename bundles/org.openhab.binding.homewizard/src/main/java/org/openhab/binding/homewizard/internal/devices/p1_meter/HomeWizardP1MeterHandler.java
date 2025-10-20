@@ -187,7 +187,6 @@ public class HomeWizardP1MeterHandler extends HomeWizardEnergyMeterHandler {
             logger.warn("No Batteries data available");
         }
         if (payload != null) {
-
             updateState(HomeWizardBindingConstants.CHANNEL_GROUP_P1_BATTERIES,
                     HomeWizardBindingConstants.CHANNEL_BATTERIES_MODE, new StringType(payload.getMode()));
             updateState(HomeWizardBindingConstants.CHANNEL_GROUP_P1_BATTERIES,
