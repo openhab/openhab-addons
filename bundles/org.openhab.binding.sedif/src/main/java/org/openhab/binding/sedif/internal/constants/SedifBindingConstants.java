@@ -109,4 +109,6 @@ public class SedifBindingConstants {
     public static final String THING_WATER_METER_PROPERTY_PAYER_MOBILE_PHONE = "payerMobilePhone";
     public static final String THING_WATER_METER_PROPERTY_PAYER_TITLE = "payerTitle";
     public static final String THING_WATER_METER_PROPERTY_PAYER_LOCK = "payerLock";
+
+    public static final int REQUEST_TIMEOUT = 30;
 }

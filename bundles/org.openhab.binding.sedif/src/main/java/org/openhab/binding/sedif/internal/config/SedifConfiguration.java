@@ -27,6 +27,6 @@ public class SedifConfiguration extends Configuration {
     public String meterId = "";
 
     public boolean seemsValid() {
-        return !(contractId.isBlank());
+        return !contractId.isBlank();
     }
 }

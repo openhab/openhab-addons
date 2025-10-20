@@ -18,6 +18,7 @@ import java.time.LocalDate;
 import java.util.Hashtable;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -30,6 +31,7 @@ import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.util.Fields;
+import org.openhab.binding.sedif.internal.constants.SedifBindingConstants;
 import org.openhab.binding.sedif.internal.dto.Action;
 import org.openhab.binding.sedif.internal.dto.Action.ReturnValue;
 import org.openhab.binding.sedif.internal.dto.Actions;
@@ -88,7 +90,7 @@ public class SedifHttpApi {
             String url, HttpClient httpClient, @Nullable AuraCommand cmd) throws SedifException {
         try {
             Request request = httpClient.newRequest(url);
-
+            request = request.timeout(SedifBindingConstants.REQUEST_TIMEOUT, TimeUnit.SECONDS);
             request = request.agent("Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:47.0) Gecko/20100101 Firefox/47.0");
 
             if (cmd == null) {
@@ -144,6 +146,7 @@ public class SedifHttpApi {
                 }
 
                 request = httpClient.newRequest(newUrl);
+                request = request.timeout(SedifBindingConstants.REQUEST_TIMEOUT, TimeUnit.SECONDS);
                 request = request.method(HttpMethod.GET);
                 result = request.send();
 
@@ -161,8 +164,7 @@ public class SedifHttpApi {
                 throw new SedifException("Error requesting '%s': %s", url, result.getContentAsString());
             }
 
-            String content = result.getContentAsString();
-            return content;
+            return result.getContentAsString();
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
             throw new SedifException(e, "Error getting url: '%s'", url);
         }
@@ -170,29 +172,27 @@ public class SedifHttpApi {
 
     public @Nullable AuraResponse doAuth(String userName, String userPassword) throws SedifException {
         // =====================================================================
-        logger.debug("Step 3: DoAuth");
+        logger.trace("Step 3: Invoke the Sedif auth endpoint to do the login");
 
         AuraCommand cmd = AuraCommand.make("", "", "");
         cmd.setUser(userName, userPassword);
 
-        AuraResponse response = getData(bridgeHandler, bridgeHandler.getUrlSedifAuth(), cmd, AuraResponse.class);
-        return response;
+        return getData(bridgeHandler, bridgeHandler.getUrlSedifAuth(), cmd, AuraResponse.class);
     }
 
     public @Nullable Contracts getContracts() throws SedifException {
         // =====================================================================
-        logger.debug("Step 6: Get contracts");
+        logger.trace("Step 6: Get the contracts associated with the sedif accounts");
 
         AuraCommand cmd = AuraCommand.make("", "LTN009_ICL_ContratsGroupements", "getContratsGroupements");
         Actions actions = getData(bridgeHandler, bridgeHandler.getUrlSedifSite(), cmd, Actions.class);
         ReturnValue retValue = actions.actions.get(0).returnValue;
-        Contracts contracts = (Contracts) ((retValue == null) ? null : retValue.returnValue);
-        return contracts;
+        return (Contracts) ((retValue == null) ? null : retValue.returnValue);
     }
 
     public @Nullable ContractDetail getContractDetails(String contractId) throws SedifException {
         // =====================================================================
-        logger.debug("Step 7: Get contractDetails");
+        logger.trace("Step 7: Get the contract details to have information about end user");
 
         AuraCommand cmd = AuraCommand.make("", "LTN008_ICL_ContratDetails", "getContratDetails");
         Hashtable<String, Object> paramsSub = cmd.getParamsSub();
@@ -202,21 +202,19 @@ public class SedifHttpApi {
         }
         Actions actions = getData(bridgeHandler, bridgeHandler.getUrlSedifSite(), cmd, Actions.class);
         ReturnValue retValue = actions.actions.get(0).returnValue;
-        ContractDetail contractDetail = (ContractDetail) ((retValue == null) ? null : retValue.returnValue);
-        return contractDetail;
+        return (ContractDetail) ((retValue == null) ? null : retValue.returnValue);
     }
 
     public @Nullable MeterReading getConsumptionData(ThingSedifHandler handler, LocalDate from, LocalDate to)
             throws SedifException {
-        logger.debug("Step 8: Get data");
+        logger.trace("Step 8: Get the water consumption data");
 
         AuraCommand cmd = AuraCommand.make("", "LTN015_ICL_ContratConsoHisto", "getData");
         Hashtable<String, Object> paramsSub = cmd.getParamsSub();
 
         paramsSub.put("TYPE_PAS", "JOURNEE"); // SEMAINE MOIS
 
-        MeterReading meterReading = getMeasures(handler, bridgeHandler.getUrlSedifSite(), cmd, from, to);
-        return meterReading;
+        return getMeasures(handler, bridgeHandler.getUrlSedifSite(), cmd, from, to);
     }
 
     private @Nullable MeterReading getMeasures(ThingSedifHandler handler, String apiUrl, AuraCommand cmd,
@@ -230,8 +228,7 @@ public class SedifHttpApi {
 
         Actions actions = getData(bridgeHandler, handler, apiUrl, cmd, Actions.class);
         ReturnValue retValue = actions.actions.get(0).returnValue;
-        MeterReading meterResponse = (MeterReading) ((retValue == null) ? null : retValue.returnValue);
-        return meterResponse;
+        return (MeterReading) ((retValue == null) ? null : retValue.returnValue);
     }
 
     public <T> T getData(BridgeSedifWebHandler bridgeHandler, String url, @Nullable AuraCommand cmd, Class<T> clazz)
@@ -364,9 +361,8 @@ public class SedifHttpApi {
 
                 String sub2 = sub1.substring(pos3, pos4 + 3);
                 sub2 = URLDecoder.decode(sub2, "UTF-8");
-                context = gson.fromJson(sub2, AuraContext.class);
 
-                return context;
+                return gson.fromJson(sub2, AuraContext.class);
             }
         } catch (UnsupportedEncodingException e) {
             throw new SedifException("Can't decode context in extractAuraContext {}", e.getMessage(), e);

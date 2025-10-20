@@ -20,14 +20,14 @@ import java.time.format.DateTimeFormatter;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.sedif.internal.api.gson.FloatTypeAdapter;
+import org.openhab.binding.sedif.internal.api.parse.RuntimeTypeAdapterFactory;
 import org.openhab.binding.sedif.internal.dto.ContractDetail;
 import org.openhab.binding.sedif.internal.dto.Contracts;
 import org.openhab.binding.sedif.internal.dto.MeterReading;
-import org.openhab.binding.sedif.internal.dto.RuntimeTypeAdapterFactory;
 import org.openhab.binding.sedif.internal.dto.Value;
 import org.openhab.binding.sedif.internal.handler.BridgeSedifWebHandler;
 import org.openhab.binding.sedif.internal.handler.ThingSedifHandler;
-import org.openhab.binding.sedif.internal.types.FloatTypeAdapter;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TimeZoneProvider;

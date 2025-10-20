@@ -92,7 +92,6 @@ public class BridgeSedifWebHandler extends BaseBridgeHandler {
             + "/s/sfsites/aura?r=1&other.LightningLoginForm.login=1";
 
     private static final String URL_SEDIF_CONTRAT = BASE_URL + "/espace-particuliers/s/contrat?tab=Detail";
-
     private static final String URL_SEDIF_SITE = BASE_URL
             + "/espace-particuliers/s/sfsites/aura?r=36&aura.ApexAction.execute=1";
 
@@ -100,7 +99,6 @@ public class BridgeSedifWebHandler extends BaseBridgeHandler {
     private String sid = "";
 
     private @Nullable AuraContext appCtx;
-
     private @Nullable String token = "";
 
     protected boolean connected = false;

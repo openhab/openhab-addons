@@ -34,7 +34,7 @@
  * com.google.gson.internal.{Streams,TypeAdapters,LazilyParsedNumber}
  * to avoid using the internal package.
  */
-package org.openhab.binding.sedif.internal.dto;
+package org.openhab.binding.sedif.internal.api.parse;
 
 import java.io.EOFException;
 import java.io.IOException;

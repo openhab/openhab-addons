@@ -23,5 +23,10 @@ import org.openhab.binding.sedif.internal.dto.Contract;
  */
 @NonNullByDefault
 public interface SedifListener {
+    /**
+     * The method is call when we detect a new contract on the sedif account.
+     *
+     * @param contract : the contract that was detected.
+     */
     void onContractInit(Contract contract);
 }

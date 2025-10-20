@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.sedif.internal.types;
+package org.openhab.binding.sedif.internal.api.gson;
 
 import java.io.IOException;
 

@@ -41,7 +41,7 @@ You can find it on the Sedif website, under the section "Tous mes contrats".
 You will see a list where the first column labeled "Contrat" is the contractId.
 
 If you have multiple meters on the same contract, you will also need to get your(s) meterId.
-MeterId is displayed at the contract details pages. 
+MeterId is displayed at the contract details page. 
 Just click on the contract number in the contract list, and you will have a detailed pages with a label Compteur n°D08MAxxxxxx.
 
 Note that you do not need to create the meter manually.

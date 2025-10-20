@@ -47,7 +47,6 @@ public class SedifDiscoveryService extends AbstractThingHandlerDiscoveryService<
         implements SedifListener {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_METER);
-
     private static final int SCAN_DURATION_IN_S = 60;
 
     private final Logger logger = LoggerFactory.getLogger(SedifDiscoveryService.class);
@@ -96,7 +95,7 @@ public class SedifDiscoveryService extends AbstractThingHandlerDiscoveryService<
     @Override
     protected synchronized void stopScan() {
         logger.debug("Sedif discovery: Stop {}", thingHandler.getThing().getUID());
-        // thingHandler.removeListener(this);
+        thingHandler.removeListener(this);
         super.stopScan();
     }
 
@@ -108,8 +107,7 @@ public class SedifDiscoveryService extends AbstractThingHandlerDiscoveryService<
     private void detectNewWaterMeterFromContract(final Contract contract) {
         logger.trace("New water meter detection from contract {}", contract);
 
-        BridgeSedifWebHandler bridgeHandler = (BridgeSedifWebHandler) getThingHandler();
-        if (bridgeHandler == null) {
+        if (!(getThingHandler() instanceof BridgeSedifWebHandler bridgeHandler)) {
             return;
         }
 
@@ -135,7 +133,7 @@ public class SedifDiscoveryService extends AbstractThingHandlerDiscoveryService<
                         final String representationProperty = THING_WATER_METER_PROPERTY_NUM_METER;
 
                         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID)
-                                .withProperties(properties).withLabel("WaterMeter " + compteInfo.numCompteur)
+                                .withProperties(properties).withLabel("Water Meter " + compteInfo.numCompteur)
                                 .withThingType(tpUid).withBridge(thingHandler.getThing().getUID())
                                 .withRepresentationProperty(representationProperty).build();
 

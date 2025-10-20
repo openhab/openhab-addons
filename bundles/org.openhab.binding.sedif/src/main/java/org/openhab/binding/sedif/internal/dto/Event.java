@@ -18,7 +18,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * The {@link Events} holds authentication information
+ * The {@link Event} holds authentication information
  *
  * @author Laurent Arnal - Initial contribution
  */
