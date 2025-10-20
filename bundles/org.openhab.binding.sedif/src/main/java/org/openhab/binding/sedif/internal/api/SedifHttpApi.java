@@ -29,7 +29,6 @@ import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.FormContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
-import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.util.Fields;
 import org.openhab.binding.sedif.internal.constants.SedifBindingConstants;
 import org.openhab.binding.sedif.internal.dto.Action;
@@ -136,55 +135,12 @@ public class SedifHttpApi {
             }
 
             ContentResponse result = request.send();
-            String redirectResult = handleRedirect(url, result);
-            if (redirectResult != null) {
-                return redirectResult;
-            }
 
             if (result.getStatus() != 200) {
                 throw new SedifException("Error requesting '%s': %s", url, result.getContentAsString());
             }
 
             return result.getContentAsString();
-        } catch (ExecutionException | TimeoutException e) {
-            throw new SedifException(e, "Error getting url: '%s'", url);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new SedifException(e, "Error getting url: '%s'", url);
-        }
-    }
-
-    // @todo: review this case to add comment about why we do that !
-    public @Nullable String handleRedirect(String url, ContentResponse result) throws SedifException {
-        try {
-            if (result.getStatus() == HttpStatus.TEMPORARY_REDIRECT_307
-                    || result.getStatus() == HttpStatus.MOVED_TEMPORARILY_302) {
-
-                String loc = result.getHeaders().get("Location");
-                String newUrl = "";
-
-                if (loc.startsWith("http://") || loc.startsWith("https://")) {
-                    newUrl = loc;
-                } else {
-                    newUrl = bridgeHandler.getBaseUrl() + loc.substring(1);
-                }
-
-                Request request = httpClient.newRequest(newUrl);
-                request = request.timeout(SedifBindingConstants.REQUEST_TIMEOUT, TimeUnit.SECONDS);
-                request = request.method(HttpMethod.GET);
-                ContentResponse subResult = request.send();
-
-                if (subResult.getStatus() == HttpStatus.TEMPORARY_REDIRECT_307
-                        || subResult.getStatus() == HttpStatus.MOVED_TEMPORARILY_302) {
-                    loc = subResult.getHeaders().get("Location");
-                    String[] urlParts = loc.split("/");
-                    if (urlParts.length < 4) {
-                        throw new SedifException("malformed url : %s", loc);
-                    }
-                    return urlParts[3];
-                }
-            }
-            return null;
         } catch (ExecutionException | TimeoutException e) {
             throw new SedifException(e, "Error getting url: '%s'", url);
         } catch (InterruptedException e) {
