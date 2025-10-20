@@ -104,6 +104,7 @@ public class Characteristic {
         boolean isNumberWithSuffix = false;
         boolean isStateChannel = true;
         boolean isPercentage = "percentage".equals(unit);
+        boolean isEnumLike = false;
 
         String uom = unit == null ? null : switch (unit) {
             case "celsius" -> "°C";
@@ -179,18 +180,24 @@ public class Characteristic {
             case AIR_PURIFIER_STATE_CURRENT:
                 itemType = CoreItemFactory.STRING;
                 dataType = "number";
+                isEnumLike = true;
+                pointTag = Point.STATUS;
                 propertyTag = Property.MODE;
+                isEnumLike = true;
                 break;
 
             case AIR_PURIFIER_STATE_TARGET:
                 itemType = CoreItemFactory.SWITCH;
                 dataType = "number";
+                pointTag = Point.CONTROL;
                 propertyTag = Property.ENABLED;
                 break;
 
             case AIR_QUALITY:
                 itemType = CoreItemFactory.STRING;
                 dataType = "number";
+                isEnumLike = true;
+                pointTag = Point.STATUS;
                 propertyTag = Property.AIR_QUALITY;
                 break;
 
@@ -248,6 +255,7 @@ public class Characteristic {
             case CHARGING_STATE:
                 itemType = CoreItemFactory.STRING;
                 dataType = "number";
+                isEnumLike = true;
                 propertyTag = Property.MODE;
                 category = "battery";
                 break;
@@ -300,6 +308,8 @@ public class Characteristic {
             case DOOR_STATE_CURRENT:
                 itemType = CoreItemFactory.STRING;
                 dataType = "number";
+                isEnumLike = true;
+                pointTag = Point.STATUS;
                 propertyTag = Property.OPEN_STATE;
                 category = "door";
                 break;
@@ -307,6 +317,7 @@ public class Characteristic {
             case DOOR_STATE_TARGET:
                 itemType = CoreItemFactory.SWITCH;
                 dataType = "number";
+                pointTag = Point.CONTROL;
                 propertyTag = Property.OPEN_STATE;
                 category = "door";
                 break;
@@ -314,6 +325,8 @@ public class Characteristic {
             case FAN_STATE_CURRENT:
                 itemType = CoreItemFactory.STRING;
                 dataType = "number";
+                isEnumLike = true;
+                pointTag = Point.STATUS;
                 propertyTag = Property.MODE;
                 category = "fan";
                 break;
@@ -321,6 +334,7 @@ public class Characteristic {
             case FAN_STATE_TARGET:
                 itemType = CoreItemFactory.SWITCH;
                 dataType = "number";
+                pointTag = Point.CONTROL;
                 propertyTag = Property.MODE;
                 category = "fan";
                 break;
@@ -350,6 +364,8 @@ public class Characteristic {
             case HEATER_COOLER_STATE_TARGET:
                 itemType = CoreItemFactory.STRING;
                 dataType = "number";
+                isEnumLike = true;
+                pointTag = isReadOnly ? Point.STATUS : Point.CONTROL;
                 propertyTag = Property.MODE;
                 category = "heating";
                 break;
@@ -357,6 +373,8 @@ public class Characteristic {
             case HEATING_COOLING_CURRENT:
                 itemType = CoreItemFactory.STRING;
                 dataType = "number";
+                isEnumLike = true;
+                pointTag = Point.STATUS;
                 propertyTag = Property.MODE;
                 category = "heating";
                 break;
@@ -364,6 +382,8 @@ public class Characteristic {
             case HEATING_COOLING_TARGET:
                 itemType = CoreItemFactory.STRING;
                 dataType = "number";
+                isEnumLike = true;
+                pointTag = Point.CONTROL;
                 propertyTag = Property.MODE;
                 category = "heating";
                 break;
@@ -385,6 +405,8 @@ public class Characteristic {
             case HUMIDIFIER_DEHUMIDIFIER_STATE_CURRENT:
                 itemType = CoreItemFactory.STRING;
                 dataType = "number";
+                isEnumLike = true;
+                pointTag = Point.STATUS;
                 propertyTag = Property.MODE;
                 category = "humidity";
                 break;
@@ -392,6 +414,8 @@ public class Characteristic {
             case HUMIDIFIER_DEHUMIDIFIER_STATE_TARGET:
                 itemType = CoreItemFactory.STRING;
                 dataType = "number";
+                isEnumLike = true;
+                pointTag = Point.CONTROL;
                 propertyTag = Property.MODE;
                 category = "humidity";
                 break;
@@ -409,6 +433,8 @@ public class Characteristic {
             case IMAGE_ROTATION:
                 itemType = CoreItemFactory.STRING;
                 dataType = "number";
+                isEnumLike = true;
+                pointTag = isReadOnly ? Point.STATUS : Point.CONTROL;
                 propertyTag = Property.MODE;
                 category = "image";
                 break;
@@ -448,7 +474,9 @@ public class Characteristic {
 
             case LOCK_MECHANISM_LAST_KNOWN_ACTION:
                 itemType = CoreItemFactory.STRING;
+                pointTag = Point.STATUS;
                 dataType = "number";
+                isEnumLike = true;
                 category = "lock";
                 break;
 
@@ -467,6 +495,7 @@ public class Characteristic {
             case LOCK_MECHANISM_TARGET_STATE:
                 itemType = CoreItemFactory.SWITCH;
                 dataType = "number";
+                pointTag = Point.CONTROL;
                 propertyTag = Property.LOCK_STATE;
                 category = "lock";
                 break;
@@ -508,6 +537,7 @@ public class Characteristic {
             case OCCUPANCY_DETECTED:
                 itemType = CoreItemFactory.CONTACT;
                 dataType = "number";
+                pointTag = Point.STATUS;
                 propertyTag = Property.PRESENCE;
                 break;
 
@@ -541,6 +571,8 @@ public class Characteristic {
             case POSITION_STATE:
                 itemType = CoreItemFactory.STRING;
                 dataType = "number";
+                isEnumLike = true;
+                pointTag = Point.STATUS;
                 propertyTag = Property.OPENING;
                 break;
 
@@ -551,7 +583,9 @@ public class Characteristic {
 
             case PROGRAM_MODE:
                 itemType = CoreItemFactory.STRING;
+                pointTag = isReadOnly ? Point.STATUS : Point.CONTROL;
                 dataType = "number";
+                isEnumLike = true;
                 propertyTag = Property.MODE;
                 break;
 
@@ -561,6 +595,7 @@ public class Characteristic {
             case RELATIVE_HUMIDITY_TARGET:
                 itemType = CoreItemFactory.NUMBER;
                 numberSuffix = "Dimensionless";
+                pointTag = isReadOnly ? Point.MEASUREMENT : Point.SETPOINT;
                 propertyTag = Property.HUMIDITY;
                 category = "humidity";
                 break;
@@ -598,7 +633,9 @@ public class Characteristic {
             case SECURITY_SYSTEM_STATE_CURRENT:
             case SECURITY_SYSTEM_STATE_TARGET:
                 itemType = CoreItemFactory.STRING;
+                pointTag = isReadOnly ? Point.STATUS : Point.CONTROL;
                 dataType = "number";
+                isEnumLike = true;
                 propertyTag = Property.MODE;
                 break;
 
@@ -627,7 +664,9 @@ public class Characteristic {
 
             case SLAT_STATE_CURRENT:
                 itemType = CoreItemFactory.STRING;
+                pointTag = Point.STATUS;
                 dataType = "number";
+                isEnumLike = true;
                 propertyTag = Property.TILT;
                 break;
 
@@ -641,6 +680,7 @@ public class Characteristic {
 
             case STATUS_ACTIVE:
                 itemType = CoreItemFactory.CONTACT;
+                pointTag = Point.STATUS;
                 propertyTag = Property.MODE;
                 break;
 
@@ -687,6 +727,7 @@ public class Characteristic {
             case SWING_MODE:
                 itemType = CoreItemFactory.SWITCH;
                 dataType = "number";
+                pointTag = isReadOnly ? Point.STATUS : Point.CONTROL;
                 propertyTag = Property.AIRFLOW;
                 break;
 
@@ -805,18 +846,29 @@ public class Characteristic {
                     fragBldr.withPattern("%.1f " + uom);
                 }
 
+                // use valid values to build options for enum-like characteristics
                 if (validValues != null && !validValues.isEmpty()) {
                     List<StateOption> options = validValues.stream().map(v -> v.toString())
                             .map(s -> new StateOption(s, s)).toList();
                     fragBldr.withOptions(options);
                 } else
-                //
+                // use valid range to build options for enum-like characteristics
                 if (validValuesRange != null && validValuesRange.size() == 2) {
                     int min = validValuesRange.stream().mapToInt(Integer::intValue).min().orElse(0); // size check above
                     int max = validValuesRange.stream().mapToInt(Integer::intValue).max().orElse(0); // ditto
                     int step = minStep != null ? minStep.intValue() : 1;
                     List<StateOption> options = new ArrayList<>();
                     for (int i = min; i <= max; i += step) {
+                        String s = Integer.toString(i);
+                        options.add(new StateOption(s, s));
+                    }
+                    fragBldr.withOptions(options);
+                } else
+                // some enum-like characteristics fail to declare valid values/ranges so misuse min/max/step instead
+                if (isEnumLike && minValue instanceof Double min && maxValue instanceof Double max && max > min
+                        && minStep instanceof Double step && step > 0) {
+                    List<StateOption> options = new ArrayList<>();
+                    for (int i = min.intValue(); i <= max.intValue(); i += step.intValue()) {
                         String s = Integer.toString(i);
                         options.add(new StateOption(s, s));
                     }

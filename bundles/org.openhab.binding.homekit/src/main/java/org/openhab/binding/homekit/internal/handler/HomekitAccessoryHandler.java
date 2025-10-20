@@ -158,7 +158,9 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
             } else if (object instanceof UpDownType upDown) {
                 object = upDown == UpDownType.UP ? PercentType.HUNDRED : PercentType.ZERO;
             } else if (object instanceof StopMoveType stopMove && stopMove == StopMoveType.STOP) {
-                // TODO forward as a command to the POSITION HOLD characteristic (if existing)
+                // TODO handle stop command -- either
+                // a) command POSITION HOLD '6F' characteristic (if existing) or
+                // b) move to the current position
             }
         }
 

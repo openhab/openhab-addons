@@ -15,9 +15,13 @@ package org.openhab.binding.homekit.internal;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
+import static org.openhab.binding.homekit.internal.HomekitBindingConstants.FAKE_PROPERTY_CHANNEL_TYPE_UID;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
@@ -25,9 +29,16 @@ import org.openhab.binding.homekit.internal.dto.Accessories;
 import org.openhab.binding.homekit.internal.dto.Accessory;
 import org.openhab.binding.homekit.internal.dto.Characteristic;
 import org.openhab.binding.homekit.internal.dto.Service;
+import org.openhab.binding.homekit.internal.enums.ServiceType;
 import org.openhab.binding.homekit.internal.persistence.HomekitTypeProvider;
+import org.openhab.core.thing.ThingUID;
+import org.openhab.core.thing.type.ChannelDefinition;
+import org.openhab.core.thing.type.ChannelGroupDefinition;
 import org.openhab.core.thing.type.ChannelGroupType;
+import org.openhab.core.thing.type.ChannelKind;
 import org.openhab.core.thing.type.ChannelType;
+import org.openhab.core.types.StateDescription;
+import org.openhab.core.types.StateOption;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
@@ -1570,7 +1581,7 @@ class TestChannelCreationForVeluxJson {
     }
 
     @Test
-    void testChannelDefinitions() {
+    void testBridge() {
         Accessories accessories = GSON.fromJson(TEST_JSON, Accessories.class);
         assertNotNull(accessories);
 
@@ -1591,10 +1602,374 @@ class TestChannelCreationForVeluxJson {
             return null;
         }).when(typeProvider).putChannelType(any(ChannelType.class));
 
-        // TODO test channel definitions for Velux shade or window
+        // get the accessory information for the bridge (accessory 1) and create properties from it
+        ThingUID thingUID = new ThingUID("hhh", "aaa", "bridge1", "accessory1");
+        Accessory accessory = accessories.getAccessory(1);
+        assertNotNull(accessory);
+        Map<String, String> properties = new HashMap<>();
+        for (Service service : accessory.services) {
+            if (ServiceType.ACCESSORY_INFORMATION == service.getServiceType()) {
+                for (Characteristic characteristic : service.characteristics) {
+                    ChannelDefinition channelDef = characteristic.buildAndRegisterChannelDefinition(thingUID,
+                            typeProvider);
+                    if (channelDef != null && FAKE_PROPERTY_CHANNEL_TYPE_UID.equals(channelDef.getChannelTypeUID())) {
+                        String name = channelDef.getId();
+                        String value = channelDef.getLabel();
+                        if (value != null) {
+                            properties.put(name, value);
+                        }
+                    }
+                }
+                break;
+            }
+        }
 
-        // TODO test channel definitions for a venetian blind with tilt support
+        // there should be five properties
+        assertEquals(5, properties.size());
+        assertEquals("VELUX Gateway", properties.get("name"));
+        assertEquals("Netatmo", properties.get("manufacturer"));
+        assertEquals("g373a63", properties.get("serialNumber"));
+        assertEquals("VELUX Gateway", properties.get("model"));
+        assertEquals("202.0.0", properties.get("firmwareRevision"));
+    }
 
-        // TODO test channel definitions for Temperature, Humidity, and CO2 sensors
+    @Test
+    void testSensors() {
+        Accessories accessories = GSON.fromJson(TEST_JSON, Accessories.class);
+        assertNotNull(accessories);
+
+        HomekitTypeProvider typeProvider = mock(HomekitTypeProvider.class);
+
+        List<ChannelGroupType> channelGroupTypes = new ArrayList<>();
+        List<ChannelType> channelTypes = new ArrayList<>();
+
+        doAnswer(invocation -> {
+            ChannelGroupType arg = invocation.getArgument(0);
+            channelGroupTypes.add(arg);
+            return null;
+        }).when(typeProvider).putChannelGroupType(any(ChannelGroupType.class));
+
+        doAnswer(invocation -> {
+            ChannelType arg = invocation.getArgument(0);
+            channelTypes.add(arg);
+            return null;
+        }).when(typeProvider).putChannelType(any(ChannelType.class));
+
+        // test channel definitions for Temperature, Humidity, and CO2 sensors
+        ThingUID thingUID = new ThingUID("hhh", "aaa", "bridge1", "accessory2");
+        Accessory accessory = accessories.getAccessory(2);
+        assertNotNull(accessory);
+        List<ChannelGroupDefinition> channelGroupDefinitions = accessory
+                .buildAndRegisterChannelGroupDefinitions(thingUID, typeProvider);
+
+        // There should be three channel group definitions for the temperature, humidity and co2 sensors
+        assertNotNull(channelGroupDefinitions);
+        assertEquals(3, channelGroupDefinitions.size());
+
+        // There should be four channel types for the temperature, humidity, co2 sensors and co2 detector
+        assertEquals(4, channelTypes.size());
+
+        // There should be three channel group types for the temperature, humidity and co2 sensors
+        assertEquals(3, channelGroupTypes.size());
+
+        // check the temperature sensor
+        ChannelGroupType groupType = channelGroupTypes.get(0);
+        assertNotNull(groupType);
+
+        // Check the temperature sensor channel definition and properties
+        ChannelDefinition channelDefinition = groupType.getChannelDefinitions().stream()
+                .filter(cd -> "10".equals(cd.getProperties().get("iid"))).findFirst().orElse(null);
+        assertNotNull(channelDefinition);
+        assertEquals("Temperature Current", channelDefinition.getLabel());
+
+        ChannelType channelType = channelTypes.stream().filter(ct -> "Temperature Current".equals(ct.getLabel()))
+                .findFirst().orElse(null);
+        assertNotNull(channelType);
+        assertEquals("Number:Temperature", channelType.getItemType());
+        assertEquals(ChannelKind.STATE, channelType.getKind());
+        assertTrue(channelType.getTags().contains("Temperature"));
+        assertTrue(channelType.getTags().contains("Measurement"));
+        assertEquals("°C", channelType.getUnitHint());
+        StateDescription state = channelType.getState();
+        assertNotNull(state);
+        BigDecimal max = state.getMaximum();
+        BigDecimal min = state.getMinimum();
+        BigDecimal step = state.getStep();
+        assertNotNull(max);
+        assertNotNull(min);
+        assertNotNull(step);
+        assertEquals(50.0, max.doubleValue());
+        assertEquals(0.0, min.doubleValue());
+        assertEquals(0.1, step.doubleValue());
+        assertTrue(state.isReadOnly());
+
+        // check the humidity sensor
+        groupType = channelGroupTypes.get(1);
+        assertNotNull(groupType);
+
+        // Check the humidity sensor channel definition and properties
+        channelDefinition = groupType.getChannelDefinitions().stream()
+                .filter(cd -> "13".equals(cd.getProperties().get("iid"))).findFirst().orElse(null);
+        assertNotNull(channelDefinition);
+        assertEquals("Relative Humidity Current", channelDefinition.getLabel());
+
+        channelType = channelTypes.stream().filter(ct -> "Relative Humidity Current".equals(ct.getLabel())).findFirst()
+                .orElse(null);
+        assertNotNull(channelType);
+        assertEquals("Number:Dimensionless", channelType.getItemType());
+        assertEquals(ChannelKind.STATE, channelType.getKind());
+        assertTrue(channelType.getTags().contains("Humidity"));
+        assertTrue(channelType.getTags().contains("Measurement"));
+        assertEquals("%", channelType.getUnitHint());
+        state = channelType.getState();
+        assertNotNull(state);
+        max = state.getMaximum();
+        min = state.getMinimum();
+        step = state.getStep();
+        assertNotNull(max);
+        assertNotNull(min);
+        assertNotNull(step);
+        assertEquals(100.0, max.doubleValue());
+        assertEquals(0.0, min.doubleValue());
+        assertEquals(1.0, step.doubleValue());
+        assertTrue(state.isReadOnly());
+
+        // check the co2 sensor
+        groupType = channelGroupTypes.get(2);
+        assertNotNull(groupType);
+
+        // Check the co2 detected channel definition and properties
+        channelDefinition = groupType.getChannelDefinitions().stream()
+                .filter(cd -> "16".equals(cd.getProperties().get("iid"))).findFirst().orElse(null);
+        assertNotNull(channelDefinition);
+        assertEquals("Carbon Dioxide Detected", channelDefinition.getLabel());
+
+        channelType = channelTypes.stream().filter(ct -> "Carbon Dioxide Detected".equals(ct.getLabel())).findFirst()
+                .orElse(null);
+        assertNotNull(channelType);
+        assertEquals("Contact", channelType.getItemType());
+        assertEquals(ChannelKind.STATE, channelType.getKind());
+        assertTrue(channelType.getTags().contains("Alarm"));
+        assertTrue(channelType.getTags().contains("CO2"));
+        state = channelType.getState();
+        assertNotNull(state);
+        max = state.getMaximum();
+        min = state.getMinimum();
+        step = state.getStep();
+        assertNotNull(max);
+        assertNotNull(min);
+        assertNotNull(step);
+        assertEquals(1.0, max.doubleValue());
+        assertEquals(0.0, min.doubleValue());
+        assertEquals(1.0, step.doubleValue());
+        assertTrue(state.isReadOnly());
+
+        // Check the co2 level channel definition and properties
+        channelDefinition = groupType.getChannelDefinitions().stream()
+                .filter(cd -> "17".equals(cd.getProperties().get("iid"))).findFirst().orElse(null);
+        assertNotNull(channelDefinition);
+        assertEquals("Carbon Dioxide Level", channelDefinition.getLabel());
+
+        channelType = channelTypes.stream().filter(ct -> "Carbon Dioxide Level".equals(ct.getLabel())).findFirst()
+                .orElse(null);
+        assertNotNull(channelType);
+        assertEquals("Number:Dimensionless", channelType.getItemType());
+        assertEquals(ChannelKind.STATE, channelType.getKind());
+        assertTrue(channelType.getTags().contains("CO2"));
+        assertTrue(channelType.getTags().contains("Measurement"));
+        assertEquals("ppm", channelType.getUnitHint());
+        state = channelType.getState();
+        assertNotNull(state);
+        max = state.getMaximum();
+        min = state.getMinimum();
+        step = state.getStep();
+        assertNotNull(max);
+        assertNotNull(min);
+        assertNull(step);
+        assertEquals(5000.0, max.doubleValue());
+        assertEquals(0.0, min.doubleValue());
+        assertTrue(state.isReadOnly());
+    }
+
+    @Test
+    void testVenetianBlind() {
+        Accessories accessories = GSON.fromJson(TEST_JSON, Accessories.class);
+        assertNotNull(accessories);
+
+        HomekitTypeProvider typeProvider = mock(HomekitTypeProvider.class);
+
+        List<ChannelGroupType> channelGroupTypes = new ArrayList<>();
+        List<ChannelType> channelTypes = new ArrayList<>();
+
+        doAnswer(invocation -> {
+            ChannelGroupType arg = invocation.getArgument(0);
+            channelGroupTypes.add(arg);
+            return null;
+        }).when(typeProvider).putChannelGroupType(any(ChannelGroupType.class));
+
+        doAnswer(invocation -> {
+            ChannelType arg = invocation.getArgument(0);
+            channelTypes.add(arg);
+            return null;
+        }).when(typeProvider).putChannelType(any(ChannelType.class));
+
+        ThingUID thingUID = new ThingUID("hhh", "aaa", "bridge1", "accessory9");
+        Accessory accessory = accessories.getAccessory(9);
+        assertNotNull(accessory);
+        List<ChannelGroupDefinition> channelGroupDefinitions = accessory
+                .buildAndRegisterChannelGroupDefinitions(thingUID, typeProvider);
+
+        // There should be one channel group definition for the blind
+        assertNotNull(channelGroupDefinitions);
+        assertEquals(1, channelGroupDefinitions.size());
+
+        // There should be five channel types for position target/actual, tilt target/actual, and state
+        assertEquals(5, channelTypes.size());
+
+        // There should be one channel group type for the blind
+        assertEquals(1, channelGroupTypes.size());
+
+        // check the channels for the blind
+        ChannelGroupType groupType = channelGroupTypes.get(0);
+        assertNotNull(groupType);
+
+        // target position channel
+        ChannelDefinition channelDefinition = groupType.getChannelDefinitions().stream()
+                .filter(cd -> "11".equals(cd.getProperties().get("iid"))).findFirst().orElse(null);
+        assertNotNull(channelDefinition);
+        assertEquals("Position Target", channelDefinition.getLabel());
+
+        ChannelType channelType = channelTypes.stream().filter(ct -> "Position Target".equals(ct.getLabel()))
+                .findFirst().orElse(null);
+        assertNotNull(channelType);
+        assertEquals("Rollershutter", channelType.getItemType());
+        assertEquals(ChannelKind.STATE, channelType.getKind());
+        assertTrue(channelType.getTags().contains("Control"));
+        assertTrue(channelType.getTags().contains("Opening"));
+        assertNull(channelType.getUnitHint());
+        StateDescription state = channelType.getState();
+        assertNotNull(state);
+        BigDecimal max = state.getMaximum();
+        BigDecimal min = state.getMinimum();
+        BigDecimal step = state.getStep();
+        assertNotNull(max);
+        assertNotNull(min);
+        assertNotNull(step);
+        assertEquals(100.0, max.doubleValue());
+        assertEquals(0.0, min.doubleValue());
+        assertEquals(1.0, step.doubleValue());
+        assertFalse(state.isReadOnly());
+
+        // current position channel
+        channelDefinition = groupType.getChannelDefinitions().stream()
+                .filter(cd -> "10".equals(cd.getProperties().get("iid"))).findFirst().orElse(null);
+        assertNotNull(channelDefinition);
+        assertEquals("Position Current", channelDefinition.getLabel());
+
+        channelType = channelTypes.stream().filter(ct -> "Position Current".equals(ct.getLabel())).findFirst()
+                .orElse(null);
+        assertNotNull(channelType);
+        assertEquals("Rollershutter", channelType.getItemType());
+        assertEquals(ChannelKind.STATE, channelType.getKind());
+        assertTrue(channelType.getTags().contains("Status"));
+        assertTrue(channelType.getTags().contains("Opening"));
+        assertNull(channelType.getUnitHint());
+        state = channelType.getState();
+        assertNotNull(state);
+        max = state.getMaximum();
+        min = state.getMinimum();
+        step = state.getStep();
+        assertNotNull(max);
+        assertNotNull(min);
+        assertNotNull(step);
+        assertEquals(100.0, max.doubleValue());
+        assertEquals(0.0, min.doubleValue());
+        assertEquals(1.0, step.doubleValue());
+        assertTrue(state.isReadOnly());
+
+        // current tilt channel
+        channelDefinition = groupType.getChannelDefinitions().stream()
+                .filter(cd -> "13".equals(cd.getProperties().get("iid"))).findFirst().orElse(null);
+        assertNotNull(channelDefinition);
+        assertEquals("Horizontal Tilt Current", channelDefinition.getLabel());
+
+        channelType = channelTypes.stream().filter(ct -> "Horizontal Tilt Current".equals(ct.getLabel())).findFirst()
+                .orElse(null);
+        assertNotNull(channelType);
+        assertEquals("Number:Angle", channelType.getItemType());
+        assertEquals(ChannelKind.STATE, channelType.getKind());
+        assertTrue(channelType.getTags().contains("Measurement"));
+        assertTrue(channelType.getTags().contains("Tilt"));
+        assertEquals("°", channelType.getUnitHint());
+        state = channelType.getState();
+        assertNotNull(state);
+        max = state.getMaximum();
+        min = state.getMinimum();
+        step = state.getStep();
+        assertNotNull(max);
+        assertNotNull(min);
+        assertNotNull(step);
+        assertEquals(90.0, max.doubleValue());
+        assertEquals(-90.0, min.doubleValue());
+        assertEquals(1.0, step.doubleValue());
+        assertTrue(state.isReadOnly());
+
+        // target tilt channel
+        channelDefinition = groupType.getChannelDefinitions().stream()
+                .filter(cd -> "14".equals(cd.getProperties().get("iid"))).findFirst().orElse(null);
+        assertNotNull(channelDefinition);
+        assertEquals("Horizontal Tilt Target", channelDefinition.getLabel());
+
+        channelType = channelTypes.stream().filter(ct -> "Horizontal Tilt Target".equals(ct.getLabel())).findFirst()
+                .orElse(null);
+        assertNotNull(channelType);
+        assertEquals("Number:Angle", channelType.getItemType());
+        assertEquals(ChannelKind.STATE, channelType.getKind());
+        assertTrue(channelType.getTags().contains("Setpoint"));
+        assertTrue(channelType.getTags().contains("Tilt"));
+        assertEquals("°", channelType.getUnitHint());
+        state = channelType.getState();
+        assertNotNull(state);
+        max = state.getMaximum();
+        min = state.getMinimum();
+        step = state.getStep();
+        assertNotNull(max);
+        assertNotNull(min);
+        assertNotNull(step);
+        assertEquals(90.0, max.doubleValue());
+        assertEquals(-90.0, min.doubleValue());
+        assertEquals(1.0, step.doubleValue());
+        assertFalse(state.isReadOnly());
+
+        // position status channel
+        channelDefinition = groupType.getChannelDefinitions().stream()
+                .filter(cd -> "12".equals(cd.getProperties().get("iid"))).findFirst().orElse(null);
+        assertNotNull(channelDefinition);
+        assertEquals("Position State", channelDefinition.getLabel());
+
+        channelType = channelTypes.stream().filter(ct -> "Position State".equals(ct.getLabel())).findFirst()
+                .orElse(null);
+        assertNotNull(channelType);
+        assertEquals("String", channelType.getItemType());
+        assertEquals(ChannelKind.STATE, channelType.getKind());
+        assertTrue(channelType.getTags().contains("Status"));
+        assertTrue(channelType.getTags().contains("Opening"));
+        assertNull(channelType.getUnitHint());
+        state = channelType.getState();
+        assertNotNull(state);
+        max = state.getMaximum();
+        min = state.getMinimum();
+        step = state.getStep();
+        assertNotNull(max);
+        assertNotNull(min);
+        assertNotNull(step);
+        assertEquals(2.0, max.doubleValue());
+        assertEquals(0.0, min.doubleValue());
+        assertEquals(1.0, step.doubleValue());
+        assertTrue(state.isReadOnly());
+        List<StateOption> options = state.getOptions();
+        assertNotNull(options);
+        assertEquals(3, options.size());
+        assertEquals("2", options.get(2).getValue());
     }
 }
