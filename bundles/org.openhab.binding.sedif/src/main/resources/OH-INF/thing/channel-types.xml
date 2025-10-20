@@ -17,7 +17,7 @@
 		<category>flow</category>
 		<tags>
 			<tag>Measurement</tag>
-            <tag>Water</tag>
+			<tag>Water</tag>
 		</tags>
 		<state readOnly="true" pattern="%.3f %unit%"/>
 	</channel-type>

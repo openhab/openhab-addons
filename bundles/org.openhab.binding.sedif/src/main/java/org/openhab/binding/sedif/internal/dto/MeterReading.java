@@ -109,5 +109,4 @@ public class MeterReading extends Value {
     public MeterReading() {
         data = new Data();
     }
-
 }

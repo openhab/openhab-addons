@@ -57,7 +57,6 @@ import com.google.gson.JsonSyntaxException;
  */
 @NonNullByDefault
 public class SedifHttpApi {
-
     private final Logger logger = LoggerFactory.getLogger(SedifHttpApi.class);
     private final Gson gson;
     private final HttpClient httpClient;
