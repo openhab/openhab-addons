@@ -36,6 +36,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.sedif.internal.api.ExpiringDayCache;
 import org.openhab.binding.sedif.internal.api.SedifHttpApi;
+import org.openhab.binding.sedif.internal.api.helpers.MeterReadingHelper;
 import org.openhab.binding.sedif.internal.config.SedifConfiguration;
 import org.openhab.binding.sedif.internal.dto.Contract;
 import org.openhab.binding.sedif.internal.dto.ContractDetail;
@@ -128,7 +129,7 @@ public class ThingSedifHandler extends BaseThingHandler {
 
                     try {
                         MeterReading meterReading = updateConsumptionData(today.minusDays(89), today, false);
-                        meterReading.calcAgregat();
+                        MeterReadingHelper.calcAgregat(meterReading);
                         return meterReading;
                     } catch (SedifException ex) {
                         return null;
@@ -342,54 +343,51 @@ public class ThingSedifHandler extends BaseThingHandler {
 
             Map<String, String> props = this.editProperties();
 
-            addProps(props, THING_WATER_METER_PROPERTY_CONTRACT_ORGANIZING_AUTHORITY,
-                    values.contrat.autoriteOrganisatrice);
-            addProps(props, THING_WATER_METER_PROPERTY_CONTRACT_DATE_SORTIE_EPT, values.contrat.dateSortieEPT);
-            addProps(props, THING_WATER_METER_PROPERTY_CONTRACT_EINVOICE, "" + values.contrat.eFacture);
-            addProps(props, THING_WATER_METER_PROPERTY_CONTRACT_ICL_ACTIVE, "" + values.contrat.iclActive);
-            addProps(props, THING_WATER_METER_PROPERTY_CONTRACT_DIRECT_DEBIT, "" + values.contrat.prelevAuto);
-            addProps(props, THING_WATER_METER_PROPERTY_CONTRACT_NAME, values.contrat.name);
-            addProps(props, THING_WATER_METER_PROPERTY_CONTRACT_STREET, values.contrat.siteRue);
-            addProps(props, THING_WATER_METER_PROPERTY_CONTRACT_POST_CODE, values.contrat.siteCp);
-            addProps(props, THING_WATER_METER_PROPERTY_CONTRACT_TOWN, values.contrat.siteCommune);
-            addProps(props, THING_WATER_METER_PROPERTY_CONTRACT_STATE, values.contrat.statut);
-            addProps(props, THING_WATER_METER_PROPERTY_CONTRACT_BALANCE, "" + values.solde);
+            addProps(props, PROPERTY_CONTRACT_ORGANIZING_AUTHORITY, values.contrat.autoriteOrganisatrice);
+            addProps(props, PROPERTY_CONTRACT_DATE_SORTIE_EPT, values.contrat.dateSortieEPT);
+            addProps(props, PROPERTY_CONTRACT_EINVOICE, "" + values.contrat.eFacture);
+            addProps(props, PROPERTY_CONTRACT_ICL_ACTIVE, "" + values.contrat.iclActive);
+            addProps(props, PROPERTY_CONTRACT_DIRECT_DEBIT, "" + values.contrat.prelevAuto);
+            addProps(props, PROPERTY_CONTRACT_NAME, values.contrat.name);
+            addProps(props, PROPERTY_CONTRACT_STREET, values.contrat.siteRue);
+            addProps(props, PROPERTY_CONTRACT_POST_CODE, values.contrat.siteCp);
+            addProps(props, PROPERTY_CONTRACT_TOWN, values.contrat.siteCommune);
+            addProps(props, PROPERTY_CONTRACT_STATE, values.contrat.statut);
+            addProps(props, PROPERTY_CONTRACT_BALANCE, "" + values.solde);
 
             CompteInfo comptInfo = values.compteInfo.get(0);
-            addProps(props, THING_WATER_METER_PROPERTY_ELMA, comptInfo.eLma);
-            addProps(props, THING_WATER_METER_PROPERTY_ELMB, comptInfo.eLmb);
-            addProps(props, THING_WATER_METER_PROPERTY_ID_PDS, comptInfo.idPds);
-            addProps(props, THING_WATER_METER_PROPERTY_NUM_METER, comptInfo.numCompteur);
+            addProps(props, PROPERTY_ELMA, comptInfo.eLma);
+            addProps(props, PROPERTY_ELMB, comptInfo.eLmb);
+            addProps(props, PROPERTY_ID_PDS, comptInfo.idPds);
+            addProps(props, PROPERTY_NUM_METER, comptInfo.numCompteur);
 
-            addProps(props, THING_WATER_METER_PROPERTY_CUSTOMER_BILLING_TOWN, values.contratClient.billingCity);
-            addProps(props, THING_WATER_METER_PROPERTY_CUSTOMER_BILLING_POST_CODE,
-                    values.contratClient.billingPostalCode);
-            addProps(props, THING_WATER_METER_PROPERTY_CUSTOMER_BILLING_STREET, values.contratClient.billingStreet);
-            addProps(props, THING_WATER_METER_PROPERTY_CUSTOMER_FIRST_NAME, values.contratClient.firstName);
-            addProps(props, THING_WATER_METER_PROPERTY_CUSTOMER_LAST_NAME, values.contratClient.lastName);
-            addProps(props, THING_WATER_METER_PROPERTY_CUSTOMER_NAME_SUP, values.contratClient.name);
-            addProps(props, THING_WATER_METER_PROPERTY_CUSTOMER_EMAIL, values.contratClient.email);
-            addProps(props, THING_WATER_METER_PROPERTY_CUSTOMER_GC, "" + values.contratClient.gC);
-            addProps(props, THING_WATER_METER_PROPERTY_CUSTOMER_MOBILE_PHONE, values.contratClient.mobilePhone);
-            addProps(props, THING_WATER_METER_PROPERTY_CUSTOMER_TITLE, values.contratClient.salutation);
-            addProps(props, THING_WATER_METER_PROPERTY_CUSTOMER_LOCK, "" + values.contratClient.verrouillageFiche);
+            addProps(props, PROPERTY_CUSTOMER_BILLING_TOWN, values.contratClient.billingCity);
+            addProps(props, PROPERTY_CUSTOMER_BILLING_POST_CODE, values.contratClient.billingPostalCode);
+            addProps(props, PROPERTY_CUSTOMER_BILLING_STREET, values.contratClient.billingStreet);
+            addProps(props, PROPERTY_CUSTOMER_FIRST_NAME, values.contratClient.firstName);
+            addProps(props, PROPERTY_CUSTOMER_LAST_NAME, values.contratClient.lastName);
+            addProps(props, PROPERTY_CUSTOMER_NAME_SUP, values.contratClient.name);
+            addProps(props, PROPERTY_CUSTOMER_EMAIL, values.contratClient.email);
+            addProps(props, PROPERTY_CUSTOMER_GC, "" + values.contratClient.gC);
+            addProps(props, PROPERTY_CUSTOMER_MOBILE_PHONE, values.contratClient.mobilePhone);
+            addProps(props, PROPERTY_CUSTOMER_TITLE, values.contratClient.salutation);
+            addProps(props, PROPERTY_CUSTOMER_LOCK, "" + values.contratClient.verrouillageFiche);
 
-            addProps(props, THING_WATER_METER_PROPERTY_PAYER_BILLING_CITY, values.payeurClient.billingCity);
-            addProps(props, THING_WATER_METER_PROPERTY_PAYER_BILLING_POSTAL_CODE,
-                    values.payeurClient.billingPostalCode);
-            addProps(props, THING_WATER_METER_PROPERTY_PAYER_BILLING_STREET, values.payeurClient.billingStreet);
-            addProps(props, THING_WATER_METER_PROPERTY_PAYER_FIRST_NAME, values.payeurClient.firstName);
-            addProps(props, THING_WATER_METER_PROPERTY_PAYER_LAST_NAME, values.payeurClient.lastName);
-            addProps(props, THING_WATER_METER_PROPERTY_PAYER_NAME_SUP, values.payeurClient.name);
-            addProps(props, THING_WATER_METER_PROPERTY_PAYER_EMAIL, values.payeurClient.email);
-            addProps(props, THING_WATER_METER_PROPERTY_PAYER_GC, "" + values.payeurClient.gC);
-            addProps(props, THING_WATER_METER_PROPERTY_PAYER_MOBILE_PHONE, values.payeurClient.mobilePhone);
-            addProps(props, THING_WATER_METER_PROPERTY_PAYER_TITLE, values.payeurClient.salutation);
-            addProps(props, THING_WATER_METER_PROPERTY_PAYER_LOCK, "" + values.payeurClient.verrouillageFiche);
+            addProps(props, PROPERTY_PAYER_BILLING_CITY, values.payeurClient.billingCity);
+            addProps(props, PROPERTY_PAYER_BILLING_POSTAL_CODE, values.payeurClient.billingPostalCode);
+            addProps(props, PROPERTY_PAYER_BILLING_STREET, values.payeurClient.billingStreet);
+            addProps(props, PROPERTY_PAYER_FIRST_NAME, values.payeurClient.firstName);
+            addProps(props, PROPERTY_PAYER_LAST_NAME, values.payeurClient.lastName);
+            addProps(props, PROPERTY_PAYER_NAME_SUP, values.payeurClient.name);
+            addProps(props, PROPERTY_PAYER_EMAIL, values.payeurClient.email);
+            addProps(props, PROPERTY_PAYER_GC, "" + values.payeurClient.gC);
+            addProps(props, PROPERTY_PAYER_MOBILE_PHONE, values.payeurClient.mobilePhone);
+            addProps(props, PROPERTY_PAYER_TITLE, values.payeurClient.salutation);
+            addProps(props, PROPERTY_PAYER_LOCK, "" + values.payeurClient.verrouillageFiche);
 
             updateProperties(props);
         }, () -> {
-            updateState(SEDIF_BASE_GROUP, CHANNEL_CONSUMPTION, new QuantityType<>(0.00, Units.LITRE));
+            updateState(GROUP_BASE, CHANNEL_CONSUMPTION, new QuantityType<>(0.00, Units.LITRE));
         });
     }
 
@@ -424,11 +422,11 @@ public class ThingSedifHandler extends BaseThingHandler {
                 dayConsoMinus3 = values.data.consommation[values.data.consommation.length - 3].consommation;
             }
 
-            updateState(SEDIF_DAILY_CONSUMPTION_GROUP, CHANNEL_DAILY_YESTERDAY_CONSUMPTION,
+            updateState(GROUP_DAILY_CONSUMPTION, CHANNEL_DAILY_YESTERDAY_CONSUMPTION,
                     new QuantityType<>(yesterdayConso, Units.LITRE));
-            updateState(SEDIF_DAILY_CONSUMPTION_GROUP, CHANNEL_DAILY_DAY_MINUS_2_CONSUMPTION,
+            updateState(GROUP_DAILY_CONSUMPTION, CHANNEL_DAILY_DAY_MINUS_2_CONSUMPTION,
                     new QuantityType<>(dayConsoMinus2, Units.LITRE));
-            updateState(SEDIF_DAILY_CONSUMPTION_GROUP, CHANNEL_DAILY_DAY_MINUS_3_CONSUMPTION,
+            updateState(GROUP_DAILY_CONSUMPTION, CHANNEL_DAILY_DAY_MINUS_3_CONSUMPTION,
                     new QuantityType<>(dayConsoMinus3, Units.LITRE));
 
             // ===========================
@@ -454,11 +452,11 @@ public class ThingSedifHandler extends BaseThingHandler {
                 }
             }
 
-            updateState(SEDIF_WEEKLY_CONSUMPTION_GROUP, CHANNEL_WEEKLY_THIS_WEEK_CONSUMPTION,
+            updateState(GROUP_WEEKLY_CONSUMPTION, CHANNEL_WEEKLY_THIS_WEEK_CONSUMPTION,
                     new QuantityType<>(thisWeekConso, Units.LITRE));
-            updateState(SEDIF_WEEKLY_CONSUMPTION_GROUP, CHANNEL_WEEKLY_LAST_WEEK_CONSUMPTION,
+            updateState(GROUP_WEEKLY_CONSUMPTION, CHANNEL_WEEKLY_LAST_WEEK_CONSUMPTION,
                     new QuantityType<>(lastWeekConso, Units.LITRE));
-            updateState(SEDIF_WEEKLY_CONSUMPTION_GROUP, CHANNEL_WEEKLY_WEEK_MINUS_2_CONSUMPTION,
+            updateState(GROUP_WEEKLY_CONSUMPTION, CHANNEL_WEEKLY_WEEK_MINUS_2_CONSUMPTION,
                     new QuantityType<>(weekConsoMinus2, Units.LITRE));
 
             // ===========================
@@ -484,11 +482,11 @@ public class ThingSedifHandler extends BaseThingHandler {
                 }
             }
 
-            updateState(SEDIF_MONTHLY_CONSUMPTION_GROUP, CHANNEL_MONTHLY_THIS_MONTH_CONSUMPTION,
+            updateState(GROUP_MONTHLY_CONSUMPTION, CHANNEL_MONTHLY_THIS_MONTH_CONSUMPTION,
                     new QuantityType<>(thisMonthConso, Units.LITRE));
-            updateState(SEDIF_MONTHLY_CONSUMPTION_GROUP, CHANNEL_MONTHLY_LAST_MONTH_CONSUMPTION,
+            updateState(GROUP_MONTHLY_CONSUMPTION, CHANNEL_MONTHLY_LAST_MONTH_CONSUMPTION,
                     new QuantityType<>(lastMonthConso, Units.LITRE));
-            updateState(SEDIF_MONTHLY_CONSUMPTION_GROUP, CHANNEL_MONTHLY_MONTH_MINUS_2_CONSUMPTION,
+            updateState(GROUP_MONTHLY_CONSUMPTION, CHANNEL_MONTHLY_MONTH_MINUS_2_CONSUMPTION,
                     new QuantityType<>(monthConsoMinus2, Units.LITRE));
 
             // ===========================
@@ -514,26 +512,26 @@ public class ThingSedifHandler extends BaseThingHandler {
                 }
             }
 
-            updateState(SEDIF_YEARLY_CONSUMPTION_GROUP, CHANNEL_YEARLY_THIS_YEAR_CONSUMPTION,
+            updateState(GROUP_YEARLY_CONSUMPTION, CHANNEL_YEARLY_THIS_YEAR_CONSUMPTION,
                     new QuantityType<>(thisYearConso, Units.LITRE));
-            updateState(SEDIF_YEARLY_CONSUMPTION_GROUP, CHANNEL_YEARLY_LAST_YEAR_CONSUMPTION,
+            updateState(GROUP_YEARLY_CONSUMPTION, CHANNEL_YEARLY_LAST_YEAR_CONSUMPTION,
                     new QuantityType<>(lastYearConso, Units.LITRE));
-            updateState(SEDIF_YEARLY_CONSUMPTION_GROUP, CHANNEL_YEARLY_YEAR_MINUS_2_CONSUMPTION,
+            updateState(GROUP_YEARLY_CONSUMPTION, CHANNEL_YEARLY_YEAR_MINUS_2_CONSUMPTION,
                     new QuantityType<>(yearConsoMinus2, Units.LITRE));
 
-            updateState(SEDIF_BASE_GROUP, CHANNEL_PRIX_MOYEN_EAU, new DecimalType(values.prixMoyenEau));
+            updateState(GROUP_BASE, CHANNEL_MEAN_WATER_PRICE, new DecimalType(values.prixMoyenEau));
 
             sedifState.setLastIndexDate(
                     values.data.consommation[values.data.consommation.length - 1].dateIndex.toLocalDate());
-            updateConsumptionTimeSeries(SEDIF_DAILY_CONSUMPTION_GROUP, CHANNEL_CONSUMPTION, values.data.consommation);
-            updateConsumptionTimeSeries(SEDIF_WEEKLY_CONSUMPTION_GROUP, CHANNEL_CONSUMPTION, values.data.weekConso);
-            updateConsumptionTimeSeries(SEDIF_MONTHLY_CONSUMPTION_GROUP, CHANNEL_CONSUMPTION, values.data.monthConso);
-            updateConsumptionTimeSeries(SEDIF_YEARLY_CONSUMPTION_GROUP, CHANNEL_CONSUMPTION, values.data.yearConso);
+            updateConsumptionTimeSeries(GROUP_DAILY_CONSUMPTION, CHANNEL_CONSUMPTION, values.data.consommation);
+            updateConsumptionTimeSeries(GROUP_WEEKLY_CONSUMPTION, CHANNEL_CONSUMPTION, values.data.weekConso);
+            updateConsumptionTimeSeries(GROUP_MONTHLY_CONSUMPTION, CHANNEL_CONSUMPTION, values.data.monthConso);
+            updateConsumptionTimeSeries(GROUP_YEARLY_CONSUMPTION, CHANNEL_CONSUMPTION, values.data.yearConso);
 
             logger.debug("end");
 
         }, () -> {
-            updateState(SEDIF_BASE_GROUP, CHANNEL_CONSUMPTION, new QuantityType<>(0.00, Units.LITRE));
+            updateState(GROUP_BASE, CHANNEL_CONSUMPTION, new QuantityType<>(0.00, Units.LITRE));
         });
     }
 

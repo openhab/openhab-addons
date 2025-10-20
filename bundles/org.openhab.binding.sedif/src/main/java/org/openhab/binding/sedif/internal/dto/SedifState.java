@@ -14,6 +14,7 @@ package org.openhab.binding.sedif.internal.dto;
 
 import java.time.LocalDate;
 
+import org.openhab.binding.sedif.internal.api.helpers.MeterReadingHelper;
 import org.openhab.binding.sedif.internal.types.SedifException;
 
 /**
@@ -45,12 +46,12 @@ public class SedifState {
             return this.meterReading;
         }
 
-        incomingMeterReading.check();
+        MeterReadingHelper.check(incomingMeterReading);
 
         if (this.meterReading == null) {
             this.meterReading = new MeterReading();
         }
 
-        return this.meterReading.merge(incomingMeterReading);
+        return MeterReadingHelper.merge(this.meterReading, incomingMeterReading);
     }
 }

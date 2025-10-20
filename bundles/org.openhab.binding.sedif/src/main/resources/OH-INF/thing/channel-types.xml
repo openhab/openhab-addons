@@ -5,12 +5,8 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<channel-type id="water-price">
-		<item-type>Number:EnergyPrice</item-type>
-		<label>Water Energy Price</label>
-		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
-		</tags>
+		<item-type>Number:Currency</item-type>
+		<label>Water Price</label>
 		<state readOnly="true" pattern="%.0f"/>
 	</channel-type>
 
@@ -20,8 +16,8 @@
 		<description>Consumption at given time interval</description>
 		<category>flow</category>
 		<tags>
-			<tag>Status</tag>
-			<tag>Timestamp</tag>
+			<tag>Measurement</tag>
+            <tag>Water</tag>
 		</tags>
 		<state readOnly="true" pattern="%.3f %unit%"/>
 	</channel-type>

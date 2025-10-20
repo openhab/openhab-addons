@@ -114,6 +114,9 @@ public class SedifHttpApi {
                     String meterIdB = handler.getMeterIdB();
                     String meterIdA = handler.getMeterIdA();
 
+                    // We put the to key syntax contratId & contractId because of an error on Sedif side.
+                    // Some api calls need the contratId syntax, and other the contactId syntax, so putting it both is
+                    // ok
                     if (!"".equals(contractId)) {
                         paramsSub.put("contratId", contractId);
                         paramsSub.put("contractId", contractId);
@@ -134,8 +137,30 @@ public class SedifHttpApi {
             }
 
             ContentResponse result = request.send();
+            String redirectResult = handleRedirect(url, result);
+            if (redirectResult != null) {
+                return redirectResult;
+            }
+
+            if (result.getStatus() != 200) {
+                throw new SedifException("Error requesting '%s': %s", url, result.getContentAsString());
+            }
+
+            return result.getContentAsString();
+        } catch (ExecutionException | TimeoutException e) {
+            throw new SedifException(e, "Error getting url: '%s'", url);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new SedifException(e, "Error getting url: '%s'", url);
+        }
+    }
+
+    // @todo: review this case to add comment about why we do that !
+    public @Nullable String handleRedirect(String url, ContentResponse result) throws SedifException {
+        try {
             if (result.getStatus() == HttpStatus.TEMPORARY_REDIRECT_307
                     || result.getStatus() == HttpStatus.MOVED_TEMPORARILY_302) {
+
                 String loc = result.getHeaders().get("Location");
                 String newUrl = "";
 
@@ -145,14 +170,14 @@ public class SedifHttpApi {
                     newUrl = bridgeHandler.getBaseUrl() + loc.substring(1);
                 }
 
-                request = httpClient.newRequest(newUrl);
+                Request request = httpClient.newRequest(newUrl);
                 request = request.timeout(SedifBindingConstants.REQUEST_TIMEOUT, TimeUnit.SECONDS);
                 request = request.method(HttpMethod.GET);
-                result = request.send();
+                ContentResponse subResult = request.send();
 
-                if (result.getStatus() == HttpStatus.TEMPORARY_REDIRECT_307
-                        || result.getStatus() == HttpStatus.MOVED_TEMPORARILY_302) {
-                    loc = result.getHeaders().get("Location");
+                if (subResult.getStatus() == HttpStatus.TEMPORARY_REDIRECT_307
+                        || subResult.getStatus() == HttpStatus.MOVED_TEMPORARILY_302) {
+                    loc = subResult.getHeaders().get("Location");
                     String[] urlParts = loc.split("/");
                     if (urlParts.length < 4) {
                         throw new SedifException("malformed url : %s", loc);
@@ -160,12 +185,11 @@ public class SedifHttpApi {
                     return urlParts[3];
                 }
             }
-            if (result.getStatus() != 200) {
-                throw new SedifException("Error requesting '%s': %s", url, result.getContentAsString());
-            }
-
-            return result.getContentAsString();
-        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+            return null;
+        } catch (ExecutionException | TimeoutException e) {
+            throw new SedifException(e, "Error getting url: '%s'", url);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
             throw new SedifException(e, "Error getting url: '%s'", url);
         }
     }
@@ -196,6 +220,9 @@ public class SedifHttpApi {
 
         AuraCommand cmd = AuraCommand.make("", "LTN008_ICL_ContratDetails", "getContratDetails");
         Hashtable<String, Object> paramsSub = cmd.getParamsSub();
+
+        // We put the to key syntax contratId & contractId because of an error on Sedif side.
+        // Some api calls need the contratId syntax, and other the contactId syntax, so putting it both is ok
         if (!"".equals(contractId)) {
             paramsSub.put("contratId", contractId);
             paramsSub.put("contractId", contractId);

@@ -37,17 +37,11 @@ public class SedifBindingConstants {
 
     public static final String SEDIF_LASTUPDATE_PROPS = "lastUpdate";
 
-    public static final String SEDIF_BASE_GROUP = "base";
-
-    public static final String SEDIF_DAILY_CONSUMPTION_GROUP = "daily-consumption";
-    public static final String SEDIF_WEEKLY_CONSUMPTION_GROUP = "weekly-consumption";
-    public static final String SEDIF_MONTHLY_CONSUMPTION_GROUP = "monthly-consumption";
-    public static final String SEDIF_YEARLY_CONSUMPTION_GROUP = "yearly-consumption";
-
-    public static final String SEDIF_CONTRAT_GROUP = "contract";
-    public static final String SEDIF_CONTRAT_CLIENT_GROUP = "contract-customer";
-    public static final String SEDIF_CONTRAT_PAYER_GROUP = "contract-payer";
-    public static final String SEDIF_CONTRAT_METER_GROUP = "contract-meter";
+    public static final String GROUP_BASE = "base";
+    public static final String GROUP_DAILY_CONSUMPTION = "daily-consumption";
+    public static final String GROUP_WEEKLY_CONSUMPTION = "weekly-consumption";
+    public static final String GROUP_MONTHLY_CONSUMPTION = "monthly-consumption";
+    public static final String GROUP_YEARLY_CONSUMPTION = "yearly-consumption";
 
     public static final String CHANNEL_CONSUMPTION = "consumption";
 
@@ -67,48 +61,48 @@ public class SedifBindingConstants {
     public static final String CHANNEL_YEARLY_LAST_YEAR_CONSUMPTION = "last-year";
     public static final String CHANNEL_YEARLY_YEAR_MINUS_2_CONSUMPTION = "year-2";
 
-    public static final String CHANNEL_PRIX_MOYEN_EAU = "mean-water-price";
+    public static final String CHANNEL_MEAN_WATER_PRICE = "mean-water-price";
 
-    public static final String THING_WATER_METER_PROPERTY_CONTRACT_ORGANIZING_AUTHORITY = "contractOrganizingAuthority";
-    public static final String THING_WATER_METER_PROPERTY_CONTRACT_DATE_SORTIE_EPT = "contractDateSortieEpt";
-    public static final String THING_WATER_METER_PROPERTY_CONTRACT_EINVOICE = "contractEInvoice";
-    public static final String THING_WATER_METER_PROPERTY_CONTRACT_ICL_ACTIVE = "contractIclActive";
-    public static final String THING_WATER_METER_PROPERTY_CONTRACT_DIRECT_DEBIT = "contractDirectDebit";
-    public static final String THING_WATER_METER_PROPERTY_CONTRACT_NAME = "contractName";
-    public static final String THING_WATER_METER_PROPERTY_CONTRACT_STREET = "contractStreet";
-    public static final String THING_WATER_METER_PROPERTY_CONTRACT_POST_CODE = "contractPostCode";
-    public static final String THING_WATER_METER_PROPERTY_CONTRACT_TOWN = "contractTown";
-    public static final String THING_WATER_METER_PROPERTY_CONTRACT_STATE = "contractState";
-    public static final String THING_WATER_METER_PROPERTY_CONTRACT_BALANCE = "balance";
+    public static final String PROPERTY_CONTRACT_ORGANIZING_AUTHORITY = "contractOrganizingAuthority";
+    public static final String PROPERTY_CONTRACT_DATE_SORTIE_EPT = "contractDateSortieEpt";
+    public static final String PROPERTY_CONTRACT_EINVOICE = "contractEInvoice";
+    public static final String PROPERTY_CONTRACT_ICL_ACTIVE = "contractIclActive";
+    public static final String PROPERTY_CONTRACT_DIRECT_DEBIT = "contractDirectDebit";
+    public static final String PROPERTY_CONTRACT_NAME = "contractName";
+    public static final String PROPERTY_CONTRACT_STREET = "contractStreet";
+    public static final String PROPERTY_CONTRACT_POST_CODE = "contractPostCode";
+    public static final String PROPERTY_CONTRACT_TOWN = "contractTown";
+    public static final String PROPERTY_CONTRACT_STATE = "contractState";
+    public static final String PROPERTY_CONTRACT_BALANCE = "balance";
 
-    public static final String THING_WATER_METER_PROPERTY_ELMA = "meterElema";
-    public static final String THING_WATER_METER_PROPERTY_ELMB = "meterElemb";
-    public static final String THING_WATER_METER_PROPERTY_ID_PDS = "meterIdPds";
-    public static final String THING_WATER_METER_PROPERTY_NUM_METER = "meterId";
+    public static final String PROPERTY_ELMA = "meterElema";
+    public static final String PROPERTY_ELMB = "meterElemb";
+    public static final String PROPERTY_ID_PDS = "meterIdPds";
+    public static final String PROPERTY_NUM_METER = "meterId";
 
-    public static final String THING_WATER_METER_PROPERTY_CUSTOMER_BILLING_TOWN = "customerBillingTown";
-    public static final String THING_WATER_METER_PROPERTY_CUSTOMER_BILLING_POST_CODE = "customerBillingPostCode";
-    public static final String THING_WATER_METER_PROPERTY_CUSTOMER_BILLING_STREET = "customerBillingStreet";
-    public static final String THING_WATER_METER_PROPERTY_CUSTOMER_FIRST_NAME = "customerFirstName";
-    public static final String THING_WATER_METER_PROPERTY_CUSTOMER_LAST_NAME = "customerLastName";
-    public static final String THING_WATER_METER_PROPERTY_CUSTOMER_NAME_SUP = "customernameComplement";
-    public static final String THING_WATER_METER_PROPERTY_CUSTOMER_EMAIL = "customerEmail";
-    public static final String THING_WATER_METER_PROPERTY_CUSTOMER_GC = "customerGc";
-    public static final String THING_WATER_METER_PROPERTY_CUSTOMER_MOBILE_PHONE = "customerMobilePhone";
-    public static final String THING_WATER_METER_PROPERTY_CUSTOMER_TITLE = "customerTitle";
-    public static final String THING_WATER_METER_PROPERTY_CUSTOMER_LOCK = "customerCustomerLock";
+    public static final String PROPERTY_CUSTOMER_BILLING_TOWN = "customerBillingTown";
+    public static final String PROPERTY_CUSTOMER_BILLING_POST_CODE = "customerBillingPostCode";
+    public static final String PROPERTY_CUSTOMER_BILLING_STREET = "customerBillingStreet";
+    public static final String PROPERTY_CUSTOMER_FIRST_NAME = "customerFirstName";
+    public static final String PROPERTY_CUSTOMER_LAST_NAME = "customerLastName";
+    public static final String PROPERTY_CUSTOMER_NAME_SUP = "customernameComplement";
+    public static final String PROPERTY_CUSTOMER_EMAIL = "customerEmail";
+    public static final String PROPERTY_CUSTOMER_GC = "customerGc";
+    public static final String PROPERTY_CUSTOMER_MOBILE_PHONE = "customerMobilePhone";
+    public static final String PROPERTY_CUSTOMER_TITLE = "customerTitle";
+    public static final String PROPERTY_CUSTOMER_LOCK = "customerCustomerLock";
 
-    public static final String THING_WATER_METER_PROPERTY_PAYER_BILLING_CITY = "payerBillingTown";
-    public static final String THING_WATER_METER_PROPERTY_PAYER_BILLING_POSTAL_CODE = "payerBillingPostCode";
-    public static final String THING_WATER_METER_PROPERTY_PAYER_BILLING_STREET = "payerBillingStreet";
-    public static final String THING_WATER_METER_PROPERTY_PAYER_FIRST_NAME = "payerFirstName";
-    public static final String THING_WATER_METER_PROPERTY_PAYER_LAST_NAME = "payerLastName";
-    public static final String THING_WATER_METER_PROPERTY_PAYER_NAME_SUP = "payernameComplement";
-    public static final String THING_WATER_METER_PROPERTY_PAYER_EMAIL = "payerEmail";
-    public static final String THING_WATER_METER_PROPERTY_PAYER_GC = "payerGc";
-    public static final String THING_WATER_METER_PROPERTY_PAYER_MOBILE_PHONE = "payerMobilePhone";
-    public static final String THING_WATER_METER_PROPERTY_PAYER_TITLE = "payerTitle";
-    public static final String THING_WATER_METER_PROPERTY_PAYER_LOCK = "payerLock";
+    public static final String PROPERTY_PAYER_BILLING_CITY = "payerBillingTown";
+    public static final String PROPERTY_PAYER_BILLING_POSTAL_CODE = "payerBillingPostCode";
+    public static final String PROPERTY_PAYER_BILLING_STREET = "payerBillingStreet";
+    public static final String PROPERTY_PAYER_FIRST_NAME = "payerFirstName";
+    public static final String PROPERTY_PAYER_LAST_NAME = "payerLastName";
+    public static final String PROPERTY_PAYER_NAME_SUP = "payernameComplement";
+    public static final String PROPERTY_PAYER_EMAIL = "payerEmail";
+    public static final String PROPERTY_PAYER_GC = "payerGc";
+    public static final String PROPERTY_PAYER_MOBILE_PHONE = "payerMobilePhone";
+    public static final String PROPERTY_PAYER_TITLE = "payerTitle";
+    public static final String PROPERTY_PAYER_LOCK = "payerLock";
 
     public static final int REQUEST_TIMEOUT = 30;
 }

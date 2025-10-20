@@ -178,18 +178,20 @@ public class BridgeSedifWebHandler extends BaseBridgeHandler {
         String resultSt;
 
         // =====================================================================
-        logger.debug("Step 1: getting salesforces context from login page");
-
+        // Step 1: getting salesforces context from login page
+        // =====================================================================
         resultSt = sedifApi.getContent(URL_SEDIF_AUTHENTICATE);
         appCtx = sedifApi.extractAuraContext(resultSt);
 
         if (appCtx == null) {
             throw new SedifException("Unable to find app context in login process");
+        } else {
+            logger.debug("Account {}: Successfully retrieved context {}", lcConfig.username);
         }
 
         // =====================================================================
-        logger.debug("Step 2: Authenticate");
-
+        // Step 2: Authenticate
+        // =====================================================================
         AuraResponse resp = sedifApi.doAuth(lcConfig.username, lcConfig.password);
 
         String urlRedir = "";
@@ -215,22 +217,23 @@ public class BridgeSedifWebHandler extends BaseBridgeHandler {
         }
 
         // =====================================================================
-        logger.debug("Step 3: Confirm login");
-
+        // Step 3: Confirm login
+        // =====================================================================
         resultSt = sedifApi.getContent(urlRedir);
 
         // =====================================================================
-        logger.debug("Step 4: Get contract page");
-
+        // Step 4: Get contract page
+        // =====================================================================
         resultSt = sedifApi.getContent(URL_SEDIF_CONTRAT);
         appCtx = sedifApi.extractAuraContext(resultSt);
 
         if (appCtx == null) {
             throw new SedifException("Unable to find app context in login process");
         }
-        // =====================================================================
 
-        logger.debug("Step 5: Get cookie auth");
+        // =====================================================================
+        // Step 5: Get cookie auth
+        // =====================================================================
         List<HttpCookie> lCookie = httpClient.getCookieStore().getCookies();
         token = "";
         for (HttpCookie cookie : lCookie) {
@@ -244,7 +247,8 @@ public class BridgeSedifWebHandler extends BaseBridgeHandler {
         }
 
         // =====================================================================
-        logger.debug("Step 6a: Get contract");
+        // Step 6a: Get contract
+        // =====================================================================
         Contracts contracts = sedifApi.getContracts();
         if (contracts != null && contracts.contracts != null) {
             for (Contract contract : contracts.contracts) {

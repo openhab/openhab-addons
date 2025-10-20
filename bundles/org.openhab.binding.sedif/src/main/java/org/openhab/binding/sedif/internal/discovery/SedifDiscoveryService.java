@@ -125,12 +125,12 @@ public class SedifDiscoveryService extends AbstractThingHandlerDiscoveryService<
                                 thingHandler.getThing().getUID().getId());
 
                         Map<String, Object> properties = new HashMap<>();
-                        properties.put(THING_WATER_METER_PROPERTY_ELMA, compteInfo.eLma);
-                        properties.put(THING_WATER_METER_PROPERTY_ELMB, compteInfo.eLmb);
-                        properties.put(THING_WATER_METER_PROPERTY_NUM_METER, compteInfo.numCompteur);
-                        properties.put(THING_WATER_METER_PROPERTY_ID_PDS, compteInfo.idPds);
+                        properties.put(PROPERTY_ELMA, compteInfo.eLma);
+                        properties.put(PROPERTY_ELMB, compteInfo.eLmb);
+                        properties.put(PROPERTY_NUM_METER, compteInfo.numCompteur);
+                        properties.put(PROPERTY_ID_PDS, compteInfo.idPds);
 
-                        final String representationProperty = THING_WATER_METER_PROPERTY_NUM_METER;
+                        final String representationProperty = PROPERTY_NUM_METER;
 
                         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID)
                                 .withProperties(properties).withLabel("Water Meter " + compteInfo.numCompteur)

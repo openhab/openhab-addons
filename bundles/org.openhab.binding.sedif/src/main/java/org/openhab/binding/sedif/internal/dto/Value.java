@@ -17,6 +17,5 @@ package org.openhab.binding.sedif.internal.dto;
  *
  * @author Laurent Arnal - Initial contribution
  */
-public class Value {
-
+public abstract class Value {
 }
