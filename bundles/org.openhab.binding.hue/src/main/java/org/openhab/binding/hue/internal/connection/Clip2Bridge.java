@@ -541,9 +541,11 @@ public class Clip2Bridge implements Closeable {
      */
     public static boolean isClip2Supported(String hostName) throws IOException {
         String response = null;
+        HttpURLConnection httpConnection = null;
+        HttpsURLConnection httpsConnection = null;
         try {
             URL url = new URI(String.format(FORMAT_URL_CONFIG, hostName)).toURL();
-            HttpURLConnection httpConnection = (HttpURLConnection) url.openConnection();
+            httpConnection = (HttpURLConnection) url.openConnection();
             /*
              * TODO we manually check if the bridge redirects to HTTPS, and if so, since v3 bridges
              * currently don't provide a full certificate chain we force use of a TrustAllTrustManager
@@ -552,24 +554,30 @@ public class Clip2Bridge implements Closeable {
             int status = httpConnection.getResponseCode();
             if (status == 301 || status == 302) {
                 String redirectUrl = httpConnection.getHeaderField("Location");
-                if (redirectUrl.startsWith("https://")) {
+                if (redirectUrl != null && redirectUrl.startsWith("https://")) {
                     SSLContext sslContext = SSLContext.getInstance("TLS");
                     sslContext.init(null, new TrustAllTrustManager[] { TrustAllTrustManager.getInstance() }, null);
-                    HttpsURLConnection httpsConnection = (HttpsURLConnection) new URI(redirectUrl).toURL()
-                            .openConnection();
+                    httpsConnection = (HttpsURLConnection) new URI(redirectUrl).toURL().openConnection();
                     httpsConnection.setSSLSocketFactory(sslContext.getSocketFactory());
                     try (InputStream in = httpsConnection.getInputStream()) {
-                        response = new String(in.readAllBytes());
+                        response = new String(in.readAllBytes(), StandardCharsets.UTF_8);
                     }
                 }
             }
             if (response == null) {
                 try (InputStream in = httpConnection.getInputStream()) {
-                    response = new String(in.readAllBytes());
+                    response = new String(in.readAllBytes(), StandardCharsets.UTF_8);
                 }
             }
         } catch (NoSuchAlgorithmException | KeyManagementException | URISyntaxException e) {
             throw new IOException("isClip2Supported() error connecting to bridge", e);
+        } finally {
+            if (httpConnection != null) {
+                httpConnection.disconnect();
+            }
+            if (httpsConnection != null) {
+                httpsConnection.disconnect();
+            }
         }
 
         BridgeConfig config = new Gson().fromJson(response, BridgeConfig.class);

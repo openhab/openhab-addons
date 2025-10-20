@@ -50,8 +50,11 @@ public class HueTlsTrustManagerProvider implements TlsTrustManagerProvider {
 
     /**
      * Creates a new instance of {@link HueTlsTrustManagerProvider}.
-     * See {@link https://developers.meethue.com/develop/application-design-guidance/using-https/} for more
-     * details about 'Signify private CA Certificates V1 and V2 for Hue Bridges'.
+     *
+     * See the documentation for more details about 'Signify private CA Certificates V1 and V2 for Hue Bridges'.
+     *
+     * @see <a href=
+     *      "https://developers.meethue.com/develop/application-design-guidance/using-https/">https://developers.meethue.com/develop/application-design-guidance/using-https/</a>
      *
      * @param hostname the hostname of the Hue Bridge
      * @param useSelfSignedCertificate true, to use the self-signed certificate downloaded from the Hue Bridge;
@@ -87,7 +90,7 @@ public class HueTlsTrustManagerProvider implements TlsTrustManagerProvider {
 
         // TODO V3 bridges currently don't provide the full certificate chain (missing intermediate certificate)
         if (isBridgeV3orHigher) {
-            logger.error("Hue V3 Bridge has incomplete PEM certificate chains .. default to a TrustAllTrustManager");
+            logger.error("Hue V3 Bridge has incomplete PEM certificate chains - defaulting to a TrustAllTrustManager");
             return TrustAllTrustManager.getInstance();
         }
 
