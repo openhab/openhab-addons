@@ -1092,7 +1092,7 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
             IntervalReading[] iv = meterReading.baseValue;
 
             logData(iv, "Last day", DateTimeFormatter.ISO_LOCAL_DATE, Target.LAST);
-            return iv != null && iv.length != 0 && iv[iv.length - 1] != null;
+            return iv != null && iv.length != 0 && iv[iv.length - 1] != null && !iv[iv.length - 1].value.isNaN();
         }
 
         return false;
@@ -1118,7 +1118,7 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
 
         if (!isDataLastDayAvailable(meterReading)) {
             logger.debug("Data including yesterday are not yet available");
-            return meterReading;
+            return null;
         }
 
         if (meterReading != null) {
