@@ -164,7 +164,7 @@ public class BridgeSedifWebHandler extends BaseBridgeHandler {
         return BASE_URL;
     }
 
-    public synchronized void connectionInit() throws SedifException {
+    public void connectionInit() throws SedifException {
         config = getConfigAs(SedifBridgeConfiguration.class);
 
         SedifBridgeConfiguration lcConfig = config;

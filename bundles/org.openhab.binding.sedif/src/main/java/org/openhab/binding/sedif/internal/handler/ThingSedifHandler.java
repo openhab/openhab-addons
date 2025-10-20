@@ -157,11 +157,6 @@ public class ThingSedifHandler extends BaseThingHandler {
         this.contractDetail.invalidate();
         this.consumption.invalidate();
 
-        BridgeSedifWebHandler bridgeHandler = (BridgeSedifWebHandler) bridge.getHandler();
-        if (bridgeHandler == null) {
-            return;
-        }
-
         if (config.seemsValid()) {
             contractName = config.contractId;
             numCompteur = config.meterId;
@@ -255,18 +250,15 @@ public class ThingSedifHandler extends BaseThingHandler {
      * Request new data and updates channels
      */
     private void updateData() {
-        logger.trace("updateContractDetail() called");
         updateContractDetail();
-
-        logger.trace("updateHistoricalConsumptionData() called");
         updateHistoricalConsumptionData();
-
-        logger.trace("updateEnergyData() called");
         updateConsumptionData();
         saveSedifState();
     }
 
     private void updateHistoricalConsumptionData() {
+        logger.trace("updateHistoricalConsumptionData() called");
+
         int periodLength = 90;
         LocalDate currentDate = LocalDate.now();
         currentDate = currentDate.minusDays(periodLength);
@@ -279,7 +271,7 @@ public class ThingSedifHandler extends BaseThingHandler {
         while ((hasData || !hasAlreadyRetrieveData) && currentDate.isAfter(lastUpdateDate)) {
             LocalDate startDate = currentDate.minusDays(periodLength - 1);
             try {
-                logger.info("Retrieve data from {} to {}:", startDate, currentDate);
+                logger.debug("Retrieve data from {} to {}:", startDate, currentDate);
                 MeterReading meterReading = updateConsumptionData(startDate, currentDate, true);
                 if (meterReading != null) {
                     newLastUpdateDate = meterReading.data.consommation[meterReading.data.consommation.length
@@ -319,14 +311,14 @@ public class ThingSedifHandler extends BaseThingHandler {
         if (updateHistorical && meterReading == null) {
             return null;
         }
-        meterReading = sedifState.updateMeterReading(meterReading);
-        return meterReading;
+        return sedifState.updateMeterReading(meterReading);
     }
 
     /**
      * Request new daily/weekly data and updates channels
      */
     private void updateContractDetail() {
+        logger.trace("updateContractDetail() called");
         contractDetail.getValue().ifPresentOrElse(values -> {
 
             for (CompteInfo compteInfo : values.compteInfo) {
@@ -405,6 +397,8 @@ public class ThingSedifHandler extends BaseThingHandler {
      * Request new daily/weekly data and updates channels
      */
     private void updateConsumptionData() {
+        logger.trace("updateEnergyData() called");
+
         consumption.getValue().ifPresentOrElse(values -> {
 
             // ===========================
@@ -582,61 +576,58 @@ public class ThingSedifHandler extends BaseThingHandler {
                 return;
             }
 
-            BridgeSedifWebHandler bridgeHandler = (BridgeSedifWebHandler) bridge.getHandler();
-            if (bridgeHandler == null) {
-                return;
-            }
-
-            int idx = 0;
-            while (bridge.getStatus() != ThingStatus.ONLINE && idx < 5) {
-                idx++;
-                try {
-                    Thread.sleep(2000);
-                } catch (InterruptedException ex) {
-                }
-            }
-
-            if (bridge.getStatus() != ThingStatus.ONLINE) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
-                        "Bridge take too much time to initialize");
-                return;
-            }
-
-            updateStatus(ThingStatus.ONLINE);
-
-            Contract contract = bridgeHandler.getContract(contractName);
-            if (contract != null) {
-                contractId = Objects.requireNonNull(contract.id);
-            }
-            sedifApi = bridgeHandler.getSedifApi();
-
-            SedifHttpApi api = this.sedifApi;
-
-            if (api != null) {
-                ScheduledFuture<?> lcPollingJob = pollingJob;
-
-                if (!bridgeHandler.isConnected()) {
-                    bridgeHandler.connectionInit();
+            if (bridge.getHandler() instanceof BridgeSedifWebHandler bridgeHandler) {
+                int idx = 0;
+                while (bridge.getStatus() != ThingStatus.ONLINE && idx < 5) {
+                    idx++;
+                    try {
+                        Thread.sleep(2000);
+                    } catch (InterruptedException ex) {
+                    }
                 }
 
-                updateData();
-
-                final LocalDateTime now = LocalDateTime.now();
-                final LocalDateTime nextDayFirstTimeUpdate = now.plusDays(1).withHour(REFRESH_HOUR_OF_DAY)
-                        .withMinute(REFRESH_MINUTE_OF_DAY).truncatedTo(ChronoUnit.MINUTES);
-
-                if (this.getThing().getStatusInfo().getStatusDetail() != ThingStatusDetail.COMMUNICATION_ERROR) {
-                    updateStatus(ThingStatus.ONLINE);
+                if (bridge.getStatus() != ThingStatus.ONLINE) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
+                            "Bridge take too much time to initialize");
+                    return;
                 }
 
-                if (lcPollingJob != null) {
-                    lcPollingJob.cancel(false);
-                    pollingJob = null;
-                }
+                updateStatus(ThingStatus.ONLINE);
 
-                refreshJob = scheduler.scheduleWithFixedDelay(this::updateData,
-                        ChronoUnit.MINUTES.between(now, nextDayFirstTimeUpdate) % REFRESH_INTERVAL_IN_MIN + 1,
-                        REFRESH_INTERVAL_IN_MIN, TimeUnit.MINUTES);
+                Contract contract = bridgeHandler.getContract(contractName);
+                if (contract != null) {
+                    contractId = Objects.requireNonNull(contract.id);
+                }
+                sedifApi = bridgeHandler.getSedifApi();
+
+                SedifHttpApi api = this.sedifApi;
+
+                if (api != null) {
+                    ScheduledFuture<?> lcPollingJob = pollingJob;
+
+                    if (!bridgeHandler.isConnected()) {
+                        bridgeHandler.connectionInit();
+                    }
+
+                    updateData();
+
+                    final LocalDateTime now = LocalDateTime.now();
+                    final LocalDateTime nextDayFirstTimeUpdate = now.plusDays(1).withHour(REFRESH_HOUR_OF_DAY)
+                            .withMinute(REFRESH_MINUTE_OF_DAY).truncatedTo(ChronoUnit.MINUTES);
+
+                    if (this.getThing().getStatusInfo().getStatusDetail() != ThingStatusDetail.COMMUNICATION_ERROR) {
+                        updateStatus(ThingStatus.ONLINE);
+                    }
+
+                    if (lcPollingJob != null) {
+                        lcPollingJob.cancel(false);
+                        pollingJob = null;
+                    }
+
+                    refreshJob = scheduler.scheduleWithFixedDelay(this::updateData,
+                            ChronoUnit.MINUTES.between(now, nextDayFirstTimeUpdate) % REFRESH_INTERVAL_IN_MIN + 1,
+                            REFRESH_INTERVAL_IN_MIN, TimeUnit.MINUTES);
+                }
             }
         } catch (SedifException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
@@ -655,7 +646,6 @@ public class ThingSedifHandler extends BaseThingHandler {
         TimeSeries timeSeries = new TimeSeries(Policy.REPLACE);
 
         for (int i = 0; i < consoTab.length; i++) {
-
             Consommation conso = consoTab[i];
             if (conso == null) {
                 continue;
