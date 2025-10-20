@@ -5,6 +5,7 @@
 	<feature name="openhab-binding-homeassistant" description="Home Assistant" version="${project.version}">
 		<feature>openhab-runtime-base</feature>
 		<feature>openhab-binding-mqtt</feature>
+		<feature dependency="true">openhab.tp-commons-net</feature>
 		<bundle dependency="true">mvn:org.openhab.osgiify/org.graalvm.llvm.llvm-api/24.2.1</bundle>
 		<bundle dependency="true">mvn:org.openhab.osgiify/org.graalvm.polyglot.polyglot/24.2.1</bundle>
 		<bundle dependency="true">mvn:org.openhab.osgiify/org.graalvm.python.python-embedding/24.2.1</bundle>
