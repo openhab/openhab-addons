@@ -129,7 +129,9 @@ public class ThingSedifHandler extends BaseThingHandler {
 
                     try {
                         MeterReading meterReading = updateConsumptionData(today.minusDays(89), today, false);
-                        MeterReadingHelper.calcAgregat(meterReading);
+                        if (meterReading != null) {
+                            MeterReadingHelper.calcAgregat(meterReading);
+                        }
                         return meterReading;
                     } catch (SedifException ex) {
                         return null;
