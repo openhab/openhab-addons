@@ -734,6 +734,9 @@ public class DeviceHandler extends ViessmannThingHandler {
                                 case "bar":
                                 case "power":
                                 case "revolutions-per-second":
+                                case "slope":
+                                case "shift":
+                                case "duration":
                                     updateChannelState(msg.getChannelId(), msg.getValue(), unit);
                                     break;
                                 case "boolean":
