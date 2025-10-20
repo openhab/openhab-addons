@@ -42,7 +42,7 @@ You will see a list where the first column labeled "Contrat" is the contractId.
 
 If you have multiple meters on the same contract, you will also need to get your(s) meterId.
 MeterId is displayed at the contract details pages. 
-Just click on the contract number in the contract list, and you will have a detailled pages with a label Compteur n°D08MAxxxxxx.
+Just click on the contract number in the contract list, and you will have a detailed pages with a label Compteur n°D08MAxxxxxx.
 
 Note that you do not need to create the meter manually.
 Once you create the gateway, the inbox will be populated automatically with all meter's that are registered on your account.
@@ -65,7 +65,7 @@ Thing sedif:meter:meter1 "Sedif Meter 1" (sedif:gateway:local)
 |---------------------------------------------|--------------|------------|------------------------------------------|
 | base#mean-water-price                       | numeric      | R          | The water mean price                     |
 
-- The daily group will give consumtion information with day granularity
+The daily group will give consumtion information with day granularity
 
 | Channel                                     | Item type      | Read/Write | Description                              |
 |---------------------------------------------|----------------|------------|------------------------------------------|
@@ -74,7 +74,7 @@ Thing sedif:meter:meter1 "Sedif Meter 1" (sedif:gateway:local)
 | daily-consumption#day-3                     | Number:Volume  | R          | The day-3 water consumption              |
 | daily-consumption#consumption               | Number:Volume  | R          | Timeseries for water consumption         |
  
-- The weekly group will give consumtion information with week granularity
+The weekly group will give consumtion information with week granularity
 
 | Channel                                     | Item type      | Read/Write | Description                              |
 |---------------------------------------------|----------------|------------|------------------------------------------|
@@ -83,7 +83,7 @@ Thing sedif:meter:meter1 "Sedif Meter 1" (sedif:gateway:local)
 | weekly-consumption#week-2                   | Number:Volume  | R          | The week-2 water consumption             |
 | weekly-consumption#consumption              | Number:Volume  | R          | Timeseries for weekly water consumption  |
 
-- The monthly group will give consumtion information with month granularity
+The monthly group will give consumtion information with month granularity
 
 | Channel                                     | Item type      | Read/Write | Description                              |
 |---------------------------------------------|----------------|------------|------------------------------------------|
@@ -92,7 +92,7 @@ Thing sedif:meter:meter1 "Sedif Meter 1" (sedif:gateway:local)
 | monthly-consumption#month-2                 | Number:Volume  | R          | The month-2 water consumption            |
 | monthly-consumption#consumption             | Number:Volume  | R          | Timeseries for monthly water consumption |
 
-- The yearly group will give consumtion information with year granularity
+The yearly group will give consumtion information with year granularity
 
 | Channel                                     | Item type      | Read/Write | Description                              |
 |---------------------------------------------|----------------|------------|------------------------------------------|
