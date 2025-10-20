@@ -775,6 +775,9 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
      * Requests new daily or weekly data and updates the channels.
      */
     private synchronized void updateEnergyIndex() {
+        if (!(getBridge() instanceof BridgeRemoteEnedisWebHandler)) {
+            return;
+        }
         dailyIndex.getValue().ifPresentOrElse(values -> {
             handleDynamicChannel(values);
 
