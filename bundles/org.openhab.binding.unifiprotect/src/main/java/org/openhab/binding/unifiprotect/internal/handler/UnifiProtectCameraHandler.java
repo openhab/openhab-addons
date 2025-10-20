@@ -562,6 +562,16 @@ public class UnifiProtectCameraHandler extends UnifiProtectAbstractDeviceHandler
                     UnifiProtectBindingConstants.CHANNEL_ACTIVE_PATROL_SLOT, channelAdd, desiredIds);
         }
 
+        if (camera.lcdMessage != null) {
+            addTriggerChannel(UnifiProtectBindingConstants.CHANNEL_RING, UnifiProtectBindingConstants.CHANNEL_RING,
+                    channelAdd, desiredIds, UnifiProtectBindingConstants.CHANNEL_RING_LABEL);
+            addChannel(UnifiProtectBindingConstants.CHANNEL_RING_CONTACT, CoreItemFactory.CONTACT,
+                    UnifiProtectBindingConstants.CHANNEL_RING_CONTACT, channelAdd, desiredIds);
+            addChannel(UnifiProtectBindingConstants.CHANNEL_RING_SNAPSHOT, CoreItemFactory.IMAGE,
+                    UnifiProtectBindingConstants.CHANNEL_SNAPSHOT, channelAdd, desiredIds,
+                    UnifiProtectBindingConstants.CHANNEL_RING_SNAPSHOT_LABEL);
+        }
+
         updateThing(editThing().withChannels(channelAdd).build());
     }
 
