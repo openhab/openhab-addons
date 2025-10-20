@@ -12,14 +12,17 @@
  */
 package org.openhab.binding.feican.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Feican configuration class.
  *
  * @author Hilbrand Bouwkamp - Initial contribution
  */
+@NonNullByDefault
 public class FeicanConfiguration {
     /**
      * IP Address of the device.
      */
-    public String ipAddress;
+    public String ipAddress = "";
 }

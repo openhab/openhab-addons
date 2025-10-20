@@ -13,7 +13,7 @@
 package org.openhab.binding.shelly.internal.manager;
 
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
-import static org.openhab.binding.shelly.internal.discovery.ShellyThingCreator.*;
+import static org.openhab.binding.shelly.internal.ShellyDevices.*;
 import static org.openhab.binding.shelly.internal.manager.ShellyManagerConstants.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 import static org.openhab.core.thing.Thing.*;
@@ -558,13 +558,19 @@ public class ShellyManagerPage {
         return option.toString();
     }
 
-    protected static String getDisplayName(Map<String, String> properties) {
+    protected static String getDisplayName(Map<String, String> properties, Thing thing) {
         String name = getString(properties.get(PROPERTY_DEV_NAME));
         if (name.isEmpty()) {
             name = getString(properties.get(PROPERTY_SERVICE_NAME));
         }
         if (name.isEmpty()) {
             name = getString(properties.get(PROPERTY_MAC_ADDRESS));
+        }
+        if (name.isEmpty()) {
+            name = thing.getLabel();
+        }
+        if (name == null || name.isEmpty()) {
+            name = thing.getUID().getId();
         }
         return name;
     }

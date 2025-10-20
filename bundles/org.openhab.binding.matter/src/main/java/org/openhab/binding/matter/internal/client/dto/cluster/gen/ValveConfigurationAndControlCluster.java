@@ -146,7 +146,7 @@ public class ValveConfigurationAndControlCluster extends BaseCluster {
      * This event shall be generated when the valve state changed. For level changes, after the end of movement, for
      * state changes when the new state has been reached.
      */
-    public class ValveStateChanged {
+    public static class ValveStateChanged {
         /**
          * This field shall indicate the new state of the valve.
          */
@@ -166,7 +166,7 @@ public class ValveConfigurationAndControlCluster extends BaseCluster {
      * This event shall be generated when the valve registers or clears a fault, e.g. not being able to transition to
      * the requested target level or state.
      */
-    public class ValveFault {
+    public static class ValveFault {
         /**
          * This field shall indicate the value of the ValveFault attribute, at the time this event is generated.
          */
@@ -183,8 +183,8 @@ public class ValveConfigurationAndControlCluster extends BaseCluster {
         OPEN(1, "Open"),
         TRANSITIONING(2, "Transitioning");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private ValveStateEnum(Integer value, String label) {
             this.value = value;
@@ -205,8 +205,8 @@ public class ValveConfigurationAndControlCluster extends BaseCluster {
     public enum StatusCodeEnum implements MatterEnum {
         FAILURE_DUE_TO_FAULT(2, "Failure Due To Fault");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private StatusCodeEnum(Integer value, String label) {
             this.value = value;

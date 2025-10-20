@@ -37,7 +37,6 @@ public class F6_10_00_EltakoFPE extends _RPSMessage {
     protected static final byte CLOSED = 0x10;
 
     public F6_10_00_EltakoFPE() {
-        super();
     }
 
     public F6_10_00_EltakoFPE(ERP1Message packet) {

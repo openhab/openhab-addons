@@ -44,7 +44,7 @@ public class D2_05_00 extends _VLDMessage {
     protected static final byte CMD_ACTUATOR_SET_POSITION = 0x01;
     protected static final byte CMD_ACTUATOR_STOP = 0x02;
     protected static final byte CMD_ACTUATOR_POSITION_QUERY = 0x03;
-    protected static final byte CMD_ACTUATOR_POSITION_RESPONE = 0x04;
+    protected static final byte CMD_ACTUATOR_POSITION_RESPONSE = 0x04;
 
     protected static final byte ALL_CHANNELS_MASK = 0x1e;
     protected static final byte CHANNEL_A_MASK = 0x00;
@@ -53,7 +53,6 @@ public class D2_05_00 extends _VLDMessage {
     protected static final byte UP = 0x00; // 0%
 
     public D2_05_00() {
-        super();
     }
 
     public D2_05_00(ERP1Message packet) {
@@ -86,7 +85,7 @@ public class D2_05_00 extends _VLDMessage {
     }
 
     protected State getPositionData() {
-        if (getCMD() == CMD_ACTUATOR_POSITION_RESPONE) {
+        if (getCMD() == CMD_ACTUATOR_POSITION_RESPONSE) {
             int position = bytes[0] & 0x7f;
             if (position != 127) {
                 return new PercentType(position);

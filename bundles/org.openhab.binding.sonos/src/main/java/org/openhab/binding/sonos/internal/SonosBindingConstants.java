@@ -50,6 +50,7 @@ public class SonosBindingConstants {
     public static final ThingTypeUID SYMFONISK_THING_TYPE_UID = new ThingTypeUID(BINDING_ID, "SYMFONISK");
     public static final ThingTypeUID ARC_THING_TYPE_UID = new ThingTypeUID(BINDING_ID, "Arc");
     public static final ThingTypeUID ARC_SL_THING_TYPE_UID = new ThingTypeUID(BINDING_ID, "ArcSL");
+    public static final ThingTypeUID ARC_ULTRA_THING_TYPE_UID = new ThingTypeUID(BINDING_ID, "ArcUltra");
     public static final ThingTypeUID MOVE_THING_TYPE_UID = new ThingTypeUID(BINDING_ID, "Move");
     public static final ThingTypeUID MOVE2_THING_TYPE_UID = new ThingTypeUID(BINDING_ID, "Move2");
     public static final ThingTypeUID ROAM_THING_TYPE_UID = new ThingTypeUID(BINDING_ID, "Roam");
@@ -61,7 +62,8 @@ public class SonosBindingConstants {
     public static final Set<ThingTypeUID> WITH_LINEIN_THING_TYPES_UIDS = Set.of(PLAY5_THING_TYPE_UID,
             FIVE_THING_TYPE_UID, PLAYBAR_THING_TYPE_UID, PLAYBASE_THING_TYPE_UID, BEAM_THING_TYPE_UID,
             CONNECT_THING_TYPE_UID, CONNECTAMP_THING_TYPE_UID, PORT_THING_TYPE_UID, ARC_THING_TYPE_UID,
-            ARC_SL_THING_TYPE_UID, MOVE2_THING_TYPE_UID, ERA_100_THING_TYPE_UID, ERA_300_THING_TYPE_UID);
+            ARC_SL_THING_TYPE_UID, ARC_ULTRA_THING_TYPE_UID, MOVE2_THING_TYPE_UID, ERA_100_THING_TYPE_UID,
+            ERA_300_THING_TYPE_UID);
 
     public static final Set<ThingTypeUID> WITH_ANALOG_LINEIN_THING_TYPES_UIDS = Set.of(AMP_THING_TYPE_UID);
 
@@ -71,11 +73,11 @@ public class SonosBindingConstants {
             ONE_SL_THING_TYPE_UID, PLAY1_THING_TYPE_UID, PLAY3_THING_TYPE_UID, PLAY5_THING_TYPE_UID,
             FIVE_THING_TYPE_UID, PLAYBAR_THING_TYPE_UID, PLAYBASE_THING_TYPE_UID, BEAM_THING_TYPE_UID,
             CONNECT_THING_TYPE_UID, CONNECTAMP_THING_TYPE_UID, PORT_THING_TYPE_UID, AMP_THING_TYPE_UID,
-            SYMFONISK_THING_TYPE_UID, ARC_THING_TYPE_UID, ARC_SL_THING_TYPE_UID, MOVE_THING_TYPE_UID,
-            MOVE2_THING_TYPE_UID, ROAM_THING_TYPE_UID, ROAM_SL_THING_TYPE_UID, ERA_100_THING_TYPE_UID,
-            ERA_300_THING_TYPE_UID);
+            SYMFONISK_THING_TYPE_UID, ARC_THING_TYPE_UID, ARC_SL_THING_TYPE_UID, ARC_ULTRA_THING_TYPE_UID,
+            MOVE_THING_TYPE_UID, MOVE2_THING_TYPE_UID, ROAM_THING_TYPE_UID, ROAM_SL_THING_TYPE_UID,
+            ERA_100_THING_TYPE_UID, ERA_300_THING_TYPE_UID);
 
-    public static final Set<String> UNSUPPORTED_KNOWN_IDS = Set.of("sub", "sonos sub mini");
+    public static final Set<String> UNSUPPORTED_KNOWN_IDS = Set.of("boost", "sub", "submini", "sub2", "sub3", "sub4");
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>(SUPPORTED_KNOWN_THING_TYPES_UIDS);
     static {

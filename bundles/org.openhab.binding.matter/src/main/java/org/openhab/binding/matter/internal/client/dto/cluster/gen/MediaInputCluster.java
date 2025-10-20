@@ -53,7 +53,7 @@ public class MediaInputCluster extends BaseCluster {
     /**
      * This contains information about an input.
      */
-    public class InputInfoStruct {
+    public static class InputInfoStruct {
         /**
          * This field shall indicate the unique index into the list of Inputs.
          */
@@ -96,8 +96,8 @@ public class MediaInputCluster extends BaseCluster {
         USB(10, "Usb"),
         OTHER(11, "Other");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private InputTypeEnum(Integer value, String label) {
             this.value = value;

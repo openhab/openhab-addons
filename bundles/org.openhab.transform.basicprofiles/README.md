@@ -323,7 +323,7 @@ Number:Dimensionless Humidity {
 
 // To actually perform a $DELTA_PERCENT check against a Percent Quantity data, specify it explicitly
 Number:Dimensionless Humidity {
-  channel="mybinding:mything:humidity" [ profile="basic-profiles:state-filter", conditions="$DELTA_PERCENT > 5%" ]
+  channel="mybinding:mything:humidity" [ profile="basic-profiles:state-filter", conditions="$DELTA_PERCENT > 5" ]
 }
 ```
 

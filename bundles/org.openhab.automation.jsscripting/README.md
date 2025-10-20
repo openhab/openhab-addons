@@ -10,28 +10,20 @@ to common openHAB functionality within rules including items, things, actions, l
 
 ## Configuration
 
-This add-on includes by default the [openhab-js](https://github.com/openhab/openhab-js/) NPM library and exports its namespaces onto the global namespace.
+This add-on includes a version of the [openhab-js](https://github.com/openhab/openhab-js/) NPM library.
 
-This allows the use of `items`, `actions`, `cache` and other objects without the need to explicitly import them using `require()`.
-This functionality can be disabled for users who prefer to manage their own imports via the add-on configuration options.
+Depending on the add-on configuration, it automatically exports all namespaces (see [Standard Library](#standard-library)) onto the global namespace.
+This allows the use of `items`, `actions`, `cache` and other APIs from the UI without the need to explicitly import them using `require()`.
+This functionality can be disabled for users who prefer to manage their own imports via the add-on configuration options:
 
-By default, the injection of the [openhab-js](https://github.com/openhab/openhab-js/) NPM library is cached (using a special mechanism instead of `require()`) to improve performance and reduce memory usage.
+- Only inject the openhab-js namespaces globally for UI-based rules and scripts (recommended and default).
+- Inject the openhab-js namespaces globally for all scripts, including file-based rules and transformations.
+- Disable injection of the openhab-js namespaces everywhere, which means you need to import the library using `require()` in every script that uses it.
 
-When configuring the add-on, you should ask yourself these questions:
+If enabled, the injection of the [openhab-js](https://github.com/openhab/openhab-js/) NPM library is cached (using a special mechanism instead of `require()`) to improve script loading performance.
+This can be disabled, which will allow you to use a different version of the library than the one included in the add-on.
 
-1. Do I want to have the openhab-js namespaces automatically globally available (`injectionEnabled`)?
-   - Yes: "Use Built-In Variables" (default)
-   - No: "Do Not Use Built-In Variables", which will allow you to decide what to import and really speed up script loading, but you need to manually import the library, which actually will slow down script loading again.
-2. Do I want to have a different version injected other than the included one (`injectionCachingEnabled`)?
-   - Yes: "Do Not Cache Library Injection" and install your version to the `$OPENHAB_CONF/automation/js/node_modules` folder, which will slow down script loading, because the injection is not cached.
-   - No: "Cache Library Injection" (default), which will speed up the initial loading of a script because the library's injection is cached.
-
-Note that in case you disable caching or your code uses `require()` to import the library and there is no installation of the library found in the node_modules folder, the add-on will fallback to its included version.
-
-In general, the first run of a script will take longer than the subsequent runs.
-This is because on the first run both the globals (like `console`) and (if enabled) the library are injected into the script's context.
-
-<!-- Paste the copied docs from openhab-js under this comment. Do NOT forget the table of contents. -->
+<!-- Paste the copied docs from openhab-js under this comment. -->
 
 ### UI Based Rules
 
@@ -79,16 +71,57 @@ console.log("Thing status",thingStatusInfo.getStatus());
 
 See [openhab-js](https://openhab.github.io/openhab-js) for a complete list of functionality.
 
-### UI Event Object
+### Event Object
 
-**NOTE**: Note that `event` object is different in UI based rules and file based rules! This section is only valid for UI based rules. If you use file based rules, refer to [file based rules event object documentation](#event-object).
-Note that `event` object is only available when:
-  1. the UI based rule was triggered by an event and is not manually run! Trying to access `event` on a manual run does not work (and will lead to an error), use `this.event` instead (will be `undefined` in case of manual run).
-  2. the rule is inline script or called by an inline script which passes it the `event object`. "Item Actions", "Scene, Rules, & Scripts", and "Audio and Voice" actions are not passed the `event` object.
+When a rule is triggered, the script is provided the event instance that triggered it.
+The specific data depends on the event type.
+The `event` object provides some information about that trigger.
 
-When you use "Item event" as trigger (i.e. "[item] received a command", "[item] was updated", "[item] changed"), there is additional context available for the action in a variable called `event`.
+This table gives an overview over the `event` object:
 
-This table gives an overview over the `event` object for most common trigger types:
+| Property Name     | Trigger Types                                       | Description                                                                                            | Rules DSL Equivalent   |
+|-------------------|-----------------------------------------------------|--------------------------------------------------------------------------------------------------------|------------------------|
+| `oldState`        | `ItemStateChangeTrigger`, `GroupStateChangeTrigger` | Previous state of Item or Group that triggered event                                                   | `previousState`        |
+| `newState`        | `ItemStateChangeTrigger`, `GroupStateChangeTrigger` | New state of Item or Group that triggered event                                                        | N/A                    |
+| `receivedState`   | `ItemStateUpdateTrigger`, `GroupStateUpdateTrigger` | State of Item that triggered event                                                                     | `triggeringItem.state` |
+| `receivedCommand` | `ItemCommandTrigger`, `GroupCommandTrigger`         | Command that triggered event                                                                           | `receivedCommand`      |
+| `itemName`        | `Item****Trigger`, `Group****Trigger`               | Name of Item that triggered event                                                                      | `triggeringItem.name`  |
+| `groupName`       | `Group****Trigger`                                  | Name of the group whose member triggered event                                                         | N/A                    |
+| `receivedEvent`   | `ChannelEventTrigger`                               | Channel event that triggered event                                                                     | N/A                    |
+| `channelUID`      | `ChannelEventTrigger`                               | UID of channel that triggered event                                                                    | N/A                    |
+| `oldStatus`       | `ThingStatusChangeTrigger`                          | Previous state of Thing that triggered event                                                           | N/A                    |
+| `newStatus`       | `ThingStatusChangeTrigger`                          | New state of Thing that triggered event                                                                | N/A                    |
+| `status`          | `ThingStatusUpdateTrigger`                          | State of Thing that triggered event                                                                    | N/A                    |
+| `thingUID`        | `Thing****Trigger`                                  | UID of Thing that triggered event                                                                      | N/A                    |
+| `cronExpression`  | `GenericCronTrigger`                                | Cron expression of the trigger                                                                         | N/A                    |
+| `time`            | `TimeOfDayTrigger`                                  | Time of day value of the trigger                                                                       | N/A                    |
+| `timeOnly`        | `DateTimeTrigger`                                   | Whether the trigger only considers the time part of the DateTime Item                                  | N/A                    |
+| `offset`          | `DateTimeTrigger`                                   | Offset in seconds added to the time of the DateTime Item                                               | N/A                    |
+| `eventType`       | all except `PWMTrigger`, `PIDTrigger`               | Type of event that triggered event (change, command, triggered, update, time)                          | N/A                    |
+| `triggerType`     | all except `PWMTrigger`, `PIDTrigger`               | Type of trigger that triggered event                                                                   | N/A                    |
+| `eventName`       | all                                                 | simple Java class name of the triggering event, e.g. `ExecutionEvent`                                  | N/A                    |
+| `eventClass`      | all                                                 | full Java class name of the triggering event, e.g. `org.openhab.core.automation.events.ExecutionEvent` | N/A                    |
+| `module`          | all                                                 | (user-defined or auto-generated) name of trigger                                                       | N/A                    |
+| `raw`             | all                                                 | Original contents of the event including data passed from a calling rule                               | N/A                    |
+
+All properties are typeof `string` except for properties contained by `raw` which are unmodified from the original types.
+
+Please note that when using `GenericEventTrigger`, the available properties depend on the chosen event types.
+It is not possible for the openhab-js library to provide type conversions for all properties of all openHAB events, as those are too many.
+In case the event object does not provide type-conversed properties for your chosen event type, use the `payload` property to gain access to the event's (Java data type) payload.
+
+**NOTE:**
+`Group****Trigger`s use the equivalent `Item****Trigger` as trigger for each member.
+
+See [openhab-js : EventObject](https://openhab.github.io/openhab-js/global.html#EventObject) for full API documentation.
+
+When disabling the option _Convert Event from Java to JavaScript type in UI-based scripts_, you will receive a raw Java event object instead of the `event` object described above.
+See the expandable section below for more details.
+
+<details>
+<summary>Raw UI Event Object</summary>
+
+This table gives an overview over the raw Java `event` object for UI-based scripts for most common trigger types:
 
 | Property Name  | Type                                                                                                                 | Trigger Types                          | Description                                                                                                   | Rules DSL Equivalent   |
 |----------------|----------------------------------------------------------------------------------------------------------------------|----------------------------------------|---------------------------------------------------------------------------------------------------------------|------------------------|
@@ -97,8 +130,10 @@ This table gives an overview over the `event` object for most common trigger typ
 | `itemCommand`  | sub-class of [org.openhab.core.types.Command](https://www.openhab.org/javadoc/latest/org/openhab/core/types/command) | `[item] received a command`            | Command that triggered event                                                                                  | `receivedCommand`      |
 | `itemName`     | string                                                                                                               | all                                    | Name of Item that triggered event                                                                             | `triggeringItem.name`  |
 | `type`         | string                                                                                                               | all                                    | Type of event that triggered event (`"ItemStateEvent"`, `"ItemStateChangedEvent"`, `"ItemCommandEvent"`, ...) | N/A                    |
+| `event`        | string                                                                                                               | channel based triggeres                | Event data published by the triggering channel.                                                               | `receivedEvent`        |
+| `payload`      | JSON formatted string                                                                                                | all                                    | Any additional information provided by the trigger not already exposed. "{}" there is none.             | N/A                    |
 
-Note that in UI based rules `event.itemState`, `event.oldItemState`, and `event.itemCommand` are Java types (not JavaScript), and care must be taken when comparing these with JavaScript types:
+Note that in UI based rules `event`, and therefore everything carried by `event` are Java types (not JavaScript). Care must be taken when comparing these with JavaScript types:
 
 ```javascript
 var { ON } = require("@runtime")
@@ -116,29 +151,11 @@ console.log(event.itemState == "test") // WRONG. Will always log "false"
 console.log(event.itemState.toString() == "test") // OK
 ```
 
+</details>
+
 ## Scripting Basics
 
 The openHAB JavaScript Scripting runtime attempts to provide a familiar environment to JavaScript developers.
-
-### `let` and `const`
-
-Due to the way how openHAB runs UI based scripts, `let`, `const` and `class` are not supported at top-level.
-Use `var` instead or wrap your script inside a self-invoking function:
-
-```javascript
-// Wrap script inside a self-invoking function:
-(function (data) {
-  const C = 'Hello world';
-  console.log(C);
-})(this.event);
-
-// Defining a class using var:
-var Tree = class {
-  constructor (height) {
-    this.height = height;
-  }
-}
-```
 
 ### `require`
 
@@ -239,7 +256,6 @@ myVar = 'Hello mutation!'; // When the timer runs, it will log "Hello mutation!"
 
 If you need to pass some variables to the timer but avoid that they can get mutated, pass those variables as parameters to `setTimeout`/`setInterval` or `createTimer`:
 
-
 ```javascript
 var myVar = 'Hello world!';
 
@@ -290,8 +306,8 @@ Use JavaScript Scripting as script transformation by:
    })(input);
    ```
 
-2. Using `JS(<scriptname>.js):%s` as Item state transformation.
-3. Passing parameters is also possible by using a URL like syntax: `JS(<scriptname>.js?arg=value)`.
+1. Using `JS(<scriptname>.js):%s` as Item state transformation.
+1. Passing parameters is also possible by using a URL like syntax: `JS(<scriptname>.js?arg=value)`.
    Parameters are injected into the script and can be referenced like variables.
 
 Simple transformations can aso be given as an inline script: `JS(|...)`, e.g. `JS(|"String has " + input.length + "characters")`.
@@ -318,10 +334,12 @@ See [openhab-js : items](https://openhab.github.io/openhab-js/items.html) for fu
   - .getItem(name, nullIfMissing) ⇒ `Item`
   - .getItems() ⇒ `Array[Item]`
   - .getItemsByTag(...tagNames) ⇒ `Array[Item]`
-  - .addItem([itemConfig](#itemconfig))
-  - .removeItem(itemOrItemName) ⇒ `boolean`
-  - .replaceItem([itemConfig](#itemconfig))
+  - .addItem([itemConfig](#itemconfig), persist) ⇒ `Item`
+  - .removeItem(itemOrItemName) ⇒ `Item|null`
+  - .replaceItem([itemConfig](#itemconfig)) ⇒ `Item|null`
   - .safeItemName(s) ⇒ `string`
+  - .metadata ⇒ [`items.metadata` namespace](https://openhab.github.io/openhab-js/items.metadata.html): Manage metadata directly without the need of going "through" the Item
+  - .itemChannelLink ⇒ [`items.itemChannelLink` namespace](https://openhab.github.io/openhab-js/items.itemChannelLink.html): Manage Item -> channel links
 
 ```javascript
 var item = items.KitchenLight;
@@ -337,11 +355,13 @@ Calling `getItem(...)` or `...` returns an `Item` object with the following prop
   - .persistence ⇒ [`ItemPersistence`](#itempersistence)
   - .semantics ⇒ [`ItemSemantics`](https://openhab.github.io/openhab-js/items.ItemSemantics.html)
   - .type ⇒ `string`
+  - .groupType ⇒ `string|null`
   - .name ⇒ `string`
   - .label ⇒ `string`
   - .state ⇒ `string`
   - .numericState ⇒ `number|null`: State as number, if state can be represented as number, or `null` if that's not the case
   - .quantityState ⇒ [`Quantity|null`](#quantity): Item state as Quantity or `null` if state is not Quantity-compatible or without unit
+  - .boolState ⇒ `boolean|null`: Item state as boolean or `null` if not boolean-compatible or is NULL or UNDEF, see below for mapping of state to boolean
   - .rawState ⇒ `HostState`
   - .previousState ⇒ `string|null`: Previous state as string, or `null` if not available
   - .previousNumericState ⇒ `number|null`: Previous state as number, if state can be represented as number, or `null` if that's not the case or not available
@@ -383,6 +403,25 @@ item.postUpdate("OFF");
 console.log("KitchenLight state", item.state);
 ```
 
+The `boolState` property is mapped according to the following table:
+
+| Item Type          | `.boolState`                                       |
+|--------------------|----------------------------------------------------|
+| Call               | `null`                                             |
+| Color              | brightness > 0                                     |
+| Contact            | state === `OPEN`                                   |
+| DateTime           | `null`                                             |
+| Dimmer             | state > 0                                          |
+| Group              | `null`  if no group type, else use the group state |
+| Image              | `null`                                             |
+| Location           | `null`                                             |
+| Number             | state !== 0                                        |
+| Number:<Dimension> | state !== 0                                        |
+| Player             | state === `PLAY`                                   |
+| Rollershutter      | state > 0                                          |
+| String             | `null`                                             |
+| Switch             | state === `ON`                                     |
+
 See [openhab-js : Item](https://openhab.github.io/openhab-js/items.Item.html) for full API documentation.
 
 #### `itemConfig`
@@ -390,24 +429,38 @@ See [openhab-js : Item](https://openhab.github.io/openhab-js/items.Item.html) fo
 Calling `addItem(itemConfig)` or `replaceItem(itemConfig)` requires the `itemConfig` object with the following properties:
 
 - itemConfig : `object`
-  - .type ⇒ `string`
-  - .name ⇒ `string`
-  - .label ⇒ `string`
-  - .category (icon) ⇒ `string`
-  - .groups ⇒ `Array[string]`
-  - .tags ⇒ `Array[string]`
+  - .type ⇒ `string`: required, e.g. `Switch` or `Group`
+  - .name ⇒ `string`: required
+  - .label ⇒ `string`: optional
+  - .category (icon) ⇒ `string`: optional
+  - .groups ⇒ `Array[string]`: optional names of groups to be a member of
+  - .tags ⇒ `Array[string]`: optional
+  - .group ⇒ `object`: optional additional config if Item is group Item
+    - .type ⇒ `string`: optional type of the group, e.g. `Switch`
+    - .function ⇒ `string`: optional aggregation function, e.g. `AND`
+    - .parameters ⇒ `Array[string]`: parameters possibly required by aggregation function, e.g. `ON` and `OFF`
   - .channels ⇒ `string | Object { channeluid: { config } }`
-  - .metadata ⇒ `Object { namespace: value } | Object { namespace: { value: value , config: { config } } }`
-  - .giBaseType ⇒ `string`
-  - .groupFunction ⇒ `string`
+  - .metadata ⇒ `Object { namespace: 'value' } | Object { namespace: { value: '' , configuration: { ... } } }`
+
+There are a few short forms for common metadata available:
+
+- itemConfig : `object`
+    - .format ⇒ `string`: short form for `stateDescription` metadata's pattern configuration
+    - .unit ⇒ `string`: short form for the `unit` metadata
+    - .autoupdate ⇒ `boolean`: short form for the `autoupdate` metadata
 
 Note: `.type` and `.name` are required.
-Basic UI and the mobile apps need `metadata.stateDescription.config.pattern` to render the state of an Item.
+Basic UI and the mobile apps need `metadata.stateDescription.configuration.pattern` to render the state of an Item.
 
 Example:
 
 ```javascript
-// more advanced example
+items.replaceItem({
+  type: 'Switch',
+  name: 'MySwitch',
+  label: 'My Switch'
+});
+
 items.replaceItem({
   type: 'String',
   name: 'Hallway_Light',
@@ -431,21 +484,34 @@ items.replaceItem({
     }
   }
 });
-// minimal example
+
 items.replaceItem({
-  type: 'Switch',
-  name: 'MySwitch',
-  metadata: {
-    stateDescription: {
-      config: {
-        pattern: '%s'
-      }
-    }
+  type: 'Group',
+  name: 'gLights',
+  label: 'Lights',
+  group: {
+    type: 'Switch',
+    function: 'AND',
+    parameters: ['ON', 'OFF']
   }
 });
 ```
 
 See [openhab-js : ItemConfig](https://openhab.github.io/openhab-js/global.html#ItemConfig) for full API documentation.
+
+#### Providing Items (& metadata & channel links) from Scripts
+
+The `addItem` method can be used to provide Items from scripts in a configuration-as-code manner.
+It also allows providing metadata and channel configurations for the Item, basically creating the Item as if it was defined in a `.items` file.
+The benefit of using `addItem` is that you can use loops, conditions or generator functions to create lots of Items without the need to write them all out in a file or manually in the UI.
+
+When called from file-based scripts, the created Item will share the lifecycle with the script, meaning it will be removed when the script is unloaded.
+You can use the `persist` parameter to optionally persist the Item from file-based scripts.
+
+When called from UI-based scripts, the Item will be stored permanently and will not be removed when the script is unloaded.
+Keep in mind that attempting to add an Item with the same name as an existing Item will result in an error.
+
+See [openhab-js : Item](https://openhab.github.io/openhab-js/items.html#.addItem) for full API documentation.
 
 #### `ItemPersistence`
 
@@ -729,7 +795,6 @@ actions.ScriptExecution.createTimer(string identifier, time.ZonedDateTime zdt, f
 - `hasTerminated()`: Whether the scheduled execution has already terminated. ⇒ `boolean`
 - `reschedule(time.ZonedDateTime)`: Reschedules a timer to a new starting time. This can also be called after a timer has terminated, which will result in another execution of the same code. ⇒ `boolean`: true, if rescheduling was successful
 
-
 ```javascript
 var now = time.ZonedDateTime.now();
 
@@ -875,14 +940,14 @@ See [openhab-js : cache](https://openhab.github.io/openhab-js/cache.html) for fu
 
 The `defaultSupplier` provided function will return a default value if a specified key is not already associated with a value.
 
-**Example** *(Get a previously set value with a default value (times = 0))*
+**Example** _(Get a previously set value with a default value (times = 0))_
 
 ```js
 var counter = cache.shared.get('counter', () => 0);
 console.log('Counter: ' + counter);
 ```
 
-**Example** *(Get a previously set value, modify and store it)*
+**Example** _(Get a previously set value, modify and store it)_
 
 ```js
 var counter = cache.private.get('counter');
@@ -923,7 +988,7 @@ Therefore, if you attempt to use the `DateTimeFormatter` and receive an error sa
 
 [JS-Joda Locales](https://github.com/js-joda/js-joda/tree/master/packages/locale#use-prebuilt-locale-packages) includes a list of all the supported locales.
 Each locale consists of a two letter language indicator followed by a "-" and a two letter dialect indicator: e.g. "EN-US".
-Installing a locale can be done through the command `npm install @js-joda/locale_de-de` from the *$OPENHAB_CONF/automation/js* folder.
+Installing a locale can be done through the command `npm install @js-joda/locale_de-de` from the _$OPENHAB_CONF/automation/js_ folder.
 
 To import and use a local into your rule you need to require it and create a `DateTimeFormatter` that uses it:
 
@@ -1204,6 +1269,9 @@ Local variable state is not persisted among reloads, see using the [cache](#cach
 
 File based rules can be created in 2 different ways: using [JSRule](#jsrule) or the [Rule Builder](#rule-builder).
 
+When a rule is triggered, the script is provided information about the event that triggered the rule in the `event` object.
+Please refer to [Event Object](#event-object) for documentation.
+
 See [openhab-js : rules](https://openhab.github.io/openhab-js/rules.html) for full API documentation.
 
 ### JSRule
@@ -1298,14 +1366,14 @@ Rule are completed by calling `.build(name, description, tags, id)` , all parame
 A simple example of this would look like:
 
 ```javascript
-rules.when().item("F1_Light").changed().then().send("changed").toItem("F2_Light").build("My Rule", "My First Rule");
+rules.when().item("F1_Light").changed().then().send("changed").toItem("F2_Light").build("My Rule", "My First Rule", ['MyTag1', 'Tag2'], 'MyRuleID');
 ```
 
 Operations and conditions can also optionally take functions:
 
 ```javascript
 rules.when().item("F1_light").changed().then(event => {
-  console.log(event);
+    console.log(event);
 }).build("Test Rule", "My Test Rule");
 ```
 
@@ -1424,54 +1492,6 @@ rules.when(true).item('HallLight').receivedCommand().then().sendIt().toItem('Kit
 rules.when(true).item('HallLight').receivedUpdate().then().copyState().fromItem('BedroomLight1').toItem('BedroomLight2').build();
 ```
 
-### Event Object
-
-**NOTE**: The `event` object is different in UI Based Rules and File Based Rules!
-This section is only valid for File Based Rules.
-If you use UI Based Rules, refer to [UI based rules event object documentation](#ui-event-object).
-
-When a rule is triggered, the script is provided the event instance that triggered it.
-The specific data depends on the event type.
-The `event` object provides some information about that trigger.
-
-This table gives an overview over the `event` object:
-
-| Property Name     | Trigger Types                                       | Description                                                                   | Rules DSL Equivalent   |
-|-------------------|-----------------------------------------------------|-------------------------------------------------------------------------------|------------------------|
-| `oldState`        | `ItemStateChangeTrigger`, `GroupStateChangeTrigger` | Previous state of Item or Group that triggered event                          | `previousState`        |
-| `newState`        | `ItemStateChangeTrigger`, `GroupStateChangeTrigger` | New state of Item or Group that triggered event                               | N/A                    |
-| `receivedState`   | `ItemStateUpdateTrigger`, `GroupStateUpdateTrigger` | State of Item that triggered event                                            | `triggeringItem.state` |
-| `receivedCommand` | `ItemCommandTrigger`, `GroupCommandTrigger`         | Command that triggered event                                                  | `receivedCommand`      |
-| `itemName`        | `Item****Trigger`, `Group****Trigger`               | Name of Item that triggered event                                             | `triggeringItem.name`  |
-| `groupName`       | `Group****Trigger`                                  | Name of the group whose member triggered event                                | N/A                    |
-| `receivedEvent`   | `ChannelEventTrigger`                               | Channel event that triggered event                                            | N/A                    |
-| `channelUID`      | `ChannelEventTrigger`                               | UID of channel that triggered event                                           | N/A                    |
-| `oldStatus`       | `ThingStatusChangeTrigger`                          | Previous state of Thing that triggered event                                  | N/A                    |
-| `newStatus`       | `ThingStatusChangeTrigger`                          | New state of Thing that triggered event                                       | N/A                    |
-| `status`          | `ThingStatusUpdateTrigger`                          | State of Thing that triggered event                                           | N/A                    |
-| `thingUID`        | `Thing****Trigger`                                  | UID of Thing that triggered event                                             | N/A                    |
-| `cronExpression`  | `GenericCronTrigger`                                | Cron expression of the trigger                                                | N/A                    |
-| `time`            | `TimeOfDayTrigger`                                  | Time of day value of the trigger                                              | N/A                    |
-| `timeOnly`        | `DateTimeTrigger`                                   | Whether the trigger only considers the time part of the DateTime Item         | N/A                    |
-| `offset`          | `DateTimeTrigger`                                   | Offset in seconds added to the time of the DateTime Item                      | N/A                    |
-| `eventType`       | all except `PWMTrigger`, `PIDTrigger`               | Type of event that triggered event (change, command, triggered, update, time) | N/A                    |
-| `triggerType`     | all except `PWMTrigger`, `PIDTrigger`               | Type of trigger that triggered event                                          | N/A                    |
-| `eventClass`      | all                                                 | Java class name of the triggering event                                       | N/A                    |
-| `module`          | all                                                 | (user-defined or auto-generated) name of trigger                              | N/A                    |
-| `raw`             | all                                                 | Original contents of the event including data passed from a calling rule      | N/A                    |
-
-All properties are typeof `string` except for properties contained by `raw` which are unmodified from the original types.
-
-Please note that when using `GenericEventTrigger`, the available properties depend on the chosen event types.
-It is not possible for the openhab-js library to provide type conversions for all properties of all openHAB events, as those are too many.
-In case the event object does not provide type-conversed properties for your chosen event type, use the `payload` property to gain access to the event's (Java data type) payload.
-
-**NOTE:**
-`Group****Trigger`s use the equivalent `Item****Trigger` as trigger for each member.
-Time triggers do not provide any event instance, therefore no property is populated.
-
-See [openhab-js : EventObject](https://openhab.github.io/openhab-js/rules.html#.EventObject) for full API documentation.
-
 ## Advanced Scripting
 
 ### Libraries
@@ -1499,8 +1519,8 @@ When it is run, `npm` will remove everything from `node_modules` that has not be
 Follow these steps to create your own library (it's called a CommonJS module):
 
 1. Create a separate folder for your library outside of `automation/js`, you may also initialize a Git repository.
-2. Run `npm init` from your newly created folder; at least provide responses for the `name`, `version` and `main` (e.g. `index.js`) fields.
-3. Create the main file of your library (`index.js`) and add some exports:
+1. Run `npm init` from your newly created folder; at least provide responses for the `name`, `version` and `main` (e.g. `index.js`) fields.
+1. Create the main file of your library (`index.js`) and add some exports:
 
    ```javascript
    var someProperty = 'Hello world!';
@@ -1514,9 +1534,12 @@ Follow these steps to create your own library (it's called a CommonJS module):
    };
    ```
 
-4. Tar it up by running `npm pack` from your library's folder.
-5. Install it by running `npm install <path-to-library-folder>/<name>-<version>.tgz` from the `automation/js` folder.
-6. After you've installed it with `npm`, you can continue development of the library inside `node_modules`.
+1. Tar it up by running `npm pack` from your library's folder.
+1. Install it by running `npm install <path-to-library-folder>/<name>-<version>.tgz` from the `automation/js` folder.
+1. After you've installed it with `npm`, you can continue development of the library inside `node_modules`.
+1. As you might have already noticed, the JavaScript Scripting add-on is reloading a script as soon as one of its dependencies changes.
+   When developing a library inside `node_modules`, this can cause regular reloads.
+   To avoid this situation, you can disable dependency tracking in the JavaScript Scripting add-on settings (you need to tick "show advanced" for the setting to come up).
 
 It is also possible to upload your library to [npm](https://npmjs.com) to share it with other users.
 

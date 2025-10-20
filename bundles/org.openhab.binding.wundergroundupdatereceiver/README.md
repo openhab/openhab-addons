@@ -66,7 +66,7 @@ Additionally there is a receipt timestamp and a trigger channel.
 | UV                | uv                           | Number:Dimensionless | UV Index                       | UV index.                                                                              | Sun         |
 | humidity          | humidity                     | Number:Dimensionless | Humidity                       | Humidity in %.                                                                         | Humidity    |
 | indoorhumidity    | indoor-humidity              | Number:Dimensionless | Indoor Humidity                | Indoor humidity in %.                                                                  | Humidity    |
-| baromin           |
+| baromin           | barometric-pressure          | Number:Pressure      | Barometric Pressure            | Barometric pressure.                                                                   | Pressure    |
 
 #### Advanced channel-types
 

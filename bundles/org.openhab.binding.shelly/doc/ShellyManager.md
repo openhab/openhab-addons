@@ -3,12 +3,14 @@
 The Shelly Manager is a small extension to the binding, which provides some low level information on the Shelly Devices, but also provides some functions to manage the devices.
 
 To open the Shelly Manage launch the following URL in your browser
+
 - http://&lt;openHAB IP address&gt;:8080/shelly/manager or
 - http://&lt;openHAB IP address&gt;:8443/shelly/manager
 
 Maybe you need to change the port matching your setup.
 
 Shelly Manager makes you various device insights available to get an overview of your Shellys
+
 - Get a quick overview that all Shellys operate like expected, statistical data will help to identify issues
 - Have some basic setting actions integrated, which help to do an easy setup of new Shellys added to openHAB
 - Make firmware updates way easier - filter 'Update available' + integrated 2-click update
@@ -16,17 +18,18 @@ Shelly Manager makes you various device insights available to get an overview of
 
 ## Overview
 
-Once the Shelly Manager is opened an overview of all Shelly devices added as a Thing are displayed. 
+Once the Shelly Manager is opened an overview of all Shelly devices added as a Thing are displayed.
 Things which are not discovered or still site in the Inbox will not be displayed.
 
-![](images/manager/overview.png)
+![Shelly Manager Overview](images/manager/overview.png)
 
 You'll see a bunch of technical details, which are not available as channels or in the Thing properties.
-This includes information on the device communication stability. 
+This includes information on the device communication stability.
 The statistic gives you a good overview if device communication is stable or a relevant number of timeouts need to be recovered.
 In this case you should verify the WiFi coverage or other options to improve stability.
 
 The following information is available
+
 |Column              |Description                                                                      |
 |--------------------|---------------------------------------------------------------------------------|
 |S                   |Thing Status - hover over the icon to see more details                           |
@@ -58,12 +61,13 @@ The following information is available
 
 The column S and Name display more information when hovering with the mouse over the entries.
 
-![](images/manager/overview_devstatus.png)
-![](images/manager/overview_devsettings.png)
+![Device Status Overview](images/manager/overview_devstatus.png)
+![Device Settings Tooltip](images/manager/overview_devsettings.png)
 
 ### Device Filters
+
 |Filter              |Description                                                                      |
-|--------------------|---------------------------------------------------------------------------------| 
+|--------------------|---------------------------------------------------------------------------------|
 |All                 |Clear filter / display all devices                                               |
 |Online only         |Filter on devices with Thing Status = ONLINE                                     |
 |Inactive only       |Filter on devices, which are not initialized for in Thing Status = OFFLINE       |
@@ -78,9 +82,10 @@ A click triggers a background status update for all devices rather only the sele
 Filter 'Needs Attention':
 This is a dynamic filter, which helps to identify devices having some kind of setup / connectivity or operation issues.
 The binding checks the following conditions
+
 - Thing status != ONLINE: Use the 'Inactive Only' filter to find those devices, check openhab.log
 - WIFISIGNAL: WiFi signal strength < 2 - this usually leads into connectivity problems, check positioning of portable devices or antenna direction.
-- LOWBATTERY: The remaining battery is < 20% (configuration in Thing Configuration), consider to replace the battery 
+- LOWBATTERY: The remaining battery is < 20% (configuration in Thing Configuration), consider to replace the battery
 Watch out for bigger number of timeout errors.
 - Device RESTARTED: Indicates a firmware problem / crash if this happens without a device reboot or firmware update (timestamp is included)
 - OVERTEMP / OVERLOAD / LOADERROR: There are problems with the physical installation of the device, check specifications, wiring, housing!
@@ -98,7 +103,7 @@ When hovering with the mouse over the status icon or the device name you'll get 
 ### Device Status
 
 |Status              |Description                                                                      |
-|--------------------|---------------------------------------------------------------------------------| 
+|--------------------|---------------------------------------------------------------------------------|
 |Status              |Thing status, sub-status and description as you know it from openHAB             |
 |CoIoT Status        |CoIoT status: enabled or disabled                                                |
 |CoIoT Destination   |CoIoT Peer address (ip address:port) or Multicast                                |
@@ -110,7 +115,7 @@ When hovering with the mouse over the status icon or the device name you'll get 
 ### Device Settings
 
 |Setting             |Description                                                                      |
-|--------------------|---------------------------------------------------------------------------------| 
+|--------------------|---------------------------------------------------------------------------------|
 |Shelly Device Name  |Device name according to device settings                                         |
 |Device Hardware Rev |Hardware revision of the device                                                  |
 |Device Type         |Device Type ID                                                                   |
@@ -125,11 +130,11 @@ When hovering with the mouse over the status icon or the device name you'll get 
 
 ### Actions
 
-The Shelly Manager provides the following actions when the Thing is ONLINE. 
+The Shelly Manager provides the following actions when the Thing is ONLINE.
 They are available in the dropdown list in column Actions.
 
 |Action               |Description                                                                      |
-|---------------------|---------------------------------------------------------------------------------| 
+|---------------------|---------------------------------------------------------------------------------|
 |Reset Statistics     |Resets device statistic and clear the last alarm                                 |
 |Restart              |Restart the device and reconnect to WiFi                                         |
 |Protect              |Use binding's default credentials to protect device access with user and password|
@@ -150,25 +155,26 @@ They are available in the dropdown list in column Actions.
 
 Note: Various actions available only for certain devices or when using a minimum firmware version.
 
-![](images/manager/overview_actions.png)
+![Actions Example](images/manager/overview_actions.png)
 
 ## Firmware Update
 
 The Shelly Manager simplifies the firmware update.
 You could select between different versions using the drop down list on the overview page.
 
-Shelly Manager integrates different sources
+Shelly Manager integrates different sources:
+
 - Allterco official releases: production and beta release (like in the device UI)
 - Older firmware release from the firmware archive - this is a community service
 - You could specify any custom URL providing the firmware image (e.g. a local web server), which is accessible for the device using http
 
 | | |
 |-|-|
-|![](images/manager/overview_versions.png)|All firmware releases are combined to the selection list.<br/>Click on the version you want to install and Shelly Manager will generate the requested URL to trigger the firmware upgrade.|
+|![Firmware Versions Dropdown](images/manager/overview_versions.png)|All firmware releases are combined to the selection list.<br/>Click on the version you want to install and Shelly Manager will generate the requested URL to trigger the firmware upgrade.|
 
 The upgrade starts if you click "Perform Update".
 
-![](images/manager/fwupgrade.png)
+![Firmware Upgrade Process](images/manager/fwupgrade.png)
 
 The device will download the firmware file, installs the update and restarts the device.
 Depending on the device type this takes between 10 and 60 seconds.
@@ -176,11 +182,12 @@ The binding will automatically recover the device with the next status check (as
 
 ### Connection types
 
-You could choose between 3 different update types
-* Internet: This triggers the regular update; the device needs to be connected to the Internet
-* Use openHAB as a proxy: In this case the binding directs the device to request the firmware from the openHAB system.
+You could choose between 3 different update types:
+
+- Internet: This triggers the regular update; the device needs to be connected to the Internet
+- Use openHAB as a proxy: In this case the binding directs the device to request the firmware from the openHAB system.
 The binding will then download the firmware from the selected sources and passes this transparently to the device.
 This provides a security benefit: The device doesn't require Internet access, only the openHAB host, which could be filtered centrally.
-* Custom URL: In this case you could specify 
+- Custom URL: In this case you could specify
 
 The binding manages the download request with the proper download URL.

@@ -44,6 +44,7 @@ import com.google.gson.JsonSyntaxException;
  * Allows access to the AutomowerConnectApi
  *
  * @author Markus Pfleger - Initial contribution
+ * @author MikeTheTux - API Extension, WSS Support, Refactoring
  */
 @NonNullByDefault
 public class AutomowerConnectApi extends HusqvarnaApi {
@@ -64,7 +65,7 @@ public class AutomowerConnectApi extends HusqvarnaApi {
         request.method(HttpMethod.GET);
 
         ContentResponse response = executeRequest(appKey, token, request);
-
+        logger.trace("getMowers: {}", response.getContentAsString());
         return parseResponse(response, MowerListResult.class);
     }
 

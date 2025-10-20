@@ -22,6 +22,7 @@ import org.junit.jupiter.api.Test;
 import org.openhab.binding.astro.internal.handler.AstroThingHandler;
 import org.openhab.binding.astro.internal.handler.SunHandler;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.scheduler.CronScheduler;
 import org.openhab.core.thing.Thing;
@@ -43,8 +44,8 @@ import org.openhab.core.thing.binding.ThingHandlerCallback;
  */
 public class AstroValidConfigurationTest {
 
-    private final String NULL_LONGITUDE = "51.2,null";
-    private final String NULL_LATITUDE = "null,25.4";
+    private static final String NULL_LONGITUDE = "51.2,null";
+    private static final String NULL_LATITUDE = "null,25.4";
 
     @Test
     public void testIfGeolocationIsProvidedForASunThing_theThingStatusBecomesONLINE() {
@@ -147,8 +148,9 @@ public class AstroValidConfigurationTest {
         ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
         CronScheduler cronScheduler = mock(CronScheduler.class);
         TimeZoneProvider timeZoneProvider = mock(TimeZoneProvider.class);
+        LocaleProvider localeProvider = mock(LocaleProvider.class);
         when(timeZoneProvider.getTimeZone()).thenReturn(ZoneId.systemDefault());
-        ThingHandler sunHandler = new SunHandler(thing, cronScheduler, timeZoneProvider);
+        ThingHandler sunHandler = new SunHandler(thing, cronScheduler, timeZoneProvider, localeProvider);
         sunHandler.setCallback(callback);
 
         sunHandler.initialize();

@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.openhab.addons.bundles</groupId>
     <artifactId>org.openhab.addons.reactor.bundles</artifactId>
-    <version>5.0.0-SNAPSHOT</version>
+    <version>5.1.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>org.openhab.binding.ftpupload</artifactId>
@@ -22,13 +22,13 @@
     <dependency>
       <groupId>org.apache.ftpserver</groupId>
       <artifactId>ftplet-api</artifactId>
-      <version>1.2.0</version>
+      <version>1.2.1</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.ftpserver</groupId>
       <artifactId>ftpserver-core</artifactId>
-      <version>1.2.0</version>
+      <version>1.2.1</version>
       <scope>compile</scope>
     </dependency>
     <dependency>

@@ -40,7 +40,7 @@ import org.openhab.core.types.State;
  * @author Dan Cunningham - Initial contribution
  */
 @NonNullByDefault
-public class DimmableLightDevice extends GenericDevice {
+public class DimmableLightDevice extends BaseDevice {
 
     private State lastOnOffState = OnOffType.OFF;
 
@@ -120,17 +120,17 @@ public class DimmableLightDevice extends GenericDevice {
     private void updateOnOff(OnOffType onOffType) {
         lastOnOffState = onOffType;
         if (primaryItem instanceof GroupItem groupItem) {
-            groupItem.send(onOffType);
+            groupItem.send(onOffType, MATTER_SOURCE);
         } else {
-            ((SwitchItem) primaryItem).send(onOffType);
+            ((SwitchItem) primaryItem).send(onOffType, MATTER_SOURCE);
         }
     }
 
     private void updateLevel(PercentType level) {
         if (primaryItem instanceof GroupItem groupItem) {
-            groupItem.send(level);
+            groupItem.send(level, MATTER_SOURCE);
         } else {
-            ((DimmerItem) primaryItem).send(level);
+            ((DimmerItem) primaryItem).send(level, MATTER_SOURCE);
         }
     }
 }

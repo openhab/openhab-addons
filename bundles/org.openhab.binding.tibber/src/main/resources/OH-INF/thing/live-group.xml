@@ -19,6 +19,10 @@
 				<label>Peak Consumption</label>
 				<description>Peak power consumption since midnight in watts</description>
 			</channel>
+			<channel id="average-consumption" typeId="power">
+				<label>Average Consumption</label>
+				<description>Average power consumption since midnight in watts</description>
+			</channel>
 			<channel id="production" typeId="power">
 				<label>Live Production</label>
 				<description>Net power production at the moment in watts</description>
@@ -30,6 +34,10 @@
 			<channel id="peak-production" typeId="power">
 				<label>Peak Production</label>
 				<description>Maximum net power production since midnight in watts</description>
+			</channel>
+			<channel id="power-balance" typeId="power">
+				<label>Power Balance</label>
+				<description>Current power consumption (as positive value) and production (as negative value)</description>
 			</channel>
 			<channel id="voltage1" typeId="voltage">
 				<label>Voltage 1</label>

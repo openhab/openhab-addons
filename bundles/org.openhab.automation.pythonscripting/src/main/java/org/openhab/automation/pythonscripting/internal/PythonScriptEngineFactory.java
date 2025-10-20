@@ -12,39 +12,24 @@
  */
 package org.openhab.automation.pythonscripting.internal;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.lang.module.ModuleDescriptor.Version;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.time.ZoneId;
 import java.util.Arrays;
-import java.util.Comparator;
-import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.script.ScriptEngine;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.automation.pythonscripting.internal.fs.watch.PythonDependencyTracker;
-import org.openhab.core.OpenHAB;
+import org.graalvm.polyglot.Language;
+import org.openhab.automation.pythonscripting.internal.fs.PythonDependencyTracker;
+import org.openhab.automation.pythonscripting.internal.scriptengine.graal.GraalPythonScriptEngine.ScriptEngineProvider;
 import org.openhab.core.automation.module.script.ScriptDependencyTracker;
 import org.openhab.core.automation.module.script.ScriptEngineFactory;
 import org.openhab.core.config.core.ConfigurableService;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.osgi.framework.Constants;
-import org.osgi.framework.FrameworkUtil;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
@@ -59,41 +44,43 @@ import org.slf4j.LoggerFactory;
  * @author Holger Hees - Initial contribution
  * @author Jeff James - Initial contribution
  */
-@Component(service = ScriptEngineFactory.class, configurationPid = "org.openhab.automation.pythonscripting", property = Constants.SERVICE_PID
-        + "=org.openhab.automation.pythonscripting")
-@ConfigurableService(category = "automation", label = "Python Scripting", description_uri = "automation:pythonscripting")
+@Component(service = { ScriptEngineFactory.class, PythonScriptEngineFactory.class }, //
+        configurationPid = "org.openhab.automation.pythonscripting", //
+        property = Constants.SERVICE_PID + "=org.openhab.automation.pythonscripting")
+@ConfigurableService(category = "automation", label = "Python Scripting", description_uri = PythonScriptEngineFactory.CONFIG_DESCRIPTION_URI)
 @NonNullByDefault
-public class PythonScriptEngineFactory implements ScriptEngineFactory {
+public class PythonScriptEngineFactory implements ScriptEngineFactory, ScriptEngineProvider {
     private final Logger logger = LoggerFactory.getLogger(PythonScriptEngineFactory.class);
 
-    private static final String RESOURCE_SEPARATOR = "/";
-
-    public static final Path PYTHON_DEFAULT_PATH = Paths.get(OpenHAB.getConfigFolder(), "automation", "python");
-    public static final Path PYTHON_LIB_PATH = PYTHON_DEFAULT_PATH.resolve("lib");
-
-    private static final Path PYTHON_OPENHAB_LIB_PATH = PYTHON_LIB_PATH.resolve("openhab");
-
-    public static final Path PYTHON_WRAPPER_FILE_PATH = PYTHON_OPENHAB_LIB_PATH.resolve("__wrapper__.py");
-    private static final Path PYTHON_INIT_FILE_PATH = PYTHON_OPENHAB_LIB_PATH.resolve("__init__.py");
-
+    public static final String CONFIG_DESCRIPTION_URI = "automation:pythonscripting";
     public static final String SCRIPT_TYPE = "application/x-python3";
-    private final List<String> scriptTypes = Arrays.asList("py", SCRIPT_TYPE);
 
+    private final List<String> scriptTypes = Arrays.asList("py", SCRIPT_TYPE);
     private final PythonDependencyTracker pythonDependencyTracker;
-    private final PythonScriptEngineConfiguration pythonScriptEngineConfiguration;
+    private final PythonScriptEngineConfiguration configuration;
+
+    private final @Nullable Language language;
 
     @Activate
     public PythonScriptEngineFactory(final @Reference PythonDependencyTracker pythonDependencyTracker,
-            Map<String, Object> config) {
+            final @Reference TimeZoneProvider timeZoneProvider, Map<String, Object> config) {
         logger.debug("Loading PythonScriptEngineFactory");
 
         this.pythonDependencyTracker = pythonDependencyTracker;
-        this.pythonScriptEngineConfiguration = new PythonScriptEngineConfiguration();
+        this.configuration = new PythonScriptEngineConfiguration(config, this);
 
-        modified(config);
+        this.language = PythonScriptEngine.getLanguage();
+        if (this.language == null) {
+            logger.error(
+                    "Graal Python language not initialized. Restart openHAB to initialize available Graal languages properly.");
+        }
 
-        if (this.pythonScriptEngineConfiguration.isHelperEnabled()) {
-            initHelperLib();
+        String defaultTimezone = ZoneId.systemDefault().getId();
+        String providerTimezone = timeZoneProvider.getTimeZone().getId();
+        if (!defaultTimezone.equals(providerTimezone)) {
+            logger.warn(
+                    "User timezone '{}' is different than openhab regional timezone '{}'. Python Scripting is running with timezone '{}'.",
+                    defaultTimezone, providerTimezone, defaultTimezone);
         }
     }
 
@@ -103,8 +90,8 @@ public class PythonScriptEngineFactory implements ScriptEngineFactory {
     }
 
     @Modified
-    protected void modified(Map<String, ?> config) {
-        this.pythonScriptEngineConfiguration.update(config);
+    protected void modified(Map<String, Object> config) {
+        this.configuration.modified(config, this);
     }
 
     @Override
@@ -124,7 +111,15 @@ public class PythonScriptEngineFactory implements ScriptEngineFactory {
         if (!scriptTypes.contains(scriptType)) {
             return null;
         }
-        return new PythonScriptEngine(pythonDependencyTracker, pythonScriptEngineConfiguration);
+        return createScriptEngine();
+    }
+
+    @Override
+    public @Nullable ScriptEngine createScriptEngine() {
+        if (language == null) {
+            return null;
+        }
+        return new PythonScriptEngine(configuration, this);
     }
 
     @Override
@@ -132,97 +127,7 @@ public class PythonScriptEngineFactory implements ScriptEngineFactory {
         return pythonDependencyTracker;
     }
 
-    private void initHelperLib() {
-        try {
-            String pathSeparator = FileSystems.getDefault().getSeparator();
-            String resourceLibPath = PYTHON_OPENHAB_LIB_PATH.toString()
-                    .substring(PYTHON_DEFAULT_PATH.toString().length()) + pathSeparator;
-            if (!RESOURCE_SEPARATOR.equals(pathSeparator)) {
-                resourceLibPath = resourceLibPath.replace(pathSeparator, RESOURCE_SEPARATOR);
-            }
-
-            if (Files.exists(PythonScriptEngineFactory.PYTHON_OPENHAB_LIB_PATH)) {
-                try (Stream<Path> files = Files.list(PYTHON_OPENHAB_LIB_PATH)) {
-                    if (files.count() > 0) {
-                        Pattern pattern = Pattern.compile("__version__\\s*=\\s*\"([0-9]+\\.[0-9]+\\.[0-9]+)\"",
-                                Pattern.CASE_INSENSITIVE);
-
-                        Version includedVersion = null;
-                        try (InputStream is = PythonScriptEngineFactory.class.getClassLoader().getResourceAsStream(
-                                resourceLibPath + PYTHON_INIT_FILE_PATH.getFileName().toString())) {
-                            try (InputStreamReader isr = new InputStreamReader(is);
-                                    BufferedReader reader = new BufferedReader(isr)) {
-                                String fileContent = reader.lines().collect(Collectors.joining(System.lineSeparator()));
-                                Matcher includedMatcher = pattern.matcher(fileContent);
-                                if (includedMatcher.find()) {
-                                    includedVersion = Version.parse(includedMatcher.group(1));
-                                }
-                            }
-                        }
-
-                        Version currentVersion = null;
-                        String fileContent = Files.readString(PYTHON_INIT_FILE_PATH, StandardCharsets.UTF_8);
-                        Matcher currentMatcher = pattern.matcher(fileContent);
-                        if (currentMatcher.find()) {
-                            currentVersion = Version.parse(currentMatcher.group(1));
-                        }
-
-                        if (currentVersion == null) {
-                            logger.warn("Unable to detect installed helper lib version. Skip installing helper libs.");
-                            return;
-                        } else if (includedVersion == null) {
-                            logger.error("Unable to detect provided helper lib version. Skip installing helper libs.");
-                            return;
-                        } else if (currentVersion.compareTo(includedVersion) >= 0) {
-                            logger.info("Newest helper lib version is deployed.");
-                            return;
-                        }
-                    }
-                }
-            }
-
-            logger.info("Deploy helper libs into {}.", PythonScriptEngineFactory.PYTHON_OPENHAB_LIB_PATH);
-
-            if (Files.exists(PythonScriptEngineFactory.PYTHON_OPENHAB_LIB_PATH)) {
-                try (Stream<Path> paths = Files.walk(PythonScriptEngineFactory.PYTHON_OPENHAB_LIB_PATH)) {
-                    paths.sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);
-                }
-            }
-
-            initDirectory(PythonScriptEngineFactory.PYTHON_DEFAULT_PATH);
-            initDirectory(PythonScriptEngineFactory.PYTHON_LIB_PATH);
-            initDirectory(PythonScriptEngineFactory.PYTHON_OPENHAB_LIB_PATH);
-
-            Enumeration<URL> resourceFiles = FrameworkUtil.getBundle(PythonScriptEngineFactory.class)
-                    .findEntries(resourceLibPath, "*.py", true);
-
-            while (resourceFiles.hasMoreElements()) {
-                URL resourceFile = resourceFiles.nextElement();
-                String resourcePath = resourceFile.getPath();
-
-                try (InputStream is = PythonScriptEngineFactory.class.getClassLoader()
-                        .getResourceAsStream(resourcePath)) {
-                    Path target = PythonScriptEngineFactory.PYTHON_OPENHAB_LIB_PATH
-                            .resolve(resourcePath.substring(resourcePath.lastIndexOf(RESOURCE_SEPARATOR) + 1));
-
-                    Files.copy(is, target);
-                    File file = target.toFile();
-                    file.setReadable(true, false);
-                    file.setWritable(true, true);
-                }
-            }
-        } catch (Exception e) {
-            logger.error("Exception during helper lib initialisation", e);
-        }
-    }
-
-    private void initDirectory(Path path) {
-        File directory = path.toFile();
-        if (!directory.exists()) {
-            directory.mkdir();
-            directory.setExecutable(true, false);
-            directory.setReadable(true, false);
-            directory.setWritable(true, true);
-        }
+    public PythonScriptEngineConfiguration getConfiguration() {
+        return this.configuration;
     }
 }

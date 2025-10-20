@@ -46,6 +46,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -224,13 +225,22 @@ public class SmartThingsApiService implements SamsungTvService {
             mediaInputSource.supportedInputSources.value = values;
         }
 
+        public void updateSupportedInputSourcesMap(List<?> values) {
+            mediaInputSource.supportedInputSourcesMap.value = values.toArray(new InputList[0]);
+        }
+
         public Items[] getItems() {
             return Optional.ofNullable(items).orElse(new Items[0]);
         }
 
         public String[] getSources() {
+            return Stream.concat(Stream.of(getSourcesFromMedia()), Stream.of(getSourcesFromMap())).distinct()
+                    .toArray(String[]::new);
+        }
+
+        public String[] getSourcesFromMedia() {
             return Optional.ofNullable(mediaInputSource).map(a -> a.supportedInputSources).map(a -> a.value)
-                    .orElseGet(() -> getSourcesFromMap());
+                    .orElse(new String[0]);
         }
 
         public String[] getSourcesFromMap() {
@@ -779,11 +789,6 @@ public class SmartThingsApiService implements SamsungTvService {
                         Optional<STSSEData> data = Optional.ofNullable(new Gson().fromJson(rawData, STSSEData.class));
                         data.ifPresentOrElse(d -> {
                             d.setTvInfo(tvInfo);
-                            String[] inputList = d.getInputSourceList();
-                            if (inputList.length > 0) {
-                                logger.trace("{}: SSE Got input source list: {}", host, Arrays.asList(inputList));
-                                tvInfo.ifPresent(a -> a.updateSupportedInputSources(inputList));
-                            }
                             String inputSource = d.getInputSource();
                             if (!inputSource.isBlank()) {
                                 updateState(SOURCE_NAME, inputSource);
@@ -801,10 +806,10 @@ public class SmartThingsApiService implements SamsungTvService {
                                 logger.trace("{}: SSE Got TV Channel Name: {}", host, tvChannelName);
                                 updateState(CHANNEL_NAME, tvChannelName);
                             }
-                            String Power = d.getSwitch();
-                            if (!Power.isBlank()) {
-                                logger.debug("{}: SSE Got TV Power: {}", host, Power);
-                                if ("on".equals(Power)) {
+                            String power = d.getSwitch();
+                            if (!power.isBlank()) {
+                                logger.debug("{}: SSE Got TV Power: {}", host, power);
+                                if ("on".equals(power)) {
                                     // handler.putOnline(); // ignore on event for now
                                 } else {
                                     // handler.setOffline(); // ignore off event for now
@@ -929,23 +934,32 @@ public class SmartThingsApiService implements SamsungTvService {
 
                 switch (channel) {
                     case SOURCE_ID:
+                    case SOURCE_NAME:
+                        String source = "";
                         if (command instanceof DecimalType commandAsDecimalType) {
                             int val = commandAsDecimalType.intValue();
                             if (val >= 0 && val < t.getSources().length) {
-                                result = setSourceName(t.getSources()[val]);
+                                source = t.getSources()[val];
                             } else {
                                 logger.warn("{}: Invalid source ID: {}, acceptable: 0..{}", host, command,
                                         t.getSources().length);
                             }
                         }
-                        break;
-                    case SOURCE_NAME:
                         if (command instanceof StringType) {
-                            if (t.getSourcesString().contains(command.toString()) || t.getSourcesString().isBlank()) {
-                                result = setSourceName(command.toString());
+                            source = command.toString();
+                        }
+                        if (!source.isBlank()) {
+                            String media = "";
+                            if (Arrays.asList(t.getSourcesFromMedia()).contains(source)) {
+                                media = "mediaInputSource";
+                            } else if (Arrays.asList(t.getSourcesFromMap()).contains(source)) {
+                                media = "samsungvd.mediaInputSource";
                             } else {
                                 logger.warn("{}: Invalid source Name: {}, acceptable: {}", host, command,
                                         t.getSourcesString());
+                            }
+                            if (!media.isBlank()) {
+                                result = setSourceName(media, source);
                             }
                         }
                         break;
@@ -954,6 +968,10 @@ public class SmartThingsApiService implements SamsungTvService {
                 }
                 if (!result) {
                     logger.warn("{}: Smartthings: wrong command type {} channel {}", host, command, channel);
+                    stateMap.put(SOURCE_NAME, "");
+                    stateMap.put(SOURCE_ID, -1);
+                    updateState(SOURCE_NAME, t.getInputSource());
+                    updateState(SOURCE_ID, t.getInputSourceId());
                 }
                 return result;
             }).orElse(false);
@@ -978,7 +996,7 @@ public class SmartThingsApiService implements SamsungTvService {
         }
     }
 
-    private boolean setSourceName(String value) {
-        return setTVProperties("mediaInputSource", "setInputSource", value);
+    private boolean setSourceName(String media, String value) {
+        return setTVProperties(media, "setInputSource", value);
     }
 }

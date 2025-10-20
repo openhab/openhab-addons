@@ -78,7 +78,7 @@ public class OtaSoftwareUpdateRequestorCluster extends BaseCluster {
      * This event shall be generated when a change of the UpdateState attribute occurs due to an OTA Requestor moving
      * through the states necessary to query for updates.
      */
-    public class StateTransition {
+    public static class StateTransition {
         /**
          * This field shall be set to the state that preceded the transition causing this event to be generated, if such
          * a state existed. If no previous state exists, the value shall be Unknown.
@@ -111,7 +111,7 @@ public class OtaSoftwareUpdateRequestorCluster extends BaseCluster {
      * This event shall be generated whenever a new version starts executing after being applied due to a software
      * update. This event SHOULD be generated even if a software update was done using means outside of this cluster.
      */
-    public class VersionApplied {
+    public static class VersionApplied {
         /**
          * This field shall be set to the same value as the one available in the Software Version attribute of the Basic
          * Information Cluster for the newly executing version.
@@ -134,7 +134,7 @@ public class OtaSoftwareUpdateRequestorCluster extends BaseCluster {
     /**
      * This event shall be generated whenever an error occurs during OTA Requestor download operation.
      */
-    public class DownloadError {
+    public static class DownloadError {
         /**
          * This field shall be set to the value of the SoftwareVersion being downloaded, matching the SoftwareVersion
          * field of the QueryImageResponse that caused the failing download to take place.
@@ -170,7 +170,7 @@ public class OtaSoftwareUpdateRequestorCluster extends BaseCluster {
     /**
      * This structure encodes a fabric-scoped location of an OTA provider on a given fabric.
      */
-    public class ProviderLocation {
+    public static class ProviderLocation {
         /**
          * This field shall contain the Node ID of the OTA Provider to contact within the Fabric identified by the
          * FabricIndex.
@@ -197,8 +197,8 @@ public class OtaSoftwareUpdateRequestorCluster extends BaseCluster {
         UPDATE_AVAILABLE(1, "Update Available"),
         URGENT_UPDATE_AVAILABLE(2, "Urgent Update Available");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private AnnouncementReasonEnum(Integer value, String label) {
             this.value = value;
@@ -227,8 +227,8 @@ public class OtaSoftwareUpdateRequestorCluster extends BaseCluster {
         ROLLING_BACK(7, "Rolling Back"),
         DELAYED_ON_USER_CONSENT(8, "Delayed On User Consent");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private UpdateStateEnum(Integer value, String label) {
             this.value = value;
@@ -253,8 +253,8 @@ public class OtaSoftwareUpdateRequestorCluster extends BaseCluster {
         TIME_OUT(3, "Time Out"),
         DELAY_BY_PROVIDER(4, "Delay By Provider");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private ChangeReasonEnum(Integer value, String label) {
             this.value = value;

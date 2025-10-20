@@ -24,7 +24,6 @@ public class BoseSoundTouchNotFoundException extends Exception {
     private static final long serialVersionUID = 1L;
 
     public BoseSoundTouchNotFoundException() {
-        super();
     }
 
     public BoseSoundTouchNotFoundException(String message) {

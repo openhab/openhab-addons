@@ -12,9 +12,12 @@
  */
 package org.openhab.binding.astro.internal.handler;
 
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.Locale;
+import java.util.TimeZone;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -24,6 +27,7 @@ import org.openhab.binding.astro.internal.job.Job;
 import org.openhab.binding.astro.internal.model.Moon;
 import org.openhab.binding.astro.internal.model.Planet;
 import org.openhab.binding.astro.internal.model.Position;
+import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.scheduler.CronScheduler;
 import org.openhab.core.thing.Thing;
@@ -40,24 +44,29 @@ public class MoonHandler extends AstroThingHandler {
     private final String[] positionalChannelIds = new String[] { "phase#name", "phase#age", "phase#agePercent",
             "phase#ageDegree", "phase#illumination", "position#azimuth", "position#elevation", "zodiac#sign" };
     private final MoonCalc moonCalc = new MoonCalc();
-    private @NonNullByDefault({}) Moon moon;
+    private volatile @Nullable Moon moon;
 
     /**
      * Constructor
      */
-    public MoonHandler(Thing thing, final CronScheduler scheduler, final TimeZoneProvider timeZoneProvider) {
-        super(thing, scheduler, timeZoneProvider);
+    public MoonHandler(Thing thing, final CronScheduler scheduler, final TimeZoneProvider timeZoneProvider,
+            LocaleProvider localeProvider) {
+        super(thing, scheduler, timeZoneProvider, localeProvider);
     }
 
     @Override
     public void publishPositionalInfo() {
-        moon = getMoonAt(ZonedDateTime.now());
+        ZoneId zoneId = timeZoneProvider.getTimeZone();
+        TimeZone zone = TimeZone.getTimeZone(zoneId);
+        Locale locale = localeProvider.getLocale();
+        Moon moon = getMoonAt(ZonedDateTime.now(zoneId), locale);
         Double latitude = thingConfig.latitude;
         Double longitude = thingConfig.longitude;
-        moonCalc.setPositionalInfo(Calendar.getInstance(), latitude != null ? latitude : 0,
-                longitude != null ? longitude : 0, moon);
+        moonCalc.setPositionalInfo(Calendar.getInstance(zone, locale), latitude != null ? latitude : 0,
+                longitude != null ? longitude : 0, moon, zone, locale);
 
         moon.getEclipse().setElevations(this, timeZoneProvider);
+        this.moon = moon;
 
         publishPlanet();
     }
@@ -79,24 +88,24 @@ public class MoonHandler extends AstroThingHandler {
     }
 
     @Override
-    protected Job getDailyJob() {
-        return new DailyJobMoon(thing.getUID().getAsString(), this);
+    protected Job getDailyJob(TimeZone zone, Locale locale) {
+        return new DailyJobMoon(this, zone, locale);
     }
 
-    private Moon getMoonAt(ZonedDateTime date) {
+    private Moon getMoonAt(ZonedDateTime date, Locale locale) {
         Double latitude = thingConfig.latitude;
         Double longitude = thingConfig.longitude;
         return moonCalc.getMoonInfo(GregorianCalendar.from(date), latitude != null ? latitude : 0,
-                longitude != null ? longitude : 0);
+                longitude != null ? longitude : 0, TimeZone.getTimeZone(date.getZone()), locale);
     }
 
     @Override
     public @Nullable Position getPositionAt(ZonedDateTime date) {
-        Moon localMoon = getMoonAt(date);
+        Moon localMoon = getMoonAt(date, Locale.ROOT);
         Double latitude = thingConfig.latitude;
         Double longitude = thingConfig.longitude;
         moonCalc.setPositionalInfo(GregorianCalendar.from(date), latitude != null ? latitude : 0,
-                longitude != null ? longitude : 0, localMoon);
+                longitude != null ? longitude : 0, localMoon, TimeZone.getTimeZone(date.getZone()), Locale.ROOT);
         return localMoon.getPosition();
     }
 }

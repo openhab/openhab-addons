@@ -40,7 +40,6 @@ public class D2_03_0A extends _VLDMessage {
     protected static final byte LONG_RELEASE = 0x04;
 
     public D2_03_0A() {
-        super();
     }
 
     public D2_03_0A(ERP1Message packet) {

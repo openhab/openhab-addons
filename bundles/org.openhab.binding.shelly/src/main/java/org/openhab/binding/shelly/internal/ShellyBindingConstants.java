@@ -12,12 +12,7 @@
  */
 package org.openhab.binding.shelly.internal;
 
-import static org.openhab.binding.shelly.internal.discovery.ShellyThingCreator.*;
-
-import java.util.Set;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.thing.ThingTypeUID;
 
 /**
  * The {@link ShellyBindingConstants} class defines common constants, which are
@@ -31,51 +26,6 @@ public class ShellyBindingConstants {
     public static final String VENDOR = "Shelly";
     public static final String BINDING_ID = "shelly";
     public static final String SYSTEM_ID = "system";
-
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_SHELLY1, THING_TYPE_SHELLY1L,
-            THING_TYPE_SHELLY1PM, THING_TYPE_SHELLYEM, THING_TYPE_SHELLY3EM, THING_TYPE_SHELLY2_RELAY,
-            THING_TYPE_SHELLY2_ROLLER, THING_TYPE_SHELLY25_RELAY, THING_TYPE_SHELLY25_ROLLER, THING_TYPE_SHELLY4PRO,
-            THING_TYPE_SHELLYPLUG, THING_TYPE_SHELLYPLUGS, THING_TYPE_SHELLYPLUGU1, THING_TYPE_SHELLYUNI,
-            THING_TYPE_SHELLYDIMMER, THING_TYPE_SHELLYDIMMER2, THING_TYPE_SHELLYIX3, THING_TYPE_SHELLYBULB,
-            THING_TYPE_SHELLYDUO, THING_TYPE_SHELLYVINTAGE, THING_TYPE_SHELLYDUORGBW, THING_TYPE_SHELLYRGBW2_COLOR,
-            THING_TYPE_SHELLYRGBW2_WHITE, THING_TYPE_SHELLYHT, THING_TYPE_SHELLYTRV, THING_TYPE_SHELLYSENSE,
-            THING_TYPE_SHELLYEYE, THING_TYPE_SHELLYSMOKE, THING_TYPE_SHELLYGAS, THING_TYPE_SHELLYFLOOD,
-            THING_TYPE_SHELLYDOORWIN, THING_TYPE_SHELLYDOORWIN2, THING_TYPE_SHELLYBUTTON1, THING_TYPE_SHELLYBUTTON2,
-            THING_TYPE_SHELLYMOTION,
-
-            // Shelly Plus
-            THING_TYPE_SHELLYPLUS1, THING_TYPE_SHELLYPLUS1PM, THING_TYPE_SHELLYPLUS2PM_RELAY,
-            THING_TYPE_SHELLYPLUS2PM_ROLLER, THING_TYPE_SHELLYPLUSI4, THING_TYPE_SHELLYPLUSI4DC,
-            THING_TYPE_SHELLYPLUSDIMMER10V, THING_TYPE_SHELLYPLUSUNI, THING_TYPE_SHELLYPLUSHT,
-            THING_TYPE_SHELLYPLUSHTG3, THING_TYPE_SHELLYPLUSSMOKE, THING_TYPE_SHELLYPLUSPLUGS,
-            THING_TYPE_SHELLYPLUSPLUGUS, THING_TYPE_SHELLYPLUSDIMMERUS, THING_TYPE_SHELLYPLUSRGBWPM,
-            THING_TYPE_SHELLYPLUSSTRIP, THING_TYPE_SHELLYPLUS1L, THING_TYPE_SHELLYPLUS2L, THING_TYPE_SHELLYPLUSSHUTTER,
-            THING_TYPE_SHELLYPLUSEM, THING_TYPE_SHELLYPLUS3EM63,
-
-            // Shelly Wall Display
-            THING_TYPE_SHELLYPLUSWALLDISPLAY,
-
-            // Shelly Plus Mini
-            THING_TYPE_SHELLYMINI_1, THING_TYPE_SHELLYMINI_PM, THING_TYPE_SHELLYMINI_1PM, THING_TYPE_SHELLYMINI_EM,
-
-            // Shelly Pro
-            THING_TYPE_SHELLYPRO1, THING_TYPE_SHELLYPRO1PM, THING_TYPE_SHELLYPRO1CB, THING_TYPE_SHELLYPRO2,
-            THING_TYPE_SHELLYPRO2PM_RELAY, THING_TYPE_SHELLYPRO2PM_ROLLER, THING_TYPE_SHELLYPRO3,
-            THING_TYPE_SHELLYPRO3EM, THING_TYPE_SHELLYPROEM50, THING_TYPE_SHELLYPRO4PM,
-
-            // Shelly BLU
-            THING_TYPE_SHELLYBLUBUTTON, THING_TYPE_SHELLYBLUDW, THING_TYPE_SHELLYBLUMOTION, THING_TYPE_SHELLYBLUHT,
-            THING_TYPE_SHELLYBLUGW,
-
-            // Other
-            THING_TYPE_SHELLYPROTECTED, THING_TYPE_SHELLYUNKNOWN);
-
-    public static final Set<ThingTypeUID> LIGHT_THING_TYPES = Set.of(THING_TYPE_SHELLYBULB, THING_TYPE_SHELLYDUO,
-            THING_TYPE_SHELLYRGBW2_COLOR, THING_TYPE_SHELLYRGBW2_WHITE, THING_TYPE_SHELLYDUORGBW,
-            THING_TYPE_SHELLYVINTAGE, THING_TYPE_SHELLYPLUSRGBWPM);
-
-    public static final Set<ThingTypeUID> BLU_SENSOR_THING_TYPES = Set.of(THING_TYPE_SHELLYBLUBUTTON,
-            THING_TYPE_SHELLYBLUDW, THING_TYPE_SHELLYBLUMOTION, THING_TYPE_SHELLYBLUHT, THING_TYPE_SHELLYBLUGW);
 
     // Thing Configuration Properties
     public static final String CONFIG_DEVICEIP = "deviceIp";
@@ -173,6 +123,13 @@ public class ShellyBindingConstants {
     public static final String CHANNEL_SENSOR_SLEEPTIME = "sensorSleepTime";
     public static final String CHANNEL_SENSOR_ALARM_STATE = "alarmState";
     public static final String CHANNEL_SENSOR_ERROR = "lastError";
+    public static final String CHANNEL_SENSOR_ROTATIONX = "rotationX"; // BLU Remote
+    public static final String CHANNEL_SENSOR_ROTATIONY = "rotationY"; // BLU Remote
+    public static final String CHANNEL_SENSOR_ROTATIONZ = "rotationZ"; // BLU Remote
+    public static final String CHANNEL_SENSOR_CHANNEL = "channel"; // BLU Remote
+    public static final String CHANNEL_SENSOR_STEPS = "steps"; // BLU Remote
+    public static final String CHANNEL_SENSOR_DIRECTION = "direction"; // BLU Remote
+    public static final String CHANNEL_SENSOR_DISTANCE = "distance"; // BLU DIstance
 
     // TRV
     public static final String CHANNEL_CONTROL_SETTEMP = "targetTemp";
@@ -245,6 +202,7 @@ public class ShellyBindingConstants {
     public static final String CHANNEL_DEVST_SELFTTEST = "selfTest";
     public static final String CHANNEL_DEVST_VOLTAGE = "supplyVoltage";
     public static final String CHANNEL_DEVST_CALIBRATED = "calibrated";
+    public static final String CHANNEL_DEVST_FIRMWARE = "firmware";
 
     public static final String CHANNEL_LED_STATUS_DISABLE = "statusLed";
     public static final String CHANNEL_LED_POWER_DISABLE = "powerLed";
@@ -304,6 +262,8 @@ public class ShellyBindingConstants {
     public static final int DIGITS_TEMP = 1;
     public static final int DIGITS_LUX = 0;
     public static final int DIGITS_PERCENT = 1;
+    public static final int DIGITS_ROTATION = 1;
+    public static final int DIGITS_DISTANCE = 0;
 
     public static final int SHELLY_API_TIMEOUT_MS = 10000;
     public static final int UPDATE_STATUS_INTERVAL_SECONDS = 3; // check for updates every x sec

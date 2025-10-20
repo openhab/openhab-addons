@@ -29,22 +29,4 @@
 		</config-description>
 	</thing-type>
 
-	<thing-type id="connected">
-		<supported-bridge-type-refs>
-			<bridge-type-ref id="roaming"/>
-			<bridge-type-ref id="bluegiga"/>
-			<bridge-type-ref id="bluez"/>
-		</supported-bridge-type-refs>
-
-		<label>Connected Bluetooth Device</label>
-		<description>A generic Bluetooth device in connected-mode</description>
-
-		<config-description>
-			<parameter name="address" type="text">
-				<label>Address</label>
-				<description>The unique Bluetooth address of the device</description>
-			</parameter>
-		</config-description>
-	</thing-type>
-
 </thing:thing-descriptions>

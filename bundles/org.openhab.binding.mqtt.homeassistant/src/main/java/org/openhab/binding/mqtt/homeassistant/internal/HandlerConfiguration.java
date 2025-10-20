@@ -70,7 +70,6 @@ public class HandlerConfiguration {
     }
 
     public HandlerConfiguration(String basetopic, List<String> topics) {
-        super();
         this.basetopic = basetopic;
         this.topics = topics;
     }

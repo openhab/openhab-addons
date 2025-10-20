@@ -20,16 +20,16 @@ For more information have a look at the [XPath transformation](https://docs.open
 
 ### Basic Example
 
-A simple but complete XSLT transformation looks like in the following example, which was taken from [here](https://en.wikipedia.org/wiki/Java_API_for_XML_Processing#Example).
+A simple but complete XSLT transformation looks like in the following example, which was taken from [this Wikipedia article](https://en.wikipedia.org/wiki/Java_API_for_XML_Processing#Example).
 
-**input XML**
+#### input XML
 
 ```xml
 <?xml version='1.0' encoding='UTF-8'?>
 <root><node val='hello'/></root>
 ```
 
-**transform/helloworld.xsl**
+#### transform/helloworld.xsl
 
 - `xsl:output`: transform incoming document into another XML-like document, without indentation.
 - `xsl:template`: `match="/"` "any type of node", so the whole document.
@@ -45,7 +45,7 @@ A simple but complete XSLT transformation looks like in the following example, w
 </xsl:stylesheet>
 ```
 
-**Output XML**
+#### Output XML
 
 ```xml
 <reRoot><reNode>hello world</reNode></reRoot>
@@ -55,7 +55,7 @@ A simple but complete XSLT transformation looks like in the following example, w
 
 This example has a namespace defined, as you would find in real world applications, which has to be matched in the rule.
 
-**input XML**
+#### Input XML
 
 - The tag `<PTZStatus>` contains an attribute `xmlns=` which defines the namespace `http://www.hikvision.com/ver20/XMLSchema`.
 
@@ -70,7 +70,7 @@ This example has a namespace defined, as you would find in real world applicatio
 </PTZStatus>
 ```
 
-**transform/azimut.xsl**
+#### transform/azimut.xsl
 
 In the rule, the tag `<xsl:stylesheet>` has to have an attribute `xmlns:xsl="http://www.w3.org/1999/XSL/Transform"` and a second attribute `xmlns:`.
 This attribute has to be the same as the namespace for the input document.
@@ -96,9 +96,9 @@ xmlns:h="http://www.hikvision.com/ver20/XMLSchema">
 </xsl:stylesheet>
 ```
 
-**Output Document**
+#### Output Document
 
-```
+```text
 Fri, 18 Dec 2009 9:38 am PST
 450
 ```

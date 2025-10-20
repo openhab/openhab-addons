@@ -81,7 +81,7 @@ public class HueSensorEntry {
                 this.type = "CLIPGenericFlag"; // "flag" (bool)
                 break;
             default:
-                throw new IllegalArgumentException("Item type not supported as sensor");
+                throw new IllegalArgumentException("Item type '" + item.getType() + "' not supported as sensor");
         }
     }
 

@@ -12,10 +12,11 @@
  */
 package org.openhab.binding.astro.internal.util;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.Locale;
 import java.util.TimeZone;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -48,24 +49,25 @@ public class DateTimeUtilsTest {
 
     @Test
     public void testGetSeasonAmsterdam() {
-        final Season season = seasonCalc.getSeason(DEC_10_2020, AMSTERDAM_LATITUDE, true);
+        final Season season = seasonCalc.getSeason(DEC_10_2020, AMSTERDAM_LATITUDE, true, TIME_ZONE, Locale.ROOT);
 
         assertNextSeason(season.getSpring(), 2020, JAN_20_2020, season);
         assertNextSeason(season.getSummer(), 2020, MAY_20_2020, season);
         assertNextSeason(season.getWinter(), 2020, SEPT_20_2020, season);
-        assertNextSeason(seasonCalc.getSeason(DEC_10_2021, AMSTERDAM_LATITUDE, true).getSpring(), 2021, DEC_10_2020,
-                season);
+        assertNextSeason(
+                seasonCalc.getSeason(DEC_10_2021, AMSTERDAM_LATITUDE, true, TIME_ZONE, Locale.ROOT).getSpring(), 2021,
+                DEC_10_2020, season);
     }
 
     @Test
     public void testGetSeasonSydney() {
-        final Season season = seasonCalc.getSeason(DEC_10_2020, SYDNEY_LATITUDE, true);
+        final Season season = seasonCalc.getSeason(DEC_10_2020, SYDNEY_LATITUDE, true, TIME_ZONE, Locale.ROOT);
 
         assertNextSeason(season.getAutumn(), 2020, JAN_20_2020, season);
         assertNextSeason(season.getWinter(), 2020, MAY_20_2020, season);
         assertNextSeason(season.getSummer(), 2020, SEPT_20_2020, season);
-        assertNextSeason(seasonCalc.getSeason(DEC_10_2021, SYDNEY_LATITUDE, true).getAutumn(), 2021, DEC_10_2020,
-                season);
+        assertNextSeason(seasonCalc.getSeason(DEC_10_2021, SYDNEY_LATITUDE, true, TIME_ZONE, Locale.ROOT).getAutumn(),
+                2021, DEC_10_2020, season);
     }
 
     @Test
@@ -75,8 +77,8 @@ public class DateTimeUtilsTest {
         Calendar truncated = DateTimeUtils.truncateToMidnight(cal);
         assertEquals(truncated, target);
         Calendar endOfDay = DateTimeUtils.endOfDayDate(cal);
-        Calendar target2 = new GregorianCalendar(2021, 9, 30, 23, 59, 59);
-        target2.setTimeZone(TIME_ZONE);
+        Calendar target2 = newCalendar(2021, 9, 30, 23, 59, TIME_ZONE);
+        target2.set(Calendar.SECOND, 59);
         target2.set(Calendar.MILLISECOND, 999);
         assertEquals(endOfDay, target2);
     }
@@ -85,12 +87,14 @@ public class DateTimeUtilsTest {
         final Calendar nextSeason = DateTimeUtils.getNext(date, season.getSpring(), season.getSummer(),
                 season.getAutumn(), season.getWinter());
         assertEquals(expectedSeason, nextSeason, "Should return the expected season name.");
+        assertNotNull(nextSeason);
         assertEquals(expectedYear, nextSeason.get(Calendar.YEAR), "Should return the year matching the next season.");
     }
 
     private static Calendar newCalendar(int year, int month, int dayOfMonth, int hourOfDay, int minute, TimeZone zone) {
-        Calendar result = new GregorianCalendar(year, month, dayOfMonth, hourOfDay, minute);
-        result.setTimeZone(zone);
+        Calendar result = new GregorianCalendar(zone, Locale.ROOT);
+        result.set(Calendar.MILLISECOND, 0);
+        result.set(year, month, dayOfMonth, hourOfDay, minute, 0);
 
         return result;
     }

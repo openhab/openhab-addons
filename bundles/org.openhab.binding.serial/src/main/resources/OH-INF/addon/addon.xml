@@ -5,7 +5,7 @@
 
 	<type>binding</type>
 	<name>Serial Binding</name>
-	<description>This binding supports sending/receiving data to/from a serial port</description>
+	<description>This binding supports sending/receiving data to/from a serial port or TCP connection</description>
 	<connection>local</connection>
 
 </addon:addon>

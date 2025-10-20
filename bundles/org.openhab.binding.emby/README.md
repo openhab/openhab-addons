@@ -72,7 +72,6 @@ The following Channel IDs are available for a `device` Thing:
 | `imageUrlMaxWidth`      | Text    | None    | The maximum width (in pixels) of the retrieved image.                                                                                                              |
 | `imageUrlPercentPlayed` | Boolean | false   | If true, adds an overlay indicating the percent played (e.g., 47%).                                                                                                |
 
-
 ## Full Example
 
 ### `emby.things` Example

@@ -23,10 +23,12 @@ import org.openhab.core.thing.ChannelUID;
 
 /**
  * @author Markus Pfleger - Initial contribution
+ * @author MikeTheTux - API Extension, WSS Support, Refactoring
  */
 @NonNullByDefault
 public enum AutomowerCommand {
     START("Start", AutomowerBindingConstants.CHANNEL_COMMAND_START),
+    START_IN_WORK_AREA("StartInWorkArea", AutomowerBindingConstants.CHANNEL_COMMAND_START_IN_WORK_AREA),
     RESUME_SCHEDULE("ResumeSchedule", AutomowerBindingConstants.CHANNEL_COMMAND_RESUME_SCHEDULE),
     PAUSE("Pause", AutomowerBindingConstants.CHANNEL_COMMAND_PAUSE),
     PARK("Park", AutomowerBindingConstants.CHANNEL_COMMAND_PARK),

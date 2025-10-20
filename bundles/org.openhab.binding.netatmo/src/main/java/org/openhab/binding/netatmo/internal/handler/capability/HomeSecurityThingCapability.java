@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.handler.ApiBridgeHandler;
 import org.openhab.binding.netatmo.internal.handler.CommonInterface;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.ChannelHelper;
@@ -35,9 +36,9 @@ public class HomeSecurityThingCapability extends Capability {
     protected final NetatmoDescriptionProvider descriptionProvider;
     protected final EventChannelHelper eventHelper;
 
-    private Optional<WebhookServlet> webhook = Optional.empty();
-    private Optional<SecurityCapability> securityCapability = Optional.empty();
-    private Optional<HomeCapability> homeCapability = Optional.empty();
+    private @Nullable WebhookServlet webhookServlet;
+    private @Nullable SecurityCapability securityCapability;
+    private @Nullable HomeCapability homeCapability;
 
     public HomeSecurityThingCapability(CommonInterface handler, NetatmoDescriptionProvider descriptionProvider,
             List<ChannelHelper> channelHelpers) {
@@ -50,27 +51,33 @@ public class HomeSecurityThingCapability extends Capability {
     }
 
     protected Optional<SecurityCapability> getSecurityCapability() {
-        if (securityCapability.isEmpty()) {
-            securityCapability = handler.getHomeCapability(SecurityCapability.class);
+        if (securityCapability == null) {
+            handler.getHomeCapability(SecurityCapability.class).ifPresent(cap -> securityCapability = cap);
             ApiBridgeHandler accountHandler = handler.getAccountHandler();
             if (accountHandler != null) {
-                webhook = accountHandler.getWebHookServlet();
-                webhook.ifPresent(servlet -> servlet.registerDataListener(handler.getId(), this));
+                webhookServlet = null;
+                accountHandler.getWebHookServlet().ifPresent(servlet -> {
+                    webhookServlet = servlet;
+                    servlet.registerDataListener(handler.getId(), this);
+                });
             }
         }
-        return securityCapability;
+        return Optional.ofNullable(securityCapability);
     }
 
     protected Optional<HomeCapability> getHomeCapability() {
-        if (homeCapability.isEmpty()) {
-            homeCapability = handler.getHomeCapability(HomeCapability.class);
+        if (homeCapability == null) {
+            handler.getHomeCapability(HomeCapability.class).ifPresent(cap -> homeCapability = cap);
         }
-        return homeCapability;
+        return Optional.ofNullable(homeCapability);
     }
 
     @Override
     public void dispose() {
-        webhook.ifPresent(servlet -> servlet.unregisterDataListener(handler.getId()));
+        WebhookServlet webhook = this.webhookServlet;
+        if (webhook != null) {
+            webhook.unregisterDataListener(handler.getId());
+        }
         super.dispose();
     }
 }

@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.openhab.addons</groupId>
     <artifactId>org.openhab.addons.reactor</artifactId>
-    <version>5.0.0-SNAPSHOT</version>
+    <version>5.1.0-SNAPSHOT</version>
   </parent>
 
   <groupId>org.openhab.addons.bundles</groupId>
@@ -54,7 +54,6 @@
     <module>org.openhab.binding.airquality</module>
     <module>org.openhab.binding.airvisualnode</module>
     <module>org.openhab.binding.alarmdecoder</module>
-    <module>org.openhab.binding.allplay</module>
     <module>org.openhab.binding.amazondashbutton</module>
     <module>org.openhab.binding.amazonechocontrol</module>
     <module>org.openhab.binding.amberelectric</module>
@@ -166,7 +165,6 @@
     <module>org.openhab.binding.folding</module>
     <module>org.openhab.binding.foobot</module>
     <module>org.openhab.binding.freeathome</module>
-    <module>org.openhab.binding.freebox</module>
     <module>org.openhab.binding.freeboxos</module>
     <module>org.openhab.binding.freecurrency</module>
     <module>org.openhab.binding.frenchgovtenergydata</module>
@@ -294,6 +292,7 @@
     <module>org.openhab.binding.mqtt.homeassistant</module>
     <module>org.openhab.binding.mqtt.homie</module>
     <module>org.openhab.binding.mqtt.ruuvigateway</module>
+    <module>org.openhab.binding.mspa</module>
     <module>org.openhab.binding.mybmw</module>
     <module>org.openhab.binding.mycroft</module>
     <module>org.openhab.binding.mynice</module>
@@ -370,6 +369,7 @@
     <module>org.openhab.binding.ring</module>
     <module>org.openhab.binding.rme</module>
     <module>org.openhab.binding.robonect</module>
+    <module>org.openhab.binding.roborock</module>
     <module>org.openhab.binding.roku</module>
     <module>org.openhab.binding.rotel</module>
     <module>org.openhab.binding.russound</module>
@@ -667,7 +667,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
-        <version>3.8.1</version>
+        <version>3.9.0</version>
         <executions>
           <execution>
             <id>embed-dependencies</id>
@@ -708,7 +708,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>xml-maven-plugin</artifactId>
-        <version>1.1.0</version>
+        <version>1.2.0</version>
         <configuration>
           <validationSets>
             <validationSet>

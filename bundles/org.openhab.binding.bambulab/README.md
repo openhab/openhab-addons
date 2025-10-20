@@ -3,6 +3,37 @@
 This addon supports connecting with BambuLab 3D printers in local mode.
 While cloud mode is theoretically possible, it is not supported by the addon developers.
 
+## Local Mode
+
+1. **Find your printer credentials**
+   On **Windows**, open the Bambu Studio configuration file:
+
+   ```json
+      "access_code": {
+      "00ABCDEFG123456": "12345678"
+   }
+   ```
+
+   Look for a section like:
+
+   ```json
+      "access_code": {
+      "00ABCDEFG123456": "12345678"
+   }
+   ```
+
+* `00ABCDEFG123456` → Serial number
+* `12345678` → Access code
+
+2. **Enter the details in openHAB**
+
+   - **Serial number** → Enter the serial number from the config file
+   - **Access code** → Enter the access code from the config file
+   - **IP / Hostname** → Enter your printer’s network address
+   - **Username** → `bblp`
+   - **Series** → Select your printer model
+   - **Other settings** → Leave defaults for now
+
 ## Cloud Mode
 
 Cloud mode is possible but not officially supported by the addon developers.
@@ -11,40 +42,45 @@ To use cloud mode, follow these steps:
 
 ### Find Username
 
-Log in to Maker World and visit [my-preferences](https://makerworld.com/api/v1/design-user-service/my/preference) to retrieve a JSON response containing your data. 
-The relevant field is `uid`, which represents the unique ID of your account. 
+Log in to Maker World and visit [my-preferences](https://makerworld.com/api/v1/design-user-service/my/preference) to retrieve a JSON response containing your data.
+The relevant field is `uid`, which represents the unique ID of your account.
 Use this value as the `username` in the configuration (advanced field) with the prefix `u_`.
 
 ### Access Token
 
-To obtain an access token, follow these steps:
+To obtain an access token, you can use the `requestLoginCode` and `requestAccessCode` actions available on the printer thing.
 
-1. Log in using your email and password.
-2. Confirm the login using a token received via email.
+1.  **Request Login Code**: Use the `requestLoginCode` action with your Bambu Lab username (email) and password. This will send a 6-digit verification code to your email address.
+    ![Request Login Code](docs/RequestLoginCode.png)
+2.  **Request Access Code**: Once you receive the verification code, use the `requestAccessCode` action with your Bambu Lab username (email) and the received 6-digit code. This will retrieve the access token and automatically update the printer thing's configuration with the new `accessCode` and set the `hostname` to `us.mqtt.bambulab.com`.
+    ![Request Access Code](docs/RequestAccessCode.png)
 
-#### Step 1: Login with Email and Password
+Alternatively, you can use the `bambu.sh` script as described below:
 
+To obtain an access token, you can use the provided `bambu.sh` script. This script simplifies the process of logging in and retrieving your access token.
+
+Make the script executable:
 ```shell
-curl -X POST "https://api.bambulab.com/v1/user-service/user/login" \
-     -H "Content-Type: application/json" \
-     -d '{
-           "account": "you@email.io",
-           "password": "superduperpassword123"
-         }'
+chmod +x bambu.sh
 ```
 
-#### Step 2: Confirm Login with Token from Email
-
+Then, run the script and follow the prompts:
 ```shell
-curl -X POST "https://api.bambulab.com/v1/user-service/user/login" \
-     -H "Content-Type: application/json" \
-     -d '{
-           "account": "you@email.io",
-           "code": "123456"
-         }'
+./bambu.sh
+```
+The script will ask for your email, password, and the verification code sent to your email.
+
+Alternatively, you can provide your credentials as command-line arguments:
+```shell
+./bambu.sh -e "you@email.io" -p "superduperpassword123"
 ```
 
-You will receive a long access code in the response. Copy it and use it as the `accessCode` parameter.
+The script will output your access token, which you can then use as the `accessCode` parameter in your thing configuration.
+
+For more options, like quiet mode for automation, use the help flag:
+```shell
+./bambu.sh --help
+```
 
 **Note:** This access code expires after three months. When it expires, repeat the process to obtain a new one.
 
@@ -147,7 +183,7 @@ end
 ### `refreshChannels`
 
 Reports the complete status of the printer.
-This is unnecessary for the X1 series since it already transmits the full object each time. 
+This is unnecessary for the X1 series since it already transmits the full object each time.
 However, the P1 series only sends the values that have been updated compared to the previous report.
 As a rule of thumb, refrain from executing this command at intervals less than 5 minutes on the P1P, as it may cause lag due to its hardware limitations.
 
@@ -155,11 +191,11 @@ As a rule of thumb, refrain from executing this command at intervals less than 5
 
 The `sendCommand` method expects a string command in the format:
 
-```
+```text
 CommandType:Parameter1:Parameter2:...
 ```
 
-#### Possible Commands:
+#### Possible Commands
 
 | Command Type         | Parameters                                                                                                                               | Description                                                                                       |
 |----------------------|------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------|

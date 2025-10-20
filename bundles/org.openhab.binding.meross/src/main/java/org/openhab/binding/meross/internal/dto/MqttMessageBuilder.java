@@ -18,6 +18,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.meross.internal.api.MD5Util;
 
 import com.google.gson.Gson;
@@ -27,13 +29,14 @@ import com.google.gson.Gson;
  * messages.
  *
  * @author Giovanni Fabiani - Initial contribution
+ * @author Mark Herwege - Subscribe to messages asynchronously
  */
+@NonNullByDefault
 public class MqttMessageBuilder {
-    public static String brokerAddress;
-    public static String userId;
-    public static String clientId;
-    public static String key;
-    public static String destinationDeviceUUID;
+    public static @Nullable String brokerAddress;
+    public static @Nullable String userId;
+    public static @Nullable String clientId;
+    public static @Nullable String key;
 
     /**
      * @param method The method
@@ -41,13 +44,14 @@ public class MqttMessageBuilder {
      * @param payload The payload
      * @return the message
      */
-    public static byte[] buildMqttMessage(String method, String namespace, Map<String, Object> payload) {
+    public static byte[] buildMqttMessage(String method, String namespace, @Nullable String destinationDeviceUUID,
+            Map<String, Object> payload) {
         int timestamp = Math.round(Instant.now().getEpochSecond());
         String randomString = UUID.randomUUID().toString().replace("-", "").substring(0, 16);
         String messageId = MD5Util.getMD5String(randomString.toLowerCase());
         String signatureToHash = "%s%s%d".formatted(messageId, key, timestamp);
         String signature = MD5Util.getMD5String(signatureToHash).toLowerCase();
-        Map<String, Object> headerMap = new HashMap<>();
+        Map<String, @Nullable Object> headerMap = new HashMap<>();
         Map<String, Object> dataMap = new HashMap<>();
         headerMap.put("from", buildClientResponseTopic());
         headerMap.put("messageId", messageId);
@@ -120,9 +124,5 @@ public class MqttMessageBuilder {
 
     public static void setKey(String key) {
         MqttMessageBuilder.key = key;
-    }
-
-    public static void setDestinationDeviceUUID(String destinationDeviceUUID) {
-        MqttMessageBuilder.destinationDeviceUUID = destinationDeviceUUID;
     }
 }

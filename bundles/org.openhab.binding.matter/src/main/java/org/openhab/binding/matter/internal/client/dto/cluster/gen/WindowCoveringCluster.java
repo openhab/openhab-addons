@@ -182,8 +182,8 @@ public class WindowCoveringCluster extends BaseCluster {
         PROJECTOR_SCREEN(9, "Projector Screen"),
         UNKNOWN(255, "Unknown");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private TypeEnum(Integer value, String label) {
             this.value = value;
@@ -228,8 +228,8 @@ public class WindowCoveringCluster extends BaseCluster {
         SLIDING_SHUTTER(23, "Sliding Shutter"),
         UNKNOWN(255, "Unknown");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private EndProductTypeEnum(Integer value, String label) {
             this.value = value;
@@ -255,8 +255,8 @@ public class WindowCoveringCluster extends BaseCluster {
         OPENING(1, "Opening"),
         CLOSING(2, "Closing");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private MovementStatus(Integer value, String label) {
             this.value = value;

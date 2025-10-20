@@ -55,7 +55,7 @@ Note. The Xiaomi devices change the token when inclusion is done. Hence if you g
 ## Binding Configuration
 
 No binding configuration is required. However to enable cloud functionality enter your Xiaomi username, password and server(s).
-The list of the known countries and related severs is [here](#country-servers).
+The list of the known countries and related servers is available [in the country servers](#country-servers) section.
 
 After successful Xiaomi cloud login, the binding will use the connection to retrieve the required device tokens from the cloud.
 For Xiaomi vacuums the map can be visualized in openHAB using the cloud connection.

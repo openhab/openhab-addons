@@ -294,6 +294,7 @@ The following channels are holding read only values:
 The usage of the numbered channels above is currently unknown. If you are able to directly match one of the values to any value reported by your heat pump, feel free to report back on the forum, so we are able to give the channel a proper name instead.
 
 The following channels are also writable:
+
 | channel                                  | type               | advanced | description                                                                         |
 |------------------------------------------|--------------------|----------|-------------------------------------------------------------------------------------|
 | temperatureHeatingParallelShift          | Number:Temperature |          | Heating temperature (parallel shift)                                                |

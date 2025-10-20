@@ -24,23 +24,23 @@ assumed automatically based on the `oem_model`.
 
 ### `salus-cloud-bridge` Thing Configuration
 
-| Name                      | Type              | Description                                 | Default                    | Required | Advanced |
-|---------------------------|-------------------|---------------------------------------------|----------------------------|----------|----------|
-| username                  | text              | Username/email to log in to Salus Cloud     | N/A                        | yes      | no       |
-| password                  | text              | Password to log in to Salus Cloud           | N/A                        | yes      | no       |
-| url                       | text              | URL to Salus Cloud                          | https://eu.salusconnect.io | no       | yes      |
-| refreshInterval           | integer (seconds) | Refresh time in seconds                     | 30                         | no       | yes      |
-| propertiesRefreshInterval | integer (seconds) | How long device properties should be cached | 5                          | no       | yes      |
+| Name                      | Type              | Description                                 | Default                        | Required | Advanced |
+|---------------------------|-------------------|---------------------------------------------|--------------------------------|----------|----------|
+| username                  | text              | Username/email to log in to Salus Cloud     | N/A                            | yes      | no       |
+| password                  | text              | Password to log in to Salus Cloud           | N/A                            | yes      | no       |
+| url                       | text              | URL to Salus Cloud                          | <https://eu.salusconnect.io>   | no       | yes      |
+| refreshInterval           | integer (seconds) | Refresh time in seconds                     | 30                             | no       | yes      |
+| propertiesRefreshInterval | integer (seconds) | How long device properties should be cached | 5                              | no       | yes      |
 
 ### `salus-aws-bridge` Thing Configuration
 
-| Name                      | Type              | Description                                  | Default                    | Required | Advanced |
-|---------------------------|-------------------|----------------------------------------------|----------------------------|----------|----------|
-| username                  | text              | Username/email to log in to Salus Cloud      | N/A                        | yes      | no       |
-| password                  | text              | Password to log in to Salus Cloud            | N/A                        | yes      | no       |
-| url                       | text              | URL to Salus Cloud                           | https://eu.salusconnect.io | no       | yes      |
-| refreshInterval           | integer (seconds) | Refresh time in seconds                      | 30                         | no       | yes      |
-| propertiesRefreshInterval | integer (seconds) | How long device properties should be cached  | 5                          | no       | yes      |
+| Name                      | Type              | Description                                  | Default                        | Required | Advanced |
+|---------------------------|-------------------|----------------------------------------------|--------------------------------|----------|----------|
+| username                  | text              | Username/email to log in to Salus Cloud      | N/A                            | yes      | no       |
+| password                  | text              | Password to log in to Salus Cloud            | N/A                            | yes      | no       |
+| url                       | text              | URL to Salus Cloud                           | `https://eu.salusconnect.io`   | no       | yes      |
+| refreshInterval           | integer (seconds) | Refresh time in seconds                      | 30                             | no       | yes      |
+| propertiesRefreshInterval | integer (seconds) | How long device properties should be cached  | 5                              | no       | yes      |
 | userPoolId                | text              |                                              | XGRz3CgoY                  | no       | yes      |
 | clientId                  | text              | The app client ID                            | 4pk5efh3v84g5dav43imsv4fbj | no       | yes      |
 | region                    | text              | Region with which the SDK should communicate | eu-central-1               | no       | yes      |
@@ -993,4 +993,3 @@ The Salus API poses challenges, and all coding efforts are a result of reverse e
 contact the Salus Team, but the closed-source nature of the API limited assistance. Consequently, there may be errors in
 implementation or channel visibility issues. If you encounter any issues, please report them, and efforts will be made
 to address and resolve them.
-

@@ -98,4 +98,59 @@
 			<default>false</default>
 		</parameter>
 	</config-description>
+
+	<config-description uri="channel-type:zwavejs:rollershutter-channel">
+		<parameter name="incomingUnit" type="text">
+			<label>Incoming Unit</label>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="commandClassId" type="integer">
+			<label>Command Class Id</label>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="commandClassName" type="text">
+			<label>Command Class Name</label>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="endpoint" type="integer">
+			<label>Endpoint Index</label>
+			<advanced>true</advanced>
+			<default>0</default>
+		</parameter>
+		<parameter name="factor" type="decimal">
+			<label>Factor</label>
+			<advanced>true</advanced>
+			<default>1</default>
+		</parameter>
+		<parameter name="propertyKeyStr" type="text">
+			<label>Property Key Str</label>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="propertyKeyInt" type="integer">
+			<label>Property Key Int</label>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="readProperty" type="text">
+			<label>Read Property</label>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="writePropertyStr" type="text">
+			<label>Write Property Str</label>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="writePropertyInt" type="integer">
+			<label>Write Property Int</label>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="inverted" type="boolean">
+			<label>Inverted</label>
+			<description>When True the position of the RollerShutter will be inverted.</description>
+			<default>false</default>
+		</parameter>
+		<parameter name="isUpDownInverted" type="boolean">
+			<label>Up/Down Inverted</label>
+			<description>When True the Up/Down commands will be inverted.</description>
+			<default>false</default>
+		</parameter>
+	</config-description>
 </config-description:config-descriptions>

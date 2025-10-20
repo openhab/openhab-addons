@@ -29,7 +29,6 @@ import com.google.gson.Gson;
 @NonNullByDefault
 public class GetFirmwareVersionCommand extends IotDeviceCommand<String> {
     public GetFirmwareVersionCommand() {
-        super();
     }
 
     @Override

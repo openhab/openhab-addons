@@ -79,6 +79,12 @@ public class FeicanHandler extends BaseThingHandler {
     public void initialize() {
         final FeicanConfiguration config = getConfigAs(FeicanConfiguration.class);
 
+        if (config.ipAddress.isBlank()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/configuration-ip-address-not-set");
+            return;
+        }
+
         logger.debug("Initializing Feican Wifi RGWB Bulb on IP address {}", config.ipAddress);
         try {
             connection = new Connection(config.ipAddress);

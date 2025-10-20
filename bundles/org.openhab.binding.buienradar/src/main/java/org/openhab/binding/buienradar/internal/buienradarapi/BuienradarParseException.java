@@ -26,7 +26,6 @@ public class BuienradarParseException extends Exception {
     private static final long serialVersionUID = 1L;
 
     public BuienradarParseException() {
-        super();
     }
 
     public BuienradarParseException(@Nullable String message) {

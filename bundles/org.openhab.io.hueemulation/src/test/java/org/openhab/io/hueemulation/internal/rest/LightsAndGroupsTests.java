@@ -31,6 +31,7 @@ import org.openhab.core.items.GroupItem;
 import org.openhab.core.items.ItemRegistry;
 import org.openhab.core.items.events.ItemCommandEvent;
 import org.openhab.core.library.items.ColorItem;
+import org.openhab.core.library.items.StringItem;
 import org.openhab.core.library.items.SwitchItem;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
@@ -164,6 +165,21 @@ public class LightsAndGroupsTests {
     }
 
     @Test
+    public void removeGroupNoLongerGroup() {
+        String groupName = "group1";
+        GroupItem item = new GroupItem(groupName, null);
+        item.addTag("Switchable");
+        itemRegistry.add(item);
+
+        String hueID = cs.mapItemUIDtoHueID(item);
+        assertThat(cs.ds.groups.get(hueID), notNullValue());
+
+        subject.updated(item, new StringItem(groupName));
+
+        assertThat(cs.ds.groups.get(hueID), nullValue());
+    }
+
+    @Test
     public void updateSwitchable() {
         SwitchItem item = new SwitchItem("switch1");
         item.setLabel("labelOld");
@@ -183,12 +199,46 @@ public class LightsAndGroupsTests {
         assertThat(device.item, is(newitem));
         assertThat(device.state, is(instanceOf(HueStatePlug.class)));
         assertThat(device.name, is("labelNew"));
+    }
+
+    @Test
+    public void updateSwitchableNoTags() {
+        SwitchItem item = new SwitchItem("switch1");
+        item.setLabel("labelOld");
+        item.addTag("Switchable");
+        itemRegistry.add(item);
+        String hueID = cs.mapItemUIDtoHueID(item);
+        HueLightEntry device = cs.ds.lights.get(hueID);
+        assertThat(device.item, is(item));
+        assertThat(device.state, is(instanceOf(HueStatePlug.class)));
+        assertThat(device.name, is("labelOld"));
 
         // Update with an item that has no tags anymore -> should be removed
-        SwitchItem newitemWithoutTag = new SwitchItem("switch1");
-        newitemWithoutTag.setLabel("labelNew2");
-        subject.updated(newitem, newitemWithoutTag);
+        SwitchItem newitem = new SwitchItem("switch1");
+        newitem.setLabel("labelNew");
+        subject.updated(item, newitem);
 
+        device = cs.ds.lights.get(hueID);
+        assertThat(device, nullValue());
+    }
+
+    @Test
+    public void updateSwitchableUnsupportedItemType() {
+        SwitchItem item = new SwitchItem("switch1");
+        item.setLabel("label");
+        item.addTag("Switchable");
+        itemRegistry.add(item);
+        String hueID = cs.mapItemUIDtoHueID(item);
+        HueLightEntry device = cs.ds.lights.get(hueID);
+        assertThat(device.item, is(item));
+        assertThat(device.state, is(instanceOf(HueStatePlug.class)));
+        assertThat(device.name, is("label"));
+
+        // Update with an item where item type is not supported anymore -> should be removed
+        StringItem newitem = new StringItem("switch1");
+        newitem.setLabel("label");
+        newitem.addTag("Switchable");
+        subject.updated(item, newitem);
         device = cs.ds.lights.get(hueID);
         assertThat(device, nullValue());
     }

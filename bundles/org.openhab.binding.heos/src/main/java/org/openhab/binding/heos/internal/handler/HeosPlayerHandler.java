@@ -60,7 +60,6 @@ public class HeosPlayerHandler extends HeosThingBaseHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        @Nullable
         HeosChannelHandler channelHandler = getHeosChannelHandler(channelUID);
         if (channelHandler != null) {
             try {

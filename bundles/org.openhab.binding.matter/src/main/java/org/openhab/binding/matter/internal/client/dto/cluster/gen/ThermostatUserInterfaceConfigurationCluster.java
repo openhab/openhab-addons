@@ -58,8 +58,8 @@ public class ThermostatUserInterfaceConfigurationCluster extends BaseCluster {
         CELSIUS(0, "Celsius"),
         FAHRENHEIT(1, "Fahrenheit");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private TemperatureDisplayModeEnum(Integer value, String label) {
             this.value = value;
@@ -88,8 +88,8 @@ public class ThermostatUserInterfaceConfigurationCluster extends BaseCluster {
         LOCKOUT4(4, "Lockout 4"),
         LOCKOUT5(5, "Lockout 5");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private KeypadLockoutEnum(Integer value, String label) {
             this.value = value;
@@ -111,8 +111,8 @@ public class ThermostatUserInterfaceConfigurationCluster extends BaseCluster {
         SCHEDULE_PROGRAMMING_PERMITTED(0, "Schedule Programming Permitted"),
         SCHEDULE_PROGRAMMING_DENIED(1, "Schedule Programming Denied");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private ScheduleProgrammingVisibilityEnum(Integer value, String label) {
             this.value = value;

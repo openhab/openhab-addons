@@ -65,19 +65,19 @@ public class BridgeRemoteEnedisWebHandler extends BridgeRemoteBaseHandler {
     public static final String URL_COMPTE_PART = URL_MON_COMPTE.replace("compte", "compte-particulier");
     public static final URI COOKIE_URI = URI.create(URL_COMPTE_PART);
 
-    private static final String USER_INFO_CONTRACT_URL = BASE_URL + "/mon-compte-client/api/private/v1/userinfos";
+    private static final String USER_INFO_CONTRACT_URL = BASE_URL + "/mon-compte/api/private/v2/userinfos";
     private static final String USER_INFO_URL = BASE_URL + "/userinfos";
-    private static final String PRM_INFO_BASE_URL = BASE_URL + "/mes-mesures-prm/api/private/v1/personnes/";
+    private static final String PRM_INFO_BASE_URL = BASE_URL + "/mes-mesures-prm/api/private/v2/personnes/";
     private static final String PRM_INFO_URL = BASE_URL + "/mes-prms-part/api/private/v2/personnes/%s/prms";
 
     private static final String MEASURE_DAILY_CONSUMPTION_URL = PRM_INFO_BASE_URL
-            + "%s/prms/%s/donnees-energetiques?mesuresTypeCode=ENERGIE&mesuresCorrigees=false&typeDonnees=CONS";
+            + "%s/prms/%s/donnees-energetiques?mesuresTypeCode=ENERGIE&mesuresCorrigees=false&typeDonnees=CONS&segments=%s";
 
     private static final String MEASURE_MAX_POWER_URL = PRM_INFO_BASE_URL
-            + "%s/prms/%s/donnees-energetiques?mesuresTypeCode=PMAX&mesuresCorrigees=false&typeDonnees=CONS";
+            + "%s/prms/%s/donnees-energetiques?mesuresTypeCode=PMAX&mesuresCorrigees=false&typeDonnees=CONS&segments=%s";
 
     private static final String LOAD_CURVE_CONSUMPTION_URL = PRM_INFO_BASE_URL
-            + "%s/prms/%s/donnees-energetiques?mesuresTypeCode=COURBE&mesuresCorrigees=false&typeDonnees=CONS&dateDebut=%s";
+            + "%s/prms/%s/donnees-energetiques?mesuresTypeCode=COURBE&mesuresCorrigees=false&typeDonnees=CONS&segments=%s&dateDebut=%s";
 
     private static final DateTimeFormatter API_DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     private static final DateTimeFormatter API_DATE_FORMAT_YEAR_FIRST = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -86,6 +86,8 @@ public class BridgeRemoteEnedisWebHandler extends BridgeRemoteBaseHandler {
 
     private static final String BASE_MYELECT_URL = "https://www.myelectricaldata.fr/";
     private static final String TEMPO_URL = BASE_MYELECT_URL + "rte/tempo/%s/%s";
+
+    private String idPersonne = "";
 
     public BridgeRemoteEnedisWebHandler(Bridge bridge, final @Reference HttpClientFactory httpClientFactory,
             final @Reference OAuthFactory oAuthFactory, final @Reference HttpService httpService,
@@ -333,8 +335,9 @@ public class BridgeRemoteEnedisWebHandler extends BridgeRemoteBaseHandler {
 
             if (hashRes != null && hashRes.containsKey("cnAlex")) {
                 cookieKey = "personne_for_" + hashRes.get("cnAlex");
+                idPersonne = Objects.requireNonNull(hashRes.get("idPersonne"));
             } else {
-                throw new LinkyException("Connection failed step 7, missing cookieKey");
+                throw new LinkyException("Connection failed step 5, missing cookieKey");
             }
 
             List<HttpCookie> lCookie = httpClient.getCookieStore().getCookies();
@@ -354,5 +357,9 @@ public class BridgeRemoteEnedisWebHandler extends BridgeRemoteBaseHandler {
     @Override
     public boolean supportNewApiFormat() {
         return false;
+    }
+
+    public String getIdPersonne() {
+        return idPersonne;
     }
 }

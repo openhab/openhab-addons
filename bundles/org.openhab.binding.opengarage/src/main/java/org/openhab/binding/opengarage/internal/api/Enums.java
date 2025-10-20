@@ -12,8 +12,7 @@
  */
 package org.openhab.binding.opengarage.internal.api;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * Container class for enums related to opengarage
@@ -21,13 +20,13 @@ import org.slf4j.LoggerFactory;
  * @author Paul Smedley - Initial contribution
  *
  */
+@NonNullByDefault
 public class Enums {
     public enum OpenGarageCommand {
         OPEN("open"),
         CLOSE("close"),
         CLICK("click");
 
-        private static final Logger LOGGER = LoggerFactory.getLogger(OpenGarageCommand.class);
         private final String value;
 
         OpenGarageCommand(String value) {

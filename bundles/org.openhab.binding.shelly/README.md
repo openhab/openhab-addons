@@ -94,7 +94,8 @@ See section [Discovery](#discovery) for details.
 | shellyplusplug       | Shelly Plug-S                                            | SNPL-00112EU, SNPL-10112EU, S3PL-00112EU                                  |
 | shellyplusplug       | Shelly Plug-IT                                           | SNPL-00110IT                                                              |
 | shellyplusplug       | Shelly Plug-UK                                           | SNPL-00112UK                                                              |
-| shellyplusplug       | Shelly Plug-S Gen 3, Shelly AZ Plug                      | SNPL-00112EU                                                              |
+| shellyplusplug       | Shelly Plug-S Gen 3, Shelly AZ Plug                      | S3PL-00112EU                                                              |
+| shellyplusplug       | Shelly AZ Plug                                           | S3PL-10112EU                                                              |
 | shellyplusplug       | Shelly Outdoor Plug-S                                    | S3PL-20112EU                                                              |
 | shellyplusplugus     | Shelly Plug-US                                           | SNPL-00116US                                                              |
 | shellyplusstrip      | Shelly Plus Power Strip 4                                | S4PL-00416EU                                                              |
@@ -105,8 +106,11 @@ See section [Discovery](#discovery) for details.
 | shellyplusht         | Shelly Plus HT with temperature + humidity sensor        | SNSN-0013A, S3SN-0U12A                                                    |
 | shellyplussmoke      | Shelly Plus Smoke sensor                                 | SNSN-0031Z                                                                |
 | shellypluswdus       | Shelly Plus Wall Dimmer US                               | SNDM-0013US                                                               |
+| shellyplusdimmer     | Shelly Plus Dimmer Gen 3                                 | S3DM-0A101WWL                                                             |
 | shellyplusrgbwpm     | Shelly Plus RGBW PM                                      | SNDC-0D4P10WW                                                             |
 | shellywalldisplay    | Shelly Plus Wall Display                                 | SAWD-0A1XX10EU1                                                           |
+| shellyblugw          | Shelly BLU Gateway                                       | SNGW-BT01                                                                 |
+| shellyblugw3         | Shelly BLU Gateway 3                                     | S3GW-1DBT001                                                              |
 
 ### Shelly Plus Mini series (Generation 2+3+4)
 
@@ -128,20 +132,26 @@ See section [Discovery](#discovery) for details.
 | shellypro2pm-relay  | Shelly Pro 2 PM with 2x relay + power meter, relay mode  | SPSW-002PE16EU, SPSW-102PE16EU, SPSW-202PE16EU |
 | shellypro2pm-roller | Shelly Pro 2 PM with 2x relay + power meter, roller mode | SPSW-002PE16EU, SPSW-102PE16EU, SPSW-202PE16EU |
 | shellypro3          | Shelly Pro 3 with 3x relay (dry contacts)                | SPSW-003XE16EU                                 |
-| shellypro3em        | Shelly Pro 3 with 3 integrated power meters              | SPEM-003CEBEU                                  |
-| shellyproem50       | Shelly Pro EM-50 with 2 power meters and 1 relay         | SPEM-002CEBEU50                                |
 | shellypro4pm        | Shelly Pro 4 PM with 4x relay + power meter              | SHPSW04P, SPSW-004PE16EU, SPSW-104PE16EU       |
+| shellyproem50       | Shelly Pro EM-50 - 2 channel, single phase energy meter  | SPEM-002CEBEU50                                |
+| shellypro3em        | Shelly Pro 3EM - 3-phase energy meter                    | SPEM-003CEBEU, SPEM-003CEBEU120                |
+| shellypro3em3ct63   | Shelly Pro 3EM-3CT63 - single or three-phase energy meter| SPEM-003CEBEU63                                |
+| shellypro3em400     | Shelly Pro 3EM-400 - 3-phase energy meter                | SPEM-003CEBEU400                               |
 
 ### Shelly BLU
 
-| thing-type        | Model                                                  | Vendor ID               |
-| ----------------- | ------------------------------------------------------ | ----------------------- |
-| shellyblubutton   | Shelly BLU Button 1                                    | SBBT                    |
-| shellybludw       | Shelly BLU Door/Windows                                | SBDW                    |
-| shellyblumotion   | Shelly BLU Motion                                      | SBMO                    |
-| shellybluht       | Shelly BLU H&T                                         | SBMO                    |
-| shellyblugw       | Shelly BLU Gateway                                     | SNGW-BT01               |
-| shellyblugw3      | Shelly BLU Gateway 3                                   | S3GW-1DBT001            |
+| thing-type           | Model                                                  | Vendor ID               |
+| -------------------- | ------------------------------------------------------ | ----------------------- |
+| shellyblubutton      | Shelly BLU Button 1, Shelly BLU Tough                  | SBBT-002C               |
+| shellyblubutton      | Shelly BLU Tough ZB                                    | SBBT-102C               |
+| shellybluwallswitch4 | Shelly BLU Wallswitch 4                                | SBBT-EU5027             |
+| shellyblurcbutton4   | Shelly BLU RC Button 4                                 | SBBT-004CUS             |
+| shellybluht          | Shelly BLU H&T                                         | SBHT-003C               |
+| shellybluht          | Shelly BLU H&T ZB                                      | SBHT-203C               |
+| shellybludw          | Shelly BLU Door/Windows                                | SBDW-002C               |
+| shellyblumotion      | Shelly BLU Motion                                      | SBMO-003Z               |
+| shellybludistance    | Shelly BLU Distance                                    | SBDI-003E               |
+| shellybluremote      | Shelly BLU Remote Control                              | SBRC-005B               |
 
 ### Special Thing Types
 
@@ -355,7 +365,7 @@ You could also create a rule to catch those status changes or device alarms (see
 | eventsRoller       | true: register event "trigger" when the roller updates status | no        | true for roller devices                            |
 | favoriteUP         | 0-4: Favorite id for UP (see Roller Favorites)                | no        | 0 = no favorite id                                 |
 | favoriteDOWN       | 0-4: Favorite id for DOWN (see Roller Favorites)              | no        | 0 = no favorite id                                 |
-| enableBluGateway   | true: Active BLU gateway support (install script)             | no        | false                                              ]
+| enableBluGateway   | true: Activate BLU gateway support (install script)           | no        | false                                              |
 
 ### General Notes
 
@@ -415,7 +425,7 @@ Depending on the firmware release the Shelly devices supports 2 different mechan
     Version 1.8 introduces CoIoT version 2, which fixes various issues with version 1 and provides almost all relevant status updates.
 
     If there is no specific reason you should enable CoIoT.
-    Check section Network Settings [here](doc/AdvancedUsers.md) for more information.
+    Check section [Network Settings](doc/AdvancedUsers.md) for more information.
 
     Enable the autoCoIoT option in the binding configuration or eventsCoIoT in the Thing configuration to activate CoIoT.
 
@@ -444,6 +454,7 @@ The following trigger types are sent:
 | LONG_PRESSED       | The button was pressed for a longer time (lastEvent=L)              |
 | SHORT_LONG_PRESSED | A short followed by a long button push (lastEvent=SL)               |
 | LONG_SHORT_PRESSED | A long followed by a short button push (lastEvent=LS)               |
+| HOLDING            | Button held for at least 3 sec                                      |
 
 Check the channel definitions for the various devices to see if the device supports those events.
 You could use the Shelly App to set the timing for those events.
@@ -1329,7 +1340,6 @@ Refer to [Smartify Roller Shutters with openHAB and Shelly](doc/UseCaseSmartRoll
 
 ### Shelly Plus 3EM-63 (thing-type: shellyplus3em63)
 
-
 | Group  | Channel       | Type     | read-only | Description                                                                       |
 | ------ | ------------- | -------- | --------- | --------------------------------------------------------------------------------- |
 | relay  | output        | Switch   | r/w       | Controls the relay's output channel (on/off)                                      |
@@ -1373,7 +1383,7 @@ Refer to [Smartify Roller Shutters with openHAB and Shelly](doc/UseCaseSmartRoll
 |        | nmismatch     | Switch   | yes       | ON: abs(ncurrent-ixsum) is greater than nmTreshhold                               |
 |        | nmTreshhold   | Number   | yes       | Treshhod (delta) before  nMismatch goes ON                                        |
 
-### Shelly Plus Dimmer 10v (thing-type: shellyplus10v)
+### Shelly Plus Dimmer / 10V (thing-type: shellyplusdimmer, shellyplus10v)
 
 | Group | Channel      | Type     | read-only | Description                                                                       |
 | ----- | ------------ | -------- | --------- | --------------------------------------------------------------------------------- |
@@ -1415,7 +1425,7 @@ Using the Thing configuration option `brightnessAutoOn` you could decide if the 
 
 Channels lastEvent and eventCount are only available if input type is set to momentary button
 
-### Shelly Plus HT (thing-type: shellyplusht), Plus HT Gen 3 (thing-type: shellyhtg3)
+### Shelly Plus HT (thing-type: shellyplusht)
 
 | Group   | Channel      | Type     | read-only | Description                                             |
 | ------- | ------------ | -------- | --------- | ------------------------------------------------------- |
@@ -1536,6 +1546,10 @@ Channels lastEvent and eventCount are only available if input type is set to mom
 |       | autoOn      | Number  | r/w       | Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds |
 |       | autoOff     | Number  | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds |
 |       | timerActive | Switch  | yes       | Relay #1: ON: An auto-on/off timer is active                                      |
+
+## Shelly BLU Gateway, BLU Gateway 3 (thing-type: shellyblugw)
+
+There are no additional channels besides the device group.
 
 ### Shelly Pro 1 PM (thing-type: shellypro1pm)
 
@@ -1742,6 +1756,59 @@ See notes on discovery of Shelly BLU devices above.
 |         | lowBattery    | Switch   | yes       | Low battery alert (< 20%)                                                           |
 | device  | gatewayDevice | String   | yes       | Shelly forwarded last status update (BLU gateway), could vary from packet to packet |
 
+# Shelly BLU Wall Switch 4 (thing-type: shellybluwallswitch4)
+
+See notes on discovery of Shelly BLU devices above.
+
+| Group   | Channel       | Type     | read-only | Description                                                                         |
+| ------- | ------------- | -------- | --------- | ----------------------------------------------------------------------------------- |
+| status1 | lastEvent     | String   | yes       | Last event type (S/SS/SSS/L/H) for button 1                                         |
+|         | eventCount    | Number   | yes       | Counter gets incremented every time the device issues a button event.               |
+|         | button        | Trigger  | yes       | Event trigger with payload, see SHORT_PRESSED or LONG_PRESSED                       |
+|         | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                   |
+| status2 | lastEvent     | String   | yes       | Last event type (S/SS/SSS/L/H) for button 2                                         |
+|         | eventCount    | Number   | yes       | Counter gets incremented every time the device issues a button event.               |
+|         | button        | Trigger  | yes       | Event trigger with payload, see SHORT_PRESSED or LONG_PRESSED                       |
+|         | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                   |
+| status3 | lastEvent     | String   | yes       | Last event type (S/SS/SSS/L/H) for button 3                                         |
+|         | eventCount    | Number   | yes       | Counter gets incremented every time the device issues a button event.               |
+|         | button        | Trigger  | yes       | Event trigger with payload, see SHORT_PRESSED or LONG_PRESSED                       |
+|         | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                   |
+| status4 | lastEvent     | String   | yes       | Last event type (S/SS/SSS/L/H) for button 4                                         |
+|         | eventCount    | Number   | yes       | Counter gets incremented every time the device issues a button event.               |
+|         | button        | Trigger  | yes       | Event trigger with payload, see SHORT_PRESSED or LONG_PRESSED                       |
+|         | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                   |
+| battery | batteryLevel  | Number   | yes       | Battery Level in %                                                                  |
+|         | lowBattery    | Switch   | yes       | Low battery alert (< 20%)                                                           |
+| device  | gatewayDevice | String   | yes       | Shelly forwarded last status update (BLU gateway), could vary from packet to packet |
+
+# Shelly BLU RC Button 4 (thing-type: shellyblurcbutton4)
+
+See notes on discovery of Shelly BLU devices above.
+
+| Group   | Channel       | Type     | read-only | Description                                                                         |
+| ------- | ------------- | -------- | --------- | ----------------------------------------------------------------------------------- |
+| status1 | lastEvent     | String   | yes       | Last event type (S/SS/SSS/L/H) for button 1                                         |
+|         | eventCount    | Number   | yes       | Counter gets incremented every time the device issues a button event.               |
+|         | button        | Trigger  | yes       | Event trigger with payload, see SHORT_PRESSED or LONG_PRESSED                       |
+|         | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                   |
+| status2 | lastEvent     | String   | yes       | Last event type (S/SS/SSS/L/H) for button 2                                         |
+|         | eventCount    | Number   | yes       | Counter gets incremented every time the device issues a button event.               |
+|         | button        | Trigger  | yes       | Event trigger with payload, see SHORT_PRESSED or LONG_PRESSED                       |
+|         | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                   |
+| status3 | lastEvent     | String   | yes       | Last event type (S/SS/SSS/L/H) for button 3                                         |
+|         | eventCount    | Number   | yes       | Counter gets incremented every time the device issues a button event.               |
+|         | button        | Trigger  | yes       | Event trigger with payload, see SHORT_PRESSED or LONG_PRESSED                       |
+|         | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                   |
+| status4 | lastEvent     | String   | yes       | Last event type (S/SS/SSS/L/H) for button 4                                         |
+|         | eventCount    | Number   | yes       | Counter gets incremented every time the device issues a button event.               |
+|         | button        | Trigger  | yes       | Event trigger with payload, see SHORT_PRESSED or LONG_PRESSED                       |
+|         | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                   |
+| battery | batteryLevel  | Number   | yes       | Battery Level in %                                                                  |
+|         | lowBattery    | Switch   | yes       | Low battery alert (< 20%)                                                           |
+| device  | gatewayDevice | String   | yes       | Shelly forwarded last status update (BLU gateway), could vary from packet to packet |
+
+
 ### Shelly BLU Door/Window Sensor (thing-type: shellybludw)
 
 See notes on discovery of Shelly BLU devices above.
@@ -1751,6 +1818,8 @@ See notes on discovery of Shelly BLU devices above.
 | sensors | state         | Contact  | yes       | OPEN: Contact is open, CLOSED: Contact is closed                                    |
 |         | lux           | Number   | yes       | Brightness in Lux                                                                   |
 |         | tilt          | Number   | yes       | Tilt in ° (angle), -1 indicates that the sensor is not calibrated                   |
+|         | eventCount    | Number   | yes       | Counter gets incremented every time the device issues a button event.               |
+|         | button        | Trigger  | yes       | Event trigger with payload, see SHORT_PRESSED or LONG_PRESSED                       |
 |         | lastUpdate    | DateTime | yes       | Timestamp of the last update (any sensor value changed)                             |
 | battery | batteryLevel  | Number   | yes       | Battery Level in %                                                                  |
 |         | lowBattery    | Switch   | yes       | Low battery alert (< 20%)                                                           |
@@ -1775,13 +1844,48 @@ See notes on discovery of Shelly BLU devices above.
 | ------- | ------------- | -------- | --------- | ------------------------------------------------------- |
 | sensors | temperature   | Number   | yes       | Temperature, unit is reported by tempUnit               |
 |         | humidity      | Number   | yes       | Relative humidity in %                                  |
+|         | eventCount    | Number   | yes       | Counter gets incremented every time the device issues a button event.               |
+|         | button        | Trigger  | yes       | Event trigger with payload, see SHORT_PRESSED or LONG_PRESSED                       |
 |         | lastUpdate    | DateTime | yes       | Timestamp of the last update (any sensor value changed) |
 | battery | batteryLevel  | Number   | yes       | Battery Level in %                                      |
 |         | lowBattery    | Switch   | yes       | Low battery alert (< 20%)                               |
 
-## Shelly BLU Gateway (thing-type: shellyblugw,  shellyblugw3)
+### Shelly BLU Distance(thing-type: shellybludistance)
 
-There are no additional channels beside the device group.
+See notes on discovery of Shelly BLU devices above.
+
+| Group   | Channel       | Type     | read-only | Description                                                                         |
+| ------- | ------------- | -------- | --------- | ----------------------------------------------------------------------------------- |
+| sensors | distance      | Number   | yes       | Distance in mm                                                                      |
+|         | vibration     | Switch   | yes       | ON: Vibration detected                                                              |
+| battery | batteryLevel  | Number   | yes       | Battery Level in %                                                                  |
+|         | lowBattery    | Switch   | yes       | Low battery alert (< 20%)                                                           |
+| device  | gatewayDevice | String   | yes       | Shelly forwarded last status update (BLU gateway), could vary from packet to packet |
+
+### Shelly BLU Remote (thing-type: shellybluremote)
+
+See notes on discovery of Shelly BLU devices above.
+
+| Group   | Channel       | Type     | read-only | Description                                                                         |
+| ------- | ------------- | -------- | --------- | ----------------------------------------------------------------------------------- |
+| sensors | channel       | Number   | yes       | Selected channel                                                                    |
+|         | steps         | Number   | yes       | Number of steps the wheel was moved                                                 |
+|         | rotationX     | Number   | yes       | Rotation X axis                                                                     |
+|         | rotationY     | Number   | yes       | Rotation Y axis                                                                     |
+|         | rotationZ     | Number   | yes       | Rotation Z axis                                                                     |
+|         | direction     | Number   | yes       | up / down                                                                           |
+|         | lastUpdate    | DateTime | yes       | Timestamp of the last update (any sensor value changed)                             |
+| status1 | button        | Trigger  | yes       | Event trigger with payload, see SHORT_PRESSED or LONG_PRESSED                       |
+|         | lastEvent     | String   | yes       | Last event type (S/SS/SSS/L/H) for button 1                                         |
+|         | eventCount    | Number   | yes       | Counter gets incremented every time the device issues a button event.               |
+| status2 | button        | Trigger  | yes       | Event trigger with payload, see SHORT_PRESSED or LONG_PRESSED                       |
+|         | lastEvent     | String   | yes       | Last event type (S/SS/SSS/L/H) for button 1                                         |
+|         | eventCount    | Number   | yes       | Counter gets incremented every time the device issues a button event.               |
+| battery | batteryLevel  | Number   | yes       | Battery Level in %                                                                  |
+|         | lowBattery    | Switch   | yes       | Low battery alert (< 20%)                                                           |
+| device  | gatewayDevice | String   | yes       | Shelly forwarded last status update (BLU gateway), could vary from packet to packet |
+
+
 
 ## Shelly Wall Displays
 

@@ -151,7 +151,7 @@ public class DeviceEnergyManagementCluster extends BaseCluster {
     /**
      * This event shall be generated when the Power Adjustment session is started.
      */
-    public class PowerAdjustStart {
+    public static class PowerAdjustStart {
         public PowerAdjustStart() {
         }
     }
@@ -159,7 +159,7 @@ public class DeviceEnergyManagementCluster extends BaseCluster {
     /**
      * This event shall be generated when the Power Adjustment session ends.
      */
-    public class PowerAdjustEnd {
+    public static class PowerAdjustEnd {
         /**
          * This field shall indicate the reason why the power adjustment session ended.
          */
@@ -186,7 +186,7 @@ public class DeviceEnergyManagementCluster extends BaseCluster {
     /**
      * This event shall be generated when the ESA enters the Paused state. There is no data for this event.
      */
-    public class Paused {
+    public static class Paused {
         public Paused() {
         }
     }
@@ -194,7 +194,7 @@ public class DeviceEnergyManagementCluster extends BaseCluster {
     /**
      * This event shall be generated when the ESA leaves the Paused state and resumes operation.
      */
-    public class Resumed {
+    public static class Resumed {
         /**
          * This field shall indicate the reason why the pause ended.
          */
@@ -209,7 +209,7 @@ public class DeviceEnergyManagementCluster extends BaseCluster {
      * This indicates a generic mechanism for expressing cost to run an appliance, in terms of financial, GHG emissions,
      * comfort value etc.
      */
-    public class CostStruct {
+    public static class CostStruct {
         /**
          * This field shall indicate the type of cost being represented (see CostTypeEnum).
          */
@@ -240,7 +240,7 @@ public class DeviceEnergyManagementCluster extends BaseCluster {
         }
     }
 
-    public class PowerAdjustStruct {
+    public static class PowerAdjustStruct {
         /**
          * This field shall indicate the minimum power that the ESA can have its power adjusted to.
          * Note that this is a signed value. Negative values indicate power flows out of the node
@@ -281,7 +281,7 @@ public class DeviceEnergyManagementCluster extends BaseCluster {
         }
     }
 
-    public class PowerAdjustCapabilityStruct {
+    public static class PowerAdjustCapabilityStruct {
         /**
          * This field shall indicate how the ESA can be adjusted at the current time.
          * For example, a battery storage inverter may need to regulate its internal temperature, or the charging rate
@@ -309,7 +309,7 @@ public class DeviceEnergyManagementCluster extends BaseCluster {
      * Where an ESA does not know the actual power and energy use of the system, it may support the SFR feature and
      * instead report its internal state.
      */
-    public class ForecastStruct {
+    public static class ForecastStruct {
         /**
          * This field shall indicate the sequence number for the current forecast. If the ESA updates a forecast, it
          * shall monotonically increase this value.
@@ -377,7 +377,7 @@ public class DeviceEnergyManagementCluster extends BaseCluster {
     /**
      * This indicates a specific stage of an ESA’s operation.
      */
-    public class SlotStruct {
+    public static class SlotStruct {
         /**
          * This field shall indicate the minimum time (in seconds) that the appliance expects to be in this slot for.
          */
@@ -535,7 +535,7 @@ public class DeviceEnergyManagementCluster extends BaseCluster {
         }
     }
 
-    public class SlotAdjustmentStruct {
+    public static class SlotAdjustmentStruct {
         /**
          * This field shall indicate the index into the Slots list within the Forecast that is to be modified. It shall
          * be less than the actual length of the Slots list (implicitly it must be in the range 0 to 9 based on the
@@ -568,7 +568,7 @@ public class DeviceEnergyManagementCluster extends BaseCluster {
      * perhaps excess solar PV). The format allows the client to suggest that the ESA can either turn up its energy
      * consumption, or turn down its energy consumption during this period.
      */
-    public class ConstraintsStruct {
+    public static class ConstraintsStruct {
         /**
          * This field shall indicate the start time of the constraint period that the client wishes the ESA to compute a
          * new Forecast.
@@ -619,8 +619,8 @@ public class DeviceEnergyManagementCluster extends BaseCluster {
         COMFORT(2, "Comfort"),
         TEMPERATURE(3, "Temperature");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private CostTypeEnum(Integer value, String label) {
             this.value = value;
@@ -655,8 +655,8 @@ public class DeviceEnergyManagementCluster extends BaseCluster {
         POOL_PUMP(13, "Pool Pump"),
         OTHER(255, "Other");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private ESATypeEnum(Integer value, String label) {
             this.value = value;
@@ -681,8 +681,8 @@ public class DeviceEnergyManagementCluster extends BaseCluster {
         POWER_ADJUST_ACTIVE(3, "Power Adjust Active"),
         PAUSED(4, "Paused");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private ESAStateEnum(Integer value, String label) {
             this.value = value;
@@ -706,8 +706,8 @@ public class DeviceEnergyManagementCluster extends BaseCluster {
         GRID_OPT_OUT(2, "Grid Opt Out"),
         OPT_OUT(3, "Opt Out");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private OptOutStateEnum(Integer value, String label) {
             this.value = value;
@@ -732,8 +732,8 @@ public class DeviceEnergyManagementCluster extends BaseCluster {
         USER_OPT_OUT(3, "User Opt Out"),
         CANCELLED(4, "Cancelled");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private CauseEnum(Integer value, String label) {
             this.value = value;
@@ -755,8 +755,8 @@ public class DeviceEnergyManagementCluster extends BaseCluster {
         LOCAL_OPTIMIZATION(0, "Local Optimization"),
         GRID_OPTIMIZATION(1, "Grid Optimization");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private AdjustmentCauseEnum(Integer value, String label) {
             this.value = value;
@@ -779,8 +779,8 @@ public class DeviceEnergyManagementCluster extends BaseCluster {
         LOCAL_OPTIMIZATION(1, "Local Optimization"),
         GRID_OPTIMIZATION(2, "Grid Optimization");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private ForecastUpdateReasonEnum(Integer value, String label) {
             this.value = value;
@@ -803,8 +803,8 @@ public class DeviceEnergyManagementCluster extends BaseCluster {
         LOCAL_OPTIMIZATION_ADJUSTMENT(1, "Local Optimization Adjustment"),
         GRID_OPTIMIZATION_ADJUSTMENT(2, "Grid Optimization Adjustment");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private PowerAdjustReasonEnum(Integer value, String label) {
             this.value = value;

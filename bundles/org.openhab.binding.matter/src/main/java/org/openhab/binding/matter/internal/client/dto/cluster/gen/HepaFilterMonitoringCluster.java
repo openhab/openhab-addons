@@ -76,7 +76,7 @@ public class HepaFilterMonitoringCluster extends BaseCluster {
     /**
      * Indicates the product identifier that can be used as a replacement for the resource.
      */
-    public class ReplacementProductStruct {
+    public static class ReplacementProductStruct {
         public ProductIdentifierTypeEnum productIdentifierType; // ProductIdentifierTypeEnum
         public String productIdentifierValue; // string
 
@@ -95,8 +95,8 @@ public class HepaFilterMonitoringCluster extends BaseCluster {
         UP(0, "Up"),
         DOWN(1, "Down");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private DegradationDirectionEnum(Integer value, String label) {
             this.value = value;
@@ -119,8 +119,8 @@ public class HepaFilterMonitoringCluster extends BaseCluster {
         WARNING(1, "Warning"),
         CRITICAL(2, "Critical");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private ChangeIndicationEnum(Integer value, String label) {
             this.value = value;
@@ -149,8 +149,8 @@ public class HepaFilterMonitoringCluster extends BaseCluster {
         GTIN14(3, "Gtin 14"),
         OEM(4, "Oem");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private ProductIdentifierTypeEnum(Integer value, String label) {
             this.value = value;

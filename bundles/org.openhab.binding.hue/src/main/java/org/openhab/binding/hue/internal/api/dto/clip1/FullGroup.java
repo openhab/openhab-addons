@@ -39,7 +39,6 @@ public class FullGroup extends Group {
     private @Nullable State groupState; // Will not be set by hue API
 
     FullGroup() {
-        super();
     }
 
     /**

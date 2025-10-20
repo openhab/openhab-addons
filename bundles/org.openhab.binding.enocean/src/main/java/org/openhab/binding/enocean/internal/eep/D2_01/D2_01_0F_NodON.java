@@ -35,7 +35,6 @@ import org.openhab.core.types.State;
 public class D2_01_0F_NodON extends D2_01 {
 
     public D2_01_0F_NodON() {
-        super();
     }
 
     public D2_01_0F_NodON(ERP1Message packet) {

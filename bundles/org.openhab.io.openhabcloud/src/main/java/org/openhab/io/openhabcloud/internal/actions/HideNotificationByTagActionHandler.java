@@ -43,7 +43,7 @@ public class HideNotificationByTagActionHandler extends BaseHideNotificationActi
     }
 
     @Override
-    public @Nullable Map<String, Object> execute(Map<String, Object> context) {
+    public @Nullable Map<String, @Nullable Object> execute(Map<String, Object> context) {
         cloudService.hideNotificationByTag(userId, tag);
         return null;
     }

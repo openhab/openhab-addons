@@ -112,10 +112,9 @@ public class Sensors implements RegistryChangeListener<Item> {
 
     @Override
     public synchronized void added(Item newElement) {
-        if (!(newElement instanceof GenericItem)) {
+        if (!(newElement instanceof GenericItem element)) {
             return;
         }
-        GenericItem element = (GenericItem) newElement;
 
         if (!ALLOWED_ITEM_TYPES.contains(element.getType())) {
             return;
@@ -136,10 +135,14 @@ public class Sensors implements RegistryChangeListener<Item> {
 
     @Override
     public synchronized void updated(Item oldElement, Item newElement) {
-        if (!(newElement instanceof GenericItem)) {
+        if (!(newElement instanceof GenericItem element)) {
             return;
         }
-        GenericItem element = (GenericItem) newElement;
+
+        if (!ALLOWED_ITEM_TYPES.contains(element.getType())) {
+            removed(element);
+            return;
+        }
 
         String hueID = cs.mapItemUIDtoHueID(element);
 

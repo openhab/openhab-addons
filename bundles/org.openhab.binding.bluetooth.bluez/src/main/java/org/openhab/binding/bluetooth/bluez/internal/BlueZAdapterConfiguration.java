@@ -25,4 +25,5 @@ import org.openhab.binding.bluetooth.BaseBluetoothBridgeHandlerConfiguration;
 public class BlueZAdapterConfiguration extends BaseBluetoothBridgeHandlerConfiguration {
 
     public @Nullable String address;
+    public boolean lazyScan = true;
 }

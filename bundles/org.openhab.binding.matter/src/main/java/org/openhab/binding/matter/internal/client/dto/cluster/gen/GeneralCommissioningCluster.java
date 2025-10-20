@@ -139,7 +139,7 @@ public class GeneralCommissioningCluster extends BaseCluster {
     /**
      * This structure provides some constant values that may be of use to all commissioners.
      */
-    public class BasicCommissioningInfo {
+    public static class BasicCommissioningInfo {
         /**
          * This field shall contain a conservative initial duration (in seconds) to set in the FailSafe for the
          * commissioning flow to complete successfully. This may vary depending on the speed or sleepiness of the
@@ -176,8 +176,8 @@ public class GeneralCommissioningCluster extends BaseCluster {
         TC_ACKNOWLEDGEMENTS_NOT_RECEIVED(6, "Tc Acknowledgements Not Received"),
         TC_MIN_VERSION_NOT_MET(7, "Tc Min Version Not Met");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private CommissioningErrorEnum(Integer value, String label) {
             this.value = value;
@@ -204,8 +204,8 @@ public class GeneralCommissioningCluster extends BaseCluster {
         OUTDOOR(1, "Outdoor"),
         INDOOR_OUTDOOR(2, "Indoor Outdoor");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private RegulatoryLocationTypeEnum(Integer value, String label) {
             this.value = value;

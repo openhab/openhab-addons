@@ -66,11 +66,18 @@ public class DeviceManagerWrapper {
         return null;
     }
 
+    @SuppressWarnings("null")
     public synchronized List<BluetoothDevice> getDevices(BluetoothAdapter adapter) {
         if (deviceManager != null) {
             return deviceManager.getDevices(adapter.getAddress(), true);
         } else {
             return List.of();
+        }
+    }
+
+    void setLazyScan(boolean lazyScan) {
+        if (deviceManager != null) {
+            deviceManager.setLazyScan(lazyScan);
         }
     }
 }

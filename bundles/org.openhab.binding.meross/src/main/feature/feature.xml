@@ -4,7 +4,7 @@
 
 	<feature name="openhab-binding-meross" description="Meross Binding" version="${project.version}">
 		<feature>openhab-runtime-base</feature>
-		<feature>openhab.tp-hivemqclient</feature>
+		<feature>openhab-transport-mqtt</feature>
 		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.meross/${project.version}</bundle>
 	</feature>
 </features>

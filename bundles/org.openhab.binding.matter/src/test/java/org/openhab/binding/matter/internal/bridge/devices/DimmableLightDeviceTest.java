@@ -19,6 +19,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.openhab.binding.matter.internal.bridge.devices.BaseDevice.MATTER_SOURCE;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +34,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.openhab.binding.matter.internal.bridge.AttributeState;
 import org.openhab.binding.matter.internal.bridge.MatterBridgeClient;
-import org.openhab.binding.matter.internal.bridge.devices.GenericDevice.MatterDeviceOptions;
+import org.openhab.binding.matter.internal.bridge.devices.BaseDevice.MatterDeviceOptions;
 import org.openhab.core.items.GroupItem;
 import org.openhab.core.items.Metadata;
 import org.openhab.core.items.MetadataKey;
@@ -105,41 +106,41 @@ class DimmableLightDeviceTest {
     @Test
     void testHandleMatterEventOnOff() {
         dimmerDevice.handleMatterEvent("onOff", "onOff", true);
-        verify(dimmerItem).send(OnOffType.ON);
+        verify(dimmerItem).send(OnOffType.ON, MATTER_SOURCE);
 
         dimmerDevice.handleMatterEvent("onOff", "onOff", false);
-        verify(dimmerItem).send(OnOffType.OFF);
+        verify(dimmerItem).send(OnOffType.OFF, MATTER_SOURCE);
     }
 
     @Test
     void testHandleMatterEventOnOffGroup() {
         groupDevice.handleMatterEvent("onOff", "onOff", true);
-        verify(groupItem).send(OnOffType.ON);
+        verify(groupItem).send(OnOffType.ON, MATTER_SOURCE);
 
         groupDevice.handleMatterEvent("onOff", "onOff", false);
-        verify(groupItem).send(OnOffType.OFF);
+        verify(groupItem).send(OnOffType.OFF, MATTER_SOURCE);
     }
 
     @Test
     void testHandleMatterEventLevel() {
         dimmerDevice.handleMatterEvent("onOff", "onOff", true);
-        verify(dimmerItem).send(OnOffType.ON);
+        verify(dimmerItem).send(OnOffType.ON, MATTER_SOURCE);
 
         dimmerDevice.handleMatterEvent("levelControl", "currentLevel", Double.valueOf(254));
-        verify(dimmerItem).send(new PercentType(100));
+        verify(dimmerItem).send(new PercentType(100), MATTER_SOURCE);
 
         dimmerDevice.handleMatterEvent("levelControl", "currentLevel", Double.valueOf(127));
-        verify(dimmerItem).send(new PercentType(50));
+        verify(dimmerItem).send(new PercentType(50), MATTER_SOURCE);
     }
 
     @Test
     void testHandleMatterEventLevelGroup() {
         groupDevice.handleMatterEvent("onOff", "onOff", true);
         groupDevice.handleMatterEvent("levelControl", "currentLevel", Double.valueOf(254));
-        verify(groupItem).send(new PercentType(100));
+        verify(groupItem).send(new PercentType(100), MATTER_SOURCE);
 
         groupDevice.handleMatterEvent("levelControl", "currentLevel", Double.valueOf(127));
-        verify(groupItem).send(new PercentType(50));
+        verify(groupItem).send(new PercentType(50), MATTER_SOURCE);
     }
 
     @Test

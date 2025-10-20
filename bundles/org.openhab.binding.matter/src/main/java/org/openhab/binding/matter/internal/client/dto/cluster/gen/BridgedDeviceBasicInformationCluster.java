@@ -240,12 +240,12 @@ public class BridgedDeviceBasicInformationCluster extends BaseCluster {
     public FeatureMap featureMap; // 65532 FeatureMap
 
     // Structs
-    public class StartUp {
+    public static class StartUp {
         public StartUp() {
         }
     }
 
-    public class ShutDown {
+    public static class ShutDown {
         public ShutDown() {
         }
     }
@@ -258,7 +258,7 @@ public class BridgedDeviceBasicInformationCluster extends BaseCluster {
      * of Bridged Device Basic Information cluster, has no usable fields, but the original Basic Information cluster’s
      * field definition is kept for completeness.
      */
-    public class Leave {
+    public static class Leave {
         public String fabricIndex;
 
         public Leave(String fabricIndex) {
@@ -272,7 +272,7 @@ public class BridgedDeviceBasicInformationCluster extends BaseCluster {
      * connectivity technology, so they may take appropriate action.
      * After (re)start of a bridge this event may be generated.
      */
-    public class ReachableChanged {
+    public static class ReachableChanged {
         public ReachableChanged() {
         }
     }
@@ -280,7 +280,7 @@ public class BridgedDeviceBasicInformationCluster extends BaseCluster {
     /**
      * This structure provides a description of the product’s appearance.
      */
-    public class ProductAppearanceStruct {
+    public static class ProductAppearanceStruct {
         /**
          * This field shall indicate the visible finish of the product.
          */
@@ -301,7 +301,7 @@ public class BridgedDeviceBasicInformationCluster extends BaseCluster {
      * This structure provides constant values related to overall global capabilities of this Node, that are not
      * cluster-specific.
      */
-    public class CapabilityMinimaStruct {
+    public static class CapabilityMinimaStruct {
         /**
          * This field shall indicate the actual minimum number of concurrent CASE sessions that are supported per
          * fabric.
@@ -327,7 +327,7 @@ public class BridgedDeviceBasicInformationCluster extends BaseCluster {
      * command is received.
      * See KeepActive for more details.
      */
-    public class ActiveChanged {
+    public static class ActiveChanged {
         /**
          * This field shall indicate the minimum duration, in milliseconds, that the bridged device will remain active
          * after receiving the initial request from the KeepActive processing steps.
@@ -355,8 +355,8 @@ public class BridgedDeviceBasicInformationCluster extends BaseCluster {
         RUGGED(4, "Rugged"),
         FABRIC(5, "Fabric");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private ProductFinishEnum(Integer value, String label) {
             this.value = value;
@@ -400,8 +400,8 @@ public class BridgedDeviceBasicInformationCluster extends BaseCluster {
         SILVER(19, "Silver"),
         GOLD(20, "Gold");
 
-        public final Integer value;
-        public final String label;
+        private final Integer value;
+        private final String label;
 
         private ColorEnum(Integer value, String label) {
             this.value = value;

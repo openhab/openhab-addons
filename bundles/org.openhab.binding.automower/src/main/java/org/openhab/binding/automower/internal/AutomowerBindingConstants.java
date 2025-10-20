@@ -13,6 +13,7 @@
 package org.openhab.binding.automower.internal;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,15 +28,16 @@ import org.openhab.core.thing.type.ChannelTypeUID;
  *
  * @author Markus Pfleger - Initial contribution
  * @author Marcin Czeczko - Added support for planner and calendar data
+ * @author MikeTheTux - API Extension, WSS Support, Refactoring
  */
 @NonNullByDefault
 public class AutomowerBindingConstants {
     private static final String BINDING_ID = "automower";
 
     public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "bridge");
-
-    // generic thing types
     public static final ThingTypeUID THING_TYPE_AUTOMOWER = new ThingTypeUID(BINDING_ID, "automower");
+    public static final ThingTypeUID THING_TYPE_STAYOUTZONE = new ThingTypeUID(BINDING_ID, "stay-out-zone");
+    public static final ThingTypeUID THING_TYPE_WORKAREA = new ThingTypeUID(BINDING_ID, "work-area");
 
     // List of all status Channel ids
     public static final String GROUP_STATUS = "status#";
@@ -59,6 +61,7 @@ public class AutomowerBindingConstants {
     public static final String CHANNEL_STATUS_OVERRIDE_ACTION = GROUP_STATUS + "override-action";
     public static final String CHANNEL_STATUS_RESTRICTED_REASON = GROUP_STATUS + "restricted-reason";
     public static final String CHANNEL_STATUS_EXTERNAL_REASON = GROUP_STATUS + "external-reason";
+    public static final String CHANNEL_STATUS_POSITION = GROUP_STATUS + "position";
 
     // List of all setting Channel ids
     public static final String GROUP_SETTING = "setting#";
@@ -85,7 +88,7 @@ public class AutomowerBindingConstants {
     public static final String CHANNEL_STATISTIC_UP_TIME = GROUP_STATISTIC + "up-time";
 
     // Calendar Task Channel ids
-    public static final String GROUP_CALENDARTASK = "calendartask#";
+    public static final String GROUP_CALENDARTASK = "calendar-task#";
 
     public static final String CHANNEL_CALENDARTASK_START = "task-start";
     public static final String CHANNEL_CALENDARTASK_DURATION = "task-duration";
@@ -96,84 +99,69 @@ public class AutomowerBindingConstants {
     public static final String CHANNEL_CALENDARTASK_FRIDAY = "task-friday";
     public static final String CHANNEL_CALENDARTASK_SATURDAY = "task-saturday";
     public static final String CHANNEL_CALENDARTASK_SUNDAY = "task-sunday";
-    public static final String CHANNEL_CALENDARTASK_WORKAREAID = "task-workareaid";
-    public static final String CHANNEL_CALENDARTASK_WORKAREA = "task-workarea";
 
     public static final ArrayList<String> CHANNEL_CALENDARTASK = new ArrayList<>(
             List.of(CHANNEL_CALENDARTASK_START, CHANNEL_CALENDARTASK_DURATION, CHANNEL_CALENDARTASK_MONDAY,
                     CHANNEL_CALENDARTASK_TUEDAY, CHANNEL_CALENDARTASK_WEDNESDAY, CHANNEL_CALENDARTASK_THURSRAY,
-                    CHANNEL_CALENDARTASK_FRIDAY, CHANNEL_CALENDARTASK_SATURDAY, CHANNEL_CALENDARTASK_SUNDAY,
-                    CHANNEL_CALENDARTASK_WORKAREAID, CHANNEL_CALENDARTASK_WORKAREA));
+                    CHANNEL_CALENDARTASK_FRIDAY, CHANNEL_CALENDARTASK_SATURDAY, CHANNEL_CALENDARTASK_SUNDAY));
 
     public static final ArrayList<ChannelTypeUID> CHANNEL_TYPE_CALENDARTASK = new ArrayList<>(
-            List.of(new ChannelTypeUID(BINDING_ID, "calendarTaskStartType"),
-                    new ChannelTypeUID(BINDING_ID, "calendarTaskDurationType"),
-                    new ChannelTypeUID(BINDING_ID, "calendarTaskMondayType"),
-                    new ChannelTypeUID(BINDING_ID, "calendarTaskTuesdayType"),
-                    new ChannelTypeUID(BINDING_ID, "calendarTaskWednesdayType"),
-                    new ChannelTypeUID(BINDING_ID, "calendarTaskThursdayType"),
-                    new ChannelTypeUID(BINDING_ID, "calendarTaskFridayType"),
-                    new ChannelTypeUID(BINDING_ID, "calendarTaskSaturdayType"),
-                    new ChannelTypeUID(BINDING_ID, "calendarTaskSundayType"),
-                    new ChannelTypeUID(BINDING_ID, "calendarTaskWorkAreaIdType"),
-                    new ChannelTypeUID(BINDING_ID, "workareaNameType")));
-
-    // Position Channel ids
-    public static final String GROUP_POSITION = "position#";
-
-    public static final String CHANNEL_POSITION_LAST = GROUP_POSITION + "last";
-    public static final String CHANNEL_POSITION = "pos";
+            List.of(new ChannelTypeUID(BINDING_ID, "calendar-task-start-type"),
+                    new ChannelTypeUID(BINDING_ID, "calendar-task-duration-type"),
+                    new ChannelTypeUID(BINDING_ID, "calendar-task-monday-type"),
+                    new ChannelTypeUID(BINDING_ID, "calendar-task-tuesday-type"),
+                    new ChannelTypeUID(BINDING_ID, "calendar-task-wednesday-type"),
+                    new ChannelTypeUID(BINDING_ID, "calendar-task-thursday-type"),
+                    new ChannelTypeUID(BINDING_ID, "calendar-task-friday-type"),
+                    new ChannelTypeUID(BINDING_ID, "calendar-task-saturday-type"),
+                    new ChannelTypeUID(BINDING_ID, "calendar-task-sunday-type")));
 
     // Stayout Zones Channel ids
-    public static final String GROUP_STAYOUTZONE = "stayoutzone#";
+    public static final String GROUP_STAYOUTZONE = "stay-out-zone#";
 
     public static final String CHANNEL_STAYOUTZONE_DIRTY = GROUP_STAYOUTZONE + "dirty";
-    public static final String CHANNEL_STAYOUTZONE_ENABLED = "zone-enabled";
-    public static final ArrayList<String> CHANNEL_STAYOUTZONE = new ArrayList<>(
-            List.of("zone-id", "zone-name", CHANNEL_STAYOUTZONE_ENABLED));
-
-    public static final ArrayList<ChannelTypeUID> CHANNEL_TYPE_STAYOUTZONE = new ArrayList<>(
-            List.of(new ChannelTypeUID(BINDING_ID, "zoneIdType"), new ChannelTypeUID(BINDING_ID, "zoneNameType"),
-                    new ChannelTypeUID(BINDING_ID, "zoneEnabledType")));
-
-    // Work Areas Channel ids
-    public static final String GROUP_WORKAREA = "workarea#";
-
-    public static final String CHANNEL_WORKAREA_CUTTING_HEIGHT = "area-cutting-height";
-    public static final String CHANNEL_WORKAREA_ENABLED = "area-enabled";
-    public static final ArrayList<String> CHANNEL_WORKAREA = new ArrayList<>(List.of("area-id", "area-name",
-            CHANNEL_WORKAREA_CUTTING_HEIGHT, CHANNEL_WORKAREA_ENABLED, "area-progress", "area-last-time-completed"));
-
-    public static final ArrayList<ChannelTypeUID> CHANNEL_TYPE_WORKAREA = new ArrayList<>(List.of(
-            new ChannelTypeUID(BINDING_ID, "workareaIdType"), new ChannelTypeUID(BINDING_ID, "workareaNameType"),
-            new ChannelTypeUID(BINDING_ID, "workareaCuttingHeightType"),
-            new ChannelTypeUID(BINDING_ID, "workareaEnabledType"),
-            new ChannelTypeUID(BINDING_ID, "workareaProgressType"),
-            new ChannelTypeUID(BINDING_ID, "workareaLastTimeCompletedType")));
 
     // Messages Channel ids
     public static final String GROUP_MESSAGE = "message#";
 
-    public static final ArrayList<String> CHANNEL_MESSAGE = new ArrayList<>(
-            List.of("msg-timestamp", "msg-code", "msg-text", "msg-severity", "msg-gps-position"));
-
-    public static final ArrayList<ChannelTypeUID> CHANNEL_TYPE_MESSAGE = new ArrayList<>(List.of(
-            new ChannelTypeUID(BINDING_ID, "messageTimeType"), new ChannelTypeUID(BINDING_ID, "messageCodeType"),
-            new ChannelTypeUID(BINDING_ID, "messageType"), new ChannelTypeUID(BINDING_ID, "messageSeverityType"),
-            new ChannelTypeUID(BINDING_ID, "messagePositionType")));
+    public static final String CHANNEL_MESSAGE_TIMESTAMP = GROUP_MESSAGE + "msg-timestamp";
+    public static final String CHANNEL_MESSAGE_CODE = GROUP_MESSAGE + "msg-code";
+    public static final String CHANNEL_MESSAGE_TEXT = GROUP_MESSAGE + "msg-text";
+    public static final String CHANNEL_MESSAGE_SEVERITY = GROUP_MESSAGE + "msg-severity";
+    public static final String CHANNEL_MESSAGE_GPS_POSITION = GROUP_MESSAGE + "msg-gps-position";
 
     // Command Channel ids
     public static final String GROUP_COMMAND = "command#";
 
     public static final String CHANNEL_COMMAND_START = GROUP_COMMAND + "start";
-    public static final String CHANNEL_COMMAND_RESUME_SCHEDULE = GROUP_COMMAND + "resume_schedule";
+    public static final String CHANNEL_COMMAND_START_IN_WORK_AREA = GROUP_COMMAND + "start-in-work-area";
+    public static final String CHANNEL_COMMAND_RESUME_SCHEDULE = GROUP_COMMAND + "resume-schedule";
     public static final String CHANNEL_COMMAND_PAUSE = GROUP_COMMAND + "pause";
     public static final String CHANNEL_COMMAND_PARK = GROUP_COMMAND + "park";
-    public static final String CHANNEL_COMMAND_PARK_UNTIL_NEXT_SCHEDULE = GROUP_COMMAND + "park_until_next_schedule";
-    public static final String CHANNEL_COMMAND_PARK_UNTIL_NOTICE = GROUP_COMMAND + "park_until_further_notice";
+    public static final String CHANNEL_COMMAND_PARK_UNTIL_NEXT_SCHEDULE = GROUP_COMMAND + "park-until-next-schedule";
+    public static final String CHANNEL_COMMAND_PARK_UNTIL_NOTICE = GROUP_COMMAND + "park-until-further-notice";
+
+    public static final List<String> AUTOMOWER_STATIC_CHANNEL_IDS = Arrays.asList(CHANNEL_STATUS_NAME,
+            CHANNEL_STATUS_MODE, CHANNEL_STATUS_ACTIVITY, CHANNEL_STATUS_INACTIVE_REASON, CHANNEL_STATUS_STATE,
+            CHANNEL_STATUS_LAST_UPDATE, CHANNEL_STATUS_LAST_POLL_UPDATE, CHANNEL_STATUS_POLL_UPDATE,
+            CHANNEL_STATUS_BATTERY, CHANNEL_STATUS_ERROR_CODE, CHANNEL_STATUS_ERROR_MESSAGE,
+            CHANNEL_STATUS_ERROR_TIMESTAMP, CHANNEL_STATUS_NEXT_START, CHANNEL_STATUS_OVERRIDE_ACTION,
+            CHANNEL_STATUS_RESTRICTED_REASON, CHANNEL_SETTING_CUTTING_HEIGHT,
+            CHANNEL_STATISTIC_CUTTING_BLADE_USAGE_TIME, CHANNEL_STATISTIC_DOWN_TIME,
+            CHANNEL_STATISTIC_NUMBER_OF_CHARGING_CYCLES, CHANNEL_STATISTIC_NUMBER_OF_COLLISIONS,
+            CHANNEL_STATISTIC_TOTAL_CHARGING_TIME, CHANNEL_STATISTIC_TOTAL_CUTTING_TIME,
+            CHANNEL_STATISTIC_TOTAL_CUTTING_PERCENT, CHANNEL_STATISTIC_TOTAL_DRIVE_DISTANCE,
+            CHANNEL_STATISTIC_TOTAL_RUNNING_TIME, CHANNEL_STATISTIC_TOTAL_SEARCHING_TIME,
+            CHANNEL_STATISTIC_TOTAL_SEARCHING_PERCENT, CHANNEL_STATISTIC_UP_TIME, CHANNEL_MESSAGE_TIMESTAMP,
+            CHANNEL_MESSAGE_CODE, CHANNEL_MESSAGE_TEXT, CHANNEL_MESSAGE_SEVERITY, CHANNEL_MESSAGE_GPS_POSITION,
+            CHANNEL_COMMAND_START, CHANNEL_COMMAND_START_IN_WORK_AREA, CHANNEL_COMMAND_RESUME_SCHEDULE,
+            CHANNEL_COMMAND_PAUSE, CHANNEL_COMMAND_PARK, CHANNEL_COMMAND_PARK_UNTIL_NEXT_SCHEDULE,
+            CHANNEL_COMMAND_PARK_UNTIL_NOTICE);
 
     // Automower properties
     public static final String AUTOMOWER_ID = "mowerId";
+    public static final String AUTOMOWER_STAYOUTZONE_ID = "stayoutzoneId";
+    public static final String AUTOMOWER_WORKAREA_ID = "workareaId";
     public static final String AUTOMOWER_NAME = "mowerName";
     public static final String AUTOMOWER_MODEL = "mowerModel";
     public static final String AUTOMOWER_SERIAL_NUMBER = "mowerSerialNumber";
@@ -185,19 +173,37 @@ public class AutomowerBindingConstants {
 
     // Channel Types of dynamic channels
     public static final ChannelTypeUID CHANNEL_TYPE_STATUS_WORK_AREA_ID = new ChannelTypeUID(BINDING_ID,
-            "workAreaIdType");
-    public static final ChannelTypeUID CHANNEL_TYPE_STATUS_WORK_AREA = new ChannelTypeUID(BINDING_ID, "workAreaType");
+            "work-area-id-type");
+    public static final ChannelTypeUID CHANNEL_TYPE_STATUS_WORK_AREA = new ChannelTypeUID(BINDING_ID, "work-area-type");
     public static final ChannelTypeUID CHANNEL_TYPE_STATUS_ERROR_CONFIRMABLE = new ChannelTypeUID(BINDING_ID,
-            "errorConfirmableType");
+            "error-confirmable-type");
+    public static final ChannelTypeUID CHANNEL_TYPE_STATUS_POSITION = new ChannelTypeUID(BINDING_ID, "position-type");
     public static final ChannelTypeUID CHANNEL_TYPE_SETTING_HEADLIGHT_MODE = new ChannelTypeUID(BINDING_ID,
-            "settingHeadlightModeType");
+            "setting-headlight-mode-type");
 
-    public static final ChannelTypeUID CHANNEL_TYPE_POSITION_LAST = new ChannelTypeUID(BINDING_ID, "lastPositionType");
-    public static final ChannelTypeUID CHANNEL_TYPE_POSITION = new ChannelTypeUID(BINDING_ID, "positionType");
     public static final ChannelTypeUID CHANNEL_TYPE_STAYOUTZONES_DIRTY = new ChannelTypeUID(BINDING_ID,
-            "zoneDirtyType");
+            "zone-dirty-type");
 
+    // Stayout Zone Channel ids
+    public static final String CHANNEL_STAYOUTZONE_NAME = "name";
+    public static final String CHANNEL_STAYOUTZONE_ENABLED = "enabled";
+
+    // Work Area Channel ids
+    public static final String GROUP_WORKAREA = "work-area#";
+
+    public static final String CHANNEL_WORKAREA_NAME = GROUP_WORKAREA + "name";
+    public static final String CHANNEL_WORKAREA_CUTTING_HEIGHT = GROUP_WORKAREA + "cutting-height";
+    public static final String CHANNEL_WORKAREA_ENABLED = GROUP_WORKAREA + "enabled";
+    public static final String CHANNEL_WORKAREA_PROGRESS = GROUP_WORKAREA + "progress";
+    public static final String CHANNEL_WORKAREA_LAST_TIME_COMPLETED = GROUP_WORKAREA + "last-time-completed";
+
+    public static final List<String> WORKAREA_STATIC_CHANNEL_IDS = Arrays.asList(CHANNEL_WORKAREA_NAME,
+            CHANNEL_WORKAREA_CUTTING_HEIGHT, CHANNEL_WORKAREA_ENABLED, CHANNEL_WORKAREA_PROGRESS,
+            CHANNEL_WORKAREA_LAST_TIME_COMPLETED);
+
+    // Error codes and messages
     public static final Map<Integer, String> ERROR = new HashMap<>() {
+        private static final long serialVersionUID = 1L;
         {
             put(0, "No message");
             put(1, "Outside working area");
@@ -278,7 +284,7 @@ public class AutomowerBindingConstants {
             put(76, "Connection NOT changed");
             put(77, "Com board not available");
             put(78, "Slipped - Mower has Slipped. Situation not solved with moving pattern");
-            put(79, "Invalid battery combination - Invalid combination of different battery types.");
+            put(79, "Invalid battery combination - Invalid combination of different battery types");
             put(80, "Cutting system imbalance Warning");
             put(81, "Safety function faulty");
             put(82, "Wheel motor blocked, rear right");
