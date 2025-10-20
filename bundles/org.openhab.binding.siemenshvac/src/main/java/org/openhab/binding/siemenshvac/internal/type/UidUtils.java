@@ -133,9 +133,7 @@ public class UidUtils {
         result = result.replace("-setpointhc", "-setpoint-hc");
         result = result.replace("setphc", "-setpoint-hc");
 
-        result = sanetizeId(result);
-
-        return result;
+        return sanetizeId(result);
     }
 
     /**
