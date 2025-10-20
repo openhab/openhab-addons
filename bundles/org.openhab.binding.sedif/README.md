@@ -40,7 +40,7 @@ To create a meter thing, you will need your contractId.
 You can find it on the Sedif website, under the section "Tous mes contrats".
 You will see a list where the first column labeled "Contrat" is the contractId.
 
-If you have multiple meters on the same contract, you will also need to get your(s) meterId.
+If you have multiple meters on the same contract, you will also need to get your(s) meterId's.
 MeterId is displayed at the contract details page. 
 Just click on the contract number in the contract list, and you will have a detailed pages with a label Compteur n°D08MAxxxxxx.
 
@@ -104,13 +104,9 @@ The yearly group will give consumtion information with year granularity
 ### Full Example
 
 ```java
-Bridge sedif:gateway:local "GatewayBridge" [username="testuser@test.fr", password="mypassword"]
-
-Thing sedif:meter:meter1 "Meter 1" (sedif:gateway:local)
-[  
-		contractId="907....", meterId="D08MA......"
-]  
-{
+Bridge sedif:gateway:local "GatewayBridge" [username="testuser@test.fr", password="mypassword"] {
+    Thing sedif:meter:meter1 "Meter 1" (sedif:gateway:local)    [   contractId="907....", meterId="D08MA......" ]  
+    Thing sedif:meter:meter1 "Meter 1" (sedif:gateway:local)    [   contractId="908....", meterId="D08MA......" ]
 }
 
 
@@ -220,6 +216,6 @@ Sometimes, you might have two contracts for the same meter. In this scenario, cr
 
 Set the contractId to the older contract and let the binding retrieve the full historical data.
 
-Then, update the contractId to the new contract and restart OpenHAB.
+Then, update the contractId to the new contract and restart openHAB.
 
 By following this process, you will preserve the full history of the meter.
