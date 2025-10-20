@@ -40,7 +40,7 @@ public class UidUtils {
      * @param label
      * @return the label without invalid character
      */
-    public static String sanetizeId(String label) {
+    private static String sanetizeId(String label) {
         String result = label;
 
         if (!Normalizer.isNormalized(label, Normalizer.Form.NFKD)) {
