@@ -904,6 +904,7 @@ public class Characteristic {
          * so we create and return a channel definition containing this information.
          */
         Map<String, String> props = new HashMap<>();
+        Optional.ofNullable(type).ifPresent(s -> props.put(PROPERTY_CHARACTERISTIC_TYPE, s));
         Optional.ofNullable(iid).map(v -> v.toString()).ifPresent(s -> props.put(PROPERTY_IID, s));
         Optional.ofNullable(format).ifPresent(s -> props.put(PROPERTY_FORMAT, s));
         Optional.ofNullable(dataType).ifPresent(s -> props.put(PROPERTY_DATA_TYPE, s));
@@ -921,6 +922,10 @@ public class Characteristic {
     }
 
     public @Nullable CharacteristicType getCharacteristicType() {
+        return getCharacteristicType(type);
+    }
+
+    public static @Nullable CharacteristicType getCharacteristicType(String type) {
         try {
             // convert "00000113-0000-1000-8000-0026BB765291" to "00000113"
             String firstPart = type.split("-")[0];

@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -31,10 +32,14 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homekit.internal.dto.Accessory;
 import org.openhab.binding.homekit.internal.dto.Characteristic;
 import org.openhab.binding.homekit.internal.dto.Service;
+import org.openhab.binding.homekit.internal.enums.CharacteristicType;
 import org.openhab.binding.homekit.internal.enums.DataFormatType;
 import org.openhab.binding.homekit.internal.hap_services.CharacteristicReadWriteClient;
 import org.openhab.binding.homekit.internal.persistence.HomekitKeyStore;
 import org.openhab.binding.homekit.internal.persistence.HomekitTypeProvider;
+import org.openhab.binding.homekit.internal.temporary.LightModel;
+import org.openhab.binding.homekit.internal.temporary.LightModel.LightCapabilities;
+import org.openhab.binding.homekit.internal.temporary.LightModel.RgbDataType;
 import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
@@ -83,10 +88,14 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
 
     private static final int INITIAL_DELAY_SECONDS = 2;
 
+    private static final Set<CharacteristicType> LIGHTING_CHANNELS = Set.of(CharacteristicType.COLOR_TEMPERATURE,
+            CharacteristicType.SATURATION, CharacteristicType.BRIGHTNESS, CharacteristicType.HUE);
+
     private final Logger logger = LoggerFactory.getLogger(HomekitAccessoryHandler.class);
     private final ChannelTypeRegistry channelTypeRegistry;
     private final ChannelGroupTypeRegistry channelGroupTypeRegistry;
 
+    private @Nullable LightModel lightModel;
     private @Nullable ScheduledFuture<?> refreshTask;
 
     public HomekitAccessoryHandler(Thing thing, HomekitTypeProvider typeProvider,
@@ -390,6 +399,14 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
                                     "+++++Channel acceptedItemType:{}, defaultTags:{}, description:{}, kind:{}, label:{}, properties:{}, uid:{}",
                                     channel.getAcceptedItemType(), channel.getDefaultTags(), channel.getDescription(),
                                     channel.getKind(), channel.getLabel(), channel.getProperties(), channel.getUID());
+
+                            // initialise the light model when appropriate
+                            if (channel.getProperties().get(PROPERTY_CHARACTERISTIC_TYPE) instanceof String cxProp
+                                    && Characteristic.getCharacteristicType(
+                                            cxProp) instanceof CharacteristicType characteristicType
+                                    && LIGHTING_CHANNELS.contains(characteristicType)) {
+                                initializeLightModel(characteristicType, channelType);
+                            }
                         }
                     }
                 });
@@ -414,6 +431,62 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
                     properties.size(), newLabel, newTag);
 
             channelsAndPropertiesLoaded();
+        }
+    }
+
+    /**
+     * Initializes or updates the light model based on the characteristic type and channel type.
+     * Upgrades the light capabilities of the model as necessary when encountering color-related characteristics.
+     *
+     * @param characteristicType the type of characteristic being processed
+     * @param channelType the channel type associated with the characteristic
+     */
+    @SuppressWarnings("incomplete-switch")
+    private void initializeLightModel(CharacteristicType characteristicType, ChannelType channelType) {
+        LightModel lightModel = this.lightModel;
+        if (lightModel == null) {
+            lightModel = new LightModel(LightCapabilities.BRIGHTNESS, RgbDataType.DEFAULT, null, null, null, null, null,
+                    null);
+            this.lightModel = lightModel;
+        }
+
+        LightCapabilities oldCaps = lightModel.configGetLightCapabilities();
+        switch (characteristicType) {
+            // if channel is hue or saturation, upgrade to support color
+            case HUE:
+            case SATURATION:
+                switch (oldCaps) {
+                    case BRIGHTNESS:
+                        LightCapabilities newCaps = LightCapabilities.COLOR;
+                        lightModel.configSetLightCapabilities(newCaps);
+                        break;
+                    case BRIGHTNESS_WITH_COLOR_TEMPERATURE:
+                        newCaps = LightCapabilities.COLOR_WITH_COLOR_TEMPERATURE;
+                        lightModel.configSetLightCapabilities(newCaps);
+                }
+                break;
+
+            // if channel is color temperature, upgrade to support color temperature
+            case COLOR_TEMPERATURE:
+                switch (oldCaps) {
+                    case BRIGHTNESS:
+                        LightCapabilities newCaps = LightCapabilities.BRIGHTNESS_WITH_COLOR_TEMPERATURE;
+                        lightModel.configSetLightCapabilities(newCaps);
+                        break;
+                    case COLOR:
+                        newCaps = LightCapabilities.COLOR_WITH_COLOR_TEMPERATURE;
+                        lightModel.configSetLightCapabilities(newCaps);
+                }
+
+                // set the mirek limits based on the channel's state description
+                StateDescription state = channelType.getState();
+                if (state != null) {
+                    if (state.getMinimum() instanceof BigDecimal min) {
+                        lightModel.configSetMirekControlCoolest(min.doubleValue());
+                    } else if (state.getMaximum() instanceof BigDecimal max) {
+                        lightModel.configSetMirekControlWarmest(max.doubleValue());
+                    }
+                }
         }
     }
 
