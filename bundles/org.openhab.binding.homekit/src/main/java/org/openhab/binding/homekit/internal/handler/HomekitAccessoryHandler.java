@@ -152,11 +152,11 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
             if (object instanceof PercentType percent) {
                 object = new PercentType(100 - percent.intValue());
             } else if (object instanceof OnOffType onOff) {
-                object = onOff == OnOffType.ON ? PercentType.ZERO : PercentType.HUNDRED;
+                object = onOff == OnOffType.ON ? PercentType.HUNDRED : PercentType.ZERO;
             } else if (object instanceof OpenClosedType openClosed) {
-                object = openClosed == OpenClosedType.OPEN ? PercentType.ZERO : PercentType.HUNDRED;
+                object = openClosed == OpenClosedType.OPEN ? PercentType.HUNDRED : PercentType.ZERO;
             } else if (object instanceof UpDownType upDown) {
-                object = upDown == UpDownType.UP ? PercentType.ZERO : PercentType.HUNDRED;
+                object = upDown == UpDownType.UP ? PercentType.HUNDRED : PercentType.ZERO;
             } else if (object instanceof StopMoveType stopMove && stopMove == StopMoveType.STOP) {
                 // TODO forward as a command to the POSITION HOLD characteristic (if existing)
             }
