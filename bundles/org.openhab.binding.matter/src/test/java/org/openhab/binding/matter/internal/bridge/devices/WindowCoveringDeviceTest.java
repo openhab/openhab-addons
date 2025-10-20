@@ -18,6 +18,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.openhab.binding.matter.internal.bridge.devices.BaseDevice.MATTER_SOURCE;
 
 import java.util.AbstractMap;
 import java.util.LinkedHashMap;
@@ -114,7 +115,7 @@ class WindowCoveringDeviceTest {
     @Test
     void testHandleMatterEventPosition() {
         shutterDevice.handleMatterEvent("windowCovering", "targetPositionLiftPercent100ths", 5000.0);
-        verify(rollershutterItem).send(new PercentType(50));
+        verify(rollershutterItem).send(new PercentType(50), MATTER_SOURCE);
     }
 
     @Test
@@ -123,7 +124,7 @@ class WindowCoveringDeviceTest {
         stoppedStatus.put("global", WindowCoveringCluster.MovementStatus.STOPPED.getValue());
 
         shutterDevice.handleMatterEvent("windowCovering", "operationalStatus", stoppedStatus);
-        verify(rollershutterItem).send(StopMoveType.STOP);
+        verify(rollershutterItem).send(StopMoveType.STOP, MATTER_SOURCE);
     }
 
     @Test
@@ -148,52 +149,52 @@ class WindowCoveringDeviceTest {
     void testHandleMatterEventWithDimmer() {
         // Test 50% position
         dimmerDevice.handleMatterEvent("windowCovering", "targetPositionLiftPercent100ths", 5000.0);
-        verify(dimmerItem).send(new PercentType(50));
+        verify(dimmerItem).send(new PercentType(50), MATTER_SOURCE);
 
         // Test fully open
         dimmerDevice.handleMatterEvent("windowCovering", "targetPositionLiftPercent100ths", 0.0);
-        verify(dimmerItem).send(new PercentType(0));
+        verify(dimmerItem).send(new PercentType(0), MATTER_SOURCE);
 
         // Test fully closed
         dimmerDevice.handleMatterEvent("windowCovering", "targetPositionLiftPercent100ths", 10000.0);
-        verify(dimmerItem).send(new PercentType(100));
+        verify(dimmerItem).send(new PercentType(100), MATTER_SOURCE);
     }
 
     @Test
     void testHandleMatterEventWithRollershutter() {
         // Test fully closed
         shutterDevice.handleMatterEvent("windowCovering", "targetPositionLiftPercent100ths", 10000.0);
-        verify(rollershutterItem).send(UpDownType.DOWN);
+        verify(rollershutterItem).send(UpDownType.DOWN, MATTER_SOURCE);
 
         // Test fully open
         shutterDevice.handleMatterEvent("windowCovering", "targetPositionLiftPercent100ths", 0.0);
-        verify(rollershutterItem).send(UpDownType.UP);
+        verify(rollershutterItem).send(UpDownType.UP, MATTER_SOURCE);
 
         // Test 50% position
         shutterDevice.handleMatterEvent("windowCovering", "targetPositionLiftPercent100ths", 5000.0);
-        verify(rollershutterItem).send(new PercentType(50));
+        verify(rollershutterItem).send(new PercentType(50), MATTER_SOURCE);
     }
 
     @Test
     void testHandleMatterEventWithSwitch() {
         // Test fully closed
         switchDevice.handleMatterEvent("windowCovering", "targetPositionLiftPercent100ths", 10000.0);
-        verify(switchItem).send(OnOffType.ON);
+        verify(switchItem).send(OnOffType.ON, MATTER_SOURCE);
 
         // Test fully open
         switchDevice.handleMatterEvent("windowCovering", "targetPositionLiftPercent100ths", 0.0);
-        verify(switchItem).send(OnOffType.OFF);
+        verify(switchItem).send(OnOffType.OFF, MATTER_SOURCE);
     }
 
     @Test
     void testHandleMatterEventWithString() {
         // Test fully open
         stringDevice.handleMatterEvent("windowCovering", "targetPositionLiftPercent100ths", 0.0);
-        verify(stringItem).send(new StringType("UP"));
+        verify(stringItem).send(new StringType("UP"), MATTER_SOURCE);
 
         // Test fully closed
         stringDevice.handleMatterEvent("windowCovering", "targetPositionLiftPercent100ths", 10000.0);
-        verify(stringItem).send(new StringType("DOWN"));
+        verify(stringItem).send(new StringType("DOWN"), MATTER_SOURCE);
     }
 
     @Test
@@ -241,11 +242,11 @@ class WindowCoveringDeviceTest {
         invertedSwitchDevice.activate();
         // Test fully closed (100%) - should result in OFF for inverted switch
         invertedSwitchDevice.handleMatterEvent("windowCovering", "targetPositionLiftPercent100ths", 10000.0);
-        verify(invertedSwitchItem).send(OnOffType.OFF);
+        verify(invertedSwitchItem).send(OnOffType.OFF, MATTER_SOURCE);
 
         // Test fully open (0%) - should result in ON for inverted switch
         invertedSwitchDevice.handleMatterEvent("windowCovering", "targetPositionLiftPercent100ths", 0.0);
-        verify(invertedSwitchItem).send(OnOffType.ON);
+        verify(invertedSwitchItem).send(OnOffType.ON, MATTER_SOURCE);
 
         // Test state updates from switch to position
         invertedSwitchDevice.updateState(invertedSwitchItem, OnOffType.ON);
@@ -261,11 +262,11 @@ class WindowCoveringDeviceTest {
     void testSwitchItemWithNormalLogic() {
         // Test fully closed (100%) - should result in ON for normal switch
         switchDevice.handleMatterEvent("windowCovering", "targetPositionLiftPercent100ths", 10000.0);
-        verify(switchItem).send(OnOffType.ON);
+        verify(switchItem).send(OnOffType.ON, MATTER_SOURCE);
 
         // Test fully open (0%) - should result in OFF for normal switch
         switchDevice.handleMatterEvent("windowCovering", "targetPositionLiftPercent100ths", 0.0);
-        verify(switchItem).send(OnOffType.OFF);
+        verify(switchItem).send(OnOffType.OFF, MATTER_SOURCE);
 
         // Test state updates from switch to position
         switchDevice.updateState(switchItem, OnOffType.ON);

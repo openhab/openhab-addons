@@ -24,7 +24,7 @@ The installation only needs to be 'connected' (registered on the Niko Home Contr
 For Niko Home Control I, the binding exposes all actions from the Niko Home Control System that can be triggered from the smartphone/tablet interface, as defined in the Niko Home Control I programming software.
 For Niko Home Control II, the binding exposes all devices in the system.
 
-Supported device types are switches, dimmers and rollershutters or blinds, thermostats, energy meters (Niko Home Control I only) and access control (Niko Home Control II only).
+Supported device types are switches, dimmers and rollershutters or blinds, thermostats, energy meters, access control (Niko Home Control II only) and car chargers (Niko Home Control II only).
 Niko Home Control alarm and notice messages are retrieved and made available in the binding.
 
 ## Supported Things
@@ -41,13 +41,15 @@ The following thing types are available in the binding:
 | dimmer              |   x   |   x    | dimmable light action                                                             |
 | blind               |   x   |   x    | rollershutter, venetian blind                                                     |
 | thermostat          |   x   |   x    | thermostat                                                                        |
+| energyMeterHome     |       |   x    | home digital energy meter                                                         |
 | energyMeterLive     |   x   |   x    | energy meter with live power monitoring and aggregation                           |
-| energyMeter         |   x   |        | energy meter, aggregates readings with 10 min intervals                           |
-| gasMeter            |   x   |        | gas meter, aggregates readings with 10 min intervals                              |
-| waterMeter          |   x   |        | water meter, aggregates readings with 10 min intervals                            |
+| energyMeter         |   x   |   x    | energy meter, aggregates readings with 10 min intervals                           |
+| gasMeter            |   x   |   x    | gas meter, aggregates readings with 10 min intervals                              |
+| waterMeter          |   x   |   x    | water meter, aggregates readings with 10 min intervals                            |
 | access              |       |   x    | door with bell button and lock                                                    |
 | accessRingAndComeIn |       |   x    | door with bell button, lock and ring and come in functionality                    |
 | alarm               |       |   x    | alarm system                                                                      |
+| carCharger          |       |   x    | car charger device                                                                |
 
 ## Binding Configuration
 
@@ -128,7 +130,7 @@ The `password` parameter should be set to the profile password.
 
 ## Thing Configuration
 
-The Thing configurations for **Niko Home Control actions, thermostats, energy meters and access devices** have the following parameters:
+The Thing configurations for **Niko Home Control actions, thermostats, energy meters, access devices and car chargers** have the following parameters:
 
 | Parameter     | NHC I | NHC II | Required | Thing Types                      | Description                                                                       |
 |---------------|:-----:|:------:|:--------:|----------------------------------|-----------------------------------------------------------------------------------|
@@ -137,10 +139,11 @@ The Thing configurations for **Niko Home Control actions, thermostats, energy me
 | invert        |   x   |   x    |          | blind, energyMeterLive, energyMeter, gasMeter, waterMeter | inverts rollershutter or blind direction. Inverts sign of meter reading. Default false |
 | thermostatId  |   x   |   x    |     x    | thermostat                       | unique ID for the thermostat in the controller                                    |
 | overruleTime  |   x   |   x    |          | thermostat                       | standard overrule duration in minutes when setting a new setpoint without providing an overrule duration, default value is 60 |
-| meterId       |   x   |   x    |     x    | energyMeterLive, energyMeter, gasMeter, waterMeter | unique ID for the energy meter in the controller                |
+| meterId       |   x   |   x    |     x    | energyMeterHome, energyMeterLive, energyMeter, gasMeter, waterMeter | unique ID for the energy meter in the controller                |
 | refresh       |   x   |   x    |          | energyMeterLive, energyMeter, gasMeter, waterMeter | refresh interval for meter reading in minutes, default 10 minutes. The value should not be lower than 5 minutes to avoid too many meter data retrieval calls |
 | accessId      |       |   x    |     x    | access, accessRingAndComeIn      | unique ID for the access device in the controller                                 |
 | alarmId       |       |   x    |     x    | alarm                            | unique ID for the alarm system in the controller                                  |
+| carChargerId  |       |   x    |     x    | car charger                      | unique ID for the car charger in the controller                                   |
 
 For Niko Home Control I, the `actionId`, `thermostatId` or `meterId` parameter are the unique IP Interface Object ID (`ipInterfaceObjectId`) as automatically assigned in the Niko Home Control Controller when programming the Niko Home Control system using the Niko Home Control I programming software.
 It is not directly visible in the Niko Home Control programming or user software, but will be detected and automatically set by openHAB discovery.
@@ -151,11 +154,8 @@ For Niko Home Control II, the `actionId` parameter is a unique ID for the action
 It can only be auto-discovered.
 If you want to define the action through textual configuration, the easiest way is to first do discovery on the bridge to get the correct `actionId` to use in the textual configuration.
 Discover and add the thing you want to add.
-Note down the `actionId` parameter from the thing, remove it before adding it again through textual configuration, with the same `actionId` parameter.
-Alternatively the `actionId` can be retrieved from the configuration file.
-The file contains a SQLLite database.
-The database contains a table `Action` with column `FifthplayId` corresponding to the required `actionId` parameter.
-The same applies applies for `thermostatId`, `meterId`, `accessId` and `alarmId`.
+You can directly create the textual configuration for the discovered thing in the UI.
+The same applies applies for `thermostatId`, `meterId`, `accessId`, `alarmId` and `carChargerId`.
 
 An example **action** textual configuration looks like:
 
@@ -187,37 +187,57 @@ For **alarm systems**:
 Thing nikohomecontrol:alarm:mybridge:myalarm [ alarmId="abcdef01-dcba-1234-ab98-012345abcdef" ]
 ```
 
+For **car chargers**:
+
+```java
+Thing nikohomecontrol:carCharger:mybridge:mycarcharger [ carChargerId="abcdef01-dcba-1234-ab98-012345abcdef" ]
+```
+
 ## Channels
 
-| Channel Type ID | RW | Advanced | Item Type          | Thing Types | Description                                                                                         |
-|-----------------|:--:|:--------:|--------------------|-------------|-----------------------------------------------------------------------------------------------------|
-| button          | RW |          | Switch             | pushButton  | stateless action control, `autoupdate="false"` by default. Only accepts `ON`                        |
-| switch          | RW |          | Switch             | onOff       | on/off switches with state control, such as light switches                                          |
-| brightness      | RW |          | Dimmer             | dimmer      | control dimmer light intensity. OnOff, IncreaseDecrease and Percent command types are supported. Note that sending an `ON` command will switch the dimmer to the value stored when last turning the dimmer off, or 100% depending on the configuration in the Niko Home Control Controller. This can be changed with the Niko Home Control programming software |
-| rollershutter   | RW |          | Rollershutter      | blind       | control rollershutter or blind. UpDown, StopMove and Percent command types are supported            |
-| measured        | R  |          | Number:Temperature | thermostat  | current temperature. Because of API restrictions, NHC II will only report in 0.5°C increments       |
-| heatingmode     | RW |          | String             | thermostat  | current thermostat mode. Allowed values are Day, Night, Eco, Off, Cool, Prog1, Prog2, Prog3. Setting `heatingmode` will reset the `setpoint` channel to the standard value for the mode in the controller |
-| mode            | RW |    X     | Number             | thermostat  | current thermostat mode, same meaning as `heatingmode`, but numeric values (0=Day, 1=Night, 2=Eco, 3=Off, 4=Cool, 5=Prog1, 6=Prog2, 7=Prog3). Setting `mode` will reset the `setpoint` channel to the standard value for the mode in the controller. This channel is kept for binding backward compatibility |
-| setpoint        | RW |          | Number:Temperature | thermostat  | current thermostat setpoint. Updating the `setpoint` will overrule the temperature setpoint defined by `heatingmode` or `mode` for `overruletime` duration. Because of API restrictions, NHC II will only report in 0.5°C increments |
-| overruletime    | RW |          | Number             | thermostat  | used to set the total duration in minutes to apply the setpoint temperature set in the `setpoint` channel before the thermostat returns to the setting from its mode |
-| heatingdemand   | R  |          | String             | thermostat  | indicating if the system is actively heating/cooling. This channel will have value Heating, Cooling or None. For NHC I this is set by the binding from the temperature difference between `setpoint` and `measured`. It therefore may incorrectly indicate cooling even when the system does not have active cooling capabilities |
-| demand          | R  |    X     | Number             | thermostat  | indicating if the system is actively heating/cooling, same as `heatingdemand` but numeric values (-1=Cooling, 0=None, 1=Heating) |
-| power           | R  |          | Number:Power       | energyMeterLive | instant power consumption/production (negative for production), refreshed every 2s. Linking this channel starts an intensive communication flow with the controller and should only be done when appropriate |
-| energy          | R  |          | Number:Energy      | energyMeterLive, energyMeter | total energy meter reading                                                         |
-| energyday       | R  |          | Number:Energy      | energyMeterLive, energyMeter | day energy meter reading                                                           |
-| gas             | R  |          | Number:Volume      | gasMeter    | total gas meter reading                                                                             |
-| gasday          | R  |          | Number:Volume      | gasMeter    | day gas meter reading                                                                               |
-| water           | R  |          | Number:Volume      | waterMeter  | total water meter reading                                                                           |
-| waterday        | R  |          | Number:Volume      | waterMeter  | day water meter reading                                                                             |
-| measurementtime | R  |          | DateTimeType       | energyMeterLive, energyMeter, gasMeter, waterMeter | last meter reading time                                      |
-| bellbutton      | RW |          | Switch             | access, accessRingAndComeIn | bell button connected to access device, including buttons on video phone devices linked to an access device. The bell can also be triggered by an `ON` command, `autoupdate="false"` by default |
-| ringandcomein   | RW |          | Switch             | accessRingAndComeIn | provide state and turn automatic door unlocking at bell ring on/off                         |
-| lock            | RW |          | Switch             | access, accessRingAndComeIn | provide doorlock state and unlock the door by sending an `OFF` command. `autoupdate="false"` by default |
-| arm             | RW |          | Switch             | alarm       | arm/disarm alarm, will change state (on/off) immediately. Note some integrations (Homekit, Google Home, ...) may require String states for an alarm system (ARMED/DISARMED). This can be achieved using an extra item and a rule updated by/commanding an item linked to this channel |
-| armed           | RW |          | Switch             | alarm       | state of the alarm system (on/off), will only turn on after pre-armed period when arming            |
-| state           | R  |          | String             | alarm       | state of the alarm system (DISARMED, PREARMED, ARMED, PREALARM, ALARM, DETECTOR PROBLEM)            |
-| alarm           |    |          |                    | bridge, alarm | trigger channel with alarm event message, can be used in rules                                    |
-| notice          |    |          |                    | bridge      | trigger channel with notice event message, can be used in rules                                     |
+| Channel Type ID   | RW | Advanced | Item Type          | Thing Types | Description                                                                                         |
+|-------------------|:--:|:--------:|--------------------|-------------|-----------------------------------------------------------------------------------------------------|
+| button            | RW |          | Switch             | pushButton  | stateless action control, `autoupdate="false"` by default. Only accepts `ON`                        |
+| switch            | RW |          | Switch             | onOff       | on/off switches with state control, such as light switches                                          |
+| brightness        | RW |          | Dimmer             | dimmer      | control dimmer light intensity. OnOff, IncreaseDecrease and Percent command types are supported. Note that sending an `ON` command will switch the dimmer to the value stored when last turning the dimmer off, or 100% depending on the configuration in the Niko Home Control Controller. This can be changed with the Niko Home Control programming software |
+| rollershutter     | RW |          | Rollershutter      | blind       | control rollershutter or blind. UpDown, StopMove and Percent command types are supported            |
+| measured          | R  |          | Number:Temperature | thermostat  | current temperature. Because of API restrictions, NHC II will only report in 0.5°C increments       |
+| heatingmode       | RW |          | String             | thermostat  | current thermostat mode. Allowed values are Day, Night, Eco, Off, Cool, Prog1, Prog2, Prog3. Setting `heatingmode` will reset the `setpoint` channel to the standard value for the mode in the controller |
+| mode              | RW |    X     | Number             | thermostat  | current thermostat mode, same meaning as `heatingmode`, but numeric values (0=Day, 1=Night, 2=Eco, 3=Off, 4=Cool, 5=Prog1, 6=Prog2, 7=Prog3). Setting `mode` will reset the `setpoint` channel to the standard value for the mode in the controller. This channel is kept for binding backward compatibility |
+| setpoint          | RW |          | Number:Temperature | thermostat  | current thermostat setpoint. Updating the `setpoint` will overrule the temperature setpoint defined by `heatingmode` or `mode` for `overruletime` duration. Because of API restrictions, NHC II will only report in 0.5°C increments |
+| overruletime      | RW |          | Number             | thermostat  | used to set the total duration in minutes to apply the setpoint temperature set in the `setpoint` channel before the thermostat returns to the setting from its mode |
+| heatingdemand     | R  |          | String             | thermostat  | indicating if the system is actively heating/cooling. This channel will have value Heating, Cooling or None. For NHC I this is set by the binding from the temperature difference between `setpoint` and `measured`. It therefore may incorrectly indicate cooling even when the system does not have active cooling capabilities |
+| demand            | R  |    X     | Number             | thermostat  | indicating if the system is actively heating/cooling, same as `heatingdemand` but numeric values (-1=Cooling, 0=None, 1=Heating) |
+| power             | R  |          | Number:Power       | energyMeterHome, energyMeterLive | instant power consumption/production (negative for production), refreshed every 2s. Linking this channel starts an intensive communication flow with the controller and should only be done when appropriate |
+| powerfromgrid     | R  |          | Number:Power       | energyMeterHome | power consumption grid for home energy meter, refreshed every 2s. Linking this channel starts an intensive communication flow with the controller and should only be done when appropriate |
+| powertogrid       | R  |          | Number:Power       | energyMeterHome | power sent to grid for home energy meter, refreshed every 2s. Linking this channel starts an intensive communication flow with the controller and should only be done when appropriate |
+| peakpowerfromgrid | R  |          | Number:Power       | energyMeterHome | current month peak power as registered by the home energy meter                         |
+| energy            | R  |          | Number:Energy      | energyMeterHome, energyMeterLive, energyMeter, carCharger | total energy meter reading                                                         |
+| energyday         | R  |          | Number:Energy      | energyMeterHome, energyMeterLive, energyMeter, carCharger | day energy meter reading                                                           |
+| gas               | R  |          | Number:Volume      | energyMeterHome, gasMeter | total gas meter reading                                                                             |
+| gasday            | R  |          | Number:Volume      | energyMeterHome, gasMeter | day gas meter reading                                                                               |
+| water             | R  |          | Number:Volume      | energyMeterHome, waterMeter | total water meter reading                                                                           |
+| waterday          | R  |          | Number:Volume      | energyMeterHome, waterMeter | day water meter reading                                                                             |
+| measurementtime   | R  |          | DateTimeType       | energyMeterHome, energyMeterLive, energyMeter, gasMeter, waterMeter, carCharger | last meter reading time                                      |
+| bellbutton        | RW |          | Switch             | access, accessRingAndComeIn | bell button connected to access device, including buttons on video phone devices linked to an access device. The bell can also be triggered by an `ON` command, `autoupdate="false"` by default |
+| ringandcomein     | RW |          | Switch             | accessRingAndComeIn | provide state and turn automatic door unlocking at bell ring on/off                         |
+| lock              | RW |          | Switch             | access, accessRingAndComeIn | provide doorlock state and unlock the door by sending an `OFF` command. `autoupdate="false"` by default |
+| arm               | RW |          | Switch             | alarm       | arm/disarm alarm, will change state (on/off) immediately. Note some integrations (Homekit, Google Home, ...) may require String states for an alarm system (ARMED/DISARMED). This can be achieved using an extra item and a rule updated by/commanding an item linked to this channel |
+| armed             | RW |          | Switch             | alarm       | state of the alarm system (on/off), will only turn on after pre-armed period when arming            |
+| state             | R  |          | String             | alarm       | state of the alarm system (DISARMED, PREARMED, ARMED, PREALARM, ALARM, DETECTOR PROBLEM)            |
+| status            | RW |          | Switch             | carCharger  | status of the car charger (on/off)                                                                  |
+| chargingstatus    | R  |          | String             | carCharger  | charging status of the car charger (ACTIVE, INACTIVE, BATTERY FULL or ERROR)                        |
+| evstatus          | R  |          | String             | carCharger  | status of the electric vehicle (IDLE, CONNECTED or CHARGING)                                        |
+| couplingstatus    | R  |          | String             | carCharger  | coupling status (OK, NO INTERNET, NO CREDENTIALS, INVALID CREDENTIALS, CONNECTION ERROR, CONNECTION TIMEOUT, API ERROR or UNKNOWN ERROR) |
+| electricalpower   | R  |          | Number:Power       | carCharger  | current charging power                                                                              |
+| chargingmode      | RW |          | String             | carCharger  | charging mode (SOLAR, NORMAL or SMART)                                                              |
+| targetdistance    | RW |          | Number:Length      | carCharger  | target distance to achieve in charging activity                                                     |
+| targettime        | RW |          | DateTime           | carCharger  | time by which the target distance should be achieved                                                |
+| boost             | RW |          | Switch             | carCharger  | boost charging to maximum achievable, not respecting capacity limit                                 |
+| reachabledistance | R  |          | Number:Length      | carCharger  | reachable distance in current charing activity                                                      |
+| nextchargingtime  | R  |          | DateTime           | carCharger  | next charging start in current charging activity                                                    |
+| alarm             |    |          |                    | bridge, alarm | trigger channel with alarm event message, can be used in rules                                    |
+| notice            |    |          |                    | bridge      | trigger channel with notice event message, can be used in rules                                     |
 
 ## Console Commands
 
@@ -230,7 +250,8 @@ To help with further development, a number of console commands allow you to coll
 
 ## Limitations
 
-The binding has been tested with a Niko Home Control I IP-interface (550-00508) and the Niko Home Control Connected Controller (550-00003) for Niko Home Control I and II, and the Niko Home Control Wireless Smart Hub for Niko Home Control II.
+The binding has been tested with a Niko Home Control I IP-interface (550-00508) and the Niko Home Control Connected Controller (550-00003) for Niko Home Control I and II, and the Niko Home Control Wireless Smart Hub (552-00001) for Niko Home Control II.
+Also the Wireless Bridge (550-00640) for the Connected Controller is supported.
 
 Not all action and device types supported in Niko Home Control I and II controllers are supported by the binding.
 Refer to the list of things and their support for Niko Home Control I and II respectively.

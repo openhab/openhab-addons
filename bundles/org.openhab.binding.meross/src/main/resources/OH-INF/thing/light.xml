@@ -17,21 +17,24 @@
 		</channels>
 
 		<config-description>
-			<parameter name="lightName" type="text" required="true">
-				<label>Light name</label>
-				<description>The name of the light as registered to Meross account</description>
+			<parameter name="name" type="text" required="true">
+				<label>Name</label>
+				<description>The name of the device as registered to Meross account</description>
+			</parameter>
+			<parameter name="uuid" type="text" required="true">
+				<label>Device UUID</label>
+				<description>Meross UUID of the device, found during discovery</description>
+			</parameter>
+			<parameter name="ipAddress" type="text">
+				<label>IP Address</label>
+				<description>Local IP address of the device, if set will be used for local communication</description>
+				<context>network-address</context>
+			</parameter>
+			<parameter name="lightName" type="text">
+				<label>Light Name</label>
+				<description>Deprecated: use 'name' parameter instead</description>
+				<advanced>true</advanced>
 			</parameter>
 		</config-description>
 	</thing-type>
-
-	<channel-type id="power">
-		<item-type>Switch</item-type>
-		<label>Switch</label>
-		<description>Switch the power ON and OFF</description>
-		<category>Light</category>
-		<tags>
-			<tag>Switch</tag>
-			<tag>Light</tag>
-		</tags>
-	</channel-type>
 </thing:thing-descriptions>

@@ -201,6 +201,7 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
 
     @Override
     public void dispose() {
+        discoveryHomeAssistantIDs.clear();
         removeStateDescriptions();
         // super.dispose() calls stop()
         super.dispose();
@@ -251,7 +252,6 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
             haComponentsByUniqueId.clear();
             haComponentsByHaId.clear();
             channelStates.clear();
-            discoveryHomeAssistantIDs.clear();
             updateComponent = null;
             started = false;
         }

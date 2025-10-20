@@ -46,6 +46,8 @@
 			<channel id="timestamp" typeId="timestamp"/>
 			<channel id="tvoc" typeId="tvoc"/>
 			<channel id="uptime" typeId="uptime"/>
+			<channel id="virus_free" typeId="virus_free"/>
+			<channel id="mold_free" typeId="mold_free"/>
 
 			<!-- Maximum error -->
 			<channel id="fineDustCnt00_3_maxerr" typeId="cnt0_3_maxerr"/>
@@ -71,6 +73,8 @@
 			<channel id="sound_maxerr" typeId="sound_maxerr"/>
 			<channel id="temperature_maxerr" typeId="temperature_maxerr"/>
 			<channel id="tvoc_maxerr" typeId="tvoc_maxerr"/>
+			<channel id="virus_free_maxerr" typeId="virus_free_maxerr"/>
+			<channel id="mold_free_maxerr" typeId="mold_free_maxerr"/>
 
 			<!-- configuration data -->
 			<channel id="wifi" typeId="Wifi"/>
@@ -120,7 +124,7 @@
 			<property name="sensorList">Unknown sensor list</property>
 			<property name="sensorInfo">No info about sensors</property>
 			<property name="industry">No industry info</property>
-			<property name="thingTypeVersion">2</property>
+			<property name="thingTypeVersion">3</property>
 		</properties>
 
 		<config-description>
@@ -348,6 +352,18 @@
 		<state readOnly="true" pattern="%d %unit%"></state>
 	</channel-type>
 
+	<channel-type id="virus_free" advanced="false">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Virus-Free Index</label>
+		<state readOnly="true" pattern="%.2f %unit%"></state>
+	</channel-type>
+
+	<channel-type id="mold_free" advanced="false">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Mold-Free Index</label>
+		<state readOnly="true" pattern="%.2f %unit%"></state>
+	</channel-type>
+
 	<!-- Maximum error -->
 	<channel-type id="cnt0_3_maxerr" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
@@ -484,6 +500,20 @@
 	<channel-type id="tvoc_maxerr" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Max. Error VOC Conc.</label>
+		<state readOnly="true" pattern="± %.2f %%"></state>
+	</channel-type>
+
+	<channel-type id="virus_free_maxerr" advanced="true">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Max. Error Virus-Free</label>
+		<description>Maximum tolerated error in the Virus-Free Index measurement.</description>
+		<state readOnly="true" pattern="± %.2f %%"></state>
+	</channel-type>
+
+	<channel-type id="mold_free_maxerr" advanced="true">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Max. Error Mold-Free</label>
+		<description>Maximum tolerated error in the Mold-Free Index measurement.</description>
 		<state readOnly="true" pattern="± %.2f %%"></state>
 	</channel-type>
 

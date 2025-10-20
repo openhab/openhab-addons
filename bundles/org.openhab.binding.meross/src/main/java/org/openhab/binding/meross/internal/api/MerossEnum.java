@@ -129,7 +129,11 @@ public class MerossEnum {
 
         public static @Nullable String getAbilityValueByName(String name) {
             return Stream.of(Namespace.values()).filter(p -> p.name().equals(name)).map(Namespace::value).findFirst()
-                    .orElse("Unidentified Ability");
+                    .orElse(null);
+        }
+
+        public static @Nullable Namespace getNamespaceByAbilityValue(String value) {
+            return Stream.of(Namespace.values()).filter(p -> p.value().equals(value)).findFirst().orElse(null);
         }
     }
 
@@ -181,5 +185,10 @@ public class MerossEnum {
         public int value() {
             return value;
         }
+    }
+
+    public enum HttpConnectionType {
+        LOCAL,
+        CLOUD
     }
 }

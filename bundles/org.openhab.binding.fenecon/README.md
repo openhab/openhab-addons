@@ -1,6 +1,6 @@
 # FENECON Binding
 
-The FENECON Binding integrates the [FENECON energy storage system](https://fenecon.de/) device into the openHAB system via [REST-API](https://docs.fenecon.de/_/de/fems/fems-app/OEM_App_REST_JSON.html).
+The FENECON Binding integrates the [FENECON energy storage system](https://fenecon.de/) device into the openHAB system via [REST-API](https://docs.fenecon.de/de/fems/fems-app/App_REST-JSON_Lesezugriff.html).
 
 With the binding, it is possible to request status information from FENECON Home to allow you home automation decisions based on the current energy management.
 
@@ -24,7 +24,7 @@ The FENECON Thing only needs to be configured with the `hostname`, all other par
 |-----------------|----------------------------------------------------------------------------------|
 | hostname        | Hostname or IP address of the FENECON device, e.g. 192.168.1.11                  |
 | password        | Password of the FENECON device. The password for guest access is set by default. |
-| port            | Port of the FENECON device. Default: 8084                                        |
+| port            | Port of the FENECON device. Default: 80                                          |
 | refreshInterval | Interval the device is polled in sec. Default 30 seconds                         |
 
 ## Channels

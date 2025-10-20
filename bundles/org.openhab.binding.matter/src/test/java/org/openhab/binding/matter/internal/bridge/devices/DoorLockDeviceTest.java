@@ -18,6 +18,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.openhab.binding.matter.internal.bridge.devices.BaseDevice.MATTER_SOURCE;
 
 import java.util.Map;
 
@@ -87,22 +88,22 @@ class DoorLockDeviceTest {
     void testHandleMatterEventLockState() {
         switchDevice.handleMatterEvent("doorLock", "lockState",
                 Double.valueOf(DoorLockCluster.LockStateEnum.LOCKED.getValue()));
-        verify(switchItem).send(OnOffType.ON);
+        verify(switchItem).send(OnOffType.ON, MATTER_SOURCE);
 
         switchDevice.handleMatterEvent("doorLock", "lockState",
                 Double.valueOf(DoorLockCluster.LockStateEnum.UNLOCKED.getValue()));
-        verify(switchItem).send(OnOffType.OFF);
+        verify(switchItem).send(OnOffType.OFF, MATTER_SOURCE);
     }
 
     @Test
     void testHandleMatterEventLockStateGroup() {
         groupDevice.handleMatterEvent("doorLock", "lockState",
                 Double.valueOf(DoorLockCluster.LockStateEnum.LOCKED.getValue()));
-        verify(groupItem).send(OnOffType.ON);
+        verify(groupItem).send(OnOffType.ON, MATTER_SOURCE);
 
         groupDevice.handleMatterEvent("doorLock", "lockState",
                 Double.valueOf(DoorLockCluster.LockStateEnum.UNLOCKED.getValue()));
-        verify(groupItem).send(OnOffType.OFF);
+        verify(groupItem).send(OnOffType.OFF, MATTER_SOURCE);
     }
 
     @Test

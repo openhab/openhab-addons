@@ -22,6 +22,7 @@ import org.eclipse.jdt.annotation.Nullable;
  * when creating the state update json to send to the Connected Controller.
  *
  * @author Mark Herwege - Initial Contribution
+ * @author Mark Herwege - Add car chargers
  */
 @NonNullByDefault
 class NhcDevice2 {
@@ -35,6 +36,7 @@ class NhcDevice2 {
         String aligned;
         @Nullable
         String basicState;
+
         // fields for motors
         @Nullable
         String action;
@@ -42,6 +44,7 @@ class NhcDevice2 {
         String position;
         @Nullable
         String moving;
+
         // fields for thermostats and hvac
         @Nullable
         String setpointTemperature;
@@ -67,18 +70,20 @@ class NhcDevice2 {
         String thermostatOn;
         @Nullable
         String hvacOn;
+
         // fields for fans and ventilation
         @Nullable
         String fanSpeed;
+
         // fields for electricity metering
-        @Nullable
-        String electricalEnergy;
         @Nullable
         String electricalPower;
         @Nullable
         String electricalPowerToGrid;
         @Nullable
         String electricalPowerFromGrid;
+        @Nullable
+        String electricalMonthlyPeakPowerFromGrid;
         @Nullable
         String electricalPowerProduction;
         @Nullable
@@ -89,9 +94,25 @@ class NhcDevice2 {
         String electricalPowerProductionThresholdExceeded;
         @Nullable
         String reportInstantUsage;
+        @Nullable
+        String electricalEnergy;
+        @Nullable
+        String electricalEnergyConsumption;
+        @Nullable
+        String electricalEnergyToGrid;
+        @Nullable
+        String electricalEnergyFromGrid;
+        @Nullable
+        String electricalEnergySelfConsumption;
+        @Nullable
+        String gasVolume;
+        @Nullable
+        String waterVolume;
+
         // fields for access control
         @Nullable
         String doorlock;
+
         // fields for video devices
         @Nullable
         String ipAddress;
@@ -103,6 +124,7 @@ class NhcDevice2 {
         String callStatus03;
         @Nullable
         String callStatus04;
+
         // fields for alarms
         @Nullable
         String internalState;
@@ -112,16 +134,41 @@ class NhcDevice2 {
         String alarmTriggered;
         @Nullable
         String control;
+
+        // fields for car chargers
+        @Nullable
+        String chargingStatus;
+        @Nullable
+        String evStatus;
+        @Nullable
+        String couplingStatus;
+        @Nullable
+        String chargingMode;
+        @Nullable
+        String targetDistance;
+        @Nullable
+        String targetTime;
+        @Nullable
+        String boost;
+        @Nullable
+        String reachableDistance;
+        @Nullable
+        String nextChargingTime;
     }
 
     static class NhcTrait {
         @Nullable
         String macAddress;
+
         // fields for metering
         @Nullable
         String channel;
         @Nullable
         String meterType;
+
+        // fields for car chargers
+        @Nullable
+        String playerName;
     }
 
     static class NhcParameter {
@@ -131,6 +178,7 @@ class NhcDevice2 {
         String locationName;
         @Nullable
         String locationIcon;
+
         // fields for electricity metering
         @Nullable
         String flow;
@@ -140,6 +188,7 @@ class NhcDevice2 {
         String clampType;
         @Nullable
         String shortName;
+
         // fields for access control
         @Nullable
         String buttonId;
@@ -149,6 +198,7 @@ class NhcDevice2 {
         String declineCallAppliedOnAllDevices;
         @Nullable
         String iconCode;
+
         // fields for video devices
         @Nullable
         String mjpegUri;

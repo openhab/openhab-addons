@@ -69,7 +69,7 @@ public class ApiHandler {
     private final HttpClient httpClient;
     private final Gson gson;
 
-    private long timeoutInMs = TimeUnit.SECONDS.toMillis(10);
+    private volatile long timeoutInMs = TimeUnit.SECONDS.toMillis(10);
 
     public ApiHandler(HttpClientFactory httpClientFactory, TimeZoneProvider timeZoneProvider) {
         this.gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
@@ -105,7 +105,7 @@ public class ApiHandler {
         }
     }
 
-    public synchronized <T> T executeUri(URI uri, HttpMethod method, Class<T> clazz, @Nullable String sessionToken,
+    public <T> T executeUri(URI uri, HttpMethod method, Class<T> clazz, @Nullable String sessionToken,
             @Nullable Object payload) throws FreeboxException, InterruptedException {
         logger.debug("executeUrl {}: {} ", method, uri);
 
@@ -171,6 +171,6 @@ public class ApiHandler {
 
     public void setTimeout(long millis) {
         timeoutInMs = millis;
-        logger.debug("Timeout set to {} ms", timeoutInMs);
+        logger.debug("Timeout set to {} ms", millis);
     }
 }
