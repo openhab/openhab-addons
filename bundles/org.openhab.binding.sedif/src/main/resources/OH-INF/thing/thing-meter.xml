@@ -19,7 +19,7 @@
 			See the documentation about where to find this
 			informations.
 		</description>
-        <semantic-equipment-tag>WaterMeter</semantic-equipment-tag>
+		<semantic-equipment-tag>WaterMeter</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group typeId="base" id="base"/>
