@@ -23,25 +23,6 @@
 	<feature name="openhab-binding-mqtt" description="MQTT Binding" version="${project.version}">
 		<feature>openhab-runtime-base</feature>
 		<feature>openhab-transport-mqtt</feature>
-		<feature dependency="true">openhab.tp-commons-net</feature>
-		<bundle dependency="true">mvn:org.openhab.osgiify/org.graalvm.llvm.llvm-api/25.0.1</bundle>
-		<bundle dependency="true">mvn:org.openhab.osgiify/org.graalvm.polyglot.polyglot/25.0.1</bundle>
-		<bundle dependency="true">mvn:org.openhab.osgiify/org.graalvm.python.python-embedding/25.0.1</bundle>
-		<bundle dependency="true" start-level="78">mvn:org.openhab.osgiify/org.graalvm.python.python-language/25.0.1</bundle>
-		<bundle dependency="true" start-level="78">mvn:org.openhab.osgiify/org.graalvm.python.python-resources/25.0.1</bundle>
-		<bundle dependency="true" start-level="78">mvn:org.openhab.osgiify/org.graalvm.regex.regex/25.0.1</bundle>
-		<bundle dependency="true">mvn:org.openhab.osgiify/org.graalvm.sdk.collections/25.0.1</bundle>
-		<bundle dependency="true">mvn:org.openhab.osgiify/org.graalvm.sdk.jniutils/25.0.1</bundle>
-		<bundle dependency="true">mvn:org.openhab.osgiify/org.graalvm.sdk.nativeimage/25.0.1</bundle>
-		<bundle dependency="true">mvn:org.openhab.osgiify/org.graalvm.sdk.word/25.0.1</bundle>
-		<bundle dependency="true">mvn:org.openhab.osgiify/org.graalvm.shadowed.icu4j/25.0.1</bundle>
-		<bundle dependency="true">mvn:org.openhab.osgiify/org.graalvm.shadowed.json/25.0.1</bundle>
-		<bundle dependency="true">mvn:org.openhab.osgiify/org.graalvm.shadowed.xz/25.0.1</bundle>
-		<bundle dependency="true">mvn:org.openhab.osgiify/org.graalvm.tools.profiler-tool/25.0.1</bundle>
-		<bundle dependency="true" start-level="79">mvn:org.openhab.osgiify/org.graalvm.truffle.truffle-api/25.0.1</bundle>
-		<bundle dependency="true">mvn:org.openhab.osgiify/org.graalvm.truffle.truffle-compiler/25.0.1</bundle>
-		<bundle dependency="true">mvn:org.openhab.osgiify/org.graalvm.truffle.truffle-nfi/25.0.1</bundle>
-		<bundle dependency="true">mvn:org.openhab.osgiify/org.graalvm.truffle.truffle-runtime/25.0.1</bundle>
 		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.mqtt/${project.version}</bundle>
 		<bundle start-level="81">mvn:org.openhab.addons.bundles/org.openhab.binding.mqtt.awtrixlight/${project.version}</bundle>
 		<bundle start-level="81">mvn:org.openhab.addons.bundles/org.openhab.binding.mqtt.espmilighthub/${project.version}</bundle>
