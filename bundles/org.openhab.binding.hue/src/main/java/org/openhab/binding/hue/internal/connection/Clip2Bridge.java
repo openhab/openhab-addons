@@ -16,11 +16,18 @@ import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.Closeable;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -28,7 +35,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Properties;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
@@ -40,6 +46,8 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
 import javax.ws.rs.core.MediaType;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -81,7 +89,7 @@ import org.openhab.binding.hue.internal.exceptions.ApiException;
 import org.openhab.binding.hue.internal.exceptions.HttpUnauthorizedException;
 import org.openhab.binding.hue.internal.handler.Clip2BridgeHandler;
 import org.openhab.core.io.net.http.HttpClientFactory;
-import org.openhab.core.io.net.http.HttpUtil;
+import org.openhab.core.io.net.http.TrustAllTrustManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -532,11 +540,38 @@ public class Clip2Bridge implements Closeable {
      * @throws NumberFormatException if the bridge firmware version is invalid.
      */
     public static boolean isClip2Supported(String hostName) throws IOException {
-        String response;
-        Properties headers = new Properties();
-        headers.put(HttpHeader.ACCEPT, MediaType.APPLICATION_JSON);
-        response = HttpUtil.executeUrl("GET", String.format(FORMAT_URL_CONFIG, hostName), headers, null, null,
-                TIMEOUT_SECONDS * 1000);
+        String response = null;
+        try {
+            URL url = new URI(String.format(FORMAT_URL_CONFIG, hostName)).toURL();
+            HttpURLConnection httpConnection = (HttpURLConnection) url.openConnection();
+            /*
+             * TODO we manually check if the bridge redirects to HTTPS, and if so, since v3 bridges
+             * currently don't provide a full certificate chain we force use of a TrustAllTrustManager
+             */
+            httpConnection.setInstanceFollowRedirects(false);
+            int status = httpConnection.getResponseCode();
+            if (status == 301 || status == 302) {
+                String redirectUrl = httpConnection.getHeaderField("Location");
+                if (redirectUrl.startsWith("https://")) {
+                    SSLContext sslContext = SSLContext.getInstance("TLS");
+                    sslContext.init(null, new TrustAllTrustManager[] { TrustAllTrustManager.getInstance() }, null);
+                    HttpsURLConnection httpsConnection = (HttpsURLConnection) new URI(redirectUrl).toURL()
+                            .openConnection();
+                    httpsConnection.setSSLSocketFactory(sslContext.getSocketFactory());
+                    try (InputStream in = httpsConnection.getInputStream()) {
+                        response = new String(in.readAllBytes());
+                    }
+                }
+            }
+            if (response == null) {
+                try (InputStream in = httpConnection.getInputStream()) {
+                    response = new String(in.readAllBytes());
+                }
+            }
+        } catch (NoSuchAlgorithmException | KeyManagementException | URISyntaxException e) {
+            throw new IOException("isClip2Supported() error connecting to bridge", e);
+        }
+
         BridgeConfig config = new Gson().fromJson(response, BridgeConfig.class);
         if (Objects.nonNull(config)) {
             String swVersion = config.swversion;
