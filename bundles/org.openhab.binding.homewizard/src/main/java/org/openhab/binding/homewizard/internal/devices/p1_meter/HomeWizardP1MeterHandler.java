@@ -201,7 +201,6 @@ public class HomeWizardP1MeterHandler extends HomeWizardEnergyMeterHandler {
             updateState(HomeWizardBindingConstants.CHANNEL_GROUP_P1_BATTERIES,
                     HomeWizardBindingConstants.CHANNEL_BATTERIES_MAX_PRODUCTION,
                     new QuantityType<>(payload.getMaxProduction(), Units.WATT));
-
         }
     }
 
