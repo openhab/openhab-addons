@@ -40,7 +40,7 @@ public class UidUtils {
      * @param label
      * @return the label without invalid character
      */
-    private static String sanetizeId(String label) {
+    public static String sanetizeId(String label) {
         String result = label;
 
         if (!Normalizer.isNormalized(label, Normalizer.Form.NFKD)) {
@@ -68,7 +68,7 @@ public class UidUtils {
      * @param descriptor
      * @return
      */
-    public static String normalizeDescriptor(String descriptor) {
+    private static String normalizeDescriptor(String descriptor) {
         String result = descriptor.trim();
 
         if (result.indexOf("CC") >= 0 || result.indexOf("HC") >= 0) {
