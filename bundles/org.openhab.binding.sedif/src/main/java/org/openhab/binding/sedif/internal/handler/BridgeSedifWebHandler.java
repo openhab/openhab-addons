@@ -186,7 +186,7 @@ public class BridgeSedifWebHandler extends BaseBridgeHandler {
         if (appCtx == null) {
             throw new SedifException("Unable to find app context in login process");
         } else {
-            logger.debug("Account {}: Successfully retrieved context {}", lcConfig.username);
+            logger.debug("Account {}: Successfully retrieved context", lcConfig.username);
         }
 
         // =====================================================================

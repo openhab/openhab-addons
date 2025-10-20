@@ -325,7 +325,6 @@ public class SedifHttpApi {
     public @Nullable AuraContext extractAuraContext(String html) throws SedifException {
         try {
             int pos1 = html.indexOf("resources.js");
-            AuraContext context = null;
             if (pos1 >= 0) {
                 String sub1 = html.substring(0, pos1 + 1);
                 int pos2 = sub1.lastIndexOf("<script");

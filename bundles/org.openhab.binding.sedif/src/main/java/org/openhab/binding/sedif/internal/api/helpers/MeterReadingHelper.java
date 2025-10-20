@@ -18,6 +18,7 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.sedif.internal.dto.MeterReading;
 import org.openhab.binding.sedif.internal.dto.MeterReading.Data;
 import org.openhab.binding.sedif.internal.dto.MeterReading.Data.Consommation;
@@ -28,6 +29,7 @@ import org.openhab.binding.sedif.internal.types.SedifException;
  *
  * @author Laurent Arnal - Initial contribution
  */
+@NonNullByDefault
 public class MeterReadingHelper {
     public static MeterReading merge(MeterReading currentMeterReading, MeterReading incomingMeterReading)
             throws SedifException {
