@@ -34,6 +34,7 @@ import org.openhab.binding.unifiprotect.internal.dto.CameraFeatureFlags;
 import org.openhab.binding.unifiprotect.internal.dto.ChannelQuality;
 import org.openhab.binding.unifiprotect.internal.dto.HdrType;
 import org.openhab.binding.unifiprotect.internal.dto.LedSettings;
+import org.openhab.binding.unifiprotect.internal.dto.ObjectType;
 import org.openhab.binding.unifiprotect.internal.dto.OsdSettings;
 import org.openhab.binding.unifiprotect.internal.dto.RtspsStreams;
 import org.openhab.binding.unifiprotect.internal.dto.TalkbackSession;
@@ -562,7 +563,7 @@ public class UnifiProtectCameraHandler extends UnifiProtectAbstractDeviceHandler
                     UnifiProtectBindingConstants.CHANNEL_ACTIVE_PATROL_SLOT, channelAdd, desiredIds);
         }
 
-        if (camera.lcdMessage != null) {
+        if (camera.lcdMessage != null || camera.featureFlags.smartDetectTypes.contains(ObjectType.PACKAGE)) {
             addTriggerChannel(UnifiProtectBindingConstants.CHANNEL_RING, UnifiProtectBindingConstants.CHANNEL_RING,
                     channelAdd, desiredIds, UnifiProtectBindingConstants.CHANNEL_RING_LABEL);
             addChannel(UnifiProtectBindingConstants.CHANNEL_RING_CONTACT, CoreItemFactory.CONTACT,

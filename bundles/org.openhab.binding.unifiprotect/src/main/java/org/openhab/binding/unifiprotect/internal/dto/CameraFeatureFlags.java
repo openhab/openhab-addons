@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.unifiprotect.internal.dto;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -22,9 +23,9 @@ import java.util.List;
 public class CameraFeatureFlags {
     public boolean supportFullHdSnapshot;
     public boolean hasHdr;
-    public List<ObjectType> smartDetectTypes;
-    public List<AudioType> smartDetectAudioTypes;
-    public List<VideoMode> videoModes;
+    public List<ObjectType> smartDetectTypes = new ArrayList<>();
+    public List<AudioType> smartDetectAudioTypes = new ArrayList<>();
+    public List<VideoMode> videoModes = new ArrayList<>();
     public boolean hasMic;
     public boolean hasLedStatus;
     public boolean hasSpeaker;
