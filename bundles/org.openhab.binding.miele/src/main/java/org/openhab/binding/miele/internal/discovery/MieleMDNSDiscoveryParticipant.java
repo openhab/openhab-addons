@@ -14,6 +14,7 @@ package org.openhab.binding.miele.internal.discovery;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.NetworkInterface;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
@@ -124,12 +125,13 @@ public class MieleMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant {
         try {
             socket = new Socket(addresses[0], 80);
             InetAddress ourAddress = socket.getLocalAddress();
-            String interfaceIpAddress = ourAddress.getHostAddress();
+            NetworkInterface ni = NetworkInterface.getByInetAddress(ourAddress);
+            String interfaceName = ni.getName();
             socket.close();
 
-            properties.put(MieleBindingConstants.INTERFACE, interfaceIpAddress);
-            logger.debug("Discovered Miele@home gateway with IP address {} and interface IP address {}", ipAddress,
-                    interfaceIpAddress);
+            properties.put(MieleBindingConstants.MULTICAST_INTERFACE, interfaceName);
+            logger.debug("Discovered Miele@home gateway with IP address {} and multicast interface {}", ipAddress,
+                    interfaceName);
         } catch (IOException e) {
             logger.warn("An exception occurred while connecting to the Miele Gateway: '{}'", e.getMessage());
             return null;
