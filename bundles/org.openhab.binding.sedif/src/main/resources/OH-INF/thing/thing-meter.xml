@@ -10,7 +10,6 @@
 		</supported-bridge-type-refs>
 
 		<label>Meter</label>
-		<semantic-equipment-tag>WaterMeter</semantic-equipment-tag>
 		<description>
 			Act as a gateway between a Meter and your Sedif web account.
 			In order to receive the data, you must
@@ -20,6 +19,7 @@
 			See the documentation about where to find this
 			informations.
 		</description>
+        <semantic-equipment-tag>WaterMeter</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group typeId="base" id="base"/>
