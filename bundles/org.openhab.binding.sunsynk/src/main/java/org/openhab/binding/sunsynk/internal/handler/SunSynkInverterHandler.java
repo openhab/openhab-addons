@@ -451,7 +451,7 @@ public class SunSynkInverterHandler extends BaseThingHandler {
         updateState(CHANNEL_INVERTER_SOLAR_ENERGY_MONTH, new DecimalType(plantSummary.getEmonth()));
         updateState(CHANNEL_INVERTER_SOLAR_ENERGY_YEAR, new DecimalType(plantSummary.getEyear()));
         updateState(CHANNEL_INVERTER_SOLAR_ENERGY_TOTAL, new DecimalType(plantSummary.getEtotal()));
-        updateState(CHANNEL_INVERTER_CAPACITY, new DecimalType(plantSummary.getCapacity()));
+        updateState(CHANNEL_INVERTER_RATED_AC_OUTPUT, new DecimalType(plantSummary.getCapacity()));
         updateState(CHANNEL_INVERTER_SOLAR_POWER, new DecimalType(plantSummary.getPac()));
         updateState(CHANNEL_INVERTER_SOLAR_EFFICIENCY, new DecimalType(plantSummary.getEfficiency()));
     }

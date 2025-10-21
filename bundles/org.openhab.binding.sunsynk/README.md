@@ -101,7 +101,7 @@ The SunSynk Inverter has the following channels.
 |inverter-grid-voltage           |Number:ElectricPotential | R   | Grid ac electric-voltage          | no       |
 |inverter-grid-current           |Number:ElectricCurrent   | R   | Grid ac electric-current          | no       |
 |inverter-grid-frequency         |Number:Frequency         | R   | Grid frequency                    | no       |
-|inverter-capacity               |Number:Power             | R   | Inverter energy capacity          | no       |
+|inverter-rated-ac-output        |Number:Power             | R   | Inverter energy capacity          | no       |
 |inverter-solar-energy-today     |Number:Energy            | R   | Solar energy generated today      | no       |
 |inverter-solar-energy-month     |Number:Energy            | R   | Solar energy generated this month | no       |
 |inverter-solar-energy-year      |Number:Energy            | R   | Solar energy generated this year  | no       |
@@ -158,8 +158,7 @@ Bridge sunsynk:account:xxx @ "Loft" [email= "user.symbol@domain.", password="som
 }
 ```
 
-You are unlikely to know the plantId, please use the automatic scan to discover and add an inverters, the plantId can be found
-in the log or in the inverter Thing configuration.
+You are unlikely to know the plantId, please use the automatic scan to discover and add an inverters, the plantId can be found in the log or in the inverter Thing configuration.
 
 #### sunsynk.items
 
@@ -203,7 +202,7 @@ Number:Dimensionless        BatterySOC                  "Battery SOC [%s]"      
 Number:ElectricPotential    BatteryGridVoltage          "Battery Voltage"                              {channel="sunsynk:inverter:xxx:1234567R1231234567890:battery-dc-voltage"}
 Number:ElectricCurrent      BatteryGridCurrent          "Battery Current"                              {channel="sunsynk:inverter:xxx:1234567R1231234567890:battery-dc-current"}
 Number:Power                BatteryGridPower            "Battery Power"                                {channel="sunsynk:inverter:xxx:1234567R1231234567890:battery-dc-power"}
-Number:Power                InverterCapacity            "Inverter Capacity"                            {channel="sunsynk:inverter:xxx:1234567R1231234567890:inverter-capacity"}
+Number:Power                InverterCapacity            "Inverter Capacity"                            {channel="sunsynk:inverter:xxx:1234567R1231234567890:inverter-rated-ac-output"}
 Number:Temperature          BatteryTemperature          "Battery Temperature "                         {channel="sunsynk:inverter:xxx:1234567R1231234567890:battery-temperature"}
 Number:Temperature          InverterACTemperature       "Inverter AC Temperature"                      {channel="sunsynk:inverter:xxx:1234567R1231234567890:inverter-ac-temperature"}
 Number:Temperature          InverterDCTemperature       "Inverter DC Temperature"                      {channel="sunsynk:inverter:xxx:1234567R1231234567890:inverter-dc-temperature"}

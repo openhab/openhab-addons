@@ -71,7 +71,7 @@ public class SunSynkBindingConstants {
     public static final String CHANNEL_INVERTER_GRID_VOLTAGE = "inverter-grid-voltage";
     public static final String CHANNEL_INVERTER_GRID_CURRENT = "inverter-grid-current";
     public static final String CHANNEL_INVERTER_GRID_FREQUENCY = "inverter-grid-frequency";
-    public static final String CHANNEL_INVERTER_CAPACITY = "inverter-capacity";
+    public static final String CHANNEL_INVERTER_RATED_AC_OUTPUT = "inverter-rated-ac-output";
 
     public static final String CHANNEL_INVERTER_AC_TEMPERATURE = "inverter-ac-temperature";
     public static final String CHANNEL_INVERTER_DC_TEMPERATURE = "inverter-dc-temperature";

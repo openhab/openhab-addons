@@ -146,7 +146,7 @@
 			</channel>
 			<channel id="inverter-ac-temperature" typeId="system.indoor-temperature">
 				<label>Inverter AC Temperature</label>
-				<description>Temperature of the inverter ac side.</description>
+				<description>Temperature of the inverter AC side.</description>
 			</channel>
 			<channel id="inverter-dc-temperature" typeId="system.indoor-temperature">
 				<label>Inverter DC Temperature</label>
@@ -168,9 +168,9 @@
 				<label>Grid Frequency</label>
 				<description>Measured frequency of the grid.</description>
 			</channel>
-			<channel id="inverter-capacity" typeId="system.electric-power">
-				<label>Inverter Capacity</label>
-				<description>Inverter capacity rating.</description>
+			<channel id="inverter-rated-ac-output" typeId="system.electric-power">
+				<label>Inverter Rated Output</label>
+				<description>Inverter AC output rating.</description>
 			</channel>
 			<channel id="inverter-solar-energy-today" typeId="system.electric-energy">
 				<label>Solar Energy Today</label>
@@ -190,7 +190,7 @@
 			</channel>
 			<channel id="inverter-solar-ac-power" typeId="system.electric-power">
 				<label>Solar Power</label>
-				<description>Solar ac power being generated.</description>
+				<description>Solar AC power being generated.</description>
 			</channel>
 			<channel id="inverter-solar-energy-total" typeId="system.electric-energy">
 				<label>Solar Energy Total</label>
