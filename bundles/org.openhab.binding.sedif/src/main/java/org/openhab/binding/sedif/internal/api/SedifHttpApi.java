@@ -15,6 +15,7 @@ package org.openhab.binding.sedif.internal.api;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Hashtable;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
@@ -38,10 +39,9 @@ import org.openhab.binding.sedif.internal.dto.AuraCommand;
 import org.openhab.binding.sedif.internal.dto.AuraContext;
 import org.openhab.binding.sedif.internal.dto.AuraResponse;
 import org.openhab.binding.sedif.internal.dto.ContractDetail;
+import org.openhab.binding.sedif.internal.dto.ContractDetail.CompteInfo;
 import org.openhab.binding.sedif.internal.dto.Contracts;
 import org.openhab.binding.sedif.internal.dto.MeterReading;
-import org.openhab.binding.sedif.internal.handler.BridgeSedifWebHandler;
-import org.openhab.binding.sedif.internal.handler.ThingSedifHandler;
 import org.openhab.binding.sedif.internal.types.SedifException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,12 +59,33 @@ public class SedifHttpApi {
     private final Logger logger = LoggerFactory.getLogger(SedifHttpApi.class);
     private final Gson gson;
     private final HttpClient httpClient;
-    private final BridgeSedifWebHandler bridgeHandler;
 
-    public SedifHttpApi(BridgeSedifWebHandler bridgeHandler, Gson gson, HttpClient httpClient) {
+    private @Nullable AuraContext appCtx;
+    private @Nullable String token = "";
+
+    public static final String SEDIF_DOMAIN = ".leaudiledefrance.fr";
+    public static final String BASE_URL = "https://connexion" + SEDIF_DOMAIN;
+    public static final String URL_SEDIF_AUTHENTICATE = BASE_URL + "/s/login/";
+    public static final String URL_SEDIF_AUTHENTICATE_POST = BASE_URL
+            + "/s/sfsites/aura?r=1&other.LightningLoginForm.login=1";
+
+    public static final String URL_SEDIF_CONTRAT = BASE_URL + "/espace-particuliers/s/contrat?tab=Detail";
+    public static final String URL_SEDIF_SITE = BASE_URL
+            + "/espace-particuliers/s/sfsites/aura?r=36&aura.ApexAction.execute=1";
+
+    private static final DateTimeFormatter API_DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+    public SedifHttpApi(Gson gson, HttpClient httpClient) {
         this.gson = gson;
         this.httpClient = httpClient;
-        this.bridgeHandler = bridgeHandler;
+    }
+
+    public void setAppContext(@Nullable AuraContext appCtx) {
+        this.appCtx = appCtx;
+    }
+
+    public void setToken(@Nullable String token) {
+        this.token = token;
     }
 
     public void removeAllCookie() {
@@ -76,16 +97,11 @@ public class SedifHttpApi {
     }
 
     public String getContent(String url) throws SedifException {
-        return getContent(logger, bridgeHandler, null, url, httpClient, null);
+        return getContent("", null, url, null);
     }
 
-    public String getContent(BridgeSedifWebHandler bridgeHandler, @Nullable ThingSedifHandler handler, String url,
-            @Nullable AuraCommand cmd) throws SedifException {
-        return getContent(logger, bridgeHandler, handler, url, httpClient, cmd);
-    }
-
-    private String getContent(Logger logger, BridgeSedifWebHandler bridgeHandler, @Nullable ThingSedifHandler handler,
-            String url, HttpClient httpClient, @Nullable AuraCommand cmd) throws SedifException {
+    private String getContent(String contractId, @Nullable CompteInfo meterInfo, String url, @Nullable AuraCommand cmd)
+            throws SedifException {
         try {
             Request request = httpClient.newRequest(url);
             request = request.timeout(SedifBindingConstants.REQUEST_TIMEOUT, TimeUnit.SECONDS);
@@ -99,26 +115,25 @@ public class SedifHttpApi {
 
                 request = request.method(HttpMethod.POST);
 
-                AuraContext appCtx = bridgeHandler.getAppCtx();
                 if (appCtx != null) {
                     fields.put("aura.context", getAuraContextPayload(appCtx));
                 }
 
-                String token = bridgeHandler.getToken();
                 fields.put("aura.token", token);
 
-                if (handler != null) {
-                    String contractId = handler.getContractId();
-                    String meterIdB = handler.getMeterIdB();
-                    String meterIdA = handler.getMeterIdA();
+                // We put the to key syntax contratId & contractId because of an error on Sedif side.
+                // Some api calls need the contratId syntax, and other the contactId syntax, so putting it both is ok
+                if (!"".equals(contractId)) {
+                    paramsSub.put("contratId", contractId);
+                    paramsSub.put("contractId", contractId);
+                }
 
-                    // We put the to key syntax contratId & contractId because of an error on Sedif side.
-                    // Some api calls need the contratId syntax, and other the contactId syntax, so putting it both is
-                    // ok
-                    if (!"".equals(contractId)) {
-                        paramsSub.put("contratId", contractId);
-                        paramsSub.put("contractId", contractId);
-                    }
+                // If we have a meterInfo in params, put this info on request
+                // We need this to read meter specific data like consumption
+                if (meterInfo != null) {
+                    String meterIdB = meterInfo.eLmb;
+                    String meterIdA = meterInfo.eLma;
+
                     if (!"".equals(meterIdB)) {
                         paramsSub.put("NUMERO_COMPTEUR", meterIdB);
                     }
@@ -156,7 +171,7 @@ public class SedifHttpApi {
         AuraCommand cmd = AuraCommand.make("", "", "");
         cmd.setUser(userName, userPassword);
 
-        return getData(bridgeHandler, bridgeHandler.getUrlSedifAuth(), cmd, AuraResponse.class);
+        return getData("", null, URL_SEDIF_AUTHENTICATE_POST, cmd, AuraResponse.class);
     }
 
     public @Nullable Contracts getContracts() throws SedifException {
@@ -164,7 +179,7 @@ public class SedifHttpApi {
         logger.trace("Step 6: Get the contracts associated with the sedif accounts");
 
         AuraCommand cmd = AuraCommand.make("", "LTN009_ICL_ContratsGroupements", "getContratsGroupements");
-        Actions actions = getData(bridgeHandler, bridgeHandler.getUrlSedifSite(), cmd, Actions.class);
+        Actions actions = getData("", null, URL_SEDIF_SITE, cmd, Actions.class);
         ReturnValue retValue = actions.actions.get(0).returnValue;
         return (Contracts) ((retValue == null) ? null : retValue.returnValue);
     }
@@ -182,13 +197,13 @@ public class SedifHttpApi {
             paramsSub.put("contratId", contractId);
             paramsSub.put("contractId", contractId);
         }
-        Actions actions = getData(bridgeHandler, bridgeHandler.getUrlSedifSite(), cmd, Actions.class);
+        Actions actions = getData(contractId, null, URL_SEDIF_SITE, cmd, Actions.class);
         ReturnValue retValue = actions.actions.get(0).returnValue;
         return (ContractDetail) ((retValue == null) ? null : retValue.returnValue);
     }
 
-    public @Nullable MeterReading getConsumptionData(ThingSedifHandler handler, LocalDate from, LocalDate to)
-            throws SedifException {
+    public @Nullable MeterReading getConsumptionData(String contractId, @Nullable CompteInfo meterInfo, LocalDate from,
+            LocalDate to) throws SedifException {
         logger.trace("Step 8: Get the water consumption data");
 
         AuraCommand cmd = AuraCommand.make("", "LTN015_ICL_ContratConsoHisto", "getData");
@@ -196,41 +211,38 @@ public class SedifHttpApi {
 
         paramsSub.put("TYPE_PAS", "JOURNEE"); // SEMAINE MOIS
 
-        return getMeasures(handler, bridgeHandler.getUrlSedifSite(), cmd, from, to);
+        return getMeasures(contractId, meterInfo, URL_SEDIF_SITE, cmd, from, to);
     }
 
-    private @Nullable MeterReading getMeasures(ThingSedifHandler handler, String apiUrl, AuraCommand cmd,
-            LocalDate from, LocalDate to) throws SedifException {
-        String dtStart = from.format(bridgeHandler.getApiDateFormat());
-        String dtEnd = to.format(bridgeHandler.getApiDateFormat());
+    private @Nullable MeterReading getMeasures(String contractId, @Nullable CompteInfo meterInfo, String apiUrl,
+            AuraCommand cmd, LocalDate from, LocalDate to) throws SedifException {
+        String dtStart = from.format(API_DATE_FORMAT);
+        String dtEnd = to.format(API_DATE_FORMAT);
 
         Hashtable<String, Object> paramsSub = cmd.getParamsSub();
         paramsSub.put("DATE_DEBUT", dtStart);
         paramsSub.put("DATE_FIN", dtEnd);
 
-        Actions actions = getData(bridgeHandler, handler, apiUrl, cmd, Actions.class);
+        Actions actions = getData(contractId, meterInfo, apiUrl, cmd, Actions.class);
         ReturnValue retValue = actions.actions.get(0).returnValue;
         return (MeterReading) ((retValue == null) ? null : retValue.returnValue);
     }
 
-    public <T> T getData(BridgeSedifWebHandler bridgeHandler, String url, @Nullable AuraCommand cmd, Class<T> clazz)
-            throws SedifException {
-        return getData(bridgeHandler, null, url, cmd, clazz);
-    }
+    /*
+     * public <T> T getData(String url, @Nullable AuraCommand cmd, Class<T> clazz) throws SedifException {
+     * return getData(null, null, url, cmd, clazz);
+     * }
+     */
 
-    public <T> T getData(BridgeSedifWebHandler bridgeHandler, @Nullable ThingSedifHandler handler, String url,
-            @Nullable AuraCommand cmd, Class<T> clazz) throws SedifException {
-        if (!bridgeHandler.isConnected()) {
-            bridgeHandler.initialize();
-        }
-
+    public <T> T getData(String contractId, @Nullable CompteInfo meterInfo, String url, @Nullable AuraCommand cmd,
+            Class<T> clazz) throws SedifException {
         int numberRetry = 0;
         SedifException lastException = null;
         logger.debug("getData begin {}: {}", clazz.getName(), url);
 
         while (numberRetry < 3) {
             try {
-                String data = getContent(bridgeHandler, handler, url, cmd);
+                String data = getContent(contractId, meterInfo, url, cmd);
 
                 if (!data.isEmpty()) {
                     try {
@@ -248,7 +260,8 @@ public class SedifHttpApi {
                 logger.debug("getData error {}: {} , retry{}", clazz.getName(), url, numberRetry);
 
                 // try to reinit connection, fail after 3 attemps
-                bridgeHandler.connectionInit();
+                // @todo : need to handle this differently
+                // bridgeHandler.connectionInit();
             }
             numberRetry++;
         }
@@ -277,9 +290,8 @@ public class SedifHttpApi {
         Actions actions = new Actions();
         Action action = new Action();
 
-        AuraContext ctx = bridgeHandler.getAppCtx();
-        if (ctx != null) {
-            String app = ctx.app;
+        if (appCtx != null) {
+            String app = appCtx.app;
             if (app != null && app.indexOf("login") >= 0) {
                 action.descriptor = "apex://LightningLoginFormController/ACTION$login";
                 action.callingDescriptor = "markup://c:loginForm";

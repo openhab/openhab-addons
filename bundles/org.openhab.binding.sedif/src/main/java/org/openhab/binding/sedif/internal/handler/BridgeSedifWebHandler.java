@@ -15,7 +15,6 @@ package org.openhab.binding.sedif.internal.handler;
 import java.net.HttpCookie;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
-import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.Dictionary;
 import java.util.Hashtable;
@@ -82,19 +81,6 @@ public class BridgeSedifWebHandler extends BaseBridgeHandler {
     protected final SedifHttpApi sedifApi;
     protected final ThingRegistry thingRegistry;
 
-    private static final DateTimeFormatter API_DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-    private static final DateTimeFormatter API_DATE_FORMAT_YEAR_FIRST = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-
-    public static final String SEDIF_DOMAIN = ".leaudiledefrance.fr";
-    private static final String BASE_URL = "https://connexion" + SEDIF_DOMAIN;
-    private static final String URL_SEDIF_AUTHENTICATE = BASE_URL + "/s/login/";
-    private static final String URL_SEDIF_AUTHENTICATE_POST = BASE_URL
-            + "/s/sfsites/aura?r=1&other.LightningLoginForm.login=1";
-
-    private static final String URL_SEDIF_CONTRAT = BASE_URL + "/espace-particuliers/s/contrat?tab=Detail";
-    private static final String URL_SEDIF_SITE = BASE_URL
-            + "/espace-particuliers/s/sfsites/aura?r=36&aura.ApexAction.execute=1";
-
     protected final Gson gson;
     private String sid = "";
 
@@ -139,7 +125,7 @@ public class BridgeSedifWebHandler extends BaseBridgeHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
 
-        this.sedifApi = new SedifHttpApi(this, gson, this.httpClient);
+        this.sedifApi = new SedifHttpApi(gson, this.httpClient);
     }
 
     @Override
@@ -160,10 +146,6 @@ public class BridgeSedifWebHandler extends BaseBridgeHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
     }
 
-    public String getBaseUrl() {
-        return BASE_URL;
-    }
-
     public void connectionInit() throws SedifException {
         config = getConfigAs(SedifBridgeConfiguration.class);
 
@@ -180,13 +162,14 @@ public class BridgeSedifWebHandler extends BaseBridgeHandler {
         // =====================================================================
         // Step 1: getting salesforces context from login page
         // =====================================================================
-        resultSt = sedifApi.getContent(URL_SEDIF_AUTHENTICATE);
+        resultSt = sedifApi.getContent(SedifHttpApi.URL_SEDIF_AUTHENTICATE);
         appCtx = sedifApi.extractAuraContext(resultSt);
 
         if (appCtx == null) {
             throw new SedifException("Unable to find app context in login process");
         } else {
             logger.debug("Account {}: Successfully retrieved context", lcConfig.username);
+            sedifApi.setAppContext(appCtx);
         }
 
         // =====================================================================
@@ -224,11 +207,14 @@ public class BridgeSedifWebHandler extends BaseBridgeHandler {
         // =====================================================================
         // Step 4: Get contract page
         // =====================================================================
-        resultSt = sedifApi.getContent(URL_SEDIF_CONTRAT);
+        resultSt = sedifApi.getContent(SedifHttpApi.URL_SEDIF_CONTRAT);
         appCtx = sedifApi.extractAuraContext(resultSt);
 
         if (appCtx == null) {
             throw new SedifException("Unable to find app context in login process");
+        } else {
+            logger.debug("Successfully retrieved contract context");
+            sedifApi.setAppContext(appCtx);
         }
 
         // =====================================================================
@@ -244,6 +230,9 @@ public class BridgeSedifWebHandler extends BaseBridgeHandler {
 
         if (token == null) {
             throw new SedifException("Unable to find token in login process");
+        } else {
+            logger.debug("Account {}: Successfully asquire token");
+            sedifApi.setToken(token);
         }
 
         // =====================================================================
@@ -265,30 +254,6 @@ public class BridgeSedifWebHandler extends BaseBridgeHandler {
 
     public boolean isConnected() {
         return connected;
-    }
-
-    public String getUrlSedifSite() {
-        return URL_SEDIF_SITE;
-    }
-
-    public String getUrlSedifAuth() {
-        return URL_SEDIF_AUTHENTICATE_POST;
-    }
-
-    public DateTimeFormatter getApiDateFormat() {
-        return API_DATE_FORMAT;
-    }
-
-    public DateTimeFormatter getApiDateFormatYearsFirst() {
-        return API_DATE_FORMAT_YEAR_FIRST;
-    }
-
-    public @Nullable String getToken() {
-        return token;
-    }
-
-    public @Nullable AuraContext getAppCtx() {
-        return appCtx;
     }
 
     public SedifHttpApi getSedifApi() {

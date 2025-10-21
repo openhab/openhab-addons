@@ -90,10 +90,9 @@ public class ThingSedifHandler extends BaseThingHandler {
 
     private String contractName;
     private String contractId;
-    private String meterIdA;
-    private String meterIdB;
-    private String idPds;
     private String numCompteur;
+
+    private @Nullable CompteInfo currentMeterInfo;
 
     private @Nullable SedifState sedifState;
 
@@ -110,9 +109,6 @@ public class ThingSedifHandler extends BaseThingHandler {
 
         contractName = "";
         contractId = "";
-        meterIdA = "";
-        meterIdB = "";
-        idPds = "";
         numCompteur = "";
 
         this.gson = gson;
@@ -323,13 +319,11 @@ public class ThingSedifHandler extends BaseThingHandler {
 
             for (CompteInfo compteInfo : values.compteInfo) {
                 if (compteInfo.numCompteur.equals(numCompteur)) {
-                    meterIdA = compteInfo.eLma;
-                    meterIdB = compteInfo.eLmb;
-                    idPds = compteInfo.idPds;
+                    currentMeterInfo = compteInfo;
                 }
             }
 
-            if (meterIdA.isBlank()) {
+            if (currentMeterInfo == null || currentMeterInfo.eLma.isBlank()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         String.format("Can't find meter for meterId {}", numCompteur));
                 return;
@@ -553,7 +547,7 @@ public class ThingSedifHandler extends BaseThingHandler {
         SedifHttpApi api = this.sedifApi;
         if (api != null) {
             try {
-                MeterReading meterReading = api.getConsumptionData(this, from, to);
+                MeterReading meterReading = api.getConsumptionData(contractId, currentMeterInfo, from, to);
                 return meterReading;
             } catch (Exception e) {
                 logger.debug("Exception when getting consumption data for : {}", e.getMessage(), e);
@@ -672,18 +666,6 @@ public class ThingSedifHandler extends BaseThingHandler {
 
     public String getContractId() {
         return contractId;
-    }
-
-    public String getMeterIdA() {
-        return meterIdA;
-    }
-
-    public String getMeterIdB() {
-        return meterIdB;
-    }
-
-    public String getIdPds() {
-        return idPds;
     }
 
     public String getNumCompteur() {
