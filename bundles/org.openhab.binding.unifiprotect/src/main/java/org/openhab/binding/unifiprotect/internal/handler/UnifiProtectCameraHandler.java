@@ -245,7 +245,7 @@ public class UnifiProtectCameraHandler extends UnifiProtectAbstractDeviceHandler
         if (event.type == null) {
             return;
         }
-
+        OpenClosedType contactState = eventType == WSEventType.ADD ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
         switch (event.type) {
             case CAMERA_MOTION:
                 maybeUpdateSnapshot(UnifiProtectBindingConstants.CHANNEL_MOTION_SNAPSHOT, eventType, Sequence.BEFORE);
@@ -254,8 +254,7 @@ public class UnifiProtectCameraHandler extends UnifiProtectAbstractDeviceHandler
                     String channelId = eventType == WSEventType.ADD ? UnifiProtectBindingConstants.CHANNEL_MOTION_START
                             : UnifiProtectBindingConstants.CHANNEL_MOTION_UPDATE;
                     triggerChannel(new ChannelUID(thing.getUID(), channelId));
-                    updateState(UnifiProtectBindingConstants.CHANNEL_MOTION_CONTACT,
-                            eventType == WSEventType.ADD ? OnOffType.OFF : OnOffType.ON);
+                    updateState(UnifiProtectBindingConstants.CHANNEL_MOTION_CONTACT, contactState);
                 }
                 maybeUpdateSnapshot(UnifiProtectBindingConstants.CHANNEL_MOTION_SNAPSHOT, eventType, Sequence.AFTER);
                 break;
@@ -269,8 +268,7 @@ public class UnifiProtectCameraHandler extends UnifiProtectAbstractDeviceHandler
                             : UnifiProtectBindingConstants.CHANNEL_SMART_DETECT_AUDIO_UPDATE;
                     if (hasChannel(channelId)) {
                         triggerChannel(channelId, e.smartDetectTypes);
-                        updateState(UnifiProtectBindingConstants.CHANNEL_SMART_DETECT_AUDIO_CONTACT,
-                                eventType == WSEventType.ADD ? OnOffType.OFF : OnOffType.ON);
+                        updateState(UnifiProtectBindingConstants.CHANNEL_SMART_DETECT_AUDIO_CONTACT, contactState);
                     }
                     maybeUpdateSnapshot(UnifiProtectBindingConstants.CHANNEL_SMART_DETECT_AUDIO_SNAPSHOT, eventType,
                             Sequence.AFTER);
@@ -286,8 +284,7 @@ public class UnifiProtectCameraHandler extends UnifiProtectAbstractDeviceHandler
                             : UnifiProtectBindingConstants.CHANNEL_SMART_DETECT_ZONE_UPDATE;
                     if (hasChannel(channelId)) {
                         triggerChannel(channelId, e.smartDetectTypes);
-                        updateState(UnifiProtectBindingConstants.CHANNEL_SMART_DETECT_ZONE_CONTACT,
-                                eventType == WSEventType.ADD ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
+                        updateState(UnifiProtectBindingConstants.CHANNEL_SMART_DETECT_ZONE_CONTACT, contactState);
                     }
                     maybeUpdateSnapshot(UnifiProtectBindingConstants.CHANNEL_SMART_DETECT_ZONE_SNAPSHOT, eventType,
                             Sequence.AFTER);
@@ -303,8 +300,7 @@ public class UnifiProtectCameraHandler extends UnifiProtectAbstractDeviceHandler
                             : UnifiProtectBindingConstants.CHANNEL_SMART_DETECT_LINE_UPDATE;
                     if (hasChannel(channelId)) {
                         triggerChannel(channelId, e.smartDetectTypes);
-                        updateState(UnifiProtectBindingConstants.CHANNEL_SMART_DETECT_LINE_CONTACT,
-                                eventType == WSEventType.ADD ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
+                        updateState(UnifiProtectBindingConstants.CHANNEL_SMART_DETECT_LINE_CONTACT, contactState);
                     }
                     maybeUpdateSnapshot(UnifiProtectBindingConstants.CHANNEL_SMART_DETECT_LINE_SNAPSHOT, eventType,
                             Sequence.AFTER);
@@ -320,8 +316,7 @@ public class UnifiProtectCameraHandler extends UnifiProtectAbstractDeviceHandler
                             : UnifiProtectBindingConstants.CHANNEL_SMART_DETECT_LOITER_UPDATE;
                     if (hasChannel(channelId)) {
                         triggerChannel(channelId, e.smartDetectTypes);
-                        updateState(UnifiProtectBindingConstants.CHANNEL_SMART_DETECT_LOITER_CONTACT,
-                                eventType == WSEventType.ADD ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
+                        updateState(UnifiProtectBindingConstants.CHANNEL_SMART_DETECT_LOITER_CONTACT, contactState);
                     }
                     maybeUpdateSnapshot(UnifiProtectBindingConstants.CHANNEL_SMART_DETECT_LOITER_SNAPSHOT, eventType,
                             Sequence.AFTER);
@@ -332,13 +327,11 @@ public class UnifiProtectCameraHandler extends UnifiProtectAbstractDeviceHandler
                     maybeUpdateSnapshot(UnifiProtectBindingConstants.CHANNEL_RING_SNAPSHOT, null, Sequence.BEFORE);
                     triggerChannel(new ChannelUID(thing.getUID(), UnifiProtectBindingConstants.CHANNEL_RING),
                             event.end == null ? "PRESSED" : "RELEASED");
-                    updateState(UnifiProtectBindingConstants.CHANNEL_RING_CONTACT,
-                            eventType == WSEventType.ADD ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
+                    updateState(UnifiProtectBindingConstants.CHANNEL_RING_CONTACT, contactState);
                     maybeUpdateSnapshot(UnifiProtectBindingConstants.CHANNEL_RING_SNAPSHOT, null, Sequence.BEFORE);
 
                 }
                 break;
-
             default:
                 // ignore other event types in camera handler
                 break;
