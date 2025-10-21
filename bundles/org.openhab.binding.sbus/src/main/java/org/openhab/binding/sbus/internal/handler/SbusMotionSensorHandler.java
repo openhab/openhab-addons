@@ -151,11 +151,6 @@ public class SbusMotionSensorHandler extends AbstractSbusHandler {
                 updateChannelStatesFromReport(report);
                 updateStatus(ThingStatus.ONLINE);
                 logger.debug("Processed async motion sensor status report for handler {}", getThing().getUID());
-                // } else if (response instanceof ReadNineInOneStatusResponse statusResponse) {
-                // // Process 9-in-1 status response (0xDB01)
-                // updateChannelStatesFromResponse(statusResponse);
-                // updateStatus(ThingStatus.ONLINE);
-                // logger.debug("Processed async 9-in-1 status response for handler {}", getThing().getUID());
             }
         } catch (IllegalStateException | IllegalArgumentException e) {
             logger.warn("Error processing async message in motion sensor handler {}: {}", getThing().getUID(),

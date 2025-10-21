@@ -382,7 +382,7 @@
 	</channel-type>
 
 	<channel-type id="lux-channel">
-		<item-type>Number</item-type>
+		<item-type>Number:Illuminance</item-type>
 		<label>Light Level</label>
 		<description>Light level in LUX units</description>
 		<category>Sun</category>
@@ -390,7 +390,7 @@
 			<tag>Measurement</tag>
 			<tag>Light</tag>
 		</tags>
-		<state readOnly="true" pattern="%.0f lux"/>
+		<state readOnly="true" pattern="%.0f %unit%"/>
 		<config-description>
 			<parameter name="channelNumber" type="integer">
 				<label>Channel Number</label>
