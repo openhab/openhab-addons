@@ -195,6 +195,25 @@ public class ZwaveJSTypeGeneratorTest {
     }
 
     @Test
+    public void testGenCTNode12TimeOutType() throws IOException {
+        Channel channel = getChannel("store_4.json", 12, "protection-timeout");
+        ChannelType type = channelTypeProvider.getChannelType(Objects.requireNonNull(channel.getChannelTypeUID()),
+                null);
+        Configuration configuration = channel.getConfiguration();
+
+        assertNotNull(type);
+        assertEquals("zwavejs:test-bridge:test-thing:protection-timeout", channel.getUID().getAsString());
+        assertEquals("Number:Time", Objects.requireNonNull(type).getItemType());
+        assertEquals("RF Protection Timeout", channel.getLabel());
+        assertNotNull(configuration.get(BindingConstants.CONFIG_CHANNEL_WRITE_PROPERTY_STR));
+
+        StateDescription statePattern = type.getState();
+        assertNotNull(statePattern);
+        assertNull(statePattern.getStep());
+        assertEquals("%d %unit%", statePattern.getPattern());
+    }
+
+    @Test
     public void testGenCTNode13MultilevelSwitchType() throws IOException {
         Channel channel = getChannel("store_4.json", 13, "multilevel-switch-value");
         ChannelType type = channelTypeProvider.getChannelType(Objects.requireNonNull(channel.getChannelTypeUID()),
