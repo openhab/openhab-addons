@@ -56,6 +56,7 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
@@ -101,7 +102,6 @@ public class ThingSedifHandler extends BaseThingHandler {
 
     protected final Gson gson;
 
-    private @Nullable ScheduledFuture<?> pollingJob = null;
     protected SedifConfiguration config;
 
     public ThingSedifHandler(Thing thing, LocaleProvider localeProvider, TimeZoneProvider timeZoneProvider, Gson gson) {
@@ -139,11 +139,6 @@ public class ThingSedifHandler extends BaseThingHandler {
 
     @Override
     public synchronized void initialize() {
-        Bridge bridge = getBridge();
-        if (bridge == null) {
-            return;
-        }
-
         loadSedifState();
         if (sedifState.getLastIndexDate() == null) {
             sedifState.setLastIndexDate(LocalDate.of(1980, 1, 1));
@@ -156,8 +151,7 @@ public class ThingSedifHandler extends BaseThingHandler {
         if (config.seemsValid()) {
             contractName = config.contractId;
             numCompteur = config.meterId;
-
-            pollingJob = scheduler.schedule(this::pollingCode, 5, TimeUnit.SECONDS);
+            updateStatus(ThingStatus.UNKNOWN);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.config-error-mandatory-settings");
@@ -221,20 +215,18 @@ public class ThingSedifHandler extends BaseThingHandler {
         }
     }
 
-    @Override
-    public void dispose() {
-        logger.debug("Disposing the Sedif handler {}", numCompteur);
+    public void cancelRefreshJob() {
         ScheduledFuture<?> job = this.refreshJob;
         if (job != null && !job.isCancelled()) {
             job.cancel(true);
             refreshJob = null;
         }
+    }
 
-        ScheduledFuture<?> lcPollingJob = pollingJob;
-        if (lcPollingJob != null) {
-            lcPollingJob.cancel(true);
-            pollingJob = null;
-        }
+    @Override
+    public void dispose() {
+        logger.debug("Disposing the Sedif handler {}", numCompteur);
+        cancelRefreshJob();
         sedifApi = null;
     }
 
@@ -563,68 +555,42 @@ public class ThingSedifHandler extends BaseThingHandler {
         super.updateStatus(status, statusDetail, description);
     }
 
-    private void pollingCode() {
-        try {
-            Bridge bridge = getBridge();
-            if (bridge == null) {
-                return;
+    @Override
+    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
+        if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE) {
+            setupRefreshJob();
+        }
+    }
+
+    private void setupRefreshJob() {
+        Bridge bridge = getBridge();
+        if (bridge == null) {
+            return;
+        }
+
+        if (bridge.getHandler() instanceof BridgeSedifWebHandler bridgeHandler) {
+            Contract contract = bridgeHandler.getContract(contractName);
+            if (contract != null) {
+                contractId = Objects.requireNonNull(contract.id);
             }
 
-            if (bridge.getHandler() instanceof BridgeSedifWebHandler bridgeHandler) {
-                int idx = 0;
-                while (bridge.getStatus() != ThingStatus.ONLINE && idx < 5) {
-                    idx++;
-                    try {
-                        Thread.sleep(2000);
-                    } catch (InterruptedException ex) {
-                    }
-                }
+            sedifApi = bridgeHandler.getSedifApi();
+            if (sedifApi != null) {
+                updateData();
 
-                if (bridge.getStatus() != ThingStatus.ONLINE) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
-                            "Bridge take too much time to initialize");
-                    return;
-                }
+                final LocalDateTime now = LocalDateTime.now();
+                final LocalDateTime nextDayFirstTimeUpdate = now.plusDays(1).withHour(REFRESH_HOUR_OF_DAY)
+                        .withMinute(REFRESH_MINUTE_OF_DAY).truncatedTo(ChronoUnit.MINUTES);
 
-                updateStatus(ThingStatus.ONLINE);
+                cancelRefreshJob();
+                refreshJob = scheduler.scheduleWithFixedDelay(this::updateData,
+                        ChronoUnit.MINUTES.between(now, nextDayFirstTimeUpdate) % REFRESH_INTERVAL_IN_MIN + 1,
+                        REFRESH_INTERVAL_IN_MIN, TimeUnit.MINUTES);
 
-                Contract contract = bridgeHandler.getContract(contractName);
-                if (contract != null) {
-                    contractId = Objects.requireNonNull(contract.id);
-                }
-                sedifApi = bridgeHandler.getSedifApi();
-
-                SedifHttpApi api = this.sedifApi;
-
-                if (api != null) {
-                    ScheduledFuture<?> lcPollingJob = pollingJob;
-
-                    if (!bridgeHandler.isConnected()) {
-                        bridgeHandler.connectionInit();
-                    }
-
-                    updateData();
-
-                    final LocalDateTime now = LocalDateTime.now();
-                    final LocalDateTime nextDayFirstTimeUpdate = now.plusDays(1).withHour(REFRESH_HOUR_OF_DAY)
-                            .withMinute(REFRESH_MINUTE_OF_DAY).truncatedTo(ChronoUnit.MINUTES);
-
-                    if (this.getThing().getStatusInfo().getStatusDetail() != ThingStatusDetail.COMMUNICATION_ERROR) {
-                        updateStatus(ThingStatus.ONLINE);
-                    }
-
-                    if (lcPollingJob != null) {
-                        lcPollingJob.cancel(false);
-                        pollingJob = null;
-                    }
-
-                    refreshJob = scheduler.scheduleWithFixedDelay(this::updateData,
-                            ChronoUnit.MINUTES.between(now, nextDayFirstTimeUpdate) % REFRESH_INTERVAL_IN_MIN + 1,
-                            REFRESH_INTERVAL_IN_MIN, TimeUnit.MINUTES);
+                if (this.getThing().getStatusInfo().getStatusDetail() != ThingStatusDetail.COMMUNICATION_ERROR) {
+                    updateStatus(ThingStatus.ONLINE);
                 }
             }
-        } catch (SedifException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 
