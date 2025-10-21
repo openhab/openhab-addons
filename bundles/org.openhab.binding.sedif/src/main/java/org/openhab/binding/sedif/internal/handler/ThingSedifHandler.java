@@ -130,6 +130,8 @@ public class ThingSedifHandler extends BaseThingHandler {
                         }
                         return meterReading;
                     } catch (SedifException ex) {
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                                ex.getMessage());
                         return null;
                     }
                 });
@@ -553,6 +555,9 @@ public class ThingSedifHandler extends BaseThingHandler {
     @Override
     protected void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
         super.updateStatus(status, statusDetail, description);
+        if (getBridge().getStatus() == ThingStatus.ONLINE && status == ThingStatus.UNKNOWN) {
+            setupRefreshJob();
+        }
     }
 
     @Override
