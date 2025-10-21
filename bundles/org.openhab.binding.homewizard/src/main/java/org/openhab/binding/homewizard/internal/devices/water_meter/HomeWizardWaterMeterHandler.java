@@ -18,9 +18,7 @@ import org.openhab.binding.homewizard.internal.devices.HomeWizardDeviceHandler;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
-import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
-import org.openhab.core.types.Command;
 
 /**
  * The {@link HomeWizardWaterMeterHandler} implements functionality to handle a HomeWizard Watermeter.
@@ -44,19 +42,12 @@ public class HomeWizardWaterMeterHandler extends HomeWizardDeviceHandler {
     }
 
     /**
-     * Not listening to any commands.
-     */
-    @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
-    }
-
-    /**
      * Device specific handling of the returned data.
      *
      * @param payload The data obtained form the API call
      */
     @Override
-    protected void handleDataPayload(String data) {
+    protected void handleMeasurementData(String data) {
         var payload = gson.fromJson(data, HomeWizardWaterMeterMeasurementPayload.class);
         if (payload != null) {
             if (!thing.getThingTypeUID().equals(HomeWizardBindingConstants.THING_TYPE_WATERMETER)) {
