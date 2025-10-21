@@ -18,9 +18,9 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.unifiprotect.internal.api.UniFiProtectApiClient;
-import org.openhab.binding.unifiprotect.internal.dto.Camera;
-import org.openhab.binding.unifiprotect.internal.dto.Light;
-import org.openhab.binding.unifiprotect.internal.dto.Sensor;
+import org.openhab.binding.unifiprotect.internal.api.dto.Camera;
+import org.openhab.binding.unifiprotect.internal.api.dto.Light;
+import org.openhab.binding.unifiprotect.internal.api.dto.Sensor;
 import org.openhab.binding.unifiprotect.internal.handler.UnifiProtectNVRHandler;
 import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;

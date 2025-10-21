@@ -197,24 +197,40 @@
 		<item-type>Switch</item-type>
 		<label>Main Light</label>
 		<description>Enable or disable the main floodlight</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Light</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="is-dark">
 		<item-type>Switch</item-type>
 		<label>Is Dark</label>
 		<description>Scene is currently dark</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Illuminance</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="last-motion">
 		<item-type>DateTime</item-type>
 		<label>Last Motion</label>
 		<description>Timestamp of last motion detected</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="light-mode">
 		<item-type>String</item-type>
 		<label>Light Mode</label>
 		<description>When will floodlight turn on</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="always">always</option>
@@ -228,6 +244,10 @@
 		<item-type>String</item-type>
 		<label>Enable At</label>
 		<description>When the lighting mode is relevant</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="fulltime">fulltime</option>
@@ -240,24 +260,40 @@
 		<item-type>Switch</item-type>
 		<label>Status Indicator</label>
 		<description>Enable or disable floodlight status LED indicator</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Light</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="pir-duration">
 		<item-type>Number</item-type>
 		<label>PIR Duration (ms)</label>
 		<description>How long the light stays on after motion (ms)</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Duration</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="pir-sensitivity">
 		<item-type>Number</item-type>
 		<label>PIR Sensitivity</label>
 		<description>PIR motion sensitivity (0-100)</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Level</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="led-level">
 		<item-type>Number</item-type>
 		<label>LED Level</label>
 		<description>Brightness level of the main LED (1-6)</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Brightness</tag>
+		</tags>
 	</channel-type>
 
 	<!-- Sensor channel types -->
@@ -265,36 +301,59 @@
 		<item-type>Number</item-type>
 		<label>Battery</label>
 		<description>Battery charge level (%)</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Level</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="contact">
 		<item-type>Contact</item-type>
 		<label>Contact</label>
 		<description>Contact state (open/closed)</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>OpenState</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="temperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
 		<description>Ambient temperature</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="humidity">
 		<item-type>Number</item-type>
 		<label>Humidity</label>
 		<description>Ambient humidity</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Humidity</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="illuminance">
 		<item-type>Number:Illuminance</item-type>
 		<label>Illuminance</label>
 		<description>Ambient light (Lux)</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Illuminance</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="alarm-contact">
 		<item-type>Contact</item-type>
 		<label>Alarm</label>
 		<description>Smoke or CO alarm state (OPEN = alarming)</description>
+		<tags>
+			<tag>Alarm</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="alarm" advanced="true">
@@ -313,6 +372,10 @@
 		<item-type>Contact</item-type>
 		<label>Water Leak</label>
 		<description>Water leak state (OPEN = leak detected)</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Water</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="water-leak" advanced="true">
@@ -334,6 +397,10 @@
 		<item-type>Contact</item-type>
 		<label>Tamper</label>
 		<description>Tamper state (OPEN = tampering)</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Tampered</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="tamper" advanced="true">
@@ -388,12 +455,20 @@
 		<item-type>Contact</item-type>
 		<label>Doorbell Ring</label>
 		<description>Doorbell ring state (OPEN = doorbell ring detected)</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Presence</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="snapshot">
 		<item-type>Image</item-type>
 		<label>Snapshot</label>
 		<description>Latest camera snapshot image</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<config-description-ref uri="thing-type:unifiprotect:snapshotconfig"/>
 	</channel-type>
 
@@ -401,12 +476,20 @@
 		<item-type>Number</item-type>
 		<label>Microphone Volume</label>
 		<description>Microphone volume (0-100)</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>SoundVolume</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="video-mode">
 		<item-type>String</item-type>
 		<label>Video Mode</label>
 		<description>Current video mode of the camera</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="default">Default</option>
@@ -423,6 +506,10 @@
 		<item-type>String</item-type>
 		<label>HDR Mode</label>
 		<description>High Dynamic Range (HDR) mode</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="auto">Auto</option>
@@ -436,24 +523,40 @@
 		<item-type>Switch</item-type>
 		<label>OSD Name</label>
 		<description>Show the name on the camera OSD</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Info</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="osd-date">
 		<item-type>Switch</item-type>
 		<label>OSD Date</label>
 		<description>Show the date on the camera OSD</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Info</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="osd-logo">
 		<item-type>Switch</item-type>
 		<label>OSD Logo</label>
 		<description>Show the logo on the camera OSD</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Info</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="rtsp-url" advanced="true">
 		<item-type>String</item-type>
 		<label>RTSP Stream URL</label>
 		<description>RTSP stream URL</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -461,6 +564,10 @@
 		<item-type>String</item-type>
 		<label>WebRTC URL</label>
 		<description>WebRTC stream URL</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -468,6 +575,10 @@
 		<item-type>String</item-type>
 		<label>Snapshot URL</label>
 		<description>Snapshot image URL</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -475,12 +586,20 @@
 		<item-type>Switch</item-type>
 		<label>Status LED</label>
 		<description>Enable or disable the camera status LED</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Light</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="active-patrol-slot">
 		<item-type>Number</item-type>
 		<label>Active Patrol Slot</label>
 		<description>Currently active PTZ patrol slot</description>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
 	</channel-type>
 
 	<!-- Triggers (for rules) -->
@@ -494,6 +613,10 @@
 		<item-type>Contact</item-type>
 		<label>Motion</label>
 		<description>Motion state (OPEN = motion detected)</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Motion</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="smart-detect-audio" advanced="true">
@@ -519,6 +642,10 @@
 		<item-type>Contact</item-type>
 		<label>Smart Detect Audio</label>
 		<description>Smart audio detect state (OPEN = smart audio detect detected)</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Noise</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="smart-detect-zone" advanced="true">
@@ -541,6 +668,10 @@
 		<item-type>Contact</item-type>
 		<label>Smart Detect Zone</label>
 		<description>Smart detect zone state (OPEN = smart detect zone detected)</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Presence</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="smart-detect-line" advanced="true">
 		<kind>trigger</kind>
@@ -562,6 +693,10 @@
 		<item-type>Contact</item-type>
 		<label>Smart Detect Line</label>
 		<description>Smart detect line state (OPEN = smart detect line detected)</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Presence</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="smart-detect-loiter" advanced="true">
 		<kind>trigger</kind>
@@ -583,5 +718,9 @@
 		<item-type>Contact</item-type>
 		<label>Smart Detect Loiter</label>
 		<description>Smart detect loiter state (OPEN = smart detect loiter detected)</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Presence</tag>
+		</tags>
 	</channel-type>
 </thing:thing-descriptions>
