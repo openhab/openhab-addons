@@ -36,6 +36,7 @@ import org.openhab.binding.homekit.internal.hap_services.PairSetupClient;
 import org.openhab.binding.homekit.internal.hap_services.PairVerifyClient;
 import org.openhab.binding.homekit.internal.persistence.HomekitKeyStore;
 import org.openhab.binding.homekit.internal.persistence.HomekitTypeProvider;
+import org.openhab.binding.homekit.internal.session.EventCallback;
 import org.openhab.binding.homekit.internal.transport.IpTransport;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -58,7 +59,7 @@ import com.google.gson.Gson;
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler {
+public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler implements EventCallback {
 
     protected static final Gson GSON = new Gson();
 
@@ -89,6 +90,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
+        cancelListening();
         cancelConnectionTask();
         if (!isChildAccessory) {
             try {
@@ -118,7 +120,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler {
                         .collect(Collectors.toMap(a -> a.aid, Function.identity())));
             }
             logger.debug("Fetched {} accessories", accessories.size());
-            scheduler.submit(() -> accessoriesLoaded()); // notify subclass in scheduler thread
+            scheduler.submit(this::accessoriesLoaded); // notify subclass in scheduler thread
         } catch (Exception e) {
             logger.debug("Failed to get accessories", e);
         }
@@ -200,6 +202,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Failed to connect");
                 return;
             }
+            cancelListening();
             cancelConnectionTask();
             startConnectionTask();
         }
@@ -312,7 +315,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler {
             if (task != null) {
                 task.cancel(false);
             }
-            connectionTask = scheduler.schedule(() -> initializePairing(), connectionDelaySeconds, TimeUnit.SECONDS);
+            connectionTask = scheduler.schedule(this::initializePairing, connectionDelaySeconds, TimeUnit.SECONDS);
             connectionDelaySeconds = Math.min(connectionDelaySeconds * connectionDelaySeconds,
                     MAX_CONNECTION_DELAY_SECONDS);
         }
@@ -328,5 +331,38 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler {
         }
         connectionTask = null;
         connectionDelaySeconds = MIN_CONNECTION_DELAY_SECONDS;
+    }
+
+    /**
+     * Starts listening for events and sets the provided callback to handle incoming events.
+     * If this handler is a child of a bridge, it delegates to the bridge handler.
+     *
+     * @param callback the EventCallback to handle incoming events
+     */
+    protected void startListening() {
+        Bridge bridge = getBridge();
+        if (bridge != null && bridge.getHandler() instanceof HomekitBridgeHandler bridgeHandler) {
+            bridgeHandler.startListening();
+        } else {
+            IpTransport ipTransport = this.ipTransport;
+            if (ipTransport != null) {
+                ipTransport.startListening(this);
+            }
+        }
+    }
+
+    /**
+     * Cancels listening for events.
+     */
+    private void cancelListening() {
+        IpTransport ipTransport = this.ipTransport;
+        if (ipTransport != null) {
+            ipTransport.cancelListening();
+        }
+    }
+
+    @Override
+    public void onEvent(byte[][] eventData) {
+        // TODO handle incoming event 3D byte array by forwarding the data the appropriate accessory thing handler(s)
     }
 }

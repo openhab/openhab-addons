@@ -352,7 +352,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
 
             ChannelGroupType channelGroupType = channelGroupTypeRegistry.getChannelGroupType(groupDef.getTypeUID());
             if (channelGroupType == null) {
-                logger.warn("Fata Error: ChannelGroupType {} is not registered", groupDef.getTypeUID());
+                logger.warn("Fatal Error: ChannelGroupType {} is not registered", groupDef.getTypeUID());
             } else {
                 logger.trace("++ChannelGroupType UID:{}, label:{}, category:{}, description:{}",
                         channelGroupType.getUID(), channelGroupType.getLabel(), channelGroupType.getCategory(),
@@ -461,7 +461,12 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
                 writeChannel(channel, command, readerWriter);
             }
         } catch (Exception e) {
-            logger.warn("Failed to send command '{}' to '{}', reconnecting", command, channelUID, e);
+            if (logger.isTraceEnabled()) {
+                logger.trace("Failed to send command '{}' to '{}', reconnecting", command, channelUID, e);
+            } else {
+                logger.debug("Failed to send command '{}' to '{}', reconnecting: {}", command, channelUID,
+                        e.getMessage());
+            }
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
             startConnectionTask();
         }
@@ -535,7 +540,11 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
                     }
                 }
             } catch (Exception e) {
-                logger.warn("Failed to poll accessory state, reconnecting", e);
+                if (logger.isTraceEnabled()) {
+                    logger.trace("Failed to poll accessory state, reconnecting", e);
+                } else {
+                    logger.debug("Failed to poll accessory state, reconnecting: {}", e.getMessage());
+                }
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
                 startConnectionTask();
             }

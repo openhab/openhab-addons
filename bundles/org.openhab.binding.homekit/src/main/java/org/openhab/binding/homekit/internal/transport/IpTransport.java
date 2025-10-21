@@ -30,6 +30,7 @@ import java.util.concurrent.TimeoutException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homekit.internal.session.AsymmetricSessionKeys;
+import org.openhab.binding.homekit.internal.session.EventCallback;
 import org.openhab.binding.homekit.internal.session.HttpPayloadParser;
 import org.openhab.binding.homekit.internal.session.SecureSession;
 import org.slf4j.Logger;
@@ -56,6 +57,8 @@ public class IpTransport implements AutoCloseable {
     private final Socket socket;
 
     private @Nullable SecureSession secureSession = null;
+    private @Nullable EventCallback eventCallback = null;
+    private @Nullable Thread listenerThread = null;
 
     /**
      * Creates a new IpTransport instance with the given socket and session keys.
@@ -238,5 +241,57 @@ public class IpTransport implements AutoCloseable {
     @Override
     public void close() throws Exception {
         socket.close();
+    }
+
+    /**
+     * Listens for incoming events and invokes the registered callback.
+     * This method runs in a loop on a thread, receiving events from the secure session
+     * and passing them to the event callback until the callback is null, the thread is
+     * interrupted, or an error occurs.
+     */
+    private void listenForEvents() {
+        while (!Thread.interrupted()) {
+            EventCallback eventCallback = this.eventCallback;
+            SecureSession secureSession = this.secureSession;
+            if (eventCallback == null || secureSession == null) {
+                break;
+            }
+            try {
+                byte[][] response = secureSession.receive(logger.isTraceEnabled());
+                logger.trace("Event Response:\n{}", new String(response[2], StandardCharsets.ISO_8859_1));
+                eventCallback.onEvent(response);
+            } catch (Exception e) {
+                if (logger.isTraceEnabled()) {
+                    logger.trace("Error while listening for events", e);
+                } else {
+                    logger.debug("Error while listening for events {}", e.getMessage());
+                }
+                break;
+            }
+        }
+    }
+
+    /**
+     * Starts listening for events and registers the provided callback.
+     *
+     * @param callback the callback to invoke on receiving events
+     */
+    public void startListening(EventCallback callback) {
+        eventCallback = callback;
+        Thread listenerThread = new Thread(this::listenForEvents);
+        this.listenerThread = listenerThread;
+        listenerThread.start();
+    }
+
+    /**
+     * Cancels listening for events.
+     */
+    public void cancelListening() {
+        eventCallback = null;
+        Thread listenerThread = this.listenerThread;
+        if (listenerThread != null) {
+            listenerThread.interrupt();
+        }
+        this.listenerThread = null;
     }
 }
