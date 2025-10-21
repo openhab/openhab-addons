@@ -15,7 +15,7 @@ package org.openhab.binding.unifiprotect.internal.api.dto.reference;
 import org.openhab.binding.unifiprotect.internal.api.dto.DeviceReference;
 
 /**
- * Canera reference (id + modelKey).
+ * Camera reference (id + modelKey).
  *
  * @author Dan Cunningham - Initial contribution
  */
