@@ -441,21 +441,24 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
         if (command == RefreshType.REFRESH) {
             return;
         }
-        CharacteristicReadWriteClient writer = this.rwService;
-        if (writer == null) {
-            logger.warn("No writer service available to handle command for '{}'", channelUID);
+        CharacteristicReadWriteClient readerWriter = this.rwService;
+        if (readerWriter == null) {
+            logger.warn("No reader/writer service available to handle command for '{}'", channelUID);
             return;
         }
         try {
             if (command instanceof HSBType) {
                 logger.warn("Forbidden to send command '{}' directly to '{}'", command, channelUID);
-            } else if (command instanceof StopMoveType stopMoveType && StopMoveType.STOP == stopMoveType
-                    && stopMoveChannel instanceof Channel stopMoveChannel) {
-                writeChannel(stopMoveChannel, OnOffType.ON, writer);
+            } else if (command instanceof StopMoveType stopMoveType && StopMoveType.STOP == stopMoveType) {
+                if (stopMoveChannel instanceof Channel stopMoveChannel) {
+                    writeChannel(stopMoveChannel, OnOffType.ON, readerWriter);
+                } else if (readChannel(channel, readerWriter) instanceof Command actualPosition) {
+                    writeChannel(channel, actualPosition, readerWriter);
+                }
             } else if (channelUID.equals(lightModelClientChannel)) {
-                lightModelHandleCommand(command, writer);
+                lightModelHandleCommand(command, readerWriter);
             } else {
-                writeChannel(channel, command, writer);
+                writeChannel(channel, command, readerWriter);
             }
         } catch (Exception e) {
             logger.warn("Failed to send command '{}' to '{}', reconnecting", command, channelUID, e);
@@ -493,8 +496,8 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
      * This method is called periodically by a scheduled executor.
      */
     private void refresh() {
-        CharacteristicReadWriteClient rwService = this.rwService;
-        if (rwService != null) {
+        CharacteristicReadWriteClient reader = this.rwService;
+        if (reader != null) {
             try {
                 Integer aid = getAccessoryId();
                 List<String> queries = new ArrayList<>();
@@ -507,7 +510,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
                 if (queries.isEmpty()) {
                     return;
                 }
-                String jsonResponse = rwService.readCharacteristic(String.join(",", queries));
+                String jsonResponse = reader.readCharacteristic(String.join(",", queries));
                 Service service = GSON.fromJson(jsonResponse, Service.class);
                 if (service != null && service.characteristics instanceof List<Characteristic> characteristics) {
                     for (Channel channel : thing.getChannels()) {
@@ -735,6 +738,33 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
                 }
             }
         }
+    }
+
+    /**
+     * Reads the state of a specific channel by querying the accessory for the characteristic value.
+     *
+     * @param channel the channel to read
+     * @return the current state of the channel, or null if not found
+     * @throws Exception
+     */
+    private synchronized @Nullable State readChannel(Channel channel, CharacteristicReadWriteClient reader)
+            throws Exception {
+        Integer aid = getAccessoryId();
+        String iid = channel.getProperties().get(PROPERTY_IID);
+        if (aid == null || iid == null) {
+            throw new IllegalStateException(
+                    "Missing accessory ID or characteristic IID for channel " + channel.getUID());
+        }
+        String jsonResponse = reader.readCharacteristic("%s.%s".formatted(aid, iid));
+        Service service = GSON.fromJson(jsonResponse, Service.class);
+        if (service != null && service.characteristics instanceof List<Characteristic> characteristics) {
+            for (Characteristic cxx : characteristics) {
+                if (iid.equals(String.valueOf(cxx.iid)) && cxx.value instanceof JsonElement element) {
+                    return convertJsonToState(element, channel);
+                }
+            }
+        }
+        return null;
     }
 
     /**
