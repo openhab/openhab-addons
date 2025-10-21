@@ -213,7 +213,6 @@ public class Characteristic {
                 break;
 
             case BUTTON_EVENT:
-                // TODO trigger channel with numeric enum 1-3
                 isStateChannel = false;
                 break;
 
@@ -436,7 +435,6 @@ public class Characteristic {
                 break;
 
             case INPUT_EVENT:
-                // TODO numeric enum 3 states
                 isStateChannel = false;
                 break;
 

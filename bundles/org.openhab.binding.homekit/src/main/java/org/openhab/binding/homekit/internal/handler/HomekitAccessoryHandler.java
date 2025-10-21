@@ -521,7 +521,11 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
                         } else if (channel.getProperties().get(PROPERTY_IID) instanceof String iid) {
                             for (Characteristic cxx : characteristics) {
                                 if (iid.equals(String.valueOf(cxx.iid)) && cxx.value instanceof JsonElement element) {
-                                    updateState(channelUID, convertJsonToState(element, channel));
+                                    State state = convertJsonToState(element, channel);
+                                    switch (channel.getKind()) {
+                                        case STATE -> updateState(channelUID, state);
+                                        case TRIGGER -> triggerChannel(channelUID, state.toFullString());
+                                    }
                                 }
                             }
                         }
