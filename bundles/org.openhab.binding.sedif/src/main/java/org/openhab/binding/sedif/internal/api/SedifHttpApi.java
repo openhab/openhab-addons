@@ -257,7 +257,10 @@ public class SedifHttpApi {
         return null;
     }
 
-    private String getAuraContextPayload(AuraContext context) {
+    private String getAuraContextPayload(@Nullable AuraContext context) {
+        if (context == null) {
+            return "";
+        }
         return gson.toJson(context);
     }
 
@@ -265,8 +268,9 @@ public class SedifHttpApi {
         Actions actions = new Actions();
         Action action = new Action();
 
-        if (appCtx != null) {
-            String app = appCtx.app;
+        AuraContext lcAppCtx = appCtx;
+        if (lcAppCtx != null) {
+            String app = lcAppCtx.app;
             if (app != null && app.indexOf("login") >= 0) {
                 action.descriptor = "apex://LightningLoginFormController/ACTION$login";
                 action.callingDescriptor = "markup://c:loginForm";
