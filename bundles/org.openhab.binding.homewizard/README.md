@@ -6,8 +6,10 @@ The HomeWizard binding provides access to several HomeWizard devices by using th
 
 There are two important points of attention:
 
-1. For API v1, the local API of each device must be enabled and a fixed address must be configured for the devices.
-1. For API v2, a bearer token needs to be obtained from the device. See <https://api-documentation.homewizard.com/> for instructions how to obtain a token.
+1. For API v1, the local API of each device must be enabled.
+1. For API v2, a bearer token needs to be obtained from the device. 
+
+See <https://api-documentation.homewizard.com/docs/getting-started> for a more detailed description of the API and for instructions how to enable/use the API versions.
 
 
 ### Fixed Address
@@ -51,46 +53,46 @@ For DSMR5 meters this is generally once per second, for older versions the frequ
 
 ## Channels
 
-| Channel ID             | Item Type                 | Description                                                                                | Available                         |
-|------------------------|---------------------------|--------------------------------------------------------------------------------------------|-----------------------------------|
-| power                  | Number:Power              | This channel provides the active usage in Watt.                                            | hwe-p1, hwe-skt, hwe-kwh, hwe-bat |
-| power_l1               | Number:Power              | This channel provides the active usage for phase 1 in Watt.                                | hwe-p1, hwe-kwh                   |
-| power_l2               | Number:Power              | This channel provides the active usage for phase 2 in Watt.                                | hwe-p1, hwe-kwh                   |
-| power_l3               | Number:Power              | This channel provides the active usage for phase 3 in Watt.                                | hwe-p1, hwe-kwh                   |
-| voltage                | Number:ElectricPotential  | This channel provides the active voltage in Volt.                                          | hwe-skt                           |
-| voltage_l1             | Number:ElectricPotential  | This channel provides the active usage for phase 1 in Watt.                                | hwe-p1, hwe-kwh, hwe-bat          |
-| voltage_l2             | Number:ElectricPotential  | This channel provides the active usage for phase 2 in Watt.                                | hwe-p1, hwe-kwh                   |
-| voltage_l3             | Number:ElectricPotential  | This channel provides the active usage for phase 3 in Watt.                                | hwe-p1, hwe-kwh                   |
-| current                | Number:ElectricCurrent    | This channel provides the active current in Ampere.                                        | hwe-skt, hwe-kwh, hwe-bat         |
-| current_l1             | Number:ElectricCurrent    | This channel provides the active current for phase 1 in Ampere.                            | hwe-p1, hwe-kwh                   |
-| current_l2             | Number:ElectricCurrent    | This channel provides the active current for phase 2 in Ampere.                            | hwe-p1, hwe-kwh                   |
-| current_l3             | Number:ElectricCurrent    | This channel provides the active current for phase 3 in Ampere.                            | hwe-p1, hwe-kwh                   |
-| energy_import          | Number:Energy             | This channel provides the total energy usage meter reading in kWh.                         | hwe-p1, hwe-skt, hwe-kwh, hwe-bat |
-| energy_import_t1       | Number:Energy             | This channel provides the energy usage meter reading for tariff 1 in kWh.                  | hwe-p1                            |
-| energy_import_t2       | Number:Energy             | This channel provides the energy usage meter reading for tariff 2 in kWh.                  | hwe-p1                            |
-| energy_export          | Number:Energy             | This channel provides the total energy feed-in meter reading in kWh.                       | hwe-p1, hwe-skt, hwe-kwh, hwe-bat |
-| energy_export_t1       | Number:Energy             | This channel provides the energy feed-in meter reading for tarff 1 in kWh.                 | hwe-p1                            |
-| energy_export_t2       | Number:Energy             | This channel provides the energy feed-in meter reading for tarff 2 in kWh.                 | hwe-p1                            |
-| reactive_power         | Number                    | This channel provides the active reactive power in Volt-Ampere reactive.                   | hwe-p1, hwe-skt, hwe-kwh          |
-| apparent_power         | Number                    | This channel provides the active apparent power in Volt-Ampere.                            | hwe-p1, hwe-skt, hwe-kwh          |
-| power_factor           | Number:Dimensionless      | This channel provides the active power factor.                                             | hwe-p1, hwe-skt, hwe-kwh          |
-| frequency              | Number:Frequency          | This channel provides the active frequency in Hertz.                                       | hwe-p1, hwe-skt, hwe-kwh, hwe-bat |
-| total_gas              | Number:Volume             | This channel provides the most recently reported total imported gas in m^3.                | hwe-p1                            |
-| gas_timestamp          | DateTime                  | This channel provides the time stamp of the total_gas measurement.                         | hwe-p1                            |
-| power_failures         | Number                    | This channel provides the number of power failures detected by meter.                      | hwe-p1                            |
-| long_power_failures    | Number                    | This channel provides the number of 'long' power failures detected by meter.               | hwe-p1                            |
-| power_switch           | Switch                    | This channel provides access to the power switch of the Energy Socket.                     | hwe-skt                           |
-| power_lock             | Switch                    | This channel provides access to the power lock of the Energy Socket.                       | hwe-skt                           |
-| ring_brightness        | Number:Dimensionless      | This channel provides access to the brightness of the ring of the Energy Socket.           | hwe-skt                           |
-| total_liter            | Number:Volume             | This channel provides total water usage in cubic meters.                                   | hwe-wtr                           |
-| active_liter           | Number:VolumetricFlowRate | This channel provides the active water usage in liters per minute.                         | hwe-wtr                           |
-| state_of_charge        | Number:Dimensionless      | This channel provides access to the current state of charge in percent.                    | hwe-bat                           |
-| cycles                 | Number:Dimensionless      | This channel provides access to the number of battery cycles.                              | hwe-bat                           |
-| batteries_mode        | String     | This channel provides the control mode of the Plug-In Battery.                   | hwe-p1                           |
-| batteries_power                 | Number:Power     | This channel provides the current combined power consumption/production of the controlled Plug-In Batteries.                              | hwe-p1                           |
-| batteries_target_power                 | Number:Power     | This channel provides the target power consumption/production of the controlled Plug-In Batteries.                              | hwe-p1                           |
-| batteries_max_consumption                 | Number:Power     | This channel provides the maximum allowed consumption power of the controlled Plug-In Batteries.                             | hwe-p1                           |
-| batteries_max_production                 | Number:Power     | This channel provides the maximum allowed production power of the controlled Plug-In Batteries.                              | hwe-p1                           |
+| Channel ID                | Item Type                 | Description                                                                                                  | Available                         |
+|---------------------------|---------------------------|--------------------------------------------------------------------------------------------------------------|-----------------------------------|
+| power                     | Number:Power              | This channel provides the active usage in Watt.                                                              | hwe-p1, hwe-skt, hwe-kwh, hwe-bat |
+| power_l1                  | Number:Power              | This channel provides the active usage for phase 1 in Watt.                                                  | hwe-p1, hwe-kwh                   |
+| power_l2                  | Number:Power              | This channel provides the active usage for phase 2 in Watt.                                                  | hwe-p1, hwe-kwh                   |
+| power_l3                  | Number:Power              | This channel provides the active usage for phase 3 in Watt.                                                  | hwe-p1, hwe-kwh                   |
+| voltage                   | Number:ElectricPotential  | This channel provides the active voltage in Volt.                                                            | hwe-skt                           |
+| voltage_l1                | Number:ElectricPotential  | This channel provides the active usage for phase 1 in Watt.                                                  | hwe-p1, hwe-kwh, hwe-bat          |
+| voltage_l2                | Number:ElectricPotential  | This channel provides the active usage for phase 2 in Watt.                                                  | hwe-p1, hwe-kwh                   |
+| voltage_l3                | Number:ElectricPotential  | This channel provides the active usage for phase 3 in Watt.                                                  | hwe-p1, hwe-kwh                   |
+| current                   | Number:ElectricCurrent    | This channel provides the active current in Ampere.                                                          | hwe-skt, hwe-kwh, hwe-bat         |
+| current_l1                | Number:ElectricCurrent    | This channel provides the active current for phase 1 in Ampere.                                              | hwe-p1, hwe-kwh                   |
+| current_l2                | Number:ElectricCurrent    | This channel provides the active current for phase 2 in Ampere.                                              | hwe-p1, hwe-kwh                   |
+| current_l3                | Number:ElectricCurrent    | This channel provides the active current for phase 3 in Ampere.                                              | hwe-p1, hwe-kwh                   |
+| energy_import             | Number:Energy             | This channel provides the total energy usage meter reading in kWh.                                           | hwe-p1, hwe-skt, hwe-kwh, hwe-bat |
+| energy_import_t1          | Number:Energy             | This channel provides the energy usage meter reading for tariff 1 in kWh.                                    | hwe-p1                            |
+| energy_import_t2          | Number:Energy             | This channel provides the energy usage meter reading for tariff 2 in kWh.                                    | hwe-p1                            |
+| energy_export             | Number:Energy             | This channel provides the total energy feed-in meter reading in kWh.                                         | hwe-p1, hwe-skt, hwe-kwh, hwe-bat |
+| energy_export_t1          | Number:Energy             | This channel provides the energy feed-in meter reading for tarff 1 in kWh.                                   | hwe-p1                            |
+| energy_export_t2          | Number:Energy             | This channel provides the energy feed-in meter reading for tarff 2 in kWh.                                   | hwe-p1                            |
+| reactive_power            | Number                    | This channel provides the active reactive power in Volt-Ampere reactive.                                     | hwe-p1, hwe-skt, hwe-kwh          |
+| apparent_power            | Number                    | This channel provides the active apparent power in Volt-Ampere.                                              | hwe-p1, hwe-skt, hwe-kwh          |
+| power_factor              | Number:Dimensionless      | This channel provides the active power factor.                                                               | hwe-p1, hwe-skt, hwe-kwh          |
+| frequency                 | Number:Frequency          | This channel provides the active frequency in Hertz.                                                         | hwe-p1, hwe-skt, hwe-kwh, hwe-bat |
+| total_gas                 | Number:Volume             | This channel provides the most recently reported total imported gas in m^3.                                  | hwe-p1                            |
+| gas_timestamp             | DateTime                  | This channel provides the time stamp of the total_gas measurement.                                           | hwe-p1                            |
+| power_failures            | Number                    | This channel provides the number of power failures detected by meter.                                        | hwe-p1                            |
+| long_power_failures       | Number                    | This channel provides the number of 'long' power failures detected by meter.                                 | hwe-p1                            |
+| power_switch              | Switch                    | This channel provides access to the power switch of the Energy Socket.                                       | hwe-skt                           |
+| power_lock                | Switch                    | This channel provides access to the power lock of the Energy Socket.                                         | hwe-skt                           |
+| ring_brightness           | Number:Dimensionless      | This channel provides access to the brightness of the ring of the Energy Socket.                             | hwe-skt                           |
+| total_liter               | Number:Volume             | This channel provides total water usage in cubic meters.                                                     | hwe-wtr                           |
+| active_liter              | Number:VolumetricFlowRate | This channel provides the active water usage in liters per minute.                                           | hwe-wtr                           |
+| state_of_charge           | Number:Dimensionless      | This channel provides access to the current state of charge in percent.                                      | hwe-bat                           |
+| cycles                    | Number:Dimensionless      | This channel provides access to the number of battery cycles.                                                | hwe-bat                           |
+| batteries_mode            | String                    | This channel provides the control mode of the Plug-In Battery.                                               | hwe-p1                            |
+| batteries_power           | Number:Power              | This channel provides the current combined power consumption/production of the controlled Plug-In Batteries. | hwe-p1                            |
+| batteries_target_power    | Number:Power              | This channel provides the target power consumption/production of the controlled Plug-In Batteries.           | hwe-p1                            |
+| batteries_max_consumption | Number:Power              | This channel provides the maximum allowed consumption power of the controlled Plug-In Batteries.             | hwe-p1                            |
+| batteries_max_production  | Number:Power              | This channel provides the maximum allowed production power of the controlled Plug-In Batteries.              | hwe-p1                            |
 
 ## Full Example
 
