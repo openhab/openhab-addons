@@ -42,6 +42,7 @@ import org.openhab.binding.sedif.internal.dto.ContractDetail;
 import org.openhab.binding.sedif.internal.dto.ContractDetail.CompteInfo;
 import org.openhab.binding.sedif.internal.dto.Contracts;
 import org.openhab.binding.sedif.internal.dto.MeterReading;
+import org.openhab.binding.sedif.internal.types.ConnectionFailedException;
 import org.openhab.binding.sedif.internal.types.SedifException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -236,39 +237,27 @@ public class SedifHttpApi {
 
     public <T> T getData(String contractId, @Nullable CompteInfo meterInfo, String url, @Nullable AuraCommand cmd,
             Class<T> clazz) throws SedifException {
-        int numberRetry = 0;
-        SedifException lastException = null;
         logger.debug("getData begin {}: {}", clazz.getName(), url);
 
-        while (numberRetry < 3) {
-            try {
-                String data = getContent(contractId, meterInfo, url, cmd);
+        try {
+            String data = getContent(contractId, meterInfo, url, cmd);
 
-                if (!data.isEmpty()) {
-                    try {
-                        T result = Objects.requireNonNull(gson.fromJson(data, clazz));
-                        logger.debug("getData success {}: {}", clazz.getName(), url);
-                        return result;
-                    } catch (JsonSyntaxException e) {
-                        logger.debug("Invalid JSON response not matching {}: {}", clazz.getName(), data);
-                        throw new SedifException(e, "Requesting '%s' returned an invalid JSON response", url);
-                    }
+            if (!data.isEmpty()) {
+                try {
+                    T result = Objects.requireNonNull(gson.fromJson(data, clazz));
+                    logger.debug("getData success {}: {}", clazz.getName(), url);
+                    return result;
+                } catch (JsonSyntaxException e) {
+                    logger.debug("Invalid JSON response not matching {}: {}", clazz.getName(), data);
+                    throw new SedifException(e, "Requesting '%s' returned an invalid JSON response", url);
                 }
-            } catch (SedifException ex) {
-                lastException = ex;
-
-                logger.debug("getData error {}: {} , retry{}", clazz.getName(), url, numberRetry);
-
-                // try to reinit connection, fail after 3 attemps
-                // @todo : need to handle this differently
-                // bridgeHandler.connectionInit();
             }
-            numberRetry++;
+        } catch (SedifException ex) {
+            logger.debug("getData error {}: {}", clazz.getName(), url);
+            throw new ConnectionFailedException(ex, "Communication with sedif failed");
         }
 
-        logger.debug("getData error {}: {} , maxRetry", clazz.getName(), url);
-
-        throw Objects.requireNonNull(lastException);
+        return null;
     }
 
     public String getAuraContext(String mainApp, String app, String appId, String fwuid) {
