@@ -30,8 +30,6 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ServiceScope;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link ViessmannAccountDiscoveryService} handles discovery of devices as they are identified by the bridge
@@ -42,8 +40,6 @@ import org.slf4j.LoggerFactory;
 @Component(scope = ServiceScope.PROTOTYPE, service = ViessmannAccountDiscoveryService.class)
 @NonNullByDefault
 public class ViessmannAccountDiscoveryService extends AbstractThingHandlerDiscoveryService<ViessmannAccountHandler> {
-
-    private final Logger logger = LoggerFactory.getLogger(ViessmannAccountDiscoveryService.class);
 
     private @Nullable ScheduledFuture<?> scanningJob;
     private @NonNullByDefault({}) ThingUID bridgeUID;
@@ -94,14 +90,13 @@ public class ViessmannAccountDiscoveryService extends AbstractThingHandlerDiscov
         String installationId = String.valueOf(serialToInstallationId.get(serial));
         Map<String, String> serialToGatewayType = thingHandler.getSerialToGatewayType();
         String gatewayType = serialToGatewayType.get(serial);
-        if (installationId != null) {
-            ThingUID uid = new ThingUID(THING_TYPE_GATEWAY, bridgeUID, serial);
-            Map<String, Object> properties = Map.ofEntries(entry(GATEWAY_SERIAL, serial),
-                    entry(INSTALLATION_ID, installationId));
-            String label = "Viessmann Gateway " + gatewayType;
-            DiscoveryResult result = DiscoveryResultBuilder.create(uid).withBridge(bridgeUID).withProperties(properties)
-                    .withRepresentationProperty(GATEWAY_SERIAL).withLabel(label).build();
-            thingDiscovered(result);
-        }
+
+        ThingUID uid = new ThingUID(THING_TYPE_GATEWAY, bridgeUID, serial);
+        Map<String, Object> properties = Map.ofEntries(entry(GATEWAY_SERIAL, serial),
+                entry(INSTALLATION_ID, installationId));
+        String label = "Viessmann Gateway " + gatewayType;
+        DiscoveryResult result = DiscoveryResultBuilder.create(uid).withBridge(bridgeUID).withProperties(properties)
+                .withRepresentationProperty(GATEWAY_SERIAL).withLabel(label).build();
+        thingDiscovered(result);
     }
 }

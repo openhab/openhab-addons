@@ -192,24 +192,30 @@ public class ViessmannBridgeHandler extends BaseBridgeHandler implements BridgeI
                 this.config.installationId, this.config.gatewaySerial, callbackUrl);
         api.createOAuthClientService(this);
 
-        if (api.doAuthorize()) {
-            if (this.config.installationId.isEmpty() || this.config.gatewaySerial.isEmpty()) {
-                api.setInstallationAndGatewayId(this);
-                setConfigInstallationGatewayId();
-            }
+        scheduler.execute(() -> {
+            try {
+                if (api.doAuthorize()) {
+                    if (this.config.installationId.isEmpty() || this.config.gatewaySerial.isEmpty()) {
+                        api.setInstallationAndGatewayId(this);
+                        setConfigInstallationGatewayId();
+                    }
 
-            if (!config.disablePolling && errorChannelsLinked()) {
-                startViessmannErrorsPolling(config.pollingIntervalErrors);
-            }
+                    if (!config.disablePolling && errorChannelsLinked()) {
+                        startViessmannErrorsPolling(config.pollingIntervalErrors);
+                    }
 
-            migrateChannelIds();
+                    migrateChannelIds();
 
-            getAllDevices();
-            if (!devicesList.isEmpty()) {
-                updateBridgeStatus(ThingStatus.ONLINE);
-                startViessmannBridgePolling(getPollingInterval(), 1);
+                    getAllDevices();
+                    if (!devicesList.isEmpty()) {
+                        updateBridgeStatus(ThingStatus.ONLINE);
+                        startViessmannBridgePolling(getPollingInterval(), 1);
+                    }
+                }
+            } catch (Exception e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
-        }
+        });
     }
 
     private void migrateChannelIds() {
@@ -256,27 +262,23 @@ public class ViessmannBridgeHandler extends BaseBridgeHandler implements BridgeI
 
         updateThing(editThing().withChannels(newChannels).build());
 
-        if (linkRegistry != null) {
-            for (Map.Entry<ChannelUID, ChannelUID> e : renameMap.entrySet()) {
-                ChannelUID oldUid = e.getKey();
-                ChannelUID newUid = e.getValue();
+        for (Map.Entry<ChannelUID, ChannelUID> e : renameMap.entrySet()) {
+            ChannelUID oldUid = e.getKey();
+            ChannelUID newUid = e.getValue();
 
-                Collection<ItemChannelLink> links = new ArrayList<>(linkRegistry.getLinks(oldUid));
+            Collection<ItemChannelLink> links = new ArrayList<>(linkRegistry.getLinks(oldUid));
 
-                for (ItemChannelLink link : links) {
-                    String item = link.getItemName();
-                    try {
-                        linkRegistry.remove(link.getUID());
-                    } catch (Exception ex) {
-                        logger.warn("Could not remove old link {} -> {}: {}", item, oldUid, ex.getMessage());
-                    }
-
-                    linkRegistry.add(new ItemChannelLink(item, newUid));
-                    logger.info("Re-linked item '{}' from '{}' to '{}'", item, oldUid.getId(), newUid.getId());
+            for (ItemChannelLink link : links) {
+                String item = link.getItemName();
+                try {
+                    linkRegistry.remove(link.getUID());
+                } catch (Exception ex) {
+                    logger.warn("Could not remove old link {} -> {}: {}", item, oldUid, ex.getMessage());
                 }
+
+                linkRegistry.add(new ItemChannelLink(item, newUid));
+                logger.info("Re-linked item '{}' from '{}' to '{}'", item, oldUid.getId(), newUid.getId());
             }
-        } else {
-            logger.warn("ItemChannelLinkRegistry not available – cannot migrate item links.");
         }
     }
 

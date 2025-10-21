@@ -118,7 +118,10 @@ public class DeviceHandler extends ViessmannThingHandler {
         }
         updateProperty(PROPERTY_ID, config.deviceId); // set representation property used by discovery
 
-        migrateChannelIds();
+        int thingTypeVersion = getThingTypeVersion();
+        if (thingTypeVersion < 4) {
+            migrateChannelIds();
+        }
 
         initDeviceState();
     }
@@ -211,27 +214,23 @@ public class DeviceHandler extends ViessmannThingHandler {
 
         updateThing(editThing().withChannels(newChannels).build());
 
-        if (linkRegistry != null) {
-            for (Map.Entry<ChannelUID, ChannelUID> e : renameMap.entrySet()) {
-                ChannelUID oldUid = e.getKey();
-                ChannelUID newUid = e.getValue();
+        for (Map.Entry<ChannelUID, ChannelUID> e : renameMap.entrySet()) {
+            ChannelUID oldUid = e.getKey();
+            ChannelUID newUid = e.getValue();
 
-                Collection<ItemChannelLink> links = new ArrayList<>(linkRegistry.getLinks(oldUid));
+            Collection<ItemChannelLink> links = new ArrayList<>(linkRegistry.getLinks(oldUid));
 
-                for (ItemChannelLink link : links) {
-                    String item = link.getItemName();
-                    try {
-                        linkRegistry.remove(link.getUID());
-                    } catch (Exception ex) {
-                        logger.warn("Could not remove old link {} -> {}: {}", item, oldUid, ex.getMessage());
-                    }
-
-                    linkRegistry.add(new ItemChannelLink(item, newUid));
-                    logger.info("Re-linked item '{}' from '{}' to '{}'", item, oldUid.getId(), newUid.getId());
+            for (ItemChannelLink link : links) {
+                String item = link.getItemName();
+                try {
+                    linkRegistry.remove(link.getUID());
+                } catch (Exception ex) {
+                    logger.warn("Could not remove old link {} -> {}: {}", item, oldUid, ex.getMessage());
                 }
+
+                linkRegistry.add(new ItemChannelLink(item, newUid));
+                logger.info("Re-linked item '{}' from '{}' to '{}'", item, oldUid.getId(), newUid.getId());
             }
-        } else {
-            logger.warn("ItemChannelLinkRegistry not available – cannot migrate item links.");
         }
     }
 
@@ -265,11 +264,11 @@ public class DeviceHandler extends ViessmannThingHandler {
         this.updateProperty(GATEWAY_SERIAL, gatewaySerial);
     }
 
-    public @NonNullByDefault String getInstallationId() {
+    public String getInstallationId() {
         return Objects.requireNonNull(thing.getProperties().get(INSTALLATION_ID), "Installation ID is missing!");
     }
 
-    public @NonNullByDefault String getGatewaySerial() {
+    public String getGatewaySerial() {
         return Objects.requireNonNull(thing.getProperties().get(GATEWAY_SERIAL), "Gateway serial is missing!");
     }
 
@@ -908,6 +907,10 @@ public class DeviceHandler extends ViessmannThingHandler {
         int dayOfWeek = c.get(Calendar.DAY_OF_WEEK);
 
         ScheduleDTO schedule = GSON.fromJson(scheduleJson, ScheduleDTO.class);
+        if (schedule == null) {
+            logger.warn("Could not create schedule object and determine day.");
+            return OnOffType.OFF;
+        }
         List<DaySchedule> day = schedule.getMon();
         switch (dayOfWeek) {
             case 2:
@@ -1146,6 +1149,21 @@ public class DeviceHandler extends ViessmannThingHandler {
                 ChannelUID channelUID = new ChannelUID(thing.getUID(), msg.getChannelId());
                 setChannelStateDescription(channelUID, stateOptions);
             }
+        }
+    }
+
+    private int getThingTypeVersion() {
+        String versionString = thing.getProperties().get("thingTypeVersion");
+        if (versionString == null) {
+            logger.debug("Thing property 'thingTypeVersion' not set, assuming 0");
+            return 0;
+        }
+
+        try {
+            return Integer.parseInt(versionString);
+        } catch (NumberFormatException e) {
+            logger.debug("Invalid thingTypeVersion '{}', assuming 0", versionString);
+            return 0;
         }
     }
 }

@@ -31,8 +31,6 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ServiceScope;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link ViessmannGatewayDiscoveryService} handles discovery of devices as they are identified by the bridge
@@ -43,8 +41,6 @@ import org.slf4j.LoggerFactory;
 @Component(scope = ServiceScope.PROTOTYPE, service = ViessmannGatewayDiscoveryService.class)
 @NonNullByDefault
 public class ViessmannGatewayDiscoveryService extends AbstractThingHandlerDiscoveryService<ViessmannGatewayHandler> {
-
-    private final Logger logger = LoggerFactory.getLogger(ViessmannGatewayDiscoveryService.class);
 
     private @Nullable ScheduledFuture<?> scanningJob;
     private @NonNullByDefault({}) ThingUID bridgeUID;

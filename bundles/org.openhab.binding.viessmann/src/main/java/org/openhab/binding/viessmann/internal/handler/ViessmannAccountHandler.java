@@ -254,27 +254,23 @@ public class ViessmannAccountHandler extends BaseBridgeHandler implements ApiInt
 
         updateThing(editThing().withChannels(newChannels).build());
 
-        if (linkRegistry != null) {
-            for (Map.Entry<ChannelUID, ChannelUID> e : renameMap.entrySet()) {
-                ChannelUID oldUid = e.getKey();
-                ChannelUID newUid = e.getValue();
+        for (Map.Entry<ChannelUID, ChannelUID> e : renameMap.entrySet()) {
+            ChannelUID oldUid = e.getKey();
+            ChannelUID newUid = e.getValue();
 
-                Collection<ItemChannelLink> links = new ArrayList<>(linkRegistry.getLinks(oldUid));
+            Collection<ItemChannelLink> links = new ArrayList<>(linkRegistry.getLinks(oldUid));
 
-                for (ItemChannelLink link : links) {
-                    String item = link.getItemName();
-                    try {
-                        linkRegistry.remove(link.getUID());
-                    } catch (Exception ex) {
-                        logger.warn("Could not remove old link {} -> {}: {}", item, oldUid, ex.getMessage());
-                    }
-
-                    linkRegistry.add(new ItemChannelLink(item, newUid));
-                    logger.info("Re-linked item '{}' from '{}' to '{}'", item, oldUid.getId(), newUid.getId());
+            for (ItemChannelLink link : links) {
+                String item = link.getItemName();
+                try {
+                    linkRegistry.remove(link.getUID());
+                } catch (Exception ex) {
+                    logger.warn("Could not remove old link {} -> {}: {}", item, oldUid, ex.getMessage());
                 }
+
+                linkRegistry.add(new ItemChannelLink(item, newUid));
+                logger.info("Re-linked item '{}' from '{}' to '{}'", item, oldUid.getId(), newUid.getId());
             }
-        } else {
-            logger.warn("ItemChannelLinkRegistry not available – cannot migrate item links.");
         }
     }
 

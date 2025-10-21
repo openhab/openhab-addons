@@ -336,7 +336,7 @@ public class ViessmannAuth {
 
                 updateBridgeStatusApiKey();
             } else {
-                logger.error("ExecutionException cause: {}", cause.toString(), cause);
+                logger.error("ExecutionException cause: {}", cause == null ? "null" : cause.toString(), cause);
             }
         } catch (InterruptedException e) {
             logger.debug("InterruptedException on call to Viessmann authorization API: {}", e.getMessage());

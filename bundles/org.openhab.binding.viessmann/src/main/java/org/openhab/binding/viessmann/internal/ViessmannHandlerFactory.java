@@ -127,6 +127,7 @@ public class ViessmannHandlerFactory extends BaseThingHandlerFactory {
     }
 
     private @Nullable String createCallbackUrl() {
+        String callbackUrl = this.callbackUrl;
         if (callbackUrl != null && !callbackUrl.isBlank()) {
             return callbackUrl;
         } else {

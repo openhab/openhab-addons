@@ -165,10 +165,17 @@ public class ViessmannGatewayHandler extends BaseBridgeHandler implements Bridge
             startViessmannErrorsPolling(config.pollingIntervalErrors);
         }
 
-        getAllDevices();
-        if (!devicesList.isEmpty()) {
-            updateBridgeStatus(ThingStatus.ONLINE);
-        }
+        scheduler.execute(() -> {
+            try {
+                getAllDevices();
+                if (!devicesList.isEmpty()) {
+                    updateBridgeStatus(ThingStatus.ONLINE);
+                }
+            } catch (Exception e) {
+                logger.error("Failed to initialize Viessmann Gateway", e);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            }
+        });
     }
 
     private void migrateChannelIds() {
