@@ -66,7 +66,7 @@ Bridged endpoints will be added to the inbox once the parent Node is added as a 
 
 The pairing action can be found in the settings of the "Controller" thing under the "Actions" -> "Pair Matter Device"
 
-<img src="doc/pairing.png" alt="Matter Pairing" width="600"/>
+<img src="./doc/pairing.png" alt="Matter Pairing" width="600"/>
 
 This action will give feedback on the pairing process, if successful a device will be added to the Inbox.
 
@@ -74,7 +74,7 @@ See [Device Pairing: Code Types](#device-pairing-code-types) for more informatio
 
 The same codes can also be used in the openHAB Thing discovery UI, although feedback is limited and only a single controller is supported.  
 
-<img src="doc/thing-discovery.png" alt="Thing Discovery" width="600"/>
+<img src="./doc/thing-discovery.png" alt="Thing Discovery" width="600"/>
 
 ### Device Pairing: Code Types
 
@@ -375,7 +375,7 @@ There are two ways in which to configure the Matter bridge:
 1. Using the "Matter Bridge Configuration" settings page (Main UI -> Settings -> Add-on Settings -> Matter Binding) for bridge status, general configuration and pairing 3rd party clients.
 1. Adding Matter metadata tags to Groups and Items either through the Main UI or through item files.
 
-<img src="doc/bridge-settings.png" alt="Bridge Settings" width="500"/>
+<img src="./doc/bridge-settings.png" alt="Bridge Settings" width="500"/>
 
 The openHAB matter bridge uses metadata tags with the key "matter", similar to the Alexa, Google Assistant and Apple Homekit integrations.
 Matter Metadata tag values generally follow the Matter "Device Type" and "Cluster" specification as much as possible.
@@ -412,7 +412,7 @@ Pairing codes and other options can be found in the MainUI under "Settings -> Ad
 
 When the matter bridge starts, if no 3rd party clients are paired, it will automatically open the "Commissioning Window", meaning you can use the QR code or manual pair code found in the bridge settings page to pair a new client like Alexa, Google Home or Apple Home.
 
-<img src="doc/bridge-settings-pair.png" alt="Commissioning Window" width="500"/>
+<img src="./doc/bridge-settings-pair.png" alt="Commissioning Window" width="500"/>
 
 Once a client is paired, the bridge will default to having its "Commissioning Window" closed and can not be paired with until the window is opened again in the settings.
 
