@@ -12,16 +12,25 @@
  */
 package org.openhab.binding.surepetcare.internal.dto;
 
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.google.gson.annotations.SerializedName;
+
 /**
- * The {@link SurePetcarePetStatus} is the Java class used to represent the
+ * The {@link SurePetcarePetDrinking} is the Java class used to represent the
  * status of a pet. It's used to deserialize JSON API results.
  *
  * @author Rene Scherer - Initial contribution
- * @author Holger Eisold - Added pet feeder status
+ * @author Holger Eisold - Added pet feeder status, waterstation
  */
-public class SurePetcarePetStatus {
+public class SurePetcarePetDrinking {
 
-    public SurePetcarePetActivity activity;
-    public SurePetcarePetFeeding feeding;
-    public SurePetcarePetDrinking drinking;
+    public Long tagId;
+    public Long deviceId;
+    @SerializedName("change")
+    public List<Float> drinkChange = new ArrayList<>();
+    @SerializedName("at")
+    public ZonedDateTime drinkChangeAt;
 }

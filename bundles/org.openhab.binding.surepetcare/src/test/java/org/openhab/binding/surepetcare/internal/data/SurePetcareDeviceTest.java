@@ -25,6 +25,7 @@ import org.openhab.binding.surepetcare.internal.dto.SurePetcareDevice;
  * The {@link SurePetcareDeviceTest} class implements unit test case for {@link SurePetcareDevice}
  *
  * @author Rene Scherer - Initial contribution
+ * @author Holger Eisold - Added waterstation
  */
 @NonNullByDefault
 public class SurePetcareDeviceTest {
@@ -118,6 +119,27 @@ public class SurePetcareDeviceTest {
             assertEquals("0.16", response.status.version.rf.firmware);
             assertEquals("MjYxMw==", response.version);
             assertEquals(Integer.valueOf(4), response.status.locking.modeId);
+        } else {
+            fail("GSON returned null");
+        }
+    }
+
+    @Test
+    public void testJsonDeserializePetWaterstation() throws ParseException {
+        String testResponse = "{\"id\":123456,\"parent_device_id\":123456,\"product_id\":8,\"household_id\":12345,\"index\":3,\"name\":\"Pet Waterstation\",\"serial_number\":\"A001-0001234\",\"mac_address\":\"A10B00CDE9F5G123\",\"version\":27311,\"created_at\":\"2020-01-01T13:42:45+00:00\",\"updated_at\":\"2020-01-01T13:42:45+00:00\",\"pairing_at\":\"2020-01-01T13:42:45+00:00\",\"last_new_event_at\":\"2020-01-01T13:42:45+00:00\",\"control\":{\"learn_mode\":false},\"status\":{\"battery\":5.72,\"learn_mode\":false,\"signal\":{\"device_rssi\":-84,\"hub_rssi\":-67},\"version\":{\"device\":{\"hardware\":\"1\",\"firmware\":\"213.562\"}},\"online\":true},\"tags\":[{\"id\":123456,\"device_id\":123456,\"index\":1,\"profile\":2,\"version\":1,\"created_at\":\"2020-01-01T13:42:45+00:00\",\"updated_at\":\"2020-01-01T13:42:45+00:00\"},{\"id\":123456,\"device_id\":123456,\"index\":2,\"profile\":2,\"version\":1,\"created_at\":\"2020-01-01T13:42:45+00:00\",\"updated_at\":\"2020-01-01T13:42:45+00:00\"}]}";
+        SurePetcareDevice response = SurePetcareConstants.GSON.fromJson(testResponse, SurePetcareDevice.class);
+
+        if (response != null) {
+            response.getThingProperties();
+            assertEquals(Long.valueOf(123456), response.id);
+            assertEquals(Integer.valueOf(8), response.productId);
+            assertEquals(Long.valueOf(12345), response.householdId);
+            assertEquals("Pet Waterstation", response.name);
+            assertEquals("A001-0001234", response.serialNumber);
+            assertEquals("A10B00CDE9F5G123", response.macAddress);
+            assertEquals("1", response.status.version.device.hardware);
+            assertEquals("213.562", response.status.version.device.firmware);
+            assertEquals("27311", response.version);
         } else {
             fail("GSON returned null");
         }

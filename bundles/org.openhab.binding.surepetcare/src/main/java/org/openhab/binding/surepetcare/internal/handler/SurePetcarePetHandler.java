@@ -26,6 +26,7 @@ import org.openhab.binding.surepetcare.internal.dto.SurePetcareDevice;
 import org.openhab.binding.surepetcare.internal.dto.SurePetcareHousehold;
 import org.openhab.binding.surepetcare.internal.dto.SurePetcarePet;
 import org.openhab.binding.surepetcare.internal.dto.SurePetcarePetActivity;
+import org.openhab.binding.surepetcare.internal.dto.SurePetcarePetDrinking;
 import org.openhab.binding.surepetcare.internal.dto.SurePetcarePetFeeding;
 import org.openhab.binding.surepetcare.internal.dto.SurePetcareTag;
 import org.openhab.core.cache.ByteArrayFileCache;
@@ -35,7 +36,9 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.RawType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.MetricPrefix;
 import org.openhab.core.library.unit.SIUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
@@ -209,6 +212,18 @@ public class SurePetcarePetHandler extends SurePetcareBaseObjectHandler {
                             }
                         }
                         updateState(PET_CHANNEL_FEEDER_LASTFEEDING, new DateTimeType(feeding.feedChangeAt));
+                    }
+                }
+                SurePetcarePetDrinking drinking = pet.status.drinking;
+                if (drinking != null) {
+                    SurePetcareDevice device = petcareAPI.getDevice(drinking.deviceId.toString());
+                    if (device != null) {
+                        updateState(PET_CHANNEL_WATER_DEVICE, new StringType(device.name));
+                        if (drinking.drinkChange.size() > 0) {
+                            updateState(PET_CHANNEL_WATER_LAST_CHANGE,
+                                    new QuantityType<>(drinking.drinkChange.get(0), MetricPrefix.MILLI(Units.LITRE)));
+                        }
+                        updateState(PET_CHANNEL_WATER_LAST_DRINKING, new DateTimeType(drinking.drinkChangeAt));
                     }
                 }
             } else {
