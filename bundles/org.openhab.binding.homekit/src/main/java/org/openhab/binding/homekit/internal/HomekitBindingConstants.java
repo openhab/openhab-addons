@@ -60,7 +60,6 @@ public class HomekitBindingConstants {
     public static final String PROPERTY_IID = "iid";
     public static final String PROPERTY_FORMAT = "format";
     public static final String PROPERTY_DATA_TYPE = "dataType";
-    public static final String PROPERTY_CHARACTERISTIC_TYPE = "characteristicType";
 
     // HomeKit HTTP URI endpoints and content types
     public static final String ENDPOINT_ACCESSORIES = "/accessories";

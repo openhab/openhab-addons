@@ -57,6 +57,8 @@ import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.DefaultSystemChannelTypeProvider;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.type.ChannelGroupType;
@@ -103,6 +105,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
     private @Nullable ChannelUID lightModelClientChannel = null; // special HSB combined channel
     private final Map<CharacteristicType, Channel> lightModelServerChannels = new HashMap<>();
 
+    private @Nullable Channel stopMoveChannel = null; // channel for the stop button (rollershutters)
     private @Nullable ScheduledFuture<?> refreshTask;
 
     public HomekitAccessoryHandler(Thing thing, HomekitTypeProvider typeProvider,
@@ -166,10 +169,6 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
                 object = openClosed == OpenClosedType.OPEN ? PercentType.HUNDRED : PercentType.ZERO;
             } else if (object instanceof UpDownType upDown) {
                 object = upDown == UpDownType.UP ? PercentType.HUNDRED : PercentType.ZERO;
-            } else if (object instanceof StopMoveType stopMove && stopMove == StopMoveType.STOP) {
-                // TODO handle stop command -- either
-                // a) command POSITION HOLD '6F' characteristic (if existing) or
-                // b) move to the current position
             }
         }
 
@@ -409,6 +408,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
         });
 
         lightModelFinalize(accessory, channels);
+        stopMoveFinalize(accessory, channels);
 
         String oldLabel = thing.getLabel();
         String newLabel = oldLabel == null || oldLabel.isEmpty() ? accessory.getAccessoryInstanceLabel() : null;
@@ -435,7 +435,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         Channel channel = thing.getChannel(channelUID);
         if (channel == null) {
-            logger.warn("Received command for unknown channel: {}", channelUID);
+            logger.warn("Received command for unknown channel '{}'", channelUID);
             return;
         }
         if (command == RefreshType.REFRESH) {
@@ -443,19 +443,24 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
         }
         CharacteristicReadWriteClient writer = this.rwService;
         if (writer == null) {
-            logger.warn("No writer service available to handle command for channel: {}", channelUID);
+            logger.warn("No writer service available to handle command for '{}'", channelUID);
             return;
         }
         try {
-            if (channelUID.equals(lightModelClientChannel)) {
+            if (command instanceof HSBType) {
+                logger.warn("Forbidden to send command '{}' directly to '{}'", command, channelUID);
+            } else if (command instanceof StopMoveType stopMoveType && StopMoveType.STOP == stopMoveType
+                    && stopMoveChannel instanceof Channel stopMoveChannel) {
+                writeChannel(stopMoveChannel, OnOffType.ON, writer);
+            } else if (channelUID.equals(lightModelClientChannel)) {
                 lightModelHandleCommand(command, writer);
-            } else if (!(command instanceof HSBType)) {
-                writeChannel(channel, command, writer);
             } else {
-                logger.warn("Failed to send command '{}' to '{}'", command, channelUID);
+                writeChannel(channel, command, writer);
             }
         } catch (Exception e) {
-            logger.warn("Failed to send command '{}' to '{}'", command, channelUID, e);
+            logger.warn("Failed to send command '{}' to '{}', reconnecting", command, channelUID, e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            startConnectionTask();
         }
     }
 
@@ -476,11 +481,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
 
     @Override
     public void dispose() {
-        ScheduledFuture<?> task = refreshTask;
-        if (task != null) {
-            task.cancel(true);
-        }
-        refreshTask = null;
+        cancelRefreshTask();
         lightModel = null;
         lightModelServerChannels.clear();
         lightModelClientChannel = null;
@@ -527,9 +528,19 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
                     }
                 }
             } catch (Exception e) {
-                logger.warn("Failed to poll accessory state", e);
+                logger.warn("Failed to poll accessory state, reconnecting", e);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                startConnectionTask();
             }
         }
+    }
+
+    private void cancelRefreshTask() {
+        ScheduledFuture<?> task = refreshTask;
+        if (task != null) {
+            task.cancel(true);
+        }
+        refreshTask = null;
     }
 
     private @Nullable StateDescription getStateDescription(Channel channel) {
@@ -677,8 +688,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
         // map characteristic channels to light model
         lightModelServerChannels.clear();
         for (Channel channel : channels) {
-            String iid = channel.getProperties().get(PROPERTY_IID);
-            if (iid != null) {
+            if (channel.getProperties().get(PROPERTY_IID) instanceof String iid) {
                 for (Service service : accessory.services) {
                     for (Characteristic cxx : service.characteristics) {
                         if (iid.equals(String.valueOf(cxx.iid)) && lightModelRelevantCharacteristic(cxx)) {
@@ -702,6 +712,28 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
     }
 
     /**
+     * Initializes the stop/move button channel by searching for a characteristic of type POSITION_HOLD.
+     *
+     * @param accessory the accessory containing the characteristics
+     * @param channels the list of channels to search
+     */
+    private void stopMoveFinalize(Accessory accessory, List<Channel> channels) {
+        for (Channel channel : channels) {
+            if (channel.getProperties().get(PROPERTY_IID) instanceof String iid) {
+                for (Service service : accessory.services) {
+                    for (Characteristic cxx : service.characteristics) {
+                        if (iid.equals(String.valueOf(cxx.iid))
+                                && CharacteristicType.POSITION_HOLD == cxx.getCharacteristicType()) {
+                            stopMoveChannel = channel;
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
      * Writes a command to a specific channel by constructing a Service and embedded Characteristic object.
      *
      * @param channel the channel to which the command is sent
@@ -710,7 +742,8 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
      *
      * @throws Exception
      */
-    private void writeChannel(Channel channel, Command command, CharacteristicReadWriteClient writer) throws Exception {
+    private synchronized void writeChannel(Channel channel, Command command, CharacteristicReadWriteClient writer)
+            throws Exception {
         Integer aid = getAccessoryId();
         String iid = channel.getProperties().get(PROPERTY_IID);
         if (aid == null || iid == null) {
@@ -724,5 +757,11 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
         characteristic.value = commandToJsonPrimitive(command, channel);
         service.characteristics = List.of(characteristic);
         writer.writeCharacteristic(GSON.toJson(service));
+    }
+
+    @Override
+    protected void startConnectionTask() {
+        cancelRefreshTask();
+        super.startConnectionTask();
     }
 }

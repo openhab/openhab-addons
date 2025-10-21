@@ -554,7 +554,6 @@ public class Characteristic {
                 break;
 
             case POSITION_HOLD:
-                // TODO "stop" command for a roller shutter
                 itemType = CoreItemFactory.SWITCH;
                 propertyTag = Property.OPENING;
                 break;
@@ -903,7 +902,6 @@ public class Characteristic {
          * so we create and return a channel definition containing this information.
          */
         Map<String, String> props = new HashMap<>();
-        Optional.ofNullable(type).ifPresent(s -> props.put(PROPERTY_CHARACTERISTIC_TYPE, s));
         Optional.ofNullable(iid).map(v -> v.toString()).ifPresent(s -> props.put(PROPERTY_IID, s));
         Optional.ofNullable(format).ifPresent(s -> props.put(PROPERTY_FORMAT, s));
         Optional.ofNullable(dataType).ifPresent(s -> props.put(PROPERTY_DATA_TYPE, s));

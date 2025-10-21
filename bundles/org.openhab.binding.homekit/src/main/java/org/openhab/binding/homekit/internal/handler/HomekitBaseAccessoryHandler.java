@@ -20,6 +20,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -60,6 +62,9 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler {
 
     protected static final Gson GSON = new Gson();
 
+    private static final int MIN_CONNECTION_DELAY_SECONDS = 2;
+    private static final int MAX_CONNECTION_DELAY_SECONDS = 600;
+
     private final Logger logger = LoggerFactory.getLogger(HomekitBaseAccessoryHandler.class);
 
     protected final Map<Integer, Accessory> accessories = new HashMap<>();
@@ -73,6 +78,9 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler {
     protected @NonNullByDefault({}) Integer accessoryId;
     protected @NonNullByDefault({}) IpTransport ipTransport;
 
+    private int connectionDelaySeconds = MIN_CONNECTION_DELAY_SECONDS;
+    private @Nullable ScheduledFuture<?> connectionTask;
+
     public HomekitBaseAccessoryHandler(Thing thing, HomekitTypeProvider typeProvider, HomekitKeyStore keyStore) {
         super(thing);
         this.typeProvider = typeProvider;
@@ -81,6 +89,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
+        cancelConnectionTask();
         if (!isChildAccessory) {
             try {
                 ipTransport.close();
@@ -191,7 +200,8 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Failed to connect");
                 return;
             }
-            scheduler.execute(() -> initializePairing()); // return fast, do pairing in background thread
+            cancelConnectionTask();
+            startConnectionTask();
         }
     }
 
@@ -199,7 +209,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler {
      * Restores an existing pairing or creates a new one if necessary.
      * Updates the thing status accordingly.
      */
-    private void initializePairing() {
+    private synchronized void initializePairing() {
         Object pairingConfig = getConfig().get(CONFIG_PAIRING_CODE);
         if (pairingConfig == null || !(pairingConfig instanceof String pairingConfigString)
                 || !PAIRING_CODE_PATTERN.matcher(pairingConfigString).matches()) {
@@ -231,6 +241,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler {
                 rwService = new CharacteristicReadWriteClient(ipTransport);
 
                 logger.debug("Restored pairing was verified for {}", thing.getUID());
+                cancelConnectionTask();
                 fetchAccessories();
                 updateStatus(ThingStatus.ONLINE);
 
@@ -259,11 +270,13 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler {
             keyStore.setAccessoryKey(macAddress, accessoryKey);
 
             logger.debug("Pairing and verification completed for {}", thing.getUID());
+            cancelConnectionTask();
             fetchAccessories();
             updateStatus(ThingStatus.ONLINE);
 
         } catch (Exception e) {
             logger.warn("Pairing / verification failed for {}", thing.getUID(), e);
+            startConnectionTask();
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Pairing / verification failed");
         }
     }
@@ -283,5 +296,37 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler {
         }
         // re-format as XXX-XX-XXX
         return String.format("%s-%s-%s", digits.substring(0, 3), digits.substring(3, 5), digits.substring(5, 8));
+    }
+
+    /**
+     * Starts a task to attempt (re) connection.
+     * The delay increases exponentially up to a maximum of 10 minutes.
+     * If this handler is a child of a bridge, it delegates to the bridge handler.
+     */
+    protected void startConnectionTask() {
+        Bridge bridge = getBridge();
+        if (bridge != null && bridge.getHandler() instanceof HomekitBridgeHandler bridgeHandler) {
+            bridgeHandler.startConnectionTask();
+        } else {
+            ScheduledFuture<?> task = connectionTask;
+            if (task != null) {
+                task.cancel(false);
+            }
+            connectionTask = scheduler.schedule(() -> initializePairing(), connectionDelaySeconds, TimeUnit.SECONDS);
+            connectionDelaySeconds = Math.min(connectionDelaySeconds * connectionDelaySeconds,
+                    MAX_CONNECTION_DELAY_SECONDS);
+        }
+    }
+
+    /**
+     * Stops the (re) connect task if it is running. Resets the retry exponent.
+     */
+    private void cancelConnectionTask() {
+        ScheduledFuture<?> task = connectionTask;
+        if (task != null) {
+            task.cancel(false);
+        }
+        connectionTask = null;
+        connectionDelaySeconds = MIN_CONNECTION_DELAY_SECONDS;
     }
 }
