@@ -164,7 +164,8 @@ public class SolarHandler extends BaseThingHandler {
         });
     }
 
-    /** May be used in the future
+    /**
+     * May be used in the future
      * 
      * private short getInt16Value(Command command) throws LambdaException {
      * if (command instanceof QuantityType quantityCommand) {
