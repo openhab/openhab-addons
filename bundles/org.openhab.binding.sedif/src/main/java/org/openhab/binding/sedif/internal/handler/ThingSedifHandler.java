@@ -32,7 +32,6 @@ import java.util.Random;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.sedif.internal.api.ExpiringDayCache;
@@ -134,7 +133,7 @@ public class ThingSedifHandler extends BaseThingHandler {
                         return null;
                     } catch (SedifException ex) {
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                                ExceptionUtils.getRootCauseMessage(ex));
+                                ex.getMessage());
                         return null;
                     }
                 });
@@ -162,7 +161,7 @@ public class ThingSedifHandler extends BaseThingHandler {
                         return null;
                     } catch (SedifException ex) {
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                                ExceptionUtils.getRootCauseMessage(ex));
+                                ex.getMessage());
                         return null;
                     }
                 });
