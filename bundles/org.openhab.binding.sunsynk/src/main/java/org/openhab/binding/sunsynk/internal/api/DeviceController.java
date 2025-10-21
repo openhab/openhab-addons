@@ -78,14 +78,14 @@ public class DeviceController {
     public static final int INVERTERDAYTEMPS = 1 << 3;
     public static final int REALTIMEIN = 1 << 4;
     public static final int PLANTSUMMARY = 1 << 5;
-    public static final Map<String, Integer> statusMap = new HashMap<>();
+    public static final Map<String, Integer> STATUSMAP = new HashMap<>();
     static {
-        statusMap.put("CommonSettings", COMMONSETTINGS);
-        statusMap.put("GridRealTime", GRIDREALTIME);
-        statusMap.put("BatteryRealTime", BATTERYREALTIME);
-        statusMap.put("InverterDayTemps", INVERTERDAYTEMPS);
-        statusMap.put("RealTimeIn", REALTIMEIN);
-        statusMap.put("PlantSummary", PLANTSUMMARY);
+        STATUSMAP.put("CommonSettings", COMMONSETTINGS);
+        STATUSMAP.put("GridRealTime", GRIDREALTIME);
+        STATUSMAP.put("BatteryRealTime", BATTERYREALTIME);
+        STATUSMAP.put("InverterDayTemps", INVERTERDAYTEMPS);
+        STATUSMAP.put("RealTimeIn", REALTIMEIN);
+        STATUSMAP.put("PlantSummary", PLANTSUMMARY);
     }
     public Settings tempInverterChargeSettings = new Settings(); // Holds modified battery settings.
     public PlantSummary plantSummary = new PlantSummary();
@@ -310,7 +310,6 @@ public class DeviceController {
     }
 
     private void sendCommandToSunSynk(String body) throws SunSynkSendCommandException {
-
         try {
             apiPostMethod(makeURL("common/setting/" + this.sn + "/set", ""), body, APIdata.staticAccessToken);
         } catch (IOException e) {

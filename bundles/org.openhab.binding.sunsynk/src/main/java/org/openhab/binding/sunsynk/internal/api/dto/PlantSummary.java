@@ -85,7 +85,6 @@ public class PlantSummary {
     }
 
     public double getEfficiency() {
-
         return getPac() / getCapacity() * 100.0; // Return as a percentage
     }
 
