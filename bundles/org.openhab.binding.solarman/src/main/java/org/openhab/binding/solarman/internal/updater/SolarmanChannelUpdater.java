@@ -36,6 +36,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.solarman.internal.defmodel.Lookup;
 import org.openhab.binding.solarman.internal.defmodel.ParameterItem;
 import org.openhab.binding.solarman.internal.defmodel.Request;
+import org.openhab.binding.solarman.internal.enums.IntegerValueType;
 import org.openhab.binding.solarman.internal.modbus.SolarmanLoggerConnection;
 import org.openhab.binding.solarman.internal.modbus.SolarmanLoggerConnector;
 import org.openhab.binding.solarman.internal.modbus.SolarmanProtocol;
@@ -100,9 +101,9 @@ public class SolarmanChannelUpdater {
             if (readRegistersMap.keySet().containsAll(registers)) {
                 switch (parameterItem.getRule()) {
                     case 1, 3 -> updateChannelWithNumericValue(parameterItem, channelUID, registers, readRegistersMap,
-                            ValueType.UNSIGNED);
+                            IntegerValueType.UNSIGNED);
                     case 2, 4 -> updateChannelWithNumericValue(parameterItem, channelUID, registers, readRegistersMap,
-                            ValueType.SIGNED);
+                            IntegerValueType.SIGNED);
                     case 5 -> updateChannelWithStringValue(channelUID, registers, readRegistersMap);
                     case 6 -> updateChannelWithRawValue(parameterItem, channelUID, registers, readRegistersMap);
                     case 7 -> updateChannelWithVersion(channelUID, registers, readRegistersMap);
@@ -175,7 +176,7 @@ public class SolarmanChannelUpdater {
     }
 
     private void updateChannelWithNumericValue(ParameterItem parameterItem, ChannelUID channelUID,
-            List<Integer> registers, Map<Integer, byte[]> readRegistersMap, ValueType valueType) {
+            List<Integer> registers, Map<Integer, byte[]> readRegistersMap, IntegerValueType valueType) {
         BigInteger value = extractNumericValue(registers, readRegistersMap, valueType);
         BigDecimal convertedValue = convertNumericValue(value, parameterItem.getOffset(), parameterItem.getScale());
         String uom = Objects.requireNonNullElse(parameterItem.getUom(), "");
@@ -229,19 +230,13 @@ public class SolarmanChannelUpdater {
     }
 
     private BigInteger extractNumericValue(List<Integer> registers, Map<Integer, byte[]> readRegistersMap,
-            ValueType valueType) {
-        return reversed(registers)
-                .stream().map(readRegistersMap::get).reduce(
-                        BigInteger.ZERO, (acc,
-                                val) -> acc.shiftLeft(Short.SIZE)
-                                        .add(BigInteger.valueOf(ByteBuffer.wrap(val).getShort()
-                                                & (valueType == ValueType.UNSIGNED ? 0xFFFF : 0xFFFFFFFF))),
-                        BigInteger::add);
-    }
-
-    private enum ValueType {
-        UNSIGNED,
-        SIGNED
+            IntegerValueType valueType) {
+        return reversed(registers).stream().map(readRegistersMap::get).reduce(
+                BigInteger.ZERO, (acc,
+                        val) -> acc.shiftLeft(Short.SIZE)
+                                .add(BigInteger.valueOf(ByteBuffer.wrap(val).getShort()
+                                        & (valueType == IntegerValueType.UNSIGNED ? 0xFFFF : 0xFFFFFFFF))),
+                BigInteger::add);
     }
 
     @FunctionalInterface
