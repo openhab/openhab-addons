@@ -19,8 +19,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -51,9 +51,11 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StopMoveType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.types.UpDownType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.semantics.SemanticTag;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.DefaultSystemChannelTypeProvider;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
@@ -88,14 +90,19 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
 
     private static final int INITIAL_DELAY_SECONDS = 2;
 
-    private static final Set<CharacteristicType> LIGHTING_CHANNELS = Set.of(CharacteristicType.COLOR_TEMPERATURE,
-            CharacteristicType.SATURATION, CharacteristicType.BRIGHTNESS, CharacteristicType.HUE);
-
     private final Logger logger = LoggerFactory.getLogger(HomekitAccessoryHandler.class);
     private final ChannelTypeRegistry channelTypeRegistry;
     private final ChannelGroupTypeRegistry channelGroupTypeRegistry;
 
-    private @Nullable LightModel lightModel;
+    /*
+     * Light model to manage combined light characteristics (hue, saturation, brightness, color temperature).
+     * Used to create a combined HSB channel and handle commands accordingly.
+     * This is only initialized if the accessory has relevant light characteristics.
+     */
+    private @Nullable LightModel lightModel = null;
+    private @Nullable ChannelUID lightModelClientChannel = null; // special HSB combined channel
+    private final Map<CharacteristicType, Channel> lightModelServerChannels = new HashMap<>();
+
     private @Nullable ScheduledFuture<?> refreshTask;
 
     public HomekitAccessoryHandler(Thing thing, HomekitTypeProvider typeProvider,
@@ -147,13 +154,6 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
      */
     private JsonPrimitive commandToJsonPrimitive(Command command, Channel channel) {
         Object object = command;
-
-        // handle HSBType as not directly supported by HomeKit
-        if (object instanceof HSBType) {
-            // TODO special handling => TBD
-            logger.warn("HSBType command handling is not yet implemented for channel {}", channel.getUID());
-        }
-
         StateDescription stateDescription = getStateDescription(channel);
 
         // process Rollershutter commands
@@ -342,6 +342,8 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
             return;
         }
 
+        lightModelInitialize(accessory);
+
         // create the channels and properties
         List<Channel> channels = new ArrayList<>();
         Map<String, String> properties = new HashMap<>(thing.getProperties()); // keep existing properties
@@ -400,18 +402,13 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
                                     channel.getAcceptedItemType(), channel.getDefaultTags(), channel.getDescription(),
                                     channel.getKind(), channel.getLabel(), channel.getProperties(), channel.getUID());
 
-                            // initialise the light model when appropriate
-                            if (channel.getProperties().get(PROPERTY_CHARACTERISTIC_TYPE) instanceof String cxProp
-                                    && Characteristic.getCharacteristicType(
-                                            cxProp) instanceof CharacteristicType characteristicType
-                                    && LIGHTING_CHANNELS.contains(characteristicType)) {
-                                initializeLightModel(characteristicType, channelType);
-                            }
                         }
                     }
                 });
             }
         });
+
+        lightModelFinalize(accessory, channels);
 
         String oldLabel = thing.getLabel();
         String newLabel = oldLabel == null || oldLabel.isEmpty() ? accessory.getAccessoryInstanceLabel() : null;
@@ -434,62 +431,6 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
         }
     }
 
-    /**
-     * Initializes or updates the light model based on the characteristic type and channel type.
-     * Upgrades the light capabilities of the model as necessary when encountering color-related characteristics.
-     *
-     * @param characteristicType the type of characteristic being processed
-     * @param channelType the channel type associated with the characteristic
-     */
-    @SuppressWarnings("incomplete-switch")
-    private void initializeLightModel(CharacteristicType characteristicType, ChannelType channelType) {
-        LightModel lightModel = this.lightModel;
-        if (lightModel == null) {
-            lightModel = new LightModel(LightCapabilities.BRIGHTNESS, RgbDataType.DEFAULT, null, null, null, null, null,
-                    null);
-            this.lightModel = lightModel;
-        }
-
-        LightCapabilities oldCaps = lightModel.configGetLightCapabilities();
-        switch (characteristicType) {
-            // if channel is hue or saturation, upgrade to support color
-            case HUE:
-            case SATURATION:
-                switch (oldCaps) {
-                    case BRIGHTNESS:
-                        LightCapabilities newCaps = LightCapabilities.COLOR;
-                        lightModel.configSetLightCapabilities(newCaps);
-                        break;
-                    case BRIGHTNESS_WITH_COLOR_TEMPERATURE:
-                        newCaps = LightCapabilities.COLOR_WITH_COLOR_TEMPERATURE;
-                        lightModel.configSetLightCapabilities(newCaps);
-                }
-                break;
-
-            // if channel is color temperature, upgrade to support color temperature
-            case COLOR_TEMPERATURE:
-                switch (oldCaps) {
-                    case BRIGHTNESS:
-                        LightCapabilities newCaps = LightCapabilities.BRIGHTNESS_WITH_COLOR_TEMPERATURE;
-                        lightModel.configSetLightCapabilities(newCaps);
-                        break;
-                    case COLOR:
-                        newCaps = LightCapabilities.COLOR_WITH_COLOR_TEMPERATURE;
-                        lightModel.configSetLightCapabilities(newCaps);
-                }
-
-                // set the mirek limits based on the channel's state description
-                StateDescription state = channelType.getState();
-                if (state != null) {
-                    if (state.getMinimum() instanceof BigDecimal min) {
-                        lightModel.configSetMirekControlCoolest(min.doubleValue());
-                    } else if (state.getMaximum() instanceof BigDecimal max) {
-                        lightModel.configSetMirekControlWarmest(max.doubleValue());
-                    }
-                }
-        }
-    }
-
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         Channel channel = thing.getChannel(channelUID);
@@ -506,16 +447,12 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
             return;
         }
         try {
-            Integer aid = getAccessoryId();
-            String iid = channel.getProperties().get(PROPERTY_IID);
-            if (aid != null && iid != null) {
-                Service service = new Service();
-                Characteristic characteristic = new Characteristic();
-                characteristic.aid = aid;
-                characteristic.iid = Integer.parseInt(iid);
-                characteristic.value = commandToJsonPrimitive(command, channel);
-                service.characteristics = List.of(characteristic);
-                writer.writeCharacteristic(GSON.toJson(service));
+            if (channelUID.equals(lightModelClientChannel)) {
+                lightModelHandleCommand(command, writer);
+            } else if (!(command instanceof HSBType)) {
+                writeChannel(channel, command, writer);
+            } else {
+                logger.warn("Failed to send command '{}' to '{}'", command, channelUID);
             }
         } catch (Exception e) {
             logger.warn("Failed to send command '{}' to '{}'", command, channelUID, e);
@@ -544,6 +481,9 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
             task.cancel(true);
         }
         refreshTask = null;
+        lightModel = null;
+        lightModelServerChannels.clear();
+        lightModelClientChannel = null;
         super.dispose();
     }
 
@@ -570,14 +510,18 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
                 Service service = GSON.fromJson(jsonResponse, Service.class);
                 if (service != null && service.characteristics instanceof List<Characteristic> characteristics) {
                     for (Channel channel : thing.getChannels()) {
-                        String iid = channel.getProperties().get(PROPERTY_IID);
-                        if (iid == null) {
-                            continue;
-                        }
-                        for (Characteristic characteristic : characteristics) {
-                            if (iid.equals(String.valueOf(characteristic.iid))
-                                    && characteristic.value instanceof JsonElement element) {
-                                updateState(channel.getUID(), convertJsonToState(element, channel));
+                        ChannelUID channelUID = channel.getUID();
+                        if (channelUID.equals(lightModelClientChannel)) {
+                            for (Characteristic cxx : characteristics) {
+                                if (lightModelRefresh(cxx)) {
+                                    updateState(channelUID, Objects.requireNonNull(lightModel).getHsb());
+                                }
+                            }
+                        } else if (channel.getProperties().get(PROPERTY_IID) instanceof String iid) {
+                            for (Characteristic cxx : characteristics) {
+                                if (iid.equals(String.valueOf(cxx.iid)) && cxx.value instanceof JsonElement element) {
+                                    updateState(channelUID, convertJsonToState(element, channel));
+                                }
                             }
                         }
                     }
@@ -601,5 +545,184 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
             return null;
         }
         return st;
+    }
+
+    /**
+     * Determines if a light model is required for the accessory based on its characteristics.
+     * If the accessory has color or color temperature characteristics, a LightModel is created and configured.
+     *
+     * @param accessory the accessory to check
+     */
+    private void lightModelInitialize(Accessory accessory) {
+        boolean isColor = false;
+        boolean isColorTemp = false;
+        Double minMirek = null;
+        Double maxMirek = null;
+
+        for (Service service : accessory.services) {
+            for (Characteristic cxx : service.characteristics) {
+                CharacteristicType cxxType = cxx.getCharacteristicType();
+                if (CharacteristicType.HUE == cxxType || CharacteristicType.SATURATION == cxxType) {
+                    isColor = true;
+                } else if (CharacteristicType.COLOR_TEMPERATURE == cxxType) {
+                    isColorTemp = true;
+                    maxMirek = cxx.maxValue;
+                    minMirek = cxx.minValue;
+                }
+            }
+        }
+
+        if (!isColor) {
+            return;
+        }
+
+        LightCapabilities caps = isColorTemp ? LightCapabilities.COLOR_WITH_COLOR_TEMPERATURE : LightCapabilities.COLOR;
+        LightModel lightModel = new LightModel(caps, RgbDataType.DEFAULT, null, null, null, null, null, null);
+        if (minMirek != null) {
+            lightModel.configSetMirekControlCoolest(minMirek);
+        }
+        if (maxMirek != null) {
+            lightModel.configSetMirekControlWarmest(maxMirek);
+        }
+        this.lightModel = lightModel;
+    }
+
+    /**
+     * Checks if a characteristic is relevant to the light model.
+     *
+     * @param cxx the characteristic to check
+     * @return true if the characteristic is part of the light model, false otherwise
+     */
+    private boolean lightModelRelevantCharacteristic(Characteristic cxx) {
+        CharacteristicType cxxType = cxx.getCharacteristicType();
+        return CharacteristicType.HUE == cxxType || CharacteristicType.SATURATION == cxxType
+                || CharacteristicType.BRIGHTNESS == cxxType || CharacteristicType.COLOR_TEMPERATURE == cxxType
+                || CharacteristicType.ON == cxxType;
+    }
+
+    /**
+     * Refreshes the light model state based on the updated characteristic value.
+     *
+     * @param cxx the characteristic containing the updated value
+     * @return true if the light model was updated, false otherwise
+     */
+    private boolean lightModelRefresh(Characteristic cxx) {
+        LightModel lightModel = this.lightModel;
+        if (lightModel == null) {
+            throw new IllegalStateException("Light model is not initialized");
+        }
+        boolean changed = false;
+        if (lightModelRelevantCharacteristic(cxx) && cxx.value instanceof JsonPrimitive primitiveValue) {
+            CharacteristicType cxxType = cxx.getCharacteristicType();
+            if (primitiveValue.isNumber()) {
+                changed = true;
+                switch (cxxType) {
+                    case HUE -> lightModel.setHue(primitiveValue.getAsDouble());
+                    case SATURATION -> lightModel.setSaturation(primitiveValue.getAsDouble());
+                    case BRIGHTNESS -> lightModel.setBrightness(primitiveValue.getAsDouble());
+                    case COLOR_TEMPERATURE -> lightModel.setMirek(primitiveValue.getAsDouble());
+                    default -> changed = false;
+                }
+            } else if (primitiveValue.isBoolean()) {
+                changed = true;
+                switch (cxxType) {
+                    case ON -> lightModel.setOnOff(primitiveValue.getAsBoolean());
+                    default -> changed = false;
+                }
+            }
+        }
+        return changed;
+    }
+
+    /**
+     * Sends a command to update the light model based on an HSBType command.
+     *
+     * @param hsbCommand the HSBType command containing hue, saturation, and brightness
+     * @param writer the CharacteristicReadWriteClient to send the command
+     * @throws Exception
+     */
+    private void lightModelHandleCommand(Command command, CharacteristicReadWriteClient writer) throws Exception {
+        LightModel lightModel = this.lightModel;
+        if (lightModel == null) {
+            throw new IllegalStateException("Light model is not initialized");
+        }
+        lightModel.handleCommand(command);
+        if (lightModelServerChannels.get(CharacteristicType.HUE) instanceof Channel channel) {
+            writeChannel(channel, QuantityType.valueOf(lightModel.getHue(), Units.DEGREE_ANGLE), writer);
+        }
+        if (lightModelServerChannels.get(CharacteristicType.SATURATION) instanceof Channel channel) {
+            writeChannel(channel, new PercentType(BigDecimal.valueOf(lightModel.getSaturation())), writer);
+        }
+        if (lightModelServerChannels.get(CharacteristicType.BRIGHTNESS) instanceof Channel channel
+                && lightModel.getBrightness() instanceof PercentType percentType) {
+            writeChannel(channel, percentType, writer);
+        }
+        if (lightModelServerChannels.get(CharacteristicType.ON) instanceof Channel channel
+                && lightModel.getOnOff() instanceof OnOffType onOff) {
+            writeChannel(channel, onOff, writer);
+        }
+    }
+
+    /**
+     * Finalizes the light model channels by mapping the relevant characteristic channels
+     * and creating a combined HSB channel.
+     *
+     * @param accessory the accessory containing the characteristics
+     * @param channels the list of channels to finalize
+     */
+    private void lightModelFinalize(Accessory accessory, List<Channel> channels) {
+        if (lightModel == null) {
+            return;
+        }
+        // map characteristic channels to light model
+        lightModelServerChannels.clear();
+        for (Channel channel : channels) {
+            String iid = channel.getProperties().get(PROPERTY_IID);
+            if (iid != null) {
+                for (Service service : accessory.services) {
+                    for (Characteristic cxx : service.characteristics) {
+                        if (iid.equals(String.valueOf(cxx.iid)) && lightModelRelevantCharacteristic(cxx)) {
+                            CharacteristicType cxxType = cxx.getCharacteristicType();
+                            lightModelServerChannels.put(cxxType, channel);
+                        }
+                    }
+                }
+            }
+        }
+        // create combined HSB channel
+        ChannelUID uid = new ChannelUID(thing.getUID(), "hsb-combined-channel");
+        Channel channel = ChannelBuilder.create(uid, CoreItemFactory.COLOR)
+                .withType(DefaultSystemChannelTypeProvider.SYSTEM_CHANNEL_TYPE_UID_COLOR).build();
+        channels.add(channel);
+        logger.trace(
+                "+++++Channel acceptedItemType:{}, defaultTags:{}, description:{}, kind:{}, label:{}, properties:{}, uid:{}",
+                channel.getAcceptedItemType(), channel.getDefaultTags(), channel.getDescription(), channel.getKind(),
+                channel.getLabel(), channel.getProperties(), channel.getUID());
+        lightModelClientChannel = uid;
+    }
+
+    /**
+     * Writes a command to a specific channel by constructing a Service and embedded Characteristic object.
+     *
+     * @param channel the channel to which the command is sent
+     * @param command the command to send
+     * @param writer the CharacteristicReadWriteClient to send the command
+     *
+     * @throws Exception
+     */
+    private void writeChannel(Channel channel, Command command, CharacteristicReadWriteClient writer) throws Exception {
+        Integer aid = getAccessoryId();
+        String iid = channel.getProperties().get(PROPERTY_IID);
+        if (aid == null || iid == null) {
+            throw new IllegalStateException(
+                    "Missing accessory ID or characteristic IID for channel " + channel.getUID());
+        }
+        Service service = new Service();
+        Characteristic characteristic = new Characteristic();
+        characteristic.aid = aid;
+        characteristic.iid = Integer.parseInt(iid);
+        characteristic.value = commandToJsonPrimitive(command, channel);
+        service.characteristics = List.of(characteristic);
+        writer.writeCharacteristic(GSON.toJson(service));
     }
 }

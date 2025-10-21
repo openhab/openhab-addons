@@ -85,10 +85,6 @@ public class Characteristic {
     public @Nullable ChannelDefinition buildAndRegisterChannelDefinition(ThingUID thingUID,
             HomekitTypeProvider typeProvider) {
         CharacteristicType characteristicType = getCharacteristicType();
-        if (characteristicType == null) {
-            return null;
-        }
-
         DataFormatType dataFormatType;
         try {
             dataFormatType = DataFormatType.from(format);
@@ -784,6 +780,9 @@ public class Characteristic {
             case ZOOM_OPTICAL:
                 itemType = null;
                 break;
+
+            default:
+                return null;
         }
 
         if (CoreItemFactory.NUMBER.equals(itemType) && numberSuffix != null) {
@@ -921,17 +920,17 @@ public class Characteristic {
                 : Objects.requireNonNull(getCharacteristicType()).toString();
     }
 
-    public @Nullable CharacteristicType getCharacteristicType() {
+    public CharacteristicType getCharacteristicType() {
         return getCharacteristicType(type);
     }
 
-    public static @Nullable CharacteristicType getCharacteristicType(String type) {
+    public static CharacteristicType getCharacteristicType(String type) {
         try {
             // convert "00000113-0000-1000-8000-0026BB765291" to "00000113"
             String firstPart = type.split("-")[0];
             return CharacteristicType.from(Integer.parseInt(firstPart, 16));
         } catch (IllegalArgumentException e) {
-            return null;
+            return CharacteristicType.UNKNOWN_CHARACTERISTIC;
         }
     }
 

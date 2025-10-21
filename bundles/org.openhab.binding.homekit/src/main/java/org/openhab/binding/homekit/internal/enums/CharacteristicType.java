@@ -155,7 +155,9 @@ public enum CharacteristicType {
     VOLUME(0x119, "public.hap.characteristic.volume"),
     WATER_LEVEL(0xB5, "public.hap.characteristic.water-level"),
     ZOOM_DIGITAL(0x11D, "public.hap.characteristic.zoom-digital"),
-    ZOOM_OPTICAL(0x11C, "public.hap.characteristic.zoom-optical");
+    ZOOM_OPTICAL(0x11C, "public.hap.characteristic.zoom-optical"),
+    // placeholder for any custom or unsupported characteristic
+    UNKNOWN_CHARACTERISTIC(0xFF, "public.hap.characteristic.unknown");
     //@formatter:on
 
     private final int id;

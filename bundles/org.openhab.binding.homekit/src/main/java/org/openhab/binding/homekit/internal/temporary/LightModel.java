@@ -661,6 +661,15 @@ public class LightModel {
     }
 
     /**
+     * Runtime State: get the HSBType color.
+     *
+     * @return HSBType representing the color.
+     */
+    public HSBType getHsb() {
+        return new HSBType(cachedHSB.getHue(), cachedHSB.getSaturation(), cachedHSB.getBrightness());
+    }
+
+    /**
      * Runtime State: get the color temperature in Mirek/Mired, may be NaN if not known.
      *
      * @return double representing the color temperature in Mirek/Mired.
@@ -957,6 +966,15 @@ public class LightModel {
             cachedHSB = new HSBType(hsb.getHue(), hsb.getSaturation(), cachedHSB.getBrightness());
         }
         cachedMirek = mirek;
+    }
+
+    /**
+     * Runtime State: update the on/off state from the remote light.
+     *
+     * @param on true for ON, false for OFF
+     */
+    public void setOnOff(boolean on) {
+        zHandleOnOff(OnOffType.from(on));
     }
 
     /**
