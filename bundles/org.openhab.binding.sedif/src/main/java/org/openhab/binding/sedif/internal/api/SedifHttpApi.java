@@ -241,6 +241,9 @@ public class SedifHttpApi {
 
         try {
             String data = getContent(contractId, meterInfo, url, cmd);
+            if (data.indexOf("aura:invalidSession") >= 0) {
+                throw new ConnectionFailedException("Communication with sedif failed, session invalid");
+            }
 
             if (!data.isEmpty()) {
                 try {
