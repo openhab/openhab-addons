@@ -20,12 +20,10 @@ It uses the official Protect Integration API over HTTPS and WebSocket with a Bea
 
 ## Native Binaries
 
-- Uses [go2rtc](https://github.com/AlexxIT/go2rtc) and [FFmpeg](https://ffmpeg.org/) for WebRTC playback and publishing
-- The binding will automatically download and extract the binaries if they are not present on linux, mac, windows and freeBSD (go2rtc only, see note below)
+- Uses [go2rtc](https://github.com/AlexxIT/go2rtc) and [FFmpeg](https://ffmpeg.org/) for WebRTC playback and publishing.
+- The binding will automatically download and extract the binaries if they are not present on linux, mac, windows and freeBSD.
 - By default the binding will first try and find the binaries on the system PATH before downloading them.
 - If your platform is not supported, or downloading the binaries is not possible, install the binaries manually and ensure they are on the system PATH.
-
-Note: The binding will attempt to download [go2rtc](https://github.com/AlexxIT/go2rtc) for freeBSD, but [FFmpeg](https://ffmpeg.org/) must be installed manually due to a lack of a static builds for freeBSD.
 
 See [Binding Configuration](#binding-configuration) to enable/disable downloading the binaries.
 
