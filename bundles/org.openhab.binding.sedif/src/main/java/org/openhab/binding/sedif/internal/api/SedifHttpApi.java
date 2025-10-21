@@ -158,10 +158,10 @@ public class SedifHttpApi {
 
             return result.getContentAsString();
         } catch (ExecutionException | TimeoutException e) {
-            throw new SedifException(e, "Error getting url: '%s'", url);
+            throw new SedifException("Error getting url: '%s'", e, url);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new SedifException(e, "Error getting url: '%s'", url);
+            throw new SedifException("Error getting url: '%s'", e, url);
         }
     }
 
@@ -252,12 +252,13 @@ public class SedifHttpApi {
                     return result;
                 } catch (JsonSyntaxException e) {
                     logger.debug("Invalid JSON response not matching {}: {}", clazz.getName(), data);
-                    throw new SedifException(e, "Requesting '%s' returned an invalid JSON response", url);
+                    throw new SedifException("Requesting '%s' returned an invalid JSON response", e, url);
                 }
             }
         } catch (SedifException ex) {
             logger.debug("getData error {}: {}", clazz.getName(), url);
-            throw new ConnectionFailedException(ex, "Communication with sedif failed");
+            ConnectionFailedException ex2 = new ConnectionFailedException("Communication with sedif failed", ex);
+            throw ex2;
         }
 
         return null;

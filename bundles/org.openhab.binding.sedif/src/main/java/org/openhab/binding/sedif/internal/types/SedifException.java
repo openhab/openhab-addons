@@ -31,15 +31,15 @@ public class SedifException extends Exception {
         super(message);
     }
 
-    public SedifException(Exception e, String message) {
-        super(message, e);
+    public SedifException(String message, Throwable cause) {
+        super(message, cause);
     }
 
     public SedifException(String message, Object... params) {
         this(message.formatted(params));
     }
 
-    public SedifException(Exception e, String message, Object... params) {
-        this(e, message.formatted(params));
+    public SedifException(String message, Throwable cause, Object... params) {
+        this(message.formatted(params), cause);
     }
 }

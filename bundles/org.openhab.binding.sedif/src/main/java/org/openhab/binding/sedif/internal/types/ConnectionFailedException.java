@@ -31,15 +31,15 @@ public class ConnectionFailedException extends SedifException {
         super(message);
     }
 
-    public ConnectionFailedException(Exception e, String message) {
-        super(message, e);
+    public ConnectionFailedException(String message, Throwable cause) {
+        super(message, cause);
     }
 
     public ConnectionFailedException(String message, Object... params) {
         this(message.formatted(params));
     }
 
-    public ConnectionFailedException(Exception e, String message, Object... params) {
-        this(e, message.formatted(params));
+    public ConnectionFailedException(String message, Throwable cause, Object... params) {
+        this(message.formatted(params), cause);
     }
 }
