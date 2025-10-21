@@ -18,3 +18,7 @@ Parts of this code (src/main/python/) have been forked.
 * License: Apache License 2.0
 * Project: https://www.home-assistant.io/
 * Source:  https://github.com/home-assistant/core
+
+Parts of this code (src/main/python/voluptuous/) have been forked:
+* License: BSD 3-Clause
+* Source: https://github.com/alecthomas/voluptuous
