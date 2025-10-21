@@ -20,26 +20,26 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Laurent Arnal - Initial contribution
  */
 @NonNullByDefault
-public class ConnectionFailedException extends SedifException {
+public class CommunicationFailedException extends SedifException {
     private static final long serialVersionUID = 3703839284673384018L;
 
-    public ConnectionFailedException() {
+    public CommunicationFailedException() {
         super();
     }
 
-    public ConnectionFailedException(String message) {
+    public CommunicationFailedException(String message) {
         super(message);
     }
 
-    public ConnectionFailedException(String message, Throwable cause) {
+    public CommunicationFailedException(String message, Throwable cause) {
         super(message, cause);
     }
 
-    public ConnectionFailedException(String message, Object... params) {
+    public CommunicationFailedException(String message, Object... params) {
         this(message.formatted(params));
     }
 
-    public ConnectionFailedException(String message, Throwable cause, Object... params) {
+    public CommunicationFailedException(String message, Throwable cause, Object... params) {
         this(message.formatted(params), cause);
     }
 }

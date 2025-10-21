@@ -45,6 +45,8 @@ import org.openhab.binding.sedif.internal.dto.ContractDetail.CompteInfo;
 import org.openhab.binding.sedif.internal.dto.MeterReading;
 import org.openhab.binding.sedif.internal.dto.MeterReading.Data.Consommation;
 import org.openhab.binding.sedif.internal.dto.SedifState;
+import org.openhab.binding.sedif.internal.types.CommunicationFailedException;
+import org.openhab.binding.sedif.internal.types.InvalidSessionException;
 import org.openhab.binding.sedif.internal.types.SedifException;
 import org.openhab.core.OpenHAB;
 import org.openhab.core.i18n.LocaleProvider;
@@ -116,8 +118,25 @@ public class ThingSedifHandler extends BaseThingHandler {
 
         this.contractDetail = new ExpiringDayCache<ContractDetail>("contractDetail", REFRESH_HOUR_OF_DAY,
                 REFRESH_MINUTE_OF_DAY, () -> {
-                    ContractDetail contractDetail = getContractDetail();
-                    return contractDetail;
+                    try {
+                        ContractDetail contractDetail = getContractDetails();
+                        return contractDetail;
+                    } catch (CommunicationFailedException ex) {
+                        // We just return null, EpiringDayCache logic will retry the operation later.
+                        logger.error("Failed to get contract details", ex);
+                        return null;
+                    } catch (InvalidSessionException ex) {
+                        // In case of session error, we force the bridge to reconnect after a delay
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                        if (getBridge().getHandler() instanceof BridgeSedifWebHandler bridgeSedif) {
+                            bridgeSedif.scheduleReconnect();
+                        }
+                        return null;
+                    } catch (SedifException ex) {
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                                ExceptionUtils.getRootCauseMessage(ex));
+                        return null;
+                    }
                 });
 
         this.consumption = new ExpiringDayCache<MeterReading>("dailyConsumption", REFRESH_HOUR_OF_DAY,
@@ -130,6 +149,17 @@ public class ThingSedifHandler extends BaseThingHandler {
                             MeterReadingHelper.calcAgregat(meterReading);
                         }
                         return meterReading;
+                    } catch (CommunicationFailedException ex) {
+                        // We just return null, EpxiringDayCache logic will retry the operation later.
+                        logger.error("Failed to get consumption data", ex);
+                        return null;
+                    } catch (InvalidSessionException ex) {
+                        // In case of session error, we force the bridge to reconnect after a delay
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                        if (getBridge().getHandler() instanceof BridgeSedifWebHandler bridgeSedif) {
+                            bridgeSedif.scheduleReconnect();
+                        }
+                        return null;
                     } catch (SedifException ex) {
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                                 ExceptionUtils.getRootCauseMessage(ex));
@@ -302,7 +332,11 @@ public class ThingSedifHandler extends BaseThingHandler {
         if (updateHistorical && meterReading == null) {
             return null;
         }
-        return sedifState.updateMeterReading(meterReading);
+
+        if (meterReading != null) {
+            return sedifState.updateMeterReading(meterReading);
+        }
+        return null;
     }
 
     /**
@@ -520,36 +554,24 @@ public class ThingSedifHandler extends BaseThingHandler {
         });
     }
 
-    private @Nullable ContractDetail getContractDetail() {
+    private @Nullable ContractDetail getContractDetails() throws SedifException {
         SedifHttpApi api = this.sedifApi;
         if (api != null) {
-            try {
-                ContractDetail contractDetail = api.getContractDetails(contractId);
-                return contractDetail;
-            } catch (Exception e) {
-                logger.debug("Exception when getting consumption data for : {}", e.getMessage(), e);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                        ExceptionUtils.getRootCauseMessage(e));
-            }
+            ContractDetail contractDetail = api.getContractDetails(contractId);
+            return contractDetail;
         }
 
         return null;
     }
 
-    private @Nullable MeterReading getConsumptionData(LocalDate from, LocalDate to) {
+    private @Nullable MeterReading getConsumptionData(LocalDate from, LocalDate to) throws SedifException {
         logger.debug("getConsumptionData for from {} to {}", from.format(DateTimeFormatter.ISO_LOCAL_DATE),
                 to.format(DateTimeFormatter.ISO_LOCAL_DATE));
 
         SedifHttpApi api = this.sedifApi;
         if (api != null) {
-            try {
-                MeterReading meterReading = api.getConsumptionData(contractId, currentMeterInfo, from, to);
-                return meterReading;
-            } catch (Exception e) {
-                logger.debug("Exception when getting consumption data for : {}", e.getMessage(), e);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                        ExceptionUtils.getRootCauseMessage(e));
-            }
+            MeterReading meterReading = api.getConsumptionData(contractId, currentMeterInfo, from, to);
+            return meterReading;
         }
 
         return null;
@@ -566,6 +588,9 @@ public class ThingSedifHandler extends BaseThingHandler {
     @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
         if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE) {
+            if (getThing().getStatus() != ThingStatus.ONLINE) {
+                updateStatus(ThingStatus.UNKNOWN);
+            }
             setupRefreshJob();
         }
     }
@@ -591,9 +616,14 @@ public class ThingSedifHandler extends BaseThingHandler {
                         .withMinute(REFRESH_MINUTE_OF_DAY).truncatedTo(ChronoUnit.MINUTES);
 
                 cancelRefreshJob();
-                refreshJob = scheduler.scheduleWithFixedDelay(this::updateData,
-                        ChronoUnit.MINUTES.between(now, nextDayFirstTimeUpdate) % REFRESH_INTERVAL_IN_MIN + 1,
-                        REFRESH_INTERVAL_IN_MIN, TimeUnit.MINUTES);
+                long initialDelay = ChronoUnit.MINUTES.between(now, nextDayFirstTimeUpdate) % REFRESH_INTERVAL_IN_MIN
+                        + 1;
+                long delay = REFRESH_INTERVAL_IN_MIN;
+
+                if (!consumption.isPresent() || !contractDetail.isPresent()) {
+                    initialDelay = 20;
+                }
+                refreshJob = scheduler.scheduleWithFixedDelay(this::updateData, initialDelay, delay, TimeUnit.MINUTES);
 
                 if (this.getThing().getStatusInfo().getStatusDetail() != ThingStatusDetail.COMMUNICATION_ERROR) {
                     updateStatus(ThingStatus.ONLINE);

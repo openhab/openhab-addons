@@ -28,7 +28,6 @@ import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.FormContentProvider;
-import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.util.Fields;
 import org.openhab.binding.sedif.internal.constants.SedifBindingConstants;
@@ -42,7 +41,8 @@ import org.openhab.binding.sedif.internal.dto.ContractDetail;
 import org.openhab.binding.sedif.internal.dto.ContractDetail.CompteInfo;
 import org.openhab.binding.sedif.internal.dto.Contracts;
 import org.openhab.binding.sedif.internal.dto.MeterReading;
-import org.openhab.binding.sedif.internal.types.ConnectionFailedException;
+import org.openhab.binding.sedif.internal.types.CommunicationFailedException;
+import org.openhab.binding.sedif.internal.types.InvalidSessionException;
 import org.openhab.binding.sedif.internal.types.SedifException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -91,10 +91,6 @@ public class SedifHttpApi {
 
     public void removeAllCookie() {
         httpClient.getCookieStore().removeAll();
-    }
-
-    public String getLocation(ContentResponse response) {
-        return response.getHeaders().get(HttpHeader.LOCATION);
     }
 
     public String getContent(String url) throws SedifException {
@@ -158,10 +154,10 @@ public class SedifHttpApi {
 
             return result.getContentAsString();
         } catch (ExecutionException | TimeoutException e) {
-            throw new SedifException("Error getting url: '%s'", e, url);
+            throw new CommunicationFailedException("Error getting url: '%s'", e, url);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new SedifException("Error getting url: '%s'", e, url);
+            throw new CommunicationFailedException("Error getting url: '%s'", e, url);
         }
     }
 
@@ -235,14 +231,14 @@ public class SedifHttpApi {
      * }
      */
 
-    public <T> T getData(String contractId, @Nullable CompteInfo meterInfo, String url, @Nullable AuraCommand cmd,
+    private <T> T getData(String contractId, @Nullable CompteInfo meterInfo, String url, @Nullable AuraCommand cmd,
             Class<T> clazz) throws SedifException {
         logger.debug("getData begin {}: {}", clazz.getName(), url);
 
         try {
             String data = getContent(contractId, meterInfo, url, cmd);
             if (data.indexOf("aura:invalidSession") >= 0) {
-                throw new ConnectionFailedException("Communication with sedif failed, session invalid");
+                throw new InvalidSessionException("Communication with sedif failed, session invalid");
             }
 
             if (!data.isEmpty()) {
@@ -256,29 +252,16 @@ public class SedifHttpApi {
                 }
             }
         } catch (SedifException ex) {
-            logger.debug("getData error {}: {}", clazz.getName(), url);
-            throw new ConnectionFailedException("Communication with sedif failed", ex);
+            throw ex;
         }
-
         return null;
     }
 
-    public String getAuraContext(String mainApp, String app, String appId, String fwuid) {
-        AuraContext context = new AuraContext();
-        context.mode = "PROD";
-        context.fwuid = fwuid;
-        context.app = mainApp;
-        context.loaded.put(app, appId);
-        context.globals = context.new Globals();
-        context.uad = false;
+    private String getAuraContextPayload(AuraContext context) {
         return gson.toJson(context);
     }
 
-    public String getAuraContextPayload(AuraContext context) {
-        return gson.toJson(context);
-    }
-
-    public String getActionPayload(AuraCommand cmd) {
+    private String getActionPayload(AuraCommand cmd) {
         Actions actions = new Actions();
         Action action = new Action();
 

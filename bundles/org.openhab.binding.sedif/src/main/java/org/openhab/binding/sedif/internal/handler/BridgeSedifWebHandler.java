@@ -21,6 +21,7 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
@@ -131,15 +132,28 @@ public class BridgeSedifWebHandler extends BaseBridgeHandler {
     @Override
     public void initialize() {
         updateStatus(ThingStatus.UNKNOWN);
+        scheduleConnection(1);
+    }
 
-        scheduler.submit(() -> {
+    public void scheduleConnection(int delay) {
+        scheduler.schedule(() -> {
             try {
                 connectionInit();
-                updateStatus(ThingStatus.ONLINE);
+                if (connected) {
+                    updateStatus(ThingStatus.ONLINE);
+                } else {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Connection failed");
+                }
             } catch (SedifException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
-        });
+        }, delay, TimeUnit.SECONDS);
+    }
+
+    public void scheduleReconnect() {
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+        connected = false;
+        scheduleConnection(30);
     }
 
     @Override
