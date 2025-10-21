@@ -257,8 +257,7 @@ public class SedifHttpApi {
             }
         } catch (SedifException ex) {
             logger.debug("getData error {}: {}", clazz.getName(), url);
-            ConnectionFailedException ex2 = new ConnectionFailedException("Communication with sedif failed", ex);
-            throw ex2;
+            throw new ConnectionFailedException("Communication with sedif failed", ex);
         }
 
         return null;
