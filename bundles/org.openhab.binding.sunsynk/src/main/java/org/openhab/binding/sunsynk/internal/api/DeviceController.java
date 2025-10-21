@@ -72,7 +72,7 @@ public class DeviceController {
     private Grid grid = new Grid();
     private Daytemps inverterDayTemperatures = new Daytemps();
     private RealTimeInData realTimeDataIn = new RealTimeInData();
-    public static final int COMMONSETTTINGS = 1 << 0;
+    public static final int COMMONSETTINGS = 1 << 0;
     public static final int GRIDREALTIME = 1 << 1;
     public static final int BATTERYREALTIME = 1 << 2;
     public static final int INVERTERDAYTEMPS = 1 << 3;
@@ -80,7 +80,7 @@ public class DeviceController {
     public static final int PLANTSUMMARY = 1 << 5;
     public static final Map<String, Integer> statusMap = new HashMap<>();
     static {
-        statusMap.put("CommonSettings", COMMONSETTTINGS);
+        statusMap.put("CommonSettings", COMMONSETTINGS);
         statusMap.put("GridRealTime", GRIDREALTIME);
         statusMap.put("BatteryRealTime", BATTERYREALTIME);
         statusMap.put("InverterDayTemps", INVERTERDAYTEMPS);
@@ -186,7 +186,7 @@ public class DeviceController {
         } else {
             this.batterySettings = settings;
             this.batterySettings.buildLists();
-            successFlags = successFlags | COMMONSETTTINGS;
+            successFlags = successFlags | COMMONSETTINGS;
         }
     }
 

@@ -58,7 +58,7 @@ The refresh rate is limited to once every 60s to prevent too many requests from 
 This can mean the data in openHAB is more than 1 minute delayed from real-time.
 Commands sent (from openHAB) to Sun Synk are buffered up until the next refresh interval and as they take a while to propagate through to your inverter, some channels are not refreshed (read back) from Sun Synk Connect until the next minute.
 
-You can check the data interval setting in the [Sun Synk Connect web services](https://www.sunsynk.net/). Look under Equipment >> Gateway >> three dots […] >> settings. If its not  there you need to change your user level access see [Introduction](#introduction)
+You can check the data interval setting in the [Sun Synk Connect web services](https://www.sunsynk.net/). Look under Equipment >> Gateway >> three dots […] >> settings. If it's not there you need to change your user level access see [Introduction](#introduction)
 
 ![Setting data interval on Sun Synk Connect (web only)](doc/data_interval.png)
 
