@@ -154,6 +154,15 @@ Trigger channels (for rules):
 | smart-detect-loiter-start  | `person`, `vehicle`, `package`, `licensePlate`, `face`, `animal`, `none`                                                              | Loiter smart detection started          |
 | smart-detect-loiter-update | `person`, `vehicle`, `package`, `licensePlate`, `face`, `animal`, `none`                                                              | Loiter smart detection updated          |
 
+#### Snapshot Channels
+
+Snapshot channels can be configured to take a snapshot before or after the trigger event or item state change.
+By default, a snapshot is taken before the trigger event fires or item state updates so its immediately available for use in rules.
+This however can cause a slight delay in the rule execution if the snapshot itself is delayed.
+To take a snapshot after the event trigger fires or item state updates, you can set the sequence to "after".
+If you do not want to take a snapshot on a trigger event or item state update, you can set the sequence to "none".
+This can be configured in the textual configuration or through the MainUI.
+
 ### Floodlight
 
 | Channel ID        | Item Type | RW | Description                                             | Advanced |
@@ -198,7 +207,9 @@ Trigger channels (for rules):
 If enabled in the binding configuration, openHAB will proxy live media using WebRTC which is compatible with the MainUI video widget.
 
 ### Stream URLs
+
 The URL for WebRTC streams can be found in 2 different ways
+
 1. As a property on the Camera Thing (webrtc-url-high, webrtc-url-medium, webrtc-url-low, webrtc-url-package)
 1. As an Item linked to a channel on the Camera Thing (webrtc-url-high, webrtc-url-medium, webrtc-url-low, webrtc-url-package)
 

@@ -394,6 +394,7 @@
 		<item-type>Image</item-type>
 		<label>Snapshot</label>
 		<description>Latest camera snapshot image</description>
+		<config-description-ref uri="thing-type:unifiprotect:snapshotconfig"/>
 	</channel-type>
 
 	<channel-type id="mic-volume">

@@ -192,8 +192,9 @@ public class Go2RtcManager {
         if (process != null && process.isAlive()) {
             process.destroy();
             try {
-                if (!process.waitFor(3, TimeUnit.SECONDS))
+                if (!process.waitFor(3, TimeUnit.SECONDS)) {
                     process.destroyForcibly();
+                }
             } catch (InterruptedException ignored) {
             }
         }
@@ -255,8 +256,9 @@ public class Go2RtcManager {
                 if (consecutiveUnhealthyChecks >= maxConsecutiveUnhealthyChecks) {
                     try {
                         process.destroy();
-                        if (!process.waitFor(2, TimeUnit.SECONDS))
+                        if (!process.waitFor(2, TimeUnit.SECONDS)) {
                             process.destroyForcibly();
+                        }
                         startIfNeeded();
                     } catch (Exception ignored) {
                     } finally {

@@ -35,6 +35,7 @@ public class UnifiProtectBindingConstants {
 
     // List of all Configuration ids
     public static final String DEVICE_ID = "deviceId";
+    public static final String SNAPSHOT_SEQUENCE = "sequence";
 
     // List of all Property ids
     public static final String PROPERTY_WEBRTC_URL = "webrtc-url"; // also used as base url for all webrtc urls
