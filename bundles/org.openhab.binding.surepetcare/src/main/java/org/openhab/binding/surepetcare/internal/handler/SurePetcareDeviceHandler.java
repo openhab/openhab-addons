@@ -189,7 +189,7 @@ public class SurePetcareDeviceHandler extends SurePetcareBaseObjectHandler {
                     updateState(DEVICE_CHANNEL_BOWLS_TRAINING_MODE,
                             new StringType(device.control.trainingModeId.toString()));
                 } else if (thing.getThingTypeUID().equals(THING_TYPE_WATER_DEVICE)) {
-                    // TODO
+                    // Currently no specific channels for water stations are supported by this binding
                 } else {
                     logger.warn("Unknown product type for device {}", thing.getUID().getAsString());
                 }
