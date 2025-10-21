@@ -25,9 +25,9 @@
 		</description>
 		<category>Energy</category>
 		<tags>
-            <tag>Measurement</tag>
-            <tag>Power</tag>
-        </tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="hw-voltage">
@@ -51,9 +51,9 @@
 		</description>
 		<category>Energy</category>
 		<tags>
-            <tag>Measurement</tag>
-            <tag>Voltage</tag>
-        </tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="hw-current">
@@ -78,9 +78,9 @@
 		</description>
 		<category>Energy</category>
 		<tags>
-            <tag>Measurement</tag>
-            <tag>Current</tag>
-        </tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -105,9 +105,9 @@
 		</description>
 		<category>Energy</category>
 		<tags>
-            <tag>Measurement</tag>
-            <tag>Energy</tag>
-        </tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="hw-energy-export">
@@ -131,9 +131,9 @@
 		</description>
 		<category>Energy</category>
 		<tags>
-            <tag>Measurement</tag>
-            <tag>Energy</tag>
-        </tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="hw-reactive-power" advanced="true">
