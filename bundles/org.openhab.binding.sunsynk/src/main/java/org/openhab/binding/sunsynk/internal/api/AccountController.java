@@ -55,6 +55,7 @@ public class AccountController {
     private static final int TIMEOUT_IN_MS = 4000;
     private final Logger logger = LoggerFactory.getLogger(AccountController.class);
     private static final String BEARER_TYPE = "Bearer ";
+    private static final long EXPIRYSECONDS = 100L; // 100 seconds before expiry
     private Client sunAccount = new Client();
 
     public AccountController() {
@@ -84,7 +85,7 @@ public class AccountController {
     public void refreshAccount(String username) throws SunSynkAuthenticateException, SunSynkTokenException {
         Long expiresIn = this.sunAccount.getExpiresIn();
         Long issuedAt = this.sunAccount.getIssuedAt();
-        if ((issuedAt + expiresIn) - Instant.now().getEpochSecond() > 100) { // > 100 seconds
+        if ((issuedAt + expiresIn) - Instant.now().getEpochSecond() > EXPIRYSECONDS) { 
             logger.debug("Account configuration token not expired.");
             return;
         }
