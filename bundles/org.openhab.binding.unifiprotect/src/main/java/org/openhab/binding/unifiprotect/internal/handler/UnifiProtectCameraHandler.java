@@ -379,8 +379,6 @@ public class UnifiProtectCameraHandler extends UnifiProtectAbstractDeviceHandler
         updateStringChannel(UnifiProtectBindingConstants.CHANNEL_RTSP_URL_PACKAGE,
                 rtsps != null ? rtsps.packageUrl : null);
 
-        getThing().setProperty("stream-publish-url", null);
-
         // Register new streams if available
         if (enableWebRTC && rtsps != null) {
             URI bc = null;
@@ -622,8 +620,7 @@ public class UnifiProtectCameraHandler extends UnifiProtectAbstractDeviceHandler
     }
 
     // Updates the snapshot channel if the sequence is configured to take a snapshot
-    // before or after the event or item
-    // state change.
+    // before or after the event or item state change.
     private void maybeUpdateSnapshot(String channelId, Sequence sequence) {
         Sequence sequenceConfig = getSnapshotSequence(channelId);
         if (sequence == sequenceConfig && sequence != Sequence.NONE) {

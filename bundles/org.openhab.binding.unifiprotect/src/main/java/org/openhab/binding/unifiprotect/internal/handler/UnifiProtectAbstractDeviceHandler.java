@@ -158,7 +158,6 @@ public abstract class UnifiProtectAbstractDeviceHandler<T extends Device> extend
             if (state instanceof OpenClosedType openClosedType) {
                 UnifiProtectContactConfiguration c = channel.getConfiguration()
                         .as(UnifiProtectContactConfiguration.class);
-                int delay = c.motionLatchDelay;
                 ScheduledFuture<?> existing = latchJobs.remove(channelId);
                 if (existing != null) {
                     existing.cancel(true);
@@ -168,7 +167,7 @@ public abstract class UnifiProtectAbstractDeviceHandler<T extends Device> extend
                         logger.debug("running close for channel: {}", channelId);
                         updateState(channelId, OpenClosedType.CLOSED);
                         latchJobs.remove(channelId);
-                    }, delay, TimeUnit.MILLISECONDS));
+                    }, c.motionLatchDelay, TimeUnit.MILLISECONDS));
                 }
             }
             updateState(channelId, state);

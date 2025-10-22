@@ -157,9 +157,15 @@ Trigger channels (for rules):
 Snapshot channels can be configured to take a snapshot before or after the trigger event or item state change.
 By default, a snapshot is taken before the trigger event fires or item state updates so its immediately available for use in rules.
 This however can cause a slight delay in the rule execution if the snapshot itself is delayed.
+The order in which the snapshot is taken can be configured via the snapshot channel configuration through textual files or the MainUI.
 To take a snapshot after the event trigger fires or item state updates, you can set the sequence to "after".
 If you do not want to take a snapshot on a trigger event or item state update, you can set the sequence to "none".
-This can be configured in the textual configuration or through the MainUI.
+
+#### Motion Contact Channels
+
+Motion contact channels are configured to latch/close after a defined delay after a motion event.
+By default, the contact is considered latched/closed after 5 seconds of no motion events.
+This delay can be configured via the contact channel configuration through textual files or the MainUI.
 
 ### Floodlight
 
