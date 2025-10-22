@@ -41,6 +41,8 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Abstract handler for all device types.
@@ -49,6 +51,7 @@ import org.openhab.core.types.UnDefType;
  */
 @NonNullByDefault
 public abstract class UnifiProtectAbstractDeviceHandler<T extends Device> extends BaseThingHandler {
+    protected final Logger logger = LoggerFactory.getLogger(UnifiProtectAbstractDeviceHandler.class);
     protected @Nullable T device;
     protected String deviceId = "";
     protected Map<String, State> stateCache = new HashMap<>();
@@ -156,21 +159,19 @@ public abstract class UnifiProtectAbstractDeviceHandler<T extends Device> extend
                 UnifiProtectContactConfiguration c = channel.getConfiguration()
                         .as(UnifiProtectContactConfiguration.class);
                 int delay = c.motionLatchDelay;
-                ScheduledFuture<?> existing = latchJobs.get(channelId);
+                ScheduledFuture<?> existing = latchJobs.remove(channelId);
                 if (existing != null) {
                     existing.cancel(true);
                 }
                 if (openClosedType == OpenClosedType.OPEN) {
                     latchJobs.put(channelId, scheduler.schedule(() -> {
+                        logger.debug("running close for channel: {}", channelId);
                         updateState(channelId, OpenClosedType.CLOSED);
                         latchJobs.remove(channelId);
                     }, delay, TimeUnit.MILLISECONDS));
-                } else {
-                    updateState(channelId, openClosedType);
                 }
-            } else {
-                updateState(channelId, state);
             }
+            updateState(channelId, state);
         }
     }
 }

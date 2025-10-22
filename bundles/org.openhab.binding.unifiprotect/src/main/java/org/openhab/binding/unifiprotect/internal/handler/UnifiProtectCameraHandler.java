@@ -636,7 +636,7 @@ public class UnifiProtectCameraHandler extends UnifiProtectAbstractDeviceHandler
             UniFiProtectApiClient client = getApiClient();
             if (client != null) {
                 try {
-                    updateState(channelId, new RawType(client.getSnapshot(deviceId, true), "image/jpeg"));
+                    updateState(channelId, new RawType(client.getSnapshot(deviceId, false), "image/jpeg"));
                 } catch (IOException e) {
                     logger.debug("Error getting snapshot", e);
                 }
