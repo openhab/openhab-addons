@@ -478,7 +478,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
                         e.getMessage());
             }
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    i18nProvider.getText(bundle, "error.error-sending-command", "Polling error", null));
+                    i18nProvider.getText(bundle, "error.error-sending-command", "Error sending command", null));
             startConnectionTask();
         }
     }
