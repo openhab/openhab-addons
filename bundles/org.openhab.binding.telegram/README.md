@@ -63,7 +63,7 @@ In order to send a message, an action must be used instead.
 |-------------------|---------|----------|---------------------------------------------------------------------------------------------------------------------|
 | `chatIds`         |         | Yes      | A list of chatIds that are entered one per line in the UI, or are comma separated values when using textual config. |
 | `botToken`        |         | Yes      | Authentication token that looks like 1122334455:AABBCCDDEEFFGG1122334455667788                                      |
-| `parseMode`       | None    | No       | Support for formatted messages, values: Markdown or HTML.                                                           |
+| `parseMode`       | None    | No       | Support for formatted messages, values: Markdown, MarkdownV2 or HTML.                                               |
 | `proxyHost`       | None    | No       | Proxy host for telegram binding.                                                                                    |
 | `proxyPort`       | None    | No       | Proxy port for telegram binding.                                                                                    |
 | `proxyType`       | SOCKS5  | No       | Type of proxy server for telegram binding (SOCKS5 or HTTP).                                                         |
