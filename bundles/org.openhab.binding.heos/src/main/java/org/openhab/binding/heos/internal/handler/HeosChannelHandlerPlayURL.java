@@ -24,6 +24,7 @@ import org.openhab.binding.heos.internal.resources.Telnet.ReadException;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
