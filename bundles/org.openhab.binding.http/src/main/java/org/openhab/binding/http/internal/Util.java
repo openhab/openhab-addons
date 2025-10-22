@@ -81,7 +81,8 @@ public class Util {
         Matcher m = URL_PATTERN.matcher(url.trim());
         if (!m.matches()) {
             throw new URISyntaxException(url,
-                "Invalid URL. Expected format: [scheme]://[host][:port][path][?query][#fragment]. Input: '" + url + "'");
+                    "Invalid URL. Expected format: [scheme]://[host][:port][path][?query][#fragment]. Input: '" + url
+                            + "'");
         }
 
         String host = m.group("host");
