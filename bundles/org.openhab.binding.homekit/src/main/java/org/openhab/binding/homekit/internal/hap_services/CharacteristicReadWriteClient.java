@@ -48,7 +48,7 @@ public class CharacteristicReadWriteClient {
     }
 
     /**
-     * Writes a characteristic to the accessory.
+     * Writes characteristic(s) to the accessory.
      *
      * @param json the JSON string to write.
      * @throws Exception on communication or encryption errors

@@ -67,7 +67,7 @@ public class Characteristic {
     public @NonNullByDefault({}) Double minStep;
     public @NonNullByDefault({}) JsonElement value; // e.g. true, 23, "Some String"
     public @NonNullByDefault({}) String description;
-    public @NonNullByDefault({}) Boolean ev; // e.g. true
+    public @NonNullByDefault({}) Boolean ev; // e.g. true (events requested)
     public @NonNullByDefault({}) Integer aid; // e.g. 10
     public @NonNullByDefault({}) @SerializedName("valid-values") List<Integer> validValues;
     public @NonNullByDefault({}) @SerializedName("valid-values-range") List<Integer> validValuesRange;

@@ -17,10 +17,12 @@ import static org.openhab.binding.homekit.internal.HomekitBindingConstants.*;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -105,7 +107,9 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
      */
     private @Nullable LightModel lightModel = null;
     private @Nullable ChannelUID lightModelClientChannel = null; // special HSB combined channel
+
     private final Map<CharacteristicType, Channel> lightModelServerChannels = new HashMap<>();
+    private final Set<Channel> eventedChannels = new HashSet<>();
 
     private @Nullable Channel stopMoveChannel = null; // channel for the stop button (rollershutters)
     private @Nullable ScheduledFuture<?> refreshTask;
@@ -126,8 +130,8 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
 
     /**
      * Called when the thing handler has been initialized, the pairing verified, the accessories loaded,
-     * and the channels and properties created.
-     * Sets up a scheduled task to periodically refresh the state of the accessory.
+     * and the channels and properties created. Sets up a scheduled task to periodically refresh the state
+     * of the accessory. And subscribes to evented channels if applicable.
      */
     private void channelsAndPropertiesLoaded() {
         if (getConfig().get(CONFIG_REFRESH_INTERVAL) instanceof Object refreshInterval) {
@@ -144,7 +148,35 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
             } catch (NumberFormatException e) {
             }
         }
-        logger.warn("Invalid refresh interval configuration, polling disabled");
+        if (refreshTask == null) {
+            logger.warn("Invalid refresh interval configuration, polling disabled");
+        }
+
+        if (eventedChannels.isEmpty()) {
+            unsubscribeEvents();
+        } else {
+            CharacteristicReadWriteClient writer = this.rwService;
+            if (writer != null) {
+                Service service = new Service();
+                service.characteristics = new ArrayList<>();
+                for (Channel channel : eventedChannels) {
+                    if (channel.getProperties().get(PROPERTY_IID) instanceof String iid) {
+                        Characteristic characteristic = new Characteristic();
+                        characteristic.iid = Integer.parseInt(iid);
+                        characteristic.aid = getAccessoryId();
+                        characteristic.ev = true; // enable events
+                        service.characteristics.add(characteristic);
+                    }
+                }
+                try {
+                    writer.writeCharacteristic(GSON.toJson(service));
+                    subscribeEvents();
+                    logger.debug("Eventing enabled for {} channels", eventedChannels.size());
+                } catch (Exception e) {
+                    logger.warn("Failed to subscribe to evented channels, eventing disabled");
+                }
+            }
+        }
     }
 
     /**
@@ -419,6 +451,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
 
         lightModelFinalize(accessory, channels);
         stopMoveFinalize(accessory, channels);
+        eventingFinalize(accessory, channels);
 
         String oldLabel = thing.getLabel();
         String newLabel = oldLabel == null || oldLabel.isEmpty() ? accessory.getAccessoryInstanceLabel() : null;
@@ -504,6 +537,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
         lightModel = null;
         lightModelServerChannels.clear();
         lightModelClientChannel = null;
+        eventedChannels.clear();
         super.dispose();
     }
 
@@ -762,6 +796,28 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
     }
 
     /**
+     * Identifies evented channels by checking for characteristics with the 'ev' permission.
+     *
+     * @param accessory the accessory containing the characteristics
+     * @param channels the list of channels to check
+     */
+    private void eventingFinalize(Accessory accessory, List<Channel> channels) {
+        eventedChannels.clear();
+        for (Channel channel : channels) {
+            if (channel.getProperties().get(PROPERTY_IID) instanceof String iid) {
+                for (Service service : accessory.services) {
+                    for (Characteristic cxx : service.characteristics) {
+                        if (iid.equals(String.valueOf(cxx.iid)) && cxx.perms instanceof List<String> perms
+                                && perms.contains("ev")) {
+                            eventedChannels.add(channel);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
      * Reads the state of a specific channel by querying the accessory for the characteristic value.
      *
      * @param channel the channel to read
@@ -820,6 +876,11 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
         super.startConnectionTask();
     }
 
+    /**
+     * Handles incoming events by updating the corresponding channels based on the characteristic values.
+     *
+     * @param jsonContent the JSON content of the event
+     */
     @Override
     public void onEvent(String jsonContent) {
         Service service = GSON.fromJson(jsonContent, Service.class);

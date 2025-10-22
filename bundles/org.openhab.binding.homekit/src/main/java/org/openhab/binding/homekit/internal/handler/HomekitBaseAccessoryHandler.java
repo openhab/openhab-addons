@@ -97,7 +97,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
 
     @Override
     public void dispose() {
-        eventsUnsubscribe();
+        unsubscribeEvents();
         cancelConnectionTask();
         if (!isChildAccessory) {
             try {
@@ -211,7 +211,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
                         i18nProvider.getText(bundle, "error.failed-to-connect", "Failed to connect", null));
                 return;
             }
-            eventsUnsubscribe();
+            unsubscribeEvents();
             cancelConnectionTask();
             startConnectionTask();
         }
@@ -370,7 +370,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
     /**
      * Subscribes to events from the IP transport.
      */
-    protected void eventsSubscribe() {
+    protected void subscribeEvents() {
         IpTransport ipTransport = getIpTransport();
         if (ipTransport != null) {
             ipTransport.subscribe(this);
@@ -380,7 +380,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
     /**
      * Unsubscribes from events from the IP transport.
      */
-    protected void eventsUnsubscribe() {
+    protected void unsubscribeEvents() {
         IpTransport ipTransport = getIpTransport();
         if (ipTransport != null) {
             ipTransport.unsubscribe(this);
