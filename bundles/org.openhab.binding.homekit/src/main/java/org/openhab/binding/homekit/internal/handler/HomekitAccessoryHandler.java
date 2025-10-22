@@ -560,30 +560,8 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
                 if (queries.isEmpty()) {
                     return;
                 }
-                String jsonResponse = reader.readCharacteristic(String.join(",", queries));
-                Service service = GSON.fromJson(jsonResponse, Service.class);
-                if (service != null && service.characteristics instanceof List<Characteristic> characteristics) {
-                    for (Channel channel : thing.getChannels()) {
-                        ChannelUID channelUID = channel.getUID();
-                        if (channelUID.equals(lightModelClientChannel)) {
-                            for (Characteristic cxx : characteristics) {
-                                if (lightModelRefresh(cxx)) {
-                                    updateState(channelUID, Objects.requireNonNull(lightModel).getHsb());
-                                }
-                            }
-                        } else if (channel.getProperties().get(PROPERTY_IID) instanceof String iid) {
-                            for (Characteristic cxx : characteristics) {
-                                if (iid.equals(String.valueOf(cxx.iid)) && cxx.value instanceof JsonElement element) {
-                                    State state = convertJsonToState(element, channel);
-                                    switch (channel.getKind()) {
-                                        case STATE -> updateState(channelUID, state);
-                                        case TRIGGER -> triggerChannel(channelUID, state.toFullString());
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
+                String json = reader.readCharacteristic(String.join(",", queries));
+                updateChannelsFromJson(json);
             } catch (Exception e) {
                 if (logger.isTraceEnabled()) {
                     logger.trace("Failed to poll accessory state, reconnecting", e);
@@ -879,21 +857,36 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
     /**
      * Handles incoming events by updating the corresponding channels based on the characteristic values.
      *
-     * @param jsonContent the JSON content of the event
+     * @param json the JSON content of the event
      */
     @Override
-    public void onEvent(String jsonContent) {
-        Service service = GSON.fromJson(jsonContent, Service.class);
+    public void onEvent(String json) {
+        updateChannelsFromJson(json);
+    }
+
+    /**
+     * Updates the channels based on the provided JSON content.
+     *
+     * @param json the JSON content containing characteristic values
+     */
+    private void updateChannelsFromJson(String json) {
+        Service service = GSON.fromJson(json, Service.class);
         if (service != null && service.characteristics instanceof List<Characteristic> characteristics) {
             for (Channel channel : thing.getChannels()) {
-                String iid = channel.getProperties().get(PROPERTY_IID);
-                if (iid != null) {
+                ChannelUID channelUID = channel.getUID();
+                if (channelUID.equals(lightModelClientChannel)) {
+                    for (Characteristic cxx : characteristics) {
+                        if (lightModelRefresh(cxx)) {
+                            updateState(channelUID, Objects.requireNonNull(lightModel).getHsb());
+                        }
+                    }
+                } else if (channel.getProperties().get(PROPERTY_IID) instanceof String iid) {
                     for (Characteristic cxx : characteristics) {
                         if (iid.equals(String.valueOf(cxx.iid)) && cxx.value instanceof JsonElement element) {
                             State state = convertJsonToState(element, channel);
                             switch (channel.getKind()) {
-                                case STATE -> updateState(channel.getUID(), state);
-                                case TRIGGER -> triggerChannel(channel.getUID(), state.toFullString());
+                                case STATE -> updateState(channelUID, state);
+                                case TRIGGER -> triggerChannel(channelUID, state.toFullString());
                             }
                         }
                     }
