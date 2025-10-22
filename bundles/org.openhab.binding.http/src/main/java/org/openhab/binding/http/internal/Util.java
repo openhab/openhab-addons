@@ -70,6 +70,13 @@ public class Util {
             + "(?:(?<userinfo>[^@/?#]*)@)?" + "(?<host>[^:/?#]*)(?::(?<port>\\d+))?" + "(?<path>/[^?#]*)?"
             + "(?:\\?(?<query>[^#]*))?" + "(?:#(?<fragment>.*))?");
 
+    /**
+     * Parses a URL string and returns a {@link URI} object, converting Unicode hostnames to ASCII as needed.
+     *
+     * @param url the URL string to parse
+     * @return a {@link URI} representing the parsed URL
+     * @throws URISyntaxException if the input string is not a valid URL
+     */
     public static URI parse(String url) throws URISyntaxException {
         Matcher m = URL_PATTERN.matcher(url.trim());
         if (!m.matches()) {
