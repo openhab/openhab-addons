@@ -36,14 +36,16 @@ import org.openhab.binding.homekit.internal.hap_services.PairSetupClient;
 import org.openhab.binding.homekit.internal.hap_services.PairVerifyClient;
 import org.openhab.binding.homekit.internal.persistence.HomekitKeyStore;
 import org.openhab.binding.homekit.internal.persistence.HomekitTypeProvider;
-import org.openhab.binding.homekit.internal.session.EventCallback;
+import org.openhab.binding.homekit.internal.session.EventListener;
 import org.openhab.binding.homekit.internal.transport.IpTransport;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.osgi.framework.Bundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,7 +61,7 @@ import com.google.gson.Gson;
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler implements EventCallback {
+public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler implements EventListener {
 
     protected static final Gson GSON = new Gson();
 
@@ -71,6 +73,8 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
     protected final Map<Integer, Accessory> accessories = new HashMap<>();
     protected final HomekitTypeProvider typeProvider;
     protected final HomekitKeyStore keyStore;
+    protected final TranslationProvider i18nProvider;
+    protected final Bundle bundle;
 
     protected boolean isChildAccessory = false;
 
@@ -82,15 +86,18 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
     private int connectionDelaySeconds = MIN_CONNECTION_DELAY_SECONDS;
     private @Nullable ScheduledFuture<?> connectionTask;
 
-    public HomekitBaseAccessoryHandler(Thing thing, HomekitTypeProvider typeProvider, HomekitKeyStore keyStore) {
+    public HomekitBaseAccessoryHandler(Thing thing, HomekitTypeProvider typeProvider, HomekitKeyStore keyStore,
+            TranslationProvider translationProvider, Bundle bundle) {
         super(thing);
         this.typeProvider = typeProvider;
         this.keyStore = keyStore;
+        this.i18nProvider = translationProvider;
+        this.bundle = bundle;
     }
 
     @Override
     public void dispose() {
-        cancelListening();
+        eventsUnsubscribe();
         cancelConnectionTask();
         if (!isChildAccessory) {
             try {
@@ -175,8 +182,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
 
     @Override
     public void initialize() {
-        Bridge bridge = getBridge();
-        if (bridge != null && bridge.getHandler() instanceof HomekitBridgeHandler bridgeHandler) {
+        if (getBridgeHandler() instanceof HomekitBridgeHandler bridgeHandler) {
             // accessory is hosted by a bridge, so use bridge's pairing session and read/write service
             isChildAccessory = true;
             ipTransport = bridgeHandler.ipTransport;
@@ -185,24 +191,27 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
                 fetchAccessories();
                 updateStatus(ThingStatus.ONLINE);
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Bridge is not connected");
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
+                        i18nProvider.getText(bundle, "error.bridge-not-connected", "Bridge not connected", null));
             }
         } else {
             // standalone accessory or bridge accessory, so do pairing and session setup here
             isChildAccessory = false;
             Object host = getConfig().get(CONFIG_HOST);
             if (host == null || !(host instanceof String hostString) || !HOST_PATTERN.matcher(hostString).matches()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Invalid host");
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        i18nProvider.getText(bundle, "error.invalid-host", "Invalid host", null));
                 return;
             }
             try {
                 ipTransport = new IpTransport(hostString);
             } catch (Exception e) {
                 logger.debug("Failed to create transport", e);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Failed to connect");
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        i18nProvider.getText(bundle, "error.failed-to-connect", "Failed to connect", null));
                 return;
             }
-            cancelListening();
+            eventsUnsubscribe();
             cancelConnectionTask();
             startConnectionTask();
         }
@@ -217,20 +226,23 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
         if (pairingConfig == null || !(pairingConfig instanceof String pairingConfigString)
                 || !PAIRING_CODE_PATTERN.matcher(pairingConfigString).matches()) {
             logger.debug("Pairing code must match XXX-XX-XXX or XXXX-XXXX or XXXXXXXX");
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Invalid pairing code");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    i18nProvider.getText(bundle, "error.invalid-pairing-code", "Invalid pairing code", null));
             return;
         }
         pairingCode = normalizePairingCode(pairingConfigString);
 
         accessoryId = getAccessoryId();
         if (accessoryId == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Invalid accessory ID");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    i18nProvider.getText(bundle, "error.invalid-accessory-id", "Invalid accessory ID", null));
             return;
         }
 
         final String macAddress = getThing().getProperties().get(Thing.PROPERTY_MAC_ADDRESS);
         if (macAddress == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Missing MAC address");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    i18nProvider.getText(bundle, "error.missing-mac-address", "Missing MAC address", null));
             return;
         }
 
@@ -280,7 +292,8 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
         } catch (Exception e) {
             logger.warn("Pairing / verification failed for {}", thing.getUID(), e);
             startConnectionTask();
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Pairing / verification failed");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, i18nProvider.getText(bundle,
+                    "error.pairing-verification-failed", "Pairing / verification failed", null));
         }
     }
 
@@ -334,35 +347,48 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
     }
 
     /**
-     * Starts listening for events and sets the provided callback to handle incoming events.
-     * If this handler is a child of a bridge, it delegates to the bridge handler.
+     * Gets the bridge handler if this thing is connected to a bridge.
      *
-     * @param callback the EventCallback to handle incoming events
+     * @return the HomekitBridgeHandler or null if not connected to a bridge
      */
-    protected void startListening() {
-        Bridge bridge = getBridge();
-        if (bridge != null && bridge.getHandler() instanceof HomekitBridgeHandler bridgeHandler) {
-            bridgeHandler.startListening();
-        } else {
-            IpTransport ipTransport = this.ipTransport;
-            if (ipTransport != null) {
-                ipTransport.startListening(this);
-            }
+    protected @Nullable HomekitBridgeHandler getBridgeHandler() {
+        return getBridge() instanceof Bridge bridge && bridge.getHandler() instanceof HomekitBridgeHandler handler
+                ? handler
+                : null;
+    }
+
+    /**
+     * Gets the IP transport from the bridge handler if connected to a bridge; otherwise, returns
+     * this handler's IP transport.
+     *
+     * @return the IpTransport or null if not available
+     */
+    protected @Nullable IpTransport getIpTransport() {
+        return getBridgeHandler() instanceof HomekitBridgeHandler h ? h.getIpTransport() : getIpTransport();
+    }
+
+    /**
+     * Subscribes to events from the IP transport.
+     */
+    protected void eventsSubscribe() {
+        IpTransport ipTransport = getIpTransport();
+        if (ipTransport != null) {
+            ipTransport.subscribe(this);
         }
     }
 
     /**
-     * Cancels listening for events.
+     * Unsubscribes from events from the IP transport.
      */
-    private void cancelListening() {
-        IpTransport ipTransport = this.ipTransport;
+    protected void eventsUnsubscribe() {
+        IpTransport ipTransport = getIpTransport();
         if (ipTransport != null) {
-            ipTransport.cancelListening();
+            ipTransport.unsubscribe(this);
         }
     }
 
     @Override
-    public void onEvent(byte[][] eventData) {
-        // TODO handle incoming event 3D byte array by forwarding the data the appropriate accessory thing handler(s)
+    public void onEvent(String jsonContent) {
+        // default implementation does nothing; subclasses may override
     }
 }

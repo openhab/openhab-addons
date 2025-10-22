@@ -18,8 +18,12 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
+import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -30,7 +34,7 @@ import java.util.concurrent.TimeoutException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homekit.internal.session.AsymmetricSessionKeys;
-import org.openhab.binding.homekit.internal.session.EventCallback;
+import org.openhab.binding.homekit.internal.session.EventListener;
 import org.openhab.binding.homekit.internal.session.HttpPayloadParser;
 import org.openhab.binding.homekit.internal.session.SecureSession;
 import org.slf4j.Logger;
@@ -51,14 +55,17 @@ public class IpTransport implements AutoCloseable {
     private static final int TIMEOUT_MILLI_SECONDS = (int) Duration.ofSeconds(10).toMillis();
 
     private final Logger logger = LoggerFactory.getLogger(IpTransport.class);
-    private final ExecutorService executor = Executors.newSingleThreadExecutor(r -> new Thread(r, "homekit-io"));
+
+    private final ExecutorService writeExecutor = Executors
+            .newSingleThreadExecutor(r -> new Thread(r, "homekit-writer"));
 
     private final String host; // ip address with optional port e.g. "192.168.1.42:9123"
     private final Socket socket;
+    private final Set<EventListener> eventListeners = ConcurrentHashMap.newKeySet();
 
     private @Nullable SecureSession secureSession = null;
-    private @Nullable EventCallback eventCallback = null;
-    private @Nullable Thread listenerThread = null;
+    private @Nullable Thread readThread = null;
+    private @Nullable CompletableFuture<byte[][]> readFuture = null;
 
     /**
      * Creates a new IpTransport instance with the given socket and session keys.
@@ -86,6 +93,9 @@ public class IpTransport implements AutoCloseable {
 
     public void setSessionKeys(AsymmetricSessionKeys keys) throws Exception {
         secureSession = new SecureSession(socket, keys);
+        Thread thread = new Thread(this::readTask, "homekit-reader");
+        thread.start();
+        readThread = thread;
     }
 
     public byte[] get(String endpoint, String contentType)
@@ -116,25 +126,28 @@ public class IpTransport implements AutoCloseable {
             byte[][] response; // 0 = headers, 1 = content, 2 = raw trace (if enabled)
             SecureSession secureSession = this.secureSession;
             if (secureSession != null) {
-                Future<@Nullable Void> sendTask = executor.submit(() -> {
+                // before we write request, create CompletableFuture to read response (with a timeout)
+                CompletableFuture<byte[][]> readFuture = new CompletableFuture<>();
+                this.readFuture = readFuture;
+                // create Future to write the request (with a timeout)
+                Future<@Nullable Void> writeTask = writeExecutor.submit(() -> {
                     secureSession.send(request);
                     return null;
                 });
-                // the Future.get() call applies a timeout to write operations
-                sendTask.get(TIMEOUT_MILLI_SECONDS, TimeUnit.MILLISECONDS);
-                // the socket applies its internal timeout to read operations
-                response = secureSession.receive(trace);
+                // now wait for both write and read to complete
+                writeTask.get(TIMEOUT_MILLI_SECONDS, TimeUnit.MILLISECONDS);
+                response = readFuture.get(TIMEOUT_MILLI_SECONDS, TimeUnit.MILLISECONDS);
             } else {
                 OutputStream out = socket.getOutputStream();
                 InputStream in = socket.getInputStream();
-                Future<@Nullable Void> sendTask = executor.submit(() -> {
+                // create Future to write the request (with a timeout)
+                Future<@Nullable Void> writeTask = writeExecutor.submit(() -> {
                     out.write(request);
                     out.flush();
                     return null;
                 });
-                // the Future.get() call applies a timeout to write operations
-                sendTask.get(TIMEOUT_MILLI_SECONDS, TimeUnit.MILLISECONDS);
-                // the socket applies its internal timeout to read operations
+                // now wait for both write and read to complete
+                writeTask.get(TIMEOUT_MILLI_SECONDS, TimeUnit.MILLISECONDS);
                 response = readPlainResponse(in, trace);
             }
 
@@ -241,57 +254,78 @@ public class IpTransport implements AutoCloseable {
     @Override
     public void close() throws Exception {
         socket.close();
-    }
-
-    /**
-     * Listens for incoming events and invokes the registered callback.
-     * This method runs in a loop on a thread, receiving events from the secure session
-     * and passing them to the event callback until the callback is null, the thread is
-     * interrupted, or an error occurs.
-     */
-    private void listenForEvents() {
-        while (!Thread.interrupted()) {
-            EventCallback eventCallback = this.eventCallback;
-            SecureSession secureSession = this.secureSession;
-            if (eventCallback == null || secureSession == null) {
-                break;
-            }
-            try {
-                byte[][] response = secureSession.receive(logger.isTraceEnabled());
-                logger.trace("Event Response:\n{}", new String(response[2], StandardCharsets.ISO_8859_1));
-                eventCallback.onEvent(response);
-            } catch (Exception e) {
-                if (logger.isTraceEnabled()) {
-                    logger.trace("Error while listening for events", e);
-                } else {
-                    logger.debug("Error while listening for events {}", e.getMessage());
-                }
-                break;
-            }
+        secureSession = null;
+        Thread thread = readThread;
+        if (thread != null) {
+            thread.interrupt();
+            thread.join();
         }
     }
 
     /**
-     * Starts listening for events and registers the provided callback.
+     * Handles an incoming response message by completing the read future or notifying event listeners.
      *
-     * @param callback the callback to invoke on receiving events
+     * @param response the received response as a 3D byte array
      */
-    public void startListening(EventCallback callback) {
-        eventCallback = callback;
-        Thread listenerThread = new Thread(this::listenForEvents);
-        this.listenerThread = listenerThread;
-        listenerThread.start();
+    private void handleResponse(byte[][] response) {
+        CompletableFuture<byte[][]> future = readFuture;
+        if (future != null) {
+            readFuture = null;
+            future.complete(response);
+        }
+        String headers = new String(response[0], StandardCharsets.ISO_8859_1);
+        if (headers.startsWith("EVENT ")) {
+            logger.trace("Event:\n{}", new String(response[2], StandardCharsets.ISO_8859_1));
+            String jsonContent = new String(response[1], StandardCharsets.UTF_8);
+            for (EventListener eventListener : eventListeners) {
+                eventListener.onEvent(jsonContent);
+            }
+        }
     }
 
     /**
-     * Cancels listening for events.
+     * Listens for incoming response messages and invokes the callback. This method runs in a loop on a
+     * thread, receiving responses from the secure session and passing them to the callback until the
+     * thread is interrupted, or an error occurs.
      */
-    public void cancelListening() {
-        eventCallback = null;
-        Thread listenerThread = this.listenerThread;
-        if (listenerThread != null) {
-            listenerThread.interrupt();
+    private void readTask() {
+        Throwable cause = null;
+        do {
+            try {
+                SecureSession session = secureSession;
+                if (session == null) {
+                    throw new IllegalStateException("Secure session is null");
+                }
+                byte[][] response = session.receive(logger.isTraceEnabled());
+                handleResponse(response);
+            } catch (SocketTimeoutException e) {
+                // ignore socket timeout; continue listening
+            } catch (Exception e) {
+                cause = e;
+                break;
+            }
+        } while (!Thread.currentThread().isInterrupted());
+
+        CompletableFuture<byte[][]> future = readFuture;
+        if (future != null) {
+            readFuture = null;
+            future.completeExceptionally(cause != null ? cause : new InterruptedException("Listener interrupted"));
         }
-        this.listenerThread = null;
+
+        if (cause != null) {
+            if (logger.isTraceEnabled()) {
+                logger.trace("Error while listening for events", cause);
+            } else {
+                logger.debug("Error while listening for events {}", cause.getMessage());
+            }
+        }
+    }
+
+    public void subscribe(EventListener listener) {
+        eventListeners.add(listener);
+    }
+
+    public void unsubscribe(EventListener listener) {
+        eventListeners.remove(listener);
     }
 }

@@ -31,12 +31,14 @@ import org.openhab.binding.homekit.internal.dto.Characteristic;
 import org.openhab.binding.homekit.internal.dto.Service;
 import org.openhab.binding.homekit.internal.enums.ServiceType;
 import org.openhab.binding.homekit.internal.persistence.HomekitTypeProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.type.ChannelDefinition;
 import org.openhab.core.thing.type.ChannelGroupDefinition;
 import org.openhab.core.thing.type.ChannelGroupType;
 import org.openhab.core.thing.type.ChannelType;
 import org.openhab.core.types.StateDescription;
+import org.osgi.framework.Bundle;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
@@ -365,6 +367,8 @@ class TestChannelCreationForAppleJson {
         assertNotNull(accessories);
 
         HomekitTypeProvider typeProvider = mock(HomekitTypeProvider.class);
+        TranslationProvider i18nProvider = mock(TranslationProvider.class);
+        Bundle bundle = mock(Bundle.class);
 
         List<ChannelGroupType> channelGroupTypes = new ArrayList<>();
         List<ChannelType> channelTypes = new ArrayList<>();
@@ -388,7 +392,7 @@ class TestChannelCreationForAppleJson {
         Accessory accessory = accessories.getAccessory(3);
         assertNotNull(accessory);
         List<ChannelGroupDefinition> channelGroupDefinitions = accessory
-                .buildAndRegisterChannelGroupDefinitions(thingUID, typeProvider);
+                .buildAndRegisterChannelGroupDefinitions(thingUID, typeProvider, i18nProvider, bundle);
 
         // There should be just one channel group definition for the Light Bulb service
         assertNotNull(channelGroupDefinitions);
@@ -452,7 +456,7 @@ class TestChannelCreationForAppleJson {
             if (ServiceType.ACCESSORY_INFORMATION == service.getServiceType()) {
                 for (Characteristic characteristic : service.characteristics) {
                     ChannelDefinition channelDef = characteristic.buildAndRegisterChannelDefinition(thingUID,
-                            typeProvider);
+                            typeProvider, i18nProvider, bundle);
                     if (channelDef != null && FAKE_PROPERTY_CHANNEL_TYPE_UID.equals(channelDef.getChannelTypeUID())) {
                         String name = channelDef.getId();
                         String value = channelDef.getLabel();

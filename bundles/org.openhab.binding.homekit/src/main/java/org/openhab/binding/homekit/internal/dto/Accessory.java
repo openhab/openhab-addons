@@ -21,10 +21,12 @@ import org.openhab.binding.homekit.internal.enums.AccessoryCategory;
 import org.openhab.binding.homekit.internal.enums.CharacteristicType;
 import org.openhab.binding.homekit.internal.enums.ServiceType;
 import org.openhab.binding.homekit.internal.persistence.HomekitTypeProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.semantics.SemanticTag;
 import org.openhab.core.semantics.model.DefaultSemanticTags.Equipment;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.type.ChannelGroupDefinition;
+import org.osgi.framework.Bundle;
 
 import com.google.gson.JsonElement;
 
@@ -59,8 +61,9 @@ public class Accessory {
      * @return a list of channel group definition instances for the services of this accessory.
      */
     public List<ChannelGroupDefinition> buildAndRegisterChannelGroupDefinitions(ThingUID thingUID,
-            HomekitTypeProvider typeProvider) {
-        return services.stream().map(s -> s.buildAndRegisterChannelGroupDefinition(thingUID, typeProvider))
+            HomekitTypeProvider typeProvider, TranslationProvider i18nProvider, Bundle bundle) {
+        return services.stream()
+                .map(s -> s.buildAndRegisterChannelGroupDefinition(thingUID, typeProvider, i18nProvider, bundle))
                 .filter(Objects::nonNull).toList();
     }
 

@@ -31,6 +31,7 @@ import org.openhab.binding.homekit.internal.dto.Characteristic;
 import org.openhab.binding.homekit.internal.dto.Service;
 import org.openhab.binding.homekit.internal.enums.ServiceType;
 import org.openhab.binding.homekit.internal.persistence.HomekitTypeProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.type.ChannelDefinition;
 import org.openhab.core.thing.type.ChannelGroupDefinition;
@@ -39,6 +40,7 @@ import org.openhab.core.thing.type.ChannelKind;
 import org.openhab.core.thing.type.ChannelType;
 import org.openhab.core.types.StateDescription;
 import org.openhab.core.types.StateOption;
+import org.osgi.framework.Bundle;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
@@ -1586,6 +1588,8 @@ class TestChannelCreationForVeluxJson {
         assertNotNull(accessories);
 
         HomekitTypeProvider typeProvider = mock(HomekitTypeProvider.class);
+        TranslationProvider i18nProvider = mock(TranslationProvider.class);
+        Bundle bundle = mock(Bundle.class);
 
         List<ChannelGroupType> channelGroupTypes = new ArrayList<>();
         List<ChannelType> channelTypes = new ArrayList<>();
@@ -1611,7 +1615,7 @@ class TestChannelCreationForVeluxJson {
             if (ServiceType.ACCESSORY_INFORMATION == service.getServiceType()) {
                 for (Characteristic characteristic : service.characteristics) {
                     ChannelDefinition channelDef = characteristic.buildAndRegisterChannelDefinition(thingUID,
-                            typeProvider);
+                            typeProvider, i18nProvider, bundle);
                     if (channelDef != null && FAKE_PROPERTY_CHANNEL_TYPE_UID.equals(channelDef.getChannelTypeUID())) {
                         String name = channelDef.getId();
                         String value = channelDef.getLabel();
@@ -1639,6 +1643,8 @@ class TestChannelCreationForVeluxJson {
         assertNotNull(accessories);
 
         HomekitTypeProvider typeProvider = mock(HomekitTypeProvider.class);
+        TranslationProvider i18nProvider = mock(TranslationProvider.class);
+        Bundle bundle = mock(Bundle.class);
 
         List<ChannelGroupType> channelGroupTypes = new ArrayList<>();
         List<ChannelType> channelTypes = new ArrayList<>();
@@ -1660,7 +1666,7 @@ class TestChannelCreationForVeluxJson {
         Accessory accessory = accessories.getAccessory(2);
         assertNotNull(accessory);
         List<ChannelGroupDefinition> channelGroupDefinitions = accessory
-                .buildAndRegisterChannelGroupDefinitions(thingUID, typeProvider);
+                .buildAndRegisterChannelGroupDefinitions(thingUID, typeProvider, i18nProvider, bundle);
 
         // There should be three channel group definitions for the temperature, humidity and co2 sensors
         assertNotNull(channelGroupDefinitions);
@@ -1797,6 +1803,8 @@ class TestChannelCreationForVeluxJson {
         assertNotNull(accessories);
 
         HomekitTypeProvider typeProvider = mock(HomekitTypeProvider.class);
+        TranslationProvider i18nProvider = mock(TranslationProvider.class);
+        Bundle bundle = mock(Bundle.class);
 
         List<ChannelGroupType> channelGroupTypes = new ArrayList<>();
         List<ChannelType> channelTypes = new ArrayList<>();
@@ -1817,7 +1825,7 @@ class TestChannelCreationForVeluxJson {
         Accessory accessory = accessories.getAccessory(9);
         assertNotNull(accessory);
         List<ChannelGroupDefinition> channelGroupDefinitions = accessory
-                .buildAndRegisterChannelGroupDefinitions(thingUID, typeProvider);
+                .buildAndRegisterChannelGroupDefinitions(thingUID, typeProvider, i18nProvider, bundle);
 
         // There should be one channel group definition for the blind
         assertNotNull(channelGroupDefinitions);
@@ -1970,6 +1978,6 @@ class TestChannelCreationForVeluxJson {
         List<StateOption> options = state.getOptions();
         assertNotNull(options);
         assertEquals(3, options.size());
-        assertEquals("2", options.get(2).getValue());
+        assertEquals("Position State #2", options.get(2).getValue());
     }
 }

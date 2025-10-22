@@ -27,6 +27,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homekit.internal.enums.CharacteristicType;
 import org.openhab.binding.homekit.internal.enums.DataFormatType;
 import org.openhab.binding.homekit.internal.persistence.HomekitTypeProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.semantics.SemanticTag;
 import org.openhab.core.semantics.model.DefaultSemanticTags.Point;
@@ -40,6 +41,7 @@ import org.openhab.core.thing.type.StateChannelTypeBuilder;
 import org.openhab.core.types.StateDescriptionFragment;
 import org.openhab.core.types.StateDescriptionFragmentBuilder;
 import org.openhab.core.types.StateOption;
+import org.osgi.framework.Bundle;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
@@ -83,7 +85,7 @@ public class Characteristic {
      * @return the ChannelDefinition or null if it cannot be mapped
      */
     public @Nullable ChannelDefinition buildAndRegisterChannelDefinition(ThingUID thingUID,
-            HomekitTypeProvider typeProvider) {
+            HomekitTypeProvider typeProvider, TranslationProvider i18nProvider, Bundle bundle) {
         CharacteristicType characteristicType = getCharacteristicType();
         DataFormatType dataFormatType;
         try {
@@ -843,32 +845,35 @@ public class Characteristic {
                 }
 
                 // use valid values to build options for enum-like characteristics
+                List<String> options = new ArrayList<>();
                 if (validValues != null && !validValues.isEmpty()) {
-                    List<StateOption> options = validValues.stream().map(v -> v.toString())
-                            .map(s -> new StateOption(s, s)).toList();
-                    fragBldr.withOptions(options);
+                    options.addAll(validValues.stream().map(v -> v.toString()).toList());
                 } else
                 // use valid range to build options for enum-like characteristics
                 if (validValuesRange != null && validValuesRange.size() == 2) {
                     int min = validValuesRange.stream().mapToInt(Integer::intValue).min().orElse(0); // size check above
                     int max = validValuesRange.stream().mapToInt(Integer::intValue).max().orElse(0); // ditto
                     int step = minStep != null ? minStep.intValue() : 1;
-                    List<StateOption> options = new ArrayList<>();
                     for (int i = min; i <= max; i += step) {
-                        String s = Integer.toString(i);
-                        options.add(new StateOption(s, s));
+                        options.add(Integer.toString(i));
                     }
-                    fragBldr.withOptions(options);
                 } else
-                // some enum-like characteristics fail to declare valid values/ranges so misuse min/max/step instead
+                // some enum-like characteristics fail to declare valid values/ranges so we misuse min/max/step instead
                 if (isEnumLike && minValue instanceof Double min && maxValue instanceof Double max && max > min
                         && minStep instanceof Double step && step > 0) {
-                    List<StateOption> options = new ArrayList<>();
                     for (int i = min.intValue(); i <= max.intValue(); i += step.intValue()) {
-                        String s = Integer.toString(i);
-                        options.add(new StateOption(s, s));
+                        options.add(Integer.toString(i));
                     }
-                    fragBldr.withOptions(options);
+                }
+
+                if (!options.isEmpty()) {
+                    String prefix = "characteristic.%s.".formatted(characteristicType.getOpenhabType());
+                    fragBldr.withOptions(options.stream().map(o -> {
+                        String defaultText = "%s #%s".formatted(characteristicType.toString(), o);
+                        String optionLabel = i18nProvider.getText(bundle, prefix + o, defaultText, null);
+                        optionLabel = optionLabel == null || optionLabel.isBlank() ? defaultText : optionLabel;
+                        return new StateOption(optionLabel, o);
+                    }).toList());
                 }
             }
             StateDescriptionFragment stateDescriptionFragment = fragBldr.build();

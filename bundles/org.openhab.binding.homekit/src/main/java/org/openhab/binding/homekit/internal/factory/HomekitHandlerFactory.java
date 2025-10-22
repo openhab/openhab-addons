@@ -22,6 +22,7 @@ import org.openhab.binding.homekit.internal.handler.HomekitAccessoryHandler;
 import org.openhab.binding.homekit.internal.handler.HomekitBridgeHandler;
 import org.openhab.binding.homekit.internal.persistence.HomekitKeyStore;
 import org.openhab.binding.homekit.internal.persistence.HomekitTypeProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -30,6 +31,8 @@ import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.openhab.core.thing.type.ChannelGroupTypeRegistry;
 import org.openhab.core.thing.type.ChannelTypeRegistry;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -49,15 +52,20 @@ public class HomekitHandlerFactory extends BaseThingHandlerFactory {
     private final ChannelTypeRegistry channelTypeRegistry;
     private final ChannelGroupTypeRegistry channelGroupTypeRegistry;
     private final HomekitKeyStore keyStore;
+    private final TranslationProvider i18nProvider;
+    private final Bundle bundle;
 
     @Activate
     public HomekitHandlerFactory(@Reference HomekitTypeProvider typeProvider,
             @Reference ChannelTypeRegistry channelTypeRegistry,
-            @Reference ChannelGroupTypeRegistry channelGroupTypeRegistry, @Reference HomekitKeyStore keyStore) {
+            @Reference ChannelGroupTypeRegistry channelGroupTypeRegistry, @Reference HomekitKeyStore keyStore,
+            @Reference TranslationProvider translationProvider) {
         this.typeProvider = typeProvider;
         this.channelTypeRegistry = channelTypeRegistry;
         this.channelGroupTypeRegistry = channelGroupTypeRegistry;
         this.keyStore = keyStore;
+        this.i18nProvider = translationProvider;
+        this.bundle = FrameworkUtil.getBundle(getClass());
     }
 
     @Override
@@ -69,10 +77,10 @@ public class HomekitHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (THING_TYPE_BRIDGE.equals(thingTypeUID)) {
-            return new HomekitBridgeHandler((Bridge) thing, typeProvider, keyStore);
+            return new HomekitBridgeHandler((Bridge) thing, typeProvider, keyStore, i18nProvider, bundle);
         } else if (THING_TYPE_ACCESSORY.equals(thingTypeUID)) {
             return new HomekitAccessoryHandler(thing, typeProvider, channelTypeRegistry, channelGroupTypeRegistry,
-                    keyStore);
+                    keyStore, i18nProvider, bundle);
         }
         return null;
     }

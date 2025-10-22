@@ -15,18 +15,17 @@ package org.openhab.binding.homekit.internal.session;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Callback interface for handling HTTP 'EVENT' messages with associated HTTP headers and HTTP contents.
+ * Callback interface for handling HTTP 'EVENT' message contents.
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-public interface EventCallback {
+public interface EventListener {
 
     /*
-     * Method invoked when an event occurs. Receives a 3D byte array where the first element is the HTTP
-     * headers, the second element is the content, and the third is the raw trace (if enabled).
+     * Method invoked when an event occurs.
      *
-     * @param eventData a 3D array of byte arrays.
+     * @param jsonContent string containing the HTTP json content.
      */
-    public void onEvent(byte[][] eventData);
+    public void onEvent(String jsonContent);
 }

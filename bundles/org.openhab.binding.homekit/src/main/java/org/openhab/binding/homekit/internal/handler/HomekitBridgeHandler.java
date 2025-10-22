@@ -25,6 +25,7 @@ import org.openhab.binding.homekit.internal.dto.Service;
 import org.openhab.binding.homekit.internal.enums.ServiceType;
 import org.openhab.binding.homekit.internal.persistence.HomekitKeyStore;
 import org.openhab.binding.homekit.internal.persistence.HomekitTypeProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -34,6 +35,7 @@ import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.thing.binding.builder.BridgeBuilder;
 import org.openhab.core.thing.type.ChannelDefinition;
 import org.openhab.core.types.Command;
+import org.osgi.framework.Bundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,8 +54,9 @@ public class HomekitBridgeHandler extends HomekitBaseAccessoryHandler implements
 
     private final Logger logger = LoggerFactory.getLogger(HomekitBridgeHandler.class);
 
-    public HomekitBridgeHandler(Bridge bridge, HomekitTypeProvider typeProvider, HomekitKeyStore keyStore) {
-        super(bridge, typeProvider, keyStore);
+    public HomekitBridgeHandler(Bridge bridge, HomekitTypeProvider typeProvider, HomekitKeyStore keyStore,
+            TranslationProvider i18nProvider, Bundle bundle) {
+        super(bridge, typeProvider, keyStore, i18nProvider, bundle);
     }
 
     @Override
@@ -127,7 +130,7 @@ public class HomekitBridgeHandler extends HomekitBaseAccessoryHandler implements
             if (ServiceType.ACCESSORY_INFORMATION == service.getServiceType()) {
                 for (Characteristic characteristic : service.characteristics) {
                     ChannelDefinition channelDef = characteristic.buildAndRegisterChannelDefinition(thing.getUID(),
-                            typeProvider);
+                            typeProvider, i18nProvider, bundle);
                     if (channelDef != null && FAKE_PROPERTY_CHANNEL_TYPE_UID.equals(channelDef.getChannelTypeUID())) {
                         String name = channelDef.getId();
                         String value = channelDef.getLabel();
