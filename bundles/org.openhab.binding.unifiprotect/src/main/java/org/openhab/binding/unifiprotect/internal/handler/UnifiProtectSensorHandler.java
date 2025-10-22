@@ -29,6 +29,7 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.UnDefType;
 
 /**
  * Child handler for a UniFi Protect Sensor.
@@ -161,7 +162,8 @@ public class UnifiProtectSensorHandler extends UnifiProtectAbstractDeviceHandler
         if (sensor.batteryStatus != null && sensor.batteryStatus.percentage != null) {
             updateDecimalChannel(UnifiProtectBindingConstants.CHANNEL_BATTERY, sensor.batteryStatus.percentage);
         }
-        updateContactChannel(UnifiProtectBindingConstants.CHANNEL_CONTACT, sensor.isOpened);
+        updateContactChannel(UnifiProtectBindingConstants.CHANNEL_CONTACT, sensor.isOpened == null ? UnDefType.UNDEF
+                : sensor.isOpened ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
         if (sensor.stats != null) {
             if (sensor.stats.temperature != null) {
                 updateDecimalChannel(UnifiProtectBindingConstants.CHANNEL_TEMPERATURE, sensor.stats.temperature.value);

@@ -109,10 +109,12 @@ public class UnifiMediaServiceImpl implements UnifiMediaService {
             logger.debug("Failed to activate WebRtcMediaServiceImpl", e);
             throw new IllegalStateException("Failed to activate WebRtcMediaServiceImpl", e);
         }
+        logger.debug("UnifiMediaServiceImpl activated");
     }
 
     @Modified
     protected void modified(Map<String, Object> properties) {
+        logger.debug("UnifiMediaServiceImpl modified");
         UnifiProtectConfiguration oldConfig = config;
         config = new Configuration(properties).as(UnifiProtectConfiguration.class);
         if (oldConfig.useStun != config.useStun) {

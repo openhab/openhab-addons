@@ -34,9 +34,7 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 /**
- * The {@link UnifiProtectHandlerFactory} is responsible for creating things and
- * thing
- * handlers.
+ * The {@link UnifiProtectHandlerFactory} is responsible for creating things and thing handlers.
  *
  * @author Dan Cunningham - Initial contribution
  */

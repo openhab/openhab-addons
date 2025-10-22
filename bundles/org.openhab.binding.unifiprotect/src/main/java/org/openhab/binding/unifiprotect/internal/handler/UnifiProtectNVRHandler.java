@@ -207,20 +207,6 @@ public class UnifiProtectNVRHandler extends BaseBridgeHandler {
                                     break;
                             }
                         }
-
-                        // switch (update.item.modelKey) {
-                        // case CAMERA:
-                        // refreshChildFromApi(UnifiProtectBindingConstants.THING_TYPE_CAMERA, id);
-                        // break;
-                        // case LIGHT:
-                        // refreshChildFromApi(UnifiProtectBindingConstants.THING_TYPE_LIGHT, id);
-                        // break;
-                        // case SENSOR:
-                        // refreshChildFromApi(UnifiProtectBindingConstants.THING_TYPE_SENSOR, id);
-                        // break;
-                        // default:
-                        // break;
-                        // }
                     });
                 }, remove -> {
                     scheduler.execute(() -> {

@@ -41,7 +41,7 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 
 /**
- * Polymorphic adapter for events based on type discriminator.
+ * Adapter for events based on type.
  *
  * @author Dan Cunningham - Initial contribution
  */

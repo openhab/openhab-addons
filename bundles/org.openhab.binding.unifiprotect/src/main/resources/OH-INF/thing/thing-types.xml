@@ -459,6 +459,7 @@
 			<tag>Measurement</tag>
 			<tag>Presence</tag>
 		</tags>
+		<config-description-ref uri="thing-type:unifiprotect:latching-contact-config"/>
 	</channel-type>
 
 	<channel-type id="snapshot">
@@ -469,7 +470,7 @@
 			<tag>Status</tag>
 			<tag>Info</tag>
 		</tags>
-		<config-description-ref uri="thing-type:unifiprotect:snapshotconfig"/>
+		<config-description-ref uri="thing-type:unifiprotect:snapshot-config"/>
 	</channel-type>
 
 	<channel-type id="mic-volume">
@@ -617,6 +618,7 @@
 			<tag>Measurement</tag>
 			<tag>Motion</tag>
 		</tags>
+		<config-description-ref uri="thing-type:unifiprotect:latching-contact-config"/>
 	</channel-type>
 
 	<channel-type id="smart-detect-audio" advanced="true">
@@ -646,6 +648,7 @@
 			<tag>Measurement</tag>
 			<tag>Noise</tag>
 		</tags>
+		<config-description-ref uri="thing-type:unifiprotect:latching-contact-config"/>
 	</channel-type>
 
 	<channel-type id="smart-detect-zone" advanced="true">
@@ -697,6 +700,7 @@
 			<tag>Measurement</tag>
 			<tag>Presence</tag>
 		</tags>
+		<config-description-ref uri="thing-type:unifiprotect:latching-contact-config"/>
 	</channel-type>
 	<channel-type id="smart-detect-loiter" advanced="true">
 		<kind>trigger</kind>
@@ -722,5 +726,6 @@
 			<tag>Measurement</tag>
 			<tag>Presence</tag>
 		</tags>
+		<config-description-ref uri="thing-type:unifiprotect:latching-contact-config"/>
 	</channel-type>
 </thing:thing-descriptions>

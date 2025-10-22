@@ -16,6 +16,9 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -23,12 +26,14 @@ import org.openhab.binding.unifiprotect.internal.api.UniFiProtectApiClient;
 import org.openhab.binding.unifiprotect.internal.api.dto.ApiValueEnum;
 import org.openhab.binding.unifiprotect.internal.api.dto.Device;
 import org.openhab.binding.unifiprotect.internal.api.dto.events.BaseEvent;
+import org.openhab.binding.unifiprotect.internal.config.UnifiProtectContactConfiguration;
 import org.openhab.binding.unifiprotect.internal.config.UnifiProtectDeviceConfiguration;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -47,6 +52,8 @@ public abstract class UnifiProtectAbstractDeviceHandler<T extends Device> extend
     protected @Nullable T device;
     protected String deviceId = "";
     protected Map<String, State> stateCache = new HashMap<>();
+
+    private Map<String, ScheduledFuture<?>> latchJobs = new ConcurrentHashMap<>();
 
     public enum WSEventType {
         ADD,
@@ -67,6 +74,12 @@ public abstract class UnifiProtectAbstractDeviceHandler<T extends Device> extend
     public void initialize() {
         updateStatus(ThingStatus.UNKNOWN);
         deviceId = getConfigAs(UnifiProtectDeviceConfiguration.class).deviceId;
+    }
+
+    @Override
+    public void dispose() {
+        latchJobs.forEach((k, v) -> v.cancel(true));
+        latchJobs.clear();
     }
 
     // making public
@@ -137,7 +150,27 @@ public abstract class UnifiProtectAbstractDeviceHandler<T extends Device> extend
                 value == null ? UnDefType.NULL : new DecimalType(BigDecimal.valueOf(value.doubleValue())));
     }
 
-    protected void updateContactChannel(String channelId, @Nullable Boolean isOpen) {
-        updateState(channelId, isOpen == null ? UnDefType.NULL : isOpen ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
+    protected void updateContactChannel(String channelId, State state) {
+        if (getThing().getChannel(channelId) instanceof Channel channel) {
+            if (state instanceof OpenClosedType openClosedType) {
+                UnifiProtectContactConfiguration c = channel.getConfiguration()
+                        .as(UnifiProtectContactConfiguration.class);
+                int delay = c.motionLatchDelay;
+                ScheduledFuture<?> existing = latchJobs.get(channelId);
+                if (existing != null) {
+                    existing.cancel(true);
+                }
+                if (openClosedType == OpenClosedType.OPEN) {
+                    latchJobs.put(channelId, scheduler.schedule(() -> {
+                        updateState(channelId, OpenClosedType.CLOSED);
+                        latchJobs.remove(channelId);
+                    }, delay, TimeUnit.MILLISECONDS));
+                } else {
+                    updateState(channelId, openClosedType);
+                }
+            } else {
+                updateState(channelId, state);
+            }
+        }
     }
 }

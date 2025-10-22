@@ -38,7 +38,7 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 
 /**
- * Polymorphic adapter for Device based on modelKey discriminator.
+ * Adapter for Device based on modelKey.
  *
  * @author Dan Cunningham - Initial contribution
  */
