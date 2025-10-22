@@ -364,7 +364,8 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
      * @return the IpTransport or null if not available
      */
     protected @Nullable IpTransport getIpTransport() {
-        return getBridgeHandler() instanceof HomekitBridgeHandler bridgeHandler ? bridgeHandler.ipTransport : ipTransport;
+        return getBridgeHandler() instanceof HomekitBridgeHandler bridgeHandler ? bridgeHandler.ipTransport
+                : ipTransport;
     }
 
     /**
