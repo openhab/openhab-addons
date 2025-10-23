@@ -143,7 +143,6 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
                         refreshTask = scheduler.scheduleWithFixedDelay(this::refresh, INITIAL_DELAY_SECONDS,
                                 refreshIntervalSeconds, TimeUnit.SECONDS);
                     }
-                    return;
                 }
             } catch (NumberFormatException e) {
             }
@@ -793,6 +792,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
                 }
             }
         }
+        logger.debug("Identified {} evented channels", eventedChannels.size());
     }
 
     /**
