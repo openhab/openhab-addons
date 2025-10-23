@@ -156,7 +156,8 @@ public class TelegramHandler extends BaseThingHandler {
             try {
                 parseMode = ParseMode.valueOf(parseModeAsString);
             } catch (IllegalArgumentException e) {
-                logger.warn("parseMode is invalid and will be ignored. Only Markdown or HTML are allowed values");
+                logger.warn(
+                        "parseMode is invalid and will be ignored. Only Markdown, MarkdownV2 or HTML are allowed values");
             }
         }
 
