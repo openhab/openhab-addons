@@ -16,11 +16,12 @@ import static org.openhab.binding.miele.internal.MieleBindingConstants.*;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
+import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.MulticastSocket;
 import java.net.NetworkInterface;
-import java.net.Socket;
+import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
@@ -313,7 +314,6 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
     private Runnable eventListenerRunnable = () -> {
         NetworkInterface networkInterface = getMulticastNetworkInterface(config.ipAddress);
         if (networkInterface == null) {
-            logger.warn("Unable to determine multicast network interface for gateway {}", config.ipAddress);
             return;
         }
 
@@ -425,17 +425,22 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
         }
     };
 
-    private @Nullable NetworkInterface getMulticastNetworkInterface(String address) {
-        Socket socket = null;
+    private @Nullable NetworkInterface getMulticastNetworkInterface(String gatewayIpAddress) {
         try {
-            socket = new Socket(address, 80);
-            InetAddress ourAddress = socket.getLocalAddress();
-            NetworkInterface ni = NetworkInterface.getByInetAddress(ourAddress);
-            socket.close();
-            return ni;
-        } catch (IOException e) {
-            return null;
+            InetAddress gatewayAddress = InetAddress.getByName(gatewayIpAddress);
+
+            try (DatagramSocket socket = new DatagramSocket()) {
+                socket.connect(gatewayAddress, 80);
+                InetAddress localAddress = socket.getLocalAddress();
+                return NetworkInterface.getByInetAddress(localAddress);
+            }
+        } catch (UnknownHostException e) {
+            logger.warn("Invalid gateway '{}': {}", gatewayIpAddress, e.getMessage());
+        } catch (SocketException e) {
+            logger.warn("Failed to determine network interface for '{}': {}", gatewayIpAddress, e.getMessage());
         }
+
+        return null;
     }
 
     public JsonElement invokeOperation(String applianceId, String modelID, String methodName) throws MieleRpcException {
