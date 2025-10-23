@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.unifiprotect.internal.api.dto;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * Camera device DTO.
  *
@@ -25,7 +27,7 @@ public class Camera extends Device {
     public LedSettings ledSettings;
     public LcdMessage lcdMessage;
     public Integer micVolume; // 0-100
-    public Integer activePatrolSlot; // nullable
+    public @Nullable Integer activePatrolSlot;
     public VideoMode videoMode;
     public HdrType hdrType;
     public CameraFeatureFlags featureFlags;

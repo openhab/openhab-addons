@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.unifiprotect.internal.api.dto;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * Relative humidity sensor configuration.
  *
@@ -20,6 +22,6 @@ package org.openhab.binding.unifiprotect.internal.api.dto;
 public class HumiditySettings {
     public Boolean isEnabled;
     public Double margin;
-    public Double lowThreshold; // nullable
-    public Double highThreshold; // nullable
+    public @Nullable Double lowThreshold;
+    public @Nullable Double highThreshold;
 }

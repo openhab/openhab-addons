@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.unifiprotect.internal.api.dto;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * Ambient light sensor configuration.
  *
@@ -20,6 +22,6 @@ package org.openhab.binding.unifiprotect.internal.api.dto;
 public class LightSettings {
     public Boolean isEnabled;
     public Double margin;
-    public Double lowThreshold; // nullable
-    public Double highThreshold; // nullable
+    public @Nullable Double lowThreshold;
+    public @Nullable Double highThreshold;
 }

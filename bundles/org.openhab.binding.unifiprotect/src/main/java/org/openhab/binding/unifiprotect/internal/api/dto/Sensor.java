@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.unifiprotect.internal.api.dto;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * Sensor device DTO.
  *
@@ -26,15 +28,15 @@ public class Sensor extends Device {
     public TemperatureSettings temperatureSettings;
 
     public Boolean isOpened;
-    public Long openStatusChangedAt; // nullable
+    public @Nullable Long openStatusChangedAt;
     public Boolean isMotionDetected;
-    public Long motionDetectedAt; // nullable
+    public @Nullable Long motionDetectedAt;
     public MotionSettings motionSettings;
 
-    public Long alarmTriggeredAt; // nullable
+    public @Nullable Long alarmTriggeredAt;
     public AlarmSettings alarmSettings;
-    public Long leakDetectedAt; // nullable
-    public Long externalLeakDetectedAt; // nullable
+    public @Nullable Long leakDetectedAt;
+    public @Nullable Long externalLeakDetectedAt;
     public LeakSettings leakSettings;
-    public Long tamperingDetectedAt; // nullable
+    public @Nullable Long tamperingDetectedAt;
 }

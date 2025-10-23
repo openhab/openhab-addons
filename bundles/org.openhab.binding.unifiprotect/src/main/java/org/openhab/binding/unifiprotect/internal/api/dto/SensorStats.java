@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.unifiprotect.internal.api.dto;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * Aggregated statistics for a sensor.
  *
@@ -23,7 +25,7 @@ public class SensorStats {
     public Metric temperature;
 
     public static class Metric {
-        public Double value; // nullable
+        public @Nullable Double value;
         public SensorStatus status;
     }
 }

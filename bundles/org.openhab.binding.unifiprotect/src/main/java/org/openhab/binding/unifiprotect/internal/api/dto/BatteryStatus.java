@@ -12,12 +12,14 @@
  */
 package org.openhab.binding.unifiprotect.internal.api.dto;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * Battery status representation.
  *
  * @author Dan Cunningham - Initial contribution
  */
 public class BatteryStatus {
-    public Double percentage; // nullable
+    public @Nullable Double percentage;
     public boolean isLow;
 }

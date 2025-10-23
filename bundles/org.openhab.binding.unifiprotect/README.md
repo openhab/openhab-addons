@@ -9,7 +9,7 @@ It uses the official Protect Integration API over HTTPS and WebSocket with a Bea
 
 ## Features
 
-- Supports multiple Protect devices (Cameras, Floodlights, Sensors)
+- Supports multiple Protect devices (Cameras, Doorbells, Floodlights, Sensors)
 - Uses the official Protect Integration API locally to a UniFi Protect NVR/CloudKey/UNVR
 - Has granular triggers and channels for realtime motion events including AI object detection, audio, and line crossing events.
 - Uses websockets for realtime updates without polling
@@ -29,16 +29,16 @@ See [Binding Configuration](#binding-configuration) to enable/disable downloadin
 
 ## Supported Things
 
-- `unifiprotect:nvr` (Bridge): The Protect NVR/CloudKey/UNVR.
+- `nvr` (Bridge): The Protect NVR/CloudKey/UNVR.
   Required to discover and manage child devices.
-- `unifiprotect:camera`: A Protect camera.
+- `camera`: A Protect camera.
   Channels are added dynamically based on device capabilities (mic, HDR, smart detection, PTZ, etc.).
-- `unifiprotect:light`: A Protect Floodlight.
-- `unifiprotect:sensor`: A Protect environmental/contact sensor.
+- `light`: A Protect Floodlight.
+- `sensor`: A Protect environmental/contact sensor.
 
 ## Discovery
 
-- Add the `NVR` bridge by entering its Hostname/IP and an Integration API Token.
+- Add the `nvr` bridge by entering its Hostname/IP and an Bearer Token.
 - Once the NVR is ONLINE, Cameras, Floodlights, and Sensors are discovered automatically and appear in the Inbox.
 - Approve discovered things to add them to your system.
   Manual creation is also possible using `deviceId`.
@@ -47,7 +47,7 @@ See [Binding Configuration](#binding-configuration) to enable/disable downloadin
 
 | Name             | Type    | Description                                                                                                                                                                                                                                                                         | Required |
 |------------------|---------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------|
-| downloadBinaries | boolean | Download binaries if they are not on the system PATH.  This setting is used to control whether the binding should download the native binaries if they are not found. By default, the binding will download the binaries if they are not on the system PATH for supported platforms | yes      |
+| downloadBinaries | boolean | Download binaries if they are not on the system PATH. This setting is used to control whether the binding should download the native binaries if they are not found. By default, the binding will download the binaries if they are not on the system PATH for supported platforms | yes      |
 | useStun          | boolean | Use STUN for external IP discovery.  This will allow camera streams to work behind NATs when outside your local network (e.g. when using the openHAB cloud service) and is enabled by default.                                                                                      | yes      |
 
 Note: Enabling STUN will incur an approximately 5 second delay delivering the stream to clients as it discovers your external IP and pins a port on your router for streams.  If you are not using the openHAB cloud service with cameras, disabling STUN will allow for near instant stream starts (video will start within a second of loading) on your local network or over a VPN.

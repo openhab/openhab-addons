@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.unifiprotect.internal.api.dto;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * Floodlight device DTO.
  *
@@ -25,5 +27,5 @@ public class Light extends Device {
     public Boolean isLightForceEnabled;
     public Long lastMotion; // epoch millis or null
     public Boolean isPirMotionDetected;
-    public String camera; // nullable
+    public @Nullable String camera;
 }

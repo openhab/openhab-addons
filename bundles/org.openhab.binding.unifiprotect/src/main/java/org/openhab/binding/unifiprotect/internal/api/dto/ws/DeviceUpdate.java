@@ -20,6 +20,6 @@ import org.openhab.binding.unifiprotect.internal.api.dto.Device;
  * @author Dan Cunningham - Initial contribution
  */
 public class DeviceUpdate {
-    public String type; // "update"
+    public String type;
     public Device item;
 }

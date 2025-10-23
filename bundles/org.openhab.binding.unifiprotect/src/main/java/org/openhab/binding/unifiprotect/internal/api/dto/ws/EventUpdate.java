@@ -20,6 +20,6 @@ import org.openhab.binding.unifiprotect.internal.api.dto.events.BaseEvent;
  * @author Dan Cunningham - Initial contribution
  */
 public class EventUpdate {
-    public String type; // "update"
+    public String type;
     public BaseEvent item;
 }

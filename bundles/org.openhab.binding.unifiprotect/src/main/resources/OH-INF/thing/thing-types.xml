@@ -481,6 +481,7 @@
 			<tag>Control</tag>
 			<tag>SoundVolume</tag>
 		</tags>
+		<state min="0" max="100" step="1" pattern="%d %%"/>
 	</channel-type>
 
 	<channel-type id="video-mode">

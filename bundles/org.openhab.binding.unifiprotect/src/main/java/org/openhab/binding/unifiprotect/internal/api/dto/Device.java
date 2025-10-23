@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.unifiprotect.internal.api.dto;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * Base type for all device-like DTOs discriminated by modelKey.
  *
@@ -22,6 +24,6 @@ package org.openhab.binding.unifiprotect.internal.api.dto;
 public abstract class Device {
     public String id;
     public ModelKey modelKey;
-    public DeviceState state; // nullable
+    public @Nullable DeviceState state;
     public String name;
 }

@@ -20,6 +20,6 @@ import org.openhab.binding.unifiprotect.internal.api.dto.Device;
  * @author Dan Cunningham - Initial contribution
  */
 public class DeviceRemove {
-    public String type; // "remove"
+    public String type;
     public Device item;
 }

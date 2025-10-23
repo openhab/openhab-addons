@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.unifiprotect.internal.api.dto.events;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.unifiprotect.internal.api.dto.ModelKey;
 
 /**
@@ -24,6 +25,6 @@ public abstract class BaseEvent {
     public ModelKey modelKey = ModelKey.EVENT;
     public EventType type;
     public Long start;
-    public Long end; // nullable
-    public String device; // deviceId
+    public @Nullable Long end;
+    public String device;
 }
