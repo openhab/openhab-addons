@@ -21,7 +21,7 @@ Single-phase energy meter (WEM3080/WEM3162)
 | voltage_a      | V    | Voltage                      | Number:ElectricPotential |
 | current_a      | A    | Current                      | Number:ElectricCurrent   |
 | power_a        | W    | Active power                 | Number:Power             |
-| importenergy_a | kWh  | Energy consumption from gird | Number:Energy            |
+| importenergy_a | kWh  | Energy consumption from grid | Number:Energy            |
 | exportgrid_a   | kWh  | Energy export to grid        | Number:Energy            |
 
 Three-phase energy meter (WEM3080T)
@@ -33,22 +33,22 @@ Three-phase energy meter (WEM3080T)
 | power_a        | W    | A phase active power  | Number:Power             |
 | importenergy_a | kWh  | A phase import energy | Number:Energy            |
 | exportgrid_a   | kWh  | A phase export energy | Number:Energy            |
-| frequency_a    | kWh  | A phase frequency     | Number:Frequency         |
-| pf_a           | kWh  | A phase power factor  | Number                   |
+| frequency_a    | Hz   | A phase frequency     | Number:Frequency         |
+| pf_a           |      | A phase power factor  | Number                   |
 | voltage_b      | V    | B phase voltage       | Number:ElectricPotential |
 | current_b      | A    | B phase current       | Number:ElectricCurrent   |
 | power_b        | W    | B phase active power  | Number:Power             |
 | importenergy_b | kWh  | B phase import energy | Number:Energy            |
 | exportgrid_b   | kWh  | B phase export energy | Number:Energy            |
-| frequency_b    | kWh  | B phase frequency     | Number:Frequency         |
-| pf_b           | kWh  | B phase power factor  | Number                   |
+| frequency_b    | Hz   | B phase frequency     | Number:Frequency         |
+| pf_b           |      | B phase power factor  | Number                   |
 | voltage_c      | V    | C phase voltage       | Number:ElectricPotential |
 | current_c      | A    | C phase current       | Number:ElectricCurrent   |
 | power_c        | W    | C phase active power  | Number:Power             |
 | importenergy_c | kWh  | C phase import energy | Number:Energy            |
 | exportgrid_c   | kWh  | C phase export energy | Number:Energy            |
-| frequency_c    | kWh  | C phase frequency     | Number:Frequency         |
-| pf_c           | kWh  | C phase power factor  | Number                   |
+| frequency_c    | Hz   | C phase frequency     | Number:Frequency         |
+| pf_c           |      | C phase power factor  | Number                   |
 
 ## More information
 
