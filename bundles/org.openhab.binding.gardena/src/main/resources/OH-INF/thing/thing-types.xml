@@ -604,7 +604,7 @@
 		</tags>
 		<state readOnly="true">
 			<options>
-				<!-- power socker -->
+				<!-- power socket -->
 				<option value="OFF">Off</option>
 				<option value="FOREVER_ON">Switched on by a manual action, no switch off scheduled</option>
 				<option value="TIME_LIMITED_ON">Switched on by a manual action, the switch off is scheduled</option>
