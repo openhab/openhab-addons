@@ -45,6 +45,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.openhab.core.OpenHAB;
 import org.openhab.core.common.ThreadPoolManager;
+import org.openhab.core.events.AbstractEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -426,6 +427,12 @@ public class CloudClient {
             logger.debug("Query {}", requestQueryJson.toString());
             // Create URI builder with base request URI of openHAB and path from request
             String newPath = URIUtil.addPaths(localBaseUrl, requestPath);
+
+            String source = requestQueryJson.getString("source");
+            String userId = data.getString("userId");
+            requestQueryJson.put("source",
+                    AbstractEvent.buildDelegatedSource(source, CloudService.CLOUD_EVENT_SOURCE, userId));
+
             Iterator<String> queryIterator = requestQueryJson.keys();
             // Add query parameters to URI builder, if any
             newPath += "?";

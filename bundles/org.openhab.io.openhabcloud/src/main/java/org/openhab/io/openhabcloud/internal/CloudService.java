@@ -82,7 +82,7 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
     private static final int DEFAULT_LOCAL_OPENHAB_MAX_CONCURRENT_REQUESTS = 200;
     private static final int DEFAULT_LOCAL_OPENHAB_REQUEST_TIMEOUT = 30000;
     private static final String HTTPCLIENT_NAME = "openhabcloud";
-    private static final String CLOUD_EVENT_SOURCE = "org.openhab.io.openhabcloud";
+    public static final String CLOUD_EVENT_SOURCE = "org.openhab.io.openhabcloud";
 
     private final Logger logger = LoggerFactory.getLogger(CloudService.class);
 
