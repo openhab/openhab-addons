@@ -15,7 +15,7 @@
   <name>openHAB Add-ons :: Bundles :: MQTT HomeAssistant Convention</name>
 
   <properties>
-    <graalpy.version>25.0.0</graalpy.version>
+    <graalpy.version>25.0.1</graalpy.version>
     <!-- define a property to overwrite it on Windows, as venv has a different structure -->
     <graalpy.executable>bin/python3</graalpy.executable>
   </properties>
