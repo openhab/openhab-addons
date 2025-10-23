@@ -27,6 +27,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.core.OpenHAB;
 import org.openhab.core.config.core.ConfigurableService;
+import org.openhab.core.events.AbstractEvent;
 import org.openhab.core.events.Event;
 import org.openhab.core.events.EventFilter;
 import org.openhab.core.events.EventPublisher;
@@ -81,6 +82,7 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
     private static final int DEFAULT_LOCAL_OPENHAB_MAX_CONCURRENT_REQUESTS = 200;
     private static final int DEFAULT_LOCAL_OPENHAB_REQUEST_TIMEOUT = 30000;
     private static final String HTTPCLIENT_NAME = "openhabcloud";
+    private static final String CLOUD_EVENT_SOURCE = "org.openhab.io.openhabcloud";
 
     private final Logger logger = LoggerFactory.getLogger(CloudService.class);
 
@@ -390,7 +392,7 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
     }
 
     @Override
-    public void sendCommand(String itemName, String commandString) {
+    public void sendCommand(String itemName, String commandString, @Nullable String source, @Nullable String userId) {
         try {
             Item item = itemRegistry.getItem(itemName);
             Command command = null;
@@ -413,7 +415,8 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
             }
             if (command != null) {
                 logger.debug("Received command '{}' for item '{}'", commandString, itemName);
-                eventPublisher.post(ItemEventFactory.createCommandEvent(itemName, command));
+                eventPublisher.post(ItemEventFactory.createCommandEvent(itemName, command,
+                        AbstractEvent.buildDelegatedSource(source, CLOUD_EVENT_SOURCE, userId)));
             } else {
                 logger.warn("Received invalid command '{}' for item '{}'", commandString, itemName);
             }

@@ -572,7 +572,8 @@ public class CloudClient {
             try {
                 logger.debug("Received command {} for item {}.", data.getString("command"), itemName);
                 if (this.listener != null) {
-                    this.listener.sendCommand(itemName, data.getString("command"));
+                    this.listener.sendCommand(itemName, data.getString("command"), data.getString("source"),
+                            data.getString("userId"));
                 }
             } catch (JSONException e) {
                 logger.debug("{}", e.getMessage());
