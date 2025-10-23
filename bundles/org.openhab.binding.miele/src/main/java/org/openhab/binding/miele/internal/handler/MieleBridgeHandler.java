@@ -20,7 +20,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.MulticastSocket;
 import java.net.NetworkInterface;
-import java.net.SocketException;
+import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
@@ -53,7 +53,6 @@ import org.openhab.binding.miele.internal.config.XGW3000Configuration;
 import org.openhab.binding.miele.internal.discovery.MieleApplianceDiscoveryService;
 import org.openhab.binding.miele.internal.exceptions.MieleRpcException;
 import org.openhab.core.common.NamedThreadFactory;
-import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
@@ -89,7 +88,6 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
     private static final String JSON_RPC_MULTICAST_IP2 = "224.255.68.139";
     private static final int MULTICAST_TIMEOUT_MILLIS = 100;
     private static final int MULTICAST_SLEEP_MILLIS = 500;
-    private static final String LEGACY_INTERFACE_PARAMETER = "interface";
 
     private final Logger logger = LoggerFactory.getLogger(MieleBridgeHandler.class);
 
@@ -121,8 +119,6 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
     public void initialize() {
         logger.debug("Initializing handler for bridge {}", getThing().getUID());
 
-        migrateMulticastInterfaceConfiguration();
-
         config = getConfigAs(XGW3000Configuration.class);
 
         if (!validateConfig()) {
@@ -144,45 +140,6 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
         return Set.of(MieleApplianceDiscoveryService.class);
-    }
-
-    private void migrateMulticastInterfaceConfiguration() {
-        Configuration config = editConfiguration();
-
-        String interfaceIpAddress = (String) config.get(LEGACY_INTERFACE_PARAMETER);
-        if (interfaceIpAddress == null || interfaceIpAddress.isBlank()) {
-            // Nothing to migrate
-            return;
-        }
-
-        String interfaceName = (String) config.get(MULTICAST_INTERFACE);
-        if (interfaceName != null && !interfaceName.isBlank()) {
-            // Already migrated
-            return;
-        }
-
-        logger.debug("Attempting to migrate multicast interface IP address: '{}'", interfaceIpAddress);
-        try {
-            InetAddress addr = InetAddress.getByName(interfaceIpAddress);
-            NetworkInterface ni = NetworkInterface.getByInetAddress(addr);
-            if (ni == null) {
-                logger.warn("Failed to migrate network interface. No network interface found for IP address '{}'",
-                        interfaceIpAddress);
-                return;
-            }
-
-            interfaceName = ni.getName();
-
-            config.put(MULTICAST_INTERFACE, interfaceName);
-            config.remove(LEGACY_INTERFACE_PARAMETER);
-            updateConfiguration(config);
-
-            logger.info(
-                    "Migrated network interface '{}' from IP address '{}'. For unmanaged Things, please adapt configuration manually",
-                    interfaceName, interfaceIpAddress);
-        } catch (SocketException | UnknownHostException e) {
-            logger.warn("Multicast interface migration failed: '{}'", e.getMessage());
-        }
     }
 
     private boolean validateConfig() {
@@ -354,10 +311,13 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
     }
 
     private Runnable eventListenerRunnable = () -> {
-        if (config.multicastInterface.isBlank()) {
-            logger.debug("No multicast interface configured");
+        NetworkInterface networkInterface = getMulticastNetworkInterface(config.ipAddress);
+        if (networkInterface == null) {
+            logger.warn("Unable to determine multicast network interface for gateway {}", config.ipAddress);
             return;
         }
+
+        logger.debug("Using multicast interface {} for gateway {}", networkInterface.getName(), config.ipAddress);
 
         // Get the address that we are going to connect to.
         InetSocketAddress address1 = null;
@@ -376,12 +336,6 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
             try {
                 clientSocket = new MulticastSocket(JSON_RPC_PORT);
                 clientSocket.setSoTimeout(MULTICAST_TIMEOUT_MILLIS);
-
-                NetworkInterface networkInterface = NetworkInterface.getByName(config.multicastInterface);
-                if (networkInterface == null) {
-                    logger.warn("Unable to get network interface for '{}'", config.multicastInterface);
-                    return;
-                }
                 clientSocket.setNetworkInterface(networkInterface);
                 clientSocket.joinGroup(address1, null);
                 clientSocket.joinGroup(address2, null);
@@ -470,6 +424,19 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
             }
         }
     };
+
+    private @Nullable NetworkInterface getMulticastNetworkInterface(String address) {
+        Socket socket = null;
+        try {
+            socket = new Socket(address, 80);
+            InetAddress ourAddress = socket.getLocalAddress();
+            NetworkInterface ni = NetworkInterface.getByInetAddress(ourAddress);
+            socket.close();
+            return ni;
+        } catch (IOException e) {
+            return null;
+        }
+    }
 
     public JsonElement invokeOperation(String applianceId, String modelID, String methodName) throws MieleRpcException {
         if (getThing().getStatus() != ThingStatus.ONLINE) {

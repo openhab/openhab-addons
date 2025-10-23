@@ -22,7 +22,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class XGW3000Configuration {
     public String ipAddress = "";
-    public String multicastInterface = "";
     public String userName = "";
     public String password = "";
     public String language = "";

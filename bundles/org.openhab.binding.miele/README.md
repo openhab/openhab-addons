@@ -48,7 +48,6 @@ discovery.miele:removalGracePeriod=30
 | Configuration Parameter | Description                                                                                                                      |
 |-------------------------|----------------------------------------------------------------------------------------------------------------------------------|
 | ipAddress               | Network address of the Miele@home gateway                                                                                        |
-| multicastInterface      | Name of the openHAB host interface where the binding will listen for multicast events coming from the Miele@home gateway.        |
 | userName                | Name of a registered Miele@home user.                                                                                            |
 | password                | Password for the registered Miele@home user.                                                                                     |
 | language                | Language for state, program and phase texts. Leave blank for system language.                                                    |
@@ -423,7 +422,7 @@ See oven.
 ## things/miele.things
 
 ```java
-Bridge miele:xgw3000:home [ipAddress="192.168.0.18", multicastInterface="eth0"] {
+Bridge miele:xgw3000:home [ipAddress="192.168.0.18"] {
     Things:
         Thing fridgefreezer freezer [uid="00124b000424be44#2"]
         Thing hood hood [uid="001d63fffe020685#210"]
