@@ -32,7 +32,7 @@ Some cameras allow the key frame to be created every second or a different amoun
 
 ### ESP32 Cameras
 
-These cameras do not have the ability to create H.264 streams and hence can not be used with HLS, however all other features should work.
+These cameras do not have the ability to create H.264 streams and hence cannot be used with HLS, however all other features should work.
 Due to many custom firmwares available, you may need to ask the firmware developer what the URLs are for snapshots and MJPEG streams if they have changed the defaults from what the Arduino IDE sample code uses.
 Another limitation is that they can only provide a single stream at a time, so you need to setup the `ffmpegInput` to use the ipcamera.mjpeg feed from the openHAB server and change `ffmpegInputOptions` to "-f mjpeg" so FFmpeg knows the input is MJPEG format and not H.264.
 
@@ -41,7 +41,7 @@ Example:
 ```java
 Thing ipcamera:generic:Esp32Cam
 [
-    ipAddress="192.168.1.181",
+Not all ONVIF cameras work with all of the methods, so testing first to confirm what works is a good idea and the presets cannot be created with the binding, only loaded after they are already created in a program like ODM.
     gifPreroll=1,
     snapshotUrl="http://192.168.1.181/capture",
     mjpegUrl="http://192.168.1.181:81/stream",
@@ -397,7 +397,7 @@ This is always the best option if it works.
 - Request a snapshot with the URL `http://openhabIP:8080/ipcamera/{cameraUID}/ipcamera.jpg`.
 The IP is for your openHAB server not the camera.
 If you find the snapshot is old, you can set the `gifPreroll` to a number above 0 and this forces the camera to keep updating the stored JPG in RAM.
-The ipcamera.jpg can also be cast, as most cameras can not directly cast their snapshots.
+The ipcamera.jpg can also be cast, as most cameras cannot directly cast their snapshots.
 - Use the `http://openHAB:8080/ipcamera/{cameraUID}/snapshots.mjpeg` to request a stream of snapshots to be delivered in MJPEG format.
 - Use the record GIF action and use a `gifPreroll` value > 0.
 This creates a number of snapshots in the FFmpeg output folder called snapshotXXX.jpg where XXX starts at 0 and increases each `pollTime`.

@@ -24,7 +24,7 @@
 
 			<parameter-group name="FFmpeg Setup">
 				<label>FFmpeg Settings</label>
-				<description>Settings that setup or effect the video stream.</description>
+				<description>Settings that affect the video stream.</description>
 				<advanced>false</advanced>
 			</parameter-group>
 
@@ -62,8 +62,8 @@
 			</parameter>
 
 			<parameter name="forthCamera" type="text" required="false" groupName="Settings">
-				<label>Forth Camera ID</label>
-				<description>Enter the 'Unique ID' of the camera you wish to show forth. Leave blank if the group is less than 4.
+				<label>Fourth Camera ID</label>
+				<description>Enter the 'Unique ID' of the camera you wish to show fourth. Leave blank if the group is less than 4.
 				</description>
 			</parameter>
 
@@ -134,7 +134,7 @@
 
 			<parameter-group name="FFmpeg Setup">
 				<label>FFmpeg Settings</label>
-				<description>Settings that setup or effect the video stream.</description>
+				<description>Settings that affect the video stream.</description>
 				<advanced>false</advanced>
 			</parameter-group>
 
@@ -387,7 +387,7 @@
 
 			<parameter-group name="FFmpeg Setup">
 				<label>FFmpeg Settings</label>
-				<description>Settings that setup or effect the video stream.</description>
+				<description>Settings that affect the video stream.</description>
 				<advanced>false</advanced>
 			</parameter-group>
 
@@ -624,7 +624,7 @@
 
 	<thing-type id="amcrest">
 		<label>Amcrest Camera with API</label>
-		<description>Use for older Amcrest Cameras, that wont work as dahua thing type.</description>
+		<description>Use for older Amcrest cameras that won't work as a Dahua thing type.</description>
 		<semantic-equipment-tag>Camera</semantic-equipment-tag>
 		<channels>
 			<channel id="startStream" typeId="startStream"/>
