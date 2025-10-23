@@ -14,13 +14,13 @@ The binding itself does not require any special configuration.
 
 ## Discovery
 
-Automatic background discovery only works for Hyperion.ng servers as they advertise using mDNS. You must manually configure a Hyperion Server V1 either through a UI / REST or .things file.
+Automatic background discovery only works for Hyperion.ng servers as they advertise using mDNS. You must manually configure a Hyperion Server V1 either through a UI/REST or `.things` file.
 
 ## Thing Configuration
 
 ### Hyperion Server (V1)
 
-In order to use a Hyperion Server it must be properly configured.  You can do this either through a UI / REST or through static .thing files.
+In order to use a Hyperion Server, it must be properly configured. You can do this either through a UI/REST or through static `.things` files.
 
 | Parameter      | Data type | Required | Example        |
 |----------------|-----------|----------|----------------|
@@ -39,7 +39,7 @@ Thing hyperion:serverV1:myServer [ host="192.168.0.10", port=19444, priority=50,
 
 ### Hyperion.ng Server
 
-In order to use a Hyperion.ng Server it must be properly configured.  You can do this either through a UI / REST or through static .thing files.
+In order to use a Hyperion.ng Server, it must be properly configured. You can do this either through a UI/REST or through static `.things` files.
 
 | Parameter      | Data type | Required | Example        |
 |----------------|-----------|----------|----------------|

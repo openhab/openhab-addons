@@ -9,8 +9,8 @@ A single supported thing called `collection`.
 
 ## Thing Configuration
 
-The thing supports one setting labelled `address` which is your street number and name as it appears on Google.<br>
-_For Example:
+The thing supports one setting labeled `address`, which is your street number and name as it appears on Google.<br>
+_For example:
 1 Victoria Street_
 
 > Note: The above address example is not valid as it is a business address.
@@ -23,8 +23,8 @@ _If the address is not valid or rubbish collection service does not apply (for e
 | ---------------- | ------ | -------------------------------------------------------------------- |
 | day              | Number | The upcoming rubbish collection day of the week (1=Monday, 7=Sunday) |
 | general          | Date   | The next general household (red bin) collection day                  |
-| recycling        | Date   | The next recycling (yellow bin, glass bin) colleciton day            |
-| collection-event | Event  | Event trigger on the day of the rubbish                              |
+| recycling        | Date   | The next recycling (yellow bin, glass bin) collection day            |
+| collection-event | Event  | Event triggered on the day of rubbish collection                     |
 
 ### Collection Event
 
