@@ -4,11 +4,9 @@ This binding integrates with [HDanywhere](https://www.hdanywhere.co.uk) HDMI mat
 
 HDanywhere is a manufacturer of multiroom/distributed audio/video equipment.
 This binding supports their V3 of the Multiroom+ HDMI matrix running firmware V1.2(20131222), as well as the newer MHUB series of matrices.
-These matrices support the highest HD resolutions, including 1080p 3D & 4K, use a single Cat5e/6/7 wiring structure with reliable performance up to 100m,
-have IR passback to allow you to select and control what you watch from every room and are fully compatible with universal remote controls
+These matrices support the highest HD resolutions, including 1080p 3D & 4K, use a single Cat5e/6/7 wiring structure with reliable performance up to 100m, have IR passback to allow you to select and control what you watch from every room, and are fully compatible with universal remote controls.
 
-The matrices can be controlled by either UDP/IP and/or Serial connections,
-but due to the lack of feedback on the actual state of the HDMI matrix when using those methods, this binding operates by controlling the built-in webserver of the matrix.
+The matrices can be controlled by either UDP/IP and/or serial connections, but due to the lack of feedback on the actual state of the HDMI matrix when using those methods, this binding operates by controlling the built-in webserver of the matrix.
 
 ## Supported Things
 
@@ -28,7 +26,7 @@ This binding does not require any special configuration.
 ## Thing Configuration
 
 Each thing requires the IP address of the matrix, and the interval in between status updates that are fetched from the matrix.
-Additionally, the _multiroomplus_ has an additional required parameter 'ports' to specify the number of physical ports (e.g. 4x4, 8x8,...) of the matrix.
+Additionally, the _multiroomplus_ has an additional required parameter 'ports' to specify the number of physical ports (e.g., 4x4, 8x8, ...) of the matrix.
 
 ```java
 Thing hdanywhere:mhub4k431:m1 [ipAddress="192.168.0.89",interval=15]
@@ -37,7 +35,7 @@ Thing hdanywhere:multiroomplus:m2 [ipAddress="192.168.0.88", ports=4, interval=1
 
 ## Channels
 
-The following channels are supported (actual number of channels is a function of the number of physical ports on the matrix):
+The following channels are supported (actual number of channels depends on the number of physical ports on the matrix):
 
 | Thing Type | Item Type | Description                                                         |
 |------------|-----------|---------------------------------------------------------------------|
@@ -49,7 +47,7 @@ The following channels are supported (actual number of channels is a function of
 
 ## Example
 
-demo.Things:
+demo.things:
 
 ```java
 hdanywhere:mhub4k431:m1 [ipAddress="192.168.0.89",interval=15]

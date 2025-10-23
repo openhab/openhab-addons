@@ -106,7 +106,7 @@ After the bridge has been added and authorized, devices are discovered automatic
     - _Home Connect User Account for Testing_: the associated user account email from [Home Connect](https://www.home-connect.com/)
        > **WARNING**: Please don't use your developer account username
 
-    - _Redirect URIs_: add your openHAB URL followed by `/homeconnect`
+    - _Redirect URIs_: add your openHAB URL followed by `/homeconnect`,
     for example: `http://192.168.178.34:8080/homeconnect` or `https://myhome.domain.com/homeconnect`
     - _One Time Token Mode_: keep unchecked
     - _Proof Key for Code Exchange_: keep unchecked
@@ -128,7 +128,7 @@ The Home Connect bridge can be configured in the openHAB UI as follows:
     - **client id:** your application client id
     - **client secret:** your application client secret
     - **simulator:** false
-1. Now navigate to the URL (`Redirct URI`) you've added to your Home Connect application in the previous step (2.3). For example `http://192.168.178.80:8080/homeconnect`.
+1. Now navigate to the URL (`Redirect URI`) you've added to your Home Connect application in the previous step (2.3). For example, `http://192.168.178.80:8080/homeconnect`.
 1. Please follow the steps shown to authenticate your binding. You can redo this step every time. For example if you have authentication problems, just start wizard again.
 ![Screenshot Home Connect wizard page 1](doc/homeconnect_setup_1.png "Screenshot Home Connect wizard page 1")
 ![Screenshot Home Connect wizard page 2](doc/homeconnect_setup_2.png "Screenshot Home Connect wizard page 2")
@@ -210,7 +210,7 @@ Switch                 Washer_LaundryCareWasherIdos2                   "i-Dos 2 
 Switch                 Washer_LaundryCareWasherVarioPerfect           "Vario Perfect State"                {channel="homeconnect:washer:api_bridge_at_home:washer1:laundry_care_washer_vario_perfect"}
 Switch                 Washer_LaundryCareWasherLessIroning            "Ironing State"                      {channel="homeconnect:washer:api_bridge_at_home:washer1:laundry_care_washer_less_ironing"}
 Switch                 Washer_LaundryCareWasherPreWash                "Prewash State"                      {channel="homeconnect:washer:api_bridge_at_home:washer1:laundry_care_washer_pre_wash"}
-Switch                 Washer_LaundryCareWasherRinsePlus              "Amount Aadditional Rinses"           {channel="homeconnect:washer:api_bridge_at_home:washer1:laundry_care_washer_rinse_plus"}
+String                 Washer_LaundryCareWasherRinsePlus              "Amount Additional Rinses"            {channel="homeconnect:washer:api_bridge_at_home:washer1:laundry_care_washer_rinse_plus"}
 Switch                 Washer_LaundryCareWasherRinseHold              "Spin Hold"                          {channel="homeconnect:washer:api_bridge_at_home:washer1:laundry_care_washer_rinse_hold"}
 Switch                 Washer_LaundryCareWasherSoak                    "Soaking State"                      {channel="homeconnect:washer:api_bridge_at_home:washer1:laundry_care_washer_soak"}
 Number:Mass            Washer_LaundryCareWasherLoadRecommendation     "Load Recommendation"                {channel="homeconnect:washer:api_bridge_at_home:washer1:laundry_care_washer_load_recommendation"}
@@ -222,17 +222,17 @@ String                 Washer_BasicActionsState                         "Basic C
 
 ## Home Connect Console
 
-The binding comes with a separate user interface, which is reachable through the web browser http(s)://[YOUROPENHAB]:[YOURPORT]/homeconnect (e.g. `http://192.168.178.100:8080/homeconnect`).
+The binding comes with a separate user interface, which is reachable through the web browser `http(s)://[YOUROPENHAB]:[YOURPORT]/homeconnect` (e.g., `http://192.168.178.100:8080/homeconnect`).
 
 Features:
 
-- overview of your bridges and appliances
-- send commands to your appliances
-- see latest API requests
-- see received events from the Home Connect backend
+- Overview of your bridges and appliances
+- Send commands to your appliances
+- See latest API requests
+- See received events from the Home Connect backend
 - API request counts
 
-> **INFO**: If you have a problems with your installation, please always provide request and event exports. ![Screenshot Home Connect wizard page 4](doc/export_button.png "Export button")
+> **INFO**: If you have problems with your installation, please always provide request and event exports. ![Screenshot Home Connect wizard page 4](doc/export_button.png "Export button")
 
 ## How To
 
@@ -273,14 +273,14 @@ Currently, not all program options of a device are available as items in openHAB
 
 #### 1. Retrieve "special command" payload
 
-You have a couple options to get the program settings payload.
+You have a couple of options to get the program settings payload.
 
 a) You could have a look at the Home Connect developer documentation (<https://developer.home-connect.com/docs/>) and create the payload on your own.
 
 b) You could have a look at the request logs and extract the payload from there.
 
 1. On the physical device, select your desired program with the appropriate options.
-1. Open the appliance section of the binding UI (http(s)://[YOUROPENHAB]:[YOURPORT]/appliances) and click the 'Selected Program' button.
+1. Open the appliance section of the binding UI (`http(s)://[YOUROPENHAB]:[YOURPORT]/appliances`) and click the 'Selected Program' button.
 ![Screenshot Home Connect wizard page 4](doc/selected_program_1.png "Get selected program")
 1. ![Screenshot Home Connect wizard page 4](doc/selected_program_2.png "Get selected program") Copy the JSON payload. In a further step, this payload will be used to start the program.
 
@@ -327,16 +327,16 @@ The channel of type `remote_start_allowance_state` is read only. You can only en
 
 ### In case of error...
 
-Please check log UI (http(s)://[YOUROPENHAB]:[YOURPORT]/homeconnect) and ask for help in the community forum or on github. Please provide request and event exports.
+Please check log UI (`http(s)://[YOUROPENHAB]:[YOURPORT]/homeconnect`) and ask for help in the community forum or on GitHub. Please provide request and event exports.
  ![Screenshot Home Connect wizard page 4](doc/export_button.png "Export button")
 
 ### Rate limit reached
 
-The Home Connect API enforces rate [limits](https://developer.home-connect.com/docs/general/ratelimiting). If you have a lot of `429` response codes in your request log section (http(s)://[YOUROPENHAB]:[YOURPORT]/homeconnect/log/requests), please check the error response.
+The Home Connect API enforces rate [limits](https://developer.home-connect.com/docs/general/ratelimiting). If you have a lot of `429` response codes in your request log section (`http(s)://[YOUROPENHAB]:[YOURPORT]/homeconnect/log/requests`), please check the error response.
 
-### Error message 'Program not supported', 'Unsupported operation' or 'SDK.Error.UnsupportedOption'
+### Error message 'Program not supported', 'Unsupported operation', or 'SDK.Error.UnsupportedOption'
 
-Not all appliance programs and program options are supported by the Home Connect API. Unfortunately you can't use them. You will see error messages like the following in the binding UI (request log):
+Not all appliance programs and program options are supported by the Home Connect API. Unfortunately, you can't use them. You will see error messages like the following in the binding UI (request log):
 
 ```json
 {

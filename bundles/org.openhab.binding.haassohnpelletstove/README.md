@@ -1,18 +1,18 @@
-# Haas Sohn Pellet Stove Binding
+# Haas+Sohn Pellet Stove Binding
 
-The binding for Haassohnpelletstove communicates with a Haas and Sohn Pelletstove through the optional
-WIFI module. More information about the WIFI module can be found here: <https://www.haassohn.com/de/ihr-plus/WLAN-Funktion>
+This binding communicates with a Haas+Sohn pellet stove through the optional
+Wi‑Fi module. More information about the Wi‑Fi module can be found here: <https://www.haassohn.com/de/ihr-plus/WLAN-Funktion>
 
 ## Supported Things
 
-| Things | Description  | Thing Type |
-|--------|--------------|------------|
-| haassohnpelletstove | Control of a Haas & Sohn Pellet Stove| oven|
+| Things               | Description                            | Thing Type |
+|----------------------|----------------------------------------|------------|
+| haassohnpelletstove  | Control of a Haas+Sohn pellet stove    | oven       |
 
 ## Thing Configuration
 
-In general two parameters are required. The IP-Address of the WIFI-Modul of the Stove in the local Network and the Access PIN of the Stove.
-The PIN can be found directly at the stove under the Menue/Network/WLAN-PIN.
+Two parameters are required: the IP address of the stove’s Wi‑Fi module on the local network and the stove’s access PIN.
+The PIN can be found directly at the stove under Menu → Network → WLAN-PIN.
 
 ```java
 Thing haassohnpelletstove:oven:myOven "Pelletstove"  [ hostIP="192.168.0.23", hostPIN="1234"]
@@ -20,20 +20,20 @@ Thing haassohnpelletstove:oven:myOven "Pelletstove"  [ hostIP="192.168.0.23", ho
 
 ## Channels
 
-The following channels are yet supported:
+The following channels are supported:
 
 | Channel | Type  | Access| Description|
 |---------|-------|-------|------------|
-| power| Switch | read/write|Turn the stove on/off|
-|channelIsTemp|Number:Temperature|read|Receives the actual temperature of the stove|
-|channelSpTemp|Number:Temperature|read/write|Receives and sets the target temperature of the stove|
-|channelMode|String|read|Receives the actual mode the stove is in like heating, cooling, error, ....|
-|channelEcoMode|Switch|read/write|Turn the eco mode of the stove on/off|
-|channelIngitions|Number|read|Amount of ignitions of the stove|
-|channelMaintenanceIn|Number:Mass|read|States the next maintenance in kg|
-|channelCleaningIn|String|read|States the next cleaning window in hours:minutes as string|
-|channelConsumption|Number:Mass|read|Total consumption of the stove|
-|channelOnTime|Number|read|Operation hours of the stove|
+| power                | Switch            | read/write | Turn the stove on/off                             |
+| channelIsTemp        | Number:Temperature| read       | Current stove temperature                         |
+| channelSpTemp        | Number:Temperature| read/write | Target stove temperature                          |
+| channelMode          | String            | read       | Current stove mode (e.g., heating, error)         |
+| channelEcoMode       | Switch            | read/write | Enable/disable Eco Mode                           |
+| channelIgnitions     | Number            | read       | Total number of ignitions                         |
+| channelMaintenanceIn | Number:Mass       | read       | Estimated pellets until next maintenance (kg)     |
+| channelCleaningIn    | String            | read       | Estimated time until next cleaning (hh:mm)        |
+| channelConsumption   | Number:Mass       | read       | Total pellet consumption                          |
+| channelOnTime        | Number            | read       | Total operating hours                             |
 
 ## Full Example
 
@@ -59,9 +59,9 @@ Number ZieltemperaturFeuer "ZieltemperaturFeuer" (g_FeuerThermostat) {ga="thermo
 Number TemperaturFeuer "TemperaturFeuer" (g_FeuerThermostat) {ga="thermostatTemperatureAmbient"}
 ```
 
-## Tested Hardware
+## Tested hardware
 
-The binding was successfully tested with the following ovens:
+The binding has been successfully tested with the following ovens:
 
 - HSP 7 DIANA
 - HSP6 434.08

@@ -1,20 +1,20 @@
 # Helios Binding
 
-This binding integrates the Heliop door/videophone system (<https://www.2n.cz>).
+This binding integrates the Helios door/videophone system (<https://www.2n.cz>).
 
 ## Supported Things
 
-Currently, the Helios IP Vario is supported by this binding, running the 2.21 version of the firmware
+Currently, the Helios IP Vario is supported by this binding, running the 2.21 version of the firmware.
 
 ## Binding Configuration
 
-There is no specific binding configuration
+There is no specific binding configuration.
 
 ## Thing Configuration
 
-The ipvario221 Thing requires the IP address of the videophone, and the username and password as a configuration value in order for the binding to log into the videophone.
+The ipvario221 thing requires the IP address of the videophone, and the username and password as a configuration value in order for the binding to log into the videophone.
 
-In the thing file, this looks e.g. like
+In the thing file, this looks for example like
 
 ```java
 Thing helios:ipvario213:gate [ipAddress="192.168.0.14", username="admin", password="mypassword"]
@@ -26,15 +26,15 @@ All devices support the following channels:
 
 | Channel Type ID | Item Type | Description                                                                   |
 |-----------------|-----------|-------------------------------------------------------------------------------|
-| keypressed      | Trigger   | Code of a key pressed on the videophone keyboard                              |
-| keyreleased     | Trigger   | Code of a key released on the videophone keyboard                             |
-| callstate       | String    | State of the call being made                                                  |
-| calldirection   | String    | Direction (e.g. inbound, outbound) of the call being made                     |
-| card            | Trigger   | ID of the card presented to the RFID reader                                   |
-| cardvalid       | Switch    | The card presented to the RFID reader is valid (i.e. registered in the Vario) |
-| code            | Trigger   | Numerical PIN code (i.e. 1234) entered on the keyboard                        |
-| codevalid       | Switch    | The code entered is valid (i.e. registerd in the Vario)                       |
-| devicestate     | String    | State of the device                                                           |
+| keypressed      | Trigger   | Code of a key pressed on the videophone keyboard                               |
+| keyreleased     | Trigger   | Code of a key released on the videophone keyboard                              |
+| callstate       | String    | State of the call being made                                                   |
+| calldirection   | String    | Direction (e.g., inbound, outbound) of the call being made                     |
+| card            | Trigger   | ID of the card presented to the RFID reader                                    |
+| cardvalid       | Switch    | The card presented to the RFID reader is valid (i.e., registered in the Vario) |
+| code            | Trigger   | Numerical PIN code (e.g., 1234) entered on the keyboard                        |
+| codevalid       | Switch    | The code entered is valid (i.e., registered in the Vario)                      |
+| devicestate     | String    | State of the device                                                            |
 
 In addition, devices running the v2.13 firmware support the following channels as well:
 
@@ -45,12 +45,12 @@ In addition, devices running the v2.13 firmware support the following channels a
 | noise           | Switch    | Indicates if noise was detected by the videophone                             |
 | switchstate     | Switch    | Indicates the state of an internal switch in the videophone                   |
 
-For most of the channels a "stamp" channel (of Type DateTime) (e.g. "keypressedstamp") is available and will be updated with the time stamp the relevant event happened on the device.
-For switchstate, there are as well the switchstateswitch and switchstateoriginator channels indicating the number of the switch that changed state (1 to 4, depending on the hardware configuration) and the source of the switch state change (keypad, DTMF signal,...)
+For most of the channels, a "stamp" channel (of type DateTime) (e.g., "keypressedstamp") is available and will be updated with the time stamp the relevant event happened on the device.
+For switchstate, there are also the switchstateswitch and switchstateoriginator channels indicating the number of the switch that changed state (1 to 4, depending on the hardware configuration) and the source of the switch state change (keypad, DTMF signal, etc.).
 
 ## Full Example
 
-demo.Things:
+demo.things:
 
 ```java
 Thing helios:ipvario221:gate [ipAddress="192.168.0.14", username="admin", password="mypassword"]

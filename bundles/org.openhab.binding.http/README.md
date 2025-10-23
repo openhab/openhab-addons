@@ -17,13 +17,13 @@ It can be extended with different channels.
 | `bufferSize`          | no       | 2048    | The buffer size for the response data (in kB).                                                                                                                             |
 | `delay`               | no       | 0       | Delay between two requests in ms (advanced parameter).                                                                                                                     |
 | `username`            | yes      | -       | Username for authentication (advanced parameter).                                                                                                                          |
-| `password`            | yes      | -       | Password for authentication (advanced parameter). Also used for the authentication token when using `TOKEN` authentication.                                                |
-| `authMode`            | no       | BASIC   | Authentication mode, `BASIC`, `BASIC_PREEMPTIVE`, `TOKEN` or `DIGEST` (advanced parameter).                                                                                |
+| `password`            | yes      | -       | Password for authentication (advanced parameter). Also used for the authentication token when using `TOKEN` authentication.                                                 |
+| `authMode`            | no       | BASIC   | Authentication mode: `BASIC`, `BASIC_PREEMPTIVE`, `TOKEN`, or `DIGEST` (advanced parameter).                                                                               |
 | `stateMethod`         | no       | GET     | Method used for requesting the state: `GET`, `PUT`, `POST`.                                                                                                                |
 | `commandMethod`       | no       | GET     | Method used for sending commands: `GET`, `PUT`, `POST`.                                                                                                                    |
-| `contentType`         | yes      | -       | MIME content-type of the command requests. Only used for  `PUT` and `POST`.                                                                                                |
+| `contentType`         | yes      | -       | MIME content-type of the command requests. Only used for `PUT` and `POST`.                                                                                                 |
 | `encoding`            | yes      | -       | Encoding to be used if no encoding is found in responses (advanced parameter).                                                                                             |
-| `headers`             | yes      | -       | Additional headers that are sent along with the request. Format is "header=value". Multiple values can be stored as `headers="key1=value1", "key2=value2", "key3=value3",` |
+| `headers`             | yes      | -       | Additional headers that are sent along with the request. Format is "header=value". Multiple values can be stored as `headers="key1=value1", "key2=value2", "key3=value3"`. |
 | `ignoreSSLErrors`     | no       | false   | If set to true, ignores invalid SSL certificate errors. This is potentially dangerous.                                                                                     |
 | `strictErrorHandling` | no       | false   | If set to true, thing status is changed depending on last request result (failed = `OFFLINE`). Failed requests result in `UNDEF` for channel values.                       |
 | `userAgent`           | yes      | (yes )  | Sets a custom user agent (default is "Jetty/version", e.g. "Jetty/9.4.20.v20190813").                                                                                      |
@@ -33,7 +33,7 @@ _Note:_ Optional "no" means that you have to configure a value unless a default 
 _Note:_ The `BASIC_PREEMPTIVE` mode adds basic authentication headers even if the server did not request authentication.
 This is dangerous and might be misused.
 The option exists to be able to authenticate when the server is not sending the proper 401/Unauthorized code.
-Authentication might fail if redirections are involved as headers are stripper prior to redirection.
+Authentication might fail if redirections are involved as headers are stripped prior to redirection.
 
 _Note:_ If you rate-limit requests by using the `delay` parameter you have to make sure that the time between two refreshes is larger than the time needed for one refresh cycle.
 

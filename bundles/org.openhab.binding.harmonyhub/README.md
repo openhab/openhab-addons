@@ -23,25 +23,25 @@ This channel is dynamically generated with the possible button press strings lis
 ## Discovery
 
 The Harmony binding will automatically find all Harmony Hubs on the local network and add them to the inbox.
-Once a Hub has been added, any connected devices will also added to the Inbox.
+Once a hub has been added, any connected devices will also be added to the Inbox.
 
 ## Binding Configuration
 
-The binding requires no special configuration
+The binding requires no special configuration.
 
 ## Thing Configuration
 
 This is optional, it is recommended to let the binding discover and add hubs and devices.
 
-To manually configure a Harmony Hub thing you may specify its host name  ("host") as well as an optional search timeout value in seconds ("discoveryTimeout") and optional heart beat interval (heartBeatInterval) in seconds.
+To manually configure a Harmony Hub thing you may specify its host name ("host") as well as an optional search timeout value in seconds ("discoveryTimeout") and optional heartbeat interval (heartBeatInterval) in seconds.
 
-In the thing file, this looks e.g. like
+In the thing file, this looks for example like
 
 ```java
 Bridge harmonyhub:hub:GreatRoom [ host="192.168.1.100"]
 ```
 
-To manually configure a Harmony device thing you may specify its numeric id ("id") or its name ("name"), but not both.
+To manually configure a Harmony device thing you may specify its numeric ID ("id") or its name ("name"), but not both.
 Note that this is prefixed by the hub the device is controlled from.
 
 In the thing file, this looks e.g. like

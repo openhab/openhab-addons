@@ -77,7 +77,7 @@ Notes:
 
 - All channels are dynamically added at runtime.
 - The word color in channel names follows American spelling ("color").
-- The `colorLevel`, `colorMarkingUsed` and `colorPagesRemaining` channels are used on printers that have only a single color cartridge instead of separate Ccyan, magenta and yellow cartridges.
+- The `colorLevel`, `colorMarkingUsed`, and `colorPagesRemaining` channels are used on printers that have only a single color cartridge instead of separate cyan, magenta, and yellow cartridges.
 - The `scanner` group is for the scanning engine which consists of scan, copy and other operations; the `scan` group is for scanner operations only.
 - If no `status` group channels are selected, then those relevant data endpoints on the _Embedded Web Server_ are not polled for status information.
 

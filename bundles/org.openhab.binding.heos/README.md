@@ -1,27 +1,27 @@
 # Denon HEOS Binding
 
-This binding support the HEOS-System from Denon.
+This binding supports the HEOS system from Denon.
 The binding provides control of the players and groups within the network.
 It also supports selecting favorites and play them on players or groups within the HEOS-Network.
-The binding first establishes a connection to one of the players of the HEOS-Network and use them as a bridge.
+The binding first establishes a connection to one of the players of the HEOS network and uses it as a bridge.
 After a connection is established, the binding searches for all available players and groups via the bridge.
-To keep the network traffic low it is recommended to establish only one connection via one bridge.
+To keep the network traffic low, it is recommended to establish only one connection via one bridge.
 Connection to the bridge is done via a Telnet connection on port 1255.
 
 ## Supported Things
 
 Bridge:
-The binding supports a bridge to connect to the HEOS-Network.
-A bridge uses the thing ID "bridge".
+The binding supports a bridge to connect to the HEOS network.
+A bridge uses the thing ID `bridge`.
 
 Player:
 A generic player is supported via this binding.
 Currently no differences are made between the players.
-A player uses the Thing ID "player"
+A player uses the thing ID `player`.
 
 Groups:
 The binding supports HEOS groups.
-A group uses the Thing ID "group"
+A group uses the thing ID `group`.
 
 ## Discovery
 
@@ -32,7 +32,7 @@ You need to add a Bridge device first (which is also auto-discovered by the bind
 Please note that only one bridge is required to establish a connection.
 Adding a second bridge can cause trouble with the connection.
 
-It is recommended to use the UI to setup the system and add all players and groups.
+It is recommended to use the UI to set up the system and add all players and groups.
 The bridge is discovered through UPnP in the local network.
 Once it is added the players and groups are discovered via the bridge and placed in the Inbox.
 
@@ -63,7 +63,7 @@ Bridge heos:bridge:main "name" [ipAddress="192.168.0.1", username="xxx", passwor
 
 ### Player Configuration
 
-Player have the following configuration parameter
+Players have the following configuration parameter:
 
 | Parameter         | Description                                                | Required  |
 |-----------------  |----------------------------------------------------------- | --------- |
@@ -83,7 +83,7 @@ For further details refer to the [HEOS CLI](https://rn.dmglobal.com/usmodel/HEOS
 
 ### Group Configuration
 
-Player have the following configuration parameter
+Groups have the following configuration parameter:
 
 | Parameter         | Description                                                                          | Required  |
 |-----------------  |------------------------------------------------------------------------------------- | --------- |
@@ -126,11 +126,11 @@ Bridge heos:bridge:main "Bridge" [ipAddress="192.168.0.1", username="userName", 
 | CurrentPosition   | Number:Time   | Shows the current track position in seconds                           |
 | Duration          | Number:Time   | The overall track duration in seconds                                 |
 | Type              | String        | The type of the played media. Station or song for example             |
-| Station           | String        | The station name if it is a station (Spotify shows track name....)    |
+| Station           | String        | The station name if it is a station (Spotify shows track name)        |
 | PlayUrl           | String        | Plays a media file located at the URL                                 |
 | Shuffle           | Switch        | Switches shuffle ON or OFF                                            |
-| RepeatMode        | String        | Defines the repeat mode: Inputs are: "One" , "All" or "Off"           |
-| Favorites         | String        | Plays a favorite. The selection options are retrieved automatically  |
+| RepeatMode        | String        | Defines the repeat mode: Inputs are: "One", "All", or "Off"           |
+| Favorites         | String        | Plays a favorite. The selection options are retrieved automatically   |
 | Playlists         | String        | Plays a playlist. The selection options are retrieved automatically   |
 | Queue             | String        | Plays from the queue. The queue items are retrieved automatically     |
 | ClearQueue        | Switch        | Clear the queue when turned ON                                        |
@@ -143,7 +143,7 @@ You can send commands to these channels from rules by sending the name of the se
 
 ```java
 Player LivingRoom_Control "Control" {channel="heos:player:main:LivingRoom:Control"}
-Selection item=LivingRoom_Playlists     label="Playlist" icon="music"
+Selection item=LivingRoom_Playlists label="Playlist" icon="music"
 ```
 
 ### Channels of Thing type 'group'
@@ -161,19 +161,19 @@ Selection item=LivingRoom_Playlists     label="Playlist" icon="music"
 | CurrentPosition   | Number:Time   | Shows the current track position in seconds                           |
 | Duration          | Number:Time   | The overall track duration in seconds                                 |
 | Type              | String        | The type of the played media. Station or song for example             |
-| Station           | String        | The station name if it is a station (Spotify shows track name....)    |
+| Station           | String        | The station name if it is a station (Spotify shows track name)        |
 | Inputs            | String        | The input to be switched to. Input values from HEOS protocol          |
 | PlayUrl           | String        | Plays a media file located at the URL                                 |
 | Shuffle           | Switch        | Switches shuffle ON or OFF                                            |
-| RepeatMode        | String        | Defines the repeat mode: Inputs are: "One" ; "All" or "Off"           |
-| Favorites         | String        | Plays a favorite. The selection options are retrieved automatically  |
+| RepeatMode        | String        | Defines the repeat mode: Inputs are: "One", "All", or "Off"           |
+| Favorites         | String        | Plays a favorite. The selection options are retrieved automatically   |
 | Playlists         | String        | Plays a playlist. The selection options are retrieved automatically   |
 | Queue             | String        | Plays from the queue. The queue items are retrieved automatically     |
 | ClearQueue        | Switch        | Clear the queue when turned ON                                        |
 
 The `Favorites`, `Playlists`, `Queue` selection options are queried automatically from the HEOS system (if you set up any in the HEOS app).
-This means the available options will be visible in a Selection, you don't have to specify them manually.
-You can send commands to these channels from rules by sending the name of the selected item (For example: Starting a favorite radio channel from rule).
+This means the available options will be visible in a selection, and you don't have to specify them manually.
+You can send commands to these channels from rules by sending the name of the selected item (for example, starting a favorite radio channel from a rule).
 
 ### Available inputs
 
@@ -218,28 +218,28 @@ A current list can be found within the [HEOS CLI Protocol Specification 2021 PDF
 | Channel ID            | Item Type     | Description                                                                                                                                               |
 |---------------------- |-----------    |--------------------------------------------------------------------------------------------------------------------------------------------------------   |
 | Reboot                | Switch        | Reboot the whole HEOS System. Can be used if you get in trouble with the system                                                                           |
-| BuildGroup            | Switch        | Is used to define a group. The player which shall be grouped has to be selected first. If Switch is then activated the group is built.                    |
+| BuildGroup            | Switch        | Is used to define a group. The player that shall be grouped has to be selected first. If the switch is then activated, the group is built.                |
 
-For a list of the commands please refer to the [HEOS CLI protocol](https://rn.dmglobal.com/euheos/HEOS_CLI_ProtocolSpecification_2021.pdf).
+For a list of the commands, please refer to the [HEOS CLI protocol](https://rn.dmglobal.com/euheos/HEOS_CLI_ProtocolSpecification_2021.pdf).
 
 ## _Dynamic Channels_
 
-Also the bridge supports dynamic channels which represent the players of the network.
+The bridge also supports dynamic channels which represent the players of the network.
 They are added dynamically if a player is found. The player and group channels are only shown on the bridge.
 
 ### Player Channels
 
 | Channel ID    | Item Type     | Description                                                                                           |
 |------------   |-----------    |-----------------------------------------------------------------------------------------------------  |
-| {playerID}    | Switch        | A channel which represents the player. Please check via UI how the correct Channel Type looks like.   |
+| {playerID}    | Switch        | A channel which represents the player. Please check via UI how the correct channel type looks.        |
 
 Example
 
- ```java
+```java
 Switch Player_1 "Player [%s]" {channel="heos:bridge:main:P123456789"}
- ```
+```
 
- The {playerUID} has either a P in front of the number which indicates that this is a player or a G to indicate this is a group.
+The {playerUID} has either a P in front of the number, which indicates that this is a player, or a G to indicate this is a group.
 
 ## Full Example
 
@@ -288,11 +288,11 @@ This section gives some detailed explanations how to use the binding.
 ### Grouping Players
 
 Players can be grouped via the binding.
-The easiest way to do this is to use the created Group type Thing. To group them simply use the `Ungroup` channel on the Group. Switching this Switch ON and OFF will group and ungroup that Group.
-The first player which is selected will be the Group leader.
-Therefore changing play/pause and some other things at any player (which is included in that group) will also change that at the whole group.
-Muting and Volume on the other hand can be changed individually for each Player also for the group leader.
-If you want to change that for the whole group you have to do it via the Group thing.
+The easiest way to do this is to use the created Group type thing. To group them, simply use the `Ungroup` channel on the Group. Switching this switch ON and OFF will group and ungroup that group.
+The first player that is selected will be the group leader.
+Therefore, changing play/pause and some other things at any player (which is included in that group) will also change that for the whole group.
+Muting and volume, on the other hand, can be changed individually for each player, also for the group leader.
+If you want to change that for the whole group, you have to do it via the Group thing.
 
 ### Inputs
 

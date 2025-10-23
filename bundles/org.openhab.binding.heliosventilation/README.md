@@ -1,19 +1,19 @@
 # HeliosVentilation Binding
 
 This is the binding for Helios Ventilation Systems KWL EC 200/300/500 Pro.
-It requires a connection to the RS485 bus used by the original remote controls KWL-FB (9417) and does not use the Modbus/TCP interface of the newer EasyControl devices.
+It requires a connection to the RS485 bus used by the original remote controls KWL-FB (9417), and does not use the Modbus/TCP interface of the newer EasyControl devices.
 
 For electrical connection it is recommended to use an USB-RS485 interface, but any RS485 interface that shows up as a serial port will do.
 Setup the device as described in <https://www.openhab.org/docs/administration/serial.html>.
 
 The binding will use the remote control address 15 for communication, so make sure that this is not assigned to a physically present remote control.
 
-For Helios ventilation devices supporting the easyControls web interface, the separate binding [Helios easyControls binding](https://www.openhab.org/addons/bindings/modbus.helioseasycontrols/) can be used.
+For Helios ventilation devices supporting the easyControls web interface, the separate [Helios easyControls binding](https://www.openhab.org/addons/bindings/modbus.helioseasycontrols/) can be used.
 
 ## Supported Things
 
 There is only one thing type supported by this binding: a Helios Ventilation System KWL EC 200/300/500 Pro from Helios.
-The binding was developed and test on a KWL EC 200 Pro device.
+The binding was developed and tested on a KWL EC 200 Pro device.
 
 ## Binding Configuration
 
@@ -43,35 +43,35 @@ Supported operation channels:
 
 Supported configuration channels:
 
-| channel            | type                 | description                                   |
-|--------------------|----------------------|-----------------------------------------------|
-| bypassTemp         | Number:Temperature   | Temperature to disable the bypass function    |
-| supplyStopTemp     | Number:Temperature   | Temperature to stop supply fan for defrosting |
-| preheatTemp        | Number:Temperature   | Temperature to enable the preheater           |
-| minFanspeed        | Number               | Minimal level of the fanspeed (1-8)           |
-| maxFanspeed        | Number               | Maximal level of the fanspeed (1-8)           |
-| rhLimit            | Number:Dimensionless | Limit for relative humidity sensor            |
-| hysteresis         | Number:Temperature   | Hysteresis on defroster temperature           |
-| DCFanExtract       | Number:Dimensionless | Speed reduction for the extract fan           |
-| DCFanSupply        | Number:Dimensionless | Speed reduction for the supply fan            |
-| maintenanceInterval| Number:Dimensionless | Maintenance interval in months                |
-| adjustInveral      | Number:Dimensionless | Adjust interval in minutes for air quality    |
-| RHLevelAuto        | Switch               | Automatic base humidity determination         |
-| switchType         | Switch               | External Switch type (Boost or Fireplace)     |
-| radiatorType       | Switch               | Use water (ON) or electric (OFF) radiator     |
-| cascade            | Switch               | System is cascaded                            |
+| channel            | type                 | description                                    |
+|--------------------|----------------------|------------------------------------------------|
+| bypassTemp         | Number:Temperature   | Temperature to disable the bypass function     |
+| supplyStopTemp     | Number:Temperature   | Temperature to stop the supply fan for defrost |
+| preheatTemp        | Number:Temperature   | Temperature to enable the preheater            |
+| minFanspeed        | Number               | Minimal level of the fanspeed (1-8)            |
+| maxFanspeed        | Number               | Maximal level of the fanspeed (1-8)            |
+| rhLimit            | Number:Dimensionless | Limit for relative humidity sensor             |
+| hysteresis         | Number:Temperature   | Hysteresis on defroster temperature            |
+| DCFanExtract       | Number:Dimensionless | Speed reduction for the extract fan            |
+| DCFanSupply        | Number:Dimensionless | Speed reduction for the supply fan             |
+| maintenanceInterval| Number:Dimensionless | Maintenance interval in months                 |
+| adjustInterval     | Number:Dimensionless | Adjust interval in minutes for air quality     |
+| RHLevelAuto        | Switch               | Automatic base humidity determination          |
+| switchType         | Switch               | External switch type (Boost or Fireplace)      |
+| radiatorType       | Switch               | Use water (ON) or electric (OFF) radiator      |
+| cascade            | Switch               | System is cascaded                             |
 
 Note: the configuration channels are not intended to be written regularly.
 
 ## Full Example
 
-Things:
+things:
 
 ```java
 heliosventilation:ventilation:MyKWL  [ serialPort="/dev/ttyUSB0" ]
 ```
 
-Items:
+items:
 
 ```java
 Switch KWLOnOff { channel="heliosventilation:ventilation:MyKWL:powerState" }
@@ -90,7 +90,7 @@ Number Max_Fan_Speed "Max Fan Speed" <fan> { channel="heliosventilation:ventilat
 
 ```
 
-Sitemap:
+sitemap:
 
 ```perl
 sitemap helios_kwl label="Helios Ventilation" {
