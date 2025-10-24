@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -30,10 +31,11 @@ import org.openhab.binding.jellyfin.internal.events.ErrorEvent;
 import org.openhab.binding.jellyfin.internal.events.ErrorEventBus;
 import org.openhab.binding.jellyfin.internal.events.ErrorEventListener;
 import org.openhab.binding.jellyfin.internal.handler.tasks.AbstractTask;
-import org.openhab.binding.jellyfin.internal.handler.util.ConfigurationManager;
-import org.openhab.binding.jellyfin.internal.handler.util.ServerStateManager;
-import org.openhab.binding.jellyfin.internal.handler.util.UserManager;
 import org.openhab.binding.jellyfin.internal.types.ServerState;
+import org.openhab.binding.jellyfin.internal.util.ClientListUpdater;
+import org.openhab.binding.jellyfin.internal.util.ConfigurationManager;
+import org.openhab.binding.jellyfin.internal.util.ServerStateManager;
+import org.openhab.binding.jellyfin.internal.util.UserManager;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
@@ -72,6 +74,9 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
     private final Map<String, AbstractTask> tasks = new HashMap<>();
     private final Map<String, @Nullable ScheduledFuture<?>> scheduledTasks = new HashMap<>();
     private final List<String> activeUserIds = new ArrayList<>();
+
+    // Maintains the list of Jellyfin clients (key: session/client id, value: session info)
+    private final Map<String, org.openhab.binding.jellyfin.internal.api.generated.current.model.SessionInfoDto> clients = new HashMap<>();
 
     /**
      * Constructor with dependency injection for TaskManager
@@ -222,8 +227,6 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
                 // Step 1: Handle server URI based on state
                 switch (initialState) {
                     case DISCOVERED:
-                        // Initialize discovered server - get URI from properties
-                        serverUri = new URI(thing.getProperties().get(Constants.ServerProperties.SERVER_URI));
                         updateConfiguration(serverUri);
                         break;
                     case INITIALIZING:
@@ -309,12 +312,24 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
                 activeUserIds.clear();
                 activeUserIds.addAll(userChangeResult.currentUserIds());
             }
-
+            // Update the client list after updating the user list
+            updateClientList();
         } catch (Exception e) {
             logger.warn("Failed to process users list: {}", e.getMessage(), e);
             ErrorEvent event = new ErrorEvent(e, ErrorEvent.ErrorType.API_ERROR, ErrorEvent.ErrorSeverity.WARNING,
                     "handleUsersList");
             errorEventBus.publishEvent(event);
+        }
+    }
+
+    /**
+     * Updates the Jellyfin client list based on the current active users.
+     */
+    private void updateClientList() {
+        try {
+            ClientListUpdater.updateClients(apiClient, Set.copyOf(activeUserIds), clients);
+        } catch (Exception e) {
+            logger.warn("Failed to update client list: {}", e.getMessage(), e);
         }
     }
 

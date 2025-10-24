@@ -19,6 +19,16 @@ Operational constraints:
 ## Code Generation Guidelines
 
 
+
+## Copyright and License Headers
+
+- **CRITICAL**: Every created file MUST contain the project's copyright and license header at the top, matching the format and content used in existing source files (see NOTICE or other Java files for reference).
+
+
+## Author Tag for New Classes
+
+- **CRITICAL**: Every new class MUST include an `@author` tag in the class-level Javadoc (not in the file header), stating "<git user name> - Initial contribution". Do not reference these instructions in the author tag. Replace `<git user name>` by the value of `git config user.name` (without eMail or angle brackets).
+
 When generating code, the agent MUST follow these guidelines to ensure quality and maintainability:
 
 - **CRITICAL**: The agent MUST NOT generate code that includes hard-coded sensitive information such as API keys, passwords, or personal data. Instead, it should use environment variables or secure vaults to manage such information.
