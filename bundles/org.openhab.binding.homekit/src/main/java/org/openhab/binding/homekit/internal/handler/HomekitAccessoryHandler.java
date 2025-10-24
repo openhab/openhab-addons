@@ -506,6 +506,33 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
                 }
             } else if (channelUID.equals(lightModelClientHSBTypeChannel)) {
                 lightModelHandleCommand(command, getRwService());
+                LightModel lightModel = this.lightModel;
+                if (lightModel != null) {
+                    lightModelLinks.forEach(link -> {
+                        switch (link.cxxType) {
+                            case HUE -> {
+                                QuantityType<Angle> hue = QuantityType.valueOf(lightModel.getHue(), Units.DEGREE_ANGLE);
+                                updateState(link.channel.getUID(), hue);
+                            }
+                            case SATURATION -> {
+                                PercentType sat = new PercentType(BigDecimal.valueOf(lightModel.getSaturation()));
+                                updateState(link.channel.getUID(), sat);
+                            }
+                            case BRIGHTNESS -> {
+                                if (lightModel.getBrightness(true) instanceof PercentType bri) {
+                                    updateState(link.channel.getUID(), bri);
+                                }
+                            }
+                            case ON -> {
+                                if (lightModel.getOnOff(true) instanceof OnOffType onOff) {
+                                    updateState(link.channel.getUID(), onOff);
+                                }
+                            }
+                            default -> {
+                            }
+                        }
+                    });
+                }
             } else {
                 writeChannel(channel, command, getRwService());
             }
