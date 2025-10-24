@@ -8,8 +8,10 @@
 	<thing-type id="oven">
 		<label>Haas+Sohn Oven</label>
 		<description>This binding communicates with a Haas+Sohn pellet stove through the optional Wi‑Fi module.
-			More information: https://www.haassohn.com/de/ihr-plus/WLAN-Funktion.
-			It allows you to power the stove on/off and receive operational information.</description>
+			More
+			information: https://www.haassohn.com/de/ihr-plus/WLAN-Funktion.
+			It allows you to power the stove on/off and receive
+			operational information.</description>
 		<semantic-equipment-tag>Furnace</semantic-equipment-tag>
 
 		<channels>
@@ -38,7 +40,8 @@
 			<parameter name="refreshRate" type="integer" unit="s" min="1" max="1000">
 				<label>Refresh Rate</label>
 				<description>How often the pellet stove schedules a refresh after a channel is linked to an item.
-					Temperature data will be refreshed according to this interval in seconds. Valid input is 1–999.</description>
+					Temperature data
+					will be refreshed according to this interval in seconds. Valid input is 1–999.</description>
 				<advanced>true</advanced>
 				<default>30</default>
 			</parameter>
