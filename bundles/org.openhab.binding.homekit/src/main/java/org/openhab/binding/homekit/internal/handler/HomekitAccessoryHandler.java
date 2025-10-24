@@ -658,16 +658,16 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
             if (primitiveValue.isNumber()) {
                 changed = true;
                 switch (cxxType) {
+                    case ON -> lightModel.setOnOff(primitiveValue.getAsInt() != 0); // number
                     case HUE -> lightModel.setHue(primitiveValue.getAsDouble());
                     case SATURATION -> lightModel.setSaturation(primitiveValue.getAsDouble());
                     case BRIGHTNESS -> lightModel.setBrightness(primitiveValue.getAsDouble());
                     case COLOR_TEMPERATURE -> lightModel.setMirek(primitiveValue.getAsDouble());
                     default -> changed = false;
                 }
-            } else if (primitiveValue.isBoolean()) {
-                changed = true;
+            } else {
                 switch (cxxType) {
-                    case ON -> lightModel.setOnOff(primitiveValue.getAsBoolean());
+                    case ON -> lightModel.setOnOff(primitiveValue.getAsBoolean()); // string, boolean
                     default -> changed = false;
                 }
             }
@@ -705,11 +705,11 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
             writeChannel(link.get().channel, saturation, writer);
         }
         link = lightModelLinks.stream().filter(e -> CharacteristicType.BRIGHTNESS == e.cxxType).findFirst();
-        if (link.isPresent() && lightModel.getBrightness() instanceof PercentType brightness) {
+        if (link.isPresent() && lightModel.getBrightness(true) instanceof PercentType brightness) {
             writeChannel(link.get().channel, brightness, writer);
         }
         link = lightModelLinks.stream().filter(e -> CharacteristicType.ON == e.cxxType).findFirst();
-        if (link.isPresent() && lightModel.getOnOff() instanceof OnOffType onOff) {
+        if (link.isPresent() && lightModel.getOnOff(true) instanceof OnOffType onOff) {
             writeChannel(link.get().channel, onOff, writer);
         }
     }
@@ -874,6 +874,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
      * @param json the JSON content containing characteristic values
      */
     private void updateChannelsFromJson(String json) {
+        ChannelUID hsbChannelUID = null;
         Service service = GSON.fromJson(json, Service.class);
         if (service != null && service.characteristics instanceof List<Characteristic> characteristics) {
             for (Channel channel : thing.getChannels()) {
@@ -881,7 +882,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
                 if (channelUID.equals(lightModelClientHSBTypeChannel)) {
                     for (Characteristic cxx : characteristics) {
                         if (lightModelRefresh(cxx)) {
-                            updateState(channelUID, Objects.requireNonNull(lightModel).getHsb());
+                            hsbChannelUID = channelUID;
                         }
                     }
                 } else if (channel.getProperties().get(PROPERTY_IID) instanceof String iid) {
@@ -896,6 +897,9 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
                     }
                 }
             }
+        }
+        if (hsbChannelUID != null) {
+            updateState(hsbChannelUID, Objects.requireNonNull(lightModel).getHsb());
         }
     }
 
