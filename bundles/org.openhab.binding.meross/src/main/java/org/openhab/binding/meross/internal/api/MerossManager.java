@@ -162,15 +162,15 @@ public class MerossManager implements MqttMessageSubscriber {
 
     private synchronized void publishMessage(String topic, byte[] message) throws MqttException, InterruptedException {
         try {
-            if (!publishMessageLocal(topic, message)) {
-                logger.trace("Publishing to mqtt...");
-                mqttConnector.publishMqttMessage(topic, message);
+            if (publishMessageLocal(topic, message)) {
+                return;
             }
         } catch (IOException e) {
-            logger.debug("Error communicating to device with IP address {} in LAN, trying cloud",
-                    callback.getIpAddress());
             logger.trace("Error: ", e);
         }
+        logger.debug("Failed communicating to device with IP address {} in LAN, trying cloud", callback.getIpAddress());
+        logger.trace("Publishing to mqtt...");
+        mqttConnector.publishMqttMessage(topic, message);
     }
 
     private boolean publishMessageLocal(String topic, byte[] message) throws IOException {
