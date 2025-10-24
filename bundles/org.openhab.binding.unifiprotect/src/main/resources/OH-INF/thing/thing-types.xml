@@ -113,17 +113,16 @@
 		</config-description>
 	</thing-type>
 
-	<!-- NVR channel types -->
 	<channel-type id="doorbell-default-message">
 		<item-type>String</item-type>
 		<label>Doorbell Default Message</label>
 		<description>Default doorbell LCD message text configured on the NVR</description>
 	</channel-type>
 
-	<channel-type id="doorbell-default-message-reset-ms">
-		<item-type>Number</item-type>
-		<label>Doorbell Default Message Reset (ms)</label>
-		<description>Default doorbell LCD message reset timeout (milliseconds)</description>
+	<channel-type id="doorbell-default-message-reset-timeout">
+		<item-type>Number:Time</item-type>
+		<label>Doorbell Default Message Reset Timeout</label>
+		<description>Default doorbell LCD message reset timeout</description>
 	</channel-type>
 
 	<channel-type id="device-added" advanced="true">
@@ -267,9 +266,9 @@
 	</channel-type>
 
 	<channel-type id="pir-duration">
-		<item-type>Number</item-type>
-		<label>PIR Duration (ms)</label>
-		<description>How long the light stays on after motion (ms)</description>
+		<item-type>Number:Time</item-type>
+		<label>PIR Duration</label>
+		<description>How long the light stays on after motion</description>
 		<tags>
 			<tag>Control</tag>
 			<tag>Duration</tag>
@@ -277,13 +276,14 @@
 	</channel-type>
 
 	<channel-type id="pir-sensitivity">
-		<item-type>Number</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>PIR Sensitivity</label>
 		<description>PIR motion sensitivity (0-100)</description>
 		<tags>
 			<tag>Control</tag>
 			<tag>Level</tag>
 		</tags>
+		<state min="0" max="100" step="1" pattern="%d %%"/>
 	</channel-type>
 
 	<channel-type id="led-level">
@@ -294,6 +294,7 @@
 			<tag>Control</tag>
 			<tag>Brightness</tag>
 		</tags>
+		<state min="1" max="6" step="1" pattern="%d"/>
 	</channel-type>
 
 	<!-- Sensor channel types -->
@@ -305,6 +306,7 @@
 			<tag>Measurement</tag>
 			<tag>Level</tag>
 		</tags>
+		<state min="0" max="100" pattern="%d %%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="contact">
@@ -315,6 +317,7 @@
 			<tag>Measurement</tag>
 			<tag>OpenState</tag>
 		</tags>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="temperature">
@@ -325,6 +328,7 @@
 			<tag>Measurement</tag>
 			<tag>Temperature</tag>
 		</tags>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="humidity">
@@ -335,6 +339,7 @@
 			<tag>Measurement</tag>
 			<tag>Humidity</tag>
 		</tags>
+		<state min="0" max="100" pattern="%d %%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="illuminance">
@@ -345,6 +350,7 @@
 			<tag>Measurement</tag>
 			<tag>Illuminance</tag>
 		</tags>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="alarm-contact">
@@ -451,6 +457,7 @@
 			</options>
 		</event>
 	</channel-type>
+
 	<channel-type id="ring-contact">
 		<item-type>Contact</item-type>
 		<label>Doorbell Ring</label>

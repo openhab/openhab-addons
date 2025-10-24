@@ -1,7 +1,5 @@
 # UniFi Protect Binding
 
-![logo](doc/logo.png)
-
 This binding integrates Ubiquiti UniFi Protect into openHAB.
 It connects to your Protect NVR/CloudKey/UNVR and provides live events and configurable settings for Cameras, Floodlights, and Sensors.
 
@@ -48,13 +46,13 @@ See [Binding Configuration](#binding-configuration) to enable/disable downloadin
 | Name             | Type    | Description                                                                                                                                                                                                                                                                         | Required |
 |------------------|---------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------|
 | downloadBinaries | boolean | Download binaries if they are not on the system PATH. This setting is used to control whether the binding should download the native binaries if they are not found. By default, the binding will download the binaries if they are not on the system PATH for supported platforms | yes      |
-| useStun          | boolean | Use STUN for external IP discovery.  This will allow camera streams to work behind NATs when outside your local network (e.g. when using the openHAB cloud service) and is enabled by default.                                                                                      | yes      |
+| useStun          | boolean | Use STUN for external IP discovery. This will allow camera streams to work behind NATs when outside your local network (e.g. when using the openHAB cloud service) and is enabled by default.                                                                                      | yes      |
 
-Note: Enabling STUN will incur an approximately 5 second delay delivering the stream to clients as it discovers your external IP and pins a port on your router for streams.  If you are not using the openHAB cloud service with cameras, disabling STUN will allow for near instant stream starts (video will start within a second of loading) on your local network or over a VPN.
+Note: Enabling STUN will incur an approximately 5 second delay delivering the stream to clients as it discovers your external IP and pins a port on your router for streams. If you are not using the openHAB cloud service with cameras, disabling STUN will allow for near instant stream starts (video will start within a second of loading) on your local network or over a VPN.
 
 ## Thing Configuration
 
-### NVR (Bridge) `unifiprotect:nvr`
+### NVR (Bridge) `nvr`
 
 | Name     | Type | Description                                        | Default | Required | Advanced |
 |----------|------|----------------------------------------------------|---------|----------|----------|
@@ -68,7 +66,7 @@ How to get the Token:
 
 ![Protect API key creation](doc/keys.png)
 
-### Camera `unifiprotect:camera`
+### `camera` Configuration
 
 | Name         | Type    | Description                            | Required |
 |--------------|---------|----------------------------------------|----------|
@@ -78,13 +76,13 @@ How to get the Token:
 When WebRTC is enabled, the camera will be able to stream through openHAB using WebRTC.
 You can disable WebRTC by setting `enableWebRTC` to `false`.
 
-### Floodlight `unifiprotect:light`
+### `light` Configuration
 
 | Name     | Type | Description                                | Required |
 |----------|------|--------------------------------------------|----------|
 | deviceId | text | Unique device identifier of the floodlight | yes      |
 
-### Sensor `unifiprotect:sensor`
+### `sensor` Configuration
 
 | Name     | Type | Description                            | Required |
 |----------|------|----------------------------------------|----------|
@@ -95,45 +93,47 @@ You can disable WebRTC by setting `enableWebRTC` to `false`.
 Below are the channels exposed by each thing type.
 Some camera channels are created dynamically depending on device capabilities.
 
-### NVR (Bridge)
+### `nvr` Bridge Channels
 
 No channels.
 
-### Camera
+### `camera` Channels
 
-- The following are dynamically created depending on features.
+- The following are dynamically created depending on the supported features.
 - Advanced channels are hidden by default in the MainUI, select "Show Advanced" to see them.
 
-| Channel ID                   | Item Type | RW | Description                                                                                          | Advanced |
-|------------------------------|-----------|----|------------------------------------------------------------------------------------------------------|----------|
-| mic-volume                   | Number    | RW | Microphone volume (0-100)                                                                            | false    |
-| video-mode                   | String    | RW | Camera video mode (e.g., `default`, `highFps`, `sport`, `slowShutter`, `lprReflex`, `lprNoneReflex`) | false    |
-| hdr-type                     | String    | RW | HDR mode (`auto`, `on`, `off`)                                                                       | false    |
-| osd-name                     | Switch    | RW | Show name on OSD                                                                                     | false    |
-| osd-date                     | Switch    | RW | Show date on OSD                                                                                     | false    |
-| osd-logo                     | Switch    | RW | Show logo on OSD                                                                                     | false    |
-| led-enabled                  | Switch    | RW | Enable/disable camera status LED                                                                     | false    |
-| active-patrol-slot           | Number    | RW | Active PTZ patrol slot (set 0 to stop)                                                               | false    |
-| webrtc-url-high              | String    | R  | WebRTC stream URL for high quality                                                                   | true     |
-| webrtc-url-medium            | String    | R  | WebRTC stream URL for medium quality                                                                 | true     |
-| webrtc-url-low               | String    | R  | WebRTC stream URL for low quality                                                                    | true     |
-| webrtc-url-package           | String    | R  | WebRTC stream URL for package quality                                                                | true     |
-| rtsp-url-high                | String    | R  | RTSP stream URL for high quality                                                                     | true     |
-| rtsp-url-medium              | String    | R  | RTSP stream URL for medium quality                                                                   | true     |
-| rtsp-url-low                 | String    | R  | RTSP stream URL for low quality                                                                      | true     |
-| rtsp-url-package             | String    | R  | RTSP stream URL for package quality                                                                  | true     |
-| snapshot                     | Image     | R  | Snapshot image. Send a REFRESH command to update.                                                         | false    |
-| snapshot-url                 | String    | R  | Snapshot image URL                                                                                      | true     |
-| motion-contact               | Contact   | R  | Motion state (OPEN = motion detected)                                                                | false    |
-| motion-snapshot              | Image     | R  | Snapshot captured around motion event                                                                | false    |
-| smart-detect-audio-contact   | Contact   | R  | Smart audio detection active state                                                                   | false    |
-| smart-detect-audio-snapshot  | Image     | R  | Snapshot captured around smart audio detection                                                       | false    |
-| smart-detect-zone-contact    | Contact   | R  | Smart zone detection active state                                                                    | false    |
-| smart-detect-zone-snapshot   | Image     | R  | Snapshot captured around smart zone detection                                                        | false    |
-| smart-detect-line-contact    | Contact   | R  | Smart line detection active state                                                                    | false    |
-| smart-detect-line-snapshot   | Image     | R  | Snapshot captured around smart line detection                                                        | false    |
-| smart-detect-loiter-contact  | Contact   | R  | Smart loiter detection active state                                                                  | false    |
-| smart-detect-loiter-snapshot | Image     | R  | Snapshot captured around smart loiter detection                                                      | false    |
+| Channel ID                             | Item Type   | RW | Description                                                                                          | Advanced |
+|----------------------------------------|-------------|----|------------------------------------------------------------------------------------------------------|----------|
+| mic-volume                             | Number      | RW | Microphone volume (0-100)                                                                            | false    |
+| video-mode                             | String      | RW | Camera video mode (e.g., `default`, `highFps`, `sport`, `slowShutter`, `lprReflex`, `lprNoneReflex`) | false    |
+| hdr-type                               | String      | RW | HDR mode (`auto`, `on`, `off`)                                                                       | false    |
+| osd-name                               | Switch      | RW | Show name on OSD                                                                                     | false    |
+| osd-date                               | Switch      | RW | Show date on OSD                                                                                     | false    |
+| osd-logo                               | Switch      | RW | Show logo on OSD                                                                                     | false    |
+| led-enabled                            | Switch      | RW | Enable/disable camera status LED                                                                     | false    |
+| active-patrol-slot                     | Number      | RW | Active PTZ patrol slot (set 0 to stop)                                                               | false    |
+| webrtc-url-high                        | String      | R  | WebRTC stream URL for high quality                                                                   | true     |
+| webrtc-url-medium                      | String      | R  | WebRTC stream URL for medium quality                                                                 | true     |
+| webrtc-url-low                         | String      | R  | WebRTC stream URL for low quality                                                                    | true     |
+| webrtc-url-package                     | String      | R  | WebRTC stream URL for package quality                                                                | true     |
+| rtsp-url-high                          | String      | R  | RTSP stream URL for high quality                                                                     | true     |
+| rtsp-url-medium                        | String      | R  | RTSP stream URL for medium quality                                                                   | true     |
+| rtsp-url-low                           | String      | R  | RTSP stream URL for low quality                                                                      | true     |
+| rtsp-url-package                       | String      | R  | RTSP stream URL for package quality                                                                  | true     |
+| snapshot                               | Image       | R  | Snapshot image. Send a REFRESH command to update.                                                    | false    |
+| snapshot-url                           | String      | R  | Snapshot image URL                                                                                   | true     |
+| motion-contact                         | Contact     | R  | Motion state (OPEN = motion detected)                                                                | false    |
+| motion-snapshot                        | Image       | R  | Snapshot captured around motion event                                                                | false    |
+| smart-detect-audio-contact             | Contact     | R  | Smart audio detection active state                                                                   | false    |
+| smart-detect-audio-snapshot            | Image       | R  | Snapshot captured around smart audio detection                                                       | false    |
+| smart-detect-zone-contact              | Contact     | R  | Smart zone detection active state                                                                    | false    |
+| smart-detect-zone-snapshot             | Image       | R  | Snapshot captured around smart zone detection                                                        | false    |
+| smart-detect-line-contact              | Contact     | R  | Smart line detection active state                                                                    | false    |
+| smart-detect-line-snapshot             | Image       | R  | Snapshot captured around smart line detection                                                        | false    |
+| smart-detect-loiter-contact            | Contact     | R  | Smart loiter detection active state                                                                  | false    |
+| smart-detect-loiter-snapshot           | Image       | R  | Snapshot captured around smart loiter detection                                                      | false    |
+| doorbell-default-message               | String      | RW | Default doorbell LCD message text configured on the NVR                                              | false    |
+| doorbell-default-message-reset-timeout | Number:Time | RW | Default doorbell LCD message reset timeout                                                           | false    |
 
 Trigger channels (for rules):
 
@@ -169,19 +169,18 @@ This delay can be configured via the contact channel configuration through textu
 
 ### Floodlight
 
-| Channel ID        | Item Type | RW | Description                                             | Advanced |
-|-------------------|-----------|----|---------------------------------------------------------|----------|
-| light             | Switch    | RW | Main floodlight on/off (forces light)                   | false    |
-| is-dark           | Switch    | R  | Scene is currently dark                                 | false    |
-| pir-motion        | Trigger   | -  | PIR motion event                                        | false    |
-| last-motion       | DateTime  | R  | Timestamp of last motion                                | false    |
-| light-mode        | String    | RW | Light mode (`always`, `motion`, `off`)                  | false    |
-| enable-at         | String    | RW | When mode is relevant (`fulltime`, `dark`)              | false    |
-| indicator-enabled | Switch    | RW | Status LED indicator on floodlight                      | false    |
-| pir-duration      | Number    | RW | How long the light stays on after motion (milliseconds) | false    |
-| pir-sensitivity   | Number    | RW | PIR motion sensitivity (0-100)                          | false    |
-| led-level         | Number    | RW | LED brightness level (1-6)                              | false    |
-
+| Channel ID        | Item Type   | RW | Description                                | Advanced |
+|-------------------|-------------|----|--------------------------------------------|----------|
+| light             | Switch      | RW | Main floodlight on/off (forces light)      | false    |
+| is-dark           | Switch      | R  | Scene is currently dark                    | false    |
+| pir-motion        | Trigger     | -  | PIR motion event                           | false    |
+| last-motion       | DateTime    | R  | Timestamp of last motion                   | false    |
+| light-mode        | String      | RW | Light mode (`always`, `motion`, `off`)     | false    |
+| enable-at         | String      | RW | When mode is relevant (`fulltime`, `dark`) | false    |
+| indicator-enabled | Switch      | RW | Status LED indicator on floodlight         | false    |
+| pir-duration      | Number:Time | RW | How long the light stays on after motion   | false    |
+| pir-sensitivity   | Number:Dimensionless | RW | PIR motion sensitivity (0-100)             | false    |
+| led-level         | Number      | RW | LED brightness level (1-6)                 | false    |
 
 ### Sensor
 
@@ -259,15 +258,15 @@ Replace the IDs with your own thing and item names.
 
 ```
 Bridge unifiprotect:nvr:myNvr "UniFi Protect NVR" [ hostname="192.168.1.10", token="YOUR_LONG_TOKEN" ] {
-	Thing unifiprotect:camera:frontdoor [ deviceId="60546f80e4b0abcd12345678" ]
-	Thing unifiprotect:light:driveway [ deviceId="60a1b2c3d4e5f67890123456" ]
-	Thing unifiprotect:sensor:garagedoor [ deviceId="60112233445566778899aabb" ]
+	Thing camera:frontdoor [ deviceId="60546f80e4b0abcd12345678" ]
+	Thing light:driveway [ deviceId="60a1b2c3d4e5f67890123456" ]
+	Thing sensor:garagedoor [ deviceId="60112233445566778899aabb" ]
 }
 ```
 
 ### Items (`.items`)
 
-```
+```java
 // Camera
 Number  Cam_Front_MicVolume        "Mic Volume [%d]"                    { channel="unifiprotect:camera:myNvr:frontdoor:mic-volume" }
 String  Cam_Front_VideoMode        "Video Mode [%s]"                    { channel="unifiprotect:camera:myNvr:frontdoor:video-mode" }
@@ -308,7 +307,7 @@ Contact Sensor_Garage_Tamper       "Tamper [%s]"                        { channe
 
 ### Sitemap (`.sitemap`)
 
-``` 
+```perl
 sitemap home label="Home" {
 	Frame label="Front Door Camera" {
 		Text item=Cam_Front_Motion
@@ -337,7 +336,7 @@ sitemap home label="Home" {
 
 Examples showing trigger channels.
 
-``` 
+```java
 // Camera motion start/update
 rule "Front door motion alert"
 when

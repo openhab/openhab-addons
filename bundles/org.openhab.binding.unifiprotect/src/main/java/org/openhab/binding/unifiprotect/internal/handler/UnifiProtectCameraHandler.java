@@ -32,6 +32,7 @@ import org.openhab.binding.unifiprotect.internal.api.dto.Camera;
 import org.openhab.binding.unifiprotect.internal.api.dto.CameraFeatureFlags;
 import org.openhab.binding.unifiprotect.internal.api.dto.ChannelQuality;
 import org.openhab.binding.unifiprotect.internal.api.dto.HdrType;
+import org.openhab.binding.unifiprotect.internal.api.dto.LcdMessage;
 import org.openhab.binding.unifiprotect.internal.api.dto.LedSettings;
 import org.openhab.binding.unifiprotect.internal.api.dto.ObjectType;
 import org.openhab.binding.unifiprotect.internal.api.dto.OsdSettings;
@@ -44,6 +45,7 @@ import org.openhab.binding.unifiprotect.internal.api.dto.events.CameraSmartDetec
 import org.openhab.binding.unifiprotect.internal.api.dto.events.CameraSmartDetectLoiterEvent;
 import org.openhab.binding.unifiprotect.internal.api.dto.events.CameraSmartDetectZoneEvent;
 import org.openhab.binding.unifiprotect.internal.api.dto.events.RingEvent;
+import org.openhab.binding.unifiprotect.internal.api.util.TranslationService;
 import org.openhab.binding.unifiprotect.internal.config.UnifiProtectCameraConfiguration;
 import org.openhab.binding.unifiprotect.internal.config.UnifiProtectSnapshotConfig;
 import org.openhab.binding.unifiprotect.internal.config.UnifiProtectSnapshotConfig.Sequence;
@@ -79,11 +81,13 @@ public class UnifiProtectCameraHandler extends UnifiProtectAbstractDeviceHandler
     private final UnifiMediaService media;
     private boolean enableWebRTC = true;
     private final String baseSourceId;
+    private final TranslationService translationService;
 
-    public UnifiProtectCameraHandler(Thing thing, UnifiMediaService media) {
+    public UnifiProtectCameraHandler(Thing thing, UnifiMediaService media, TranslationService translationService) {
         super(thing);
         this.media = media;
         this.baseSourceId = thing.getUID().getAsString();
+        this.translationService = translationService;
     }
 
     @Override
@@ -172,6 +176,24 @@ public class UnifiProtectCameraHandler extends UnifiProtectAbstractDeviceHandler
                     updateFromDevice(updated);
                     break;
                 }
+                case UnifiProtectBindingConstants.CHANNEL_DOORBELL_DEFAULT_MESSAGE: {
+                    String value = command.toString();
+                    JsonObject patch = UniFiProtectApiClient.buildPatch("lcdMessage.text", value);
+                    Camera updated = api.patchCamera(deviceId, patch);
+                    updateFromDevice(updated);
+                    break;
+                }
+                case UnifiProtectBindingConstants.CHANNEL_DOORBELL_DEFAULT_MESSAGE_RESET_TIMEOUT: {
+                    Long value = timeToMilliseconds(command);
+                    // null means forever, zero or less as well
+                    if (value != null && value <= 0) {
+                        value = null;
+                    }
+                    JsonObject patch = UniFiProtectApiClient.buildPatch("lcdMessage.resetAt", value);
+                    Camera updated = api.patchCamera(deviceId, patch);
+                    updateFromDevice(updated);
+                    break;
+                }
                 case UnifiProtectBindingConstants.CHANNEL_LED_ENABLED: {
                     boolean value = OnOffType.ON.equals(command);
                     JsonObject patch = UniFiProtectApiClient.buildPatch("ledSettings.isEnabled", value);
@@ -224,6 +246,12 @@ public class UnifiProtectCameraHandler extends UnifiProtectAbstractDeviceHandler
         LedSettings led = camera.ledSettings;
         if (led != null) {
             updateBooleanChannel(UnifiProtectBindingConstants.CHANNEL_LED_ENABLED, led.isEnabled);
+        }
+
+        LcdMessage lcd = camera.lcdMessage;
+        if (lcd != null) {
+            updateStringChannel(UnifiProtectBindingConstants.CHANNEL_DOORBELL_DEFAULT_MESSAGE, lcd.text);
+            updateTimeChannel(UnifiProtectBindingConstants.CHANNEL_DOORBELL_DEFAULT_MESSAGE_RESET_TIMEOUT, lcd.resetAt);
         }
 
         HdrType hdr = camera.hdrType;
@@ -571,6 +599,12 @@ public class UnifiProtectCameraHandler extends UnifiProtectAbstractDeviceHandler
             addChannel(UnifiProtectBindingConstants.CHANNEL_RING_SNAPSHOT, CoreItemFactory.IMAGE,
                     UnifiProtectBindingConstants.CHANNEL_SNAPSHOT, channelAdd, desiredIds,
                     UnifiProtectBindingConstants.CHANNEL_RING_SNAPSHOT_LABEL);
+            addChannel(UnifiProtectBindingConstants.CHANNEL_DOORBELL_DEFAULT_MESSAGE, CoreItemFactory.STRING,
+                    UnifiProtectBindingConstants.CHANNEL_DOORBELL_DEFAULT_MESSAGE, channelAdd, desiredIds,
+                    UnifiProtectBindingConstants.CHANNEL_DOORBELL_DEFAULT_MESSAGE_LABEL);
+            addChannel(UnifiProtectBindingConstants.CHANNEL_DOORBELL_DEFAULT_MESSAGE_RESET_TIMEOUT, "Number:Time",
+                    UnifiProtectBindingConstants.CHANNEL_DOORBELL_DEFAULT_MESSAGE_RESET_TIMEOUT, channelAdd, desiredIds,
+                    UnifiProtectBindingConstants.CHANNEL_DOORBELL_DEFAULT_MESSAGE_RESET_TIMEOUT_LABEL);
         }
 
         updateThing(editThing().withChannels(channelAdd).build());
@@ -589,7 +623,7 @@ public class UnifiProtectCameraHandler extends UnifiProtectAbstractDeviceHandler
             ChannelBuilder builder = ChannelBuilder.create(uid, itemType)
                     .withType(new ChannelTypeUID(UnifiProtectBindingConstants.BINDING_ID, channelTypeId));
             if (label != null) {
-                builder.withLabel(label);
+                builder.withLabel(translationService.getTranslation(label));
             }
             Channel ch = builder.build();
             channelAdd.add(ch);

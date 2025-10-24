@@ -82,7 +82,8 @@ public class UnifiProtectLightHandler extends UnifiProtectAbstractDeviceHandler<
         LightDeviceSettings lds = light.lightDeviceSettings;
         if (lds != null) {
             updateBooleanChannel(UnifiProtectBindingConstants.CHANNEL_INDICATOR_ENABLED, lds.isIndicatorEnabled);
-            updateIntegerChannel(UnifiProtectBindingConstants.CHANNEL_PIR_DURATION, lds.pirDuration);
+            updateTimeChannel(UnifiProtectBindingConstants.CHANNEL_PIR_DURATION,
+                    lds.pirDuration != null ? lds.pirDuration.longValue() : null);
             updateIntegerChannel(UnifiProtectBindingConstants.CHANNEL_PIR_SENSITIVITY, lds.pirSensitivity);
             updateIntegerChannel(UnifiProtectBindingConstants.CHANNEL_LED_LEVEL, lds.ledLevel);
         }
@@ -136,12 +137,7 @@ public class UnifiProtectLightHandler extends UnifiProtectAbstractDeviceHandler<
                     break;
                 }
                 case UnifiProtectBindingConstants.CHANNEL_PIR_DURATION: {
-                    int value;
-                    try {
-                        value = ((DecimalType) command).intValue();
-                    } catch (Exception e) {
-                        break;
-                    }
+                    Long value = timeToMilliseconds(command);
                     var patch = UniFiProtectApiClient.buildPatch("lightDeviceSettings.pirDuration", value);
                     Light updated = api.patchLight(deviceId, patch);
                     updateFromDevice(updated);

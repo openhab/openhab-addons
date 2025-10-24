@@ -18,6 +18,7 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.unifiprotect.internal.api.util.TranslationService;
 import org.openhab.binding.unifiprotect.internal.handler.UnifiProtectCameraHandler;
 import org.openhab.binding.unifiprotect.internal.handler.UnifiProtectLightHandler;
 import org.openhab.binding.unifiprotect.internal.handler.UnifiProtectNVRHandler;
@@ -44,15 +45,16 @@ public class UnifiProtectHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_NVR, THING_TYPE_CAMERA,
             THING_TYPE_LIGHT, THING_TYPE_SENSOR);
-
+    private final TranslationService translationService;
     private HttpClientFactory httpClientFactory;
     private UnifiMediaService media;
 
     @Activate
     public UnifiProtectHandlerFactory(@Reference HttpClientFactory httpClientFactory,
-            @Reference UnifiMediaService media) {
+            @Reference UnifiMediaService media, @Reference TranslationService translationService) {
         this.httpClientFactory = httpClientFactory;
         this.media = media;
+        this.translationService = translationService;
     }
 
     @Override
@@ -66,7 +68,7 @@ public class UnifiProtectHandlerFactory extends BaseThingHandlerFactory {
         if (THING_TYPE_NVR.equals(thingTypeUID)) {
             return new UnifiProtectNVRHandler(thing, httpClientFactory);
         } else if (THING_TYPE_CAMERA.equals(thingTypeUID)) {
-            return new UnifiProtectCameraHandler(thing, media);
+            return new UnifiProtectCameraHandler(thing, media, translationService);
         } else if (THING_TYPE_LIGHT.equals(thingTypeUID)) {
             return new UnifiProtectLightHandler(thing);
         } else if (THING_TYPE_SENSOR.equals(thingTypeUID)) {

@@ -20,6 +20,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import javax.measure.quantity.Time;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.unifiprotect.internal.api.UniFiProtectApiClient;
@@ -32,7 +34,10 @@ import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.MetricPrefix;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -40,6 +45,7 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.State;
+import org.openhab.core.types.Type;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -153,6 +159,11 @@ public abstract class UnifiProtectAbstractDeviceHandler<T extends Device> extend
                 value == null ? UnDefType.NULL : new DecimalType(BigDecimal.valueOf(value.doubleValue())));
     }
 
+    protected void updateTimeChannel(String channelId, @Nullable Long milliseconds) {
+        updateState(channelId, milliseconds == null ? UnDefType.NULL
+                : new QuantityType<Time>(milliseconds.longValue(), MetricPrefix.MILLI(Units.SECOND)));
+    }
+
     protected void updateContactChannel(String channelId, State state) {
         if (getThing().getChannel(channelId) instanceof Channel channel) {
             if (state instanceof OpenClosedType openClosedType) {
@@ -172,5 +183,17 @@ public abstract class UnifiProtectAbstractDeviceHandler<T extends Device> extend
             }
             updateState(channelId, state);
         }
+    }
+
+    protected static @Nullable Long timeToMilliseconds(Type type) {
+        if (type instanceof QuantityType<?> quantity) {
+            QuantityType<?> milliseconds = quantity.toUnit(MetricPrefix.MILLI(Units.SECOND));
+            if (milliseconds != null) {
+                return milliseconds.longValue();
+            }
+        } else if (type instanceof Number number) {
+            return number.longValue();
+        }
+        return null;
     }
 }

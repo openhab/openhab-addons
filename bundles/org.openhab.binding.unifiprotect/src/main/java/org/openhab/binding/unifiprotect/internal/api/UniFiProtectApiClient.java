@@ -71,6 +71,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 
@@ -659,7 +660,7 @@ public class UniFiProtectApiClient implements Closeable {
      * Supported values: null, Boolean, Number, String, JsonObject, ApiValueEnum,
      * other (toString()).
      */
-    public static JsonObject buildPatch(Object... keysAndValues) throws IllegalArgumentException {
+    public static JsonObject buildPatch(@Nullable Object... keysAndValues) throws IllegalArgumentException {
         if (keysAndValues.length % 2 != 0) {
             throw new IllegalArgumentException("buildPatch requires an even number of arguments (key/value pairs)");
         }
@@ -672,7 +673,7 @@ public class UniFiProtectApiClient implements Closeable {
         return root;
     }
 
-    private static void putPath(JsonObject root, String path, Object value) {
+    private static void putPath(JsonObject root, String path, @Nullable Object value) {
         String[] parts = path.split("\\.");
         JsonObject current = root;
         for (int i = 0; i < parts.length - 1; i++) {
@@ -688,8 +689,10 @@ public class UniFiProtectApiClient implements Closeable {
         setValue(current, parts[parts.length - 1], value);
     }
 
-    private static void setValue(JsonObject obj, String key, Object value) {
-        if (value instanceof Boolean v) {
+    private static void setValue(JsonObject obj, String key, @Nullable Object value) {
+        if (value == null) {
+            obj.add(key, JsonNull.INSTANCE);
+        } else if (value instanceof Boolean v) {
             obj.addProperty(key, v);
         } else if (value instanceof Number v) {
             obj.addProperty(key, v);
