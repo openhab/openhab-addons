@@ -18,7 +18,7 @@ All apps are implemented as separate things under the bridge.
 
 | App               | Thing Type   | Description                                      |
 |-------------------|--------------|--------------------------------------------------|
-| Clock             | clockApp     | Clock that dispays time and date                 |
+| Clock             | clockApp     | Clock that displays time and date                |
 | Timer             | countdownApp | A countdown timer that counts by seconds         |
 | Radio             | radioApp     | Streaming radio player                           |
 | Stopwatch         | stopwatchApp | Stopwatch that counts up by seconds              |
