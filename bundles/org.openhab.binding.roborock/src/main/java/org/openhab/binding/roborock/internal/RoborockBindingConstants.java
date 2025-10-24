@@ -136,7 +136,6 @@ public class RoborockBindingConstants {
     public static final String COMMAND_APP_START_WASH = "app_start_wash";
     public static final String COMMAND_APP_STAT = "app_stat";
     public static final String COMMAND_APP_STOP = "app_stop";
-    public static final String COMMAND_APP_STOP_COLLECT_DUST = "app_stop_collect_dust";
     public static final String COMMAND_APP_STOP_WASH = "app_stop_wash";
     public static final String COMMAND_SET_MODE = "set_custom_mode";
     public static final String COMMAND_SET_WATERBOX_MODE = "set_water_box_custom_mode";
@@ -144,6 +143,7 @@ public class RoborockBindingConstants {
     public static final String COMMAND_START_SEGMENT = "app_segment_clean";
     public static final String COMMAND_CONSUMABLES_RESET = "reset_consumable";
     public static final String COMMAND_SET_COLLECT_DUST = "app_start_collect_dust";
+    public static final String COMMAND_STOP_COLLECT_DUST = "app_stop_collect_dust";
     public static final String COMMAND_SET_CLEAN_MOP_START = "app_start_wash";
     public static final String COMMAND_SET_CLEAN_MOP_STOP = "app_stop_wash";
     public static final String COMMAND_GET_ROOM_MAPPING = "get_room_mapping";

@@ -113,12 +113,13 @@ public class RoborockVacuumHandler extends BaseThingHandler {
 
     private final Map<String, Integer> outstandingRequests = new ConcurrentHashMap<>();
 
-    private static final Set<RobotCapabilities> FEATURES_CHANNELS = Collections.unmodifiableSet(Stream.of(
-            RobotCapabilities.SEGMENT_STATUS, RobotCapabilities.MAP_STATUS, RobotCapabilities.LED_STATUS,
-            RobotCapabilities.CARPET_MODE, RobotCapabilities.FW_FEATURES, RobotCapabilities.ROOM_MAPPING,
-            RobotCapabilities.MULTI_MAP_LIST, RobotCapabilities.CUSTOMIZE_CLEAN_MODE, RobotCapabilities.COLLECT_DUST,
-            RobotCapabilities.CLEAN_MOP_START, RobotCapabilities.CLEAN_MOP_STOP, RobotCapabilities.MOP_DRYING,
-            RobotCapabilities.MOP_DRYING_REMAINING_TIME, RobotCapabilities.DOCK_STATE_ID).collect(Collectors.toSet()));
+    private static final Set<RobotCapabilities> FEATURES_CHANNELS = Collections.unmodifiableSet(
+            Stream.of(RobotCapabilities.SEGMENT_STATUS, RobotCapabilities.MAP_STATUS, RobotCapabilities.LED_STATUS,
+                    RobotCapabilities.CARPET_MODE, RobotCapabilities.FW_FEATURES, RobotCapabilities.ROOM_MAPPING,
+                    RobotCapabilities.MULTI_MAP_LIST, RobotCapabilities.CUSTOMIZE_CLEAN_MODE,
+                    RobotCapabilities.COLLECT_DUST, RobotCapabilities.CLEAN_MOP_START, RobotCapabilities.CLEAN_MOP_STOP,
+                    RobotCapabilities.MOP_DRYING, RobotCapabilities.MOP_DRYING_REMAINING_TIME,
+                    RobotCapabilities.DOCK_STATE_ID, RobotCapabilities.CLEAN_PERCENT).collect(Collectors.toSet()));
 
     public RoborockVacuumHandler(Thing thing, ChannelTypeRegistry channelTypeRegistry) {
         super(thing);
@@ -223,21 +224,29 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                 updateState(CHANNEL_CONSUMABLE_RESET, new StringType("none"));
             }
 
-            if (channelUID.getId().equals(RobotCapabilities.COLLECT_DUST.getChannel()) && !command.toString().isEmpty()
-                    && !command.toString().contentEquals("-")) {
-                sendRPCCommand(COMMAND_SET_COLLECT_DUST);
-                return;
+            if (channelUID.getId().equals(RobotCapabilities.COLLECT_DUST.getChannel())) {
+                if (command instanceof OnOffType) {
+                    if (command.equals(OnOffType.ON)) {
+                        sendRPCCommand(COMMAND_SET_COLLECT_DUST);
+                        return;
+                    } else {
+                        sendRPCCommand(COMMAND_STOP_COLLECT_DUST);
+                        return;
+                    }
+                }
             }
 
-            if (channelUID.getId().equals(RobotCapabilities.CLEAN_MOP_START.getChannel())
-                    && !command.toString().isEmpty() && !command.toString().contentEquals("-")) {
-                sendRPCCommand(COMMAND_SET_CLEAN_MOP_START);
-                return;
+            if (channelUID.getId().equals(RobotCapabilities.CLEAN_MOP_START.getChannel())) {
+                if (command.equals(OnOffType.ON)) {
+                    sendRPCCommand(COMMAND_SET_CLEAN_MOP_START);
+                    return;
+                }
             }
-            if (channelUID.getId().equals(RobotCapabilities.CLEAN_MOP_STOP.getChannel())
-                    && !command.toString().isEmpty() && !command.toString().contentEquals("-")) {
-                sendRPCCommand(COMMAND_SET_CLEAN_MOP_STOP);
-                return;
+            if (channelUID.getId().equals(RobotCapabilities.CLEAN_MOP_STOP.getChannel())) {
+                if (command.equals(OnOffType.ON)) {
+                    sendRPCCommand(COMMAND_SET_CLEAN_MOP_STOP);
+                    return;
+                }
             }
         } catch (UnsupportedEncodingException e) {
             logger.debug("UnsupportedEncodingException, {}", e.getMessage());
@@ -537,8 +546,6 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             updateState(CHANNEL_FAN_POWER, new DecimalType(getStatus.result[0].fanPower));
             updateState(CHANNEL_FAN_CONTROL,
                     new DecimalType(FanModeType.getType(getStatus.result[0].fanPower).getId()));
-            updateState(CHANNEL_CLEAN_AREA,
-                    new QuantityType<>(getStatus.result[0].cleanArea / 1000000.0, SIUnits.SQUARE_METRE));
             updateState(CHANNEL_CLEAN_TIME,
                     new QuantityType<>(TimeUnit.SECONDS.toMinutes(getStatus.result[0].cleanTime), Units.MINUTE));
             updateState(CHANNEL_DND_ENABLED, new DecimalType(getStatus.result[0].dndEnabled));
@@ -627,6 +634,10 @@ public class RoborockVacuumHandler extends BaseThingHandler {
             if (deviceCapabilities.containsKey(RobotCapabilities.MOP_DRYING_REMAINING_TIME)) {
                 updateState(CHANNEL_MOP_TOTAL_DRYTIME,
                         new QuantityType<>(TimeUnit.SECONDS.toMinutes(getStatus.result[0].dryStatus), Units.MINUTE));
+            }
+            if (deviceCapabilities.containsKey(RobotCapabilities.CLEAN_PERCENT)) {
+                updateState(CHANNEL_MOP_TOTAL_DRYTIME,
+                        new QuantityType<>(TimeUnit.SECONDS.toMinutes(getStatus.result[0].cleanPercent), Units.MINUTE));
             }
         }
     }

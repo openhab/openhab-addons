@@ -88,6 +88,7 @@
 			<channel id="segment-status" typeId="segment-status"/>
 			<channel id="map-status" typeId="map-status"/>
 			<channel id="led-status" typeId="led-status"/>
+			<channel id="clean-percent" typeId="clean-percent"/>
 		</channels>
 	</channel-group-type>
 	<channel-group-type id="consumables">
@@ -350,6 +351,15 @@
 	<channel-type id="water-box-status">
 		<item-type>Switch</item-type>
 		<label>Water Box State</label>
+		<tags>
+			<tag>Status</tag>
+			<tag>Info</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="clean-percent">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Cleaning % Complete</label>
 		<tags>
 			<tag>Status</tag>
 			<tag>Info</tag>
