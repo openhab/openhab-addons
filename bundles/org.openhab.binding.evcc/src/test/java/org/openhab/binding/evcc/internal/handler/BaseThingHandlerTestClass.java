@@ -33,7 +33,6 @@ import com.google.gson.JsonObject;
  */
 @NonNullByDefault
 public class BaseThingHandlerTestClass extends EvccBaseThingHandler {
-    public boolean setItemValueCalled = false;
     public boolean createChannelCalled = false;
     public boolean updateThingCalled = false;
     public boolean updateStatusCalled = false;
@@ -64,12 +63,6 @@ public class BaseThingHandlerTestClass extends EvccBaseThingHandler {
     protected Channel createChannel(String thingKey, JsonElement value) {
         createChannelCalled = true;
         return super.createChannel(thingKey, value);
-    }
-
-    @Override
-    protected void setItemValue(ItemTypeUnit itemTypeUnit, ChannelUID channelUID, JsonElement value) {
-        setItemValueCalled = true;
-        super.setItemValue(itemTypeUnit, channelUID, value);
     }
 
     @Override

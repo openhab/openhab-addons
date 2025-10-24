@@ -30,8 +30,6 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
-import javax.measure.Unit;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -39,13 +37,6 @@ import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.core.i18n.TranslationProvider;
-import org.openhab.core.library.CoreItemFactory;
-import org.openhab.core.library.types.DateTimeType;
-import org.openhab.core.library.types.DecimalType;
-import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.types.StringType;
-import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -61,6 +52,7 @@ import org.openhab.core.thing.type.ChannelTypeRegistry;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.State;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
@@ -83,6 +75,7 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
     protected boolean isInitialized = false;
     protected String endpoint = "";
     protected String smartCostType = "";
+    protected @Nullable StateResolver stateResolver = StateResolver.getInstance();
 
     public EvccBaseThingHandler(Thing thing, ChannelTypeRegistry channelTypeRegistry) {
         super(thing);
@@ -141,31 +134,39 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
         if (command instanceof RefreshType) {
             String key = Utils.getKeyFromChannelUID(channelUID);
             Optional.ofNullable(bridgeHandler).ifPresent(handler -> {
-                JsonObject state = getStateFromCachedState(handler.getCachedEvccState());
-                if (!state.isEmpty()) {
-                    JsonElement value = state.get(key);
-                    ItemTypeUnit typeUnit = getItemType(new ChannelTypeUID(BINDING_ID, channelUID.getId()));
-                    if (null != value) {
-                        setItemValue(typeUnit, channelUID, value);
-                    }
+                JsonObject jsonState = getStateFromCachedState(handler.getCachedEvccState());
+                if (!jsonState.isEmpty()) {
+                    JsonElement value = jsonState.get(key);
+                    Optional.ofNullable(stateResolver).ifPresent(resolver -> {
+                        State state = resolver.resolveState(key, value);
+                        if (null != state) {
+                            updateState(channelUID, state);
+                        }
+                    });
                 }
             });
         }
     }
 
+    private String getItemType(ChannelTypeUID channelTypeUID) {
+        ChannelType channelType = channelTypeRegistry.getChannelType(channelTypeUID);
+        if (null != channelType) {
+            String itemType = channelType.getItemType();
+            return Objects.requireNonNullElse(itemType, "Unknown");
+        }
+        return "Unknown";
+    }
+
     @Nullable
     protected Channel createChannel(String thingKey, JsonElement value) {
         ChannelTypeUID channelTypeUID = new ChannelTypeUID(BINDING_ID, thingKey);
-        ItemTypeUnit typeUnit = getItemType(channelTypeUID);
-        String itemType = typeUnit.itemType;
-
+        String itemType = getItemType(channelTypeUID);
         if (!"Unknown".equals(itemType)) {
             String label = getChannelLabel(thingKey);
             Channel channel = ChannelBuilder.create(new ChannelUID(getThing().getUID(), thingKey)).withLabel(label)
                     .withType(channelTypeUID).withAcceptedItemType(itemType).build();
             if (getThing().getChannels().stream().noneMatch(c -> c.getUID().equals(channel.getUID()))) {
                 return channel;
-                // builder.withChannel(channel);
             }
         } else {
             String valString = Objects.requireNonNullElse(value.toString(), "Null");
@@ -175,7 +176,6 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
     }
 
     private String getChannelLabel(String thingKey) {
-        String returnValue = thingKey;
         @Nullable
         String tmp = Optional.ofNullable(bridgeHandler).map(handler -> {
             String labelKey = "channel-type.evcc." + thingKey + ".label";
@@ -184,67 +184,7 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
             Locale locale = handler.getLocaleProvider().getLocale();
             return tp.getText(ctx.getBundle(), labelKey, thingKey, locale);
         }).orElse(thingKey);
-        if (null != tmp) {
-            returnValue = tmp;
-        }
-        return returnValue;
-    }
-
-    private ItemTypeUnit getItemType(ChannelTypeUID channelTypeUID) {
-        ChannelType channelType = channelTypeRegistry.getChannelType(channelTypeUID);
-        if (null != channelType) {
-            String itemType = channelType.getItemType();
-            if (null != itemType) {
-                Unit<?> unit = Utils.getUnitFromChannelType(itemType);
-                return new ItemTypeUnit(channelType, unit);
-            }
-        }
-        return new ItemTypeUnit(channelType, Units.ONE);
-    }
-
-    protected void setItemValue(ItemTypeUnit itemTypeUnit, ChannelUID channelUID, JsonElement value) {
-        if (value.isJsonNull() || itemTypeUnit.itemType.isEmpty()) {
-            return;
-        }
-        switch (itemTypeUnit.itemType) {
-            case CoreItemFactory.NUMBER:
-            case NUMBER_CURRENCY:
-            case NUMBER_ENERGY_PRICE:
-                updateState(channelUID, new DecimalType(value.getAsDouble()));
-                break;
-            case NUMBER_DIMENSIONLESS:
-            case NUMBER_ELECTRIC_CURRENT:
-            case NUMBER_EMISSION_INTENSITY:
-            case NUMBER_ENERGY:
-            case NUMBER_LENGTH:
-            case NUMBER_POWER:
-                Double finalValue = "%".equals(itemTypeUnit.unitHint) ? value.getAsDouble() / 100 : value.getAsDouble();
-                if (channelUID.getId().contains("capacity") || "km".equals(itemTypeUnit.unitHint)) {
-                    updateState(channelUID, new QuantityType<>(finalValue, itemTypeUnit.unit.multiply(1000)));
-                } else if ("Wh".equals(itemTypeUnit.unitHint)) {
-                    updateState(channelUID, new QuantityType<>(finalValue, itemTypeUnit.unit.divide(1000)));
-                } else {
-                    updateState(channelUID, new QuantityType<>(finalValue, itemTypeUnit.unit));
-                }
-                break;
-            case NUMBER_TIME:
-                updateState(channelUID, QuantityType.valueOf(value.getAsDouble() + " s"));
-                break;
-            case NUMBER_TEMPERATURE:
-                updateState(channelUID, QuantityType.valueOf(value.getAsDouble() + " " + itemTypeUnit.unitHint));
-                break;
-            case CoreItemFactory.DATETIME:
-                updateState(channelUID, new DateTimeType(value.getAsString()));
-                break;
-            case CoreItemFactory.STRING:
-                updateState(channelUID, new StringType(value.getAsString()));
-                break;
-            case CoreItemFactory.SWITCH:
-                updateState(channelUID, value.getAsBoolean() ? OnOffType.ON : OnOffType.OFF);
-                break;
-            default:
-                logUnknownChannelXmlAsync(channelUID.getId(), "Hint for type: " + value.toString());
-        }
+        return null != tmp ? tmp : thingKey;
     }
 
     protected String getThingKey(String key) {
@@ -260,12 +200,12 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
         return (type + "-" + Utils.sanitizeChannelID(key));
     }
 
-    public void updateStatesFromApiResponse(JsonObject state) {
-        if (!isInitialized || state.isEmpty()) {
+    public void updateStatesFromApiResponse(JsonObject jsonState) {
+        if (!isInitialized || jsonState.isEmpty()) {
             return;
         }
 
-        for (Map.Entry<@Nullable String, @Nullable JsonElement> entry : state.entrySet()) {
+        for (Map.Entry<@Nullable String, @Nullable JsonElement> entry : jsonState.entrySet()) {
             String key = entry.getKey();
             JsonElement value = entry.getValue();
             if (null == key || null == value || !value.isJsonPrimitive()) {
@@ -277,7 +217,7 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
             Channel existingChannel = getThing().getChannel(channelUID.getId());
             if (existingChannel == null) {
                 ThingBuilder builder = editThing();
-                List<Channel> channels = getThing().getChannels();
+                List<Channel> channels = new ArrayList<>(getThing().getChannels());
                 builder.withoutChannels(channels);
                 @Nullable
                 Channel newChannel = createChannel(thingKey, value);
@@ -287,7 +227,12 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
                     updateThing(builder.withChannels(channels).build());
                 }
             }
-            setItemValue(getItemType(new ChannelTypeUID(BINDING_ID, channelUID.getId())), channelUID, value);
+            Optional.ofNullable(stateResolver).ifPresent(resolver -> {
+                State state = resolver.resolveState(key, value);
+                if (null != state) {
+                    updateState(channelUID, state);
+                }
+            });
         }
         updateStatus(ThingStatus.ONLINE);
     }
@@ -381,25 +326,6 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
             logger.debug("Unknown channel definition written to file: {}", filePath.toAbsolutePath());
         } catch (IOException e) {
             logger.error("Failed to write unknown channel definition to file", e);
-        }
-    }
-
-    protected static class ItemTypeUnit {
-        private final Unit<?> unit;
-        private final String unitHint;
-        private final String itemType;
-
-        public ItemTypeUnit(@Nullable ChannelType type, @Nullable Unit<?> unit) {
-            if (null == type) {
-                unitHint = "";
-                itemType = "Unknown";
-            } else {
-                String tmp = type.getUnitHint();
-                unitHint = null != tmp ? tmp : "";
-                tmp = type.getItemType();
-                itemType = null != tmp ? tmp : "Unknown";
-            }
-            this.unit = Objects.requireNonNullElse(unit, Units.ONE);
         }
     }
 }

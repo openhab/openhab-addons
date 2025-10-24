@@ -155,7 +155,7 @@ public class EvccBridgeHandler extends BaseBridgeHandler {
                 if (listener instanceof BaseThingHandler handler) {
                     logger.warn("Listener {} couldn't parse evcc state", handler.getThing().getUID(), e);
                 } else {
-                    logger.debug("Listener {} is not instance of BaseThingHandlder", listener, e);
+                    logger.debug("Listener {} is not instance of BaseThingHandler", listener, e);
                 }
             }
         }
@@ -167,7 +167,9 @@ public class EvccBridgeHandler extends BaseBridgeHandler {
 
     public void register(EvccThingLifecycleAware handler) {
         listeners.addIfAbsent(handler);
-        Optional.of(lastState).ifPresent(handler::prepareApiResponseForChannelStateUpdate);
+        if (!lastState.isEmpty()) {
+            handler.prepareApiResponseForChannelStateUpdate(lastState);
+        }
     }
 
     public void unregister(EvccThingLifecycleAware handler) {

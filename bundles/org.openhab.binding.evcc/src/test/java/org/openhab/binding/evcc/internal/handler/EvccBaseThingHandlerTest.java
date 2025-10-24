@@ -17,36 +17,16 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
-import static org.openhab.binding.evcc.internal.EvccBindingConstants.NUMBER_CURRENCY;
-import static org.openhab.binding.evcc.internal.EvccBindingConstants.NUMBER_DIMENSIONLESS;
-import static org.openhab.binding.evcc.internal.EvccBindingConstants.NUMBER_ELECTRIC_CURRENT;
-import static org.openhab.binding.evcc.internal.EvccBindingConstants.NUMBER_EMISSION_INTENSITY;
 import static org.openhab.binding.evcc.internal.EvccBindingConstants.NUMBER_ENERGY;
-import static org.openhab.binding.evcc.internal.EvccBindingConstants.NUMBER_ENERGY_PRICE;
-import static org.openhab.binding.evcc.internal.EvccBindingConstants.NUMBER_LENGTH;
-import static org.openhab.binding.evcc.internal.EvccBindingConstants.NUMBER_POWER;
-import static org.openhab.binding.evcc.internal.EvccBindingConstants.NUMBER_TEMPERATURE;
-import static org.openhab.binding.evcc.internal.EvccBindingConstants.NUMBER_TIME;
 
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
-import org.openhab.binding.evcc.internal.handler.EvccBaseThingHandler.ItemTypeUnit;
-import org.openhab.core.library.CoreItemFactory;
-import org.openhab.core.library.types.DecimalType;
-import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.types.StringType;
-import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -59,7 +39,6 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
@@ -96,7 +75,6 @@ public class EvccBaseThingHandlerTest {
             JsonObject state = new JsonObject();
             handler.updateStatesFromApiResponse(state);
             assertTrue(handler.prepareApiResponseForChannelStateUpdateCalled);
-            assertFalse(handler.setItemValueCalled);
             assertFalse(handler.createChannelCalled);
             assertFalse(handler.updateThingCalled);
             assertFalse(handler.updateStatusCalled);
@@ -109,7 +87,6 @@ public class EvccBaseThingHandlerTest {
             JsonObject state = new JsonObject();
             handler.updateStatesFromApiResponse(state);
             assertTrue(handler.prepareApiResponseForChannelStateUpdateCalled);
-            assertFalse(handler.setItemValueCalled);
             assertFalse(handler.createChannelCalled);
             assertFalse(handler.updateThingCalled);
             // Status should not be updated for empty state
@@ -132,7 +109,6 @@ public class EvccBaseThingHandlerTest {
             handler.updateStatesFromApiResponse(state);
             assertTrue(handler.prepareApiResponseForChannelStateUpdateCalled);
             assertTrue(handler.createChannelCalled);
-            assertTrue(handler.setItemValueCalled);
             assertTrue(handler.updateThingCalled);
             assertTrue(handler.updateStatusCalled);
             assertEquals(ThingStatus.ONLINE, handler.lastUpdatedStatus);
@@ -151,7 +127,6 @@ public class EvccBaseThingHandlerTest {
 
             assertTrue(handler.prepareApiResponseForChannelStateUpdateCalled);
             assertFalse(handler.createChannelCalled);
-            assertTrue(handler.setItemValueCalled);
             assertFalse(handler.updateThingCalled); // Should not update thing if channel exists
             assertTrue(handler.updateStatusCalled);
             assertEquals(ThingStatus.ONLINE, handler.lastUpdatedStatus);
@@ -169,7 +144,6 @@ public class EvccBaseThingHandlerTest {
 
             assertTrue(handler.prepareApiResponseForChannelStateUpdateCalled);
             assertFalse(handler.createChannelCalled);
-            assertFalse(handler.setItemValueCalled);
             assertFalse(handler.updateThingCalled);
             assertTrue(handler.updateStatusCalled); // Status is updated even if nothing else happens
             assertEquals(ThingStatus.ONLINE, handler.lastUpdatedStatus);
@@ -182,7 +156,6 @@ public class EvccBaseThingHandlerTest {
             state.add("capacity", null); // Null value
             handler.updateStatesFromApiResponse(state);
             assertFalse(handler.createChannelCalled);
-            assertFalse(handler.setItemValueCalled);
             assertFalse(handler.updateThingCalled);
             assertTrue(handler.updateStatusCalled);
             assertEquals(ThingStatus.ONLINE, handler.lastUpdatedStatus);
@@ -208,8 +181,6 @@ public class EvccBaseThingHandlerTest {
             handler.bridgeHandler = mock(EvccBridgeHandler.class);
 
             handler.handleCommand(channelUID, command);
-
-            assertTrue(handler.setItemValueCalled);
         }
 
         @SuppressWarnings("null")
@@ -229,8 +200,6 @@ public class EvccBaseThingHandlerTest {
             handler.bridgeHandler = mock(EvccBridgeHandler.class);
 
             handler.handleCommand(channelUID, command);
-
-            assertTrue(handler.setItemValueCalled);
         }
 
         @SuppressWarnings("null")
@@ -243,8 +212,6 @@ public class EvccBaseThingHandlerTest {
             doReturn(cachedState).when(handler).getStateFromCachedState(any());
 
             handler.handleCommand(channelUID, command);
-
-            assertFalse(handler.setItemValueCalled);
             assertFalse(handler.logUnknownChannelXmlCalled);
         }
 
@@ -254,7 +221,6 @@ public class EvccBaseThingHandlerTest {
             ChannelUID channelUID = new ChannelUID("test:thing:uid:battery-capacity");
             Command command = mock(org.openhab.core.types.Command.class);
             handler.handleCommand(channelUID, command);
-            assertFalse(handler.setItemValueCalled);
         }
     }
 
@@ -305,77 +271,6 @@ public class EvccBaseThingHandlerTest {
             String result = handler.getThingKey(key);
 
             assertEquals("loadpoint-some-key", result);
-        }
-    }
-
-    @Nested
-    class SetItemValueTests {
-
-        static Stream<Arguments> provideItemTypesWithExpectedStateClass() {
-            return Stream.of(Arguments.of(NUMBER_DIMENSIONLESS, QuantityType.class),
-                    Arguments.of(NUMBER_ELECTRIC_CURRENT, QuantityType.class),
-                    Arguments.of(NUMBER_EMISSION_INTENSITY, QuantityType.class),
-                    Arguments.of(NUMBER_ENERGY, QuantityType.class), Arguments.of(NUMBER_LENGTH, QuantityType.class),
-                    Arguments.of(NUMBER_POWER, QuantityType.class), Arguments.of(NUMBER_TIME, QuantityType.class),
-                    Arguments.of(NUMBER_TEMPERATURE, QuantityType.class),
-                    Arguments.of(CoreItemFactory.NUMBER, DecimalType.class),
-                    Arguments.of(NUMBER_CURRENCY, DecimalType.class),
-                    Arguments.of(NUMBER_ENERGY_PRICE, DecimalType.class),
-                    Arguments.of(CoreItemFactory.STRING, StringType.class),
-                    Arguments.of(CoreItemFactory.SWITCH, OnOffType.class));
-        }
-
-        @SuppressWarnings("null")
-        @ParameterizedTest
-        @MethodSource("provideItemTypesWithExpectedStateClass")
-        void setItemValueWithVariousTypes(String itemType, Class<?> expectedStateClass) {
-            ChannelUID channelUID = new ChannelUID("test:thing:uid:dummy");
-            JsonElement value = itemType.equals(CoreItemFactory.STRING) ? new JsonPrimitive("OK")
-                    : itemType.equals(CoreItemFactory.SWITCH) ? new JsonPrimitive(true) : new JsonPrimitive(12.5);
-
-            ChannelType mockChannelType = mock(ChannelType.class);
-            when(mockChannelType.getItemType()).thenReturn(itemType);
-            if (NUMBER_TEMPERATURE.equals(itemType)) {
-                when(mockChannelType.getUnitHint()).thenReturn("°C");
-            }
-            when(channelTypeRegistry.getChannelType(any())).thenReturn(mockChannelType);
-
-            ItemTypeUnit itemTypeUnit = new ItemTypeUnit(mockChannelType, Units.ONE);
-
-            handler.setItemValue(itemTypeUnit, channelUID, value);
-
-            assertTrue(handler.updateStateCalled);
-            assertEquals(channelUID, handler.lastChannelUID);
-            assertEquals(expectedStateClass, handler.lastState.getClass());
-        }
-
-        @SuppressWarnings("null")
-        @Test
-        void setItemValueWithUnknownItemTypeDoesNotUpdateState() {
-            ChannelUID channelUID = new ChannelUID("test:thing:uid:dummy");
-            JsonElement value = new JsonPrimitive(12.5);
-            ChannelType mockChannelType = mock(ChannelType.class);
-            when(mockChannelType.getItemType()).thenReturn("Unknown");
-            ItemTypeUnit itemTypeUnit = new ItemTypeUnit(mockChannelType, Units.ONE);
-
-            handler.setItemValue(itemTypeUnit, channelUID, value);
-
-            assertFalse(handler.updateStateCalled);
-            assertTrue(handler.logUnknownChannelXmlCalled);
-        }
-
-        @SuppressWarnings("null")
-        @Test
-        void setItemValueWithJsonNullDoesNotUpdateState() {
-            ChannelUID channelUID = new ChannelUID("test:thing:uid:dummy");
-            JsonElement value = JsonNull.INSTANCE;
-            ChannelType mockChannelType = mock(ChannelType.class);
-            when(mockChannelType.getItemType()).thenReturn(CoreItemFactory.NUMBER);
-            ItemTypeUnit itemTypeUnit = new ItemTypeUnit(mockChannelType, Units.ONE);
-
-            handler.setItemValue(itemTypeUnit, channelUID, value);
-
-            assertFalse(handler.updateStateCalled);
         }
     }
 
