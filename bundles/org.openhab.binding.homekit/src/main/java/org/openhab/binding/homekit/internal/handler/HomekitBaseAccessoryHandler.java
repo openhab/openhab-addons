@@ -213,6 +213,8 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
      * Updates the thing status accordingly.
      */
     private synchronized void initializePairing() {
+        updateStatus(ThingStatus.UNKNOWN);
+
         Object host = getConfig().get(CONFIG_HOST);
         if (host == null || !(host instanceof String hostString) || !HOST_PATTERN.matcher(hostString).matches()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -300,9 +302,9 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
                 | InvalidCipherTextException | IOException | InterruptedException | TimeoutException
                 | ExecutionException e) {
             logger.warn("Pairing / verification failed for {}", thing.getUID(), e);
-            startConnectionTask();
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, i18nProvider.getText(bundle,
                     "error.pairing-verification-failed", "Pairing / verification failed", null));
+            startConnectionTask();
         }
     }
 
