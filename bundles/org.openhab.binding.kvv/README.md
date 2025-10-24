@@ -20,7 +20,7 @@ export QUERY="gottesauer"
 curl https://www.kvv.de/tunnelEfaDirect.php?action=XSLT_STOPFINDER_REQUEST&name_sf=${QUERY}&outputFormat=JSON&type_sf=any
 ```
 
-The exact `id` may be extracted from the JSON-encoded reponse. E.g.
+The exact `id` may be extracted from the JSON-encoded response. E.g.,
 
 ```json
 "points": [
