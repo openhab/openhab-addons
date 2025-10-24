@@ -51,7 +51,6 @@ import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
-import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.PercentType;
@@ -499,9 +498,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
             return;
         }
         try {
-            if (command instanceof HSBType) {
-                logger.warn("Forbidden to send command '{}' directly to '{}'", command, channelUID);
-            } else if (command instanceof StopMoveType stopMoveType && StopMoveType.STOP == stopMoveType) {
+            if (command instanceof StopMoveType stopMoveType && StopMoveType.STOP == stopMoveType) {
                 if (stopMoveChannel instanceof Channel stopMoveChannel) {
                     writeChannel(stopMoveChannel, OnOffType.ON, getRwService());
                 } else if (readChannel(channel, getRwService()) instanceof Command actualPosition) {
