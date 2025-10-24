@@ -13,27 +13,29 @@ When planning significant changes or implementations, it is essential to ensure 
 	- If fewer than 10 decisions are relevant, explicitly state which are not applicable and proceed with the remainder.
 	- Block further implementation steps until each question has received an explicit "yes" or "no" answer.
 
-  ## Code Generation Guidelines
+## Code Generation Guidelines
 
 When generating code, the agent MUST follow these guidelines to ensure quality and maintainability:
 
 - **CRITICAL**: The agent MUST NOT generate code that includes hard-coded sensitive information such as API keys, passwords, or personal data. Instead, it should use environment variables or secure vaults to manage such information.
 - **CRITICAL**: The definitions available from the openHAB [guildelines]<https://www.openhab.org/docs/developer/guidelines.html> must be followed.
-
-
-- Strictly follow the SOLID principles. Especially separate concerns, this also applies to private methods.
+- **CRITICAL**: Strictly follow the SOLID principles. Especially separate concerns, this also applies to private methods.
+- **CRITICAL**: Adhere to the existing architectural patterns and coding conventions used in the openHAB project.
+- **CRITICAL**: Follow the [build system]<https://www.openhab.org/docs/developer/buildsystem.html> guidelines for dependency management and project structure.
+- **CRITICAL**: Ensure compatibility with the Java versions supported by openHAB.
+- **CRITICAL**: Leverage Java 21 language features where appropriate to imrpove code clarity and performance.
+- **CRITICAL**: Leverate existing utility classes and methods within the openHAB codebase to maintain consistency and reduce redundancy.
 - Ensure thread safety in multi-threaded scenarios
-- Consider HIPAA compliance and FDA regulations
 - Prioritize code reliability and safety over performance optimizations
 - Write code that is self-explanatory through good naming and clear structure
 
-- ### Comments
-	- Minimize code comments by avoiding obvious statements
-	- Do not add comments explaining what was moved, refactored, or changed
+### Comments
+- Minimize code comments by avoiding obvious statements
+- Do not add comments explaining what was moved, refactored, or changed
 
-- ### Logging
-	- Never add logging without specific instructions to do so.
-	- Preserve existing logging statements unless specifically asked to remove them
+### Logging
+- Never add logging without specific instructions to do so.
+- Preserve existing logging statements unless specifically asked to remove them
 
 ## Code Quality Gates
 
@@ -47,7 +49,7 @@ When generating code, the agent MUST follow these guidelines to ensure quality a
 - After every modification the unit tests affected must be executed. If new logic was added, new test must be added. All unit tests must pass. There might be integration tests that can fail. Ask, if it is unclear if a failing test is an integration test.
 
 ### Code Style
-	- Added or changed code must report not code style warnings from static code analysis.
+- Added or changed code must report not code style warnings from static code analysis.
 
 ## Documentation
 
