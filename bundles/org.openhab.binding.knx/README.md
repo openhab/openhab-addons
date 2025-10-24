@@ -33,7 +33,7 @@ Bridges don't have channels on their own.
 
 ### Discovery
 
-KNX IP bridges, i.e. IP interfaces, routers, and knxd instances, are discovered through mulitcast communication in the local network.
+KNX IP bridges, i.e., IP interfaces, routers, and knxd instances, are discovered through multicast communication in the local network.
 As a KNX setup is typically static, this in only done during startup of the binding.
 Corresponding bridges are added to the inbox.
 Additional configuration might be necessary after adding a bridge.
@@ -146,7 +146,7 @@ This option can be selected using the special DPT 251.60600.
 |-----------|---------------|-------------|
 | ga        | Group address | 1.009       |
 
-_Attention:_ Due to a bug in the original implementation, the states for DPT 1.009 are inverted (i.e., `1` is mapped to `OPEN` instead of `CLOSE`).
+_Attention:_ Due to a bug in the original implementation, the states for DPT 1.009 are inverted (i.e., `1` is mapped to `OPEN` instead of `CLOSED`).
 A change would break all existing installations and is therefore not implemented.
 
 ##### Channel Type `datetime`, `datetime-control`
@@ -236,7 +236,7 @@ When a `GroupValueRead` telegram is sent from the KNX bus to a *-control Channel
 |-----------|---------------|-------------|
 | ga        | Group address | 1.009       |
 
-_Attention:_ Due to a bug in the original implementation, the states for DPT 1.009 are inverted (i.e. `1` is mapped to `OPEN` instead of `CLOSE`).
+_Attention:_ Due to a bug in the original implementation, the states for DPT 1.009 are inverted (i.e., `1` is mapped to `OPEN` instead of `CLOSED`).
 A change would break all existing installations and is therefore not implemented.
 
 ##### Channel Type "number-control"
@@ -458,19 +458,19 @@ For _Secure routing_ mode, the so-called `backbone key` needs to be configured i
 It is created by the ETS tool and cannot be changed via the ETS user interface.
 There are two possible ways to provide the key to openHAB:
 
-- The backbone key can be extracted from Security report (ETS, Reports, Security, look for a 32-digit key) and specified in parameter `routerBackboneKey`.
-- The backbone key is included in ETS keyring export (ETS, project settings, export keyring). Keyring file is configured using `keyringFile` (put it in `config\misc` folder of the openHAB installation) and also requires `keyringPassword`.
+- The backbone key can be extracted from the Security report (ETS, Reports, Security, look for a 32-digit key) and specified in parameter `routerBackboneKey`.
+- The backbone key is included in ETS keyring export (ETS, project settings, export keyring). The keyring file is configured using `keyringFile` (put it in `config\misc` folder of the openHAB installation) and also requires `keyringPassword`.
 
 For _Secure tunneling_ with a Secure IP Interface (or a router in tunneling mode), more parameters are required.
 A unique device authentication key, and a specific tunnel identifier and password need to be available.
 It can be provided to openHAB in two different ways:
 
 - All information can be looked up in ETS and provided separately: `tunnelDeviceAuthentication`, `tunnelUserPassword`.
- `tunnelUserId` is a number that is not directly visible in ETS, but can be looked up in keyring export or deduced (typically 2 for the first tunnel of a device, 3 for the second one, ...).
- `tunnelUserPasswort` is set in ETS in the properties of the tunnel (below the IP interface, you will see the different tunnels listed) and denoted as "Password".
+ `tunnelUserId` is a number that is not directly visible in ETS, but can be looked up in the keyring export or deduced (typically 2 for the first tunnel of a device, 3 for the second one, etc.).
+ `tunnelUserPassword` is set in ETS in the properties of the tunnel (below the IP interface, you will see the different tunnels listed) and denoted as "Password".
  `tunnelDeviceAuthentication` is set in the properties of the IP interface itself; check for the tab "IP" and the description "Authentication Code".
 - All necessary information is included in ETS keyring export (ETS, project settings, export keyring).
- Keyring file is configured using `keyringFile` (put it in `config\misc` folder of the openHAB installation) and `keyringPassword`.
+ The keyring file is configured using `keyringFile` (put it in `config\misc` folder of the openHAB installation) and `keyringPassword`.
  In addition, `tunnelSourceAddress` needs to be set to uniquely identify the tunnel in use.
 
 ### KNX Data Secure
@@ -483,10 +483,10 @@ Data Secure does _not_ necessarily require a KNX Secure Router or a Secure IP In
 
 > NOTE: openHAB currently does fully support passive (listening) access to secure group addresses.
 Write access to secure group addresses is currently disabled in openHAB.
-Initial/periodic read will fail, avoid automatic read (< in thing definition).
+Initial/periodic read will fail; avoid automatic read (`<` in thing definition).
 
 All necessary information to decode secure group addresses is included in ETS keyring export (ETS, project settings, export keyring).
-Keyring file is configured using `keyringFile` (put it in `config\misc` folder of the openHAB installation) and also requires `keyringPassword`.
+The keyring file is configured using `keyringFile` (put it in `config\misc` folder of the openHAB installation) and also requires `keyringPassword`.
 
 ## Examples
 
@@ -689,7 +689,7 @@ Uploading an application to the module is not necessary for use with openHAB.
 #### Configuration of the Serial Port
 
 Configuration of the serial port is necessary.
-This is done by editing text files in the folder `/boot/firmware` on the PI (for older distributions, it is `/boot`).
+This is done by editing text files in the folder `/boot/firmware` on the Pi (for older distributions, it is `/boot`).
 This can be done manually or using the tool `raspi-config`.
 
 If something goes wrong, you can also recover using a Windows machine, as this partition is also accessible from Windows when using a micro SD card reader.
@@ -701,17 +701,17 @@ The configuration options have changed over time, depending on the Linux distrib
 
 The following settings might work for you:
 
-For PI 5, add `dtoverlay=disable-bt` and `dtoverlay=uart0`.
+For Pi 5, add `dtoverlay=disable-bt` and `dtoverlay=uart0`.
 
-For PI 4, add `dtoverlay=disable-bt`.
+For Pi 4, add `dtoverlay=disable-bt`.
 
-For PI 3, add `dtoverlay=pi3-miniuart-bt`.
+For Pi 3, add `dtoverlay=pi3-miniuart-bt`.
 
 ##### cmdline.txt
 
 Remove the part that refers to the serial port, e.g. `console=serial0,115200`.
 
-Finally, reboot the PI.
+Finally, reboot the Pi.
 
 #### openHAB Configuration
 
