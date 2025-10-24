@@ -85,7 +85,7 @@ public class AccountController {
     public void refreshAccount(String username) throws SunSynkAuthenticateException, SunSynkTokenException {
         Long expiresIn = this.sunAccount.getExpiresIn();
         Long issuedAt = this.sunAccount.getIssuedAt();
-        if ((issuedAt + expiresIn) - Instant.now().getEpochSecond() > EXPIRYSECONDS) { 
+        if ((issuedAt + expiresIn) - Instant.now().getEpochSecond() > EXPIRYSECONDS) {
             logger.debug("Account configuration token not expired.");
             return;
         }

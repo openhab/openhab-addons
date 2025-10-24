@@ -68,10 +68,10 @@ public class SunSynkInverterHandler extends BaseThingHandler {
     private @Nullable ScheduledFuture<?> refreshTask;
     private boolean batterySettingsUpdated = false;
     private SunSynkInverterConfig config = new SunSynkInverterConfig();
-    private int inverterFlags = DeviceController.COMMONSETTINGS | DeviceController.GRIDREALTIME
-            | DeviceController.BATTERYREALTIME | DeviceController.INVERTERDAYTEMPS | DeviceController.REALTIMEIN;
-    private int summaryFlag = DeviceController.PLANTSUMMARY;
-    private int allFlags = inverterFlags | summaryFlag;
+    private final int INVERTERFLAGS = DeviceController.GRIDREALTIME | DeviceController.BATTERYREALTIME
+            | DeviceController.INVERTERDAYTEMPS | DeviceController.REALTIMEIN;
+    private final int SUMMARYFLAGS = DeviceController.PLANTSUMMARY;
+    private final int ALLFLAGS = INVERTERFLAGS | SUMMARYFLAGS;
     private int statusFlags = 0;
     public Settings tempInverterChargeSettings = inverter.tempInverterChargeSettings; // Holds modified
                                                                                       // battery settings.
@@ -287,18 +287,21 @@ public class SunSynkInverterHandler extends BaseThingHandler {
         }
         try {
             statusFlags = inverter.sendGetState(this.batterySettingsUpdated); // get inverter settings
-
-            if ((statusFlags & summaryFlag) != summaryFlag) {
+            if ((statusFlags & DeviceController.COMMONSETTINGS) != DeviceController.COMMONSETTINGS) {
+                logger.debug("API call for common settings skipped or failed at plant {} for Inverter {} serial {}.",
+                        this.config.getPlantId(), this.config.getAlias(), this.config.getSerialnumber());
+            }
+            if ((statusFlags & SUMMARYFLAGS) != SUMMARYFLAGS) {
                 logger.debug(
                         "API call failed at plant {} for Inverter {} serial {} Check plant ID in the inverter Thing configuration.",
                         this.config.getPlantId(), this.config.getAlias(), this.config.getSerialnumber());
             }
-            if ((statusFlags & inverterFlags) != inverterFlags) {
+            if ((statusFlags & INVERTERFLAGS) != INVERTERFLAGS) {
                 logger.debug(
                         "API calls failed at plant {} for Inverter {} serial {}. Check inverter serial number in the inverter Thing configuration.",
                         this.config.getPlantId(), this.config.getAlias(), this.config.getSerialnumber());
             }
-            if ((statusFlags & allFlags) == 0) {
+            if ((statusFlags & ALLFLAGS) == 0) {
                 logger.debug(
                         "All API calls failure for plant {}, Inverter {} serial {}. Its likely Sun Synk Connect is down, will retry.",
                         this.config.getPlantName(), this.config.getAlias(), this.config.getSerialnumber());
@@ -334,14 +337,16 @@ public class SunSynkInverterHandler extends BaseThingHandler {
 
     private void publishChannels() {
         logger.debug("Updating Channels");
-        if ((statusFlags & inverterFlags) == inverterFlags) {
+        if ((statusFlags & DeviceController.COMMONSETTINGS) == DeviceController.COMMONSETTINGS) {
             updateSettings();
+        }
+        if ((statusFlags & INVERTERFLAGS) == INVERTERFLAGS) {
             updateGrid();
             updateBattery();
             updateTemperature();
             updateSolar();
         }
-        if ((statusFlags & summaryFlag) == summaryFlag) {
+        if ((statusFlags & SUMMARYFLAGS) == SUMMARYFLAGS) {
             updateSummary();
         }
     }
