@@ -6,8 +6,9 @@
   - [Table of Contents](#table-of-contents)
   - [Overview](#overview)
   - [Architecture Diagram](#architecture-diagram)
-  - [Main Components](#main-components)
-  - [Integration Points](#integration-points)
+    - [Main Components](#main-components)
+    - [Server Discovery](server-discovery.md)
+    - [Integration Points](#integration-points)
 
 ## Overview
 
