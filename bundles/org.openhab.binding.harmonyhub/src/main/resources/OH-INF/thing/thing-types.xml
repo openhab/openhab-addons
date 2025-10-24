@@ -89,7 +89,8 @@
 	<channel-type id="player">
 		<item-type>Player</item-type>
 		<label>Player Control</label>
-		<description>Send player commands (Rewind, FastForward, Play, Pause, SkipForward, SkipBackward) to the device associated
+		<description>Send player commands (Rewind, FastForward, Play, Pause, SkipForward, SkipBackward) to the device
+			associated
 			with the currently running activity.</description>
 		<tags>
 			<tag>Control</tag>

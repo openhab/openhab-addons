@@ -60,7 +60,8 @@
 			</parameter>
 			<parameter name="command" type="text" required="true">
 				<label>Command</label>
-				<description>The name of the command that will be allowed, as defined in the IRtrans server database and flashed into the
+				<description>The name of the command that will be allowed, as defined in the IRtrans server database and flashed
+					into the
 					transceiver. Can be '*' for any command</description>
 			</parameter>
 		</config-description>
@@ -79,7 +80,8 @@
 			</parameter>
 			<parameter name="command" type="text" required="true">
 				<label>Command</label>
-				<description>The name of the command that will be allowed, as defined in the IRtrans server database and flashed into the
+				<description>The name of the command that will be allowed, as defined in the IRtrans server database and flashed
+					into the
 					transceiver. Can be '*' for any command</description>
 			</parameter>
 		</config-description>
