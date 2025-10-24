@@ -19,7 +19,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.avmfritz.internal.dto.PowerMeterModel;
 import org.openhab.binding.avmfritz.internal.dto.json.EnergyStats;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
@@ -65,10 +64,10 @@ public class AVMFritzPowerMeterDeviceHandler extends DeviceHandler implements AV
     }
 
     @Override
-    public void enablePowerMeterHighRefresh(long deviceId) {
+    public void enablePowerMeterHighRefresh(long deviceId, long pollingInterval) {
         // TODO use Thing property "deviceId" instead of passing an argument
         this.deviceId = deviceId;
-        startPolling(deviceId);
+        startPolling(deviceId, pollingInterval);
     }
 
     @Override
@@ -80,10 +79,11 @@ public class AVMFritzPowerMeterDeviceHandler extends DeviceHandler implements AV
         try {
             EnergyStats energyStats = gson.fromJson(response, EnergyStats.class);
             if (energyStats != null) {
-                updateThingChannelState(CHANNEL_POWER, new QuantityType<>(
-                        energyStats.mMValuePower * PowerMeterModel.POWER_FACTOR.doubleValue(), Units.WATT));
-                updateThingChannelState(CHANNEL_VOLTAGE, new QuantityType<>(
-                        energyStats.mMValueVolt * PowerMeterModel.VOLTAGE_FACTOR.doubleValue(), Units.VOLT));
+                updateThingChannelState(CHANNEL_ENERGY,
+                        new QuantityType<>(energyStats.getScaledEnergy(), Units.WATT_HOUR));
+                updateThingChannelState(CHANNEL_POWER, new QuantityType<>(energyStats.getScaledPower(), Units.WATT));
+                updateThingChannelState(CHANNEL_VOLTAGE,
+                        new QuantityType<>(energyStats.getScaledVoltage(), Units.VOLT));
             }
         } catch (JsonSyntaxException e) {
             logger.debug("Failed to parse JSON: {}", e.getMessage());
@@ -93,10 +93,9 @@ public class AVMFritzPowerMeterDeviceHandler extends DeviceHandler implements AV
     /**
      * Start the polling.
      */
-    private void startPolling(long deviceId) {
+    private void startPolling(long deviceId, long pollingInterval) {
         ScheduledFuture<?> localPollingJob = pollingJob;
         if (localPollingJob == null || localPollingJob.isCancelled()) {
-            long pollingInterval = 10;
             logger.debug("Start polling job for device '{}' at interval {}s", deviceId, pollingInterval);
             pollingJob = scheduler.scheduleWithFixedDelay(() -> {
                 handleAction(GET_ENERGY_STATS, deviceId);
