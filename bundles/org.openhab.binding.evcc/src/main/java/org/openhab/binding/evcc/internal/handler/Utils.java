@@ -122,4 +122,17 @@ public class Utils {
         }
         return Arrays.stream(input.split("\\.")).mapToInt(Integer::parseInt).toArray();
     }
+
+    /**
+     * Capitalizes the first character of a string.
+     *
+     * @param input The input string.
+     * @return The string with the first character in uppercase.
+     */
+    public static String capitalizeFirstLetter(String input) {
+        if (input.isEmpty()) {
+            return input;
+        }
+        return input.substring(0, 1).toUpperCase() + input.substring(1);
+    }
 }
