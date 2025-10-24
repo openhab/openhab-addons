@@ -67,6 +67,8 @@ public class IpTransport implements AutoCloseable {
     private @Nullable Thread readThread = null;
     private @Nullable CompletableFuture<byte[][]> readFuture = null;
 
+    private boolean closing = false;
+
     /**
      * Creates a new IpTransport instance with the given socket and session keys.
      *
@@ -249,6 +251,7 @@ public class IpTransport implements AutoCloseable {
 
     @Override
     public void close() {
+        closing = true;
         secureSession = null;
         eventListeners.clear();
         try {
@@ -312,7 +315,7 @@ public class IpTransport implements AutoCloseable {
             future.completeExceptionally(cause != null ? cause : new InterruptedException("Listener interrupted"));
         }
 
-        if (cause != null) {
+        if (cause != null && !closing) {
             if (logger.isTraceEnabled()) {
                 logger.trace("Error while listening for events", cause);
             } else {
