@@ -14,6 +14,7 @@ package org.openhab.binding.homekit.internal.handler;
 
 import static org.openhab.binding.homekit.internal.HomekitBindingConstants.*;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,11 +24,14 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import javax.measure.Unit;
 import javax.measure.format.MeasurementParseException;
+import javax.measure.quantity.Angle;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -42,6 +46,7 @@ import org.openhab.binding.homekit.internal.persistence.HomekitTypeProvider;
 import org.openhab.binding.homekit.internal.temporary.LightModel;
 import org.openhab.binding.homekit.internal.temporary.LightModel.LightCapabilities;
 import org.openhab.binding.homekit.internal.temporary.LightModel.RgbDataType;
+import org.openhab.binding.homekit.internal.transport.IpTransport;
 import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.DateTimeType;
@@ -56,6 +61,7 @@ import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.types.UpDownType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.semantics.SemanticTag;
+import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.DefaultSystemChannelTypeProvider;
@@ -96,6 +102,11 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
 
     private static final int INITIAL_DELAY_SECONDS = 2;
 
+    // Characteristic types relevant for light model management
+    private static final Set<CharacteristicType> LIGHT_MODEL_RELEVANT_TYPES = Set.of(CharacteristicType.HUE,
+            CharacteristicType.SATURATION, CharacteristicType.BRIGHTNESS, CharacteristicType.COLOR_TEMPERATURE,
+            CharacteristicType.ON);
+
     private final Logger logger = LoggerFactory.getLogger(HomekitAccessoryHandler.class);
     private final ChannelTypeRegistry channelTypeRegistry;
     private final ChannelGroupTypeRegistry channelGroupTypeRegistry;
@@ -106,9 +117,16 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
      * This is only initialized if the accessory has relevant light characteristics.
      */
     private @Nullable LightModel lightModel = null;
-    private @Nullable ChannelUID lightModelClientChannel = null; // special HSB combined channel
+    private @Nullable ChannelUID lightModelClientHSBTypeChannel = null; // special HSB combined channel
 
-    private final Map<CharacteristicType, Channel> lightModelServerChannels = new HashMap<>();
+    /*
+     * Internal record representing a link between an OH channel and a HomeKit characteristic type & iid.
+     * Used for light model management.
+     */
+    private record LightModelLink(Channel channel, CharacteristicType cxxType, Integer cxxIid) {
+    }
+
+    private final List<LightModelLink> lightModelLinks = new ArrayList<>();
     private final Set<Channel> eventedChannels = new HashSet<>();
 
     private @Nullable Channel stopMoveChannel = null; // channel for the stop button (rollershutters)
@@ -145,6 +163,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
                     }
                 }
             } catch (NumberFormatException e) {
+                // logged below
             }
         }
         if (refreshTask == null) {
@@ -154,26 +173,26 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
         if (eventedChannels.isEmpty()) {
             unsubscribeEvents();
         } else {
-            CharacteristicReadWriteClient writer = this.rwService;
-            if (writer != null) {
-                Service service = new Service();
-                service.characteristics = new ArrayList<>();
-                for (Channel channel : eventedChannels) {
-                    if (channel.getProperties().get(PROPERTY_IID) instanceof String iid) {
-                        Characteristic characteristic = new Characteristic();
-                        characteristic.iid = Integer.parseInt(iid);
-                        characteristic.aid = getAccessoryId();
-                        characteristic.ev = true; // enable events
-                        service.characteristics.add(characteristic);
-                    }
+            Service service = new Service();
+            service.characteristics = new ArrayList<>();
+            for (Channel channel : eventedChannels) {
+                if (channel.getProperties().get(PROPERTY_IID) instanceof String iid) {
+                    Characteristic characteristic = new Characteristic();
+                    characteristic.iid = Integer.parseInt(iid);
+                    characteristic.aid = getAccessoryId();
+                    characteristic.ev = true; // enable events
+                    service.characteristics.add(characteristic);
                 }
-                try {
-                    writer.writeCharacteristic(GSON.toJson(service));
-                    subscribeEvents();
-                    logger.debug("Eventing enabled for {} channels", eventedChannels.size());
-                } catch (Exception e) {
-                    logger.warn("Failed to subscribe to evented channels, eventing disabled");
-                }
+            }
+            try {
+                getRwService().writeCharacteristic(GSON.toJson(service));
+                subscribeEvents();
+                logger.debug("Eventing enabled for {} channels", eventedChannels.size());
+            } catch (IOException | TimeoutException e) {
+                logger.debug("Communication error subscribing to evented channels");
+            } catch (IllegalAccessException | ExecutionException e) {
+                logger.warn("Unexpected error subscribing to evented channels", e);
+            } catch (InterruptedException e) { // shutting down
             }
         }
     }
@@ -226,10 +245,10 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
                         String val = option.getValue();
                         try {
                             object = Integer.parseInt(val);
+                            break;
                         } catch (NumberFormatException e) {
                             logger.warn("Unexpected state option value {} for channel {}", val, channel.getUID(), e);
                         }
-                        break;
                     }
                 }
             }
@@ -249,17 +268,13 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
             // comply with characteristic's data format
             String format = channel.getProperties().get(PROPERTY_FORMAT);
             if (format != null) {
-                try {
-                    object = switch (DataFormatType.from(format)) {
-                        case UINT8, UINT16, UINT32, UINT64, INT -> Integer.valueOf(number.intValue());
-                        case FLOAT -> Float.valueOf(number.floatValue());
-                        case STRING -> String.valueOf(number);
-                        case BOOL -> Boolean.valueOf(number.intValue() != 0);
-                        default -> object;
-                    };
-                } catch (IllegalArgumentException e) {
-                    logger.warn("Unexpected format {} for channel {}", format, channel.getUID(), e);
-                }
+                object = switch (DataFormatType.from(format)) {
+                    case UINT8, UINT16, UINT32, UINT64, INT -> Integer.valueOf(number.intValue());
+                    case FLOAT -> Float.valueOf(number.floatValue());
+                    case STRING -> String.valueOf(number);
+                    case BOOL -> Boolean.valueOf(number.intValue() != 0);
+                    default -> object;
+                };
             }
         }
 
@@ -324,7 +339,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
         } else if (value.isNumber()) {
             return switch (acceptedItemType) {
                 case CoreItemFactory.COLOR -> {
-                    logger.warn("HSBType command handling is not yet implemented for channel {}", channel.getUID());
+                    logger.warn("Channel {} wrong item type 'COLOR'", channel.getUID());
                     yield UnDefType.UNDEF;
                 }
                 case CoreItemFactory.SWITCH -> OnOffType.from(value.getAsInt() != 0);
@@ -483,36 +498,29 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
         if (command == RefreshType.REFRESH) {
             return;
         }
-        CharacteristicReadWriteClient readerWriter = this.rwService;
-        if (readerWriter == null) {
-            logger.warn("No reader/writer service available to handle command for '{}'", channelUID);
-            return;
-        }
         try {
             if (command instanceof HSBType) {
                 logger.warn("Forbidden to send command '{}' directly to '{}'", command, channelUID);
             } else if (command instanceof StopMoveType stopMoveType && StopMoveType.STOP == stopMoveType) {
                 if (stopMoveChannel instanceof Channel stopMoveChannel) {
-                    writeChannel(stopMoveChannel, OnOffType.ON, readerWriter);
-                } else if (readChannel(channel, readerWriter) instanceof Command actualPosition) {
-                    writeChannel(channel, actualPosition, readerWriter);
+                    writeChannel(stopMoveChannel, OnOffType.ON, getRwService());
+                } else if (readChannel(channel, getRwService()) instanceof Command actualPosition) {
+                    writeChannel(channel, actualPosition, getRwService());
                 }
-            } else if (channelUID.equals(lightModelClientChannel)) {
-                lightModelHandleCommand(command, readerWriter);
+            } else if (channelUID.equals(lightModelClientHSBTypeChannel)) {
+                lightModelHandleCommand(command, getRwService());
             } else {
-                writeChannel(channel, command, readerWriter);
+                writeChannel(channel, command, getRwService());
             }
-        } catch (Exception e) {
-            if (logger.isTraceEnabled()) {
-                logger.trace("Failed to send command '{}' to '{}', reconnecting", command, channelUID, e);
-            } else {
-                logger.debug("Failed to send command '{}' to '{}', reconnecting: {}", command, channelUID,
-                        e.getMessage());
-            }
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    i18nProvider.getText(bundle, "error.error-sending-command", "Error sending command", null));
-            startConnectionTask();
+            return;
+        } catch (IOException | TimeoutException e) {
+            logger.debug("Communication error sending command '{}' to '{}' '{}'", command, channelUID, e.getMessage());
+        } catch (IllegalAccessException | ExecutionException e) {
+            logger.warn("Unexpected error sending command '{}' to '{}'", command, channelUID, e);
+        } catch (InterruptedException e) { // shutting down
         }
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                i18nProvider.getText(bundle, "error.error-sending-command", "Error sending command", null));
     }
 
     @Override
@@ -534,8 +542,8 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
     public void dispose() {
         cancelRefreshTask();
         lightModel = null;
-        lightModelServerChannels.clear();
-        lightModelClientChannel = null;
+        lightModelLinks.clear();
+        lightModelClientHSBTypeChannel = null;
         eventedChannels.clear();
         super.dispose();
     }
@@ -545,33 +553,30 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
      * This method is called periodically by a scheduled executor.
      */
     private void refresh() {
-        CharacteristicReadWriteClient reader = this.rwService;
-        if (reader != null) {
-            try {
-                Integer aid = getAccessoryId();
-                List<String> queries = new ArrayList<>();
-                thing.getChannels().stream().forEach(c -> {
-                    String iid = c.getProperties().get(PROPERTY_IID);
-                    if (iid != null) {
-                        queries.add("%s.%s".formatted(aid, iid));
-                    }
-                });
-                if (queries.isEmpty()) {
-                    return;
-                }
-                String json = reader.readCharacteristic(String.join(",", queries));
-                updateChannelsFromJson(json);
-            } catch (Exception e) {
-                if (logger.isTraceEnabled()) {
-                    logger.trace("Failed to poll accessory state, reconnecting", e);
-                } else {
-                    logger.debug("Failed to poll accessory state, reconnecting: {}", e.getMessage());
-                }
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        i18nProvider.getText(bundle, "error.polling-error", "Polling error", null));
-                startConnectionTask();
+        Integer aid = getAccessoryId();
+        List<String> queries = new ArrayList<>();
+        thing.getChannels().stream().forEach(c -> {
+            String iid = c.getProperties().get(PROPERTY_IID);
+            if (iid != null) {
+                queries.add("%s.%s".formatted(aid, iid));
             }
+        });
+        if (queries.isEmpty()) {
+            return;
         }
+        try {
+            String json = getRwService().readCharacteristic(String.join(",", queries));
+            updateChannelsFromJson(json);
+            return;
+        } catch (IOException | TimeoutException e) {
+            logger.debug("Communication error polling accessory '{}', restarting", e.getMessage());
+            startConnectionTask();
+        } catch (IllegalAccessException | ExecutionException e) {
+            logger.warn("Unexpected error polling accessory", e);
+        } catch (InterruptedException e) { // shutting down
+        }
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                i18nProvider.getText(bundle, "error.polling-error", "Polling error", null));
     }
 
     private void cancelRefreshTask() {
@@ -638,32 +643,21 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
     }
 
     /**
-     * Checks if a characteristic is relevant to the light model.
-     *
-     * @param cxx the characteristic to check
-     * @return true if the characteristic is part of the light model, false otherwise
-     */
-    private boolean lightModelRelevantCharacteristic(Characteristic cxx) {
-        CharacteristicType cxxType = cxx.getCharacteristicType();
-        return CharacteristicType.HUE == cxxType || CharacteristicType.SATURATION == cxxType
-                || CharacteristicType.BRIGHTNESS == cxxType || CharacteristicType.COLOR_TEMPERATURE == cxxType
-                || CharacteristicType.ON == cxxType;
-    }
-
-    /**
      * Refreshes the light model state based on the updated characteristic value.
      *
      * @param cxx the characteristic containing the updated value
      * @return true if the light model was updated, false otherwise
+     * @throws IllegalStateException if the light model is not initialized
      */
-    private boolean lightModelRefresh(Characteristic cxx) {
+    private boolean lightModelRefresh(Characteristic cxx) throws IllegalStateException {
         LightModel lightModel = this.lightModel;
         if (lightModel == null) {
             throw new IllegalStateException("Light model is not initialized");
         }
         boolean changed = false;
-        if (lightModelRelevantCharacteristic(cxx) && cxx.value instanceof JsonPrimitive primitiveValue) {
-            CharacteristicType cxxType = cxx.getCharacteristicType();
+        Optional<LightModelLink> link = lightModelLinks.stream().filter(e -> e.cxxIid.equals(cxx.iid)).findFirst();
+        if (link.isPresent() && cxx.value instanceof JsonPrimitive primitiveValue) {
+            CharacteristicType cxxType = link.get().cxxType;
             if (primitiveValue.isNumber()) {
                 changed = true;
                 switch (cxxType) {
@@ -689,32 +683,42 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
      *
      * @param hsbCommand the HSBType command containing hue, saturation, and brightness
      * @param writer the CharacteristicReadWriteClient to send the command
-     * @throws Exception
+     * @throws ExecutionException
+     * @throws TimeoutException
+     * @throws InterruptedException
+     * @throws IOException
+     * @throws IllegalStateException
      */
-    private void lightModelHandleCommand(Command command, CharacteristicReadWriteClient writer) throws Exception {
+    private void lightModelHandleCommand(Command command, CharacteristicReadWriteClient writer)
+            throws IOException, InterruptedException, TimeoutException, ExecutionException, IllegalStateException {
         LightModel lightModel = this.lightModel;
         if (lightModel == null) {
             throw new IllegalStateException("Light model is not initialized");
         }
         lightModel.handleCommand(command);
-        if (lightModelServerChannels.get(CharacteristicType.HUE) instanceof Channel channel) {
-            writeChannel(channel, QuantityType.valueOf(lightModel.getHue(), Units.DEGREE_ANGLE), writer);
+        Optional<LightModelLink> link;
+        link = lightModelLinks.stream().filter(e -> CharacteristicType.HUE == e.cxxType).findFirst();
+        if (link.isPresent()) {
+            QuantityType<Angle> hue = QuantityType.valueOf(lightModel.getHue(), Units.DEGREE_ANGLE);
+            writeChannel(link.get().channel, hue, writer);
         }
-        if (lightModelServerChannels.get(CharacteristicType.SATURATION) instanceof Channel channel) {
-            writeChannel(channel, new PercentType(BigDecimal.valueOf(lightModel.getSaturation())), writer);
+        link = lightModelLinks.stream().filter(e -> CharacteristicType.SATURATION == e.cxxType).findFirst();
+        if (link.isPresent()) {
+            PercentType saturation = new PercentType(BigDecimal.valueOf(lightModel.getSaturation()));
+            writeChannel(link.get().channel, saturation, writer);
         }
-        if (lightModelServerChannels.get(CharacteristicType.BRIGHTNESS) instanceof Channel channel
-                && lightModel.getBrightness() instanceof PercentType percentType) {
-            writeChannel(channel, percentType, writer);
+        link = lightModelLinks.stream().filter(e -> CharacteristicType.BRIGHTNESS == e.cxxType).findFirst();
+        if (link.isPresent() && lightModel.getBrightness() instanceof PercentType brightness) {
+            writeChannel(link.get().channel, brightness, writer);
         }
-        if (lightModelServerChannels.get(CharacteristicType.ON) instanceof Channel channel
-                && lightModel.getOnOff() instanceof OnOffType onOff) {
-            writeChannel(channel, onOff, writer);
+        link = lightModelLinks.stream().filter(e -> CharacteristicType.ON == e.cxxType).findFirst();
+        if (link.isPresent() && lightModel.getOnOff() instanceof OnOffType onOff) {
+            writeChannel(link.get().channel, onOff, writer);
         }
     }
 
     /**
-     * Finalizes the light model channels by mapping the relevant characteristic channels
+     * Finalizes the light model channels by mapping the relevant characteristic and channel links
      * and creating a combined HSB channel.
      *
      * @param accessory the accessory containing the characteristics
@@ -724,15 +728,17 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
         if (lightModel == null) {
             return;
         }
-        // map characteristic channels to light model
-        lightModelServerChannels.clear();
+        // link channels to characteristic types & iids for the light model
+        lightModelLinks.clear();
         for (Channel channel : channels) {
             if (channel.getProperties().get(PROPERTY_IID) instanceof String iid) {
                 for (Service service : accessory.services) {
                     for (Characteristic cxx : service.characteristics) {
-                        if (iid.equals(String.valueOf(cxx.iid)) && lightModelRelevantCharacteristic(cxx)) {
+                        if (iid.equals(String.valueOf(cxx.iid))) {
                             CharacteristicType cxxType = cxx.getCharacteristicType();
-                            lightModelServerChannels.put(cxxType, channel);
+                            if (LIGHT_MODEL_RELEVANT_TYPES.contains(cxxType)) {
+                                lightModelLinks.add(new LightModelLink(channel, cxxType, cxx.iid));
+                            }
                         }
                     }
                 }
@@ -747,7 +753,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
                 "+++++Channel acceptedItemType:{}, defaultTags:{}, description:{}, kind:{}, label:{}, properties:{}, uid:{}",
                 channel.getAcceptedItemType(), channel.getDefaultTags(), channel.getDescription(), channel.getKind(),
                 channel.getLabel(), channel.getProperties(), channel.getUID());
-        lightModelClientChannel = uid;
+        lightModelClientHSBTypeChannel = uid;
     }
 
     /**
@@ -800,10 +806,14 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
      *
      * @param channel the channel to read
      * @return the current state of the channel, or null if not found
-     * @throws Exception
+     * @throws ExecutionException
+     * @throws TimeoutException
+     * @throws InterruptedException
+     * @throws IOException
+     * @throws IllegalStateException
      */
     private synchronized @Nullable State readChannel(Channel channel, CharacteristicReadWriteClient reader)
-            throws Exception {
+            throws IOException, InterruptedException, TimeoutException, ExecutionException, IllegalStateException {
         Integer aid = getAccessoryId();
         String iid = channel.getProperties().get(PROPERTY_IID);
         if (aid == null || iid == null) {
@@ -828,11 +838,14 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
      * @param channel the channel to which the command is sent
      * @param command the command to send
      * @param writer the CharacteristicReadWriteClient to send the command
-     *
-     * @throws Exception
+     * @throws ExecutionException
+     * @throws TimeoutException
+     * @throws InterruptedException
+     * @throws IOException
+     * @throws IllegalStateException
      */
     private synchronized void writeChannel(Channel channel, Command command, CharacteristicReadWriteClient writer)
-            throws Exception {
+            throws IOException, InterruptedException, TimeoutException, ExecutionException, IllegalStateException {
         Integer aid = getAccessoryId();
         String iid = channel.getProperties().get(PROPERTY_IID);
         if (aid == null || iid == null) {
@@ -846,12 +859,6 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
         characteristic.value = commandToJsonPrimitive(command, channel);
         service.characteristics = List.of(characteristic);
         writer.writeCharacteristic(GSON.toJson(service));
-    }
-
-    @Override
-    protected void startConnectionTask() {
-        cancelRefreshTask();
-        super.startConnectionTask();
     }
 
     /**
@@ -874,7 +881,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
         if (service != null && service.characteristics instanceof List<Characteristic> characteristics) {
             for (Channel channel : thing.getChannels()) {
                 ChannelUID channelUID = channel.getUID();
-                if (channelUID.equals(lightModelClientChannel)) {
+                if (channelUID.equals(lightModelClientHSBTypeChannel)) {
                     for (Characteristic cxx : characteristics) {
                         if (lightModelRefresh(cxx)) {
                             updateState(channelUID, Objects.requireNonNull(lightModel).getHsb());
@@ -893,5 +900,43 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
                 }
             }
         }
+    }
+
+    /**
+     * Override method to delegate to the bridge IP transport if we are a child accessory.
+     *
+     * @return own IpTransport service or bridge IpTransport service if we are a child.
+     * @throws IllegalAccessException if access to the transport is denied.
+     */
+    @Override
+    protected IpTransport getIpTransport() throws IllegalAccessException {
+        if (isChildAccessory) {
+            if (getBridge() instanceof Bridge bridge
+                    && bridge.getHandler() instanceof HomekitBridgeHandler bridgeHandler) {
+                return bridgeHandler.getIpTransport();
+            } else {
+                throw new IllegalAccessException("Cannot access bridge IP transport");
+            }
+        }
+        return super.getIpTransport();
+    }
+
+    /**
+     * Override method to delegate to the bridge read/write service if we are a child accessory.
+     *
+     * @return own CharacteristicReadWriteClient service or bridge service if we are a child.
+     * @throws IllegalAccessException if access to the service is denied.
+     */
+    @Override
+    protected CharacteristicReadWriteClient getRwService() throws IllegalAccessException {
+        if (isChildAccessory) {
+            if (getBridge() instanceof Bridge bridge
+                    && bridge.getHandler() instanceof HomekitBridgeHandler bridgeHandler) {
+                return bridgeHandler.getRwService();
+            } else {
+                throw new IllegalAccessException("Cannot access bridge read/write service");
+            }
+        }
+        return super.getRwService();
     }
 }

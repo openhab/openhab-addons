@@ -17,9 +17,15 @@ import static org.mockito.Mockito.*;
 import static org.openhab.binding.homekit.internal.crypto.CryptoConstants.*;
 import static org.openhab.binding.homekit.internal.crypto.CryptoUtils.*;
 
+import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 
+import org.bouncycastle.crypto.InvalidCipherTextException;
 import org.bouncycastle.crypto.params.Ed25519PrivateKeyParameters;
 import org.bouncycastle.crypto.params.X25519PrivateKeyParameters;
 import org.bouncycastle.crypto.params.X25519PublicKeyParameters;
@@ -62,7 +68,8 @@ class TestPairVerify {
     private @NonNullByDefault({}) byte[] cryptoKey;
 
     @Test
-    void testPairVerify() throws Exception {
+    void testPairVerify() throws InvalidCipherTextException, IOException, InterruptedException, TimeoutException,
+            ExecutionException, NoSuchAlgorithmException, NoSuchProviderException, IllegalArgumentException {
         accessoryEphemeralSecretKey = generateX25519KeyPair();
 
         // create mock
@@ -97,7 +104,7 @@ class TestPairVerify {
         client.verify();
     }
 
-    private byte[] m1GetAccessoryResponse(Map<Integer, byte[]> tlv) throws Exception {
+    private byte[] m1GetAccessoryResponse(Map<Integer, byte[]> tlv) throws InvalidCipherTextException {
         byte[] controllerEphemeralPublicKey = tlv.get(TlvType.PUBLIC_KEY.value);
         byte[] accessoryEphemeralPublicKey = accessoryEphemeralSecretKey.generatePublicKey().getEncoded();
         if (controllerEphemeralPublicKey == null) {
@@ -126,7 +133,7 @@ class TestPairVerify {
         return Tlv8Codec.encode(tlvOut);
     }
 
-    private byte[] m3GetAccessoryResponse(Map<Integer, byte[]> tlv) throws Exception {
+    private byte[] m3GetAccessoryResponse(Map<Integer, byte[]> tlv) throws InvalidCipherTextException {
         if (cryptoKey.length == 0) {
             throw new IllegalStateException("Session key not established");
         }

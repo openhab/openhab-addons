@@ -24,6 +24,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.bouncycastle.crypto.InvalidCipherTextException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
@@ -55,9 +56,10 @@ public class SecureSession {
      * encrypts them, and sends them as separate frames.
      *
      * @param plainText the complete plaintext message to be sent.
-     * @throws Exception if an error occurs during encryption or sending.
+     * @throws IOException
+     * @throws InvalidCipherTextException
      */
-    public void send(byte[] plainText) throws Exception {
+    public void send(byte[] plainText) throws IOException, InvalidCipherTextException {
         ByteArrayInputStream plainTextStream = new ByteArrayInputStream(plainText);
         while (plainTextStream.available() > 0) {
             sendFrame(plainTextStream);
@@ -72,9 +74,10 @@ public class SecureSession {
      * incremented after sending the frame to ensure nonce uniqueness.
      *
      * @param plainTextStream the input stream containing the plaintext to be sent.
-     * @throws Exception if an error occurs during encryption or sending.
+     * @throws IOException
+     * @throws InvalidCipherTextException
      */
-    private void sendFrame(ByteArrayInputStream plainTextStream) throws Exception {
+    private void sendFrame(ByteArrayInputStream plainTextStream) throws IOException, InvalidCipherTextException {
         short frameLen = (short) Math.min(1024, plainTextStream.available());
         ByteBuffer frameAad = ByteBuffer.allocate(2).order(ByteOrder.LITTLE_ENDIAN).putShort(frameLen);
         out.write(frameAad.array(), 0, frameAad.array().length); // send length prefix
@@ -92,9 +95,10 @@ public class SecureSession {
      * @param trace if true, captures the raw decrypted frames for debugging purposes.
      * @return a 3D byte array where the first element is the HTTP headers, the second element is the content,
      *         and the third is the raw trace (if enabled).
-     * @throws Exception if an error occurs during reading or decryption.
+     * @throws IOException
+     * @throws InvalidCipherTextException
      */
-    public byte[][] receive(boolean trace) throws Exception {
+    public byte[][] receive(boolean trace) throws IOException, InvalidCipherTextException {
         HttpPayloadParser httpParser = new HttpPayloadParser();
         ByteArrayOutputStream raw = trace ? new ByteArrayOutputStream() : null;
         do {
@@ -114,9 +118,10 @@ public class SecureSession {
      * AAD to ensure integrity. The read counter is incremented after reading the frame to ensure nonce uniqueness.
      *
      * @return the decrypted plaintext of the single frame.
-     * @throws Exception if an error occurs during reading or decryption.
+     * @throws IOException
+     * @throws InvalidCipherTextException
      */
-    private byte[] receiveFrame() throws Exception {
+    private byte[] receiveFrame() throws IOException, InvalidCipherTextException {
         byte[] frameAad = in.readNBytes(2);
         short frameLen = ByteBuffer.wrap(frameAad).order(ByteOrder.LITTLE_ENDIAN).getShort();
         if (frameLen < 0 || frameLen > 1024) {

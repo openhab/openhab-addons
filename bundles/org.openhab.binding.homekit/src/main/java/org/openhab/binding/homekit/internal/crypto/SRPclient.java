@@ -17,11 +17,13 @@ import static org.openhab.binding.homekit.internal.crypto.CryptoUtils.*;
 
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
+import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.bouncycastle.crypto.InvalidCipherTextException;
 import org.bouncycastle.crypto.params.Ed25519PrivateKeyParameters;
 import org.bouncycastle.crypto.params.Ed25519PublicKeyParameters;
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -62,10 +64,10 @@ public class SRPclient {
      * @param password_P the password (P) used for authentication.
      * @param serverSalt the salt (s) provided by the server.
      * @param serverEphemeralPublicKey the server's public SRP key (B).
-     *
-     * @throws Exception if an error occurs during initialization.
+     * @throws NoSuchAlgorithmException
      */
-    public SRPclient(String password_P, byte[] serverSalt, byte[] serverEphemeralPublicKey) throws Exception {
+    public SRPclient(String password_P, byte[] serverSalt, byte[] serverEphemeralPublicKey)
+            throws NoSuchAlgorithmException {
         this(password_P, serverSalt, serverEphemeralPublicKey, null, null);
     }
 
@@ -77,11 +79,10 @@ public class SRPclient {
      * @param accessoryEphemeralPublicKey the server's public SRP key (B).
      * @param user_I the username (I). If null, "Pair-Setup" is used.
      * @param clientEphemeralSecretKey the client's private SRP key (a). If null, a random key is generated.
-     *
-     * @throws Exception if an error occurs during initialization.
+     * @throws NoSuchAlgorithmException
      */
     public SRPclient(String password_P, byte[] serverSalt, byte[] accessoryEphemeralPublicKey, @Nullable String user_I,
-            byte @Nullable [] clientEphemeralSecretKey) throws Exception {
+            byte @Nullable [] clientEphemeralSecretKey) throws NoSuchAlgorithmException {
         // set username, salt and server public key
         s = serverSalt;
         B = new BigInteger(1, accessoryEphemeralPublicKey);
@@ -138,7 +139,7 @@ public class SRPclient {
         return toUnsigned(u, 64);
     }
 
-    public Ed25519PublicKeyParameters getAccessoryLongTermPublicKey() throws Exception {
+    public Ed25519PublicKeyParameters getAccessoryLongTermPublicKey() throws IllegalStateException {
         Ed25519PublicKeyParameters accessoryLTPK = this.accessoryLongTermPublicKey;
         if (accessoryLTPK == null) {
             throw new IllegalStateException("Accessory long-term public key not yet available");
@@ -146,7 +147,7 @@ public class SRPclient {
         return accessoryLTPK;
     }
 
-    public void m4VerifyAccessoryProof(byte[] accessoryProof) throws Exception {
+    public void m4VerifyAccessoryProof(byte[] accessoryProof) {
         if (logger.isTraceEnabled()) {
             logger.trace("Pair-Setup M4: Accessory info:\n - Controller M2: {}\n - Accessory M2:  {}", toHex(M2),
                     toHex(accessoryProof));
@@ -165,10 +166,10 @@ public class SRPclient {
      * @param iOSDeviceId the pairing identifier.
      * @param iOSDeviceLongTermPrivateKey the controller's long-term private key for signing.
      * @return the encrypted controller information as a byte array.
-     * @throws Exception if an error occurs during the encryption or signing process.
+     * @throws InvalidCipherTextException
      */
     public byte[] m5EncodeControllerInfoAndSign(byte[] iOSDeviceId,
-            Ed25519PrivateKeyParameters iOSDeviceLongTermPrivateKey) throws Exception {
+            Ed25519PrivateKeyParameters iOSDeviceLongTermPrivateKey) throws InvalidCipherTextException {
         byte[] iOSDeviceX = generateHkdfKey(K, PAIR_SETUP_CONTROLLER_SIGN_SALT, PAIR_SETUP_CONTROLLER_SIGN_INFO);
         byte[] iOSDeviceLTPK = iOSDeviceLongTermPrivateKey.generatePublicKey().getEncoded();
         byte[] iOSDeviceInfo = concat(iOSDeviceX, iOSDeviceId, iOSDeviceLTPK);
@@ -203,9 +204,9 @@ public class SRPclient {
      * concatentation of { shared key, pairing identifier, accessory LTPK} .
      *
      * @param cipherText the encrypted accessory information received from the accessory.
-     * @throws Exception if an error occurs during decryption or signature verification.
+     * @throws InvalidCipherTextException
      */
-    public void m6DecodeAccessoryInfoAndVerify(byte[] cipherText) throws Exception {
+    public void m6DecodeAccessoryInfoAndVerify(byte[] cipherText) throws InvalidCipherTextException {
         byte[] decryptKey = generateHkdfKey(K, PAIR_SETUP_ENCRYPT_SALT, PAIR_SETUP_ENCRYPT_INFO);
         if (logger.isTraceEnabled()) {
             logger.trace("Pair-Setup M6: Accessory info:\n - Cipher text: {}\n - Key: {}", toHex(cipherText),

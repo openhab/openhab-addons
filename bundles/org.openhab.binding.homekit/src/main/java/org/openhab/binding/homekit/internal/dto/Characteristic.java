@@ -395,7 +395,6 @@ public class Characteristic {
             case HUE:
                 numberSuffix = "Angle";
                 propertyTag = Property.COLOR;
-                itemType = CoreItemFactory.COLOR;
                 category = "color";
                 break;
 

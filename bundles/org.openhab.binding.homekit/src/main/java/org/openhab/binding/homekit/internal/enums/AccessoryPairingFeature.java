@@ -31,7 +31,7 @@ public enum AccessoryPairingFeature {
         this.value = (byte) value;
     }
 
-    public static AccessoryPairingFeature from(int value) {
+    public static AccessoryPairingFeature from(int value) throws IllegalArgumentException {
         for (AccessoryPairingFeature state : values()) {
             if (state.value == value) {
                 return state;

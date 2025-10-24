@@ -16,6 +16,7 @@ import static org.openhab.binding.homekit.internal.crypto.CryptoUtils.*;
 
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
+import java.security.NoSuchAlgorithmException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -76,16 +77,12 @@ public class CryptoConstants {
             byte[] paddedG = toUnsigned(g, 384);
             byte[] hash = sha512(concat(paddedN, paddedG));
             return new BigInteger(1, hash);
-        } catch (Exception e) {
+        } catch (NoSuchAlgorithmException e) {
             throw new SecurityException("Failed to compute k", e);
         }
     }
 
     private static byte[] nonce(String input) {
-        // ByteBuffer nonce = ByteBuffer.allocate(12);
-        // nonce.put(input.getBytes(StandardCharsets.UTF_8));
-        // nonce.putInt(0);
-        // return nonce.array(); // 12-byte nonce
         return input.getBytes(StandardCharsets.UTF_8);
     }
 }

@@ -17,9 +17,11 @@ import static org.openhab.binding.homekit.internal.crypto.CryptoUtils.*;
 
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
+import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Map;
 
+import org.bouncycastle.crypto.InvalidCipherTextException;
 import org.bouncycastle.crypto.params.Ed25519PrivateKeyParameters;
 import org.bouncycastle.crypto.params.Ed25519PublicKeyParameters;
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -60,11 +62,11 @@ public class SRPserver {
      * @param accessoryKey the long term private key of the server
      * @param username the username to use (or null for default "Pair-Setup")
      * @param accessoryPrivateKey optional 32 byte private key to use for b, or null to generate a new one
+     * @throws NoSuchAlgorithmException
      *
-     * @throws Exception on any error
      */
     public SRPserver(String password, byte[] serverSalt, byte[] accessoryId, Ed25519PrivateKeyParameters accessoryKey,
-            @Nullable String username, byte @Nullable [] accessoryPrivateKey) throws Exception {
+            @Nullable String username, byte @Nullable [] accessoryPrivateKey) throws NoSuchAlgorithmException {
         this.accessoryId = accessoryId;
         this.accessoryKey = accessoryKey;
         I = username != null ? username : PAIR_SETUP;
@@ -87,7 +89,7 @@ public class SRPserver {
         B = k.multiply(v).add(gb).mod(N);
     }
 
-    public byte[] m3CreateServerProof(byte[] clientPublicKeyA) throws Exception {
+    public byte[] m3CreateServerProof(byte[] clientPublicKeyA) throws NoSuchAlgorithmException {
         BigInteger clientPublicA = new BigInteger(1, clientPublicKeyA);
         if (clientPublicA.mod(N).equals(BigInteger.ZERO)) {
             throw new SecurityException("Invalid client public key");
@@ -120,7 +122,8 @@ public class SRPserver {
         return sha512(concat(toUnsigned(clientPublicA, 384), M1, K));
     }
 
-    public void m5DecodeControllerInfoAndVerify(Map<Integer, byte[]> tlv5) throws Exception {
+    public void m5DecodeControllerInfoAndVerify(Map<Integer, byte[]> tlv5)
+            throws InvalidCipherTextException, IllegalArgumentException {
         byte[] cipherText = tlv5.get(TlvType.ENCRYPTED_DATA.value);
         if (cipherText == null) {
             throw new IllegalArgumentException("Missing encrypted data");
@@ -145,7 +148,7 @@ public class SRPserver {
         verifySignature(iOSDeviceLongTermPublicKey, iOSDeviceSignature, iOSDeviceInfo);
     }
 
-    public byte[] m6EncodeAccessoryInfoAndSign() throws Exception {
+    public byte[] m6EncodeAccessoryInfoAndSign() throws InvalidCipherTextException {
         byte[] accessoryX = generateHkdfKey(K, PAIR_SETUP_ACCESSORY_SIGN_SALT, PAIR_SETUP_ACCESSORY_SIGN_INFO);
         byte[] accessoryLTPK = accessoryKey.generatePublicKey().getEncoded();
         byte[] accessoryInfo = concat(accessoryX, accessoryId, accessoryLTPK);

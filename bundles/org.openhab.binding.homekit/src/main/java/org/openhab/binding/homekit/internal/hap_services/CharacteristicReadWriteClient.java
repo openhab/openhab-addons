@@ -14,7 +14,10 @@ package org.openhab.binding.homekit.internal.hap_services;
 
 import static org.openhab.binding.homekit.internal.HomekitBindingConstants.*;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.homekit.internal.transport.IpTransport;
@@ -39,9 +42,13 @@ public class CharacteristicReadWriteClient {
      *
      * @param query the query string e.g. "1.10,1.11" for aid 1 and iid 10 and 11
      * @return JSON response as String
-     * @throws Exception on communication or encryption errors
+     * @throws ExecutionException
+     * @throws TimeoutException
+     * @throws InterruptedException
+     * @throws IOException
      */
-    public String readCharacteristic(String query) throws Exception {
+    public String readCharacteristic(String query)
+            throws IOException, InterruptedException, TimeoutException, ExecutionException {
         String endpoint = "%s?id=%s".formatted(ENDPOINT_CHARACTERISTICS, query);
         byte[] result = ipTransport.get(endpoint, CONTENT_TYPE_HAP);
         return new String(result, StandardCharsets.UTF_8);
@@ -51,9 +58,13 @@ public class CharacteristicReadWriteClient {
      * Writes characteristic(s) to the accessory.
      *
      * @param json the JSON string to write.
-     * @throws Exception on communication or encryption errors
+     * @throws ExecutionException
+     * @throws TimeoutException
+     * @throws InterruptedException
+     * @throws IOException
      */
-    public void writeCharacteristic(String json) throws Exception {
+    public void writeCharacteristic(String json)
+            throws IOException, InterruptedException, TimeoutException, ExecutionException {
         ipTransport.put(ENDPOINT_CHARACTERISTICS, CONTENT_TYPE_HAP, json.getBytes(StandardCharsets.UTF_8));
     }
 }

@@ -14,9 +14,12 @@ package org.openhab.binding.homekit.internal.hap_services;
 
 import static org.openhab.binding.homekit.internal.crypto.CryptoUtils.toHex;
 
+import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.homekit.internal.crypto.Tlv8Codec;
@@ -44,13 +47,13 @@ public class PairRemoveClient {
     private final IpTransport ipTransport;
     private final byte[] controllerId;
 
-    public PairRemoveClient(IpTransport ipTransport, byte[] controllerId) throws Exception {
+    public PairRemoveClient(IpTransport ipTransport, byte[] controllerId) {
         logger.debug("Created..");
         this.ipTransport = ipTransport;
         this.controllerId = controllerId;
     }
 
-    public void remove() throws Exception {
+    public void remove() throws IOException, InterruptedException, TimeoutException, ExecutionException {
         logger.debug("Pair-Remove: starting removal");
         Map<Integer, byte[]> tlv = new LinkedHashMap<>();
         tlv.put(TlvType.STATE.value, new byte[] { PairingState.M1.value });

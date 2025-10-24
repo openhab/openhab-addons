@@ -31,6 +31,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import org.bouncycastle.crypto.InvalidCipherTextException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homekit.internal.session.AsymmetricSessionKeys;
@@ -45,7 +46,6 @@ import org.slf4j.LoggerFactory;
  * It provides methods for sending GET, POST, and PUT requests with appropriate headers and content types.
  * It supports both plain and secure (encrypted) communication based on whether session keys have been set.
  * It handles building HTTP requests, sending them over a socket, and parsing HTTP responses.
- * It throws exceptions for various error conditions, including IO issues, timeouts, and non-200 HTTP responses.
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
@@ -71,8 +71,10 @@ public class IpTransport implements AutoCloseable {
      * Creates a new IpTransport instance with the given socket and session keys.
      *
      * @param host the IP address and port of the HomeKit accessory
+     * @throws IOException
+     * @throws IllegalArgumentException if the host or port are invalid
      */
-    public IpTransport(String host) throws Exception {
+    public IpTransport(String host) throws IOException, IllegalArgumentException {
         logger.debug("Connecting to {}", host);
         this.host = host;
         String[] parts = host.split(":");
@@ -91,7 +93,7 @@ public class IpTransport implements AutoCloseable {
         logger.debug("Connected to {}", host);
     }
 
-    public void setSessionKeys(AsymmetricSessionKeys keys) throws Exception {
+    public void setSessionKeys(AsymmetricSessionKeys keys) throws IOException {
         secureSession = new SecureSession(socket, keys);
         Thread thread = new Thread(this::readTask, "homekit-reader");
         thread.start();
@@ -115,57 +117,51 @@ public class IpTransport implements AutoCloseable {
 
     private synchronized byte[] execute(String method, String endpoint, String contentType, byte[] content)
             throws IOException, InterruptedException, TimeoutException, ExecutionException {
-        try {
-            byte[] request = buildRequest(method, endpoint, contentType, content);
+        byte[] request = buildRequest(method, endpoint, contentType, content);
 
-            boolean trace = logger.isTraceEnabled();
-            if (trace) {
-                logger.trace("Request:\n{}", new String(request, StandardCharsets.ISO_8859_1));
-            }
-
-            byte[][] response; // 0 = headers, 1 = content, 2 = raw trace (if enabled)
-            SecureSession secureSession = this.secureSession;
-            if (secureSession != null) {
-                // before we write request, create CompletableFuture to read response (with a timeout)
-                CompletableFuture<byte[][]> readFuture = new CompletableFuture<>();
-                this.readFuture = readFuture;
-                // create Future to write the request (with a timeout)
-                Future<@Nullable Void> writeTask = writeExecutor.submit(() -> {
-                    secureSession.send(request);
-                    return null;
-                });
-                // now wait for both write and read to complete
-                writeTask.get(TIMEOUT_MILLI_SECONDS, TimeUnit.MILLISECONDS);
-                response = readFuture.get(TIMEOUT_MILLI_SECONDS, TimeUnit.MILLISECONDS);
-            } else {
-                OutputStream out = socket.getOutputStream();
-                InputStream in = socket.getInputStream();
-                // create Future to write the request (with a timeout)
-                Future<@Nullable Void> writeTask = writeExecutor.submit(() -> {
-                    out.write(request);
-                    out.flush();
-                    return null;
-                });
-                // now wait for both write and read to complete
-                writeTask.get(TIMEOUT_MILLI_SECONDS, TimeUnit.MILLISECONDS);
-                response = readPlainResponse(in, trace);
-            }
-
-            if (response.length != 3) {
-                throw new IOException("Response must contain 3 arrays");
-            }
-
-            if (trace) {
-                logger.trace("Response:\n{}", new String(response[2], StandardCharsets.ISO_8859_1));
-            }
-
-            checkHeaders(response[0]);
-            return response[1];
-        } catch (IOException | InterruptedException | TimeoutException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new ExecutionException(e);
+        boolean trace = logger.isTraceEnabled();
+        if (trace) {
+            logger.trace("Request:\n{}", new String(request, StandardCharsets.ISO_8859_1));
         }
+
+        byte[][] response; // 0 = headers, 1 = content, 2 = raw trace (if enabled)
+        SecureSession secureSession = this.secureSession;
+        if (secureSession != null) {
+            // before we write request, create CompletableFuture to read response (with a timeout)
+            CompletableFuture<byte[][]> readFuture = new CompletableFuture<>();
+            this.readFuture = readFuture;
+            // create Future to write the request (with a timeout)
+            Future<@Nullable Void> writeTask = writeExecutor.submit(() -> {
+                secureSession.send(request);
+                return null;
+            });
+            // now wait for both write and read to complete
+            writeTask.get(TIMEOUT_MILLI_SECONDS, TimeUnit.MILLISECONDS);
+            response = readFuture.get(TIMEOUT_MILLI_SECONDS, TimeUnit.MILLISECONDS);
+        } else {
+            OutputStream out = socket.getOutputStream();
+            InputStream in = socket.getInputStream();
+            // create Future to write the request (with a timeout)
+            Future<@Nullable Void> writeTask = writeExecutor.submit(() -> {
+                out.write(request);
+                out.flush();
+                return null;
+            });
+            // now wait for both write and read to complete
+            writeTask.get(TIMEOUT_MILLI_SECONDS, TimeUnit.MILLISECONDS);
+            response = readPlainResponse(in, trace);
+        }
+
+        if (response.length != 3) {
+            throw new IOException("Response must contain 3 arrays");
+        }
+
+        if (trace) {
+            logger.trace("Response:\n{}", new String(response[2], StandardCharsets.ISO_8859_1));
+        }
+
+        checkHeaders(response[0]);
+        return response[1];
     }
 
     /**
@@ -252,13 +248,18 @@ public class IpTransport implements AutoCloseable {
     }
 
     @Override
-    public void close() throws Exception {
-        socket.close();
+    public void close() {
         secureSession = null;
-        Thread thread = readThread;
-        if (thread != null) {
-            thread.interrupt();
-            thread.join();
+        eventListeners.clear();
+        try {
+            socket.close();
+            Thread thread = readThread;
+            if (thread != null) {
+                thread.interrupt();
+                thread.join();
+            }
+        } catch (IOException | InterruptedException e) {
+            // shut down quietly
         }
     }
 
@@ -274,7 +275,7 @@ public class IpTransport implements AutoCloseable {
             future.complete(response);
         }
         String headers = new String(response[0], StandardCharsets.ISO_8859_1);
-        if (headers.startsWith("EVENT ")) {
+        if (headers.startsWith("EVENT")) {
             logger.trace("Event:\n{}", new String(response[2], StandardCharsets.ISO_8859_1));
             String jsonContent = new String(response[1], StandardCharsets.UTF_8);
             for (EventListener eventListener : eventListeners) {
@@ -298,9 +299,8 @@ public class IpTransport implements AutoCloseable {
                 }
                 byte[][] response = session.receive(logger.isTraceEnabled());
                 handleResponse(response);
-            } catch (SocketTimeoutException e) {
-                // ignore socket timeout; continue listening
-            } catch (Exception e) {
+            } catch (SocketTimeoutException e) { // ignore socket timeout; continue listening
+            } catch (IllegalStateException | InvalidCipherTextException | IOException e) {
                 cause = e;
                 break;
             }

@@ -34,7 +34,7 @@ public enum PairingMethod {
         this.value = (byte) value;
     }
 
-    public static PairingMethod from(byte value) {
+    public static PairingMethod from(byte value) throws IllegalArgumentException {
         for (PairingMethod state : values()) {
             if (state.value == value) {
                 return state;

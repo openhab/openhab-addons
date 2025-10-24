@@ -18,11 +18,16 @@ import static org.mockito.Mockito.*;
 import static org.openhab.binding.homekit.internal.crypto.CryptoConstants.*;
 import static org.openhab.binding.homekit.internal.crypto.CryptoUtils.*;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 
+import org.bouncycastle.crypto.InvalidCipherTextException;
 import org.bouncycastle.crypto.params.Ed25519PrivateKeyParameters;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
@@ -57,7 +62,7 @@ class TestPairSetup {
     private @NonNullByDefault({}) byte[] clientPublicKey;
 
     @Test
-    void testBareCrypto() throws Exception {
+    void testBareCrypto() throws InvalidCipherTextException {
         byte[] plainText0 = "the quick brown dog".getBytes(StandardCharsets.UTF_8);
         byte[] key = new byte[32]; // 256 bits = 32 bytes
         byte[] nonce64 = generateNonce64(123);
@@ -68,7 +73,7 @@ class TestPairSetup {
     }
 
     @Test
-    void testSrpClient() throws Exception {
+    void testSrpClient() throws InvalidCipherTextException, NoSuchAlgorithmException {
         byte[] plainText0 = "the quick brown dog".getBytes(StandardCharsets.UTF_8);
         SRPclient client = new SRPclient("password123", toBytes(SALT_HEX), toBytes(SERVER_PRIVATE_HEX));
         byte[] sharedKey = generateHkdfKey(client.K, PAIR_SETUP_ENCRYPT_SALT, PAIR_SETUP_ENCRYPT_INFO);
@@ -78,7 +83,8 @@ class TestPairSetup {
     }
 
     @Test
-    void testPairSetup() throws Exception {
+    void testPairSetup() throws NoSuchAlgorithmException, SecurityException, InvalidCipherTextException, IOException,
+            InterruptedException, TimeoutException, ExecutionException, IllegalArgumentException {
         // initialize test parameters
         String password = "password123";
         byte[] iOSDeviceId = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 };
@@ -135,7 +141,7 @@ class TestPairSetup {
     }
 
     private byte[] m3GetAccessoryResponse(SRPserver server, Map<Integer, byte[]> tlv2, PairSetupClient client)
-            throws Exception {
+            throws NoSuchAlgorithmException {
         clientPublicKey = tlv2.get(TlvType.PUBLIC_KEY.value);
         byte[] serverProof = server.m3CreateServerProof(Objects.requireNonNull(clientPublicKey));
         Map<Integer, byte[]> tlv3 = Map.of( //
@@ -146,7 +152,8 @@ class TestPairSetup {
         return Tlv8Codec.encode(tlv3);
     }
 
-    private byte[] m5GetAccessoryResponse(SRPserver server, Map<Integer, byte[]> tlv5) throws Exception {
+    private byte[] m5GetAccessoryResponse(SRPserver server, Map<Integer, byte[]> tlv5)
+            throws InvalidCipherTextException {
         server.m5DecodeControllerInfoAndVerify(tlv5);
         byte[] cipherText = server.m6EncodeAccessoryInfoAndSign();
         Map<Integer, byte[]> tlv6 = Map.of( //

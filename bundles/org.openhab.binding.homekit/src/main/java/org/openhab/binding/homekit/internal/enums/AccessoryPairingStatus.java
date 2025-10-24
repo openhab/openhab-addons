@@ -30,7 +30,7 @@ public enum AccessoryPairingStatus {
         this.value = (byte) value;
     }
 
-    public static AccessoryPairingStatus from(int value) {
+    public static AccessoryPairingStatus from(int value) throws IllegalArgumentException {
         for (AccessoryPairingStatus state : values()) {
             if (state.value == value) {
                 return state;

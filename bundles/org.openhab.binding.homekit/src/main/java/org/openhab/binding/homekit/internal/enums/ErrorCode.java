@@ -36,7 +36,7 @@ public enum ErrorCode {
         this.value = (byte) value;
     }
 
-    public static ErrorCode from(byte value) {
+    public static ErrorCode from(byte value) throws IllegalArgumentException {
         for (ErrorCode state : values()) {
             if (state.value == value) {
                 return state;

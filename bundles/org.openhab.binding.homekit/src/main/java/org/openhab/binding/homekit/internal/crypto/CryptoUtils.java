@@ -117,7 +117,7 @@ public class CryptoUtils {
         return new X25519PrivateKeyParameters(new SecureRandom());
     }
 
-    public static byte[] sha512(byte[] data) throws Exception {
+    public static byte[] sha512(byte[] data) throws NoSuchAlgorithmException {
         MessageDigest md = MessageDigest.getInstance("SHA-512");
         return md.digest(data);
     }
@@ -130,7 +130,7 @@ public class CryptoUtils {
         return signer.generateSignature();
     }
 
-    public static BigInteger toBigInteger(String hexBlock) {
+    public static BigInteger toBigInteger(String hexBlock) throws IllegalArgumentException {
         String plainHex = hexBlock.replaceAll("\\s+", "");
         if (plainHex.length() % 2 != 0) {
             throw new IllegalArgumentException("Hex string must have even length");
@@ -138,7 +138,7 @@ public class CryptoUtils {
         return new BigInteger(plainHex, 16);
     }
 
-    public static byte[] toBytes(String hexBlock) {
+    public static byte[] toBytes(String hexBlock) throws IllegalArgumentException {
         String plainHex = hexBlock.replaceAll("\\s+", "");
         if (plainHex.length() % 2 != 0) {
             throw new IllegalArgumentException("Hex string must have even length");
@@ -169,7 +169,6 @@ public class CryptoUtils {
      * @param bigInteger the BigInteger to convert.
      * @param length the desired length of the resulting byte array.
      * @return a byte array of the given length representing the unsigned BigInteger.
-     * @throws IllegalArgumentException if the BigInteger cannot fit in the specified length.
      */
     public static byte[] toUnsigned(BigInteger bigInteger, int length) {
         byte[] raw = bigInteger.toByteArray();
@@ -197,7 +196,7 @@ public class CryptoUtils {
     }
 
     public static void verifySignature(Ed25519PublicKeyParameters publicKey, byte[] signature, byte[] payload)
-            throws Exception {
+            throws SecurityException {
         Ed25519Signer verifier = new Ed25519Signer();
         verifier.init(false, publicKey);
         verifier.update(payload, 0, payload.length);
@@ -206,7 +205,7 @@ public class CryptoUtils {
         }
     }
 
-    public static byte[] xor(byte[] a, byte[] b) {
+    public static byte[] xor(byte[] a, byte[] b) throws IllegalArgumentException {
         if (a.length != b.length) {
             throw new IllegalArgumentException("xor length mismatch");
         }

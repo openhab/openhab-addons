@@ -14,17 +14,23 @@ package org.openhab.binding.homekit.internal.handler;
 
 import static org.openhab.binding.homekit.internal.HomekitBindingConstants.*;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.bouncycastle.crypto.InvalidCipherTextException;
 import org.bouncycastle.crypto.params.Ed25519PublicKeyParameters;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -78,13 +84,14 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
 
     protected boolean isChildAccessory = false;
 
-    protected @NonNullByDefault({}) CharacteristicReadWriteClient rwService;
+    private int connectionDelaySeconds = MIN_CONNECTION_DELAY_SECONDS;
+
+    private @Nullable ScheduledFuture<?> connectionTask;
+    private @Nullable CharacteristicReadWriteClient rwService;
+    private @Nullable IpTransport ipTransport;
+
     protected @NonNullByDefault({}) String pairingCode;
     protected @NonNullByDefault({}) Integer accessoryId;
-    protected @NonNullByDefault({}) IpTransport ipTransport;
-
-    private int connectionDelaySeconds = MIN_CONNECTION_DELAY_SECONDS;
-    private @Nullable ScheduledFuture<?> connectionTask;
 
     public HomekitBaseAccessoryHandler(Thing thing, HomekitTypeProvider typeProvider, HomekitKeyStore keyStore,
             TranslationProvider translationProvider, Bundle bundle) {
@@ -99,11 +106,8 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
     public void dispose() {
         unsubscribeEvents();
         cancelConnectionTask();
-        if (!isChildAccessory) {
-            try {
-                ipTransport.close();
-            } catch (Exception e) {
-            }
+        if (!isChildAccessory && ipTransport instanceof IpTransport ipTransport) {
+            ipTransport.close();
         }
         super.dispose();
     }
@@ -119,7 +123,8 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
      */
     private void fetchAccessories() {
         try {
-            String json = new String(ipTransport.get(ENDPOINT_ACCESSORIES, CONTENT_TYPE_HAP), StandardCharsets.UTF_8);
+            String json = new String(getIpTransport().get(ENDPOINT_ACCESSORIES, CONTENT_TYPE_HAP),
+                    StandardCharsets.UTF_8);
             Accessories acc0 = GSON.fromJson(json, Accessories.class);
             if (acc0 instanceof Accessories acc1 && acc1.accessories instanceof List<Accessory> acc2) {
                 accessories.clear();
@@ -128,7 +133,8 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
             }
             logger.debug("Fetched {} accessories", accessories.size());
             scheduler.submit(this::accessoriesLoaded); // notify subclass in scheduler thread
-        } catch (Exception e) {
+        } catch (IOException | InterruptedException | TimeoutException | ExecutionException
+                | IllegalAccessException e) {
             logger.debug("Failed to get accessories", e);
         }
     }
@@ -153,6 +159,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
             } catch (NumberFormatException e) {
             }
         }
+        logger.debug("Missing or invalid accessory id");
         return null;
     }
 
@@ -164,7 +171,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
             scheduler.submit(() -> {
                 // unpair and clear stored keys if this is NOT a child accessory
                 try {
-                    PairRemoveClient service = new PairRemoveClient(ipTransport, keyStore.getControllerUUID());
+                    PairRemoveClient service = new PairRemoveClient(getIpTransport(), keyStore.getControllerUUID());
                     service.remove();
                     String mac = getThing().getProperties().get(Thing.PROPERTY_MAC_ADDRESS);
                     if (mac != null) {
@@ -173,7 +180,8 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
                         logger.warn("Could not clear key for {} due to missing mac address", thing.getUID());
                     }
                     updateStatus(ThingStatus.REMOVED);
-                } catch (Exception e) {
+                } catch (IOException | InterruptedException | TimeoutException | ExecutionException
+                        | IllegalAccessException e) {
                     logger.warn("Failed to remove pairing for {}", thing.getUID());
                 }
             });
@@ -182,37 +190,20 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
 
     @Override
     public void initialize() {
-        if (getBridgeHandler() instanceof HomekitBridgeHandler bridgeHandler) {
+        if (getBridge() instanceof Bridge bridge && bridge.getHandler() instanceof HomekitBridgeHandler bridgeHandler) {
             // accessory is hosted by a bridge, so use bridge's pairing session and read/write service
             isChildAccessory = true;
-            ipTransport = bridgeHandler.ipTransport;
-            rwService = bridgeHandler.rwService;
-            if (rwService != null) {
+            try {
+                bridgeHandler.getRwService(); // ensure that bridge has a read/write service
                 fetchAccessories();
                 updateStatus(ThingStatus.ONLINE);
-            } else {
+            } catch (IllegalAccessException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
                         i18nProvider.getText(bundle, "error.bridge-not-connected", "Bridge not connected", null));
             }
         } else {
             // standalone accessory or bridge accessory, so do pairing and session setup here
             isChildAccessory = false;
-            Object host = getConfig().get(CONFIG_HOST);
-            if (host == null || !(host instanceof String hostString) || !HOST_PATTERN.matcher(hostString).matches()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        i18nProvider.getText(bundle, "error.invalid-host", "Invalid host", null));
-                return;
-            }
-            try {
-                ipTransport = new IpTransport(hostString);
-            } catch (Exception e) {
-                logger.debug("Failed to create transport", e);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        i18nProvider.getText(bundle, "error.failed-to-connect", "Failed to connect", null));
-                return;
-            }
-            unsubscribeEvents();
-            cancelConnectionTask();
             startConnectionTask();
         }
     }
@@ -222,6 +213,13 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
      * Updates the thing status accordingly.
      */
     private synchronized void initializePairing() {
+        Object host = getConfig().get(CONFIG_HOST);
+        if (host == null || !(host instanceof String hostString) || !HOST_PATTERN.matcher(hostString).matches()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    i18nProvider.getText(bundle, "error.invalid-host", "Invalid host", null));
+            return;
+        }
+
         Object pairingConfig = getConfig().get(CONFIG_PAIRING_CODE);
         if (pairingConfig == null || !(pairingConfig instanceof String pairingConfigString)
                 || !PAIRING_CODE_PATTERN.matcher(pairingConfigString).matches()) {
@@ -246,50 +244,61 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
             return;
         }
 
+        // create new transport
+        try {
+            ipTransport = new IpTransport(hostString);
+        } catch (IOException e) {
+            logger.debug("Failed to create transport", e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    i18nProvider.getText(bundle, "error.failed-to-connect", "Failed to connect", null));
+            return;
+        }
+
         if (keyStore.getAccessoryKey(macAddress) != null) {
             try {
                 logger.debug("Starting Pair-Verify with existing key for {}", thing.getUID());
-                PairVerifyClient client = new PairVerifyClient(ipTransport, keyStore.getControllerUUID(),
+                PairVerifyClient client = new PairVerifyClient(getIpTransport(), keyStore.getControllerUUID(),
                         keyStore.getControllerKey(), Objects.requireNonNull(keyStore.getAccessoryKey(macAddress)));
 
-                ipTransport.setSessionKeys(client.verify());
-                rwService = new CharacteristicReadWriteClient(ipTransport);
+                getIpTransport().setSessionKeys(client.verify());
+                rwService = new CharacteristicReadWriteClient(getIpTransport());
 
                 logger.debug("Restored pairing was verified for {}", thing.getUID());
                 cancelConnectionTask();
                 fetchAccessories();
                 updateStatus(ThingStatus.ONLINE);
-
-                return;
-            } catch (Exception e) {
+                return; // pairing restore succeeded => exit
+            } catch (NoSuchAlgorithmException | NoSuchProviderException | IllegalAccessException
+                    | InvalidCipherTextException | IOException | InterruptedException | TimeoutException
+                    | ExecutionException e) {
                 logger.debug("Restored pairing was not verified for {}", thing.getUID(), e);
-                keyStore.setAccessoryKey(macAddress, null);
-                // fall through to create new pairing
+                // pairing restore failed => continue to create new pairing
             }
         }
 
         try {
             logger.debug("Starting Pair-Setup for {}", thing.getUID());
-            PairSetupClient pairSetupClient = new PairSetupClient(ipTransport, keyStore.getControllerUUID(),
+            PairSetupClient pairSetupClient = new PairSetupClient(getIpTransport(), keyStore.getControllerUUID(),
                     keyStore.getControllerKey(), pairingCode);
 
             Ed25519PublicKeyParameters accessoryKey = pairSetupClient.pair();
             logger.debug("Pair-Setup completed; starting Pair-Verify for {}", thing.getUID());
 
             // Perform Pair-Verify immediately after Pair-Setup
-            PairVerifyClient pairVerifyClient = new PairVerifyClient(ipTransport, keyStore.getControllerUUID(),
+            PairVerifyClient pairVerifyClient = new PairVerifyClient(getIpTransport(), keyStore.getControllerUUID(),
                     keyStore.getControllerKey(), accessoryKey);
 
-            ipTransport.setSessionKeys(pairVerifyClient.verify());
-            rwService = new CharacteristicReadWriteClient(ipTransport);
+            getIpTransport().setSessionKeys(pairVerifyClient.verify());
+            rwService = new CharacteristicReadWriteClient(getIpTransport());
             keyStore.setAccessoryKey(macAddress, accessoryKey);
 
             logger.debug("Pairing and verification completed for {}", thing.getUID());
             cancelConnectionTask();
             fetchAccessories();
             updateStatus(ThingStatus.ONLINE);
-
-        } catch (Exception e) {
+        } catch (NoSuchAlgorithmException | NoSuchProviderException | IllegalAccessException
+                | InvalidCipherTextException | IOException | InterruptedException | TimeoutException
+                | ExecutionException e) {
             logger.warn("Pairing / verification failed for {}", thing.getUID(), e);
             startConnectionTask();
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, i18nProvider.getText(bundle,
@@ -304,7 +313,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
     /**
      * Normalize XXX-XX-XXX or XXXX-XXXX or XXXXXXXX to XXX-XX-XXX
      */
-    private String normalizePairingCode(String input) {
+    private String normalizePairingCode(String input) throws IllegalArgumentException {
         // remove all non-digit character formatting
         String digits = input.replaceAll("\\D", "");
         if (digits.length() != 8) {
@@ -320,13 +329,17 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
      * If this handler is a child of a bridge, it delegates to the bridge handler.
      */
     protected void startConnectionTask() {
-        Bridge bridge = getBridge();
-        if (bridge != null && bridge.getHandler() instanceof HomekitBridgeHandler bridgeHandler) {
+        if (getBridge() instanceof Bridge bridge && bridge.getHandler() instanceof HomekitBridgeHandler bridgeHandler) {
             bridgeHandler.startConnectionTask();
         } else {
             ScheduledFuture<?> task = connectionTask;
             if (task != null) {
                 task.cancel(false);
+            }
+            IpTransport ipTransport = this.ipTransport;
+            if (ipTransport != null) { // clean up prior transport if any
+                this.ipTransport = null;
+                ipTransport.close();
             }
             connectionTask = scheduler.schedule(this::initializePairing, connectionDelaySeconds, TimeUnit.SECONDS);
             connectionDelaySeconds = Math.min(connectionDelaySeconds * connectionDelaySeconds,
@@ -347,34 +360,47 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
     }
 
     /**
-     * Gets the bridge handler if this thing is connected to a bridge.
+     * Gets the IP transport.
      *
-     * @return the HomekitBridgeHandler or null if not connected to a bridge
+     * @throws IllegalAccessException if this is a child accessory or if the transport is not initialized.
+     * @return the IpTransport
      */
-    protected @Nullable HomekitBridgeHandler getBridgeHandler() {
-        return getBridge() instanceof Bridge bridge && bridge.getHandler() instanceof HomekitBridgeHandler handler
-                ? handler
-                : null;
+    protected IpTransport getIpTransport() throws IllegalAccessException {
+        if (isChildAccessory) {
+            throw new IllegalAccessException("Child accessories must delegate to bridge IP transport");
+        }
+        IpTransport ipTransport = this.ipTransport;
+        if (ipTransport == null) {
+            throw new IllegalAccessException("IP transport not initialized");
+        }
+        return ipTransport;
     }
 
     /**
-     * Gets the IP transport from the bridge handler if connected to a bridge; otherwise, returns
-     * this handler's IP transport.
+     * Gets the read/write service.
      *
-     * @return the IpTransport or null if not available
+     * @throws IllegalAccessException if this is a child accessory or if the service is not initialized
+     * @return the CharacteristicReadWriteClient
      */
-    protected @Nullable IpTransport getIpTransport() {
-        return getBridgeHandler() instanceof HomekitBridgeHandler bridgeHandler ? bridgeHandler.ipTransport
-                : ipTransport;
+    protected CharacteristicReadWriteClient getRwService() throws IllegalAccessException {
+        if (isChildAccessory) {
+            throw new IllegalAccessException("Child accessories must delegate to bridge read/write service");
+        }
+        CharacteristicReadWriteClient rwService = this.rwService;
+        if (rwService == null) {
+            throw new IllegalAccessException("Read/write service not initialized");
+        }
+        return rwService;
     }
 
     /**
      * Subscribes to events from the IP transport.
      */
     protected void subscribeEvents() {
-        IpTransport ipTransport = getIpTransport();
-        if (ipTransport != null) {
-            ipTransport.subscribe(this);
+        try {
+            getIpTransport().subscribe(this);
+        } catch (IllegalAccessException e) {
+            logger.debug("Failed to subscribe to events '{}", e.getMessage());
         }
     }
 
@@ -382,14 +408,15 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
      * Unsubscribes from events from the IP transport.
      */
     protected void unsubscribeEvents() {
-        IpTransport ipTransport = getIpTransport();
-        if (ipTransport != null) {
-            ipTransport.unsubscribe(this);
+        try {
+            getIpTransport().unsubscribe(this);
+        } catch (IllegalAccessException e) {
+            logger.debug("Failed to unsubscribe from events '{}", e.getMessage());
         }
     }
 
     @Override
     public void onEvent(String jsonContent) {
-        // default implementation does nothing; subclasses may override
+        // default implementation does nothing; subclasses must override
     }
 }

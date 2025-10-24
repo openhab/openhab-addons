@@ -16,11 +16,17 @@ import static org.openhab.binding.homekit.internal.HomekitBindingConstants.*;
 import static org.openhab.binding.homekit.internal.crypto.CryptoConstants.*;
 import static org.openhab.binding.homekit.internal.crypto.CryptoUtils.*;
 
+import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 
+import org.bouncycastle.crypto.InvalidCipherTextException;
 import org.bouncycastle.crypto.params.Ed25519PrivateKeyParameters;
 import org.bouncycastle.crypto.params.Ed25519PublicKeyParameters;
 import org.bouncycastle.crypto.params.X25519PrivateKeyParameters;
@@ -60,7 +66,7 @@ public class PairVerifyClient {
     private @NonNullByDefault({}) byte[] writeKey;
 
     public PairVerifyClient(IpTransport ipTransport, byte[] controllerId, Ed25519PrivateKeyParameters controllerKey,
-            Ed25519PublicKeyParameters accessoryKey) throws Exception {
+            Ed25519PublicKeyParameters accessoryKey) throws NoSuchAlgorithmException, NoSuchProviderException {
         logger.debug("Created..");
         this.ipTransport = ipTransport;
         this.clientPairingId = controllerId;
@@ -73,15 +79,21 @@ public class PairVerifyClient {
      * Executes the 4-step pairing verification process with the accessory.
      *
      * @return SessionKeys containing the derived session keys
-     * @throws Exception if any step of the pairing process fails
+     * @throws ExecutionException
+     * @throws TimeoutException
+     * @throws InterruptedException
+     * @throws IOException
+     * @throws InvalidCipherTextException
      */
-    public AsymmetricSessionKeys verify() throws Exception {
+    public AsymmetricSessionKeys verify()
+            throws IOException, InterruptedException, TimeoutException, ExecutionException, InvalidCipherTextException {
         m1Execute();
         return new AsymmetricSessionKeys(readKey, writeKey);
     }
 
     // M1 — Create new random client ephemeral X25519 public key and send it to server
-    private void m1Execute() throws Exception {
+    private void m1Execute()
+            throws IOException, InterruptedException, TimeoutException, ExecutionException, InvalidCipherTextException {
         logger.debug("Pair-Verify M1: Send verification start request with client ephemeral X25519 PK to server");
         Map<Integer, byte[]> tlv = new LinkedHashMap<>();
         tlv.put(TlvType.STATE.value, new byte[] { PairingState.M1.value });
@@ -93,7 +105,8 @@ public class PairVerifyClient {
     }
 
     // M2 — Receive server ephemeral X25519 public key and encrypted TLV
-    private void m2Execute(byte[] m1Response) throws Exception {
+    private void m2Execute(byte[] m1Response)
+            throws InvalidCipherTextException, IOException, InterruptedException, TimeoutException, ExecutionException {
         logger.debug("Pair-Verify M2: Read server ephemeral X25519 PK and encrypted id; validate signature");
         Map<Integer, byte[]> tlv = Tlv8Codec.decode(m1Response);
         loggerTraceTlv(tlv);
@@ -121,7 +134,8 @@ public class PairVerifyClient {
     }
 
     // M3 — Send encrypted controller identifier and signature
-    private void m3Execute() throws Exception {
+    private void m3Execute()
+            throws InvalidCipherTextException, IOException, InterruptedException, TimeoutException, ExecutionException {
         logger.debug("Pair-Verify M3: Send encrypted controller id with signature");
         byte[] clientSignature = signMessage(controllerKey,
                 concat(controllerEphemeralSecretKey.generatePublicKey().getEncoded(), clientPairingId,
@@ -145,7 +159,7 @@ public class PairVerifyClient {
     }
 
     // M4 — Final confirmation
-    private void m4Execute(byte[] m3Response) throws Exception {
+    private void m4Execute(byte[] m3Response) {
         logger.debug("Pair-Verify M4: Confirm validation; derive session keys");
         Map<Integer, byte[]> tlv = Tlv8Codec.decode(m3Response);
         loggerTraceTlv(tlv);

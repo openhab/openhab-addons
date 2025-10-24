@@ -77,6 +77,7 @@ public class HomekitMdnsDiscoveryParticipant implements MDNSDiscoveryParticipant
             if (port != 0) {
                 host = host + ":" + port;
             }
+
             AccessoryCategory category;
             try {
                 String ci = properties.getOrDefault("ci", ""); // accessory category
