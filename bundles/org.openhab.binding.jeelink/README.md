@@ -1,10 +1,10 @@
-# Jeelink Binding
+# JeeLink Binding
 
 This binding integrates JeeLink USB RF receivers and LaCrosseGateways.
 
 ## Introduction
 
-Binding should be compatible with JeeLink USB receivers and LaCrosseGateways. It supports connected LaCrosse temperature sensors, EC3000 sensors, PCA301 power monitoring wireless sockets and TX22 temperature and humidity sensors (including connected TX23 wind and TX26 rain sensors).
+The binding is compatible with JeeLink USB receivers and LaCrosseGateways. It supports connected LaCrosse temperature sensors, EC3000 sensors, PCA301 power monitoring wireless sockets, and TX22 temperature and humidity sensors (including connected TX23 wind and TX26 rain sensors).
 
 ## Supported Things
 
@@ -20,11 +20,11 @@ This binding supports:
 - PCA301 power monitoring wireless sockets
 - TX22 temperature & humidity Sensors (including connected TX23 wind and TX26 rain sensors)
 
-## Binding configuration
+## Binding Configuration
 
-Configuration of the binding is not needed.
+No binding-level configuration is required.
 
-## Thing discovery
+## Thing Discovery
 
 Only sensor discovery is supported, the thing for the USB receiver / LaCrosseGateway has to be created manually. Pay attention to use the correct serial port, as otherwise the binding may interfere with other bindings accessing serial ports.
 
@@ -107,8 +107,8 @@ The available init commands depend on the sketch that is running on the USB stic
 |-----------------|-----------------------|---------------------------------------------------|
 | temperature     | Number:Temperature    | Temperature reading                               |
 | humidity        | Number:Dimensionless  | Humidity reading                                  |
-| batteryNew      | Contact               | Whether the battery is new (CLOSED) or not (OPEN) |
-| batteryLow      | Contact               | Whether the battery is low (CLOSED) or not (OPEN) |
+| batteryNew      | Switch                | Indicates whether the battery was recently replaced |
+| batteryLow      | Switch                | Low battery indication                               |
 
 ### TX22 temperature and humidity sensors
 
@@ -158,8 +158,8 @@ The available init commands depend on the sketch that is running on the USB stic
 |-------------------|--------------------------|---------------------------------------|
 | currentPower      | Number:Power             | Current power draw                    |
 | consumptionTotal  | Number:Energy            | Total energy consumption in kWh       |
-| electricCurrent   | Number:ElectricCurrent   | The measured Electric Current         |
-| electricPotential | Number:ElectricPotential | The measured Electric Potential in mA |
+| electricCurrent   | Number:ElectricCurrent   | The measured electric current         |
+| electricPotential | Number:ElectricPotential | The measured electric potential (V)   |
 
 ## Commands
 
@@ -186,7 +186,7 @@ Thing jeelink:ec3k:0E3D "ec3k 1" (jeelink:jeelinkUsb:ec3k)  @ "home" [ sensorId=
 Thing jeelink:ec3k:14E7 "ec3k 2" (jeelink:jeelinkUsb:ec3k)  @ "home" [ sensorId="14E7"]
 ```
 
-A typical Thing configuration for lacrosse looks like this:
+A typical Thing configuration for LaCrosse looks like this:
 
 ```java
 Bridge jeelink:jeelinkUsb:lacrosse "Jeelink lacrosse" @ "home" [ serialPort="COM6" ]
@@ -204,13 +204,13 @@ Thing jeelink:revolt:4F1B "revolt 1" (jeelink:jeelinkUsb:revolt)  @ "home" [ sen
 A typical item configuration for a LaCrosse temperature sensor looks like this:
 
 ```java
-Number:Dimensionless Humidty_LR "Living Room [%.1f %unit%]" <humidity> {channel="jeelink:lacrosse:42:humidity"}
+Number:Dimensionless Humidity_LR "Living Room [%.1f %unit%]" <humidity> {channel="jeelink:lacrosse:42:humidity"}
 Number:Temperature Temperature_LR "Living Room [%.1f %unit%]" <temperature> {channel="jeelink:lacrosse:42:temperature"}
 Contact Battery_Low_LR "Battery Low Living Room" {channel="jeelink:lacrosse:42:batteryLow"}
 Contact Battery_New_LR "Battery New Living Room" {channel="jeelink:lacrosse:42:batteryNew"}
 ```
 
-A typical item configuration for a PCA301 power monitoring wireless sockets looks like this:
+A typical item configuration for a PCA301 power monitoring wireless socket looks like this:
 
 ```java
 Switch SocketSwitch {channel="jeelink:pca301:1-160-236:switchingState"}
@@ -236,7 +236,7 @@ A typical item configuration for a Revolt power monitor looks like this:
 ```java
 Number:Power SocketWattage {channel="jeelink:revolt:4F1B:currentPower"}
 Number:Energy SocketConsumption {channel="jeelink:revolt:4F1B:consumptionTotal"}
-Number:Dimensionless POwerFactor {channel="jeelink:revolt:4F1B:powerFactor"}
+Number:Dimensionless PowerFactor {channel="jeelink:revolt:4F1B:powerFactor"}
 Number:ElectricCurrent Current {channel="jeelink:revolt:4F1B:electricCurrent"}
 Number:ElectricPotential Voltage {channel="jeelink:revolt:4F1B:electricPotential"}
 Number:Frequency PowerFrequency {channel="jeelink:revolt:4F1B:powerFrequency"}
