@@ -46,7 +46,7 @@ You can also configure the polling interval in seconds by setting "pollingPeriod
 | map             | Image     | Image of clean area.                                                     | R          |
 | monday          | DateTime  | Time when cleaning is on Mondays.                                        | R          |
 | tuesday         | DateTime  | Time when cleaning is on Tuesdays.                                       | R          |
-| wednsday        | DateTime  | Time when cleaning is on Wednsdays.                                      | R          |
+| wednesday       | DateTime  | Time when cleaning is on Wednesdays.                                     | R          |
 | thursday        | DateTime  | Time when cleaning is on Thursdays.                                      | R          |
 | friday          | DateTime  | Time when cleaning is on Fridays.                                        | R          |
 | saturday        | DateTime  | Time when cleaning is on Saturdays.                                      | R          |
