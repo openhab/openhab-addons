@@ -177,12 +177,12 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
                     if (mac != null) {
                         keyStore.setAccessoryKey(mac, null);
                     } else {
-                        logger.warn("Could not clear key for {} due to missing mac address", thing.getUID());
+                        logger.warn("Could not clear key for '{}' due to missing mac address", thing.getUID());
                     }
                     updateStatus(ThingStatus.REMOVED);
                 } catch (IOException | InterruptedException | TimeoutException | ExecutionException
                         | IllegalAccessException e) {
-                    logger.warn("Failed to remove pairing for {}", thing.getUID());
+                    logger.warn("Failed to remove pairing for '{}'", thing.getUID());
                 }
             });
         }
@@ -299,7 +299,8 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
         } catch (NoSuchAlgorithmException | NoSuchProviderException | IllegalAccessException
                 | InvalidCipherTextException | IOException | InterruptedException | TimeoutException
                 | ExecutionException e) {
-            logger.warn("Pairing / verification failed for {}", thing.getUID(), e);
+            logger.warn("Pairing / verification failed '{}' for {}", e.getMessage(), thing.getUID());
+            logger.debug("Stack trace", e);
             startConnectionTask();
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, i18nProvider.getText(bundle,
                     "error.pairing-verification-failed", "Pairing / verification failed", null));

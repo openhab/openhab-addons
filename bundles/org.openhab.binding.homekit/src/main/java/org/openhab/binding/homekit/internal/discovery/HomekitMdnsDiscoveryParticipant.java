@@ -107,8 +107,6 @@ public class HomekitMdnsDiscoveryParticipant implements MDNSDiscoveryParticipant
                 builder.withLabel(THING_LABEL_FMT.formatted(service.getName(), host)) //
                         .withProperty(CONFIG_HOST, host) //
                         .withProperty(Thing.PROPERTY_MAC_ADDRESS, mac) //
-                        .withProperty(PROPERTY_ACCESSORY_PAIRING_FEATURE, pairFeature.toString()) //
-                        .withProperty(PROPERTY_ACCESSORY_PAIRED_STATE, pairStatus.toString()) //
                         .withProperty(PROPERTY_ACCESSORY_CATEGORY, category.toString()) //
                         .withProperty(PROPERTY_ACCESSORY_UID, new ThingUID(THING_TYPE_ACCESSORY, "1").toString()) //
                         .withRepresentationProperty(Thing.PROPERTY_MAC_ADDRESS);

@@ -191,7 +191,8 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
             } catch (IOException | TimeoutException e) {
                 logger.debug("Communication error subscribing to evented channels");
             } catch (IllegalAccessException | ExecutionException e) {
-                logger.warn("Unexpected error subscribing to evented channels", e);
+                logger.warn("Unexpected error '{}' subscribing to evented channels", e.getMessage());
+                logger.debug("Stack trace", e);
             } catch (InterruptedException e) { // shutting down
             }
         }
@@ -232,7 +233,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
                     QuantityType<?> temp = quantity.toUnit(channelUnit);
                     object = temp != null ? temp : quantity;
                 } catch (MeasurementParseException e) {
-                    logger.warn("Unexpected unit {} for channel {}", channelUnit, channel.getUID());
+                    logger.warn("Unexpected unit '{}' for channel '{}'", channelUnit, channel.getUID());
                 }
             }
         }
@@ -247,7 +248,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
                             object = Integer.parseInt(val);
                             break;
                         } catch (NumberFormatException e) {
-                            logger.warn("Unexpected state option value {} for channel {}", val, channel.getUID(), e);
+                            logger.warn("Unexpected state option value '{}' for channel '{}'", val, channel.getUID());
                         }
                     }
                 }
@@ -402,7 +403,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
                     ChannelGroupType channelGroupType = channelGroupTypeRegistry
                             .getChannelGroupType(groupDef.getTypeUID());
                     if (channelGroupType == null) {
-                        logger.warn("Fatal Error: ChannelGroupType {} is not registered", groupDef.getTypeUID());
+                        logger.warn("Fatal Error: ChannelGroupType '{}' is not registered", groupDef.getTypeUID());
                     } else {
                         logger.trace("++ChannelGroupType UID:{}, label:{}, category:{}, description:{}",
                                 channelGroupType.getUID(), channelGroupType.getLabel(), channelGroupType.getCategory(),
@@ -428,7 +429,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
                                 ChannelType channelType = channelTypeRegistry
                                         .getChannelType(chanDef.getChannelTypeUID());
                                 if (channelType == null) {
-                                    logger.warn("Fatal Error: ChannelType {} is not registered",
+                                    logger.warn("Fatal Error: ChannelType '{}' is not registered",
                                             chanDef.getChannelTypeUID());
                                 } else {
                                     logger.trace(
@@ -492,7 +493,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         Channel channel = thing.getChannel(channelUID);
         if (channel == null) {
-            logger.warn("Received command for unknown channel '{}'", channelUID);
+            logger.warn("Received command '{}' for unknown channel '{}'", command, channelUID);
             return;
         }
         if (command == RefreshType.REFRESH) {
@@ -541,7 +542,8 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
         } catch (IOException | TimeoutException e) {
             logger.debug("Communication error sending command '{}' to '{}' '{}'", command, channelUID, e.getMessage());
         } catch (IllegalAccessException | ExecutionException e) {
-            logger.warn("Unexpected error sending command '{}' to '{}'", command, channelUID, e);
+            logger.warn("Unexpected error '{}' sending command '{}' to '{}'", e.getMessage(), command, channelUID);
+            logger.debug("Stack trace", e);
         } catch (InterruptedException e) { // shutting down
         }
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
@@ -597,7 +599,8 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
             logger.debug("Communication error polling accessory '{}', restarting", e.getMessage());
             startConnectionTask();
         } catch (IllegalAccessException | ExecutionException e) {
-            logger.warn("Unexpected error polling accessory", e);
+            logger.warn("Unexpected error '{}' polling accessory", e.getMessage());
+            logger.debug("Stack trace", e);
         } catch (InterruptedException e) { // shutting down
         }
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
@@ -616,12 +619,12 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
         ChannelTypeUID uid = channel.getChannelTypeUID();
         ChannelType ct = channelTypeRegistry.getChannelType(uid);
         if (ct == null) {
-            logger.warn("Channel {} is missing a channel type", uid);
+            logger.warn("Channel '{}' is missing a channel type", uid);
             return null;
         }
         StateDescription st = ct.getState();
         if (st == null) {
-            logger.warn("Channel {} of type {} is missing a state description", uid, ct.getUID());
+            logger.warn("Channel '{}' of type '{}' is missing a state description", uid, ct.getUID());
             return null;
         }
         return st;
