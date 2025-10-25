@@ -12,9 +12,9 @@
  */
 package org.openhab.binding.boschindego.internal.console;
 
-import java.util.ArrayList;
+import static org.openhab.binding.boschindego.internal.BoschIndegoBindingConstants.THING_TYPE_ACCOUNT;
+
 import java.util.List;
-import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -55,34 +55,18 @@ public class BoschIndegoCommandExtension extends AbstractConsoleCommandExtension
 
     @Override
     public void execute(String[] args, Console console) {
-        String authCode;
-        Thing bridge;
 
-        if (args.length == 2 && AUTHORIZE.equals(args[0])) {
-            try {
-                bridge = getSingleBridge();
-            } catch (IllegalStateException e) {
-                console.println("Error finding indego bridge: " + e.getMessage());
-                printUsage(console);
-                return;
-            }
-
-            if (bridge == null) {
-                console.println("No BoschIndego Bridge defined.");
-                return;
-            }
-
-            authCode = args[1];
-        } else if (args.length == 3 && AUTHORIZE.equals(args[1])) {
-            bridge = getBridgeById(args[0]);
-            if (bridge == null) {
-                console.println("Unknown thing id '" + args[0] + "'");
-                return;
-            }
-
-            authCode = args[2];
-        } else {
+        if (args.length != 3 || !AUTHORIZE.equals(args[1])) {
             printUsage(console);
+            return;
+        }
+
+        String bridgeId = args[0];
+        String authCode = args[2];
+
+        Thing bridge = getBridgeById(bridgeId);
+        if (bridge == null) {
+            console.println("Unknown bridge id '" + bridgeId + "'");
             return;
         }
 
@@ -101,7 +85,7 @@ public class BoschIndegoCommandExtension extends AbstractConsoleCommandExtension
     @Override
     public List<String> getUsages() {
         return List
-                .of(buildCommandUsage("[<bridgeId>] " + AUTHORIZE + " <AuthToken>", "authorize by authorization code"));
+                .of(buildCommandUsage("<bridgeId> " + AUTHORIZE + " <AuthToken>", "authorize by authorization code"));
     }
 
     @Override
@@ -112,46 +96,25 @@ public class BoschIndegoCommandExtension extends AbstractConsoleCommandExtension
     @Override
     public boolean complete(String[] args, int cursorArgumentIndex, int cursorPosition, List<String> candidates) {
         if (cursorArgumentIndex <= 0) {
-            return new StringsCompleter(
-                    Stream.concat(Stream.of(AUTHORIZE), getBridgeIds().stream().map(ThingUID::getAsString)).toList(),
-                    false).complete(args, cursorArgumentIndex, cursorPosition, candidates);
+            return new StringsCompleter(getBridgeIds(), true).complete(args, cursorArgumentIndex, cursorPosition,
+                    candidates);
         } else if (cursorArgumentIndex == 1 && !AUTHORIZE.equals(args[0])) {
             return SUBCMD_COMPLETER.complete(args, cursorArgumentIndex, cursorPosition, candidates);
         }
         return false;
     }
 
-    private List<ThingUID> getBridgeIds() {
-        List<ThingUID> bridgeIds = new ArrayList<>();
-        for (Thing thing : thingRegistry.getAll()) {
-            if (thing.getHandler() instanceof BoschAccountHandler) {
-                bridgeIds.add(thing.getUID());
-            }
-        }
-        return bridgeIds;
+    private List<String> getBridgeIds() {
+        return thingRegistry.getAll().stream().filter(thing -> thing.getHandler() instanceof BoschAccountHandler)
+                .map(thing -> thing.getUID().getId()).toList();
     }
 
-    private @Nullable Thing getBridgeById(String uid) {
-        Thing thing;
+    private @Nullable Thing getBridgeById(String bridgeId) {
         try {
-            ThingUID thingUID = new ThingUID(uid);
-            thing = thingRegistry.get(thingUID);
+            ThingUID thingUID = new ThingUID(THING_TYPE_ACCOUNT, bridgeId);
+            return thingRegistry.get(thingUID);
         } catch (IllegalArgumentException e) {
-            thing = null;
+            return null;
         }
-        return thing;
-    }
-
-    private @Nullable Thing getSingleBridge() {
-        Thing bridge = null;
-        for (Thing thing : thingRegistry.getAll()) {
-            if (thing.getHandler() instanceof BoschAccountHandler) {
-                if (bridge != null) {
-                    throw new IllegalStateException("More than one BoschIndego Bridge found.");
-                }
-                bridge = thing;
-            }
-        }
-        return bridge;
     }
 }
