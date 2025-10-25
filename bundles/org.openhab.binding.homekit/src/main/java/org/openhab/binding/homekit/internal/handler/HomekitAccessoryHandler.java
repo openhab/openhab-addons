@@ -67,6 +67,7 @@ import org.openhab.core.thing.DefaultSystemChannelTypeProvider;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.type.ChannelGroupType;
@@ -901,6 +902,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
      * @param json the JSON content containing characteristic values
      */
     private void updateChannelsFromJson(String json) {
+        Integer aid = getAccessoryId();
         ChannelUID hsbChannelUID = null;
         Service service = GSON.fromJson(json, Service.class);
         if (service != null && service.characteristics instanceof List<Characteristic> characteristics) {
@@ -908,13 +910,14 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
                 ChannelUID channelUID = channel.getUID();
                 if (channelUID.equals(lightModelClientHSBTypeChannel)) {
                     for (Characteristic cxx : characteristics) {
-                        if (lightModelRefresh(cxx)) {
+                        if (Objects.equals(cxx.aid, aid) && lightModelRefresh(cxx)) {
                             hsbChannelUID = channelUID;
                         }
                     }
                 } else if (channel.getProperties().get(PROPERTY_IID) instanceof String iid) {
                     for (Characteristic cxx : characteristics) {
-                        if (iid.equals(String.valueOf(cxx.iid)) && cxx.value instanceof JsonElement element) {
+                        if (Objects.equals(cxx.aid, aid) && iid.equals(String.valueOf(cxx.iid))
+                                && cxx.value instanceof JsonElement element) {
                             State state = convertJsonToState(element, channel);
                             switch (channel.getKind()) {
                                 case STATE -> updateState(channelUID, state);
@@ -966,5 +969,14 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
             }
         }
         return super.getRwService();
+    }
+
+    @Override
+    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
+        super.bridgeStatusChanged(bridgeStatusInfo);
+        if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE && thing.getStatus() != ThingStatus.ONLINE) {
+            updateStatus(ThingStatus.ONLINE);
+            channelsAndPropertiesLoaded();
+        }
     }
 }
