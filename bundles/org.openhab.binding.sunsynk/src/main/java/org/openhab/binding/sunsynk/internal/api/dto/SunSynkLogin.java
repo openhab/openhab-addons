@@ -17,7 +17,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link SunSynkLogin} is the internal class for inital connection
+ * The {@link SunSynkLogin} is the internal class for initial connection
  * to a Sun Synk Connect Account.
  * Login via Username and Password
  * 
