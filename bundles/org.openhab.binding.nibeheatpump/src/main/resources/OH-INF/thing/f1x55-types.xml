@@ -5140,14 +5140,16 @@
 	<channel-type id="f1x55-47388" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Alarm Lower Room Temp.</label>
-		<description>Lowers the room temperature during red light alarms to notify the occupants of the building; 0 = Off, 1 = On
+		<description>Lowers the room temperature during red light alarms to notify the occupants of the building; 0 = Off, 1 =
+			On
 		</description>
 		<state readOnly="false"></state>
 	</channel-type>
 	<channel-type id="f1x55-47389" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Alarm Lower HW Temp.</label>
-		<description>Lowers the hot water temperature during red light alarms to notify the occupants of the building; 0 = Off, 1 = On
+		<description>Lowers the hot water temperature during red light alarms to notify the occupants of the building; 0 =
+			Off, 1 = On
 		</description>
 		<state readOnly="false"></state>
 	</channel-type>

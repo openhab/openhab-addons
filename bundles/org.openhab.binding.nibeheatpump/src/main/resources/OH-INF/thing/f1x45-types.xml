@@ -5766,14 +5766,14 @@
 		<item-type>Switch</item-type>
 		<label>Alarm Lower Room Temp.</label>
 		<description>Lowers the room temperature during red light alarms to notify the occupants of the building that
-				Indicates an alarm condition; 0 = Off, 1 = On</description>
+			Indicates an alarm condition; 0 = Off, 1 = On</description>
 		<state readOnly="false"></state>
 	</channel-type>
 	<channel-type id="f1x45-47389" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Alarm Lower HW Temp.</label>
 		<description>Lowers the hot water temperature during red light alarms to notify the occupants of the building that
-				Indicates an alarm condition; 0 = Off, 1 = On</description>
+			Indicates an alarm condition; 0 = Off, 1 = On</description>
 		<state readOnly="false"></state>
 	</channel-type>
 	<channel-type id="f1x45-47391" advanced="true">
@@ -5925,7 +5925,8 @@
 	<channel-type id="f1x45-47537" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Night Cooling</label>
-		<description>Whether the fan should run at a higher speed when there is a high room temperature and a low outdoor temperature; 0 = Off, 1 = On</description>
+		<description>Whether the fan should run at a higher speed when there is a high room temperature and a low outdoor
+			temperature; 0 = Off, 1 = On</description>
 		<state readOnly="false"></state>
 	</channel-type>
 	<channel-type id="f1x45-47538" advanced="true">
