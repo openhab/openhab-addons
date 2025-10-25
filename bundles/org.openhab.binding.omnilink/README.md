@@ -147,7 +147,7 @@ The devices support some of the following trigger channels:
 ## Rule Actions
 
 This binding includes a rule action, which allows synchronizing the controller time to match the openHAB system time with a user specified zone.
-There is a separate instance for each contoller, which can be retrieved through:
+There is a separate instance for each controller, which can be retrieved through:
 
 :::: tabs
 

@@ -4,11 +4,11 @@ This binding integrates the Onkyo AV receivers.
 
 ## Introduction
 
-Binding should be compatible with Onkyo AV receivers which support ISCP (Integra Serial Control Protocol) over Ethernet (eISCP).
+The binding is compatible with Onkyo AV receivers that support ISCP (Integra Serial Control Protocol) over Ethernet (eISCP).
 
 ## Supported Things
 
-This binding supports only one thing: The Onkyo AV receiver.
+This binding supports only one thing: the Onkyo AV receiver.
 All supported Onkyo devices are registered as an audio sink in the framework.
 
 ## Discovery
@@ -75,10 +75,10 @@ Sometimes it is necessary to use the Callback URL to override the default, such 
 
 ## Thing Configuration
 
-The Onkyo AVR thing requires the ip address and the port to access it on.
-In the code `avr-livingroom` refers to the user defined unique id of your Onkyo device.
+The Onkyo AVR Thing requires the IP address and the port to access it.
+In the code, `avr-livingroom` refers to the user-defined unique ID of your Onkyo device.
 A second device could be called avr2.
-In the thing file, this looks e.g. like
+In the thing file, this looks for example like
 
 Model specific
 
@@ -94,25 +94,25 @@ Generic model
 onkyo:onkyoAVR:avr-livingroom [ipAddress="192.168.1.100", port=60128]
 ```
 
-Optionally you can specify the refresh interval by `refreshInterval` parameter.
+Optionally, you can specify the refresh interval with the `refreshInterval` parameter.
 
 ```java
 onkyo:onkyoAVR:avr-livingroom [ipAddress="192.168.1.100", port=60128, refreshInterval=30]
 ```
 
-Maximum volume level can also be configured by `volumeLimit` parameter.
-This prevent setting receiver volume level too high, which could damage your speakers or receiver.
+The maximum volume level can also be configured with the `volumeLimit` parameter.
+This prevents setting the receiver’s volume level too high, which could damage your speakers or receiver.
 
 ```java
 onkyo:onkyoAVR:avr-livingroom [ipAddress="192.168.1.100", port=60128, volumeLimit=50]
 ```
 
-Binding then automatically scale the volume level in both directions (100% = 50 = 100%).
+The binding then automatically scales the volume level in both directions (100% = 50 = 100%).
 
-You can also change the way volume scaling works.
-This can be necessary if your receiver uses a different scaling system than 0-100.
-You can specify a decimal number that acts as the coefficient for scaling.
-See below for a few examples:
+You can also change how volume scaling works.
+This can be necessary if your receiver uses a scaling system different from 0–100.
+You can specify a decimal number that acts as the scaling coefficient.
+See a few examples below:
 
 | Value | Description                                         | Value for 100% |
 | ----- | --------------------------------------------------- | -------------- |
@@ -121,7 +121,7 @@ See below for a few examples:
 | 0.8   | For receivers that go from 0-80                     | 80             |
 | 0.5   | For receivers that go from 0-50                     | 50             |
 
-Note that this is applied after the volume limiting took place.
+Note that this is applied after volume limiting takes place.
 
 ```java
 onkyo:onkyoAVR:avr-livingroom [ipAddress="192.168.1.100", port=60128, volumeScale=2]
@@ -131,7 +131,7 @@ The binding will send value 200 for maximum volume to the receiver.
 
 ## Channels
 
-The Onkyo AVR supports the following channels (some channels are model specific):
+The Onkyo AVR supports the following channels (some channels are model-specific):
 
 | Channel Type ID           | Item Type | Description                                                                                                     |
 | ------------------------- | --------- | --------------------------------------------------------------------------------------------------------------- |
@@ -147,13 +147,13 @@ The Onkyo AVR supports the following channels (some channels are model specific)
 | zone3#mute                | Switch    | Mute/unmute zone 3                                                                                              |
 | zone3#input               | Number    | The input for zone 3                                                                                            |
 | zone3#volume              | Dimmer    | Volume of zone 3                                                                                                |
-| player#control            | Player    | Control the Zone Player, e.g. play/pause/next/previous/ffward/rewind (available if playing from Network or USB) |
+| player#control            | Player    | Control the Zone Player, e.g., play/pause/next/previous/fast-forward/rewind (available if playing from Network or USB) |
 | player#title              | String    | Title of the current song (available if playing from Network or USB)                                            |
 | player#album              | String    | Album name of the current song (available if playing from Network or USB)                                       |
 | player#artist             | String    | Artist name of the current song (available if playing from Network or USB)                                      |
 | player#currentPlayingTime | String    | Current playing time of the current song (available if playing from Network or USB)                             |
 | player#listenmode         | Number    | Current listening mode e.g. Stereo, 5.1ch Surround, ...                                                         |
-| player#audysseyeq         | Number    | Current Audyseey EQ mode (e.g. OFF, Movie, Music)                                                               |
+| player#audysseyeq         | Number    | Current Audyssey EQ mode (e.g., Off, Movie, Music)                                                               |
 | player#audioinfo          | String    | Current audio info (Refresh timer must be configured for updates)                                               |
 | player#playuri            | String    | Plays the URI provided to the channel                                                                           |
 | player#albumArt           | Image     | Image of the current album art of the current song                                                              |
@@ -178,7 +178,7 @@ The Onkyo AVR supports the following channels (some channels are model specific)
 
 ## Rule Actions
 
-This binding includes a rule action which allows to send raw eISCP messages to the receiver.
+This binding includes a rule action that allows sending raw eISCP messages to the receiver.
 The rule action can be used to send commands to the receiver that are not supported by channels.
 There is a separate instance for each receiver, which can be retrieved through
 
@@ -187,7 +187,7 @@ val onkyoActions = getActions("onkyo","onkyo:onkyoAVR:avr-livingroom")
 ```
 
 where the first parameter always has to be `onkyo` and the second (`onkyo:onkyoAVR:avr-livingroom`) is the Thing UID of the broker that should be used.
-Once this action instance is retrieved, you can invoke the `onkyoActions.sendRawCommand(String action, String value)` method on it:
+Once this action instance is retrieved, you can invoke the `onkyoActions.sendRawCommand(String action, String value)` method:
 
 ```java
 onkyoActions.sendRawCommand("CTL", "UP")
@@ -196,11 +196,11 @@ onkyoActions.sendRawCommand("CTL", "UP")
 This command for instance increases the volume for the center channel.
 For a description of all commands you can e.g. search [this GitHub project](https://github.com/miracle2k/onkyo-eiscp/tree/master/commands/main).
 
-Also note that when sending multiple commands there has to be a `Thread::sleep(100)` in between the commands because the action does not wait for a response from the receiver.
+When sending multiple commands, insert a short `Thread::sleep(100)` between them because the action does not wait for a response from the receiver.
 
 ## Input Source Mapping
 
-Here after are the ID values of the input sources:
+Here are the ID values of the input sources:
 
 - 00: DVR/VCR
 - 01: SATELLITE/CABLE
@@ -243,10 +243,10 @@ Dimmer avrLrZ2_Volume "Volume [%s]" <soundvolume> { channel="onkyo:onkyoAVR:avr-
 Player avrLrPlayer_Control            "Control"                 <text>        { channel="onkyo:onkyoAVR:avr-livingroom:player#control" }
 String avrLrPlayer_Title              "Title [%s]"              <text>        { channel="onkyo:onkyoAVR:avr-livingroom:player#title" }
 String avrLrPlayer_Album              "Album [%s]"              <text>        { channel="onkyo:onkyoAVR:avr-livingroom:player#album" }
-String avrLrPlayer_Artist             "Artist [%s]"             <parents_2_5> { channel="onkyo:onkyoAVR:avr-livingroom:player#artist" }
+String avrLrPlayer_Artist             "Artist [%s]"             <text>        { channel="onkyo:onkyoAVR:avr-livingroom:player#artist" }
 String avrLrPlayer_CurrentPlayingTime "CurrentPlayingTime [%s]" <clock>       { channel="onkyo:onkyoAVR:avr-livingroom:player#currentPlayingTime" }
 Number avrLrPlayer_Listenmode         "Listenmode [%d]"         <text>        { channel="onkyo:onkyoAVR:avr-livingroom:player#listenmode" }
-Number avrLrPlayer_AudysseyEQ         "AudysseeyEQ [%d]"        <text>        { channel="onkyo:onkyoAVR:avr-livingroom:player#audysseyeq" }
+Number avrLrPlayer_AudysseyEQ         "AudysseyEQ [%d]"         <text>        { channel="onkyo:onkyoAVR:avr-livingroom:player#audysseyeq" }
 String avrLrPlayer_PlayURI            "PlayURI [%s]"            <text>        { channel="onkyo:onkyoAVR:avr-livingroom:player#playuri" }
 Image  avrLrPlayer_AlbumArt           "AlbumArt [%s]"           <text>        { channel="onkyo:onkyoAVR:avr-livingroom:player#albumArt" }
 String avrLrPlayer_AlbumArtUrl        "AlbumArtURL [%s]"        <text>        { channel="onkyo:onkyoAVR:avr-livingroom:player#albumArtUrl" }
@@ -304,7 +304,7 @@ sitemap demo label="Onkyo AVR"
 
     Frame label="NetMenu" {
         Text      item=avrLrNet_Title
-        Selection item=avrLrNet_Control   mappings=[ Up='Up', Down='Down', Select='Select', Back='Back', PageUp='PageUp', PageDown='PageDow', Select0='Select0', Select1='Select1', Select2='Select2', Select3='Select3', Select4='Select4', Select5='Select5', Select6='Select6', Select7='Select7', Select8='Select8', Select9='Select9' ]
+        Selection item=avrLrNet_Control   mappings=[ Up='Up', Down='Down', Select='Select', Back='Back', PageUp='PageUp', PageDown='PageDown', Select0='Select0', Select1='Select1', Select2='Select2', Select3='Select3', Select4='Select4', Select5='Select5', Select6='Select6', Select7='Select7', Select8='Select8', Select9='Select9' ]
         Selection item=avrLrNet_Selection mappings=[ 0='Item0', 1='Item1', 2='Item2', 3='Item3', 4='Item4', 5='Item5', 6='Item6', 7='Item7', 8='Item8', 9='Item9' ]
         Text      item=avrLrNet_Item0
         Text      item=avrLrNet_Item1

@@ -12,10 +12,10 @@ Mixing the two concepts can also be done, the choice is yours.
 
 ## Supported Things
 
-- `OpenSprinkler Station` is for gaining advanced controls and status information over a single station (zone) of a device, e.g. to turn it on or off, or the time remaining.
-- `OpenSprinkler Device` is for device-specific controls that usually apply to multiple stations or main unit sensors, e.g. if rain was detected.
+- `OpenSprinkler Station` is for gaining advanced controls and status information over a single station (zone) of a device, e.g., to turn it on or off, or the time remaining.
+- `OpenSprinkler Device` is for device-specific controls that usually apply to multiple stations or main unit sensors, e.g., if rain was detected.
 
-Recommend that you first add a single `device` thing and then if you need the extra controls, add as many of the `station` things as you wish.
+It is recommended that you first add a single `device` thing and then, if you need the extra controls, add as many of the `station` things as you wish.
 
 ## Discovery
 
@@ -26,7 +26,7 @@ Due to this method used, it is very slow at finding devices and can saturate net
 
 - hostname: Hostname or IP address of the OpenSprinkler HTTP API.
 - port: Port the OpenSprinkler device is listening on. Usually 80.
-- password: Admin password of the API. Factory default is: opendoor
+- password: Admin password of the API. Factory default is: opendoor.
 - refresh: Number of seconds in between refreshing the Thing state with the API.
 - timeout: (optional) Number of seconds to wait for a timeout when calling the OpenSprinkler HTTP API.
 - retry: (optional) Number of retries on connection timeouts.
@@ -37,7 +37,7 @@ Due to this method used, it is very slow at finding devices and can saturate net
 
 The `station` thing must be used with a `http` bridge and has the following configuration properties:
 
-- stationIndex: The index of the station to communicate with, starting with 0 for the first station
+- stationIndex: The index of the station to communicate with, starting with 0 for the first station.
 
 ## Channels
 
@@ -76,7 +76,7 @@ NOTE: Some channels will only show up if the hardware has the required sensor an
 | rainsensor      | Switch                 | RO | This channel indicates whether rain is detected by the device or not.              |
 | resetStations   | Switch                 | RW | The ON command will stop all stations immediately, including those waiting to run. |
 | sensor2         | Switch                 | RO | This channel is for the second sensor (if your hardware supports it).              |
-| signalStrength  | Number                 | RO | Shows how strong the WiFi Signal is.     |
+| signalStrength  | Number                 | RO | Shows how strong the WiFi signal is.                                               |
 | stations        | String                 | RW | Display a list of stations that can be run when selected to the length of time set |
 |                 |                        |    | in the `nextDuration` channel.                                                  |
 | waterlevel      | Number:Dimensionless   | RO | This channel shows the current water level in percent (0-250%). The water level is |
@@ -104,7 +104,7 @@ demo.items:
 ```java
 Group stations
 Switch Station01 (stations) { channel="opensprinkler:station:http:01:stationState" }
-Number:Time Station01RaminingTime { channel="opensprinkler:station:http:01:remainingWaterTime" }
+Number:Time Station01RemainingTime { channel="opensprinkler:station:http:01:remainingWaterTime" }
 Switch Station02 (stations) { channel="opensprinkler:station:http:02:stationState" }
 Switch Station03 (stations) { channel="opensprinkler:station:http:03:stationState" }
 Number:Time Station03NextDuration { channel="opensprinkler:station:http:03:nextDuration" }
@@ -113,7 +113,7 @@ Switch Station05 (stations) { channel="opensprinkler:station:http:05:stationStat
 Switch Station06 (stations) { channel="opensprinkler:station:http:06:stationState" }
 
 Switch RainSensor { channel="opensprinkler:device:http:device:rainsensor" }
-Number:ElectricCurrent CurrentDraw {channel="opensprinkler:device:http:device:currentDraw"}
+Number:ElectricCurrent CurrentDraw { channel="opensprinkler:device:http:device:currentDraw" }
 ```
 
 demo.sitemap:

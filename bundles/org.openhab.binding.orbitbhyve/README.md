@@ -1,6 +1,6 @@
 # Orbit B-hyve Binding
 
-This is the binding for the [Orbit B-hyve](https://bhyve.orbitonline.com/) wi-fi sprinklers.
+This is the binding for the [Orbit B-hyve](https://bhyve.orbitonline.com/) Wi‑Fi sprinklers.
 
 ## Supported Things
 
@@ -9,13 +9,13 @@ So far only the [Orbit B-hyve 8-zone Indoor Timer](https://bhyve.orbitonline.com
 
 ## Discovery
 
-This binding supports the auto discovery of the sprinklers bound to your Orbit B-hyve account.
+This binding supports the auto-discovery of the sprinklers bound to your Orbit B-hyve account.
 To start the discovery you need to create a bridge thing and enter valid credentials to your Orbit B-hyve cloud account.
 
 ## Thing Configuration
 
-The bridge thing requires a manual configuration. You have to enter valid credentials to your Orbit B-hyve account, and you can also set the refresh time in seconds for polling data from the Orbit cloud.
-There is no user configuration related to sprinkler things. Sprinklers do need a configuration property _id_ identifying the device, but the only way how to retrieve it is to let the bridge to auto discover sprinklers.
+The bridge thing requires manual configuration. You must enter valid credentials to your Orbit B-hyve account, and you can also set the refresh time in seconds for polling data from the Orbit cloud.
+There is no user configuration for sprinkler things. Sprinklers have an _id_ configuration property identifying the device; it is populated when the bridge auto-discovers sprinklers.
 
 ## Channels
 

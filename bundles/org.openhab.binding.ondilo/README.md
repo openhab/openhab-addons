@@ -8,7 +8,7 @@ This binding integrates Ondilo ICO pool monitoring devices with openHAB, allowin
 - `ondilo:` Represents an individual Ondilo ICO device
 
 Ondilo ICO Pool as well as Spa devices are supported.
-Chlor as well as salt water.
+Chlorine as well as salt water.
 
 ## Discovery
 
@@ -24,7 +24,7 @@ Each Ondilo ICO will appear as a new Thing in the inbox.
 
 ### `ondilo` Thing Configuration
 
-- **id**: The Id of an Ondilo ICO device. Set via discovery service (e.g. `12345`)
+- **id**: The ID of an Ondilo ICO device. Set via discovery service (e.g. `12345`)
 
 Ondilo ICO takes measures every hour.
 Higher polling will not increase the update interval.
@@ -37,7 +37,7 @@ The requests to the Ondilo Customer API are limited to the following per user qu
 
 Example using default interval:
 
-- `account` Thing performs 2 request per cycle - 8 requests per hour per Ondilo Account
+- `account` Thing performs 2 requests per cycle - 8 requests per hour per Ondilo Account
 - `ondilo` Thing performs 4 requests per cycle - 16 requests per hour per Ondilo ICO
 
 ## Channels
@@ -63,7 +63,7 @@ Example using default interval:
 | tds                       | Number:Density           | false    | R      | Total dissolved solids in the pool (chlor pools only)  |
 | tds-trend                 | Number:Density           | true     | R      | Change in TDS since last measure                       |
 | battery                   | Number:Dimensionless     | false    | R      | Battery level of the device                            |
-| rssi                      | Number:Dimensionless     | false    | R      | Signal strength (RSSI)                                 |
+| rssi                      | Number                    | false    | R      | Signal strength (RSSI)                                 |
 | value-time                | DateTime                 | true     | R      | Timestamp of the set of measures                       |
 
 ### Recommendations Channels

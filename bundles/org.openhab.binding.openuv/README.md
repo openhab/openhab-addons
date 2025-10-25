@@ -6,7 +6,7 @@ To use this binding, you first need to [register and get your API token](https:/
 
 ## Discovery
 
-Once a bridge with the api Key has been created, Local UV Index information can be auto discovered based on system location.
+Once a bridge with the API key has been created, local UV Index information can be auto-discovered based on the system location.
 
 ## Binding Configuration
 
@@ -20,7 +20,7 @@ The bridge has only one configuration parameter:
 |-----------|--------------------------------------------------------------|
 | apikey    | Data-platform token to access the OpenUV service. Mandatory. |
 
-Will accept a Refresh command in order to reinitiate connexion (eg in case of Quota exceeded).
+Will accept a Refresh command in order to reinitiate connection (e.g., in case of quota exceeded).
 
 ## Thing Configuration
 
@@ -96,10 +96,10 @@ demo.items:
 ```xtend
 
 Number              UVIndex   "UV Index"  { channel = "openuv:uvreport:local:city1:UVIndex" }
-Number              UVMax     "UV Max"    { channel = "openuv:uvreport:local:city1:UVMaxEvent" }
+Number              UVMax     "UV Max"    { channel = "openuv:uvreport:local:city1:UVMax" }
 Number:ArealDensity Ozone     "Ozone"     { channel = "openuv:uvreport:local:city1:Ozone" }
 Number:Time         SafeExp3  "Parents"   { channel = "openuv:uvreport:local:city1:parents" }
-Number:Time         SafeExp2  "Childs"    { channel = "openuv:uvreport:local:city1:childs" }
+Number:Time         SafeExp2  "Children"  { channel = "openuv:uvreport:local:city1:childs" }
 
 ```
 
