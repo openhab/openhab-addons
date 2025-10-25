@@ -62,7 +62,6 @@ public class DeviceController {
     private static final int TIMEOUT_IN_MS = 4000;
     private final Logger logger = LoggerFactory.getLogger(DeviceController.class);
     private static final String BEARER_TYPE = "Bearer ";
-    // private int successFlags = 0;
     private String sn = "";
     private String alias = "";
     private String plantId = "";
