@@ -162,8 +162,8 @@ Example list of Channels using a Guntamatic Biostar 15kW Pellets Heating System 
 | `076-program-hc6`          | Program HC6            | `String`               |      | 🔓 W0                 | R/O      | false    |
 | `077-program-hc7`          | Program HC7            | `String`               |      | 🔓 W0                 | R/O      | false    |
 | `078-program-hc8`          | Program HC8            | `String`               |      | 🔓 W0                 | R/O      | false    |
-| `079-interruption-0`       | Interruption 0         | `String`               |      | 🔓 W0                 | R/O      | false    |
-| `080-interruption-1`       | Interruption 1         | `String`               |      | 🔓 W0                 | R/O      | false    |
+| `079-interuption-0`        | Interuption 0          | `String`               |      | 🔓 W0                 | R/O      | false    |
+| `080-interuption-1`        | Interuption 1          | `String`               |      | 🔓 W0                 | R/O      | false    |
 | `081-serial`               | Serial                 | `Number`               |      | 🔓 W0                 | R/O      | false    |
 | `082-version`              | Version                | `String`               |      | 🔓 W0                 | R/O      | false    |
 | `083-running-time`         | Running Time           | `Number:Time`          | `h`  | 🔓 W0                 | R/O      | false    |
@@ -186,7 +186,7 @@ Example list of Channels using a Guntamatic Biostar 15kW Pellets Heating System 
 | `100-auxiliary-pump-0`     | Auxiliary pump 0       | `Switch`               |      | 🔐 W1                 | R/O      | false    |
 | `101-auxiliary-pump-1`     | Auxiliary pump 1       | `Switch`               |      | 🔐 W1                 | R/O      | false    |
 | `102-auxiliary-pump-2`     | Auxiliary pump 2       | `Switch`               |      | 🔐 W1                 | R/O      | false    |
-| `104-boilers-condition-no` | Boiler's condition no. | `String`               |      | 🔐 W1                 | R/O      | false    |
+| `104-boilers-condition-no` | Boiler´s condition no. | `String`               |      | 🔐 W1                 | R/O      | false    |
 | `108-buffer-t5`            | Buffer T5              | `Number:Temperature`   | `°C` | 🔓 W0                 | R/O      | false    |
 | `109-buffer-t6`            | Buffer T6              | `Number:Temperature`   | `°C` | 🔓 W0                 | R/O      | false    |
 | `110-buffer-t7`            | Buffer T7              | `Number:Temperature`   | `°C` | 🔓 W0                 | R/O      | false    |
@@ -291,8 +291,8 @@ String               Biostar_ProgramHc5              "Program HC5"
 String               Biostar_ProgramHc6              "Program HC6"                        { channel="guntamatic:biostar:mybiostar:status#076-program-hc6" }
 String               Biostar_ProgramHc7              "Program HC7"                        { channel="guntamatic:biostar:mybiostar:status#077-program-hc7" }
 String               Biostar_ProgramHc8              "Program HC8"                        { channel="guntamatic:biostar:mybiostar:status#078-program-hc8" }
-String               Biostar_Interruption0           "Interruption 0"                     { channel="guntamatic:biostar:mybiostar:status#079-interruption-0" }
-String               Biostar_Interruption1           "Interruption 1"                     { channel="guntamatic:biostar:mybiostar:status#080-interruption-1" }
+String               Biostar_Interuption0            "Interuption 0"                      { channel="guntamatic:biostar:mybiostar:status#079-interuption-0" }
+String               Biostar_Interuption1            "Interuption 1"                      { channel="guntamatic:biostar:mybiostar:status#080-interuption-1" }
 Number               Biostar_Serial                  "Serial"                             { channel="guntamatic:biostar:mybiostar:status#081-serial" }
 String               Biostar_Version                 "Version"                            { channel="guntamatic:biostar:mybiostar:status#082-version" }
 Number:Time          Biostar_RunningTime             "Running Time"                       { channel="guntamatic:biostar:mybiostar:status#083-running-time" }
@@ -315,7 +315,7 @@ Switch               Biostar_BExtraWw2               "B extra-WW. 
 Switch               Biostar_AuxiliaryPump0          "Auxiliary pump 0"                   { channel="guntamatic:biostar:mybiostar:status#100-auxiliary-pump-0" }
 Switch               Biostar_AuxiliaryPump1          "Auxiliary pump 1"                   { channel="guntamatic:biostar:mybiostar:status#101-auxiliary-pump-1" }
 Switch               Biostar_AuxiliaryPump2          "Auxiliary pump 2"                   { channel="guntamatic:biostar:mybiostar:status#102-auxiliary-pump-2" }
-String               Biostar_BoilersConditionNo      "Boiler's condition no."             { channel="guntamatic:biostar:mybiostar:status#104-boilers-condition-no" }
+String               Biostar_BoilersConditionNo      "Boiler´s condition no."             { channel="guntamatic:biostar:mybiostar:status#104-boilers-condition-no" }
 Number:Temperature   Biostar_BufferT5                "Buffer T5"                          { channel="guntamatic:biostar:mybiostar:status#108-buffer-t5" }
 Number:Temperature   Biostar_BufferT6                "Buffer T6"                          { channel="guntamatic:biostar:mybiostar:status#109-buffer-t6" }
 Number:Temperature   Biostar_BufferT7                "Buffer T7"                          { channel="guntamatic:biostar:mybiostar:status#110-buffer-t7" }
