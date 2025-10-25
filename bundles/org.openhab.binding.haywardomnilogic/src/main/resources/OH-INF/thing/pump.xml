@@ -53,7 +53,7 @@
 	<channel-type id="pumpSpeedRpm">
 		<item-type unitHint="rpm">Number:Frequency</item-type>
 		<label>Pump Speed</label>
-		<description>Pump speed in rpm</description>
+		<description>Pump speed in RPM</description>
 		<tags>
 			<tag>Control</tag>
 			<tag>Frequency</tag>
@@ -63,7 +63,7 @@
 
 	<channel-type id="pumpSpeedSelect">
 		<item-type>String</item-type>
-		<label>Pump Speed States</label>
+		<label>Pump Speed Presets</label>
 		<tags>
 			<tag>Control</tag>
 			<tag>Speed</tag>

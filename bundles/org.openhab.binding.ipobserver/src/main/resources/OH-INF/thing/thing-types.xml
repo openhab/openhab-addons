@@ -50,7 +50,7 @@
 			</parameter>
 			<parameter name="pollTime" type="integer" required="true" min="5" max="3600" unit="s">
 				<label>Poll Time</label>
-				<description>Time in seconds between each Scan of the livedata.htm from the ObserverIP</description>
+				<description>Time in seconds between each scan of the livedata.htm from the IP Observer</description>
 				<default>20</default>
 			</parameter>
 			<parameter name="autoReboot" type="integer" required="true" min="0" max="20000" unit="ms">
@@ -61,12 +61,12 @@
 			</parameter>
 			<parameter name="id" type="text">
 				<label>Station ID</label>
-				<description>The station ID used to connect to WeatherUnderGround. Leave blank if you wish to poll the livedata.</description>
+				<description>The station ID used to connect to Weather Underground. Leave blank if you wish to poll the livedata.</description>
 			</parameter>
 			<parameter name="password" type="text">
 				<context>password</context>
 				<label>Station Password</label>
-				<description>The station password used to connect to WeatherUnderGround. Leave blank if you wish to poll the
+				<description>The station password used to connect to Weather Underground. Leave blank if you wish to poll the
 					livedata.</description>
 			</parameter>
 		</config-description>
