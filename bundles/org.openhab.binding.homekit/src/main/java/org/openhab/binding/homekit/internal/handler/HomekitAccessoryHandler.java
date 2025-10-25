@@ -974,6 +974,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
         super.bridgeStatusChanged(bridgeStatusInfo);
         if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE && thing.getStatus() != ThingStatus.ONLINE) {
             updateStatus(ThingStatus.ONLINE);
+            channelsAndPropertiesLoaded();
         }
     }
 }
