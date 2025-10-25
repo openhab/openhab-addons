@@ -1,11 +1,11 @@
 # GROHE ONDUS Binding
 
-The GROHE ONDUS Binding provides access to data collected by a GROHE ONDUS appliance, such as an [GROHE Sense Guard](https://www.grohe.de/de_de/smarthome/grohe-sense-guard/).
-The binding uses the REST API interface (the same as used by the Android App) to retrieve the collected data.
+The GROHE ONDUS Binding provides access to data collected by a GROHE ONDUS appliance, such as a [GROHE Sense Guard](https://www.grohe.de/de_de/smarthome/grohe-sense-guard/).
+The binding uses the REST API interface (the same as used by the Android app) to retrieve the collected data.
 
 ## Supported Things
 
-This binding should support all appliances from GROHE, however, only the GROHE Sense and Sense Guard is tested with it.
+This binding should support all appliances from GROHE; however, only the GROHE Sense and Sense Guard are tested with it.
 
 | Thing type               | Name                     |
 |--------------------------|--------------------------|
@@ -24,7 +24,7 @@ This binding does not require any configuration outside of things.
 
 ## Thing Configuration
 
-There is only one thing and one bridge that needs to be configured together to get this binding to work, see the full example section for a self-explaining example.
+There is only one thing and one bridge that needs to be configured together to get this binding to work; see the full example section for a self-explanatory example.
 
 ### Account Bridge
 
@@ -33,8 +33,8 @@ Use the same credentials as in the mobile app.
 
 ### Appliance
 
-The `groheondus:sense` and `groheondus:senseguard` things are used to retrieve information of a specific appliance from GROHE.
-This appliance needs to be connected with your GROHE ONDUS account as configured in the corresponding Account Bridge.
+The `groheondus:sense` and `groheondus:senseguard` things are used to retrieve information for a specific appliance from GROHE.
+This appliance needs to be connected to your GROHE ONDUS account as configured in the corresponding Account Bridge.
 The appliance needs to be configured with the unique appliance ID (with the `applianceId` configuration) as well as the `roomId` and the `locationId`.
 Once the account bridge is configured, the appliances in your account will be discovered as Appliance things.
 `pollingInterval` has a minimum value of 900 seconds to avoid service rate limiting.
