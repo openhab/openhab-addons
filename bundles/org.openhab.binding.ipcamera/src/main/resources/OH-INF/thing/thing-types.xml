@@ -270,7 +270,7 @@
 				<description>This gives you direct access to specify your own FFmpeg options to be used for animated GIF files.
 				</description>
 				<default>-r 2 -filter_complex
-					scale=-2:360:flags=lanczos,setpts=0.5*PTS,split[o1][o2];[o1]palettegen[p];[o2]fifo[o3];[o3][p]paletteuse</default>
+					scale=480:-2:flags=lanczos,setpts=0.5*PTS,split[o1][o2];[o1]palettegen=max_colors=128:stats_mode=diff[p];[o2][p]paletteuse=dither=bayer:bayer_scale=3</default>
 				<advanced>true</advanced>
 			</parameter>
 
@@ -470,7 +470,7 @@
 				<description>This gives you direct access to specify your own FFmpeg options to be used for animated GIF files.
 				</description>
 				<default>-r 2 -filter_complex
-					scale=-2:360:flags=lanczos,setpts=0.5*PTS,split[o1][o2];[o1]palettegen[p];[o2]fifo[o3];[o3][p]paletteuse</default>
+					scale=480:-2:flags=lanczos,setpts=0.5*PTS,split[o1][o2];[o1]palettegen=max_colors=128:stats_mode=diff[p];[o2][p]paletteuse=dither=bayer:bayer_scale=3</default>
 				<advanced>true</advanced>
 			</parameter>
 
@@ -736,7 +736,7 @@
 				<description>This gives you direct access to specify your own FFmpeg options to be used for animated GIF files.
 				</description>
 				<default>-r 2 -filter_complex
-					scale=-2:360:flags=lanczos,setpts=0.5*PTS,split[o1][o2];[o1]palettegen[p];[o2]fifo[o3];[o3][p]paletteuse</default>
+					scale=480:-2:flags=lanczos,setpts=0.5*PTS,split[o1][o2];[o1]palettegen=max_colors=128:stats_mode=diff[p];[o2][p]paletteuse=dither=bayer:bayer_scale=3</default>
 				<advanced>true</advanced>
 			</parameter>
 
@@ -1046,7 +1046,7 @@
 				<description>This gives you direct access to specify your own FFmpeg options to be used for animated GIF files.
 				</description>
 				<default>-r 2 -filter_complex
-					scale=-2:360:flags=lanczos,setpts=0.5*PTS,split[o1][o2];[o1]palettegen[p];[o2]fifo[o3];[o3][p]paletteuse</default>
+					scale=480:-2:flags=lanczos,setpts=0.5*PTS,split[o1][o2];[o1]palettegen=max_colors=128:stats_mode=diff[p];[o2][p]paletteuse=dither=bayer:bayer_scale=3</default>
 				<advanced>true</advanced>
 			</parameter>
 
@@ -1321,7 +1321,7 @@
 				<description>This gives you direct access to specify your own FFmpeg options to be used for animated GIF files.
 				</description>
 				<default>-r 2 -filter_complex
-					scale=-2:360:flags=lanczos,setpts=0.5*PTS,split[o1][o2];[o1]palettegen[p];[o2]fifo[o3];[o3][p]paletteuse</default>
+					scale=480:-2:flags=lanczos,setpts=0.5*PTS,split[o1][o2];[o1]palettegen=max_colors=128:stats_mode=diff[p];[o2][p]paletteuse=dither=bayer:bayer_scale=3</default>
 				<advanced>true</advanced>
 			</parameter>
 
@@ -1595,7 +1595,7 @@
 				<description>This gives you direct access to specify your own FFmpeg options to be used for animated GIF files.
 				</description>
 				<default>-r 2 -filter_complex
-					scale=-2:360:flags=lanczos,setpts=0.5*PTS,split[o1][o2];[o1]palettegen[p];[o2]fifo[o3];[o3][p]paletteuse</default>
+					scale=480:-2:flags=lanczos,setpts=0.5*PTS,split[o1][o2];[o1]palettegen=max_colors=128:stats_mode=diff[p];[o2][p]paletteuse=dither=bayer:bayer_scale=3</default>
 				<advanced>true</advanced>
 			</parameter>
 
@@ -1893,7 +1893,7 @@
 				<description>This gives you direct access to specify your own FFmpeg options to be used for animated GIF files.
 				</description>
 				<default>-r 2 -filter_complex
-					scale=-2:360:flags=lanczos,setpts=0.5*PTS,split[o1][o2];[o1]palettegen[p];[o2]fifo[o3];[o3][p]paletteuse</default>
+					scale=480:-2:flags=lanczos,setpts=0.5*PTS,split[o1][o2];[o1]palettegen=max_colors=128:stats_mode=diff[p];[o2][p]paletteuse=dither=bayer:bayer_scale=3</default>
 				<advanced>true</advanced>
 			</parameter>
 
@@ -2179,7 +2179,7 @@
 				<description>This gives you direct access to specify your own FFmpeg options to be used for animated GIF files.
 				</description>
 				<default>-r 2 -filter_complex
-					scale=-2:360:flags=lanczos,setpts=0.5*PTS,split[o1][o2];[o1]palettegen[p];[o2]fifo[o3];[o3][p]paletteuse</default>
+					scale=480:-2:flags=lanczos,setpts=0.5*PTS,split[o1][o2];[o1]palettegen=max_colors=128:stats_mode=diff[p];[o2][p]paletteuse=dither=bayer:bayer_scale=3</default>
 				<advanced>true</advanced>
 			</parameter>
 
@@ -2466,7 +2466,7 @@
 				<description>This gives you direct access to specify your own FFmpeg options to be used for animated GIF files.
 				</description>
 				<default>-r 2 -filter_complex
-					scale=-2:360:flags=lanczos,setpts=0.5*PTS,split[o1][o2];[o1]palettegen[p];[o2]fifo[o3];[o3][p]paletteuse</default>
+					scale=480:-2:flags=lanczos,setpts=0.5*PTS,split[o1][o2];[o1]palettegen=max_colors=128:stats_mode=diff[p];[o2][p]paletteuse=dither=bayer:bayer_scale=3</default>
 				<advanced>true</advanced>
 			</parameter>
 
