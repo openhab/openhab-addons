@@ -140,18 +140,23 @@ Follow these patterns and lessons to ensure robust, reliable, and maintainable u
 Entry point for documentation changes is the `docs` folder in the repository root.
 
 
+
+
 ### Documentation Structure and Patterns
 
 - The main documentation page (e.g., `architecture.md`) must provide a high-level overview, a clear table of contents, and short summaries of each major architectural area.
+- The main Mermaid architecture diagram **MUST NOT** include members of records (record fields or methods) for clarity and overview. Instead, add a dedicated section (e.g., "Record Details") to document all record members and their structure.
 - For complex or detailed topics (such as handler architecture, utility classes, task management, error handling, discovery, or API structure), create dedicated pages in a subfolder (e.g., `docs/architecture/`).
 - **CRITICAL**: Each documentation detail page must follow the SOLID principle—one responsibility per page. If a detail page covers more than one architectural concern, split it into separate pages (e.g., do not mix discovery and API architecture on a single page).
 - Each dedicated page must include:
 	- A clear heading and summary of its focus area.
 	- The relevant Mermaid diagram(s), validated for the current Mermaid version.
 	- A summary section and, if needed, links back to the main overview.
+	- If records are used, only visualize their usage (e.g., as return types or associations) without showing their members. Do not include record members in these diagrams; details must be in the dedicated Record Details section only.
 - The main documentation page must include:
 	- A table of contents with links to all dedicated detail pages.
 	- Short summaries of each area, referencing the detail pages.
+	- A dedicated section listing all record details (members and structure) referenced in the architecture, with a dedicated Mermaid diagram for records.
 - Do not include development or contribution guidelines in the documentation section—only document the existing implementation and its structure.
 
 #### Table of Contents (TOC)

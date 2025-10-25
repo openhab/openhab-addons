@@ -1,3 +1,4 @@
+
 # Architectural Overview
 
 ## Table of Contents
@@ -7,6 +8,7 @@
   - [Overview](#overview)
   - [Architecture Diagram](#architecture-diagram)
   - [Main Components](#main-components)
+  - [Record Details](#record-details)
   - [Integration Points](#integration-points)
   - [Key Components (Summary)](#key-components-summary)
 
@@ -33,6 +35,7 @@ flowchart TD
     JH --> JA
     JA <--> JS
     JD -->|Discovered Things| JH
+    %% Note: Record members are omitted for clarity. See Record Details section.
 ```
 
 ## Main Components
@@ -58,6 +61,35 @@ For detailed diagrams and explanations, see:
     Network discovery services and result registration.
 - [API Architecture](architecture/api.md):
     API client abstraction and communication structure.
+
+## Record Details
+
+The following records are used for immutable data transfer and are detailed here for clarity.
+For their usage, see the [Utility Classes Architecture](architecture/utility-classes.md).
+
+```mermaid
+classDiagram
+    class UserChangeResult {
+        <<record>>
+        +List~String~ currentUserIds
+        +List~String~ addedUserIds
+        +List~String~ removedUserIds
+        +List~UserDto~ enabledVisibleUsers
+    }
+    class ConfigurationUpdate {
+        <<record>>
+        +Map~String,Object~ configMap
+        +boolean hasChanges
+    }
+    class StateAnalysis {
+        <<record>>
+        +ServerState recommendedState
+        +String reason
+        +URI serverUri
+    }
+```
+
+These records are referenced by utility classes and handlers but are not shown in the main architecture diagram for clarity.
 
 
 ## Integration Points
