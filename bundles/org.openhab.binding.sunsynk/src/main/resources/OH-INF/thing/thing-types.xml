@@ -227,6 +227,7 @@
 
 		<properties>
 			<property name="vendor">SunSynk</property>
+			<property name="thingTypeVersion">1</property>
 		</properties>
 		<representation-property>serialnumber</representation-property>
 
