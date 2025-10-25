@@ -47,6 +47,7 @@ import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.internal.BridgeImpl;
 import org.openhab.core.thing.internal.ThingImpl;
 import org.openhab.core.types.State;
+import org.openhab.core.util.SameThreadExecutorService;
 
 /**
  * {@link TestMessages} tests some generic use cases
@@ -87,10 +88,10 @@ class TestMessages {
     }
 
     @Test
-    void testDiscovery() throws InterruptedException {
+    void testDiscovery() {
         Bridge thing = new BridgeImpl(THING_TYPE_OWNER_ACCOUNT, new ThingUID("mspa", "account"));
         Map<String, Object> configMap = new HashMap<>();
-        MSpaDiscoveryService discovery = new MSpaDiscoveryService();
+        MSpaDiscoveryService discovery = new MSpaDiscoveryService(new SameThreadExecutorService());
         DiscoveryListenerMock discoveryListener = new DiscoveryListenerMock();
         discovery.addDiscoveryListener(discoveryListener);
         configMap.put("email", "a@b.c");
@@ -102,7 +103,6 @@ class TestMessages {
         try {
             String content = new String(Files.readAllBytes(Paths.get(fileName)));
             account.decodeDevices(content);
-            Thread.sleep(500L);
             List<DiscoveryResult> results = discoveryListener.getResults();
             assertEquals(1, results.size(), "Number of discovery results");
             DiscoveryResult result = results.get(0);
