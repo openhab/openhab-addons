@@ -16,9 +16,9 @@ import static org.openhab.binding.miele.internal.MieleBindingConstants.*;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
+import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.net.InterfaceAddress;
 import java.net.MulticastSocket;
 import java.net.NetworkInterface;
 import java.net.SocketException;
@@ -28,7 +28,6 @@ import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Enumeration;
 import java.util.IllformedLocaleException;
 import java.util.Iterator;
 import java.util.List;
@@ -42,7 +41,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -52,10 +50,10 @@ import org.openhab.binding.miele.internal.MieleGatewayCommunicationController;
 import org.openhab.binding.miele.internal.api.dto.DeviceClassObject;
 import org.openhab.binding.miele.internal.api.dto.DeviceProperty;
 import org.openhab.binding.miele.internal.api.dto.HomeDevice;
+import org.openhab.binding.miele.internal.config.XGW3000Configuration;
 import org.openhab.binding.miele.internal.discovery.MieleApplianceDiscoveryService;
 import org.openhab.binding.miele.internal.exceptions.MieleRpcException;
 import org.openhab.core.common.NamedThreadFactory;
-import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
@@ -85,9 +83,6 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_XGW3000);
 
-    private static final Pattern IP_PATTERN = Pattern
-            .compile("^(([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.){3}([01]?\\d\\d?|2[0-4]\\d|25[0-5])$");
-
     private static final int POLLING_PERIOD_SECONDS = 15;
     private static final int JSON_RPC_PORT = 2810;
     private static final String JSON_RPC_MULTICAST_IP1 = "239.255.68.139";
@@ -101,6 +96,7 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
 
     private final HttpClient httpClient;
     private final Gson gson = new Gson();
+    private XGW3000Configuration config;
     private @NonNullByDefault({}) MieleGatewayCommunicationController gatewayCommunication;
 
     private Set<DiscoveryListener> discoveryListeners = ConcurrentHashMap.newKeySet();
@@ -115,18 +111,23 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
     public MieleBridgeHandler(Bridge bridge, HttpClient httpClient) {
         super(bridge);
         this.httpClient = httpClient;
+
+        // Default configuration
+        this.config = new XGW3000Configuration();
     }
 
     @Override
     public void initialize() {
         logger.debug("Initializing handler for bridge {}", getThing().getUID());
 
-        if (!validateConfig(getConfig())) {
+        config = getConfigAs(XGW3000Configuration.class);
+
+        if (!validateConfig()) {
             return;
         }
 
         try {
-            gatewayCommunication = new MieleGatewayCommunicationController(httpClient, (String) getConfig().get(HOST));
+            gatewayCommunication = new MieleGatewayCommunicationController(httpClient, config.ipAddress);
         } catch (URISyntaxException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, e.getMessage());
             return;
@@ -142,30 +143,18 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
         return Set.of(MieleApplianceDiscoveryService.class);
     }
 
-    private boolean validateConfig(Configuration config) {
-        if (config.get(HOST) == null || ((String) config.get(HOST)).isBlank()) {
+    private boolean validateConfig() {
+        if (config.ipAddress.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                     "@text/offline.configuration-error.ip-address-not-set");
             return false;
         }
-        if (config.get(INTERFACE) == null || ((String) config.get(INTERFACE)).isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                    "@text/offline.configuration-error.ip-multicast-interface-not-set");
-            return false;
-        }
-        if (!IP_PATTERN.matcher((String) config.get(INTERFACE)).matches()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                    "@text/offline.configuration-error.invalid-ip-multicast-interface [\"" + config.get(INTERFACE)
-                            + "\"]");
-            return false;
-        }
-        String language = (String) config.get(LANGUAGE);
-        if (language != null && !language.isBlank()) {
+        if (!config.language.isBlank()) {
             try {
-                new Locale.Builder().setLanguageTag(language).build();
+                new Locale.Builder().setLanguageTag(config.language).build();
             } catch (IllformedLocaleException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                        "@text/offline.configuration-error.invalid-language [\"" + language + "\"]");
+                        "@text/offline.configuration-error.invalid-language [\"" + config.language + "\"]");
                 return false;
             }
         }
@@ -175,12 +164,11 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
     private Runnable pollingRunnable = new Runnable() {
         @Override
         public void run() {
-            String host = (String) getConfig().get(HOST);
             try {
                 List<HomeDevice> homeDevices = getHomeDevices();
 
                 if (!lastBridgeConnectionState) {
-                    logger.debug("Connection to Miele Gateway {} established.", host);
+                    logger.debug("Connection to Miele Gateway {} established.", config.ipAddress);
                     lastBridgeConnectionState = true;
                 }
                 updateStatus(ThingStatus.ONLINE);
@@ -231,7 +219,7 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
                             message);
                 }
                 if (lastBridgeConnectionState) {
-                    logger.debug("Connection to Miele Gateway {} lost.", host);
+                    logger.debug("Connection to Miele Gateway {} lost.", config.ipAddress);
                     lastBridgeConnectionState = false;
                 }
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, message);
@@ -324,11 +312,12 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
     }
 
     private Runnable eventListenerRunnable = () -> {
-        String interfaceIpAddress = (String) getConfig().get(INTERFACE);
-        if (!IP_PATTERN.matcher(interfaceIpAddress).matches()) {
-            logger.debug("Invalid IP address for the multicast interface: '{}'", interfaceIpAddress);
+        NetworkInterface networkInterface = getMulticastNetworkInterface(config.ipAddress);
+        if (networkInterface == null) {
             return;
         }
+
+        logger.debug("Using multicast interface {} for gateway {}", networkInterface.getName(), config.ipAddress);
 
         // Get the address that we are going to connect to.
         InetSocketAddress address1 = null;
@@ -347,12 +336,6 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
             try {
                 clientSocket = new MulticastSocket(JSON_RPC_PORT);
                 clientSocket.setSoTimeout(MULTICAST_TIMEOUT_MILLIS);
-
-                NetworkInterface networkInterface = getMulticastInterface(interfaceIpAddress);
-                if (networkInterface == null) {
-                    logger.warn("Unable to find network interface for address {}", interfaceIpAddress);
-                    return;
-                }
                 clientSocket.setNetworkInterface(networkInterface);
                 clientSocket.joinGroup(address1, null);
                 clientSocket.joinGroup(address2, null);
@@ -442,25 +425,19 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
         }
     };
 
-    private @Nullable NetworkInterface getMulticastInterface(String interfaceIpAddress) throws SocketException {
-        Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
+    private @Nullable NetworkInterface getMulticastNetworkInterface(String gatewayIpAddress) {
+        try {
+            InetAddress gatewayAddress = InetAddress.getByName(gatewayIpAddress);
 
-        @Nullable
-        NetworkInterface networkInterface;
-        while (networkInterfaces.hasMoreElements()) {
-            networkInterface = networkInterfaces.nextElement();
-            if (networkInterface.isLoopback()) {
-                continue;
+            try (DatagramSocket socket = new DatagramSocket()) {
+                socket.connect(gatewayAddress, 80);
+                InetAddress localAddress = socket.getLocalAddress();
+                return NetworkInterface.getByInetAddress(localAddress);
             }
-            for (InterfaceAddress interfaceAddress : networkInterface.getInterfaceAddresses()) {
-                if (logger.isTraceEnabled()) {
-                    logger.trace("Found interface address {} -> {}", interfaceAddress.toString(),
-                            interfaceAddress.getAddress().toString());
-                }
-                if (interfaceAddress.getAddress().toString().endsWith("/" + interfaceIpAddress)) {
-                    return networkInterface;
-                }
-            }
+        } catch (UnknownHostException e) {
+            logger.warn("Invalid gateway '{}': {}", gatewayIpAddress, e.getMessage());
+        } catch (SocketException e) {
+            logger.warn("Failed to determine network interface for '{}': {}", gatewayIpAddress, e.getMessage());
         }
 
         return null;
