@@ -330,7 +330,8 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
      * If this handler is a child of a bridge, it delegates to the bridge handler.
      */
     protected void startConnectionTask() {
-        if (getBridge() instanceof Bridge bridge && bridge.getHandler() instanceof HomekitBridgeHandler bridgeHandler) {
+        if (isChildAccessory && getBridge() instanceof Bridge bridge
+                && bridge.getHandler() instanceof HomekitBridgeHandler bridgeHandler) {
             bridgeHandler.startConnectionTask();
         } else {
             ScheduledFuture<?> task = connectionTask;

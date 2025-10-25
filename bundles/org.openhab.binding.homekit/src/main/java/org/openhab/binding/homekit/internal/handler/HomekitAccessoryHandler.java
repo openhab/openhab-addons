@@ -189,7 +189,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
                 subscribeEvents();
                 logger.debug("Eventing enabled for {} channels", eventedChannels.size());
             } catch (IOException | TimeoutException e) {
-                logger.debug("Communication error subscribing to evented channels");
+                logger.debug("Communication error '{}' subscribing to evented channels", e.getMessage());
             } catch (IllegalAccessException | ExecutionException e) {
                 logger.warn("Unexpected error '{}' subscribing to evented channels", e.getMessage());
                 logger.debug("Stack trace", e);
@@ -540,7 +540,9 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
             }
             return;
         } catch (IOException | TimeoutException e) {
-            logger.debug("Communication error sending command '{}' to '{}' '{}'", command, channelUID, e.getMessage());
+            logger.debug("Communication error '{}' sending command '{}' to '{}', restarting", e.getMessage(), command,
+                    channelUID);
+            startConnectionTask();
         } catch (IllegalAccessException | ExecutionException e) {
             logger.warn("Unexpected error '{}' sending command '{}' to '{}'", e.getMessage(), command, channelUID);
             logger.debug("Stack trace", e);
@@ -596,7 +598,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
             updateChannelsFromJson(json);
             return;
         } catch (IOException | TimeoutException e) {
-            logger.debug("Communication error polling accessory '{}', restarting", e.getMessage());
+            logger.debug("Communication error '{}' polling accessory, restarting", e.getMessage());
             startConnectionTask();
         } catch (IllegalAccessException | ExecutionException e) {
             logger.warn("Unexpected error '{}' polling accessory", e.getMessage());
