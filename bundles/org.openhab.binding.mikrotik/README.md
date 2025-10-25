@@ -23,7 +23,7 @@ configuration section in
 Take note of the API port number as you'll need it below.
 [SSL API connection](https://wiki.mikrotik.com/wiki/Manual:API-SSL) is not yet supported by this binding.
 To connect to the RouterOS API, you will need to provide user credentials for the bridge thing.
-You may use your current credentials that you use to manage your devices, but it is highly recommended to **create a read-only RouterOS user** since this binding only need to read data from the device.
+You may use your current credentials that you use to manage your devices, but it is highly recommended to **create a read-only RouterOS user** since this binding only needs to read data from the device.
 To do this, proceed to <kbd>System -> Users</kbd> configuration section and add a user to the `read` group.
 
 > Thing type: `routeros`
@@ -34,7 +34,7 @@ The RouterOS Bridge configuration parameters are:
 |---|---|---|---|---|
 | host | text | Yes | 192.168.88.1 | Hostname or IP address of the RouterOS device |
 | port | integer | No | 8728 | API Port number of the RouterOS device |
-| login | text | Yes | admin | The username to access the the RouterOS device |
+| login | text | Yes | admin | The username to access the RouterOS device |
 | password | text | Yes |  | The user password to access the RouterOS device |
 | refresh | integer | No | 10 | The refresh interval in seconds to poll the RouterOS device |
 
@@ -116,8 +116,8 @@ The interface thing configuration parameters are:
 
 ### Interface Thing Channels
 
-Please note that different on RouterOS interfaces has different data available depending on the kind of interface.
-While the common dataset is same, some specific information for specific interface type may be missing. This may
+Please note that different RouterOS interfaces have different data available depending on the kind of interface.
+While the common dataset is the same, some specific information for specific interface types may be missing. This may
 be improved in future binding versions.
 
 Common for all kinds of interfaces:
@@ -237,7 +237,7 @@ String     Eth_2_Rate                  "Link rate"                  (gRB1Eth2) {
 String     Eth_2_Auto_Negotiation      "Auto negotiation"           (gRB1Eth2) {channel="mikrotik:interface:rb1:eth2:autoNegotiation"}
 String     Eth_2_State                 "State"                      (gRB1Eth2) {channel="mikrotik:interface:rb1:eth2:state"}
 
-Group gRB1Cap1 "CAPsMAN Inerface 1"
+Group gRB1Cap1 "CAPsMAN Interface 1"
 String     Cap_1_Type                  "Type"                       (gRB1Cap1) {channel="mikrotik:interface:rb1:cap1:type"}
 String     Cap_1_Name                  "Name"                       (gRB1Cap1) {channel="mikrotik:interface:rb1:cap1:name"}
 String     Cap_1_Comment               "Comment"                    (gRB1Cap1) {channel="mikrotik:interface:rb1:cap1:comment"}

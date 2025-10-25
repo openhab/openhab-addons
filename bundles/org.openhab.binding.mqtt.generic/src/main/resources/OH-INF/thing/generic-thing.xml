@@ -10,7 +10,7 @@
 			<bridge-type-ref id="broker"/>
 		</supported-bridge-type-refs>
 		<label>Generic MQTT Thing</label>
-		<description>You need a configured Broker first. Dynamically add channels of various types to this Thing. Link
+		<description>You need a configured broker first. Dynamically add channels of various types to this Thing. Link
 			different MQTT topics to each channel.</description>
 
 		<config-description>

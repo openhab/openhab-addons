@@ -8,8 +8,8 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="broker"/>
 		</supported-bridge-type-refs>
-		<label>HomeAssistant MQTT Component</label>
-		<description>You need a configured Broker first. This Thing represents a device, that follows the "HomeAssistant MQTT
+		<label>Home Assistant MQTT Component</label>
+		<description>You need a configured broker first. This Thing represents a device that follows the "Home Assistant MQTT
 			Component" specification.</description>
 		<config-description-ref uri="thing-type:mqtt:homeassistant"/>
 	</thing-type>

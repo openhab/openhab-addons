@@ -13,7 +13,7 @@ MQTT servers are called brokers and the clients are simply the connected devices
 
 ![Publish and Subscribe](doc/subpub.png)
 
-openHAB itself is not an MQTT Broker and needs to connect to one as a regular client.
+openHAB itself is not an MQTT broker and needs to connect to one as a regular client.
 Therefore you must have configured a _Broker Thing_ first via the **MQTT Broker Binding**!
 
 ## MQTT Topics
@@ -89,12 +89,12 @@ You can add the following channels:
   The default is `false`.
   You usually need this to be `true` if your item is also linked to another channel, say a KNX actor, and you want a received MQTT payload to command that KNX actor.
 - **retained**: The value will be published to the command topic as retained message. A retained value stays on the broker and can even be seen by MQTT clients that are subscribing at a later point in time.
-- **qos**: QoS of this channel. Overrides the connection  QoS (defined in broker connection).
+- **qos**: QoS of this channel. Overrides the connection QoS (defined in broker connection).
 - **trigger**: If `true`, the state topic will not update a state, but trigger a channel instead.
 
 ### Channel Type "string"
 
-- **allowedStates**: An optional comma separated list of allowed states. Example: "ONE,TWO,THREE"
+- **allowedStates**: An optional comma-separated list of allowed states. Example: "ONE,TWO,THREE"
 
 You can connect this channel to a String item.
 
@@ -105,7 +105,7 @@ You can connect this channel to a String item.
 - **step**: For decrease, increase commands the step needs to be known
 - **unit**: Unit of measurement (optional). For supported units see [OpenHAB: List of Units](https://www.openhab.org/docs/concepts/units-of-measurement.html#list-of-units). Examples: "°C", "°F"
 
-A decimal value (like 0.2) is send to the MQTT topic if the number has a fractional part.
+A decimal value (like 0.2) is sent to the MQTT topic if the number has a fractional part.
 If you always require an integer, please use the formatter.
 
 You can connect this channel to a Number item.
@@ -148,7 +148,7 @@ You can connect this channel to a Contact or Switch item.
 
 You can connect this channel to a Color, Dimmer and Switch item.
 
-This channel will publish the color as comma separated list to the MQTT broker,
+This channel will publish the color as a comma-separated list to the MQTT broker,
 e.g. "112,54,123" for the RGB color mode (0-255 per component), "360,100,100" for the HSB color mode (0-359 for hue and 0-100 for saturation and brightness),
 and "0.640074,0.329970,100" for the xyY color mode (0-1 for x and y, and 0-100 for brightness).
 
@@ -168,7 +168,7 @@ the brightness will be set to this configured initial brightness (default: 10%).
 
 You can connect this channel to a Color, Dimmer and Switch item.
 
-This channel will publish the color as comma separated list to the MQTT broker,
+This channel will publish the color as a comma-separated list to the MQTT broker,
 e.g. "112,54,123" for an RGB channel (0-255 per component) and "360,100,100" for a HSB channel (0-359 for hue and 0-100 for saturation and brightness).
 
 The channel expects values on the corresponding MQTT topic to be in this format as well.
@@ -177,7 +177,7 @@ The channel expects values on the corresponding MQTT topic to be in this format 
 
 You can connect this channel to a Location item.
 
-The channel will publish the location as comma separated list to the MQTT broker,
+The channel will publish the location as a comma-separated list to the MQTT broker,
 e.g. "112,54,123" for latitude, longitude, altitude. The altitude is optional.
 
 The channel expects values on the corresponding MQTT topic to be in this format as well.
@@ -187,13 +187,13 @@ The channel expects values on the corresponding MQTT topic to be in this format 
 You can connect this channel to an Image item. This is a read-only channel.
 
 The channel expects values on the corresponding MQTT topic to contain the binary
-data of a bmp, jpg, png or any other format that the installed java runtime supports.
+data of a bmp, jpg, png or any other format that the installed Java runtime supports.
 
 ### Channel Type "datetime"
 
 You can connect this channel to a DateTime item.
 
-The channel will publish the date/time in the format "yyyy-MM-dd'T'HH:mm"
+The channel will publish the date/time in the format "yyyy-MM-dd'T'HH:mm:ss",
 for example 2018-01-01T12:14:00. If you require another format, please use the formatter.
 
 The channel expects values on the corresponding MQTT topic to be in this format as well.
@@ -285,10 +285,10 @@ Thing mqtt:topic:bedroom1-switch (mqtt:broker:myInsecureBroker) [ availabilityTo
 
 ## Limitations
 
-- The HomeAssistant Fan Components only support ON/OFF.
-- The HomeAssistant Cover Components only support OPEN/CLOSE/STOP.
-- The HomeAssistant Light Component does not support XY color changes.
-- The HomeAssistant Climate Components is not yet supported.
+- The HomeAssistant Fan components only support ON/OFF.
+- The HomeAssistant Cover components only support OPEN/CLOSE/STOP.
+- The HomeAssistant Light component does not support XY color changes.
+- The HomeAssistant Climate components are not yet supported.
 
 ## Value Transformations
 
