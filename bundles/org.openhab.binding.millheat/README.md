@@ -1,6 +1,6 @@
 # Millheat Binding
 
-This binding integrates the Mill Wi-Fi enabled panel heaters. See <https://www.millheat.com/mill-wifi/>
+This binding integrates Mill Wi-Fi enabled panel heaters. See <https://www.millheat.com/mill-wifi/>
 
 ## Supported Things
 
@@ -15,11 +15,11 @@ This binding supports all Wi-Fi enabled heaters as well as the Wi-Fi socket.
 
 The binding will discover homes with rooms and heaters.
 
-In order to do discovery, add a thing of type Mill Heating API and add username and password.
+To enable discovery, add a thing of type Mill Heating API and provide your username and password.
 
 ## Thing Configuration
 
-See full example below for how to configure using thing files.
+See the full example below for how to configure using thing files.
 
 ### Account
 
@@ -38,13 +38,13 @@ See full example below for how to configure using thing files.
 ### Heater
 
 - `macAddress` = network mac address of device in UPPERCASE.
-  Can be found in the app by viewing devices. Or you can find it during discovery. Used for heaters connected to a room.
+  This can be found in the app by viewing devices, or you can find it during discovery. Used for heaters connected to a room.
 - `heaterId` = id of device/heater, type number (not string)
   Use auto discovery to find this value. Used to identify independent heaters or heaters connected to a room.
 - `power` = number of watts this heater is consuming when active.
   Used to provide data for the currentPower channel.
 
-Either `macAddres` or `heaterId` must be specified.
+Either `macAddress` or `heaterId` must be specified.
 
 ## Channels
 
@@ -91,8 +91,8 @@ millheat.things:
 ```java
 Bridge millheat:account:home "Millheat account" [username="email@address.com",password="topsecret"] {
     Thing home monaco "Penthouse Monaco" [ homeId=100000000000000 ] // Note: numeric value
-    Thing room office "Office room" [ roomId=200000000000000 ] Note: numeric value
-    Thing heater office "Office panel heater" [ macAddress="F0XXXXXXXXX", power=900, heaterId=12345 ] Note: heaterId is a numeric value, macAddress in UPPERCASE
+  Thing room office "Office room" [ roomId=200000000000000 ] // Note: numeric value
+  Thing heater office "Office panel heater" [ macAddress="F0XXXXXXXXX", power=900, heaterId=12345 ] // Note: heaterId is a numeric value, macAddress in UPPERCASE
 }
 ```
 
@@ -104,7 +104,7 @@ Number:Temperature Vacation_Target_Temperature "Vacation target temp [%d %unit%]
 Switch Vacation_Mode "Vacation mode" <vacation>  {channel="millheat:home:home:monaco:vacationMode"}
 Switch Vacation_Mode_Advanced "Use room away temperatures" <vacation>  {channel="millheat:home:home:monaco:vacationModeAdvanced"}
 DateTime Vacation_Mode_Start "Vacation mode start [%1$td.%1$tm.%1$ty %1$tH:%1$tM]" <vacation>  {channel="millheat:home:home:monaco:vacationModeStart"}
-DateTime Vacation_Mode_End "Vacation mode end [%1$td.%1$tm.%1$ty %1$tH:%1$tM]" <vacation>  {channel="millheat:home:home:monaco:vacationModeStart"}
+DateTime Vacation_Mode_End "Vacation mode end [%1$td.%1$tm.%1$ty %1$tH:%1$tM]" <vacation>  {channel="millheat:home:home:monaco:vacationModeEnd"}
 
 // Items connected to ROOM channels
 Number:Temperature Heating_Office_Room_Current_Temperature "Office current [%.1f %unit%]" <temperature>  {channel="millheat:room:home:office:currentTemperature"}

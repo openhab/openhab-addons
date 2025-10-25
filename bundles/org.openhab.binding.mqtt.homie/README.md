@@ -2,10 +2,10 @@
 
 NOTE: This binding is provided by the [MQTT binding](https://www.openhab.org/addons/bindings/mqtt/), and therefore no explicit installation is necessary beyond installing the MQTT binding.
 
-Devices that follow the [Homie convention](https://homieiot.github.io/) 3.x and better
+Devices that follow the [Homie convention](https://homieiot.github.io/) 3.x and later
 are auto-discovered and represented by this binding and the Homie Thing.
 
-Find the next table to understand the topology mapping from Homie to the Framework:
+The following table shows the topology mapping from Homie to openHAB:
 
 | Homie    | Framework     | Example MQTT topic                 |
 |----------|---------------|------------------------------------|
@@ -13,7 +13,7 @@ Find the next table to understand the topology mapping from Homie to the Framewo
 | Node     | Channel Group | homie/super-car/engine             |
 | Property | Channel       | homie/super-car/engine/temperature |
 
-System trigger channels are supported using non-retained properties, with _enum_ data type and with the following formats:
+System trigger channels are supported via non-retained properties with _enum_ data type, using the following formats:
 
 - Format: "PRESSED,RELEASED" -> system.rawbutton
 - Format: "SHORT\_PRESSED,DOUBLE\_PRESSED,LONG\_PRESSED" -> system.button
