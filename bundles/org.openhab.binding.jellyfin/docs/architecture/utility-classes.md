@@ -1,6 +1,7 @@
 # Utility Classes Architecture
 
-This page documents the extracted utility classes that handle specific responsibilities in the Jellyfin binding.
+This page documents the extracted utility classes that handle specific
+responsibilities in the Jellyfin binding.
 
 ```mermaid
 classDiagram
@@ -42,5 +43,6 @@ classDiagram
 
 ## Summary
 
-Utility classes provide focused, testable logic for user management, configuration, and state analysis.
+Utility classes provide focused, testable logic for user management,
+configuration, and state analysis.
 See the [architecture overview](../architecture.md) for context.

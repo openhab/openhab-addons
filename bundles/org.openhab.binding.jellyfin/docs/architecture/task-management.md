@@ -41,5 +41,6 @@ classDiagram
 
 ## Summary
 
-Task management is handled by a dedicated manager and factory, supporting extensibility and testability.
+Task management is handled by a dedicated manager and factory, supporting
+extensibility and testability.
 See the [architecture overview](../architecture.md) for context.

@@ -25,5 +25,6 @@ classDiagram
 
 ## Summary
 
-Discovery is handled by dedicated services that scan the network and register found servers.
+Discovery is handled by dedicated services that scan the network and register
+found servers.
 See the [architecture overview](../architecture.md) for context.

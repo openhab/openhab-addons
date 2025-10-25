@@ -15,8 +15,10 @@
 ## Overview
 
 The Jellyfin binding integrates the openHAB platform with a Jellyfin media server.
-It enables discovery, control, and monitoring of Jellyfin devices and their media playback states within openHAB.
-The binding is structured to separate concerns between discovery, thing handling, and communication with the Jellyfin server.
+It enables discovery, control, and monitoring of Jellyfin devices and their media
+playback states within openHAB.
+The binding is structured to separate concerns between discovery, thing handling,
+and communication with the Jellyfin server.
 
 ## Architecture Diagram
 
@@ -41,8 +43,9 @@ flowchart TD
 ## Main Components
 
 - **Discovery Service**: Detects available Jellyfin servers and devices on the network.
-- **Thing Handlers**: Manage the lifecycle and state of Jellyfin things (servers, devices, users, etc.).
-    They expose channels for interaction.
+- **Thing Handlers**: Manage the lifecycle and state of Jellyfin things (servers,
+  devices, users, etc.).
+  They expose channels for interaction.
 - **API Client**: Handles communication with the Jellyfin server using its REST API.
 
 Auto-generated code in `internal.api.generated` is not described here.
@@ -64,8 +67,10 @@ For detailed diagrams and explanations, see:
 
 ## Record Details
 
-The following records are used for immutable data transfer and are detailed here for clarity.
-For their usage, see the [Utility Classes Architecture](architecture/utility-classes.md).
+The following records are used for immutable data transfer and are detailed here
+for clarity.
+For their usage, see the
+[Utility Classes Architecture](architecture/utility-classes.md).
 
 ```mermaid
 classDiagram
@@ -89,22 +94,25 @@ classDiagram
     }
 ```
 
-These records are referenced by utility classes and handlers but are not shown in the main architecture diagram for clarity.
-
+These records are referenced by utility classes and handlers but are not shown in
+the main architecture diagram for clarity.
 
 ## Integration Points
 
 - The binding interacts with the openHAB core via thing and channel events.
 - It communicates with the external Jellyfin server through the API client.
     The API client is responsible for all protocol-level details.
-- Discovery and thing handlers are decoupled to ensure maintainability and clarity.
+- Discovery and thing handlers are decoupled to ensure maintainability and
+    clarity.
 
 ## Key Components (Summary)
 
 - The binding uses a modular architecture with clean separation of concerns.
 - Core handler logic is separated from utility classes and task management.
-- Utility classes provide focused, testable logic for user management, configuration, and state analysis.
-- Task management is handled by a dedicated manager and factory, supporting extensibility and testability.
+- Utility classes provide focused, testable logic for user management,
+  configuration, and state analysis.
+- Task management is handled by a dedicated manager and factory, supporting
+    extensibility and testability.
 - Error handling uses the Observer pattern for decoupled, event-driven error management.
 
 For in-depth details, see the dedicated pages linked above.

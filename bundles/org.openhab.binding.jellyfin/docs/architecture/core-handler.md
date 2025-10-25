@@ -1,6 +1,7 @@
 # Core Handler Architecture
 
-This page documents the main handler structure and dependency injection in the Jellyfin binding.
+This page documents the main handler structure and dependency injection in the
+Jellyfin binding.
 
 ```mermaid
 classDiagram
@@ -47,5 +48,6 @@ classDiagram
 
 ## Summary
 
-The core handler architecture separates the creation and orchestration of handlers, task management, and API client instantiation.
+The core handler architecture separates the creation and orchestration of
+handlers, task management, and API client instantiation.
 See the [architecture overview](../architecture.md) for context.

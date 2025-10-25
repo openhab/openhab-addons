@@ -20,5 +20,6 @@ classDiagram
 
 ## Summary
 
-API communication is handled by a factory and client abstraction, supporting version-specific implementations.
+API communication is handled by a factory and client abstraction, supporting
+version-specific implementations.
 See the [architecture overview](../architecture.md) for context.
