@@ -23,6 +23,11 @@
 				<option value="EUR">Euro</option>
 			</options>
 		</parameter>
+		<parameter name="hourlySpotPrices" type="boolean">
+			<label>Hourly Spot Prices</label>
+			<description>Recalculate spot prices to hourly average based on quarter hourly.</description>
+			<default>false</default>
+		</parameter>
 		<parameter name="gridCompanyGLN" type="text">
 			<label>Grid Company GLN</label>
 			<description>Global Location Number of the grid company.</description>
