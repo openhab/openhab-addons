@@ -702,9 +702,9 @@ public class IpCameraHandler extends BaseThingHandler {
 
     public void startStreamServer() {
         servlet = new CameraServlet(this, httpService);
-        updateState(CHANNEL_HLS_URL, new StringType("ipcamera/" + getThing().getUID().getId() + "/ipcamera.m3u8"));
-        updateState(CHANNEL_IMAGE_URL, new StringType("ipcamera/" + getThing().getUID().getId() + "/ipcamera.jpg"));
-        updateState(CHANNEL_MJPEG_URL, new StringType("ipcamera/" + getThing().getUID().getId() + "/ipcamera.mjpeg"));
+        updateState(CHANNEL_HLS_URL, new StringType("/ipcamera/" + getThing().getUID().getId() + "/ipcamera.m3u8"));
+        updateState(CHANNEL_IMAGE_URL, new StringType("/ipcamera/" + getThing().getUID().getId() + "/ipcamera.jpg"));
+        updateState(CHANNEL_MJPEG_URL, new StringType("/ipcamera/" + getThing().getUID().getId() + "/ipcamera.mjpeg"));
     }
 
     public void openCamerasStream() {
