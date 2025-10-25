@@ -11,8 +11,8 @@
 		</parameter-group>
 
 		<parameter-group name="system">
-			<label>System Behaviour</label>
-			<description>This group defines JavaScript's system behaviour.</description>
+			<label>System Behavior</label>
+			<description>This group defines JavaScript's system behavior.</description>
 		</parameter-group>
 
 		<parameter name="injectionEnabledV2" type="integer" required="true" min="0" max="3" groupName="environment">
