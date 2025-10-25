@@ -160,7 +160,7 @@ Number nuvo_z1_bass "Bass Adjustment [%s]" { channel="nuvo:amplifier:myamp:zone1
 Number nuvo_z1_balance "Balance Adjustment [%s]" { channel="nuvo:amplifier:myamp:zone1#balance" }
 Switch nuvo_z1_loudness "Loudness" { channel="nuvo:amplifier:myamp:zone1#loudness" }
 Switch nuvo_z1_dnd "Do Not Disturb" { channel="nuvo:amplifier:myamp:zone1#dnd" }
-Switch nuvo_z1_lock "Zone Locked [%s]" { channel="nuvo:amplifier:myamp:zone1#lock" }
+Contact nuvo_z1_lock "Zone Locked [%s]" { channel="nuvo:amplifier:myamp:zone1#lock" }
 Switch nuvo_z1_party "Party Mode" { channel="nuvo:amplifier:myamp:zone1#party" }
 
 // > repeat for zones 2-20 (substitute z1 and zone1) < //

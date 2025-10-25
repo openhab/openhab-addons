@@ -92,7 +92,7 @@
 		<state min="0" max="1">
 			<options>
 				<option value="0">Microphone</option>
-				<option value="1">Aux Cable</option>
+				<option value="1">Aux cable</option>
 			</options>
 		</state>
 	</channel-type>
