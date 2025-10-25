@@ -6,9 +6,9 @@
   - [Table of Contents](#table-of-contents)
   - [Overview](#overview)
   - [Architecture Diagram](#architecture-diagram)
-    - [Main Components](#main-components)
-    - [Server Discovery](server-discovery.md)
-    - [Integration Points](#integration-points)
+  - [Main Components](#main-components)
+  - [Integration Points](#integration-points)
+  - [Key Components (Summary)](#key-components-summary)
 
 ## Overview
 
@@ -38,10 +38,27 @@ flowchart TD
 ## Main Components
 
 - **Discovery Service**: Detects available Jellyfin servers and devices on the network.
-- **Thing Handlers**: Manage the lifecycle and state of Jellyfin things (servers, devices, users, etc.) and expose channels for interaction.
+- **Thing Handlers**: Manage the lifecycle and state of Jellyfin things (servers, devices, users, etc.).
+    They expose channels for interaction.
 - **API Client**: Handles communication with the Jellyfin server using its REST API.
 
-    (Auto-generated code in `internal.api.generated` is not described here.)
+Auto-generated code in `internal.api.generated` is not described here.
+
+For detailed diagrams and explanations, see:
+
+- [Core Handler Architecture](architecture/core-handler.md):
+    Overview of handler structure and dependency injection.
+- [Utility Classes Architecture](architecture/utility-classes.md):
+    Focused classes for user management, configuration, and state analysis.
+- [Task Management Architecture](architecture/task-management.md):
+    Task manager and factory design for extensibility.
+- [Error Handling Architecture](architecture/error-handling.md):
+    Event-driven error management using the Observer pattern.
+- [Discovery Architecture](architecture/discovery.md):
+    Network discovery services and result registration.
+- [API Architecture](architecture/api.md):
+    API client abstraction and communication structure.
+
 
 ## Integration Points
 
@@ -49,3 +66,13 @@ flowchart TD
 - It communicates with the external Jellyfin server through the API client.
     The API client is responsible for all protocol-level details.
 - Discovery and thing handlers are decoupled to ensure maintainability and clarity.
+
+## Key Components (Summary)
+
+- The binding uses a modular architecture with clean separation of concerns.
+- Core handler logic is separated from utility classes and task management.
+- Utility classes provide focused, testable logic for user management, configuration, and state analysis.
+- Task management is handled by a dedicated manager and factory, supporting extensibility and testability.
+- Error handling uses the Observer pattern for decoupled, event-driven error management.
+
+For in-depth details, see the dedicated pages linked above.

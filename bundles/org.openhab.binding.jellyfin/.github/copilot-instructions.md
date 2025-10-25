@@ -136,29 +136,43 @@ Follow these patterns and lessons to ensure robust, reliable, and maintainable u
 - max-one-sentence-per-line: Max 1 sentence should be on a line (markdownlint max-one-sentence-per-line).
 - MD012/no-multiple-blanks: Multiple consecutive blank lines are not allowed.
 
-Entry point for documentation changes is the `docs` folder in the repository root. Follow these guidelines for markdown documentation updates:
+
+Entry point for documentation changes is the `docs` folder in the repository root.
 
 
-#### Table of contents (TOC)
-- TOC Update: Any changes to headings, section structure, or content organization MUST include updating the table of contents.
-- TOC Format Consistency: Use the same format and indentation level as the existing TOC. Ensure no orphaned TOC entries remain after content changes. Check that TOC structure matches document hierarchy.
-- Link Fragment Validation: Ensure all TOC links match the actual heading anchors (lowercase, hyphens for spaces, special characters removed).
+### Documentation Structure and Patterns
 
+- The main documentation page (e.g., `architecture.md`) must provide a high-level overview, a clear table of contents, and short summaries of each major architectural area.
+- For complex or detailed topics (such as handler architecture, utility classes, task management, error handling, discovery, or API structure), create dedicated pages in a subfolder (e.g., `docs/architecture/`).
+- **CRITICAL**: Each documentation detail page must follow the SOLID principle—one responsibility per page. If a detail page covers more than one architectural concern, split it into separate pages (e.g., do not mix discovery and API architecture on a single page).
+- Each dedicated page must include:
+	- A clear heading and summary of its focus area.
+	- The relevant Mermaid diagram(s), validated for the current Mermaid version.
+	- A summary section and, if needed, links back to the main overview.
+- The main documentation page must include:
+	- A table of contents with links to all dedicated detail pages.
+	- Short summaries of each area, referencing the detail pages.
+- Do not include development or contribution guidelines in the documentation section—only document the existing implementation and its structure.
+
+#### Table of Contents (TOC)
+- Any changes to headings, section structure, or content organization MUST include updating the table of contents.
+- Use the same format and indentation level as the existing TOC.
+- Ensure no orphaned TOC entries remain after content changes.
+- Check that TOC structure matches document hierarchy.
+- All TOC links must match the actual heading anchors (lowercase, hyphens for spaces, special characters removed).
 
 #### Sections
-- New Sections:
-  When adding new sections, add corresponding TOC entries at the appropriate hierarchy level.
-- Removed Sections:
-  When removing sections, remove corresponding TOC entries.
-- Section Order:
-  Maintain logical section ordering in both the TOC and document structure.
-
+- When adding new sections, add corresponding TOC entries at the appropriate hierarchy level.
+- When removing sections, remove corresponding TOC entries.
+- Maintain logical section ordering in both the TOC and document structure.
 
 #### Diagrams
-- <https://docs.mermaidchart.com/mermaid-oss/intro/index.html> is used to create diagrams and visualizations. See <https://docs.mermaidchart.com/mermaid-oss/intro/syntax-reference.html> for more information on the syntax.
+- Use <https://docs.mermaidchart.com/mermaid-oss/intro/index.html> for diagrams and visualizations.
 - **CRITICAL**: Diagrams MUST focus on the architecture and high-level workflows. Avoid low-level implementation details.
+- Validate all Mermaid diagrams for syntax and rendering with the current Mermaid version before adding or updating.
 - Leverage enhanced features like subgraphs, styling, and notes to improve clarity.
-- Ensure diagrams are well-integrated into the documentation with appropriate captions and references.
+- Place diagrams in dedicated detail pages if they are complex or focused on a specific subsystem.
+- Ensure diagrams are well-integrated into the documentation with appropriate captions, summaries, and references from the main overview.
 
 
 ## Source Code Management
