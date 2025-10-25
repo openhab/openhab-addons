@@ -177,16 +177,22 @@ public enum CharacteristicType {
         throw new IllegalArgumentException("Unknown ID: " + id);
     }
 
+    /**
+     * Returns OH type id being a shortened version of the full Homekit type id. e.g. ZOOM_DIGITAL -> zoom-digital
+     */
     public String getOpenhabType() {
         return type.substring(26).replace(".", "-"); // convert to OH channel type format
     }
 
+    /**
+     * Returns the full Homekit type id. e.g. ZOOM_DIGITAL -> public.hap.characteristic.zoom-digital
+     */
     public String getType() {
         return type;
     }
 
     /**
-     * Returns the name of the enum constant in Title Case.
+     * Returns the name of the enum constant in Title Case. e.g. ZOOM_DIGITAL -> Zoom Digital
      */
     @Override
     public String toString() {
@@ -195,6 +201,9 @@ public enum CharacteristicType {
                 .collect(Collectors.joining(" "));
     }
 
+    /**
+     * Returns the name of the enum constant in Camel Case. e.g. ZOOM_DIGITAL -> zoomDigital
+     */
     public String toCamelCase() {
         String[] parts = name().split("_");
         StringBuilder camelCase = new StringBuilder(parts[0].toLowerCase());

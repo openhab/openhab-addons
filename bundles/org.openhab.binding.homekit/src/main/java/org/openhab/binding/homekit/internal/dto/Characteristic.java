@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -181,7 +180,6 @@ public class Characteristic {
                 isEnumLike = true;
                 pointTag = Point.STATUS;
                 propertyTag = Property.MODE;
-                isEnumLike = true;
                 break;
 
             case AIR_PURIFIER_STATE_TARGET:
@@ -866,11 +864,11 @@ public class Characteristic {
                 }
 
                 if (!options.isEmpty()) {
-                    String prefix = "characteristic.%s.".formatted(characteristicType.getOpenhabType());
+                    String translationKey = "characteristic.%s.".formatted(characteristicType.getOpenhabType());
                     fragBldr.withOptions(options.stream().map(o -> {
-                        String defaultText = "%s #%s".formatted(characteristicType.toString(), o);
-                        String optionLabel = i18nProvider.getText(bundle, prefix + o, defaultText, null);
-                        optionLabel = optionLabel == null || optionLabel.isBlank() ? defaultText : optionLabel;
+                        String defaultLabel = "%s #%s".formatted(characteristicType.toString(), o);
+                        String optionLabel = i18nProvider.getText(bundle, translationKey + o, defaultLabel, null);
+                        optionLabel = optionLabel == null || optionLabel.isBlank() ? defaultLabel : optionLabel;
                         return new StateOption(optionLabel, o);
                     }).toList());
                 }
@@ -908,16 +906,29 @@ public class Characteristic {
         Optional.ofNullable(format).ifPresent(s -> props.put(PROPERTY_FORMAT, s));
         Optional.ofNullable(dataType).ifPresent(s -> props.put(PROPERTY_DATA_TYPE, s));
 
-        return new ChannelDefinitionBuilder(characteristicType.getOpenhabType(), channelTypeUid).withProperties(props)
-                .withLabel(getChannelInstanceLabel()).build();
+        ChannelDefinitionBuilder channelDefBuilder = new ChannelDefinitionBuilder(characteristicType.getOpenhabType(),
+                channelTypeUid).withLabel(getChannelLabel(characteristicType, i18nProvider, bundle))
+                .withProperties(props);
+        Optional.ofNullable(getChannelDescription()).ifPresent(d -> channelDefBuilder.withDescription(d));
+        return channelDefBuilder.build();
     }
 
     /*
-     * Returns the 'description' field if it is present. Otherwise returns the Characteristic type in Title Case.
+     * Returns the translated characteristic label, or the Characteristic type in Title Case.
      */
-    private String getChannelInstanceLabel() {
-        return description != null && !description.isBlank() ? description
-                : Objects.requireNonNull(getCharacteristicType()).toString();
+    private String getChannelLabel(CharacteristicType characteristicType, TranslationProvider i18nProvider,
+            Bundle bundle) {
+        String translationKey = "characteristic.%s".formatted(characteristicType.getOpenhabType());
+        String defaultLabel = characteristicType.toString();
+        String channelLabel = i18nProvider.getText(bundle, translationKey, defaultLabel, null);
+        return channelLabel == null || channelLabel.isBlank() ? defaultLabel : channelLabel;
+    }
+
+    /*
+     * Returns the 'description' field if it is present. Otherwise returns null.
+     */
+    private @Nullable String getChannelDescription() {
+        return description != null && !description.isBlank() ? description : null;
     }
 
     public CharacteristicType getCharacteristicType() {
