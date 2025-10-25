@@ -54,6 +54,12 @@ public class ServerStateManager {
             return new StateAnalysis(ServerState.DISPOSED, "Server is disposed", null);
         }
 
+        // If configuration has a token, consider the server configured (priority)
+        if (configuration != null && configuration.token != null && !configuration.token.isBlank()) {
+            logger.debug("Server state analysis: configuration has token, state is CONFIGURED");
+            return new StateAnalysis(ServerState.CONFIGURED, "Configuration has token", null);
+        }
+
         // Check if we have a discovered server
         boolean isDiscovered = thing.getProperties().containsKey(Constants.ServerProperties.SERVER_URI);
         if (isDiscovered) {

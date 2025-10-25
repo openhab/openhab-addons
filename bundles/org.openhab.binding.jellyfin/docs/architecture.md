@@ -8,9 +8,16 @@
   - [Overview](#overview)
   - [Architecture Diagram](#architecture-diagram)
   - [Main Components](#main-components)
-  - [Record Details](#record-details)
-  - [Integration Points](#integration-points)
-  - [Key Components (Summary)](#key-components-summary)
+    - [Server State Transitions](#server-state-transitions)
+    - [Record Details](#record-details)
+    - [Integration Points](#integration-points)
+    - [Key Components (Summary)](#key-components-summary)
+
+## Server State Transitions
+
+The logic for determining the state of a Jellyfin server thing is documented in detail in [Server State Transitions](architecture/server-state.md).
+This includes the rules for transitioning between DISPOSED, DISCOVERED, CONFIGURED, ERROR, and other states, as well as a Mermaid diagram visualizing the process.
+See the dedicated page for the full transition diagram and rules.
 
 ## Overview
 

@@ -166,12 +166,10 @@ markdown files before being considered complete.
   instructional content.
 
 **First step for fixing markdown violations:**
-Always attempt to auto-fix markdown issues using `markdownlint --fix` before
-making manual changes.
-This can resolve many common formatting problems
-automatically.
-Entry point for documentation changes is the `docs` folder in the repository
-root.
+Always attempt to auto-fix markdown issues using `npx markdownlint --fix` before
+making manual changes. Do not rely on a global install; always use npx to ensure the correct version is used.
+This can resolve many common formatting problems automatically.
+Entry point for documentation changes is the `docs` folder in the repository root.
 
 ### Documentation Structure and Patterns
 
