@@ -3,16 +3,16 @@
 The Netatmo binding integrates the following Netatmo products:
 
 - _Personal Weather Station_. Reports temperature, humidity, air pressure, carbon dioxide concentration in the air, as well as the ambient noise level.
-- _Thermostat_. Reports ambient temperature, allow to check target temperature, consult and change furnace heating status.
-- _Indoor Camera / Welcome_. Reports last event and persons at home, consult picture and video from event/camera.
+- _Thermostat_. Reports ambient temperature, allows you to check target temperature, consult and change furnace heating status.
+- _Indoor Camera / Welcome_. Reports last event and persons at home, consults picture and video from event/camera.
 - _Siren_
-- _Outdoor Camera / Presence_. Reports last event, consult picture and video from event/camera.
+- _Outdoor Camera / Presence_. Reports last event, consults picture and video from event/camera.
 - _Doorbell_
 - _Smoke Detector_
 - _Smart Door Sensor_
 - _Carbon Monoxide Detector_
 
-See <https://www.netatmo.com/> for details on their product.
+See <https://www.netatmo.com/> for details on their products.
 
 ## Binding Configuration
 
@@ -24,13 +24,12 @@ Follow instructions under:
 
  1. Setting Up Your Account
  1. Registering Your Application
- 1. Setting Redirect URI and webhook URI can be skipped, these will be provided by the binding.
+ 1. Setting Redirect URI and webhook URI can be skipped; these will be provided by the binding.
 
 Variables needed for the setup of the binding are:
 
 - `<CLIENT_ID>` Your client ID taken from your App at <https://dev.netatmo.com/apps>
 - `<CLIENT_SECRET>` A token provided along with the `<CLIENT_ID>`.
-
 The binding has the following configuration options:
 
 | Parameter   | Type    | Description                                                  |
@@ -43,13 +42,13 @@ You will have to create at first a bridge to handle communication with your Neta
 
 The Account bridge has the following configuration elements:
 
-| Parameter         | Type   | Required | Description                                                                                                            |
-| ----------------- | ------ | -------- | ---------------------------------------------------------------------------------------------------------------------- |
-| clientId          | String | Yes      | Client ID provided for the application you created on <http://dev.netatmo.com/createapp>                               |
-| clientSecret      | String | Yes      | Client Secret provided for the application you created                                                                 |
-| webHookUrl        | String | No       | Protocol, public IP and port to access openHAB server from Internet                                                    |
-| webHookPostfix    | String | No       | String appended to the generated webhook address (should start with "/")                                               |
-| reconnectInterval | Number | No       | The reconnection interval to Netatmo API (in s)                                                                        |
+| Parameter         | Type   | Required | Description                                                                                                         |
+| ----------------- | ------ | -------- | ------------------------------------------------------------------------------------------------------------------- |
+| clientId          | String | Yes      | Client ID provided for the application you created on <http://dev.netatmo.com/createapp>                           |
+| clientSecret      | String | Yes      | Client Secret provided for the application you created                                                              |
+| webHookUrl        | String | No       | Protocol, public IP and port to access openHAB server from internet                                                 |
+| webHookPostfix    | String | No       | String appended to the generated webhook address (should start with "/")                                            |
+| reconnectInterval | Number | No       | The reconnection interval to Netatmo API (in s)                                                                     |
 
 **Supported channels for the Account bridge thing:**
 
@@ -113,7 +112,7 @@ Your Netatmo App will be configured automatically by the bridge to the endpoint:
 http(s)://xx.yy.zz.ww:443/netatmo/webhook/<_CLIENT_ID_><webHookPostfix>
 ```
 
-Please be aware of Netatmo own limits regarding webhook usage that lead to a 24h ban-time when webhook does not answer 5 times.
+Please be aware of Netatmo's own limits regarding webhook usage that lead to a 24h ban time when the webhook does not answer 5 times.
 
 NB: Allowed ports for webhooks are 80, 88, 443 and 9443.
 
@@ -483,7 +482,7 @@ All channels are read only.
 **Supported channels for the Energy Home thing:**
 
 | Channel Group | Channel Id             | Item Type   | Read/Write | Description                                               |
-| ------------- | ---------------------- | ----------- |----------- | --------------------------------------------------------- |
+| ------------- | ---------------------- | ----------- | ---------- | --------------------------------------------------------- |
 | energy        | setpoint-duration      | Number:Time | Read-only  | Default duration of manual setpoint changes               |
 | energy        | planning               | String      | Read-write | Planning currently applied when following weekly schedule |
 | energy        | mode                   | String      | Read-write | Chosen thermostat mode (home, frost guard, manual, max)   |

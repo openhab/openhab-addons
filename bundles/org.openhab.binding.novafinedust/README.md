@@ -5,7 +5,7 @@ Currently only one model is supported, the SDS011.
 
 It basically implements the protocol specified in [this document](https://cdn.sparkfun.com/assets/parts/1/2/2/7/5/Laser_Dust_Sensor_Control_Protocol_V1.3.pdf).
 One can measure the PM 2.5 and PM 10 values with this device.
-It comes very handy for detecting air pollution like neighbors firing their oven with wet wood etc. so one can deactivate the ventilation system.
+It comes in very handy for detecting air pollution, like neighbors firing their oven with wet wood, so you can deactivate the ventilation system.
 
 ## Supported Things
 

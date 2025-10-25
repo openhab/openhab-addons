@@ -42,14 +42,15 @@
 
 			<parameter name="retry" type="integer">
 				<label>Retry</label>
-				<description>How many refresh interval cycles should a presence detection should take place, before the device is
-					stated as offline</description>
+				<description>How many refresh interval cycles should a presence detection take place before the device is
+					stated as
+					offline.</description>
 				<default>1</default>
 			</parameter>
 
 			<parameter name="timeout" type="integer" unit="ms">
 				<label>Timeout</label>
-				<description>States how long to wait for a response (in ms), before if a device is stated as offline</description>
+				<description>States how long to wait for a response (in ms) before a device is stated as offline.</description>
 				<default>5000</default>
 				<advanced>true</advanced>
 			</parameter>
@@ -129,13 +130,13 @@
 
 			<parameter name="retry" type="integer">
 				<label>Retry</label>
-				<description>Defines how many times a connection attempt shall occur, before the device is stated as offline</description>
+				<description>Defines how many times a connection attempt shall occur before the device is stated as offline.</description>
 				<default>1</default>
 			</parameter>
 
 			<parameter name="timeout" type="integer">
 				<label>Timeout</label>
-				<description>States how long to wait for a response (in ms), before if a device is stated as offline</description>
+				<description>States how long to wait for a response (in ms) before a device is stated as offline.</description>
 				<default>5000</default>
 			</parameter>
 
@@ -191,15 +192,15 @@
 			</parameter>
 			<parameter name="url" type="text" required="true">
 				<label>Test Server URL</label>
-				<description>Url of the speed test server</description>
+				<description>Url of the speed test server.</description>
 			</parameter>
 			<parameter name="fileName" type="text" required="true">
 				<label>File Name</label>
-				<description>Name of the file to download from test server</description>
+				<description>Name of the file to download from test server.</description>
 			</parameter>
 			<parameter name="maxTimeout" type="integer">
 				<label>Timeouts</label>
-				<description>Number of timeout that can happend before the device is stated as offline</description>
+				<description>Number of timeout that can happen before the device is stated as offline.</description>
 				<default>3</default>
 				<advanced>true</advanced>
 			</parameter>
@@ -209,35 +210,35 @@
 	<channel-type id="isRunning">
 		<item-type>Switch</item-type>
 		<label>Test Running</label>
-		<description>Indicates if a test is currently ongoing</description>
+		<description>Indicates if a test is currently ongoing.</description>
 		<state readOnly="false"></state>
 	</channel-type>
 
 	<channel-type id="progress">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Progress</label>
-		<description>Current Test progression</description>
+		<description>Current Test progression.</description>
 		<state readOnly="true" min="0" max="100" pattern="%.0f %unit%"/>
 	</channel-type>
 
 	<channel-type id="rateUp">
 		<item-type>Number:DataTransferRate</item-type>
 		<label>Upload Rate</label>
-		<description>Current upload rate</description>
+		<description>Current upload rate.</description>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="rateDown">
 		<item-type>Number:DataTransferRate</item-type>
 		<label>Download Rate</label>
-		<description>Current download rate</description>
+		<description>Current download rate.</description>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="Timestamp">
 		<item-type>DateTime</item-type>
 		<label>Timestamp</label>
-		<description>Status timestamp</description>
+		<description>Status timestamp.</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>Timestamp</tag>
@@ -248,7 +249,7 @@
 	<channel-type id="online">
 		<item-type>Switch</item-type>
 		<label>Online</label>
-		<description>States whether a device is online or offline</description>
+		<description>States whether a device is online or offline.</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>Mode</tag>
@@ -259,7 +260,7 @@
 	<channel-type id="latency">
 		<item-type>Number:Time</item-type>
 		<label>Latency</label>
-		<description>States the latency time</description>
+		<description>States the latency time.</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>Duration</tag>
@@ -270,7 +271,7 @@
 	<channel-type id="lastseen">
 		<item-type>DateTime</item-type>
 		<label>Last Seen</label>
-		<description>States the last seen date/time</description>
+		<description>States the last seen date/time.</description>
 		<category>time</category>
 		<tags>
 			<tag>Status</tag>

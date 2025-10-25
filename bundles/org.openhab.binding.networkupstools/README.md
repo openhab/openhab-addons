@@ -3,7 +3,7 @@
 The primary goal of the [Network UPS Tools](https://networkupstools.org/) (NUT) project is to provide support for power devices, such as uninterruptible power supplies (UPS), Power Distribution Units and Solar Controllers.
 
 Network UPS Tools (NUT) provides many control and monitoring features, with a uniform control and management interface.
-More than 100 different manufacturers, and several thousands of models are compatible.
+More than 100 different manufacturers and several thousand models are compatible.
 
 This binding lets you integrate NUT servers with openHAB.
 
@@ -12,12 +12,12 @@ This binding lets you integrate NUT servers with openHAB.
 The binding can connect to multiple NUT instances.
 The thing is an `ups` thing.
 The thing supports a number of NUT features out-of-the-box and supports the option to configure additional channels to get other NUT variables.
-The thing queries the NUT server for the status of the UPS approximate every 3 seconds and updates the status when a change happens.
-When a change of the UPS status happens it will query the NUT server to update all linked channels.
-Outside the status change updates, all linked channels are updated at the user configured refresh time.
+The thing queries the NUT server for the status of the UPS approximately every 3 seconds and updates the status when a change happens.
+When a change to the UPS status occurs, it will query the NUT server to update all linked channels.
+Outside of status changes, all linked channels are updated at the user-configured refresh interval.
 
 Some NUT variables are static in nature and are not suited for a channel.
-Some of these could change, like of firmware version.
+Some of these could change, like the firmware version.
 Therefore these properties are updated with a 1 hour frequency.
 The following NUT variables are read and added to the thing as properties:
 
@@ -38,8 +38,8 @@ Discovery is not supported.
 ## Thing Configuration
 
 The thing configuration requires the name of the UPS device as configured on the NUT server.
-If the NUT service isn't running locally the ip address or domain name (FDQN) of the server running NUT must be configured.
-Optional, port, username and password might need to be configured if required.
+If the NUT service isn't running locally, the IP address or domain name (FQDN) of the server running NUT must be configured.
+Optionally, the port, username, and password might need to be configured if required.
 
 | Parameter | Default   | Mandatory | Description                                     |
 | --------- | --------- | --------- | ----------------------------------------------- |
@@ -80,16 +80,16 @@ The following channels are available:
 
 ### Dynamic Channels
 
-Because there is a lot of variation in UPS features, the binding supports dynamically adding channels for features, not supported out-of-the-box.
-To get data from another NUT variable the channel needs to configured.
-Channels can be created with as type: `Number`, `Number:<Quantity>`, `String` or `Switch`.
+Because there is a lot of variation in UPS features, the binding supports dynamically adding channels for features not supported out of the box.
+To get data from another NUT variable, the channel needs to be configured.
+Channels can be created with the types: `Number`, `Number:<Quantity>`, `String`, or `Switch`.
 
 The following channel properties are needed:
 
 | Property        | Description                    | Example                                       |
 | --------------- | ------------------------------ | --------------------------------------------- |
 | networkupstools | Links to NUT variable          | `networkupstools="input.voltage.low.warning"` |
-| unit            | The unit of Quantity Type data | `unit="V"`                                    |
+| unit            | The unit for QuantityType data | `unit="V"`                                    |
 
 ## Full Example
 

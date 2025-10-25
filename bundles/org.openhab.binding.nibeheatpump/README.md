@@ -3,14 +3,14 @@
 The Nibe Heatpump binding is used to get live data from Nibe heat pumps without using an expensive MODBUS40 adapter.
 This binding is compatible with the F750, F1145, F1245, F1155, F1255, F470 and SMO40 heat pump models.
 
-The binding supports data telegrams (containing a maximum of 20 registers) from the heat pump.
+This binding supports data telegrams (containing a maximum of 20 registers) from the heat pump.
 The binding can also read other registers from the pump.
-It is recommended to add the most often updated variables to a telegram.
+It is recommended to add the most frequently updated variables to a telegram.
 The binding will then read all other registers automatically from the pump when channels are linked to an item.
 Register reading needs to be enabled in the thing configuration.
 The binding also has experimental support for writing registers.
 This can be used to configure the heat pump.
-Write mode needs to be enabled in the thing configuration and for safety reasons all register identifiers need to be explicitly defined.
+Write mode needs to be enabled in the thing configuration and, for safety reasons, all register identifiers need to be explicitly defined.
 
 ## Supported Things
 
@@ -44,17 +44,17 @@ When Modbus adapter support is enabled from the heat pump UI, the heat pump will
 A telegram contains a maximum of 20 registers.
 Those 20 registers can be configured via the Nibe ModbusManager application.
 
-Unfortunately Nibe has made this tricky.
+Unfortunately, Nibe has made this tricky.
 A telegram from the heat pump must be acknowledged, otherwise the heat pump will raise an alarm and go into the alarm state.
 Acknowledgement (ACK or NAK) responses should be sent correctly.
 The binding also supports direct serial port connections to the heat pump, but the heat pump will raise an alarm when the openHAB binding is not running e.g. during openHAB updates.
 This problem can be resolved by using the `nibegw` program, which can be run on Unix/Linux (such as a Raspberry Pi) or Arduino-based boards.
 If you are running openHAB on a Raspberry Pi, the `nibegw` program can also run on the same machine.
-Then when openHAB is not running , `nibegw` will acknowledge packets from the heat pump.
-Obviously, this doesn't solve the problem when the Raspberry Pi is down, therefore an Arduino based solution is recommended.
+Then, when openHAB is not running, `nibegw` will acknowledge packets from the heat pump.
+Obviously, this doesn't solve the problem when the Raspberry Pi is down; therefore an Arduino-based solution is recommended.
 
-`nibegw` is an application that reads telegrams from a serial port (which requires an RS-485 adapter), sends ACK/NAK to the heat pump and relays untouched telegrams to openHAB via UDP packets.
-The Nibe Heat Pump binding will listen to a UDP port and parse register data from UDP telegrams.
+`nibegw` is an application that reads telegrams from a serial port (which requires an RS-485 adapter), sends ACK/NAK to the heat pump, and relays untouched telegrams to openHAB via UDP packets.
+The Nibe Heatpump binding will listen on a UDP port and parse register data from UDP telegrams.
 
 ### Arduino
 
@@ -70,7 +70,7 @@ PRODINo ESP32 Ethernet v1 also supports dynamic configuration and OTA updates vi
 
 ### Raspberry Pi (or other Linux/Unix based boards)
 
-The C code for NibeGW on Raspberry Pi is available in the [NibeGW Arduino directory of the openHAB add-ons GitHub repository](https://github.com/openhab/openhab-addons/tree/main/bundles/org.openhab.binding.nibeheatpump/contrib/NibeGW/RasPi).
+The C code for NibeGW on Raspberry Pi is available in the [NibeGW Raspberry Pi directory of the openHAB add-ons GitHub repository](https://github.com/openhab/openhab-addons/tree/main/bundles/org.openhab.binding.nibeheatpump/contrib/NibeGW/RasPi).
 
 To build the C code use:
 
@@ -110,7 +110,7 @@ nibegw -v -d /dev/ttyUSB0 -a 192.168.1.10
 
 ## Binding Configuration
 
-No binding configuration required.
+No binding configuration is required.
 
 ## Thing Configuration
 
@@ -129,19 +129,19 @@ nibeheatpump:f1x45-udp:myPump [hostName="192.168.1.50", port=9999]
 nibeheatpump:f1x45-udp:myPump [hostName="192.168.1.50", port=9999, readCommandsPort=10000, writeCommandsPort=10001, refreshInterval=30, enableReadCommands=true, enableWriteCommands=true, enableWriteCommandsToRegisters="44266, 47004"]
 ```
 
-All supported configuration parameters for UDP connection:
+All supported configuration parameters for a UDP connection:
 
 | Property                       | Type    | Default | Required | Description                                                                                                                                                                  |
 | ------------------------------ | ------- | ------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | hostName                       | String  |         | Yes      | Network address of the Nibe heat pump                                                                                                                                        |
-| port                           | Integer | 9999    | No       | UDP port to listening data packets from the NibeGW                                                                                                                           |
-| readCommandsPort               | Integer | 9999    | No       | UDP port to send read commands to the NibeGW                                                                                                                                 |
-| writeCommandsPort              | Integer | 10000   | No       | UDP port to send write commands to the NibeGW                                                                                                                                |
-| refreshInterval                | Integer | 60      | No       | States how often a refresh shall occur in seconds                                                                                                                            |
-| enableReadCommands             | Boolean | false   | No       | Enable read commands to read additional variable from Nibe heat pump which are not included to data readout messages. This is experimental feature, use it at your own risk! |
-| enableWriteCommands            | Boolean | false   | No       | Enable write commands to change Nibe heat pump settings. This is experimental feature, use it at your own risk!                                                              |
-| enableWriteCommandsToRegisters | String  |         | No       | Comma separated list of registers, which are allowed to write to Nibe heat pump. E.g. 44266, 47004                                                                           |
-| throttleTime                   | Integer | 0       | No       | Throttle incoming data read out messages from heat pump. 0 = throttle is disabled, otherwise throttle time in milliseconds.                                                  |
+| port                           | Integer | 9999    | No       | UDP port to listen for data packets from NibeGW                                                                                                                              |
+| readCommandsPort               | Integer | 9999    | No       | UDP port to send read commands to NibeGW                                                                                                                                     |
+| writeCommandsPort              | Integer | 10000   | No       | UDP port to send write commands to NibeGW                                                                                                                                    |
+| refreshInterval                | Integer | 60      | No       | How often to refresh, in seconds                                                                                                                                             |
+| enableReadCommands             | Boolean | false   | No       | Enable read commands to read additional variables from the Nibe heat pump that are not included in data readout messages. This is an experimental feature; use at your own risk. |
+| enableWriteCommands            | Boolean | false   | No       | Enable write commands to change Nibe heat pump settings. This is an experimental feature; use at your own risk.                                                               |
+| enableWriteCommandsToRegisters | String  |         | No       | Comma-separated list of registers allowed to be written to the Nibe heat pump, e.g., 44266, 47004                                                                            |
+| throttleTime                   | Integer | 0       | No       | Throttle incoming data readout messages from the heat pump. 0 = throttle is disabled; otherwise, throttle time in milliseconds.                                              |
 
 ### Serial port connection
 
@@ -151,19 +151,19 @@ Thing example:
 nibeheatpump:f1x45-serial:myPump [serialPort="/dev/ttyUSB0"]
 ```
 
-All supported configuration parameters for serial port connection:
+All supported configuration parameters for a serial port connection:
 
 | Property                       | Type    | Default | Required | Description                                                                                                                                                                  |
 | ------------------------------ | ------- | ------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| serialPort                     | String  |         | Yes      | Network address of the Nibe heat pump                                                                                                                                        |
-| refreshInterval                | Integer | 60      | No       | States how often a refresh shall occur in seconds                                                                                                                            |
-| enableReadCommands             | Boolean | false   | No       | Enable read commands to read additional variable from Nibe heat pump which are not included to data readout messages. This is experimental feature, use it at your own risk! |
-| enableWriteCommands            | Boolean | false   | No       | Enable write commands to change Nibe heat pump settings. This is experimental feature, use it at your own risk!                                                              |
-| enableWriteCommandsToRegisters | String  |         | No       | Comma separated list of registers, which are allowed to write to Nibe heat pump. E.g. 44266, 47004                                                                           |
-| sendAckToMODBUS40              | Boolean | true    | No       | Binding emulates MODBUS40 device and send protocol acknowledges to heat pump                                                                                                 |
-| sendAckToRMU40                 | Boolean | false   | No       | Binding emulates RMU40 device and send protocol acknowledges to heat pump                                                                                                    |
-| sendAckToSMS40                 | Boolean | false   | No       | Binding emulates SMS40 device and send protocol acknowledges to heat pump                                                                                                    |
-| throttleTime                   | Integer | 0       | No       | Throttle incoming data read out messages from heat pump. 0 = throttle is disabled, otherwise throttle time in milliseconds.                                                  |
+| serialPort                     | String  |         | Yes      | Serial port device (for example, COM3 on Windows or /dev/ttyUSB0 on Linux)                                                                                                   |
+| refreshInterval                | Integer | 60      | No       | How often to refresh, in seconds                                                                                                                                             |
+| enableReadCommands             | Boolean | false   | No       | Enable read commands to read additional variables from the Nibe heat pump that are not included in data readout messages. This is an experimental feature; use at your own risk. |
+| enableWriteCommands            | Boolean | false   | No       | Enable write commands to change Nibe heat pump settings. This is an experimental feature; use at your own risk.                                                               |
+| enableWriteCommandsToRegisters | String  |         | No       | Comma-separated list of registers allowed to be written to the Nibe heat pump, e.g., 44266, 47004                                                                            |
+| sendAckToMODBUS40              | Boolean | true    | No       | Binding emulates a MODBUS40 device and sends protocol acknowledgments to the heat pump                                                                                        |
+| sendAckToRMU40                 | Boolean | false   | No       | Binding emulates an RMU40 device and sends protocol acknowledgments to the heat pump                                                                                          |
+| sendAckToSMS40                 | Boolean | false   | No       | Binding emulates an SMS40 device and sends protocol acknowledgments to the heat pump                                                                                          |
+| throttleTime                   | Integer | 0       | No       | Throttle incoming data readout messages from the heat pump. 0 = throttle is disabled; otherwise, throttle time in milliseconds.                                              |
 
 ## Channels
 
