@@ -148,7 +148,7 @@ public class MapDbPersistenceServiceOSGiTest extends JavaOSGiTest {
         ZonedDateTime lastStateChange = ZonedDateTime.now().minusHours(2);
 
         GenericItem item = new DimmerItem(name);
-        item.setState(state, lastState, lastStateUpdate, lastStateChange);
+        item.setState(state, lastState, lastStateUpdate, lastStateChange, null);
 
         assertNull(persistenceService.persistedItem(name, null));
 
