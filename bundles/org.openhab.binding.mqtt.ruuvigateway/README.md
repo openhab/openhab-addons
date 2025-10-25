@@ -9,18 +9,18 @@ The primary requirement is having a Ruuvi Gateway device.
 
 This binding supports RuuviTag sensors (all variants including Pro 2in1, 3in1, and 4in1) and Ruuvi Air quality sensors.
 
-## Setup the Gateway
+## Set up the Gateway
 
-Before using this binding, Ruuvi Gateway needs to configured to publish the sensor data via MQTT.
+Before using this binding, the Ruuvi Gateway needs to be configured to publish the sensor data via MQTT.
 
-For further instructions, refer to relevant section in [Ruuvi Gateway documentation](https://ruuvi.com/gateway-config/).
-For most convenient usage of this binding, please ensure that "Use 'ruuvi' on the prefix' MQTT setting is enabled on Ruuvi Gateway.
+For further instructions, refer to the relevant section in the [Ruuvi Gateway documentation](https://ruuvi.com/gateway-config/).
+For the most convenient usage of this binding, ensure that the "Use 'ruuvi' as the prefix" MQTT setting is enabled on the Ruuvi Gateway.
 
 ## Discovery
 
-First install the MQTT binding and setup a `broker` thing and make sure it is ONLINE, as this binding uses the MQTT binding to talk to your broker and hence that binding must be setup first.
+First install the MQTT binding and set up a `broker` Thing, and make sure it is ONLINE, as this binding uses the MQTT binding to talk to your broker.
 
-This binding discovers the Ruuvi Tags via the MQTT bridge; the discovered things should appear in your thing Inbox.
+This binding discovers the Ruuvi Tags via the MQTT bridge; the discovered Things should appear in your Thing Inbox.
 
 ## Thing Configuration
 
@@ -32,7 +32,7 @@ This binding supports the following thing type:
 
 No manual configuration is needed as discovery can be used instead.
 
-For users that prefer manual configuration, the following parameter is available:
+For users who prefer manual configuration, here are the configurable parameters:
 
 | Parameter | Description                               | Required | Default |
 |-----------|-------------------------------------------|----------|---------|
@@ -87,7 +87,7 @@ Some measurements may not be meaningful for all device types. For example, Ruuvi
 Please note that Thing and Item configuration can be done fully in the UI.
 For those who prefer textual configuration, we share this example here.
 
-To use these examples for textual configuration, you must already have a configured a MQTT `broker` thing and know its unique ID.
+To use these examples for textual configuration, you must already have configured an MQTT `broker` Thing and know its unique ID.
 This UID will be used in the things file and will replace the text `myBroker`.
 The first line in the things file will create a `broker` thing and this can be removed if you have already setup a broker in another file or via the UI already.
 

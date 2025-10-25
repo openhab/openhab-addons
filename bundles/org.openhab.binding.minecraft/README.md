@@ -47,7 +47,7 @@ Depending on the thing type, different channels are provided:
 | playerHealth               | Number    | The health of the player                                   |
 | playerWalkSpeed            | Number    | The speed of the player                                    |
 | playerLocation             | Location  | The player location                                        |
-| playerGameMode             | Number    | The players game mode                                      |
+| playerGameMode             | Number    | The player's game mode                                     |
 
 ### Sign
 
@@ -65,9 +65,9 @@ Depending on the thing type, different channels are provided:
 
 ### Example Thing Definition
 
-The easiest method to add Minecraft servers, players, and signs is use the automatic discovery.
+The easiest method to add Minecraft servers, players, and signs is to use automatic discovery.
 You can also manually define the objects using thing configuration files.
-Players and signs are connected through Minecraft server [bridges](https://www.openhab.org/docs/configuration/things.html#defining-bridges-using-files).
+Players and signs are connected through Minecraft server bridges ([see documentation](https://www.openhab.org/docs/configuration/things.html#defining-bridges-using-files)).
 
 ```java
 Bridge minecraft:server:myminecraftserver "Minecraft server for Friends" @ "Minecraft" [ hostname="192.168.1.100", port=10692 ] {

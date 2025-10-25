@@ -55,7 +55,7 @@ The thing has the following configuration parameters (number of sources and zone
 | Port                   | port                 | Communication port (8080 for newer amps with built-in serial over IP)                                                          | TCP port number  |
 | Number of Zones        | numZones             | (Optional) Number of amplifier zones to utilize in the binding (See Supported Things for max number of zones per Thing type)   | 1-18; default 6  |
 | Polling Interval       | pollingInterval      | (Optional) Configures how often (in seconds) to poll the amplifier to check for zone updates                                   | 5-60; default 15 |
-| Ignore Zones           | ignoreZones          | (Optional) A comma separated list of Zone numbers that will ignore the 'All Zone' (except All Off) commands                    | ie: "1,6,10"     |
+| Ignore Zones           | ignoreZones          | (Optional) A comma separated list of Zone numbers that will ignore the 'All Zone' (except All Off) commands                    | e.g., "1,6,10"     |
 | Initial All Volume     | initialAllVolume     | (Optional) When 'All' zones are activated, the volume will reset to this value to prevent excessive blaring of sound ;)        | 1-30; default 10 |
 | Source 1 Input Label   | inputLabel1          | (Optional) Friendly name for the input source to be displayed in the UI (ie: Chromecast, Radio, CD, etc.) (default "Source 1") | A free text name |
 | Source 2 Input Label   | inputLabel2          | (Optional) Friendly name for the input source to be displayed in the UI (ie: Chromecast, Radio, CD, etc.) (default "Source 2") | A free text name |

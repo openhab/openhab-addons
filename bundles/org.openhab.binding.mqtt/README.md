@@ -65,7 +65,7 @@ Additionally the following parameters can be set:
 - **protocol**:  The protocol used for communicating with the broker (TCP, WEBSOCKETS). Defaults to TCP.
 - **mqttVersion**: The MQTT version used for communicating with the broker (V3, V5). Defaults to V3.
 - **qos**: Quality of Service. Can be 0, 1 or 2. Please read the MQTT specification for details. Defaults to 0.
-- **clientID**: Use a fixed client ID. Defaults to empty which means a user ID is generated for this connection.
+- **clientID**: Use a fixed client ID. Defaults to empty which means a client ID is generated for this connection.
 
 Reconnect parameters are:
 
@@ -103,13 +103,13 @@ For more security, the following optional parameters can be altered:
 By default discovery services (like homie or homeassistant) are enabled on a broker.
 This behaviour can be controlled with a configuration parameter.
 
-- **enableDiscovery**:If set to true, enables discovery on this broker, if set to false, disables discovery services on this broker.
+- **enableDiscovery**: If set to true, enables discovery on this broker; if set to false, disables discovery services on this broker.
 
 ## Supported Channels
 
 You can extend your broker connection bridges with a channel:
 
-- **publishTrigger**: This channel is triggered when a value is published to the configured MQTT topic on this broker connection. The event payload (in `receivedEvent`) will be the received MQTT topic and its value, separated by the hash character (`#`).
+- **publishTrigger**: This channel is triggered when a value is published to the configured MQTT topic on this broker connection. By default, the event payload (in `receivedEvent`) is the received MQTT topic value only. If a separator is configured (see channel config), the payload will contain the topic and the value separated by that character (e.g., `my_topic#my_value`).
 
 Configuration parameters are:
 
