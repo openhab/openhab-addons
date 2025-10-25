@@ -25,7 +25,7 @@ To authorize, please follow these steps:
 - With developer tools showing on the right, go to [Bosch Indego login page](https://prodindego.b2clogin.com/prodindego.onmicrosoft.com/b2c_1a_signup_signin/oauth2/v2.0/authorize?redirect_uri=com.bosch.indegoconnect://login&client_id=65bb8c9d-1070-4fb4-aa95-853618acc876&response_type=code&scope=openid%20offline_access%20https://prodindego.onmicrosoft.com/indego-mobile-api/Indego.Mower.User) again.
 - "Please wait..." should now be displayed.
 - Find the `authresp` and copy the code: `com.bosch.indegoconnect://login/?code=<copy this>`
-- Use the openHAB console to authorize with this code: `openhab:boschindego authorize <paste code>`
+- Use the openHAB console to authorize with this code (`<bridgeId>` is optional if only one bridge is defined): `openhab:boschindego [<bridgeId>] authorize <paste code>` 
 
 ### `indego` Thing Configuration
 
