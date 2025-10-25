@@ -123,10 +123,14 @@ public class MailBuilder {
      *
      * @param urlString the URL as String
      * @return a MailBuilder
-     * @throws MalformedURLException if url has invalid format
+     * @throws IllegalArgumentException if url has invalid format
      */
-    public MailBuilder withURLAttachment(String urlString) throws MalformedURLException {
-        attachmentURLs.add(URI.create(urlString).toURL());
+    public MailBuilder withURLAttachment(String urlString) throws IllegalArgumentException {
+        try {
+            attachmentURLs.add(URI.create(urlString).toURL());
+        } catch (MalformedURLException e) {
+            throw new IllegalArgumentException("Invalid URL format", e);
+        }
         return this;
     }
 
