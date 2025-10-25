@@ -72,7 +72,61 @@ When generating code, the agent MUST follow these guidelines to ensure quality a
 - Added or changed code must report not code style warnings from static code analysis.
 
 
-## Documentation
+
+## Additional Guidance: Robust Handler Test Creation
+
+When writing or maintaining unit tests for handler logic (e.g., server URI resolution), follow these best practices to ensure reliability and maintainability:
+
+### Mocking and Field Injection
+	- When testing handler logic that accesses the `thing` field (from `BaseThingHandler`), ensure the test subclass sets the base class's `thing` field to the test's mock. Use reflection if necessary.
+	- Do not rely solely on overriding `getThing()`; the actual field must be set for internal logic to work as expected.
+
+### Configuration Injection
+	- If the handler constructor or logic uses `getConfigAs`, ensure the test subclass provides the correct configuration instance or mock at construction time.
+	- Use a static helper or similar pattern to inject the configuration mock for both the constructor and subsequent calls.
+
+### Exception Handling in Reflection
+	- When invoking private methods via reflection (e.g., `resolveServerUri()`), always unwrap `InvocationTargetException` to assert on the real cause.
+	- Write assertions that accept all possible exception types thrown by the production code (e.g., `IllegalArgumentException`, `URISyntaxException`, `IllegalStateException`).
+
+### Test Coverage
+	- Cover all logic branches: valid Thing property, invalid Thing property, unsupported scheme, fallback to configuration, and configuration errors.
+	- Always set up the mock Thing and Configuration for each test scenario.
+
+### No Production Code Changes for Testability
+	- Do not modify production code solely for testability. Use subclassing, reflection, and proper mock setup in tests.
+
+### Formatting and Style
+	- Run `mvn spotless:apply` after any test changes to ensure code style compliance.
+
+#### Example Patterns
+
+	Setting the `thing` field in a test subclass:
+
+	```java
+	try {
+		Field thingField = BaseThingHandler.class.getDeclaredField("thing");
+		thingField.setAccessible(true);
+		thingField.set(this, mockThing);
+	} catch (Exception e) {
+		throw new RuntimeException(e);
+	}
+	```
+
+	Unwrapping exceptions in assertions:
+
+	```java
+	Exception ex = assertThrows(Exception.class, () -> {
+		try {
+			method.invoke(handler);
+		} catch (InvocationTargetException ite) {
+			throw ite.getCause();
+		}
+	});
+	assertTrue(ex instanceof IllegalArgumentException || ...);
+	```
+
+Follow these patterns and lessons to ensure robust, reliable, and maintainable unit tests for handler logic in the openHAB Jellyfin binding. This will help future agents and developers avoid common pitfalls and ensure test correctness.
 
 - Update relevant documentation to reflect code changes.
 

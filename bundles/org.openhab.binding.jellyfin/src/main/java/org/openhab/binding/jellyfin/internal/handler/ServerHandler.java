@@ -222,50 +222,31 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
                 ServerState initialState = determineState();
                 setState(initialState);
 
-                URI serverUri = this.configuration.getServerURI();
+                URI serverUri = resolveServerUri();
 
-                // Step 1: Handle server URI based on state
-                switch (initialState) {
-                    case DISCOVERED:
-                        updateConfiguration(serverUri);
-                        break;
-                    case INITIALIZING:
-                    case NEEDS_AUTHENTICATION:
-                    case CONFIGURED:
-                        // Add the server URI to the properties for non-discovery results
-                        updateThingProperty(Constants.ServerProperties.SERVER_URI, serverUri.toString());
-                        break;
-                    case ERROR:
-                    case CONNECTED:
-                    case DISPOSED:
-                        // These states are not applicable during initialization
-                        logger.warn("Unexpected state during initialization: {}", initialState);
-                        break;
+                if (initialState == ServerState.DISCOVERED) {
+                    updateConfiguration(serverUri);
+                } else if (initialState == ServerState.INITIALIZING || initialState == ServerState.NEEDS_AUTHENTICATION
+                        || initialState == ServerState.CONFIGURED) {
+                    updateThingProperty(Constants.ServerProperties.SERVER_URI, serverUri.toString());
+                } else if (initialState == ServerState.ERROR || initialState == ServerState.CONNECTED
+                        || initialState == ServerState.DISPOSED) {
+                    // These states are not applicable during initialization
+                    logger.warn("Unexpected state during initialization: {}", initialState);
                 }
 
-                // Step 2: Update API client with server URI for all states
                 this.apiClient.updateBaseUri(serverUri.toString());
 
-                // Step 3: Handle authentication based on state
-                switch (initialState) {
-                    case CONFIGURED:
-                        // Has token, authenticate (tasks will be started by setState)
-                        this.apiClient.authenticateWithToken(this.configuration.token);
-                        break;
-                    case DISCOVERED:
-                    case NEEDS_AUTHENTICATION:
-                        // No token, set offline with configuration error
-                        ThingStatusInfo statusInfo = new ThingStatusInfo(ThingStatus.OFFLINE,
-                                ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.configuration.no-access-token");
-                        this.getThing().setStatusInfo(statusInfo);
-                        break;
-                    case INITIALIZING:
-                    case ERROR:
-                    case CONNECTED:
-                    case DISPOSED:
-                        // No specific authentication action for these states
-                        break;
+                if (initialState == ServerState.CONFIGURED) {
+                    // Has token, authenticate (tasks will be started by setState)
+                    this.apiClient.authenticateWithToken(this.configuration.token);
+                } else if (initialState == ServerState.DISCOVERED || initialState == ServerState.NEEDS_AUTHENTICATION) {
+                    // No token, set offline with configuration error
+                    ThingStatusInfo statusInfo = new ThingStatusInfo(ThingStatus.OFFLINE,
+                            ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.configuration.no-access-token");
+                    this.getThing().setStatusInfo(statusInfo);
                 }
+                // No specific authentication action for other states
 
             } catch (Exception e) {
                 this.logger.error("Error during initialization: {}", e.getMessage(), e);
@@ -395,5 +376,39 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
         Map<String, String> properties = new HashMap<>(thing.getProperties());
         properties.put(key, value);
         updateProperties(properties);
+    }
+
+    /**
+     * Resolves the effective server URI, preferring the Thing property if present and valid, otherwise falling back to
+     * configuration.
+     * Throws and logs errors for invalid or unsupported URIs.
+     *
+     * @return the resolved server URI
+     */
+    private URI resolveServerUri() {
+        String propertyValue = thing.getProperties().get(Constants.ServerProperties.SERVER_URI);
+        if (propertyValue != null && !propertyValue.isBlank()) {
+            try {
+                URI candidate = URI.create(propertyValue);
+                String scheme = candidate.getScheme();
+                if (scheme != null && (scheme.equalsIgnoreCase("http") || scheme.equalsIgnoreCase("https"))) {
+                    return candidate;
+                } else {
+                    logger.error("Thing property '{}' contains unsupported URI scheme: {}",
+                            Constants.ServerProperties.SERVER_URI, scheme);
+                    throw new IllegalArgumentException("Unsupported URI scheme: " + scheme);
+                }
+            } catch (Exception ex) {
+                logger.error("Thing property '{}' contains invalid URI: {}", Constants.ServerProperties.SERVER_URI,
+                        propertyValue, ex);
+                throw ex;
+            }
+        }
+        try {
+            return this.configuration.getServerURI();
+        } catch (java.net.URISyntaxException ex) {
+            logger.error("Configuration contains invalid server URI", ex);
+            throw new IllegalStateException("Configuration contains invalid server URI", ex);
+        }
     }
 }
