@@ -178,7 +178,7 @@ public class LinkPlayHandler extends BaseThingHandler implements LinkPlayUpnpDev
         updateStatus(ThingStatus.UNKNOWN);
         linkPlayUpnpRegistry.addDeviceListener(udn, this);
         upnpIOService.registerParticipant(this);
-        
+
         /**
          * kicks off a service check to discover the device (and continues to run every 15 seconds until the device
          * is discovered) this will be rescheduled once the device is discovered and we get a maxAgeSeconds value from
