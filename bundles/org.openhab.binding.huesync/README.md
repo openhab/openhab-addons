@@ -54,7 +54,7 @@ If your device is not automatically discovered, create a thing and manually conf
 
 To communicate with the sync box, you need to couple the thing with the hardware (registration).
 The thing will start this process automatically.
-To complete the registration, you just press the "coupling" button on the sync box for 3 seconds:
+To complete the registration, simply press the "coupling" button on the sync box for 3 seconds:
 
 ![Device Registration](doc/device_registration.png)
 
