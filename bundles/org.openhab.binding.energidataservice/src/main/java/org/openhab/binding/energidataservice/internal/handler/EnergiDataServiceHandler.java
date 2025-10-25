@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -328,7 +329,7 @@ public class EnergiDataServiceHandler extends BaseThingHandler
 
     private Subscription getChannelSubscription(String channelId) {
         if (CHANNEL_SPOT_PRICE.equals(channelId)) {
-            return SpotPriceSubscription.of(config.priceArea, config.getCurrency());
+            return SpotPriceSubscription.of(config.priceArea, config.getCurrency(), config.hourlySpotPrices);
         } else if (CHANNEL_CO2_EMISSION_PROGNOSIS.equals(channelId)) {
             return Co2EmissionSubscription.of(config.priceArea, Co2EmissionSubscription.Type.Prognosis);
         } else if (CHANNEL_CO2_EMISSION_REALTIME.equals(channelId)) {
@@ -467,14 +468,27 @@ public class EnergiDataServiceHandler extends BaseThingHandler
                 DayAheadPriceRecord[] spotPriceRecords = apiController.getDayAheadPrices(config.priceArea, currency,
                         DateQueryParameter.of(startDate.isBefore(dayAheadFirstDate) ? dayAheadFirstDate : startDate),
                         DateQueryParameter.of(endDate.plusDays(1)), properties);
+
+                Map<Instant, BigDecimal> dayAheadPrices = new TreeMap<>();
                 for (DayAheadPriceRecord record : Arrays.stream(spotPriceRecords)
                         .sorted(Comparator.comparing(DayAheadPriceRecord::time)).toList()) {
                     BigDecimal spotPrice = isDKK ? record.dayAheadPriceDKK() : record.dayAheadPriceEUR();
                     if (spotPrice == null) {
                         continue;
                     }
-                    spotPriceTimeSeries.add(record.time(),
-                            getEnergyPrice(spotPrice.divide(BigDecimal.valueOf(1000)), currency));
+                    dayAheadPrices.put(record.time(), spotPrice.divide(BigDecimal.valueOf(1000)));
+                }
+
+                if (config.hourlySpotPrices && !dayAheadPrices.isEmpty()) {
+                    Map<Instant, BigDecimal> hourlyAverages = ElectricityPriceProvider
+                            .calculateHourlyAverages(dayAheadPrices);
+                    for (Entry<Instant, BigDecimal> entry : hourlyAverages.entrySet()) {
+                        spotPriceTimeSeries.add(entry.getKey(), getEnergyPrice(entry.getValue(), currency));
+                    }
+                } else {
+                    for (Entry<Instant, BigDecimal> entry : dayAheadPrices.entrySet()) {
+                        spotPriceTimeSeries.add(entry.getKey(), getEnergyPrice(entry.getValue(), currency));
+                    }
                 }
             }
             if (spotPriceTimeSeries.size() > 0) {
