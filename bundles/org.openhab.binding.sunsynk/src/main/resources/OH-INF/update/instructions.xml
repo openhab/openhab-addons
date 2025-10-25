@@ -2,6 +2,7 @@
 <update:update-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns:update="https://openhab.org/schemas/update-description/v1.0.0"
     xsi:schemaLocation="https://openhab.org/schemas/update-description/v1.0.0 https://openhab.org/schemas/update-description-1.0.0.xsd">
+	
     <thing-type uid="sunsynk:inverter">
         <instruction-set targetVersion="1">
             <!--> </Remove channels ids-->
