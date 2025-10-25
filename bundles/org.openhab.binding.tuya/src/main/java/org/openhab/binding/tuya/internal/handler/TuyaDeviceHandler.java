@@ -601,6 +601,8 @@ public class TuyaDeviceHandler extends BaseThingHandler implements DeviceInfoSub
                 configuration.ip = deviceInfo.ip;
                 configuration.protocol = deviceInfo.protocolVersion;
 
+                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "@text/online.wait-for-device");
+
                 this.tuyaDevice = new TuyaDevice(gson, this, eventLoopGroup, configuration.deviceId,
                         configuration.localKey.getBytes(StandardCharsets.UTF_8), configuration.ip,
                         configuration.protocol);
