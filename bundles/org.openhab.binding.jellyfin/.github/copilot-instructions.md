@@ -30,7 +30,11 @@ Operational constraints:
 
 ## Author Tag for New Classes
 <!-- markdownlint-disable-next-line MD033 -->
-- **CRITICAL**: Every new class MUST include an `@author` tag in the class-level Javadoc (not in the file header), stating "<git user name> - Initial contribution". Do not reference these instructions in the author tag. Replace `<git user name>` by the value of `git config user.name` (without eMail or angle brackets).
+- **CRITICAL**: Every new class MUST include an `@author` tag in the
+  class-level Javadoc (not in the file header), stating "\<git user name\> - Initial
+  contribution". Do not reference these instructions in the author tag. Replace
+  `\<git user name\>` by the value of `git config user.name` (without eMail or angle
+  brackets).
 When generating code, the agent MUST follow these guidelines to ensure quality
 and maintainability:
 
@@ -133,12 +137,20 @@ try {
 
 ```
 
-  markdown linter issues before considering documentation complete.
+## Markdown Quality and Compliance Requirements
 
-- Always run a markdown linter (e.g., markdownlint) on all documentation files,
-  including `.github/copilot-instructions.md`, before considering changes
-  complete. Fix all reported issues, including line length, multiple blank
-  lines, and sentence-per-line rules.
+**CRITICAL:** All new or changed documentation content (including
+`.github/copilot-instructions.md` and all files in `docs/`) MUST be fully
+compliant with the markdownlint rules and the `.editorconfig` settings for
+markdown files before being considered complete.
+
+- Always run a markdown linter (e.g., `markdownlint`) on all documentation files
+  before submitting or merging changes. All reported issues (including line
+  length, multiple blank lines, code block language, and sentence-per-line
+  rules) MUST be fixed.
+- The `.editorconfig` file in the repository root enforces markdown style rules
+  (indentation, max line length, etc.) for all `*.md` files. Your editor MUST
+  respect these settings when editing documentation.
 - Never remove or lose information when fixing linter issues. If a linter
   warning is caused by formatting, reformat the content (e.g., convert stray
   lines or fragments into proper bullet lists or paragraphs) rather than
@@ -152,63 +164,93 @@ try {
 - When in doubt, prefer clarity and completeness over strict formatting, but
   always resolve linter errors in a way that preserves all technical and
   instructional content.
-  max-one-sentence-per-line: Max 1 sentence should be on a line (markdownlint max-one-sentence-per-line).
-  MD012/no-multiple-blanks: Multiple consecutive blank lines are not allowed.
 
-  **First step for fixing markdown violations:**
-  Always attempt to auto-fix markdown issues using `markdownlint --fix` before making manual changes. This can resolve many common formatting problems automatically.
-
-  **EditorConfig enforcement:**
-  The `.editorconfig` file in the repository root enforces markdown style rules (indentation, max line length, etc.) for all `*.md` files. Ensure your editor respects these settings when editing documentation.
-
-  Entry point for documentation changes is the `docs` folder in the repository root.
+**First step for fixing markdown violations:**
+Always attempt to auto-fix markdown issues using `markdownlint --fix` before
+making manual changes.
+This can resolve many common formatting problems
+automatically.
+Entry point for documentation changes is the `docs` folder in the repository
+root.
 
 ### Documentation Structure and Patterns
 
-- The main documentation page (e.g., `architecture.md`) must provide a high-level overview, a clear table of contents, and short summaries of each major architectural area.
-- The main Mermaid architecture diagram **MUST NOT** include members of records (record fields or methods) for clarity and overview. Instead, add a dedicated section (e.g., "Record Details") to document all record members and their structure.
-- For complex or detailed topics (such as handler architecture, utility classes, task management, error handling, discovery, or API structure), create dedicated pages in a subfolder (e.g., `docs/architecture/`).
-- **CRITICAL**: Each documentation detail page must follow the SOLID principle—one responsibility per page. If a detail page covers more than one architectural concern, split it into separate pages (e.g., do not mix discovery and API architecture on a single page).
+- The main documentation page (e.g., `architecture.md`) must provide a
+  high-level overview, a clear table of contents, and short summaries of each
+  major architectural area.
+- The main Mermaid architecture diagram **MUST NOT** include members of records
+  (record fields or methods) for clarity and overview. Instead, add a dedicated
+  section (e.g., "Record Details") to document all record members and their
+  structure.
+- For complex or detailed topics (such as handler architecture, utility classes,
+  task management, error handling, discovery, or API structure), create
+  dedicated pages in a subfolder (e.g., `docs/architecture/`).
+- **CRITICAL**: Each documentation detail page must follow the SOLID principle—one
+  responsibility per page. If a detail page covers more than one architectural
+  concern, split it into separate pages (e.g., do not mix discovery and API
+  architecture on a single page).
   - Each dedicated page must include:
     - A clear heading and summary of its focus area.
     - The relevant Mermaid diagram(s), validated for the current Mermaid version.
     - A summary section and, if needed, links back to the main overview.
-    - If records are used, only visualize their usage (e.g., as return types or associations) without showing their members. Do not include record members in these diagrams; details must be in the dedicated Record Details section only.
-    - Validate all Mermaid diagrams after any change to ensure they render and are syntactically correct.
+    - If records are used, only visualize their usage (e.g., as return types or
+      associations) without showing their members. Do not include record members
+      in these diagrams; details must be in the dedicated Record Details
+      section only.
+    - Validate all Mermaid diagrams after any change to ensure they render and
+      are syntactically correct.
   - The main documentation page must include:
     - A table of contents with links to all dedicated detail pages.
     - Short summaries of each area, referencing the detail pages.
-    - A dedicated section listing all record details (members and structure) referenced in the architecture, with a dedicated Mermaid diagram for records.
-  - Do not include development or contribution guidelines in the documentation section—only document the existing implementation and its structure.
+
+    - A dedicated section listing all record details (members and structure)
+      referenced in the architecture, with a dedicated Mermaid diagram for records.
+  - Do not include development or contribution guidelines in the documentation
+    section—only document the existing implementation and its structure.
+
+  - Do not include development or contribution guidelines in the documentation
+    section—only document the existing implementation and its structure.
 
 #### Table of Contents (TOC)
 
-- Any changes to headings, section structure, or content organization MUST include updating the table of contents.
+- Any changes to headings, section structure, or content organization MUST
+  include updating the table of contents.
 - Use the same format and indentation level as the existing TOC.
 - Ensure no orphaned TOC entries remain after content changes.
 - Check that TOC structure matches document hierarchy.
-- All TOC links must match the actual heading anchors (lowercase, hyphens for spaces, special characters removed).
+- All TOC links must match the actual heading anchors (lowercase, hyphens for
+  spaces, special characters removed).
 
 #### Sections
 
-- When adding new sections, add corresponding TOC entries at the appropriate hierarchy level.
+- When adding new sections, add corresponding TOC entries at the appropriate
+  hierarchy level.
 - When removing sections, remove corresponding TOC entries.
 - Maintain logical section ordering in both the TOC and document structure.
 
 #### Diagrams
 
-- Use <https://docs.mermaidchart.com/mermaid-oss/intro/index.html> for diagrams and visualizations.
-- **CRITICAL**: Diagrams MUST focus on the architecture and high-level workflows. Avoid low-level implementation details.
-- Validate all Mermaid diagrams for syntax and rendering with the current Mermaid version before adding or updating.
-- Leverage enhanced features like subgraphs, styling, and notes to improve clarity.
-- Place diagrams in dedicated detail pages if they are complex or focused on a specific subsystem.
-- Ensure diagrams are well-integrated into the documentation with appropriate captions, summaries, and references from the main overview.
+- Use <https://docs.mermaidchart.com/mermaid-oss/intro/index.html> for diagrams
+  and visualizations.
+- **CRITICAL**: Diagrams MUST focus on the architecture and high-level
+  workflows. Avoid low-level implementation details.
+- Validate all Mermaid diagrams for syntax and rendering with the current
+  Mermaid version before adding or updating.
+- Leverage enhanced features like subgraphs, styling, and notes to improve
+  clarity.
+- Place diagrams in dedicated detail pages if they are complex or focused on a
+  specific subsystem.
+- Ensure diagrams are well-integrated into the documentation with appropriate
+  captions, summaries, and references from the main overview.
 
 ## Source Code Management
 
 - Follow the established branching strategy of the openHAB project.
-- Commit messages MUST be clear, concise, and follow the conventional commit format.
-- **CRITICAL**: Agent MUST not automatically commit changes. All changes MUST be reviewed and approved by a human developer before being committed to the repository.
+- Commit messages MUST be clear, concise, and follow the conventional commit
+  format.
+- **CRITICAL**: Agent MUST not automatically commit changes. All changes MUST be
+  reviewed and approved by a human developer before being committed to the
+  repository.
 - **CRITICAL**: Never add the "Close (issue-number)" statement to commit
 
   messages. This must be done by a human developer during the PR creation.
