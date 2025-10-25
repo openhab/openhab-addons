@@ -206,7 +206,7 @@ This will change the communication method and the Mi IO binding can communicate 
 
 # Mi IO Devices
 
-Currently the miio binding supports more than 360 different models.
+Currently the miio binding supports more than 370 different models.
 
 | Device                             | ThingType        | Device Model           | Supported    | Remark     |
 |------------------------------------|------------------|------------------------|--------------|------------|
@@ -234,7 +234,7 @@ Currently the miio binding supports more than 360 different models.
 | Mi IH Pressure Rice Cooker         | miio:unsupported | chunmi.cooker.press1   | No           |            |
 | Mi IH Pressure Rice Cooker         | miio:unsupported | chunmi.cooker.press2   | No           |            |
 | Gosund Smart Plug                  | miio:basic       | [cuco.plug.cp1](#cuco-plug-cp1) | Yes          |            |
-| Xiaomi Smart Plug 2 (Wi-Fi)        | miio:basic       | [cuco.plug.v2eur](#cuco-plug-v2eur) | Yes          | Device only works with cloud connection (stays offline with direct connection). Select in your thing configuration Communication Method 'Cloud' |
+| Xiaomi Smart Plug 2 (Wi-Fi)        | miio:basic       | [cuco.plug.v2eur](#cuco-plug-v2eur) | Yes          |            |
 | Mi Smart Antibacterial Humidifier  | miio:basic       | [deerma.humidifier.jsq](#deerma-humidifier-jsq) | Yes          |            |
 | Mi S Smart Humidifer               | miio:basic       | [deerma.humidifier.jsq1](#deerma-humidifier-jsq1) | Yes          |            |
 | Xiaomi Smart Humidifier 2          | miio:basic       | [deerma.humidifier.jsq2w](#deerma-humidifier-jsq2w) | Yes          |            |
@@ -473,6 +473,8 @@ Currently the miio binding supports more than 360 different models.
 | Mi Bedside Lamp                    | miio:basic       | [yeelink.light.bslamp1](#yeelink-light-bslamp1) | Yes          |            |
 | Mi Bedside Lamp 2                  | miio:basic       | [yeelink.light.bslamp2](#yeelink-light-bslamp2) | Yes          |            |
 | Yeelight Bedside Lamp II           | miio:basic       | [yeelink.light.bslamp3](#yeelink-light-bslamp3) | Yes          |            |
+| Yeelight LED Ceiling Light Pro     | miio:basic       | [yeelink.light.ceila](#yeelink-light-ceila) | Yes          |            |
+| Yeelight Arwen Ceiling Light       | miio:basic       | [yeelink.light.ceilb](#yeelink-light-ceilb) | Yes          |            |
 | Yeelight Ceiling Light             | miio:basic       | [yeelink.light.ceiling1](#yeelink-light-ceiling1) | Yes          |            |
 | Yeelight Ceiling Light SE          | miio:basic       | [yeelink.light.ceiling2](#yeelink-light-ceiling2) | Yes          |            |
 | Yeelight LED Ceiling Light         | miio:basic       | [yeelink.light.ceiling3](#yeelink-light-ceiling3) | Yes          |            |
@@ -4061,6 +4063,33 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | colorflow                  | Switch               | Color Flow                               |            |
 | name                       | String               | Name                                     |            |
 
+### Yeelight LED Ceiling Light Pro (<a name="yeelink-light-ceila">yeelink.light.ceila</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| actions                    | String               | Actions                                  | Value mapping `["light-toggle"="Light Toggle","light-brightness-up"="Light Brightness Up","light-brightness-down"="Light Brightness Down"]` |
+| on                         | Switch               | Light - Switch Status                    |            |
+| mode                       | Number               | Light - Mode                             | Value mapping `["0"="Day","1"="Night"]` |
+| brightness                 | Number:Dimensionless | Light - Brightness                       |            |
+| color_temperature          | Number:Temperature   | Light - Color Temperature                |            |
+
+### Yeelight Arwen Ceiling Light (<a name="yeelink-light-ceilb">yeelink.light.ceilb</a>) Channels
+
+| Channel                    | Type                 | Description                              | Comment    |
+|----------------------------|----------------------|------------------------------------------|------------|
+| actions                    | String               | Actions                                  | Value mapping `["light-toggle"="Light Toggle","light-brightness-up"="Light Brightness Up","light-brightness-down"="Light Brightness Down"]` |
+| on                         | Switch               | Light - Switch Status                    |            |
+| mode                       | Number               | Light - Mode                             | Value mapping `["0"="Day","1"="Night"]` |
+| brightness                 | Number:Dimensionless | Light - Brightness                       |            |
+| color_temperature          | Number:Temperature   | Light - Color Temperature                |            |
+| on1                        | Switch               | Ambient Light - Switch Status            |            |
+| mode1                      | Number               | Ambient Light - Mode                     | Value mapping `["1"="RGB","3"="HSV"]` |
+| brightness1                | Number:Dimensionless | Ambient Light - Brightness               |            |
+| color_temperature1         | Number:Temperature   | Ambient Light - Color Temperature        |            |
+| color                      | Number               | Ambient Light - Color                    |            |
+| saturability               | Number:Dimensionless | Ambient Light - Saturability             |            |
+| flow                       | Number               | Ambient Light - Flow                     | Value mapping `["0"="NOFLOW","1"="FLOWING"]` |
+
 ### Yeelight Ceiling Light (<a name="yeelink-light-ceiling1">yeelink.light.ceiling1</a>) Channels
 
 | Channel                    | Type                 | Description                              | Comment    |
@@ -6309,7 +6338,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
-| fault                      | Number               | Heater - Device Fault                    | Value mapping `["0"="No Error","1"="NTC Connect Error","2"="High Temperature Alarm","3"="EEPROM Error","4"="Multi Errors"]` |
+| fault                      | Number               | Heater - Device Fault                    | Value mapping `["0"="No Error","1"="NTC	Connect Error","2"="High Temperature Alarm","3"="EEPROM Error","4"="Multi Errors"]` |
 | on                         | Switch               | Heater - Power                           |            |
 | target-temperature         | Number:Temperature   | Heater - Target Temperature              |            |
 | alarm                      | Switch               | Alarm - Alarm                            |            |
@@ -6325,7 +6354,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | Channel                    | Type                 | Description                              | Comment    |
 |----------------------------|----------------------|------------------------------------------|------------|
 | on                         | Switch               | Heater - Power                           |            |
-| fault                      | Number               | Heater - Device Fault                    | Value mapping `["0"="No Error","1"="NTC Connect Error","2"="High Temperature Alarm","3"="EEPROM Error","4"="Multi Errors"]` |
+| fault                      | Number               | Heater - Device Fault                    | Value mapping `["0"="No Error","1"="NTC	Connect Error","2"="High Temperature Alarm","3"="EEPROM Error","4"="Multi Errors"]` |
 | target-temperature         | Number:Temperature   | Heater - Target Temperature              |            |
 | alarm                      | Switch               | Alarm - Alarm                            |            |
 | countdown-time             | Number:Time          | Countdown - Countdown Time               |            |
@@ -10438,6 +10467,39 @@ Switch colorflow "Color Flow" (G_light) {channel="miio:basic:light:colorflow"}
 String name "Name" (G_light) {channel="miio:basic:light:name"}
 ```
 
+### Yeelight LED Ceiling Light Pro (yeelink.light.ceila) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_light "Yeelight LED Ceiling Light Pro" <status>
+String actions "Actions" (G_light) {channel="miio:basic:light:actions"}
+Switch on "Light - Switch Status" (G_light) {channel="miio:basic:light:on"}
+Number mode "Light - Mode" (G_light) {channel="miio:basic:light:mode"}
+Number:Dimensionless brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number:Temperature color_temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color_temperature"}
+```
+
+### Yeelight Arwen Ceiling Light (yeelink.light.ceilb) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_light "Yeelight Arwen Ceiling Light" <status>
+String actions "Actions" (G_light) {channel="miio:basic:light:actions"}
+Switch on "Light - Switch Status" (G_light) {channel="miio:basic:light:on"}
+Number mode "Light - Mode" (G_light) {channel="miio:basic:light:mode"}
+Number:Dimensionless brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Number:Temperature color_temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color_temperature"}
+Switch on1 "Ambient Light - Switch Status" (G_light) {channel="miio:basic:light:on1"}
+Number mode1 "Ambient Light - Mode" (G_light) {channel="miio:basic:light:mode1"}
+Number:Dimensionless brightness1 "Ambient Light - Brightness" (G_light) {channel="miio:basic:light:brightness1"}
+Number:Temperature color_temperature1 "Ambient Light - Color Temperature" (G_light) {channel="miio:basic:light:color_temperature1"}
+Number color "Ambient Light - Color" (G_light) {channel="miio:basic:light:color"}
+Number:Dimensionless saturability "Ambient Light - Saturability" (G_light) {channel="miio:basic:light:saturability"}
+Number flow "Ambient Light - Flow" (G_light) {channel="miio:basic:light:flow"}
+```
+
 ### Yeelight Ceiling Light (yeelink.light.ceiling1) item file lines
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
@@ -13207,6 +13269,7 @@ Number lp_autooff "Low Power Auto Off" (G_powerstrip) {channel="miio:basic:power
 Number lp_autooff_delay "Low Power Limit Time" (G_powerstrip) {channel="miio:basic:powerstrip:lp_autooff_delay"}
 Number lp_threshold "Low Power Threshold" (G_powerstrip) {channel="miio:basic:powerstrip:lp_threshold"}
 ```
+
 
 ### Country Servers
 
