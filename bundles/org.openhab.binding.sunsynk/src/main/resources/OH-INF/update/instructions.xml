@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<update:update-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:update="https://openhab.org/schemas/update-description/v1.0.0"
+    xsi:schemaLocation="https://openhab.org/schemas/update-description/v1.0.0 https://openhab.org/schemas/update-description-1.0.0.xsd">
+    <thing-type uid="sunsynk:inverter">
+        <instruction-set targetVersion="1">
+            <!--> </Remove channels ids-->
+            <remove-channel id="inverter-solar-power-now"/>
+            <!--> </Add new channels ids-->
+            <add-channel id="inverter-grid-frequency">
+                <type>sunsynk:grid-frequency</type>
+                <label>Grid Frequency</label>
+            </add-channel> 
+            <add-channel id="inverter-rated-ac-output">
+                <type>system:electric-power</type>
+                <label>Inverter Rated Output</label>
+            </add-channel >
+            <add-channel id="inverter-solar-energy-month"> 
+                <type>system:electric-energy</type>
+                <label>Solar Energy This Month</label>
+            </add-channel> 
+            <add-channel id="inverter-solar-energy-year"> 
+                <type>system:electric-energy</type>
+                <label>Solar Energy This Year</label>
+            </add-channel>
+            <add-channel id="inverter-solar-efficiency">
+                <type>sunsynk:solar-efficiency</type>
+                <label>Solar Efficiency</label>
+            </add-channel>
+            <add-channel id= "inverter-solar-ac-power">
+                <type>system:electric-power</type>
+                <label>Solar Power</label>
+            </add-channel>
+            <add-channel id="inverter-solar-string-voltage-1"> 
+                <type>system:electric-voltage</type>
+                <label>String 1 Solar Voltage</label>
+            </add-channel>
+            <add-channel id="inverter-solar-string-voltage-2"> 
+                <type>system:electric-voltage</type>
+                <label>String 2 Solar Voltage</label>
+            </add-channel>
+            <add-channel id="inverter-solar-string-current-1"> 
+                <type>system:electric-current</type>
+                <label>String 1 Solar Current</label>
+            </add-channel>
+            <add-channel id="inverter-solar-string-current-2"> 
+                <type>system:electric-current</type>
+                <label>String 2 Solar Current</label>
+            </add-channel>
+            <add-channel id="inverter-solar-string-power-1"> 
+                <type>system:electric-power</type>
+                <label>String 1 Solar Power</label>
+            </add-channel>
+            <add-channel id="inverter-solar-string-power-2"> 
+                <type>system:electric-power</type>
+                <label>String 2 Solar Power</label>
+            </add-channel>
+        </instruction-set>
+    </thing-type>
+</update:update-descriptions>
