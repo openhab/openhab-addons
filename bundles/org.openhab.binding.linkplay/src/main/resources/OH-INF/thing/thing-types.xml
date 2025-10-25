@@ -1,0 +1,470 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="linkplay"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="player">
+		<label>LinkPlay Player</label>
+		<description>Represents a single LinkPlay-based audio player</description>
+		<channel-groups>
+			<channel-group id="playback" typeId="playback"/>
+			<channel-group id="metadata" typeId="metadata"/>
+			<channel-group id="input" typeId="input"/>
+			<channel-group id="equalizer" typeId="equalizer"/>
+			<channel-group id="network" typeId="network"/>
+			<channel-group id="multiroom" typeId="multiroom"/>
+			<channel-group id="device" typeId="device"/>
+			<channel-group id="presets" typeId="presets"/>
+			<channel-group id="preset1" typeId="preset"/>
+			<channel-group id="preset2" typeId="preset"/>
+			<channel-group id="preset3" typeId="preset"/>
+			<channel-group id="preset4" typeId="preset"/>
+			<channel-group id="preset5" typeId="preset"/>
+			<channel-group id="preset6" typeId="preset"/>
+			<channel-group id="preset7" typeId="preset"/>
+			<channel-group id="preset8" typeId="preset"/>
+			<channel-group id="preset9" typeId="preset"/>
+			<channel-group id="preset10" typeId="preset"/>
+			<channel-group id="preset11" typeId="preset"/>
+			<channel-group id="preset12" typeId="preset"/>
+		</channel-groups>
+		<representation-property>udn</representation-property>
+		<config-description>
+			<parameter name="udn" type="text" required="true">
+				<label>UDN</label>
+				<description>Unique Device Name (UDN)</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- Playback & Player Status -->
+	<channel-type id="playerControl">
+		<item-type>Player</item-type>
+		<label>Player Control</label>
+		<description>Control playback of the device</description>
+	</channel-type>
+	<channel-type id="playbackState">
+		<item-type>String</item-type>
+		<label>Playback State</label>
+		<description>Current playback state (PLAYING, PAUSED, STOPPED, BUFFERING)</description>
+		<state readOnly="true">
+			<options>
+				<option value="PLAYING">Playing</option>
+				<option value="PAUSED">Paused</option>
+				<option value="STOPPED">Stopped</option>
+				<option value="BUFFERING">Buffering</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="trackPosition">
+		<item-type>Number:Time</item-type>
+		<label>Track Position</label>
+		<description>Current track position</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="trackDuration">
+		<item-type>Number:Time</item-type>
+		<label>Track Duration</label>
+		<description>Total track duration</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="playlistName">
+		<item-type>String</item-type>
+		<label>Playlist Name</label>
+		<description>Playlist name</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="repeatShuffleMode">
+		<item-type>Number</item-type>
+		<label>Repeat / Shuffle Mode</label>
+		<description>Loop, shuffle or single-track mode</description>
+		<state>
+			<options>
+				<option value="-1">Off</option>
+				<option value="0">Repeat One</option>
+				<option value="1">Repeat All</option>
+				<option value="2">Shuffle All</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="eqPreset">
+		<item-type>String</item-type>
+		<label>EQ Preset</label>
+		<description>Name of the active EQ preset</description>
+	</channel-type>
+	<channel-type id="volume">
+		<item-type>Dimmer</item-type>
+		<label>Volume</label>
+		<description>Main volume (0-100 %)</description>
+		<state min="0" max="100" step="1" pattern="%d %%"/>
+	</channel-type>
+	<channel-type id="mute">
+		<item-type>Switch</item-type>
+		<label>Mute</label>
+		<description>Mutes or unmutes the device</description>
+	</channel-type>
+
+	<!-- Current Track Metadata -->
+	<channel-type id="trackTitle">
+		<item-type>String</item-type>
+		<label>Track Title</label>
+		<description>Current track title</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="trackArtist">
+		<item-type>String</item-type>
+		<label>Track Artist</label>
+		<description>Current track artist</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="trackAlbum">
+		<item-type>String</item-type>
+		<label>Track Album</label>
+		<description>Current track album</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="trackUri">
+		<item-type>String</item-type>
+		<label>Track URI</label>
+		<description>Current track uri</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="trackUri">
+		<item-type>String</item-type>
+		<label>Track Source</label>
+		<description>Current track source (Pandora, Spotify, etc..)</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="albumArtUrl">
+		<item-type>String</item-type>
+		<label>Album Art URL</label>
+		<description>URL of the current album artwork</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="albumArt">
+		<item-type>Image</item-type>
+		<label>Album Art</label>
+		<description>Album artwork</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="sampleRate">
+		<item-type>Number</item-type>
+		<label>Sample Rate</label>
+		<description>Sample rate of the playing track (Hz)</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="bitDepth">
+		<item-type>Number</item-type>
+		<label>Bit Depth</label>
+		<description>Bit depth of the playing track</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="bitRate">
+		<item-type>Number</item-type>
+		<label>Bit Rate</label>
+		<description>Bit rate of the playing track (kbps)</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<!-- Input / Source Selection -->
+	<channel-type id="sourceInput">
+		<item-type>String</item-type>
+		<label>Source Input</label>
+		<description>Active input source (WiFi, Bluetooth, Line-in, …)</description>
+		<state>
+			<options>
+				<option value="wifi">WiFi</option>
+				<option value="bluetooth">Bluetooth</option>
+				<option value="line-in">Line-in</option>
+				<option value="optical">Optical</option>
+				<option value="udisk">USB / U-Disk</option>
+				<option value="HDMI">HDMI</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="bluetoothConnected">
+		<item-type>Switch</item-type>
+		<label>Bluetooth Connected</label>
+		<description>Indicates if a Bluetooth device is connected</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="bluetoothPairedDevice">
+		<item-type>String</item-type>
+		<label>Paired BT Device</label>
+		<description>MAC address of the paired Bluetooth device</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="lineInActive">
+		<item-type>Switch</item-type>
+		<label>Line-in Active</label>
+		<description>True when line-in source is selected</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<!-- Equaliser & Audio Output -->
+	<channel-type id="eqEnabled">
+		<item-type>Switch</item-type>
+		<label>EQ Enabled</label>
+		<description>Equaliser on/off</description>
+	</channel-type>
+	<channel-type id="eqBand">
+		<item-type>Number</item-type>
+		<label>EQ Band</label>
+		<description>Gain value of an EQ frequency band</description>
+		<state min="-12" max="12" step="1" pattern="%d dB"/>
+	</channel-type>
+	<channel-type id="outputHardwareMode">
+		<item-type>String</item-type>
+		<label>Output Hardware Mode</label>
+		<description>Active audio output (SPDIF, AUX, COAX)</description>
+		<state readOnly="true">
+			<options>
+				<option value="SPDIF">SPDIF</option>
+				<option value="AUX">AUX</option>
+				<option value="COAX">COAX</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="channelBalance">
+		<item-type>Number</item-type>
+		<label>Channel Balance</label>
+		<description>Stereo balance (-1.0 left … 1.0 right)</description>
+		<state min="-1" max="1" step="0.1" pattern="%.1f"/>
+	</channel-type>
+	<channel-type id="spdifSwitchDelayMs">
+		<item-type>Number</item-type>
+		<label>SPDIF Switch Delay</label>
+		<description>SPDIF sample-rate switch delay (ms)</description>
+		<state min="0" max="3000" step="50" pattern="%d ms"/>
+	</channel-type>
+
+	<!-- Multi-room / Grouping -->
+	<channel-type id="slaveVolume">
+		<item-type>Dimmer</item-type>
+		<label>Slave Volume</label>
+		<description>Volume level for all grouped devices</description>
+		<state min="0" max="100" step="1" pattern="%d %%"/>
+	</channel-type>
+	<channel-type id="slaveMute">
+		<item-type>Switch</item-type>
+		<label>Slave Mute</label>
+		<description>Mutes or unmutes all grouped devices</description>
+	</channel-type>
+	<channel-type id="multiroomActive">
+		<item-type>Switch</item-type>
+		<label>Multi-room Active</label>
+		<description>Indicates if the device is part of a group</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="multiroomLeader">
+		<item-type>Switch</item-type>
+		<label>Multi-room Leader</label>
+		<description>Indicates if the device is a leader of a group</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="joinGroup">
+		<item-type>String</item-type>
+		<label>Join Group</label>
+		<description>Join another player's group</description>
+	</channel-type>
+	<channel-type id="leaveGroup">
+		<item-type>String</item-type>
+		<label>Leave Group</label>
+		<description>Leave this player's group</description>
+	</channel-type>
+	<channel-type id="addRemoveMember">
+		<item-type>String</item-type>
+		<label>Manage Members</label>
+		<description>Add or remove members from this player's group</description>
+	</channel-type>
+	<channel-type id="ungroup">
+		<item-type>Switch</item-type>
+		<label>Ungroup</label>
+		<description>Ungroup all devices</description>
+	</channel-type>
+
+	<!-- Device & System -->
+	<channel-type id="ledEnabled">
+		<item-type>Switch</item-type>
+		<label>Status LED</label>
+		<description>Enables or disables the status LED</description>
+	</channel-type>
+	<channel-type id="touchKeysEnabled">
+		<item-type>Switch</item-type>
+		<label>Touch Keys</label>
+		<description>Enables or disables touch controls</description>
+	</channel-type>
+	<channel-type id="shutdownTimer">
+		<item-type>Number:Time</item-type>
+		<label>Shutdown Timer</label>
+		<description>Seconds until automatic shutdown</description>
+	</channel-type>
+	<channel-type id="reboot">
+		<item-type>Switch</item-type>
+		<label>Reboot Device</label>
+		<description>Sends a reboot command (ON to trigger)</description>
+	</channel-type>
+	<channel-type id="factoryReset">
+		<item-type>Switch</item-type>
+		<label>Factory Reset</label>
+		<description>Restores factory defaults (ON to trigger)</description>
+	</channel-type>
+
+	<!-- Alarm & Presets (simplified) -->
+	<channel-type id="presetCount">
+		<item-type>Number</item-type>
+		<label>Preset Count</label>
+		<description>Number of presets stored on the device</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="playPreset">
+		<item-type>Number</item-type>
+		<label>Play Preset</label>
+		<description>Sends the chosen preset number (1-12) to play</description>
+	</channel-type>
+	<!-- Added preset detail channel types -->
+	<channel-type id="presetName">
+		<item-type>String</item-type>
+		<label>Preset Name</label>
+		<description>Name of the stored preset</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="presetUrl">
+		<item-type>String</item-type>
+		<label>Preset URL</label>
+		<description>URL associated with the preset</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="presetSource">
+		<item-type>String</item-type>
+		<label>Preset Source</label>
+		<description>Source type of the preset (e.g. tunein, udisk)</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="presetPicUrl">
+		<item-type>String</item-type>
+		<label>Preset Picture URL</label>
+		<description>Artwork URL for the preset</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="presetPic">
+		<item-type>Image</item-type>
+		<label>Preset Picture</label>
+		<description>Artwork image for the preset</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="presetPlay">
+		<item-type>Switch</item-type>
+		<label>Play Preset</label>
+		<description>Play the preset (ON to trigger)</description>
+	</channel-type>
+
+	<!-- Channel groups -->
+	<channel-group-type id="playback">
+		<label>Playback</label>
+		<description>Playback control and status</description>
+		<channels>
+			<channel id="control" typeId="playerControl"/>
+			<channel id="state" typeId="playbackState"/>
+			<channel id="position" typeId="trackPosition"/>
+			<channel id="duration" typeId="trackDuration"/>
+			<channel id="repeat-shuffle-mode" typeId="repeatShuffleMode"/>
+			<channel id="eq-preset" typeId="eqPreset"/>
+			<channel id="volume" typeId="volume"/>
+			<channel id="mute" typeId="mute"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="metadata">
+		<label>Track Metadata</label>
+		<description>Information about the current track</description>
+		<channels>
+			<channel id="track-title" typeId="trackTitle"/>
+			<channel id="track-artist" typeId="trackArtist"/>
+			<channel id="track-album" typeId="trackAlbum"/>
+			<channel id="track-uri" typeId="trackUri"/>
+			<channel id="track-source" typeId="trackSource"/>
+			<channel id="album-art-url" typeId="albumArtUrl"/>
+			<channel id="album-art" typeId="albumArt"/>
+			<channel id="sample-rate" typeId="sampleRate"/>
+			<channel id="bit-depth" typeId="bitDepth"/>
+			<channel id="bit-rate" typeId="bitRate"/>
+			<channel id="current-playlist-name" typeId="playlistName">
+				<label>Current Playlist Name</label>
+				<description>Name of the current playlist</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="input">
+		<label>Source Selection</label>
+		<description>Input and connection related channels</description>
+		<channels>
+			<channel id="source" typeId="sourceInput"/>
+			<channel id="bluetoothConnected" typeId="bluetoothConnected"/>
+			<channel id="bluetooth-paired-device" typeId="bluetoothPairedDevice"/>
+			<channel id="line-in-active" typeId="lineInActive"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="equalizer">
+		<label>Equalizer &amp; Output</label>
+		<description>Equalizer settings and audio output</description>
+		<channels>
+			<channel id="enabled" typeId="eqEnabled"/>
+			<channel id="preset" typeId="eqPreset"/>
+			<channel id="band" typeId="eqBand"/>
+			<channel id="output-hardware-mode" typeId="outputHardwareMode"/>
+			<channel id="channel-balance" typeId="channelBalance"/>
+			<channel id="spdif-switch-delay-ms" typeId="spdifSwitchDelayMs"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="multiroom">
+		<label>Multi-room</label>
+		<description>Group playback features</description>
+		<channels>
+			<channel id="volume" typeId="slaveVolume"/>
+			<channel id="mute" typeId="slaveMute"/>
+			<channel id="active" typeId="multiroomActive"/>
+			<channel id="join" typeId="joinGroup"/>
+			<channel id="leave" typeId="leaveGroup"/>
+			<channel id="manage" typeId="addRemoveMember"/>
+			<channel id="ungroup" typeId="ungroup"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="device">
+		<label>Device</label>
+		<description>Physical device settings</description>
+		<channels>
+			<channel id="led-enabled" typeId="ledEnabled"/>
+			<channel id="touch-keys-enabled" typeId="touchKeysEnabled"/>
+			<channel id="shutdown-timer" typeId="shutdownTimer"/>
+			<channel id="reboot" typeId="reboot"/>
+			<channel id="factory-reset" typeId="factoryReset"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="presets">
+		<label>Presets</label>
+		<description>Stored presets</description>
+		<channels>
+			<channel id="count" typeId="presetCount"/>
+			<channel id="play" typeId="playPreset"/>
+		</channels>
+	</channel-group-type>
+	<channel-group-type id="preset">
+		<label>Preset</label>
+		<description>Information stored for a single device preset</description>
+		<channels>
+			<channel id="name" typeId="presetName"/>
+			<channel id="url" typeId="presetUrl"/>
+			<channel id="source" typeId="presetSource"/>
+			<channel id="pic-url" typeId="presetPicUrl"/>
+			<channel id="pic" typeId="presetPic"/>
+			<channel id="play" typeId="presetPlay"/>
+		</channels>
+	</channel-group-type>
+</thing:thing-descriptions>
