@@ -15,19 +15,26 @@ package org.openhab.binding.energidataservice.internal.provider;
 import static org.openhab.binding.energidataservice.internal.EnergiDataServiceBindingConstants.*;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -311,12 +318,52 @@ public class ElectricityPriceProvider extends AbstractProvider<ElectricityPriceL
             } else {
                 DayAheadPriceRecord[] dayAheadRecords = apiController.getDayAheadPrices(subscription.getPriceArea(),
                         subscription.getCurrency(), start, DateQueryParameter.EMPTY, properties);
+                if (subscription.isHourlyAverage()) {
+                    logger.debug("Recalculating spot prices to hourly average based on quarter hourly");
+                    dayAheadRecords = calculateHourlyAverages(dayAheadRecords);
+                }
                 isUpdated = cache.put(dayAheadRecords);
             }
         } finally {
             listenerToSubscriptions.keySet().forEach(listener -> listener.onPropertiesUpdated(properties));
         }
         return isUpdated;
+    }
+
+    private static DayAheadPriceRecord[] calculateHourlyAverages(DayAheadPriceRecord[] records) {
+        Map<Instant, List<DayAheadPriceRecord>> groupedByHour = Arrays.stream(records)
+                .collect(Collectors.groupingBy(r -> r.time().truncatedTo(ChronoUnit.HOURS)));
+
+        List<DayAheadPriceRecord> hourlyAverages = new ArrayList<>();
+
+        for (Map.Entry<Instant, List<DayAheadPriceRecord>> entry : groupedByHour.entrySet()) {
+            List<DayAheadPriceRecord> group = entry.getValue();
+
+            // We expect 4 quarter-hour records per hour
+            if (group.size() == 4) {
+                BigDecimal avgDKK = average(group.stream().map(DayAheadPriceRecord::priceDKK).toList());
+                BigDecimal avgEUR = average(group.stream().map(DayAheadPriceRecord::priceEUR).toList());
+
+                // Only add if at least one currency has a valid average
+                if (avgDKK != null || avgEUR != null) {
+                    hourlyAverages.add(new DayAheadPriceRecord(entry.getKey(), avgDKK, avgEUR));
+                }
+            }
+        }
+
+        // Sort by time (optional but recommended)
+        hourlyAverages.sort(Comparator.comparing(DayAheadPriceRecord::time));
+
+        return hourlyAverages.toArray(DayAheadPriceRecord[]::new);
+    }
+
+    private static @Nullable BigDecimal average(List<@Nullable BigDecimal> values) {
+        List<BigDecimal> nonNulls = values.stream().filter(Objects::nonNull).toList();
+        if (nonNulls.size() != 4) {
+            return null;
+        }
+        BigDecimal sum = nonNulls.stream().reduce(BigDecimal.ZERO, BigDecimal::add);
+        return sum.divide(BigDecimal.valueOf(nonNulls.size()), RoundingMode.HALF_UP);
     }
 
     private boolean downloadTariffsIfNotCached(DatahubPriceSubscription subscription)

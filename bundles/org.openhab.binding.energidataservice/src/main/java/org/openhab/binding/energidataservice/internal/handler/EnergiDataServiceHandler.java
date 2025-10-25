@@ -328,7 +328,7 @@ public class EnergiDataServiceHandler extends BaseThingHandler
 
     private Subscription getChannelSubscription(String channelId) {
         if (CHANNEL_SPOT_PRICE.equals(channelId)) {
-            return SpotPriceSubscription.of(config.priceArea, config.getCurrency());
+            return SpotPriceSubscription.of(config.priceArea, config.getCurrency(), config.hourlySpotPrices);
         } else if (CHANNEL_CO2_EMISSION_PROGNOSIS.equals(channelId)) {
             return Co2EmissionSubscription.of(config.priceArea, Co2EmissionSubscription.Type.Prognosis);
         } else if (CHANNEL_CO2_EMISSION_REALTIME.equals(channelId)) {
