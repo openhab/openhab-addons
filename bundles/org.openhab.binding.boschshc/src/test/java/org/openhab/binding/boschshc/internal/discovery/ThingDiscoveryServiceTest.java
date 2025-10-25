@@ -20,7 +20,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -47,6 +46,7 @@ import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ThingUID;
+import org.openhab.core.util.SameThreadExecutorService;
 
 /**
  * Unit tests for {@link ThingDiscoveryService}.
@@ -66,7 +66,7 @@ class ThingDiscoveryServiceTest {
 
     @BeforeEach
     void beforeEach() {
-        fixture = new ThingDiscoveryService();
+        fixture = new ThingDiscoveryService(new SameThreadExecutorService());
         fixture.addDiscoveryListener(discoveryListener);
         fixture.setThingHandler(bridgeHandler);
     }
@@ -160,7 +160,7 @@ class ThingDiscoveryServiceTest {
         fixture.addDevices(devices, emptyRooms);
 
         // two calls for the two devices expected
-        verify(discoveryListener, timeout(1000L).times(2)).thingDiscovered(any(), any());
+        verify(discoveryListener, times(2)).thingDiscovered(any(), any());
     }
 
     @Test
@@ -186,8 +186,7 @@ class ThingDiscoveryServiceTest {
         device.name = "Test Name";
         fixture.addDevice(device, "TestRoom");
 
-        verify(discoveryListener, timeout(1000L)).thingDiscovered(discoveryServiceCaptor.capture(),
-                discoveryResultCaptor.capture());
+        verify(discoveryListener).thingDiscovered(discoveryServiceCaptor.capture(), discoveryResultCaptor.capture());
 
         assertThat(discoveryServiceCaptor.getValue().getClass(), is(ThingDiscoveryService.class));
         DiscoveryResult result = discoveryResultCaptor.getValue();
@@ -228,8 +227,7 @@ class ThingDiscoveryServiceTest {
         device.id = "testDevice:ID";
         device.name = deviceName;
         fixture.addDevice(device, roomName);
-        verify(discoveryListener, timeout(1000L)).thingDiscovered(discoveryServiceCaptor.capture(),
-                discoveryResultCaptor.capture());
+        verify(discoveryListener).thingDiscovered(discoveryServiceCaptor.capture(), discoveryResultCaptor.capture());
         assertThat(discoveryServiceCaptor.getValue().getClass(), is(ThingDiscoveryService.class));
         DiscoveryResult result = discoveryResultCaptor.getValue();
         assertThat(result.getLabel(), is(expectedNiceName));
