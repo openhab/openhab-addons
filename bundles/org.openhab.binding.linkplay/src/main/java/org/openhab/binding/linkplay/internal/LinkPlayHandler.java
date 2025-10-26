@@ -117,7 +117,6 @@ public class LinkPlayHandler extends BaseThingHandler implements LinkPlayUpnpDev
     private @Nullable ScheduledFuture<?> positionJob;
     private @Nullable ScheduledFuture<?> notificationTimeoutJob;
     private final Object upnpLock = new Object();
-    private final Object refreshLock = new Object();
     // Are we currently playing a notification?
     private final AtomicBoolean inNotification = new AtomicBoolean(false);
     // Are we currently initializing the device?
@@ -211,13 +210,11 @@ public class LinkPlayHandler extends BaseThingHandler implements LinkPlayUpnpDev
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("{}: handleCommand: {} {}", udn, channelUID, command);
         if (command instanceof RefreshType) {
-            synchronized (refreshLock) {
-                if (stateCache.get(channelUID) instanceof State state) {
-                    // bypass the state cache and update the state directly
-                    super.updateState(channelUID, state);
-                } else {
-                    refreshPlayer();
-                }
+            if (stateCache.get(channelUID) instanceof State state) {
+                // bypass the state cache and update the state directly
+                super.updateState(channelUID, state);
+            } else {
+                super.updateState(channelUID, UnDefType.UNDEF);
             }
             return;
         }
@@ -1541,7 +1538,6 @@ public class LinkPlayHandler extends BaseThingHandler implements LinkPlayUpnpDev
      */
     private void updateState(String groupId, String channelId, State state) {
         boolean isGroupChannel = GROUP_PROXY_CHANNELS.contains(channelId);
-        // group proxy channels are set by the leader when in a group
         String groupIdChannel = groupId + "#" + channelId;
         if (inGroup && isGroupChannel) {
             if (isLeader) {
