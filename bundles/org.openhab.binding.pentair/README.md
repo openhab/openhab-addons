@@ -8,12 +8,12 @@ Further, if there is interest to improve functionality or address issues with an
 
 ## Hardware Setup
 
-> REQUISITE DISCLAIMER: CONNECTING 3RD PARTY DEVICES TO THE PENTAIR SYSTEM BUS COULD CAUSE SERIOUS DAMAGE TO THE SYSTEM SHOULD SOMETHING MALFUNCTION.  IT IS NOT ENDORSED BY PENTAIR AND COULD VOID WARRENTY. IF YOU DECIDE TO USE THIS BINDING TO INTERFACE TO A PENTAIR CONTROLLER, THE AUTHOR(S) CAN NOT BE HELD RESPONSIBLE.
+> REQUISITE DISCLAIMER: CONNECTING 3RD PARTY DEVICES TO THE PENTAIR SYSTEM BUS COULD CAUSE SERIOUS DAMAGE TO THE SYSTEM SHOULD SOMETHING MALFUNCTION. IT IS NOT ENDORSED BY PENTAIR AND COULD VOID WARRANTY. IF YOU DECIDE TO USE THIS BINDING TO INTERFACE TO A PENTAIR CONTROLLER, THE AUTHOR(S) CANNOT BE HELD RESPONSIBLE.
 
 This binding requires an adapter to interface to the Pentair system bus.
 This bus/wire runs between the Pentair control system, indoor control panels, IntelliFlo pumps, etc.
-It is a standard RS-485 bus running at 9600,8N1 so any RS-485 adapter should work and you should be able to buy one for under $30.
-Pentair does not publish any information on the protocol so this binding was developed using the great reverse-engineering efforts of others made available on the internet.
+It is a standard RS-485 bus running at 9600,8N1, so any RS-485 adapter should work and you should be able to buy one for under $30.
+Pentair does not publish any information on the protocol, so this binding was developed using the great reverse-engineering efforts of others made available on the internet.
 I have cited several of those in the References section below.
 
 ### Connecting adapter to your system
@@ -21,19 +21,19 @@ I have cited several of those in the References section below.
 A USB or serial RS-485 interface or IP based interface can be used to interface to the Pentair system bus.
 The binding includes 2 different Bridges depending on which type of interface you use, serial_bridge or ip_bridge.
 
-If your openHAB system is physically located far from your Pentair equipment or indoor control panel, you can use a Raspberry Pi or other computer to redirect USB/serial port traffic over the internet using a program called ser2sock (see Reference section).
-An example setup would run the following command: "ser2sock -p 10000 -s /dev/ttyUSB1 -b 9600 -d".
+If your openHAB system is physically located far from your Pentair equipment or indoor control panel, you can use a Raspberry Pi or other computer to redirect USB/serial port traffic over the internet using a program called ser2sock (see References section).
+An example setup would run the following command: `ser2sock -p 10000 -s /dev/ttyUSB1 -b 9600 -d`.
 
 Note: This is the setup utilized for the majority of my testing of this binding.
 
 Once you have the interface connected to your system, it is best to test basic connectivity.
 Note the protocol is a binary protocol (not ASCII text based) and in order to view the communication packets, one must use a program capable of a binary/HEX mode.
-If connected properly, you will see a periodic traffic with packets staring with FF00FFA5.
+If connected properly, you will see periodic traffic with packets starting with FF00FFA5.
 This is the preamble for Pentair's communication packet.
 
 After you see this traffic, you can proceed to configuring the Pentair binding in openHAB.
 
-Note: Many adapters use A and B to represent Data+ and Data-. There is no reliable standard for determining which is Data+ and Data-. If you connect the system in reverse, you will still see serial data, however it will be corrupted. Look at your data coming from your device and look for a repeated "FFa5". If you don't see that preamble reliably, you may try switching your data lines."
+Note: Many adapters use A and B to represent Data+ and Data-. There is no reliable standard for determining which is Data+ and Data-. If you connect the system in reverse, you will still see serial data; however, it will be corrupted. Look at your data coming from your device and look for a repeated "FFa5". If you don't see that preamble reliably, you may try switching your data lines.
 
 #### USB/Serial interface
 
@@ -56,10 +56,10 @@ This binding supports the following thing types:
 | --------------- | :--------: | --------------------------------------- |
 | ip_bridge       |   Bridge   | A TCP network RS-485 bridge device.     |
 | serial_bridge   |   Bridge   | A USB or serial RS-485 device.          |
-| controller      |   Thing    | Pentair EasyTouch, SunTouch, or IntelliTouch pool controller.      |
+| controller      |   Thing    | Pentair EasyTouch, SunTouch, or IntelliTouch pool controller. |
 | intelliflo      |   Thing    | Pentair IntelliFlo variable speed pump. |
 | intellichlor    |   Thing    | Pentair IntelliChlor chlorinator.       |
-| intellichem     |   Thing    | Pentair IntelliChem.                     |
+| intellichem     |   Thing    | Pentair IntelliChem.                    |
 
 ## Binding Configuration
 
@@ -76,9 +76,9 @@ The following table shows the parameters for each Bridge.
 | ip_bridge     | address - IP address for the RS-485 adapter - Required.      |
 |               | port - TCP port for the RS-485 adapter - Not Required - default = 10000. |
 |               | id - ID to use when communicating on Pentair control bus - default = 34. |
-| serial_bridge | serialPort - Serial port for the IT-100s bridge - Required.  |
-|               | baud - Baud rate of the IT-100 bridge - Not Required - default = 9600. |
-|               | pollPeriod - Period of time in minutes between the poll command being sent to the IT-100 bridge - Not Required - default=1. |
+| serial_bridge | serialPort - Serial port for the RS-485 bridge - Required.  |
+|               | baud - Baud rate of the RS-485 bridge - Not Required - default = 9600. |
+|               | pollPeriod - Period of time in minutes between the poll command being sent to the RS-485 bridge - Not Required - default=1. |
 |               | id - ID to use when communicating on Pentair control bus - default = 34. |
 
 ```java
@@ -105,8 +105,8 @@ Bridge pentair:serial_bridge:1 [ serialPort="/dev/ttyUSB0" ] {
 
 ### Thing: Controller
 
-Represents and interfaces with a Pentair pool controller in the system.  This binding should work for both Intellitouch and EasyTouch systems.
-Feature availability is dependent on the version of hardware and firmware versions of your specific controller.
+Represents and interfaces with a Pentair pool controller in the system. This binding should work for both IntelliTouch and EasyTouch systems.
+Feature availability is dependent on the hardware and firmware versions of your specific controller.
 
 #### Synchronize Time
 
@@ -208,7 +208,7 @@ Note: This has limited testing since I don't own an IntelliChem
 | alarmProbeFault               | Switch                 | R   | Probe fault alarm reported. |
 | warningPhLockout              | Switch                 | R   | Unit is in PH Lockout. |
 | warningPhDailyLimitReached    | Switch                 | R   | Daily limit of PH dosing has been reached. |
-| warningOrpDailLimitReached    | Switch                 | R   | Daily limit of ORP dosing has been reached. |
+| warningOrpDailyLimitReached   | Switch                 | R   | Daily limit of ORP dosing has been reached. |
 | warningInvalidSetup           | Switch                 | R   | Invalid setup for the unit. |
 | warningChlorinatorCommError   | Switch                 | R   | Error in communicating with the Chlorinator. |
 
