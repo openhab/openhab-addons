@@ -46,7 +46,7 @@
 			</parameter>
 		</config-description>
 	</thing-type>
-	
+
 	<!-- Panasonic UHD Blu-ray Player Thing -->
 	<thing-type id="uhd-player">
 		<label>Panasonic UHD Blu-ray Player</label>
