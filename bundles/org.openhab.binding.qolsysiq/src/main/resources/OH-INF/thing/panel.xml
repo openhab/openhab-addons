@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<bridge-type id="panel">
 		<label>Qolsys IQ Panel</label>
-		<description>A Qolsys IQ Panel Bridge</description>
+		<description>A Qolsys IQ panel bridge</description>
 		<semantic-equipment-tag>AlarmSystem</semantic-equipment-tag>
 		<config-description>
 			<parameter name="hostname" type="text" required="true">
@@ -15,13 +15,13 @@
 			</parameter>
 			<parameter name="port" type="integer">
 				<label>Port</label>
-				<description>The port to connect to on the panel.</description>
+				<description>The port to connect to on the panel</description>
 				<default>12345</default>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="key" type="text" required="true">
 				<context>password</context>
-				<label>key</label>
+				<label>Key</label>
 				<description>Key to access the device</description>
 			</parameter>
 		</config-description>
