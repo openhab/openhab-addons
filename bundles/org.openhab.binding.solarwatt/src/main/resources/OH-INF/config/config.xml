@@ -6,22 +6,20 @@
 	https://openhab.org/schemas/config-description-1.0.0.xsd">
 	<config-description uri="thing-type:solarwatt:energymanager">
 		<parameter name="hostname" type="text">
-			<label>Host Name</label>
-			<description>The host name/ip address of the solarwatt energymanager.</description>
+			<label>Hostname</label>
+			<description>Hostname or IP address of the Solarwatt Energymanager.</description>
 			<context>network-address</context>
 		</parameter>
 		<parameter name="refresh" type="integer" unit="s">
-			<label>Refresh Data Period</label>
-			<description>Period between updates to the devices data in seconds.
-			</description>
+			<label>Refresh Interval</label>
+			<description>Interval between updates to device data (in seconds).</description>
 			<default>30</default>
 			<unitLabel>s</unitLabel>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="rescan" type="integer" unit="min">
-			<label>Redetect Devices Period</label>
-			<description>Period between updates to the detected devices in minutes.
-			</description>
+			<label>Device Rescan Interval</label>
+			<description>Interval between scans for newly detected devices (in minutes).</description>
 			<default>5</default>
 			<unitLabel>min</unitLabel>
 			<advanced>true</advanced>
@@ -30,8 +28,8 @@
 
 	<config-description uri="thing-type:solarwatt:device">
 		<parameter name="guid" type="text">
-			<label>Guid of Device</label>
-			<description>Guid of the device as used by the solarwatt energymanager.</description>
+			<label>Device GUID</label>
+			<description>GUID of the device as used by the Solarwatt Energymanager.</description>
 		</parameter>
 	</config-description>
 </config-description:config-descriptions>

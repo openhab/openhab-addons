@@ -26,7 +26,7 @@ The binding has been tested with an RSP-1066, an RSP-1570 and an RX-1052.
 
 ## Supported Things
 
-This binding supports the following thing types:
+This binding supports the following Thing types:
 
 | Thing Type | Description                                                                   |
 |------------|-------------------------------------------------------------------------------|
@@ -87,11 +87,11 @@ You have to add all things manually.
 ## Binding Configuration
 
 There are no overall binding configuration settings that need to be set.
-All settings are through thing configuration parameters.
+All settings are through Thing configuration parameters.
 
 ## Thing Configuration
 
-The thing requires the following configuration parameters:
+The Thing requires the following configuration parameters:
 
 | Parameter Label         | Parameter ID     | Description                                           | Accepted values |
 |-------------------------|------------------|-------------------------------------------------------|-----------------|
@@ -178,7 +178,7 @@ The following channels are available:
 | speakera       | Speaker-A Adjustment           | Switch    | Turn on/off the speaker group A                          | ON, OFF                            |
 | speakerb       | Speaker-B Adjustment           | Switch    | Turn on/off the speaker group B                          | ON, OFF                            |
 
-Here are the list of channels available for each thing type:
+Here are the list of channels available for each Thing type:
 
 | Thing Type | Available channels                                                                                      |
 |------------|---------------------------------------------------------------------------------------------------------|
@@ -231,7 +231,7 @@ Here are the list of channels available for each thing type:
 | x3         | power, source, volume, mute, bass, treble, frequency, brightness, tcbypass, balance, otherCommand       |
 | x5         | power, source, volume, mute, bass, treble, frequency, brightness, tcbypass, balance, otherCommand       |
 
-Here are the available commands for the otherCommand channel depending on the thing type:
+Here are the available commands for the otherCommand channel depending on the Thing type:
 
 | Thing Type         | Available commands for the otherCommand channel                               |
 |--------------------|-------------------------------------------------------------------------------|

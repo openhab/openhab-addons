@@ -31,7 +31,7 @@ This binding builds off the following works in understanding the Sense API:
 
 ## Discovery
 
-Initial configurtion involes creating a cloud-connector device with the email and password for the Sense cloud account.
+Initial configuration involves creating a cloud-connector device with the email and password for the Sense cloud account.
 Once the cloud-connector has been created and initialized, the monitor(s) associated with the account will be auto-discovered.
 Virtual proxy devices are created manually attached to the monitor bridge.
 
@@ -51,7 +51,7 @@ At present, the binding does not support multi-factor authentication which shoul
 
 The monitor will be auto-discovered after the `cloud-connector` bridge goes online.
 The only configuration parameter is the id, however, this is not available via the Sense app or sense.com.
-When supporting textual configuration, you can monitor the openhab.log in order to see the id for your monitor device.
+When supporting textual configuration, you can monitor the openhab.log in order to see the ID for your monitor device.
 
 | Name | Type    | Description               | Default | Required | Advanced |
 |------|---------|---------------------------|---------|----------|----------|
@@ -60,7 +60,7 @@ When supporting textual configuration, you can monitor the openhab.log in order 
 ### Virtual Proxy Device Emulation
 
 Virtual proxy devices can be created in order to notify Sense of specific power usage of devices in your home.
-These emulate a TP-Link Kasa HS110 smart plug and will report to Sense the power usage based on on the configuration of the proxy device and the state.
+These emulate a TP-Link Kasa HS110 smart plug and will report to Sense the power usage based on the configuration of the proxy device and the state.
 In order to use, you need to enable "TP-Link HS110/HS300 Smart Plug" in the Sense app.
 
 | Name        | Type            | Description                                   | Default | Required | Advanced |
@@ -78,14 +78,14 @@ Here are several examples of how this can be configured:
 |------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------|
 | 10 W                         | The device is a simple ON/OFF switch or Dimmer with 0 W in the OFF or 0% state, and 10 W in the full ON or 100% state. For a dimmer, the power will be linearly interpolated over the full range [0 W, 10 W] depending on current dim level.                 | Light                                        |
 | 800 mW,10 W                  | The device is a simple ON/OFF switch or Dimmer with 800 mW in the OFF or 0% state, and 10 W in the full ON or 100% state. For a dimmer, the power will be linearly interpolated over the full range [800 mW, 10 W] depending on current dim level.           | TV which standby power > 0 W                 |
-| 0 W,1 W,3 W,8 W, 15 W        | A device which has non-linear power usage at different dim levels. This configuration would use 0 W at 0%, 1 W at 25%, 3 W at 50%, 8 W at 75% and 15 W at the full 100%. Other levels are linearly interpolated within the bounding points of the sub-range. | Dimmable light with non-linear usage profile |
+| 0 W,1 W,3 W,8 W, 15 W        | A device that has non-linear power usage at different dim levels. This configuration would use 0 W at 0%, 1 W at 25%, 3 W at 50%, 8 W at 75%, and 15 W at the full 100%. Other levels are linearly interpolated within the bounding points of the sub-range. | Dimmable light with non-linear usage profile |
 | OFF=0 W,LOW=200 W,HIGH=400 W | A device with several power states with different power levels in state represented by a String.                                                                                                                                                             | A fan with OFF, LOW, HIGH states             |
 
 #### MAC
 
 Each proxy device must be configured with a MAC address.
 The virtual device creates a random MAC address which is used in identification of the device to Sense.
-Note, if configuring via the textual interace, it is important to provide the MAC field, otherwise a different MAC address will be randomized whenever openHAB restarts and the proxy device will appear as a new additional device to Sense.
+Note, if configuring via the textual interface, it is important to provide the MAC field; otherwise a different MAC address will be randomized whenever openHAB restarts and the proxy device will appear as a new additional device to Sense.
 
 ## Channels
 
@@ -189,12 +189,12 @@ The binding also supports querying of trend totals over a periods of time.
 
 #### Map<String, Object> queryEnergyTrend(String scale, Instant datetime)
 
-This function will query tthe Sense cloud for usage totals for a given period of time.
+This function will query the Sense cloud for usage totals for a given period of time.
 
 ##### Parameters
 
 `scale` - the time scale for which the query should be over ("DAY", "WEEK", "MONTH", "YEAR").
-`datetime` - the datetime in the period. this can be null to select the current datetime.
+`datetime` - the datetime in the period. This can be null to select the current datetime.
 
 ##### Returns
 
@@ -234,9 +234,9 @@ end
 
 ## Special Notes
 
-For proxy device to work, openHAB must be on the same sub-net as the Sense monitor and be able to receive broadcast Datagram packets on port 9999.
+For proxy devices to work, openHAB must be on the same subnet as the Sense monitor and be able to receive broadcast datagram packets on port 9999.
 While the binding has not been tested in a Docker configuration, there are some potential issues with being able to receive on port 9999 (see <https://github.com/cbpowell/SenseLink/>).
 
-The Sense Energy Monitor can be configured in two different modes depending on whether the secondary current monitor is either attaced to the Solar circuit of another circuit in your house.
-Unfortunately, the JSON format from the API is different depending on the mode and currently the binding has only been tested and will work in the Solar mode.
+The Sense Energy Monitor can be configured in two different modes depending on whether the secondary current monitor is either attached to the solar circuit or another circuit in your house.
+Unfortunately, the JSON format from the API is different depending on the mode, and currently the binding has only been tested to work in the solar mode.
 If there are others wanting to use the setup in a different mode, I would be interested in enabling support.

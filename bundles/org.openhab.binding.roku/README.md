@@ -9,7 +9,7 @@ must be configured as `Enabled` or `Permissive`.
 
 ## Supported Things
 
-There are two supported thing types, which represent either a standalone Roku device or a Roku TV.
+There are two supported Thing types, which represent either a standalone Roku device or a Roku TV.
 A supported Roku streaming media player or streaming stick uses the `roku_player` id and a supported Roku TV uses the `roku_tv` id.
 The Roku TV type adds additional channels and button commands to the button channel dropdown for TV specific functionality.
 Multiple Things can be added if more than one Roku is to be controlled.
@@ -25,7 +25,7 @@ The binding has no configuration options, all configuration is done at Thing lev
 
 ## Thing Configuration
 
-The thing has a few configuration parameters:
+The Thing has a few configuration parameters:
 
 | Parameter | Description                                                                                                              |
 |-----------|--------------------------------------------------------------------------------------------------------------------------|

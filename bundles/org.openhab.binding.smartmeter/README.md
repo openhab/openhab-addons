@@ -12,15 +12,15 @@ Discovery is not available, as the binding only reads from serial ports.
 
 ## Thing Configuration
 
-The smartmeter thing requires the serial port where the meter device is connected and optionally a refresh interval.
+The smartmeter Thing requires the serial port where the meter device is connected and optionally a refresh interval.
 
 | Parameter             | Name                            | Description                                                                                                                                                                                   | Required | Default |
 | --------------------- | ------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | ------- |
 | `port`                | The serial port to connect to   | URL to use for reading SML data, e.g. `/dev/ttyUSB0`, `rfc2217://xxx.xxx.xxx.xxx:3002`                                                                                                        | yes      |         |
 | `refresh`             | The refresh interval in seconds | Defines at which interval the values of the meter device shall be read                                                                                                                        | no       | 20      |
-| `mode`                | The protocol mode to use        | Can be `SML` (PUSH mode), `ABC` (PULL) or `D` (PUSH)                                                                                                                                          | no       | `SML`   |
-| `baudrateChangeDelay` | Delay of baudrate change in ms  | USB to serial converters often require a delay of up to 250ms after the ACK before changing baudrate (only relevant for 'C' mode)                                                             | no       | 0       |
-| `baudrate`            | (initial) Baudrate              | The baudrate of the serial port. If set to `AUTO`, it will be negotiated with the meter. The default is `300` baud for modes A, B, and C and `2400` baud for mode D, and `9600` baud for SML. | no       | `AUTO`  |
+| `mode`                | The protocol mode to use        | Can be `SML` (PUSH mode), `ABC` (PULL), or `D` (PUSH)                                                                                                                                         | no       | `SML`   |
+| `baudrateChangeDelay` | Delay of baudrate change in ms  | USB to serial converters often require a delay of up to 250ms after the ACK before changing the baudrate (only relevant for mode C)                                                           | no       | 0       |
+| `baudrate`            | (initial) Baudrate              | The baudrate of the serial port. If set to `AUTO`, it will be negotiated with the meter. The default is `300` baud for modes A, B, and C; `2400` baud for mode D; and `9600` baud for SML. | no       | `AUTO`  |
 
 ## Channels
 
