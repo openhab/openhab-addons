@@ -44,13 +44,13 @@ Board:
 The code running on the ESP module can be found in the [esp8266-bridge repository on GitHub](https://github.com/crnjan/esp8266-bridge).
 There are other projects providing ESP firmware with similar functionality, such as the [ESP-LINK WiFi-Serial Bridge project on GitHub](https://github.com/jeelabs/esp-link), but did not test with those.
 
-Configuration of the TCP/IP thing:
+Configuration of the TCP/IP Thing:
 
 - address: the hostname/IP address of the transparent bridge on the local network - mandatory,
 - tcpPort: the port number to use to connect to the transparent bridge - optional, defaults to 9265,
 - refreshInterval: refresh interval in seconds, used to fetch new values from the heat pump - optional, defaults to 60 seconds.
 
-Example thing definition:
+Example Thing definition:
 
  ```java
  regoheatpump:ipRego6xx:ivtIP [ address="192.168.2.50", tcpPort="9265" ]
@@ -65,7 +65,7 @@ Parameters:
 - portName: the name of the serial port on your computer - mandatory,
 - refreshInterval: refresh interval in seconds, used to fetch new values from the heat pump - optional, defaults to 60 seconds.
 
-Example thing definition:
+Example Thing definition:
 
 ```java
 regoheatpump:serialRego6xx:ivtSerial [ portName="COM3" ]
@@ -172,12 +172,12 @@ A transparent bridge between the Husdata interface and network (i.e. Wi-Fi) is u
 
 There are many existing projects providing such functionality, such as [Serial to Network Proxy (ser2net)](http://ser2net.sourceforge.net/).
 
-Configuration of the TCP/IP thing:
+Configuration of the TCP/IP Thing:
 
 - address: the hostname/IP address of the transparent bridge on the local network - mandatory,
 - tcpPort: the port number to use to connect to the transparent bridge - optional, defaults to 9265.
 
-Example thing definition:
+Example Thing definition:
 
  ```java
  regoheatpump:ipHusdata:ivtIP [ address="192.168.2.50", tcpPort="9265" ]
@@ -191,7 +191,7 @@ Parameters:
 
 - portName: the name of the serial port on your computer - mandatory.
 
-Example thing definition:
+Example Thing definition:
 
 ```java
 regoheatpump:serialHusdata:ivtSerial [ portName="COM3" ]

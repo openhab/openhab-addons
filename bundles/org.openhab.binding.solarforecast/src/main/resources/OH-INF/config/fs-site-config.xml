@@ -8,7 +8,7 @@
 		<parameter name="location" type="text">
 			<context>location</context>
 			<label>PV Location</label>
-			<description>Location of photovoltaic system. Location from openHAB settings is used in case of empty value.</description>
+			<description>Location of the photovoltaic system. If left empty, the location from openHAB settings is used.</description>
 		</parameter>
 		<parameter name="inverterKwp" type="decimal" step="0.1">
 			<label>Inverter Kilowatt Peak</label>
