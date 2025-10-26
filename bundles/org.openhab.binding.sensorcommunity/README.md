@@ -40,7 +40,7 @@ Perform the following steps to get the appropriate Sensor ID
 - Go to to [Sensor.Community map](https://deutschland.maps.sensor.community/)
 - Choose your desired value in bottom list - now only the Sensors are displayed which are supporting this
 - Click on your / any Sensor and the ID is displayed in the top right corner. Note: Sensor ID is just the number without beginning hash #
-- Enter this Sensor ID into the thing configuration
+- Enter this Sensor ID into the Thing configuration
 
 ![Sensor.Community Logo](doc/SensorCommunity-Map.png)
 

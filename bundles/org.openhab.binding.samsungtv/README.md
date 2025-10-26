@@ -8,7 +8,7 @@ There is one Thing per TV.
 
 ## Discovery
 
-The TV's are discovered through UPnP protocol in the local network and all devices are put in the Inbox. TV must be ON for this to work.
+The TV's are discovered through UPnP protocol in the local network and all devices are put in the Inbox. The TV must be ON for this to work.
 
 ## Binding Configuration
 
@@ -28,7 +28,7 @@ The binding has the following configuration options, which can be set for "bindi
 | orientationKey         | Orientation Key           | Key press to send to rotate auto-rotation mount               | no        |
 | smartThingsApiKey      | Smartthings PAT           | Smartthings Personal Access Token                             | no        |
 | smartThingsDeviceId    | Smartthings Device ID     | Smartthings Device ID for this TV                             | no        |
-| smartThingsSubscription| Smarththings Subscription | Reduces polling on Smartthings channels, default true         | no        |
+| smartThingsSubscription| Smartthings Subscription | Reduces polling on Smartthings channels, default true         | no        |
 
 ## Thing Configuration
 
@@ -52,7 +52,7 @@ If your TV supports _websocketsecure_, you **MUST** use it, otherwise the `keyCo
 In order for the binding to control your TV, you will be asked to accept the remote connection (from openHAB) on your TV. You have 30 seconds to accept the connection. If you fail to accept it, then most channels will not work.
 Once you have accepted the connection, the returned token is stored in the binding, so you don't have to repeat this every time openHAB is restarted.
 
-If the connection has been refused, or you don't have your TV configured to allow remote connections, the binding will not work. If you are having problems, check the settings on your TV, sometimes a family member denies the popup (because they don't know what it is), and after that nothing will work.
+If the connection has been refused, or you don't have your TV configured to allow remote connections, the binding will not work. If you are having problems, check the settings on your TV. Sometimes a family member denies the popup (because they don't know what it is), and after that nothing will work.
 You can set the connection to `Allow` on the TV, or delete the openHAB entry, and try the connection again.
 
 The binding will try to automatically discover the correct protocol for your TV, so **don't change it** unless you know it is wrong.
@@ -91,7 +91,7 @@ TVs support the following channels:
 | artLabel            | String   | RW         | The currently selected art (label) - can also set the current art                                       |
 | artJson             | String   | RW         | Send/receive commands from the TV art websocket Channel                                                 |
 | artBrightness       | Dimmer   | RW         | ArtMode Brightness                                                                                      |
-| artColorTemperature | Number   | RW         | ArtMode Color temperature Minnimum value is -5 and maximum 5                                            |
+| artColorTemperature | Number   | RW         | ArtMode Color temperature Minimum value is -5 and maximum 5                                            |
 | artOrientation      | Switch   | RW         | TV orientation, Landscape (OFF) or Portrait (ON)                                                        |
 
 **NOTE:** channels: brightness, contrast, sharpness, colorTemperature don't work on newer TV's.<br>
@@ -176,7 +176,7 @@ To determine the ON/ART/OFF state of your TV, you have to read both `power` and 
 
 ### setArtMode
 
-**NOTE** Samsung added back the art API in Firmware 1622 to >2021 Frame TV's. If you have this version of firmware or higher, don't use the `setArtMode` channel, as it is not neccessary.
+**NOTE:** Samsung added back the art API in Firmware 1622 to >2021 Frame TV's. If you have this version of firmware or higher, don't use the `setArtMode` channel, as it is not necessary.
 
 `setArtMode` is a Switch channel. Since Samsung removed the art api in 2022, the TV has no way of knowing if it is in art mode or playing a TV source. This switch is to allow you to manually tell the TV what mode it is in.
 
@@ -187,11 +187,11 @@ This input allows you to set the internal art mode state from an external source
 
 ### artImage
 
-`artImage` is an Image channel that receives a thumbnail of the art that would be displayed in artMode (even if the TV is on). It receives iimages only (you can't send a command to it due to openHAB lmitations).
+`artImage` is an Image channel that receives a thumbnail of the art that would be displayed in artMode (even if the TV is on). It receives images only (you can't send a command to it due to openHAB limitations).
 
 ### artLabel
 
-`artlabel` is a String channel that receives the _internal_ label of the artwork displayed. This will be something like `MY_0010` or `SAM-0123`. `MY` means it's art you uploaded, `SAM` means its from the Samsung art gallery.
+`artLabel` is a String channel that receives the _internal_ label of the artwork displayed. This will be something like `MY_0010` or `SAM-0123`. `MY` means it's art you uploaded, `SAM` means it's from the Samsung art gallery.
 You have to figure out what the label actually represents.
 
 You can send commands to the channel. It accepts, Strings, string representations of a `Rawtype` image and `RawType` Images. If you send a String, such as `MY-0013`, it will display that art on the TV. If the TV is ON, playing live TV, then the Tv will switch to artMode.
@@ -288,12 +288,12 @@ TV_ArtJson.sendCommand("{\"request\":\"select_image\", \"content_id\":\"MY_0009\
 
 These are just the commands I know, there are probably others, let me know if you find more that work.
 
-### artbrightness
+### artBrightness
 
 `artBrightness` is a dimmer channel that sets the brightness of the art in ArtMode. It does not affect the TV brightness. Normally the brightness of the artwork is controlled automatically, and the current value is polled and reported via this channel.
 You can change the brightness of the artwork (but automatic control is still enabled, unless you turn it off).
 
-There are only 10 levels of brighness, so you could use a `Setpoint` control for this channel in your `sitemap` - eg:
+There are only 10 levels of brightness, so you could use a `Setpoint` control for this channel in your `sitemap` - e.g.:
 
 ```java
 Slider item=TV_ArtBrightness visibility=[TV_ArtMode==ON]
@@ -303,7 +303,7 @@ Setpoint item=TV_ArtBrightness minValue=0 maxValue=100 step=10 visibility=[TV_Ar
 ### artColorTemperature
 
 `artColorTemperature` is a Number channel, it reports the "warmth" of the artwork from -5 to 5 (default 0). It's not polled, but is updated when artmode status is updated.
-You can use a `Setpoint` contol for this item in your `sitemap` eg:
+You can use a `Setpoint` control for this item in your `sitemap` e.g.:
 
 ```java
 Setpoint item=TV_ArtColorTemperature minValue=-5 maxValue=5 step=1 visibility=[TV_ArtMode==ON]
@@ -312,10 +312,10 @@ Setpoint item=TV_ArtColorTemperature minValue=-5 maxValue=5 step=1 visibility=[T
 ### artOrientation
 
 `artOrientation` is a Switch channel, it reports the current orientation of the TV, OFF for Landscape, and ON for Portrait. This channel is polled. If you send an ON or OFF command to this channel, then the binding will send a long (4s) press of the key defined in the configuration for orientationKey.<br>
-For 2023- TV's `orientationKey` should be KEY_MULTI_VIEW (default), for 2024+ TV's this should be KEY_HOME.
+For 2023- TV's, `orientationKey` should be KEY_MULTI_VIEW (default). For 2024+ TV's, this should be KEY_HOME.
 
 ```java
-Switch item=TV_ArtOrientation mappings[OFF="Landscape", ON="Portrait"]
+Switch item=TV_ArtOrientation mappings=[OFF="Landscape", ON="Portrait"]
 ```
 
 **NOTE:** You should only send commands to the `artOrientation` channel if you have the auto-rotation mount paired to the TV.
@@ -356,7 +356,7 @@ Switch  TV_ArtOrient     "Art Orientation [%s]"                (gLivingRoomTV)  
 
 ## WOL
 
-Wake on Lan is supported by Samsung TV’s after 2016. The binding will attempt to use WOL to turn on a TV, if `power` (or `artMode`) is commanded ON.
+Wake on LAN is supported by Samsung TV's after 2016. The binding will attempt to use WOL to turn on a TV, if `power` (or `artMode`) is commanded ON.
 This only works on TV's after 2016, and has some quirks.
 
 - Does not work on TV's <2016
@@ -389,7 +389,7 @@ TV_SourceApp.sendCommand("shuffleslideshow,1440")
 or a sitemap entry:
 
 ```java
-Switch item=TV_SourceApp label="Slideshow" mappings=["shuffleslideshow,1440"="shuffle 1 day","suffleslideshow,3"="shuffle 3 mins","slideshow,1440"="slideshow 1 day","slideshow,off"="Off"]
+Switch item=TV_SourceApp label="Slideshow" mappings=["shuffleslideshow,1440"="shuffle 1 day","shuffleslideshow,3"="shuffle 3 mins","slideshow,1440"="slideshow 1 day","slideshow,off"="Off"]
 ```
 
 Sending `slideshow,off` turns the slideshow feature of the TV off.
@@ -413,11 +413,11 @@ Values are confirmed to work on UE50MU6179.
 
 To discover all installed apps names, you can enable the DEBUG log output from the binding to see a list of apps that have been discovered as installed. This list is displayed once, shortly after the TV is turned On.
 
-If you have a TV >2019, then the list of apps will not be discovered. Instead, a default list of known appID's is built into the binding, these cover most common apps. The binding will attempt to discover these apps, and, if you are lucky, your app will be found and you have nothing further to do. It is possible that new apps have been added, or are specific to your country that are not in the built in list, in which case you can add these apps manually.
+If you have a TV >2019, then the list of apps will not be discovered. Instead, a default list of known appID's is built into the binding, these cover most common apps. The binding will attempt to discover these apps, and, if you are lucky, your app will be found and you have nothing further to do. It is possible that new apps have been added, or are specific to your country that are not in the built-in list, in which case you can add these apps manually.
 
 #### Adding apps manually
 
-If the app you need is not discovered, a file `samsungtv.cfg` will need to be be created in the openHAB config services directory (`/etc/openhab/services/` for Linux systems).
+If the app you need is not discovered, a file `samsungtv.cfg` will need to be created in the openHAB config services directory (`/etc/openhab/services/` for Linux systems).
 
 You need to edit the file `samsungtv.cfg`, and add in the name, appID, and type of the apps you have installed on your TV. Here is a sample for the contents of the `samsungtv.cfg` file:
 
@@ -521,36 +521,49 @@ You need to edit the file `samsungtv.cfg`, and add in the name, appID, and type 
 { "name":"Viafree"                 , "appId":"hs9ONwyP2U.ViafreeBigscreen" , "type":2 }
 ```
 
-Enter this into the `samsungtv.cfg` file and save it. The file contents are read automatically every time the file is updated. The binding will check to see if the app is installed, and start polling the status every 10 seconds (or more if your refresh interval is set higher).
-Apps that are not installed are deleted from the list (internally, the file is not updated). If you install an app on the TV, which is not in the built in list, you have to update the file with it's appID, or at least touch the file for the new app to be registered with the binding.
+Enter this into the `samsungtv.cfg` file and save it.
+The file contents are read automatically every time the file is updated.
+The binding will check to see if the app is installed, and start polling the status every 10 seconds (or more if your refresh interval is set higher).
+Apps that are not installed are deleted from the list (internally, the file is not updated).
+If you install an app on the TV, which is not in the built-in list, you have to update the file with its appID, or at least touch the file for the new app to be registered with the binding.
 
-The entry for `Internet` is important, as this is the TV web browser App. on older TV's it's `org.tizen.browser`, but this is not correct on later TV's (>2019). This is the app used for the `url` channel, so it needs to be set correctly if you use this channel.
-`org.tizen.browser` is the internal default, and does launch the browser on all TV's, but on later TV's this is just an alias for the actual app, so the `sourceApp` channel will not be updated correctly unless the correct appID is entered here. The built in list has the correct current appID for the browser, but if it changes or is incorrect for your TV, you can update it here.
+The entry for `Internet` is important, as this is the TV web browser App.
+On older TV's it's `org.tizen.browser`, but this is not correct on later TV's (>2019).
+This is the app used for the `url` channel, so it needs to be set correctly if you use this channel.
+`org.tizen.browser` is the internal default, and does launch the browser on all TV's, but on later TV's this is just an alias for the actual app, so the `sourceApp` channel will not be updated correctly unless the correct appID is entered here.
+The built-in list has the correct current appID for the browser, but if it changes or is incorrect for your TV, you can update it here.
 
 You can use any name you want in this list, as long as the appID is valid. The binding will then allow you to launch the app using your name, the official name, or the appID.
 
 ## Smartthings
 
-In order to be able to control the TV input (HDMI1, HDMI2 etc), you have to link the binding to the smartthngs API, as there is no local control capable of switching the TV input.
-There are several steps required to enable this feature, and no hub is needed.
+In order to be able to control the TV input (HDMI1, HDMI2 etc), you have to link the binding to the Smartthings API, as there is no local control capable of switching the TV input.
+There are several steps required to enable this feature, and no hub is required.
 In order to connect to the Smartthings cloud, there are a few steps to take.
 
-1. Set the samsungtv logs to at least DEBUG
-1. Create a Samsung account (probably already have one when you set up your TV)
-1. Add Your TV to the Smartthings App
-1. Go to <https://account.smartthings.com/tokens> and create a Personal Access Token (PAT). check off all the features you want (I would add them all).
+1. Set the samsungtv logs to at least DEBUG.
+1. Create a Samsung account (probably already have one when you set up your TV).
+1. Add your TV to the Smartthings App.
+1. Go to <https://account.smartthings.com/tokens> and create a Personal Access Token (PAT). Check off all the features you want (I would add them all).
 1. Go to the openHAB Samsung TV Thing, and update the configuration with your PAT (click on advanced). You will fill in Device ID later if necessary.
 1. Save the Thing, and watch the logs.
 
-The binding will attempt to find the Device ID for your TV. If you have several TV’s of the same type, you will have to manually identify the Device ID for the current Thing from the logs. The device ID should look something like 996ff19f-d12b-4c5d-1989-6768a7ad6271. If you have only one TV of each type, Device ID should get filled in for you.
-You can now link the `sourceName`, `sourceId`, `channel` and `channelName` channels, and should see the values updating. You can change the TV input source by sending `"HDMI1"`, or `"HDMI2"` to the `sourceName` channel, the exact string will depend on your TV, and how many inputs you have. You can also send a number to the `sourceId` channel.
+The binding will attempt to find the Device ID for your TV.
+If you have several TV's of the same type, you will have to manually identify the Device ID for the current Thing from the logs.
+The device ID should look something like 996ff19f-d12b-4c5d-1989-6768a7ad6271.
+If you have only one TV of each type, Device ID should get filled in for you.
+You can now link the `sourceName`, `sourceId`, `channel` and `channelName` channels, and should see the values updating.
+You can change the TV input source by sending `"HDMI1"` or `"HDMI2"` to the `sourceName` channel.
+The exact string will depend on your TV, and how many inputs you have. You can also send a number to the `sourceId` channel.
 
 **NOTE:** You may not get anything for `channelName`, as most TV’s don’t report it. You can only send commands to `channel`, `sourceName` and `sourceId`, `channelName` is read only.
 
 ## Smartthings Subscriptions
 
-Smartthings Subscriptions are supported. This is a feature which reduces the polling of Smartthings channels (on by default).  
-If the Smarthings channels only update with the Smartthings app open, turn subscription off, and the channels will be polled instead. Channels are only polled when the TV is ON.
+Smartthings Subscriptions are supported.
+This is a feature which reduces the polling of Smartthings channels (on by default).  
+If the Smartthings channels only update with the Smartthings app open, turn subscription off, and the channels will be polled instead.
+Channels are only polled when the TV is ON.
 
 ## UPnP Subscriptions
 
@@ -617,7 +630,8 @@ You should get `volume` and `mute` channels working at the minnimum. Other chann
 If you see errors that say `no route to host` or similar things, it means your TV is off. The binding cannot discover, control or poll a TV that is off.
 
 For the binding to function properly it is very important that your network config allows the machine running openHAB to receive UPnP multicast traffic.
-Multicast traffic is not propogated between different subnets, or VLANS, unless you specifically configure your router to do this. Many switches have IGMP Snooping enabled by default, which filters out multicast traffic.
+Multicast traffic is not propagated between different subnets, or VLANs, unless you specifically configure your router to do this.
+Many switches have IGMP Snooping enabled by default, which filters out multicast traffic.
 If you want to check the communication between the machine and the TV is working, you can try the following:
 
 ### Check if your Linux machine receives multicast traffic
@@ -660,8 +674,9 @@ Where the ip address in `LOCATION` is the ip address of your TV, and the `USN` v
 
 If you now turn your TV off, you will see similar messages, but with `NTS: ssdp:byebye`. This is how the binding detects that your TV has turned OFF.
 
-Try this several times over a period of 30 minutes after you have discovered the TV and added the binding. This is because when you discover the binding, a UPnP `M-SEARCH` packet is broadcast, which will enable mulicast traffic, but your network (router or switches) can eventually start filtering out multicast traffic, leading to unrealiable behaviour.
-If you see these messages, then basic communications is working, and you should be able to turn your TV Off (and on later TV's) ON, and have the status reported correctly.
+Try this several times over a period of 30 minutes after you have discovered the TV and added the binding.
+This is because when you discover the binding, a UPnP `M-SEARCH` packet is broadcast, which will enable multicast traffic, but your network (router or switches) can eventually start filtering out multicast traffic, leading to unreliable behaviour.
+If you see these messages, then basic communications is working, and you should be able to turn your TV Off (and on later TV's ON), and have the status reported correctly.
 
 ### Multiple network interfaces
 
@@ -675,7 +690,7 @@ If you have more than one network interface on your openHAB machine, you may hav
   - Make sure the openHAB machine and the TV are in the same subnet/VLAN.
   - disable `IGMP Snooping` if it is enabled on your switches.
   - enable/disable `Enable multicast enhancement (IGMPv3)` if you have it (sometimes this helps).
-  - Try to connect your openHAB machine or TV via Ethernet instead of WiFi (AP's can filter Multicasts).
+  - Try to connect your openHAB machine or TV via Ethernet instead of WiFi (AP's can filter multicasts).
   - Make sure you don't have any firewall rules blocking multicast.
   - if you are using a Docker container, ensure you use the `--net=host` setting, as Docker filters multicast broadcasts by default. If device discovery still does not work, try other jupnp environment variables as described in [openHAB Docker documentation](https://www.openhab.org/docs/installation/docker.html#universal-plug-and-play-upnp)
 
@@ -692,17 +707,17 @@ There are several other common issues that you can check for:
   - Protocol None is not valid
   - Protocol Legacy will not work on >2016 TV's
   - Protocol websocket only works with port 8001
-  - Protocol websocketsecure only works with port 8002. If your TV supports websocketsecure on port 8002, you _must_ use it, or many things will not work.
+  - Protocol websocketsecure only works with port 8002. If your TV supports websocketsecure on port 8002, you _must_ use it, or many things will not work..
 - The channel you are trying to use is not supported on your TV.
   - Only some channels are supported on different TV's
   - Some channels require additional configuration on >2016 TV's. eg `SmartThings` configuration, or Apps confguration.
   - Some channels are read only on certain TV's
 - I can't turn my TV ON.
-  - Older TV's (<2016) do not support tuning ON
-  - WOL is not enabled on your TV (you have to specifically enable it)
+  - Older TV's (<2016) do not support turning ON.
+  - WOL is not enabled on your TV (you have to specifically enable it).
   - You have a soundbar connected to your TV and are connected using wired Ethernet.
-  - The MAC address in the binding configuratiion is blank/wrong.
-  - You have to wait up to 60 seconds after turning OFF, before you can turn back ON (This is a Samsung feature called "instant on")
+  - The MAC address in the binding configuration is blank/wrong.
+  - You have to wait up to 60 seconds after turning OFF, before you can turn back ON (This is a Samsung feature called "instant on").
 - My TV asks me to accept the connection every time I turn the TV on
   - You have the TV set to "Always Ask" for external connections. You need to set it to "Only ask the First Time". To get to the Device Manager, press the home button on your TV remote and navigate to Settings → General → External Device Manager → Device Connect Manager and change the setting.
   - You are using a text `.things` file entry for the TV `thing`, and you haven't entered the `webSocketToken` in the text file definition. The token is shown on the binding config page. See [Binding Configuration](#binding-configuration).

@@ -33,7 +33,7 @@ Panel will _reboot_
 
 `Settings` --> `Advanced Settings` --> `Installation` --> `Devices` --> `Wi-Fi Devices` --> `Reveal Secure Token` (copy token to use in panel configuration)
 
-At this point you may add the panel thing in openHAB using the secure token along with the IP or host name of the panel.
+At this point you may add the panel Thing in openHAB using the secure token along with the IP or host name of the panel.
 
 ### Partition (Bridge)
 

@@ -3,7 +3,7 @@
 Robonect is a piece of hardware which has to be put into your Husqvarna, Gardena and other branded automower and makes it accessible in your internal network.
 More details about the Robonect module can be found at [robonect.de](https://forum.robonect.de/)
 
-This binding integrates mowers having the robonect module installed as a thing into the home automation solution, allowing to control the mower and react on mower status changes in rules.
+This binding integrates mowers having the robonect module installed as a Thing into the home automation solution, allowing to control the mower and react on mower status changes in rules.
 
 ## Supported Things
 
@@ -25,7 +25,7 @@ Automatic discovery is not supported.
 
 ## Thing Configuration
 
-The following configuration settings are supported for the `mower` thing.
+The following configuration settings are supported for the `mower` Thing.
 
 | parameter name | mandatory | description                                                                                       |
 |----------------|-----------|---------------------------------------------------------------------------------------------------|

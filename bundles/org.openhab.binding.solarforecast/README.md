@@ -1,21 +1,21 @@
 # SolarForecast Binding
 
-This binding provides data from Solar Forecast services.
-Use it to estimate your daily production, plan electric consumers like Electric Vehicle charging, heating or HVAC.
-Look ahead the next days in order to identify surplus / shortages in your energy planning.
+This binding provides data from solar forecast services.
+Use it to estimate your daily production and plan electric consumers like EV charging, heating, or HVAC.
+Look ahead to the next days to identify surpluses/shortages in your energy planning.
 
-Supported Services
+## Supported Services
 
 - [Solcast](https://solcast.com/)
   - Free [Hobbyist Plan](https://toolkit.solcast.com.au/register/hobbyist) with registration
 - [Forecast.Solar](https://forecast.solar/)
   - Public, Personal and Professional [plans](https://forecast.solar/#accounts) available
 
-Display Power values of Forecast and PV Inverter items
+Display power values of forecast and PV inverter items
 
 ![Solar Forecast Power Chart](doc/SolcastPower.png)
 
-Display Energy values of Forecast and PV inverter items
+Display energy values of forecast and PV inverter items
 Yellow line shows _Daily Total Forecast_.
 
 ![Solar Forecast Energy Chart](doc/SolcastCumulated.png)
@@ -27,23 +27,23 @@ Each service needs one `xx-site` for your location and at least one photovoltaic
 | Thing Type ID         | Label                             | Subscription  |
 |-----------------------|-----------------------------------|---------------|
 | sc-site               | Solcast service site definition   | yes (free)    |
-| sc-plane              | Solcast PV Plane                  | yes (free)    |
-| fs-site               | Forecast Solar Site               | no            |
-| fs-plane              | Forecast Solar Plane              | no            |
-| adjustable-fs-site    | Adjustable Forecast Solar Site    | yes (paid)    |
-| adjustable-fs-plane   | Adjustable Forecast Solar Plane   | yes (paid)    |
-| smart-fs-site         | Smart Forecast Solar Site         | no            |
-| smart-fs-plane        | Smart Forecast Solar Plane        | no            |
+| sc-plane              | Solcast PV plane                  | yes (free)    |
+| fs-site               | Forecast Solar site               | no            |
+| fs-plane              | Forecast Solar plane              | no            |
+| adjustable-fs-site    | Adjustable Forecast Solar site    | yes (paid)    |
+| adjustable-fs-plane   | Adjustable Forecast Solar plane   | yes (paid)    |
+| smart-fs-site         | Smart Forecast Solar site         | no            |
+| smart-fs-plane        | Smart Forecast Solar plane        | no            |
 
 ## Solcast Configuration
 
-[Solcast service](https://solcast.com/) requires a personal registration with an e-mail address.
+[Solcast service](https://solcast.com/) requires a personal registration with an email address.
 A free version for your personal home PV system is available in [Hobbyist Plan](https://toolkit.solcast.com.au/register/hobbyist)
 (Limited to 10 API requests per day).
 You need to configure your home photovoltaic system within the web interface.
 The `resourceId` for each PV plane is provided afterwards.
 
-In order to receive proper timestamps double check your time zone in _openHAB - Settings - Regional Settings_.
+In order to receive proper timestamps, double-check your time zone in _openHAB - Settings - Regional Settings_.
 Correct time zone is necessary to show correct forecast times in UI.
 
 ### Solcast Bridge Configuration
@@ -55,14 +55,14 @@ Correct time zone is necessary to show correct forecast times in UI.
 
 `apiKey` can be obtained in your [Account Settings](https://toolkit.solcast.com.au/account)
 
-`timeZone` can be left empty to evaluate Regional Settings of your openHAB installation.
+`timeZone` can be left empty to evaluate the Regional Settings of your openHAB installation.
 See [DateTime](#date-time) section for more information.
 
 ### Solcast Plane Configuration
 
 | Name            | Type    | Description                                                              | Default         | Required | Advanced |
 |-----------------|---------|--------------------------------------------------------------------------|-----------------|----------|----------|
-| resourceId      | text    | Resource Id of Solcast rooftop site                                      | N/A             | yes      | no       |
+| resourceId      | text    | Resource ID of Solcast rooftop site                                     | N/A             | yes      | no       |
 | refreshInterval | integer | Forecast Refresh Interval in minutes (0 = disable automatic refresh)     | 150             | yes      | no       |
 | guessActuals    | boolean | Guess actual forecast values instead of placing an API call              | true            | yes      | no       |
 
@@ -70,27 +70,27 @@ See [DateTime](#date-time) section for more information.
 
 `refreshInterval` of forecast data needs to respect the throttling of the Solcast service.
 
-With parameter `guessActuals=true` a plane needs 1 API call per update.
+With parameter `guessActuals=true`, a plane needs 1 API call per update.
 If not 2 API calls per update are placed.
 A refresh interval of 150 minutes will result in approx 10 calls per day.
 
-With `refreshInterval = 0` the forecast data will not be updated by binding.
+With `refreshInterval = 0`, the forecast data will not be updated by the binding.
 This gives the user the possibility to define an own update strategy in rules.
 See [manual update rule example](#solcast-manual-update) to update Solcast forecast data
 
 - after startup
 - every 2 hours only during daytime using [Astro Binding](https://www.openhab.org/addons/bindings/astro/)
 
-With boolean configuration `guessActuals` `true` the binding will take over the previous forecast data and use them as _actual values_.
-This will spare one API call.
+With boolean configuration `guessActuals = true`, the binding will take the previous forecast data and use them as _actual values_.
+This will save one API call.
 If set to `false` the 2 API calls are placed as in the previous versions.
 
 ## Solcast Channels
 
 Each `sc-plane` reports its own values.
-The `sc-site` bridge sums up all attached `sc-plane` values and provides total forecast for your home location.
+The `sc-site` bridge sums up all attached `sc-plane` values and provides the total forecast for your home location.
 
-Channels are covering today's actual data with current, remaining and today's total prediction.
+Channels cover today's actual data with current, remaining, and today's total prediction.
 Forecasts are delivered up to 6 days in advance.
 Scenarios are clustered in groups:
 
@@ -114,7 +114,7 @@ Technical channels observing the update behavior are reported in `update` group.
 
 | Channel                 | Type          | Description                                                  |
 |-------------------------|---------------|--------------------------------------------------------------|
-| api-count               | String        | Number of requests send to Solcast API starting 0:00 UTC     |
+| api-count               | String        | Number of requests sent to the Solcast API starting 0:00 UTC |
 | latest-update           | DateTime      | Date and time of the latest forecast update                  |
 
 The `api-count` channel delivers a JSON object with 3 different counters:
@@ -129,26 +129,26 @@ The `api-count` channel delivers a JSON object with 3 different counters:
 
 <img src="doc/APICountTransformation.png" alt="API Count Transformation Example" width="320" height="300"/>
 
-You can connect a Number item to this channel using a [JSONPATH transformation](https://www.openhab.org/addons/transformations/jsonpath/) referring the wanted JSON key e.g. `$.200`.
+You can connect a Number item to this channel using a [JSONPATH transformation](https://www.openhab.org/addons/transformations/jsonpath/), referring to the desired JSON key, e.g., `$.200`.
 
 ## ForecastSolar Configuration
 
-[ForecastSolar service](https://forecast.solar/) provides a [public free](https://forecast.solar/#accounts) plan.
+[Forecast.Solar service](https://forecast.solar/) provides a [public free](https://forecast.solar/#accounts) plan.
 You can try it without any registration or other preconditions.
 
 ### ForecastSolar Bridge Configuration
 
-| Name                   | Type    | Description                           | Default      | Required |
-|------------------------|---------|---------------------------------------|--------------|----------|
-| location               | text    | Location of Photovoltaic system.      | empty        | no       |
-| inverterKwp            | decimal | Inverter Kilowatt Peak                | N/A          | no       |
-| apiKey                 | text    | API Key                               | N/A          | yes / no |
+| Name                   | Type    | Description                          | Default      | Required |
+|------------------------|---------|--------------------------------------|--------------|----------|
+| location               | text    | Location of photovoltaic system      | empty        | no       |
+| inverterKwp            | decimal | Inverter Kilowatt Peak               | N/A          | no       |
+| apiKey                 | text    | API Key                              | N/A          | yes / no |
 
-`location` defines latitude, longitude values of your PV system.
-In case of empty the location configured in openHAB is obtained.
+`location` defines latitude and longitude values of your PV system.
+If left empty, the location configured in openHAB is used.
 
 `inverterKwp` defines the maximum possible kilo watt capability of your inverter.
-Used if your installed plane kWp is greater than inverter kWp.
+Used if your installed plane kWp is greater than the inverter kWp.
 
 `apiKey` is mandatory for `adjustable-fs-site` commercial plan to calculate [forecast adjustment by forecast.solar](https://doc.forecast.solar/actual).
 It's optional for `fs-site` and `smart-fs-site` but can be used for comparison of forecasts.
@@ -159,17 +159,17 @@ Following parameters are needed for each `fs-plane`.
 
 | Name            | Type    | Description                                                                  | Default | Required | Advanced |
 |-----------------|---------|------------------------------------------------------------------------------|---------|----------|----------|
-| refreshInterval | integer | Forecast Refresh Interval in minutes                                         | 30      | yes      | false    |
-| declination     | integer | Plane Declination: 0 for horizontal till 90 for vertical declination         | N/A     | yes      | false    |
-| azimuth         | integer | Plane Azimuth: -180 = north, -90 = east, 0 = south, 90 = west, 180 = north   | N/A     | yes      | false    |
-| kwp             | decimal | Installed Kilowatt Peak                                                      | N/A     | yes      | false    |
+| refreshInterval | integer | Forecast refresh interval in minutes                                         | 30      | yes      | false    |
+| declination     | integer | Plane declination: 0 for horizontal to 90 for vertical                       | N/A     | yes      | false    |
+| azimuth         | integer | Plane azimuth: -180 = north, -90 = east, 0 = south, 90 = west, 180 = north   | N/A     | yes      | false    |
+| kwp             | decimal | Installed kilowatt-peak                                                      | N/A     | yes      | false    |
 
 `refreshInterval` of forecast data needs to respect the throttling of the ForecastSolar service.
 12 calls per hour allowed from your caller IP address so for 2 planes lowest possible refresh rate is 10 minutes.
 
 #### Advanced Configuration
 
-Advanced configuration parameters are available to _fine tune_ your forecast data.
+Advanced configuration parameters are available to _fine-tune_ your forecast data.
 Read linked documentation in order to know what you're doing.
 
 | Name            | Type    | Description                                                                  | Default | Required | Advanced |
@@ -180,13 +180,13 @@ Read linked documentation in order to know what you're doing.
 
 [Damping factors](https://doc.forecast.solar/doku.php?id=damping) for morning and evening.
 
-[Horizon information](https://doc.forecast.solar/doku.php?id=api) as comma-separated integer list.
+[Horizon information](https://doc.forecast.solar/doku.php?id=api) as a comma-separated integer list.
 This configuration item is aimed to expert users.
 You need to understand the [horizon concept](https://joint-research-centre.ec.europa.eu/pvgis-photovoltaic-geographical-information-system/getting-started-pvgis/pvgis-user-manual_en#ref-2-using-horizon-information).
-Shadow obstacles like mountains, hills, buildings can be expressed here.
-First step can be a download from [PVGIS tool](https://re.jrc.ec.europa.eu/pvg_tools/en/) and downloading the _terrain shadows_.
+Shadow obstacles like mountains, hills, and buildings can be expressed here.
+A first step can be downloading from the [PVGIS tool](https://re.jrc.ec.europa.eu/pvg_tools/en/) and downloading the _terrain shadows_.
 But it doesn't fit 100% to the required configuration.
-Currently there's no tool available which is providing the configuration information 1 to 1.
+Currently there's no tool available that provides the configuration information one-to-one.
 So you need to know what you're doing.
 
 #### Energy Feedback Configuration
@@ -218,7 +218,7 @@ E.g. forecast predicts 0.1 kWh but real production is 0.001 kWh results into [ma
 Each `fs-plane` reports its own values.
 The `fs-site` bridge sums up all attached `fs-plane` values and provides the total forecast for your home location.
 
-Channels are covering today's actual data with current, remaining and total prediction.
+Channels cover today's actual data with current, remaining, and total prediction.
 Forecasts are delivered up to 3 days for paid personal plans.
 
 | Channel                 | Type          | Unit | Description                                     | TimeSeries     |
@@ -320,7 +320,7 @@ Examples are showing
 - how to translate `Instant` to `ZonedDateTime` objects and
 - how to translate `ZonedDateTime` to `Instant` objects
 
-## Forecast Solar Example
+## Forecast.Solar Example
 
 ### Thing file
 
@@ -392,7 +392,7 @@ Number:Energy    Solcast_Site_Pessimistic_Remaining           "Today's remaining
 Number:Energy    Solcast_Site_Pessimistic_Today               "Today's total energy forecast"                                          {channel="solarforecast:sc-site:homeSite:pessimistic#energy-today", stateDescription=" "[ pattern="%.1f %unit%" ], unit="kWh"}
 
 // site API call counter 
-Number           Solcast_Site_API_Sucess_Counter              "Site API Counter"                                                       {channel="solarforecast:sc-site:homeSite:update#api-count" [ profile="transform:JSONPATH", function="$.200"]}
+Number           Solcast_Site_API_Success_Counter             "Site API Counter"                                                       {channel="solarforecast:sc-site:homeSite:update#api-count" [ profile="transform:JSONPATH", function="$.200"]}
 Number           Solcast_Site_API_Throttle_Counter            "Site API Throttle Counter"                                              {channel="solarforecast:sc-site:homeSite:update#api-count" [ profile="transform:JSONPATH", function="$.429"]}
 Number           Solcast_Site_API_Error_Counter               "Site API ErrorCounter"                                                  {channel="solarforecast:sc-site:homeSite:update#api-count" [ profile="transform:JSONPATH", function="$.other"]}
 DateTime         Solcast_Site_API_LastUpdate                  "Site API Last Update"                                                   {channel="solarforecast:sc-site:homeSite:update#latest-update"}
@@ -425,7 +425,7 @@ Number:Energy    Solcast_Plane_Pessimistic_Remaining_SW       "SW Today's pessim
 Number:Energy    Solcast_Plane_Pessimistic_Today_SW           "SW Today's pessimistic total energy forecast"                           {channel="solarforecast:sc-plane:homeSite:planeSouthWest:pessimistic#energy-today", stateDescription=" "[ pattern="%.1f %unit%" ], unit="kWh"}
 
 // plane API call counter
-Number           Solcast_Plane_API_Sucess_Counter             "Plane API Counter"                                                      {channel="solarforecast:sc-plane:homeSite:planeSouthWest:update#api-count" [ profile="transform:JSONPATH", function="$.200"]}
+Number           Solcast_Plane_API_Success_Counter            "Plane API Counter"                                                      {channel="solarforecast:sc-plane:homeSite:planeSouthWest:update#api-count" [ profile="transform:JSONPATH", function="$.200"]}
 Number           Solcast_Plane_API_Throttle_Counter           "Plane API Throttle Counter"                                             {channel="solarforecast:sc-plane:homeSite:planeSouthWest:update#api-count" [ profile="transform:JSONPATH", function="$.429"]}
 Number           Solcast_Plane_API_Error_Counter              "Plane API ErrorCounter"                                                 {channel="solarforecast:sc-plane:homeSite:planeSouthWest:update#api-count" [ profile="transform:JSONPATH", function="$.other"]}
 DateTime         Solcast_Plane_API_LastUpdate                 "Plane API Last Update"                                                  {channel="solarforecast:sc-plane:homeSite:planeSouthWest:update#latest-update"}
@@ -433,8 +433,8 @@ DateTime         Solcast_Plane_API_LastUpdate                 "Plane API Last Up
 // plane estimation items
 Number:Power     Solcast_Plane_Average_Power_Estimate         "Plane Average Power estimations"                          (influxdb)    {channel="solarforecast:sc-plane:homeSite:planeSouthWest:average#power-estimate", stateDescription=" "[ pattern="%.0f %unit%" ], unit="W"}
 Number:Energy    Solcast_Plane_Average_Energy_Estimate        "Plane Average Energy estimations"                         (influxdb)    {channel="solarforecast:sc-plane:homeSite:planeSouthWest:average#energy-estimate", stateDescription=" "[ pattern="%.3f %unit%" ], unit="kWh"}
-Number:Power     Solcast_Plane_Optimistic_Power_Estimate      "Plane Optiisitc Power estimations"                        (influxdb)    {channel="solarforecast:sc-plane:homeSite:planeSouthWest:optimistic#power-estimate", stateDescription=" "[ pattern="%.0f %unit%" ], unit="W"}
-Number:Energy    Solcast_Plane_Optimistic_Energy_Estimate     "Plane Optiisitc Energy estimations"                       (influxdb)    {channel="solarforecast:sc-plane:homeSite:planeSouthWest:optimistic#energy-estimate", stateDescription=" "[ pattern="%.3f %unit%" ], unit="kWh"}
+Number:Power     Solcast_Plane_Optimistic_Power_Estimate      "Plane Optimistic Power estimations"                        (influxdb)    {channel="solarforecast:sc-plane:homeSite:planeSouthWest:optimistic#power-estimate", stateDescription=" "[ pattern="%.0f %unit%" ], unit="W"}
+Number:Energy    Solcast_Plane_Optimistic_Energy_Estimate     "Plane Optimistic Energy estimations"                       (influxdb)    {channel="solarforecast:sc-plane:homeSite:planeSouthWest:optimistic#energy-estimate", stateDescription=" "[ pattern="%.3f %unit%" ], unit="kWh"}
 Number:Power     Solcast_Plane_Pessimistic_Power_Estimate     "Plane Pessimistic Power estimations"                      (influxdb)    {channel="solarforecast:sc-plane:homeSite:planeSouthWest:pessimistic#power-estimate", stateDescription=" "[ pattern="%.0f %unit%" ], unit="W"}
 Number:Energy    Solcast_Plane_Pessimistic_Energy_Estimate    "Plane Pessimistic Energy estimations"                     (influxdb)    {channel="solarforecast:sc-plane:homeSite:planeSouthWest:pessimistic#energy-estimate", stateDescription=" "[ pattern="%.3f %unit%" ], unit="kWh"}
 ```
@@ -535,7 +535,7 @@ rule "Daylight Start"
         PV_Daytime.postUpdate(ON)
 end
 
-rule "Solacast Updates"
+rule "Solcast Updates"
     when
         Thing "solarforecast:sc-plane:homeSite:homeSouthWest" changed to INITIALIZING or // Thing status changed to INITIALIZING
         Time cron "0 30 0/2 ? * * *" // every 2 hours at minute 30

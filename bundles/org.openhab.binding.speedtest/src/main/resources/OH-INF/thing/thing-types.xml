@@ -109,7 +109,7 @@
 	<channel-type id="downloadBytes" advanced="true">
 		<item-type>Number:DataAmount</item-type>
 		<label>Downloaded Bytes</label>
-		<description>Amount of data that was used for the last upload bandwidth test</description>
+		<description>Amount of data that was used for the last download bandwidth test</description>
 		<state readOnly="true" pattern="%.0f MB"></state>
 	</channel-type>
 	<channel-type id="downloadElapsed" advanced="true">

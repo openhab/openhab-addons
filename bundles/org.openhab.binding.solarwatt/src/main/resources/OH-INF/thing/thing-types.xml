@@ -85,7 +85,7 @@
 		</supported-bridge-type-refs>
 
 		<label>Power Meter</label>
-		<description>Power meter for produced or consumed energy</description>
+		<description>Power meter for produced or consumed energy.</description>
 		<semantic-equipment-tag>ElectricMeter</semantic-equipment-tag>
 		<representation-property>IdName</representation-property>
 

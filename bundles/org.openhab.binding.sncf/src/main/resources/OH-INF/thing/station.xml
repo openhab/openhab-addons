@@ -34,7 +34,7 @@
 	</thing-type>
 
 	<channel-group-type id="passage">
-		<label>Other</label>
+		<label>Passage</label>
 		<channels>
 			<channel id="direction" typeId="direction"/>
 			<channel id="lineName" typeId="lineName"/>
@@ -76,7 +76,7 @@
 		<item-type>DateTime</item-type>
 		<label>Timestamp</label>
 		<description>Timestamp of the future event.</description>
-		<category>time</category>
+		<category>Time</category>
 		<tags>
 			<tag>Forecast</tag>
 			<tag>Timestamp</tag>

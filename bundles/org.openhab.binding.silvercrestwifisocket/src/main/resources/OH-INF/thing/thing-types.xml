@@ -6,8 +6,8 @@
 
 	<!-- Socket Thing Type -->
 	<thing-type id="wifiSocket">
-		<label>Silvercrest Wifi Socket</label>
-		<description>Supports Silvercrest Wifi Socket SWS-A1.</description>
+		<label>Silvercrest WiFi Socket</label>
+		<description>Supports Silvercrest WiFi Socket SWS-A1.</description>
 		<semantic-equipment-tag>PowerOutlet</semantic-equipment-tag>
 		<channels>
 			<channel id="switch" typeId="switch"/>
@@ -21,7 +21,7 @@
 			<parameter name="hostAddress" type="text">
 				<label>Host Address</label>
 				<context>network-address</context>
-				<description>The socket Host address. The binding is able to discover the host address.</description>
+				<description>The socket host address. The binding is able to discover the host address.</description>
 			</parameter>
 			<parameter name="updateInterval" type="integer" min="5">
 				<label>Update Interval</label>
@@ -43,7 +43,7 @@
 	<channel-type id="switch">
 		<item-type>Switch</item-type>
 		<label>Socket Switch</label>
-		<description>Silvercrest Wifi Socket Switch to turn on or off.</description>
+		<description>Silvercrest WiFi socket switch to turn on or off.</description>
 		<tags>
 			<tag>Switch</tag>
 			<tag>Power</tag>

@@ -6,7 +6,7 @@
 
 	<!-- Amplifier CONNECT:AMP Thing Type -->
 	<thing-type id="CONNECTAMP" listed="false">
-		<!-- Label without column (:) because of device pairing name restrictions -->
+		<!-- Label without colon (:) because of device pairing name restrictions -->
 		<label>CONNECT AMP</label>
 		<description>Represents SONOS CONNECT:AMP amplifier</description>
 		<semantic-equipment-tag>AudioVisual</semantic-equipment-tag>

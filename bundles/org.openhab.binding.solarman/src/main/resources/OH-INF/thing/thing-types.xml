@@ -60,8 +60,8 @@
 			</parameter>
 			<parameter name="solarmanLoggerMode" type="text" required="false">
 				<label>Logger Mode</label>
-				<description>Use RAW Modbus for LAN Stick LSE-3 and V5 NODBUS for most Wifi Sticks. If your Wifi stick uses Raw
-					Modbus choose RAW. If you do not use this advanced option, V5 MODBUS will be the default.</description>
+				<description>Use RAW Modbus for LAN Stick LSE-3 and V5 MODBUS for most WiFi sticks. If your WiFi stick uses Raw
+					Modbus, choose RAW. If you do not use this advanced option, V5 MODBUS will be the default.</description>
 				<options>
 					<option value="V5MODBUS">V5 Modbus</option>
 					<option value="RAWMODBUS">RAW Modbus</option>
@@ -72,10 +72,9 @@
 			<parameter name="additionalRequests" type="text" required="false">
 				<label>Additional Requests</label>
 				<description>Additional requests besides the ones defined in the inverter definition.
-					Format is
-					mb_functioncode1:start1-end1, mb_functioncode2:start2-end2,...
-					Example 0x03:0x0000-0x0100,0x03:0x0200-0x0300
-				</description>
+					Format:
+					mb_functioncode1:start1-end1, mb_functioncode2:start2-end2, ...
+					Example: 0x03:0x0000-0x0100,0x03:0x0200-0x0300</description>
 				<advanced>true</advanced>
 			</parameter>
 		</config-description>

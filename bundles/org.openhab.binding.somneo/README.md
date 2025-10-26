@@ -10,7 +10,7 @@ This binding does only support one Thing:
 
 ## Thing Configuration
 
-The Philips Somneo thing requires the `hostname` it can connect to.
+The Philips Somneo Thing requires the `hostname` it can connect to.
 Its API only allows HTTPS access, but unfortunately the SSL certificate is not trusted and must be ignored by the parameter.
 
 | Parameter                    | Values                                                      | Default |

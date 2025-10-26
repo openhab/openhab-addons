@@ -10,7 +10,7 @@ The heating and cooling program schedules on the thermostat can also be configur
 
 ## Supported Things
 
-There is exactly one supported thing type, which represents any of the supported thermostat models.
+There is exactly one supported Thing type, which represents any of the supported thermostat models.
 It has the `rtherm` id.
 Multiple Things can be added if more than one thermostat is to be controlled.
 
@@ -21,7 +21,7 @@ Otherwise the Thing must be manually added.
 
 ## Thing Configuration
 
-The thing has a few configuration parameters:
+The Thing has a few configuration parameters:
 
 |    Parameter    | Description                                                                                                                                                                                                                                                                                                                |
 |-----------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|

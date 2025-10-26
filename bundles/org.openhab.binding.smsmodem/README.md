@@ -27,8 +27,8 @@ Two things are supported by this binding:
 
 ## Discovery
 
-There is no discovery process for _smsmodembridge_ or _smsmodemremotebridge_ thing.
-A _smsconversation_ thing will be discovered and added to the inbox everytime the modem should receive a SMS by a new sender.
+There is no discovery process for _smsmodembridge_ or _smsmodemremotebridge_ Thing.
+A _smsconversation_ Thing will be discovered and added to the inbox everytime the modem should receive a SMS by a new sender.
 
 ## Thing Configuration
 
@@ -56,7 +56,7 @@ The other parameters are optional:
 | pollingInterval  | integer | Delay between two checks for new message (in seconds)                                        |
 | delayBetweenSend | integer | Delay to wait between two messages post (in milliseconds, could be necessary for slow modem) |
 
-The _smsconversation_ thing is just a shortcut to address/receive messages with a specific msisdn. It is not mandatory to use the binding, as you can use action and trigger channel to send/receive a message once the smsmodem bridge is configured.
+The _smsconversation_ Thing is just a shortcut to address/receive messages with a specific msisdn. It is not mandatory to use the binding, as you can use action and trigger channel to send/receive a message once the smsmodem bridge is configured.
 
 | Parameter Name | type    | description                                                                                                                                                                                  |
 | -------------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -96,7 +96,7 @@ val smsAction = getActions("smsmodem","smsmodem:smsmodembridge:<uid>")
 var smsAction = actions.get("smsmodem","smsmodem:smsmodembridge:<uid>");
 ```
 
-Where uid is the Bridge UID of the _smsmodembridge_ thing.
+Where uid is the Bridge UID of the _smsmodembridge_ Thing.
 
 Once this action instance is retrieved, you can invoke the 'send' method on it:
 

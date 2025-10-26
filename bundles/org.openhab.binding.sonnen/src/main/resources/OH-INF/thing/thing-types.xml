@@ -123,7 +123,7 @@
 	<channel-type id="gridConsumption">
 		<item-type>Number:Power</item-type>
 		<label>Grid Consumption</label>
-		<description>Indicates the actual current consumption from the the Grid. Otherwise 0.</description>
+		<description>Indicates the actual current consumption from the Grid. Otherwise 0.</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Power</tag>

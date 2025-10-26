@@ -6,11 +6,11 @@ The Siemens RDS binding provides the infrastructure for connecting openHAB to th
 
 ## Supported Things
 
-The binding supports two types of Thing as follows..
+The binding supports two types of Thing as follows:
 
 | Thing Type           | Description                                                                                                              |
 | -------------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| Climatix IC Account  | User account on the Siemens Climatix IC cloud server (bridge) to connect with respective Smart Thermostat Things below.. |
+| Climatix IC Account  | User account on the Siemens Climatix IC cloud server (bridge) to connect with respective Smart Thermostat Things below. |
 | RDS Smart Thermostat | Siemens RDS model Smart Thermostat devices                                                                               |
 
 ## Discovery
@@ -108,10 +108,10 @@ Number:Dimensionless Upstairs_RoomHumidity "Room Humidity" { channel="siemensrds
 String Upstairs_RoomAirQuality "Room Air Quality" { channel="siemensrds:rds:mybridgename:myupstairs:roomAirQuality" }
 Number:Temperature Upstairs_OutsideTemperature "Outside Temperature" { channel="siemensrds:rds:mybridgename:myupstairs:outsideTemperature" }
 String Upstairs_EnergySavingsLevel "Energy Savings Level" { channel="siemensrds:rds:mybridgename:myupstairs:energySavingsLevel" }
-Switch Upstairs_OccupancModePresent "Occupancy Mode Present" { channel="siemensrds:rds:mybridgename:myupstairs:occupancyModePresent" }
+Switch Upstairs_OccupancyModePresent "Occupancy Mode Present" { channel="siemensrds:rds:mybridgename:myupstairs:occupancyModePresent" }
 Switch Upstairs_ThermostatAutoMode "Thermostat Auto Mode" { channel="siemensrds:rds:mybridgename:myupstairs:thermostatAutoMode" }
-Switch Upstairs_HotWaterAutoMode "Hotwater Auto Mode" { channel="siemensrds:rds:mybridgename:myupstairs:hotWaterAutoMode" }
-Switch Upstairs_HotWaterOutputState "Hotwater Output State" { channel="siemensrds:rds:mybridgename:myupstairs:hotWaterOutputState" }
+Switch Upstairs_HotWaterAutoMode "Hot Water Auto Mode" { channel="siemensrds:rds:mybridgename:myupstairs:hotWaterAutoMode" }
+Switch Upstairs_HotWaterOutputState "Hot Water Output State" { channel="siemensrds:rds:mybridgename:myupstairs:hotWaterOutputState" }
 ```
 
 ### `demo.sitemap` File

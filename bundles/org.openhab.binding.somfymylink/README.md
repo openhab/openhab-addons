@@ -14,7 +14,7 @@ This binding has been tested with myLink firmware 5.23.
 ## Discovery
 
 To use auto discovery first setup a Somfy MyLink bridge, then supply its IP address and system id.
-The system id can be found in the integration settings -> Control4 section of your My Link app.
+The system id can be found in the integration settings -> Control4 section of your myLink app.
 Once the Somfy MyLink bridge is ONLINE you can start a scan that will detect and add to your Inbox any discovered roller shades.
 
 ## Thing Configuration
@@ -45,7 +45,7 @@ The following channels are supported by the binding. Note that specific weather 
 | Channel ID   | Item Type     | Description                                              |
 | ------------ | ------------- | -------------------------------------------------------- |
 | shadeControl | Rollershutter | Device control (UP, DOWN, STOP)                          |
-| scenelist    | String        | Comma-separated list of scenes of form sceneId=sceneName |
+| sceneid      | String        | Comma-separated list of scenes of form sceneId=sceneName |
 | button       | Switch        | Button to trigger a scene or rule                        |
 
 ## Example

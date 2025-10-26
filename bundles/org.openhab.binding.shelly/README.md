@@ -187,7 +187,7 @@ In this case autoCoIoT should be disabled, CoIoT events will not work, because t
 
 `Generation 1`: The binding requires firmware version 1.9.2 or newer to enable all features.
 `Generation 2+3` Those Shelly devices require firmware version 1.0.0 or newer (1.10.0+ is recommended).
-`Shelly BLU deries`: Use the Shelly App to update to 1.0+ version of the firmware.
+`Shelly BLU series`: Use the Shelly app to update to version 1.0+ of the firmware.
 
 Some of the features are enabled dynamically or are not available depending on device type and firmware release.
 The Web UI of the Shelly device displays the current firmware version under Settings:Firmware and shows an update option when a newer version is available.
@@ -225,15 +225,15 @@ The BLU devices use Bluetooth Low Energy (BLE).
 The binding can't communicate directly with the device, so a Shelly Plus/Pro device is required with enabled Bluetooth to use those devices as a hub.
 The binding automatically installs a script on the Shelly Device (oh-blu-scanner.js), which forwards the BLU events to the binding.
 
-Follow these steps to add the Shelly BLU Device to openHAB
+Follow these steps to add the Shelly BLU Device to openHAB:
 
-- Make sure a Shelly is near by the BLU device, enable Bluetooh on this device (**disable the 'Bluetooth Gateway' mode** in the Shelly app/UI is recommended)
-- Add this thing to openHAB, make sure thing gets online
-- Enable "BLU Gateway Support" in the thing configuration of the Shelly device acting as gateway.
+- Make sure a Shelly is nearby the BLU device, and enable Bluetooth on this device (**disabling the 'Bluetooth Gateway' mode** in the Shelly app/UI is recommended).
+- Add this Thing to openHAB, make sure Thing gets online
+- Enable "BLU Gateway Support" in the Thing configuration of the Shelly device acting as gateway.
 - Now press the button on your BLU device, this wakes up the device and the script forwards this event to the binding
-- As a result the corresponding thing should show up in the Inbox
-- Add the thing (at this point no channels are created), the new thing will show status CONFIG_PENDING
-- Click the device button again, the binding gets another event and creates the channels and thing changes status to ONLINE
+- As a result the corresponding Thing should show up in the Inbox
+- Add the Thing (at this point no channels are created), the new Thing will show status CONFIG_PENDING
+- Click the device button again, the binding gets another event and creates the channels and Thing changes status to ONLINE
 - Finally link the channels to the equipment in the model
 
 `Note`:
@@ -246,7 +246,7 @@ Try moving the device to force status updates.
 Every time an event is received sensors#lastUpdate and channels are updated with the reported values.
 `device#wifiSignal` indicates the Bluetooth signal strength and gets updated when the device sends an event.
 
-The binding supports multiple Shelly Plus/Pro as gateway devices unless they are added as thing and are ONLINE.
+The binding supports multiple Shelly Plus/Pro as gateway devices unless they are added as Thing and are ONLINE.
 In this scenario the channel `device#gatewayDevice` will report the last hub device, which forwarded a status update.
 
 ### Password Protected Devices
@@ -262,22 +262,22 @@ In this case the credentials are persisted as part of the Thing configuration.
 ### Range Extender Mode
 
 The Plus/Pro devices support the so-called Range Extender Mode (not available for Gen1).
-This allows connect Shellys, which are normally no reachable, because of a lack of WiFi signal.
+This allows connecting Shellys that are normally not reachable due to a lack of Wi-Fi signal.
 Once enabled the Shelly acts as a hub to the linked devices, like a WiFi repeater.
 The hub device enables the access point, which can be seen by the linked device.
-The binding could then get access to the secondary device using &lt;ub shelly ip&gt;:&lt;special port&gt;.
-A special port on the hub device will be created for every linked device so one hub device could supported multiple linked devices.
+The binding can then access the secondary device using &lt;hub Shelly IP&gt;:&lt;special port&gt;.
+A special port on the hub device will be created for every linked device, so one hub device can support multiple linked devices.
 
 The binding communicates with the Shelly hub device, which then forwards the request to the secondary device.
-Once the thing for the primary Shelly goes online the binding detects the enabled range extender mode and adds all connected secondary devices to the Inbox.
+Once the Thing for the primary Shelly goes online the binding detects the enabled range extender mode and adds all connected secondary devices to the Inbox.
 This means: The primary Shelly has to complete initialization before linked secondary devices are discovered.
 
 - Discover primary/hub Shelly
-- Add thing and wait until it goes ONLINE
+- Add Thing and wait until it goes ONLINE
 - Check Inbox to find the secondary/linked devices
 - Add secondary device as usual
 
-If you are adding another secondary device to the same hub device you need to suspend and resume the primary thing, this will run a new initialization and adds the new secondary device to the Inbox.
+If you add another secondary device to the same hub device, suspend and resume the primary thing; this will run a new initialization and add the new secondary device to the Inbox.
 
 ### Dynamic creation of channels
 
@@ -381,8 +381,8 @@ Every device has a channel group `device` with the following channels:
 |        | alarm               | Trigger  | yes       | Self-Test result not_completed/completed/running/pending                       |
 |        | supplyVoltage       | Number   | yes       | Shelly 1PM, 1L, 2.5: Supply voltage (fixed or measured depending on device)    |
 |        | accumulatedWatts    | Number   | yes       | Accumulated power in W of the device (including all meters)                    |
-|        | accumulatedTotal    | Number   | yes       | Accumulated total power in kwh of the device (including all meters)            |
-|        | accumulatedReturned | Number   | yes       | Accumulated returned power in kwh of the device (including all meters)         |
+|        | accumulatedTotal    | Number   | yes       | Accumulated total energy in kWh for the device (including all meters)          |
+|        | accumulatedReturned | Number   | yes       | Accumulated returned energy in kWh for the device (including all meters)       |
 |        | heartBeat           | DateTime | yes       | Timestamp of the last successful device communication                          |
 |        | updateAvailable     | Switch   | yes       | ON: A firmware update is available                                             |
 |        | statusLed           | Switch   | r/w       | ON: Status LED is disabled, OFF: LED enabled                                   |
@@ -400,7 +400,7 @@ The LED channels are available for the Plug-S with firmware 1.6x and for various
 
 ### Generation 1: Action URLs vs. CoIoT
 
-Depending on the firmware release the Shelly devices supports 2 different mechanims to report sensor updates or events.
+Depending on the firmware release, Shelly devices support two different mechanisms to report sensor updates or events.
 
 1. Action URLs
     Usually the binding polls the device to update the status and maps the returned values to the various channels.
@@ -564,7 +564,7 @@ In this case the is no real measurement based on power consumption, but the Shel
 |         | button       | Trigger  | yes       | Event trigger, see section Button Events                                        |
 | meter   | currentWatts | Number   | yes       | Current power consumption in Watts                                              |
 |         | lastPower1   | Number   | yes       | The average power for the previous minute                                       |
-|         | totalKWH     | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart) |
+|         | totalKWH     | Number   | yes       | Total energy consumption in kWh since the device powered up (resets on restart) |
 |         | frequency    | Number   | yes       | Measure frequency (Hz) - Gen4 only                                              |
 |         |              |          |           |                                                                                 |
 |         | lastUpdate   | DateTime | yes       | Timestamp of the last measurement                                               |
@@ -588,15 +588,15 @@ In this case the is no real measurement based on power consumption, but the Shel
 |        | autoOff       | Number   | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds |
 |        | timerActive   | Switch   | yes       | Relay #1: ON: An auto-on/off timer is active                                      |
 | meter1 | currentWatts  | Number   | yes       | Current power consumption in Watts                                                |
-|        | totalKWH      | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
-|        | returnedKWH   | Number   | yes       | Total returned energy, kwh                                                        |
+|        | totalKWH      | Number   | yes       | Total energy consumption in kWh since the device powered up (resets on restart)   |
+|        | returnedKWH   | Number   | yes       | Total returned energy, kWh                                                        |
 |        | reactiveWatts | Number   | yes       | Instantaneous reactive power, Watts                                               |
 |        | voltage       | Number   | yes       | RMS voltage, Volts                                                                |
 |        | powerFactor   | Number   | yes       | Power Factor in percent                                                           |
 |        | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                 |
 | meter2 | currentWatts  | Number   | yes       | Current power consumption in Watts                                                |
-|        | totalKWH      | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
-|        | returnedKWH   | Number   | yes       | Total returned energy, kwh                                                        |
+|        | totalKWH      | Number   | yes       | Total energy consumption in kWh since the device powered up (resets on restart)   |
+|        | returnedKWH   | Number   | yes       | Total returned energy, kWh                                                        |
 |        | reactiveWatts | Number   | yes       | Instantaneous reactive power, Watts                                               |
 |        | voltage       | Number   | yes       | RMS voltage, Volts                                                                |
 |        | powerFactor   | Number   | yes       | Power Factor in percent                                                           |
@@ -619,28 +619,28 @@ The Thing id is derived from the service name, so that's the reason why the Thin
 |        | autoOff       | Number   | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds |
 |        | timerActive   | Switch   | yes       | Relay #1: ON: An auto-on/off timer is active                                      |
 | meter1 | currentWatts  | Number   | yes       | Current power consumption in Watts                                                |
-|        | totalKWH      | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
-|        | returnedKWH   | Number   | yes       | Total returned energy, kwh                                                        |
+|        | totalKWH      | Number   | yes       | Total energy consumption in kWh since the device powered up (resets on restart)   |
+|        | returnedKWH   | Number   | yes       | Total returned energy, kWh                                                        |
 |        | reactiveWatts | Number   | yes       | Instantaneous reactive power, Watts                                               |
-|        | voltage       | Number   | yes       | RMS voltage, Volts                                                                |
+|        | returnedKWH   | Number   | yes       | Total returned energy, kWh                                                        |
 |        | current       | Number   | yes       | Current in A                                                                      |
 |        | powerFactor   | Number   | yes       | Power Factor in percent                                                           |
 |        | resetTotals   | Switch   | yes       | ON: Resets total values for the power meter                                       |
 |        | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                 |
 | meter2 | currentWatts  | Number   | yes       | Current power consumption in Watts                                                |
-|        | totalKWH      | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
-|        | returnedKWH   | Number   | yes       | Total returned energy, kwh                                                        |
+|        | totalKWH      | Number   | yes       | Total energy consumption in kWh since the device powered up (resets on restart)   |
+|        | returnedKWH   | Number   | yes       | Total returned energy, kWh                                                        |
 |        | reactiveWatts | Number   | yes       | Instantaneous reactive power, Watts                                               |
-|        | voltage       | Number   | yes       | RMS voltage, Volts                                                                |
+|        | returnedKWH   | Number   | yes       | Total returned energy, kWh                                                        |
 |        | current       | Number   | yes       | Current in A                                                                      |
 |        | powerFactor   | Number   | yes       | Power Factor in percent                                                           |
 |        | resetTotals   | Switch   | yes       | ON: Resets total values for the power meter                                       |
 |        | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                 |
 | meter3 | currentWatts  | Number   | yes       | Current power consumption in Watts                                                |
-|        | totalKWH      | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
-|        | returnedKWH   | Number   | yes       | Total returned energy, kwh                                                        |
+|        | totalKWH      | Number   | yes       | Total energy consumption in kWh since the device powered up (resets on restart)   |
+|        | returnedKWH   | Number   | yes       | Total returned energy, kWh                                                        |
 |        | reactiveWatts | Number   | yes       | Instantaneous reactive power, Watts                                               |
-|        | voltage       | Number   | yes       | RMS voltage, Volts                                                                |
+|        | returnedKWH   | Number   | yes       | Total returned energy, kWh                                                        |
 |        | current       | Number   | yes       | Current in A                                                                      |
 |        | powerFactor   | Number   | yes       | Power Factor in percent                                                           |
 |        | resetTotals   | Switch   | yes       | ON: Resets total values for the power meter                                       |
@@ -674,10 +674,10 @@ Check the Shelly documentation for details._
 |        | button       | Trigger  | yes       | Event trigger, see section Button Events                                          |
 | meter  | currentWatts | Number   | yes       | Current power consumption in Watts                                                |
 |        | lastPower1   | Number   | yes       | Energy consumption for a round minute, 1 minute  ago                              |
-|        | totalKWH     | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
+|        | totalKWH     | Number   | yes       | Total energy consumption in kWh since the device powered up (resets on restart)   |
 |        | lastUpdate   | DateTime | yes       | Timestamp of the last measurement                                                 |
 
-### Shelly 2 - roller mode thing-type: shelly2-roller)
+|        | returnedKWH   | Number   | yes       | Total returned energy, kWh                                                        |
 
 | Group  | Channel      | Type          | read-only | Description                                                                           |
 | ------ | ------------ | ------------- | --------- | ------------------------------------------------------------------------------------- |
@@ -691,7 +691,7 @@ Check the Shelly documentation for details._
 |        | safety       | Switch        | yes       | Indicates status of the Safety Switch, ON=problem detected, powered off               |
 | meter  | currentWatts | Number        | yes       | Current power consumption in Watts                                                    |
 |        | lastPower1   | Number        | yes       | Accumulated energy consumption in Watts for the full last minute                      |
-|        | totalKWH     | Number        | yes       | Total energy consumption in kwh since the device powered up (reset on restart)        |
+|        | totalKWH     | Number        | yes       | Total energy consumption in kWh since the device powered up (reset on restart)        |
 |        | lastUpdate   | DateTime      | yes       | Timestamp of the last measurement                                                     |
 
 _Note: The Roller should be calibrated using the device Web UI or Shelly App, otherwise the position can't be set._
@@ -773,7 +773,7 @@ The Shelly 4Pro provides 4 relays and 4 power meters.
 |       | timerActive  | Switch   | yes       | Relay #1: ON: An auto-on/off timer is active                                      |
 | meter | currentWatts | Number   | yes       | Current power consumption in Watts                                                |
 |       | lastPower1   | Number   | yes       | Energy consumption for a round minute, 1 minute  ago                              |
-|       | totalKWH     | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
+|       | totalKWH     | Number   | yes       | Total energy consumption in kWh since the device powered up (resets on restart)   |
 |       | lastUpdate   | DateTime | yes       | Timestamp of the last measurement                                                 |
 
 `Note: The Dimmer should be calibrated using the device Web UI or Shelly App.`
@@ -855,7 +855,7 @@ This information applies to the Shelly Duo-1 as well as the Duo White for the G1
 |         | brightness   | Dimmer   |           | Brightness: 0..100% or 0..100                                                   |
 | meter   | currentWatts | Number   | yes       | Current power consumption in Watts                                              |
 |         | lastPower1   | Number   | yes       | Energy consumption in Watts for a round minute, 1 minute  ago                   |
-|         | totalKWH     | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart) |
+|         | totalKWH     | Number   | yes       | Total energy consumption in kWh since the device powered up (resets on restart) |
 |         | lastUpdate   | DateTime | yes       | Timestamp of the last measurement                                               |
 
 ### Shelly Vintage (thing-type: shellyvintage)
@@ -910,7 +910,7 @@ Using the Thing configuration option `brightnessAutoOn` you could decide if the 
 |         | autoOff      | Number  | r/w       | Sets a  timer to turn the device OFF after every ON command; in seconds |
 |         | timerActive  | Switch  | yes       | ON: An auto-on/off timer is active                                      |
 | color   |              |         |           | Color settings: only valid in COLOR mode                                |
-|         | hsb          | HSB     | r/w       | Represents the color picker (HSBType), control r/g/b, bight not white   |
+|         | hsb          | HSB     | r/w       | Represents the color picker (HSBType); control r/g/b, bright, not white |
 |         | full         | String  | r/w       | Set Red / Green / Blue / Yellow / White mode and switch mode            |
 |         |              |         | r/w       | Valid settings: "red", "green", "blue", "yellow", "white" or "r,g,b,w"  |
 |         | red          | Dimmer  | r/w       | Red brightness: 0..100% or 0..255 (control only the red channel)        |
@@ -936,7 +936,7 @@ Using the Thing configuration option `brightnessAutoOn` you could decide if the 
 |         | autoOn       | Number   | r/w       | Sets a  timer to turn the device ON after every OFF command; in seconds         |
 |         | autoOff      | Number   | r/w       | Sets a  timer to turn the device OFF after every ON command; in seconds         |
 |         | timerActive  | Switch   | yes       | ON: An auto-on/off timer is active                                              |
-| color   | hsb          | HSB      | r/w       | Represents the color picker (HSBType), control r/g/b, bight not white           |
+| color   | hsb          | HSB      | r/w       | Represents the color picker (HSBType); control r/g/b, bright, not white         |
 |         | full         | String   | r/w       | Set Red / Green / Blue / Yellow / White mode and switch mode                    |
 |         |              |          | r/w       | Valid settings: "red", "green", "blue", "yellow", "white" or "r,g,b,w"          |
 |         | red          | Dimmer   | r/w       | Red brightness: 0..100% or 0..255 (control only the red channel)                |
@@ -1052,7 +1052,7 @@ While the device is in low power mode (usual operation) it will not respond to d
 Use case for the 'sensorSleepTime':
 You have a Motion controlling your light.
 You switch off the light and want to leave the room, but the motion sensor immediately switches light back on.
-Using 'sensorSleepTime' you could suppress motion events while leaving the room, e.g. for 5sec and the light doesn's switch on.
+Using 'sensorSleepTime' you can suppress motion events while leaving the room (e.g., for 5 seconds) so the light doesn't switch on.
 
 ### Shelly Motion 2 (thing-type: shellymotion2)
 
@@ -1327,14 +1327,14 @@ Refer to [Smartify Roller Shutters with openHAB and Shelly](doc/UseCaseSmartRoll
 |        | totalKWH      | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
 |        | returnedKWH   | Number   | yes       | Total returned energy, kwh                                                        |
 |        | reactiveWatts | Number   | yes       | Instantaneous reactive power, Watts                                               |
-|        | voltage       | Number   | yes       | RMS voltage, Volts                                                                |
+|        | returnedKWH   | Number   | yes       | Total returned energy, kWh                                                        |
 |        | powerFactor   | Number   | yes       | Power Factor in percent                                                           |
 |        | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                 |
 | meter2 | currentWatts  | Number   | yes       | Current power consumption in Watts                                                |
 |        | totalKWH      | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
 |        | returnedKWH   | Number   | yes       | Total returned energy, kwh                                                        |
 |        | reactiveWatts | Number   | yes       | Instantaneous reactive power, Watts                                               |
-|        | voltage       | Number   | yes       | RMS voltage, Volts                                                                |
+|        | returnedKWH   | Number   | yes       | Total returned energy, kWh                                                        |
 |        | powerFactor   | Number   | yes       | Power Factor in percent                                                           |
 |        | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                 |
 
@@ -1355,7 +1355,7 @@ Refer to [Smartify Roller Shutters with openHAB and Shelly](doc/UseCaseSmartRoll
 |        | totalKWH      | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
 |        | returnedKWH   | Number   | yes       | Total returned energy, kwh                                                        |
 |        | reactiveWatts | Number   | yes       | Instantaneous reactive power, Watts                                               |
-|        | voltage       | Number   | yes       | RMS voltage, Volts                                                                |
+|        | returnedKWH   | Number   | yes       | Total returned energy, kWh                                                        |
 |        | current       | Number   | yes       | Current in A                                                                      |
 |        | powerFactor   | Number   | yes       | Power Factor in percent                                                           |
 |        | resetTotals   | Switch   | yes       | ON: Resets total values for the power meter                                       |
@@ -1364,7 +1364,7 @@ Refer to [Smartify Roller Shutters with openHAB and Shelly](doc/UseCaseSmartRoll
 |        | totalKWH      | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
 |        | returnedKWH   | Number   | yes       | Total returned energy, kwh                                                        |
 |        | reactiveWatts | Number   | yes       | Instantaneous reactive power, Watts                                               |
-|        | voltage       | Number   | yes       | RMS voltage, Volts                                                                |
+|        | returnedKWH   | Number   | yes       | Total returned energy, kWh                                                        |
 |        | current       | Number   | yes       | Current in A                                                                      |
 |        | powerFactor   | Number   | yes       | Power Factor in percent                                                           |
 |        | resetTotals   | Switch   | yes       | ON: Resets total values for the power meter                                       |
@@ -1373,7 +1373,7 @@ Refer to [Smartify Roller Shutters with openHAB and Shelly](doc/UseCaseSmartRoll
 |        | totalKWH      | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
 |        | returnedKWH   | Number   | yes       | Total returned energy, kwh                                                        |
 |        | reactiveWatts | Number   | yes       | Instantaneous reactive power, Watts                                               |
-|        | voltage       | Number   | yes       | RMS voltage, Volts                                                                |
+|        | returnedKWH   | Number   | yes       | Total returned energy, kWh                                                        |
 |        | current       | Number   | yes       | Current in A                                                                      |
 |        | powerFactor   | Number   | yes       | Power Factor in percent                                                           |
 |        | resetTotals   | Switch   | yes       | ON: Resets total values for the power meter                                       |
@@ -1514,7 +1514,7 @@ Channels lastEvent and eventCount are only available if input type is set to mom
 |        | totalKWH      | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
 |        | returnedKWH   | Number   | yes       | Total returned energy, kwh                                                        |
 |        | reactiveWatts | Number   | yes       | Instantaneous reactive power, Watts                                               |
-|        | voltage       | Number   | yes       | RMS voltage, Volts                                                                |
+|        | returnedKWH   | Number   | yes       | Total returned energy, kWh                                                        |
 |        | powerFactor   | Number   | yes       | Power Factor in percent                                                           |
 |        | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                 |
 |        | frequency     | Number   | yes       | Measure frequency (Hz)                                                            |

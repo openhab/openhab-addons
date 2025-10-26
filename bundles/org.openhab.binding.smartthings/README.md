@@ -2,29 +2,30 @@
 
 This binding integrates the Samsung Smartthings Hub into openHAB.
 
-## Supported things
+## Supported Things
 
-This binding supports most of the Smartthings devices that are defined in the [Smartthings Capabilities list](https://developer.smartthings.com/docs/devices/capabilities/capabilities-reference/).
+This binding supports most of the SmartThings devices that are defined in the [SmartThings Capabilities list](https://developer.smartthings.com/docs/devices/capabilities/capabilities-reference/).
 If you find a device that doesn't work [follow these instructions](doc/Troubleshooting.md) to collect the required data so it can be added in a future release.
 
 ## Discovery
 
 Discovery allows openHAB to examine a binding and automatically find the Things available on that binding.
-Discovery is supported by the Smartthings binding and is run automatically on startup.
+Discovery is supported by the SmartThings binding and is run automatically on startup.
 
-## Smartthings Configuration
+## SmartThings Configuration
 
-Prior to running the binding the Smartthings hub must have the required openHAB software installed. [Follow these instructions](doc/SmartthingsInstallation.md)
+Prior to running the binding the SmartThings hub must have the required openHAB software installed. [Follow these instructions](doc/SmartthingsInstallation.md)
 
 **The binding will not work until this part has been completed, do not skip this part of the setup.**
 
 ## openHAB Configuration
 
-This binding is an openHAB binding and uses the Bridge / Thing design with the Smartthings Hub being the Bridge and the controlled modules being the Things. The following definitions are specified in the .things file.
+This binding is an openHAB binding and uses the Bridge / Thing design with the SmartThings Hub being the Bridge and the controlled modules being the Things.
+The following definitions are specified in the .things file.
 
 ### Bridge Configuration
 
-The bridge requires the IP address and port used to connect the openHAB server to the Smartthings Hub.
+The bridge requires the IP address and port used to connect the openHAB server to the SmartThings Hub.
 
 ```java
 Bridge smartthings:smartthings:Home    [ smartthingsIp="192.168.1.12", smartthingsPort=39500 ] {
@@ -32,20 +33,20 @@ Bridge smartthings:smartthings:Home    [ smartthingsIp="192.168.1.12", smartthin
 
 where:
 
-- **smartthings:smartthings:Home** identifies this is a smartthings hub named Home.
+- **smartthings:smartthings:Home** identifies this is a SmartThings hub named Home.
     The first two segments must be smartthings:smartthings.
-    You can choose any unique name for the the last segment.
+    You can choose any unique name for the last segment.
     The last segment is used when you identify items connected to this hubthingTypeId.
-- **smartthingsIp** is the IP address of the Smartthings Hub.
-    Your router should be configured such that the Smartthings Hub is always assigned to this IP address.
-- **smartthingsPort** is the port the Smartthings hub listens on. 39500 is the port assigned by Smartthings so it should be used unless you have a good reason for using another port.
+- **smartthingsIp** is the IP address of the SmartThings Hub.
+    Your router should be configured such that the SmartThings Hub is always assigned to this IP address.
+- **smartthingsPort** is the port the SmartThings hub listens on. 39500 is the port assigned by SmartThings so it should be used unless you have a good reason for using another port.
 
 **Warning** This binding only supports one Bridge.
 If you try to configure a second bridge it will be ignored.
 
 ### Thing Configuration
 
-Each attached thing must specify the type of device and it's Smartthings device name. The format of the Thing description is:
+Each attached Thing must specify the type of device and its SmartThings device name. The format of the Thing description is:
 
 ```java
 Thing <thingTypeId> name [ smartthingsName="<deviceName>", {smartthingsTimeout=<timeout>} ]
@@ -53,9 +54,9 @@ Thing <thingTypeId> name [ smartthingsName="<deviceName>", {smartthingsTimeout=<
 
 where:
 
-- **[thingTypeId](https://developer-preview.smartthings.com/docs/devices/capabilities/capabilities-reference/)** corresponds to the "Preferences Reference" in the Smartthings Capabilities document but without the capability.prefix. i.e. A dimmer switch in the Capabilities document has a Preferences reference of capability.switchLevel, therefore the &lt;thingTypeId&gt; is switchLevel.
-- **name** is what you want to call this thing and is used in defining the items that use this thing.
-- **deviceName** is the name you assigned to the device when you discovered and connected to it in the Smartthings App
+- **[thingTypeId](https://developer-preview.smartthings.com/docs/devices/capabilities/capabilities-reference/)** corresponds to the "Preferences Reference" in the SmartThings Capabilities document but without the capability.prefix. i.e. A dimmer switch in the Capabilities document has a Preferences reference of capability.switchLevel, therefore the &lt;thingTypeId&gt; is switchLevel.
+- **name** is what you want to call this Thing and is used in defining the items that use this Thing.
+- **deviceName** is the name you assigned to the device when you discovered and connected to it in the SmartThings App
 - Optional: **timeout** is how long openHAB will wait for a response to the request before throwing a timeout exception. The default is 3 seconds.
 
 #### Example
@@ -76,7 +77,7 @@ Bridge smartthings:smartthings:Home    [ smartthingsIp="192.168.1.12", smartthin
 These are specified in the .items file. This section describes the specifics related to this binding.
 Please see the [Items documentation](https://www.openhab.org/docs/configuration/items.html) for a full explanation of configuring items.
 
-The most important thing is getting the **channel** specification correct. The general format is:
+The most important Thing is getting the **channel** specification correct. The general format is:
 
 ```java
 { channel="smartthings:<thingTypeId>:<hubName>:<thingName>:<channelId>" }
@@ -84,11 +85,11 @@ The most important thing is getting the **channel** specification correct. The g
 
 The parts (separated by :) are defined as:
 
-1. **smartthings** to specify this is a smartthings device
-1. **thingTypeId** specifies the type of the thing  you are connecting to. This is the same as described in the last section.
+1. **smartthings** to specify this is a SmartThings device
+1. **thingTypeId** specifies the type of the Thing  you are connecting to. This is the same as described in the last section.
 1. **hubName** identifies the name of the hub specified above. This corresponds to the third segment in the **Bridge** definition.
-1. **thingName** identifes the thing this is attached to and is the "name" you specified in the **Thing** definition.
-1. **channelId** corresponds the the attribute in the [Smartthings Capabilities list](https://docs.smartthings.com/en/latest/capabilities-reference.html). For switch it would be "switch".
+1. **thingName** identifies the Thing this is attached to and is the "name" you specified in the **Thing** definition.
+1. **channelId** corresponds to the attribute in the [SmartThings Capabilities list](https://docs.smartthings.com/en/latest/capabilities-reference.html). For switch it would be "switch".
 
 ### Example
 
@@ -103,7 +104,10 @@ String  SimulatedValve       "Simulated valve"                            { chan
 ```
 
 **Special note about Valves**
-Smarttings includes a **valve** which can be Open or Closed but openHAB does not include a Valve item type. Therefore, the valve is defined as a having an item type of String. And, therefore the item needs to be defined with an item type of string. It can be controlled in the sitemap by specifying the Element type of Switch and providing a mapping of: mappings=[open="Open", closed="Close"]. Such as:
+SmartThings includes a **valve** which can be Open or Closed but openHAB does not include a Valve item type.
+Therefore, the valve is defined as having an item type of String.
+And, therefore the item needs to be defined with an item type of string.
+It can be controlled in the sitemap by specifying the Element type of Switch and providing a mapping of: mappings=[open="Open", closed="Close"]. Such as:
 
 ```java
 Switch item=SimulatedValve mappings=[open="Open", closed="Close"]
@@ -146,6 +150,6 @@ Frame label="Sengled RGBW Bulb" {
 ## References
 
 1. [openHAB configuration documentation](https://openhab.org/docs/configuration/index.html)
-1. [Smartthings Capabilities Reference](https://docs.smartthings.com/en/latest/capabilities-reference.html)
-1. [Smartthings Developers Documentation](https://docs.smartthings.com/en/latest/index.html)
-1. [Smartthings Development Environment](https://graph.api.smartthings.com/)
+1. [SmartThings Capabilities Reference](https://docs.smartthings.com/en/latest/capabilities-reference.html)
+1. [SmartThings Developers Documentation](https://docs.smartthings.com/en/latest/index.html)
+1. [SmartThings Development Environment](https://graph.api.smartthings.com/)

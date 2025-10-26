@@ -82,7 +82,7 @@
 	</channel-group-type>
 
 	<channel-group-type id="sensorsGroup">
-		<label>Sensor</label>
+		<label>Sensors</label>
 		<description>Sensor parameters</description>
 		<channels>
 			<channel id="cpuTemp" typeId="cpuTemp"/>
@@ -392,8 +392,8 @@
 
 	<channel-type id="mac" advanced="true">
 		<item-type>String</item-type>
-		<label>Mac Address</label>
-		<description>Mac address of the network</description>
+		<label>MAC Address</label>
+		<description>MAC address of the network</description>
 		<state readOnly="true" pattern="%s"/>
 		<config-description-ref uri="channel-type:systeminfo:lowpriority"/>
 	</channel-type>

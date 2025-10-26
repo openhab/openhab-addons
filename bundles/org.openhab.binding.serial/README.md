@@ -13,13 +13,13 @@ The Serial binding represents a serial port as a bridge thing, a TCP socket as a
 
 ### Serial Bridge
 
-A Serial Bridge thing (`serialBridge`) represents a single serial port.
+A Serial Bridge Thing (`serialBridge`) represents a single serial port.
 
 The bridge supports a String channel which is set to the currently received data from the serial port.
 Sending a command to this channel sends the command as a string to the serial port.
 
 To communicate with protocols requiring binary data it is possible to select a special 'HEX' charset.
-This results into all binary data being converted into space-separacted hexadecimal strings that can be parsed using regular expressions.
+This results in all binary data being converted into space-separated hexadecimal strings that can be parsed using regular expressions.
 In this mode, the input data is also expected to be encoded as hexadecimal characters.
 
 The bridge also supports a String channel which encodes the received data as the string representation of a RawType to handle data that is
@@ -39,17 +39,17 @@ Currently, only one connection per bridge is allowed.
 
 ### Serial Device
 
-A Serial Device thing (`serialDevice`) can be used to represent data matching a defined pattern as a device.
+A Serial Device Thing (`serialDevice`) can be used to represent data matching a defined pattern as a device.
 The serial port may be providing data for many different devices/sensors, such as a temperature sensor or a doorbell.
 Usually such devices can be identified by performing a pattern match on the received data.
 For example, a Serial Device could be configured to represent a temperature sensor.
 
-The thing will only update its channels if the received data matches the defined pattern.
+The Thing will only update its channels if the received data matches the defined pattern.
 
-The thing supports generic String and Number channels which can apply a transform on the received data to set the channel state.
+The Thing supports generic String and Number channels which can apply a transform on the received data to set the channel state.
 Commands sent to the channels can be formatted and transformed before being sent to the device.
 
-The thing also supports Switch and Rollershutter channels which provide simple mappings for the ON, OFF, UP, DOWN and STOP commands.
+The Thing also supports Switch and Rollershutter channels which provide simple mappings for the ON, OFF, UP, DOWN and STOP commands.
 
 When using a Serial Device the expectation is that the received data for each device is terminated by a line break.
 
@@ -65,7 +65,7 @@ The configuration for the `serialBridge` consists of the following parameters:
 | parity     | Set the parity. Valid values: N(one), O(dd), E(even), M(ark), S(pace) (default N)                                                                                                                          |
 | stopBits   | Set the stop bits. Valid values: 1, 1.5, 2 (default 1)                                                                                                                                                     |
 | charset    | The charset to use for converting between bytes and string (e.g. UTF-8,ISO-8859-1). Enter 'HEX' to convert binary data into hexadecimal strings separated by space.                                        |
-| eolPattern | In charset=HEX mode, a regular expression is required to match the binaries equivalent of an 'End of line' character. For example, '\bFF' would match a byte value of 255 as end of the current response. |
+| eolPattern | In charset=HEX mode, a regular expression is required to match the binary equivalent of an 'End of line' character. For example, '\\bFF' matches a byte value of 255 as the end of the current response. |
 
 The configuration for the `tcpBridge` consists of the following parameters:
 
@@ -83,7 +83,7 @@ The configuration for the `tcpServerBridge` consists of the following parameters
 
 | Parameter   | Description                                                                                                                                                                                               |
 |-------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| port        | The number of the TCP port to listen to                                                                                                                                                                   |
+| port        | The number of the TCP port to listen to.                                                                                                                                                                  |
 | bindAddress | The IP to bind to.                                                                                                                                                                                        |
 | timeout     | Socket timeout in seconds (0 = no timeout)                                                                                                                                                                |
 | keepAlive   | Enable socket keep-alive                                                                                                                                                                                  |

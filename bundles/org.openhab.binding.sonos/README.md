@@ -15,9 +15,9 @@ This includes the One, One SL, Move, Move 2, Roam, Roam SL, Play:1, Play:3, Play
 The Bridge and Boost are not supported, but these devices do only have an auxiliary role in the Sonos network and do not have any playback capability.
 All supported Sonos devices are registered as an audio sink in the framework.
 
-When being defined in a \*.things file, the specific thing types One, OneSL, Move, Move2, Roam, RoamSL, PLAY1, PLAY3, PLAY5, Five, Era100, Era300, SYMFONISK, PLAYBAR, PLAYBASE, Beam, Arc, ArcSL, CONNECT, CONNECTAMP, Port and Amp should be used.
+When being defined in a \*.things file, the specific Thing types One, OneSL, Move, Move2, Roam, RoamSL, PLAY1, PLAY3, PLAY5, Five, Era100, Era300, SYMFONISK, PLAYBAR, PLAYBASE, Beam, Arc, ArcSL, CONNECT, CONNECTAMP, Port and Amp should be used.
 
-Please note that these thing types are case sensitive (you need to define them **exactly as stated above**).
+Please note that these Thing types are case sensitive (you need to define them **exactly as stated above**).
 
 ## Discovery
 
@@ -38,7 +38,7 @@ The Sonos Thing requires the UPnP UDN (Unique Device Name) as a configuration va
 All the Sonos UDN have the "RINCON_000E58D8403A0XXXX" format (value to be found via Sonos item in the Inbox).
 Additionally, a refresh interval, used to poll the Sonos device, can be specified (in seconds).
 You can use the `notificationVolume` property for setting a default volume (in percent) to be used to play notifications.
-In the thing file, this looks e.g. like
+In the Thing file, this looks e.g. like
 
 ```java
 Thing sonos:PLAY1:1 [udn="RINCON_000E58D8403A0XXXX", refresh=60, notificationVolume=25]
@@ -115,7 +115,7 @@ The devices support the following channels:
 | zonegroupid          | String    | R           | Id of the Zone Group the Zone Player belongs to                                                                                                           | all                                                             |
 | zonename             | String    | R           | Name of the Zone associated to the Zone Player                                                                                                            | all                                                             |
 
-The `playline` channel accepts as command either the thing UID or the UPnP UDN.
+The `playline` channel accepts as command either the Thing UID or the UPnP UDN.
 Note that you can prefix your command value with "Analog," or "Digital," to distinguish the line-in of your Sonos device.
 This is useful for the Sonos Amp in particular.
 
@@ -123,7 +123,7 @@ This is useful for the Sonos Amp in particular.
 
 All supported Sonos devices are registered as an audio sink in the framework.
 Audio streams are treated as notifications, i.e. they are fed into the `notificationsound` channel.
-The `notificationsound` channel change the volume of the audio sink to the value defined in the `notificationVolume` property of the thing and restores it after finished playing.
+The `notificationsound` channel change the volume of the audio sink to the value defined in the `notificationVolume` property of the Thing and restores it after finished playing.
 Note that the Sonos binding has a limit of 20 seconds for notification sounds.
 Any sound that is longer than that will be cut off.
 

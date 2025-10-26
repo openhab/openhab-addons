@@ -272,8 +272,8 @@
 
 	<channel-type id="idType">
 		<item-type>Number</item-type>
-		<label>Id</label>
-		<description>A unique id of the thing</description>
+		<label>ID</label>
+		<description>A unique ID of the thing</description>
 		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 
@@ -293,7 +293,7 @@
 
 	<channel-type id="timezoneIdType">
 		<item-type>Number</item-type>
-		<label>Timezone Id</label>
+		<label>Timezone ID</label>
 		<description>The identifier of the timezone</description>
 		<state readOnly="true" pattern="%d"/>
 	</channel-type>
@@ -589,12 +589,12 @@
 	<channel-type id="lockingModeType">
 		<item-type>String</item-type>
 		<label>Locking Mode</label>
-		<description>The id of the locking mode the flap is currently set to</description>
+		<description>The ID of the locking mode the flap is currently set to</description>
 		<state readOnly="false">
 			<options>
 				<option value="0">Unlocked</option>
-				<option value="1">Locked In-only</option>
-				<option value="2">Locked Out-only</option>
+				<option value="1">Locked In-Only</option>
+				<option value="2">Locked Out-Only</option>
 				<option value="3">Locked</option>
 				<option value="4">Curfew</option>
 			</options>
@@ -614,7 +614,7 @@
 
 	<channel-type id="rssiDeviceType" advanced="true">
 		<item-type unitHint="dBm">Number:Power</item-type>
-		<label>Signal Strength Device (RSSI)</label>
+		<label>Device Signal Strength (RSSI)</label>
 		<description>The received device signal strength (RSSI).</description>
 		<tags>
 			<tag>Measurement</tag>
@@ -625,7 +625,7 @@
 
 	<channel-type id="rssiHubType" advanced="true">
 		<item-type unitHint="dBm">Number:Power</item-type>
-		<label>Signal Strength Hub (RSSI)</label>
+		<label>Hub Signal Strength (RSSI)</label>
 		<description>The received hub signal strength (RSSI).</description>
 		<tags>
 			<tag>Measurement</tag>
@@ -727,8 +727,8 @@
 		<state readOnly="true">
 			<options>
 				<option value="0">Off</option>
-				<option value="1">Full open</option>
-				<option value="2">Almost Full open</option>
+				<option value="1">Full Open</option>
+				<option value="2">Almost Full Open</option>
 				<option value="3">Half closed</option>
 				<option value="4">Almost closed</option>
 			</options>

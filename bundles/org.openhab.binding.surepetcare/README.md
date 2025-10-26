@@ -1,6 +1,6 @@
 # Sure Petcare Binding
 
-This binding offers integration to the Sure Petcare API, supporting cloud-connected pet/cat flaps, feeders and waterstations.
+This binding integrates with the Sure Petcare API, supporting cloud‑connected pet/cat flaps, feeders, and waterstations.
 
 ## Features
 
@@ -23,7 +23,7 @@ The binding code is based on a lot of work done by other developers:
 
 ## Supported Things
 
-This binding supports the following thing types
+This binding supports the following Thing types
 
 | Thing                 | Thing Type | Discovery | Description                                                              |
 |-----------------------|------------|-----------|--------------------------------------------------------------------------|
@@ -47,7 +47,7 @@ When new hardware is discovered it will appear in the Inbox.
 
 ## Things and their channels
 
-Channel names in **bold** are read/write, everything else is read-only
+Channel names in **bold** are read/write; everything else is read‑only.
 
 ### Bridge Thing
 
@@ -59,28 +59,28 @@ Channel names in **bold** are read/write, everything else is read-only
 
 | Channel    | Type     | Description                                  |
 |------------|----------|----------------------------------------------|
-| id         | Number   | A unique id assigned by the Sure Petcare API |
-| name       | Text     | The name of the household                    |
-| timezoneId | Number   | The id of the household's timezone           |
+| id         | Number   | A unique ID assigned by the Sure Petcare API |
+| name       | String   | The name of the household                    |
+| timezoneId | Number   | The ID of the household's timezone           |
 
 ### Hub Device Thing
 
 | Channel         | Type     | Description                                                           |
 |-----------------|----------|-----------------------------------------------------------------------|
-| id              | Number   | A unique id assigned by the Sure Petcare API                          |
-| name            | Text     | The name of the hub                                                   |
-| product         | Text     | The type of product (1=hub)                                           |
-| ledMode         | Text     | The mode of the hub's LED ears                                        |
-| pairingMode     | Text     | The state of pairing                                                  |
+| id              | Number   | A unique ID assigned by the Sure Petcare API                          |
+| name            | String   | The name of the hub                                                   |
+| product         | String   | The type of product (1=hub)                                           |
+| ledMode         | String   | The mode of the hub's LED ears                                        |
+| pairingMode     | String   | The state of pairing                                                  |
 | online          | Switch   | Indicator if the hub is connected to the internet                     |
 
 ### Flap Device Thing (Cat or Pet Flap)
 
 | Channel            | Type                     | Description                                                |
 |--------------------|--------------------------|------------------------------------------------------------|
-| id                 | Number                   | A unique id assigned by the Sure Petcare API               |
-| name               | Text                     | The name of the flap                                       |
-| product            | Text                     | The type of product (3=pet flap, 6=cat flap)               |
+| id                 | Number                   | A unique ID assigned by the Sure Petcare API               |
+| name               | String                   | The name of the flap                                       |
+| product            | String                   | The type of product (3=pet flap, 6=cat flap)               |
 | curfewEnabled1     | Switch                   | Indicator if curfew #1 configuration is enabled            |
 | curfewLockTime1    | Text                     | The curfew #1 locking time (HH:MM)                         |
 | curfewUnlockTime1  | Text                     | The curfew #1 unlocking time (HH:MM)                       |
@@ -105,32 +105,32 @@ Channel names in **bold** are read/write, everything else is read-only
 
 | Channel           | Type                      | Description                                                                                     |
 |-------------------|---------------------------|-------------------------------------------------------------------------------------------------|
-| id                | Number                    | A unique id assigned by the Sure Petcare API                                                    |
-| name              | Text                      | The name of the feeder                                                                          |
-| product           | Text                      | The type of product                                                                             |
+| id                | Number                    | A unique ID assigned by the Sure Petcare API                                                    |
+| name              | String                    | The name of the feeder                                                                          |
+| product           | String                    | The type of product                                                                             |
 | online            | Switch                    | Indicator if the feeder is connected to the hub                                                 |
 | lowBattery        | Switch                    | Indicator if the battery voltage is low                                                         |
 | batteryLevel      | Number:Dimensionless      | The battery voltage percentage in %                                                             |
 | batteryVoltage    | Number:ElectricPotential  | The absolute battery voltage measurement in V                                                   |
 | deviceRSSI        | Number:Power              | The received device signal strength in dBm                                                      |
 | hubRSSI           | Number:Power              | The received hub signal strength in dBm                                                         |
-| bowls             | Text                      | The feeder bowls type (1 big bowl or 2 half bowls)                                              |
-| bowlsFood         | Text                      | The feeder big bowl food type (wet food, dry food or both)                                      |
+| bowls             | String                    | The feeder bowls type (1 big bowl or 2 half bowls)                                              |
+| bowlsFood         | String                    | The feeder big bowl food type (wet food, dry food or both)                                      |
 | bowlsTarget       | Number:Mass               | The feeder big bowl target weight in gram (even if user setting is oz, API stores this in gram) |
-| bowlsFoodLeft     | Text                      | The feeder left half bowl food type (wet food, dry food or both)                                |
+| bowlsFoodLeft     | String                    | The feeder left half bowl food type (wet food, dry food or both)                                |
 | bowlsTargetLeft   | Number:Mass               | The feeder left half bowl target weight in g                                                    |
-| bowlsFoodRight    | Text                      | The feeder right half bowl food type (wet food, dry food or both)                               |
+| bowlsFoodRight    | String                    | The feeder right half bowl food type (wet food, dry food or both)                               |
 | bowlsTargetRight  | Number:Mass               | The feeder right half bowl target weight in g                                                   |
-| bowlsCloseDelay   | Text                      | The feeder lid close delay (fast, normal, slow)                                                 |
-| bowlsTrainingMode | Text                      | The feeder training mode (off, full open, almost full open, half closed, almost closed)         |
+| bowlsCloseDelay   | String                    | The feeder lid close delay (fast, normal, slow)                                                 |
+| bowlsTrainingMode | String                    | The feeder training mode (off, full open, almost full open, half closed, almost closed)         |
 
 ### Waterstation Device Thing
 
 | Channel           | Type                      | Description                                            |
 |-------------------|---------------------------|--------------------------------------------------------|
-| id                | Number                    | A unique id assigned by the Sure Petcare API           |
-| name              | Text                      | The name of the waterstation                           |
-| product           | Text                      | The type of product                                    |
+| id                | Number                    | A unique ID assigned by the Sure Petcare API           |
+| name              | String                    | The name of the waterstation                           |
+| product           | String                    | The type of product                                    |
 | online            | Switch                    | Indicator if the waterstation is connected to the hub  |
 | lowBattery        | Switch                    | Indicator if the battery voltage is low                |
 | batteryLevel      | Number:Dimensionless      | The battery voltage percentage in %                    |
@@ -142,27 +142,27 @@ Channel names in **bold** are read/write, everything else is read-only
 
 | Channel                | Type           | Description                                                                         |
 |------------------------|----------------|-------------------------------------------------------------------------------------|
-| id                     | Number         | A unique id assigned by the Sure Petcare API                                        |
-| name                   | Text           | The name of the pet                                                                 |
-| comment                | Text           | A user provided comment/description                                                 |
-| gender                 | Text           | The pet's gender                                                                    |
-| breed                  | Text           | The pet's breed                                                                     |
-| species                | Text           | The pet's species                                                                   |
+| id                     | Number         | A unique ID assigned by the Sure Petcare API                                        |
+| name                   | String         | The name of the pet                                                                 |
+| comment                | String         | A user-provided comment/description                                                 |
+| gender                 | String         | The pet's gender                                                                    |
+| breed                  | String         | The pet's breed                                                                     |
+| species                | String         | The pet's species                                                                   |
 | photo                  | Image          | The image of the pet                                                                |
-| tagIdentifier          | Text           | The unique identifier of the pet's micro chip or collar tag                         |
-| location               | Text           | The current location of the pet (0=unknown, 1=inside, 2=outside)                    |
+| tagIdentifier          | String         | The unique identifier of the pet's microchip or collar tag                          |
+| location               | String         | The current location of the pet (0=unknown, 1=inside, 2=outside)                    |
 | locationChanged        | DateTime       | The time when the location was last changed                                         |
 | locationTimeoffset     | String         | Time-Command to set the pet location with a time offset. (10, 30 or 60 minutes ago) |
 | locationChangedThrough | Text           | The device name or username where the pet left/entered the house                    |
 | weight                 | Number:Mass    | The pet's weight (in gram)                                                          |
 | dateOfBirth            | DateTime       | The pet's date of birth                                                             |
-| feederDevice           | Text           | The device from which the pet last ate                                              |
+| feederDevice           | String         | The device from which the pet last ate                                              |
 | feederLastChange       | Number:Mass    | The last eaten change in gram (big bowl)                                            |
 | feederLastChangeLeft   | Number:Mass    | The last eaten change in gram (half bowl left)                                      |
 | feederLastChangeRight  | Number:Mass    | The last eaten change in gram (half bowl right)                                     |
 | feederLastFeeding      | DateTime       | The pet's last eaten date                                                           |
-| waterDevice            | Text           | The device from which the pet last drunk                                            |
-| waterLastChange        | Number:Volume  | The last drinking change in milliliter (ml)                                         |
+| waterDevice            | String         | The device from which the pet last drank                                            |
+| waterLastChange        | Number:Volume  | The last change in drinking volume in milliliters (mL)                              |
 | waterLastDrinking      | DateTime       | The pet's last drinking date                                                        |
 
 ## Manual configuration
@@ -452,8 +452,8 @@ sitemap surepetcare label="My home automation" {
 ### Using Group Items
 
 You can also set pet locations with a group item.
-Please Note: the location for each pet gets updated only if the current location is not already the location you want to set.
-This can be very useful if you have alot of pets that often enter the home by any window/door.
+Please note: the location for each pet gets updated only if the current location is not already the location you want to set.
+This can be very useful if you have a lot of pets that often enter the home by any window/door.
 Your .items file should contain this:
 
 ```java
@@ -475,4 +475,4 @@ Frame label="Group Pet/Cats items" {
 
 | Problem                                     | Solution                                                                            |
 |---------------------------------------------|-------------------------------------------------------------------------------------|
-| Bridge cannot connect to Sure Petcare API    | Check if you can logon to the Sure Petcare app with the given username/password.    |
+| Bridge cannot connect to Sure Petcare API    | Check if you can log in to the Sure Petcare app with the given username/password.    |

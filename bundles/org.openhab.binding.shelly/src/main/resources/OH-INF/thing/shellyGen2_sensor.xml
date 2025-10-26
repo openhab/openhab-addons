@@ -6,7 +6,7 @@
 
 	<thing-type id="shellyplusht">
 		<label>ShellyPlus H&amp;T</label>
-		<description>@text/thing-type.shelly.shellypludht.description</description>
+		<description>@text/thing-type.shelly.shellyplusht.description</description>
 		<category>Sensor</category>
 		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
 		<channel-groups>

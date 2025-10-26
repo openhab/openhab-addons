@@ -6,7 +6,7 @@
 
 	<!-- Amplifier Amp Thing Type -->
 	<thing-type id="Amp" listed="false">
-		<!-- Label without column (:) because of device pairing name restrictions -->
+		<!-- Label without colon (:) because of device pairing name restrictions -->
 		<label>Amp</label>
 		<description>Represents SONOS Amp amplifier</description>
 		<semantic-equipment-tag>AudioVisual</semantic-equipment-tag>

@@ -18,7 +18,7 @@
 	<config-description uri="spotify:config:album-image">
 		<parameter name="imageIndex" type="integer" min="0" max="2">
 			<label>Image Index</label>
-			<description>Index in list of to select image to show</description>
+			<description>Index in the list to select the image to show</description>
 			<default>0</default>
 		</parameter>
 	</config-description>

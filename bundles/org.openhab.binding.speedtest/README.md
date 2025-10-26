@@ -26,9 +26,9 @@ The Speedtest Binding is using the following functionality, provided by Ookla's 
 
 ## What interfaces does the Speedtest Binding offer?
 
-The Speedtest Binding provides the Ookla's Speedtest functionality via the following openHAB interface:
+The Speedtest Binding provides Ookla's Speedtest functionality via the following openHAB interfaces:
 
-- Execute Speedtest time based or triggered
+- Execute Speedtest time-based or triggered
 - Provide results via openHAB Channels
 - List available Ookla Speedtest servers that can be used for testing (optional)
 
@@ -43,7 +43,7 @@ You can find the latest version of those terms at the following webpages:
 
 ## Supported Things
 
-Speedtest thing.
+Speedtest Thing.
 
 ## Binding Configuration
 

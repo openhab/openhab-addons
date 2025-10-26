@@ -1,26 +1,26 @@
 # Systeminfo Binding
 
-The system information binding provides operating system and hardware information including:
+The Systeminfo binding provides operating system and hardware information, including:
 
-- Operating system name, version and manufacturer;
-- CPU average load for last 1, 5, 15 minutes, name, description, number of physical and logical cores, running threads number, system uptime, max frequency and frequency by logical core;
-- Free, total and available memory;
-- Free, total and available swap memory;
-- Hard drive name, model and serial number;
-- Free, total, available storage space and storage type (NTSFS, FAT32 ..);
-- Battery information - estimated remaining time, capacity, name;
-- Sensors information - CPU voltage and temperature, fan speeds;
+- Operating system name, version, and manufacturer;
+- CPU average load for the last 1, 5, and 15 minutes; CPU name and description; number of physical and logical cores; number of running threads; system uptime; maximum frequency; and logical-core frequency;
+- Free, total, and available memory;
+- Free, total, and available swap memory;
+- Drive name, model, and serial number;
+- Free, total, and available storage, and storage type (NTFS, FAT32...);
+- Battery information — estimated remaining time, capacity, and name;
+- Sensor information — CPU voltage and temperature, and fan speeds;
 - Display information;
-- Network IP, name and adapter name, mac, data sent and received, packets sent and received;
-- Process information - size of RAM memory used, CPU load, process name, path, number of threads.
+- Network information — IP address, adapter and network names, MAC address, data sent/received, and packets sent/received;
+- Process information — RAM used, CPU load, process name, path, and number of threads.
 
 The binding uses the [OSHI](https://github.com/oshi/oshi) library to access this information regardless of the underlying OS and hardware.
 
 ## Supported Things
 
-The binding supports only one thing type - **computer**. This thing represents a system with one storage volume, one display device and one network adapter.
+The binding supports only one Thing type — **computer**. This Thing represents a system with one storage volume, one display device, and one network adapter.
 
-The thing has the following properties:
+The Thing has the following properties:
 
 - `cpu_logicalCores` - Number of CPU logical cores
 - `cpu_physicalCores` - Number of CPU physical cores
@@ -28,38 +28,38 @@ The thing has the following properties:
 - `os_version` - The version of the operating system
 - `os_family` - The family of the operating system
 
-If multiple storage or display devices support is needed, a new thing type has to be defined.
+If support for multiple storage or display devices is needed, define a new Thing type.
 
 ## Discovery
 
-The discovery service implementation tries to resolve the computer name.
-If the resolving process fails, the computer name is set to "Unknown".
-In both cases it creates a Discovery Result with thing type  **computer**.
+The discovery service attempts to resolve the computer name.
+If resolution fails, the computer name is set to "Unknown".
+In both cases it creates a discovery result with Thing type **computer**.
 
-## Thing configuration
+## Thing Configuration
 
-The configuration of the Thing gives the user the possibility to update channels at different intervals.
+The Thing configuration lets you update channels at different intervals.
 
-The thing has two configuration parameters:
+The Thing has two configuration parameters:
 
 - **interval_high** - refresh interval in seconds for channels with 'High' priority configuration. Default value is 1 s.
 - **interval_medium** - refresh interval in seconds for channels with 'Medium' priority configuration. Default value is 60s.
 
-That means that by default configuration:
+By default:
 
-- channels with priority set to 'High' are updated every second
-- channels with priority set to 'Medium' are updated every minute
-- channels with priority set to 'Low' are updated only at initialization or if the `REFRESH` command is sent to the channel.
+- Channels with priority 'High' are updated every second
+- Channels with priority 'Medium' are updated every minute
+- Channels with priority 'Low' are updated only at initialization or when the `REFRESH` command is sent to the channel
 
 Channels, not linked to an item, do not get updates, and do not periodically consume resources.
 
-For more info see [channel configuration](#channel-configuration)
+For more information, see [Channel configuration](#channel-configuration).
 
 ## Channels
 
-The binding support several channel group.
-Each channel group, contains one or more channels.
-In the list below, you can find, how are channel group and channels id`s related.
+The binding supports several channel groups.
+Each channel group contains one or more channels.
+The list below shows how channel groups and channel IDs relate.
 
 **thing** `computer`
 
@@ -76,7 +76,7 @@ In the list below, you can find, how are channel group and channels id`s related
 - **group** `battery` (deviceIndex)
   - **channel** `name, remainingCapacity, remainingTime`
 - **group** `cpu`
-  - **channel** `name, description, maxfreq, freq` (deviceIndex)`, load, load1, load5, load15, uptime, threads`
+  - **channel** `name, description, maxfreq, freq, load, load1, load5, load15, uptime, threads`
 - **group** `sensors`
   - **channel** `cpuTemp, cpuVoltage, fanSpeed` (deviceIndex)
 - **group** `network` (deviceIndex)
@@ -86,30 +86,30 @@ In the list below, you can find, how are channel group and channels id`s related
 - **group** `process` (pid)
   - **channel** `load, used, name, threads, path`
 
-The groups marked with "(deviceIndex)" may have device index attached to the Channel Group.
+The groups marked with "(deviceIndex)" may have a device index attached to the channel group.
 
 - channel ::= channel_group & (deviceIndex) & # channel_id
 - deviceIndex ::= number >= 0
 - (e.g. _storage1#available_)
 
-The channels marked with "(deviceIndex)" may have a device index attached to the Channel.
+The channels marked with "(deviceIndex)" may have a device index attached to the channel.
 
 - channel ::= channel_group & # channel_id & (deviceIndex)
 - deviceIndex ::= number >= 0
 
-Channels or channel groups without a trailing index will show the data for the first device (index 0) if multiple exist.
+Channels or channel groups without a trailing index will show data for the first device (index 0) if multiple exist.
 If only one device for a group exists, no channels or channel groups with indexes will be created.
 
-The group `process` is using a configuration parameter "pid" instead of "deviceIndex".
+The group `process` uses a configuration parameter "pid" instead of "deviceIndex".
 This makes it possible to change the tracked process at runtime.
 
-The group `currentProcess` has the same channels as the `process` group without the "pid" configuration parameter.
+The group `currentProcess` has the same channels as the `process` group, without the "pid" configuration parameter.
 The PID is dynamically set to the PID of the process running openHAB.
 
-The binding uses this index to get information about a specific device from a list of devices (e.g on a single computer several local disks could be installed with names C:\, D:\, E:\ - the first will have deviceIndex=0, the second deviceIndex=1 etc).
-If device with this index is not existing, the binding will display an error message on the console.
+The binding uses this index to get information about a specific device from a list of devices (e.g., on a single computer, several local disks could be installed with names C:\, D:\, E:\ — the first has deviceIndex=0, the second deviceIndex=1, etc.).
+If a device with this index does not exist, the binding displays an error message on the console.
 
-The table shows more detailed information about each Channel type.
+The table shows more detailed information about each channel type.
 The binding introduces the following channels:
 
 | Channel ID         | Channel Description                                              | Supported item type | Default priority | Advanced |
@@ -150,26 +150,25 @@ The binding introduces the following channels:
 | availableHeap      | How much space is available in the currently committed heap      | Number:DataAmount   | Medium           | True     |
 | usedHeapPercent    | How much of the MAX heap size is actually used in %              | Number:Dimensionless| Medium           | False    |
 
-## Channel configuration
+## Channel Configuration
 
-All channels can change its configuration parameters at runtime.
-The binding will trigger the necessary changes (reduce or increase the refresh time, change channel priority or the process that is being tracked).
+All channels can change their configuration parameters at runtime.
+The binding triggers the necessary changes (reduce or increase the refresh time, change channel priority, or change the tracked process).
 
-Each of the channels has a default configuration parameter - priority.
-It has the following options:
+Each channel has a "priority" configuration parameter with the following options:
 
 - **High**
 - **Medium**
 - **Low**
 
-The ''load'' channel will update total or by process CPU load at the frequency defined by the priority update interval, by default high priority, every second.
+The `load` channel updates total or per-process CPU load at the frequency defined by the priority update interval (by default, High priority = every second).
 The value corresponds to the average CPU load over the interval.
 
-Channels from group ''process'' have additional configuration parameter - PID (Process identifier).
-This parameter is used as 'deviceIndex' and defines which process is tracked from the channel.
-This makes the channels from this groups very flexible - they can change its PID dynamically.
+Channels in the `process` group have an additional configuration parameter: PID (process identifier).
+This parameter is used like a `deviceIndex` and defines which process the channel tracks.
+This makes the channels in this group very flexible — they can change their PID dynamically.
 
-Parameter PID has a default value 0 - this is the PID of the System Idle process in Windows OS.
+The PID parameter has a default value of 0 — this is the PID of the System Idle process on Windows.
 
 ## Known issues and workarounds
 

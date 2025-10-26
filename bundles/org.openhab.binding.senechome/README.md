@@ -31,7 +31,7 @@ demo.things
 Thing senechome:senechome:pvbattery [ hostname="192.168.0.128", refreshInterval=60, limitationTresholdValue=70, limitationDuration=60, useHttp=false ]
 ```
 
-If the thing goes online then the connection to the web interface is successful.
+If the Thing goes online then the connection to the web interface is successful.
 In case it is offline you should see an error message.
 The refresh interval is 15 seconds by default, but you can optionally provide your own value adding the `refreshInterval` key.
 

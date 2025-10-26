@@ -1,29 +1,29 @@
-# Silvercrest Wifi Plug Binding
+# Silvercrest WiFi Plug Binding
 
-This binding integrates the Silvercrest Wifi Socket SWS-A1 sold by Lidl and the EasyHome Wifi Socket DIS-124 sold by Aldi.
+This binding integrates the Silvercrest WiFi Socket SWS-A1 sold by Lidl and the EasyHome WiFi Socket DIS-124 sold by Aldi.
 
 ## Supported Things
 
-- Silvercrest Wifi Socket SWS-A1 - [(Owner Manual)](https://www.lidl-service.com/static/118127777/103043_FI.pdf)   --   Tested with firmware version: 1.41, 1.60, 1.70
-- EasyHome Wifi Socket DIS-124 <https://www.aldi-sued.de/de/infos/aldi-sued-a-bis-z/s/serviceportal/ergebnisliste/sis/si/wifi-steckdose/>
+- Silvercrest WiFi Socket SWS-A1 - [(Owner Manual)](https://www.lidl-service.com/static/118127777/103043_FI.pdf)   --   Tested with firmware version: 1.41, 1.60, 1.70
+- EasyHome WiFi Socket DIS-124 <https://www.aldi-sued.de/de/infos/aldi-sued-a-bis-z/s/serviceportal/ergebnisliste/sis/si/wifi-steckdose/>
 
 ## Discovery
 
-The Discovery of Wifi Sockets is always running in the background.
-If a command is sent to wifi socket using the Android/iOS app or if the physical button in the device is pressed, the device will be recognized and will be placed in the Inbox.
+The discovery of WiFi Sockets is always running in the background.
+If a command is sent to the WiFi socket using the Android/iOS app or if the physical button on the device is pressed, the device will be recognized and placed in the Inbox.
 
 ## Binding Configuration
 
 The binding does not require any special configuration.
-The Wifi Socket should be connected to the same wifi network.
+The WiFi Socket should be connected to the same WiFi network.
 
 ## Thing Configuration
 
-To configure a Wifi Socket manually the mac address and the vendor is required.
-You can check the Wifi Socket mac address in your router or using some mobile app.
+To configure a WiFi Socket manually, the MAC address and the vendor are required.
+You can check the WiFi Socket MAC address in your router or using a mobile app.
 Supported vendors are either Silvercrest (Lidl) or EasyHome (Aldi).
 
-Wifi Socket thing parameters:
+WiFi Socket Thing parameters:
 
 | Parameter ID   | Parameter Type | Mandatory | Description                                                                   | Default          |
 | -------------- | -------------- | --------- | ----------------------------------------------------------------------------- | ---------------- |
@@ -40,8 +40,8 @@ Thing silvercrestwifisocket:wifiSocket:lamp [ macAddress="ACCF23343C50", vendor=
 
 ## Channels
 
-The Silvercrest Wifi Socket support the following channel:
+The Silvercrest WiFi Socket supports the following channel:
 
-| Channel Type ID | Item Type | Description         |
-| --------------- | --------- | ------------------- |
-| switch          | Switch    | Wifi Socket Switch. |
+| Channel Type ID | Item Type | Description          |
+| --------------- | --------- | -------------------- |
+| switch          | Switch    | WiFi Socket Switch. |

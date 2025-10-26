@@ -1,42 +1,40 @@
 # Souliss Binding
 
-[Souliss](https://souliss.github.io/) is a networking framework for Arduino and compatible boards, and is designed to let you easily build a smart home that is distributed over multiple boards via Ethernet, WiFi, wireless point-to-point and RS485 bus.
+[Souliss](https://souliss.github.io/) is a networking framework for Arduino and compatible boards, designed to let you easily build a smart home distributed over multiple boards via Ethernet, Wi‑Fi, wireless point‑to‑point, and RS‑485 bus.
 
-Souliss is an open-source and community driven project.
+Souliss is an open-source and community-driven project.
 You can use the [Souliss Wiki documentation](https://github.com/souliss/souliss/wiki) and [Souliss Community Page on GitHub](https://github.com/souliss/souliss/wiki/Community) to get help and share your results.
 
 ## Prerequisites
 
 The binding requires a deployed network.
-As a minimum, you need one Souliss node with Ethernet or WiFi access configured as a [Souliss Gateway](https://github.com/souliss/souliss/wiki/Gateway).
-A Gateway is a special node that is able to communicate with the user interfaces.
+As a minimum, you need one Souliss node with Ethernet or Wi‑Fi access configured as a [Souliss Gateway](https://github.com/souliss/souliss/wiki/Gateway).
+A gateway is a special node that is able to communicate with user interfaces.
 The binding interacts as a user interface for Souliss.
 
-A starting point is the [Souliss Wiki documentation on GitHub](https://github.com/souliss/souliss/wiki).
-The best is to start with a single node and connect with SoulissApp.
-The code for networking activities of this binding is based on the [SoulissApp Codebase documentation](https://github.com/souliss/souliss/wiki/SoulissApp), so once connected with SoulissApp, you can move to openHAB directly.
+Start with the [Souliss Wiki documentation](https://github.com/souliss/souliss/wiki).
+It's best to begin with a single node and connect using SoulissApp.
+The networking code of this binding is based on the [SoulissApp documentation](https://github.com/souliss/souliss/wiki/SoulissApp), so once you're connected with SoulissApp, you can move to openHAB directly.
 
-You can use SoulissApp and the Souliss binding at the same time, and generally up to five (by default, but can be increased) user interfaces simultaneously.
+You can use SoulissApp and the Souliss binding at the same time, generally up to five user interfaces simultaneously by default (this can be increased).
 
 ### Sketches
 
 The easiest way is to start with a simple example to control an ON/OFF light (through a relay).
 
-You can go to the [Souliss GitHub Project main page](https://github.com/souliss/souliss) and see a lot of example sketches in the [Souliss Examples Directory on GitHub](https://github.com/souliss/souliss/tree/friariello/examples)
+See the [Souliss GitHub project](https://github.com/souliss/souliss) for many example sketches in the [Examples directory](https://github.com/souliss/souliss/tree/friariello/examples).
 
 ## Discovery
 
-First add a gateway (only one is permitted on LAN at this moment), then discovery can find other things (Souliss Typicals)
+First add a gateway (only one gateway on the LAN is supported at a time), then discovery can find other things (Souliss Typicals).
 
 ## Supported Things
 
-In Souliss Framework a Typical is one of predefined logic dedicated to smart home devices like lights, heating or antitheft.
+In the Souliss framework, a Typical is a predefined logic block for smart‑home functions such as lights, heating, or anti‑theft.
 
-Typical can be one of T11, T12, T13, T14, etc...
+Typicals can be one of T11, T12, T13, T14, etc., as defined in the [Souliss Wiki Typicals documentation](https://github.com/souliss/souliss/wiki/Typicals).
 
-They are defined in the [Souliss Wiki Typicals documentation](https://github.com/souliss/souliss/wiki/Typicals).
-
-Typicals match directly with openHAB Thing type.
+Typicals map directly to openHAB Thing types.
 
 | Device type                                               | Typical Code   | Thing type |
 |-----------------------------------------------------------|----------------|------------|
@@ -86,17 +84,17 @@ The following matrix lists the capabilities (channels) for each type:
 | t19                  | x              | x              | x                           | x                |                   |                      |                          |                |                    | x                                | x                         |                  |              |              |                |               |               |              |                |                |
 | t1A                  |                |                | x                           | x                |                   |                      |                          |                |                    |                                  |                           |                  | x            | x            | x              | x             | x             | x            | x              | x              |
 
-| Thing type / Channel | DateTime / lastStatusStored | Number / healthy | Rollershutter / rollerShutter | (see below) / rollerShutterState | (see down) / mode | (see down) / fan | Switch / status | Number / setPoint | Switch / setAsMeasured | Switch / measured | Switch / statusAlarm | Switch / onOffAlarm | Switch / rearmAlarm |
+| Thing type / Channel | DateTime / lastStatusStored | Number / healthy | Rollershutter / rollerShutter | (see below) / rollerShutterState | (see below) / mode | (see below) / fan | Switch / status | Number / setPoint | Switch / setAsMeasured | Switch / measured | Switch / statusAlarm | Switch / onOffAlarm | Switch / rearmAlarm |
 |----------------------|-----------------------------|------------------|-------------------------------|----------------------------------|-------------------|------------------|-----------------|-------------------|------------------------|-------------------|----------------------|---------------------|---------------------|
-| t21                  | x                           | x                |                               | x                                |                   |                  |                 |                   |                        |                   |                      |                     |                     |
+| t21                  | x                           | x                | x                             | x                                |                   |                  |                 |                   |                        |                   |                      |                     |                     |
 | t22                  | x                           | x                | x                             | x                                |                   |                  |                 |                   |                        |                   |                      |                     |                     |
 | t31                  | x                           | x                |                               |                                  | x                 | x                | x               | x                 | x                      | x                 |                      |                     |                     |
 | t41                  | x                           | x                |                               |                                  |                   |                  |                 |                   |                        |                   | x                    | x                   | x                   |
 | t42                  | x                           | x                |                               |                                  |                   |                  |                 |                   |                        |                   | x                    |                     | x                   |
 
-rollershutterstate = opening, closing, limSwitchOpen , limSwitchClose, stateOpen, stateClose, noLimSwitch
+rollerShutterState = opening, stop, closing, limSwitchOpen, limSwitchClose, stateOpen, stateClose, NoLimSwitch
 
-mode = COOLING_MODE, HEATING_MODE, POWEREDOFF_MODE
+mode = COOLING_MODE, HEATING_MODE
 
 fan = AUTO, HIGH, MEDIUM, LOW, FANOFF
 
@@ -127,15 +125,18 @@ fan = AUTO, HIGH, MEDIUM, LOW, FANOFF
 
 | Thing type | Parameters Name and Default Value | Description                                                                                           |
 |------------|-----------------------------------|-------------------------------------------------------------------------------------------------------|
-| Gateway    | gatewayLanAddress=""              | Mandatory - lan address of Gateway                                                                    |
-| "          | gatewayWanAddress=""              | (advanced) When gateway is outside local network can insert domain/ip in this field                   |
-| "          | gatewayPortNumber=230             | (advanced) Gateway UDP Port                                                                           |
-| "          | preferredLocalPortNumber=23000    | (advanced) Local UDP Port  **(don't use 0, check it if you come from previous versions like 2.x)**    |
-| "          | pingInterval=30                   | (advanced) Interval in seconds to check for device presence                                           |
-| "          | subscriptionInterval=2            | (advanced) Interval in minutes to subscribe Souliss Gateway                                           |
-| "          | healthyInterval=35                | (advanced) Interval in seconds to send nodes healthy                                                  |
-| "          | userIndex=70                      | (advanced) Generally the default is good. It must be different from other ui (ex: SoulissApp)         |
-| "          | nodeIndex=120                     | (advanced) Generally the default value work good. It must is different from other ui (ex: SoulissApp) |
+| Gateway    | gatewayLanAddress=""              | Mandatory – LAN IPv4 address of the gateway                                                           |
+| "          | gatewayWanAddress=""              | (advanced) Hostname or IPv4 address for external access                                               |
+| "          | gatewayPortNumber=230             | (advanced) Gateway UDP port                                                                           |
+| "          | preferredLocalPortNumber=23000    | (advanced) Local UDP port  **(don't use 0; required when upgrading from 2.x)**                        |
+| "          | pingInterval=30s                  | (advanced) Interval in seconds to check for device presence                                           |
+| "          | subscriptionInterval=30s          | (advanced) Interval in seconds to subscribe to the Souliss gateway                                    |
+| "          | healthyInterval=60s               | (advanced) Interval in seconds to send node health                                                    |
+| "          | sendInterval=30ms                 | (advanced) Interval in milliseconds between queued packet sends                                       |
+| "          | timeoutToRequeue=5000ms           | (advanced) Requeue timeout in milliseconds for unexecuted packets                                     |
+| "          | timeoutToRemovePacket=20000ms     | (advanced) Removal timeout in milliseconds for stale packets                                          |
+| "          | userIndex=70                      | (advanced) Generally the default is fine; must differ from other UIs (e.g., SoulissApp)               |
+| "          | nodeIndex=120                     | (advanced) Generally the default works well; must differ from other UIs (e.g., SoulissApp)            |
 | Txx (all)  | Node                              | Node of typical                                                                                       |
 | Txx (all)  | Slot                              | Slot of typical                                                                                       |
 | T11        | sleep=5                           | Set sleep timer in cycles                                                                             |
@@ -193,7 +194,7 @@ Thing t52 11-3 "Birra - Temp 2"@"Soppalco" [node=11,slot=3]
 
 ```
 
-You have to write your Gateway IP Number and leave all other to default values
+Enter your gateway IP address; you can leave the other parameters at their default values.
 
 default.items:
 
@@ -209,7 +210,7 @@ Group    Diagnostic
 Group    TermostatoSoggiorno
 
 Switch   tettoia                "Tettoia"                                   <light>     (Outside)   ["Lighting"]    {autoupdate="false", channel="souliss:t11:105:5-0:onOff"}
-String   tettoia_aggiornamento  "Agg [%1$td.%1$tm.%1$tY %1$tk:%1$tM:%1$tS]" <keyring>   (Outside, Diagnostic)       {channel="souliss:t31:105:5-0:lastStatusStored"}
+String   tettoia_aggiornamento  "Agg [%1$td.%1$tm.%1$tY %1$tk:%1$tM:%1$tS]" <keyring>   (Outside, Diagnostic)       {channel="souliss:t11:105:5-0:lastStatusStored"}
 
 Switch   portoncino             "Portoncino"            <light>         (FamilyRoom)         ["Lighting"]   {autoupdate="false",channel="souliss:t14:105:1-6:pulse"}
 Switch   cancello               "Cancello"              <light>         (FamilyRoom)         ["Lighting"]   {autoupdate="false",channel="souliss:t14:105:1-7:pulse"}
@@ -224,8 +225,8 @@ String   AggiornamentoNodo1 "Agg.Consumi [%1$td.%1$tm.%1$tY %1$tk:%1$tM:%1$tS]" 
 String   AggiornamentoNodo4 "Agg.Fotovoltaico [%1$td.%1$tm.%1$tY %1$tk:%1$tM:%1$tS]"    <keyring> (FamilyRoom, Elettricita, Diagnostic)  {channel="souliss:t57:105:4-0:lastStatusStored"}
 
 Switch divano               "Divano"                                        <light> (FamilyRoom, Divano ) ["Switchable"]    {autoupdate="false", channel="souliss:t11:105:12-0:onOff"}
-String divano_aggiornamento "Agg. [%1$td.%1$tm.%1$tY %1$tk:%1$tM:%1$tS]"    <keyring> (FamilyRoom, Divano, Diagnostic)      {channel="souliss:t57:105:12-0:lastStatusStored"}
-String divano_healthy       "Salute"                                        <keyring> (FamilyRoom, Divano, Diagnostic)      {channel="souliss:t57:105:12-0:healthy"}
+String divano_aggiornamento "Agg. [%1$td.%1$tm.%1$tY %1$tk:%1$tM:%1$tS]"    <keyring> (FamilyRoom, Divano, Diagnostic)      {channel="souliss:t11:105:12-0:lastStatusStored"}
+String divano_healthy       "Salute"                                        <keyring> (FamilyRoom, Divano, Diagnostic)      {channel="souliss:t11:105:12-0:healthy"}
 
 Number termostatosoggiorno_temperatura  "Temperatura [%.1f °C]" <temperature>   (TermostatoSoggiorno) {channel="souliss:t31:105:6-0:measured"}
 Number termostatosoggiorno_umidita      "Umidità [%.1f %%]"     <temperature>   (TermostatoSoggiorno) {channel="souliss:t53:105:6-7:value" }
@@ -239,7 +240,7 @@ String termostatosoggiorno_modo             "Modo"                              
 Switch termostatosoggiorno_power            "Termostato"                    <powerIcon>     (TermostatoSoggiorno) {channel="souliss:t31:105:6-0:system"}
 Switch termostatosoggiorno_fire             "Fire"                          <fire>          (TermostatoSoggiorno) {channel="souliss:t31:105:6-0:fire"}
 
-Dimmer  TermostatoSoggiorno_displayBright   "Lumin.min. display"                                    (TermostatoSoggiorno)               {channel="souliss:t19:105:6-9" }
+Dimmer  TermostatoSoggiorno_displayBright   "Lumin.min. display"                                    (TermostatoSoggiorno)               {channel="souliss:t19:105:6-9:dimmerBrightness"}
 String TermostatoSoggiorno_aggiornamento    "Agg.[%1$td.%1$tm.%1$tY %1$tk:%1$tM:%1$tS]" <keyring>   (TermostatoSoggiorno, Diagnostic)   {channel="souliss:t31:105:6-0:lastStatusStored"}
 Number TermostatoSoggiorno_healthy          "Salute"                                    <keyring>   (TermostatoSoggiorno, Diagnostic )  {channel="souliss:t31:105:6-0:healthy"}
 ```
@@ -288,9 +289,9 @@ Text label="Termostato soggiorno" icon="temperature" {
             Switch item=termostatosoggiorno_modo label="Heating Mode" mappings=[HEATING_MODE="Set"]
             Switch item=termostatosoggiorno_power label="Power On/Off"
             Default item=termostatosoggiorno_fire label="Fire"
-            Text item=termostatoSoggiorno_aggiornamento label="Aggiornato: [%1$td.%1$tm.%1$tY %1$tk:%1$tM:%1$tS]" icon="icon16x16"
-            Default item=termostatoSoggiorno_healthy
-            Slider item=termostatoSoggiorno_displayBright
+            Text item=TermostatoSoggiorno_aggiornamento label="Aggiornato: [%1$td.%1$tm.%1$tY %1$tk:%1$tM:%1$tS]" icon="icon16x16"
+            Default item=TermostatoSoggiorno_healthy
+            Slider item=TermostatoSoggiorno_displayBright
    }
  }
 }
@@ -298,9 +299,9 @@ Text label="Termostato soggiorno" icon="temperature" {
 
 ## Community
 
-Souliss is a small community and doesn't have sufficient human resources to be more active on the official openHAB community.
+Souliss is a small community and does not have sufficient human resources to be very active on the official openHAB community.
 
-These are some very popular forums:
+Some popular forums:
 
 - English Group: [Souliss English Google Group](https://groups.google.com/forum/#!forum/souliss)
 - Italian Group: [Souliss Italian Google Group](https://groups.google.com/forum/#!forum/souliss-it)
@@ -308,8 +309,8 @@ These are some very popular forums:
 
 ## Contribution
 
-Official repository for contributing to the Souliss project: [Souliss GitHub Organization page](https://github.com/souliss)
+Official repository for contributing to the Souliss project: [Souliss GitHub organization](https://github.com/souliss)
 
 ## Known issues
 
-Securesend is, at moment, enabled and tested only for t11...
+Secure send is currently enabled and tested only for T11...

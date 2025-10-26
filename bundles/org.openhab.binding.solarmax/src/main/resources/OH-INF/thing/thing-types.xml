@@ -76,7 +76,7 @@
 	<channel-type id="acPhase1Current">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>AC Phase 1 Current</label>
-		<description>AC Phase 1 Current in Amps</description>
+		<description>AC Phase 1 current in A</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Current</tag>
@@ -87,7 +87,7 @@
 	<channel-type id="acPhase2Current">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>AC Phase 2 Current</label>
-		<description>AC Phase 2 Current in Amps</description>
+		<description>AC Phase 2 current in A</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Current</tag>
@@ -98,7 +98,7 @@
 	<channel-type id="acPhase3Current">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>AC Phase 3 Current</label>
-		<description>AC Phase 3 Current in Amps</description>
+		<description>AC Phase 3 current in A</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Current</tag>
@@ -109,7 +109,7 @@
 	<channel-type id="energyGeneratedToday">
 		<item-type>Number:Energy</item-type>
 		<label>Energy Generated Today</label>
-		<description>Energy Generated Today in wH</description>
+		<description>Energy generated today in Wh</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Energy</tag>
@@ -120,7 +120,7 @@
 	<channel-type id="energyGeneratedTotal">
 		<item-type>Number:Energy</item-type>
 		<label>Energy Generated Total</label>
-		<description>Energy Generated Total since recording began in wH</description>
+		<description>Total energy generated since recording began in Wh</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Energy</tag>
@@ -131,14 +131,14 @@
 	<channel-type id="operatingHours">
 		<item-type>Number</item-type>
 		<label>Operating Hours</label>
-		<description>Operating Hours since recording began in H</description>
+		<description>Operating hours since recording began in h</description>
 		<state readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="energyGeneratedYesterday">
 		<item-type>Number:Energy</item-type>
 		<label>Energy Generated Yesterday</label>
-		<description>Energy Generated Yesterday in wH</description>
+		<description>Energy generated yesterday in Wh</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Energy</tag>
@@ -149,7 +149,7 @@
 	<channel-type id="energyGeneratedLastMonth">
 		<item-type>Number:Energy</item-type>
 		<label>Energy Generated Last Month</label>
-		<description>Energy Generated Last Month in wH</description>
+		<description>Energy generated last month in Wh</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Energy</tag>
@@ -160,7 +160,7 @@
 	<channel-type id="energyGeneratedLastYear">
 		<item-type>Number:Energy</item-type>
 		<label>Energy Generated Last Year</label>
-		<description>Energy Generated Last Year in wH</description>
+		<description>Energy generated last year in Wh</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Energy</tag>
@@ -171,7 +171,7 @@
 	<channel-type id="energyGeneratedThisMonth">
 		<item-type>Number:Energy</item-type>
 		<label>Energy Generated This Month</label>
-		<description>Energy Generated This Month in wH</description>
+		<description>Energy generated this month in Wh</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Energy</tag>
@@ -182,7 +182,7 @@
 	<channel-type id="energyGeneratedThisYear">
 		<item-type>Number:Energy</item-type>
 		<label>Energy Generated This Year</label>
-		<description>Energy Generated This Year in wH</description>
+		<description>Energy generated this year in Wh</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Energy</tag>
@@ -193,7 +193,7 @@
 	<channel-type id="currentPowerGenerated">
 		<item-type>Number:Power</item-type>
 		<label>Current Power Generated</label>
-		<description>Power currently being generated in w</description>
+		<description>Power currently being generated in W</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Power</tag>
@@ -204,7 +204,7 @@
 	<channel-type id="acFrequency">
 		<item-type>Number:Frequency</item-type>
 		<label>AC Frequency</label>
-		<description>AcFrequency in Hz</description>
+		<description>AC frequency in Hz</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Frequency</tag>
@@ -214,8 +214,8 @@
 
 	<channel-type id="acPhase1Voltage">
 		<item-type>Number:ElectricPotential</item-type>
-		<label>AC Phase1 Voltage</label>
-		<description>AC Phase1 Voltage in V</description>
+		<label>AC Phase 1 Voltage</label>
+		<description>AC Phase 1 voltage in V</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Voltage</tag>
@@ -225,8 +225,8 @@
 
 	<channel-type id="acPhase2Voltage">
 		<item-type>Number:ElectricPotential</item-type>
-		<label>AC Phase2 Voltage</label>
-		<description>AC Phase2 Voltage in V</description>
+		<label>AC Phase 2 Voltage</label>
+		<description>AC Phase 2 voltage in V</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Voltage</tag>
@@ -236,8 +236,8 @@
 
 	<channel-type id="acPhase3Voltage">
 		<item-type>Number:ElectricPotential</item-type>
-		<label>AC Phase3 Voltage</label>
-		<description>AC Phase3 Voltage in V</description>
+		<label>AC Phase 3 Voltage</label>
+		<description>AC Phase 3 voltage in V</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Voltage</tag>
@@ -248,7 +248,7 @@
 	<channel-type id="heatSinkTemperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Heat Sink Temperature</label>
-		<description>Heat Sink Temperature in degrees celcius</description>
+		<description>Heat sink temperature in degrees Celsius</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Temperature</tag>

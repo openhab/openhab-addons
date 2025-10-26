@@ -17,11 +17,11 @@ Currently, only dual-chamber beds are supported by this binding.
 
 ## Discovery
 
-The SleepIQ cloud thing must be added manually with the username and password used to register with the service.
+The SleepIQ cloud Thing must be added manually with the username and password used to register with the service.
 After that, beds are discovered automatically by querying the service.
 If the bed has a foundation, it will be auto-discovered by the binding.
 If a foundation is discovered, the channels for controlling presets, position and outlets can be operated.
-The thing properties will show whether or not a foundation is installed.
+The Thing properties will show whether or not a foundation is installed.
 
 ## Binding Configuration
 
@@ -106,7 +106,7 @@ Here is a sample item configuration:
 ```java
 Switch      MasterBR_SleepIQ_InBed_Alice                 "In Bed [%s]"                      { channel="sleepiq:dualBed:1:master:left#inBed" }
 Number      MasterBR_SleepIQ_SleepNumber_Alice           "Sleep Number [%s]"                { channel="sleepiq:dualBed:1:master:left#sleepNumber" }
-Number:Time MasterBR_SleepIQ_SleepGoal_Alice             "Sleep Goal [%d min]"              { channel="sleepiq:dualBed:1:master:left#sleepGoalMinutes"
+Number:Time MasterBR_SleepIQ_SleepGoal_Alice             "Sleep Goal [%d min]"              { channel="sleepiq:dualBed:1:master:left#sleepGoalMinutes" }
 Number      MasterBR_SleepIQ_Pressure_Alice              "Pressure [%s]"                    { channel="sleepiq:dualBed:1:master:left#pressure" }
 Switch      MasterBR_SleepIQ_PrivacyMode_Alice           "Privacy Mode [%s]"                { channel="sleepiq:dualBed:1:master:left#privacyMode" }
 String      MasterBR_SleepIQ_LastLink_Alice              "Last Update [%s]"                 { channel="sleepiq:dualBed:1:master:left#lastLink" }
@@ -132,8 +132,8 @@ Switch      MasterBR_SleepIQ_FoundationNightLight_Alice  "Night Light [%d]"     
 
 Switch      MasterBR_SleepIQ_InBed_Bob                   "In Bed [%s]"                      { channel="sleepiq:dualBed:1:master:right#inBed" }
 Number      MasterBR_SleepIQ_SleepNumber_Bob             "Sleep Number [%s]"                { channel="sleepiq:dualBed:1:master:right#sleepNumber" }
-Number      MasterBR_SleepIQ_SleepGoal_Bob               "Sleep Goal [%d min]"              { channel="sleepiq:dualBed:1:master:left#sleepGoalMinutes"
-Number:Time MasterBR_SleepIQ_Pressure_Bob                "Pressure [%s]"                    { channel="sleepiq:dualBed:1:master:right#pressure" }
+Number:Time MasterBR_SleepIQ_SleepGoal_Bob               "Sleep Goal [%d min]"              { channel="sleepiq:dualBed:1:master:right#sleepGoalMinutes" }
+Number      MasterBR_SleepIQ_Pressure_Bob                "Pressure [%s]"                    { channel="sleepiq:dualBed:1:master:right#pressure" }
 Switch      MasterBR_SleepIQ_PrivacyMode_Bob             "Privacy Mode [%s]"                { channel="sleepiq:dualBed:1:master:right#privacyMode" }
 String      MasterBR_SleepIQ_LastLink_Bob                "Last Update [%s]"                 { channel="sleepiq:dualBed:1:master:right#lastLink" }
 Number      MasterBR_SleepIQ_AlertId_Bob                 "Alert ID [%s]"                    { channel="sleepiq:dualBed:1:master:right#alertId" }

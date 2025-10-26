@@ -46,7 +46,7 @@
 	</channel-type>
 	<channel-type id="energy-today">
 		<item-type>Number:Energy</item-type>
-		<label>Todays Energy Forecast</label>
+		<label>Today's Energy Forecast</label>
 		<description>Today's total energy forecast</description>
 		<tags>
 			<tag>Forecast</tag>

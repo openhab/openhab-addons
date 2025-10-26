@@ -10,7 +10,7 @@
 		</supported-bridge-type-refs>
 
 		<label>Solcast PV Plane</label>
-		<description>One PV Plane of Multi Plane Bridge</description>
+		<description>A PV plane of a multi-plane bridge</description>
 		<semantic-equipment-tag>SolarPanel</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="average" typeId="average-values"/>
