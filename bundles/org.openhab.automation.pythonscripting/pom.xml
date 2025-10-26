@@ -23,7 +23,7 @@
     <dependency>
       <groupId>org.openhab.osgiify</groupId>
       <artifactId>org.graalvm.polyglot.polyglot</artifactId>
-      <version>${graalpy.version}</version>
+      <version>${graalvm.version}</version>
       <!-- provided as OSGi bundle at runtime, available only at compile time -->
       <scope>provided</scope>
     </dependency>
