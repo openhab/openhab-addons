@@ -53,7 +53,7 @@ public class LinkPlayGroupService {
     }
 
     /**
-     * Register a potential group participant (a player)`
+     * Register a potential group participant (a player)
      * 
      * @param participant
      */

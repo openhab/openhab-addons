@@ -154,7 +154,7 @@ public class LinkPlayAudioSink extends AudioSinkSync {
                 } catch (IOException ex) {
                 }
                 throw new UnsupportedAudioStreamException(
-                        "Sonos was not able to handle the audio stream (cache on disk failed).", audioStream.getClass(),
+                        "Was not able to handle the audio stream (cache on disk failed).", audioStream.getClass(),
                         e);
             }
             String url = callbackUrl + streamServed.url();
@@ -164,7 +164,7 @@ public class LinkPlayAudioSink extends AudioSinkSync {
                 logger.debug("Error while playing notification: {}", e.getMessage(), e);
             }
         } else {
-            logger.warn("We do not have any callback url, so Sonos cannot play the audio stream!");
+            logger.warn("We do not have any callback url, so cannot play the audio stream!");
             try {
                 audioStream.close();
             } catch (IOException e) {
