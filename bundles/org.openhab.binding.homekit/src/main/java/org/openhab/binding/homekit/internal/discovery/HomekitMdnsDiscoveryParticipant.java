@@ -24,8 +24,6 @@ import javax.jmdns.ServiceInfo;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homekit.internal.enums.AccessoryCategory;
-import org.openhab.binding.homekit.internal.enums.AccessoryPairingFeature;
-import org.openhab.binding.homekit.internal.enums.AccessoryPairingStatus;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.mdns.MDNSDiscoveryParticipant;
@@ -67,8 +65,7 @@ public class HomekitMdnsDiscoveryParticipant implements MDNSDiscoveryParticipant
 
     @Override
     public @Nullable DiscoveryResult createResult(ServiceInfo service) {
-        ThingUID uid = getThingUID(service);
-        if (uid != null) {
+        if (getThingUID(service) instanceof ThingUID uid) {
             Map<String, String> properties = getProperties(service);
 
             String mac = properties.get("id"); // MAC address
@@ -86,22 +83,6 @@ public class HomekitMdnsDiscoveryParticipant implements MDNSDiscoveryParticipant
                 category = null;
             }
 
-            AccessoryPairingFeature pairFeature;
-            try {
-                String ff = properties.getOrDefault("ff", ""); // accessory feature flag
-                pairFeature = AccessoryPairingFeature.from(Integer.parseInt(ff));
-            } catch (IllegalArgumentException e) {
-                pairFeature = AccessoryPairingFeature.NO;
-            }
-
-            AccessoryPairingStatus pairStatus;
-            try {
-                String sf = properties.getOrDefault("sf", ""); // accessory status flag
-                pairStatus = AccessoryPairingStatus.from(Integer.parseInt(sf));
-            } catch (IllegalArgumentException e) {
-                pairStatus = AccessoryPairingStatus.UNPAIRED;
-            }
-
             if (host != null && mac != null && category != null) {
                 DiscoveryResultBuilder builder = DiscoveryResultBuilder.create(uid);
                 builder.withLabel(THING_LABEL_FMT.formatted(service.getName(), host)) //
@@ -111,16 +92,13 @@ public class HomekitMdnsDiscoveryParticipant implements MDNSDiscoveryParticipant
                         .withProperty(PROPERTY_ACCESSORY_UID, new ThingUID(THING_TYPE_ACCESSORY, "1").toString()) //
                         .withRepresentationProperty(Thing.PROPERTY_MAC_ADDRESS);
 
-                String model = properties.get("md");
-                if (model != null) {
+                if (properties.get("md") instanceof String model) {
                     builder.withProperty(Thing.PROPERTY_MODEL_ID, model);
                 }
-                String serial = properties.get("s#");
-                if (serial != null) {
+                if (properties.get("s#") instanceof String serial) {
                     builder.withProperty(Thing.PROPERTY_SERIAL_NUMBER, serial);
                 }
-                String protocolVersion = properties.get("pv");
-                if (protocolVersion != null) {
+                if (properties.get("pv") instanceof String protocolVersion) {
                     builder.withProperty(PROPERTY_PROTOCOL_VERSION, protocolVersion);
                 }
 

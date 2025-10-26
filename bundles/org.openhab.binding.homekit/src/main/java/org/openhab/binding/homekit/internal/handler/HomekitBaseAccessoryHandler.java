@@ -71,8 +71,8 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
 
     protected static final Gson GSON = new Gson();
 
-    private static final int MIN_CONNECTION_DELAY_SECONDS = 2;
-    private static final int MAX_CONNECTION_DELAY_SECONDS = 600;
+    private static final int MIN_CONNECTION_ATTEMPT_DELAY = 2;
+    private static final int MAX_CONNECTION_ATTEMPT_DELAY = 600;
 
     private final Logger logger = LoggerFactory.getLogger(HomekitBaseAccessoryHandler.class);
 
@@ -83,10 +83,11 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
     protected final Bundle bundle;
 
     protected boolean isChildAccessory = false;
+    private boolean isConfigured = false;
 
-    private int connectionDelaySeconds = MIN_CONNECTION_DELAY_SECONDS;
+    private int connectionAttemptDelay = MIN_CONNECTION_ATTEMPT_DELAY;
 
-    private @Nullable ScheduledFuture<?> connectionTask;
+    private @Nullable ScheduledFuture<?> connectionAttemptTask;
     private @Nullable CharacteristicReadWriteClient rwService;
     private @Nullable IpTransport ipTransport;
 
@@ -105,10 +106,14 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
     @Override
     public void dispose() {
         unsubscribeEvents();
-        cancelConnectionTask();
-        if (!isChildAccessory && ipTransport instanceof IpTransport ipTransport) {
-            ipTransport.close();
+        if (connectionAttemptTask instanceof ScheduledFuture<?> task) {
+            task.cancel(true);
         }
+        if (ipTransport instanceof IpTransport transport) {
+            transport.close();
+        }
+        connectionAttemptTask = null;
+        ipTransport = null;
         super.dispose();
     }
 
@@ -152,8 +157,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
      * @return the accessory ID, or null if it cannot be determined
      */
     protected @Nullable Integer getAccessoryId() {
-        String accessoryUid = thing.getProperties().get(PROPERTY_ACCESSORY_UID);
-        if (accessoryUid != null) {
+        if (thing.getProperties().get(PROPERTY_ACCESSORY_UID) instanceof String accessoryUid) {
             try {
                 return Integer.parseInt(new ThingUID(accessoryUid).getId());
             } catch (NumberFormatException e) {
@@ -173,8 +177,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
                 try {
                     PairRemoveClient service = new PairRemoveClient(getIpTransport(), keyStore.getControllerUUID());
                     service.remove();
-                    String mac = getThing().getProperties().get(Thing.PROPERTY_MAC_ADDRESS);
-                    if (mac != null) {
+                    if (getThing().getProperties().get(Thing.PROPERTY_MAC_ADDRESS) instanceof String mac) {
                         keyStore.setAccessoryKey(mac, null);
                     } else {
                         logger.warn("Could not clear key for '{}' due to missing mac address", thing.getUID());
@@ -204,7 +207,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
         } else {
             // standalone accessory or bridge accessory, so do pairing and session setup here
             isChildAccessory = false;
-            startConnectionTask();
+            scheduleConnectionAttempt();
         }
     }
 
@@ -213,8 +216,9 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
      * Updates the thing status accordingly.
      */
     private synchronized void initializePairing() {
+        isConfigured = false;
         Object host = getConfig().get(CONFIG_HOST);
-        if (host == null || !(host instanceof String hostString) || !HOST_PATTERN.matcher(hostString).matches()) {
+        if (host == null || !(host instanceof String hostName) || !HOST_PATTERN.matcher(hostName).matches()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     i18nProvider.getText(bundle, "error.invalid-host", "Invalid host", null));
             return;
@@ -243,28 +247,29 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
                     i18nProvider.getText(bundle, "error.missing-mac-address", "Missing MAC address", null));
             return;
         }
+        isConfigured = true;
 
         // create new transport
         try {
-            ipTransport = new IpTransport(hostString);
+            ipTransport = new IpTransport(hostName);
         } catch (IOException e) {
-            logger.debug("Failed to create transport", e);
+            logger.warn("Error '{}' creating transport", e.getMessage());
+            logger.debug("Stack trace", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     i18nProvider.getText(bundle, "error.failed-to-connect", "Failed to connect", null));
             return;
         }
 
-        if (keyStore.getAccessoryKey(macAddress) != null) {
+        if (keyStore.getAccessoryKey(macAddress) instanceof Ed25519PublicKeyParameters accessoryKey) {
             try {
                 logger.debug("Starting Pair-Verify with existing key for {}", thing.getUID());
                 PairVerifyClient client = new PairVerifyClient(getIpTransport(), keyStore.getControllerUUID(),
-                        keyStore.getControllerKey(), Objects.requireNonNull(keyStore.getAccessoryKey(macAddress)));
+                        keyStore.getControllerKey(), accessoryKey);
 
                 getIpTransport().setSessionKeys(client.verify());
                 rwService = new CharacteristicReadWriteClient(getIpTransport());
 
                 logger.debug("Restored pairing was verified for {}", thing.getUID());
-                cancelConnectionTask();
                 fetchAccessories();
                 updateStatus(ThingStatus.ONLINE);
                 return; // pairing restore succeeded => exit
@@ -272,7 +277,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
                     | InvalidCipherTextException | IOException | InterruptedException | TimeoutException
                     | ExecutionException e) {
                 logger.debug("Restored pairing was not verified for {}", thing.getUID(), e);
-                // pairing restore failed => continue to create new pairing
+                // pairing restore failed => continue to try to create a new pairing
             }
         }
 
@@ -293,7 +298,6 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
             keyStore.setAccessoryKey(macAddress, accessoryKey);
 
             logger.debug("Pairing and verification completed for {}", thing.getUID());
-            cancelConnectionTask();
             fetchAccessories();
             updateStatus(ThingStatus.ONLINE);
         } catch (NoSuchAlgorithmException | NoSuchProviderException | IllegalAccessException
@@ -301,7 +305,6 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
                 | ExecutionException e) {
             logger.warn("Pairing / verification failed '{}' for {}", e.getMessage(), thing.getUID());
             logger.debug("Stack trace", e);
-            startConnectionTask();
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, i18nProvider.getText(bundle,
                     "error.pairing-verification-failed", "Pairing / verification failed", null));
         }
@@ -325,40 +328,33 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
     }
 
     /**
-     * Starts a task to attempt (re) connection.
-     * The delay increases exponentially up to a maximum of 10 minutes.
-     * If this handler is a child of a bridge, it delegates to the bridge handler.
+     * Schedules a connection attempt.
      */
-    protected void startConnectionTask() {
-        if (isChildAccessory && getBridge() instanceof Bridge bridge
-                && bridge.getHandler() instanceof HomekitBridgeHandler bridgeHandler) {
-            bridgeHandler.startConnectionTask();
-        } else {
-            ScheduledFuture<?> task = connectionTask;
-            if (task != null) {
-                task.cancel(false);
-            }
-            IpTransport ipTransport = this.ipTransport;
-            if (ipTransport != null) { // clean up prior transport if any
-                this.ipTransport = null;
-                ipTransport.close();
-            }
-            connectionTask = scheduler.schedule(this::initializePairing, connectionDelaySeconds, TimeUnit.SECONDS);
-            connectionDelaySeconds = Math.min(connectionDelaySeconds * connectionDelaySeconds,
-                    MAX_CONNECTION_DELAY_SECONDS);
+    protected void scheduleConnectionAttempt() {
+        if (getBridge() instanceof Bridge bridge && bridge.getHandler() instanceof HomekitBridgeHandler bridgeHandler) {
+            bridgeHandler.scheduleConnectionAttempt();
+        } else if (connectionAttemptTask == null) {
+            connectionAttemptTask = scheduler.schedule(this::attemptConnect, connectionAttemptDelay, TimeUnit.SECONDS);
         }
     }
 
     /**
-     * Stops the (re) connect task if it is running. Resets the retry exponent.
+     * The (re) connection task. Cleans up any prior transport, then attempts to initialize pairing.
+     * If successful, resets the retry delay. If not, reschedules itself with an exponentially increased delay.
      */
-    private void cancelConnectionTask() {
-        ScheduledFuture<?> task = connectionTask;
-        if (task != null) {
-            task.cancel(false);
+    private synchronized void attemptConnect() {
+        if (ipTransport instanceof IpTransport transport) { // close prior transport (if any)
+            transport.close();
+            ipTransport = null;
         }
-        connectionTask = null;
-        connectionDelaySeconds = MIN_CONNECTION_DELAY_SECONDS;
+        initializePairing();
+        if (isConfigured && thing.getStatus() != ThingStatus.ONLINE) { // config ok but connection failed => try again
+            connectionAttemptDelay = Math.min(MAX_CONNECTION_ATTEMPT_DELAY, (int) Math.pow(connectionAttemptDelay, 2));
+            connectionAttemptTask = scheduler.schedule(this::attemptConnect, connectionAttemptDelay, TimeUnit.SECONDS);
+        } else { // succeeded => reset delay
+            connectionAttemptDelay = MIN_CONNECTION_ATTEMPT_DELAY;
+            connectionAttemptTask = null;
+        }
     }
 
     /**

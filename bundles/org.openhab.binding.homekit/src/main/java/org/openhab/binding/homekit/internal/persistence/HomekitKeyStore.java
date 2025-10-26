@@ -67,8 +67,7 @@ public class HomekitKeyStore {
     }
 
     public byte[] getControllerUUID() {
-        String controllerUUID = storage.get(CONTROLLER_UUID);
-        if (controllerUUID != null) {
+        if (storage.get(CONTROLLER_UUID) instanceof String controllerUUID) {
             return decode(controllerUUID);
         }
         byte[] newControllerUUID = UUID.randomUUID().toString().getBytes(StandardCharsets.UTF_8);
@@ -77,8 +76,7 @@ public class HomekitKeyStore {
     }
 
     public Ed25519PrivateKeyParameters getControllerKey() {
-        String controllerKey = storage.get(CONTROLLER_KEY_ID);
-        if (controllerKey != null) {
+        if (storage.get(CONTROLLER_KEY_ID) instanceof String controllerKey) {
             return new Ed25519PrivateKeyParameters(decode(controllerKey), 0);
         }
         Ed25519PrivateKeyParameters newControllerKey = new Ed25519PrivateKeyParameters(new SecureRandom());

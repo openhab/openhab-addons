@@ -133,8 +133,7 @@ public class HomekitBridgeHandler extends HomekitBaseAccessoryHandler implements
                             typeProvider, i18nProvider, bundle);
                     if (channelDef != null && FAKE_PROPERTY_CHANNEL_TYPE_UID.equals(channelDef.getChannelTypeUID())) {
                         String name = channelDef.getId();
-                        String value = channelDef.getLabel();
-                        if (value != null) {
+                        if (channelDef.getLabel() instanceof String value) {
                             thing.setProperty(name, value);
                         }
                     }

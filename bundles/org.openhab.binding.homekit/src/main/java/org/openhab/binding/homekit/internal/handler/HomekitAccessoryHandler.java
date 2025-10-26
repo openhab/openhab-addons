@@ -267,8 +267,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
             }
 
             // comply with characteristic's data format
-            String format = channel.getProperties().get(PROPERTY_FORMAT);
-            if (format != null) {
+            if (channel.getProperties().get(PROPERTY_FORMAT) instanceof String format) {
                 object = switch (DataFormatType.from(format)) {
                     case UINT8, UINT16, UINT32, UINT64, INT -> Integer.valueOf(number.intValue());
                     case FLOAT -> Float.valueOf(number.floatValue());
@@ -419,8 +418,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
                             if (FAKE_PROPERTY_CHANNEL_TYPE_UID.equals(chanDef.getChannelTypeUID())) {
                                 // this is a property, not a channel
                                 String name = chanDef.getId();
-                                String value = chanDef.getLabel();
-                                if (value != null) {
+                                if (chanDef.getLabel() instanceof String value) {
                                     properties.put(name, value);
                                     logger.trace("++++Property '{}:{}'", name, value);
                                 }
@@ -508,8 +506,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
                 }
             } else if (channelUID.equals(lightModelClientHSBTypeChannel)) {
                 lightModelHandleCommand(command, getRwService());
-                LightModel lightModel = this.lightModel;
-                if (lightModel != null) {
+                if (lightModel instanceof LightModel lightModel) {
                     lightModelLinks.forEach(link -> {
                         switch (link.cxxType) {
                             case HUE -> {
@@ -538,11 +535,11 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
             } else {
                 writeChannel(channel, command, getRwService());
             }
-            return;
+            return; // success
         } catch (IOException | TimeoutException e) {
             logger.debug("Communication error '{}' sending command '{}' to '{}', restarting", e.getMessage(), command,
                     channelUID);
-            startConnectionTask();
+            scheduleConnectionAttempt();
         } catch (IllegalAccessException | ExecutionException e) {
             logger.warn("Unexpected error '{}' sending command '{}' to '{}'", e.getMessage(), command, channelUID);
             logger.debug("Stack trace", e);
@@ -559,11 +556,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
 
     @Override
     public void handleRemoval() {
-        ScheduledFuture<?> task = refreshTask;
-        if (task != null) {
-            task.cancel(true);
-        }
-        refreshTask = null;
+        cancelRefreshTask();
         super.handleRemoval();
     }
 
@@ -585,8 +578,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
         Integer aid = getAccessoryId();
         List<String> queries = new ArrayList<>();
         thing.getChannels().stream().forEach(c -> {
-            String iid = c.getProperties().get(PROPERTY_IID);
-            if (iid != null) {
+            if (c.getProperties().get(PROPERTY_IID) instanceof String iid) {
                 queries.add("%s.%s".formatted(aid, iid));
             }
         });
@@ -599,7 +591,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
             return;
         } catch (IOException | TimeoutException e) {
             logger.debug("Communication error '{}' polling accessory, restarting", e.getMessage());
-            startConnectionTask();
+            scheduleConnectionAttempt();
         } catch (IllegalAccessException | ExecutionException e) {
             logger.warn("Unexpected error '{}' polling accessory", e.getMessage());
             logger.debug("Stack trace", e);
@@ -610,8 +602,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
     }
 
     private void cancelRefreshTask() {
-        ScheduledFuture<?> task = refreshTask;
-        if (task != null) {
+        if (refreshTask instanceof ScheduledFuture<?> task) {
             task.cancel(true);
         }
         refreshTask = null;

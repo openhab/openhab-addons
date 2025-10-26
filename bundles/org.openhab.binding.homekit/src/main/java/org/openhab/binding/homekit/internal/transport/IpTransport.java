@@ -127,8 +127,7 @@ public class IpTransport implements AutoCloseable {
         }
 
         byte[][] response; // 0 = headers, 1 = content, 2 = raw trace (if enabled)
-        SecureSession secureSession = this.secureSession;
-        if (secureSession != null) {
+        if (secureSession instanceof SecureSession secureSession) {
             // before we write request, create CompletableFuture to read response (with a timeout)
             CompletableFuture<byte[][]> readFuture = new CompletableFuture<>();
             this.readFuture = readFuture;
@@ -256,8 +255,7 @@ public class IpTransport implements AutoCloseable {
         eventListeners.clear();
         try {
             socket.close();
-            Thread thread = readThread;
-            if (thread != null) {
+            if (readThread instanceof Thread thread) {
                 thread.interrupt();
                 thread.join();
             }
@@ -272,8 +270,7 @@ public class IpTransport implements AutoCloseable {
      * @param response the received response as a 3D byte array
      */
     private void handleResponse(byte[][] response) {
-        CompletableFuture<byte[][]> future = readFuture;
-        if (future != null) {
+        if (readFuture instanceof CompletableFuture<byte[][]> future) {
             readFuture = null;
             future.complete(response);
         }
@@ -309,8 +306,7 @@ public class IpTransport implements AutoCloseable {
             }
         } while (!Thread.currentThread().isInterrupted());
 
-        CompletableFuture<byte[][]> future = readFuture;
-        if (future != null) {
+        if (readFuture instanceof CompletableFuture<byte[][]> future) {
             readFuture = null;
             future.completeExceptionally(cause != null ? cause : new InterruptedException("Listener interrupted"));
         }
