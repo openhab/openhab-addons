@@ -7,7 +7,7 @@
 	<!-- SmartStrip Thing Type -->
 	<thing-type id="smartstrip">
 		<label>SmartStrip</label>
-		<description>A Thing to control Revogi SmartStrip</description>
+		<description>A thing to control the Revogi SmartStrip</description>
 		<category>PowerOutlet</category>
 		<semantic-equipment-tag>PowerOutlet</semantic-equipment-tag>
 
@@ -55,7 +55,7 @@
 
 	<channel-group-type id="plugActuator">
 		<label>Single Plug Actuator</label>
-		<description>Switches a single plug and retrieve stats for it</description>
+		<description>Switches a single plug and retrieves stats for it</description>
 		<channels>
 			<channel id="switch" typeId="single-plug"/>
 			<channel id="watt" typeId="watts"/>
@@ -83,7 +83,7 @@
 	<channel-type id="watts" advanced="true">
 		<item-type>Number:Power</item-type>
 		<label>Power</label>
-		<description>Contains the current watt value for the given plug</description>
+		<description>Contains the current power for the plug</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Power</tag>
@@ -93,7 +93,7 @@
 	<channel-type id="amps" advanced="true">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Current</label>
-		<description>Contains the current Amp value for the given plug</description>
+		<description>Contains the current for the plug</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Current</tag>
