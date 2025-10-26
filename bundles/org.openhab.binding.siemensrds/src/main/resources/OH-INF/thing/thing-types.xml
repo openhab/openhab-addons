@@ -66,7 +66,7 @@
 
 			<channel id="thermostatOutputState" typeId="thermostatOutputState">
 				<label>Thermostat Output State</label>
-				<description>The output state of the the thermostat (Heating, Cooling)</description>
+				<description>The output state of the thermostat (Heating, Cooling)</description>
 			</channel>
 
 			<channel id="roomHumidity" typeId="roomHumidity">
@@ -153,7 +153,7 @@
 	<channel-type id="thermostatOutputState">
 		<item-type>String</item-type>
 		<label>Thermostat Output State</label>
-		<description>The output state of the the thermostat (Heating, Cooling)</description>
+		<description>The output state of the thermostat (Heating, Cooling)</description>
 		<category>fire</category>
 		<tags>
 			<tag>Status</tag>
@@ -163,7 +163,7 @@
 	</channel-type>
 
 	<channel-type id="roomHumidity">
-		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>Humidity</label>
 		<description>Measured humidity value</description>
 		<category>humidity</category>
@@ -222,7 +222,7 @@
 
 	<channel-type id="hotWaterAutoMode">
 		<item-type>Switch</item-type>
-		<label>Hotwater Auto Mode</label>
+		<label>Hot Water Auto Mode</label>
 		<description>The domestic water heating is in Automatic Mode (Off = Manual Mode)</description>
 		<tags>
 			<tag>Switch</tag>
@@ -233,7 +233,7 @@
 
 	<channel-type id="hotWaterOutputState">
 		<item-type>Switch</item-type>
-		<label>Hotwater Output State</label>
+		<label>Hot Water Output State</label>
 		<description>The On/Off state of the domestic water heating</description>
 		<tags>
 			<tag>Switch</tag>

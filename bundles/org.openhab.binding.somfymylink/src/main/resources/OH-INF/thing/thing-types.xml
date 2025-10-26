@@ -10,7 +10,7 @@
 		<description>Somfy MyLink bridge enabling communication with Somfy devices</description>
 		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 		<channels>
-			<channel id="sceneid" typeId="scenelist"/>
+			<channel id="scenelist" typeId="scenelist"/>
 		</channels>
 		<config-description>
 			<parameter name="ipAddress" type="text" required="true">
@@ -68,7 +68,7 @@
 		<item-type>String</item-type>
 		<label>Scene List</label>
 		<description>Comma-separated list of scenes of form sceneId=sceneName</description>
-		<state pattern="%s"></state>
+		<state pattern="%s" readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="shadeControl">

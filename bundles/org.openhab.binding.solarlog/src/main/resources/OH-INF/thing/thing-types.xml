@@ -29,12 +29,12 @@
 		<config-description>
 			<parameter name="url" type="text" required="true">
 				<label>URL</label>
-				<description>URL of the Solar-Log web interface (e.g. http://solar-log)</description>
+				<description>URL of the Solar-Log web interface (e.g., http://solar-log)</description>
 				<default>http://solar-log</default>
 			</parameter>
 			<parameter name="refreshInterval" type="integer" min="15">
 				<label>Refresh Interval</label>
-				<description>States how often a refresh shall occur (in s).</description>
+				<description>How often to refresh (in seconds).</description>
 				<default>15</default>
 			</parameter>
 		</config-description>
@@ -162,7 +162,7 @@
 	<channel-type id="consyieldyesterday">
 		<item-type>Number</item-type>
 		<label>Consumption Yesterday</label>
-		<description>Total consumption for the previous day; all of the consumption meters</description>
+		<description>Total consumption for the previous day from all of the consumption meters</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Energy</tag>
@@ -172,7 +172,7 @@
 	<channel-type id="consyieldmonth">
 		<item-type>Number</item-type>
 		<label>Consumption Month</label>
-		<description>Total consumption for the month; all of the consumption meters</description>
+		<description>Total consumption for the month from all of the consumption meters</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Energy</tag>
@@ -182,13 +182,13 @@
 	<channel-type id="consyieldyear">
 		<item-type>Number</item-type>
 		<label>Consumption Year</label>
-		<description>Total consumption for the year; all of the consumption meters</description>
+		<description>Total consumption for the year from all of the consumption meters</description>
 		<state readOnly="true" pattern="%d Wh"></state>
 	</channel-type>
 	<channel-type id="consyieldtotal">
 		<item-type>Number</item-type>
 		<label>Consumption Total</label>
-		<description>Accumulated total consumption, all Consumption meter</description>
+		<description>Accumulated total consumption from all consumption meters</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Energy</tag>

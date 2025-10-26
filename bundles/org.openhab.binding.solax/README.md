@@ -87,7 +87,7 @@ If you're missing a channel this means that it's not supported for your inverter
 | Channel                  | Type                       | Description                                                                                                                                 |
 |--------------------------|----------------------------|---------------------------------------------------------------------------------------------------------------------------------------------|
 | last-update-time         | DateTime                   | Last time when a call has been made to the inverter                                                                                         |
-| raw-data                 | String                     | The raw data retrieved from inverter in JSON format. (Usable for channels not implemented. Can be consumed with the JSONpath transformation |
+| raw-data                 | String                     | The raw data retrieved from inverter in JSON format. (Usable for channels not implemented. Can be consumed with the JSONPath transformation |
 
 ### Statistics / Usage related Channels
 
@@ -156,7 +156,7 @@ If you're missing a channel this means that it's not supported for your inverter
 
 | Parameter         | Description                                                                                                                                        |
 |-------------------|----------------------------------------------------------------------------------------------------------------------------------------------------|
-| refreshInterval   | Defines the refresh interval when the binding polls from from the Solax cloud (in seconds). Optional parameter(min=15, max=600). Default is 30 seconds. Be advised that the cloud API is limited to max 10 calls per minute and 10000 calls per day.                                                                                                              |
+| refreshInterval   | Defines the refresh interval when the binding polls from from the Solax cloud (in seconds). Optional parameter(min=9, max=600). Default is 30 seconds. Be advised that the cloud API is limited to max 10 calls per minute and 10000 calls per day.                                                                                                              |
 | password          | The registration number, shown in the Solax Cloud web portal. Mandatory parameter.                                                                 |
 | token             | Token for accessing the Solax Cloud API. Can be obtained via Service -> API on the Solax cloud web portal. Mandatory parameter.                    |
 
@@ -177,7 +177,7 @@ If you're missing a channel this means that it's not supported for your inverter
 | total-consumption               | Number:Energy              | Total energy consumed by the building [kWh]                                                                                                 |
 | today-energy                    | Number:Energy              | Energy output from the inverter for the day [kWh]                                                                                           |
 | total-energy                    | Number:Energy              | Total energy output from the inverter [kWh]                                                                                                 |
-| raw-data                        | String                     | The raw data retrieved from inverter in JSON format. (Usable for channels not implemented. Can be consumed with the JSONpath transformation |
+| raw-data                        | String                     | The raw data retrieved from inverter in JSON format. (Usable for channels not implemented. Can be consumed with the JSONPath transformation |
 | inverter-status                 | String                     | The status of the inverter. (For the various status types, refer to the API documentation)                                                  |
 | last-update-time                | DateTime                   | Last time when a call has been made to the inverter                                                                                         |
 | inverter-meter2-power           | Number:Power               | Inverter power on meter2 [W]                                                                                                                |
@@ -206,7 +206,7 @@ Group solarPanels "Solar panels" <energy> (gSolaxInverter)
 // Direct connect
 Number solaxPowerWest "West Power [%d W]" <solarplant> (gsolax_inverter,EveryChangePersist,solarPanels){ channel="solax:local-connect-inverter:localInverter:pv1-power" }
 Number solaxPowerEast "East Power [%d W]" <solarplant> (gsolax_inverter,EveryChangePersist,solarPanels){ channel="solax:local-connect-inverter:localInverter:pv2-power" }
-Number solaxGenerationTotal "Total generаtion now [%.0f W]" <solarplant> (gsolax_inverter,EveryChangePersist,solarPanels) { channel="solax:local-connect-inverter:localInverter:pv-total-power" }
+Number solaxGenerationTotal "Total generation now [%.0f W]" <solarplant> (gsolax_inverter,EveryChangePersist,solarPanels) { channel="solax:local-connect-inverter:localInverter:pv-total-power" }
 Number solaxVoltageWest "West Voltage [%.1f V]" <solarplant> (gsolax_inverter,EveryChangePersist,solarPanels){ channel="solax:local-connect-inverter:localInverter:pv1-voltage" }
 Number solaxVoltageEast "East Voltage [%.1f V]" <solarplant> (gsolax_inverter,EveryChangePersist,solarPanels){ channel="solax:local-connect-inverter:localInverter:pv2-voltage" }
 Number solaxCurrentWest "West Current [%.1f A]" <solarplant> (gsolax_inverter,EveryChangePersist,solarPanels){ channel="solax:local-connect-inverter:localInverter:pv1-current" }
