@@ -21,9 +21,6 @@ import static org.mockito.Mockito.*;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.Set;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -40,6 +37,7 @@ import org.openhab.binding.network.internal.utils.NetworkUtils;
 import org.openhab.binding.network.internal.utils.NetworkUtils.ArpPingUtilEnum;
 import org.openhab.binding.network.internal.utils.NetworkUtils.IpPingMethodEnum;
 import org.openhab.binding.network.internal.utils.PingResult;
+import org.openhab.core.util.SameThreadExecutorService;
 
 /**
  * Tests cases for {@see PresenceDetectionValue}
@@ -55,9 +53,6 @@ public class PresenceDetectionTest {
     private @NonNullByDefault({}) PresenceDetection asyncSubject;
 
     private @Mock @NonNullByDefault({}) Consumer<PresenceDetectionValue> callback;
-    private @Mock @NonNullByDefault({}) ExecutorService detectionExecutorService;
-    private @Mock @NonNullByDefault({}) ExecutorService waitForResultExecutorService;
-    private @Mock @NonNullByDefault({}) ScheduledExecutorService scheduledExecutorService;
     private @Mock @NonNullByDefault({}) PresenceDetectionListener listener;
     private @Mock @NonNullByDefault({}) NetworkUtils networkUtils;
 
@@ -81,7 +76,7 @@ public class PresenceDetectionTest {
         subject.setUseArpPing(true, "arping", ArpPingUtilEnum.IPUTILS_ARPING);
         subject.setUseIcmpPing(true);
 
-        asyncSubject = spy(new PresenceDetection(listener, Duration.ofSeconds(2), Executors.newSingleThreadExecutor()));
+        asyncSubject = spy(new PresenceDetection(listener, Duration.ofSeconds(2), new SameThreadExecutorService()));
 
         asyncSubject.networkUtils = networkUtils;
         asyncSubject.setHostname("127.0.0.1");
@@ -174,7 +169,6 @@ public class PresenceDetectionTest {
         // Get value will issue a PresenceDetection internally.
         asyncSubject.getValue(callback);
         verify(asyncSubject).performPresenceDetection();
-        Thread.sleep(200); // give it some time to execute
         // Callback should be called once with the result (since we use direct executor)
         verify(callback, times(1)).accept(any());
 
@@ -182,9 +176,9 @@ public class PresenceDetectionTest {
         asyncSubject.getValue(callback);
         verify(callback, times(2)).accept(any());
 
-        // Invalidate value, we should not get a new callback immediately again
+        // Invalidate value, we should get a new callback immediately
         asyncSubject.cache.invalidateValue();
         asyncSubject.getValue(callback);
-        verify(callback, times(2)).accept(any());
+        verify(callback, times(3)).accept(any());
     }
 }
