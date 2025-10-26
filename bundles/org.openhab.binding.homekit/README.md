@@ -1,6 +1,7 @@
 # HomeKit Binding
 
-This binding allows pairing with HomeKit accessory devices and importing their services as channel groups and their respective service- characteristics as channels.
+This binding allows pairing with HomeKit accessories and **imports** their services as channel groups and their respective service- characteristics as channels.
+Do not confuse this with the other HomeKit **integration** (https://www.openhab.org/addons/integrations/homekit/) which **exports** openHAB Items to a HomeKit controller.
 
 ## Supported Things
 
@@ -24,8 +25,7 @@ The `bridge` and stand-alone `accessory` Things need to be paired with their res
 This requires entering the HomeKit pairing code as a configuration parameter in the binding.
 Note that HomeKit accessories can only be paired with one controller, so if it is already paired with something else, you will need to remove that pairing first.
 
-Things are mostly automatically configured when they are discovered.
-However the following are the .
+The following table shows the thing configuration parameters.
 
 | Name              | Type    | Description                                       | Default | Required  | Advanced  |
 |-------------------|---------|---------------------------------------------------|---------|-----------|-----------|
@@ -33,35 +33,50 @@ However the following are the .
 | `pairingCode`     | text    | Code used for pairing with the HomeKit accessory. | N/A     | see below | see below |
 | `refreshInterval` | integer | Interval at which the accessory is polled in sec. | 60      | no        | yes       |
 
-Things of type `bridge` and stand-alone `accessory` Things require both a `host` and a `pairingCode`.
+Things of type `bridge` and `accessory` require both a `host` and a `pairingCode`.
+
 The `host` is set by the mDNS auto- discovery process.
-And the `pairingCode` must be entered manually.
+It must match the format `123.123.123.123:4567` representing its IP v4 address and port.
+
+The `pairingCode` must be entered manually.
+It must match the format `XXX-XX-XXX` or `XXXX-XXXX` or `XXXXXXXX` where `X` is a single digit.
 
 Child `accessory` Things do not require neither a `host` nor a `pairingCode`.
-Therefore these parameters are preset to `n/a`.
+Therefore child things have these parameters preset to `n/a`.
 
 ## Channels
 
-Channels will be auto-created depending on the services and characteristics published by the HomeKit accessory.
+Channels are auto-created depending on the services and characteristics published by the HomeKit accessory.
+
+As a general rule openHAB has one channel for each HomeKit charactersitic.
+Some HomeKit accessories have separate charactersitics for 'target' and 'current' states.
+The two charactersitics may have different values (e.g. for a thermostat).
+In all such cases the thing has a channel for each characteristic so that both values can be accessed.
+
+Some HomeKit characteristics represent fixed information e.g. model number, firmware version, etc.
+Such values appear in openHAB as properties of the respectinve thing.
+
+### Special Extra HSBType Channel
+
+In openHAB the norm is that lighting objects shall be represented by a single `HSBType` channel which manages hue, saturation, brightness, and on-off states.
+By contrast a HomeKit accessory has four separate characteristics for hue, saturation, brightness, and on-off.
+So the thing creates one additional `HSBType` channel that amalgamates hue, saturation, brightness, and on-off characteristics, according to the openHAB norm.
+
+## File Based Configuration
 
 ### Thing Configuration
 
-Things are mostly automatically configured when they are discovered.
-So for this reason it is extremely difficult to create Things via a '.things' file.
+Things are automatically configured when they are discovered.
+So for this reason it is extremely difficult to create Things via a '.things' file, and is therefore not recommeneded.
 
 ### Item Configuration
 
 ```java
-Example item configuration goes here.
+Number:Temperature Color_Temperature "Color Temperature [%.1f mired]" <light> [ColorTemperature, Setpoint] { channel="homekit:accessory:297b703df234:lightbulb#color-temperature", unit="mired" }
 ```
 
 ### Sitemap Configuration
 
 ```perl
-Optional Sitemap configuration goes here.
-Remove this section, if not needed.
+Slider item=Color_Temperature
 ```
-
-## Any custom content here!
-
-_Feel free to add additional sections for whatever you think should also be mentioned about your binding!_
