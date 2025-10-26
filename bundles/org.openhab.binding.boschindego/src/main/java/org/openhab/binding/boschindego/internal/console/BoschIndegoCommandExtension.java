@@ -111,8 +111,7 @@ public class BoschIndegoCommandExtension extends AbstractConsoleCommandExtension
 
     private @Nullable Thing getBridgeById(String bridgeId) {
         try {
-            ThingUID thingUID = new ThingUID(THING_TYPE_ACCOUNT, bridgeId);
-            return thingRegistry.get(thingUID);
+            return thingRegistry.get(new ThingUID(THING_TYPE_ACCOUNT, bridgeId));
         } catch (IllegalArgumentException e) {
             return null;
         }
