@@ -45,13 +45,12 @@ public final class StateResolver {
 
     /**
      * Resolves a {@link State} object from a given JSON element based on the provided key.
-     * <p>
      * This method interprets the JSON value heuristically, mapping numeric values to
      * {@link QuantityType} or {@link DecimalType}, strings to {@link StringType} or {@link DateTimeType},
      * and booleans to {@link OnOffType}. The key is used to infer the appropriate unit of measurement
      * or semantic meaning.
      *
-     * @param key   the semantic key associated with the value (e.g. "Odometer", "Timestamp", "Price")
+     * @param key the semantic key associated with the value (e.g. "Odometer", "Timestamp", "Price")
      * @param value the JSON element to be converted into an openHAB {@link State}
      * @return the resolved {@link State}, or {@code null} if the value is not a supported primitive
      */
