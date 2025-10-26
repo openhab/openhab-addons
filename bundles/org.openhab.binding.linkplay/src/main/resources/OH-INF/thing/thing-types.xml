@@ -130,7 +130,7 @@
 		<description>Current track uri</description>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="trackUri">
+	<channel-type id="trackSource">
 		<item-type>String</item-type>
 		<label>Track Source</label>
 		<description>Current track source (Pandora, Spotify, etc..)</description>

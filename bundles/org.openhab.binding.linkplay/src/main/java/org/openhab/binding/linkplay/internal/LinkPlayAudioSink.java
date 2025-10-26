@@ -154,8 +154,7 @@ public class LinkPlayAudioSink extends AudioSinkSync {
                 } catch (IOException ex) {
                 }
                 throw new UnsupportedAudioStreamException(
-                        "Was not able to handle the audio stream (cache on disk failed).", audioStream.getClass(),
-                        e);
+                        "Was not able to handle the audio stream (cache on disk failed).", audioStream.getClass(), e);
             }
             String url = callbackUrl + streamServed.url();
             try {
