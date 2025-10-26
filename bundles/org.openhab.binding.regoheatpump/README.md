@@ -9,8 +9,10 @@ The Rego heat pump binding supports:
 
 The Rego 6xx controllers family is used in many heat pumps such as IVT/Bosch/Autotherm/Carrier and others.
 
-Rego 6xx unit contain an interface marked as service.
-Header of this interface is close to the control unit. This is 5V (TTL) serial interface and is connected by a 9 pin can/d-sub connector. Pinout:
+The Rego 6xx unit contains an interface marked as service.
+Header of this interface is close to the control unit.
+This is a 5V (TTL) serial interface and is connected by a 9-pin CAN/D-sub connector.
+Pinout:
 
 2 - RxD
 3 - TxD
@@ -28,12 +30,12 @@ Two connection types are supported:
 
 #### TCP/IP connection
 
-A transparent bridge between the serial interface of the heat pump and network (i.e. wifi) is used.
+A transparent bridge between the serial interface of the heat pump and network (i.e. Wi-Fi) is used.
 This way no additional wires are required between heat pump and computer, running openHAB.
 
 There are many existing projects providing such functionality, such as [Serial to Network Proxy (ser2net)](http://ser2net.sourceforge.net/).
 
-For my setup, I used a low budget (~5€) circuit, that is integrated into the heat pump and connects to a wifi using an ESP8266 based module.
+For my setup, I used a low-budget (~5€) circuit, that is integrated into the heat pump and connects to a Wi-Fi using an ESP8266-based module.
 
 Board:
 
@@ -56,7 +58,7 @@ Example thing definition:
 
 #### Serial connection
 
-In order to connect directly to the rego 6xx controller, one needs to adjust the TTL levels coming from the rego unit to levels used by a RS232 serial port, used within computers, using MAX232 or similar.
+In order to connect directly to the Rego 6xx controller, one needs to adjust the TTL levels coming from the Rego unit to levels used by an RS232 serial port, used within computers, using MAX232 or similar.
 
 Parameters:
 
@@ -137,7 +139,7 @@ Below is the list of supported channels:
 
 Access: R = read only; RW = read write
 
-**Note - breaking change:** to have all writable channels within the settings group, hotWaterTarget channel was moved from controlData to the setting group.
+**Note - breaking change:** To have all writable channels within the settings group, the hotWaterTarget channel was moved from controlData to the settings group.
 
 ## The Husdata interface
 
@@ -166,7 +168,7 @@ Two connection types are supported:
 
 #### TCP/IP connection
 
-A transparent bridge between the Husdata interface and network (i.e. wifi) is used.
+A transparent bridge between the Husdata interface and network (i.e. Wi-Fi) is used.
 
 There are many existing projects providing such functionality, such as [Serial to Network Proxy (ser2net)](http://ser2net.sourceforge.net/).
 
