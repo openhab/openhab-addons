@@ -215,14 +215,14 @@
 		<state min="-12" max="12" step="1" pattern="%d dB"/>
 	</channel-type>
 	<channel-type id="outputHardwareMode">
-		<item-type>String</item-type>
+		<item-type>Number</item-type>
 		<label>Output Hardware Mode</label>
 		<description>Active audio output (SPDIF, AUX, COAX)</description>
-		<state readOnly="true">
+		<state>
 			<options>
-				<option value="SPDIF">SPDIF</option>
-				<option value="AUX">AUX</option>
-				<option value="COAX">COAX</option>
+				<option value="1">SPDIF</option>
+				<option value="2">AUX</option>
+				<option value="3">COAX</option>
 			</options>
 		</state>
 	</channel-type>

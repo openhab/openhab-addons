@@ -44,6 +44,7 @@ import org.jupnp.model.meta.RemoteDevice;
 import org.jupnp.model.types.UDN;
 import org.openhab.binding.linkplay.internal.client.http.LinkPlayConnectionUtils;
 import org.openhab.binding.linkplay.internal.client.http.LinkPlayHTTPClient;
+import org.openhab.binding.linkplay.internal.client.http.dto.AudioOutputHardwareMode;
 import org.openhab.binding.linkplay.internal.client.http.dto.DeviceStatus;
 import org.openhab.binding.linkplay.internal.client.http.dto.PlayMode;
 import org.openhab.binding.linkplay.internal.client.http.dto.PlayerStatus;
@@ -150,7 +151,6 @@ public class LinkPlayHandler extends BaseThingHandler implements LinkPlayUpnpDev
     private int currentDuration = 0;
     private PresetList presetInfo = new PresetList();
     private TransportState currentTransportState = TransportState.STOPPED;
-    // Pending request tracking removed; actions either return sync data or ack immediately
 
     public LinkPlayHandler(Thing thing, HttpClient httpClient, LinkPlayUpnpRegistry linkPlayUpnpRegistry,
             UpnpIOService upnpIOService, UpnpService upnpService, LinkPlayGroupService linkPlayGroupService,
@@ -365,6 +365,11 @@ public class LinkPlayHandler extends BaseThingHandler implements LinkPlayUpnpDev
                         } else {
                             logger.debug("Unsupported source input mode: {}", stringType);
                         }
+                    }
+                    break;
+                case LinkPlayBindingConstants.CHANNEL_OUTPUT_HW_MODE:
+                    if (command instanceof DecimalType decimalType) {
+                        apiClient.setAudioOutputHardwareMode(decimalType.intValue()).get();
                     }
                     break;
                 case LinkPlayBindingConstants.CHANNEL_CHANNEL_BALANCE:
@@ -1170,6 +1175,7 @@ public class LinkPlayHandler extends BaseThingHandler implements LinkPlayUpnpDev
                 // if no track metadata, we're not playing anything
             }
         }
+        updateEqAndDeviceSettings();
         updateMultiroom();
         refreshPlayListQueue();
     }
@@ -1252,6 +1258,65 @@ public class LinkPlayHandler extends BaseThingHandler implements LinkPlayUpnpDev
             updateState(LinkPlayBindingConstants.GROUP_METADATA, LinkPlayBindingConstants.CHANNEL_BIT_RATE,
                     stateOrNull(md.bitRate, DecimalType.class));
             updateAlbumArtChannels(md.albumArtUri);
+        }
+    }
+
+    /**
+     * Updates equaliser on/off, output hardware mode, channel balance, SPDIF delay and shutdown timer
+     * from the device using the HTTP API
+     */
+    private void updateEqAndDeviceSettings() {
+        // EQ enabled state
+        try {
+            var eqStat = apiClient.getEQStat().get();
+            updateState(LinkPlayBindingConstants.GROUP_EQUALISER, LinkPlayBindingConstants.CHANNEL_EQ_ENABLED,
+                    eqStat.isOn() ? OnOffType.ON : OnOffType.OFF);
+        } catch (InterruptedException | ExecutionException e) {
+            logger.trace("{}: Unable to fetch EQ status: {}", udn, e.getMessage());
+        }
+
+        try {
+            AudioOutputHardwareMode mode = apiClient.getNewAudioOutputHardwareMode().get();
+            if (mode != null) {
+                updateState(LinkPlayBindingConstants.GROUP_EQUALISER, LinkPlayBindingConstants.CHANNEL_OUTPUT_HW_MODE,
+                        new DecimalType(mode.hardware));
+            }
+        } catch (InterruptedException | ExecutionException e) {
+            logger.trace("{}: Unable to fetch output hardware mode: {}", udn, e.getMessage());
+        }
+
+        try {
+            Double balance = apiClient.getChannelBalance().get();
+            if (balance != null) {
+                updateState(LinkPlayBindingConstants.GROUP_EQUALISER, LinkPlayBindingConstants.CHANNEL_CHANNEL_BALANCE,
+                        new DecimalType(balance));
+            }
+        } catch (InterruptedException | ExecutionException e) {
+            logger.trace("{}: Unable to fetch channel balance: {}", udn, e.getMessage());
+        }
+
+        try {
+            Integer delay = apiClient.getSpdifOutSwitchDelayMs().get();
+            if (delay != null) {
+                updateState(LinkPlayBindingConstants.GROUP_EQUALISER, LinkPlayBindingConstants.CHANNEL_SPDIF_DELAY,
+                        new DecimalType(delay));
+            }
+        } catch (InterruptedException | ExecutionException e) {
+            logger.trace("{}: Unable to fetch SPDIF delay: {}", udn, e.getMessage());
+        }
+
+        // Shutdown timer (seconds; -1 for disabled)
+        try {
+            Integer secs = apiClient.getShutdownTimer().get();
+            if (secs != null && secs >= 0) {
+                updateState(LinkPlayBindingConstants.GROUP_DEVICE, LinkPlayBindingConstants.CHANNEL_SHUTDOWN_TIMER,
+                        new DecimalType(secs));
+            } else {
+                updateState(LinkPlayBindingConstants.GROUP_DEVICE, LinkPlayBindingConstants.CHANNEL_SHUTDOWN_TIMER,
+                        UnDefType.UNDEF);
+            }
+        } catch (InterruptedException | ExecutionException e) {
+            logger.trace("{}: Unable to fetch shutdown timer: {}", udn, e.getMessage());
         }
     }
 
