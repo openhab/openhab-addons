@@ -17,6 +17,7 @@ import javax.measure.Unit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.library.types.DateTimeType;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
@@ -54,12 +55,14 @@ public final class StateResolver {
         if (prim.isNumber()) {
             double raw = prim.getAsDouble();
             Unit<?> base = determineBaseUnitFromKey(key);
-            if (key.contains("odometer") || key.contains("range") || key.contains("capacity")) {
+            if (key.contains("Odometer") || key.contains("Range") || key.contains("Capacity")) {
                 return new QuantityType<>(raw, MetricPrefix.KILO(base));
+            } else if (key.contains("Price") || key.contains("Tariff") || key.contains("tariff")) {
+                return new DecimalType(value.getAsDouble());
             }
             return new QuantityType<>(raw, base);
         } else if (prim.isString()) {
-            if (key.contains("timestamp")) {
+            if (key.contains("Timestamp")) {
                 return new DateTimeType(value.getAsString());
             } else {
                 return new StringType(value.getAsString());
@@ -77,9 +80,9 @@ public final class StateResolver {
 
         if (lower.contains("soc") || lower.contains("percentage"))
             return Units.PERCENT;
-        if (lower.contains("power") || lower.contains("threshold"))
+        if (lower.contains("power") || lower.contains("threshold") || lower.contains("tariffsolar"))
             return Units.WATT;
-        if (lower.contains("energy") || lower.contains("capacity"))
+        if (lower.contains("energy") || lower.contains("capacity") || lower.contains("import"))
             return Units.WATT_HOUR;
         if (lower.contains("temp") || lower.contains("temperature") || lower.contains("heating"))
             return SIUnits.CELSIUS;
@@ -88,11 +91,11 @@ public final class StateResolver {
         if (lower.contains("current"))
             return Units.AMPERE;
         if (lower.contains("duration") || lower.contains("time") || lower.contains("delay")
-                || lower.contains("remaining"))
+                || lower.contains("remaining") || lower.contains("overrun") || lower.contains("precondition"))
             return Units.SECOND;
-        if (lower.contains("odometer") || lower.contains("distance"))
+        if (lower.contains("odometer") || lower.contains("distance") || lower.contains("range"))
             return SIUnits.METRE;
-        if (lower.contains("co2") || lower.contains("co2perkwh"))
+        if (lower.contains("co2"))
             return Units.GRAM_PER_KILOWATT_HOUR;
         return Units.ONE;
     }
