@@ -4,16 +4,26 @@ This binding integrates audio devices based on the LinkPlay platform.
 LinkPlay is a popular Wi-Fi audio module used by many manufacturers to enable streaming capabilities in their speakers and audio devices.
 The binding allows you to control playback, adjust volume, switch inputs, configure equalizer settings, and create multi-room audio groups.
 
-It uses a mixture of UPnP and HTTP API calls when communicating with a LinkPlay device.
+## Supported Manufacturers
+
+The following is a subset of manufacturers and their models known to use the LinkPlay platform:
+
+| Brand             | Models                                                                  |
+|-------------------|-------------------------------------------------------------------------|
+| WiiM              | WiiM Mini, WiiM Pro / Pro Plus, WiiM Amp, WiiM Solo, WiiM Ultra, others |
+| Arylic            | A50, S50 Pro / S50 Pro+, Up2Stream series                               |
+| Magnat            | MMS 730 Network Streamer                                                |
+| Hall Audio        | Linkplay-based Audio Streamers                                          |
+| Advanced Acoustic | WTX-MicroStreamer                                                       |
+| Octavio           | Octavio Stream                                                          |
+
+Any device using the LinkPlay streaming platform should be supported by this binding, regardless of the manufacturer.
 
 ## Supported Things
 
 This binding supports the following thing type:
 
 - `player` - Represents a single LinkPlay-based audio player (Thing Type UID: `linkplay:player`)
-
-LinkPlay software is used by various manufacturers including Arylic, August, iEast, Rakoit, and others.
-The binding should work with any device using the LinkPlay platform, regardless of the manufacturer.
 
 ## Discovery
 

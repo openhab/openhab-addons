@@ -171,9 +171,7 @@ public class LinkPlayGroupService {
     public void updateGroupState(LinkPlayGroupParticipant leader, String channelId, State state) {
         Map<String, State> cache = groupStateCache.computeIfAbsent(leader.getThingUID(),
                 k -> new ConcurrentHashMap<>());
-        if (cache != null) {
-            cache.put(channelId, state);
-        }
+        cache.put(channelId, state);
 
         // Notify all group members except the leader
         String leaderIp = leader.getIpAddress();
@@ -227,9 +225,7 @@ public class LinkPlayGroupService {
                 LinkPlayGroupParticipant participant = findParticipantByIp(slave.ip);
                 if (participant != null) {
                     participant.addedToOrUpdatedGroup(member, slaves);
-                    if (cachedStates != null) {
-                        cachedStates.forEach((channelId, state) -> participant.groupProxyUpdateState(channelId, state));
-                    }
+                    cachedStates.forEach((channelId, state) -> participant.groupProxyUpdateState(channelId, state));
                 }
             });
 
