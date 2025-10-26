@@ -20,13 +20,13 @@ package org.openhab.binding.linkplay.internal.client.http.dto;
 public class AlarmClockInfo {
 
     /** "1" when the alarm is active, "0" when disabled */
-    public String enable;
+    public int enable;
 
     /** Trigger type (0-5) – see API documentation for meaning */
-    public String trigger;
+    public int trigger;
 
     /** Operation to perform (0 shell, 1 playback/ring, 2 stop) */
-    public String operation;
+    public int operation;
 
     /** Date in format YYYYMMDD for one-time alarms (only present when trigger==1) */
     public String date;

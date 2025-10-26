@@ -23,14 +23,14 @@ public class AudioOutputHardwareMode {
     /**
      * 1: SPDIF, 2: AUX, 3: COAX
      */
-    public String hardware;
+    public int hardware;
     /**
      * Bluetooth output mode: 0 disable, 1 active
      */
-    public String source;
+    public int source;
     /**
      * Audio cast output mode: 0 disable, 1 active
      */
     @SerializedName("audiocast")
-    public String audioCast;
+    public int audioCast;
 }
