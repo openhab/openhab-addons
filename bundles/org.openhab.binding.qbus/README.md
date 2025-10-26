@@ -2,27 +2,27 @@
 
 This binding for [Qbus](https://qbus.be) communicates with all controllers of the Qbus home automation system.
 
-We also host a site which contains a [manual](https://iot.qbus.be/) where you can find lots of information to set up openHAB with Qbus client and server (for the moment only in Dutch).
+We also host a site with a [manual](https://iot.qbus.be/) containing information to set up openHAB with Qbus client and server (currently only in Dutch).
 
-The controllers can not communicate directly with openHAB, therefore we developed a client/server application which you must install prior to enable this binding.
+The controllers cannot communicate directly with openHAB, so you must install a client/server application prior to enabling this binding.
 More information can be found here:
 [Qbus Client/Server](https://github.com/QbusKoen/QbusClientServer-Installer)
 
-With this binding you can control and read almost every output from the Qbus system.
+With this binding, you can control and read almost every output from the Qbus system.
 
 ## Supported Things
 
 The following things are supported by the Qbus binding:
 
-- `dimmer`: Dimmer 1 button, 2 button and clc
-- `onOff`: Bistabiel, Timer1-3, Interval
-- `thermostats`: Thermostats - normal and PID
+- `dimmer`: Dimmer (1-button, 2-button, and CLC)
+- `onOff`: Bistabiel, Timer 1–3, Interval
+- `thermostats`: Thermostats (normal and PID)
 - `scene`: Scenes
 - `co2`: CO2
 - `rollershutter`: Rollershutter
-- `rollershutter_slats`: Rollerhutter with slats
+- `rollershutter_slats`: Rollershutter with slats
 
-For now the following Qbus things are not yet supported but will come:
+For now, the following Qbus things are not yet supported but will come:
 
 - DMX
 - Timer 4 & 5
@@ -36,9 +36,9 @@ For now the following Qbus things are not yet supported but will come:
 
 ## Discovery
 
-The discovery service is not yet implemented but the System Manager III software of Qbus generates things and item files from the programming, which you can use directly in openHAB.
+The discovery service is not yet implemented, but the System Manager III software of Qbus generates things and item files from the programming that you can use directly in openHAB.
 
-## Bridge configuration
+## Bridge Configuration
 
 ```java
 Bridge qbus:bridge:CTD001122 [ addr="localhost", sn="001122", port=8447, serverCheck=10 ] {
@@ -48,24 +48,24 @@ Bridge qbus:bridge:CTD001122 [ addr="localhost", sn="001122", port=8447, serverC
 
 | Property      | Default   | Required | Description                                                                                                                          |
 |---------------|-----------|----------|--------------------------------------------------------------------------------------------------------------------------------------|
-| `addr`        | localhost | YES      | The ip address of the machine where the Qbus Server runs                                                                             |
+| `addr`        | localhost | YES      | The IP address of the machine where the Qbus server runs                                                                             |
 | `sn`          |           | YES      | The serial number of your controller                                                                                                 |
 | `port`        | 8447      | YES      | The communication port of the client/server                                                                                          |
 | `serverCheck` | 10        | NO       | Refresh time - After x minutes there will be a check if server is still running and if client is still connected. If not - reconnect |
 
-## Things configuration
+## Things Configuration
 
-| Thing Type ID         | Channel Name  | Read only | description                                            |
-| --------------------- | ------------- | --------- | ------------------------------------------------------ |
-| `onOff`               | switch        | No        | This is the channel for Bistable, Timers and Intervals |
-| `dimmer`              | brightness    | No        | This is the channel for Dimmers 1&2 buttons and CLC    |
-| `scene`               | Switch        | No        | This is the channel for scenes                         |
-| `co2`                 | co2           | Yes       | This is the channel for CO2 sensors                    |
-| `rollershutter`       | rollershutter | No        | This is the channel for rollershutters                 |
-| `rollershutter_slats` | rollershutter | No        | This is the channel for rollershutters with slats      |
-| `thermostat`          | setpoint      | No        | This is the channel for thermostats setpoint           |
-| `thermostat`          | measured      | Yes       | This is the channel for thermostats currenttemp        |
-| `thermostat`          | mode          | No        | This is the channel for thermostats mode               |
+| Thing Type ID         | Channel Name  | Read Only | Description                                             |
+|-----------------------|---------------|-----------|---------------------------------------------------------|
+| `onOff`               | switch        | No        | This is the channel for bistabiel, timers, and intervals |
+| `dimmer`              | brightness    | No        | This is the channel for dimmers 1&2 buttons and CLC     |
+| `scene`               | switch        | No        | This is the channel for scenes                          |
+| `co2`                 | co2           | Yes       | This is the channel for CO2 sensors                     |
+| `rollershutter`       | rollershutter | No        | This is the channel for rollershutters                  |
+| `rollershutter_slats` | rollershutter | No        | This is the channel for rollershutters with slats       |
+| `thermostat`          | setpoint      | No        | This is the channel for thermostat setpoint             |
+| `thermostat`          | measured      | Yes       | This is the channel for thermostat current temperature  |
+| `thermostat`          | mode          | No        | This is the channel for thermostat mode                 |
 
 ## Full Example
 
@@ -99,4 +99,5 @@ Rollershutter       Roller2                     <rollershutter>                 
 Dimmer              Roller2_slats               <rollershutter>                 ["Blinds"]          {channel="qbus:rollershutter_slats:CTD001122:121:slats"}
 ```
 
-This is the link to the [Qbus forum](https://qbusforum.be). This forum is mainly in dutch and you can find a lot of information about the pre testings of this binding and offers a way to communicate with other users.
+This is the link to the [Qbus forum](<https://qbusforum.be>).
+This forum is mainly in Dutch, and you can find a lot of information about the pre-testings of this binding and offers a way to communicate with other users.
