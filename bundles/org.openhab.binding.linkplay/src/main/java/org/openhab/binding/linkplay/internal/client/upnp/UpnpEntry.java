@@ -134,7 +134,7 @@ public class UpnpEntry {
     }
 
     /**
-     * @return the identifier of the entry this reference intry refers to.
+     * @return the identifier of the entry this reference entry refers to.
      */
     public String getRefId() {
         return refId;
