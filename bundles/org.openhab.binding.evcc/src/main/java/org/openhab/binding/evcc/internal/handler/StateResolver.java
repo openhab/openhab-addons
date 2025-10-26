@@ -44,8 +44,16 @@ public final class StateResolver {
     }
 
     /**
-     * Liefert QuantityType mit originalem numerischen Wert und (ggf.) präfixierter Unit.
-     * Gibt null zurück, wenn value nicht numerisch ist.
+     * Resolves a {@link State} object from a given JSON element based on the provided key.
+     * <p>
+     * This method interprets the JSON value heuristically, mapping numeric values to
+     * {@link QuantityType} or {@link DecimalType}, strings to {@link StringType} or {@link DateTimeType},
+     * and booleans to {@link OnOffType}. The key is used to infer the appropriate unit of measurement
+     * or semantic meaning.
+     *
+     * @param key   the semantic key associated with the value (e.g. "Odometer", "Timestamp", "Price")
+     * @param value the JSON element to be converted into an openHAB {@link State}
+     * @return the resolved {@link State}, or {@code null} if the value is not a supported primitive
      */
     @Nullable
     public State resolveState(String key, JsonElement value) {
@@ -58,7 +66,7 @@ public final class StateResolver {
             if (key.contains("Odometer") || key.contains("Range") || key.contains("Capacity")) {
                 return new QuantityType<>(raw, MetricPrefix.KILO(base));
             } else if (key.contains("Price") || key.contains("Tariff") || key.contains("tariff")) {
-                return new DecimalType(value.getAsDouble());
+                return new DecimalType(raw);
             }
             return new QuantityType<>(raw, base);
         } else if (prim.isString()) {
@@ -74,7 +82,15 @@ public final class StateResolver {
         }
     }
 
-    /* ----- Heuristik zur Basiseinheit ----- */
+    /**
+     * Determines the most appropriate base {@link Units} for a given key using keyword heuristics.
+     * This method performs a case-insensitive analysis of the key to infer the expected unit
+     * (e.g. "temperature" → °C, "energy" → Wh). It is used to assign meaningful units to numeric values
+     * when constructing {@link QuantityType} instances.
+     *
+     * @param key the semantic key to analyze (e.g. "chargingPower", "batterySoc", "sessionEnergy")
+     * @return the inferred {@link Units}/{@link SIUnits}, or {@link Units#ONE} if no specific unit is matched
+     */
     private Unit<?> determineBaseUnitFromKey(String key) {
         String lower = key.toLowerCase();
 
