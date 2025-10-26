@@ -17,6 +17,7 @@ import static org.openhab.binding.homematic.internal.HomematicBindingConstants.B
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledExecutorService;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.openhab.binding.homematic.internal.common.HomematicConfig;
@@ -53,6 +54,11 @@ public class HomematicDeviceDiscoveryService
 
     public HomematicDeviceDiscoveryService() {
         super(HomematicBridgeHandler.class, Set.of(new ThingTypeUID(BINDING_ID, "-")), DISCOVER_TIMEOUT_SECONDS, false);
+    }
+
+    HomematicDeviceDiscoveryService(ScheduledExecutorService scheduler) {
+        super(scheduler, HomematicBridgeHandler.class, Set.of(new ThingTypeUID(BINDING_ID, "-")),
+                DISCOVER_TIMEOUT_SECONDS, false, null, null);
     }
 
     @Override
@@ -149,7 +155,7 @@ public class HomematicDeviceDiscoveryService
     private void waitForLoadDevicesFinished() throws InterruptedException, ExecutionException {
         Future<?> loadFuture;
         if ((loadFuture = loadDevicesFuture) != null) {
-            loadFuture.get(); // TODO: Bug - doesn't always complete
+            loadFuture.get();
         }
     }
 
