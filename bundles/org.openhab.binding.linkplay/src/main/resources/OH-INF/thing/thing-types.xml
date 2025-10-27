@@ -81,10 +81,12 @@
 		<description>Loop, shuffle or single-track mode</description>
 		<state>
 			<options>
-				<option value="-1">Off</option>
-				<option value="0">Repeat One</option>
-				<option value="1">Repeat All</option>
-				<option value="2">Shuffle All</option>
+				<option value="0">Repeat All</option>
+				<option value="1">Repeat One</option>
+				<option value="2">Shuffle + Repeat All</option>
+				<option value="3">Shuffle</option>
+				<option value="4">Off</option>
+				<option value="5">Shuffle + Repeat One</option>
 			</options>
 		</state>
 	</channel-type>
@@ -179,6 +181,7 @@
 				<option value="line-in">Line-in</option>
 				<option value="optical">Optical</option>
 				<option value="udisk">USB / U-Disk</option>
+				<option value="PCUSB">PC USB (USBDAC)</option>
 				<option value="HDMI">HDMI</option>
 			</options>
 		</state>

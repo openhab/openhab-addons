@@ -28,6 +28,8 @@ public enum SourceInputMode {
     OPTICAL("optical"),
     @SerializedName("udisk")
     UDISK("udisk"),
+    @SerializedName("PCUSB")
+    PCUSB("PCUSB"),
     @SerializedName("wifi")
     WIFI("wifi"),
     @SerializedName("HDMI")
