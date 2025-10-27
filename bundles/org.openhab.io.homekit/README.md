@@ -2,9 +2,6 @@
 
 This is an add-on that exposes your openHAB system as a bridge over the HomeKit protocol.
 
-This integration **exports** openHAB Items to a HomeKit controller.
-Do not confuse this with the other HomeKit **binding** (https://www.openhab.org/addons/bindings/homekit/) which **imports** data from HomeKit accessories.
-
 Using this add-on, you will be able to control your openHAB system using Apple's Siri, or any of a number of HomeKit enabled iOS apps.
 In order to do so, you will need to make some configuration changes.
 HomeKit organizes your home into "accessories" that are made up of a number of "characteristics".
