@@ -15,35 +15,26 @@ package org.openhab.binding.sagercaster.internal.caster;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * This class holds the result of the SagerCaster algorithm
+ * This record holds the result of the SagerCaster algorithm
  *
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class SagerPrediction {
-    private final String prediction;
-
-    public SagerPrediction(String sagerCode) {
-        this.prediction = sagerCode;
-    }
-
-    public String getSagerCode() {
-        return prediction;
-    }
+public record SagerPrediction(String sagerCode) {
 
     public String getForecast() {
-        return Character.toString(prediction.charAt(0));
+        return Character.toString(sagerCode.charAt(0));
     }
 
     public String getWindVelocity() {
-        return Character.toString(prediction.charAt(1));
+        return Character.toString(sagerCode.charAt(1));
     }
 
     public String getWindDirection() {
-        return Character.toString(prediction.charAt(2));
+        return Character.toString(sagerCode.charAt(2));
     }
 
     public String getWindDirection2() {
-        return prediction.length() > 3 ? Character.toString(prediction.charAt(3)) : SagerWeatherCaster.UNDEF;
+        return sagerCode.length() > 3 ? Character.toString(sagerCode.charAt(3)) : SagerWeatherCaster.UNDEF;
     }
 }
