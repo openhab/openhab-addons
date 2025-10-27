@@ -13,6 +13,7 @@
 package org.openhab.binding.sagercaster.internal.caster;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * This record holds the result of the SagerCaster algorithm
@@ -34,7 +35,7 @@ public record SagerPrediction(String sagerCode) {
         return Character.toString(sagerCode.charAt(2));
     }
 
-    public String getWindDirection2() {
-        return sagerCode.length() > 3 ? Character.toString(sagerCode.charAt(3)) : SagerWeatherCaster.UNDEF;
+    public @Nullable String getWindDirection2() {
+        return sagerCode.length() > 3 ? Character.toString(sagerCode.charAt(3)) : null;
     }
 }

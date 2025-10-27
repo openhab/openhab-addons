@@ -19,6 +19,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import javax.measure.quantity.Pressure;
 import javax.measure.quantity.Temperature;
@@ -44,6 +45,7 @@ import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.StateOption;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,7 +69,7 @@ public class SagerCasterHandler extends BaseThingHandler {
     private final ExpiringMap<Integer> bearingCache = new ExpiringMap<>(ALGORITHM_WINDOW);
 
     private double currentTemp = 0;
-    private String currentSagerCode = SagerWeatherCaster.UNDEF;
+    private @Nullable String currentSagerCode;
 
     public SagerCasterHandler(final Thing thing, final WindDirectionStateDescriptionProvider stateDescriptionProvider,
             final SagerWeatherCaster sagerWeatherCaster) {
@@ -79,10 +81,15 @@ public class SagerCasterHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         if (getConfig().get(CONFIG_LOCATION) instanceof String locationString) {
-            PointType location = new PointType(locationString);
-            sagerWeatherCaster.setLatitude(location.getLatitude().doubleValue());
-            defineWindDirectionStateDescriptions();
-            updateStatus(ThingStatus.ONLINE);
+            try {
+                PointType location = new PointType(locationString);
+                sagerWeatherCaster.setLatitude(location.getLatitude().doubleValue());
+                defineWindDirectionStateDescriptions();
+                updateStatus(ThingStatus.ONLINE);
+            } catch (IllegalArgumentException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "Location incorrectly configured");
+            }
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Location incorrectly configured");
         }
@@ -206,10 +213,10 @@ public class SagerCasterHandler extends BaseThingHandler {
     }
 
     private void postNewForecast() {
-        String newSagerCode = sagerWeatherCaster.getSagerCode();
-        if (!newSagerCode.equals(currentSagerCode)) {
-            logger.debug("Sager prediction changed to {}", newSagerCode);
-            currentSagerCode = newSagerCode;
+        String newCode = sagerWeatherCaster.getSagerCode();
+        if (!Objects.equals(newCode, currentSagerCode)) {
+            logger.debug("Sager prediction changed to {}", newCode);
+            currentSagerCode = newCode;
             updateChannelTimeStamp(GROUP_OUTPUT, CHANNEL_TIMESTAMP, Instant.now());
             String forecast = sagerWeatherCaster.getForecast();
             // Sharpens forecast if current temp is below 2 degrees, likely to be flurries rather than shower
@@ -235,9 +242,9 @@ public class SagerCasterHandler extends BaseThingHandler {
         }
     }
 
-    private void updateChannelString(String group, String channelId, String value) {
+    private void updateChannelString(String group, String channelId, @Nullable String value) {
         if (getChannelId(group, channelId) instanceof ChannelUID id) {
-            updateState(id, new StringType(value));
+            updateState(id, value != null ? new StringType(value) : UnDefType.NULL);
         }
     }
 

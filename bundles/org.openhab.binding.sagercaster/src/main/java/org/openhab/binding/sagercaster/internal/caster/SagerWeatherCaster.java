@@ -77,7 +77,6 @@ import org.slf4j.LoggerFactory;
 @Component(service = SagerWeatherCaster.class, scope = ServiceScope.SINGLETON)
 @NonNullByDefault
 public class SagerWeatherCaster {
-    public static final String UNDEF = "-";
     // Northern Polar Zone & Northern Tropical Zone
     private static final String[] NPZDIRECTIONS = { "S", "SW", "W", "NW", "N", "NE", "E", "SE" };
     // Northern Temperate Zone
@@ -221,14 +220,14 @@ public class SagerWeatherCaster {
     }
 
     private String getCompass() {
-        double step = 360.0 / NTZDIRECTIONS.length;
+        double step = 360.0 / usedDirections.length;
         double b = Math.floor((currentBearing + (step / 2.0)) / step);
-        return NTZDIRECTIONS[(int) (b % NTZDIRECTIONS.length)];
+        return usedDirections[(int) (b % usedDirections.length)];
     }
 
     private void updatePrediction() {
         int zWind = Arrays.asList(usedDirections).indexOf(getCompass());
-        String d1 = UNDEF;
+        String d1 = null;
         switch (zWind) {
             case 0:
                 if (windEvolution == 3) {
@@ -307,28 +306,28 @@ public class SagerWeatherCaster {
                     d1 = "Z";
                 }
         }
-        String forecast = forecaster.getProperty(d1 + sagerPressure + pressureEvolution + nubes);
+        String forecast = d1 == null ? null : forecaster.getProperty(d1 + sagerPressure + pressureEvolution + nubes);
         prevision = forecast != null ? new SagerPrediction(forecast) : null;
     }
 
-    public String getForecast() {
-        return prevision instanceof SagerPrediction p ? p.getForecast() : UNDEF;
+    public @Nullable String getForecast() {
+        return prevision instanceof SagerPrediction p ? p.getForecast() : null;
     }
 
-    public String getWindVelocity() {
-        return prevision instanceof SagerPrediction p ? p.getWindVelocity() : UNDEF;
+    public @Nullable String getWindVelocity() {
+        return prevision instanceof SagerPrediction p ? p.getWindVelocity() : null;
     }
 
-    public String getWindDirection() {
-        return prevision instanceof SagerPrediction p ? p.getWindDirection() : UNDEF;
+    public @Nullable String getWindDirection() {
+        return prevision instanceof SagerPrediction p ? p.getWindDirection() : null;
     }
 
-    public String getWindDirection2() {
-        return prevision instanceof SagerPrediction p ? p.getWindDirection2() : UNDEF;
+    public @Nullable String getWindDirection2() {
+        return prevision instanceof SagerPrediction p ? p.getWindDirection2() : null;
     }
 
-    public String getSagerCode() {
-        return prevision instanceof SagerPrediction p ? p.sagerCode() : UNDEF;
+    public @Nullable String getSagerCode() {
+        return prevision instanceof SagerPrediction p ? p.sagerCode() : null;
     }
 
     public void setLatitude(Double latitude) {
@@ -351,6 +350,7 @@ public class SagerWeatherCaster {
             case "W" -> 10;
             case "H" -> 12;
             case "D" -> currentBeaufort - 1;
+            case null -> currentBeaufort;
             default -> currentBeaufort;
         };
     }
