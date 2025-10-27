@@ -46,11 +46,11 @@ public class PlayerStatus {
     @SerializedName("ch")
     public String channel;
 
-    /** Source input mode. */
-    public String mode;
+    /** Player operating mode. */
+    public PlayerMode mode;
 
-    /** Repeat / shuffle loop mode. */
-    public String loop;
+    /** Repeat / shuffle loop mode (combined as numeric code 0..5). */
+    public LoopMode loop;
 
     /** Name of EQ preset applied. */
     public String eq;
@@ -105,8 +105,9 @@ public class PlayerStatus {
     @Override
     public String toString() {
         return "PlayerStatus{" + "status=" + status + ", type='" + type + '\'' + ", channel='" + channel + '\''
-                + ", mode='" + mode + '\'' + ", loop='" + loop + '\'' + ", eq='" + eq + '\'' + ", vendor='" + vendor
-                + '\'' + ", currentPosition='" + currentPosition + '\'' + ", offsetPts='" + offsetPts + '\''
+                + ", mode='" + (mode != null ? mode.name() : null) + '\'' + ", loop='"
+                + (loop != null ? loop.name() : null) + '\'' + ", eq='" + eq + '\'' + ", vendor='" + vendor + '\''
+                + ", currentPosition='" + currentPosition + '\'' + ", offsetPts='" + offsetPts + '\''
                 + ", totalLength='" + totalLength + '\'' + ", title='" + title + '\'' + ", artist='" + artist + '\''
                 + ", album='" + album + '\'' + ", volume='" + volume + '\'' + ", mute='" + mute + '\'' + ", alarmFlag='"
                 + alarmFlag + '\'' + ", playlistCount='" + playlistCount + '\'' + ", playlistCurrent='"

@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
@@ -46,7 +47,6 @@ import org.openhab.binding.linkplay.internal.client.http.LinkPlayConnectionUtils
 import org.openhab.binding.linkplay.internal.client.http.LinkPlayHTTPClient;
 import org.openhab.binding.linkplay.internal.client.http.dto.AudioOutputHardwareMode;
 import org.openhab.binding.linkplay.internal.client.http.dto.DeviceStatus;
-import org.openhab.binding.linkplay.internal.client.http.dto.PlayMode;
 import org.openhab.binding.linkplay.internal.client.http.dto.PlayerStatus;
 import org.openhab.binding.linkplay.internal.client.http.dto.PlayerStatus.PlaybackStatus;
 import org.openhab.binding.linkplay.internal.client.http.dto.PresetList;
@@ -58,6 +58,7 @@ import org.openhab.binding.linkplay.internal.client.upnp.LinkPlayUpnpDeviceListe
 import org.openhab.binding.linkplay.internal.client.upnp.LinkPlayUpnpRegistry;
 import org.openhab.binding.linkplay.internal.client.upnp.PlayList;
 import org.openhab.binding.linkplay.internal.client.upnp.PlayListInfo;
+import org.openhab.binding.linkplay.internal.client.upnp.PlayMode;
 import org.openhab.binding.linkplay.internal.client.upnp.PlayQueue;
 import org.openhab.binding.linkplay.internal.client.upnp.TransportState;
 import org.openhab.binding.linkplay.internal.client.upnp.UpnpEntry;
@@ -353,12 +354,10 @@ public class LinkPlayHandler extends BaseThingHandler implements LinkPlayUpnpDev
                     break;
                 case LinkPlayBindingConstants.CHANNEL_SOURCE_INPUT:
                     if (command instanceof StringType stringType) {
-                        @Nullable
-                        SourceInputMode mode = Arrays.stream(SourceInputMode.values())
-                                .filter(m -> m.toString().equalsIgnoreCase(stringType.toString())).findFirst()
-                                .orElse(null);
-                        if (mode != null) {
-                            apiClient.setPlayerCmdSwitchMode(mode).get();
+                        Optional<SourceInputMode> modeOpt = Arrays.stream(SourceInputMode.values())
+                                .filter(m -> m.toString().equalsIgnoreCase(stringType.toString())).findFirst();
+                        if (modeOpt.isPresent()) {
+                            apiClient.setPlayerCmdSwitchMode(modeOpt.get()).get();
                         } else {
                             logger.debug("Unsupported source input mode: {}", stringType);
                         }
@@ -703,6 +702,7 @@ public class LinkPlayHandler extends BaseThingHandler implements LinkPlayUpnpDev
                                     }
                                     break;
                                 default:
+                                    break;
                             }
                         }
                     }
@@ -734,6 +734,7 @@ public class LinkPlayHandler extends BaseThingHandler implements LinkPlayUpnpDev
                                     }
                                     break;
                                 default:
+                                    break;
                             }
                         }
                     }
@@ -1023,9 +1024,14 @@ public class LinkPlayHandler extends BaseThingHandler implements LinkPlayUpnpDev
 
         PlayMode playMode = PlayMode.fromString(avt.get("CurrentPlayMode"));
         if (playMode != null) {
-            String mappedMode = playMode.getMappedMode();
+            Integer loopCode = switch (playMode) {
+                case NORMAL -> 4; // Off
+                case REPEAT_ONE, REPEATONE -> 1; // Repeat One
+                case REPEAT_ALL, REPEATALL, REPEAT -> 0; // Repeat All
+                case SHUFFLE, SHUFFLE_NOREPEAT, RANDOM, SHUFFLE_ALL -> 3; // Shuffle only
+            };
             updateState(LinkPlayBindingConstants.GROUP_PLAYBACK, LinkPlayBindingConstants.CHANNEL_REPEAT_SHUFFLE_MODE,
-                    mappedMode != null ? new StringType(mappedMode) : UnDefType.UNDEF);
+                    new DecimalType(loopCode));
         }
 
         String relPos = avt.get("RelativeTimePosition");
@@ -1072,6 +1078,7 @@ public class LinkPlayHandler extends BaseThingHandler implements LinkPlayUpnpDev
                 }
             }
         }
+        @Nullable
         String currentTrackUri = avt.get("AVTransportURI");
         if (currentTrackUri == null) {
             currentTrackUri = avt.get("CurrentTrackURI");
@@ -1218,14 +1225,31 @@ public class LinkPlayHandler extends BaseThingHandler implements LinkPlayUpnpDev
             currentDuration = decimalType.intValue();
         }
 
-        updateState(LinkPlayBindingConstants.GROUP_PLAYBACK, LinkPlayBindingConstants.CHANNEL_REPEAT_SHUFFLE_MODE,
-                stateOrNull(playerStatus.loop, StringType.class));
+        if (playerStatus.loop != null) {
+            updateState(LinkPlayBindingConstants.GROUP_PLAYBACK, LinkPlayBindingConstants.CHANNEL_REPEAT_SHUFFLE_MODE,
+                    new DecimalType(playerStatus.loop.getCode()));
+        } else {
+            updateState(LinkPlayBindingConstants.GROUP_PLAYBACK, LinkPlayBindingConstants.CHANNEL_REPEAT_SHUFFLE_MODE,
+                    UnDefType.NULL);
+        }
 
         updateState(LinkPlayBindingConstants.GROUP_EQUALISER, LinkPlayBindingConstants.CHANNEL_EQ_PRESET,
                 stateOrNull(playerStatus.eq, StringType.class));
 
-        updateState(LinkPlayBindingConstants.GROUP_INPUT, LinkPlayBindingConstants.CHANNEL_SOURCE_INPUT,
-                stateOrNull(playerStatus.mode, StringType.class));
+        // Map PlayerMode to the source input value string when possible
+        if (playerStatus.mode != null) {
+            String mappedSource = playerStatus.mode.toSourceInputValue();
+            if (mappedSource != null) {
+                updateState(LinkPlayBindingConstants.GROUP_INPUT, LinkPlayBindingConstants.CHANNEL_SOURCE_INPUT,
+                        new StringType(mappedSource));
+            } else {
+                updateState(LinkPlayBindingConstants.GROUP_INPUT, LinkPlayBindingConstants.CHANNEL_SOURCE_INPUT,
+                        UnDefType.NULL);
+            }
+        } else {
+            updateState(LinkPlayBindingConstants.GROUP_INPUT, LinkPlayBindingConstants.CHANNEL_SOURCE_INPUT,
+                    UnDefType.NULL);
+        }
     }
 
     /**
