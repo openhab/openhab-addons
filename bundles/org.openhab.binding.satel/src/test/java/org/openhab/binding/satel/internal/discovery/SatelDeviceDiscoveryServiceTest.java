@@ -30,7 +30,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.openhab.binding.satel.internal.command.ReadDeviceInfoCommand;
@@ -65,16 +64,14 @@ class SatelDeviceDiscoveryServiceTest {
     @Mock
     private DiscoveryListener listener;
 
-    @Mock
-    private SameThreadExecutorService scheduler;
-
-    @InjectMocks
     private SatelDeviceDiscoveryService testSubject;
 
     @BeforeEach
     void setUp() {
         when(bridgeHandler.getIntegraType()).thenReturn(IntegraType.I24);
         when(bridgeHandler.getEncoding()).thenReturn(bridgeEncoding);
+        testSubject = new SatelDeviceDiscoveryService(new SameThreadExecutorService(), bridgeHandler,
+                thingTypeProvider);
         testSubject.addDiscoveryListener(listener);
     }
 
