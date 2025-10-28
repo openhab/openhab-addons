@@ -76,7 +76,7 @@ public class SatelDeviceDiscoveryService extends AbstractDiscoveryService {
      */
     SatelDeviceDiscoveryService(ScheduledExecutorService scheduler, SatelBridgeHandler bridgeHandler,
             Function<ThingTypeUID, ThingType> thingTypeProvider) {
-        super(SUPPORTED_THING_TYPES, 60, false);
+        super(scheduler, SUPPORTED_THING_TYPES, 60, false, null, null);
         this.bridgeHandler = bridgeHandler;
         this.thingTypeProvider = thingTypeProvider;
     }
