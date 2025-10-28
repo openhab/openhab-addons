@@ -32,6 +32,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.bouncycastle.crypto.InvalidCipherTextException;
+import org.bouncycastle.util.Arrays;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homekit.internal.session.AsymmetricSessionKeys;
@@ -214,26 +215,21 @@ public class IpTransport implements AutoCloseable {
      * @throws IOException if an I/O error occurs or if the response is invalid.
      */
     private byte[][] readPlainResponse(InputStream in, boolean trace) throws IOException {
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        HttpPayloadParser httpParser = new HttpPayloadParser();
+        ByteArrayOutputStream raw = trace ? new ByteArrayOutputStream() : null;
         byte[] buf = new byte[4096];
-        int read;
-        while ((read = in.read(buf)) != -1) {
-            out.write(buf, 0, read);
-            if (read < buf.length) {
-                break; // crude EOF detection
+        do {
+            int read = in.read(buf);
+            if (read > 0) {
+                byte[] frame = Arrays.copyOf(buf, read);
+                if (raw != null) {
+                    raw.write(frame);
+                }
+                httpParser.accept(frame);
             }
-        }
-        byte[] data = out.toByteArray();
-        int headersEnd = HttpPayloadParser.indexOfDoubleCRLF(data, 0);
-        if (headersEnd < 0) {
-            throw new IOException("Invalid HTTP response");
-        }
-        headersEnd += 4; // move past the \r\n\r\n
-        byte[] headers = new byte[headersEnd];
-        byte[] content = new byte[data.length - headersEnd];
-        System.arraycopy(data, 0, headers, 0, headers.length);
-        System.arraycopy(data, headersEnd, content, 0, content.length);
-        return new byte[][] { headers, content, trace ? data : new byte[0] };
+        } while (!httpParser.isComplete());
+        return new byte[][] { httpParser.getHeaders(), httpParser.getContent(),
+                raw != null ? raw.toByteArray() : new byte[0] };
     }
 
     /**
