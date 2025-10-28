@@ -46,7 +46,7 @@ Good sources for further information:
 Useful tools
 
 - [binaryconvert.com](https://www.binaryconvert.com/): tool to convert numbers between different binary presentations
-- [rapidscada.net Modbus parser](https://modbus.rapidscada.net/): tool to parse Modbus requests and responses. Useful for debugging purposes when you want to understand the message sent / received.
+- [rapidscada.net Modbus parser](https://rapidscada.net/modbus/): tool to parse Modbus requests and responses. Useful for debugging purposes when you want to understand the message sent / received.
 - [JSFiddle tool](https://jsfiddle.net/rgypuuxq/) to test JavaScript (JS) transformations interactively
 
 ## Supported Things
