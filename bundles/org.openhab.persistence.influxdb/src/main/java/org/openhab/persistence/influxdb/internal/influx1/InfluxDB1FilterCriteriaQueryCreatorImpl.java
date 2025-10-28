@@ -73,9 +73,9 @@ public class InfluxDB1FilterCriteriaQueryCreatorImpl implements FilterCriteriaQu
         }
 
         State filterState = criteria.getState();
-        if (filterState != null && criteria.getOperator() != null) {
+        if (filterState != null) {
             where.and(new SimpleClause(COLUMN_VALUE_NAME_V1,
-                    getOperationSymbol(criteria.getOperator(), InfluxDBVersion.V1), stateToObject(filterState)));
+                    getOperationSymbol(criteria.getOperator()), stateToObject(filterState)));
         }
 
         if (criteria.getOrdering() == FilterCriteria.Ordering.DESCENDING) {
@@ -119,5 +119,12 @@ public class InfluxDB1FilterCriteriaQueryCreatorImpl implements FilterCriteriaQu
             sb.append(tableName);
         }
         return sb.toString();
+    }
+
+    private String getOperationSymbol(FilterCriteria.Operator operator) {
+        if (operator == NEQ) {
+            return "<>";
+        }
+        return operator.getSymbol();
     }
 }

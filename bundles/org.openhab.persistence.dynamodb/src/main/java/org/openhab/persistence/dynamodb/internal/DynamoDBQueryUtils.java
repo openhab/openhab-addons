@@ -142,10 +142,10 @@ public class DynamoDBQueryUtils {
                 return null;
             }
         });
-        if (filter.getOperator() != null && filter.getState() != null) {
+        if (filter.getState() != null) {
             // Convert filter's state to DynamoDBItem in order get suitable string representation for the state
             Expression.Builder stateFilterExpressionBuilder = Expression.builder()
-                    .expression(String.format("#attr %s :value", operatorAsString(filter.getOperator())));
+                    .expression(String.format("#attr %s :value", filter.getOperator().getSymbol()));
             // Following will throw IllegalArgumentException when filter state is not compatible with
             // item. This is acceptable.
             GenericItem stateToFind = DynamoDBPersistenceService.copyItem(item, item, filter.getItemName(),
@@ -203,32 +203,6 @@ public class DynamoDBQueryUtils {
             queryBuilder.queryConditional(QueryConditional.sortBetween(
                     k -> k.partitionValue(partition).sortValue(timeConverter.transformFrom(begin)),
                     k -> k.partitionValue(partition).sortValue(timeConverter.transformFrom(end))));
-        }
-    }
-
-    /**
-     * Convert op to string suitable for dynamodb filter expression
-     *
-     * @param op
-     * @return string representation corresponding to the given the Operator
-     */
-    private static String operatorAsString(Operator op) {
-        switch (op) {
-            case EQ:
-                return "=";
-            case NEQ:
-                return "<>";
-            case LT:
-                return "<";
-            case LTE:
-                return "<=";
-            case GT:
-                return ">";
-            case GTE:
-                return ">=";
-
-            default:
-                throw new IllegalStateException("Unknown operator " + op);
         }
     }
 

@@ -79,10 +79,10 @@ public class InfluxDB2FilterCriteriaQueryCreatorImpl implements FilterCriteriaQu
         }
 
         State filterState = criteria.getState();
-        if (filterState != null && criteria.getOperator() != null) {
+        if (filterState != null) {
             Restrictions restrictions = Restrictions.and(Restrictions.field().equal(FIELD_VALUE_NAME),
                     Restrictions.value().custom(stateToObject(filterState),
-                            getOperationSymbol(criteria.getOperator(), InfluxDBVersion.V2)));
+                            criteria.getOperator().getSymbol()));
             flux = flux.filter(restrictions);
         }
 

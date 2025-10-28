@@ -254,31 +254,4 @@ public class StringUtilsExt {
         }
         return arr;
     }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Object#toString()
-     */
-    public static String filterToString(FilterCriteria filter) {
-        StringBuilder builder = new StringBuilder();
-        builder.append("FilterCriteria [itemName=");
-        builder.append(filter.getItemName());
-        builder.append(", beginDate=");
-        builder.append(filter.getBeginDate());
-        builder.append(", endDate=");
-        builder.append(filter.getEndDate());
-        builder.append(", pageNumber=");
-        builder.append(filter.getPageNumber());
-        builder.append(", pageSize=");
-        builder.append(filter.getPageSize());
-        builder.append(", operator=");
-        builder.append(filter.getOperator());
-        builder.append(", ordering=");
-        builder.append(filter.getOrdering());
-        builder.append(", state=");
-        builder.append(filter.getState());
-        builder.append("]");
-        return builder.toString();
-    }
 }
