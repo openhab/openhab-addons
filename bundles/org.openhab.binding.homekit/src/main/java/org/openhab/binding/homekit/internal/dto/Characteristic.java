@@ -25,6 +25,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homekit.internal.enums.CharacteristicType;
 import org.openhab.binding.homekit.internal.enums.DataFormatType;
+import org.openhab.binding.homekit.internal.enums.StatusCode;
 import org.openhab.binding.homekit.internal.persistence.HomekitTypeProvider;
 import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.library.CoreItemFactory;
@@ -70,6 +71,7 @@ public class Characteristic {
     public @NonNullByDefault({}) Integer aid; // e.g. 10
     public @NonNullByDefault({}) @SerializedName("valid-values") List<Integer> validValues;
     public @NonNullByDefault({}) @SerializedName("valid-values-range") List<Integer> validValuesRange;
+    public @NonNullByDefault({}) Integer status;
 
     /**
      * Builds a ChannelType and a ChannelDefinition based on the characteristic properties.
@@ -869,7 +871,7 @@ public class Characteristic {
                         String defaultLabel = "%s #%s".formatted(characteristicType.toString(), o);
                         String optionLabel = i18nProvider.getText(bundle, translationKey + o, defaultLabel, null);
                         optionLabel = optionLabel == null || optionLabel.isBlank() ? defaultLabel : optionLabel;
-                        return new StateOption(optionLabel, o);
+                        return new StateOption(o, optionLabel);
                     }).toList());
                 }
             }
@@ -948,5 +950,9 @@ public class Characteristic {
     @Override
     public String toString() {
         return getCharacteristicType() instanceof CharacteristicType ct ? ct.getType() : "Unknown";
+    }
+
+    public @Nullable StatusCode getStatusCode() {
+        return status instanceof Integer code ? StatusCode.from(code) : null;
     }
 }

@@ -40,6 +40,7 @@ import org.openhab.binding.homekit.internal.dto.Characteristic;
 import org.openhab.binding.homekit.internal.dto.Service;
 import org.openhab.binding.homekit.internal.enums.CharacteristicType;
 import org.openhab.binding.homekit.internal.enums.DataFormatType;
+import org.openhab.binding.homekit.internal.enums.StatusCode;
 import org.openhab.binding.homekit.internal.hap_services.CharacteristicReadWriteClient;
 import org.openhab.binding.homekit.internal.persistence.HomekitKeyStore;
 import org.openhab.binding.homekit.internal.persistence.HomekitTypeProvider;
@@ -241,14 +242,16 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
         // convert StringType enums to integers
         if (object instanceof StringType stringType) {
             if (stateDescription != null && stateDescription.getOptions() instanceof List<StateOption> stateOptions) {
+                String commandString = stringType.toString();
                 for (StateOption option : stateOptions) {
-                    if (stringType.toString().equals(option.getLabel())) {
-                        String val = option.getValue();
+                    String optionValue = option.getValue();
+                    if (commandString.equalsIgnoreCase(optionValue)) {
                         try {
-                            object = Integer.parseInt(val);
+                            object = Integer.parseInt(optionValue);
                             break;
                         } catch (NumberFormatException e) {
-                            logger.warn("Unexpected state option value '{}' for channel '{}'", val, channel.getUID());
+                            logger.warn("Unexpected state option value '{}' for channel '{}'", optionValue,
+                                    channel.getUID());
                         }
                     }
                 }
@@ -879,7 +882,16 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
         characteristic.iid = Integer.parseInt(iid);
         characteristic.value = commandToJsonPrimitive(command, channel);
         service.characteristics = List.of(characteristic);
-        writer.writeCharacteristic(GSON.toJson(service));
+        String response = writer.writeCharacteristic(GSON.toJson(service));
+        Service serviceResponse = GSON.fromJson(response, Service.class); // check for errors
+        if (serviceResponse != null
+                && serviceResponse.characteristics instanceof List<Characteristic> characteristics) {
+            for (Characteristic cxx : characteristics) {
+                if (cxx.getStatusCode() instanceof StatusCode code && code != StatusCode.SUCCESS) {
+                    logger.warn("Error writing to channel '{}': {}", channel.getUID(), code);
+                }
+            }
+        }
     }
 
     /**

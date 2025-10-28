@@ -1978,6 +1978,7 @@ class TestChannelCreationForVeluxJson {
         List<StateOption> options = state.getOptions();
         assertNotNull(options);
         assertEquals(3, options.size());
-        assertEquals("Position State #2", options.get(2).getValue());
+        assertEquals("Position State #2", options.get(2).getLabel());
+        assertEquals("2", options.get(2).getValue());
     }
 }
