@@ -33,6 +33,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.tidal.internal.TidalAccountHandler;
 import org.openhab.binding.tidal.internal.TidalBindingConstants;
+import org.openhab.binding.tidal.internal.TidalBindingConstants.OAuthMode;
 import org.openhab.binding.tidal.internal.TidalBridgeConfiguration;
 import org.openhab.binding.tidal.internal.api.TidalApi;
 import org.openhab.binding.tidal.internal.api.exception.TidalAuthorizationException;
@@ -44,6 +45,7 @@ import org.openhab.binding.tidal.internal.api.model.Track;
 import org.openhab.binding.tidal.internal.api.model.User;
 import org.openhab.core.auth.client.oauth2.AccessTokenRefreshListener;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
+import org.openhab.core.auth.client.oauth2.DeviceCodeResponseDTO;
 import org.openhab.core.auth.client.oauth2.OAuthClientService;
 import org.openhab.core.auth.client.oauth2.OAuthException;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
@@ -234,32 +236,43 @@ public class TidalBridgeHandler extends BaseBridgeHandler
             if (oAuthService == null) {
                 throw new OAuthException("OAuth service is not initialized");
             }
-            String oAuthorizationUrl = oAuthService.getAuthorizationUrl(redirectUri, null,
-                    thing.getUID().getAsString());
 
-            try {
-                byte[] randomBytes = new byte[32];
-                SecureRandom secureRandom = new SecureRandom();
-                secureRandom.nextBytes(randomBytes);
+            if (OAUTH_MODE == OAuthMode.ClientFlow) {
+                String oAuthorizationUrl = oAuthService.getAuthorizationUrl(redirectUri, null,
+                        thing.getUID().getAsString());
 
-                codeVerifier = Base64.getUrlEncoder().withoutPadding().encodeToString(randomBytes);
-                System.out.println("Base64 original : " + codeVerifier);
+                try {
+                    byte[] randomBytes = new byte[32];
+                    SecureRandom secureRandom = new SecureRandom();
+                    secureRandom.nextBytes(randomBytes);
 
-                // 3. Hasher la séquence via SHA-256
-                byte[] hashBytes = MessageDigest.getInstance("SHA-256")
-                        .digest(codeVerifier.getBytes(StandardCharsets.UTF_8));
+                    codeVerifier = Base64.getUrlEncoder().withoutPadding().encodeToString(randomBytes);
+                    System.out.println("Base64 original : " + codeVerifier);
 
-                // 4. Encoder le hash en Base64
-                codeChallenge = Base64.getUrlEncoder().withoutPadding().encodeToString(hashBytes);
-                System.out.println("SHA-256 Base64 : " + codeChallenge);
-            } catch (Exception ex) {
-                logger.info(ex.toString());
+                    // 3. Hasher la séquence via SHA-256
+                    byte[] hashBytes = MessageDigest.getInstance("SHA-256")
+                            .digest(codeVerifier.getBytes(StandardCharsets.UTF_8));
+
+                    // 4. Encoder le hash en Base64
+                    codeChallenge = Base64.getUrlEncoder().withoutPadding().encodeToString(hashBytes);
+                    System.out.println("SHA-256 Base64 : " + codeChallenge);
+                } catch (Exception ex) {
+                    logger.info(ex.toString());
+                }
+
+                oAuthorizationUrl = oAuthorizationUrl + "&code_challenge_method=S256";
+                oAuthorizationUrl = oAuthorizationUrl + "&code_challenge=" + codeChallenge;
+                return oAuthorizationUrl;
+            } else if (OAUTH_MODE == OAuthMode.DeviceFlow) {
+                DeviceCodeResponseDTO dto = oAuthService.getDeviceCodeResponse();
+                if (dto == null) {
+                    return "";
+                }
+                return "https://" + dto.getVerificationUriComplete();
             }
 
-            oAuthorizationUrl = oAuthorizationUrl + "&code_challenge_method=S256";
-            oAuthorizationUrl = oAuthorizationUrl + "&code_challenge=" + codeChallenge;
-            return oAuthorizationUrl;
-        } catch (final OAuthException e) {
+            return "";
+        } catch (OAuthException e) {
             logger.debug("Error constructing AuthorizationUrl: ", e);
             return "";
         }
@@ -309,9 +322,18 @@ public class TidalBridgeHandler extends BaseBridgeHandler
         updateStatus(ThingStatus.UNKNOWN);
         active = true;
         configuration = getConfigAs(TidalBridgeConfiguration.class);
-        OAuthClientService oAuthService = oAuthFactory.createOAuthClientService(thing.getUID().getAsString(),
-                TIDAL_API_TOKEN_URL, TIDAL_AUTHORIZE_URL, configuration.clientId, configuration.clientSecret,
-                TIDAL_SCOPES, null);
+
+        OAuthClientService oAuthService = null;
+        if (OAUTH_MODE == OAuthMode.ClientFlow) {
+            oAuthService = oAuthFactory.createOAuthClientService(thing.getUID().getAsString(), TIDAL_API_TOKEN_URL,
+                    TIDAL_AUTHORIZE_CLIENT_FLOW_URL, configuration.clientId, configuration.clientSecret,
+                    TIDAL_SCOPES_NEW_API, null);
+        } else if (OAUTH_MODE == OAuthMode.DeviceFlow) {
+            oAuthService = oAuthFactory.createOAuthClientService(thing.getUID().getAsString(), TIDAL_API_TOKEN_URL,
+                    TIDAL_AUTHORIZE_DEVICE_FLOW_URL, configuration.clientId, null, TIDAL_SCOPES_OLD_API, true);
+        }
+
+        // configuration.clientSecret
         this.oAuthService = oAuthService;
         oAuthService.addAccessTokenRefreshListener(this);
 
@@ -448,6 +470,7 @@ public class TidalBridgeHandler extends BaseBridgeHandler
     @Override
     public void refreshEntry(MediaEntry mediaEntry, long start, long size) {
         // Refresh root Entry, we register the collections we expose to users
+
         if (mediaEntry.getKey().equals(TidalBindingConstants.BINDING_ID)) {
             mediaEntry.registerEntry("Albums", () -> {
                 return new MediaCollection("Albums", "Albums", "/static/Albums.png");

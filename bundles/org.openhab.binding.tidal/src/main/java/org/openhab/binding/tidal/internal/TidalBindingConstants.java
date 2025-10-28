@@ -24,20 +24,32 @@ import org.openhab.core.thing.ThingTypeUID;
  */
 public class TidalBindingConstants {
 
+    public enum OAuthMode {
+        ClientFlow,
+        DeviceFlow;
+    }
+
     // List of Tidal services related urls, information
     public static final String TIDAL_LOGIN_URL = "https://login.tidal.com";
     public static final String TIDAL_AUTH_URL = "https://auth.tidal.com";
-    public static final String TIDAL_AUTHORIZE_URL = TIDAL_LOGIN_URL + "/authorize";
+    public static final String TIDAL_AUTHORIZE_CLIENT_FLOW_URL = TIDAL_LOGIN_URL + "/authorize";
+    public static final String TIDAL_AUTHORIZE_DEVICE_FLOW_URL = TIDAL_AUTH_URL + "/v1/oauth2/device_authorization";
+
+    public static final OAuthMode OAUTH_MODE = OAuthMode.DeviceFlow;
+
+    // for device flow
+
     public static final String TIDAL_API_TOKEN_URL = TIDAL_AUTH_URL + "/v1/oauth2/token";
+
     /**
      * Tidal scopes needed by this binding to work.
      */
-    public static final String TIDAL_SCOPES = Stream
+    public static final String TIDAL_SCOPES_NEW_API = Stream
             .of("playlists.read", "entitlements.read", "collection.read", "playlists.write", "collection.write",
                     "user.read", "recommendations.read", "playback", "search.read", "search.write")
             .collect(Collectors.joining(" "));
 
-    // public static final String TIDAL_SCOPES = null;
+    public static final String TIDAL_SCOPES_OLD_API = Stream.of("r_usr", "w_usr").collect(Collectors.joining(" "));
     public static final String TIDAL_V1_API_URL = "https://api.tidal.com/v1";
     public static final String TIDAL_API_URL = "https://openapi.tidal.com";
 

@@ -87,6 +87,8 @@ public class TidalAuthServlet extends HttpServlet {
         String redirectUri = servletBaseURL;
         redirectUri = redirectUri.replace("http://", "https://");
         // redirectUri = "https://tidal.com/android/login/auth";
+        // redirectUri = "https://offer.tidal.com/login/tidal/return";
+
         String template = indexTemplate;
         handleTidalRedirect(replaceMap, redirectUri, req.getQueryString());
         resp.setContentType(CONTENT_TYPE);

@@ -235,7 +235,7 @@ public class TidalApi {
 
     public String getTrackStreamUrl(String trackId) {
         String sessionId = getSession().getSessionId();
-        sessionId = "b022c7a2-3016-4a64-a657-8afa88f5102c";
+        // sessionId = "b022c7a2-3016-4a64-a657-8afa88f5102c";
         User me = getMe();
         String uri = TidalBindingConstants.TIDAL_V1_API_URL + "/tracks/";
         uri = uri + trackId;
@@ -257,7 +257,7 @@ public class TidalApi {
         // uri = uri + "&playbackmode=STREAM";
         // uri = uri + "&audioquality=LOSSLESS";
         // uri = uri + "&assetpresentation=FULL";
-        //
+
         // Stream stream = request(GET, uri, "", Stream.class);
         // String[] urls = stream.getUrls();
 
@@ -286,15 +286,15 @@ public class TidalApi {
 
         try {
             String accessToken = "";
-            if (!(clazz == Stream.class)) {
-                final AccessTokenResponse accessTokenResponse = oAuthClientService.getAccessTokenResponse();
-                accessToken = accessTokenResponse == null ? null : accessTokenResponse.getAccessToken();
+            // if (!(clazz == Stream.class)) {
+            final AccessTokenResponse accessTokenResponse = oAuthClientService.getAccessTokenResponse();
+            accessToken = accessTokenResponse == null ? null : accessTokenResponse.getAccessToken();
 
-                if (accessToken == null || accessToken.isEmpty()) {
-                    throw new TidalAuthorizationException(
-                            "No Tidal accesstoken. Did you authorize Tidal via /connecttidal ?");
-                }
+            if (accessToken == null || accessToken.isEmpty()) {
+                throw new TidalAuthorizationException(
+                        "No Tidal accesstoken. Did you authorize Tidal via /connecttidal ?");
             }
+            // }
 
             final String response = requestWithRetry(call, accessToken).getContentAsString();
 
