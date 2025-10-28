@@ -25,11 +25,11 @@ This binding supports one Thing, the `energyhub`. This hub allows data to be cap
 
 ## Discovery
 
-Discovery is not supported.
+Automatic discovery is not supported. Please configure your things manually.
 
 ## Thing Configuration
 
-The following configuration parameters are available.
+Configure your EnergyHub thing with the following parameters:
 
 | Name            | Type    | Description                                           | Default | Required | Advanced |
 |-----------------|---------|-------------------------------------------------------|---------|----------|----------|
@@ -41,8 +41,10 @@ The following configuration parameters are available.
 
 ## Channels
 
+### eHub Channels
+
 | Channel Type ID                       | Item Type                  | Read/Write | Label                                    | Description                                                                                          |
-|--------------------------------------------------------------------|------------|------------------------------------------|------------------------------------------------------------------------------------------------------|
+|---------------------------------------|----------------------------|------------|------------------------------------------|------------------------------------------------------------------------------------------------------|
 | grid-frequency                        | Number:Frequency           | R          | Grid Frequency                           | Grid frequency                                                                                       |
 | ace-current-l1                        | Number:ElectricCurrent     | R          | ACE Current L1                           | Adaptive Current Equalization (ACE) equalization current set-points in Amps root mean square (Arms)  |
 | ace-current-l2                        | Number:ElectricCurrent     | R          | ACE Current L2                           | Adaptive Current Equalization (ACE) equalization current set-points in Amps root mean square (Arms)  |
@@ -125,72 +127,58 @@ The following configuration parameters are available.
 | timestamp                             | DateTime                   | R          | Time Stamp                               | Time stamp when message was published                                                                |
 | battery-energy-produced               | Number:Energy              | R          | Battery Energy Produced                  | Only sent when system has batteries                                                                  |
 | battery-energy-consumed               | Number:Energy              | R          | Battery Energy Consumed                  | Only sent when system has batteries                                                                  |
-| soc                                   | Number:Dimensionless       | R          | System State of Check                    | State of the system                                                                                  |
+| soc                                   | Number:Dimensionless       | R          | System State of Charge                   | State of the system                                                                                  |                                                                               |
 | soh                                   | Number:Dimensionless       | R          | System State of Health                   |                                                                                                      |
 | power-battery                         | Number:Power               | R          | Battery Power                            | Only sent when system has batteries                                                                  |
 | total-capacity-batteries              | Number:Energy              | R          | Total Capacity Batteries                 | Total rated capacity of all batteries                                                                |
 
-| s1-id                                 | String                     | R          | S1 ID                                    | Unique identifier of SSO-1                                                                           |
-| s1-pv-voltage                         | Number:ElectricPotential   | R          | S1 Voltage on PV String Side             | Measured on PV string side                                                                           |
-| s1-pv-current                         | Number:ElectricCurrent     | R          | S1 Current on PV String Side             | Measured on PV string side                                                                           |
-| s1-total-solar-energy                 | Number:Energy              | R          | S1 Total Solar Energy                    | Total energy produced by SSO-1                                                                       |
-| s1-relay-status                       | Contact                    | R          | S1 Relay Status                          | 0 = relay closed (i.e running power), 1 = relay open/disconnected, 2 = precharge                     |
-| s1-temperature                        | Number:Temperature         | R          | S1 Temperature on PCB                    | Temperature Measured on PCB                                                                          |
-| s1-fault-code                         | String                     | R          | S1 FaultCode                             | 0x00 = OK. For all other values Please contact Ferroamp support                                      |
-| s1-dc-link-voltage                    | Number:ElectricPotential   | R          | S1 DC Link Voltage                       | DC link voltage as measured by SSO-1                                                                 |
-| s1-timestamp                          | DateTime                   | R          | S1 Time Stamp                            | Time stamp when message was published                                                                |
+### sso Channels
 
-| s2-id                                 | String                     | R          | S2 ID                                    | Unique identifier of SSO-2                                                                           |
-| s2-pv-voltage                         | Number:ElectricPotential   | R          | S2 Voltage on PV String Side             | Measured on PV string side                                                                           |
-| s2-pv-current                         | Number:ElectricCurrent     | R          | S2 Current on PV String Side             | Measured on PV string side                                                                           |
-| s2-total-solar-energy                 | Number:Energy              | R          | S2 Total Solar Energy                    | Total energy produced by SSO-2                                                                       |
-| s2-relay-status                       | Contact                    | R          | S2 Relay Status                          | 0 = relay closed (i.e running power), 1 = relay open/disconnected, 2 = precharge                     |
-| s2-temperature                        | Number:Temperature         | R          | S2 Temperature on PCB                    | Temperature Measured on PCB                                                                          |
-| s2-fault-code                         | String                     | R          | S2 FaultCode                             | 0x00 = OK. For all other values Please contact Ferroamp support                                      |
-| s2-dc-link-voltage                    | Number:ElectricPotential   | R          | S2 DC Link Voltage                       | DC link voltage as measured by SSO-2                                                                 |
-| s2-timestamp                          | DateTime                   | R          | S2 Time Stamp                            | Time stamp when message was published                                                                |
- 
-| s3-id                                 | String                     | R          | S3 ID                                    | Unique identifier of SSO-3                                                                           |
-| s3-pv-voltage                         | Number:ElectricPotential   | R          | S3 Voltage on PV String Side             | Measured on PV string side                                                                           |
-| s3-pv-current                         | Number:ElectricCurrent     | R          | S3 Current on PV String Side             | Measured on PV string side                                                                           |
-| s3-total-solar-energy                 | Number:Energy              | R          | S3 Total Solar Energy                    | Total energy produced by SSO-3                                                                       |
-| s3-relay-status                       | Contact                    | R          | S3 Relay Status                          | 0 = relay closed (i.e running power), 1 = relay open/disconnected, 2 = precharge                     |
-| s3-temperature                        | Number:Temperature         | R          | S3 Temperature on PCB                    | Temperature Measured on PCB                                                                          |
-| s3-fault-code                         | String                     | R          | S3 FaultCode                             | 0x00 = OK. For all other values Please contact Ferroamp support                                      |
-| s3-dc-link-voltage                    | Number:ElectricPotential   | R          | S3 DC Link Voltage                       | DC link voltage as measured by SSO-3                                                                 |
-| s3-timestamp                          | DateTime                   | R          | S3 Time Stamp                            | Time stamp when message was published                                                                |
+One EnergyHub can contain multiple Solar String Optimizers. Channel IDs are built according to the convention: `sso-[ssocount]#[channelid]`. For example `sso-1#pv-voltage`
 
-| s4-id                                 | String                     | R          | S4 ID                                    | Unique identifier of SSO-4                                                                           |
-| s4-pv-voltage                         | Number:ElectricPotential   | R          | S4 Voltage on PV String Side             | Measured on PV string side                                                                           |
-| s4-pv-current                         | Number:ElectricCurrent     | R          | S4 Current on PV String Side             | Measured on PV string side                                                                           |
-| s4-total-solar-energy                 | Number:Energy              | R          | S4 Total Solar Energy                    | Total energy produced by SSO-4                                                                       |
-| s4-relay-status                       | Contact                    | R          | S4 Relay Status                          | 0 = relay closed (i.e running power), 1 = relay open/disconnected, 2 = precharge                     |
-| s4-temperature                        | Number:Temperature         | R          | S4 Temperature on PCB                    | Temperature Measured on PCB                                                                          |
-| s4-fault-code                         | String                     | R          | S4 FaultCode                             | 0x00 = OK. For all other values Please contact Ferroamp support                                      |
-| s4-dc-link-voltage                    | Number:ElectricPotential   | R          | S4 DC Link Voltage                       | DC link voltage as measured by SSO-4                                                                 |
-| s4-timestamp                          | DateTime                   | R          | S4 Time Stamp                            | Time stamp when message was published                                                                |
+| Channel Type ID                    | Item Type                  | Read/Write | Label                                    | Description                                                                                          |
+|-----------------------------------------------------------------|------------|------------------------------------------|------------------------------------------------------------------------------------------------------|
+| id                                 | String                     | R          | S1 ID                                    | Unique identifier of SSO-1                                                                           |
+| pv-voltage                         | Number:ElectricPotential   | R          | S1 Voltage on PV String Side             | Measured on PV string side                                                                           |
+| pv-current                         | Number:ElectricCurrent     | R          | S1 Current on PV String Side             | Measured on PV string side                                                                           |
+| total-solar-energy                 | Number:Energy              | R          | S1 Total Solar Energy                    | Total energy produced by SSO-1                                                                       |
+| relay-status                       | Contact                    | R          | S1 Relay Status                          | 0 = relay closed (i.e running power), 1 = relay open/disconnected, 2 = precharge                     |
+| temperature                        | Number:Temperature         | R          | S1 Temperature on PCB                    | Temperature Measured on PCB                                                                          |
+| fault-code                         | String                     | R          | S1 FaultCode                             | 0x00 = OK. For all other values Please contact Ferroamp support                                      |
+| dc-link-voltage                    | Number:ElectricPotential   | R          | S1 DC Link Voltage                       | DC link voltage as measured by SSO-1                                                                 |
+| timestamp                          | DateTime                   | R          | S1 Time Stamp                            | Time stamp when message was published                                                                |
 
-| eso-id                                | String                     | R          | Eso Unique Identifier                    | Unique identifier of ESO                                                                             |
-| eso-voltage-battery                   | Number:ElectricPotential   | R          | Eso Voltage on Battery Side              | Measured on battery side                                                                             |
-| eso-current-battery                   | Number:ElectricCurrent     | R          | Eso Current on Battery Side              | Measured on battery side                                                                             |
-| eso-battery-energy-produced           | Number:Energy              | R          | Eso Battery Energy Produced              | Total energy produced by ESO, i.e total energy charged                                               |
-| eso-battery-energy-consumed           | Number:Energy              | R          | Eso Battery Energy Consumed              | Total energy consumed by ESO, i.e total energy discharged                                            |
-| eso-soc                               | Number:Dimensionless       | R          | Eso State of Charge                      | State of Charge for ESO                                                                              |
-| eso-relay-status                      | Contact                    | R          | Eso Relay Status                         | 0 = relay closed, 1 = relay open                                                                     |
-| eso-temperature                       | Number:Temperature         | R          | Eso Temperature on PCB                   | Measured inside ESO                                                                                  |
-| eso-fault-code                        | String                     | R          | Eso FaultCode                            | See section 4.1.3.1 in Ferroamp-External-API-specifikation                                           |
-| eso-battery-energy-produced           | Number:Energy              | R          | Eso Battery Energy Produced              | Total energy produced by ESO, i.e total energy charged                                               |
-| eso-dc-link-voltage                   | Number:ElectricPotential   | R          | Eso Dc Link Voltage                      | DC link voltage as measured by ESO                                                                   |
-| eso-timestamp                         | DateTime                   | R          | Eso Time Stamp                           | Time stamp when message was published                                                                |
+### eso Channels
 
+As ESO channels are specific (and optional) they are grouped in `eso#` Channel IDs are built according to the convention: `eso#[channelid]`. For example `eso#voltage-battery`
 
-| esm-id                                | String                     | R          | Esm Unique Identifier                    | Unique identifier of battery. If available, this will be the unique id that the battery reports      |
-| esm-soh                               | Number:Dimensionless       | R          | Esm System State of Health               | State of Health for ESM                                                                              |
-| esm-soc                               | Number:Dimensionless       | R          | Esm System State of Charge               | State of Charge for ESM                                                                              |
-| esm-total-capacity                    | Number:Energy              | R          | Esm Rated Capacity                       | Rated capacity of all batteries                                                                      |
-| esm-power-battery                     | Number:Power               | R          | Esm Rated Power of Battery               | Rated power of battery                                                                               |
-| esm-status                            | String                     | R          | Esm Status                               | Dependent on battery manufacturer                                                                    |
-| esm-timestamp                         | DateTime                   | R          | Esm Time Stamp                           | Time stamp when message was published                                                                |
+| Channel Type ID                   | Item Type                  | Read/Write | Label                                    | Description                                                                                          |
+|----------------------------------------------------------------|------------|------------------------------------------|------------------------------------------------------------------------------------------------------|
+| id                                | String                     | R          | Eso Unique Identifier                    | Unique identifier of ESO                                                                             |
+| voltage-battery                   | Number:ElectricPotential   | R          | Eso Voltage on Battery Side              | Measured on battery side                                                                             |
+| current-battery                   | Number:ElectricCurrent     | R          | Eso Current on Battery Side              | Measured on battery side                                                                             |
+| battery-energy-produced           | Number:Energy              | R          | Eso Battery Energy Produced              | Total energy produced by ESO, i.e total energy charged                                               |
+| battery-energy-consumed           | Number:Energy              | R          | Eso Battery Energy Consumed              | Total energy consumed by ESO, i.e total energy discharged                                            |
+| soc                               | Number:Dimensionless       | R          | Eso State of Charge                      | State of Charge for ESO                                                                              |
+| relay-status                      | Contact                    | R          | Eso Relay Status                         | 0 = relay closed, 1 = relay open                                                                     |
+| temperature                       | Number:Temperature         | R          | Eso Temperature on PCB                   | Measured inside ESO                                                                                  |
+| fault-code                        | String                     | R          | Eso FaultCode                            | See section 4.1.3.1 in Ferroamp-External-API-specifikation                                           |
+| dc-link-voltage                   | Number:ElectricPotential   | R          | Eso Dc Link Voltage                      | DC link voltage as measured by ESO                                                                   |
+| timestamp                         | DateTime                   | R          | Eso Time Stamp                           | Time stamp when message was published                                                                |
+
+### esm Channels
+
+As ESM channels are specific (and optional) they are grouped in `esm#` Channel IDs are built according to the convention: `esm#[channelid]`. For example `esm#total-capacity`
+
+| Channel Type ID                   | Item Type                  | Read/Write | Label                                    | Description                                                                                          |
+|----------------------------------------------------------------|------------|------------------------------------------|------------------------------------------------------------------------------------------------------|
+| id                                | String                     | R          | Esm Unique Identifier                    | Unique identifier of battery. If available, this will be the unique id that the battery reports      |
+| soh                               | Number:Dimensionless       | R          | Esm System State of Health               | State of Health for ESM                                                                              |
+| soc                               | Number:Dimensionless       | R          | Esm System State of Charge               | State of Charge for ESM                                                                              |
+| total-capacity                    | Number:Energy              | R          | Esm Rated Capacity                       | Rated capacity of all batteries                                                                      |
+| power-battery                     | Number:Power               | R          | Esm Rated Power of Battery               | Rated power of battery                                                                               |
+| status                            | String                     | R          | Esm Status                               | Dependent on battery manufacturer                                                                    |
+| timestamp                         | DateTime                   | R          | Esm Time Stamp                           | Time stamp when message was published                                                                |                                             |
 
 The following channels are available for `Ferroamp` EnergyHub configuration. Please, see Ferroamp documentation for more details.
 
@@ -200,15 +188,15 @@ The following channels are available for `Ferroamp` EnergyHub configuration. Ple
 | request-discharge    | String                     | W          | Set discharge power, value in Watt                                                                                                                               |
 | request-auto         | String                     | W          | Set auto power. Returning control of batteries to system, value as auto 
 
-# Full Example
+## Full Example
 
-## `demo.things` Example
+### `demo.things` Example
 
 ```java
 Thing ferroamp:energyhub:myenergyhub [ hostName="energyhub-ip", userName="myUserName", password="myPassword", hasBattery=false ]
 ```
 
-## `demo.items` Example
+### `demo.items` Example
 
 ```java
 Number:Energy Ferroamp "Load Energy Consumed L1" <energy> { channel="ferroamp:energyhub:myenergyhub:load-energy-consumed-l1" }

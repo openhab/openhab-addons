@@ -7,7 +7,6 @@
 	<thing-type id="energyhub">
 		<label>EnergyHub</label>
 		<description>Provides information from Ferroamp EnergyHub</description>
-
 		<channels>
 			<channel id="grid-frequency" typeId="frequency">
 				<label>Grid Frequency</label>
@@ -240,7 +239,7 @@
 			<channel id="load-energy-consumed-total" typeId="energy">
 				<label>Load Energy Cons. Tot.</label>
 			</channel>
-			<channel id="total-solar-energy" typeId="power">
+			<channel id="total-solar-energy" typeId="energy">
 				<label>Tot. Solar Energy</label>
 			</channel>
 			<channel id="state" typeId="string">
@@ -267,168 +266,7 @@
 			<channel id="total-capacity-batteries" typeId="energy">
 				<label>Tot. Rated Cap. Batt.</label>
 			</channel>
-			<channel id="s1-id" typeId="string">
-				<label>S1 ID</label>
-			</channel>
-			<channel id="s1-pv-voltage" typeId="electric-potential">
-				<label>S1 Voltage, PV String</label>
-			</channel>
-			<channel id="s1-pv-current" typeId="electric-current">
-				<label>S1 Current, PV String</label>
-			</channel>
-			<channel id="s1-total-solar-energy" typeId="energy">
-				<label>S1 Tot. Solar Energy</label>
-			</channel>
-			<channel id="s1-relay-status" typeId="string">
-				<label>S1 RelayStatus</label>
-			</channel>
-			<channel id="s1-temperature" typeId="temperature">
-				<label>S1 Temperature, PCB</label>
-			</channel>
-			<channel id="s1-fault-code" typeId="string">
-				<label>S1 FaultCode</label>
-			</channel>
-			<channel id="s1-dc-link-voltage" typeId="electric-potential">
-				<label>S1 DC Link Voltage</label>
-			</channel>
-			<channel id="s1-timestamp" typeId="date-time">
-				<label>S1 Published Time</label>
-			</channel>
-			<channel id="s2-id" typeId="string">
-				<label>S2 ID</label>
-			</channel>
-			<channel id="s2-pv-voltage" typeId="electric-potential">
-				<label>S2 Voltage, PV String</label>
-			</channel>
-			<channel id="s2-pv-current" typeId="electric-current">
-				<label>S2 Current, PV String</label>
-			</channel>
-			<channel id="s2-total-solar-energy" typeId="energy">
-				<label>S2 Tot. Solar Energy</label>
-			</channel>
-			<channel id="s2-relay-status" typeId="string">
-				<label>S2 RelayStatus</label>
-			</channel>
-			<channel id="s2-temperature" typeId="temperature">
-				<label>S2 Temperature, PCB</label>
-			</channel>
-			<channel id="s2-fault-code" typeId="string">
-				<label>S2 FaultCode</label>
-			</channel>
-			<channel id="s2-dc-link-voltage" typeId="electric-potential">
-				<label>S2 DC Link Voltage</label>
-			</channel>
-			<channel id="s2-timestamp" typeId="date-time">
-				<label>S2 Published Time</label>
-			</channel>
-			<channel id="s3-id" typeId="string">
-				<label>S3 ID</label>
-			</channel>
-			<channel id="s3-pv-voltage" typeId="electric-potential">
-				<label>S3 Voltage, PV String</label>
-			</channel>
-			<channel id="s3-pv-current" typeId="electric-current">
-				<label>S3 Current, PV String</label>
-			</channel>
-			<channel id="s3-total-solar-energy" typeId="energy">
-				<label>S3 Tot. Solar Energy</label>
-			</channel>
-			<channel id="s3-relay-status" typeId="string">
-				<label>S3 RelayStatus</label>
-			</channel>
-			<channel id="s3-temperature" typeId="temperature">
-				<label>S3 Temperature, PCB</label>
-			</channel>
-			<channel id="s3-fault-code" typeId="string">
-				<label>S3 FaultCode</label>
-			</channel>
-			<channel id="s3-dc-link-voltage" typeId="electric-potential">
-				<label>S3 DC Link Voltage</label>
-			</channel>
-			<channel id="s3-timestamp" typeId="date-time">
-				<label>S3 Published Time</label>
-			</channel>
-			<channel id="s4-id" typeId="string">
-				<label>S4 ID</label>
-			</channel>
-			<channel id="s4-pv-voltage" typeId="electric-potential">
-				<label>S4 Voltage, PV String</label>
-			</channel>
-			<channel id="s4-pv-current" typeId="electric-current">
-				<label>S4 Current, PV String</label>
-			</channel>
-			<channel id="s4-total-solar-energy" typeId="energy">
-				<label>S4 Tot. Solar Energy</label>
-			</channel>
-			<channel id="s4-relay-status" typeId="string">
-				<label>S4 RelayStatus</label>
-			</channel>
-			<channel id="s4-temperature" typeId="temperature">
-				<label>S4 Temperature. PCB</label>
-			</channel>
-			<channel id="s4-fault-code" typeId="string">
-				<label>S4 FaultCode</label>
-			</channel>
-			<channel id="s4-dc-link-voltage" typeId="electric-potential">
-				<label>S4 DC Link Voltage</label>
-			</channel>
-			<channel id="s4-timestamp" typeId="date-time">
-				<label>S4 Published Time</label>
-			</channel>
-			<channel id="eso-id" typeId="string">
-				<label>Eso Identifier</label>
-			</channel>
-			<channel id="eso-voltage-battery" typeId="electric-potential">
-				<label>Eso Voltage, Battery</label>
-			</channel>
-			<channel id="eso-current-battery" typeId="electric-current">
-				<label>Eso Current, Battery</label>
-			</channel>
-			<channel id="eso-battery-energy-produced" typeId="energy">
-				<label>Eso Batt. Energy Prod.</label>
-			</channel>
-			<channel id="eso-battery-energy-consumed" typeId="energy">
-				<label>Eso Batt. Energy Cons.</label>
-			</channel>
-			<channel id="eso-soc" typeId="percentage">
-				<label>Eso SoC</label>
-			</channel>
-			<channel id="eso-relay-status" typeId="string">
-				<label>Eso RelayStatus</label>
-			</channel>
-			<channel id="eso-temperature" typeId="temperature">
-				<label>ESO Temperature, PCB</label>
-			</channel>
-			<channel id="eso-fault-code" typeId="string">
-				<label>Eso FaultCode</label>
-			</channel>
-			<channel id="eso-dc-link-voltage" typeId="electric-potential">
-				<label>Eso DC Link Voltage</label>
-			</channel>
-			<channel id="eso-timestamp" typeId="date-time">
-				<label>Eso Published Time</label>
-			</channel>
-			<channel id="esm-id" typeId="string">
-				<label>Esm Identifier</label>
-			</channel>
-			<channel id="esm-soh" typeId="percentage">
-				<label>Esm SoH</label>
-			</channel>
-			<channel id="esm-soc" typeId="percentage">
-				<label>Esm SoC</label>
-			</channel>
-			<channel id="esm-total-capacity" typeId="energy">
-				<label>Esm Rated Capacity</label>
-			</channel>
-			<channel id="esm-power-battery" typeId="power">
-				<label>Esm Rated Power, Batt.</label>
-			</channel>
-			<channel id="esm-status" typeId="string">
-				<label>Esm Status</label>
-			</channel>
-			<channel id="esm-timestamp" typeId="date-time">
-				<label>Esm Published Time</label>
-			</channel>
+		            
 			<channel id="request-charge" typeId="request">
 				<label>RequestCharge</label>
 			</channel>
@@ -439,6 +277,8 @@
 				<label>RequestAuto</label>
 			</channel>
 		</channels>
+		
+		<representation-property>hostName</representation-property>
 
 		<config-description>
 			<parameter name="hostName" type="text" required="true">
@@ -468,6 +308,108 @@
 			</parameter>
 		</config-description>
 	</thing-type>
+	
+	<channel-group-type id="sso">
+        <label>SSO</label>
+        <description>This is a group of SSO channels</description>
+        <channels>
+            <channel id="id" typeId="string">
+                <label>Identifier</label>
+            </channel>
+            <channel id="pv-voltage" typeId="electric-potential">
+                <label>Voltage, PV String</label>
+            </channel>
+            <channel id="pv-current" typeId="electric-current">
+                <label>Current, PV String</label>
+            </channel>
+            <channel id="total-solar-energy" typeId="energy">
+                <label>Tot. Solar Energy</label>
+            </channel>
+            <channel id="relay-status" typeId="string">
+                <label>RelayStatus</label>
+            </channel>
+            <channel id="temperature" typeId="temperature">
+                <label>Temperature, PCB</label>
+            </channel>
+            <channel id="fault-code" typeId="string">
+                <label>FaultCode</label>
+            </channel>
+            <channel id="dc-link-voltage" typeId="electric-potential">
+                <label>DC Link Voltage</label>
+            </channel>
+            <channel id="timestamp" typeId="date-time">
+                <label>Published Time</label>
+            </channel>
+        </channels>
+    </channel-group-type>
+    
+    <channel-group-type id="esm">
+        <label>ESM</label>
+        <description>This is a group of ESM channels</description>
+        <channels>
+            <channel id="id" typeId="string">
+                <label>Identifier</label>
+            </channel>
+            <channel id="soh" typeId="percentage">
+                <label>SoH</label>
+            </channel>
+            <channel id="soc" typeId="percentage">
+                <label>SoC</label>
+            </channel>
+            <channel id="total-capacity" typeId="energy">
+                <label>Rated Capacity</label>
+            </channel>
+            <channel id="power-battery" typeId="power">
+                <label>Rated Power, Batt.</label>
+            </channel>
+            <channel id="status" typeId="string">
+                <label>Status</label>
+            </channel>
+            <channel id="timestamp" typeId="date-time">
+                <label>Published Time</label>
+            </channel>
+        </channels>
+    </channel-group-type>
+    
+    <channel-group-type id="eso">
+        <label>ESO</label>
+        <description>This is a group of ESO channels</description>
+        <channels>
+        <channel id="id" typeId="string">
+            <label>Identifier</label>
+        </channel>
+        <channel id="voltage-battery" typeId="electric-potential">
+            <label>Voltage, Battery</label>
+        </channel>
+        <channel id="current-battery" typeId="electric-current">
+            <label>Current, Battery</label>
+        </channel>
+        <channel id="battery-energy-produced" typeId="energy">
+            <label>Batt. Energy Prod.</label>
+        </channel>
+        <channel id="battery-energy-consumed" typeId="energy">
+            <label>Batt. Energy Cons.</label>
+        </channel>
+        <channel id="soc" typeId="percentage">
+            <label>SoC</label>
+        </channel>
+        <channel id="relay-status" typeId="string">
+            <label>RelayStatus</label>
+        </channel>
+        <channel id="temperature" typeId="temperature">
+            <label>Temperature, PCB</label>
+        </channel>
+        <channel id="fault-code" typeId="string">
+            <label>FaultCode</label>
+        </channel>
+        <channel id="dc-link-voltage" typeId="electric-potential">
+            <label>DC Link Voltage</label>
+        </channel>
+        <channel id="timestamp" typeId="date-time">
+            <label>Published Time</label>
+        </channel>
+    </channels>
+    </channel-group-type>
 
 	<channel-type id="energy">
 		<item-type>Number:Energy</item-type>
