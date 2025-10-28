@@ -15,7 +15,6 @@
   <name>openHAB Add-ons :: Bundles :: MQTT HomeAssistant Convention</name>
 
   <properties>
-    <graalpy.version>25.0.1</graalpy.version>
     <!-- define a property to overwrite it on Windows, as venv has a different structure -->
     <graalpy.executable>bin/python3</graalpy.executable>
   </properties>
@@ -38,7 +37,7 @@
     <dependency>
       <groupId>org.openhab.osgiify</groupId>
       <artifactId>org.graalvm.polyglot.polyglot</artifactId>
-      <version>${graalpy.version}</version>
+      <version>${graalvm.version}</version>
       <!-- provided as OSGi bundle at runtime, available only at compile time -->
       <scope>provided</scope>
     </dependency>
@@ -49,7 +48,7 @@
     <dependency>
       <groupId>org.graalvm.polyglot</groupId>
       <artifactId>python-community</artifactId>
-      <version>${graalpy.version}</version>
+      <version>${graalvm.version}</version>
       <type>pom</type>
       <!-- provided as OSGi bundle at runtime, available only at compile time -->
       <scope>provided</scope>
@@ -57,7 +56,7 @@
     <dependency>
       <groupId>org.openhab.osgiify</groupId>
       <artifactId>org.graalvm.python.python-embedding</artifactId>
-      <version>${graalpy.version}</version>
+      <version>${graalvm.version}</version>
       <!-- provided as OSGi bundle at runtime, available only at compile time -->
       <scope>provided</scope>
     </dependency>
@@ -131,7 +130,7 @@
       <plugin>
         <groupId>org.graalvm.python</groupId>
         <artifactId>graalpy-maven-plugin</artifactId>
-        <version>${graalpy.version}</version>
+        <version>${graalvm.version}</version>
         <executions>
           <execution>
             <id>install-python-packages</id>
