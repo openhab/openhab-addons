@@ -6,7 +6,7 @@ SunSpec is a format for inverters and smart meters to communicate over the Modbu
 It defines how common parameters like AC/DC voltage and current, lifetime produced energy, device temperature etc can be read from the device.
 
 SunSpec is supported by several manufacturers like ABB, Fronius, LG, SMA, SolarEdge, Schneider Electric.
-For a list of certified products see this page: <https://sunspec.org/sunspec-certified-products/>
+For a list of certified products see this page: <https://sunspec.org/product-certification-registry/>
 
 ## Supported Things
 
