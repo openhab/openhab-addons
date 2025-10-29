@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.Dictionary;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.junit.jupiter.api.AfterEach;
@@ -29,6 +30,7 @@ import org.mockito.Mockito;
 import org.openhab.io.hueemulation.internal.ConfigStore;
 import org.openhab.io.hueemulation.internal.HueEmulationConfig;
 import org.openhab.io.hueemulation.internal.dto.HueUnauthorizedConfig;
+import org.openhab.io.hueemulation.internal.dto.HueUserAuth;
 import org.openhab.io.hueemulation.internal.dto.response.HueResponse;
 import org.openhab.io.hueemulation.internal.dto.response.HueSuccessResponseCreateUser;
 import org.openhab.io.hueemulation.internal.rest.mocks.ConfigStoreWithoutMetadata;
@@ -42,11 +44,12 @@ import com.google.gson.JsonParser;
  *
  * @author David Graeff - Initial contribution
  */
+@NonNullByDefault
 public class UsersAndConfigTests {
 
     ConfigurationAccess configurationAccess = new ConfigurationAccess();
 
-    CommonSetup commonSetup;
+    private @NonNullByDefault({}) CommonSetup commonSetup;
 
     @BeforeEach
     public void setUp() throws IOException {
@@ -94,7 +97,7 @@ public class UsersAndConfigTests {
     @Test
     public void addUser() throws Exception {
         // GET should fail
-        assertEquals(405, commonSetup.sendGet().getStatus());
+        assertThat(commonSetup.sendGet().getStatus(), is(405));
 
         String body = "{'username':'testuser','devicetype':'app#device'}";
 
@@ -102,6 +105,7 @@ public class UsersAndConfigTests {
         ContentResponse response = commonSetup.sendPost(body);
         assertThat(response.getStatus(), is(200));
         HueResponse[] r = commonSetup.cs.gson.fromJson(response.getContentAsString(), HueResponse[].class);
+        assertNotNull(r);
         assertNotNull(r[0].error);
 
         // Post should create a user
@@ -113,7 +117,9 @@ public class UsersAndConfigTests {
         e = e.getAsJsonObject().get("success");
         HueSuccessResponseCreateUser rc = commonSetup.cs.gson.fromJson(e, HueSuccessResponseCreateUser.class);
         assertNotNull(rc);
-        assertThat(commonSetup.cs.ds.config.whitelist.get(rc.username).name, is("app#device"));
+        HueUserAuth userAuth = commonSetup.cs.ds.config.whitelist.get(rc.username);
+        assertNotNull(userAuth);
+        assertThat(userAuth.name, is("app#device"));
     }
 
     @Test
@@ -122,6 +128,7 @@ public class UsersAndConfigTests {
         ContentResponse response = commonSetup.sendGet("/config");
         assertThat(response.getStatus(), is(200));
         HueUnauthorizedConfig config = new Gson().fromJson(response.getContentAsString(), HueUnauthorizedConfig.class);
+        assertNotNull(config);
         assertThat(config.bridgeid, is(commonSetup.cs.ds.config.bridgeid));
         assertThat(config.name, is(commonSetup.cs.ds.config.name));
 

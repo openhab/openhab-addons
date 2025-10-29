@@ -40,7 +40,6 @@ public class RemoveRuleActionHandler extends BaseModuleHandler<Action> implement
 
     private RuleRegistry ruleRegistry;
 
-    @SuppressWarnings({ "null", "unused" })
     public RemoveRuleActionHandler(final Action module, RuleRegistry ruleRegistry) {
         super(module);
         this.ruleRegistry = ruleRegistry;
@@ -49,10 +48,11 @@ public class RemoveRuleActionHandler extends BaseModuleHandler<Action> implement
             throw new IllegalArgumentException("'Configuration' can not be empty.");
         }
 
-        ruleUID = (String) config.get(CFG_REMOVE_UID);
+        String ruleUID = (String) config.get(CFG_REMOVE_UID);
         if (ruleUID == null) {
             throw new IllegalArgumentException("'ruleUIDs' property must not be null.");
         }
+        this.ruleUID = ruleUID;
     }
 
     @Override

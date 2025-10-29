@@ -197,7 +197,6 @@ public class Sensors implements RegistryChangeListener<Item> {
         return Response.ok(cs.gson.toJson(cs.ds.sensors.get(id))).build();
     }
 
-    @SuppressWarnings({ "null", "unused" })
     @GET
     @Path("{username}/sensors/{id}/config")
     @Operation(summary = "Return a sensor config. Always empty", responses = {
@@ -217,7 +216,6 @@ public class Sensors implements RegistryChangeListener<Item> {
         return Response.ok(cs.gson.toJson(sensor.config)).build();
     }
 
-    @SuppressWarnings({ "null", "unused" })
     @DELETE
     @Path("{username}/sensors/{id}")
     @Operation(summary = "Deletes the sensor that is represented by this id", responses = {
@@ -242,7 +240,6 @@ public class Sensors implements RegistryChangeListener<Item> {
         }
     }
 
-    @SuppressWarnings({ "null", "unused" })
     @PUT
     @Path("{username}/sensors/{id}")
     @Operation(summary = "Rename a sensor", responses = { @ApiResponse(responseCode = "200", description = "OK") })
@@ -258,6 +255,10 @@ public class Sensors implements RegistryChangeListener<Item> {
         }
 
         final HueChangeRequest changeRequest = cs.gson.fromJson(body, HueChangeRequest.class);
+
+        if (changeRequest == null) {
+            return NetworkUtils.singleError(cs.gson, uri, HueResponse.INVALID_JSON, "Empty body");
+        }
 
         String name = changeRequest.name;
         if (name == null || name.isEmpty()) {

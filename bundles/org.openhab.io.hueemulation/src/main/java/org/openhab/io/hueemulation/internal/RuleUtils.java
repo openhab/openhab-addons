@@ -86,7 +86,6 @@ public class RuleUtils {
      *            {@code "/api/<username>/lights/1/state"}
      * @throws IllegalStateException Thrown if address is invalid
      */
-    @SuppressWarnings({ "unused", "null" })
     public static void validateHueHttpAddress(HueDataStore ds, String address) throws IllegalStateException {
         String[] validation = address.split("/");
         if (validation.length < 6 || !validation[0].isEmpty() || !"api".equals(validation[1])) {
@@ -113,7 +112,6 @@ public class RuleUtils {
         public String body = "";
     }
 
-    @SuppressWarnings({ "unused", "null" })
     public static @Nullable HueCommand httpActionToHueCommand(HueDataStore ds, Action a, @Nullable String ruleName) {
         ConfigHttpAction config = a.getConfiguration().as(ConfigHttpAction.class);
 
