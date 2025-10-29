@@ -176,12 +176,48 @@
 				<label>Solar Energy Today</label>
 				<description>Solar energy generated today.</description>
 			</channel>
+            <channel id="inverter-solar-energy-month" typeId="system.electric-energy">
+				<label>Solar Energy This Month</label>
+				<description>Solar energy generated this month.</description>
+			</channel>
+			<channel id="inverter-solar-energy-year" typeId="system.electric-energy">
+				<label>Solar Energy This Year</label>
+				<description>Solar energy generated this year.</description>
+			</channel>
+			<channel id="inverter-solar-efficiency" typeId="solar-efficiency">
+				<label>Solar Efficiency</label>
+				<description>Efficiency of the solar panels.</description>
+			</channel>
+			<channel id="inverter-solar-ac-power" typeId="system.electric-power">
+				<label>Solar Power</label>
+				<description>Solar AC power being generated.</description>
+			</channel>
 			<channel id="inverter-solar-energy-total" typeId="system.electric-energy">
 				<label>Solar Energy Total</label>
 				<description>Total solar energy generated.</description>
 			</channel>
-			<channel id="inverter-solar-power-now" typeId="system.electric-current">
-				<label>Solar Power</label>
+            <channel id="inverter-solar-string-voltage-1" typeId="system.electric-voltage">
+				<label>String 1 Solar Voltage</label>
+				<description>Solar voltage being generated.</description>
+			</channel>
+			<channel id="inverter-solar-string-voltage-2" typeId="system.electric-voltage">
+				<label>String 2 Solar Voltage</label>
+				<description>Solar voltage being generated.</description>
+			</channel>
+			<channel id="inverter-solar-string-current-1" typeId="system.electric-current">
+				<label>String 1 Solar Current</label>
+				<description>Solar current being generated.</description>
+			</channel>
+			<channel id="inverter-solar-string-current-2" typeId="system.electric-current">
+				<label>String 2 Solar Current</label>
+				<description>Solar current being generated.</description>
+			</channel>
+			<channel id="inverter-solar-string-power-1" typeId="system.electric-power">
+				<label>String 1 Solar Power</label>
+				<description>Solar power being generated.</description>
+			</channel>
+            <channel id="inverter-solar-string-power-2" typeId="system.electric-power">
+				<label>String 2 Solar Power</label>
 				<description>Solar power being generated.</description>
 			</channel>
 			<channel id="inverter-control-timer" typeId="control-timer"/>
@@ -203,6 +239,14 @@
 			<parameter name="alias" type="text" required="true">
 				<label>Inverter Name</label>
 				<description>Name of inverter from Sun Synk Connect.</description>
+			</parameter>
+            <parameter name="plantId" type="text" required="true">
+				<label>Plant ID</label>
+				<description>Plant ID of the inverter from Sun Synk Connect.</description>
+			</parameter>
+			<parameter name="plantName" type="text" required="true">
+				<label>Plant Name</label>
+				<description>Plant Name of the inverter from Sun Synk Connect.</description>
 			</parameter>
 			<parameter name="refresh" type="integer" required="true" min="60">
 				<label>Refresh Interval</label>
