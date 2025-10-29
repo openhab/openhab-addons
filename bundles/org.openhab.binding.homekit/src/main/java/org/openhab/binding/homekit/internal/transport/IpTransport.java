@@ -19,6 +19,7 @@ import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
+import java.nio.BufferUnderflowException;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.Arrays;
@@ -296,7 +297,8 @@ public class IpTransport implements AutoCloseable {
                 byte[][] response = session.receive(logger.isTraceEnabled());
                 handleResponse(response);
             } catch (SocketTimeoutException e) { // ignore socket timeout; continue listening
-            } catch (IllegalStateException | InvalidCipherTextException | IOException e) {
+            } catch (IllegalStateException | InvalidCipherTextException | IOException | BufferUnderflowException
+                    | SecurityException e) {
                 cause = e;
                 break;
             }

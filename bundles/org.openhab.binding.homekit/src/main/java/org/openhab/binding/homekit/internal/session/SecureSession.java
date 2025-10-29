@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -98,7 +99,8 @@ public class SecureSession {
      * @throws IOException
      * @throws InvalidCipherTextException
      */
-    public byte[][] receive(boolean trace) throws IOException, InvalidCipherTextException {
+    public byte[][] receive(boolean trace)
+            throws IOException, InvalidCipherTextException, BufferUnderflowException, SecurityException {
         HttpPayloadParser httpParser = new HttpPayloadParser();
         ByteArrayOutputStream raw = trace ? new ByteArrayOutputStream() : null;
         do {
@@ -121,7 +123,8 @@ public class SecureSession {
      * @throws IOException
      * @throws InvalidCipherTextException
      */
-    private byte[] receiveFrame() throws IOException, InvalidCipherTextException {
+    private byte[] receiveFrame()
+            throws IOException, InvalidCipherTextException, BufferUnderflowException, SecurityException {
         byte[] frameAad = in.readNBytes(2);
         short frameLen = ByteBuffer.wrap(frameAad).order(ByteOrder.LITTLE_ENDIAN).getShort();
         if (frameLen < 0 || frameLen > 1024) {
