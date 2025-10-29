@@ -15,6 +15,8 @@ package org.openhab.binding.ftpupload.internal.ftp;
 import org.apache.ftpserver.ftplet.FileSystemView;
 import org.apache.ftpserver.ftplet.FtpException;
 import org.apache.ftpserver.ftplet.FtpFile;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,13 +26,14 @@ import org.slf4j.LoggerFactory;
  *
  * @author Pauli Anttila - Initial contribution
  */
+@NonNullByDefault
 public class SimpleFileSystemView implements FileSystemView {
     private Logger logger = LoggerFactory.getLogger(SimpleFileSystemView.class);
 
     SimpleFtpFile file = new SimpleFtpFile();
 
     @Override
-    public boolean changeWorkingDirectory(String arg0) throws FtpException {
+    public boolean changeWorkingDirectory(@Nullable String arg0) throws FtpException {
         logger.trace("changeWorkingDirectory: {}", arg0);
         return true;
     }
@@ -41,7 +44,7 @@ public class SimpleFileSystemView implements FileSystemView {
     }
 
     @Override
-    public FtpFile getFile(String arg0) throws FtpException {
+    public FtpFile getFile(@Nullable String arg0) throws FtpException {
         logger.trace("getFile: {}", arg0);
         return file;
     }

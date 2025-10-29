@@ -324,6 +324,8 @@ public enum MiIoDevices {
     YEELINK_LIGHT_BSLAMP1("yeelink.light.bslamp1", "Mi Bedside Lamp", THING_TYPE_BASIC),
     YEELINK_LIGHT_BSLAMP2("yeelink.light.bslamp2", "Mi Bedside Lamp 2", THING_TYPE_BASIC),
     YEELINK_LIGHT_BSLAMP3("yeelink.light.bslamp3", "Yeelight Bedside Lamp II", THING_TYPE_BASIC),
+    YEELINK_LIGHT_CEILA("yeelink.light.ceila", "Yeelight LED Ceiling Light Pro", THING_TYPE_BASIC),
+    YEELINK_LIGHT_CEILB("yeelink.light.ceilb", "Yeelight Arwen Ceiling Light", THING_TYPE_BASIC),
     YEELINK_LIGHT_CEILING1("yeelink.light.ceiling1", "Yeelight Ceiling Light", THING_TYPE_BASIC),
     YEELINK_LIGHT_CEILING2("yeelink.light.ceiling2", "Yeelight Ceiling Light SE", THING_TYPE_BASIC),
     YEELINK_LIGHT_CEILING3("yeelink.light.ceiling3", "Yeelight LED Ceiling Light", THING_TYPE_BASIC),

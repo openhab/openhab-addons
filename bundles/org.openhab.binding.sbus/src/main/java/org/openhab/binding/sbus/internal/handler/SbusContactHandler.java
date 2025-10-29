@@ -27,13 +27,13 @@ import org.slf4j.LoggerFactory;
 
 import ro.ciprianpascu.sbus.msg.ReadDryChannelsRequest;
 import ro.ciprianpascu.sbus.msg.ReadDryChannelsResponse;
-import ro.ciprianpascu.sbus.msg.ReadStatusChannelsResponse;
 import ro.ciprianpascu.sbus.msg.SbusResponse;
 import ro.ciprianpascu.sbus.procimg.InputRegister;
 
 /**
- * The {@link SbusContactHandler} is responsible for handling commands for Sbus contact devices.
- * It supports reading the current contact state (open/closed).
+ * The {@link SbusContactHandler} is responsible for handling traditional Sbus contact sensor devices.
+ * It supports reading the current contact state (open/closed) using the ReadDryChannelsRequest protocol.
+ * For 9-in-1 sensor devices, use the Sbus9in1ContactHandler instead.
  *
  * @author Ciprian Pascu - Initial contribution
  */
@@ -105,14 +105,11 @@ public class SbusContactHandler extends AbstractSbusHandler {
         // Execute transaction and parse response
         SbusResponse response = adapter.executeTransaction(request);
         if (!(response instanceof ReadDryChannelsResponse statusResponse)) {
-            throw new IllegalStateException("Unexpected response type: " + response.getClass().getSimpleName());
+            throw new IllegalStateException(
+                    "Unexpected response type: " + (response != null ? response.getClass().getSimpleName() : "null"));
         }
 
-        InputRegister[] registers = statusResponse.getRegisters();
-        boolean[] contactStates = new boolean[registers.length];
-        for (int i = 0; i < registers.length; i++) {
-            contactStates[i] = (registers[i].getValue() & 0xff) > 0; // Convert to boolean
-        }
+        boolean[] contactStates = extractContactStatuses(statusResponse);
         return contactStates;
     }
 
@@ -121,12 +118,11 @@ public class SbusContactHandler extends AbstractSbusHandler {
     @Override
     protected void processAsyncMessage(SbusResponse response) {
         try {
-            if (response instanceof ReadStatusChannelsResponse statusResponse) {
+            if (response instanceof ReadDryChannelsResponse statusResponse) {
                 // Process status channel response using existing logic
                 boolean[] statuses = extractContactStatuses(statusResponse);
-
-                // Update channel states based on async message
                 updateChannelStatesFromStatuses(statuses);
+                updateStatus(ThingStatus.ONLINE);
                 logger.debug("Processed async contact status message for handler {}", getThing().getUID());
             }
         } catch (IllegalStateException | IllegalArgumentException e) {
@@ -137,13 +133,12 @@ public class SbusContactHandler extends AbstractSbusHandler {
 
     @Override
     protected boolean isMessageRelevant(SbusResponse response) {
-        if (!(response instanceof ReadStatusChannelsResponse)) {
-            return false;
+        if (response instanceof ReadDryChannelsResponse) {
+            // Traditional contact sensor messages
+            SbusDeviceConfig config = getConfigAs(SbusDeviceConfig.class);
+            return response.getSubnetID() == config.subnetId && response.getUnitID() == config.id;
         }
-
-        // Check if the message is for this device based on subnet and unit ID
-        SbusDeviceConfig config = getConfigAs(SbusDeviceConfig.class);
-        return response.getSubnetID() == config.subnetId && response.getUnitID() == config.id;
+        return false;
     }
 
     /**
@@ -165,10 +160,10 @@ public class SbusContactHandler extends AbstractSbusHandler {
     }
 
     /**
-     * Extract contact status values from ReadStatusChannelsResponse.
+     * Extract contact status values from ReadDryChannelsResponse.
      * Reuses existing logic from readContactStatusChannels method.
      */
-    private boolean[] extractContactStatuses(ReadStatusChannelsResponse response) {
+    private boolean[] extractContactStatuses(ReadDryChannelsResponse response) {
         InputRegister[] registers = response.getRegisters();
         boolean[] statuses = new boolean[registers.length];
 

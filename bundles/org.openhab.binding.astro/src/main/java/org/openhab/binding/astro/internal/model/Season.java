@@ -40,6 +40,14 @@ public class Season {
 
     private @Nullable SeasonName name;
 
+    private TimeZone timeZone;
+    private Locale locale;
+
+    public Season(TimeZone timeZone, Locale locale) {
+        this.timeZone = timeZone;
+        this.locale = locale;
+    }
+
     /**
      * Returns the date of the beginning of spring.
      */
@@ -118,8 +126,8 @@ public class Season {
     /**
      * Returns the next season.
      */
-    public Calendar getNextSeason(TimeZone zone, Locale locale) {
-        return DateTimeUtils.getNextFromToday(zone, locale, spring, summer, autumn, winter);
+    public Calendar getNextSeason() {
+        return DateTimeUtils.getNextFromToday(timeZone, locale, spring, summer, autumn, winter);
     }
 
     /**
@@ -136,9 +144,9 @@ public class Season {
     /**
      * Returns the time left for current season
      */
-    public QuantityType<Time> getTimeLeft(TimeZone zone, Locale locale) {
-        final Calendar now = Calendar.getInstance(zone, locale);
-        final Calendar next = getNextSeason(zone, locale);
+    public QuantityType<Time> getTimeLeft() {
+        final Calendar now = Calendar.getInstance(timeZone, locale);
+        final Calendar next = getNextSeason();
         final Duration timeLeft = Duration.of(next.getTimeInMillis() - now.getTimeInMillis(), ChronoUnit.MILLIS);
 
         return new QuantityType<>(timeLeft.toDays(), Units.DAY);

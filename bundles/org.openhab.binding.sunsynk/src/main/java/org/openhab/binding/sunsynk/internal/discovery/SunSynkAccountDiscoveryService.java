@@ -33,7 +33,8 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The {@link SunSynkAccountDiscoveryService} is responsible for starting the discovery procedure
- * that connects to SunSynk Web and imports all registered inverters.
+ * that connects to Sun Synk Connect API and imports all registered inverters.
+ * Inverters are associated with a plant. The plant ID is required to get summary solar data.
  * 
  * @author Lee Charlton - Initial contribution
  */
@@ -81,15 +82,19 @@ public class SunSynkAccountDiscoveryService extends AbstractDiscoveryService {
     }
 
     private void addThing(Inverter inverter) {
-        logger.debug("addThing(): Adding new SunSynk Inverter unit ({}) to the inbox", inverter.getAlias());
+        logger.debug("addThing(): Adding new SunSynk Inverter unit ({}) for plant {} to the inbox", inverter.getAlias(),
+                inverter.getPlantId());
         Map<String, Object> properties = new HashMap<>();
         ThingUID thingUID = new ThingUID(SunSynkBindingConstants.THING_TYPE_INVERTER, bridgeUID, inverter.getUID());
         properties.put(SunSynkBindingConstants.CONFIG_GATE_SERIAL, inverter.getGateSerialNo());
         properties.put(SunSynkBindingConstants.CONFIG_SERIAL, inverter.getSerialNo());
         properties.put(Thing.PROPERTY_MODEL_ID, inverter.getID());
         properties.put(SunSynkBindingConstants.CONFIG_NAME, inverter.getAlias());
+        properties.put(SunSynkBindingConstants.CONFIG_PLANT_ID, inverter.getPlantId());
+        properties.put(SunSynkBindingConstants.CONFIG_PLANT_NAME, inverter.getPlantName());
         thingDiscovered(DiscoveryResultBuilder.create(thingUID).withLabel(inverter.getAlias()).withBridge(bridgeUID)
-                .withProperty("serialnumber", inverter.getSerialNo()).withRepresentationProperty("serialnumber")
+                .withProperty("serialnumber", inverter.getSerialNo()).withProperty("plantId", inverter.getPlantId())
+                .withProperty("plantName", inverter.getPlantName()).withRepresentationProperty("serialnumber")
                 .withProperties(properties).build());
     }
 }

@@ -23,4 +23,5 @@ public class SurePetcarePetStatus {
 
     public SurePetcarePetActivity activity;
     public SurePetcarePetFeeding feeding;
+    public SurePetcarePetDrinking drinking;
 }

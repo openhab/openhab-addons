@@ -33,6 +33,7 @@ import javax.ws.rs.core.UriInfo;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.common.registry.RegistryChangeListener;
+import org.openhab.core.events.AbstractEvent;
 import org.openhab.core.events.EventPublisher;
 import org.openhab.core.items.GenericItem;
 import org.openhab.core.items.GroupItem;
@@ -143,10 +144,9 @@ public class LightsAndGroups implements RegistryChangeListener<Item> {
 
     @Override
     public synchronized void added(Item newElement) {
-        if (!(newElement instanceof GenericItem)) {
+        if (!(newElement instanceof GenericItem element)) {
             return;
         }
-        GenericItem element = (GenericItem) newElement;
 
         if (!(element instanceof GroupItem) && !ALLOWED_ITEM_TYPES.contains(element.getType())) {
             return;
@@ -210,18 +210,17 @@ public class LightsAndGroups implements RegistryChangeListener<Item> {
     @SuppressWarnings({ "null", "unused" })
     @Override
     public synchronized void updated(Item oldElement, Item newElement) {
-        if (!(newElement instanceof GenericItem)) {
+        if (!(newElement instanceof GenericItem element)) {
             return;
         }
-        GenericItem element = (GenericItem) newElement;
 
         String hueID = cs.mapItemUIDtoHueID(element);
 
         HueGroupEntry hueGroup = cs.ds.groups.get(hueID);
         if (hueGroup != null) {
             DeviceType t = StateUtils.determineTargetType(cs, element);
-            if (t != null && element instanceof GroupItem) {
-                hueGroup.updateItem((GroupItem) element);
+            if (t != null && element instanceof GroupItem groupElement) {
+                hueGroup.updateItem(groupElement);
             } else {
                 cs.ds.groups.remove(hueID);
             }
@@ -235,8 +234,9 @@ public class LightsAndGroups implements RegistryChangeListener<Item> {
         }
 
         // Check if type can still be determined (tags and category is still sufficient)
+        // and that it's still an allowed item type
         DeviceType t = StateUtils.determineTargetType(cs, element);
-        if (t == null) {
+        if (t == null || !ALLOWED_ITEM_TYPES.contains(element.getType())) {
             removed(element);
             return;
         }
@@ -376,8 +376,9 @@ public class LightsAndGroups implements RegistryChangeListener<Item> {
         if (command != null) {
             EventPublisher localEventPublisher = eventPublisher;
             if (localEventPublisher != null) {
-                logger.debug("sending {} to {}", command, itemUID);
-                localEventPublisher.post(ItemEventFactory.createCommandEvent(itemUID, command, "hueemulation"));
+                logger.debug("Sending {} to {}", command, itemUID);
+                localEventPublisher.post(ItemEventFactory.createCommandEvent(itemUID, command,
+                        AbstractEvent.buildSource("org.openhab.io.hueemulation", username)));
             } else {
                 logger.warn("No event publisher. Cannot post item '{}' command!", itemUID);
             }

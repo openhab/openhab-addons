@@ -61,7 +61,7 @@ public class SunSynkAccountHandler extends BaseBridgeHandler {
     public void initialize() {
         accountConfig = getConfigAs(SunSynkAccountConfig.class);
         updateStatus(ThingStatus.UNKNOWN);
-        logger.debug("SunSynk Handler Intialised attempting to retrieve configuration");
+        logger.debug("SunSynk Handler initialised attempting to retrieve configuration");
         discoverApiKeyJob = scheduler.schedule(this::configAccount, 0, TimeUnit.SECONDS); // calls account config
                                                                                           // asynchronously
     }
@@ -71,7 +71,7 @@ public class SunSynkAccountHandler extends BaseBridgeHandler {
     }
 
     public void setBridgeOffline() {
-        updateStatus(ThingStatus.OFFLINE);
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Check credentials and re-enable account");
     }
 
     public List<Inverter> getInvertersFromSunSynk() {
@@ -133,7 +133,7 @@ public class SunSynkAccountHandler extends BaseBridgeHandler {
             this.sunAccount.refreshAccount(accountConfig.getEmail());
         } catch (SunSynkTokenException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Error attempting to refresh token");
+                    "Error attempting to refresh token: " + e.getMessage());
             return false;
         }
         return true;

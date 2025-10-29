@@ -52,7 +52,7 @@
     <dependency>
       <groupId>org.jacoco</groupId>
       <artifactId>org.jacoco.agent</artifactId>
-      <version>0.8.13</version>
+      <version>0.8.14</version>
       <classifier>runtime</classifier>
       <scope>test</scope>
     </dependency>
@@ -92,7 +92,7 @@ SPI-Consumer: java.util.ServiceLoader#load(java.lang.Class[tuwien.auto.calimero.
       <plugin>
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
-        <version>0.8.13</version>
+        <version>0.8.14</version>
         <configuration>
           <excludes>
             <exclude>tuwien/auto/calimero/**/*</exclude>

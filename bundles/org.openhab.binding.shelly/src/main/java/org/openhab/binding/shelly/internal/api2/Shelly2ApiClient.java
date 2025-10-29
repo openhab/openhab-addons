@@ -272,7 +272,7 @@ public class Shelly2ApiClient extends ShellyHttpClient {
         ShellySettingsRelay rstatus;
         ShellyShortStatusRelay sr;
         if (rs.id == null) { // firmware 1.6.1 returns id = null!
-            rs.id = id;
+            rs.id = id >= 10 ? id - 10 : id; // ids start at 10
         }
         int rIdx = getRelayIdx(profile, rs.id);
         if (profile.hasRelays) {

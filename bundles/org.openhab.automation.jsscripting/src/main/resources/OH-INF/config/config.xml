@@ -11,11 +11,11 @@
 		</parameter-group>
 
 		<parameter-group name="system">
-			<label>System Behaviour</label>
-			<description>This group defines JavaScript's system behaviour.</description>
+			<label>System Behavior</label>
+			<description>This group defines JavaScript's system behavior.</description>
 		</parameter-group>
 
-		<parameter name="injectionEnabledV2" type="integer" required="true" min="0" max="2" groupName="environment">
+		<parameter name="injectionEnabledV2" type="integer" required="true" min="0" max="3" groupName="environment">
 			<label>Inject Global Variables from Helper Library</label>
 			<description><![CDATA[
 			Import all variables from the openHAB JavaScript library for common services like items, things, actions, log, etc... <br>
@@ -29,14 +29,14 @@
 			</options>
 			<default>3</default>
 		</parameter>
-		<parameter name="wrapperEnabled" type="boolean" required="true" groupName="environment">
-			<label>Wrap UI-based scripts in Self-Executing Function</label>
+		<parameter name="scriptConditionWrapperEnabled" type="boolean" required="true" groupName="environment">
+			<label>Wrap Script Conditions in Self-Executing Function</label>
 			<description><![CDATA[
-			Wrapping UI-based scripts in a self-executing function allows the use of the <code>let</code> and <code>const</code> variable declarations,
+			Wrapping script conditions in a self-executing function allows the use of the <code>let</code> and <code>const</code> variable declarations,
 			as well as the use of <code>function</code> and <code>class</code> declarations.<br>
-			With this option enabled, you can also use <code>return</code> statements in your scripts to abort execution at any point.
+			With this option enabled, you need to use <code>return</code> statements in your script condition to return true or false.
 			]]></description>
-			<default>true</default>
+			<default>false</default>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="eventConversionEnabled" type="boolean" required="true" groupName="environment">
@@ -44,7 +44,7 @@
 			<description><![CDATA[
             Converting the event data from Java to JavaScript types in UI-based scripts allows working with event data in a native JS way without special handling for Java types.<br>
             With this option enabled, the event data available in UI-based scripts is all JS types and the same as in file-based scripts.<br>
-            Please note that this option <strong>requires both auto-injection & wrapper enabled</strong> and only applies to UI-based scripts and does not affect file-based scripts.
+            Please note that this option <strong>requires auto-injection enabled at least for UI-based scripts</strong>.
             ]]></description>
 			<default>true</default>
 			<advanced>true</advanced>

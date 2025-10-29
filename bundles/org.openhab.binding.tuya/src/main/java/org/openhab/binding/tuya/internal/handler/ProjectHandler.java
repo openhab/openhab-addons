@@ -28,7 +28,6 @@ import org.openhab.binding.tuya.internal.cloud.TuyaOpenAPI;
 import org.openhab.binding.tuya.internal.cloud.dto.DeviceListInfo;
 import org.openhab.binding.tuya.internal.cloud.dto.DeviceSchema;
 import org.openhab.binding.tuya.internal.config.ProjectConfiguration;
-import org.openhab.core.storage.Storage;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -47,14 +46,12 @@ import com.google.gson.Gson;
 @NonNullByDefault
 public class ProjectHandler extends BaseThingHandler implements ApiStatusCallback {
     private final TuyaOpenAPI api;
-    private final Storage<String> storage;
 
     private @Nullable ScheduledFuture<?> apiConnectFuture;
 
-    public ProjectHandler(Thing thing, HttpClient httpClient, Storage<String> storage, Gson gson) {
+    public ProjectHandler(Thing thing, HttpClient httpClient, Gson gson) {
         super(thing);
         this.api = new TuyaOpenAPI(this, scheduler, gson, httpClient);
-        this.storage = storage;
     }
 
     @Override
@@ -91,10 +88,6 @@ public class ProjectHandler extends BaseThingHandler implements ApiStatusCallbac
 
     public TuyaOpenAPI getApi() {
         return api;
-    }
-
-    public Storage<String> getStorage() {
-        return storage;
     }
 
     public CompletableFuture<List<DeviceListInfo>> getAllDevices(int page) {

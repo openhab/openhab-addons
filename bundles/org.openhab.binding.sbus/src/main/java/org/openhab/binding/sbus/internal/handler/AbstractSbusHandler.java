@@ -123,9 +123,22 @@ public abstract class AbstractSbusHandler extends BaseThingHandler implements Sb
     }
 
     /**
-     * Start polling the device for updates based on the configured refresh interval.
+     * Public method for helpers to update channel states.
+     * This exposes the protected updateState method to helper classes.
+     *
+     * @param channelUID the channel to update
+     * @param state the new state value
      */
-    protected void startPolling() {
+    public void updateChannelState(ChannelUID channelUID, org.openhab.core.types.State state) {
+        updateState(channelUID, state);
+    }
+
+    /**
+     * Start polling the device for updates based on the configured refresh interval.
+     * 
+     * @param initialDelay the initial delay before the first poll (in seconds)
+     */
+    protected void startPolling(long initialDelay) {
         SbusDeviceConfig config = getConfigAs(SbusDeviceConfig.class);
         if (config.refresh > 0) {
             pollingJob = scheduler.scheduleWithFixedDelay(() -> {
@@ -134,9 +147,10 @@ public abstract class AbstractSbusHandler extends BaseThingHandler implements Sb
                 } catch (IllegalStateException e) {
                     logger.warn("Error polling Sbus device: {}", e.getMessage());
                 }
-            }, 0, config.refresh, TimeUnit.SECONDS);
-        } else if (config.refresh == 0) {
+            }, initialDelay, config.refresh, TimeUnit.SECONDS);
+        } else if (config.refresh == 0 && initialDelay == 0) {
             // Run polling once to set initial thing state when refresh is disabled
+            // Only execute if initialDelay is 0 (startup), not when called from resetPollingTimer
             pollingJob = scheduler.schedule(() -> {
                 try {
                     pollDevice();
@@ -145,6 +159,14 @@ public abstract class AbstractSbusHandler extends BaseThingHandler implements Sb
                 }
             }, 0, TimeUnit.SECONDS);
         }
+    }
+
+    /**
+     * Start polling the device for updates based on the configured refresh interval.
+     * Uses a default initial delay of 0 seconds (immediate execution).
+     */
+    protected void startPolling() {
+        startPolling(0);
     }
 
     /**
@@ -166,14 +188,23 @@ public abstract class AbstractSbusHandler extends BaseThingHandler implements Sb
      * Reset the polling timer by cancelling the current polling job and starting a new one.
      * This should be called when an async message is successfully processed to reduce
      * unnecessary polling when the device is actively sending updates.
+     * Only resets the timer if periodic polling is enabled (refresh > 0).
+     * The next poll will occur after the full refresh interval, not immediately.
      */
     protected void resetPollingTimer() {
-        ScheduledFuture<?> job = pollingJob;
-        if (job != null) {
-            job.cancel(false); // Cancel the polling job without interrupting if it is currently running (cancel(false))
+        SbusDeviceConfig config = getConfigAs(SbusDeviceConfig.class);
+        // Only reset polling timer if periodic polling is enabled
+        if (config.refresh > 0) {
+            ScheduledFuture<?> job = pollingJob;
+            if (job != null) {
+                job.cancel(false); // Cancel the polling job without interrupting if it is currently running
+                                   // (cancel(false))
+            }
+            // Use refresh interval as initial delay to prevent immediate polling
+            startPolling(config.refresh);
+            logger.debug("Reset polling timer for handler {} - next poll in {} seconds", getThing().getUID(),
+                    config.refresh);
         }
-        startPolling();
-        logger.debug("Reset polling timer for handler {}", getThing().getUID());
     }
 
     // SbusMessageListener implementation

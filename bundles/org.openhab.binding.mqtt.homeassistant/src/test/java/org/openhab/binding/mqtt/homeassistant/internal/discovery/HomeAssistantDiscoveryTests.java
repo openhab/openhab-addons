@@ -14,6 +14,7 @@ package org.openhab.binding.mqtt.homeassistant.internal.discovery;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -72,7 +73,7 @@ public class HomeAssistantDiscoveryTests extends AbstractHomeAssistantTests {
                 getResourceAsByteArray("component/configTS0601AutoLock.json"));
 
         // Then one thing found
-        assert latch.await(3, TimeUnit.SECONDS);
+        assertTrue(latch.await(3, TimeUnit.SECONDS));
         var discoveryResults = discoveryListener.getDiscoveryResults();
         assertThat(discoveryResults.size(), is(1));
         var result = discoveryResults.get(0);
@@ -99,7 +100,7 @@ public class HomeAssistantDiscoveryTests extends AbstractHomeAssistantTests {
                 getResourceAsByteArray("component/configTS0601ClimateThermostat.json"));
 
         // Then one thing found
-        assert latch.await(3, TimeUnit.SECONDS);
+        assertTrue(latch.await(3, TimeUnit.SECONDS));
         var discoveryResults = discoveryListener.getDiscoveryResults();
         assertThat(discoveryResults.size(), is(1));
         var result = discoveryResults.get(0);
@@ -119,7 +120,7 @@ public class HomeAssistantDiscoveryTests extends AbstractHomeAssistantTests {
                 "homeassistant/switch/0x847127fffe11dd6a_auto_lock_zigbee2mqtt/config",
                 getResourceAsByteArray("component/configTS0601AutoLock.json"));
 
-        assert latch.await(3, TimeUnit.SECONDS);
+        assertTrue(latch.await(3, TimeUnit.SECONDS));
         discoveryResults = discoveryListener.getDiscoveryResults();
         assertThat(discoveryResults.size(), is(1));
         result = discoveryResults.get(0);
@@ -149,7 +150,7 @@ public class HomeAssistantDiscoveryTests extends AbstractHomeAssistantTests {
                 getResourceAsByteArray("component/configTS0601AutoLock.json"));
 
         // Then one thing found
-        assert latch.await(4, TimeUnit.SECONDS);
+        assertTrue(latch.await(4, TimeUnit.SECONDS));
         var discoveryResults = discoveryListener.getDiscoveryResults();
         assertThat(discoveryResults.size(), is(1));
         var result = discoveryResults.get(0);
@@ -168,7 +169,7 @@ public class HomeAssistantDiscoveryTests extends AbstractHomeAssistantTests {
         discovery.topicVanished(HA_UID, bridgeConnection,
                 "homeassistant/switch/0x847127fffe11dd6a_auto_lock_zigbee2mqtt/config");
 
-        assert latch.await(3, TimeUnit.SECONDS);
+        assertTrue(latch.await(3, TimeUnit.SECONDS));
         discoveryResults = discoveryListener.getDiscoveryResults();
         assertThat(discoveryResults.size(), is(1));
         result = discoveryResults.get(0);
@@ -204,6 +205,9 @@ public class HomeAssistantDiscoveryTests extends AbstractHomeAssistantTests {
 
         @Override
         public void thingRemoved(DiscoveryService source, ThingUID thingUID) {
+            if (latch != null) {
+                latch.countDown();
+            }
         }
 
         @Override

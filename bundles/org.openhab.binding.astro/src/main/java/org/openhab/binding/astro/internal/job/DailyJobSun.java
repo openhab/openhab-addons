@@ -129,7 +129,7 @@ public final class DailyJobSun extends AbstractJob {
             if (cal != null) {
                 schedulePublishPlanet(handler, cal, zone, locale);
             }
-            schedulePublishPlanet(handler, sun.getSeason().getNextSeason(zone, locale), zone, locale);
+            schedulePublishPlanet(handler, sun.getSeason().getNextSeason(), zone, locale);
 
             // schedule phase jobs
             cal = sun.getRise().getStart();

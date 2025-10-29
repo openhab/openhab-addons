@@ -64,10 +64,12 @@ public class OndiloHandler extends BaseThingHandler {
     private final LocaleProvider localeProvider;
     private final int configPoolId;
 
-    private int recommendationId; // Used to track the last recommendation ID processed
     private AtomicReference<String> ondiloId = new AtomicReference<>(NO_ID);
 
     private @Nullable ScheduledFuture<?> bridgeRecoveryJob;
+
+    private @Nullable LastMeasure[] lastMeasures = new LastMeasure[0];
+    private @Nullable Recommendation lastRecommendation = null;
 
     // Store last value and valueTime for trend calculation
     private OndiloMeasureState lastTemperatureState = new OndiloMeasureState(Double.NaN, null);
@@ -88,8 +90,25 @@ public class OndiloHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (RefreshType.REFRESH == command) {
-            // not implemented as it would causes >10 channel updates in a row during setup (exceeds given API quota)
-            // If you want to update the values, use the poll channel instead
+            String groupId = channelUID.getGroupId();
+            if (groupId == null) {
+                logger.warn("Received refresh command for unknown channel: {}", channelUID.getId());
+            } else if (GROUP_MEASURES.startsWith(groupId)) {
+                if (lastMeasures.length == 0) {
+                    clearLastMeasuresChannels();
+                } else {
+                    updateLastMeasuresChannels(lastMeasures);
+                }
+            } else if (GROUP_RECOMMENDATIONS.startsWith(groupId)) {
+                Recommendation lastRecommendation = this.lastRecommendation;
+                if (lastRecommendation == null) {
+                    clearRecommendationChannels();
+                } else {
+                    updateRecommendationChannels(lastRecommendation);
+                }
+            } else {
+                logger.warn("Received refresh command for unknown channel: {}", channelUID.getId());
+            }
             return;
         } else if (CHANNEL_RECOMMENDATION_STATUS.equals(channelUID.getId())) {
             if (command instanceof StringType cmd) {
@@ -97,8 +116,9 @@ public class OndiloHandler extends BaseThingHandler {
                     Recommendation.Status status = Recommendation.Status.valueOf(cmd.toString());
                     if (status == Recommendation.Status.ok) {
                         OndiloBridge ondiloBridge = getOndiloBridge();
-                        if (ondiloBridge != null && this.recommendationId != 0) {
-                            ondiloBridge.validateRecommendation(configPoolId, recommendationId);
+                        Recommendation lastRecommendation = this.lastRecommendation;
+                        if (ondiloBridge != null && lastRecommendation != null && lastRecommendation.id != 0) {
+                            ondiloBridge.validateRecommendation(configPoolId, lastRecommendation.id);
                         } else {
                             logger.warn(
                                     "Cannot validate recommendation, as the bridge is not initialized or no recommendation ID is set");
@@ -120,8 +140,9 @@ public class OndiloHandler extends BaseThingHandler {
     public void initialize() {
         OndiloBridge ondiloBridge = getOndiloBridge();
         if (ondiloBridge != null) {
-            // Initialize to 0, as no recommendation has been processed yet
-            recommendationId = 0;
+            // Initialize to empty array, as no measure / recommendation has been processed yet
+            this.lastMeasures = new LastMeasure[0];
+            this.lastRecommendation = null;
 
             if (configPoolId == 0) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, I18N_ID_INVALID);
@@ -163,7 +184,10 @@ public class OndiloHandler extends BaseThingHandler {
         if (!ondiloId.get().equals(NO_ID)) {
             ondiloId.set(NO_ID);
         }
-        recommendationId = 0; // Reset last processed recommendation ID
+
+        // Initialize to empty array, as no measure / recommendation has been processed yet
+        this.lastMeasures = new LastMeasure[0];
+        this.lastRecommendation = null;
     }
 
     public void clearLastMeasuresChannels() {
@@ -175,6 +199,7 @@ public class OndiloHandler extends BaseThingHandler {
         updateState(CHANNEL_TDS, UnDefType.UNDEF);
         updateState(CHANNEL_BATTERY, UnDefType.UNDEF);
         updateState(CHANNEL_RSSI, UnDefType.UNDEF);
+        this.lastMeasures = new LastMeasure[0];
     }
 
     public void clearRecommendationChannels() {
@@ -186,7 +211,7 @@ public class OndiloHandler extends BaseThingHandler {
         updateState(CHANNEL_RECOMMENDATION_UPDATED_AT, UnDefType.NULL);
         updateState(CHANNEL_RECOMMENDATION_STATUS, UnDefType.NULL);
         updateState(CHANNEL_RECOMMENDATION_DEADLINE, UnDefType.NULL);
-        this.recommendationId = 0; // Reset last processed recommendation ID
+        this.lastRecommendation = null;
     }
 
     private void updateTrendChannel(String channel, String trendChannel, double value, Instant valueTime,
@@ -219,41 +244,53 @@ public class OndiloHandler extends BaseThingHandler {
         lastMeasureState.time = valueTime;
     }
 
-    public Instant updateLastMeasuresChannels(LastMeasure measure) {
-        Instant valueTime = parseUtcTimeToInstant(measure.valueTime);
-        switch (measure.dataType) {
-            case "temperature":
-                updateTrendChannel(CHANNEL_TEMPERATURE, CHANNEL_TEMPERATURE_TREND, measure.value, valueTime,
-                        lastTemperatureState, SIUnits.CELSIUS);
-                break;
-            case "ph":
-                updateTrendChannel(CHANNEL_PH, CHANNEL_PH_TREND, measure.value, valueTime, lastPhState,
-                        DecimalType.class);
-                break;
-            case "orp":
-                updateTrendChannel(CHANNEL_ORP, CHANNEL_ORP_TREND, measure.value / 1000.0, valueTime, lastOrpState,
-                        Units.VOLT); // Convert mV to V
-                break;
-            case "salt":
-                updateTrendChannel(CHANNEL_SALT, CHANNEL_SALT_TREND, measure.value * 0.001, valueTime, lastSaltState,
-                        Units.KILOGRAM_PER_CUBICMETRE); // Convert mg/l to kg/m³
-                break;
-            case "tds":
-                updateTrendChannel(CHANNEL_TDS, CHANNEL_TDS_TREND, measure.value, valueTime, lastTdsState,
-                        Units.PARTS_PER_MILLION);
-                break;
-            case "battery":
-                updateState(CHANNEL_BATTERY, new QuantityType<>(measure.value, Units.PERCENT));
-                break;
-            case "rssi":
-                updateState(CHANNEL_RSSI, new DecimalType(measure.value));
-                break;
-            default:
-                logger.warn("Unknown data type: {}", measure.dataType);
+    public @Nullable Instant updateLastMeasuresChannels(LastMeasure[] measures) {
+        Instant earliestValueTime = null;
+        for (LastMeasure measure : measures) {
+            logger.trace("LastMeasure: type={}, value={}", measure.dataType, measure.value);
+            Instant valueTime = parseUtcTimeToInstant(measure.valueTime);
+            if (earliestValueTime == null || valueTime.isBefore(earliestValueTime)) {
+                earliestValueTime = valueTime;
+            }
+            switch (measure.dataType) {
+                case "temperature":
+                    updateTrendChannel(CHANNEL_TEMPERATURE, CHANNEL_TEMPERATURE_TREND, measure.value, valueTime,
+                            lastTemperatureState, SIUnits.CELSIUS);
+                    break;
+                case "ph":
+                    updateTrendChannel(CHANNEL_PH, CHANNEL_PH_TREND, measure.value, valueTime, lastPhState,
+                            DecimalType.class);
+                    break;
+                case "orp":
+                    updateTrendChannel(CHANNEL_ORP, CHANNEL_ORP_TREND, measure.value / 1000.0, valueTime, lastOrpState,
+                            Units.VOLT); // Convert mV to V
+                    break;
+                case "salt":
+                    updateTrendChannel(CHANNEL_SALT, CHANNEL_SALT_TREND, measure.value * 0.001, valueTime,
+                            lastSaltState, Units.KILOGRAM_PER_CUBICMETRE); // Convert mg/l to kg/m³
+                    break;
+                case "tds":
+                    updateTrendChannel(CHANNEL_TDS, CHANNEL_TDS_TREND, measure.value, valueTime, lastTdsState,
+                            Units.PARTS_PER_MILLION);
+                    break;
+                case "battery":
+                    updateState(CHANNEL_BATTERY, new QuantityType<>(measure.value, Units.PERCENT));
+                    break;
+                case "rssi":
+                    updateState(CHANNEL_RSSI, new DecimalType(measure.value));
+                    break;
+                default:
+                    logger.warn("Unknown data type: {}", measure.dataType);
+            }
         }
-        // Update value time channel (expect that it is the same for all measures)
-        updateState(CHANNEL_VALUE_TIME, new DateTimeType(valueTime));
-        return valueTime;
+
+        if (earliestValueTime != null) {
+            // Update value time channel (expect that it is the same for all measures)
+            updateState(CHANNEL_VALUE_TIME, new DateTimeType(earliestValueTime));
+        }
+
+        this.lastMeasures = measures;
+        return earliestValueTime;
     }
 
     public void updateRecommendationChannels(Recommendation recommendation) {
@@ -264,7 +301,7 @@ public class OndiloHandler extends BaseThingHandler {
         updateState(CHANNEL_RECOMMENDATION_UPDATED_AT, new DateTimeType(recommendation.updatedAt));
         updateState(CHANNEL_RECOMMENDATION_STATUS, new StringType(recommendation.status.name()));
         updateState(CHANNEL_RECOMMENDATION_DEADLINE, new DateTimeType(recommendation.deadline));
-        this.recommendationId = recommendation.id; // Update last processed recommendation ID
+        this.lastRecommendation = recommendation;
     }
 
     public void updatePool(Pool pool) {

@@ -1,10 +1,10 @@
 # Sure Petcare Binding
 
-This binding offers integration to the Sure Petcare API, supporting cloud-connected cat flaps and feeders.
+This binding offers integration to the Sure Petcare API, supporting cloud-connected pet/cat flaps, feeders and waterstations.
 
 ## Features
 
-1. Read access to all attributes for households, devices (hubs, flaps) and pets through individual things/channels.
+1. Read access to all attributes for households, devices (hubs, flaps, feeder, waterstations) and pets through individual things/channels.
 1. Manual setting of pet location.
 1. Setting of LED Mode (hub), Locking Mode (flaps) and Curfews.
 
@@ -25,14 +25,15 @@ The binding code is based on a lot of work done by other developers:
 
 This binding supports the following thing types
 
-| Thing           | Thing Type | Discovery | Description                                                              |
-|-----------------|------------|-----------|--------------------------------------------------------------------------|
-| Bridge          | Bridge     | Manual    |  A single connection to the Sure Petcare API                             |
-| Household       | Thing      | Automatic |  The Sure Petcare Household                                              |
-| Hub Device      | Thing      | Automatic |  The hub device which connects the cat flaps and feeders to the internet |
-| Flap Device     | Thing      | Automatic |  A cat or pet flap                                                       |
-| Feeder Device   | Thing      | Automatic |  A pet feeder                                                            |
-| Pet             | Thing      | Automatic |  A pet (dog or cat)                                                      |
+| Thing                 | Thing Type | Discovery | Description                                                              |
+|-----------------------|------------|-----------|--------------------------------------------------------------------------|
+| Bridge                | Bridge     | Manual    |  A single connection to the Sure Petcare API                             |
+| Household             | Thing      | Automatic |  The Sure Petcare Household                                              |
+| Hub Device            | Thing      | Automatic |  The hub device which connects the cat flaps and feeders to the internet |
+| Flap Device           | Thing      | Automatic |  A cat or pet flap                                                       |
+| Feeder Device         | Thing      | Automatic |  A pet feeder                                                            |
+| Waterstation Device   | Thing      | Automatic |  A pet drinking station                                                  |
+| Pet                   | Thing      | Automatic |  A pet (dog or cat)                                                      |
 
 ## Getting started /  Discovery
 
@@ -75,77 +76,94 @@ Channel names in **bold** are read/write, everything else is read-only
 
 ### Flap Device Thing (Cat or Pet Flap)
 
-| Channel            | Type         | Description                                                |
-|--------------------|--------------|------------------------------------------------------------|
-| id                 | Number       | A unique id assigned by the Sure Petcare API               |
-| name               | Text         | The name of the flap                                       |
-| product            | Text         | The type of product (3=pet flap, 6=cat flap)               |
-| curfewEnabled1     | Switch       | Indicator if curfew #1 configuration is enabled            |
-| curfewLockTime1    | Text         | The curfew #1 locking time (HH:MM)                         |
-| curfewUnlockTime1  | Text         | The curfew #1 unlocking time (HH:MM)                       |
-| curfewEnabled2     | Switch       | Indicator if curfew #2 configuration is enabled            |
-| curfewLockTime2    | Text         | The curfew #2 locking time (HH:MM)                         |
-| curfewUnlockTime2  | Text         | The curfew #2 unlocking time (HH:MM)                       |
-| curfewEnabled3     | Switch       | Indicator if curfew #3 configuration is enabled            |
-| curfewLockTime3    | Text         | The curfew #3 locking time (HH:MM)                         |
-| curfewUnlockTime3  | Text         | The curfew #3 unlocking time (HH:MM)                       |
-| curfewEnabled4     | Switch       | Indicator if curfew #4 configuration is enabled            |
-| curfewLockTime4    | Text         | The curfew #4 locking time (HH:MM)                         |
-| curfewUnlockTime4  | Text         | The curfew #4 unlocking time (HH:MM)                       |
-| lockingMode        | Text         | The locking mode (e.g. in/out, in-only, out-only etc.)     |
-| online             | Switch       | Indicator if the flap is connected to the hub              |
-| lowBattery         | Switch       | Indicator if the battery voltage is low                    |
-| batteryLevel       | Number       | The battery voltage percentage                             |
-| batteryVoltage     | Number       | The absolute battery voltage measurement                   |
-| deviceRSSI         | Number:Power | The received device signal strength in dB                  |
-| hubRSSI            | Number:Power | The received hub signal strength in dB                     |
+| Channel            | Type                     | Description                                                |
+|--------------------|--------------------------|------------------------------------------------------------|
+| id                 | Number                   | A unique id assigned by the Sure Petcare API               |
+| name               | Text                     | The name of the flap                                       |
+| product            | Text                     | The type of product (3=pet flap, 6=cat flap)               |
+| curfewEnabled1     | Switch                   | Indicator if curfew #1 configuration is enabled            |
+| curfewLockTime1    | Text                     | The curfew #1 locking time (HH:MM)                         |
+| curfewUnlockTime1  | Text                     | The curfew #1 unlocking time (HH:MM)                       |
+| curfewEnabled2     | Switch                   | Indicator if curfew #2 configuration is enabled            |
+| curfewLockTime2    | Text                     | The curfew #2 locking time (HH:MM)                         |
+| curfewUnlockTime2  | Text                     | The curfew #2 unlocking time (HH:MM)                       |
+| curfewEnabled3     | Switch                   | Indicator if curfew #3 configuration is enabled            |
+| curfewLockTime3    | Text                     | The curfew #3 locking time (HH:MM)                         |
+| curfewUnlockTime3  | Text                     | The curfew #3 unlocking time (HH:MM)                       |
+| curfewEnabled4     | Switch                   | Indicator if curfew #4 configuration is enabled            |
+| curfewLockTime4    | Text                     | The curfew #4 locking time (HH:MM)                         |
+| curfewUnlockTime4  | Text                     | The curfew #4 unlocking time (HH:MM)                       |
+| lockingMode        | Text                     | The locking mode (e.g. in/out, in-only, out-only etc.)     |
+| online             | Switch                   | Indicator if the flap is connected to the hub              |
+| lowBattery         | Switch                   | Indicator if the battery voltage is low                    |
+| batteryLevel       | Number:Dimensionless     | The battery voltage percentage in %                        |
+| batteryVoltage     | Number:ElectricPotential | The absolute battery voltage measurement in V              |
+| deviceRSSI         | Number:Power             | The received device signal strength in dBm                 |
+| hubRSSI            | Number:Power             | The received hub signal strength in dBm                    |
 
 ### Feeder Device Thing
 
-| Channel           | Type         | Description                                                                                     |
-|-------------------|--------------|-------------------------------------------------------------------------------------------------|
-| id                | Number       | A unique id assigned by the Sure Petcare API                                                    |
-| name              | Text         | The name of the feeder                                                                          |
-| product           | Text         | The type of product                                                                             |
-| online            | Switch       | Indicator if the feeder is connected to the hub                                                 |
-| lowBattery        | Switch       | Indicator if the battery voltage is low                                                         |
-| batteryLevel      | Number       | The battery voltage percentage                                                                  |
-| batteryVoltage    | Number       | The absolute battery voltage measurement                                                        |
-| deviceRSSI        | Number:Power | The received device signal strength in dB                                                       |
-| hubRSSI           | Number:Power | The received hub signal strength in dB                                                          |
-| bowls             | Text         | The feeder bowls type (1 big bowl or 2 half bowls)                                              |
-| bowlsFood         | Text         | The feeder big bowl food type (wet food, dry food or both)                                      |
-| bowlsTarget       | Number:Mass  | The feeder big bowl target weight in gram (even if user setting is oz, API stores this in gram) |
-| bowlsFoodLeft     | Text         | The feeder left half bowl food type (wet food, dry food or both)                                |
-| bowlsTargetLeft   | Number:Mass  | The feeder left half bowl target weight                                                         |
-| bowlsFoodRight    | Text         | The feeder right half bowl food type (wet food, dry food or both)                               |
-| bowlsTargetRight  | Number:Mass  | The feeder right half bowl target weight                                                        |
-| bowlsCloseDelay   | Text         | The feeder lid close delay (fast, normal, slow)                                                 |
-| bowlsTrainingMode | Text         | The feeder training mode (off, full open, almost full open, half closed, almost closed)         |
+| Channel           | Type                      | Description                                                                                     |
+|-------------------|---------------------------|-------------------------------------------------------------------------------------------------|
+| id                | Number                    | A unique id assigned by the Sure Petcare API                                                    |
+| name              | Text                      | The name of the feeder                                                                          |
+| product           | Text                      | The type of product                                                                             |
+| online            | Switch                    | Indicator if the feeder is connected to the hub                                                 |
+| lowBattery        | Switch                    | Indicator if the battery voltage is low                                                         |
+| batteryLevel      | Number:Dimensionless      | The battery voltage percentage in %                                                             |
+| batteryVoltage    | Number:ElectricPotential  | The absolute battery voltage measurement in V                                                   |
+| deviceRSSI        | Number:Power              | The received device signal strength in dBm                                                      |
+| hubRSSI           | Number:Power              | The received hub signal strength in dBm                                                         |
+| bowls             | Text                      | The feeder bowls type (1 big bowl or 2 half bowls)                                              |
+| bowlsFood         | Text                      | The feeder big bowl food type (wet food, dry food or both)                                      |
+| bowlsTarget       | Number:Mass               | The feeder big bowl target weight in gram (even if user setting is oz, API stores this in gram) |
+| bowlsFoodLeft     | Text                      | The feeder left half bowl food type (wet food, dry food or both)                                |
+| bowlsTargetLeft   | Number:Mass               | The feeder left half bowl target weight in g                                                    |
+| bowlsFoodRight    | Text                      | The feeder right half bowl food type (wet food, dry food or both)                               |
+| bowlsTargetRight  | Number:Mass               | The feeder right half bowl target weight in g                                                   |
+| bowlsCloseDelay   | Text                      | The feeder lid close delay (fast, normal, slow)                                                 |
+| bowlsTrainingMode | Text                      | The feeder training mode (off, full open, almost full open, half closed, almost closed)         |
+
+### Waterstation Device Thing
+
+| Channel           | Type                      | Description                                            |
+|-------------------|---------------------------|--------------------------------------------------------|
+| id                | Number                    | A unique id assigned by the Sure Petcare API           |
+| name              | Text                      | The name of the waterstation                           |
+| product           | Text                      | The type of product                                    |
+| online            | Switch                    | Indicator if the waterstation is connected to the hub  |
+| lowBattery        | Switch                    | Indicator if the battery voltage is low                |
+| batteryLevel      | Number:Dimensionless      | The battery voltage percentage in %                    |
+| batteryVoltage    | Number:ElectricPotential  | The absolute battery voltage measurement in V          |
+| deviceRSSI        | Number:Power              | The received device signal strength in dBm             |
+| hubRSSI           | Number:Power              | The received hub signal strength in dBm                |
 
 ### Pet Thing
 
-| Channel                | Type        | Description                                                                         |
-|------------------------|-------------|-------------------------------------------------------------------------------------|
-| id                     | Number      | A unique id assigned by the Sure Petcare API                                        |
-| name                   | Text        | The name of the pet                                                                 |
-| comment                | Text        | A user provided comment/description                                                 |
-| gender                 | Text        | The pet's gender                                                                    |
-| breed                  | Text        | The pet's breed                                                                     |
-| species                | Text        | The pet's species                                                                   |
-| photo                  | Image       | The image of the pet                                                                |
-| tagIdentifier          | Text        | The unique identifier of the pet's micro chip or collar tag                         |
-| location               | Text        | The current location of the pet (0=unknown, 1=inside, 2=outside)                    |
-| locationChanged        | DateTime    | The time when the location was last changed                                         |
-| locationTimeoffset     | String      | Time-Command to set the pet location with a time offset. (10, 30 or 60 minutes ago) |
-| locationChangedThrough | Text        | The device name or username where the pet left/entered the house                    |
-| weight                 | Number:Mass | The pet's weight (in gram)                                                          |
-| dateOfBirth            | DateTime    | The pet's date of birth                                                             |
-| feederDevice           | Text        | The device from which the pet last ate                                              |
-| feederLastChange       | Number:Mass | The last eaten change in gram (big bowl)                                            |
-| feederLastChangeLeft   | Number:Mass | The last eaten change in gram (half bowl left)                                      |
-| feederLastChangeRight  | Number:Mass | The last eaten change in gram (half bowl right)                                     |
-| feederLastFeeding      | DateTime    | The pet's last eaten date                                                           |
+| Channel                | Type           | Description                                                                         |
+|------------------------|----------------|-------------------------------------------------------------------------------------|
+| id                     | Number         | A unique id assigned by the Sure Petcare API                                        |
+| name                   | Text           | The name of the pet                                                                 |
+| comment                | Text           | A user provided comment/description                                                 |
+| gender                 | Text           | The pet's gender                                                                    |
+| breed                  | Text           | The pet's breed                                                                     |
+| species                | Text           | The pet's species                                                                   |
+| photo                  | Image          | The image of the pet                                                                |
+| tagIdentifier          | Text           | The unique identifier of the pet's micro chip or collar tag                         |
+| location               | Text           | The current location of the pet (0=unknown, 1=inside, 2=outside)                    |
+| locationChanged        | DateTime       | The time when the location was last changed                                         |
+| locationTimeoffset     | String         | Time-Command to set the pet location with a time offset. (10, 30 or 60 minutes ago) |
+| locationChangedThrough | Text           | The device name or username where the pet left/entered the house                    |
+| weight                 | Number:Mass    | The pet's weight (in gram)                                                          |
+| dateOfBirth            | DateTime       | The pet's date of birth                                                             |
+| feederDevice           | Text           | The device from which the pet last ate                                              |
+| feederLastChange       | Number:Mass    | The last eaten change in gram (big bowl)                                            |
+| feederLastChangeLeft   | Number:Mass    | The last eaten change in gram (half bowl left)                                      |
+| feederLastChangeRight  | Number:Mass    | The last eaten change in gram (half bowl right)                                     |
+| feederLastFeeding      | DateTime       | The pet's last eaten date                                                           |
+| waterDevice            | Text           | The device from which the pet last drunk                                            |
+| waterLastChange        | Number:Volume  | The last drinking change in milliliter (ml)                                         |
+| waterLastDrinking      | DateTime       | The pet's last drinking date                                                        |
 
 ## Manual configuration
 
@@ -158,108 +176,185 @@ Bridge surepetcare:bridge:bridge1 "Demo API Bridge" @ "SurePetcare" [ username="
   Thing hubDevice     123456 "My SurePetcare Hub" @ "SurePetcare Devices"
   Thing flapDevice    123456 "My Backdoor Cat Flap" @ "SurePetcare Devices"
   Thing feederDevice  123456 "My Pet Feeder" @ "SurePetcare Devices"
+  Thing waterDevice   123456 "My Pet Waterstation" @ "SurePetcare Devices"
   Thing pet           12345  "My Cat" @ "SurePetcare Pets"
 }
 ```
 
 ### Items configuration
 
+Choose "Create Equipment from Thing" -> select Thing -> Channels click on Expert Mode
+
 ```java
-/* *****************************************
- * Bridge
- * *****************************************/
-Group   dgPet
-Switch  UR_1a_Online    "Bridge Online [%s]"        (dgPet) {channel="surepetcare:bridge:bridge1:online"}
-Switch  UR_1a_Refresh   "Bridge Data Refresh [%s]"  (dgPet) {channel="surepetcare:bridge:bridge1:refresh"}
+// Equipment representing thing:
+// surepetcare:bridge:api
+// (SurePetcare API Bridge)
+Group     gSurePetcare           "SurePetcare API Bridge"   (gLivingRoom)     ["WebService"]
+Switch    SurePet_API_Refresh    "Bridge Data Refresh"      (gSurePetcare)    ["Point"]         {channel="surepetcare:bridge:api:refresh"}
 
-/* *****************************************
- * Household
- * *****************************************/
-Number      UR_1b_Id            "Household Id [%d]"                 (dgPet) {channel="surepetcare:household:bridge1:12345:id"}
-String      UR_1b_Name          "Household Name [%s]"               (dgPet) {channel="surepetcare:household:bridge1:12345:name"}
-Number      UR_1b_TimezoneId    "Household Timezone Id [%d]"        (dgPet) {channel="surepetcare:household:bridge1:12345:timezoneId"}
+// Equipment representing thing:
+// surepetcare:household:api:CHANGE_ME
+// (SurePetcare Household)
+Group     gSurePetcareHousehold            "SurePetcare Household"          (gSurePetcare)             ["Equipment"]
+Number    SurePet_HouseholdId_1            "Household Id"                   (gSurePetcareHousehold)    ["Point"]        {channel="surepetcare:household:api:CHANGE_ME:id"}
+String    SurePet_HouseholdName_1          "Household Name"                 (gSurePetcareHousehold)    ["Point"]        {channel="surepetcare:household:api:CHANGE_ME:name"}
+Number    SurePet_HouseholdTimezoneId_1    "Household Timezone Id"          (gSurePetcareHousehold)    ["Point"]        {channel="surepetcare:household:api:CHANGE_ME:timezoneId"}
 
-/* *****************************************
- * Hub
- * *****************************************/
-Number      UR_1c_Id                "Hub Id [%d]"                                   (dgPet) {channel="surepetcare:hubDevice:bridge1:123456:id"}
-String      UR_1c_Name              "Hub Name [%s]"                                 (dgPet) {channel="surepetcare:hubDevice:bridge1:123456:name"}
-String      UR_1c_Product           "Hub Product [%s]"                              (dgPet) {channel="surepetcare:hubDevice:bridge1:123456:product"}
-String      UR_1c_LEDMode           "Hub LED Mode [%s]"                             (dgPet) {channel="surepetcare:hubDevice:bridge1:123456:ledMode"}
-String      UR_1c_PairingMode       "Hub Pairing Mode [%s]"                         (dgPet) {channel="surepetcare:hubDevice:bridge1:123456:pairingMode"}
-Switch      UR_1c_Online            "Hub Online [%s]"                               (dgPet) {channel="surepetcare:hubDevice:bridge1:123456:online"}
+Group    gSurePetcareDevices    "SurePetcare Devices"    (gSurePetcareHousehold)    ["Equipment"]
+// Equipment representing thing:
+// surepetcare:hubDevice:api:CHANGE_ME
+// (SurePetcare Hub)
+Group     gSurePetcareHub             "SurePetcare Hub"         (gSurePetcareDevices)    ["Equipment"]
+Number    SurePet_HubId_1             "Hub Id"                  (gSurePetcareHub)        ["Point"]        {channel="surepetcare:hubDevice:api:CHANGE_ME:id"}
+String    SurePet_HubName_1           "Hub Name"                (gSurePetcareHub)        ["Point"]        {channel="surepetcare:hubDevice:api:CHANGE_ME:name"}
+String    SurePet_HubProduct_1        "Hub Product"             (gSurePetcareHub)        ["Point"]        {channel="surepetcare:hubDevice:api:CHANGE_ME:product"}
+String    SurePet_HubLedMode_1        "Hub LED Mode"            (gSurePetcareHub)        ["Point"]        {channel="surepetcare:hubDevice:api:CHANGE_ME:ledMode"}
+String    SurePet_HubPairingMode_1    "Hub Pairing Mode"        (gSurePetcareHub)        ["Point"]        {channel="surepetcare:hubDevice:api:CHANGE_ME:pairingMode"}
+Switch    SurePet_HubOnline_1         "Hub Online"              (gSurePetcareHub)        ["Point"]        {channel="surepetcare:hubDevice:api:CHANGE_ME:online"}
 
-/* *****************************************
- * Cat/Pet Flap
- * *****************************************/
-Number      UR_1d_Id                "Flap Id [%d]"                              (dgPet) {channel="surepetcare:flapDevice:bridge1:123456:id"}
-String      UR_1d_Name              "Flap Name [%s]"                            (dgPet) {channel="surepetcare:flapDevice:bridge1:123456:name"}
-String      UR_1d_Product           "Flap Product [%s]"                         (dgPet) {channel="surepetcare:flapDevice:bridge1:123456:product"}
-Switch      UR_1d_CurfewEnabled1    "Flap Curfew 1 Enabled [%s]"                (dgPet) {channel="surepetcare:flapDevice:bridge1:123456:curfewEnabled1"}
-String      UR_1d_CurfewLockTime1   "Flap Curfew 1 Lock Time [%s]"              (dgPet) {channel="surepetcare:flapDevice:bridge1:123456:curfewLockTime1"}
-String      UR_1d_CurfewUnlockTime1 "Flap Curfew 1 Unlock Time [%s]"            (dgPet) {channel="surepetcare:flapDevice:bridge1:123456:curfewUnlockTime1"}
-Switch      UR_1d_CurfewEnabled2    "Flap Curfew 2 Enabled [%s]"                (dgPet) {channel="surepetcare:flapDevice:bridge1:123456:curfewEnabled2"}
-String      UR_1d_CurfewLockTime2   "Flap Curfew 2 Lock Time [%s]"              (dgPet) {channel="surepetcare:flapDevice:bridge1:123456:curfewLockTime2"}
-String      UR_1d_CurfewUnlockTime2 "Flap Curfew 2 Unlock Time [%s]"            (dgPet) {channel="surepetcare:flapDevice:bridge1:123456:curfewUnlockTime2"}
-Switch      UR_1d_CurfewEnabled3    "Flap Curfew 3 Enabled [%s]"                (dgPet) {channel="surepetcare:flapDevice:bridge1:123456:curfewEnabled3"}
-String      UR_1d_CurfewLockTime3   "Flap Curfew 3 Lock Time [%s]"              (dgPet) {channel="surepetcare:flapDevice:bridge1:123456:curfewLockTime3"}
-String      UR_1d_CurfewUnlockTime3 "Flap Curfew 3 Unlock Time [%s]"            (dgPet) {channel="surepetcare:flapDevice:bridge1:123456:curfewUnlockTime3"}
-Switch      UR_1d_CurfewEnabled4    "Flap Curfew 4 Enabled [%s]"                (dgPet) {channel="surepetcare:flapDevice:bridge1:123456:curfewEnabled4"}
-String      UR_1d_CurfewLockTime4   "Flap Curfew 4 Lock Time [%s]"              (dgPet) {channel="surepetcare:flapDevice:bridge1:123456:curfewLockTime4"}
-String      UR_1d_CurfewUnlockTime5 "Flap Curfew 4 Unlock Time [%s]"            (dgPet) {channel="surepetcare:flapDevice:bridge1:123456:curfewUnlockTime4"}
-String      UR_1d_LockingMode       "Flap Locking Mode [%s]"                    (dgPet) {channel="surepetcare:flapDevice:bridge1:123456:lockingMode"}
-Switch      UR_1d_LowBattery        "Flap Low Battery [%s]"                     (dgPet) {channel="surepetcare:flapDevice:bridge1:123456:lowBattery"}
-Number      UR_1d_BatteryLevel      "Flap Battery Level [%.0f %%]"              (dgPet) {channel="surepetcare:flapDevice:bridge1:123456:batteryLevel"}
-Number      UR_1d_BatteryVoltage    "Flap Battery Voltage [%.1f V]"             (dgPet) {channel="surepetcare:flapDevice:bridge1:123456:batteryVoltage"}
-Switch      UR_1d_Online            "Flap Online [%s]"                          (dgPet) {channel="surepetcare:flapDevice:bridge1:123456:online"}
-Number      UR_1d_DeviceRSSI        "Flap Device RSSI [%.2f dB]"                (dgPet) {channel="surepetcare:flapDevice:bridge1:123456:deviceRSSI"}
-Number      UR_1d_HubRSSI           "Flap Hub RSSI [%.2f dB]"                   (dgPet) {channel="surepetcare:flapDevice:bridge1:123456:hubRSSI"}
+// Equipment representing thing:
+// surepetcare:flapDevice:api:CHANGE_ME
+// (SurePetcare Flap)
+Group                       gSurePetcareFlap                   "SurePetcare Flap"                                            (gSurePetcareDevices)    ["Equipment"]
+Number                      SurePet_FlapId_1                   "Flap Id"                                                     (gSurePetcareFlap)       ["Point"]                    {channel="surepetcare:flapDevice:api:CHANGE_ME:id"}
+String                      SurePet_FlapName_1                 "Flap Name"                                                   (gSurePetcareFlap)       ["Point"]                    {channel="surepetcare:flapDevice:api:CHANGE_ME:name"}
+String                      SurePet_FlapProduct_1              "Flap Product"                                                (gSurePetcareFlap)       ["Point"]                    {channel="surepetcare:flapDevice:api:CHANGE_ME:product"}
+Switch                      SurePet_FlapCurfewEnabled1_1       "Flap Curfew 1 Enabled"                                       (gSurePetcareFlap)       ["Point"]                    {channel="surepetcare:flapDevice:api:CHANGE_ME:curfewEnabled1"}
+String                      SurePet_FlapCurfewLockTime1_1      "Flap Curfew 1 Lock Time"                                     (gSurePetcareFlap)       ["Point"]                    {channel="surepetcare:flapDevice:api:CHANGE_ME:curfewLockTime1"}
+String                      SurePet_FlapCurfewUnlockTime1_1    "Flap Curfew 1 Unlock Time"                                   (gSurePetcareFlap)       ["Point"]                    {channel="surepetcare:flapDevice:api:CHANGE_ME:curfewUnlockTime1"}
+Switch                      SurePet_FlapCurfewEnabled2_1       "Flap Curfew 2 Enabled"                                       (gSurePetcareFlap)       ["Point"]                    {channel="surepetcare:flapDevice:api:CHANGE_ME:curfewEnabled2"}
+String                      SurePet_FlapCurfewLockTime2_1      "Flap Curfew 2 Lock Time"                                     (gSurePetcareFlap)       ["Point"]                    {channel="surepetcare:flapDevice:api:CHANGE_ME:curfewLockTime2"}
+String                      SurePet_FlapCurfewUnlockTime2_1    "Flap Curfew 2 Unlock Time"                                   (gSurePetcareFlap)       ["Point"]                    {channel="surepetcare:flapDevice:api:CHANGE_ME:curfewUnlockTime2"}
+Switch                      SurePet_FlapCurfewEnabled3_1       "Flap Curfew 3 Enabled"                                       (gSurePetcareFlap)       ["Point"]                    {channel="surepetcare:flapDevice:api:CHANGE_ME:curfewEnabled3"}
+String                      SurePet_FlapCurfewLockTime3_1      "Flap Curfew 3 Lock Time"                                     (gSurePetcareFlap)       ["Point"]                    {channel="surepetcare:flapDevice:api:CHANGE_ME:curfewLockTime3"}
+String                      SurePet_FlapCurfewUnlockTime3_1    "Flap Curfew 3 Unlock Time"                                   (gSurePetcareFlap)       ["Point"]                    {channel="surepetcare:flapDevice:api:CHANGE_ME:curfewUnlockTime3"}
+Switch                      SurePet_FlapCurfewEnabled4_1       "Flap Curfew 4 Enabled"                                       (gSurePetcareFlap)       ["Point"]                    {channel="surepetcare:flapDevice:api:CHANGE_ME:curfewEnabled4"}
+String                      SurePet_FlapCurfewLockTime4_1      "Flap Curfew 4 Lock Time"                                     (gSurePetcareFlap)       ["Point"]                    {channel="surepetcare:flapDevice:api:CHANGE_ME:curfewLockTime4"}
+String                      SurePet_FlapCurfewUnlockTime4_1    "Flap Curfew 4 Unlock Time"                                   (gSurePetcareFlap)       ["Point"]                    {channel="surepetcare:flapDevice:api:CHANGE_ME:curfewUnlockTime4"}
+String                      SurePet_FlapLockingMode_1          "Flap Locking Mode"                     <lock>                (gSurePetcareFlap)       ["Point"]                    {channel="surepetcare:flapDevice:api:CHANGE_ME:lockingMode"}
+Switch                      SurePet_FlapLowBattery_1           "Flap Low Battery"                      <LowBattery>          (gSurePetcareFlap)       ["Energy", "LowBattery"]     {channel="surepetcare:flapDevice:api:CHANGE_ME:lowBattery"}
+Number:Dimensionless        SurePet_FlapBatteryLevel_1         "Flap Battery Level"                    <Battery>             (gSurePetcareFlap)       ["Measurement", "Energy"]    {channel="surepetcare:flapDevice:api:CHANGE_ME:batteryLevel", stateDescription="%.0f %%", unit="%"}
+Number:ElectricPotential    SurePet_FlapBatteryVoltage_1       "Flap Battery Voltage"                  <energy>              (gSurePetcareFlap)       ["Point"]                    {channel="surepetcare:flapDevice:api:CHANGE_ME:batteryVoltage", stateDescription="%.1f V", unit="V"}
+Switch                      SurePet_FlapOnline_1               "Flap Online"                                                 (gSurePetcareFlap)       ["Point"]                    {channel="surepetcare:flapDevice:api:CHANGE_ME:online"}
+Number:Power                SurePet_FlapDeviceRSSI_1           "Flap Device RSSI"                      <qualityofservice>    (gSurePetcareFlap)       ["Point"]                    {channel="surepetcare:flapDevice:api:CHANGE_ME:deviceRSSI", stateDescription="%.2f dBm", unit="dBm"}
+Number:Power                SurePet_FlapHubRSSI_1              "Flap Hub RSSI"                         <qualityofservice>    (gSurePetcareFlap)       ["Point"]                    {channel="surepetcare:flapDevice:api:CHANGE_ME:hubRSSI", stateDescription="%.2f dBm", unit="dBm"}
 
-/* *****************************************
- * Pet
- * *****************************************/
-Number      UR_1e_Id                "Pet Id [%d]"                           (dgPet) {channel="surepetcare:pet:bridge1:12345:id"}
-String      UR_1e_Name              "Pet Name [%s]"                         (dgPet) {channel="surepetcare:pet:bridge1:12345:name"}
-String      UR_1e_Comment           "Pet Comment [%s]"                      (dgPet) {channel="surepetcare:pet:bridge1:12345:comment"}
-String      UR_1e_Gender            "Pet Gender [%s]"                       (dgPet) {channel="surepetcare:pet:bridge1:12345:gender"}
-String      UR_1e_Breed             "Pet Breed [%s]"                        (dgPet) {channel="surepetcare:pet:bridge1:12345:breed"}
-String      UR_1e_Species           "Pet Species [%s]"                      (dgPet) {channel="surepetcare:pet:bridge1:12345:species"}
-Image       UR_1e_Photo             "Pet Photo"                             (dgPet) {channel="surepetcare:pet:bridge1:12345:photo"}
-String      UR_1e_TagIdentifier     "Pet Tag Identifier [%s]"               (dgPet) {channel="surepetcare:pet:bridge1:12345:tagIdentifier"}
-String      UR_1e_Location          "Pet Location [%s]"                     (dgPet) {channel="surepetcare:pet:bridge1:12345:location"}
-String      UR_1e_LocationTimeoffset"Pet Switch Location [%s]"              (gCats) {channel="surepetcare:pet:bridge1:20584:locationTimeoffset"}
-DateTime    UR_1e_LocationChanged   "Pet Loc. Updated [%1$ta. %1$tH:%1$tM]" (dgPet) {channel="surepetcare:pet:bridge1:12345:locationChanged"}
-String      UR_1e_LocationThrough   "Pet Entered / Left through [%s]"       (dgPet) {channel="surepetcare:pet:bridge1:12345:locationChangedThrough"}
-Number:Mass UR_1e_Weight            "Pet Weight [%.1f %unit%]"              (dgPet) {channel="surepetcare:pet:bridge1:12345:weight"}
-DateTime    UR_1e_DateOfBirth       "Pet Date of Birth [%1$td.%1$tm.%1$tY]" (dgPet) {channel="surepetcare:pet:bridge1:12345:dateOfBirth"}
-// Pet Feeder Data
-String      UR_1e_Device            "Device Name [%s]"                      (dgPet) {channel="surepetcare:pet:bridge1:12345:feederDevice"}
-Number:Mass UR_1e_Change            "Change: [%.2f %unit%]"                 (dgPet) {channel="surepetcare:pet:bridge1:12345:feederLastChange"}
-Number:Mass UR_1e_ChangeLeft        "Change: L [%.2f %unit%]"               (dgPet) {channel="surepetcare:pet:bridge1:12345:feederLastChangeLeft"}
-Number:Mass UR_1e_ChangeRight       "Change: R [%.2f %unit%]"               (dgPet) {channel="surepetcare:pet:bridge1:12345:feederLastChangeRight"}
-DateTime    UR_1e_FeedAt            "Last Feeding [%1$ta. %1$tH:%1$tM]"     (dgPet) {channel="surepetcare:pet:bridge1:12345:feederLastFeeding"}
+// Equipment representing thing:
+// surepetcare:feederDevice:api:CHANGE_ME
+// (SurePetcare Feeder 1)
+Group                       gSurePetcareDevice1                  "SurePetcare Feeder 1"                                                 (gSurePetcareDevices)    ["Equipment"]
+Number                      SurePet_FeederId_1                   "Feeder ID"                                                            (gSurePetcareDevice1)    ["Point"]                    {channel="surepetcare:feederDevice:api:CHANGE_ME:id"}
+String                      SurePet_FeederName_1                 "Feeder Name"                                                          (gSurePetcareDevice1)    ["Point"]                    {channel="surepetcare:feederDevice:api:CHANGE_ME:name"}
+String                      SurePet_FeederProduct_1              "Feeder Product"                                                       (gSurePetcareDevice1)    ["Point"]                    {channel="surepetcare:feederDevice:api:CHANGE_ME:product"}
+Switch                      SurePet_FeederLowBattery_1           "Feeder Low Battery"                             <LowBattery>          (gSurePetcareDevice1)    ["Energy", "LowBattery"]     {channel="surepetcare:feederDevice:api:CHANGE_ME:lowBattery"}
+Number:Dimensionless        SurePet_FeederBatteryLevel_1         "Feeder Battery Level"                           <Battery>             (gSurePetcareDevice1)    ["Measurement", "Energy"]    {channel="surepetcare:feederDevice:api:CHANGE_ME:batteryLevel", stateDescription="%.0f %%", unit="%"}
+Number:ElectricPotential    SurePet_FeederBatteryVoltage_1       "Feeder Battery Voltage"                         <energy>              (gSurePetcareDevice1)    ["Point"]                    {channel="surepetcare:feederDevice:api:CHANGE_ME:batteryVoltage", stateDescription="%.1f V", unit="V"}
+Switch                      SurePet_FeederOnline_1               "Feeder Status"                                                        (gSurePetcareDevice1)    ["Point"]                    {channel="surepetcare:feederDevice:api:CHANGE_ME:online"}
+Number:Power                SurePet_FeederDeviceRSSI_1           "Feeder Device Signal"                           <qualityofservice>    (gSurePetcareDevice1)    ["Point"]                    {channel="surepetcare:feederDevice:api:CHANGE_ME:deviceRSSI", stateDescription="%.2f dBm", unit="dBm"}
+Number:Power                SurePet_FeederHubRSSI_1              "Feeder Hub Signal"                              <qualityofservice>    (gSurePetcareDevice1)    ["Point"]                    {channel="surepetcare:feederDevice:api:CHANGE_ME:hubRSSI", stateDescription="%.2f dBm", unit="dBm"}
+String                      SurePet_FeederBowlsFood_1            "Feeder Food Type"                                                     (gSurePetcareDevice1)    ["Point"]                    {channel="surepetcare:feederDevice:api:CHANGE_ME:bowlsFood"}
+Number:Mass                 SurePet_FeederBowlsTarget_1          "Feeder Target"                                                        (gSurePetcareDevice1)    ["Point"]                    {channel="surepetcare:feederDevice:api:CHANGE_ME:bowlsTarget", stateDescription="%.0f g", unit="g"}
+String                      SurePet_FeederBowlsFoodLeft_1        "Feeder Food Type L"                                                   (gSurePetcareDevice1)    ["Point"]                    {channel="surepetcare:feederDevice:api:CHANGE_ME:bowlsFoodLeft"}
+Number:Mass                 SurePet_FeederBowlsTargetLeft_1      "Feeder Target L"                                                      (gSurePetcareDevice1)    ["Point"]                    {channel="surepetcare:feederDevice:api:CHANGE_ME:bowlsTargetLeft", stateDescription="%.0f g", unit="g"}
+String                      SurePet_FeederBowlsFoodRight_1       "Feeder Food Type R"                                                   (gSurePetcareDevice1)    ["Point"]                    {channel="surepetcare:feederDevice:api:CHANGE_ME:bowlsFoodRight"}
+Number:Mass                 SurePet_FeederBowlsTargetRight_1     "Feeder Target R"                                                      (gSurePetcareDevice1)    ["Point"]                    {channel="surepetcare:feederDevice:api:CHANGE_ME:bowlsTargetRight", stateDescription="%.0f g", unit="g"}
+String                      SurePet_FeederBowls_1                "Feeder Bowls Type"                                                    (gSurePetcareDevice1)    ["Point"]                    {channel="surepetcare:feederDevice:api:CHANGE_ME:bowls"}
+String                      SurePet_FeederBowlsCloseDelay_1      "Feeder Close Delay"                                                   (gSurePetcareDevice1)    ["Point"]                    {channel="surepetcare:feederDevice:api:CHANGE_ME:bowlsCloseDelay"}
+String                      SurePet_FeederBowlsTrainingMode_1    "Feeder Training Mode"                                                 (gSurePetcareDevice1)    ["Point"]                    {channel="surepetcare:feederDevice:api:CHANGE_ME:bowlsTrainingMode"}
 
-/* *****************************************
- * Pet Feeder
- * *****************************************/
-Number      UR_1f_Id                    "Feeder ID [%s]"                            (dgPet) {channel="surepetcare:feederDevice:bridge1:123456:id"}
-String      UR_1f_Name                  "Feeder Name [%s]"                          (dgPet) {channel="surepetcare:feederDevice:bridge1:123456:name"}
-String      UR_1f_Product               "Feeder Product [%s]"                       (dgPet) {channel="surepetcare:feederDevice:bridge1:123456:product"}
-Switch      UR_1f_LowBattery            "Feeder Low Battery [%s]"                   (dgPet) {channel="surepetcare:feederDevice:bridge1:123456:lowBattery"}
-Number      UR_1f_BatteryLevel          "Feeder Battery Level [%.0f %%]"            (dgPet) {channel="surepetcare:feederDevice:bridge1:123456:batteryLevel"}
-Number      UR_1f_BatteryVoltage        "Feeder Battery Voltage [%.2f V]"           (dgPet) {channel="surepetcare:feederDevice:bridge1:123456:batteryVoltage"}
-String      UR_1f_BowlsType             "Feeder Bowls Type [%s]"                    (dgPet) {channel="surepetcare:feederDevice:bridge1:123456:bowls"}
-String      UR_1f_BowlsFoodtype         "Feeder Food Type [%s]"                     (dgPet) {channel="surepetcare:feederDevice:bridge1:123456:bowlsFood"}
-Number:Mass UR_1f_BowlsTarget           "Feeder Target [%.0f %unit%]"               (dgPet) {channel="surepetcare:feederDevice:bridge1:123456:bowlsTarget"}
-String      UR_1f_BowlsFoodtypeLeft     "Feeder Food Type L [%s]"                   (dgPet) {channel="surepetcare:feederDevice:bridge1:123456:bowlsFoodLeft"}
-Number:Mass UR_1f_BowlsTargetLeft       "Feeder Target L [%.0f %unit%]"             (dgPet) {channel="surepetcare:feederDevice:bridge1:123456:bowlsTargetLeft"}
-String      UR_1f_BowlsFoodtypeRight    "Feeder Food Type R [%s]"                   (dgPet) {channel="surepetcare:feederDevice:bridge1:123456:bowlsFoodRight"}
-Number:Mass UR_1f_BowlsTargetRight      "Feeder Target R [%.0f %unit%]"             (dgPet) {channel="surepetcare:feederDevice:bridge1:123456:bowlsTargetRight"}
-String      UR_1f_BowlsLidCloseDelay    "Feeder Close Delay [%s]"                   (dgPet) {channel="surepetcare:feederDevice:bridge1:123456:bowlsCloseDelay"}
-String      UR_1f_BowlsTrainingMode     "Feeder Training Mode [%s]"                 (dgPet) {channel="surepetcare:feederDevice:bridge1:123456:bowlsTrainingMode"}
-Switch      UR_1f_Online                "Feeder Status [%s]"                        (dgPet) {channel="surepetcare:feederDevice:bridge1:123456:online"}
-Number      UR_1f_DeviceRSSI            "Feeder Device Signal [%.2f dB]"            (dgPet) {channel="surepetcare:feederDevice:bridge1:123456:deviceRSSI"}
-Number      UR_1f_HubRSSI               "Feeder Hub Signal [%.2f dB]"               (dgPet) {channel="surepetcare:feederDevice:bridge1:123456:hubRSSI"}
+
+// Equipment representing thing:
+// surepetcare:feederDevice:api:CHANGE_ME
+// (SurePetcare Feeder 2)
+Group                       gSurePetcareDevice2                  "SurePetcare Feeder 2"                                                 (gSurePetcareDevices)    ["Equipment"]
+Number                      SurePet_FeederId_2                   "Feeder ID"                                                            (gSurePetcareDevice2)    ["Point"]                    {channel="surepetcare:feederDevice:api:CHANGE_ME:id"}
+String                      SurePet_FeederName_2                 "Feeder Name"                                                          (gSurePetcareDevice2)    ["Point"]                    {channel="surepetcare:feederDevice:api:CHANGE_ME:name"}
+String                      SurePet_FeederProduct_2              "Feeder Product"                                                       (gSurePetcareDevice2)    ["Point"]                    {channel="surepetcare:feederDevice:api:CHANGE_ME:product"}
+Switch                      SurePet_FeederLowBattery_2           "Feeder Low Battery"                             <LowBattery>          (gSurePetcareDevice2)    ["Energy", "LowBattery"]     {channel="surepetcare:feederDevice:api:CHANGE_ME:lowBattery"}
+Number:Dimensionless        SurePet_FeederBatteryLevel_2         "Feeder Battery Level"                           <Battery>             (gSurePetcareDevice2)    ["Measurement", "Energy"]    {channel="surepetcare:feederDevice:api:CHANGE_ME:batteryLevel", stateDescription="%.0f %%", unit="%"}
+Number:ElectricPotential    SurePet_FeederBatteryVoltage_2       "Feeder Battery Voltage"                         <energy>              (gSurePetcareDevice2)    ["Point"]                    {channel="surepetcare:feederDevice:api:CHANGE_ME:batteryVoltage", stateDescription="%.1f V", unit="V"}
+Switch                      SurePet_FeederOnline_2               "Feeder Status"                                                        (gSurePetcareDevice2)    ["Point"]                    {channel="surepetcare:feederDevice:api:CHANGE_ME:online"}
+Number:Power                SurePet_FeederDeviceRSSI_2           "Feeder Device Signal"                           <qualityofservice>    (gSurePetcareDevice2)    ["Point"]                    {channel="surepetcare:feederDevice:api:CHANGE_ME:deviceRSSI", stateDescription="%.2f dBm", unit="dBm"}
+Number:Power                SurePet_FeederHubRSSI_2              "Feeder Hub Signal"                              <qualityofservice>    (gSurePetcareDevice2)    ["Point"]                    {channel="surepetcare:feederDevice:api:CHANGE_ME:hubRSSI", stateDescription="%.2f dBm", unit="dBm"}
+String                      SurePet_FeederBowlsFood_2            "Feeder Food Type"                                                     (gSurePetcareDevice2)    ["Point"]                    {channel="surepetcare:feederDevice:api:CHANGE_ME:bowlsFood"}
+Number:Mass                 SurePet_FeederBowlsTarget_2          "Feeder Target"                                                        (gSurePetcareDevice2)    ["Point"]                    {channel="surepetcare:feederDevice:api:CHANGE_ME:bowlsTarget", stateDescription="%.0f g", unit="g"}
+String                      SurePet_FeederBowlsFoodLeft_2        "Feeder Food Type L"                                                   (gSurePetcareDevice2)    ["Point"]                    {channel="surepetcare:feederDevice:api:CHANGE_ME:bowlsFoodLeft"}
+Number:Mass                 SurePet_FeederBowlsTargetLeft_2      "Feeder Target L"                                                      (gSurePetcareDevice2)    ["Point"]                    {channel="surepetcare:feederDevice:api:CHANGE_ME:bowlsTargetLeft", stateDescription="%.0f g", unit="g"}
+String                      SurePet_FeederBowlsFoodRight_2       "Feeder Food Type R"                                                   (gSurePetcareDevice2)    ["Point"]                    {channel="surepetcare:feederDevice:api:CHANGE_ME:bowlsFoodRight"}
+Number:Mass                 SurePet_FeederBowlsTargetRight_2     "Feeder Target R"                                                      (gSurePetcareDevice2)    ["Point"]                    {channel="surepetcare:feederDevice:api:CHANGE_ME:bowlsTargetRight", stateDescription="%.0f g", unit="g"}
+String                      SurePet_FeederBowls_2                "Feeder Bowls Type"                                                    (gSurePetcareDevice2)    ["Point"]                    {channel="surepetcare:feederDevice:api:CHANGE_ME:bowls"}
+String                      SurePet_FeederBowlsCloseDelay_2      "Feeder Close Delay"                                                   (gSurePetcareDevice2)    ["Point"]                    {channel="surepetcare:feederDevice:api:CHANGE_ME:bowlsCloseDelay"}
+String                      SurePet_FeederBowlsTrainingMode_2    "Feeder Training Mode"                                                 (gSurePetcareDevice2)    ["Point"]                    {channel="surepetcare:feederDevice:api:CHANGE_ME:bowlsTrainingMode"}
+
+// Equipment representing thing:
+// surepetcare:waterDevice:api:CHANGE_ME
+// (SurePetcare Waterstation)
+Group                       gSurePetcareDevice3                "SurePetcare Waterstation"                                     (gSurePetcareDevices)    ["Equipment"]
+Number                      SurePet_Poseidon_ID                "Waterstation ID"                                              (gSurePetcareDevice3)    ["Point"]                    {channel="surepetcare:waterDevice:api:CHANGE_ME:id"}
+String                      SurePet_Poseidon_Name              "Waterstation Name"                                            (gSurePetcareDevice3)    ["Point"]                    {channel="surepetcare:waterDevice:api:CHANGE_ME:name"}
+String                      SurePet_Poseidon_Product           "Waterstation Product"                                         (gSurePetcareDevice3)    ["Point"]                    {channel="surepetcare:waterDevice:api:CHANGE_ME:product"}
+Switch                      SurePet_Poseidon_LowBattery        "Waterstation Low Battery"               <LowBattery>          (gSurePetcareDevice3)    ["Energy", "LowBattery"]     {channel="surepetcare:waterDevice:api:CHANGE_ME:lowBattery"}
+Number:Dimensionless        SurePet_Poseidon_BatteryLevel      "Waterstation Battery Level"             <Battery>             (gSurePetcareDevice3)    ["Measurement", "Energy"]    {channel="surepetcare:waterDevice:api:CHANGE_ME:batteryLevel", stateDescription="%.0f %%", unit="%"}
+Number:ElectricPotential    SurePet_Poseidon_BatteryVolatge    "Waterstation Battery Voltage"           <energy>              (gSurePetcareDevice3)    ["Point"]                    {channel="surepetcare:waterDevice:api:CHANGE_ME:batteryVoltage", stateDescription="%.1f V", unit="V"}
+Switch                      SurePet_Poseidon_Online            "Waterstation Status"                                          (gSurePetcareDevice3)    ["Point"]                    {channel="surepetcare:waterDevice:api:CHANGE_ME:online"}
+Number:Power                SurePet_Poseidon_DeviceRSSI        "Waterstation Device Signal"             <qualityofservice>    (gSurePetcareDevice3)    ["Point"]                    {channel="surepetcare:waterDevice:api:CHANGE_ME:deviceRSSI", stateDescription="%.2f dBm", unit="dBm"}
+Number:Power                SurePet_Poseidon_HubRSSI           "Waterstation Hub Signal"                <qualityofservice>    (gSurePetcareDevice3)    ["Point"]                    {channel="surepetcare:waterDevice:api:CHANGE_ME:hubRSSI", stateDescription="%.2f dBm", unit="dBm"}
+
+
+Group    gSurePetcarePets    "SurePetcare Pets"    (gSurePetcareHousehold)    ["Equipment"]
+// Equipment representing thing:
+// surepetcare:pet:api:CHANGE_ME
+// (SurePetcare Pet 1)
+Group            gSurePetcarePet1                    "SurePetcare Pet 1"                                             (gSurePetcarePets)    ["Equipment"]
+Number           SurePet_Id_1                        "Pet Id"                                                        (gSurePetcarePet1)    ["Point"]        {channel="surepetcare:pet:api:CHANGE_ME:id"}
+String           SurePet_Name_1                      "Pet Name"                                                      (gSurePetcarePet1)    ["Point"]        {channel="surepetcare:pet:api:CHANGE_ME:name"}
+String           SurePet_Comment_1                   "Pet Comment"                                                   (gSurePetcarePet1)    ["Point"]        {channel="surepetcare:pet:api:CHANGE_ME:comment"}
+String           SurePet_Gender_1                    "Pet Gender"                                                    (gSurePetcarePet1)    ["Point"]        {channel="surepetcare:pet:api:CHANGE_ME:gender"}
+String           SurePet_Breed_1                     "Pet Breed"                                                     (gSurePetcarePet1)    ["Point"]        {channel="surepetcare:pet:api:CHANGE_ME:breed"}
+String           SurePet_Species_1                   "Pet Species"                                                   (gSurePetcarePet1)    ["Point"]        {channel="surepetcare:pet:api:CHANGE_ME:species"}
+Image            SurePet_Photo_1                     "Pet Photo"                                                     (gSurePetcarePet1)    ["Point"]        {channel="surepetcare:pet:api:CHANGE_ME:photo"}
+String           SurePet_TagIdentifier_1             "Pet Tag Identifier"                                            (gSurePetcarePet1)    ["Point"]        {channel="surepetcare:pet:api:CHANGE_ME:tagIdentifier"}
+String           SurePet_Location_1                  "Pet Location"                            <motion>              (gSurePetcarePet1)    ["Point"]        {channel="surepetcare:pet:api:CHANGE_ME:location"}
+DateTime         SurePet_LocationChanged_1           "Pet Loc. Updated"                                              (gSurePetcarePet1)    ["Point"]        {channel="surepetcare:pet:api:CHANGE_ME:locationChanged", stateDescription="%1$ta. %1$tH:%1$tM"}
+String           SurePet_LocationTimeoffset_1        "Pet Switch Location"                                           (gSurePetcarePet1)    ["Point"]        {channel="surepetcare:pet:api:CHANGE_ME:locationTimeoffset"}
+String           SurePet_LocationChangedThrough_1    "Pet Entered / Left through"                                    (gSurePetcarePet1)    ["Point"]        {channel="surepetcare:pet:api:CHANGE_ME:locationChangedThrough"}
+DateTime         SurePet_DateOfBirth_1               "Pet Date of Birth"                       <calendar>            (gSurePetcarePet1)    ["Point"]        {channel="surepetcare:pet:api:CHANGE_ME:dateOfBirth", stateDescription="%1$td.%1$tm.%1$tY"}
+Number:Mass      SurePet_Weight_1                    "Pet Weight"                                                    (gSurePetcarePet1)    ["Point"]        {channel="surepetcare:pet:api:CHANGE_ME:weight", stateDescription="%.1f kg", unit="g"}
+String           SurePet_FeederDevice_1              "Device Name"                                                   (gSurePetcarePet1)    ["Point"]        {channel="surepetcare:pet:api:CHANGE_ME:feederDevice"}
+DateTime         SurePet_FeederLastFeeding_1         "Last Feeding"                            <time>                (gSurePetcarePet1)    ["Point"]        {channel="surepetcare:pet:api:CHANGE_ME:feederLastFeeding", stateDescription="%1$ta. %1$tH:%1$tM"}
+Number:Mass      SurePet_FeederLastChange_1          "Change:"                                                       (gSurePetcarePet1)    ["Point"]        {channel="surepetcare:pet:api:CHANGE_ME:feederLastChange", stateDescription="%.1f g", unit="g"}
+Number:Mass      SurePet_FeederLastChangeLeft_1      "Change: L"                                                     (gSurePetcarePet1)    ["Point"]        {channel="surepetcare:pet:api:CHANGE_ME:feederLastChangeLeft", stateDescription="%.1f g", unit="g"}
+Number:Mass      SurePet_FeederLastChangeRight_1     "Change: R"                                                     (gSurePetcarePet1)    ["Point"]        {channel="surepetcare:pet:api:CHANGE_ME:feederLastChangeRight", stateDescription="%.1f g", unit="g"}
+String           SurePet_WaterDevice_1               "Device Name"                                                   (gSurePetcarePet1)    ["Point"]        {channel="surepetcare:pet:api:CHANGE_ME:waterDevice"}
+DateTime         SurePet_WaterLastDrinking_1         "Last Drinking"                           <time>                (gSurePetcarePet1)    ["Point"]        {channel="surepetcare:pet:api:CHANGE_ME:waterLastDrinking", stateDescription="%1$ta. %1$tH:%1$tM"}
+Number:Volume    SurePet_WaterLastChange_1           "Change:"                                                       (gSurePetcarePet1)    ["Point"]        {channel="surepetcare:pet:api:CHANGE_ME:waterLastChange", stateDescription="%.1f ml", unit="ml"}
+
+// Equipment representing thing:
+// surepetcare:pet:api:CHANGE_ME
+// (SurePetcare Pet 2)
+Group            gSurePetcarePet2                    "SurePetcare Pet 2"                                             (gSurePetcarePets)    ["Equipment"]
+Number           SurePet_Id_2                        "Pet Id"                                                        (gSurePetcarePet2)    ["Point"]        {channel="surepetcare:pet:api:CHANGE_ME:id"}
+String           SurePet_Name_2                      "Pet Name"                                                      (gSurePetcarePet2)    ["Point"]        {channel="surepetcare:pet:api:CHANGE_ME:name"}
+String           SurePet_Comment_2                   "Pet Comment"                                                   (gSurePetcarePet2)    ["Point"]        {channel="surepetcare:pet:api:CHANGE_ME:comment"}
+String           SurePet_Gender_2                    "Pet Gender"                                                    (gSurePetcarePet2)    ["Point"]        {channel="surepetcare:pet:api:CHANGE_ME:gender"}
+String           SurePet_Breed_2                     "Pet Breed"                                                     (gSurePetcarePet2)    ["Point"]        {channel="surepetcare:pet:api:CHANGE_ME:breed"}
+String           SurePet_Species_2                   "Pet Species"                                                   (gSurePetcarePet2)    ["Point"]        {channel="surepetcare:pet:api:CHANGE_ME:species"}
+Image            SurePet_Photo_2                     "Pet Photo"                                                     (gSurePetcarePet2)    ["Point"]        {channel="surepetcare:pet:api:CHANGE_ME:photo"}
+String           SurePet_TagIdentifier_2             "Pet Tag Identifier"                                            (gSurePetcarePet2)    ["Point"]        {channel="surepetcare:pet:api:CHANGE_ME:tagIdentifier"}
+String           SurePet_Location_2                  "Pet Location"                            <motion>              (gSurePetcarePet2)    ["Point"]        {channel="surepetcare:pet:api:CHANGE_ME:location"}
+DateTime         SurePet_LocationChanged_2           "Pet Loc. Updated"                                              (gSurePetcarePet2)    ["Point"]        {channel="surepetcare:pet:api:CHANGE_ME:locationChanged", stateDescription="%1$ta. %1$tH:%1$tM"}
+String           SurePet_LocationTimeoffset_2        "Pet Switch Location"                                           (gSurePetcarePet2)    ["Point"]        {channel="surepetcare:pet:api:CHANGE_ME:locationTimeoffset"}
+String           SurePet_LocationChangedThrough_2    "Pet Entered / Left through"                                    (gSurePetcarePet2)    ["Point"]        {channel="surepetcare:pet:api:CHANGE_ME:locationChangedThrough"}
+DateTime         SurePet_DateOfBirth_2               "Pet Date of Birth"                       <calendar>            (gSurePetcarePet2)    ["Point"]        {channel="surepetcare:pet:api:CHANGE_ME:dateOfBirth", stateDescription="%1$td.%1$tm.%1$tY"}
+Number:Mass      SurePet_Weight_2                    "Pet Weight"                                                    (gSurePetcarePet2)    ["Point"]        {channel="surepetcare:pet:api:CHANGE_ME:weight", stateDescription="%.1f kg", unit="g"}
+String           SurePet_FeederDevice_2              "Device Name"                                                   (gSurePetcarePet2)    ["Point"]        {channel="surepetcare:pet:api:CHANGE_ME:feederDevice"}
+DateTime         SurePet_FeederLastFeeding_2         "Last Feeding"                            <time>                (gSurePetcarePet2)    ["Point"]        {channel="surepetcare:pet:api:CHANGE_ME:feederLastFeeding", stateDescription="%1$ta. %1$tH:%1$tM"}
+Number:Mass      SurePet_FeederLastChange_2          "Change:"                                                       (gSurePetcarePet2)    ["Point"]        {channel="surepetcare:pet:api:CHANGE_ME:feederLastChange", stateDescription="%.1f g", unit="g"}
+Number:Mass      SurePet_FeederLastChangeLeft_2      "Change: L"                                                     (gSurePetcarePet2)    ["Point"]        {channel="surepetcare:pet:api:CHANGE_ME:feederLastChangeLeft", stateDescription="%.1f g", unit="g"}
+Number:Mass      SurePet_FeederLastChangeRight_2     "Change: R"                                                     (gSurePetcarePet2)    ["Point"]        {channel="surepetcare:pet:api:CHANGE_ME:feederLastChangeRight", stateDescription="%.1f g", unit="g"}
+String           SurePet_WaterDevice_2               "Device Name"                                                   (gSurePetcarePet2)    ["Point"]        {channel="surepetcare:pet:api:CHANGE_ME:waterDevice"}
+DateTime         SurePet_WaterLastDrinking_2         "Last Drinking"                           <time>                (gSurePetcarePet2)    ["Point"]        {channel="surepetcare:pet:api:CHANGE_ME:waterLastDrinking", stateDescription="%1$ta. %1$tH:%1$tM"}
+Number:Volume    SurePet_WaterLastChange_2           "Change:"                                                       (gSurePetcarePet2)    ["Point"]        {channel="surepetcare:pet:api:CHANGE_ME:waterLastChange", stateDescription="%.1f ml", unit="ml"}
 ```
 
 ### Sitemap Configuration

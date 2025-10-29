@@ -50,9 +50,9 @@ public class DoorLockDevice extends BaseDevice {
                 int lockInt = ((Double) data).intValue();
                 boolean locked = DoorLockCluster.LockStateEnum.LOCKED.getValue() == lockInt;
                 if (primaryItem instanceof GroupItem groupItem) {
-                    groupItem.send(OnOffType.from(locked));
+                    groupItem.send(OnOffType.from(locked), MATTER_SOURCE);
                 } else {
-                    ((SwitchItem) primaryItem).send(OnOffType.from(locked));
+                    ((SwitchItem) primaryItem).send(OnOffType.from(locked), MATTER_SOURCE);
                 }
             }
             default:

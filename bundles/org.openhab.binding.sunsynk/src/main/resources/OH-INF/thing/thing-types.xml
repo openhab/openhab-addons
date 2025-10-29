@@ -124,7 +124,10 @@
 			<channel id="interval-6-gen-charge" typeId="gen-charge">
 				<label>Interval 6 Generator Charge</label>
 			</channel>
-			<channel id="battery-soc" typeId="system.battery-level"/>
+			<channel id="battery-soc" typeId="system.battery-level">
+				<label>Battery State of Charge</label>
+				<description>State of charge of the battery (%).</description>
+			</channel>
 			<channel id="battery-dc-voltage" typeId="system.electric-voltage">
 				<label>Battery Voltage</label>
 				<description>Measured voltage of the battery.</description>
@@ -143,7 +146,7 @@
 			</channel>
 			<channel id="inverter-ac-temperature" typeId="system.indoor-temperature">
 				<label>Inverter AC Temperature</label>
-				<description>Temperature of the inverter ac side.</description>
+				<description>Temperature of the inverter AC side.</description>
 			</channel>
 			<channel id="inverter-dc-temperature" typeId="system.indoor-temperature">
 				<label>Inverter DC Temperature</label>
@@ -161,17 +164,61 @@
 				<label>Grid Current</label>
 				<description>Measured current of the grid.</description>
 			</channel>
+			<channel id="inverter-grid-frequency" typeId="grid-frequency">
+				<label>Grid Frequency</label>
+				<description>Measured frequency of the grid.</description>
+			</channel>
+			<channel id="inverter-rated-ac-output" typeId="system.electric-power">
+				<label>Inverter Rated Output</label>
+				<description>Inverter AC output rating.</description>
+			</channel>
 			<channel id="inverter-solar-energy-today" typeId="system.electric-energy">
 				<label>Solar Energy Today</label>
-				<description>Solar energy generted today.</description>
+				<description>Solar energy generated today.</description>
+			</channel>
+			<channel id="inverter-solar-energy-month" typeId="system.electric-energy">
+				<label>Solar Energy This Month</label>
+				<description>Solar energy generated this month.</description>
+			</channel>
+			<channel id="inverter-solar-energy-year" typeId="system.electric-energy">
+				<label>Solar Energy This Year</label>
+				<description>Solar energy generated this year.</description>
+			</channel>
+			<channel id="inverter-solar-efficiency" typeId="solar-efficiency">
+				<label>Solar Efficiency</label>
+				<description>Efficiency of the solar panels.</description>
+			</channel>
+			<channel id="inverter-solar-ac-power" typeId="system.electric-power">
+				<label>Solar Power</label>
+				<description>Solar AC power being generated.</description>
 			</channel>
 			<channel id="inverter-solar-energy-total" typeId="system.electric-energy">
 				<label>Solar Energy Total</label>
-				<description>Total solar energy generted.</description>
+				<description>Total solar energy generated.</description>
 			</channel>
-			<channel id="inverter-solar-power-now" typeId="system.electric-current">
-				<label>Solar Power</label>
-				<description>Solar power being generted.</description>
+			<channel id="inverter-solar-string-voltage-1" typeId="system.electric-voltage">
+				<label>String 1 Solar Voltage</label>
+				<description>Solar voltage being generated.</description>
+			</channel>
+			<channel id="inverter-solar-string-voltage-2" typeId="system.electric-voltage">
+				<label>String 2 Solar Voltage</label>
+				<description>Solar voltage being generated.</description>
+			</channel>
+			<channel id="inverter-solar-string-current-1" typeId="system.electric-current">
+				<label>String 1 Solar Current</label>
+				<description>Solar current being generated.</description>
+			</channel>
+			<channel id="inverter-solar-string-current-2" typeId="system.electric-current">
+				<label>String 2 Solar Current</label>
+				<description>Solar current being generated.</description>
+			</channel>
+			<channel id="inverter-solar-string-power-1" typeId="system.electric-power">
+				<label>String 1 Solar Power</label>
+				<description>Solar power being generated.</description>
+			</channel>
+			<channel id="inverter-solar-string-power-2" typeId="system.electric-power">
+				<label>String 2 Solar Power</label>
+				<description>Solar power being generated.</description>
 			</channel>
 			<channel id="inverter-control-timer" typeId="control-timer"/>
 			<channel id="inverter-control-energy-pattern" typeId="control-pattern"/>
@@ -180,6 +227,7 @@
 
 		<properties>
 			<property name="vendor">SunSynk</property>
+			<property name="thingTypeVersion">1</property>
 		</properties>
 		<representation-property>serialnumber</representation-property>
 
@@ -192,6 +240,14 @@
 				<label>Inverter Name</label>
 				<description>Name of inverter from Sun Synk Connect.</description>
 			</parameter>
+			<parameter name="plantId" type="text" required="true">
+				<label>Plant ID</label>
+				<description>Plant ID of the inverter from Sun Synk Connect.</description>
+			</parameter>
+			<parameter name="plantName" type="text" required="true">
+				<label>Plant Name</label>
+				<description>Plant Name of the inverter from Sun Synk Connect.</description>
+			</parameter>
 			<parameter name="refresh" type="integer" required="true">
 				<label>Refresh Interval</label>
 				<description>Time in seconds to retrieve status from Sun Synk Connect services. Greater than 60 seconds.</description>
@@ -199,9 +255,22 @@
 				<advanced>true</advanced>
 			</parameter>
 		</config-description>
-
 	</thing-type>
 
+	<channel-type id="grid-frequency">
+		<item-type>Number:Frequency</item-type>
+		<label>Grid Frequency</label>
+		<description>Measured frequency of the grid.</description>
+		<category>Sensor</category>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="solar-efficiency">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Solar Efficiency</label>
+		<description>Efficiency of the solar panels.</description>
+		<category>Sensor</category>
+		<state pattern="%d %%" readOnly="true"/>
+	</channel-type>
 	<channel-type id="grid-time" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Grid Charge Time</label>
@@ -209,21 +278,18 @@
 			leading zero on the hour and minute. Interval times must be in ascending order."</description>
 		<state readOnly="false" pattern="%1$tH:%1$tM"/>
 	</channel-type>
-
 	<channel-type id="grid-charge" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Grid Charge</label>
 		<description>Charge the inverter battery from the grid during this interval.</description>
 		<state readOnly="false"/>
 	</channel-type>
-
 	<channel-type id="gen-charge" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Generator (AUX) Charge</label>
-		<description>Charge the inverter battery from the generator (auxilary) during this interval.</description>
+		<description>Charge the inverter battery from the generator (auxiliary) during this interval.</description>
 		<state readOnly="false"/>
 	</channel-type>
-
 	<channel-type id="battery-target" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Target Charge Level</label>
@@ -231,7 +297,6 @@
 		<category>Battery</category>
 		<state min="0" max="100" step="1" pattern="%d %%" readOnly="false"/>
 	</channel-type>
-
 	<channel-type id="power-charge-limit" advanced="true">
 		<item-type>Number:Power</item-type>
 		<label>Maximum Charge Rate</label>
@@ -239,14 +304,12 @@
 		<category>Inverter</category>
 		<state pattern="%d %unit%" readOnly="false"/>
 	</channel-type>
-
 	<channel-type id="control-timer" advanced="true">
 		<item-type>Switch</item-type>
 		<label>System Timer</label>
 		<description>Use the system mode timer to control battery charge discharge.</description>
 		<state readOnly="false"/>
 	</channel-type>
-
 	<channel-type id="control-pattern" advanced="true">
 		<item-type>String</item-type>
 		<label>System Energy Pattern</label>
@@ -258,18 +321,16 @@
 			</options>
 		</command>
 	</channel-type>
-
 	<channel-type id="control-work-mode" advanced="true">
 		<item-type>String</item-type>
 		<label>System Work Mode</label>
-		<description>Set the work mode to '0' Selling First; '1' Zero-Export + Limted to Load or '2' Limited to Home.</description>
+		<description>Set the work mode to '0' Selling First; '1' Zero-Export + Limited to Load or '2' Limited to Home.</description>
 		<command>
 			<options>
 				<option value="0">Selling First</option>
-				<option value="1">"Zero-Export + Limted to Load"</option>
+				<option value="1">"Zero-Export + Limited to Load"</option>
 				<option value="2">Limited to Home</option>
 			</options>
 		</command>
 	</channel-type>
-
 </thing:thing-descriptions>

@@ -21,6 +21,7 @@ import static org.mockito.Mockito.*;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -61,6 +62,7 @@ public class NetworkHandlerTest extends JavaTest {
 
     private @Mock @NonNullByDefault({}) ThingHandlerCallback callback;
     private @Mock @NonNullByDefault({}) ScheduledExecutorService scheduledExecutorService;
+    private @Mock @NonNullByDefault({}) ExecutorService resolver;
     private @Mock @NonNullByDefault({}) Thing thing;
 
     @BeforeEach
@@ -71,7 +73,7 @@ public class NetworkHandlerTest extends JavaTest {
     @Test
     public void checkAllConfigurations() {
         NetworkBindingConfiguration config = new NetworkBindingConfiguration();
-        NetworkHandler handler = spy(new NetworkHandler(thing, scheduledExecutorService, true, config));
+        NetworkHandler handler = spy(new NetworkHandler(thing, scheduledExecutorService, resolver, true, config));
         handler.setCallback(callback);
         // Provide all possible configuration
         when(thing.getConfiguration()).thenAnswer(a -> {
@@ -82,8 +84,7 @@ public class NetworkHandlerTest extends JavaTest {
             conf.put(NetworkBindingConstants.PARAMETER_TIMEOUT, 1234);
             return conf;
         });
-        PresenceDetection presenceDetection = spy(
-                new PresenceDetection(handler, Duration.ofSeconds(2), scheduledExecutorService));
+        PresenceDetection presenceDetection = spy(new PresenceDetection(handler, Duration.ofSeconds(2), resolver));
 
         handler.initialize(presenceDetection);
         assertThat(handler.retries, is(10));
@@ -95,7 +96,7 @@ public class NetworkHandlerTest extends JavaTest {
     @Test
     public void tcpDeviceInitTests() {
         NetworkBindingConfiguration config = new NetworkBindingConfiguration();
-        NetworkHandler handler = spy(new NetworkHandler(thing, scheduledExecutorService, true, config));
+        NetworkHandler handler = spy(new NetworkHandler(thing, scheduledExecutorService, resolver, true, config));
         assertThat(handler.isTCPServiceDevice(), is(true));
         handler.setCallback(callback);
         // Port is missing, should make the device OFFLINE
@@ -104,7 +105,7 @@ public class NetworkHandlerTest extends JavaTest {
             conf.put(NetworkBindingConstants.PARAMETER_HOSTNAME, "127.0.0.1");
             return conf;
         });
-        handler.initialize(new PresenceDetection(handler, Duration.ofSeconds(2), scheduledExecutorService));
+        handler.initialize(new PresenceDetection(handler, Duration.ofSeconds(2), resolver));
         // Check that we are offline
         ArgumentCaptor<ThingStatusInfo> statusInfoCaptor = ArgumentCaptor.forClass(ThingStatusInfo.class);
         verify(callback).statusUpdated(eq(thing), statusInfoCaptor.capture());
@@ -115,7 +116,7 @@ public class NetworkHandlerTest extends JavaTest {
     @Test
     public void pingDeviceInitTests() {
         NetworkBindingConfiguration config = new NetworkBindingConfiguration();
-        NetworkHandler handler = spy(new NetworkHandler(thing, scheduledExecutorService, false, config));
+        NetworkHandler handler = spy(new NetworkHandler(thing, scheduledExecutorService, resolver, false, config));
         handler.setCallback(callback);
         // Provide minimal configuration
         when(thing.getConfiguration()).thenAnswer(a -> {
@@ -124,8 +125,7 @@ public class NetworkHandlerTest extends JavaTest {
             conf.put(NetworkBindingConstants.PARAMETER_REFRESH_INTERVAL, 0); // disable auto refresh
             return conf;
         });
-        PresenceDetection presenceDetection = spy(
-                new PresenceDetection(handler, Duration.ofSeconds(2), scheduledExecutorService));
+        PresenceDetection presenceDetection = spy(new PresenceDetection(handler, Duration.ofSeconds(2), resolver));
         doReturn(Instant.now()).when(presenceDetection).getLastSeen();
 
         handler.initialize(presenceDetection);

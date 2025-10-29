@@ -106,7 +106,7 @@ public class DatahubTariffFilterFactoryTest {
                 Arguments.of("5790001095451", DateQueryParameter.of(DateQueryParameterType.START_OF_DAY),
                         List.of("AAL-NT-05", "AAL-NTR05"), List.of("Nettarif C time")), //
                 Arguments.of("5790000705184", DateQueryParameter.EMPTY, List.of("30TR_C_ET"),
-                        List.of("Nettarif C time")), //
+                        List.of("Nettarif C", "Nettarif C time")), //
                 Arguments.of("5790000682102", DateQueryParameter.of(LocalDate.of(2022, 10, 1)), List.of("IEV-NT-01"),
                         List.of("Nettarif C time")), //
                 Arguments.of("5790001089030", DateQueryParameter.of(LocalDate.of(2023, 1, 1)), List.of("CD", "CD R"),

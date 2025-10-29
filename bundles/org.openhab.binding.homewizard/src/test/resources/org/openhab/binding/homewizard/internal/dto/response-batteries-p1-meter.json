@@ -1,0 +1,8 @@
+{
+    "mode": "to_full",
+    "power_w": 1599,
+    "target_power_w": 1600,
+    "max_consumption_w": 1600,
+    "max_production_w": 800
+}
+

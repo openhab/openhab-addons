@@ -19,6 +19,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.openhab.binding.matter.internal.bridge.devices.BaseDevice.MATTER_SOURCE;
 
 import java.util.Map;
 
@@ -86,19 +87,19 @@ class OnOffLightDeviceTest {
     @Test
     void testHandleMatterEventOnOff() {
         device.handleMatterEvent("onOff", "onOff", true);
-        verify(switchItem).send(OnOffType.ON);
+        verify(switchItem).send(OnOffType.ON, MATTER_SOURCE);
 
         device.handleMatterEvent("onOff", "onOff", false);
-        verify(switchItem).send(OnOffType.OFF);
+        verify(switchItem).send(OnOffType.OFF, MATTER_SOURCE);
     }
 
     @Test
     void testHandleMatterEventOnOffGroup() {
         groupDevice.handleMatterEvent("onOff", "onOff", true);
-        verify(groupItem).send(OnOffType.ON);
+        verify(groupItem).send(OnOffType.ON, MATTER_SOURCE);
 
         groupDevice.handleMatterEvent("onOff", "onOff", false);
-        verify(groupItem).send(OnOffType.OFF);
+        verify(groupItem).send(OnOffType.OFF, MATTER_SOURCE);
     }
 
     @Test

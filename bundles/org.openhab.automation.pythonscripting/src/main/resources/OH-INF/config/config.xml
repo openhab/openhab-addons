@@ -20,25 +20,23 @@
 			<label>Use scope and import wrapper</label>
 			<description><![CDATA[
 			This enables a scope module and and import wrapper.<br>
-			An scope module is an encapsulated module containing all openHAB jsr223 objects and can be imported with <code>import scope</code><br>
+			A scope module is an encapsulated module containing all openHAB jsr223 objects and can be imported with <code>import scope</code><br>
 			Additionally you can run an import like <code>from org.openhab.core import OpenHAB</code>
 			]]></description>
 			<default>true</default>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="helperEnabled" type="boolean" required="true" groupName="environment">
-			<label>Install openHAB Python helper modules and keep it updated (requires scope module)</label>
+			<label>Install openHAB Python helper module (requires scope module)</label>
 			<description><![CDATA[
-			Deploy and update openHAB Python helper modules like rule, logger, Registry, Timer etc...<br>
-			If disabled, the openHAB Python helper module can be installed manually by copying it to /conf/automation/python/lib/openhab"
+			Install openHAB Python helper module to support helper classes like rule, logger, Registry, Timer etc...<br>
+			If disabled, the openHAB python helper module can be installed manually by copying it to /conf/automation/python/lib/openhab"
 			]]></description>
 			<default>true</default>
 		</parameter>
 		<parameter name="injectionEnabled" type="integer" required="true" min="0" max="2" groupName="environment">
-			<label>Inject scope and helper objects into UI based rules (requires helper modules)</label>
-			<description><![CDATA[
-			This injects the scope module and core helper Registry and logger into UI based rules.
-			]]></description>
+			<label>Inject scope and helper objects into rules (requires helper modules)</label>
+			<description>This injects the scope and helper Registry and logger into rules.</description>
 			<options>
 				<option value="2">Auto injection enabled only for UI and Transformation scripts (preferred)</option>
 				<option value="1">Auto injection enabled for all scripts</option>
@@ -46,8 +44,24 @@
 			</options>
 			<default>2</default>
 		</parameter>
+		<parameter name="pipModules" type="text" required="false" groupName="system">
+			<label>Python pip modules (requires a manually configured venv)</label>
+			<description>
+				<![CDATA[A comma separated list of Python modules to install.
+				Versions may be constrained by separating with an <code>==</code> followed by standard
+				python pip version constraint, such as "<code>tzdata==2025.2</code>".]]>
+			</description>
+			<default></default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="nativeModules" type="boolean" required="false" groupName="system">
+			<label>Enables native modules (requires a manually configured venv)</label>
+			<description>Native modules are sometimes necessary for pip modules which depends on native libraries.</description>
+			<default>false</default>
+			<advanced>true</advanced>
+		</parameter>
 		<parameter name="dependencyTrackingEnabled" type="boolean" required="true" groupName="system">
-			<label>Enable Dependency Tracking</label>
+			<label>Enable dependency tracking</label>
 			<description>Dependency tracking allows your scripts to automatically reload when one of its dependencies is updated.
 				You may want to disable dependency tracking if you plan on editing or updating a shared library, but don't want all
 				your scripts to reload until you can test it.</description>
@@ -55,7 +69,7 @@
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="cachingEnabled" type="boolean" required="true" groupName="system">
-			<label>Cache compiled openHAB Python helper modules (.pyc files)</label>
+			<label>Cache compiled openHAB Python modules (.pyc files)</label>
 			<description><![CDATA[
 			Cache the openHAB python modules for improved startup performance.<br>
 			Disable this option will result in a slower startup performance, because scripts have to be recompiled on every startup.

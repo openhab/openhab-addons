@@ -46,7 +46,7 @@ public class HomeWizardPlugInBatteryMeterHandlerTest extends HomeWizardHandlerTe
                 .thenReturn(new ThingUID(HomeWizardBindingConstants.THING_TYPE_HWE_P1, "homewizard-test-thing-bat"));
         when(thing.getThingTypeUID()).thenReturn(HomeWizardBindingConstants.THING_TYPE_HWE_BAT);
 
-        when(thing.getConfiguration()).thenReturn(CONFIG);
+        when(thing.getConfiguration()).thenReturn(CONFIG_V2);
 
         final List<Channel> channelList = Arrays.asList(
                 mockChannel(thing.getUID(), HomeWizardBindingConstants.CHANNEL_GROUP_ENERGY,

@@ -27,4 +27,5 @@ public class BaseChannelConfig {
     public Integer rule = 1;
     public BigDecimal offset = BigDecimal.ZERO;
     public String registers = "";
+    public boolean readOnly = true;
 }
