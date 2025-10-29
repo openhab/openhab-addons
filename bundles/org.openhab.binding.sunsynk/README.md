@@ -54,7 +54,6 @@ When using the UI Scan service all the parameters for an Inverter Thing are disc
 - Inverter Name maps to the Sun Synk Connect inverter alias
 - Plant ID maps to the Sun Synk plant number (not available via Sun Synk Connect App)
 - Plant Name maps to the Sun Synk Connect plant name.
-- Refresh time (advanced) default 60s; determines the interval between polls of Sun Synk Connect. A value above 60 is enforced. When setting this remember your inverter values are only published by Sun Synk Connect at the rate set by "data interval".
 - Refresh time (advanced) default 60 s; determines the interval between polls of Sun Synk Connect. A minimum of 60 s is enforced. Remember that inverter values are only published by Sun Synk Connect at the gateway "data interval".
 
 The refresh rate is limited to once every 60 s to avoid excessive requests to the Sun Synk Connect API. Although there's no documented rate limit, data is fully refreshed at the "data interval" set in Sun Synk Connect (typically every 60 s).
@@ -85,11 +84,6 @@ The SunSynk Account requires the user e‑mail address and password used to log 
 | Plant ID               | text    | The plant ID not available in Sun Synk Connect | N/A     | yes      | no       |
 | Plant Name             | text    | The Sun Synk Connect plant name                | N/A     | yes      | no       |
 | refresh                | integer | Sun Synk Connect polling interval              | 60      | yes      | yes      |
-| Name         | Type    | Description                                 | Default | Required | Advanced |
-|--------------|---------|---------------------------------------------|---------|----------|----------|
-| alias        | text    | The Sun Synk Connect inverter alias         | N/A     | yes      | no       |
-| serialnumber | text    | The Sun Synk Connect inverter serial number | N/A     | yes      | no       |
-| refresh      | integer | Polling interval in seconds                 | 60      | yes      | yes      |
 
 ## Channels
 
@@ -98,19 +92,29 @@ The SunSynk Inverter has the following channels.
 
 | Channel                        | Type                    | R/W | Description                       | Advanced |
 |--------------------------------|-------------------------|-----|-----------------------------------|----------|
-|battery-soc                     |Number:Dimensionless     | R   | Inverter battery state of charge  | no       |
-|battery-dc-voltage              |Number:ElectricPotential | R   | Battery DC voltage                | no       |
-|battery-dc-current              |Number:ElectricCurrent   | R   | Battery DC current                | no       |
-|battery-dc-power                |Number:Power             | R   | Battery DC power                  | no       |
-|battery-temperature             |Number:Temperature       | R   | Battery temperature               | no       |
-|inverter-ac-temperature         |Number:Temperature       | R   | Inverter AC temperature           | no       |
-|inverter-dc-temperature         |Number:Temperature       | R   | Inverter DC temperature           | no       |
-|inverter-grid-power             |Number:Power             | R   | Grid import/export power          | no       |
-|inverter-grid-voltage           |Number:ElectricPotential | R   | Grid voltage                       | no       |
-|inverter-grid-current           |Number:ElectricCurrent   | R   | Grid current                       | no       |
-|inverter-solar-energy-today     |Number:Energy            | R   | Solar DC energy generated today   | no       |
-|inverter-solar-energy-total     |Number:Energy            | R   | Solar DC energy generated to date | no       |
-|inverter-solar-power-now        |Number:Power             | R   | Solar DC power                     | no       |
+|battery-soc                     |Number:Dimensionless     | R   | Inverter battery % charged        | no       |
+|battery-grid-voltage            |Number:ElectricPotential | R   | Battery dc electric-voltage       | no       |
+|battery-grid-current            |Number:ElectricCurrent   | R   | Battery dc electric-current       | no       |
+|battery-grid-power              |Number:Power             | R   | Battery dc electric-power         | no       |
+|inverter-ac-temperature         |Number:Temperature       | R   | Inverter ac temperature           | no       |
+|inverter-dc-temperature         |Number:Temperature       | R   | Inverter dc temperature           | no       |
+|inverter-grid-power             |Number:Power             | R   | Grid ac electric-power            | no       |
+|inverter-grid-voltage           |Number:ElectricPotential | R   | Grid ac electric-voltage          | no       |
+|inverter-grid-current           |Number:ElectricCurrent   | R   | Grid ac electric-current          | no       |
+|inverter-grid-frequency         |Number:Frequency         | R   | Grid frequency                    | no       |
+|inverter-rated-ac-output        |Number:Power             | R   | Inverter energy capacity          | no       |
+|inverter-solar-energy-today     |Number:Energy            | R   | Solar energy generated today      | no       |
+|inverter-solar-energy-month     |Number:Energy            | R   | Solar energy generated this month | no       |
+|inverter-solar-energy-year      |Number:Energy            | R   | Solar energy generated this year  | no       |
+|inverter-solar-efficiency       |Number:Dimensionless     | R   | Solar production efficiency       | no       |
+|inverter-solar-ac-power         |Number:Power             | R   | Solar power being generated       | no       |
+|inverter-solar-energy-total     |Number:Energy            | R   | Solar energy generated to date    | no       |
+|inverter-solar-string-voltage-1 |Number:ElectricPotential | R   | String 1 Solar Voltage            | no       |
+|inverter-solar-string-voltage-2 |Number:ElectricPotential | R   | String 2 Solar Voltage            | no       |
+|inverter-solar-string-current-1 |Number:ElectricCurrent   | R   | String 1 Solar Current            | no       |
+|inverter-solar-string-current-2 |Number:ElectricCurrent   | R   | String 2 Solar Current            | no       |
+|inverter-solar-string-power-1   |Number:Power             | R   | String 1 Solar Power              | no       |
+|inverter-solar-string-power-2   |Number:Power             | R   | String 2 Solar Power              | no       |
 |interval-1-grid-charge          |Switch                   | R/W | Interval 1 grid charge on/off     | yes      |
 |interval-1-grid-time            |DateTime                 | R/W | Interval 1 start grid charge time | yes      |
 |interval-1-grid-capacity        |Number:Dimensionless     | R/W | Interval 1 battery charge target  | yes      |
@@ -151,7 +155,7 @@ The SunSynk Inverter has the following channels.
 
 ```java
 Bridge sunsynk:account:xxx @ "Loft" [email="user@domain.com", password="somepassword"]{
-    Thing inverter E1234567R1231234567890 @ "Loft" [alias= "My Inverter", serialnumber= "1234567890", refresh= 60]
+    Thing inverter E1234567R1231234567890 @ "Loft" [alias= "My Inverter", serialnumber= "1234567890", plantId ="123456", plantName="plant 1", refresh= 60]
 }
 ```
 
@@ -195,23 +199,35 @@ Number:Power                Interval4GridPowerLimit     "Max Charge Power Interv
 Number:Power                Interval5GridPowerLimit     "Max Charge Power Interval 5"                  {channel="sunsynk:inverter:xxx:1234567R1231234567890:interval-5-grid-power-limit", listWidget="oh-slider-item"[title="Target Power Limit",subtitle="Set Limit in Watts", min=0, max=8000,step=1000]}
 Number:Power                Interval6GridPowerLimit     "Max Charge Power Interval 6"                  {channel="sunsynk:inverter:xxx:1234567R1231234567890:interval-6-grid-power-limit", listWidget="oh-slider-item"[title="Target Power Limit",subtitle="Set Limit in Watts", min=0, max=8000,step=1000]}
 
-Number:Dimensionless        BatterySOC                  "Battery SOC [%s]"                             {channel ="sunsynk:inverter:xxx:1234567R1231234567890:battery-soc"}
-Number:ElectricPotential    BatteryDCVoltage            "Battery DC Voltage"                           {channel="sunsynk:inverter:xxx:1234567R1231234567890:battery-dc-voltage"}
-Number:ElectricCurrent      BatteryDCCurrent            "Battery DC Current"                           {channel="sunsynk:inverter:xxx:1234567R1231234567890:battery-dc-current"}
-Number:Power                BatteryDCPower              "Battery DC Power"                             {channel="sunsynk:inverter:xxx:1234567R1231234567890:battery-dc-power"}
+Number:Dimensionless        BatterySOC                  "Battery SOC [%s]"                             {channel="sunsynk:inverter:xxx:1234567R1231234567890:battery-soc"}
+Number:ElectricPotential    BatteryGridVoltage          "Battery Voltage"                              {channel="sunsynk:inverter:xxx:1234567R1231234567890:battery-dc-voltage"}
+Number:ElectricCurrent      BatteryGridCurrent          "Battery Current"                              {channel="sunsynk:inverter:xxx:1234567R1231234567890:battery-dc-current"}
+Number:Power                BatteryGridPower            "Battery Power"                                {channel="sunsynk:inverter:xxx:1234567R1231234567890:battery-dc-power"}
+Number:Power                InverterCapacity            "Inverter Capacity"                            {channel="sunsynk:inverter:xxx:1234567R1231234567890:inverter-rated-ac-output"}
 Number:Temperature          BatteryTemperature          "Battery Temperature"                          {channel="sunsynk:inverter:xxx:1234567R1231234567890:battery-temperature"}
 Number:Temperature          InverterACTemperature       "Inverter AC Temperature"                      {channel="sunsynk:inverter:xxx:1234567R1231234567890:inverter-ac-temperature"}
 Number:Temperature          InverterDCTemperature       "Inverter DC Temperature"                      {channel="sunsynk:inverter:xxx:1234567R1231234567890:inverter-dc-temperature"}
-Number:Power                InverterGridPower           "Inverter Grid Power"                          {channel="sunsynk:inverter:xxx:1234567R1231234567890:inverter-grid-power"}
-Number:ElectricPotential    InverterGridVoltage         "Inverter Grid Voltage"                        {channel="sunsynk:inverter:xxx:1234567R1231234567890:inverter-grid-voltage"}
-Number:ElectricCurrent      InverterGridCurrent         "Inverter Grid Current"                        {channel="sunsynk:inverter:xxx:1234567R1231234567890:inverter-grid-current"}
-Number:Energy               InverterSolarEnergyToday    "Inverter Energy Today"                        {channel="sunsynk:inverter:xxx:1234567R1231234567890:inverter-solar-energy-today"}
-Number:Energy               InverterSolarEnergyTotal    "Inverter Energy Total"                        {channel="sunsynk:inverter:xxx:1234567R1231234567890:inverter-solar-energy-total"}
-Number:Power                InverterSolarPowerNow       "Inverter Solar Power"                         {channel="sunsynk:inverter:xxx:1234567R1231234567890:inverter-solar-power-now"}
+
+
+Number:Power                InverterGridPower           "Grid Power"                                   {channel="sunsynk:inverter:xxx:1234567R1231234567890:inverter-grid-power"}
+Number:ElectricPotential    InverterGridVoltage         "Grid Voltage"                                 {channel="sunsynk:inverter:xxx:1234567R1231234567890:inverter-grid-voltage"}
+Number:ElectricCurrent      InverterGridCurrent         "Grid Current"                                 {channel="sunsynk:inverter:xxx:1234567R1231234567890:inverter-grid-current"}
+Number:Frequency            BatteryGridFrequency        "Grid Frequency"                               {channel="sunsynk:inverter:xxx:1234567R1231234567890:inverter-grid-frequency"}
+
+Number:Energy               InverterSolarEnergyToday    "Inverter Solar Energy Today"                  {channel="sunsynk:inverter:xxx:1234567R1231234567890:inverter-solar-energy-today"}
+Number:Energy               InverterSolarEnergyMonth    "Inverter Solar Energy This Month"             {channel="sunsynk:inverter:xxx:1234567R1231234567890:inverter-solar-energy-month"}
+Number:Energy               InverterSolarEnergyYear     "Inverter Solar Energy This Year"              {channel="sunsynk:inverter:xxx:1234567R1231234567890:inverter-solar-energy-year"}
+Number:Energy               InverterSolarEnergyTotal    "Inverter Solar Energy Gross"                  {channel="sunsynk:inverter:xxx:1234567R1231234567890:inverter-solar-energy-total"}
+Number:Dimensionless        InverterSolarEfficiency     "Inverter Solar Efficiency"                    {channel="sunsynk:inverter:xxx:1234567R1231234567890:inverter-solar-efficiency"}
+Number:Power                InverterSolarPowerNow       "Inverter Solar Power"                         {channel="sunsynk:inverter:xxx:1234567R1231234567890:inverter-solar-ac-power"}
+Number:ElectricPotential    SolarString1Voltage         "Solar String 1 Voltage"                       {channel="sunsynk:inverter:xxx:1234567R1231234567890:inverter-solar-string-voltage-1"}
+Number:ElectricPotential    SolarString2Voltage         "Solar String 2 Voltage"                       {channel="sunsynk:inverter:xxx:1234567R1231234567890:inverter-solar-string-voltage-2"}
+Number:ElectricCurrent      SolarString1Current         "Solar String 1 Current"                       {channel="sunsynk:inverter:xxx:1234567R1231234567890:inverter-solar-string-current-1"}
+Number:ElectricCurrent      SolarString2Current         "Solar String 2 Current"                       {channel="sunsynk:inverter:xxx:1234567R1231234567890:inverter-solar-string-current-2"}
+Number:Power                SolarString1Power           "Solar String 1 Power"                         {channel="sunsynk:inverter:xxx:1234567R1231234567890:inverter-solar-string-power-1"}
+Number:Power                SolarString2Power           "Solar String 2 Power"                         {channel="sunsynk:inverter:xxx:1234567R1231234567890:inverter-solar-string-power-2"}
 
 Switch                      Interval6ControlTimer       "Switch on System Mode Timer"                  {channel="sunsynk:inverter:xxx:1234567R1231234567890:inverter-control-timer"}
-String                      InverterControlWorkMode     "System Work Mode 0, 1 or 2"                   {channel="sunsynk:inverter:xxx:1234567R1231234567890:inverter-control-work-mode"}
-String                      InverterControlPattern      "System Mode Energy Pattern 0 or 1"            {channel="sunsynk:inverter:xxx:1234567R1231234567890:inverter-control-energy-pattern"}
 String                      InverterControlWorkMode     "System Work Mode 0, 1 or 2"                   {channel="sunsynk:inverter:xxx:1234567R1231234567890:inverter-control-work-mode"}
 String                      InverterControlPattern      "System Mode Energy Pattern 0 or 1"            {channel="sunsynk:inverter:xxx:1234567R1231234567890:inverter-control-energy-pattern"}
 ```
