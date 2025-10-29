@@ -128,6 +128,9 @@
 		<item-type>String</item-type>
 		<label>Hot Water Mode</label>
 		<description>Domestic hot water zone mode</description>
+		<tags>
+			<tag>Control</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="anti-frost">Anti-frost</option>
@@ -141,6 +144,9 @@
 		<item-type>String</item-type>
 		<label>Hot Water Status</label>
 		<description>Hot water status</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
