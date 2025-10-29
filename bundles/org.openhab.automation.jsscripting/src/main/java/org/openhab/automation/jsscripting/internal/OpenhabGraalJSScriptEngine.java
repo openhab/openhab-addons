@@ -249,8 +249,8 @@ public class OpenhabGraalJSScriptEngine
                 // enable Nashorn compat mode as openhab-js relies on accessors, see
                 // https://github.com/oracle/graaljs/blob/master/docs/user/NashornMigrationGuide.md#accessors
                 .option("js.nashorn-compat", "true") //
-                // if Nashorn compat mode is enabled, it will enforce ES5 compatibility, we want ECMA2024
-                .option("js.ecmascript-version", "2024") //
+                // if Nashorn compat mode is enabled, it will enforce ES5 compatibility, we want ECMA2025
+                .option("js.ecmascript-version", "2025") //
                 // enable CommonJS module support
                 .option("js.commonjs-require", "true"));
     }
