@@ -58,16 +58,16 @@ public class PlayerStatus {
     /** Vendor string reported by firmware. */
     public String vendor;
 
-    /** Current track position (seconds). */
+    /** Current track position (milliseconds). */
     @SerializedName("curpos")
-    public String currentPosition;
+    public Integer currentPosition;
 
-    /** Offset PTS (used for video lip-sync). */
-    public String offsetPts;
+    /** Offset PTS (used for video lip-sync in milliseconds). */
+    public Integer offsetPts;
 
-    /** Total track length (seconds). */
+    /** Total track length (milliseconds). */
     @SerializedName("totlen")
-    public String totalLength;
+    public Integer totalLength;
 
     /** Track title (hex encoded). */
     @SerializedName("Title")

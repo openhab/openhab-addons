@@ -149,6 +149,7 @@ public class LinkPlayHandler extends BaseThingHandler implements LinkPlayUpnpDev
     private @Nullable String currentAlbumArtUri;
     private int currentPosition = 0;
     private int currentDuration = 0;
+    private int currentVolume = 0;
     private PresetList presetInfo = new PresetList();
     private TransportState currentTransportState = TransportState.STOPPED;
 
@@ -537,6 +538,9 @@ public class LinkPlayHandler extends BaseThingHandler implements LinkPlayUpnpDev
             stateCache.entrySet().forEach(entry -> {
                 linkPlayGroupService.updateGroupState(this, entry.getKey().getId(), entry.getValue());
             });
+            // Set the group volume to the current volume of the leader
+            updateState(LinkPlayBindingConstants.GROUP_PLAYBACK, LinkPlayBindingConstants.CHANNEL_VOLUME,
+                    new PercentType(currentVolume));
         }
         updateState(LinkPlayBindingConstants.GROUP_MULTIROOM, LinkPlayBindingConstants.CHANNEL_MULTIROOM_LEADER,
                 isLeader ? OnOffType.ON : OnOffType.OFF);
@@ -873,6 +877,11 @@ public class LinkPlayHandler extends BaseThingHandler implements LinkPlayUpnpDev
             getThing().setProperties(properties);
             groupName = friendlyName;
             linkPlayGroupService.registerParticipant(this);
+            // set the group channels to off until we are added to a group
+            updateState(LinkPlayBindingConstants.GROUP_MULTIROOM, LinkPlayBindingConstants.CHANNEL_MULTIROOM_ACTIVE,
+                    OnOffType.OFF);
+            updateState(LinkPlayBindingConstants.GROUP_MULTIROOM, LinkPlayBindingConstants.CHANNEL_MULTIROOM_LEADER,
+                    OnOffType.OFF);
             refreshPlayer();
             upnpServiceCheck();
             checkUpnpOnlineStatus();
@@ -906,6 +915,10 @@ public class LinkPlayHandler extends BaseThingHandler implements LinkPlayUpnpDev
             apiClient.setHost(slave.ip);
             apiClient.setPort(port);
             linkPlayGroupService.registerParticipant(this);
+            updateState(LinkPlayBindingConstants.GROUP_MULTIROOM, LinkPlayBindingConstants.CHANNEL_MULTIROOM_ACTIVE,
+                    OnOffType.ON);
+            updateState(LinkPlayBindingConstants.GROUP_MULTIROOM, LinkPlayBindingConstants.CHANNEL_MULTIROOM_LEADER,
+                    OnOffType.OFF);
             refreshPlayer();
             upnpServiceCheck();
             updateStatus(ThingStatus.ONLINE);
@@ -1110,9 +1123,9 @@ public class LinkPlayHandler extends BaseThingHandler implements LinkPlayUpnpDev
             }
             try {
                 if (key.endsWith("Volume")) {
-                    int vol = Integer.parseInt(value);
+                    currentVolume = Integer.parseInt(value);
                     updateState(LinkPlayBindingConstants.GROUP_PLAYBACK, LinkPlayBindingConstants.CHANNEL_VOLUME,
-                            new PercentType(vol));
+                            new PercentType(currentVolume));
                 } else if (key.endsWith("Mute")) {
                     OnOffType muteState = "1".equals(value) ? OnOffType.ON : OnOffType.OFF;
                     updateState(LinkPlayBindingConstants.GROUP_PLAYBACK, LinkPlayBindingConstants.CHANNEL_MUTE,
@@ -1204,25 +1217,33 @@ public class LinkPlayHandler extends BaseThingHandler implements LinkPlayUpnpDev
                                 || playerStatus.status == PlaybackStatus.BUFFERING ? PlayPauseType.PLAY
                                         : PlayPauseType.PAUSE)
                         : UnDefType.NULL);
+        currentVolume = playerStatus.volume != null ? Integer.parseInt(playerStatus.volume) : 0;
         updateState(LinkPlayBindingConstants.GROUP_PLAYBACK, LinkPlayBindingConstants.CHANNEL_VOLUME,
-                stateOrNull(playerStatus.volume, PercentType.class));
+                new PercentType(currentVolume));
 
         if (playerStatus.mute != null) {
             OnOffType muteState = "1".equals(playerStatus.mute) ? OnOffType.ON : OnOffType.OFF;
             updateState(LinkPlayBindingConstants.GROUP_PLAYBACK, LinkPlayBindingConstants.CHANNEL_MUTE, muteState);
         }
 
-        State position = stateOrNull(playerStatus.currentPosition, DecimalType.class);
-        updateState(LinkPlayBindingConstants.GROUP_PLAYBACK, LinkPlayBindingConstants.CHANNEL_TRACK_POSITION,
-                stateOrNull(playerStatus.currentPosition, DecimalType.class));
-        if (position instanceof DecimalType decimalType) {
-            currentPosition = decimalType.intValue();
+        if (playerStatus.currentPosition != null) {
+            int seconds = playerStatus.currentPosition / 1000;
+            updateState(LinkPlayBindingConstants.GROUP_PLAYBACK, LinkPlayBindingConstants.CHANNEL_TRACK_POSITION,
+                    new DecimalType(seconds));
+            currentPosition = seconds;
+        } else {
+            updateState(LinkPlayBindingConstants.GROUP_PLAYBACK, LinkPlayBindingConstants.CHANNEL_TRACK_POSITION,
+                    UnDefType.UNDEF);
         }
 
-        State duration = stateOrNull(playerStatus.totalLength, DecimalType.class);
-        updateState(LinkPlayBindingConstants.GROUP_PLAYBACK, LinkPlayBindingConstants.CHANNEL_TRACK_DURATION, duration);
-        if (duration instanceof DecimalType decimalType) {
-            currentDuration = decimalType.intValue();
+        if (playerStatus.totalLength != null) {
+            int seconds = playerStatus.totalLength / 1000;
+            updateState(LinkPlayBindingConstants.GROUP_PLAYBACK, LinkPlayBindingConstants.CHANNEL_TRACK_DURATION,
+                    new DecimalType(seconds));
+            currentDuration = seconds;
+        } else {
+            updateState(LinkPlayBindingConstants.GROUP_PLAYBACK, LinkPlayBindingConstants.CHANNEL_TRACK_DURATION,
+                    UnDefType.UNDEF);
         }
 
         if (playerStatus.loop != null) {
