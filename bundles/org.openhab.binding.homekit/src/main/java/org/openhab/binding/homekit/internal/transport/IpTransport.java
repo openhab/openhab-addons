@@ -21,6 +21,7 @@ import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
+import java.util.Arrays;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
@@ -32,7 +33,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.bouncycastle.crypto.InvalidCipherTextException;
-import org.bouncycastle.util.Arrays;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homekit.internal.session.AsymmetricSessionKeys;
@@ -219,7 +219,7 @@ public class IpTransport implements AutoCloseable {
         ByteArrayOutputStream raw = trace ? new ByteArrayOutputStream() : null;
         byte[] buf = new byte[4096];
         do {
-            int read = in.read(buf);
+            int read = in.read(buf, 0, buf.length);
             if (read > 0) {
                 byte[] frame = Arrays.copyOf(buf, read);
                 if (raw != null) {
