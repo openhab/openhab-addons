@@ -15,6 +15,8 @@ package org.openhab.binding.modbus.lambda.internal.parser;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.modbus.lambda.internal.dto.BoilerReg50Block;
 import org.openhab.core.io.transport.modbus.ModbusRegisterArray;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Parses modbus data into an BoilerReg50 Block
@@ -25,10 +27,11 @@ import org.openhab.core.io.transport.modbus.ModbusRegisterArray;
  */
 @NonNullByDefault
 public class BoilerReg50BlockParser extends AbstractBaseParser {
+    private final Logger logger = LoggerFactory.getLogger(BoilerReg50BlockParser.class);
 
     public BoilerReg50Block parse(ModbusRegisterArray raw) {
         BoilerReg50Block block = new BoilerReg50Block();
-        block.boilerMaximumBoilerTemperature = extractUInt16(raw, 0, (short) 0);
+        block.boilerMaximumBoilerTemperature = extractInt16(raw, 0, (short) 0);
         return block;
     }
 }

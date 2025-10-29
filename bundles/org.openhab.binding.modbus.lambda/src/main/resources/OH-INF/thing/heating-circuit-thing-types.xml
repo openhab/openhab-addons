@@ -15,6 +15,7 @@
 
 		<channel-groups>
 			<channel-group id="heating-circuit-group" typeId="heating-circuit"/>
+			<channel-group id="heating-circuit-reg50-group" typeId="heating-circuit-reg50"/>
 		</channel-groups>
 
 		<config-description>
@@ -43,7 +44,7 @@
 	</thing-type>
 
 	<channel-group-type id="heating-circuit">
-		<label>Heating Circuit</label>
+		<label>Heating-Circuit Group</label>
 		<channels>
 			<channel id="heating-circuit-error-number" typeId="heating-circuit-error-number-channel"/>
 			<channel id="heating-circuit-operating-state" typeId="heating-circuit-operating-state-channel"/>
@@ -57,6 +58,12 @@
 			<channel id="heating-circuit-operating-mode" typeId="heating-circuit-operating-mode-channel"/>
 			<channel id="heating-circuit-target-temperature-flow-line"
 				typeId="heating-circuit-target-temperature-flow-line-channel"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="heating-circuit-reg50">
+		<label>Heating-Circuit Reg50 Group</label>
+		<channels>
 			<channel id="heating-circuit-offset-flow-line-temperature"
 				typeId="heating-circuit-offset-flow-line-temperature-channel"/>
 			<channel id="heating-circuit-room-heating-temperature"

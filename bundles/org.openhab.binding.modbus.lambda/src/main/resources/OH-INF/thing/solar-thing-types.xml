@@ -14,6 +14,7 @@
 
 		<channel-groups>
 			<channel-group id="solar-group" typeId="solar"/>
+			<channel-group id="solar-reg50-group" typeId="solar-reg50"/>
 		</channel-groups>
 
 		<config-description>
@@ -33,8 +34,8 @@
 				<default>0</default>
 			</parameter>
 		</config-description>
-
 	</thing-type>
+
 	<channel-group-type id="solar">
 		<label>Solar</label>
 		<channels>
@@ -43,6 +44,12 @@
 			<channel id="solar-collector-temperature" typeId="solar-collector-temperature-channel"/>
 			<channel id="solar-buffer1-temperature" typeId="solar-buffer1-temperature-channel"/>
 			<channel id="solar-buffer2-temperature" typeId="solar-buffer2-temperature-channel"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="solar-reg50">
+		<label>Solar Reg50 Group</label>
+		<channels>
 			<channel id="solar-maximum-buffer-temperature" typeId="solar-maximum-buffer-temperature-channel"/>
 			<channel id="solar-buffer-changeover-temperature" typeId="solar-buffer-changeover-temperature-channel"/>
 		</channels>

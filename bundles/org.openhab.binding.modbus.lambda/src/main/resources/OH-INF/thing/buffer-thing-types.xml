@@ -13,6 +13,7 @@
 
 		<channel-groups>
 			<channel-group id="buffer-group" typeId="buffer"/>
+			<channel-group id="buffer-reg50-group" typeId="buffer-reg50"/>
 		</channel-groups>
 
 		<config-description>
@@ -48,6 +49,12 @@
 			<channel id="buffer-request-return-line-temperature" typeId="buffer-request-return-line-temperature-channel"/>
 			<channel id="buffer-request-heat-sink-temperature" typeId="buffer-request-heat-sink-temperature-channel"/>
 			<channel id="buffer-request-heating-capacity" typeId="buffer-request-heating-capacity-channel"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="buffer-reg50">
+		<label>Buffer Reg50 Group</label>
+		<channels>
 			<channel id="maximum-buffer-temperature" typeId="maximum-buffer-temperature-channel"/>
 		</channels>
 	</channel-group-type>

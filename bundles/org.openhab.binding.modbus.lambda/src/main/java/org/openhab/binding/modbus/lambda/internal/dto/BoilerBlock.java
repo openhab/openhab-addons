@@ -24,6 +24,4 @@ public class BoilerBlock {
     public int boilerOperatingState;
     public int boilerActualHighTemperature;
     public int boilerActualLowTemperature;
-    public int boilerActualCirculationTemperature;
-    public int boilerActualCirculationPumpState;
 }

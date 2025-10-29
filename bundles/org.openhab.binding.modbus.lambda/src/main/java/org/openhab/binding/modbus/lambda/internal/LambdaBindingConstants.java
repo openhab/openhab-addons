@@ -27,20 +27,14 @@ import org.openhab.core.thing.ThingTypeUID;
 public class LambdaBindingConstants {
 
     private static final String BINDING_ID = ModbusBindingConstants.BINDING_ID;
-    private static final String GENERAL = "general";
-    private static final String BOILER = "boiler";
-    private static final String BUFFER = "buffer";
-    private static final String HEAT_PUMP = "heat-pump";
-    private static final String HEATING_CIRCUIT = "heating-circuit";
-    private static final String SOLAR = "solar";
 
     // List of all Thing Type UIDs
-    public static final ThingTypeUID THING_TYPE_GENERAL = new ThingTypeUID(BINDING_ID, GENERAL);
-    public static final ThingTypeUID THING_TYPE_BOILER = new ThingTypeUID(BINDING_ID, BOILER);
-    public static final ThingTypeUID THING_TYPE_BUFFER = new ThingTypeUID(BINDING_ID, BUFFER);
-    public static final ThingTypeUID THING_TYPE_HEAT_PUMP = new ThingTypeUID(BINDING_ID, HEAT_PUMP);
-    public static final ThingTypeUID THING_TYPE_HEATING_CIRCUIT = new ThingTypeUID(BINDING_ID, HEATING_CIRCUIT);
-    public static final ThingTypeUID THING_TYPE_SOLAR = new ThingTypeUID(BINDING_ID, SOLAR);
+    public static final ThingTypeUID THING_TYPE_GENERAL = new ThingTypeUID(BINDING_ID, "general");
+    public static final ThingTypeUID THING_TYPE_BOILER = new ThingTypeUID(BINDING_ID, "boiler");
+    public static final ThingTypeUID THING_TYPE_BUFFER = new ThingTypeUID(BINDING_ID, "buffer");
+    public static final ThingTypeUID THING_TYPE_HEAT_PUMP = new ThingTypeUID(BINDING_ID, "heat-pump");
+    public static final ThingTypeUID THING_TYPE_SOLAR = new ThingTypeUID(BINDING_ID, "solar");
+    public static final ThingTypeUID THING_TYPE_HEATING_CIRCUIT = new ThingTypeUID(BINDING_ID, "heating-circuit");
 
     // Channel group ids
     public static final String GROUP_GENERAL_AMBIENT = "ambient-group";
@@ -50,10 +44,10 @@ public class LambdaBindingConstants {
     public static final String GROUP_BOILER_REG50 = "boiler-reg50-group";
     public static final String GROUP_BUFFER = "buffer-group";
     public static final String GROUP_BUFFER_REG50 = "buffer-reg50-group";
-    public static final String GROUP_HEATING_CIRCUIT = "heating-circuit-group";
-    public static final String GROUP_HEATING_CIRCUIT_REG50 = "heating-circuit-reg50-group";
     public static final String GROUP_SOLAR = "solar-group";
     public static final String GROUP_SOLAR_REG50 = "solar-reg50-group";
+    public static final String GROUP_HEATING_CIRCUIT = "heating-circuit-group";
+    public static final String GROUP_HEATING_CIRCUIT_REG50 = "heating-circuit-reg50-group";
 
     // List of all Channel ids in device information group
     // General Ambient
@@ -100,9 +94,7 @@ public class LambdaBindingConstants {
     public static final String CHANNEL_BOILER_OPERATING_STATE = "boiler-operating-state";
     public static final String CHANNEL_BOILER_ACTUAL_HIGH_TEMPERATURE = "boiler-actual-high-temperature";
     public static final String CHANNEL_BOILER_ACTUAL_LOW_TEMPERATURE = "boiler-actual-low-temperature";
-    public static final String CHANNEL_BOILER_ACTUAL_CIRCULATION_TEMPERATURE = "boiler-actual-circulation-low-temperature";
-    public static final String CHANNEL_BOILER_ACTUAL_CIRCULATION_PUMP_STATE = "boiler-actual-circulation-pump-state";
-    public static final String CHANNEL_BOILER_MAXIMUM_BOILER_TEMPERATURE = "boiler-maximum-boiler-temperature";
+    public static final String CHANNEL_BOILER_MAXIMUM_BOILER_TEMPERATURE = "maximum-boiler-temperature";
 
     // Buffer
     public static final String CHANNEL_BUFFER_ERROR_NUMBER = "buffer-error-number";
@@ -115,7 +107,16 @@ public class LambdaBindingConstants {
     public static final String CHANNEL_BUFFER_REQUEST_RETURN_LINE_TEMPERATURE = "buffer-request-return-line-temperature";
     public static final String CHANNEL_BUFFER_REQUEST_HEAT_SINK_TEMPERATURE = "buffer-request-heat-sink-temperature-difference";
     public static final String CHANNEL_BUFFER_REQUEST_HEATING_CAPACITY = "buffer-request-heating-capacity";
-    public static final String CHANNEL_BUFFER_MAXIMUM_BUFFER_TEMPERATURE = "buffer-maximum-buffer-temperature";
+    public static final String CHANNEL_BUFFER_MAXIMUM_BUFFER_TEMPERATURE = "maximum-buffer-temperature";
+
+    // Solar
+    public static final String CHANNEL_SOLAR_ERROR_NUMBER = "solar-error-number";
+    public static final String CHANNEL_SOLAR_OPERATING_STATE = "solar-operating-state";
+    public static final String CHANNEL_SOLAR_COLLECTOR_TEMPERATURE = "solar-collector-temperature";
+    public static final String CHANNEL_SOLAR_BUFFER1_TEMPERATURE = "solar-buffer1-temperature";
+    public static final String CHANNEL_SOLAR_BUFFER2_TEMPERATURE = "solar-buffer2-temperature";
+    public static final String CHANNEL_SOLAR_MAXIMUM_BUFFER_TEMPERATURE = "solar-maximum-buffer-temperature";
+    public static final String CHANNEL_SOLAR_BUFFER_CHANGEOVER_TEMPERATURE = "solar-buffer-changeover-temperature";
 
     // Heating Circuit
     public static final String CHANNEL_HEATING_CIRCUIT_ERROR_NUMBER = "heating-circuit-error-number";
@@ -129,13 +130,4 @@ public class LambdaBindingConstants {
     public static final String CHANNEL_HEATING_CIRCUIT_OFFSET_FLOW_LINE_TEMPERATURE = "heating-circuit-offset-flow-line-temperature";
     public static final String CHANNEL_HEATING_CIRCUIT_ROOM_HEATING_TEMPERATURE = "heating-circuit-room-heating-temperature";
     public static final String CHANNEL_HEATING_CIRCUIT_ROOM_COOLING_TEMPERATURE = "heating-circuit-room-cooling-temperature";
-
-    // Solar
-    public static final String CHANNEL_SOLAR_ERROR_NUMBER = "solar-error-number";
-    public static final String CHANNEL_SOLAR_OPERATING_STATE = "solar-operating-state";
-    public static final String CHANNEL_SOLAR_COLLECTOR_TEMPERATURE = "solar-collector-temperature";
-    public static final String CHANNEL_SOLAR_BUFFER1_TEMPERATURE = "solar-buffer1-temperature";
-    public static final String CHANNEL_SOLAR_BUFFER2_TEMPERATURE = "solar-buffer2-temperature";
-    public static final String CHANNEL_SOLAR_MAXIMUM_BUFFER_TEMPERATURE = "solar-maximum-buffer-temperature";
-    public static final String CHANNEL_SOLAR_BUFFER_CHANGEOVER_TEMPERATURE = "solar-buffer-changeover-temperature";
 }

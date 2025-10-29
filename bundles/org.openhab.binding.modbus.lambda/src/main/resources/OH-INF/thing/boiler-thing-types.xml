@@ -14,6 +14,7 @@
 
 		<channel-groups>
 			<channel-group id="boiler-group" typeId="boiler"/>
+			<channel-group id="boiler-reg50-group" typeId="boiler-reg50"/>
 		</channel-groups>
 
 		<config-description>
@@ -43,6 +44,12 @@
 			<channel id="boiler-operating-state" typeId="boiler-operating-state-channel"/>
 			<channel id="boiler-actual-high-temperature" typeId="boiler-actual-high-temperature-channel"/>
 			<channel id="boiler-actual-low-temperature" typeId="boiler-actual-low-temperature-channel"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="boiler-reg50">
+		<label>Boiler Reg50 Group</label>
+		<channels>
 			<channel id="maximum-boiler-temperature" typeId="maximum-boiler-temperature-channel"/>
 		</channels>
 	</channel-group-type>
@@ -91,26 +98,9 @@
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
-	<channel-type id="boiler-actual-circulation-temperature-channel">
-		<item-type>Number:Temperature</item-type>
-		<label>Boiler Actual Circulation Temperature</label>
-		<state readOnly="true" pattern="%.1f %unit%"/>
-	</channel-type>
-
-	<channel-type id="boiler-actual-circulation-pump-state-channel">
-		<item-type>Number</item-type>
-		<label>Boiler Actual Circulation Pump State</label>
-		<state readOnly="true">
-			<options>
-				<option value="0">OFF</option>
-				<option value="1">ON</option>
-			</options>
-		</state>
-	</channel-type>
-
 	<channel-type id="maximum-boiler-temperature-channel">
 		<item-type>Number:Temperature</item-type>
-		<label>Max. Boiler Temperature</label>
+		<label>Maximum Boiler Temperature</label>
 		<state readOnly="false" pattern="%.1f %unit%"/>
 	</channel-type>
 

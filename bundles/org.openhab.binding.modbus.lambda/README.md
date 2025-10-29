@@ -21,6 +21,7 @@ Note, that the things will show up under the Modbus binding.
 | Heat Pump       | heat-pump           | Heat Pump section                       |
 | Boiler          | boiler              | Boiler section                          |
 | Buffer          | buffer              | Buffer section                          |
+| Solar           | solar               | Solar section                           |
 | Heating Circuit | heating-circuit     | Heating Circuit section                 |
 
 A Modbus Bridge has to be installed before installing the above mentioned things.
@@ -64,6 +65,7 @@ Heat Pump, Boiler, Buffer and Heating Circuit things use another parameter Subin
 | Heatpump         | 0..2    | 
 | Boiler           | 0..4    | 
 | Buffer           | 0..4    | 
+| Solar            | 0..2    | 
 | Heating Circuit  | 0..11   | 
 
 ## Channels
@@ -134,8 +136,6 @@ This group contains information about the boiler for the water for domestic use 
 | boiler-operating-state                | Number             | true      | Boiler Operating State: See Modbus description manual, link above   |
 | boiler-actual-high-temperature        | Number:Temperature | true      | Actual temperature boiler high sensor                               |
 | boiler-actual-low-temperature         | Number:Temperature | true      | Actual temperature boiler low sensor                                |
-| boiler-actual-circulation-temperature | Number:Temperature | true      | Actual circulation temperature                                      |
-| boiler-actual-circulation-pump-state  | Number             | true      | Actual circulation pump state                                       |
 | maximum-boiler-temperature            | Number:Temperature | false     | Setting for maximum boiler temperature (min = 25.0°C; max = 65.0°C) |
 
 ### Buffer Group
@@ -169,7 +169,6 @@ This group contains information about the solar thermic component.
 | solar-heat-quantity          | Number:Energy      | true      | Heat quantity produced by solar                                  |
 | solar-power-output           | Number:Power       | true      | Current power output of solar                                    |
 | solar-operating-hours        | Number             | true      | Operating hours of solar component                               |
-
 
 ### Heating Circuit Group
 
@@ -221,11 +220,11 @@ Number              lambdabuffer_operatingstate                 "Buffer Operatin
 Number:Temperature  lambdabuffer_actualhightemperature          "Buffer Actual High Temperature"            (lambdabuffer)  { channel="modbus:buffer:Lambda_Bridge:lambdabuffer:buffer-group#buffer-actual-high-temperature" }
 Number:Temperature  lambdabuffer_actuallowtemperature           "Buffer Actual Low Temperature"             (lambdabuffer)  { channel="modbus:buffer:Lambda_Bridge:lambdabuffer:buffer-group#buffer-actual-low-temperature" }
 Number:Temperature  lambdabuffer_actualmodbustemperature       "Actual Modbus Temperature"                  (lambdabuffer)  { channel="modbus:buffer:Lambda_Bridge:lambdabuffer:buffer-group#buffer-actual-modbus-temperature" }
-Number                          lambdabuffer_requesttype                   "Request Type"                               (lambdabuffer)  { channel="modbus:buffer:Lambda_Bridge:lambdabuffer:buffer-group#buffer-request-type" }
+Number              lambdabuffer_requesttype                   "Request Type"                               (lambdabuffer)  { channel="modbus:buffer:Lambda_Bridge:lambdabuffer:buffer-group#buffer-request-type" }
 Number:Temperature  lambdabuffer_requestflowlinetemperature    "Request Flow Line Temperature"              (lambdabuffer)  { channel="modbus:buffer:Lambda_Bridge:lambdabuffer:buffer-group#buffer-request-flow-line-temperature" }
 Number:Temperature  lambdabuffer_requestreturnlinetemperature  "Request Return Line Temperature"            (lambdabuffer)  { channel="modbus:buffer:Lambda_Bridge:lambdabuffer:buffer-group#buffer-request-return-line-temperature" }
 Number:Temperature  lambdabuffer_requestheatsinktemperature    "Requested Heat Sink Temperature Difference" (lambdabuffer)  { channel="modbus:buffer:Lambda_Bridge:lambdabuffer:buffer-group#buffer-request-heat-sink-temperature" }
-Number:Power  lambdabuffer_requestheatingcapacity              "Requested Heating Capacity"                 (lambdabuffer)  { channel="modbus:buffer:Lambda_Bridge:lambdabuffer:buffer-group#buffer-request-heating-capacity" }
+Number:Power        lambdabuffer_requestheatingcapacity              "Requested Heating Capacity"                 (lambdabuffer)  { channel="modbus:buffer:Lambda_Bridge:lambdabuffer:buffer-group#buffer-request-heating-capacity" }
 Number:Temperature  lambdabuffer_maximumbuffertemperature      "Maximum Buffer Temperature"                 (lambdabuffer)  { channel="modbus:buffer:Lambda_Bridge:lambdabuffer:buffer-group#maximum-buffer-temperature" }
   ```
   
@@ -268,9 +267,9 @@ Number              lambdasolar_operatingstate            "Solar Operating State
 Number:Temperature  lambdasolar_collectortemperature      "Solar Collector Temperature"      (lambdasolar)  { channel="modbus:solar:Lambda_Bridge:lambdasolar:solar-group#solar-collector-temperature" }
 Number:Temperature  lambdasolar_storagetemperature        "Solar Storage Temperature"        (lambdasolar)  { channel="modbus:solar:Lambda_Bridge:lambdasolar:solar-group#solar-storage-temperature" }
 Number              lambdasolar_pumpspeed                 "Solar Pump Speed"                 (lambdasolar)  { channel="modbus:solar:Lambda_Bridge:lambdasolar:solar-group#solar-pump-speed" }
-Number:Energy       lambdasolar_heatquantity             "Solar Heat Quantity"              (lambdasolar)  { channel="modbus:solar:Lambda_Bridge:lambdasolar:solar-group#solar-heat-quantity" }
-Number:Power        lambdasolar_poweroutput              "Solar Power Output"               (lambdasolar)  { channel="modbus:solar:Lambda_Bridge:lambdasolar:solar-group#solar-power-output" }
-Number              lambdasolar_operatinghours           "Solar Operating Hours"            (lambdasolar)  { channel="modbus:solar:Lambda_Bridge:lambdasolar:solar-group#solar-operating-hours" }
+Number:Energy       lambdasolar_heatquantity              "Solar Heat Quantity"              (lambdasolar)  { channel="modbus:solar:Lambda_Bridge:lambdasolar:solar-group#solar-heat-quantity" }
+Number:Power        lambdasolar_poweroutput               "Solar Power Output"               (lambdasolar)  { channel="modbus:solar:Lambda_Bridge:lambdasolar:solar-group#solar-power-output" }
+Number              lambdasolar_operatinghours            "Solar Operating Hours"            (lambdasolar)  { channel="modbus:solar:Lambda_Bridge:lambdasolar:solar-group#solar-operating-hours" }
 ```
 
 ### Items Lambda Heatpump

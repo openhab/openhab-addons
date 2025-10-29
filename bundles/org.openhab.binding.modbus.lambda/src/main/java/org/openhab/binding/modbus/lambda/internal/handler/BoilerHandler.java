@@ -313,7 +313,6 @@ public class BoilerHandler extends BaseThingHandler {
                     handlePolledBoilerData(registers);
                 }
             };
-            // neu: poller.registerPollTask(baseadress, 6, ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS);
             poller.registerPollTask(baseadress, 4, ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS);
             boilerPoller = poller;
         }
@@ -439,17 +438,13 @@ public class BoilerHandler extends BaseThingHandler {
                 getScaled(block.boilerActualHighTemperature, CELSIUS, -1.0));
         updateState(channelUID(GROUP_BOILER, CHANNEL_BOILER_ACTUAL_LOW_TEMPERATURE),
                 getScaled(block.boilerActualLowTemperature, CELSIUS, -1.0));
-        // neu: updateState(channelUID(GROUP_BOILER, CHANNEL_BOILER_ACTUAL_CIRCULATION_TEMPERATURE),
-        // neu: getScaled(block.boilerActualCirculationTemperature, CELSIUS, -1.0));
-        // neu: updateState(channelUID(GROUP_BOILER, CHANNEL_BOILER_ACTUAL_CIRCULATION_PUMP_STATE),
-        // neu: new DecimalType(block.boilerActualCirculationPumpState));
         resetCommunicationError();
     }
 
     protected void handlePolledBoilerReg50Data(ModbusRegisterArray registers) {
         BoilerReg50Block block = boilerReg50BlockParser.parse(registers);
 
-        // BoilerReg50 group
+        // BoilerReg50 groupaximumBoilerTemperature: {}",
         updateState(channelUID(GROUP_BOILER_REG50, CHANNEL_BOILER_MAXIMUM_BOILER_TEMPERATURE),
                 getScaled(block.boilerMaximumBoilerTemperature, CELSIUS, -1.0));
         resetCommunicationError();

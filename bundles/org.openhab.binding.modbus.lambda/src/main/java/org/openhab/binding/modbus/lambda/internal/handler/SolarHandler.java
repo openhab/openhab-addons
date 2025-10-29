@@ -164,26 +164,6 @@ public class SolarHandler extends BaseThingHandler {
         });
     }
 
-    /**
-     * May be used in the future
-     * 
-     * private short getInt16Value(Command command) throws LambdaException {
-     * if (command instanceof QuantityType quantityCommand) {
-     * QuantityType<?> c = quantityCommand.toUnit(WATT);
-     * if (c != null) {
-     * return c.shortValue();
-     * } else {
-     * throw new LambdaException("Unsupported unit");
-     * }
-     * }
-     * if (command instanceof DecimalType c) {
-     * return c.shortValue();
-     * }
-     * throw new LambdaException("Unsupported command type");
-     * }
-     * 
-     */
-
     private short getScaledInt16Value(Command command) throws LambdaException {
         if (command instanceof QuantityType quantityCommand) {
             QuantityType<?> c = quantityCommand.toUnit(CELSIUS);
