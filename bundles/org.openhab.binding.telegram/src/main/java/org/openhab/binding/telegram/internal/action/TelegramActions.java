@@ -52,6 +52,10 @@ import org.slf4j.LoggerFactory;
 
 import com.pengrad.telegrambot.model.request.InlineKeyboardButton;
 import com.pengrad.telegrambot.model.request.InlineKeyboardMarkup;
+import com.pengrad.telegrambot.model.request.Keyboard;
+import com.pengrad.telegrambot.model.request.KeyboardButton;
+import com.pengrad.telegrambot.model.request.ReplyKeyboardMarkup;
+import com.pengrad.telegrambot.model.request.ReplyKeyboardRemove;
 import com.pengrad.telegrambot.request.AnswerCallbackQuery;
 import com.pengrad.telegrambot.request.DeleteMessage;
 import com.pengrad.telegrambot.request.EditMessageReplyMarkup;
@@ -304,6 +308,180 @@ public class TelegramActions implements ThingActions {
         return false;
     }
 
+    @RuleAction(label = "send a keyboard", description = "Send a Telegram custom keyboard.")
+    public boolean sendTelegramKeyboard(@ActionInput(name = "chatId") @Nullable Long chatId,
+            @ActionInput(name = "message") @Nullable String message,
+            @ActionInput(name = "replyId") @Nullable String replyId,
+            @ActionInput(name = "oneTimeKeyboard") boolean oneTimeKeyboard,
+            @ActionInput(name = "buttons") @Nullable String... buttons) {
+        return sendKeyboard(chatId, message, replyId, oneTimeKeyboard, buttons);
+    }
+
+    @RuleAction(label = "send a keyboard", description = "Send a Telegram custom keyboard.")
+    public boolean sendTelegramKeyboard(@ActionInput(name = "message") @Nullable String message,
+            @ActionInput(name = "replyId") @Nullable String replyId,
+            @ActionInput(name = "oneTimeKeyboard") boolean oneTimeKeyboard,
+            @ActionInput(name = "buttons") @Nullable String... buttons) {
+        TelegramHandler localHandler = handler;
+        if (localHandler != null) {
+            for (Long chatId : localHandler.getReceiverChatIds()) {
+                if (!sendTelegramKeyboard(chatId, message, replyId, oneTimeKeyboard, buttons)) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    private boolean sendReplyMarkup(String replyId, Long chatId, String message, Keyboard keyboard) {
+        TelegramHandler localHandler = handler;
+        if (localHandler != null) {
+            SendMessage sendMessage = new SendMessage(chatId, message);
+            if (localHandler.getParseMode() != null) {
+                sendMessage.parseMode(localHandler.getParseMode());
+            }
+            if (replyId != null) {
+                if (!replyId.contains(" ")) {
+                    sendMessage.replyMarkup(keyboard);
+                }
+            }
+            SendResponse retMessage = null;
+            try {
+                retMessage = localHandler.execute(sendMessage);
+            } catch (Exception e) {
+                logger.warn("Exception occured whilst sending message:{}", e.getMessage());
+            }
+            if (!evaluateResponse(retMessage)) {
+                return false;
+            }
+            if (replyId != null && retMessage != null) {
+                logger.debug("Adding chatId {}, replyId {} and messageId {}", chatId, replyId,
+                        retMessage.message().messageId());
+                localHandler.addMessageId(chatId, replyId, retMessage.message().messageId());
+            }
+            return true;
+        }
+        return false;
+    }
+
+    private boolean removeKeyboard(@ActionInput(name = "isSelective") boolean isSelective) {
+        Keyboard replyKeyboardRemove = new ReplyKeyboardRemove(isSelective);
+        sendReplyMarkup("324", 34354675676576546L, "foo", replyKeyboardRemove);
+        return true;
+    }
+
+    private boolean sendKeyboard(@ActionInput(name = "chatId") @Nullable Long chatId, @Nullable String message,
+            @Nullable String replyId, boolean oneTimeKeyboard, @Nullable String[]... buttons) {
+        if (message == null) {
+            logger.warn("Message not defined; action skipped.");
+            return false;
+        }
+        if (chatId == null) {
+            logger.warn("chatId not defined; action skipped.");
+            return false;
+        }
+        TelegramHandler localHandler = handler;
+        if (localHandler != null) {
+            SendMessage sendMessage = new SendMessage(chatId, message);
+            if (localHandler.getParseMode() != null) {
+                sendMessage.parseMode(localHandler.getParseMode());
+            }
+            if (replyId != null) {
+                if (!replyId.contains(" ")) {
+                    if (buttons.length > 0) {
+                        KeyboardButton[][] keyboard2D = new KeyboardButton[buttons.length][];
+                        for (int i = 0; i < buttons.length; i++) {
+                            KeyboardButton[] rowOfButtons = new KeyboardButton[buttons[i].length];
+                            for (int x = 0; x < buttons[i].length; x++) {
+                                rowOfButtons[x] = new KeyboardButton(buttons[i][x]);
+                            }
+                            keyboard2D[i] = rowOfButtons;
+                        }
+                        ReplyKeyboardMarkup keyBoardMarkup = new ReplyKeyboardMarkup(keyboard2D);
+                        sendMessage.replyMarkup(keyBoardMarkup);
+                    } else {
+                        logger.warn(
+                                "The replyId {} for message {} is given, but no buttons are defined. ReplyKeyboardMarkup will be ignored.",
+                                replyId, message);
+                    }
+                } else {
+                    logger.warn("replyId {} must not contain spaces. ReplyKeyboardMarkup will be ignored.", replyId);
+                }
+            }
+            SendResponse retMessage = null;
+            try {
+                retMessage = localHandler.execute(sendMessage);
+            } catch (Exception e) {
+                logger.warn("Exception occured whilst sending message:{}", e.getMessage());
+            }
+            if (!evaluateResponse(retMessage)) {
+                return false;
+            }
+            if (replyId != null && retMessage != null) {
+                logger.debug("Adding chatId {}, replyId {} and messageId {}", chatId, replyId,
+                        retMessage.message().messageId());
+                localHandler.addMessageId(chatId, replyId, retMessage.message().messageId());
+            }
+            return true;
+        }
+        return false;
+    }
+
+    private boolean sendKeyboard(@ActionInput(name = "chatId") @Nullable Long chatId, @Nullable String message,
+            @Nullable String replyId, boolean oneTimeKeyboard, @Nullable String... buttons) {
+        if (message == null) {
+            logger.warn("Message not defined; action skipped.");
+            return false;
+        }
+        if (chatId == null) {
+            logger.warn("chatId not defined; action skipped.");
+            return false;
+        }
+        TelegramHandler localHandler = handler;
+        if (localHandler != null) {
+            SendMessage sendMessage = new SendMessage(chatId, message);
+            if (localHandler.getParseMode() != null) {
+                sendMessage.parseMode(localHandler.getParseMode());
+            }
+            if (replyId != null) {
+                if (!replyId.contains(" ")) {
+                    if (buttons.length > 0) {
+                        KeyboardButton[][] keyboard2D = new KeyboardButton[1][];
+                        KeyboardButton[] keyboard = new KeyboardButton[buttons.length];
+                        keyboard2D[0] = keyboard;
+                        for (int i = 0; i < buttons.length; i++) {
+                            keyboard[i] = new KeyboardButton(buttons[i]);
+                        }
+                        ReplyKeyboardMarkup keyBoardMarkup = new ReplyKeyboardMarkup(keyboard2D);
+                        sendMessage.replyMarkup(keyBoardMarkup);
+                    } else {
+                        logger.warn(
+                                "The replyId {} for message {} is given, but no buttons are defined. ReplyKeyboardMarkup will be ignored.",
+                                replyId, message);
+                    }
+                } else {
+                    logger.warn("replyId {} must not contain spaces. ReplyKeyboardMarkup will be ignored.", replyId);
+                }
+            }
+            SendResponse retMessage = null;
+            try {
+                retMessage = localHandler.execute(sendMessage);
+            } catch (Exception e) {
+                logger.warn("Exception occured whilst sending message:{}", e.getMessage());
+            }
+            if (!evaluateResponse(retMessage)) {
+                return false;
+            }
+            if (replyId != null && retMessage != null) {
+                logger.debug("Adding chatId {}, replyId {} and messageId {}", chatId, replyId,
+                        retMessage.message().messageId());
+                localHandler.addMessageId(chatId, replyId, retMessage.message().messageId());
+            }
+            return true;
+        }
+        return false;
+    }
+
     @RuleAction(label = "delete a query", description = "Delete a Query using the Telegram API.")
     public @ActionOutput(label = "Success", type = "java.lang.Boolean") boolean deleteTelegramQuery(
             @ActionInput(name = "replyId") @Nullable String replyId) {
@@ -336,7 +514,7 @@ public class TelegramActions implements ThingActions {
         }
 
         return true;
-    } // public boolean deleteTelegramQuery(String replyId)
+    }
 
     @RuleAction(label = "send a message", description = "Send a Telegram using the Telegram API.")
     public @ActionOutput(label = "Success", type = "java.lang.Boolean") boolean sendTelegram(
