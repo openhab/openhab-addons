@@ -27,8 +27,8 @@
 			</parameter>
 
 			<parameter name="tadoApiUrl" type="text" required="true">
-				<label>URL to use for API calls</label>
-				<description>Selects the URL to be used for API calls (it's possible to use a proxy)</description>
+				<label>API Base URL</label>
+				<description>he base URL used for all API requests. Can be changed to use a proxy.</description>
 				<default>https://my.tado.com/api/v2</default>
 				<advanced>true</advanced>
 			</parameter>
