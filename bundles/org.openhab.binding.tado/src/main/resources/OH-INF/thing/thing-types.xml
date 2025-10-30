@@ -26,6 +26,13 @@
 				<advanced>true</advanced>
 			</parameter>
 
+			<parameter name="tadoApiUrl" type="text" required="true">
+				<label>URL to use for API calls</label>
+				<description>Selects the URL to be used for API calls (it's possible to use a proxy)</description>
+				<default>https://my.tado.com/api/v2</default>
+				<advanced>true</advanced>
+			</parameter>
+
 			<parameter name="username" type="text" required="false">
 				<label>User Name</label>
 				<description>Selects the tado° account to be used if there is more than one account.</description>
