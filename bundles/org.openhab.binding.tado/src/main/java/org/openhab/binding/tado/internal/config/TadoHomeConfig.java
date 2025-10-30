@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.tado.internal.config;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -26,5 +25,5 @@ public class TadoHomeConfig {
     public @Nullable String username;
     public @Nullable Boolean rfcWithUser;
     public @Nullable Integer homeId;
-    public @NonNull String tadoApiUrl;
+    public String tadoApiUrl;
 }
