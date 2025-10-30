@@ -254,7 +254,7 @@ public class SagerCasterHandler extends BaseThingHandler {
         }
     }
 
-    public void updateReliability(String group, String channelId) {
+    private void updateReliability(String group, String channelId) {
         if (getChannelId(group, channelId) instanceof ChannelUID id) {
             long minDuration = Math.min(bearingCache.getDataAgeInMin(),
                     Math.min(pressureCache.getDataAgeInMin(), temperatureCache.getDataAgeInMin()));

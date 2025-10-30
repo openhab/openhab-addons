@@ -41,7 +41,7 @@ class ExpiringMap<T> {
     public Optional<T> put(T newValue) {
         long now = System.currentTimeMillis();
 
-        // removes all entries > 6h
+        // removes all entries older than the configured window duration
         long cutoff = now - windowMillis;
         while (!values.isEmpty() && values.firstKey() < cutoff) {
             values.pollFirstEntry();

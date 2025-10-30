@@ -30,7 +30,7 @@ public class SagerCasterBindingConstants {
     public static final String LOCAL = "local";
 
     // List of all Thing Type UIDs
-    public static final ThingTypeUID THING_TYPE_SAGERCASTER = new ThingTypeUID(BINDING_ID, BINDING_ID);
+    public static final ThingTypeUID THING_TYPE_SAGERCASTER = new ThingTypeUID(BINDING_ID, "sagercaster");
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_SAGERCASTER);
     // Configuration elements
     public static final String CONFIG_LOCATION = "location";
