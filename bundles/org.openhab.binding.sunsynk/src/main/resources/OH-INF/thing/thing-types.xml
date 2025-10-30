@@ -176,7 +176,7 @@
 				<label>Solar Energy Today</label>
 				<description>Solar energy generated today.</description>
 			</channel>
-            <channel id="inverter-solar-energy-month" typeId="system.electric-energy">
+			<channel id="inverter-solar-energy-month" typeId="system.electric-energy">
 				<label>Solar Energy This Month</label>
 				<description>Solar energy generated this month.</description>
 			</channel>
@@ -196,7 +196,7 @@
 				<label>Solar Energy Total</label>
 				<description>Total solar energy generated.</description>
 			</channel>
-            <channel id="inverter-solar-string-voltage-1" typeId="system.electric-voltage">
+			<channel id="inverter-solar-string-voltage-1" typeId="system.electric-voltage">
 				<label>String 1 Solar Voltage</label>
 				<description>Solar voltage being generated.</description>
 			</channel>
@@ -216,7 +216,7 @@
 				<label>String 1 Solar Power</label>
 				<description>Solar power being generated.</description>
 			</channel>
-            <channel id="inverter-solar-string-power-2" typeId="system.electric-power">
+			<channel id="inverter-solar-string-power-2" typeId="system.electric-power">
 				<label>String 2 Solar Power</label>
 				<description>Solar power being generated.</description>
 			</channel>
@@ -240,7 +240,7 @@
 				<label>Inverter Name</label>
 				<description>Name of inverter from Sun Synk Connect.</description>
 			</parameter>
-            <parameter name="plantId" type="text" required="true">
+			<parameter name="plantId" type="text" required="true">
 				<label>Plant ID</label>
 				<description>Plant ID of the inverter from Sun Synk Connect.</description>
 			</parameter>
