@@ -127,8 +127,8 @@ public class Powerline546EHandler extends AVMFritzBaseBridgeHandler implements F
 
             updateProperties(device);
 
-            if (device.isPowermeter()) {
-                updatePowermeter(device.getPowermeter());
+            if (device.isPowerMeter()) {
+                updatePowermeter(device.getPowerMeter());
             }
             if (device.isSwitchableOutlet()) {
                 updateSwitchableOutlet(device.getSwitch());

@@ -22,87 +22,87 @@
     <dependency>
       <groupId>org.openhab.osgiify</groupId>
       <artifactId>org.graalvm.llvm.llvm-api</artifactId>
-      <version>${graalpy.version}</version>
+      <version>${graalvm.version}</version>
     </dependency>
     <dependency>
       <groupId>org.openhab.osgiify</groupId>
       <artifactId>org.graalvm.polyglot.polyglot</artifactId>
-      <version>${graalpy.version}</version>
+      <version>${graalvm.version}</version>
     </dependency>
     <dependency>
       <groupId>org.openhab.osgiify</groupId>
       <artifactId>org.graalvm.python.python-embedding</artifactId>
-      <version>${graalpy.version}</version>
+      <version>${graalvm.version}</version>
     </dependency>
     <dependency>
       <groupId>org.openhab.osgiify</groupId>
       <artifactId>org.graalvm.python.python-language</artifactId>
-      <version>${graalpy.version}</version>
+      <version>${graalvm.version}</version>
     </dependency>
     <dependency>
       <groupId>org.openhab.osgiify</groupId>
       <artifactId>org.graalvm.python.python-resources</artifactId>
-      <version>${graalpy.version}</version>
+      <version>${graalvm.version}</version>
     </dependency>
     <dependency>
       <groupId>org.openhab.osgiify</groupId>
       <artifactId>org.graalvm.regex.regex</artifactId>
-      <version>${graalpy.version}</version>
+      <version>${graalvm.version}</version>
     </dependency>
     <dependency>
       <groupId>org.openhab.osgiify</groupId>
       <artifactId>org.graalvm.sdk.collections</artifactId>
-      <version>${graalpy.version}</version>
+      <version>${graalvm.version}</version>
     </dependency>
     <dependency>
       <groupId>org.openhab.osgiify</groupId>
       <artifactId>org.graalvm.sdk.nativeimage</artifactId>
-      <version>${graalpy.version}</version>
+      <version>${graalvm.version}</version>
     </dependency>
     <dependency>
       <groupId>org.openhab.osgiify</groupId>
       <artifactId>org.graalvm.sdk.word</artifactId>
-      <version>${graalpy.version}</version>
+      <version>${graalvm.version}</version>
     </dependency>
     <dependency>
       <groupId>org.openhab.osgiify</groupId>
       <artifactId>org.graalvm.shadowed.icu4j</artifactId>
-      <version>${graalpy.version}</version>
+      <version>${graalvm.version}</version>
     </dependency>
     <dependency>
       <groupId>org.openhab.osgiify</groupId>
       <artifactId>org.graalvm.shadowed.json</artifactId>
-      <version>${graalpy.version}</version>
+      <version>${graalvm.version}</version>
     </dependency>
     <dependency>
       <groupId>org.openhab.osgiify</groupId>
       <artifactId>org.graalvm.shadowed.xz</artifactId>
-      <version>${graalpy.version}</version>
+      <version>${graalvm.version}</version>
     </dependency>
     <dependency>
       <groupId>org.openhab.osgiify</groupId>
       <artifactId>org.graalvm.tools.profiler-tool</artifactId>
-      <version>${graalpy.version}</version>
+      <version>${graalvm.version}</version>
     </dependency>
     <dependency>
       <groupId>org.openhab.osgiify</groupId>
       <artifactId>org.graalvm.truffle.truffle-api</artifactId>
-      <version>${graalpy.version}</version>
+      <version>${graalvm.version}</version>
     </dependency>
     <dependency>
       <groupId>org.openhab.osgiify</groupId>
       <artifactId>org.graalvm.truffle.truffle-compiler</artifactId>
-      <version>${graalpy.version}</version>
+      <version>${graalvm.version}</version>
     </dependency>
     <dependency>
       <groupId>org.openhab.osgiify</groupId>
       <artifactId>org.graalvm.truffle.truffle-nfi</artifactId>
-      <version>${graalpy.version}</version>
+      <version>${graalvm.version}</version>
     </dependency>
     <dependency>
       <groupId>org.openhab.osgiify</groupId>
       <artifactId>org.graalvm.truffle.truffle-runtime</artifactId>
-      <version>${graalpy.version}</version>
+      <version>${graalvm.version}</version>
     </dependency>
 
     <dependency>

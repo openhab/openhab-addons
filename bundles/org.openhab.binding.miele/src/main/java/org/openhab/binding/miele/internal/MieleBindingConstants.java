@@ -119,7 +119,6 @@ public class MieleBindingConstants {
 
     // Bridge config properties
     public static final String HOST = "ipAddress";
-    public static final String INTERFACE = "interface";
     public static final String USER_NAME = "userName";
     public static final String PASSWORD = "password";
     public static final String LANGUAGE = "language";

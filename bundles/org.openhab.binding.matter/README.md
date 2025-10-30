@@ -66,7 +66,7 @@ Bridged endpoints will be added to the inbox once the parent Node is added as a 
 
 The pairing action can be found in the settings of the "Controller" thing under the "Actions" -> "Pair Matter Device"
 
-<img src="doc/pairing.png" alt="Matter Pairing" width="600"/>
+<img src="./doc/pairing.png" alt="Matter Pairing" width="600"/>
 
 This action will give feedback on the pairing process, if successful a device will be added to the Inbox.
 
@@ -74,7 +74,7 @@ See [Device Pairing: Code Types](#device-pairing-code-types) for more informatio
 
 The same codes can also be used in the openHAB Thing discovery UI, although feedback is limited and only a single controller is supported.  
 
-<img src="doc/thing-discovery.png" alt="Thing Discovery" width="600"/>
+<img src="./doc/thing-discovery.png" alt="Thing Discovery" width="600"/>
 
 ### Device Pairing: Code Types
 

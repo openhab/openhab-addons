@@ -35,6 +35,7 @@ import org.openhab.binding.salus.internal.rest.Device;
 import org.openhab.binding.salus.internal.rest.exceptions.SalusApiException;
 import org.openhab.core.config.discovery.DiscoveryListener;
 import org.openhab.core.thing.ThingUID;
+import org.openhab.core.util.SameThreadExecutorService;
 
 /**
  * @author Martin Grześlowski - Initial contribution
@@ -48,7 +49,7 @@ public class SalusDiscoveryTest {
         // Given
         var cloudApi = mock(CloudApi.class);
         var bridgeUid = new ThingUID("salus", "salus-device", "boo");
-        var discoveryService = new SalusDiscovery(cloudApi, bridgeUid);
+        var discoveryService = new SalusDiscovery(new SameThreadExecutorService(), cloudApi, bridgeUid);
         var discoveryListener = mock(DiscoveryListener.class);
         discoveryService.addDiscoveryListener(discoveryListener);
         var device1 = randomDevice(true);
@@ -80,7 +81,7 @@ public class SalusDiscoveryTest {
         // Given
         var cloudApi = mock(CloudApi.class);
         var bridgeUid = mock(ThingUID.class);
-        var discoveryService = new SalusDiscovery(cloudApi, bridgeUid);
+        var discoveryService = new SalusDiscovery(new SameThreadExecutorService(), cloudApi, bridgeUid);
 
         given(cloudApi.findDevices()).willThrow(new SalusApiException("API error"));
 

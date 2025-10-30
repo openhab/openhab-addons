@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ScheduledExecutorService;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.mspa.internal.MSpaConstants;
@@ -42,6 +43,15 @@ public class MSpaDiscoveryService extends AbstractDiscoveryService {
 
     public MSpaDiscoveryService() {
         super(Set.of(MSpaConstants.THING_TYPE_POOL), 0, false);
+    }
+
+    /**
+     * Constructor for tests only.
+     *
+     * @param scheduler the {@link ScheduledExecutorService} to use during testing.
+     */
+    public MSpaDiscoveryService(ScheduledExecutorService scheduler) {
+        super(scheduler, Set.of(MSpaConstants.THING_TYPE_POOL), 0, false, null, null);
     }
 
     @Override

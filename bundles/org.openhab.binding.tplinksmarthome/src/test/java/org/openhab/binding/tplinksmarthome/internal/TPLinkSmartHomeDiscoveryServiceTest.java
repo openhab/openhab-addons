@@ -35,6 +35,7 @@ import org.mockito.stubbing.Answer;
 import org.openhab.binding.tplinksmarthome.internal.model.ModelTestUtil;
 import org.openhab.core.config.discovery.DiscoveryListener;
 import org.openhab.core.config.discovery.DiscoveryResult;
+import org.openhab.core.util.SameThreadExecutorService;
 
 /**
  * Test class for {@link TPLinkSmartHomeDiscoveryService} class.
@@ -57,7 +58,7 @@ public class TPLinkSmartHomeDiscoveryServiceTest {
     }
 
     public void setUp(String filename) throws IOException {
-        discoveryService = new TPLinkSmartHomeDiscoveryService() {
+        discoveryService = new TPLinkSmartHomeDiscoveryService(new SameThreadExecutorService()) {
             @Override
             protected DatagramSocket sendDiscoveryPacket() throws IOException {
                 return discoverSocket;

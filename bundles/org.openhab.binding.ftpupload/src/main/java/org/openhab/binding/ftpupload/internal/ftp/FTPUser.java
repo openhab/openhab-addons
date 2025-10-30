@@ -30,7 +30,7 @@ public class FTPUser implements User {
     private static Logger logger = LoggerFactory.getLogger(FTPUser.class);
 
     private final String login;
-    private int idleTimeout;
+    private final int idleTimeout;
 
     public FTPUser(String login, int idleTimeout) {
         this.login = login;

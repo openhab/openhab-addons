@@ -173,26 +173,26 @@ public class ModeSelectDevice extends BaseDevice {
         String value = modeMappings.get(mode);
         if (value != null) {
             if (primaryItem instanceof GroupItem groupItem) {
-                groupItem.send(new StringType(value));
+                groupItem.send(new StringType(value), MATTER_SOURCE);
             } else if (primaryItem instanceof StringItem stringItem) {
-                stringItem.send(new StringType(value));
+                stringItem.send(new StringType(value), MATTER_SOURCE);
             } else if (primaryItem instanceof NumberItem numberItem) {
-                numberItem.send(new DecimalType(value));
+                numberItem.send(new DecimalType(value), MATTER_SOURCE);
             } else if (primaryItem instanceof SwitchItem switchItem) {
-                switchItem.send(OnOffType.from(value));
+                switchItem.send(OnOffType.from(value), MATTER_SOURCE);
             } else if (primaryItem instanceof RollershutterItem rollershutterItem) {
                 switch (value.toUpperCase()) {
                     case "UP":
                     case "DOWN":
-                        rollershutterItem.send(UpDownType.valueOf(value.toUpperCase()));
+                        rollershutterItem.send(UpDownType.valueOf(value.toUpperCase()), MATTER_SOURCE);
                         break;
                     case "STOP":
                     case "MOVE":
-                        rollershutterItem.send(StopMoveType.valueOf(value.toUpperCase()));
+                        rollershutterItem.send(StopMoveType.valueOf(value.toUpperCase()), MATTER_SOURCE);
                         break;
                     default:
                         try {
-                            rollershutterItem.send(new PercentType(Integer.parseInt(value)));
+                            rollershutterItem.send(new PercentType(Integer.parseInt(value)), MATTER_SOURCE);
                         } catch (NumberFormatException ignored) {
                         }
                         break;

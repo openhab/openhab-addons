@@ -52,6 +52,7 @@ import org.openhab.core.auth.client.oauth2.OAuthResponseException;
  * AutomowerConnectApi or the AuthenticationApi
  *
  * @author Markus Pfleger - Initial contribution
+ * @author MikeTheTux - API Extension, WSS Support, Refactoring
  */
 @NonNullByDefault
 public class AutomowerBridge {

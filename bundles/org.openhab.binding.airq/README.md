@@ -79,6 +79,8 @@ The rw column is empty if the channel is only readable, w if the channel can be 
 | temperature               | Number:Temperature   |    | Temperature                                                         |
 | timestamp                 | DateTime             |    | Timestamp of measurement                                            |
 | tvoc                      | Number:Dimensionless |    | VOC concentration                                                   |
+| virus-free                | Number:Dimensionless | r  | Virus-Free index in percent; the lower the index, the higher the potential virus risk. |
+| mold-free                 | Number:Dimensionless | r  | Mold-Free index in percent; the lower the index, the higher the potential mold risk. |
 | uptime                    | Number:Time          |    | uptime in seconds                                                   |
 | wifi                      | Switch               |    | WLAN on or off                                                      |
 | ssid                      | String               |    | WLAN SSID                                                           |
@@ -168,6 +170,8 @@ Number:Temperature    airQ_temperature            "Temperature"                 
 DateTime              airQ_timestamp              "TimeStamp [%1$td.%1$tm.%1$tY %1$tH:%1$tM]"                            {channel="airq:airq:1:timestamp"}
 Number:Dimensionless  airQ_voc                    "VOC concentration"                     {channel="airq:airq:1:tvoc"}
 Number:Time           airQ_uptime                 "Uptime"                                {channel="airq:airq:1:uptime"}
+Number:Dimensionless  airQ_Virus_free             "Virus-Free index"                      {unit="%",channel="airq:airq:1:virus_free"}
+Number:Dimensionless  airQ_Mold_free              "Mold-Free index"                       {unit="%",channel="airq:airq:1:mold_free"}
 
 Number:Dimensionless  airQ_cnt03_maxerr        "Maximum error of Fine Dust >0,3 µm"             {channel="airq:airq:1:cnt0_3_maxerr"}
 Number:Dimensionless  airQ_cnt05_maxerr        "Maximum error of Fine Dust >0,5 µm"             {channel="airq:airq:1:cnt0_5_maxerr"}
@@ -190,6 +194,8 @@ Number:Dimensionless  airQ_so2_maxerr          "Maximum error of SO2 concentrati
 Number:Dimensionless  airQ_sound_maxerr        "Maximum error of Noise"                         {channel="airq:airq:1:sound_maxerr"}
 Number:Dimensionless  airQ_temperature_maxerr  "Maximum error of Temperature"                   {channel="airq:airq:1:temperature_maxerr"}
 Number:Dimensionless  airQ_voc_maxerr          "Maximum error of VOC concentration"             {channel="airq:airq:1:tvoc_maxerr"}
+Number:Dimensionless  airQ_virus_free_maxerr   "Maximum error of Virus-Free"                    {unit="%",channel="airq:airq:1:virus_free_maxerr"}
+Number:Dimensionless  airQ_mold_free_maxerr    "Maximum error of Mold-Free"                     {unit="%",channel="airq:airq:1:mold_free_maxerr"}
 
 Switch airQ_wifi                    "WLAN on or off"                                 {channel="airq:airq:1:wifi"}
 String airQ_SSID                    "WLAN SSID"                                      {channel="airq:airq:1:ssid"}

@@ -12,23 +12,11 @@
  */
 package org.openhab.binding.tuya.internal;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.lang.reflect.Type;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.tuya.internal.util.SchemaDp;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.type.ChannelTypeUID;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
 /**
  * The {@link TuyaBindingConstants} class defines common constants, which are
@@ -38,8 +26,7 @@ import com.google.gson.reflect.TypeToken;
  */
 @NonNullByDefault
 public class TuyaBindingConstants {
-    private static final Logger LOGGER = LoggerFactory.getLogger(TuyaBindingConstants.class);
-    private static final String BINDING_ID = "tuya";
+    public static final String BINDING_ID = "tuya";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_PROJECT = new ThingTypeUID(BINDING_ID, "project");
@@ -49,38 +36,21 @@ public class TuyaBindingConstants {
 
     public static final String CONFIG_LOCAL_KEY = "localKey";
     public static final String CONFIG_DEVICE_ID = "deviceId";
+    public static final String CONFIG_DP = "dp";
+    public static final String CONFIG_DP2 = "dp2";
     public static final String CONFIG_PRODUCT_ID = "productId";
     public static final String CONFIG_IP = "ip";
+    public static final String CONFIG_MIN = "min";
+    public static final String CONFIG_MAX = "max";
     public static final String CONFIG_PROTOCOL = "protocol";
+    public static final String CONFIG_RANGE = "range";
 
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_COLOR = new ChannelTypeUID(BINDING_ID, "color");
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_DIMMER = new ChannelTypeUID(BINDING_ID, "dimmer");
     public static final ChannelTypeUID CHANNEL_TYPE_UID_NUMBER = new ChannelTypeUID(BINDING_ID, "number");
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_QUANTITY = new ChannelTypeUID(BINDING_ID, "quantity");
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_STRING = new ChannelTypeUID(BINDING_ID, "string");
-    public static final ChannelTypeUID CHANNEL_TYPE_UID_SWITCH = new ChannelTypeUID(BINDING_ID, "switch");
     public static final ChannelTypeUID CHANNEL_TYPE_UID_IR_CODE = new ChannelTypeUID(BINDING_ID, "ir-code");
 
-    public static final Map<String, Map<String, SchemaDp>> SCHEMAS = getSchemas();
-
-    private static Map<String, Map<String, SchemaDp>> getSchemas() {
-        InputStream resource = Thread.currentThread().getContextClassLoader().getResourceAsStream("schema.json");
-        if (resource == null) {
-            LOGGER.warn("Could not read resource file 'schema.json', discovery might fail");
-            return Map.of();
-        }
-
-        try (InputStreamReader reader = new InputStreamReader(resource)) {
-            Gson gson = new Gson();
-            Type schemaListType = TypeToken.getParameterized(LinkedHashMap.class, String.class, SchemaDp.class)
-                    .getType();
-            Type schemaType = TypeToken.getParameterized(Map.class, String.class, schemaListType).getType();
-            return Objects.requireNonNull(gson.fromJson(reader, schemaType));
-        } catch (IOException e) {
-            LOGGER.warn("Failed to read 'schema.json', discovery might fail");
-            return Map.of();
-        }
-    }
+    public static final List<String> COLOUR_CHANNEL_CODES = List.of("colour_data");
+    public static final List<String> DIMMER_CHANNEL_CODES = List.of("bright_value", "bright_value_1", "bright_value_2",
+            "temp_value");
 
     // The heartbeat interval specifies the maximum amount of time that can pass without us
     // sending anything to a device. Once the heartbeat interval is reached we send a heartbeat

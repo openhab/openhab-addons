@@ -84,7 +84,7 @@ You can add the following channels:
 - **transformationPattern**: An optional transformation pattern like [JSONPath](https://goessner.net/articles/JsonPath/index.html#e2) that is applied to all incoming MQTT values.
 - **transformationPatternOut**: An optional transformation pattern like [JSONPath](https://goessner.net/articles/JsonPath/index.html#e2) that is applied before publishing a value to MQTT.
 - **commandTopic**: The MQTT topic that commands are send to. This can be empty, the thing channel will be read-only then. Transformations are not applied for sending data.
-- **formatBeforePublish**: Format a value before it is published to the MQTT broker. The default is to just pass the channel/item state. If you want to apply a prefix, say "MYCOLOR,", you would use "MYCOLOR,%s". Currently only "%s" is supported.
+- **formatBeforePublish**: Format a value before it is published to the MQTT broker. The default is to just pass the channel/item state. If you want to apply a prefix, say "MYCOLOR,", you would use "MYCOLOR,%s". Currently only "%s" is supported. Note that this format does not apply to the special on/off command values for dimmer channels, or up/down/stop command values for rollershutter channels.
 - **postCommand**: If `true`, the received MQTT value will not only update the state of linked items, but command it.
   The default is `false`.
   You usually need this to be `true` if your item is also linked to another channel, say a KNX actor, and you want a received MQTT payload to command that KNX actor.
@@ -112,11 +112,14 @@ You can connect this channel to a Number item.
 
 ### Channel Type "dimmer"
 
-- **on**: An optional string (like "ON"/"Open") that is recognized as minimum.
-- **off**: An optional string (like "OFF"/"Close") that is recognized as maximum.
+- **on**: An optional string (like "ON"/"Open") that is sent for the `ON` command to tell the device to turn on to whatever value it thinks is useful (i.e. restore last state).
+- **off**: An optional string (like "OFF"/"Close") that is sent for the `OFF` command.
 - **min**: A required minimum value.
 - **max**: A required maximum value.
 - **step**: For decrease, increase commands the step needs to be known
+
+If **on** or **off** are not defined, an explicit 0 or 100 will be sent (after being scaled by **min** and **max** as appropriate).
+Note that **formatBeforePublish** will be ignored for these values, in case your device uses a vastly different format for these special commands than it does for number values.
 
 The value is internally stored as a percentage for a value between **min** and **max**.
 
@@ -139,12 +142,9 @@ You can connect this channel to a Contact or Switch item.
 ### Channel Type "color"
 
 - **colorMode**: An optional string that defines the color representation: `HSB`, `RGB` or `XYY` (x,y,brightness). Defaults to `HSB` when not specified.
-- **on**: An optional string (like "BRIGHT") that is recognized as on state. (ON will always be recognized.)
-- **off**: An optional string (like "DARK") that is recognized as off state. (OFF will always be recognized.)
-- **onBrightness**: If you connect this channel to a Switch item and turn it on,
-
-color and saturation are preserved from the last state, but
-the brightness will be set to this configured initial brightness (default: 10%).
+- **on**: An optional string (like "ON"/"Open") that is sent for the `ON` command to tell the device to turn on to whatever value it thinks is useful (i.e. restore last state).
+- **off**: An optional string (like "OFF"/"Close") that is sent for the `OFF` command.
+- **onBrightness**: If you connect this channel to a Switch item and turn it on, color and saturation are preserved from the last state, but the brightness will be set to this configured initial brightness (default: 10%).
 
 You can connect this channel to a Color, Dimmer and Switch item.
 
@@ -153,6 +153,9 @@ e.g. "112,54,123" for the RGB color mode (0-255 per component), "360,100,100" fo
 and "0.640074,0.329970,100" for the xyY color mode (0-1 for x and y, and 0-100 for brightness).
 
 The channel expects values on the corresponding MQTT topic to be in this format as well.
+
+If **on** or **off** are not defined, a color command with the brightness set to 0 or 100 will be sent.
+Note that **formatBeforePublish** will be ignored for these values, in case your device uses a vastly different format for these special commands than it does for regular values.
 
 ### Channel Type "colorRGB", "colorHSB" (Deprecated)
 
@@ -197,13 +200,13 @@ The channel expects values on the corresponding MQTT topic to be in this format 
 
 ### Channel Type "rollershutter"
 
-- **on**: An optional string (like "Open") that is recognized as `UP` state.
-- **off**: An optional string (like "Close") that is recognized as `DOWN` state.
-- **stop**: An optional string (like "Stop") that is recognized as `STOP` state.
+- **on**: An optional string (like "Open") that is sent for the `UP` command.
+- **off**: An optional string (like "Close") that is sent for the `DOWN` command.
+- **stop**: An optional string (like "Stop") that is sent for the `STOP` command.
 - **stopCommandTopic**: An optional topic to send `STOP` commands to. If not set, `STOP` commands are sent to the main **commandTopic**.
 
-Internally `UP` is converted to 0%, `DOWN` to 100%.
-If strings are defined for these values, they are used for sending commands to the broker, too.
+If **on**, **off**, or **stop** are not defined, an explicit 0 or 100 will be sent for `UP` and `DOWN` respectively. `STOP` commands will be ignored entirely.
+Note that **formatBeforePublish** will be ignored for these values, in case your device uses a vastly different format for these special commands than it does for number values.
 
 You can connect this channel to a Rollershutter or Dimmer item.
 

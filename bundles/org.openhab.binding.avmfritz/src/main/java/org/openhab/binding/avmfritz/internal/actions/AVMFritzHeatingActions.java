@@ -52,6 +52,7 @@ public class AVMFritzHeatingActions implements ThingActions {
         if (duration == null) {
             throw new IllegalArgumentException("Cannot set Boost mode as 'duration' is null!");
         }
+        validateDuration(duration.longValue());
         actionsHandler.setBoostMode(duration.longValue());
     }
 
@@ -69,10 +70,17 @@ public class AVMFritzHeatingActions implements ThingActions {
         if (duration == null) {
             throw new IllegalArgumentException("Cannot set Window Open mode as 'duration' is null!");
         }
+        validateDuration(duration.longValue());
         actionsHandler.setWindowOpenMode(duration.longValue());
     }
 
     public static void setWindowOpenMode(ThingActions actions, @Nullable Long duration) {
         ((AVMFritzHeatingActions) actions).setWindowOpenMode(duration);
+    }
+
+    private void validateDuration(long duration) {
+        if (duration < 0 || 86400 < duration) {
+            throw new IllegalArgumentException("Duration must not be less than zero or greater than 86400");
+        }
     }
 }

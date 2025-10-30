@@ -26,7 +26,7 @@ import org.openhab.core.config.core.Configuration;
  * This action module type allows to remove a rule from the rule registry.
  * <p>
  * This is very useful for rules that should execute only once etc.
- * 
+ *
  * @author David Graeff - Initial contribution
  */
 @NonNullByDefault
@@ -56,7 +56,7 @@ public class RemoveRuleActionHandler extends BaseModuleHandler<Action> implement
     }
 
     @Override
-    public @Nullable Map<String, Object> execute(Map<String, Object> context) {
+    public @Nullable Map<String, @Nullable Object> execute(Map<String, Object> context) {
         ruleRegistry.remove(ruleUID);
         return null;
     }

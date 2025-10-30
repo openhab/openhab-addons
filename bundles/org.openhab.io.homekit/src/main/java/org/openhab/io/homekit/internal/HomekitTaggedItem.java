@@ -66,6 +66,9 @@ public class HomekitTaggedItem {
     public static final String EMULATE_STOP_SAME_DIRECTION = "stopSameDirection";
     public static final String SEND_UP_DOWN_FOR_EXTENTS = "sendUpDownForExtents";
 
+    // The "source" sent with command events so rules can identify them as coming from HomeKit
+    public static final String HOMEKIT_SOURCE = "org.openhab.io.homekit";
+
     private static final Map<Integer, String> CREATED_ACCESSORY_IDS = new ConcurrentHashMap<>();
 
     // proxy item used to group commands for complex item types like Color or Dimmer
@@ -181,10 +184,10 @@ public class HomekitTaggedItem {
      */
     public void send(DecimalType command) {
         if (getItem() instanceof GroupItem groupItem && getBaseItem() instanceof NumberItem) {
-            groupItem.send(command);
+            groupItem.send(command, HOMEKIT_SOURCE);
             return;
         } else if (getItem() instanceof NumberItem numberItem) {
-            numberItem.send(command);
+            numberItem.send(command, HOMEKIT_SOURCE);
             return;
         }
         logger.warn("Received DecimalType command for item {} that doesn't support it. This is probably a bug.",
@@ -198,10 +201,10 @@ public class HomekitTaggedItem {
      */
     public void send(QuantityType command) {
         if (getItem() instanceof GroupItem groupItem && getBaseItem() instanceof NumberItem) {
-            groupItem.send(command);
+            groupItem.send(command, HOMEKIT_SOURCE);
             return;
         } else if (getItem() instanceof NumberItem numberItem) {
-            numberItem.send(command);
+            numberItem.send(command, HOMEKIT_SOURCE);
             return;
         }
         logger.warn("Received QuantityType command for item {} that doesn't support it. This is probably a bug.",
@@ -215,10 +218,10 @@ public class HomekitTaggedItem {
      */
     public void send(OnOffType command) {
         if (getItem() instanceof GroupItem groupItem && getBaseItem() instanceof SwitchItem) {
-            groupItem.send(command);
+            groupItem.send(command, HOMEKIT_SOURCE);
             return;
         } else if (getItem() instanceof SwitchItem switchItem) {
-            switchItem.send(command);
+            switchItem.send(command, HOMEKIT_SOURCE);
             return;
         }
         logger.warn("Received OnOffType command for item {} that doesn't support it. This is probably a bug.",
@@ -230,10 +233,10 @@ public class HomekitTaggedItem {
      */
     public void send(IncreaseDecreaseType command) {
         if (getItem() instanceof GroupItem groupItem && getBaseItem() instanceof DimmerItem) {
-            groupItem.send(command);
+            groupItem.send(command, HOMEKIT_SOURCE);
             return;
         } else if (getItem() instanceof DimmerItem dimmerItem) {
-            dimmerItem.send(command);
+            dimmerItem.send(command, HOMEKIT_SOURCE);
             return;
         }
         logger.warn(
@@ -249,13 +252,13 @@ public class HomekitTaggedItem {
     public void send(PercentType command) {
         if (getItem() instanceof GroupItem groupItem
                 && (getBaseItem() instanceof DimmerItem || getBaseItem() instanceof RollershutterItem)) {
-            groupItem.send(command);
+            groupItem.send(command, HOMEKIT_SOURCE);
             return;
         } else if (getItem() instanceof DimmerItem dimmerItem) {
-            dimmerItem.send(command);
+            dimmerItem.send(command, HOMEKIT_SOURCE);
             return;
         } else if (getItem() instanceof RollershutterItem rollerShutterItem) {
-            rollerShutterItem.send(command);
+            rollerShutterItem.send(command, HOMEKIT_SOURCE);
             return;
         }
         logger.warn("Received PercentType command for item {} that doesn't support it. This is probably a bug.",
@@ -269,10 +272,10 @@ public class HomekitTaggedItem {
      */
     public void send(StringType command) {
         if (getItem() instanceof GroupItem groupItem && getBaseItem() instanceof StringItem) {
-            groupItem.send(command);
+            groupItem.send(command, HOMEKIT_SOURCE);
             return;
         } else if (getItem() instanceof StringItem stringItem) {
-            stringItem.send(command);
+            stringItem.send(command, HOMEKIT_SOURCE);
             return;
         }
         logger.warn("Received StringType command for item {} that doesn't support it. This is probably a bug.",
@@ -284,10 +287,10 @@ public class HomekitTaggedItem {
      */
     public void send(UpDownType command) {
         if (getItem() instanceof GroupItem groupItem && getBaseItem() instanceof RollershutterItem) {
-            groupItem.send(command);
+            groupItem.send(command, HOMEKIT_SOURCE);
             return;
         } else if (getItem() instanceof RollershutterItem rollershutterItem) {
-            rollershutterItem.send(command);
+            rollershutterItem.send(command, HOMEKIT_SOURCE);
             return;
         }
         logger.warn("Received UpDownType command for item {} that doesn't support it. This is probably a bug.",

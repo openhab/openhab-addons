@@ -40,7 +40,9 @@ public class SolarmanV5Protocol implements SolarmanProtocol {
     @Override
     public Map<Integer, byte[]> readRegisters(SolarmanLoggerConnection solarmanLoggerConnection, byte mbFunctionCode,
             int firstReg, int lastReg) throws SolarmanException {
-        byte[] solarmanV5Frame = buildSolarmanV5Frame(mbFunctionCode, firstReg, lastReg);
+        int regCount = lastReg - firstReg + 1;
+        byte[] modbusFrame = buildModbusReadHoldingRegistersFrame(DEFAULT_SLAVE_ID, mbFunctionCode, firstReg, regCount);
+        byte[] solarmanV5Frame = buildSolarmanV5Frame(modbusFrame);
         byte[] respFrame = solarmanLoggerConnection.sendRequest(solarmanV5Frame);
         if (respFrame.length > 0) {
             byte[] modbusRespFrame = extractModbusResponseFrame(respFrame, solarmanV5Frame);
@@ -50,18 +52,31 @@ public class SolarmanV5Protocol implements SolarmanProtocol {
         }
     }
 
+    @Override
+    public boolean writeRegisters(SolarmanLoggerConnection solarmanLoggerConnection, int firstReg, byte[] data)
+            throws SolarmanException {
+        byte[] modbusFrame = buildModbusWriteHoldingRegistersFrame(DEFAULT_SLAVE_ID, firstReg, data);
+        byte[] solarmanV5Frame = buildSolarmanV5Frame(modbusFrame);
+        byte[] respFrame = solarmanLoggerConnection.sendRequest(solarmanV5Frame);
+        if (respFrame.length > 0) {
+            byte[] modbusRespFrame = extractModbusResponseFrame(respFrame, solarmanV5Frame);
+            parseModbusWriteHoldingRegistersResponse(modbusRespFrame, data);
+            return true;
+        } else {
+            throw new SolarmanConnectionException("Response frame was empty");
+        }
+    }
+
     /**
-     * Builds a SolarMAN V5 frame to request data from firstReg to lastReg.
+     * Builds a SolarMAN V5 frame.
      * Frame format is based on
      * <a href="https://pysolarmanv5.readthedocs.io/en/latest/solarmanv5_protocol.html">Solarman V5 Protocol</a>
      *
-     * @param mbFunctionCode
-     * @param firstReg - the start register
-     * @param lastReg - the end register
+     * @param modbusPayload - ModBus Frame to integrate
      * @return byte array containing the Solarman V5 frame
      */
-    protected byte[] buildSolarmanV5Frame(byte mbFunctionCode, int firstReg, int lastReg) {
-        byte[] requestPayload = buildSolarmanV5FrameRequestPayload(mbFunctionCode, firstReg, lastReg);
+    protected byte[] buildSolarmanV5Frame(byte[] modbusPayload) {
+        byte[] requestPayload = buildSolarmanV5FrameRequestPayload(modbusPayload);
         byte[] header = buildSolarmanV5FrameHeader(requestPayload.length);
         byte[] trailer = buildSolarmanV5FrameTrailer(header, requestPayload);
 
@@ -125,7 +140,7 @@ public class SolarmanV5Protocol implements SolarmanProtocol {
                 .put(start).put(length).put(controlCode).put(serial).put(loggerSerial).array();
     }
 
-    protected byte[] buildSolarmanV5FrameRequestPayload(byte mbFunctionCode, int firstReg, int lastReg) {
+    protected byte[] buildSolarmanV5FrameRequestPayload(byte[] modbusPayload) {
         // (one byte) – Denotes the frame type.
         byte[] frameType = new byte[] { 0x02 };
         // (two bytes) – Denotes the sensor type.
@@ -137,15 +152,12 @@ public class SolarmanV5Protocol implements SolarmanProtocol {
         byte[] powerOnTime = new byte[] { 0x00, 0x00, 0x00, 0x00 };
         // Denotes the frame offset time.
         byte[] offsetTime = new byte[] { 0x00, 0x00, 0x00, 0x00 };
-        // (variable length) – Modbus RTU request frame.
-        byte[] requestFrame = buildModbusReadHoldingRegistersRequestFrame((byte) 0x01, mbFunctionCode, firstReg,
-                lastReg);
 
         return ByteBuffer
                 .allocate(frameType.length + sensorType.length + totalWorkingTime.length + powerOnTime.length
-                        + offsetTime.length + requestFrame.length)
-                .put(frameType).put(sensorType).put(totalWorkingTime).put(powerOnTime).put(offsetTime).put(requestFrame)
-                .array();
+                        + offsetTime.length + modbusPayload.length)
+                .put(frameType).put(sensorType).put(totalWorkingTime).put(powerOnTime).put(offsetTime)
+                .put(modbusPayload).array();
     }
 
     /**
@@ -153,16 +165,48 @@ public class SolarmanV5Protocol implements SolarmanProtocol {
      * Registers</a>
      *
      * @param slaveId - Slave Address
-     * @param mbFunctionCode -
-     * @param firstReg - Starting Address
-     * @param lastReg - Ending Address
+     * @param mbFunctionCode - Modbus function code
+     * @param startRegister - Starting register
+     * @param registerCount - Register count
      * @return byte array containing the Modbus request frame
      */
-    protected byte[] buildModbusReadHoldingRegistersRequestFrame(byte slaveId, byte mbFunctionCode, int firstReg,
-            int lastReg) {
-        int regCount = lastReg - firstReg + 1;
-        byte[] req = ByteBuffer.allocate(6).put(slaveId).put(mbFunctionCode).putShort((short) firstReg)
-                .putShort((short) regCount).array();
+    protected byte[] buildModbusReadHoldingRegistersFrame(byte slaveId, byte mbFunctionCode, int startRegister,
+            int registerCount) {
+        byte[] req = ByteBuffer.allocate(6).put(slaveId).put(mbFunctionCode).putShort((short) startRegister)
+                .putShort((short) registerCount).array();
+        byte[] crc = ByteBuffer.allocate(Short.BYTES).order(ByteOrder.LITTLE_ENDIAN)
+                .putShort((short) CRC16Modbus.calculate(req)).array();
+
+        return ByteBuffer.allocate(req.length + crc.length).put(req).put(crc).array();
+    }
+
+    /**
+     * Based on <a href="https://www.modbustools.com/modbus.html#function16">Function 16 (10hex) Write Holding
+     * Registers</a>
+     *
+     * @param slaveId - Slave Address
+     * @param startRegister - Starting register
+     * @param data - Data to be written
+     * @return byte array containing the Modbus request frame
+     */
+    protected byte[] buildModbusWriteHoldingRegistersFrame(byte slaveId, int startRegister, byte[] data)
+            throws SolarmanException {
+        if (data.length % 2 != 0) {
+            throw new SolarmanException("Data to be written should be packed as two bytes per register!");
+        }
+
+        // slaveId (1 byte)
+        // mbFunction (1 byte)
+        // startRegister (2 bytes)
+        // registerCount (2 bytes)
+        // data length (1 byte)
+        // data
+        int bufferSize = 1 + 1 + 2 + 2 + 1 + data.length;
+        int registerCount = data.length / 2;
+
+        byte[] req = ByteBuffer.allocate(bufferSize).put(slaveId).put(WRITE_REGISTERS_FUNCTION_CODE)
+                .putShort((short) startRegister).putShort((short) registerCount).put((byte) data.length).put(data)
+                .array();
         byte[] crc = ByteBuffer.allocate(Short.BYTES).order(ByteOrder.LITTLE_ENDIAN)
                 .putShort((short) CRC16Modbus.calculate(req)).array();
 
@@ -195,6 +239,36 @@ public class SolarmanV5Protocol implements SolarmanProtocol {
         }
 
         return registers;
+    }
+
+    protected void parseModbusWriteHoldingRegistersResponse(byte @Nullable [] frame, byte[] data)
+            throws SolarmanProtocolException {
+        int expectedRegistersCount = data.length / 2;
+
+        // slaveId (1 byte)
+        // modbusFunction (1 byte)
+        // firstRegister (2 bytes)
+        // registerCount (2 bytes)
+        int expectedFrameDataLen = 1 + 1 + 2 + 2;
+        if (frame == null || frame.length < expectedFrameDataLen + 2) {
+            throw new SolarmanProtocolException("Modbus frame is too short or empty");
+        }
+
+        int actualCrc = ByteBuffer.wrap(frame, expectedFrameDataLen, 2).order(ByteOrder.LITTLE_ENDIAN).getShort()
+                & 0xFFFF;
+        int expectedCrc = CRC16Modbus.calculate(Arrays.copyOfRange(frame, 0, expectedFrameDataLen));
+
+        if (actualCrc != expectedCrc) {
+            throw new SolarmanProtocolException(
+                    String.format("Modbus frame crc is not valid. Expected %04x, got %04x", expectedCrc, actualCrc));
+        }
+
+        short registersWrittenCount = ByteBuffer.wrap(frame, 4, 2).getShort();
+        if (registersWrittenCount != expectedRegistersCount) {
+            throw new SolarmanProtocolException(
+                    String.format("Modbus written registers count is not valid. Expected %04x, got %04x",
+                            expectedRegistersCount, registersWrittenCount));
+        }
     }
 
     protected byte[] extractModbusResponseFrame(byte @Nullable [] responseFrame, byte[] requestFrame)
