@@ -60,6 +60,9 @@ public class GroovyScriptEngineFactory extends AbstractScriptEngineFactory {
                 } catch (ClassNotFoundException e) {
                     logger.debug("Unable to add import for {} as {}", entry.getKey(), canonicalName, e);
                 }
+            } else if (entry.getValue() instanceof Enum<?> e) {
+                importCustomizer.addStaticImport(entry.getKey(), e.getDeclaringClass().getCanonicalName(), e.name());
+                logger.debug("Added static import for {}", e);
             } else {
                 scriptEngine.put(entry.getKey(), entry.getValue());
             }
