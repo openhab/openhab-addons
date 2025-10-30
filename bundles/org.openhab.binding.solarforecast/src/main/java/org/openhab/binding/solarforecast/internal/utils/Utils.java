@@ -252,7 +252,7 @@ public class Utils {
     private static double powerCalculationTillNow(Iterable<HistoricItem> historicItems) {
         double total = 0;
         double lastPowerValue = -1;
-        Instant lastTimeStamp = Instant.MIN;
+        Instant lastTimeStamp = Instant.MAX; // set to max to skip first entry
         for (HistoricItem historicItem : historicItems) {
             State powerState = historicItem.getState();
             if (powerState instanceof QuantityType<?> qs) {
@@ -263,12 +263,12 @@ public class Utils {
                     LOGGER.warn("Cannot convert Unit {} to {}", qs.getUnit(), KILOWATT_UNIT);
                     return 0;
                 }
-            }
+            } // QuantityType is checked and ensured by caller function
             ZonedDateTime stateTimestamp = historicItem.getTimestamp();
             if (lastTimeStamp.isBefore(stateTimestamp.toInstant()) && lastPowerValue >= 0) {
                 total += calculateKwh(lastTimeStamp, stateTimestamp.toInstant(), lastPowerValue);
             } else {
-                LOGGER.debug("Skip timestamp {}", stateTimestamp);
+                LOGGER.debug("Skip state {} from {} to {}", powerState, lastTimeStamp, stateTimestamp);
             }
             lastTimeStamp = stateTimestamp.toInstant();
         }
