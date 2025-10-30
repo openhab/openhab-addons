@@ -18,7 +18,7 @@ The binding uses the [OSHI](https://github.com/oshi/oshi) library to access this
 
 ## Supported Things
 
-The binding supports only one Thing type — **computer**. This Thing represents a system with one storage volume, one display device, and one network adapter.
+The binding supports only one Thing type — **computer**.
 
 The Thing has the following properties:
 
@@ -27,8 +27,6 @@ The Thing has the following properties:
 - `os_manufacturer` - The manufacturer of the operating system
 - `os_version` - The version of the operating system
 - `os_family` - The family of the operating system
-
-If support for multiple storage or display devices is needed, define a new Thing type.
 
 ## Discovery
 
