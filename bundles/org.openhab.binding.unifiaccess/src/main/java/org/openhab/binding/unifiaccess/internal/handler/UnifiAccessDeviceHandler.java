@@ -41,8 +41,6 @@ import org.slf4j.LoggerFactory;
 public class UnifiAccessDeviceHandler extends UnifiAccessBaseHandler {
 
     private final Logger logger = LoggerFactory.getLogger(UnifiAccessDeviceHandler.class);
-
-    public String deviceId = "";
     private @Nullable String locationId;
 
     public UnifiAccessDeviceHandler(Thing thing) {
@@ -208,7 +206,31 @@ public class UnifiAccessDeviceHandler extends UnifiAccessBaseHandler {
         }
     }
 
-    public void updateFromSettings(DeviceAccessMethodSettings settings) {
+    @Override
+    protected void handleLocationState(LocationState locationState) {
+        this.locationId = locationState.locationId;
+        if (locationState.dps != null) {
+            updateState(UnifiAccessBindingConstants.CHANNEL_DEVICE_DOOR_SENSOR,
+                    locationState.dps == org.openhab.binding.unifiaccess.internal.dto.DoorState.DoorPosition.OPEN
+                            ? OpenClosedType.OPEN
+                            : OpenClosedType.CLOSED);
+        }
+        // TODO: Add emergency status, need to understand software vs hardware here
+        // if (locationState.emergency != null) {
+        // String status = "normal";
+        // String sw = locationState.emergency.software;
+        // String hw = locationState.emergency.hardware;
+        // if ("lockdown".equalsIgnoreCase(sw) || "lockdown".equalsIgnoreCase(hw)) {
+        // status = "lockdown";
+        // } else if ("evacuation".equalsIgnoreCase(sw) || "evacuation".equalsIgnoreCase(hw)) {
+        // status = "evacuation";
+        // }
+        // updateState(UnifiAccessBindingConstants.CHANNEL_DEVICE_EMERGENCY_STATUS,
+        // new StringType(status));
+        // }
+    }
+
+    protected void updateFromSettings(DeviceAccessMethodSettings settings) {
         if (getThing().getStatus() != ThingStatus.ONLINE) {
             updateStatus(ThingStatus.ONLINE);
         }
@@ -248,7 +270,7 @@ public class UnifiAccessDeviceHandler extends UnifiAccessBaseHandler {
         }
     }
 
-    public void handleRemoteView(RemoteViewData remoteView) {
+    protected void handleRemoteView(RemoteViewData remoteView) {
         if (!deviceId.equals(remoteView.deviceId)) {
             return;
         }
@@ -256,7 +278,7 @@ public class UnifiAccessDeviceHandler extends UnifiAccessBaseHandler {
         updateState(UnifiAccessBindingConstants.CHANNEL_DEVICE_DOORBELL_CONTACT, OpenClosedType.OPEN);
     }
 
-    public void handleRemoteViewChange(RemoteViewChangeData change) {
+    protected void handleRemoteViewChange(RemoteViewChangeData change) {
         triggerChannel(UnifiAccessBindingConstants.CHANNEL_DEVICE_DOORBELL_TRIGGER, "completed");
         updateState(UnifiAccessBindingConstants.CHANNEL_DEVICE_DOORBELL_CONTACT, OpenClosedType.CLOSED);
         try {
@@ -266,35 +288,10 @@ public class UnifiAccessDeviceHandler extends UnifiAccessBaseHandler {
         }
     }
 
-    public void triggerLogInsight(String payload) {
+    protected void triggerLogInsight(String payload) {
         try {
             triggerChannel(UnifiAccessBindingConstants.CHANNEL_BRIDGE_LOG_INSIGHT, payload);
         } catch (Exception ignored) {
         }
-    }
-
-    public void handleLocationState(LocationState locationState) {
-        this.locationId = locationState.locationId;
-        if (locationState.dps != null) {
-            updateState(UnifiAccessBindingConstants.CHANNEL_DEVICE_DOOR_SENSOR,
-                    locationState.dps == org.openhab.binding.unifiaccess.internal.dto.DoorState.DoorPosition.OPEN
-                            ? OpenClosedType.OPEN
-                            : OpenClosedType.CLOSED);
-        }
-
-        // TODO: Add emergency status, need to understand software vs hardware here
-
-        // if (locationState.emergency != null) {
-        // String status = "normal";
-        // String sw = locationState.emergency.software;
-        // String hw = locationState.emergency.hardware;
-        // if ("lockdown".equalsIgnoreCase(sw) || "lockdown".equalsIgnoreCase(hw)) {
-        // status = "lockdown";
-        // } else if ("evacuation".equalsIgnoreCase(sw) || "evacuation".equalsIgnoreCase(hw)) {
-        // status = "evacuation";
-        // }
-        // updateState(UnifiAccessBindingConstants.CHANNEL_DEVICE_EMERGENCY_STATUS,
-        // new StringType(status));
-        // }
     }
 }

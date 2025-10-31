@@ -310,7 +310,7 @@ public class Notification {
         public DoorState.LockState lock;
         public DoorState.DoorPosition dps;
         public Boolean dpsConnected;
-        public RemainUnlock remainUnlock;
+        public DoorLockRule remainUnlock;
         public List<Alarm> alarms;
         public Emergency emergency;
         public Boolean isUnavailable;
@@ -325,11 +325,11 @@ public class Notification {
         public String hardware;
     }
 
-    public static class RemainUnlock {
-        public DoorState.LockState state;
-        public Long until;
-        public DoorState.DoorLockRuleType type;
-    }
+    // public static class RemainUnlock {
+    // public DoorState.LockState state;
+    // public Long until;
+    // public DoorState.DoorLockRuleType type;
+    // }
 
     /** access.data.v2.device.update payload (partial). */
     public static class DeviceUpdateV2Data {
@@ -350,7 +350,8 @@ public class Notification {
         public String hwType;
         public String revision;
         public JsonElement cap;
-        public List<LocationState> locationStates; // is this ever present?
+        @Nullable
+        public List<LocationState> locationStates;
         public List<String> category;
     }
 

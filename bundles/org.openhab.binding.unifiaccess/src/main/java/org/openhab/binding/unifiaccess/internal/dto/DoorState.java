@@ -60,7 +60,7 @@ public final class DoorState {
         LOCK_NOW,
         @SerializedName("schedule")
         SCHEDULE,
-        @SerializedName("unknown")
-        UNKNOWN
+        @SerializedName("")
+        NONE
     }
 }

@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.unifiaccess.internal.dto;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Lock rule payload and value object used for both setting and reading lock rules.
  * 
@@ -19,20 +21,27 @@ package org.openhab.binding.unifiaccess.internal.dto;
  */
 public class DoorLockRule {
     public DoorState.DoorLockRuleType type;
-    /** minutes, only for type=custom */
-    public Integer interval;
+    /** minutes, only for type=custom and for setting the rule */
+    public Integer interval = 0;
+    @SerializedName(value = "until", alternate = { "ended_time", "endtime" })
+    public Long until = 0L; // milliseconds since epoch
 
-    public DoorLockRule(DoorState.DoorLockRuleType type, Integer interval) {
+    public DoorLockRule(DoorState.DoorLockRuleType type, Integer minutes) {
         this.type = type;
-        this.interval = interval;
+        this.interval = minutes;
+        this.until = System.currentTimeMillis() + minutes * 60 * 1000;
+    }
+
+    public DoorLockRule(DoorState.DoorLockRuleType type) {
+        this.type = type;
     }
 
     public static DoorLockRule keepUnlock() {
-        return new DoorLockRule(DoorState.DoorLockRuleType.KEEP_UNLOCK, null);
+        return new DoorLockRule(DoorState.DoorLockRuleType.KEEP_UNLOCK);
     }
 
     public static DoorLockRule keepLock() {
-        return new DoorLockRule(DoorState.DoorLockRuleType.KEEP_LOCK, null);
+        return new DoorLockRule(DoorState.DoorLockRuleType.KEEP_LOCK);
     }
 
     public static DoorLockRule customMinutes(int minutes) {
@@ -40,10 +49,10 @@ public class DoorLockRule {
     }
 
     public static DoorLockRule reset() {
-        return new DoorLockRule(DoorState.DoorLockRuleType.RESET, null);
+        return new DoorLockRule(DoorState.DoorLockRuleType.RESET);
     }
 
     public static DoorLockRule lockEarly() {
-        return new DoorLockRule(DoorState.DoorLockRuleType.LOCK_EARLY, null);
+        return new DoorLockRule(DoorState.DoorLockRuleType.LOCK_EARLY);
     }
 }

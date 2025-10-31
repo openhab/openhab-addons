@@ -47,6 +47,7 @@ Then paste the token into the Bridge configuration.
 | deviceId | text | Unique door identifier from the UniFi Access controller. | N/A     | yes      | no       |
 
 ### Device `unifiaccess:device`
+
 | Name     | Type | Description                                                | Default | Required | Advanced |
 |----------|------|------------------------------------------------------------|---------|----------|----------|
 | deviceId | text | Unique device identifier from the UniFi Access controller. | N/A     | yes      | no       |
@@ -144,6 +145,7 @@ sitemap home label="Home" {
     }
 }
 ```
+
 ### Rules
 
 ```javascript

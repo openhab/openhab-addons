@@ -41,6 +41,7 @@ public class UnifiAccessBindingConstants {
     public static final String CHANNEL_KEEP_UNLOCKED = "keep-unlocked";
     public static final String CHANNEL_KEEP_LOCKED = "keep-locked";
     public static final String CHANNEL_UNLOCK_MINUTES = "unlock-minutes";
+    public static final String CHANNEL_UNLOCK_UNTIL = "unlock-until";
     public static final String CHANNEL_DOOR_THUMBNAIL = "thumbnail";
 
     // Door trigger channels

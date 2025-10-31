@@ -40,6 +40,7 @@
 			<channel id="last-actor" typeId="last-actor"/>
 			<channel id="lock-rule" typeId="lock-rule"/>
 			<channel id="keep-unlocked" typeId="keep-unlocked"/>
+			<channel id="unlock-until" typeId="unlock-until"/>
 			<channel id="keep-locked" typeId="keep-locked"/>
 			<channel id="unlock-minutes" typeId="unlock-minutes"/>
 			<channel id="thumbnail" typeId="door-thumbnail">
@@ -268,6 +269,11 @@
 				<option value="custom">Custom</option>
 				<option value="keep_unlock">Keep Unlocked</option>
 				<option value="keep_lock">Keep Locked</option>
+				<option value="reset">Reset</option>
+				<option value="lock_early">Lock Early</option>
+				<option value="lock_now">Lock Now</option>
+				<option value="schedule">Schedule</option>
+				<option value="none">None</option>
 			</options>
 		</state>
 	</channel-type>
@@ -300,8 +306,16 @@
 	<channel-type id="unlock-minutes">
 		<item-type>Number:Time</item-type>
 		<label>Unlock Minutes</label>
+		<description>The number of minutes the door will be unlocked for</description>
 		<category>Time</category>
 		<state pattern="%d min"/>
+	</channel-type>
+
+	<channel-type id="unlock-until">
+		<item-type>DateTime</item-type>
+		<label>Unlock Until</label>
+		<description>The time the door will be unlocked until</description>
+		<category>Time</category>
 	</channel-type>
 
 	<channel-type id="door-thumbnail">

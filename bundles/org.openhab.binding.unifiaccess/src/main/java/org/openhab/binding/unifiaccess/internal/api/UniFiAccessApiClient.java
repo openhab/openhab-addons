@@ -228,7 +228,7 @@ public final class UniFiAccessApiClient implements Closeable {
         ContentResponse resp = execGet("/devices");
         ensure2xx(resp, "getDevices");
         String json = resp.getContentAsString();
-        return parseListMaybeWrappedWithKeys(json, wrapped, raw, "getDevices", "devices");
+        return parseListMaybeWrapped(json, wrapped, raw, "getDevices", "devices");
     }
 
     public DeviceAccessMethodSettings getDeviceAccessMethodSettings(String deviceId) throws UniFiAccessApiException {
@@ -318,7 +318,7 @@ public final class UniFiAccessApiClient implements Closeable {
         var resp = execGet("/doors");
         ensure2xx(resp, "getDoors");
         String json = resp.getContentAsString();
-        return parseListMaybeWrappedWithKeys(json, wrapped, raw, "getDoors", "doors");
+        return parseListMaybeWrapped(json, wrapped, raw, "getDoors", "doors");
     }
 
     public Door getDoor(String doorId) throws UniFiAccessApiException {
@@ -360,6 +360,14 @@ public final class UniFiAccessApiClient implements Closeable {
         return ar.isSuccess();
     }
 
+    public DoorLockRule getDoorLockRule(String doorId) throws UniFiAccessApiException {
+        var resp = execGet("/doors/" + doorId + "/lock_rule");
+        ensure2xx(resp, "getDoorLockRule");
+        var wrapped = TypeToken.getParameterized(ApiResponse.class, DoorLockRule.class).getType();
+        ApiResponse<DoorLockRule> ar = gson.fromJson(resp.getContentAsString(), wrapped);
+        return requireData(ar == null ? null : ar.data, "getDoorLockRule");
+    }
+
     public boolean keepDoorUnlocked(String doorId) throws UniFiAccessApiException {
         return setDoorLockRule(doorId, DoorLockRule.keepUnlock());
     }
@@ -369,8 +377,9 @@ public final class UniFiAccessApiClient implements Closeable {
     }
 
     public boolean unlockForMinutes(String doorId, int minutes) throws UniFiAccessApiException {
-        if (minutes <= 0)
+        if (minutes <= 0) {
             throw new IllegalArgumentException("minutes must be > 0");
+        }
         return setDoorLockRule(doorId, DoorLockRule.customMinutes(minutes));
     }
 
@@ -535,7 +544,7 @@ public final class UniFiAccessApiClient implements Closeable {
             @Nullable
             T raw = gson.fromJson(json, rawType);
             if (raw == null) {
-                throw new Exception("Empty Data");
+                throw new UniFiAccessApiException("Empty Data", null);
             }
             return raw;
         } catch (Exception e) {
@@ -558,16 +567,15 @@ public final class UniFiAccessApiClient implements Closeable {
     }
 
     /**
-     * For endpoints that conceptually return a list but may be wrapped or nested
-     * inside an object, try multiple shapes:
-     * - ApiResponse<List<E>>
+     * For endpoints that may return a list but may be wrapped or nested
+     * inside an object:
      * - raw JSON array
      * - { "data": [ ... ] }
      * - { "data": { "list"|"items"|"records": [ ... ] } }
      * - { altArrayKeys[0]|altArrayKeys[1]|...: [ ... ] }
      */
-    private <E> List<E> parseListMaybeWrappedWithKeys(String json, Type wrappedListType, Type rawListType,
-            String action, String... altArrayKeys) throws UniFiAccessApiException {
+    private <E> List<E> parseListMaybeWrapped(String json, Type wrappedListType, Type rawListType, String action,
+            String... altArrayKeys) throws UniFiAccessApiException {
         if (json.isBlank()) {
             return Collections.emptyList();
         }
@@ -647,7 +655,7 @@ public final class UniFiAccessApiClient implements Closeable {
                         }
                     }
                 }
-                // { altArrayKey: [ ... ] } at root
+
                 for (String key : altArrayKeys) {
                     if (!obj.has(key)) {
                         continue;
@@ -684,11 +692,6 @@ public final class UniFiAccessApiClient implements Closeable {
         } catch (Exception ignored) {
         }
 
-        try {
-            String snippet = json.length() > 512 ? json.substring(0, 512) + "..." : json;
-            logger.warn("{}: unexpected JSON: {}", action, snippet);
-        } catch (Exception ignored2) {
-        }
         throw new UniFiAccessApiException("Failed to parse list response for " + action + ": unexpected JSON", null);
     }
 

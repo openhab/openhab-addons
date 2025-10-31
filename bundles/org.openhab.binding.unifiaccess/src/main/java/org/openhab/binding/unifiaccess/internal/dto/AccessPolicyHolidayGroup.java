@@ -36,11 +36,13 @@ public class AccessPolicyHolidayGroup {
 
     public Holiday activeHolidayAt(ZonedDateTime when) {
         Objects.requireNonNull(when, "when");
-        if (holidays == null || holidays.isEmpty())
+        if (holidays == null || holidays.isEmpty()) {
             return null;
+        }
         for (Holiday h : holidays) {
-            if (h != null && h.contains(when))
+            if (h != null && h.contains(when)) {
                 return h;
+            }
         }
         return null;
     }

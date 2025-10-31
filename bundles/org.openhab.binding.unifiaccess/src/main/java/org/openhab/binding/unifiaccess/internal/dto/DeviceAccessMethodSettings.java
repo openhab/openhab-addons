@@ -29,7 +29,7 @@ public class DeviceAccessMethodSettings {
     public QrCode qrCode;
     public TouchPass touchPass;
 
-    public static abstract class EnabledFlag {
+    public abstract static class EnabledFlag {
         public Boolean enabled;
     }
 

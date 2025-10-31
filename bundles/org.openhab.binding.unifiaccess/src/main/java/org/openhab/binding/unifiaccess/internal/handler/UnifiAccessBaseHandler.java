@@ -17,7 +17,14 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.unifiaccess.internal.api.UniFiAccessApiClient;
+import org.openhab.binding.unifiaccess.internal.dto.Notification;
+import org.openhab.binding.unifiaccess.internal.dto.Notification.DeviceUpdateData;
+import org.openhab.binding.unifiaccess.internal.dto.Notification.LocationState;
+import org.openhab.binding.unifiaccess.internal.dto.Notification.LocationUpdateV2Data;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.State;
 
@@ -29,15 +36,21 @@ import org.openhab.core.types.State;
 @NonNullByDefault
 public abstract class UnifiAccessBaseHandler extends BaseThingHandler {
     protected Map<String, State> stateCache = new HashMap<>();
+    public String deviceId = "";
 
     public UnifiAccessBaseHandler(Thing thing) {
         super(thing);
     }
 
     @Override
-    public void updateState(String channelUID, State state) {
+    protected void updateState(String channelUID, State state) {
         super.updateState(channelUID, state);
         stateCache.put(channelUID, state);
+    }
+
+    @Override
+    protected void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
+        super.updateStatus(status, statusDetail, description);
     }
 
     protected void refreshState(String channelId) {
@@ -55,4 +68,33 @@ public abstract class UnifiAccessBaseHandler extends BaseThingHandler {
         var h = b.getHandler();
         return (h instanceof UnifiAccessBridgeHandler) ? (UnifiAccessBridgeHandler) h : null;
     }
+
+    protected @Nullable UniFiAccessApiClient getApiClient() {
+        UnifiAccessBridgeHandler bridge = getBridgeHandler();
+        return bridge != null ? bridge.getApiClient() : null;
+    }
+
+    // updates from the WebSocket
+
+    protected void handleDeviceUpdate(DeviceUpdateData updateData) {
+        if (!updateData.isConnected) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                    "Device reported as offline");
+        }
+    }
+
+    protected void handleDeviceUpdateV2(Notification.DeviceUpdateV2Data updateData) {
+        if (!updateData.online) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                    "Device reported as offline");
+        }
+    }
+
+    protected void handleLocationUpdateV2(LocationUpdateV2Data locationUpdate) {
+        if (locationUpdate.state != null) {
+            handleLocationState(locationUpdate.state);
+        }
+    }
+
+    protected abstract void handleLocationState(LocationState locationState);
 }

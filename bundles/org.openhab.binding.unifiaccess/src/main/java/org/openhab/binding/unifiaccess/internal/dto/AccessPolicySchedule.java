@@ -45,8 +45,9 @@ public class AccessPolicySchedule {
             }
             final LocalTime t = when.toLocalTime();
             for (TimeRange r : holidaySchedule) {
-                if (r != null && r.contains(t))
+                if (r != null && r.contains(t)) {
                     return true;
+                }
             }
             return false;
         }
@@ -60,8 +61,9 @@ public class AccessPolicySchedule {
         }
         final LocalTime t = when.toLocalTime();
         for (TimeRange r : ranges) {
-            if (r != null && r.contains(t))
+            if (r != null && r.contains(t)) {
                 return true;
+            }
         }
         return false;
     }
