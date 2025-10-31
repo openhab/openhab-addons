@@ -27,13 +27,13 @@
 			</parameter>
 
 			<parameter name="tadoApiUrl" type="text" required="true">
-                <label>API Base URL</label>
-                <description>he base URL used for all API requests. Can be changed to use a proxy.</description>
-                <default>https://my.tado.com/api/v2</default>
-                <advanced>true</advanced>
-            </parameter>
-            
-            <parameter name="username" type="text" required="false">
+				<label>API Base URL</label>
+				<description>he base URL used for all API requests. Can be changed to use a proxy.</description>
+				<default>https://my.tado.com/api/v2</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="username" type="text" required="false">
 				<label>User Name</label>
 				<description>Selects the tado° account to be used if there is more than one account.</description>
 				<advanced>true</advanced>
