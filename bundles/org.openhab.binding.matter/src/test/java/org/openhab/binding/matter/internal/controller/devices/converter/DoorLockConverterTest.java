@@ -14,8 +14,7 @@ package org.openhab.binding.matter.internal.controller.devices.converter;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 import java.util.Map;
 
@@ -28,6 +27,7 @@ import org.openhab.binding.matter.internal.client.dto.cluster.gen.DoorLockCluste
 import org.openhab.binding.matter.internal.client.dto.ws.AttributeChangedMessage;
 import org.openhab.binding.matter.internal.client.dto.ws.Path;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelGroupUID;
 import org.openhab.core.thing.ChannelUID;
@@ -35,7 +35,7 @@ import org.openhab.core.types.StateDescription;
 
 /**
  * Test class for DoorLockConverter
- * 
+ *
  * @author Dan Cunningham - Initial contribution
  */
 @NonNullByDefault
@@ -52,6 +52,8 @@ class DoorLockConverterTest extends BaseMatterConverterTest {
     @BeforeEach
     void setUp() {
         super.setUp();
+        mockCluster.featureMap = new DoorLockCluster.FeatureMap(false, false, false, false, false, false, false, false,
+                false, false, false, false, false);
         converter = new DoorLockConverter(mockCluster, mockHandler, 1, "TestLabel");
     }
 
@@ -63,6 +65,26 @@ class DoorLockConverterTest extends BaseMatterConverterTest {
         Channel channel = channels.keySet().iterator().next();
         assertEquals("matter:node:test:12345:1#doorlock-lockstate", channel.getUID().toString());
         assertEquals("Switch", channel.getAcceptedItemType());
+    }
+
+    @Test
+    void testCreateChannelsWithDoorState() {
+        mockCluster.featureMap.doorPositionSensor = true;
+
+        ChannelGroupUID channelGroupUID = new ChannelGroupUID("matter:node:test:12345:1");
+        Map<Channel, @Nullable StateDescription> channels = converter.createChannels(channelGroupUID);
+        assertEquals(2, channels.size());
+        for (Channel channel : channels.keySet()) {
+            String channelId = channel.getUID().getIdWithoutGroup();
+            switch (channelId) {
+                case "doorlock-lockstate":
+                    assertEquals("Switch", channel.getAcceptedItemType());
+                    break;
+                case "doorlock-doorstate":
+                    assertEquals("Contact", channel.getAcceptedItemType());
+                    break;
+            }
+        }
     }
 
     @Test
@@ -89,6 +111,16 @@ class DoorLockConverterTest extends BaseMatterConverterTest {
         message.value = DoorLockCluster.LockStateEnum.LOCKED;
         converter.onEvent(message);
         verify(mockHandler, times(1)).updateState(eq(1), eq("doorlock-lockstate"), eq(OnOffType.ON));
+    }
+
+    @Test
+    void testOnEventWithDoorState() {
+        AttributeChangedMessage message = new AttributeChangedMessage();
+        message.path = new Path();
+        message.path.attributeName = "doorState";
+        message.value = DoorLockCluster.DoorStateEnum.DOOR_CLOSED;
+        converter.onEvent(message);
+        verify(mockHandler, times(1)).updateState(eq(1), eq("doorlock-doorstate"), eq(OpenClosedType.CLOSED));
     }
 
     @Test

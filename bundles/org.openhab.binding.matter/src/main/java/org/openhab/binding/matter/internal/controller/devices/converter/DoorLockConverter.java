@@ -12,10 +12,9 @@
  */
 package org.openhab.binding.matter.internal.controller.devices.converter;
 
-import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_DOORLOCK_STATE;
-import static org.openhab.binding.matter.internal.MatterBindingConstants.CHANNEL_ID_DOORLOCK_STATE;
+import static org.openhab.binding.matter.internal.MatterBindingConstants.*;
 
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -26,6 +25,7 @@ import org.openhab.binding.matter.internal.client.dto.ws.AttributeChangedMessage
 import org.openhab.binding.matter.internal.handler.MatterBaseThingHandler;
 import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelGroupUID;
 import org.openhab.core.thing.ChannelUID;
@@ -48,11 +48,21 @@ public class DoorLockConverter extends GenericConverter<DoorLockCluster> {
 
     @Override
     public Map<Channel, @Nullable StateDescription> createChannels(ChannelGroupUID channelGroupUID) {
+        Map<Channel, @Nullable StateDescription> channels = new HashMap<>();
+
         Channel channel = ChannelBuilder
                 .create(new ChannelUID(channelGroupUID, CHANNEL_ID_DOORLOCK_STATE), CoreItemFactory.SWITCH)
                 .withType(CHANNEL_DOORLOCK_STATE).build();
+        channels.put(channel, null);
 
-        return Collections.singletonMap(channel, null);
+        if (initializingCluster.featureMap.doorPositionSensor) {
+            Channel doorStateChannel = ChannelBuilder
+                    .create(new ChannelUID(channelGroupUID, CHANNEL_ID_DOORLOCK_DOORSTATE), CoreItemFactory.CONTACT)
+                    .withType(CHANNEL_DOORLOCK_DOORSTATE).build();
+            channels.put(doorStateChannel, null);
+        }
+
+        return channels;
     }
 
     @Override
@@ -73,6 +83,12 @@ public class DoorLockConverter extends GenericConverter<DoorLockCluster> {
                     updateState(CHANNEL_ID_DOORLOCK_STATE,
                             lockState == DoorLockCluster.LockStateEnum.LOCKED ? OnOffType.ON : OnOffType.OFF);
                 }
+            case "doorState":
+                if (message.value instanceof DoorLockCluster.DoorStateEnum doorState) {
+                    updateState(CHANNEL_ID_DOORLOCK_DOORSTATE,
+                            doorState == DoorLockCluster.DoorStateEnum.DOOR_CLOSED ? OpenClosedType.CLOSED
+                                    : OpenClosedType.OPEN);
+                }
             default:
                 break;
         }
@@ -83,5 +99,11 @@ public class DoorLockConverter extends GenericConverter<DoorLockCluster> {
     public void initState() {
         updateState(CHANNEL_ID_DOORLOCK_STATE,
                 initializingCluster.lockState == DoorLockCluster.LockStateEnum.LOCKED ? OnOffType.ON : OnOffType.OFF);
+
+        if (initializingCluster.featureMap.doorPositionSensor) {
+            updateState(CHANNEL_ID_DOORLOCK_DOORSTATE,
+                    initializingCluster.doorState == DoorLockCluster.DoorStateEnum.DOOR_CLOSED ? OpenClosedType.CLOSED
+                            : OpenClosedType.OPEN);
+        }
     }
 }
