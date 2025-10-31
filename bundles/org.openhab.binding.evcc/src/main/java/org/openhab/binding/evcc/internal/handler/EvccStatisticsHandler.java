@@ -44,6 +44,7 @@ public class EvccStatisticsHandler extends EvccBaseThingHandler {
 
     public EvccStatisticsHandler(Thing thing, ChannelTypeRegistry channelTypeRegistry) {
         super(thing, channelTypeRegistry);
+        type = PROPERTY_TYPE_STATISTICS;
     }
 
     @Override

@@ -50,13 +50,18 @@ public class EvccLoadpointHandler extends EvccBaseThingHandler {
             Map.entry(JSON_KEY_PHASES, JSON_KEY_PHASES_CONFIGURED), Map.entry(JSON_KEY_CHARGE_CURRENTS, ""),
             Map.entry(JSON_KEY_CHARGE_VOLTAGES, ""));
     protected final int index;
-    private int[] version = {};
 
     public EvccLoadpointHandler(Thing thing, ChannelTypeRegistry channelTypeRegistry) {
         super(thing, channelTypeRegistry);
-        Map<String, String> props = thing.getProperties();
-        String indexString = props.getOrDefault(PROPERTY_INDEX, "0");
-        index = Integer.parseInt(indexString);
+        Object index = thing.getConfiguration().get(PROPERTY_INDEX);
+        String indexString;
+        if (index instanceof String s) {
+            indexString = s;
+        } else {
+            indexString = thing.getProperties().getOrDefault(PROPERTY_INDEX, "0");
+        }
+        this.index = Integer.parseInt(indexString);
+        type = PROPERTY_TYPE_LOADPOINT;
     }
 
     @Override
@@ -85,8 +90,8 @@ public class EvccLoadpointHandler extends EvccBaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof State) {
             String datapoint = Utils.getKeyFromChannelUID(channelUID).toLowerCase();
-            // Backwards compatibility for phasesConfigured
-            if (JSON_KEY_PHASES_CONFIGURED.equals(datapoint) && version[0] == 0 && version[1] < 200) {
+            // Correct the datapoint for the API call
+            if ("phasesconfigured".equals(datapoint)) {
                 datapoint = JSON_KEY_PHASES;
             }
             // Special Handling for enable and disable endpoints
@@ -114,7 +119,6 @@ public class EvccLoadpointHandler extends EvccBaseThingHandler {
 
     @Override
     public void prepareApiResponseForChannelStateUpdate(JsonObject state) {
-        version = Utils.convertVersionStringToIntArray(state.get("version").getAsString().split(" ")[0]);
         state = state.getAsJsonArray(JSON_KEY_LOADPOINTS).get(index).getAsJsonObject();
         modifyJSON(state);
         updateStatesFromApiResponse(state);

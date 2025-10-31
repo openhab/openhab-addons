@@ -15,13 +15,13 @@ package org.openhab.binding.evcc.internal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link EvccConfiguration} class contains fields mapping thing configuration parameters.
+ * The {@link EvccBridgeConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Florian Hotze - Initial contribution
  * @author Marcel Goerentz - Rework the binding
  */
 @NonNullByDefault
-public class EvccConfiguration {
+public class EvccBridgeConfiguration {
     public String host = "";
     public int pollInterval = 30;
     public int port = 7070;

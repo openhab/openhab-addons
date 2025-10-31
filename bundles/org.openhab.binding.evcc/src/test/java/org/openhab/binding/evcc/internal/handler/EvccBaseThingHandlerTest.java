@@ -27,6 +27,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -65,6 +66,10 @@ public class EvccBaseThingHandlerTest {
         when(thing.getUID()).thenReturn(new ThingUID("test:thing:uid"));
         when(thing.getProperties()).thenReturn(Map.of("index", "0", "type", "battery"));
         when(thing.getChannels()).thenReturn(new ArrayList<>());
+        Configuration configuration = mock(Configuration.class);
+        when(configuration.get("index")).thenReturn("0");
+        when(configuration.get("id")).thenReturn("vehicle_1");
+        when(thing.getConfiguration()).thenReturn(configuration);
     }
 
     @Nested
@@ -245,7 +250,7 @@ public class EvccBaseThingHandlerTest {
     class GetThingKeyTests {
         @Test
         public void getThingKeyWithBatteryTypeAndSpecialKey() {
-            when(thing.getProperties()).thenReturn(Map.of("type", "battery"));
+            handler.type = "battery";
 
             String key = "soc";
             String result = handler.getThingKey(key);
@@ -255,7 +260,7 @@ public class EvccBaseThingHandlerTest {
 
         @Test
         public void getThingKeyWithHeatingType() {
-            when(thing.getProperties()).thenReturn(Map.of("type", "heating"));
+            handler.type = "loadpoint";
 
             String key = "capacity";
             String result = handler.getThingKey(key);
@@ -265,7 +270,7 @@ public class EvccBaseThingHandlerTest {
 
         @Test
         public void getThingKeyWithDefaultType() {
-            when(thing.getProperties()).thenReturn(Map.of("type", "loadpoint"));
+            handler.type = "loadpoint";
 
             String key = "someKey";
             String result = handler.getThingKey(key);

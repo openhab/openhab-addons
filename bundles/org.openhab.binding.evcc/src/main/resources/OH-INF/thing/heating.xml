@@ -11,6 +11,12 @@
 		<label>Heating - Loadpoint</label>
 		<description>A heating loadpoint configured in your evcc instance</description>
 		<representation-property>index</representation-property>
+		<config-description>
+			<parameter name="index" type="integer">
+				<label>Index</label>
+				<description>The index of the heating loadpoint in your evcc setup (starting with 0)</description>
+			</parameter>
+		</config-description>
 	</thing-type>
 	<channel-type id="loadpoint-effective-limit-temperature">
 		<item-type unitHint="°C">Number:Temperature</item-type>

@@ -53,8 +53,8 @@ public class VehicleDiscoveryMapper implements EvccDiscoveryMapper {
             ThingUID uid = new ThingUID(EvccBindingConstants.THING_TYPE_VEHICLE, bridgeHandler.getThing().getUID(),
                     Utils.sanitizeName(title));
             DiscoveryResult result = DiscoveryResultBuilder.create(uid).withLabel(title)
-                    .withBridge(bridgeHandler.getThing().getUID()).withProperty(PROPERTY_TYPE, PROPERTY_TYPE_VEHICLE)
-                    .withProperty(PROPERTY_ID, id).withRepresentationProperty(PROPERTY_ID).build();
+                    .withBridge(bridgeHandler.getThing().getUID()).withProperty(PROPERTY_ID, id)
+                    .withRepresentationProperty(PROPERTY_ID).build();
 
             results.add(result);
         }

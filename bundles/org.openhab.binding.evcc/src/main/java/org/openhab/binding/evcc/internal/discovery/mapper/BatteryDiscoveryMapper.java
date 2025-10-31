@@ -55,8 +55,7 @@ public class BatteryDiscoveryMapper implements EvccDiscoveryMapper {
                     Utils.sanitizeName(title));
             DiscoveryResult result = DiscoveryResultBuilder.create(uid).withLabel(title)
                     .withBridge(bridgeHandler.getThing().getUID()).withProperty(PROPERTY_INDEX, i)
-                    .withProperty(PROPERTY_TYPE, PROPERTY_TYPE_BATTERY).withProperty(PROPERTY_TITLE, title)
-                    .withRepresentationProperty(PROPERTY_TITLE).build();
+                    .withProperty(PROPERTY_TITLE, title).withRepresentationProperty(PROPERTY_TITLE).build();
             results.add(result);
         }
         return results;

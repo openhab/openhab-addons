@@ -14,7 +14,6 @@ package org.openhab.binding.evcc.internal.handler;
 
 import static org.openhab.binding.evcc.internal.EvccBindingConstants.*;
 
-import java.util.Map;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -37,9 +36,15 @@ public class EvccPvHandler extends EvccBaseThingHandler {
 
     public EvccPvHandler(Thing thing, ChannelTypeRegistry channelTypeRegistry) {
         super(thing, channelTypeRegistry);
-        Map<String, String> props = thing.getProperties();
-        String indexString = props.getOrDefault(PROPERTY_INDEX, "0");
-        index = Integer.parseInt(indexString);
+        Object index = thing.getConfiguration().get(PROPERTY_INDEX);
+        String indexString;
+        if (index instanceof String s) {
+            indexString = s;
+        } else {
+            indexString = thing.getProperties().getOrDefault(PROPERTY_INDEX, "0");
+        }
+        this.index = Integer.parseInt(indexString);
+        type = PROPERTY_TYPE_PV;
     }
 
     @Override

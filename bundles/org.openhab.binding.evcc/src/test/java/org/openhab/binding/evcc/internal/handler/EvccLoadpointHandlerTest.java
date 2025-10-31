@@ -26,6 +26,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -84,6 +85,10 @@ public class EvccLoadpointHandlerTest extends AbstractThingHandlerTestClass<Evcc
         when(thing.getUID()).thenReturn(new ThingUID("test:thing:uid"));
         when(thing.getProperties()).thenReturn(Map.of("index", "0", "type", "loadpoint"));
         when(thing.getChannels()).thenReturn(new ArrayList<>());
+        Configuration configuration = mock(Configuration.class);
+        when(configuration.get("index")).thenReturn("0");
+        when(configuration.get("id")).thenReturn("vehicle_1");
+        when(thing.getConfiguration()).thenReturn(configuration);
         handler = spy(createHandler());
 
         modifiedVerifyObject.addProperty("chargedEnergy", 50);

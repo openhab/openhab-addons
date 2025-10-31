@@ -60,11 +60,9 @@ public class LoadpointDiscoveryMapper implements EvccDiscoveryMapper {
             if (lp.has(JSON_KEY_CHARGER_FEATURE_HEATING) && lp.get(JSON_KEY_CHARGER_FEATURE_HEATING).getAsBoolean()) {
                 uid = new ThingUID(EvccBindingConstants.THING_TYPE_HEATING, bridgeHandler.getThing().getUID(),
                         Utils.sanitizeName(title));
-                properties.put(PROPERTY_TYPE, PROPERTY_TYPE_HEATING);
             } else {
                 uid = new ThingUID(EvccBindingConstants.THING_TYPE_LOADPOINT, bridgeHandler.getThing().getUID(),
                         Utils.sanitizeName(title));
-                properties.put(PROPERTY_TYPE, PROPERTY_TYPE_LOADPOINT);
             }
 
             DiscoveryResult result = DiscoveryResultBuilder.create(uid).withLabel(title)

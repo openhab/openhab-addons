@@ -45,6 +45,7 @@ public class EvccSiteHandler extends EvccBaseThingHandler {
 
     public EvccSiteHandler(Thing thing, ChannelTypeRegistry channelTypeRegistry) {
         super(thing, channelTypeRegistry);
+        type = PROPERTY_TYPE_SITE;
     }
 
     @Override

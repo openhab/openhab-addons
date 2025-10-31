@@ -24,7 +24,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.http.HttpHeader;
-import org.openhab.binding.evcc.internal.EvccConfiguration;
+import org.openhab.binding.evcc.internal.EvccBridgeConfiguration;
 import org.openhab.binding.evcc.internal.discovery.EvccDiscoveryService;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TranslationProvider;
@@ -78,7 +78,7 @@ public class EvccBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void initialize() {
-        EvccConfiguration config = getConfigAs(EvccConfiguration.class);
+        EvccBridgeConfiguration config = getConfigAs(EvccBridgeConfiguration.class);
         endpoint = config.scheme + "://" + config.host + ":" + config.port + "/api/state";
 
         startPolling(config.pollInterval);

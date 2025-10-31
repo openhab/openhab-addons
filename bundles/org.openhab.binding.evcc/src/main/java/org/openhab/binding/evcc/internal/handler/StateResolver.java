@@ -62,7 +62,8 @@ public final class StateResolver {
         if (prim.isNumber()) {
             double raw = prim.getAsDouble();
             Unit<?> base = determineBaseUnitFromKey(key);
-            if (key.contains("Odometer") || key.contains("Range") || key.contains("Capacity")) {
+            if (key.contains("Odometer") || key.contains("Range") || key.contains("Capacity")
+                    || key.contains("limitEnergy")) {
                 return new QuantityType<>(raw, MetricPrefix.KILO(base));
             } else if (key.contains("Price") || key.contains("Tariff") || key.contains("tariff")) {
                 return new DecimalType(raw);
