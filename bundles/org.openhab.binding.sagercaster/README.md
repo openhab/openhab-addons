@@ -22,9 +22,9 @@ The binding itself does not require any configuration.
 
 ### SagerCaster
 
-| Name               | Type     | Description                                                          |
-| ------------------ | -------- | -------------------------------------------------------------------- |
-| location (*)       | Location | Latitude and longitude of the desired weather forecast.              |
+| Name         | Type     | Description                                            |
+| ------------ | -------- | ------------------------------------------------------ |
+| location (*) | Location | Latitude and longitude of the desired weather forecast |
 
 (*) Only latitude is used by the algorithm.
 
@@ -32,27 +32,27 @@ The binding itself does not require any configuration.
 
 The binding will use some input channels, that can be configured directly with profiles (sample below).
 
-| Name                | Group  | Type                 | Description                                                            |
-| ------------------- | ------ | -------------------- | ---------------------------------------------------------------------- |
-| is-raining (*)      | input  | Switch               | On if it is raining, else Off.                                         |
-| rain-qtty  (*)      | input  | Number               | Any value that give indication of a current rain volume                |
-| or                  | input  | Number:Speed         | Any value that give indication of a current rain volume eg mm/h        |
-| or                  | input  | Number:Length        | Any value that give indication of a current rain volume eg mm          |
-| cloudiness          | input  | Number:Dimensionless | Cloud cover percentage                                                 |
-| wind-speed-beaufort | input  | Number               | Wind speed expressed using the Beaufort scale                          |
-| pressure            | input  | Number:Pressure      | Sea level pressure                                                     |
-| wind-angle          | input  | Number:Angle         | Wind direction                                                         |
-| temperature         | input  | Number:Temperature   | Outside temperature                                                    |
-| timestamp           | output | DateTime             | Timestamp of the last forecast update                                  |
-| forecast            | output | String               | Description of the weather forecast                                    |
-| velocity            | output | String               | Description of the expected wind evolution                             |
-| velocity-beaufort   | output | Number               | Expected wind evolution using the Beaufort scale                       |
-| wind-from           | output | String               | Expected wind orientation                                              |
-| wind-to             | output | String               | Evolution of the expected wind orientation                             |
-| wind-evolution      | output | String               | Wind orientation evolution over observation period                     |
-| pressure-trend      | output | String               | Pressure evolution over observation period                             |
-| temperature-trend   | output | String               | Temperature evolution over observation period                          |
-| reliability         | output | Number:Dimensionless | Grows along with the algorithm historical data storage (up to 6 hours) |
+| Name                | Group  | Type                 | Description                                                           |
+| ------------------- | ------ | -------------------- | --------------------------------------------------------------------- |
+| is-raining (*)      | input  | Switch               | On if it is raining, else Off.                                        |
+| rain-qtty  (*)      | input  | Number               | Any value that give indication of a current rain volume               |
+|        or           | input  | Number:Speed         | Any value that give indication of a current rain volume eg mm/h       |
+|        or           | input  | Number:Length        | Any value that give indication of a current rain volume eg mm         |
+| cloudiness          | input  | Number:Dimensionless | Cloud cover percentage                                                |
+| wind-speed-beaufort | input  | Number               | Wind speed expressed using the Beaufort scale                         |
+| pressure            | input  | Number:Pressure      | Sea level pressure                                                    |
+| wind-angle          | input  | Number:Angle         | Wind direction                                                        |
+| temperature         | input  | Number:Temperature   | Outside temperature                                                   |
+| timestamp           | output | DateTime             | Timestamp of the last forecast update                                 |
+| forecast            | output | String               | Description of the weather forecast                                   |
+| velocity            | output | String               | Description of the expected wind evolution                            |
+| velocity-beaufort   | output | Number               | Expected wind evolution using the Beaufort scale                      |
+| wind-from           | output | String               | Expected wind orientation                                             |
+| wind-to             | output | String               | Evolution of the expected wind orientation                            |
+| wind-evolution      | output | String               | Wind orientation evolution over observation period                    |
+| pressure-trend      | output | String               | Pressure evolution over observation period                            |
+| temperature-trend   | output | String               | Temperature evolution over observation period                         |
+| reliability         | output | Number:Dimensionless | Algorithm efficiency toward buffered data, grows during first 6 hours |
 
 (*) You may use either is-raining, either rain-qtty depending upon the data available in your system.
 
