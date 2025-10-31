@@ -25,10 +25,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingUID;
+import org.openhab.core.types.State;
 
 import com.google.gson.JsonObject;
 
@@ -69,6 +71,10 @@ public class EvccBatteryHandlerTest extends AbstractThingHandlerTestClass<EvccBa
 
             @Override
             public void updateThing(Thing thing) {
+            }
+
+            @Override
+            protected void updateState(ChannelUID channelUID, State state) {
             }
         };
     }
