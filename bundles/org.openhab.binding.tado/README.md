@@ -14,11 +14,12 @@ The binding will automatically discover this thing and place it in the Inbox.
 It must be authenticated before it will actually go online.
 Authenticatation is done online via the OAuth Device Code Grant Flow (RFC-8628) authentication process via the link provided at `http://[openhab-ip-address]:8080/tado`.
 
-| Parameter     | Optional | Description                                                                   |
-|---------------|----------|-------------------------------------------------------------------------------|
-| `rfcWithUser` | yes      | Determines if the user name is included in the oAuth RFC-8628 authentication. |
-| `username`    | yes      | Selects the tado° account to be used if there is more than one account.       |
-| `homeId`      | yes      | Selects the Home Id to use in case of more than one home per account.         |
+| Parameter     | Optional | Description                                                                   | Default |
+|---------------|----------|-------------------------------------------------------------------------------|---------|
+| `rfcWithUser` | yes      | Determines if the user name is included in the oAuth RFC-8628 authentication. |         |
+| `tadoApiUrl` | no       | Selects the URL to be used for API calls (it's possible to use a proxy)       |`https://my.tado.com/api/v2`|
+| `username`    | yes      | Selects the tado° account to be used if there is more than one account.       |         |
+| `homeId`      | yes      | Selects the Home Id to use in case of more than one home per account.         |         |
 
 The `rfcWithUser` and `username` settings are only needed if you have more than one tado° account.
 The `rfcWithUser` setting makes the binding use a different authentication token for each respective account `username`.
