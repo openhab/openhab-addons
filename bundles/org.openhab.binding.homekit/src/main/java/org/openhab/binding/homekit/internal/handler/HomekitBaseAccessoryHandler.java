@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -34,6 +35,7 @@ import org.bouncycastle.crypto.InvalidCipherTextException;
 import org.bouncycastle.crypto.params.Ed25519PublicKeyParameters;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.homekit.internal.action.HomekitAccessoryActions;
 import org.openhab.binding.homekit.internal.dto.Accessories;
 import org.openhab.binding.homekit.internal.dto.Accessory;
 import org.openhab.binding.homekit.internal.hap_services.CharacteristicReadWriteClient;
@@ -51,6 +53,7 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
 import org.osgi.framework.Bundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -91,7 +94,6 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
     private @Nullable CharacteristicReadWriteClient rwService;
     private @Nullable IpTransport ipTransport;
 
-    protected @NonNullByDefault({}) String pairingCode;
     protected @NonNullByDefault({}) Integer accessoryId;
 
     public HomekitBaseAccessoryHandler(Thing thing, HomekitTypeProvider typeProvider, HomekitKeyStore keyStore,
@@ -212,52 +214,22 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
     }
 
     /**
-     * Restores an existing pairing or creates a new one if necessary.
+     * Restores an existing pairing.
      * Updates the thing status accordingly.
      */
-    private synchronized void initializePairing() {
+    private synchronized void verifyPairing() {
         isConfigured = false;
-        Object host = getConfig().get(CONFIG_HOST);
-        if (host == null || !(host instanceof String hostName) || !HOST_PATTERN.matcher(hostName).matches()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    i18nProvider.getText(bundle, "error.invalid-host", "Invalid host", null));
-            return;
-        }
-
-        Object pairingConfig = getConfig().get(CONFIG_PAIRING_CODE);
-        if (pairingConfig == null || !(pairingConfig instanceof String pairingConfigString)
-                || !PAIRING_CODE_PATTERN.matcher(pairingConfigString).matches()) {
-            logger.debug("Pairing code must match XXX-XX-XXX or XXXX-XXXX or XXXXXXXX");
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    i18nProvider.getText(bundle, "error.invalid-pairing-code", "Invalid pairing code", null));
-            return;
-        }
-        pairingCode = normalizePairingCode(pairingConfigString);
-
-        accessoryId = getAccessoryId();
-        if (accessoryId == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    i18nProvider.getText(bundle, "error.invalid-accessory-id", "Invalid accessory ID", null));
-            return;
-        }
-
-        final String macAddress = getThing().getProperties().get(Thing.PROPERTY_MAC_ADDRESS);
-        if (macAddress == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    i18nProvider.getText(bundle, "error.missing-mac-address", "Missing MAC address", null));
-            return;
+        Integer accessoryId = checkedAccessoryId();
+        String hostName = checkedHostName();
+        String macAddress = checkedMacAddress();
+        if (accessoryId == null || hostName == null || macAddress == null) {
+            return; // configuration error
         }
         isConfigured = true;
 
         // create new transport
-        try {
-            ipTransport = new IpTransport(hostName);
-        } catch (IOException e) {
-            logger.warn("Error '{}' creating transport", e.getMessage());
-            logger.debug("Stack trace", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    i18nProvider.getText(bundle, "error.failed-to-connect", "Failed to connect", null));
-            return;
+        if (checkedCreateIpTransport(hostName) == null) {
+            return; // transport creation failed
         }
 
         if (keyStore.getAccessoryKey(macAddress) instanceof Ed25519PublicKeyParameters accessoryKey) {
@@ -277,36 +249,14 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
                     | InvalidCipherTextException | IOException | InterruptedException | TimeoutException
                     | ExecutionException e) {
                 logger.debug("Restored pairing was not verified for {}", thing.getUID(), e);
-                // pairing restore failed => continue to try to create a new pairing
+                // pairing restore failed => exit and perhaps try again later
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, i18nProvider.getText(bundle,
+                        "error.pairing-verification-failed", "Pairing / Verification failed", null));
             }
-        }
-
-        try {
-            logger.debug("Starting Pair-Setup for {}", thing.getUID());
-            PairSetupClient pairSetupClient = new PairSetupClient(getIpTransport(), keyStore.getControllerUUID(),
-                    keyStore.getControllerKey(), pairingCode);
-
-            Ed25519PublicKeyParameters accessoryKey = pairSetupClient.pair();
-            logger.debug("Pair-Setup completed; starting Pair-Verify for {}", thing.getUID());
-
-            // Perform Pair-Verify immediately after Pair-Setup
-            PairVerifyClient pairVerifyClient = new PairVerifyClient(getIpTransport(), keyStore.getControllerUUID(),
-                    keyStore.getControllerKey(), accessoryKey);
-
-            getIpTransport().setSessionKeys(pairVerifyClient.verify());
-            rwService = new CharacteristicReadWriteClient(getIpTransport());
-            keyStore.setAccessoryKey(macAddress, accessoryKey);
-
-            logger.debug("Pairing and verification completed for {}", thing.getUID());
-            fetchAccessories();
-            updateStatus(ThingStatus.ONLINE);
-        } catch (NoSuchAlgorithmException | NoSuchProviderException | IllegalAccessException
-                | InvalidCipherTextException | IOException | InterruptedException | TimeoutException
-                | ExecutionException e) {
-            logger.warn("Pairing / verification failed '{}' for {}", e.getMessage(), thing.getUID());
-            logger.debug("Stack trace", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, i18nProvider.getText(bundle,
-                    "error.pairing-verification-failed", "Pairing / verification failed", null));
+        } else {
+            logger.debug("No stored pairing credentials for {}", thing.getUID());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    i18nProvider.getText(bundle, "error.not-paired", "Not paired", null));
         }
     }
 
@@ -347,7 +297,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
             transport.close();
             ipTransport = null;
         }
-        initializePairing();
+        verifyPairing();
         if (isConfigured && thing.getStatus() != ThingStatus.ONLINE) { // config ok but connection failed => try again
             connectionAttemptDelay = Math.min(MAX_CONNECTION_ATTEMPT_DELAY, (int) Math.pow(connectionAttemptDelay, 2));
             connectionAttemptTask = scheduler.schedule(this::attemptConnect, connectionAttemptDelay, TimeUnit.SECONDS);
@@ -416,5 +366,101 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
     @Override
     public void onEvent(String jsonContent) {
         // default implementation does nothing; subclasses must override
+    }
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return getBridge() != null ? Set.of() : Set.of(HomekitAccessoryActions.class); // only for non-child accessories
+    }
+
+    private @Nullable String checkedHostName() {
+        Object host = getConfig().get(CONFIG_HOST);
+        if (host == null || !(host instanceof String hostName) || !HOST_PATTERN.matcher(hostName).matches()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    i18nProvider.getText(bundle, "error.invalid-host", "Invalid host", null));
+            return null;
+        }
+        return hostName;
+    }
+
+    private @Nullable String checkedMacAddress() {
+        String macAddress = getThing().getProperties().get(Thing.PROPERTY_MAC_ADDRESS);
+        if (macAddress == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    i18nProvider.getText(bundle, "error.missing-mac-address", "Missing MAC address", null));
+        }
+        return macAddress;
+    }
+
+    private @Nullable Integer checkedAccessoryId() {
+        accessoryId = getAccessoryId();
+        if (accessoryId == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    i18nProvider.getText(bundle, "error.invalid-accessory-id", "Invalid accessory ID", null));
+            return null;
+        }
+        return accessoryId;
+    }
+
+    private @Nullable IpTransport checkedCreateIpTransport(String hostName) {
+        try {
+            IpTransport ipTransport = new IpTransport(hostName);
+            this.ipTransport = ipTransport;
+            return ipTransport;
+        } catch (IOException e) {
+            logger.warn("Error '{}' creating transport", e.getMessage());
+            logger.debug("Stack trace", e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    i18nProvider.getText(bundle, "error.failed-to-connect", "Failed to connect", null));
+        }
+        return null;
+    }
+
+    /**
+     * Pairs the accessory using the provided pairing code.
+     *
+     * @param code the pairing code
+     */
+    public void pair(String code) {
+        if (isChildAccessory) {
+            logger.warn("Cannot pair child accessory '{}'", thing.getUID());
+            return; // child accessories cannot be paired directly
+        }
+
+        if (!PAIRING_CODE_PATTERN.matcher(code).matches()) {
+            logger.debug("Pairing code must match XXX-XX-XXX or XXXX-XXXX or XXXXXXXX");
+            return; // invalid pairing code format
+        }
+        String pairingCode = normalizePairingCode(code);
+
+        isConfigured = false;
+        Integer accessoryId = checkedAccessoryId();
+        String hostName = checkedHostName();
+        String macAddress = checkedMacAddress();
+        if (accessoryId == null || hostName == null || macAddress == null) {
+            return; // configuration error
+        }
+        isConfigured = true;
+
+        // create new transport
+        if (checkedCreateIpTransport(hostName) == null) {
+            return; // transport creation failed
+        }
+
+        try {
+            logger.debug("Starting Pair-Setup for {}", thing.getUID());
+            PairSetupClient pairSetupClient = new PairSetupClient(getIpTransport(), keyStore.getControllerUUID(),
+                    keyStore.getControllerKey(), pairingCode);
+            pairSetupClient.pair();
+            logger.debug("Pair-Setup completed; starting Pair-Verify for {}", thing.getUID());
+            connectionAttemptDelay = MIN_CONNECTION_ATTEMPT_DELAY; // reset delay on manual pairing
+            scheduleConnectionAttempt();
+        } catch (NoSuchAlgorithmException | IllegalAccessException | InvalidCipherTextException | IOException
+                | InterruptedException | TimeoutException | ExecutionException e) {
+            logger.warn("Pairing / verification failed '{}' for {}", e.getMessage(), thing.getUID());
+            logger.debug("Stack trace", e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, i18nProvider.getText(bundle,
+                    "error.pairing-verification-failed", "Pairing / Verification failed", null));
+        }
     }
 }

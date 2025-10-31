@@ -57,7 +57,6 @@ public class HomekitChildDiscoveryService extends AbstractThingHandlerDiscoveryS
                         .withBridge(bridge.getUID()) //
                         .withLabel(THING_LABEL_FMT.formatted(thingLabel, bridge.getLabel())) //
                         .withProperty(CONFIG_HOST, "n/a") //
-                        .withProperty(CONFIG_PAIRING_CODE, "n/a") //
                         .withProperty(PROPERTY_ACCESSORY_UID, uid.toString()) //
                         .withRepresentationProperty(PROPERTY_ACCESSORY_UID).build());
             }

@@ -46,7 +46,6 @@ public class HomekitBindingConstants {
 
     // configuration parameters
     public static final String CONFIG_HOST = "host";
-    public static final String CONFIG_PAIRING_CODE = "pairingCode";
     public static final String CONFIG_REFRESH_INTERVAL = "refreshInterval";
 
     // thing properties
