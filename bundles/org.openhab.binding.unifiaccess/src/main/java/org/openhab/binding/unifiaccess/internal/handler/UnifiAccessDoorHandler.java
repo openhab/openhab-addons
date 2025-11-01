@@ -216,42 +216,26 @@ public class UnifiAccessDoorHandler extends UnifiAccessBaseHandler {
     protected void handleRemoteUnlock(Notification.RemoteUnlockData remoteUnlock) {
         setLastUnlock(remoteUnlock.fullName, System.currentTimeMillis());
         door.doorLockRelayStatus = DoorState.LockState.UNLOCKED;
-        try {
-            String payload = new Gson()
-                    .toJson(Map.of("deviceId", remoteUnlock.uniqueId, "name", remoteUnlock.name, "fullName",
-                            remoteUnlock.fullName, "level", remoteUnlock.level, "workTimeId", remoteUnlock.workTimeId));
-            triggerChannel(UnifiAccessBindingConstants.CHANNEL_DOOR_REMOTE_UNLOCK, payload);
-        } catch (Exception ignored) {
-        }
+        String payload = new Gson().toJson(Map.of("deviceId", remoteUnlock.uniqueId, "name", remoteUnlock.name,
+                "fullName", remoteUnlock.fullName, "level", remoteUnlock.level, "workTimeId", remoteUnlock.workTimeId));
+        triggerChannel(UnifiAccessBindingConstants.CHANNEL_DOOR_REMOTE_UNLOCK, payload);
     }
 
     protected void handleDoorbellStatus(RemoteViewChangeData change) {
-        try {
-            String event = change.reason != null ? change.reason.name() : "UNKNOWN";
-            triggerChannel(UnifiAccessBindingConstants.CHANNEL_DOORBELL_STATUS, event);
-        } catch (Exception ignored) {
-        }
+        String event = change.reason != null ? change.reason.name() : "UNKNOWN";
+        triggerChannel(UnifiAccessBindingConstants.CHANNEL_DOORBELL_STATUS, event);
     }
 
     protected void triggerAccessAttemptSuccess(String payload) {
-        try {
-            triggerChannel(UnifiAccessBindingConstants.CHANNEL_DOOR_ACCESS_ATTEMPT_SUCCESS, payload);
-        } catch (Exception ignored) {
-        }
+        triggerChannel(UnifiAccessBindingConstants.CHANNEL_DOOR_ACCESS_ATTEMPT_SUCCESS, payload);
     }
 
     protected void triggerAccessAttemptFailure(String payload) {
-        try {
-            triggerChannel(UnifiAccessBindingConstants.CHANNEL_DOOR_ACCESS_ATTEMPT_FAILURE, payload);
-        } catch (Exception ignored) {
-        }
+        triggerChannel(UnifiAccessBindingConstants.CHANNEL_DOOR_ACCESS_ATTEMPT_FAILURE, payload);
     }
 
     protected void triggerLogInsight(String payload) {
-        try {
-            triggerChannel(UnifiAccessBindingConstants.CHANNEL_BRIDGE_LOG_INSIGHT, payload);
-        } catch (Exception ignored) {
-        }
+        triggerChannel(UnifiAccessBindingConstants.CHANNEL_BRIDGE_LOG_INSIGHT, payload);
     }
 
     protected void updateLock(DoorState.LockState lock) {

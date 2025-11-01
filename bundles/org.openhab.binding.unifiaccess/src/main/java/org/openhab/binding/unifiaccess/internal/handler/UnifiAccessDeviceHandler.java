@@ -22,13 +22,16 @@ import org.openhab.binding.unifiaccess.internal.dto.DoorEmergencySettings;
 import org.openhab.binding.unifiaccess.internal.dto.Notification.LocationState;
 import org.openhab.binding.unifiaccess.internal.dto.Notification.RemoteViewChangeData;
 import org.openhab.binding.unifiaccess.internal.dto.Notification.RemoteViewData;
+import org.openhab.binding.unifiaccess.internal.dto.UniFiAccessApiException;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -171,25 +174,31 @@ public class UnifiAccessDeviceHandler extends UnifiAccessBaseHandler {
                     case UnifiAccessBindingConstants.CHANNEL_DEVICE_EMERGENCY_STATUS:
                         String normalized = value.toLowerCase();
                         DoorEmergencySettings des = new DoorEmergencySettings();
+                        String status = "normal";
                         if ("lockdown".equals(normalized)) {
                             des.lockdown = Boolean.TRUE;
                             des.evacuation = Boolean.FALSE;
+                            status = "lockdown";
                         } else if ("evacuation".equals(normalized)) {
                             des.lockdown = Boolean.FALSE;
                             des.evacuation = Boolean.TRUE;
+                            status = "evacuation";
                         } else {
                             des.lockdown = Boolean.FALSE;
                             des.evacuation = Boolean.FALSE;
+                            status = "normal";
                         }
                         try {
                             String doorId = this.locationId;
                             if (doorId != null && !doorId.isBlank()) {
                                 api.setDoorEmergencySettings(doorId, des);
                                 updateState(UnifiAccessBindingConstants.CHANNEL_DEVICE_EMERGENCY_STATUS,
-                                        new org.openhab.core.library.types.StringType(
-                                                normalized.isEmpty() ? "normal" : normalized));
+                                        new StringType(status));
                             }
-                        } catch (Exception ignored) {
+                        } catch (UniFiAccessApiException e) {
+                            logger.debug("Failed to set door emergency settings for device {}: {}", deviceId,
+                                    e.getMessage());
+                            updateState(UnifiAccessBindingConstants.CHANNEL_DEVICE_EMERGENCY_STATUS, UnDefType.UNDEF);
                         }
                         break;
                     default:
@@ -215,19 +224,17 @@ public class UnifiAccessDeviceHandler extends UnifiAccessBaseHandler {
                             ? OpenClosedType.OPEN
                             : OpenClosedType.CLOSED);
         }
-        // TODO: Add emergency status, need to understand software vs hardware here
-        // if (locationState.emergency != null) {
-        // String status = "normal";
-        // String sw = locationState.emergency.software;
-        // String hw = locationState.emergency.hardware;
-        // if ("lockdown".equalsIgnoreCase(sw) || "lockdown".equalsIgnoreCase(hw)) {
-        // status = "lockdown";
-        // } else if ("evacuation".equalsIgnoreCase(sw) || "evacuation".equalsIgnoreCase(hw)) {
-        // status = "evacuation";
-        // }
-        // updateState(UnifiAccessBindingConstants.CHANNEL_DEVICE_EMERGENCY_STATUS,
-        // new StringType(status));
-        // }
+        String status = "normal";
+        if (locationState.emergency != null) {
+            String sw = locationState.emergency.software;
+            String hw = locationState.emergency.hardware;
+            if ("lockdown".equalsIgnoreCase(sw) || "lockdown".equalsIgnoreCase(hw)) {
+                status = "lockdown";
+            } else if ("evacuation".equalsIgnoreCase(sw) || "evacuation".equalsIgnoreCase(hw)) {
+                status = "evacuation";
+            }
+        }
+        updateState(UnifiAccessBindingConstants.CHANNEL_DEVICE_EMERGENCY_STATUS, new StringType(status));
     }
 
     protected void updateFromSettings(DeviceAccessMethodSettings settings) {
@@ -268,6 +275,30 @@ public class UnifiAccessDeviceHandler extends UnifiAccessBaseHandler {
             updateState(UnifiAccessBindingConstants.CHANNEL_DEVICE_MOBILE_WAVE_ENABLED,
                     settings.mobileWave.enabled ? OnOffType.ON : OnOffType.OFF);
         }
+        if (settings.wave != null && settings.wave.enabled != null) {
+            updateState(UnifiAccessBindingConstants.CHANNEL_DEVICE_WAVE_ENABLED,
+                    settings.wave.enabled ? OnOffType.ON : OnOffType.OFF);
+        }
+        if (settings.qrCode != null && settings.qrCode.enabled != null) {
+            updateState(UnifiAccessBindingConstants.CHANNEL_DEVICE_QR_CODE_ENABLED,
+                    settings.qrCode.enabled ? OnOffType.ON : OnOffType.OFF);
+        }
+        if (settings.touchPass != null && settings.touchPass.enabled != null) {
+            updateState(UnifiAccessBindingConstants.CHANNEL_DEVICE_TOUCH_PASS_ENABLED,
+                    settings.touchPass.enabled ? OnOffType.ON : OnOffType.OFF);
+        }
+        if (settings.face != null && settings.face.enabled != null) {
+            updateState(UnifiAccessBindingConstants.CHANNEL_DEVICE_FACE_ENABLED,
+                    settings.face.enabled ? OnOffType.ON : OnOffType.OFF);
+        }
+        if (settings.face != null && settings.face.antiSpoofingLevel != null) {
+            updateState(UnifiAccessBindingConstants.CHANNEL_DEVICE_FACE_ANTI_SPOOFING,
+                    new StringType(settings.face.antiSpoofingLevel));
+        }
+        if (settings.face != null && settings.face.detectDistance != null) {
+            updateState(UnifiAccessBindingConstants.CHANNEL_DEVICE_FACE_DETECT_DISTANCE,
+                    new StringType(settings.face.detectDistance));
+        }
     }
 
     protected void handleRemoteView(RemoteViewData remoteView) {
@@ -281,17 +312,11 @@ public class UnifiAccessDeviceHandler extends UnifiAccessBaseHandler {
     protected void handleRemoteViewChange(RemoteViewChangeData change) {
         triggerChannel(UnifiAccessBindingConstants.CHANNEL_DEVICE_DOORBELL_TRIGGER, "completed");
         updateState(UnifiAccessBindingConstants.CHANNEL_DEVICE_DOORBELL_CONTACT, OpenClosedType.CLOSED);
-        try {
-            String event = change.reason != null ? change.reason.name() : "UNKNOWN";
-            triggerChannel(UnifiAccessBindingConstants.CHANNEL_DOORBELL_STATUS, event);
-        } catch (Exception ignored) {
-        }
+        String event = change.reason != null ? change.reason.name() : "UNKNOWN";
+        triggerChannel(UnifiAccessBindingConstants.CHANNEL_DOORBELL_STATUS, event);
     }
 
     protected void triggerLogInsight(String payload) {
-        try {
-            triggerChannel(UnifiAccessBindingConstants.CHANNEL_BRIDGE_LOG_INSIGHT, payload);
-        } catch (Exception ignored) {
-        }
+        triggerChannel(UnifiAccessBindingConstants.CHANNEL_BRIDGE_LOG_INSIGHT, payload);
     }
 }

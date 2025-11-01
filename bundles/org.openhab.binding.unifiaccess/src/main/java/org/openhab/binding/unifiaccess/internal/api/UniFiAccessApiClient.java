@@ -339,7 +339,7 @@ public final class UniFiAccessApiClient implements Closeable {
         var wrapped = TypeToken.getParameterized(ApiResponse.class, Object.class).getType();
         ApiResponse<?> ar = gson.fromJson(resp.getContentAsString(), wrapped);
         if (ar == null) {
-            throw new UniFiAccessApiException("Missing or null response data for unlockDoor", null);
+            throw new UniFiAccessApiException("Missing or null response data for unlockDoor");
         }
         return ar.isSuccess();
     }
@@ -355,7 +355,7 @@ public final class UniFiAccessApiClient implements Closeable {
         var wrapped = TypeToken.getParameterized(ApiResponse.class, Object.class).getType();
         ApiResponse<?> ar = gson.fromJson(resp.getContentAsString(), wrapped);
         if (ar == null) {
-            throw new UniFiAccessApiException("Missing or null response data for setDoorLockRule", null);
+            throw new UniFiAccessApiException("Missing or null response data for setDoorLockRule");
         }
         return ar.isSuccess();
     }
@@ -509,10 +509,12 @@ public final class UniFiAccessApiClient implements Closeable {
 
     private void ensure2xx(ContentResponse resp, String action) throws UniFiAccessApiException {
         if (logger.isTraceEnabled()) {
-            if (resp.getMediaType().equals("image/jpeg") || resp.getMediaType().equals("image/png")) {
-                logger.trace("ensure2xx status: {} resp: image data", resp.getStatus());
+            String mediaType = resp.getMediaType();
+            if (mediaType != null && (mediaType.equals("image/jpeg") || mediaType.equals("image/png"))) {
+                logger.trace("ensure2xx status: {} mediaType: {} resp: image data", resp.getStatus(), mediaType);
             } else {
-                logger.trace("ensure2xx status: {} resp: {}", resp.getStatus(), resp.getContentAsString());
+                logger.trace("ensure2xx status: {} mediaType: {} resp: {}", resp.getStatus(), mediaType,
+                        resp.getContentAsString());
             }
         }
         int sc = resp.getStatus();
@@ -530,7 +532,7 @@ public final class UniFiAccessApiClient implements Closeable {
     private <T> T parseMaybeWrapped(String json, Type wrappedType, Type rawType, String action)
             throws UniFiAccessApiException {
         if (json.isBlank()) {
-            throw new UniFiAccessApiException("Failed to parse response for " + action + ": null or blank JSON", null);
+            throw new UniFiAccessApiException("Failed to parse response for " + action + ": null or blank JSON");
         }
         try {
             // Try wrapped first
@@ -544,7 +546,7 @@ public final class UniFiAccessApiClient implements Closeable {
             @Nullable
             T raw = gson.fromJson(json, rawType);
             if (raw == null) {
-                throw new UniFiAccessApiException("Empty Data", null);
+                throw new UniFiAccessApiException("Empty Data");
             }
             return raw;
         } catch (Exception e) {
@@ -561,7 +563,7 @@ public final class UniFiAccessApiClient implements Closeable {
      */
     private <T> T requireData(@Nullable T data, String action) throws UniFiAccessApiException {
         if (data == null) {
-            throw new UniFiAccessApiException("Missing or null response data for " + action, null);
+            throw new UniFiAccessApiException("Missing or null response data for " + action);
         }
         return data;
     }
@@ -692,7 +694,7 @@ public final class UniFiAccessApiClient implements Closeable {
         } catch (Exception ignored) {
         }
 
-        throw new UniFiAccessApiException("Failed to parse list response for " + action + ": unexpected JSON", null);
+        throw new UniFiAccessApiException("Failed to parse list response for " + action + ": unexpected JSON");
     }
 
     private static JsonElement flattenArrayIfNeeded(JsonArray array) {

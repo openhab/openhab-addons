@@ -152,30 +152,30 @@ sitemap home label="Home" {
 rules.when().channel('unifiaccess:door:ua:frontdoor:access-attempt-success').triggered().then( e => {
     const jsonData = JSON.parse(e.payload.event);
     console.log("Door Access Attempt Success: ", jsonData);
-}).build('Unifi Protect Door Access Attempt Success');
+}).build('Unifi Access Door Access Attempt Success');
 
 rules.when().channel('unifiaccess:door:ua:frontdoor:access-attempt-failure').triggered().then( e => {
     const jsonData = JSON.parse(e.payload.event);
     console.log("Door Access Attempt Failure: ", jsonData);
-}).build('Unifi Protect Door Access Attempt Failure');
+}).build('Unifi Access Door Access Attempt Failure');
 
 rules.when().channel('unifiaccess:door:ua:frontdoor:remote-unlock').triggered().then( e => {
     const jsonData = JSON.parse(e.payload.event);
     console.log("Door Remote Unlock: ", jsonData);
-}).build('Unifi Protect Door Remote Unlock');
+}).build('Unifi Access Door Remote Unlock');
 
 rules.when().channel('unifiaccess:door:ua:frontdoor:doorbell-status').triggered().then( e => {
     const data = e.payload.event;
     console.log("Doorbell Status: ", e);
-}).build('Unifi Protect Doorbell Status');
+}).build('Unifi Access Doorbell Status');
 
 rules.when().channel('unifiaccess:bridge:ua:log-insight').triggered().then( e => {
     const jsonData = JSON.parse(e.payload.event);
     console.log("Bridge Log Insight: ", jsonData);
-}).build('Unifi Protect Bridge Log Insight');
+}).build('Unifi Access Bridge Log Insight');
 
 rules.when().channel('unifiaccess:bridge:ua:log').triggered().then( e => {
     const jsonData = JSON.parse(e.payload.event);
     console.log("Bridge Log: ", jsonData);
-}).build('Unifi Protect Bridge Log');
+}).build('Unifi Access Bridge Log');
 ```
