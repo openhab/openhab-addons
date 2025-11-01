@@ -33,7 +33,7 @@ Allowed pairing formats are:
 - https://home.myopenhab.org/onecta
 - https://openhabianpi:8443/onecta 
 
-It is **not** allowed to use localhost (Onecta will not accept this)
+**note:** It is **not** allowed to use localhost (Onecta will not accept this)
 - https://localhost:8443
 
 Once a Onecta account is paired, all supported appliances are automatically discovered as individual things and placed in the inbox. 
@@ -46,8 +46,7 @@ For a detailed walk through the account configuration, see [Account Configuratio
 
 | Name             | Type    | Description                                                    | Default | Required | Advanced |
 |------------------|---------|----------------------------------------------------------------|---------|----------|----------|
-| `refreshInterval`  | integer | Interval the device is polled in sec.                          | 600     | yes      | no       |
-
+| `refreshInterval`| integer | Interval the device is polled in sec.                          | 600     | yes      | no       |
 
 ## Discovered Things Configuration
 
@@ -62,12 +61,10 @@ This can cause items to flip-flop. <br>
 For example: You switch a Unit 'On' with the binding. 
 Daikin will process this command and control the unit, this processing can take 15 seconds. 
 During this time, the binding may have requested a data refresh from OnectaCloud. 
-If this 'On' command has not yet been processed by Daikin, this will result in the OH item returning to 'Off'. 
-After a while, when Daikin has processed it and another data refresh is performed by the binding, the OH item will return to 'On'. <br> 
+If this 'On' command has not yet been processed by Daikin, this will result in the openHab item returning to 'Off'. 
+After a while, when Daikin has processed it and another data refresh is performed by the binding, the openHab item will return to 'On'.
 The Refresh Delay prevents an item from being refreshed (for x seconds) after a command has been issued from this item.
 Other items will be updated during this time with a data refresh.
-
-
 
 ## Full Example
 
@@ -316,7 +313,6 @@ Number:Temperature  HeatExchangerTemp     "Heatexchanger temperature [%.1f °C]"
 Number:Temperature  SuctionTemp           "Suction temperature [%.1f °C]"       <Temperature>  ["Point"] {channel="onecta:indoor-unit:bridge:livingroom:basic#suctiontemp", readOnly="true"}
 ```
 
-
 ## Account Configuration Example
 
 The best way to perform the following steps is in an incognito browser to prevent historical settings and accounts from causing problems.
@@ -340,8 +336,6 @@ Once you obtained your client ID and client secret continue pairing by filling i
 - Localhost is not supported, you have to use the actual hostname of your openHAB installation.
 ![img.png](doc/CloudBindingSettings.png)
 
-  
-
 A click on `Pair Account` will take you to the Daikin cloud service login form where you need to log in with the same account as you used for the Onecta@mobile app.
 
 ![Onecta Login Form](doc/onecta-login.png)
@@ -361,5 +355,3 @@ In the properties of the Onecta account thing, you can also find the available u
 Sometimes you need to Disable and then re-Enable the account thing to see the updated list of units.
 
 ![Account Overview With Bridge](doc/account-overview-with-bridge.png)
-
-
