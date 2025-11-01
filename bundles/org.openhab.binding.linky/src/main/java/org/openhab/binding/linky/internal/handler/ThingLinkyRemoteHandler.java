@@ -590,7 +590,7 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
 
         for (int idx = 0; idx < indexMode.getSize(); idx++) {
             String channelName = channelPrefix + idx;
-            String channelLabel = " Consumption " + idx;
+            String channelLabel = " Consumption " + indexMode.getLabel() + " " + idx;
             Bundle bundle = FrameworkUtil.getBundle(this.getClass());
 
             String channelDesc = translationProvider.getText(bundle, "consumptionindex.description", "", null) + " \""
@@ -781,7 +781,8 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
      * Requests new daily or weekly data and updates the channels.
      */
     private synchronized void updateEnergyIndex() {
-        if (!(getBridge() instanceof BridgeRemoteEnedisWebHandler)) {
+        Bridge lcBridge = getBridge();
+        if (!(lcBridge != null && lcBridge.getHandler() instanceof BridgeRemoteEnedisWebHandler)) {
             return;
         }
         dailyIndex.getValue().ifPresentOrElse(values -> {
