@@ -208,7 +208,7 @@
 	<channel-type id="dvrStatus">
 		<item-type>String</item-type>
 		<label>TiVo Status</label>
-		<description>Action return code / channel information returned by the TiVo. Type: String {ReadOnly)</description>
+		<description>Action return code / channel information returned by the TiVo. Type: String (read-only)</description>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 </thing:thing-descriptions>

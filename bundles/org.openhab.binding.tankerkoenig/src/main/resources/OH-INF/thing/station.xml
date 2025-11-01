@@ -27,19 +27,19 @@
 	<channel-type id="diesel">
 		<item-type>Number</item-type>
 		<label>Diesel</label>
-		<description>price for diesel</description>
+		<description>Price for diesel</description>
 		<state pattern="%.3f €" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="e10">
 		<item-type>Number</item-type>
 		<label>E10</label>
-		<description>price for E10</description>
+		<description>Price for E10</description>
 		<state pattern="%.3f €" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="e5">
 		<item-type>Number</item-type>
 		<label>E5</label>
-		<description>price for E5</description>
+		<description>Price for E5</description>
 		<state pattern="%.3f €" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="station_open">

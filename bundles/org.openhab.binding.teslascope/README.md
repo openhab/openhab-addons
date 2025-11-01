@@ -73,7 +73,7 @@ Additionally, these advanced channels are available (not all are available on al
 | charge-limit-soc-min        | Number:Dimensionless     | Charge Limit SOC Min          | Minimum charging limit of the vehicle, in %                                                              |
 | charge-limit-soc-max        | Number:Dimensionless     | Charge Limit SOC Max          | Maximum charging limit of the vehicle, in %                                                              |
 | charge-limit-soc-standard   | Number:Dimensionless     | Charge Limit SOC Standard     | Standard charging limit of the vehicle, in %                                                             |
-| charge-port-latch           | Switch                   | Charge Port Latch             | Indicate the Charge Port Latch status, (ON/OFF if latched/unlatched)                                     |
+| charge-port-latch           | Switch                   | Charge Port Latch             | Indicates the Charge Port Latch status (ON/OFF if latched/unlatched)                                      |
 | charge-rate                 | Number:Speed             | Charge Rate                   | Distance per hour charging rate                                                                          |
 | charger-power               | Number:Power             | Charger Power                 | Power actually delivered by the charger                                                                  |
 | charger-voltage             | Number:ElectricPotential | Charger Voltage               | Voltage (V) actually presented by the charger                                                            |
