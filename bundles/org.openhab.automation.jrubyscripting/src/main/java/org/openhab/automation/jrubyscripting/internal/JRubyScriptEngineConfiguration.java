@@ -49,6 +49,8 @@ public class JRubyScriptEngineConfiguration {
     public static final Path HOME_PATH = Path.of("automation", "ruby");
     public static final Path HOME_PATH_ABS = Path.of(OpenHAB.getConfigFolder()).resolve(HOME_PATH);
     private static final Path DEFAULT_GEMFILE_PATH = HOME_PATH_ABS.resolve("Gemfile");
+    private static final Path BUNDLE_USER_HOME = Path.of(OpenHAB.getUserDataFolder(), "cache", "automation", "ruby",
+            ".bundle");
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JRubyScriptEngineConfiguration.class);
 
@@ -83,6 +85,18 @@ public class JRubyScriptEngineConfiguration {
 
     private String specificGemHome = "";
     private File bundleGemfile = DEFAULT_GEMFILE_PATH.toFile();
+
+    JRubyScriptEngineConfiguration() {
+        File dir = BUNDLE_USER_HOME.toFile();
+        if (!dir.exists()) {
+            boolean created = dir.mkdirs();
+            if (created) {
+                LOGGER.debug("Created directory for Ruby Bundler user path: {}", dir);
+            } else {
+                LOGGER.warn("Could not create directory for Ruby Bundler user path: {}", dir);
+            }
+        }
+    }
 
     /**
      * Update configuration
@@ -241,7 +255,7 @@ public class JRubyScriptEngineConfiguration {
 
     /**
      * Run bundle install or update.
-     * 
+     *
      * This is to be called at start up or configuration change,
      * so that gems are available when user scripts are run.
      *
@@ -302,7 +316,7 @@ public class JRubyScriptEngineConfiguration {
 
     /**
      * Install a gems in ScriptEngine
-     * 
+     *
      * @param engine Engine to install gems
      */
     synchronized void configureGems(ScriptEngine engine, boolean update) {
@@ -415,6 +429,7 @@ public class JRubyScriptEngineConfiguration {
     public void configureRubyEnvironment(ScriptEngine scriptEngine) {
         setEnvironmentVariable(scriptEngine, "GEM_HOME", getSpecificGemHome());
         setEnvironmentVariable(scriptEngine, "RUBYLIB", configuration.rubylib);
+        setEnvironmentVariable(scriptEngine, "BUNDLE_USER_HOME", BUNDLE_USER_HOME.toString());
         if (bundleGemfile.exists()) {
             setEnvironmentVariable(scriptEngine, "BUNDLE_GEMFILE", bundleGemfile.toString());
         }
