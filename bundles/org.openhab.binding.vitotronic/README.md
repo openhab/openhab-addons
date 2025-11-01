@@ -15,7 +15,7 @@ The adapter itself is not a part of the binding.
 
 ## Supported Things
 
-For easy using are the main things of a heating system are already define in this binding:
+For easy use, the main things of a heating system are already defined in this binding:
 
 - heating (Vitotronic core system)
 - pelletburner (Pellet Fireplace, works for wood also)
@@ -25,7 +25,7 @@ For easy using are the main things of a heating system are already define in thi
 - circuit (Heating circuit controls the flow between the heating system and the radiators in the rooms)
 - solar (Solar water heating (SWH): Convert sunlight into energy for water heating)
 
-For advanced used 3 basic things of a headingsystem define also.
+For advanced use, 3 basic things of a heating system are also defined.
 
 - temperaturesensor (Single temperature sensor)
 - pump (Single pump)
@@ -52,14 +52,14 @@ Binding itself has 4 configuration parameters:
 - refreshInterval (Refresh time for data in seconds. Default: 600 seconds)
 
 If the adapter is automatic discovered the ipAddress, and adapterID will be set by discovery.
-The rereshInterval can be set between 60 and 600 seconds.
+The refreshInterval can be set between 60 and 600 seconds.
 The minimal setting is dependent of the performance of the adapter.
 
 ## Thing Configuration
 
 There is no configuration of Things necessary.
 Only some channels are set active by default.
-If this channels are defined in the adapter and will be used in **openHAB**  it must set active manually.
+If these channels are defined in the adapter and will be used in **openHAB**, they must be set active manually.
 Don't change the Thing Name. It is the reference to the name in the adapter.
 
 ## Channels
@@ -95,7 +95,7 @@ The follow channels are implemented:
 | middle_temp            | Number    | Temperature sensor in the middle of the storage tank  |
 | bottom_temp            | Number    | Temperature sensor at the bottom of the storage tank  |
 | circuitpump            | Switch    | Circuit pump state                                    |
-| flowtemperature        | Number    | Temperature sensor of the ciruit flow                 |
+| flowtemperature        | Number    | Temperature sensor of the circuit flow                |
 | pump                   | Switch    | Pump state                                            |
 | operationmode          | Number    | Operationmode                                         |
 | currentmode            | Number    | Current Mode                                          |
