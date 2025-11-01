@@ -35,7 +35,7 @@ import org.bouncycastle.crypto.InvalidCipherTextException;
 import org.bouncycastle.crypto.params.Ed25519PublicKeyParameters;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.homekit.internal.action.HomekitPairingAction;
+import org.openhab.binding.homekit.internal.action.HomekitPairingActions;
 import org.openhab.binding.homekit.internal.dto.Accessories;
 import org.openhab.binding.homekit.internal.dto.Accessory;
 import org.openhab.binding.homekit.internal.hap_services.CharacteristicReadWriteClient;
@@ -140,8 +140,8 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
             }
             logger.debug("Fetched {} accessories", accessories.size());
             scheduler.submit(this::accessoriesLoaded); // notify subclass in scheduler thread
-        } catch (IOException | InterruptedException | TimeoutException | ExecutionException
-                | IllegalAccessException e) {
+        } catch (IOException | InterruptedException | TimeoutException | ExecutionException | IllegalAccessException
+                | IllegalStateException e) {
             logger.debug("Failed to get accessories", e);
         }
     }
@@ -175,19 +175,8 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
             updateStatus(ThingStatus.REMOVED);
         } else {
             scheduler.submit(() -> {
-                // unpair and clear stored keys if this is NOT a child accessory
-                try {
-                    PairRemoveClient service = new PairRemoveClient(getIpTransport(), keyStore.getControllerUUID());
-                    service.remove();
-                    if (getThing().getProperties().get(Thing.PROPERTY_MAC_ADDRESS) instanceof String mac) {
-                        keyStore.setAccessoryKey(mac, null);
-                    } else {
-                        logger.warn("Could not clear key for '{}' due to missing mac address", thing.getUID());
-                    }
+                if (unpairInner()) {
                     updateStatus(ThingStatus.REMOVED);
-                } catch (IOException | InterruptedException | TimeoutException | ExecutionException
-                        | IllegalAccessException e) {
-                    logger.warn("Failed to remove pairing for '{}'", thing.getUID());
                 }
             });
         }
@@ -247,7 +236,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
                 return; // pairing restore succeeded => exit
             } catch (NoSuchAlgorithmException | NoSuchProviderException | IllegalAccessException
                     | InvalidCipherTextException | IOException | InterruptedException | TimeoutException
-                    | ExecutionException e) {
+                    | ExecutionException | IllegalStateException e) {
                 logger.debug("Restored pairing was not verified for {}", thing.getUID(), e);
                 // pairing restore failed => exit and perhaps try again later
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, i18nProvider.getText(bundle,
@@ -313,13 +302,13 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
      * @throws IllegalAccessException if this is a child accessory or if the transport is not initialized.
      * @return the IpTransport
      */
-    protected IpTransport getIpTransport() throws IllegalAccessException {
+    protected IpTransport getIpTransport() throws IllegalAccessException, IllegalStateException {
         if (isChildAccessory) {
             throw new IllegalAccessException("Child accessories must delegate to bridge IP transport");
         }
         IpTransport ipTransport = this.ipTransport;
         if (ipTransport == null) {
-            throw new IllegalAccessException("IP transport not initialized");
+            throw new IllegalStateException("IP transport not initialized");
         }
         return ipTransport;
     }
@@ -347,7 +336,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
     protected void subscribeEvents() {
         try {
             getIpTransport().subscribe(this);
-        } catch (IllegalAccessException e) {
+        } catch (IllegalAccessException | IllegalStateException e) {
             logger.debug("Failed to subscribe to events '{}", e.getMessage());
         }
     }
@@ -358,7 +347,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
     protected void unsubscribeEvents() {
         try {
             getIpTransport().unsubscribe(this);
-        } catch (IllegalAccessException e) {
+        } catch (IllegalAccessException | IllegalStateException e) {
             logger.debug("Failed to unsubscribe from events '{}", e.getMessage());
         }
     }
@@ -371,7 +360,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
         // only non child accessories require pairing support
-        return thing.getBridgeUID() != null ? Set.of() : Set.of(HomekitPairingAction.class);
+        return thing.getBridgeUID() != null ? Set.of() : Set.of(HomekitPairingActions.class);
     }
 
     private @Nullable String checkedHostName() {
@@ -418,7 +407,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
     }
 
     /**
-     * Pairs the accessory using the provided pairing code.
+     * Thing Action that pairs the accessory using the provided pairing code.
      *
      * @param code the pairing code
      */
@@ -460,11 +449,46 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
             connectionAttemptDelay = MIN_CONNECTION_ATTEMPT_DELAY; // reset delay on manual pairing
             scheduleConnectionAttempt();
         } catch (NoSuchAlgorithmException | IllegalAccessException | InvalidCipherTextException | IOException
-                | InterruptedException | TimeoutException | ExecutionException e) {
+                | InterruptedException | TimeoutException | ExecutionException | IllegalStateException e) {
             logger.warn("Pairing / verification failed '{}' for {}", e.getMessage(), thing.getUID());
             logger.debug("Stack trace", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, i18nProvider.getText(bundle,
                     "error.pairing-verification-failed", "Pairing / Verification failed", null));
+        }
+    }
+
+    /**
+     * Inner method to unpair and clear stored key.
+     */
+    private boolean unpairInner() {
+        if (isChildAccessory) {
+            logger.warn("Cannot unpair child accessory '{}'", thing.getUID());
+            return false;
+        }
+        String macAddress = getThing().getProperties().get(Thing.PROPERTY_MAC_ADDRESS);
+        if (macAddress == null) {
+            logger.warn("Cannot unpair accessory '{}' due to missing mac address property", thing.getUID());
+            return false;
+        }
+        try {
+            PairRemoveClient service = new PairRemoveClient(getIpTransport(), keyStore.getControllerUUID());
+            service.remove();
+            keyStore.setAccessoryKey(macAddress, null);
+            return true;
+        } catch (IOException | InterruptedException | TimeoutException | ExecutionException | IllegalAccessException
+                | IllegalStateException e) {
+            logger.warn("Error '{}' unpairing accessory '{}'", e.getMessage(), thing.getUID());
+            return false;
+        }
+    }
+
+    /**
+     * Thing Action that unpairs the accessory.
+     */
+    public void unpair() {
+        if (unpairInner()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    i18nProvider.getText(bundle, "error.not-paired", "Not paired", null));
         }
     }
 }

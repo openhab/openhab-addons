@@ -30,17 +30,25 @@ import org.slf4j.LoggerFactory;
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
-@Component(scope = ServiceScope.PROTOTYPE, service = HomekitPairingAction.class)
+@Component(scope = ServiceScope.PROTOTYPE, service = HomekitPairingActions.class)
 @ThingActionsScope(name = "homekit-pairing")
 @NonNullByDefault
-public class HomekitPairingAction implements ThingActions {
+public class HomekitPairingActions implements ThingActions {
 
-    private final Logger logger = LoggerFactory.getLogger(HomekitPairingAction.class);
+    private final Logger logger = LoggerFactory.getLogger(HomekitPairingActions.class);
     private @Nullable HomekitBaseAccessoryHandler handler;
 
     public static void pair(ThingActions actions, String code) {
-        if (actions instanceof HomekitPairingAction accessoryActions) {
+        if (actions instanceof HomekitPairingActions accessoryActions) {
             accessoryActions.pair(code);
+        } else {
+            throw new IllegalArgumentException("The 'actions' argument is not an instance of HomekitAccessoryActions");
+        }
+    }
+
+    public static void unpair(ThingActions actions) {
+        if (actions instanceof HomekitPairingActions accessoryActions) {
+            accessoryActions.unpair();
         } else {
             throw new IllegalArgumentException("The 'actions' argument is not an instance of HomekitAccessoryActions");
         }
@@ -62,6 +70,16 @@ public class HomekitPairingAction implements ThingActions {
         HomekitBaseAccessoryHandler handler = this.handler;
         if (handler != null) {
             handler.pair(code);
+        } else {
+            logger.warn("ThingHandler is null.");
+        }
+    }
+
+    @RuleAction(label = "@text/actions.unpairing-action.label", description = "@text/actions.unpairing-action.description")
+    public void unpair() {
+        HomekitBaseAccessoryHandler handler = this.handler;
+        if (handler != null) {
+            handler.unpair();
         } else {
             logger.warn("ThingHandler is null.");
         }
