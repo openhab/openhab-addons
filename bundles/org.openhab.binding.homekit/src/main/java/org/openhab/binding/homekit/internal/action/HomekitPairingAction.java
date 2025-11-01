@@ -56,7 +56,7 @@ public class HomekitPairingAction implements ThingActions {
         this.handler = handler instanceof HomekitBaseAccessoryHandler accessoryHandler ? accessoryHandler : null;
     }
 
-    @RuleAction(label = "@text/actions.pairing-code.label", description = "@text/actions.pairing-code.description")
+    @RuleAction(label = "@text/actions.pairing-action.label", description = "@text/actions.pairing-action.description")
     public void pair(
             @ActionInput(name = "code", label = "@text/actions.pairing-code.label", description = "@text/actions.pairing-code.description") String code) {
         HomekitBaseAccessoryHandler handler = this.handler;
