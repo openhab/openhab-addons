@@ -44,13 +44,11 @@ It only needs to be changed from the default value of `5` seconds when the remot
 
 ### `fritzbox`
 
-The `fritzbox` devices can give additional information in dedicated channels, controlled
- by additional parameters (visible if Show Advanced is selected), w.r.t. to `generic` devices.
+The `fritzbox` devices can give additional information in dedicated channels, controlled by additional parameters (visible if Show Advanced is selected), with respect to `generic` devices.
 If the parameters are specified, the corresponding channels will be added to the device.
 
 One or more TAM (telephone answering machines) are supported by most fritzbox devices.
-By setting the `tamIndices` parameter you can instruct the binding to add channels for these
- devices to the thing.
+By setting the `tamIndices` parameter you can instruct the binding to add channels for these devices to the thing.
 Values start with `0`.
 This is an optional parameter and multiple values are allowed: add one value per line in the Main User Interface.
 
@@ -60,9 +58,8 @@ Values start with `0`, including the number of "Call Blocks" (two configured cal
 This is an optional parameter and multiple values are allowed:  add one value per line in the Main User Interface.
 
 Most devices support call lists.
-The binding can retrieve these call lists and provide channels for the number of missed calls, inbound calls, outbound calls and rejected (blocked) calls,
-for a given number of days. A channel is added to the Thing if such a number is set through the corresponding parameter
-in the Main User Interface.
+The binding can retrieve these call lists and provide channels for the number of missed calls, inbound calls, outbound calls and rejected (blocked) calls, for a given number of days.
+A channel is added to the Thing if such a number is set through the corresponding parameter in the Main User Interface.
 The parameters are: `missedCallDays`, `rejectedCallDays`, `inboundCallDays`, `outboundCallDays` and `callListDays`.
 
 Since FritzOS! 7.20 WAN access of local devices can be controlled by their IPs.
@@ -91,13 +88,13 @@ If no password is given, the user password (parameter `password`) is used.
 
 Additional information (i.e. channels) is available in subdevices of the bridge.
 Each subdevice is characterized by a unique `uuid` parameter: this is the UUID/UDN of the device.
-This is a mandatory parameter to be set in order to add the subdevice. Since the parameter value can only be determined
-by examining the SCPD of the root device, the simplest way to obtain it is through auto-discovery.
+This is a mandatory parameter to be set in order to add the subdevice.
+Since the parameter value can only be determined by examining the SCPD of the root device, the simplest way to obtain it is through auto-discovery.
 
 Auto discovery may find several sub-devices, each one holding channels as described in the following.
 
 The LAN sub-device, in particular, is also used for presence detection.
-It therefore optionally contains a channel for each MAC address (in a format 11:11:11:11:11:11, different than the old v1 version of this binding), defined by the parameter `macOnline`.
+It therefore optionally contains a channel for each MAC address (in a format 11:11:11:11:11:11, different from the old v1 version of this binding), defined by the parameter `macOnline`.
 
 ## Channels
 
@@ -136,17 +133,17 @@ The call-types are the same as provided by the FritzBox, i.e. `1` (inbound), `2`
 | `wifiXEnable`        | `Switch`                  |          | Enable/Disable the WiFi X. See below for details.                                                            |
 | `macOnline`          | `Switch`                  |    x     | Online status of the device with the given MAC                                                               |
 | `macOnlineIpAddress` | `String`                  |    x     | IP of the MAC (uses same parameter as `macOnline`)                                                           |
-| `macSignalStrength1` | `Number`                  |    x     | Wifi Signal Strength of the device with the given MAC. This is set in case the Device is connected to 2.4Ghz |
-| `macSpeed1`          | `Number:DataTransferRate` |    x     | Wifi Speed of the device with the given MAC. This is set in case the Device is connected to 2.4Ghz           |
-| `macSignalStrength2` | `Number`                  |    x     | Wifi Signal Strength of the device with the given MAC. This is set in case the Device is connected to 5Ghz   |
-| `macSpeed2`          | `Number:DataTransferRate` |    x     | Wifi Speed of the device with the given MAC. This is set in case the Device is connected to 5Ghz             |
+| `macSignalStrength1` | `Number`                  |    x     | WiFi Signal Strength of the device with the given MAC. This is set in case the Device is connected to 2.4GHz |
+| `macSpeed1`          | `Number:DataTransferRate` |    x     | WiFi Speed of the device with the given MAC. This is set in case the Device is connected to 2.4GHz           |
+| `macSignalStrength2` | `Number`                  |    x     | WiFi Signal Strength of the device with the given MAC. This is set in case the Device is connected to 5GHz   |
+| `macSpeed2`          | `Number:DataTransferRate` |    x     | WiFi Speed of the device with the given MAC. This is set in case the Device is connected to 5GHz             |
 
-_Note:_ The `wifi24GHzEnable`, `wifi5GHzEnable` and `wifiGuestEnable`channels have been deprecated and will be removed in future versions.
+_Note:_ The `wifi24GHzEnable`, `wifi5GHzEnable` and `wifiGuestEnable` channels have been deprecated and will be removed in future versions.
 They are replaced by `wifiXEnable` (with `X` being a number between `1` and `4`).
 
-- FritzBoxes which do not support 5 GHz use `wifi1Enable` for the standard WiFi and `wifi2Enable`for the guest WiFi.
-- FritzBoxes which support 5 GHz use `wifi1Enable` for the 2.5 GHz WiFi, `wifi2Enable` for the 5 GHz WiFi and `wifi3Enable` for the guest WiFi.
-- FritzBoxes which support two 5 GHz networks use `wifi1Enable` for the 2.5 GHz WiFi, `wifi2Enable` and `wifi3Enable` for the 5 GHz WiFis and `wifi4Enable` for the guest WiFi.
+- FritzBoxes which do not support 5 GHz use `wifi1Enable` for the standard WiFi and `wifi2Enable` for the guest WiFi.
+- FritzBoxes which support 5 GHz use `wifi1Enable` for the 2.4 GHz WiFi, `wifi2Enable` for the 5 GHz WiFi and `wifi3Enable` for the guest WiFi.
+- FritzBoxes which support two 5 GHz networks use `wifi1Enable` for the 2.4 GHz WiFi, `wifi2Enable` and `wifi3Enable` for the 5 GHz WiFis and `wifi4Enable` for the guest WiFi.
 
 ### WANConnection `subdevice` channels
 
@@ -230,12 +227,12 @@ val result = tr064Actions.phonebookLookup("49157712341234", 5)
 The `fritzbox` things can create configuration backups of the Fritz!Box.
 
 The default configuration of the Fritz!Boxes requires 2-factor-authentication for creating backups.
-If you see a `Failed to get configuration backup URL: HTTP-Response-Code 500 (Internal Server Error), SOAP-Fault: 866 (second factor authentication required)` warning, you need to disable 2-actor authentication.
+If you see a `Failed to get configuration backup URL: HTTP-Response-Code 500 (Internal Server Error), SOAP-Fault: 866 (second factor authentication required)` warning, you need to disable 2-factor authentication.
 But beware: depending on your configuration this might be a security issue.
 The setting can be found under "System -> FRITZ!Box Users -> Login to the Home Network -> Confirm".
 
 When executed, the action requests a backup file with the given password in the configured path.
-The backup file is names as `ThingFriendlyName dd.mm.yyyy HHMM.export` (e.g. `My FritzBox 18.06.2021 1720.export`).
+The backup file is named as `ThingFriendlyName dd.mm.yyyy HHMM.export` (e.g. `My FritzBox 18.06.2021 1720.export`).
 Files with the same name will be overwritten, so make sure that you trigger the rules at different times if your devices have the same friendly name.
 
 ```java
@@ -245,14 +242,11 @@ tr064Actions.createConfigurationBackup()
 
 ## A note on textual configuration
 
-Textual configuration through a `.things` file is possible but, at present, strongly discouraged because it is significantly more error-prone
-than the configuration through Main User Interface.
+Textual configuration through a `.things` file is possible but, at present, strongly discouraged because it is significantly more error-prone than the configuration through Main User Interface.
 
-If an advanced user is really motivated to define a textual configuration, it is suggested to perform
-an automatic scan through the user interface first in order to extract the required parameters (namely the different `uuid` of the
-needed subdevices).
+If an advanced user is really motivated to define a textual configuration, it is suggested to perform an automatic scan through the user interface first in order to extract the required parameters (namely the different `uuid` of the needed subdevices).
 
-The definition of the bridge and of the subdevices things is the following
+The definition of the bridge and of the subdevices things is the following:
 
 ```java
 Bridge tr064:fritzbox:rootuid "Root label" @ "location" [ host="192.168.1.1", user="user", password="passwd",
@@ -265,14 +259,14 @@ Bridge tr064:fritzbox:rootuid "Root label" @ "location" [ host="192.168.1.1", us
     }
 ```
 
-The channel are automatically generated and it is simpler to use the Main User Interface to copy the textual definition of the channel
+The channels are automatically generated and it is simpler to use the Main User Interface to copy the textual definition of the channel:
 
 ```java
 Switch PresXX "[%s]" {channel="tr064:subdeviceLan:rootuid:LAN:macOnline_XX_3AXX_3AXX_3AXX_3AXX_3AXX"}
 Switch PresYY "[%s]" {channel="tr064:subdeviceLan:rootuid:LAN:macOnline_YY_3AYY_3AYY_3AYY_3AYY_3AYY"}
 ```
 
-Example `*.items` file using the `PHONEBOOK` profile for storing the name of a caller in an item. it matches 8 digits from the right of the "from" number (note the escaping of `:` to `_3A`):
+Example `*.items` file using the `PHONEBOOK` profile for storing the name of a caller in an item. It matches 8 digits from the right of the "from" number (note the escaping of `:` to `_3A`):
 
 ```java
 Call IncomingCallResolved "Caller name: [%s]" { channel="avmfritz:fritzbox:fritzbox:incoming_call" [profile="transform:PHONEBOOK", phonebook="tr064_3Afritzbox_3AfritzboxTR064", phoneNumberIndex="1", matchCount="8"] }
