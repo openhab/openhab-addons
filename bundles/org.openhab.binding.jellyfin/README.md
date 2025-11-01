@@ -34,10 +34,10 @@ Once a Jellyfin server bridge has been added, clients will be detected automatic
 
 ## Authentication
 
-To allow the server thing to go online, you must provide valid credentials (`userId` and `token`) for the user that the biding will use to interact with the server.
+To allow the server thing to go online, you must provide a valid access token for the user that the binding will use to interact with the server.
 Please note that the user should be allowed on the Jellyfin server to remote control devices.
 
-In order to assist you with this process the binding expose a simple login form you can access on `<local openHAB server url>/jellyfin/<server thing id>` (example `http://127.0.0.1:8080/jellyfin/2846b8fb60ad444f9ebd085335e3f6bf`).
+In order to assist you with this process the binding exposes a simple login form you can access on `<local openHAB server url>/jellyfin/<server thing id>` (example `http://127.0.0.1:8080/jellyfin/2846b8fb60ad444f9ebd085335e3f6bf`).
 
 ## Server Thing Configuration
 
@@ -49,7 +49,6 @@ In order to assist you with this process the binding expose a simple login form 
 | path                      | Text    | Base path of the server                                                                     |
 | refreshSeconds            | Integer | Interval to pull devices state from the server                                              |
 | clientActiveWithInSeconds | Integer | Amount of seconds allowed since the last client activity to assert it's online (0 disabled) |
-| userId                    | Text    | The user id                                                                                 |
 | token                     | Text    | The user access token                                                                       |
 
 ## Channels

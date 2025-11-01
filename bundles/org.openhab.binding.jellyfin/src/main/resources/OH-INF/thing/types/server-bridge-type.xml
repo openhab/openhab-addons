@@ -37,10 +37,6 @@
 				<description>Amount off seconds allowed since the last client activity to assert it's online (0 disabled)</description>
 				<default>0</default>
 			</parameter>
-			<parameter name="userId" type="text">
-				<label>User ID</label>
-				<description>The user id</description>
-			</parameter>
 			<parameter name="token" type="text">
 				<label>Access Token</label>
 				<description>The user access token</description>

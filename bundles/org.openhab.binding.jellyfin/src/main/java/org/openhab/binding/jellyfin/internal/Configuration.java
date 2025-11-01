@@ -55,7 +55,11 @@ public class Configuration {
     public String token = "";
     /**
      * User ID
+     * 
+     * @deprecated This parameter is no longer used by the binding and is only kept for backward compatibility.
+     *             Existing configurations with this parameter will continue to work, but the value is ignored.
      */
+    @Deprecated
     public String userId = "";
 
     /**
