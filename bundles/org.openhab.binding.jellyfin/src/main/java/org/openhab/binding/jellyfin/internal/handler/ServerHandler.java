@@ -35,6 +35,8 @@ import org.openhab.binding.jellyfin.internal.types.ServerState;
 import org.openhab.binding.jellyfin.internal.util.ClientListUpdater;
 import org.openhab.binding.jellyfin.internal.util.ConfigurationManager;
 import org.openhab.binding.jellyfin.internal.util.ServerStateManager;
+import org.openhab.binding.jellyfin.internal.util.SystemInfoConfigurationExtractor;
+import org.openhab.binding.jellyfin.internal.util.UriConfigurationExtractor;
 import org.openhab.binding.jellyfin.internal.util.UserManager;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -321,16 +323,19 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
      */
     private void updateConfiguration(URI uri) {
         try {
-            var configUpdate = configurationManager.analyzeUriConfiguration(uri, this.configuration);
+            var configUpdate = configurationManager.analyze(new UriConfigurationExtractor(), uri, this.configuration);
 
             if (configUpdate.hasChanges()) {
                 // Apply changes to the current configuration object
-                configurationManager.applyConfigurationChanges(this.configuration, configUpdate.configMap());
+                configUpdate.applyTo(this.configuration);
 
                 logger.info("Configuration changed, updating Thing configuration");
 
                 org.openhab.core.config.core.Configuration config = editConfiguration();
-                configUpdate.configMap().forEach(config::put);
+                config.put("hostname", configUpdate.hostname());
+                config.put("port", configUpdate.port());
+                config.put("ssl", configUpdate.ssl());
+                config.put("path", configUpdate.path());
                 updateConfiguration(config);
             } else {
                 logger.debug("No configuration changes needed");
@@ -345,16 +350,20 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
 
     private void updateConfiguration(SystemInfo systemInfo) {
         try {
-            var configUpdate = configurationManager.analyzeSystemInfoConfiguration(systemInfo, this.configuration);
+            var configUpdate = configurationManager.analyze(new SystemInfoConfigurationExtractor(), systemInfo,
+                    this.configuration);
 
             if (configUpdate.hasChanges()) {
                 // Apply changes to the current configuration object
-                configurationManager.applyConfigurationChanges(this.configuration, configUpdate.configMap());
+                configUpdate.applyTo(this.configuration);
 
                 logger.info("Configuration updated from SystemInfo");
 
                 org.openhab.core.config.core.Configuration config = editConfiguration();
-                configUpdate.configMap().forEach(config::put);
+                config.put("hostname", configUpdate.hostname());
+                config.put("port", configUpdate.port());
+                config.put("ssl", configUpdate.ssl());
+                config.put("path", configUpdate.path());
                 updateConfiguration(config);
             }
         } catch (Exception e) {
