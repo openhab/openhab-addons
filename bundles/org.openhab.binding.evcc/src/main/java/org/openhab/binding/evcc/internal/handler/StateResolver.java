@@ -61,13 +61,19 @@ public final class StateResolver {
         }
         JsonPrimitive prim = value.getAsJsonPrimitive();
         if (prim.isNumber()) {
-            double raw = prim.getAsDouble();
+            String lowerKey = key.toLowerCase();
+            Number raw = prim.getAsNumber();
             Unit<?> base = determineBaseUnitFromKey(key);
-            if (key.contains("Odometer") || key.contains("Range") || key.contains("Capacity")
-                    || key.contains("limitEnergy")) {
-                return new QuantityType<>(raw, MetricPrefix.KILO(base));
-            } else if (key.contains("Price") || key.contains("Tariff") || key.contains("tariff")) {
+            if (lowerKey.contains("price") || key.contains("tariff")) {
                 return new DecimalType(raw);
+            } else if (raw.toString().contains(".")) {
+                if ("energy".equals(lowerKey) || "gridenergy".equals(lowerKey) || "chargedenergy".equals(lowerKey)
+                        || "pvenergy".equals(lowerKey) || "chargedkwh".equals(lowerKey) || lowerKey.contains("import")
+                        || lowerKey.contains("capacity")) {
+                    return new QuantityType<>(raw, MetricPrefix.KILO(base));
+                }
+            } else if (lowerKey.contains("capacity") || lowerKey.contains("odometer") || lowerKey.contains("range")) {
+                return new QuantityType<>(raw, MetricPrefix.KILO(base));
             }
             return new QuantityType<>(raw, base);
         } else if (prim.isString()) {
