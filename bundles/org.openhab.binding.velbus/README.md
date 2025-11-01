@@ -61,7 +61,7 @@ xidel -e \
 | vmb6in        | 6-channel input module                                                                     |
 | vmb6pb-20     | 6-button interface module                                                                  |
 | vmb6pbn       | Push-button interface module for Niko 4- or 6-fold push-button                             |
-| vmb7in        | 7-channel input module (potentialfree + pulse)                                             |
+| vmb7in        | 7-channel input module (potential-free + pulse)                                             |
 | vmb8dc-20     | 8-channel 0 to 10 V dimmer control module                                                  |
 | vmb8ir        | Infrared remote control receiver module                                                    |
 | vmb8pb        | 8-Channel Push Button module                                                               |
@@ -78,8 +78,8 @@ xidel -e \
 | vmbel4pir-20  | Edge-lit Motion detector with four touch buttons                                           |
 | vmbel4-20     | Edge-lit four touch buttons module                                                         |
 | vmbel4        | Edge-lit four touch buttons module                                                         |
-| vmbelo-20     | Edge-lit touch panel with Oled display                                                     |
-| vmbelo        | Edge-lit touch panel with Oled display                                                     |
+| vmbelo-20     | Edge-lit touch panel with OLED display                                                     |
+| vmbelo        | Edge-lit touch panel with OLED display                                                     |
 | vmbelpir      | Edge-lit Motion detector with one touch button                                             |
 | vmbgp1-20     | Glass control module with 1 touch key                                                      |
 | vmbgp1-2      | Glass control module with 1 touch key (Edition 2)                                          |
@@ -93,11 +93,11 @@ xidel -e \
 | vmbgp4pir-20  | Glass control module with 4 touch keys and built-in motion and twilight sensor             |
 | vmbgp4pir-2   | Glass control module with 4 touch keys and built-in motion and twilight sensor (Edition 2) |
 | vmbgp4pir     | Glass control module with 4 touch keys and built-in motion and twilight sensor             |
-| vmbgpod-2     | Glass control module with oled display and temperature controller (Edition 2)              |
-| vmbgpod       | Glass control module with oled display and temperature controller                          |
-| vmbgpo-20     | Glass control module with oled display and temperature controller                          |
-| vmbgpo        | Glass control module with oled display                                                     |
-| vmbgptc       | Glass control module with oled display                                                     |
+| vmbgpod-2     | Glass control module with OLED display and temperature controller (Edition 2)              |
+| vmbgpod       | Glass control module with OLED display and temperature controller                          |
+| vmbgpo-20     | Glass control module with OLED display and temperature controller                          |
+| vmbgpo        | Glass control module with OLED display                                                     |
+| vmbgptc       | Glass control module with OLED display                                                     |
 | vmbin         | 1-channel input module                                                                     |
 | vmbkp         | Keypad interface module                                                                    |
 | vmbmeteo      | Weather station with thermometer, anemometer, rain sensor and light sensor                 |
@@ -133,7 +133,7 @@ The Velbus bridge needs to be added first.
 
 For the Velbus Serial Bridge it is necessary to specify the serial port device used for communication.
 
-On Linux and other UNIX systems, it is recommended to use a more stable symbolic device path such as `/dev/serial/by-id/usb-Velleman_Projects_VMB1USB_Velbus_USB_interface-if00`, as it will always refer at to a Velbus configuration module, and not an arbitrary serial device.
+On Linux and other UNIX systems, it is recommended to use a more stable symbolic device path such as `/dev/serial/by-id/usb-Velleman_Projects_VMB1USB_Velbus_USB_interface-if00`, as it will always refer to a Velbus configuration module, and not an arbitrary serial device.
 If this is not a concern or an option, it is valid to refer to the serial device directly with a path such as `/dev/ttyS0`, `/dev/ttyUSB0` or `/dev/ttyACM0` (or a number other than `0` if multiple serial devices are connected.)
 
 On Windows `port` will refer to one of the COM devices such as `COM1`, `COM2`, etc.
@@ -157,9 +157,9 @@ In a `.things` file, a network bridge running on the same machine at port 6000 w
 Bridge velbus:networkbridge:1 "Velbus Network Bridge - Loopback" @ "Control" [ address="localhost", port=6000 ]
 ```
 
-### Realtime Clock Synchronization
+### Real-time Clock Synchronization
 
-Optionally, the openHAB Velbus binding can synchronize the realtime clock, date and daylight savings status of the Velbus modules.
+Optionally, the openHAB Velbus binding can synchronize the real-time clock, date and daylight saving status of the Velbus modules.
 This is achieved by setting the Time Update Interval (in minutes) on the bridge thing. For example:
 
 ```java
@@ -206,7 +206,7 @@ Discovered modules can be found in the inbox.
   - `@ "Location"` is an optional specification of the location of the thing;
   - The `CHx="..."` properties are optional and can be used to specify names of the module channels.
 
-Individual module `Thing`’s channels can be linked to openHAB items via channel names like `velbus:vmb4ryld:1:0A:CH1`. Here, from left to right, the channel name consistes of the binding name, module type (`<thingType> = vmb4ryld`), bridge id (`1`), module’s hexadecimal address (`<thingId> = 0A`) and channel within the module (`CH1`).
+Individual module `Thing`’s channels can be linked to openHAB items via channel names like `velbus:vmb4ryld:1:0A:CH1`. Here, from left to right, the channel name consists of the binding name, module type (`<thingType> = vmb4ryld`), bridge id (`1`), module’s hexadecimal address (`<thingId> = 0A`), and channel within the module (`CH1`).
 
 #### Additional properties
 

@@ -50,9 +50,9 @@ The binding will automatically discover Velux Bridges within the local network, 
 Once a Velux Bridge has been discovered, you will need to enter the `password` Configuration Parameter (see below) before the binding can communicate with it.
 And once the Velux Bridge is fully configured, you need to check your Inbox for discovered scenes and actuators.
 If nothing shows up you need to trigger discovering scenes and actuators (like windows and rollershutters) of the Velux Bridge.
-For this log into the openHAB webfront go to Settings -> Things and click on the + symbol in the lower right.
+In the Main UI, go to Settings → Things and click the + (Add) button in the lower right.
 Then select the Velux Binding and click Scan.
-After the scan has completed the scences and actuators configured in the KLF 200 are placed in the Inbox.
+After the scan has completed the scenes and actuators configured in the KLF 200 are placed in the Inbox.
 
 ## Thing Configuration
 
@@ -248,14 +248,14 @@ The bridge Thing provides the following properties.
 |-------------------|-----------------------------------------------------------------|
 | address           | IP address of the Bridge                                        |
 | check             | Result of the check of current item configuration               |
-| connectionAttempt | Date-Time of last connection attampt                            |
-| connectionSuccess | Date-Time of last successful connection attampt                 |
+| connectionAttempt | Date-Time of last connection attempt                            |
+| connectionSuccess | Date-Time of last successful connection attempt                 |
 | defaultGW         | IP address of the Default Gateway of the Bridge                 |
 | DHCP              | Flag whether automatic IP configuration is enabled              |
 | firmware          | Software version of the Bridge                                  |
 | products          | List of all recognized products                                 |
 | scenes            | List of all defined scenes                                      |
-| subnetMask        | IP subnetmask of the Bridge                                     |
+| subnetMask        | IP subnet mask of the Bridge                                    |
 | vendor            | Vendor name                                                     |
 | WLANSSID          | Name of the wireless network (not supported any more)           |
 | WLANPassword      | WLAN Authentication Password (not supported any more)           |

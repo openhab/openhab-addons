@@ -1,25 +1,26 @@
 # ValloxMV Binding
 
-This binding is designed to connect to the web interface of Vallox MV series of ventilation unit.
-It has been tested so far only with Vallox 350 MV and 510 MV.
+This binding connects to the web interface of the Vallox MV series of ventilation units.
+It has been tested so far with Vallox 350 MV and 510 MV.
 
 ## Supported Things
 
-There is one thing (valloxmv) supporting the connection via the web interface of the Vallox MV. There is NO support of former modbus connected devices.
+There is one thing type (`valloxmv`) supporting the connection via the web interface of the Vallox MV.
+There is no support for earlier Modbus-connected devices.
 
 ## Discovery
 
-This binding does not support any discovery, IP address has to be provided.
+This binding does not support discovery; you must provide the IP address.
 
 ## Thing Configuration
 
-The Thing needs the information at which IP the web interface could be reached and how often the values should be updated.
-Minimum update interval is limited to 15 sec in order to avoid polling again before results have been evaluated.
+The thing needs the IP/hostname of the web interface and how often values should be updated.
+The minimum update interval is 15 seconds to avoid polling again before results have been evaluated.
 
 | Config                | Description                                           | Type  | Default |
 | :-------------------- |:------------------------------------------------------|:-----:|:-------:|
-| ip                    | IP address of web interface                           |string | n/a     |
-| updateinterval        | Interval in seconds in which the interface is polled  |int    | 60      |
+| ip                    | IP/hostname of the web interface                       |string | n/a     |
+| updateinterval        | Poll interval in seconds (min. 15)                    |int    | 60      |
 
 ## Channels
 
@@ -27,7 +28,7 @@ Overview of provided channels
 
 | Channel ID                | Vallox Name                 | Description                       | Read/Write | Values               |
 | :------------------------- | :--------------------------- |:-----------------------------------|:-:|:----------------------:|
-| onoff                     | A_CYC_MODE                  | On off switch                     |rw| On/Off               |
+| onoff                     | A_CYC_MODE                  | On/off switch                     |rw| On/Off               |
 | state                     | _several_                     | Current state of ventilation unit |rw| 1=FIREPLACE, 2=AWAY, 3=ATHOME, 4=BOOST    |
 | fanspeed                  | A_CYC_FAN_SPEED             | Fan speed                         |r | 0 - 100 (%)          |
 | fanspeedextract           | A_CYC_EXTR_FAN_SPEED        | Fan speed of extracting fan       |r | 1/min                |
@@ -64,6 +65,8 @@ Overview of provided channels
 | extratime                 | A_CYC_EXTRA_TIME            | Timer value in extra profile      |rw| 1 - 65535 (min)      |
 | extratimerenabled         | A_CYC_EXTRA_TIMER_ENABLED   | Timer enabled setting in extra profile |rw| On/Off               |
 | weeklytimerenabled        | A_CYC_WEEKLY_TIMER_ENABLED  | Weekly timer enabled setting      |rw| On/Off               |
+
+Note: If your unit is equipped with a CO₂ sensor, an additional read-only channel `co2` (Number:Dimensionless, in ppm) is available.
 
 ## Example
 

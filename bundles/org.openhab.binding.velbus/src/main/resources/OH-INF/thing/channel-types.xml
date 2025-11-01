@@ -265,7 +265,7 @@
 		<item-type>Number</item-type>
 		<label>Scene</label>
 		<description>Scene options for DALI network</description>
-		<state readOnly="false" min="0" max="15" step="1">
+		<state readOnly="false" min="1" max="15" step="1">
 		</state>
 	</channel-type>
 
