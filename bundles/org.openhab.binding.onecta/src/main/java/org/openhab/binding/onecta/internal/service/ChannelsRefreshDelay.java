@@ -16,8 +16,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.openhab.core.thing.Thing;
-
 /**
  *
  * This class is responsible for providing a delay of data refresh after an update has been sent to Onecta.
@@ -49,9 +47,7 @@ public class ChannelsRefreshDelay {
 
     private List<ChannelDelay> channelRefreshDelay = new ArrayList<>();
 
-    private String channel;
     private long delay;
-    private Thing thing;
 
     public ChannelsRefreshDelay(Long delay) {
         this.delay = delay;

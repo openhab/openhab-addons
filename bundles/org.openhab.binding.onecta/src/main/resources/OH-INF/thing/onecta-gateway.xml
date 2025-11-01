@@ -9,9 +9,9 @@
 			<bridge-type-ref id="account"/>
 		</supported-bridge-type-refs>
 
-		<label>Daikin Onecta Gateway</label>
+		<label>Gateway</label>
 		<description>Daikin Onecta Gateway</description>
-
+        <semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="basic" typeId="basic-group-gateway"/>
 		</channel-groups>

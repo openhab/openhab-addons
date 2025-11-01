@@ -9,8 +9,9 @@
 			<bridge-type-ref id="account"/>
 		</supported-bridge-type-refs>
 
-		<label>Diakin Onecta device climateControl</label>
-		<description>Diakin Onecta device climateControl</description>
+		<label>Device climateControl</label>
+		<description>Daikin Onecta device climateControl</description>
+        <semantic-equipment-tag>AirConditioner</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="basic" typeId="basic-group"/>

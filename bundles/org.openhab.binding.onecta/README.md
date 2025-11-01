@@ -29,7 +29,7 @@ This is fine and you can safely continue.
 It is NOT possible to use an unsecured connection (http://) for pairing.<br>
 Allowed pairing formats are:
 - https://<your-domain>/onecta
-- https://<your-local-ip>:<your-port>/onecta (standaard port 8443)
+- https://<your-local-ip>:<your-port>/onecta (standard port 8443)
 - https://home.myopenhab.org/onecta
 - https://openhabianpi:8443/onecta 
 

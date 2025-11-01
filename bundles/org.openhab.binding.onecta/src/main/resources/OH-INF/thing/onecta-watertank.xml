@@ -9,8 +9,9 @@
 			<bridge-type-ref id="account"/>
 		</supported-bridge-type-refs>
 
-		<label>Daikin Onecta Domestic HotWater Tank</label>
+		<label>Domestic Hot Water Tank</label>
 		<description>Daikin Onecta Domestic HotWater Tank</description>
+        <semantic-equipment-tag>Boiler</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="basic" typeId="basic-group-watertank"/>

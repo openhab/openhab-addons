@@ -14,7 +14,6 @@ package org.openhab.binding.onecta.internal.type;
 
 import java.time.ZonedDateTime;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.onecta.internal.api.Enums;
 import org.openhab.core.library.types.DateTimeType;
@@ -33,7 +32,6 @@ import com.google.gson.JsonObject;
  * @author Alexander Drent - Initial contribution
  *
  */
-@NonNullByDefault
 public class TypeHandler {
 
     public static State stringType(@Nullable String value) {

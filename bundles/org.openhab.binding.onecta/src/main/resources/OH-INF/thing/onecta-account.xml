@@ -6,7 +6,7 @@
 
 	<bridge-type id="account">
 		<label>Account</label>
-		<description>This is the account for which your device(s) are registered at Diakin Onecta.</description>
+		<description>This is the account for which your device(s) are registered at Daikin Onecta.</description>
 
 		<config-description>
 			<parameter name="refreshInterval" type="integer" unit="s" min="5">
