@@ -30,7 +30,7 @@ The refresh interval and number of channels can be overridden from the default.
 
 ## Channels
 
-The number of channels depends of on the `numChannels` configuration parameter.
+The number of channels depends on the `numChannels` configuration parameter.
 Channels above the number specified are automatically removed.
 Therefore `numChannels` cannot be changed upward after Thing creation.
 If the number of channels must be increased, delete the Thing and re-create it with the correct number.

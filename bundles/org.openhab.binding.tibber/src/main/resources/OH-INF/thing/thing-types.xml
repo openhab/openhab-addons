@@ -25,12 +25,12 @@
 				<description>Tibber Personal Token</description>
 			</parameter>
 			<parameter name="homeid" type="text" required="true">
-				<label>HomeID</label>
+				<label>Home ID</label>
 				<description>Tibber Home ID</description>
 			</parameter>
-			<parameter name="updateHour" type="integer">
+			<parameter name="updateHour" type="integer" min="0" max="23">
 				<label>Spot Price Update Hour</label>
-				<description>Your local time hour when spot prices are updated</description>
+				<description>Local hour when spot prices are updated</description>
 				<default>13</default>
 			</parameter>
 		</config-description>
