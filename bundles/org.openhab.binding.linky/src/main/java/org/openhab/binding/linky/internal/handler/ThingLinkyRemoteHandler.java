@@ -580,6 +580,12 @@ public class ThingLinkyRemoteHandler extends ThingBaseRemoteHandler {
      * @param indexMode indicates whether this is Supplier or Distributor index mode
      */
     private void addDynamicChannelByIdx(List<Channel> channels, ChannelTypeUID chanTypeUid, IndexMode indexMode) {
+        if (indexMode.getIdx() < 0) {
+            logger.error(
+                    "We only support indexMode values of Supplier or Distributor. Your incoming data seems corrupted—please check! !");
+            return;
+        }
+
         String channelPrefix = CHANNEL_CONSUMPTION + indexMode.getLabel() + "Idx";
 
         for (int idx = 0; idx < indexMode.getSize(); idx++) {
