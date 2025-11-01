@@ -56,26 +56,6 @@ public class Utils {
     }
 
     /**
-     * This method will capitalize the words of a given string
-     * 
-     * @param input string containing hyphenized words
-     * @return A string with spaces instead of hyphens and the first letter of each word is capitalized
-     */
-    public static String capitalizeWords(String input) {
-        String[] allParts = input.split("-");
-        String[] parts = Arrays.stream(allParts, 1, allParts.length).toArray(String[]::new);
-        StringJoiner joiner = new StringJoiner(" ");
-
-        for (String part : parts) {
-            if (!part.isEmpty()) {
-                joiner.add(Character.toUpperCase(part.charAt(0)) + part.substring(1));
-            }
-        }
-
-        return joiner.toString();
-    }
-
-    /**
      * This method will sanitize a given string for a channel ID
      * 
      * @param input camel case string

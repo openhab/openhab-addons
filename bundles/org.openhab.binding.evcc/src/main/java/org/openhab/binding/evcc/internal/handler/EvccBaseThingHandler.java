@@ -13,6 +13,7 @@
 package org.openhab.binding.evcc.internal.handler;
 
 import static org.openhab.binding.evcc.internal.EvccBindingConstants.*;
+import static org.openhab.core.util.StringUtils.capitalize;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -313,7 +314,7 @@ public abstract class EvccBaseThingHandler extends BaseThingHandler implements E
                     <state readOnly="true"></state>
                     <autoUpdatePolicy>veto</autoUpdatePolicy>
                 </channel-type>
-                """, key, itemType, Utils.capitalizeWords(key));
+                """, key, itemType, capitalize(key));
 
         Path filePath = Paths.get(System.getProperty("user.dir"), "evcc", "unknown-channels.xml");
 
