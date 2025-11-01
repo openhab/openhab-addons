@@ -1,16 +1,16 @@
-# WeatherUnderground Binding
+# Weather Underground Binding
 
 This binding uses the [Weather Underground service](https://www.wunderground.com/weather/api/) for providing weather information for any location worldwide.
 
-The Weather Underground API is provided by The Weather Underground, LLC (WUL) free of charge but there is a daily limit and minute rate limit to the number of requests that can be made to the API for free (until 2018/12/31).
-WUL will monitor your daily usage of the API to determine if you have exceeded the free-use threshold by using an API key. You may exceed this threshold only if you are or become a fee paying subscriber.
+The Weather Underground API is provided by The Weather Underground, LLC (WUL) free of charge, but there is a daily limit and a per-minute rate limit to the number of requests that can be made to the API for free (until 2018/12/31).
+WUL will monitor your daily usage of the API to determine if you have exceeded the free-use threshold by using an API key. You may exceed this threshold only if you are or become a fee-paying subscriber.
 By using this binding, you confirm that you agree with the [Weather Underground API terms and conditions of use](https://www.wunderground.com/weather/api/d/terms.html).
 
 To use this binding, you first need to [register and get your API key](https://www.wunderground.com/weather/api/d/pricing.html) .
 
 ## Supported Things
 
-There are exactly two supported thing types. The first one is the bridge thing, which represents the connection to the Weather Underground service through the API key. It has the id `bridge`. The second one is the weather thing, which represents the weather information for an observed location. It has the id `weather`.  Each `weather` thing uses a `bridge` thing ; it cannot be set online if no `bridge` thing is defined.
+There are exactly two supported thing types. The first one is the Bridge Thing, which represents the connection to the Weather Underground service through the API key. It has the ID `bridge`. The second one is the Weather Thing, which represents the weather information for an observed location. It has the ID `weather`. Each `weather` Thing uses a `bridge` Thing; it cannot be set online if no `bridge` Thing is defined.
 
 ## Discovery
 
@@ -22,7 +22,7 @@ If a bridge is correctly configured, the discovered thing will automatically go 
 
 ## Binding Configuration
 
-The binding has no configuration options, all configuration is done at Thing and Channel levels.
+The binding has no configuration options; all configuration is done at the Thing and Channel levels.
 
 ## Thing Configuration
 
@@ -42,8 +42,8 @@ The thing has a few configuration parameters:
 
 For the location parameter, different syntaxes are possible:
 
-| Syntax                  | Example          |
-|-------------------------|----------------- |
+| Syntax                  | Example           |
+|-------------------------|-------------------|
 | US state/city           | CA/San_Francisco |
 | US zipcode              | 60290            |
 | country/city            | Australia/Sydney |
@@ -51,23 +51,23 @@ For the location parameter, different syntaxes are possible:
 | airport code            | KJFK             |
 | PWS id                  | pws:KCASANFR70   |
 
-It can happen that the service is not able to determine the station to use, for example when you select as location a city in which several stations are registered. In this case, the thing configuration will fail because the service will not return the data expected by the binding. The best solution in this case is to use as location latitude and longitude, the service will automatically select a station from this position.
+It can happen that the service is not able to determine the station to use, for example when you select as the location a city in which several stations are registered. In this case, the Thing configuration will fail because the service will not return the data expected by the binding. The best solution in this case is to use latitude and longitude; the service will automatically select a station based on this position.
 
-For the language parameter Weather Underground uses a special set of language codes which are different from ISO 639-1 standard, for example for German use `DL`  or Swedish use `SW`. See [Weather Underground language support documentation](https://www.wunderground.com/weather/api/d/docs?d=language-support) for a detailed list.
+For the language parameter, Weather Underground uses a special set of language codes that are different from the ISO 639-1 standard. For example, for German use `DL`, or for Swedish use `SW`. See the [Weather Underground language support documentation](https://www.wunderground.com/weather/api/d/docs?d=language-support) for a detailed list.
 
 ## Channels
 
 The weather information that is retrieved is available as these channels:
 
-| Channel Group ID | Channel ID | Item Type    | Description             |
-|------------------|------------|--------------|-------------------------|
+| Channel Group ID | Channel ID | Item Type            | Description                     |
+|------------------|------------|----------------------|---------------------------------|
 | Current          | location             | String               | Weather observation location |
 | Current          | stationId            | String               | Weather station identifier |
 | Current          | observationTime      | DateTime             | Observation date and time |
 | Current          | conditions           | String               | Weather conditions |
 | Current          | temperature          | Number:Temperature   | Temperature |
 | Current          | relativeHumidity     | Number:Dimensionless | Relative humidity |
-| Current          | windDirection        | String               | Wind direction |
+| Current          | windDirection        | String               | Wind direction (cardinal) |
 | Current          | windDirectionDegrees | Number:Angle         | Wind direction as an angle |
 | Current          | windSpeed            | Number:Speed         | Wind speed |
 | Current          | windGust             | Number:Speed         | Wind gust |
@@ -79,7 +79,7 @@ The weather information that is retrieved is available as these channels:
 | Current          | feelingTemperature   | Number:Temperature   | Feeling temperature |
 | Current          | visibility           | Number:Length        | Visibility |
 | Current          | solarRadiation       | Number:Intensity     | Solar radiation |
-| Current          | UVIndex              | Number               | UV Index |
+| Current          | UVIndex              | Number               | UV index |
 | Current          | precipitationDay     | Number:Length        | Rain fall during the day |
 | Current          | precipitationHour    | Number:Length        | Rain fall during the last hour |
 | Current          | icon                 | Image                | Icon representing the weather current conditions |
@@ -90,8 +90,8 @@ The weather information that is retrieved is available as these channels:
 | forecastToday forecastTomorrow forecastDay2 ... forecastDay9 | maxTemperature              | Number:Temperature   | Maximum temperature |
 | forecastToday forecastTomorrow forecastDay2 ... forecastDay9 | relativeHumidity            | Number:Dimensionless | Relative humidity |
 | forecastToday forecastTomorrow forecastDay2 ... forecastDay9 | probaPrecipitation          | Number:Dimensionless | Probability of precipitation |
-| forecastToday forecastTomorrow forecastDay2 ... forecastDay9 | precipitationDay            | Number:Length        | Rain fall |
-| forecastToday forecastTomorrow forecastDay2 ... forecastDay9 | snow                        | Number:Length        | Snow fall |
+| forecastToday forecastTomorrow forecastDay2 ... forecastDay9 | precipitationDay            | Number:Length        | Rainfall |
+| forecastToday forecastTomorrow forecastDay2 ... forecastDay9 | snow                        | Number:Length        | Snowfall |
 | forecastToday forecastTomorrow forecastDay2 ... forecastDay9 | maxWindDirection            | String               | Maximum wind direction |
 | forecastToday forecastTomorrow forecastDay2 ... forecastDay9 | maxWindDirectionDegrees     | Number:Angle         | Maximum wind direction as an angle |
 | forecastToday forecastTomorrow forecastDay2 ... forecastDay9 | maxWindSpeed                | Number:Speed         | Maximum wind speed |

@@ -97,8 +97,8 @@
 	</thing-type>
 
 	<thing-type id="fan-with-dimmable-bulb">
-		<label>WiZ Ceiling Fan With Dimmable Bulb</label>
-		<description>Supports WiZ Ceiling Fans With a Dimmable Bulb</description>
+		<label>WiZ Ceiling Fan with Dimmable Bulb</label>
+		<description>Supports WiZ ceiling fans with a dimmable bulb</description>
 		<semantic-equipment-tag>CeilingFan</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="device" typeId="device-channels"/>
@@ -112,7 +112,7 @@
 	</thing-type>
 
 	<channel-type id="light-mode">
-		<item-type>String</item-type>
+		<item-type>Number</item-type>
 		<label>Light Mode</label>
 		<tags>
 			<tag>Control</tag>
@@ -211,7 +211,7 @@
 	<channel-type id="last-update" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Last Update</label>
-		<description>Timestamp of last status update</description>
+		<description>Timestamp of the last status update</description>
 		<category>Time</category>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -219,7 +219,7 @@
 	<channel-type id="rssi" advanced="true">
 		<item-type unitHint="dBm">Number:Power</item-type>
 		<label>RSSI</label>
-		<description>WiFi Received Signal Strength Indicator</description>
+		<description>Wi‑Fi received signal strength indicator (dBm)</description>
 		<category>QualityOfService</category>
 		<tags>
 			<tag>Measurement</tag>

@@ -1,6 +1,6 @@
 # Warmup Binding
 
-This binding integrates [Warmup](https://www.warmup.co.uk) Wifi enabled Thermostats via the API at <https://my.warmup.com/>.
+This binding integrates [Warmup](https://www.warmup.co.uk) Wi‑Fi–enabled thermostats via the API at <https://my.warmup.com/>.
 
 Devices known to work with the binding:
 
@@ -11,7 +11,7 @@ Device expected to work with the binding:
 
 - [Warmup 6iE](https://www.warmup.co.uk/thermostats/smart/6ie-underfloor-heating)
 
-Devices which might work with the binding:
+Devices that might work with the binding:
 
 - Other similar looking devices marketed under different brands, mentioned in the API
   - [Laticrete](https://laticrete.com/)
@@ -20,31 +20,31 @@ Devices which might work with the binding:
   - Equus
   - [Savant](https://www.savant.com/)
 
-Any Warmup device must be registered at <https://my.warmup.com/> prior to usage, or connected through the [MyHeating app](https://www.warmup.co.uk/thermostats/smart/myheating-app).
+Any Warmup device must be registered at <https://my.warmup.com/> prior to use, or connected through the [MyHeating app](https://www.warmup.co.uk/thermostats/smart/myheating-app).
 
-This API is not known to be documented publicly.
-The binding api implementation has been derived from the implementations at <https://github.com/alyc100/SmartThingsPublic/blob/master/devicetypes/alyc100/warmup-4ie.src/warmup-4ie.groovy> and <https://github.com/alex-0103/warmup4IE/blob/master/warmup4ie/warmup4ie.py>, and enhanced by inspecting the [GraphQL endpoint](https://apil.warmup.com/graphql).
+The API is not publicly documented.
+The binding’s API implementation is derived from the implementations at <https://github.com/alyc100/SmartThingsPublic/blob/master/devicetypes/alyc100/warmup-4ie.src/warmup-4ie.groovy> and <https://github.com/alex-0103/warmup4IE/blob/master/warmup4ie/warmup4ie.py>, and has been enhanced by inspecting the [GraphQL endpoint](https://apil.warmup.com/graphql).
 
 ## Supported Things
 
 The Warmup binding supports the following thing types:
 
-| Bridge         | Label             | Description                                                                            |
-|----------------|-------------------|----------------------------------------------------------------------------------------|
-| `my-warmup`    | My Warmup Account | The account credentials for my.warmup.com which acts as an API to the Warmup device(s) |
+| Bridge         | Label             | Description                                                                             |
+|----------------|-------------------|-----------------------------------------------------------------------------------------|
+| `my-warmup`    | My Warmup Account | The account credentials for my.warmup.com, which acts as an API to the Warmup device(s) |
 
-| Thing    | Label | Description                                                                                    |
-|----------|-------|------------------------------------------------------------------------------------------------|
-| `room`   | Room  | A room containing an individual Warmup WiFi connected device which controls a heating circuit. |
+| Thing    | Label | Description                                                                                     |
+|----------|-------|-------------------------------------------------------------------------------------------------|
+| `room`   | Room  | A room containing an individual Warmup Wi‑Fi–connected device that controls a heating circuit. |
 
 **Room**
 The device is optimised for controlling underfloor heating (electric or hydronic), although it can also control central heating circuits.
-The device reports the temperature from one of two thermostats, either a floor temperature probe or the air temperature at the device.
-It appears to be possible to configure two devices in a primary / secondary configuration, but it is not clear how this might be represented by the API and hasn't been implemented.
+The device reports the temperature from one of two sensors: either a floor temperature probe or the air temperature at the device.
+It appears to be possible to configure two devices in a primary/secondary configuration, but it is not clear how this might be represented by the API and has not been implemented.
 
 ## Discovery
 
-Once credentials are successfully added to the bridge, any rooms (devices) detected will be added as things to the inbox.
+Once credentials are successfully added to the bridge, any rooms (devices) detected will be added as Things to the Inbox.
 
 ## Thing Configuration
 
@@ -58,36 +58,36 @@ Once credentials are successfully added to the bridge, any rooms (devices) detec
 
 ### `room` Thing Configuration
 
-Rooms are configured automatically with a Serial Number on discovery, or can be added manually using the "Device Number" from the device, excluding the last 3 characters. Changing the target temperature results in a temporary override to that temperature, for the duration configured on the thing. This defaults to 60 minutes.
+Rooms are configured automatically with a serial number upon discovery, or can be added manually using the "Device Number" from the device, excluding the last 3 characters. Changing the target temperature results in a temporary override to that temperature for the duration configured on the Thing. This defaults to 60 minutes.
 
 | config parameter | type    | description                                                        | required | default |
 |------------------|---------|--------------------------------------------------------------------|----------|---------|
-| serialNumber     | String  | Device Serial Number, excluding last 3 characters                  | true     |         |
-| overrideDuration | Integer | Duration in minutes of override when target temperature is changed | false    | 60      |
+| serialNumber     | String  | Device serial number, excluding the last 3 characters              | true     |         |
+| overrideDuration | Integer | Duration in minutes of override when target temperature is changed | true     | 60      |
 
 ## Channels
 
-| channel             | type               | description                                                                                                                                  | read only |
+| channel             | type               | description                                                                                                                                  | read-only |
 |---------------------|--------------------|----------------------------------------------------------------------------------------------------------------------------------------------|-----------|
 | currentTemperature  | Number:Temperature | Currently reported temperature                                                                                                               | true      |
 | targetTemperature   | Number:Temperature | Target temperature                                                                                                                           | false     |
-| overrideRemaining   | Number:Time        | Duration remaining of the configured override                                                                                                | true      |
+| overrideRemaining   | Number:Time        | Remaining duration of the configured override                                                                                                | true      |
 | fixedTemperature    | Number:Temperature | Target temperature for fixed mode                                                                                                            | false     |
-| energyToday         | Number:Energy      | Today's current energy consumption.                                                                                                          | true      |
-| runMode             | String             | Current operating mode of the thermostat, options listed below                                                                               | false     |
-| frostProtectionMode | Switch             | Toggles between the "Frost Protection" run mode and the previously configured "active" run mode (known options are either Fixed or Schedule) | false     |
+| energyToday         | Number:Energy      | Today's current energy consumption                                                                                                           | true      |
+| runMode             | String             | Current operating mode of the thermostat; options listed below                                                                               | false     |
+| frostProtectionMode | Switch             | Toggles between the "Frost Protection" run mode and the previously active run mode (typically Fixed or Schedule)                            | false     |
 | airTemperature      | Number:Temperature | Currently reported air temperature at the device                                                                                             | true      |
 | floor1Temperature   | Number:Temperature | Currently reported temperature from floor probe 1 on the device                                                                              | true      |
 | floor2Temperature   | Number:Temperature | Currently reported temperature from floor probe 2 on the device                                                                              | true      |
 
 ### Run Mode Statuses
 
-These run mode statuses are defined for the API.
+These run modes are defined for the API.
 The descriptions are based on inspection of the device behaviour and are not sourced from documentation.
-Only the value `schedule` is writeable, this reverts the device to the program/schedule configured on the device.
+Only the value `schedule` is writable; this reverts the device to the program/schedule configured on the device.
 The value `fixed` can be set by commanding the `fixedTemperature` channel. The value `override` can be set by commanding the `targetTemperature` channel.
 
-| api value  | ui name          | description                                                                     |
+| api value  | UI name          | description                                                                     |
 |------------|------------------|---------------------------------------------------------------------------------|
 | not_set    | Not Set          | Unknown                                                                         |
 | off        | Off              | Device turned off                                                               |
@@ -105,7 +105,7 @@ The value `fixed` can be set by commanding the `fixedTemperature` channel. The v
 
 ### setOverride(temperature, duration)
 
-Sets a temporary temperature override on the device
+Sets a temporary temperature override on the device.
 
  Parameters:
 
@@ -151,7 +151,7 @@ Bridge warmup:my-warmup:MyWarmup [ username="test@example.com", password="test",
 
 ```java
 Number:Temperature bathroom_temperature "Temperature [%.1f °C]" <temperature> (GF_Bathroom, Temperature)    ["Temperature"] {channel="warmup:room:MyWarmup:bathroom:currentTemperature"}
-Number:Temperature bathroom_setpoint    "Set Point [%.1f °C]" <temperature> (GF_Bathroom) ["Set Point"] {channel="warmup:room:MyWarmup:bathroom:targetTemperature"}
+Number:Temperature bathroom_setpoint    "Setpoint [%.1f °C]" <temperature> (GF_Bathroom) ["Setpoint"] {channel="warmup:room:MyWarmup:bathroom:targetTemperature"}
 Number:Time bathroom_overrideRemaining  "Override Remaining [%d minutes]" (GF_Bathroom) {channel="warmup:room:MyWarmup:bathroom:overrideRemaining"}
 String bathroom_runMode "Run Mode [%s]" (GF_Bathroom) {channel="warmup:room:MyWarmup:bathroom:runMode"}
 Switch bathroom_frostProtection "Frost Protection Mode" (GF_Bathroom) {channel="warmup:room:MyWarmup:bathroom:frostProtectionMode"}

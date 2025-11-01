@@ -54,7 +54,7 @@
 			</parameter>
 			<parameter name="refreshInterval" type="integer" min="1" max="9999" required="false">
 				<label>Refresh Interval</label>
-				<description>Refresh interval for refreshing the data in seconds</description>
+				<description>Refresh interval in seconds</description>
 				<default>30</default>
 				<advanced>true</advanced>
 			</parameter>

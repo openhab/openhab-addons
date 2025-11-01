@@ -27,8 +27,8 @@
 	<config-description uri="thing-type:weathercompany:weather-forecast">
 		<parameter name="locationType" type="text" required="true">
 			<label>Location Type</label>
-			<description>Location type (Postal Code, Geocode)</description>
-			<default>postal</default>
+			<description>Location type (Postal Code, Geocode, IATA Code)</description>
+			<default>postalCode</default>
 			<options>
 				<option value="postalCode">Postal Code</option>
 				<option value="geocode">Geocode</option>
