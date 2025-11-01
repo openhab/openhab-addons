@@ -1,10 +1,10 @@
 # XMPPClient Binding
 
-XMPPClient binding provides support for sending and receiving XMPP (Jabber) messages.
+The XMPPClient binding provides support for sending and receiving XMPP (Jabber) messages.
 
 ## Supported Things
 
-xmppBridge - Basic XMPP (Jabber) client thing, that can send and receive messages.
+- xmppBridge — XMPP (Jabber) client bridge that can send and receive messages. You can add publish trigger channels to it.
 
 ## Thing Configuration
 
@@ -12,15 +12,15 @@ Sample configurations:
 
 ```java
 Bridge xmppclient:xmppBridge:xmpp "XMPP Client" [ username="openhab", domain="example.com", password="********" ] {
-  Channels:
-    Trigger String : xmpp_command [ separator="##" ]
+    Channels:
+        Trigger String : xmpp_command [ separator="##" ]
 }
 ```
 
 ```java
 Bridge xmppclient:xmppBridge:xmpp "XMPP Client" [ host="xmpp.example.com", port=7222, username="openhab", domain="example.com", password="********" ] {
-  Channels:
-    Trigger String : xmpp_command [ separator="##" ]
+    Channels:
+        Trigger String : xmpp_command [ separator="##" ]
 }
 ```
 
@@ -31,18 +31,20 @@ Bridge xmppclient:xmppBridge:xmpp "XMPP Client" [ host="xmpp.example.com", port=
 | username     | Username           | The XMPP username (left part of JID)                               | true     | -                     |
 | domain       | Domain             | The XMPP domain name (right part of JID)                           | true     | -                     |
 | password     | Password           | The XMPP user password                                             | true     | -                     |
-| host         | Server Hostname/IP | The IP/Hostname of the XMPP server                                 | false    | as "domain" parameter |
-| port         | XMPP server Port   | The typical port is 5222                                           | false    | 5222                  |
+| host         | Server Hostname/IP | The IP address or hostname of the XMPP server                       | false    | as "domain" parameter |
+| port         | XMPP Server Port   | Port for the XMPP server                                            | false    | 5222                  |
 | securityMode | Security Mode      | Sets the TLS security mode: `required`, `ifpossible` or `disabled` | false    | `required`            |
 
 ## Channels
+
+You can add `publishTrigger` channels to the bridge to react to incoming messages.
 
 **publishTrigger** parameters:
 
 | Name      | Label               | Description                                                                                                                                                                                                                                        | Required |
 |-----------|---------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------|
 | payload   | Payload condition   | An optional condition on the value                                                                                                                                                                                                                 | false    |
-| separator | Separator character | The trigger channel payload usually only contains the received text. If you define a separator character, for example '#', the sender UID and received text will be in the trigger channel payload. For example: `pavel@example.com#My Message Text` | false    |
+| separator | Separator character | The trigger payload usually contains only the received text. If you define a separator character (e.g., `#`), the sender UID and received text will both be included in the payload. For example: `pavel@example.com#My Message Text` | false    |
 
 ## Example Rules
 
@@ -82,7 +84,7 @@ then
         Group_Light_Home_All.sendCommand(OFF)
 
         val actions = getActions("xmppclient","xmppclient:xmppBridge:xmpp")
-        actions.publishXMPP(actionName.get(0),"All lights was turned off")
+        actions.publishXMPP(actionName.get(0),"All lights were turned off")
     }
 end
 ```
