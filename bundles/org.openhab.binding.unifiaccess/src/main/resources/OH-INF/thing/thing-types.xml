@@ -272,7 +272,6 @@
 				<option value="reset">Reset</option>
 				<option value="lock_early">Lock Early</option>
 				<option value="lock_now">Lock Now</option>
-				<option value="schedule">Schedule</option>
 				<option value="none">None</option>
 			</options>
 		</state>

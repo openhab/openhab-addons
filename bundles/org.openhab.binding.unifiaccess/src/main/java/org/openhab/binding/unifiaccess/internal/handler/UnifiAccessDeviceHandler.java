@@ -255,10 +255,6 @@ public class UnifiAccessDeviceHandler extends UnifiAccessBaseHandler {
                         settings.pinCode.pinCodeShuffle ? OnOffType.ON : OnOffType.OFF);
             }
         }
-        if (settings.face != null && settings.face.enabled != null) {
-            updateState(UnifiAccessBindingConstants.CHANNEL_DEVICE_FACE_ENABLED,
-                    settings.face.enabled ? OnOffType.ON : OnOffType.OFF);
-        }
         if (settings.btTap != null && settings.btTap.enabled != null) {
             updateState(UnifiAccessBindingConstants.CHANNEL_DEVICE_MOBILE_TAP_ENABLED,
                     settings.btTap.enabled ? OnOffType.ON : OnOffType.OFF);
