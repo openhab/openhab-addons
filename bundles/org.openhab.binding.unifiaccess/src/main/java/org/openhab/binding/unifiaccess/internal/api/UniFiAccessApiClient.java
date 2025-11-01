@@ -510,7 +510,7 @@ public final class UniFiAccessApiClient implements Closeable {
     private void ensure2xx(ContentResponse resp, String action) throws UniFiAccessApiException {
         if (logger.isTraceEnabled()) {
             String mediaType = resp.getMediaType();
-            if (mediaType != null && (mediaType.equals("image/jpeg") || mediaType.equals("image/png"))) {
+            if ("image/jpeg".equalsIgnoreCase(mediaType) || "image/png".equalsIgnoreCase(mediaType)) {
                 logger.trace("ensure2xx status: {} mediaType: {} resp: image data", resp.getStatus(), mediaType);
             } else {
                 logger.trace("ensure2xx status: {} mediaType: {} resp: {}", resp.getStatus(), mediaType,

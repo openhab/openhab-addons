@@ -13,7 +13,6 @@
 package org.openhab.binding.unifiaccess.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.unifiaccess.internal.UnifiAccessBindingConstants;
 import org.openhab.binding.unifiaccess.internal.api.UniFiAccessApiClient;
 import org.openhab.binding.unifiaccess.internal.config.UnifiAccessDeviceConfiguration;
@@ -44,7 +43,6 @@ import org.slf4j.LoggerFactory;
 public class UnifiAccessDeviceHandler extends UnifiAccessBaseHandler {
 
     private final Logger logger = LoggerFactory.getLogger(UnifiAccessDeviceHandler.class);
-    private @Nullable String locationId;
 
     public UnifiAccessDeviceHandler(Thing thing) {
         super(thing);
@@ -189,12 +187,9 @@ public class UnifiAccessDeviceHandler extends UnifiAccessBaseHandler {
                             status = "normal";
                         }
                         try {
-                            String doorId = this.locationId;
-                            if (doorId != null && !doorId.isBlank()) {
-                                api.setDoorEmergencySettings(doorId, des);
-                                updateState(UnifiAccessBindingConstants.CHANNEL_DEVICE_EMERGENCY_STATUS,
-                                        new StringType(status));
-                            }
+                            api.setDoorEmergencySettings(deviceId, des);
+                            updateState(UnifiAccessBindingConstants.CHANNEL_DEVICE_EMERGENCY_STATUS,
+                                    new StringType(status));
                         } catch (UniFiAccessApiException e) {
                             logger.debug("Failed to set door emergency settings for device {}: {}", deviceId,
                                     e.getMessage());
@@ -217,7 +212,6 @@ public class UnifiAccessDeviceHandler extends UnifiAccessBaseHandler {
 
     @Override
     protected void handleLocationState(LocationState locationState) {
-        this.locationId = locationState.locationId;
         if (locationState.dps != null) {
             updateState(UnifiAccessBindingConstants.CHANNEL_DEVICE_DOOR_SENSOR,
                     locationState.dps == org.openhab.binding.unifiaccess.internal.dto.DoorState.DoorPosition.OPEN

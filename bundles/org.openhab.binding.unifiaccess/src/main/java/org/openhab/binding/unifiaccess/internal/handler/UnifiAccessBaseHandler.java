@@ -36,7 +36,8 @@ import org.openhab.core.types.State;
 @NonNullByDefault
 public abstract class UnifiAccessBaseHandler extends BaseThingHandler {
     protected Map<String, State> stateCache = new HashMap<>();
-    public String deviceId = "";
+    /* This is the universal ID for the device or door, will match locationId as well in API responses */
+    protected String deviceId = "";
 
     public UnifiAccessBaseHandler(Thing thing) {
         super(thing);
