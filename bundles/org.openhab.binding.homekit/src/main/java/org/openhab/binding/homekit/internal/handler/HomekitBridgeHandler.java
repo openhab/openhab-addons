@@ -18,6 +18,7 @@ import java.util.Collection;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.homekit.internal.action.HomekitPairingAction;
 import org.openhab.binding.homekit.internal.discovery.HomekitChildDiscoveryService;
 import org.openhab.binding.homekit.internal.dto.Accessory;
 import org.openhab.binding.homekit.internal.dto.Characteristic;
@@ -106,7 +107,7 @@ public class HomekitBridgeHandler extends HomekitBaseAccessoryHandler implements
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Set.of(HomekitChildDiscoveryService.class);
+        return Set.of(HomekitChildDiscoveryService.class, HomekitPairingAction.class);
     }
 
     /**

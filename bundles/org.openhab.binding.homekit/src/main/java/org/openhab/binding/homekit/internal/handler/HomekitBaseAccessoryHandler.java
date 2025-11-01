@@ -35,7 +35,7 @@ import org.bouncycastle.crypto.InvalidCipherTextException;
 import org.bouncycastle.crypto.params.Ed25519PublicKeyParameters;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.homekit.internal.action.HomekitAccessoryActions;
+import org.openhab.binding.homekit.internal.action.HomekitPairingAction;
 import org.openhab.binding.homekit.internal.dto.Accessories;
 import org.openhab.binding.homekit.internal.dto.Accessory;
 import org.openhab.binding.homekit.internal.hap_services.CharacteristicReadWriteClient;
@@ -370,7 +370,8 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return getBridge() != null ? Set.of() : Set.of(HomekitAccessoryActions.class); // only for non-child accessories
+        // only non child accessories require pairing support
+        return thing.getBridgeUID() != null ? Set.of() : Set.of(HomekitPairingAction.class);
     }
 
     private @Nullable String checkedHostName() {
@@ -451,7 +452,10 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
             logger.debug("Starting Pair-Setup for {}", thing.getUID());
             PairSetupClient pairSetupClient = new PairSetupClient(getIpTransport(), keyStore.getControllerUUID(),
                     keyStore.getControllerKey(), pairingCode);
-            pairSetupClient.pair();
+
+            Ed25519PublicKeyParameters accessoryKey = pairSetupClient.pair();
+            keyStore.setAccessoryKey(macAddress, accessoryKey);
+
             logger.debug("Pair-Setup completed; starting Pair-Verify for {}", thing.getUID());
             connectionAttemptDelay = MIN_CONNECTION_ATTEMPT_DELAY; // reset delay on manual pairing
             scheduleConnectionAttempt();

@@ -26,20 +26,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Implementation of the {@link ThingActions} interface used for pairing.
+ * Implementation of the {@link ThingActions} interface for pairing.
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
-@Component(scope = ServiceScope.PROTOTYPE, service = HomekitAccessoryActions.class)
+@Component(scope = ServiceScope.PROTOTYPE, service = HomekitPairingAction.class)
 @ThingActionsScope(name = "homekit-pairing")
 @NonNullByDefault
-public class HomekitAccessoryActions implements ThingActions {
+public class HomekitPairingAction implements ThingActions {
 
-    private final Logger logger = LoggerFactory.getLogger(HomekitAccessoryActions.class);
+    private final Logger logger = LoggerFactory.getLogger(HomekitPairingAction.class);
     private @Nullable HomekitBaseAccessoryHandler handler;
 
     public static void pair(ThingActions actions, String code) {
-        if (actions instanceof HomekitAccessoryActions accessoryActions) {
+        if (actions instanceof HomekitPairingAction accessoryActions) {
             accessoryActions.pair(code);
         } else {
             throw new IllegalArgumentException("The 'actions' argument is not an instance of HomekitAccessoryActions");
