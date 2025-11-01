@@ -1,9 +1,9 @@
 # openHAB Hue Emulation Service
 
-Hue Emulation exposes openHAB items as Philips Hue lights to Hue API–compatible applications such as Amazon Echo, Google Home, and other Hue-compatible apps.
+Hue Emulation exposes openHAB items as Philips Hue lights to Hue API-compatible applications like Amazon Echos, Google Homes, or any other Hue-compatible application.
 
 Because Amazon Echo and Google Home communicate with openHAB locally via the Hue API, this provides a fast and reliable way to control your installation using voice commands.
-See the Troubleshoot section down below though.
+See the Troubleshooting section below though.
 
 This service is independent of the also available Hue binding!
 
@@ -94,46 +94,46 @@ Hue bridges are using the Universal Plug and Play (UPnP) protocol for discovery.
 Like the real Hue bridge the service must be put into pairing mode before other applications can access it.
 By default the pairing mode disables itself after 1 minute (can be configured).
 
-## Classic mapping
+## Classic Mapping
 
-### Exposed lights
+### Exposed Lights
 
 This section applies only when semantic model mapping is disabled.
 
-It is important to note that Hue Emulation exposes _Items_, not _Things_ or _Channels_.
-Only Color, Dimmer, Rollershutter, Switch and Group type _Items_ are supported.
-Group type items require the "Huelight" tag to be exposed as devices instead of Groups.
+It is important to note that you are exposing _Items_, not _Things_ or _Channels_.
+Only Color, Dimmer, Rollershutter, Switch, and Group type _Items_ are supported.
+Group type items require the "Huelight" tag to be exposed as devices instead of groups.
 
 This service can emulate three different devices:
 
 - An OSRAM SMART+ Plug
-- a dimmable white color Philips A19 bulb
-- a Philips Gen 3 LCT010 extended color bulb
+- A dimmable white color Philips A19 bulb
+- A Philips Gen 3 LCT010 extended color bulb
 
-The exposed Hue-type depends on some criteria:
+The exposed Hue type depends on some criteria:
 
-- If the item has the category "ColorLight": It will be exposed as a color bulb
+- If the item has the category "ColorLight": It will be exposed as a color bulb.
 - If the item has the category "Light": It will be exposed as a switch.
 
 This initial type determination is overridden if the item is tagged.
 
-The following default tags are setup:
+The following default tags are set up:
 
-- "Switchable": Item will be exposed as an OSRAM SMART+ Plug
-- "Lighting": Item will be exposed as a dimmable white bulb
-- "ColorLighting": Item will be exposed as a color bulb
+- "Switchable": Item will be exposed as an OSRAM SMART+ Plug.
+- "Lighting": Item will be exposed as a dimmable white bulb.
+- "ColorLighting": Item will be exposed as a color bulb.
 
-It is the responsibility of binding developers to categories and default tag their available _Channels_, so that linked Items are automatically exposed with this service.
+It is the responsibility of binding developers to categorize and default-tag their available _Channels_ so that linked items are automatically exposed with this service.
 
-You can tag items manually though as well.
+You can tag items manually as well.
 
 ### Exposed names
 
 This section applies only when semantic model mapping is disabled.
 
-Your items labels are used for exposing!
-The default naming schema for automatically linked items unfortunately names _Items_ like their Channel names,
-so usually "Brightness" or "Color". You want to rename those.
+Your items label are used for exposing!
+The default naming schema for automatically linked items unfortunately names _Items_ like their channel names, so usually "Brightness" or "Color".
+You will want to rename those.
 
 ### Migrating from classic mapping
 
@@ -172,7 +172,7 @@ org.openhab.hueemulation:pairingTimeout=60
 Enable the following option in combination with pairing to create a new API key on the fly on every API endpoint, not only via the new-user-create API.
 
 Necessary for Amazon Echos and other devices where the API key cannot be reset.
-After a new installation of openHAB or a configuration pruning the old API keys are gone but Amazon Echos will keep trying with their old, invalid keys.
+After a new installation of openHAB or a configuration pruning, the old API keys are gone, but Amazon Echos will keep trying with their old, invalid keys.
 
 ```ini
 org.openhab.hueemulation:createNewUserOnEveryEndpoint=false
@@ -193,21 +193,20 @@ Permanent V1 bridge emulation (no obvious reason to enable that):
 org.openhab.hueemulation:permanentV1bridge=false
 ```
 
-The hue emulation service will announce its existence via UPnP on every
-of the openHAB configured primary addresses (IPv4 and IPv6).
+The Hue emulation service will announce its existence via UPnP on every openHAB-configured primary address (IPv4 and IPv6).
 
-Usually you do not want to set this option, but change the primary address configuration of openHAB.
+Usually, you do not want to set this option but change the primary address configuration of openHAB.
 
 This option allows you to override what addresses are used for the announcement.
-You can have multiple comma separated entries.
+You can have multiple comma-separated entries.
 
 ```ini
 org.openhab.hueemulation:discoveryIp=192.168.1.100,::FFFF:A9DB:0D85
 ```
 
-The hue emulation service supports three types of emulated bulbs.
+The Hue emulation service supports three types of emulated bulbs.
 You need to tell the service which item tag corresponds to which emulated bulb type.
-One of the comma separated tags must match for the item to be exposed.
+One of the comma-separated tags must match for the item to be exposed.
 Can be empty to match an item based on other criteria.
 
 ```ini
@@ -225,7 +224,7 @@ org.openhab.hueemulation:restrictToTagsWhiteLights=Lighting,Switchable
 org.openhab.hueemulation:restrictToTagsColorLights=ColorLighting
 ```
 
-The service tries to expose as much items as possible (greedy), based on some criteria as explained in the section above.
+The service tries to expose as many items as possible (greedy), based on some criteria as explained in the section above.
 If you want to exclude items, you need to tag them. Define the tags with the following option:
 
 ```ini
@@ -237,12 +236,12 @@ You want this tag for all items that are purely used for rules, as proxy items e
 
 ## Troubleshooting
 
-Some devices like Amazon Echo, Google Home and all Philips devices (TVs, Apps) expect a Hue bridge to run on port 80.
-You must either
+Some devices like Amazon Echo, Google Home, and all Philips devices (TVs, apps) expect a Hue bridge to run on port 80.
+You must either:
 
-- port forward your openHAB installation to port 80,
+- Port forward your openHAB installation to port 80
   (`iptables -t nat -A PREROUTING -p tcp -m tcp --dport 80 -j REDIRECT --to-ports 8080`)
-- install a reverse proxy on port 80, for example nginx with the following configuration:
+- Install a reverse proxy on port 80, for example, nginx with the following configuration:
 
   ```text
   server {
@@ -257,9 +256,9 @@ You must either
   }
   ```
 
-- or let openHAB run on port 80 (the entire java process requires elevated privileges).
+- Or let openHAB run on port 80 (the entire Java process requires elevated privileges).
 
-- For Amazon Echo the pairing process may fail due to a 302 response from openHAB, this can be resolved by using a reverse proxy to change the request url from `/api` to `/api/`, for example nginx with the following configuration:
+- For Amazon Echo, the pairing process may fail due to a 302 response from openHAB. This can be resolved by using a reverse proxy to change the request URL from `/api` to `/api/`, for example, nginx with the following configuration:
 
   ```text
   server {
@@ -270,9 +269,9 @@ You must either
   }
   ```
 
-Please open port 80 tcp and port 1900 udp in your firewall installation.
+Please open port 80 TCP and port 1900 UDP in your firewall installation.
 
-You can test if the hue emulation does its job by enabling pairing mode including the option "Amazon Echo device discovery fix".
+You can test if the Hue emulation does its job by enabling pairing mode, including the option "Amazon Echo device discovery fix".
 
 1. Navigate with your browser to `http://your-openhab-ip/description.xml` to check the discovery response.
    Check the IP address in there.
@@ -284,12 +283,12 @@ A reverse proxy is recommended.
 Depending on the firmware version of your Amazon Echo, it may not support colored bulbs or switches.
 Please assign "ColorLighting" and "Switchable" to the `WhiteLights` type as explained above.
 
-Also note that Amazon Echos are stubborn as.
-You might need to remove all former recognized devices multiple times and perform the search via different Echos and also the web or mobile application.
+Also note that Amazon Echos can be stubborn.
+You might need to remove all formerly recognized devices multiple times and perform the search via different Echos and also via the web or mobile application.
 
-It might help to (temporarly) lower the emulated bridge version in the configuration as described above.
+It might help to (temporarily) lower the emulated bridge version in the configuration as described above.
 
-## Text configuration example
+## Text Configuration Example
 
 ### Semantic model mapping
 
@@ -315,8 +314,8 @@ Color   TestColor      "Color"      (GamingLightStrip) ["Control", "Color"]     
 ### Classic mapping
 
 The item label will be used as the Hue device name.
-Please be aware that textual defined items are generally a bad idea.
-In this case renaming items in Hue compatible Apps will fail.
+Please be aware that textually defined items are generally a bad idea.
+In this case, renaming items in Hue-compatible apps will fail.
 
 ```java
 Switch  TestSwitch     "Kitchen spots"      [ "Switchable" ]    {channel="..."}
