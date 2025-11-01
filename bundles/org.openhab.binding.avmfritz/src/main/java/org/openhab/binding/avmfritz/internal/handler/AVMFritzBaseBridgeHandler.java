@@ -323,7 +323,9 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
      */
     public String getThingTypeId(AVMFritzBaseModel device) {
         if (device instanceof GroupModel) {
-            if (device.isHeatingThermostat()) {
+            if (device.isHANFUNBlinds()) {
+                return GROUP_BLINDS;
+            } else if (device.isHeatingThermostat()) {
                 return GROUP_HEATING;
             } else if (device.isSwitchableOutlet()) {
                 return GROUP_SWITCH;

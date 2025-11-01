@@ -302,7 +302,8 @@
 							]
 						}
 					}
-				]
+				],
+				"readmeComment": "Value mapping `[\"vacuum-start-sweep\"\u003d\"Vacuum Start Sweep\",\"vacuum-stop-sweeping\"\u003d\"Vacuum Stop Sweeping\",\"vacuum-start-room-sweep\"\u003d\"Vacuum Start Room Sweep\",\"battery-start-charge\"\u003d\"Battery Start Charge\",\"brush-cleaner-reset-brush-life\"\u003d\"Brush Cleaner Reset Brush Life\",\"brush-cleaner-reset-brush-life\"\u003d\"Brush Cleaner Reset Brush Life\",\"filter-reset-filter-life\"\u003d\"Filter Reset Filter Life\",\"vacuum-extend-start-clean\"\u003d\"Vacuum Extend Start Clean\",\"vacuum-extend-stop-clean\"\u003d\"Vacuum Extend Stop Clean\",\"map-map-req\"\u003d\"Map Map Req\",\"map-update-map\"\u003d\"Map Update Map\",\"audio-position\"\u003d\"Audio Position\",\"audio-play-sound\"\u003d\"Audio Play Sound\",\"time-delete-timer\"\u003d\"Time Delete Timer\",\"collect-dust-start-collect\"\u003d\"Collect Dust Start Collect\"]`"
 			},
 			{
 				"property": "status",
@@ -354,7 +355,7 @@
 				},
 				"refresh": true,
 				"actions": [],
-				"readmeComment": "Value mapping [\"1\"\u003d\"Sweeping\",\"2\"\u003d\"Idle\",\"3\"\u003d\"Paused\",\"4\"\u003d\"Error\",\"5\"\u003d\"Go Charging\",\"6\"\u003d\"Charging\",\"7\"\u003d\"Mopping\",\"11\"\u003d\"Building\",\"13\"\u003d\"Charging Completed\"]"
+				"readmeComment": "Value mapping `[\"1\"\u003d\"Sweeping\",\"2\"\u003d\"Idle\",\"3\"\u003d\"Paused\",\"4\"\u003d\"Error\",\"5\"\u003d\"Go Charging\",\"6\"\u003d\"Charging\",\"7\"\u003d\"Mopping\",\"11\"\u003d\"Building\",\"13\"\u003d\"Charging Completed\"]`"
 			},
 			{
 				"property": "fault",
@@ -363,7 +364,6 @@
 				"friendlyName": "Robot Cleaner - Device Fault",
 				"channel": "fault",
 				"type": "Number",
-				
 				"refresh": true,
 				"actions": []
 			},
@@ -401,7 +401,7 @@
 						"parameterType": "NUMBER"
 					}
 				],
-				"readmeComment": "Value mapping [\"0\"\u003d\"Silent\",\"1\"\u003d\"Basic\",\"2\"\u003d\"Strong\",\"3\"\u003d\"Full Speed\"]"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Silent\",\"1\"\u003d\"Basic\",\"2\"\u003d\"Strong\",\"3\"\u003d\"Full Speed\"]`"
 			},
 			{
 				"property": "battery-level",
@@ -447,7 +447,7 @@
 				},
 				"refresh": true,
 				"actions": [],
-				"readmeComment": "Value mapping [\"1\"\u003d\"Charging\",\"2\"\u003d\"Not Charging\",\"5\"\u003d\"Go Charging\"]"
+				"readmeComment": "Value mapping `[\"1\"\u003d\"Charging\",\"2\"\u003d\"Not Charging\",\"5\"\u003d\"Go Charging\"]`"
 			},
 			{
 				"property": "brush-left-time",
@@ -640,7 +640,7 @@
 				},
 				"refresh": true,
 				"actions": [],
-				"readmeComment": "Value mapping [\"0\"\u003d\"Quiet\",\"1\"\u003d\"Standard\",\"2\"\u003d\"Medium\",\"3\"\u003d\"Strong\"]"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Quiet\",\"1\"\u003d\"Standard\",\"2\"\u003d\"Medium\",\"3\"\u003d\"Strong\"]`"
 			},
 			{
 				"property": "mop-mode",
@@ -672,7 +672,7 @@
 						"parameterType": "STRING"
 					}
 				],
-				"readmeComment": "Value mapping [\"1\"\u003d\"Low\",\"2\"\u003d\"Medium\",\"3\"\u003d\"High\"]"
+				"readmeComment": "Value mapping `[\"1\"\u003d\"Low\",\"2\"\u003d\"Medium\",\"3\"\u003d\"High\"]`"
 			},
 			{
 				"property": "waterbox-status",
@@ -696,7 +696,7 @@
 				},
 				"refresh": true,
 				"actions": [],
-				"readmeComment": "Value mapping [\"0\"\u003d\"No\",\"1\"\u003d\"Yes\"]"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"No\",\"1\"\u003d\"Yes\"]`"
 			},
 			{
 				"property": "task-status",
@@ -705,7 +705,6 @@
 				"friendlyName": "Vacuum Extend - Task Status",
 				"channel": "task_status",
 				"type": "Number",
-				
 				"refresh": true,
 				"actions": []
 			},
@@ -750,7 +749,7 @@
 						"parameterType": "NUMBER"
 					}
 				],
-				"readmeComment": "Value mapping [\"0\"\u003d\"Close\",\"1\"\u003d\"Open\"]"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Off\",\"1\"\u003d\"On\"]`"
 			},
 			{
 				"property": "carpet-press",
@@ -778,7 +777,7 @@
 						"parameterType": "NUMBER"
 					}
 				],
-				"readmeComment": "Value mapping [\"0\"\u003d\"Close\",\"1\"\u003d\"Open\"]"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Off\",\"1\"\u003d\"On\"]`"
 			},
 			{
 				"property": "serial-number",
@@ -1163,7 +1162,7 @@
 						"parameterType": "STRING"
 					}
 				],
-				"readmeComment": "Value mapping [\"0\"\u003d\"Close-auto-collect\",\"1\"\u003d\"Open-auto-collect\"]"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Close-auto-collect\",\"1\"\u003d\"Open-auto-collect\"]`"
 			},
 			{
 				"property": "clean-times",
@@ -1208,7 +1207,7 @@
 				},
 				"refresh": true,
 				"actions": [],
-				"readmeComment": "Value mapping [\"0\"\u003d\"Disable\",\"1\"\u003d\"Enable\"]"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Disable\",\"1\"\u003d\"Enable\"]`"
 			}
 		],
 		"experimental": false

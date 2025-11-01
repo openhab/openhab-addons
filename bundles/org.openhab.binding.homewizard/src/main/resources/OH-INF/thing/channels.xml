@@ -24,6 +24,10 @@
 			This channel provides the active usage in Watt.
 		</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="hw-voltage">
@@ -46,6 +50,10 @@
 			This channel provides the active voltage in Volt.
 		</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="hw-current">
@@ -69,6 +77,10 @@
 			This channel provides the active current in Ampere.
 		</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Current</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -92,6 +104,10 @@
 			This channel provides the total energy usage meter reading in kWh.
 		</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="hw-energy-export">
@@ -114,6 +130,10 @@
 			This channel provides the total energy feed-in meter reading in kWh.
 		</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Energy</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="hw-reactive-power" advanced="true">

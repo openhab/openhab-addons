@@ -14,7 +14,7 @@ package org.openhab.binding.deconz;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -51,6 +51,7 @@ import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ThingUID;
+import org.openhab.core.util.SameThreadExecutorService;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -92,13 +93,13 @@ public class DeconzTest {
 
         Mockito.doAnswer(answer -> CompletableFuture.completedFuture(Optional.of(bridgeFullState))).when(bridgeHandler)
                 .getBridgeFullState();
-        ThingDiscoveryService discoveryService = new ThingDiscoveryService();
+        ThingDiscoveryService discoveryService = new ThingDiscoveryService(new SameThreadExecutorService());
         discoveryService.modified(Map.of(DiscoveryService.CONFIG_PROPERTY_BACKGROUND_DISCOVERY, false));
         discoveryService.setThingHandler(bridgeHandler);
         discoveryService.initialize();
         discoveryService.addDiscoveryListener(discoveryListener);
         discoveryService.startScan();
-        Mockito.verify(discoveryListener, timeout(1000L).times(20)).thingDiscovered(any(), any());
+        Mockito.verify(discoveryListener, times(20)).thingDiscovered(any(), any());
     }
 
     public static <T> T getObjectFromJson(String filename, Class<T> clazz, Gson gson) throws IOException {

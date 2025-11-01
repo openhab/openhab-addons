@@ -138,7 +138,8 @@ public class SbusTemperatureHandler extends AbstractSbusHandler {
         // Execute transaction and parse response
         SbusResponse response = adapter.executeTransaction(request);
         if (!(response instanceof ReadTemperatureResponse tempResponse)) {
-            throw new IllegalStateException("Unexpected response type: " + response.getClass().getSimpleName());
+            throw new IllegalStateException(
+                    "Unexpected response type: " + (response != null ? response.getClass().getSimpleName() : "null"));
         }
         InputRegister[] registers = tempResponse.getRegisters();
         float[] temperatures = new float[registers.length];

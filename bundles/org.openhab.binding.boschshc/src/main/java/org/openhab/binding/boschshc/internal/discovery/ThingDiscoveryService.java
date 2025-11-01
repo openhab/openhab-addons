@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.ScheduledExecutorService;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -115,6 +116,15 @@ public class ThingDiscoveryService extends AbstractThingHandlerDiscoveryService<
 
     public ThingDiscoveryService() {
         super(BridgeHandler.class, SUPPORTED_THING_TYPES, SEARCH_TIME);
+    }
+
+    /**
+     * Constructor for tests only.
+     *
+     * @param scheduler the {@link ScheduledExecutorService} to use during testing.
+     */
+    ThingDiscoveryService(ScheduledExecutorService scheduler) {
+        super(scheduler, BridgeHandler.class, SUPPORTED_THING_TYPES, SEARCH_TIME, true, null, null);
     }
 
     @Override
@@ -255,7 +265,7 @@ public class ThingDiscoveryService extends AbstractThingHandlerDiscoveryService<
      * Translates a Bosch device ID to an openHAB-compliant thing ID.
      * <p>
      * Characters that are not allowed in thing IDs are replaced by underscores.
-     * 
+     *
      * @param deviceId the Bosch device ID
      * @return the translated openHAB-compliant thing ID
      */

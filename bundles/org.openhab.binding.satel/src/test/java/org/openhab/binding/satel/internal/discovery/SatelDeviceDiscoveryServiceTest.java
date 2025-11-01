@@ -22,16 +22,14 @@ import static org.openhab.binding.satel.internal.command.SatelCommand.State.FAIL
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.function.Function;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.openhab.binding.satel.internal.command.ReadDeviceInfoCommand;
@@ -39,10 +37,12 @@ import org.openhab.binding.satel.internal.event.EventDispatcher;
 import org.openhab.binding.satel.internal.handler.SatelBridgeHandler;
 import org.openhab.binding.satel.internal.protocol.SatelMessage;
 import org.openhab.binding.satel.internal.types.IntegraType;
+import org.openhab.core.config.discovery.DiscoveryListener;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.internal.BridgeImpl;
 import org.openhab.core.thing.type.ThingType;
+import org.openhab.core.util.SameThreadExecutorService;
 
 /**
  * @author Krzysztof Goworek - Initial contribution
@@ -61,7 +61,8 @@ class SatelDeviceDiscoveryServiceTest {
     @Mock
     private EventDispatcher eventDispatcher;
 
-    private final List<DiscoveryResult> results = new ArrayList<>();
+    @Mock
+    private DiscoveryListener listener;
 
     private SatelDeviceDiscoveryService testSubject;
 
@@ -69,19 +70,9 @@ class SatelDeviceDiscoveryServiceTest {
     void setUp() {
         when(bridgeHandler.getIntegraType()).thenReturn(IntegraType.I24);
         when(bridgeHandler.getEncoding()).thenReturn(bridgeEncoding);
-
-        testSubject = new SatelDeviceDiscoveryService(bridgeHandler, thingTypeProvider) {
-            @NonNullByDefault
-            @Override
-            protected void thingDiscovered(DiscoveryResult discoveryResult) {
-                results.add(discoveryResult);
-            }
-        };
-    }
-
-    @AfterEach
-    void tearDown() {
-        results.clear();
+        testSubject = new SatelDeviceDiscoveryService(new SameThreadExecutorService(), bridgeHandler,
+                thingTypeProvider);
+        testSubject.addDiscoveryListener(listener);
     }
 
     @Test
@@ -90,7 +81,7 @@ class SatelDeviceDiscoveryServiceTest {
 
         testSubject.startScan();
 
-        assertEquals(0, results.size());
+        verifyNoInteractions(listener);
     }
 
     @Test
@@ -101,6 +92,10 @@ class SatelDeviceDiscoveryServiceTest {
         when(bridgeHandler.getThing()).thenReturn(new BridgeImpl(THING_TYPE_ETHM1, "bridgeId"));
 
         testSubject.startScan();
+
+        ArgumentCaptor<DiscoveryResult> resultCaptor = ArgumentCaptor.forClass(DiscoveryResult.class);
+        verify(listener, atLeastOnce()).thingDiscovered(any(), resultCaptor.capture());
+        List<DiscoveryResult> results = resultCaptor.getAllValues();
 
         assertEquals(2, results.size());
         assertEquals(THING_TYPE_SYSTEM, results.get(0).getThingTypeUID());
@@ -113,7 +108,7 @@ class SatelDeviceDiscoveryServiceTest {
 
         testSubject.startScan();
 
-        assertEquals(0, results.size());
+        verifyNoInteractions(listener);
         verify(bridgeHandler, times(52)).sendCommand(any(), eq(false));
     }
 
@@ -125,6 +120,9 @@ class SatelDeviceDiscoveryServiceTest {
 
         testSubject.startScan();
 
+        ArgumentCaptor<DiscoveryResult> resultCaptor = ArgumentCaptor.forClass(DiscoveryResult.class);
+        verify(listener, atLeastOnce()).thingDiscovered(any(), resultCaptor.capture());
+        List<DiscoveryResult> results = resultCaptor.getAllValues();
         assertEquals(4,
                 results.stream().filter(result -> THING_TYPE_PARTITION.equals(result.getThingTypeUID())).count());
         assertEquals(24, results.stream().filter(result -> THING_TYPE_ZONE.equals(result.getThingTypeUID())).count());
@@ -145,10 +143,12 @@ class SatelDeviceDiscoveryServiceTest {
 
         testSubject.startScan();
 
-        List<DiscoveryResult> shutterResults = results.stream()
+        ArgumentCaptor<DiscoveryResult> resultCaptor = ArgumentCaptor.forClass(DiscoveryResult.class);
+        verify(listener, atLeastOnce()).thingDiscovered(any(), resultCaptor.capture());
+        List<DiscoveryResult> results = resultCaptor.getAllValues().stream()
                 .filter(result -> THING_TYPE_SHUTTER.equals(result.getThingTypeUID())).toList();
-        assertEquals(24, shutterResults.size());
-        for (DiscoveryResult result : shutterResults) {
+        assertEquals(24, results.size());
+        for (DiscoveryResult result : results) {
             assertEquals("Device", result.getLabel());
             assertEquals(bridge.getUID(), result.getBridgeUID());
             assertEquals(2, result.getProperties().size());
@@ -162,6 +162,9 @@ class SatelDeviceDiscoveryServiceTest {
 
         testSubject.startScan();
 
+        ArgumentCaptor<DiscoveryResult> resultCaptor = ArgumentCaptor.forClass(DiscoveryResult.class);
+        verify(listener, atLeastOnce()).thingDiscovered(any(), resultCaptor.capture());
+        List<DiscoveryResult> results = resultCaptor.getAllValues();
         assertEquals(0, results.stream().filter(result -> THING_TYPE_OUTPUT.equals(result.getThingTypeUID())).count());
         assertEquals(0, results.stream().filter(result -> THING_TYPE_SHUTTER.equals(result.getThingTypeUID())).count());
     }
@@ -173,6 +176,9 @@ class SatelDeviceDiscoveryServiceTest {
 
         testSubject.startScan();
 
+        ArgumentCaptor<DiscoveryResult> resultCaptor = ArgumentCaptor.forClass(DiscoveryResult.class);
+        verify(listener, atLeastOnce()).thingDiscovered(any(), resultCaptor.capture());
+        List<DiscoveryResult> results = resultCaptor.getAllValues();
         assertEquals(0, results.stream().filter(result -> THING_TYPE_OUTPUT.equals(result.getThingTypeUID())).count());
         assertEquals(0, results.stream().filter(result -> THING_TYPE_SHUTTER.equals(result.getThingTypeUID())).count());
     }
@@ -198,7 +204,7 @@ class SatelDeviceDiscoveryServiceTest {
         thread.join();
 
         verifyNoMoreInteractions(bridgeHandler);
-        assertEquals(0, results.size());
+        verifyNoInteractions(listener);
     }
 
     private void setUpCommandResponse(int deviceKind) {

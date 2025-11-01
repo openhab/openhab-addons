@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ScheduledExecutorService;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.mybmw.internal.MyBMWConstants;
@@ -58,6 +59,16 @@ public class VehicleDiscovery extends AbstractThingHandlerDiscoveryService<MyBMW
 
     public VehicleDiscovery() {
         super(MyBMWBridgeHandler.class, MyBMWConstants.SUPPORTED_THING_SET, DISCOVERY_TIMEOUT, false);
+    }
+
+    /**
+     * Constructor for tests only.
+     *
+     * @param scheduler the {@link ScheduledExecutorService} to use during testing.
+     */
+    VehicleDiscovery(ScheduledExecutorService scheduler) {
+        super(scheduler, MyBMWBridgeHandler.class, MyBMWConstants.SUPPORTED_THING_SET, DISCOVERY_TIMEOUT, false, null,
+                null);
     }
 
     @Override

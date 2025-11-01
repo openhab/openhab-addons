@@ -19,6 +19,10 @@ import com.google.gson.annotations.SerializedName;
  * @author Christoph Weitkamp - Initial contribution
  */
 public class EnergyStats {
+    public static final double VOLTAGE_FACTOR = 0.01;
+    public static final double POWER_FACTOR = 0.01;
+    public static final double ENERGY_FACTOR = 0.001;
+
     @SerializedName("DeviceConnectState")
     public String deviceConnectState;
     @SerializedName("VoltageStat")
@@ -33,6 +37,8 @@ public class EnergyStats {
     public int mMValueVolt;
     @SerializedName("MM_Value_Power")
     public int mMValuePower;
+    @SerializedName("MM_Value_Energy")
+    public int mMValueEnergy;
     @SerializedName("tabType")
     public String tabType;
     @SerializedName("DeviceID")
@@ -47,4 +53,31 @@ public class EnergyStats {
     public int sumMonth;
     @SerializedName("RequestResult")
     public boolean requestResult;
+
+    /**
+     * Gets the scaled voltage value.
+     *
+     * @return the scaled voltage value
+     */
+    public double getScaledVoltage() {
+        return mMValueVolt * VOLTAGE_FACTOR;
+    }
+
+    /**
+     * Gets the scaled power value.
+     *
+     * @return the scaled power value
+     */
+    public double getScaledPower() {
+        return mMValuePower * POWER_FACTOR;
+    }
+
+    /**
+     * Gets the scaled energy value.
+     *
+     * @return the scaled energy value
+     */
+    public double getScaledEnergy() {
+        return mMValueEnergy * ENERGY_FACTOR;
+    }
 }

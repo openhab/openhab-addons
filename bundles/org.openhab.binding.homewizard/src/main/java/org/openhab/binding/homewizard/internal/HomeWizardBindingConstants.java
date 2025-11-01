@@ -52,6 +52,7 @@ public class HomeWizardBindingConstants {
 
     // Channel Groups
     public static final String CHANNEL_GROUP_ENERGY = "energy";
+    public static final String CHANNEL_GROUP_P1_BATTERIES = "batteries";
     public static final String CHANNEL_GROUP_WATER = "water";
     public static final String CHANNEL_GROUP_SKT_CONTROL = "control";
 
@@ -103,6 +104,12 @@ public class HomeWizardBindingConstants {
 
     public static final String CHANNEL_GAS_TIMESTAMP = "gas_timestamp";
     public static final String CHANNEL_GAS_TOTAL = "total_gas";
+
+    public static final String CHANNEL_BATTERIES_MODE = "batteries_mode";
+    public static final String CHANNEL_BATTERIES_POWER = "batteries_power";
+    public static final String CHANNEL_BATTERIES_TARGET_POWER = "batteries_target_power";
+    public static final String CHANNEL_BATTERIES_MAX_CONSUMPTION = "batteries_max_consumption";
+    public static final String CHANNEL_BATTERIES_MAX_PRODUCTION = "batteries_max_production";
 
     // Energy Socket And kWh Meter Channels
     public static final String CHANNEL_REACTIVE_POWER = "reactive_power";

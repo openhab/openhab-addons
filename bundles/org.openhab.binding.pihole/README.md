@@ -22,9 +22,10 @@ The Pi-hole Binding allows you to monitor Pi-hole statistics and control its fun
 
 | Name            | Type    | Description                                                                               | Default | Required | Advanced |
 |-----------------|---------|-------------------------------------------------------------------------------------------|---------|----------|----------|
-| hostname        | text    | Hostname or IP address of the device                                                      | N/A     | yes      | no       |
+| hostname        | text    | URL (hostname or IP address) of the pihole web server                                     | N/A     | yes      | no       |
 | token           | text    | Token to access the device. To generate token go to `settings` > `API` > `Show API token` | N/A     | yes      | no       |
-| refreshInterval | integer | Interval the device is polled in sec.                                                     | 600     | no       | yes      |
+| refreshInterval | integer | Interval the device is polled in sec                                                      | 600     | no       | yes      |
+| serverVersion   | text    | Defines the API to be used with this server                                               | v5      | no       | no      |
 
 ## Channels
 

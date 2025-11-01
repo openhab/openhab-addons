@@ -54,8 +54,12 @@ public class Details {
             Inverter temp = new Inverter();
             String serialNo = inv.getsn();
             String gateSerialNo = inv.getgsn();
+            String plantId = inv.getPlantId();
+            String plantName = inv.getPlantName();
             temp.setGateSerialNo(gateSerialNo);
             temp.setSerialNo(serialNo);
+            temp.setPlantId(plantId);
+            temp.setPlantName(plantName);
             temp.setUID(gateSerialNo + serialNo);
             temp.setToken(accessToken);
             temp.setAlias(inv.getAlias());
@@ -118,6 +122,14 @@ public class Details {
                 return this.etotal;
             }
 
+            public String getPlantId() {
+                return plant.getPlantId();
+            }
+
+            public String getPlantName() {
+                return plant.getPlantName();
+            }
+
             class Plant {
                 private int id;
                 private String name = "";
@@ -130,6 +142,14 @@ public class Details {
                 private boolean sunsynkEquip;
                 private int protocolIdentifier;
                 private int equipType;
+
+                public String getPlantId() {
+                    return String.valueOf(id);
+                }
+
+                public String getPlantName() {
+                    return name;
+                }
 
                 class GatewayVO {
                     private String gsn = "";

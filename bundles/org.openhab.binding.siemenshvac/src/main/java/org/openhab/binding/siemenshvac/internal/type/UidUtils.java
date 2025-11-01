@@ -133,7 +133,7 @@ public class UidUtils {
         result = result.replace("-setpointhc", "-setpoint-hc");
         result = result.replace("setphc", "-setpoint-hc");
 
-        return result;
+        return sanetizeId(result);
     }
 
     /**
@@ -142,18 +142,18 @@ public class UidUtils {
     public static ChannelTypeUID generateChannelTypeUID(SiemensHvacMetadataDataPoint dpt) throws SiemensHvacException {
         String type = dpt.getDptType();
         String shortDesc = dpt.getShortDescEn();
-        String result = normalizeDescriptor(shortDesc);
+        String channelTypeId = normalizeDescriptor(shortDesc);
 
         try {
             TypeConverter tp = ConverterFactory.getConverter(type);
             if (!tp.hasVariant()) {
-                result = tp.getChannelType(dpt);
+                channelTypeId = tp.getChannelType(dpt);
             }
         } catch (ConverterTypeException ex) {
             throw new SiemensHvacException(String.format("Can't find converter for type: %s", type), ex);
         }
 
-        return new ChannelTypeUID(SiemensHvacBindingConstants.BINDING_ID, result);
+        return new ChannelTypeUID(SiemensHvacBindingConstants.BINDING_ID, channelTypeId);
     }
 
     /**

@@ -29,11 +29,18 @@ import org.openhab.binding.pihole.internal.rest.model.DnsStatistics;
 import org.openhab.binding.pihole.internal.rest.model.GravityLastUpdated;
 import org.openhab.binding.pihole.internal.rest.model.Relative;
 
+import com.google.gson.FieldNamingPolicy;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 /**
  * @author Martin Grzeslowski - Initial contribution
  */
 @NonNullByDefault
 public class JettyAdminServiceTest {
+    private static final Gson GSON = new GsonBuilder()
+            .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create();
+
     String content = """
             {
               "domains_being_blocked": 131355,
@@ -83,7 +90,7 @@ public class JettyAdminServiceTest {
         var token = "validToken";
         var baseUrl = URI.create("https://example.com");
         var client = mock(HttpClient.class);
-        var adminService = new JettyAdminService(token, baseUrl, client);
+        var adminService = new JettyAdminService(token, baseUrl, client, GSON);
         var dnsStatistics = new DnsStatistics(131355, // domains_being_blocked
                 27459, // dns_queries_today
                 2603, // ads_blocked_today

@@ -18,6 +18,8 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.sbus.internal.config.ContactSensorType;
+import org.openhab.binding.sbus.internal.config.SbusContactConfig;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -40,8 +42,8 @@ public class SbusHandlerFactory extends BaseThingHandlerFactory {
     private final Logger logger = LoggerFactory.getLogger(SbusHandlerFactory.class);
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_UDP_BRIDGE, THING_TYPE_SWITCH,
-            THING_TYPE_TEMPERATURE, THING_TYPE_RGBW, THING_TYPE_CONTACT_SENSOR, THING_TYPE_MOTION_SENSOR,
-            THING_TYPE_LUX_SENSOR);
+            THING_TYPE_TEMPERATURE, THING_TYPE_TEMPERATURE_SENSOR, THING_TYPE_RGBW, THING_TYPE_CONTACT_SENSOR,
+            THING_TYPE_MOTION_SENSOR, THING_TYPE_LUX_SENSOR);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -60,15 +62,24 @@ public class SbusHandlerFactory extends BaseThingHandlerFactory {
         if (thingTypeUID.equals(THING_TYPE_SWITCH)) {
             logger.debug("Creating Sbus switch handler for thing {}", thing.getUID());
             return new SbusSwitchHandler(thing);
-        } else if (thingTypeUID.equals(THING_TYPE_TEMPERATURE)) {
-            logger.debug("Creating Sbus temperature handler for thing {}", thing.getUID());
+        } else if (thingTypeUID.equals(THING_TYPE_TEMPERATURE) || thingTypeUID.equals(THING_TYPE_TEMPERATURE_SENSOR)) {
+            logger.debug("Creating Sbus temperature sensor handler for thing {}", thing.getUID());
             return new SbusTemperatureHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_RGBW)) {
             logger.debug("Creating Sbus RGBW handler for thing {}", thing.getUID());
             return new SbusRgbwHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_CONTACT_SENSOR)) {
-            logger.debug("Creating Sbus contact sensor handler for thing {}", thing.getUID());
-            return new SbusContactHandler(thing);
+            // Determine which contact handler to create based on sensor type configuration
+            SbusContactConfig config = thing.getConfiguration().as(SbusContactConfig.class);
+            ContactSensorType sensorType = config.getSensorType();
+
+            if (sensorType == ContactSensorType.MULTI_SENSOR_02CA) {
+                logger.debug("Creating Sbus 02CA multi-sensor contact handler for thing {}", thing.getUID());
+                return new Sbus9in1ContactHandler(thing);
+            } else {
+                logger.debug("Creating Sbus 012C contact sensor handler for thing {}", thing.getUID());
+                return new SbusContactHandler(thing);
+            }
         } else if (thingTypeUID.equals(THING_TYPE_MOTION_SENSOR)) {
             logger.debug("Creating Sbus motion sensor handler for thing {}", thing.getUID());
             return new SbusMotionSensorHandler(thing);

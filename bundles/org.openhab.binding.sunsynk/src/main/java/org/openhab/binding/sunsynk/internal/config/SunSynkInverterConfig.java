@@ -15,7 +15,7 @@ package org.openhab.binding.sunsynk.internal.config;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link SunSynkInverterConfig} Parameters used for Inverterconfiguration.
+ * The {@link SunSynkInverterConfig} Parameters used for Inverter configuration.
  *
  * @author Lee Charlton - Initial contribution
  */
@@ -25,22 +25,28 @@ public class SunSynkInverterConfig {
 
     private String alias = "";
     private String serialnumber = "";
+    private String plantId = "";
+    private String plantName = "";
     private int refresh;
-
-    public String getSerialnumber() {
-        return this.serialnumber;
-    }
-
-    public int getRefresh() {
-        return this.refresh;
-    }
 
     public String getAlias() {
         return this.alias;
     }
 
-    public void setRefresh(int refresh) {
-        this.refresh = refresh;
+    public String getSerialnumber() {
+        return this.serialnumber;
+    }
+
+    public String getPlantId() {
+        return this.plantId;
+    }
+
+    public String getPlantName() {
+        return this.plantName;
+    }
+
+    public int getRefresh() {
+        return this.refresh;
     }
 
     public void setAlias(String alias) {
@@ -51,8 +57,21 @@ public class SunSynkInverterConfig {
         this.serialnumber = sn;
     }
 
+    public void setPlantId(String plantId) {
+        this.plantId = plantId;
+    }
+
+    public void setPlantName(String plantName) {
+        this.plantName = plantName;
+    }
+
+    public void setRefresh(int refresh) {
+        this.refresh = refresh;
+    }
+
     @Override
     public String toString() {
-        return "InverterConfig [alias=" + alias + ", serial=" + serialnumber + ", refresh=" + refresh + "]";
+        return "InverterConfig [alias=" + alias + ", serial=" + serialnumber + ", plant ID =" + plantId
+                + ", plant name =" + plantName + ", refresh=" + refresh + "]";
     }
 }

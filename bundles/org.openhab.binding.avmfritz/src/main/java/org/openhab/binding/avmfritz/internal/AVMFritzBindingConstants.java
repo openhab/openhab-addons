@@ -66,6 +66,7 @@ public class AVMFritzBindingConstants {
     public static final String DEVICE_SMART_ENERGY_250 = "FRITZ_Smart_Energy_250";
 
     // List of main group types
+    public static final String GROUP_BLINDS = "FRITZ_GROUP_BLINDS";
     public static final String GROUP_HEATING = "FRITZ_GROUP_HEATING";
     public static final String GROUP_SWITCH = "FRITZ_GROUP_SWITCH";
 
@@ -92,6 +93,7 @@ public class AVMFritzBindingConstants {
             DEVICE_HAN_FUN_COLOR_BULB);
     public static final ThingTypeUID HAN_FUN_DIMMABLE_BULB_THING_TYPE = new ThingTypeUID(BINDING_ID,
             DEVICE_HAN_FUN_DIMMABLE_BULB);
+    public static final ThingTypeUID GROUP_BLINDS_THING_TYPE = new ThingTypeUID(BINDING_ID, GROUP_BLINDS);
     public static final ThingTypeUID GROUP_HEATING_THING_TYPE = new ThingTypeUID(BINDING_ID, GROUP_HEATING);
     public static final ThingTypeUID GROUP_SWITCH_THING_TYPE = new ThingTypeUID(BINDING_ID, GROUP_SWITCH);
     public static final ThingTypeUID HAN_FUN_SENSOR_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_HAN_FUN_SENSOR);
@@ -202,14 +204,14 @@ public class AVMFritzBindingConstants {
             DECT301_THING_TYPE, COMETDECT_THING_TYPE);
 
     public static final Set<ThingTypeUID> SUPPORTED_POWER_METER_THING_TYPES = Set.of(DECT200_THING_TYPE,
-            DECT210_THING_TYPE);
+            DECT210_THING_TYPE, SMART_ENERGY_250_THING_TYPE);
 
     public static final Set<ThingTypeUID> SUPPORTED_DEVICE_THING_TYPES_UIDS = Set.of(DECT100_THING_TYPE,
             POWERLINE546E_THING_TYPE, HAN_FUN_CONTACT_THING_TYPE, HAN_FUN_ON_OFF_THING_TYPE, HAN_FUN_BLINDS_THING_TYPE,
-            HAN_FUN_SENSOR_THING_TYPE, HAN_FUN_HOST_THING_TYPE, SMART_ENERGY_250_THING_TYPE);
+            HAN_FUN_SENSOR_THING_TYPE, HAN_FUN_HOST_THING_TYPE);
 
-    public static final Set<ThingTypeUID> SUPPORTED_GROUP_THING_TYPES_UIDS = Set.of(GROUP_HEATING_THING_TYPE,
-            GROUP_SWITCH_THING_TYPE);
+    public static final Set<ThingTypeUID> SUPPORTED_GROUP_THING_TYPES_UIDS = Set.of(GROUP_BLINDS_THING_TYPE,
+            GROUP_HEATING_THING_TYPE, GROUP_SWITCH_THING_TYPE);
 
     public static final Set<ThingTypeUID> SUPPORTED_BRIDGE_THING_TYPES_UIDS = Set.of(BRIDGE_THING_TYPE,
             POWERLINE546E_STANDALONE_THING_TYPE);
