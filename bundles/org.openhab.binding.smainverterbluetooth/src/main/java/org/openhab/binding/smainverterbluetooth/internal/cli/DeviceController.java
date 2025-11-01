@@ -1,0 +1,134 @@
+package org.openhab.binding.smainverterbluetooth.internal.cli;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.smainverterbluetooth.internal.cli.dto.InverterData;
+import org.openhab.binding.smainverterbluetooth.internal.config.SmaInverterBluetoothConfiguration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.gson.Gson;
+//import com.google.gson.JsonSyntaxException;
+
+/**
+ * The {@link DeviceController} class defines methods that control
+ * communication with the inverter.
+ * It collects data from CLI for the various data objects defined in the dto package.
+ * 
+ * @author Lee Charlton - Initial contribution
+ */
+
+@NonNullByDefault
+public class DeviceController {
+
+    private InverterData inverterData = new InverterData();
+    private String bluetoothAddress = "";
+    private String password = "";
+    int exitCode = -1;
+    @SuppressWarnings("null")
+    private final Logger logger = LoggerFactory.getLogger(DeviceController.class);
+
+    @Nullable
+    private final String OPENHAB_HOME = System.getenv("OPENHAB_HOME");
+
+    public DeviceController() {
+    }
+
+    public DeviceController(SmaInverterBluetoothConfiguration config) {
+        this.bluetoothAddress = config.getBluetoothAddress() != null ? config.getBluetoothAddress() : "";
+        this.password = config.getPassword() != null ? config.getPassword() : "";
+    }
+
+    public int fetchInverterData() {
+
+        // Define the command and its arguments as a List
+        List<String> command = new ArrayList<>();
+        command.add(OPENHAB_HOME + "\\userdata\\files\\sma2json.exe");
+        command.add("-b");
+        command.add(this.bluetoothAddress);
+        command.add("-p");
+        command.add(this.password);
+        @SuppressWarnings("null")
+        ProcessBuilder pb = new ProcessBuilder(command);
+        logger.debug("Trying Grid Solar Data from CLI");
+        this.exitCode = -1;
+        try {
+            Process p = pb.start();
+            // Capture the standard output
+            BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
+            StringBuilder output = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                output.append(line).append(System.lineSeparator());
+            }
+            // It is crucial to also handle the error stream to prevent deadlocks
+            BufferedReader errorReader = new BufferedReader(new InputStreamReader(p.getErrorStream()));
+            StringBuilder errorOutput = new StringBuilder();
+            String errorLine;
+            while ((errorLine = errorReader.readLine()) != null) {
+                errorOutput.append(errorLine).append(System.lineSeparator());
+            }
+
+            // Wait for the process to complete, with a timeout
+            boolean finished = p.waitFor(10, TimeUnit.SECONDS);
+
+            if (finished) {
+                this.exitCode = p.exitValue();
+                String outputString = output.toString();
+                logger.trace("Command executed with exit code: {} result: {} error if any: {}", this.exitCode,
+                        outputString, errorOutput.toString());
+                Gson gson = new Gson();
+                @Nullable
+                InverterData inverterData = gson.fromJson(outputString, InverterData.class);
+                this.inverterData = inverterData != null ? inverterData : new InverterData();
+
+            } else {
+                // Handle timeout
+                logger.debug("Command timed out, destroying process.");
+                p.destroy();
+            }
+
+        } catch (Exception e) {
+            logger.debug("Error executing CLI command", e);
+        }
+        return this.exitCode;
+    }
+
+    public int getCode() {
+        return this.inverterData.getCode();
+    }
+
+    public String getMessage() {
+        return this.inverterData.getMessage();
+    }
+
+    public int getDaily() {
+        return this.inverterData.getDaily() / 1000;
+    }
+
+    public long getTotal() {
+        return this.inverterData.getTotal() / 1000;
+    }
+
+    public int getSpotPower() {
+        return this.inverterData.getSpotPower();
+    }
+
+    public double getSpotTemperature() {
+        return this.inverterData.getSpotTemperature();
+    }
+
+    public double getSpotACVolts() {
+        return this.inverterData.getSpotACVolts();
+    }
+
+    public String getTime() {
+        return this.inverterData.getTime();
+    }
+}
