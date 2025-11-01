@@ -44,16 +44,6 @@ public class Utils {
     static byte[] empty = new byte[0];
 
     /**
-     * Converts byte array to upper case hex string
-     * 
-     * @param bytes bytes to convert
-     * @return string of upper case hex chars
-     */
-    public static String bytesToHex(byte[] bytes) {
-        return HexUtils.bytesToHex(bytes);
-    }
-
-    /**
      * Converts byte array to binary string
      * 
      * @param bytes bytes to convert
@@ -66,16 +56,6 @@ public class Utils {
             s1 = s1.concat(" ");
         }
         return s1;
-    }
-
-    /**
-     * Converts byte array to lower case hex string
-     * 
-     * @param bytes bytes to convert
-     * @return string of lower case hex chars
-     */
-    public static String bytesToHexLowercase(byte[] bytes) {
-        return HexUtils.bytesToHex(bytes).toLowerCase();
     }
 
     /**
@@ -141,22 +121,6 @@ public class Utils {
             result[i] = (byte) (b ^ array2[i++]);
         }
         return result;
-    }
-
-    /**
-     * Create String of the V.3 Token
-     * String length is the nbytes characters long
-     * 
-     * @param nbytes number of bytes
-     * @return String
-     */
-    public static String tokenHex(int nbytes) {
-        Random r = new Random();
-        StringBuffer sb = new StringBuffer();
-        for (int n = 0; n < nbytes; n++) {
-            sb.append(Integer.toHexString(r.nextInt()));
-        }
-        return sb.toString().substring(0, nbytes);
     }
 
     /**

@@ -13,8 +13,8 @@
 package org.openhab.binding.mideaac.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.mideaac.internal.Utils;
 import org.openhab.binding.mideaac.internal.handler.Timer.TimerData;
+import org.openhab.core.util.HexUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -249,7 +249,7 @@ public class CommandSet extends CommandBase {
     public void setScreenDisplay(boolean screenDisplayToggle) {
         modifyBytesForDisplayOff();
         removeExtraBytes();
-        logger.trace("Set Display Bytes before encrypt {}", Utils.bytesToHex(data));
+        logger.trace("Set Display Bytes before encrypt {}", HexUtils.bytesToHex(data));
     }
 
     private void modifyBytesForDisplayOff() {
@@ -282,7 +282,7 @@ public class CommandSet extends CommandBase {
     public void getCapabilities() {
         modifyBytesForCapabilities();
         removeExtraCapabilityBytes();
-        logger.trace("Set Capability Bytes before encrypt {}", Utils.bytesToHex(data));
+        logger.trace("Set Capability Bytes before encrypt {}", HexUtils.bytesToHex(data));
     }
 
     private void modifyBytesForCapabilities() {
@@ -307,7 +307,7 @@ public class CommandSet extends CommandBase {
     public void getAdditionalCapabilities() {
         modifyBytesForAdditionalCapabilities();
         removeExtraAdditionalCapabilityBytes();
-        logger.trace("Set Additional Capability Bytes before encrypt {}", Utils.bytesToHex(data));
+        logger.trace("Set Additional Capability Bytes before encrypt {}", HexUtils.bytesToHex(data));
     }
 
     private void modifyBytesForAdditionalCapabilities() {
@@ -456,7 +456,7 @@ public class CommandSet extends CommandBase {
     public void energyPoll() {
         modifyBytesForEnergyPoll();
         removeExtraEnergyPollBytes();
-        logger.trace("Set Energy Bytes before encrypt {}", Utils.bytesToHex(data));
+        logger.trace("Set Energy Bytes before encrypt {}", HexUtils.bytesToHex(data));
     }
 
     private void modifyBytesForEnergyPoll() {
@@ -489,7 +489,7 @@ public class CommandSet extends CommandBase {
     public void humidityPoll() {
         modifyBytesForHumidityPoll();
         removeExtraHumidityPollBytes();
-        logger.trace("Set Humidity Poll Bytes before encrypt {}", Utils.bytesToHex(data));
+        logger.trace("Set Humidity Poll Bytes before encrypt {}", HexUtils.bytesToHex(data));
     }
 
     private void modifyBytesForHumidityPoll() {

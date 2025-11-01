@@ -37,6 +37,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mideaac.internal.Utils;
 import org.openhab.binding.mideaac.internal.cloud.CloudProvider;
+import org.openhab.core.util.HexUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -283,12 +284,12 @@ public class Security {
         byte[] finalData = new byte[dataBuffer.remaining()];
         dataBuffer.get(finalData);
 
-        logger.trace("Header:      {}", Utils.bytesToHex(finalHeader));
+        logger.trace("Header:      {}", HexUtils.bytesToHex(finalHeader));
 
         if (msgtype == MsgType.MSGTYPE_ENCRYPTED_RESPONSE || msgtype == MsgType.MSGTYPE_ENCRYPTED_REQUEST) {
             byte[] sign = sha256(Utils.concatenateArrays(finalHeader, finalData));
-            logger.trace("Sign:        {}", Utils.bytesToHex(sign));
-            logger.trace("TcpKey:      {}", Utils.bytesToHex(tcpKey));
+            logger.trace("Sign:        {}", HexUtils.bytesToHex(sign));
+            logger.trace("TcpKey:      {}", HexUtils.bytesToHex(tcpKey));
 
             finalData = Utils.concatenateArrays(aesCbcEncrypt(finalData, tcpKey), sign);
         }
@@ -309,7 +310,7 @@ public class Security {
             return new Decryption8370Result(new ArrayList<byte[]>(), data);
         }
         byte[] header = Arrays.copyOfRange(data, 0, 6);
-        logger.trace("Header:        {}", Utils.bytesToHex(header));
+        logger.trace("Header:        {}", HexUtils.bytesToHex(header));
         if (header[0] != (byte) 0x83 || header[1] != (byte) 0x70) {
             logger.warn("Not an 8370 message");
             return new Decryption8370Result(new ArrayList<byte[]>(), data);
@@ -336,10 +337,10 @@ public class Security {
             data = aesCbcDecrypt(data, tcpKey);
             byte[] signLocal = sha256(Utils.concatenateArrays(header, data));
 
-            logger.trace("Sign:        {}", Utils.bytesToHex(sign));
-            logger.trace("SignLocal:   {}", Utils.bytesToHex(signLocal));
-            logger.trace("TcpKey:      {}", Utils.bytesToHex(tcpKey));
-            logger.trace("Data:        {}", Utils.bytesToHex(data));
+            logger.trace("Sign:        {}", HexUtils.bytesToHex(sign));
+            logger.trace("SignLocal:   {}", HexUtils.bytesToHex(signLocal));
+            logger.trace("TcpKey:      {}", HexUtils.bytesToHex(tcpKey));
+            logger.trace("Data:        {}", HexUtils.bytesToHex(data));
 
             if (!Arrays.equals(sign, signLocal)) {
                 logger.warn("Sign does not match");
@@ -384,17 +385,17 @@ public class Security {
         byte[] plain = aesCbcDecrypt(payload, key);
         byte[] signLocal = sha256(plain);
 
-        logger.trace("Payload:   {}", Utils.bytesToHex(payload));
-        logger.trace("Sign:      {}", Utils.bytesToHex(sign));
-        logger.trace("SignLocal: {}", Utils.bytesToHex(signLocal));
-        logger.trace("Plain:     {}", Utils.bytesToHex(plain));
+        logger.trace("Payload:   {}", HexUtils.bytesToHex(payload));
+        logger.trace("Sign:      {}", HexUtils.bytesToHex(sign));
+        logger.trace("SignLocal: {}", HexUtils.bytesToHex(signLocal));
+        logger.trace("Plain:     {}", HexUtils.bytesToHex(plain));
 
         if (!Arrays.equals(sign, signLocal)) {
             logger.warn("Sign does not match");
             return false;
         }
         tcpKey = Utils.strxor(plain, key);
-        logger.trace("TcpKey:    {}", Utils.bytesToHex(tcpKey));
+        logger.trace("TcpKey:    {}", HexUtils.bytesToHex(tcpKey));
         return true;
     }
 
@@ -505,7 +506,7 @@ public class Security {
 
             String sign = path + query + cloudProvider.appkey();
             logger.trace("sign: {}", sign);
-            return Utils.bytesToHexLowercase(sha256((sign).getBytes(StandardCharsets.US_ASCII)));
+            return HexUtils.bytesToHex(sha256(sign.getBytes(StandardCharsets.US_ASCII))).toLowerCase();
         } catch (URISyntaxException e) {
             logger.warn("Error parsing URI '{}': {}", url, e.getMessage());
         }
@@ -556,7 +557,7 @@ public class Security {
         SecretKeySpec secretKeySpec = new SecretKeySpec(key.getBytes(), algorithm);
         Mac mac = Mac.getInstance(algorithm);
         mac.init(secretKeySpec);
-        return Utils.bytesToHexLowercase(mac.doFinal(data.getBytes()));
+        return HexUtils.bytesToHex(mac.doFinal(data.getBytes())).toLowerCase();
     }
 
     /**
@@ -573,10 +574,10 @@ public class Security {
             m.update(password.getBytes(StandardCharsets.US_ASCII));
 
             // Create the login hash with the loginID + password hash + appKey, then hash it all AGAIN
-            String loginHash = loginId + Utils.bytesToHexLowercase(m.digest()) + cloudProvider.appkey();
+            String loginHash = loginId + HexUtils.bytesToHex(m.digest()).toLowerCase() + cloudProvider.appkey();
             m = MessageDigest.getInstance("SHA-256");
             m.update(loginHash.getBytes(StandardCharsets.US_ASCII));
-            return Utils.bytesToHexLowercase(m.digest());
+            return HexUtils.bytesToHex(m.digest()).toLowerCase();
         } catch (NoSuchAlgorithmException e) {
             logger.warn("encryptPassword error: NoSuchAlgorithmException: {}", e.getMessage());
         }
@@ -596,10 +597,10 @@ public class Security {
             md.update(password.getBytes(StandardCharsets.US_ASCII));
 
             MessageDigest mdSecond = MessageDigest.getInstance("MD5");
-            mdSecond.update(Utils.bytesToHexLowercase(md.digest()).getBytes(StandardCharsets.US_ASCII));
+            mdSecond.update((HexUtils.bytesToHex(md.digest()).toLowerCase()).getBytes(StandardCharsets.US_ASCII));
 
-            String loginHash = loginId + Utils.bytesToHexLowercase(mdSecond.digest()) + cloudProvider.appkey();
-            return Utils.bytesToHexLowercase(sha256(loginHash.getBytes(StandardCharsets.US_ASCII)));
+            String loginHash = loginId + HexUtils.bytesToHex(mdSecond.digest()).toLowerCase() + cloudProvider.appkey();
+            return HexUtils.bytesToHex(sha256(loginHash.getBytes(StandardCharsets.US_ASCII))).toLowerCase();
         } catch (NoSuchAlgorithmException e) {
             logger.warn("encryptIamPasswordt error: NoSuchAlgorithmException: {}", e.getMessage());
         }
@@ -623,6 +624,6 @@ public class Security {
             b3[i] = (byte) (b1[i] ^ b2[i]);
             i++;
         }
-        return Utils.bytesToHexLowercase(b3);
+        return HexUtils.bytesToHex(b3).toLowerCase();
     }
 }

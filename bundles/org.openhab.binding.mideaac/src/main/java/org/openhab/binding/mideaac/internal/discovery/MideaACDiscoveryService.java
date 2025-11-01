@@ -39,6 +39,7 @@ import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.ThingUID;
+import org.openhab.core.util.HexUtils;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -258,28 +259,28 @@ public class MideaACDiscoveryService extends AbstractDiscoveryService {
         final String ipAddress = packet.getAddress().getHostAddress();
         byte[] data = Arrays.copyOfRange(packet.getData(), 0, packet.getLength());
 
-        logger.trace("Midea AC discover data ({}) from {}: '{}'", data.length, ipAddress, Utils.bytesToHex(data));
+        logger.trace("Midea AC discover data ({}) from {}: '{}'", data.length, ipAddress, HexUtils.bytesToHex(data));
 
-        if (data.length >= 104 && (Utils.bytesToHex(Arrays.copyOfRange(data, 0, 2)).equals("5A5A")
-                || Utils.bytesToHex(Arrays.copyOfRange(data, 8, 10)).equals("5A5A"))) {
+        if (data.length >= 104 && (HexUtils.bytesToHex(Arrays.copyOfRange(data, 0, 2)).equals("5A5A")
+                || HexUtils.bytesToHex(Arrays.copyOfRange(data, 8, 10)).equals("5A5A"))) {
             logger.trace("Device supported");
             String mSmartId, mSmartip = "", mSmartSN = "", mSmartSSID = "", mSmartType = "", mSmartPort = "",
                     mSmartVersion = "";
 
-            if (Utils.bytesToHex(Arrays.copyOfRange(data, 0, 2)).equals("5A5A")) {
+            if (HexUtils.bytesToHex(Arrays.copyOfRange(data, 0, 2)).equals("5A5A")) {
                 mSmartVersion = "2";
             }
-            if (Utils.bytesToHex(Arrays.copyOfRange(data, 0, 2)).equals("8370")) {
+            if (HexUtils.bytesToHex(Arrays.copyOfRange(data, 0, 2)).equals("8370")) {
                 mSmartVersion = "3";
             }
-            if (Utils.bytesToHex(Arrays.copyOfRange(data, 8, 10)).equals("5A5A")) {
+            if (HexUtils.bytesToHex(Arrays.copyOfRange(data, 8, 10)).equals("5A5A")) {
                 data = Arrays.copyOfRange(data, 8, data.length - 16);
             }
 
             logger.debug("Version: {}", mSmartVersion);
 
             byte[] id = Arrays.copyOfRange(data, 20, 26);
-            logger.trace("Id Bytes: {}", Utils.bytesToHex(id));
+            logger.trace("Id Bytes: {}", HexUtils.bytesToHex(id));
 
             byte[] idReverse = Utils.reverse(id);
 
@@ -289,10 +290,10 @@ public class MideaACDiscoveryService extends AbstractDiscoveryService {
             logger.debug("Id: '{}'", mSmartId);
 
             byte[] encryptData = Arrays.copyOfRange(data, 40, data.length - 16);
-            logger.trace("Encrypt data: '{}'", Utils.bytesToHex(encryptData));
+            logger.trace("Encrypt data: '{}'", HexUtils.bytesToHex(encryptData));
 
             byte[] reply = security.aesDecrypt(encryptData);
-            logger.trace("Length: {}, Reply: '{}'", reply.length, Utils.bytesToHex(reply));
+            logger.trace("Length: {}, Reply: '{}'", reply.length, HexUtils.bytesToHex(reply));
 
             mSmartip = Byte.toUnsignedInt(reply[3]) + "." + Byte.toUnsignedInt(reply[2]) + "."
                     + Byte.toUnsignedInt(reply[1]) + "." + Byte.toUnsignedInt(reply[0]);
@@ -323,7 +324,7 @@ public class MideaACDiscoveryService extends AbstractDiscoveryService {
                             mSmartSSID, mSmartType, new TreeMap<>(), // Placeholder for capabilities
                             new TreeMap<>())) // Placeholder for numericCapabilities
                     .build();
-        } else if (Utils.bytesToHex(Arrays.copyOfRange(data, 0, 6)).equals("3C3F786D6C20")) {
+        } else if (HexUtils.bytesToHex(Arrays.copyOfRange(data, 0, 6)).equals("3C3F786D6C20")) {
             logger.debug("Midea AC v1 device was detected, supported, but not implemented yet.");
             return null;
         } else {

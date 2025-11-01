@@ -155,7 +155,6 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
                 CommandSet humidityUpdate = new CommandSet();
                 humidityUpdate.humidityPoll();
                 connectionManager.sendCommand(humidityUpdate, this);
-
             } catch (MideaAuthenticationException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
             } catch (MideaConnectionException | MideaException e) {
@@ -254,7 +253,7 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
             if (config.isTokenKeyObtainable()) {
                 try {
                     CloudProvider cloudProvider = CloudProvider.getCloudProvider(config.cloud);
-                    getTokenKeyCloud(cloudProvider);
+                    Executors.newSingleThreadExecutor().submit(() -> getTokenKeyCloud(cloudProvider));
                     return;
                 } catch (Exception e) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -468,13 +467,13 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
     @Override
     public void updateChannels(EnergyResponse energyUpdate) {
         if (config.energyDecode) {
-            updateChannel(CHANNEL_KILOWATT_HOURS, new DecimalType(energyUpdate.getKilowattHoursBCD()));
-            updateChannel(CHANNEL_AMPERES, new DecimalType(energyUpdate.getAmperesBCD()));
-            updateChannel(CHANNEL_WATTS, new DecimalType(energyUpdate.getWattsBCD()));
+            updateChannel(CHANNEL_ENERGY_CONSUMPTION, new DecimalType(energyUpdate.getKilowattHoursBCD()));
+            updateChannel(CHANNEL_CURRENT_DRAW, new DecimalType(energyUpdate.getAmperesBCD()));
+            updateChannel(CHANNEL_POWER_CONSUMPTION, new DecimalType(energyUpdate.getWattsBCD()));
         } else {
-            updateChannel(CHANNEL_KILOWATT_HOURS, new DecimalType(energyUpdate.getKilowattHours()));
-            updateChannel(CHANNEL_AMPERES, new DecimalType(energyUpdate.getAmperes()));
-            updateChannel(CHANNEL_WATTS, new DecimalType(energyUpdate.getWatts()));
+            updateChannel(CHANNEL_ENERGY_CONSUMPTION, new DecimalType(energyUpdate.getKilowattHours()));
+            updateChannel(CHANNEL_CURRENT_DRAW, new DecimalType(energyUpdate.getAmperes()));
+            updateChannel(CHANNEL_POWER_CONSUMPTION, new DecimalType(energyUpdate.getWatts()));
         }
     }
 

@@ -16,8 +16,8 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.mideaac.internal.Utils;
 import org.openhab.binding.mideaac.internal.security.Crc8;
+import org.openhab.core.util.HexUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -281,7 +281,7 @@ public class CommandBase {
      * Pulls the elements of the Base command together
      */
     public void compose() {
-        logger.trace("Base Bytes before crypt {}", Utils.bytesToHex(data));
+        logger.trace("Base Bytes before crypt {}", HexUtils.bytesToHex(data));
         byte crc8 = (byte) Crc8.calculate(Arrays.copyOfRange(data, 10, data.length));
         byte[] newData1 = new byte[data.length + 1];
         System.arraycopy(data, 0, newData1, 0, data.length);
@@ -308,7 +308,6 @@ public class CommandBase {
         for (byte value : bytes) {
             sum = (byte) (sum + value);
         }
-        sum = (byte) ((255 - (sum % 256)) + 1);
-        return (byte) sum;
+        return (byte) ((255 - (sum % 256)) + 1);
     }
 }

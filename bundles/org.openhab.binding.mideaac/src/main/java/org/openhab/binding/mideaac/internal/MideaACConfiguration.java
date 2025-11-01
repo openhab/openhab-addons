@@ -118,7 +118,7 @@ public class MideaACConfiguration {
      * @return true(discovery needed), false (not needed)
      */
     public boolean isDiscoveryPossible() {
-        return (Utils.validateIP(ipAddress));
+        return Utils.validateIP(ipAddress);
     }
 
     /**
@@ -128,7 +128,7 @@ public class MideaACConfiguration {
      * @return true (yes they can), false (they cannot)
      */
     public boolean isTokenKeyObtainable() {
-        return (!email.isBlank() && !password.isBlank() && !cloud.isBlank());
+        return !email.isBlank() && !password.isBlank() && !cloud.isBlank();
     }
 
     /**

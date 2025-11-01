@@ -63,9 +63,9 @@ public class MideaACBindingConstants {
     public static final String CHANNEL_HUMIDITY = "humidity";
     public static final String CHANNEL_SCREEN_DISPLAY = "screen-display";
     public static final String CHANNEL_FILTER_STATUS = "filter-status";
-    public static final String CHANNEL_KILOWATT_HOURS = "kilowatt-hours";
-    public static final String CHANNEL_AMPERES = "amperes";
-    public static final String CHANNEL_WATTS = "watts";
+    public static final String CHANNEL_ENERGY_CONSUMPTION = "energy-consumption";
+    public static final String CHANNEL_CURRENT_DRAW = "current-draw";
+    public static final String CHANNEL_POWER_CONSUMPTION = "power-consumption";
 
     public static final Unit<Temperature> API_TEMPERATURE_UNIT = SIUnits.CELSIUS;
 

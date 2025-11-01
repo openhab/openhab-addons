@@ -22,6 +22,7 @@ import java.util.HexFormat;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.mideaac.internal.Utils;
+import org.openhab.core.util.HexUtils;
 
 /**
  * The {@link MideaACDiscoveryServiceTest} tests the discovery byte arrays
@@ -45,7 +46,7 @@ public class MideaACDiscoveryServiceTest {
      */
     @Test
     public void testVersion() {
-        if (Utils.bytesToHex(Arrays.copyOfRange(data, 0, 2)).equals("8370")) {
+        if (HexUtils.bytesToHex(Arrays.copyOfRange(data, 0, 2)).equals("8370")) {
             mSmartVersion = "3";
         } else {
             mSmartVersion = "2";
@@ -58,7 +59,7 @@ public class MideaACDiscoveryServiceTest {
      */
     @Test
     public void testId() {
-        if (Utils.bytesToHex(Arrays.copyOfRange(data, 8, 10)).equals("5A5A")) {
+        if (HexUtils.bytesToHex(Arrays.copyOfRange(data, 8, 10)).equals("5A5A")) {
             data = Arrays.copyOfRange(data, 8, data.length - 16);
         }
         byte[] id = Utils.reverse(Arrays.copyOfRange(data, 20, 26));

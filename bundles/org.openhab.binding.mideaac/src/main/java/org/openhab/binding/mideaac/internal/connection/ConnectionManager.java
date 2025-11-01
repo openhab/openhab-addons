@@ -42,6 +42,7 @@ import org.openhab.binding.mideaac.internal.handler.capabilities.CapabilitiesRes
 import org.openhab.binding.mideaac.internal.security.Decryption8370Result;
 import org.openhab.binding.mideaac.internal.security.Security;
 import org.openhab.binding.mideaac.internal.security.Security.MsgType;
+import org.openhab.core.util.HexUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -168,6 +169,8 @@ public class ConnectionManager {
                         Thread.sleep(5000);
                     } catch (InterruptedException ex) {
                         logger.debug("An interupted error (socket retry) has occured {}", ex.getMessage());
+                        Thread.currentThread().interrupt();
+                        throw new MideaConnectionException("Socket connection interrupted");
                     }
                     logger.debug("Socket retry count {}, Socket timeout connecting to {}: {}", retrySocket, ipAddress,
                             e.getMessage());
@@ -242,7 +245,7 @@ public class ConnectionManager {
     private void doV3Handshake() throws MideaConnectionException, MideaAuthenticationException {
         byte[] request = security.encode8370(Utils.hexStringToByteArray(token), MsgType.MSGTYPE_HANDSHAKE_REQUEST);
         try {
-            logger.trace("Device at IP: {} writing handshake_request: {}", ipAddress, Utils.bytesToHex(request));
+            logger.trace("Device at IP: {} writing handshake_request: {}", ipAddress, HexUtils.bytesToHex(request));
 
             write(request);
             byte[] response = read();
@@ -315,8 +318,8 @@ public class ConnectionManager {
             throws MideaConnectionException, MideaAuthenticationException, MideaException, IOException {
         ensureConnected();
 
-        if (command instanceof CommandSet) {
-            ((CommandSet) command).setPromptTone(promptTone);
+        if (command instanceof CommandSet cmdSet) {
+            cmdSet.setPromptTone(promptTone);
         }
         Packet packet = new Packet(command, deviceId, security);
         packet.compose();
@@ -340,7 +343,7 @@ public class ConnectionManager {
             } catch (InterruptedException e) {
                 logger.debug("An interupted error (write command2) has occured {}", e.getMessage());
                 Thread.currentThread().interrupt();
-                // Note, but continue anyway for second write if needed.
+                throw new MideaConnectionException("Command interrupted during wait");
             }
 
             // Input stream is checked after 1.5 seconds
@@ -363,7 +366,7 @@ public class ConnectionManager {
                         if (response.length > 40 + 16) {
                             data = security.aesDecrypt(Arrays.copyOfRange(response, 40, response.length - 16));
                             logger.trace("Bytes in HEX, decoded and with header: length: {}, data: {}", data.length,
-                                    Utils.bytesToHex(data));
+                                    HexUtils.bytesToHex(data));
                         }
                         // The response data from the appliance includes a packet header which we don't want
                         if (data != null && data.length > 10) {
@@ -383,7 +386,7 @@ public class ConnectionManager {
                     if (responseBytes.length > 40 + 16) {
                         data = security.aesDecrypt(Arrays.copyOfRange(responseBytes, 40, responseBytes.length - 16));
                         logger.trace("V2 Bytes decoded with header: length: {}, data: {}", data.length,
-                                Utils.bytesToHex(data));
+                                HexUtils.bytesToHex(data));
                     }
                     // The response data from the appliance includes a packet header which we don't want
                     if (data != null && data.length > 10) {
@@ -424,7 +427,7 @@ public class ConnectionManager {
     private void handleResponse(byte[] data, byte bodyType, @Nullable Callback callback) throws MideaException {
         logger.trace("Response bodyType: {}", bodyType);
         logger.debug("Bytes in HEX, decoded and stripped without header: length: {}, data: {}", data.length,
-                Utils.bytesToHex(data));
+                HexUtils.bytesToHex(data));
         logger.trace("Bytes in BINARY, decoded and stripped without header: length: {}, data: {}", data.length,
                 Utils.bytesToBinary(data));
 

@@ -31,6 +31,7 @@ import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.mideaac.internal.Utils;
 import org.openhab.binding.mideaac.internal.security.Security;
 import org.openhab.binding.mideaac.internal.security.TokenKey;
+import org.openhab.core.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -116,7 +117,7 @@ public class Cloud {
         // This adds the first 16 characters of a 16 byte string
         // if Cloud provider uses proxied and wasn't added by the method()
         if (!data.has("reqId") && !cloudProvider.proxied().isBlank()) {
-            data.addProperty("reqId", Utils.tokenHex(16));
+            data.addProperty("reqId", StringUtils.getRandomHex(16));
         }
 
         String url = cloudProvider.apiurl() + endpoint;
@@ -176,11 +177,13 @@ public class Cloud {
         try {
             cr = request.send();
         } catch (InterruptedException e) {
-            logger.warn("an interupted error has occurred{}", e.getMessage());
+            Thread.currentThread().interrupt(); // Restore interrupt flag
+            logger.warn("Request interrupted: {}", e.getMessage());
+            return null; // Return quickly
         } catch (TimeoutException e) {
-            logger.warn("a timeout error has occurred{}", e.getMessage());
+            logger.warn("Request timed out: {}", e.getMessage());
         } catch (ExecutionException e) {
-            logger.warn("an execution error has occurred{}", e.getMessage());
+            logger.warn("Request execution failed: {}", e.getMessage());
         }
 
         if (cr != null) {
@@ -203,7 +206,7 @@ public class Cloud {
             if (code != 0) {
                 errMsg = msg;
                 logger.warn("Error {} logging to Cloud: {}", code, msg);
-                return null;
+                throw new LoginFailedException("Login failed with error code " + code + ": " + msg);
             } else {
                 logger.debug("Api response ok: {} ({})", code, msg);
                 if (!cloudProvider.proxied().isBlank()) {
@@ -257,7 +260,7 @@ public class Cloud {
             iotData.addProperty("loginAccount", loginAccount);
             iotData.addProperty("password", security.encryptPassword(loginId, password));
             iotData.addProperty("pushToken", Utils.tokenUrlsafe(120));
-            iotData.addProperty("reqId", Utils.tokenHex(16));
+            iotData.addProperty("reqId", StringUtils.getRandomHex(16));
             iotData.addProperty("src", cloudProvider.appid());
             iotData.addProperty("stamp", new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()));
             newData.add("iotData", iotData);

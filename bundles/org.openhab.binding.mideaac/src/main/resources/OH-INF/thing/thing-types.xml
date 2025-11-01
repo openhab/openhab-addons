@@ -30,9 +30,9 @@
 			<channel id="auxiliary-heat" typeId="auxiliary-heat"/>
 			<channel id="maximum-humidity" typeId="maximum-humidity"/>
 			<channel id="humidity" typeId="humidity"/>
-			<channel id="kilowatt-hours" typeId="kilowatt-hours"/>
-			<channel id="amperes" typeId="amperes"/>
-			<channel id="watts" typeId="watts"/>
+			<channel id="energy-consumption" typeId="energy-consumption"/>
+			<channel id="current-draw" typeId="current-draw"/>
+			<channel id="power-consumption" typeId="power-consumption"/>
 			<channel id="screen-display" typeId="screen-display"/>
 			<channel id="filter-status" typeId="filter-status"/>
 		</channels>
@@ -96,7 +96,7 @@
 			</parameter>
 			<parameter name="pollingTime" type="decimal" required="true" min="30" unit="s">
 				<context>pollingTime</context>
-				<label>Poll frequency in seconds</label>
+				<label>Poll Frequency in Seconds</label>
 				<description>Poll device status. Minimum is 30, default 60.</description>
 				<default>60</default>
 			</parameter>
@@ -358,7 +358,7 @@
 		</tags>
 		<state readOnly="true" pattern="%d%%"/>
 	</channel-type>
-	<channel-type id="kilowatt-hours" advanced="true">
+	<channel-type id="energy-consumption" advanced="true">
 		<item-type>Number</item-type>
 		<label>Kilowatt Hours</label>
 		<description>kilowatt Hours reported by the indoor unit.</description>
@@ -369,7 +369,7 @@
 		</tags>
 		<state readOnly="true" pattern="%.1f"/>
 	</channel-type>
-	<channel-type id="amperes" advanced="true">
+	<channel-type id="current-draw" advanced="true">
 		<item-type>Number</item-type>
 		<label>Amperes</label>
 		<description>Amperes (current) reported by the indoor unit.</description>
@@ -380,7 +380,7 @@
 		</tags>
 		<state readOnly="true" pattern="%.1f"/>
 	</channel-type>
-	<channel-type id="watts" advanced="true">
+	<channel-type id="power-consumption" advanced="true">
 		<item-type>Number</item-type>
 		<label>Watts</label>
 		<description>Watts reported by the indoor unit.</description>

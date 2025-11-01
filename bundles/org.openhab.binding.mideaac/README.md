@@ -70,9 +70,9 @@ Note:  After discovery, the thing properties dropdown on the Thing UI page will 
 | screen-display       | Switch             | If device supports across LAN, turns off the LED display.                                              |           | Yes      |
 | maximum-humidity     | Number             | If device supports, allows setting the maximum humidity in DRY mode                                    |           | Yes
 | humidity             | Number             | If device supports, the indoor room humidity.                                                          | Yes       | Yes      |
-| kilowatt-hours       | Number             | If device supports, cumulative KWH usage                                                               | Yes       | Yes      |
-| amperes              | Number             | If device supports, current amperage usage                                                             | Yes       | Yes      |
-| watts                | Number             | If device supports, current wattage reading                                                            | Yes       | Yes      |
+| energy-consumption   | Number             | If device supports, cumulative Kilowatt-Hours usage                                                    | Yes       | Yes      |
+| current-draw         | Number             | If device supports, instantaneous amperage usage                                                       | Yes       | Yes      |
+| power-consumption    | Number             | If device supports, instantaneous wattage reading                                                      | Yes       | Yes      |
 | appliance-error      | Switch             | If device supports, appliance error notification                                                       | Yes       | Yes      |
 | filter-status        | Switch             | If device supports, notification that filter needs cleaning                                            | Yes       | Yes      |
 | auxiliary-heat       | Switch             | If device supports, auxiliary heat (On or Off)                                                         | Yes       | Yes      |
