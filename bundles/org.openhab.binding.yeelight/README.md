@@ -17,10 +17,10 @@ This binding integrates the [Yeelight Lighting Product](https://www.yeelight.com
 
 ## Preconditions
 
-To control Yeelight devices with this binding, you need to connect the device to your local network at first with the Yeelight app.
-This app is available in the iOS AppStore and on Google Play.
+To control Yeelight devices with this binding, you need to connect the device to your local network first using the Yeelight app.
+This app is available in the iOS App Store and on Google Play.
 
-Then you need to activate LAN control mode by enable Developer Mode in device settings, after which it will become discoverable by openHAB.
+Then you need to activate LAN control mode by enabling Developer Mode in device settings, after which it will become discoverable by openHAB.
 
 ## Discovery
 
@@ -30,10 +30,10 @@ Yeelight smart LED devices announce themselves on the network through UPnP, so t
 
 All Yeelight things require the `deviceId` from the device as a configuration parameter. This table shows all available parameters:
 
-| Parameter           | Values                                         | Mandatory |
-|---------------------|------------------------------------------------|-----------|
-| deviceId            | ID of the Yeelight device                      | Yes       |
-| duration            | Duration for changing between different states | No        |
+| Parameter           | Values                                           | Mandatory |
+|---------------------|--------------------------------------------------|-----------|
+| deviceId            | ID of the Yeelight device                        | Yes       |
+| duration            | Duration for transition between different states | No        |
 
 ## Channels
 
@@ -41,12 +41,12 @@ All devices support some of the following channels:
 
 | Channel | Item Type | Description |
 |--------|------|------|
-|`brightness` | `Dimmer` | This channel supports adjusting the brightness value, it is available on `dolphin` and `ceiling`.|
-|`color` | `Color` | This channel supports color control, it is available on `wonder` and `stripe`.|
-|`colorTemperature` | `Dimmer` | This channel supports adjusting the color temperature, it is available on `wonder` and `stripe` and `ceiling`.|
-|`command` | `String` | This channel sends a command directly to the device, it is available on all Yeelight Things.|
-|`backgroundColor` | `Color` or `Dimmer`  | This channel supports color control for the ambient light, it is available on `ceiling4`.|
-|`nightlight` | `Switch` | This supports switching to nightlight mode, it is available on `ceiling1` or `ceiling4`.|
+|`brightness` | `Dimmer` | This channel supports adjusting the brightness value; it is available on `dolphin` and `ceiling`.|
+|`color` | `Color` | This channel supports color control; it is available on `wonder` and `stripe`.|
+|`colorTemperature` | `Dimmer` | This channel supports adjusting the color temperature; it is available on `wonder`, `stripe`, and `ceiling`.|
+|`command` | `String` | This channel sends a command directly to the device; it is available on all Yeelight things.|
+|`backgroundColor` | `Color` or `Dimmer`  | This channel supports color control for the ambient light; it is available on `ceiling4`.|
+|`nightlight` | `Switch` | This channel supports switching to nightlight mode; it is available on `ceiling1` and `ceiling4`.|
 
 ## Full Example
 
