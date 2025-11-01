@@ -23,7 +23,6 @@ import static org.openhab.binding.evcc.internal.EvccBindingConstants.NUMBER_TIME
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Objects;
-import java.util.StringJoiner;
 
 import javax.measure.Unit;
 
