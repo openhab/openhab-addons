@@ -10,15 +10,17 @@
 		<semantic-equipment-tag>AlarmSystem</semantic-equipment-tag>
 		<channels>
 			<channel id="imageMonitorId" typeId="id">
-				<label>Image Monitor Id</label>
-				<description>Monitor ID for Image URL Channel</description>
+				<label>Image Monitor ID</label>
+				<description>Monitor ID to use for selecting an image URL. Sending an OFF command to this channel will reset the
+					monitor ID and URL to UNDEF.</description>
 			</channel>
 			<channel id="imageUrl" typeId="url">
 				<label>Image URL</label>
 			</channel>
 			<channel id="videoMonitorId" typeId="id">
-				<label>Video Monitor Id</label>
-				<description>Monitor ID for Video URL Channel</description>
+				<label>Video Monitor ID</label>
+				<description>Monitor ID to use for selecting a video URL. Sending an OFF command to this channel will reset the
+					monitor ID and URL to UNDEF.</description>
 			</channel>
 			<channel id="videoUrl" typeId="url">
 				<label>Video URL</label>
@@ -123,7 +125,7 @@
 	<channel-type id="function">
 		<item-type>String</item-type>
 		<label>Function</label>
-		<description>State of the monitor (e.g. Nodect, Record)</description>
+		<description>State of the monitor (e.g., Nodect, Record)</description>
 		<state pattern="%s">
 			<options>
 				<option value="None">None</option>
@@ -179,8 +181,8 @@
 	</channel-type>
 	<channel-type id="eventId">
 		<item-type>String</item-type>
-		<label>Event Id</label>
-		<description>Id of the event</description>
+		<label>Event ID</label>
+		<description>ID of the event</description>
 		<state readOnly="true" pattern="%s"></state>
 	</channel-type>
 	<channel-type id="eventName">
@@ -217,13 +219,13 @@
 		<item-type>Number</item-type>
 		<label>Event Frames</label>
 		<description>Number of frames in the event</description>
-		<state readOnly="true" pattern="%d"></state>
+		<state readOnly="true" pattern="%.0f"></state>
 	</channel-type>
 	<channel-type id="eventAlarmFrames">
 		<item-type>Number</item-type>
 		<label>Event Alarm Frames</label>
 		<description>Number of alarm frames in the event</description>
-		<state readOnly="true" pattern="%d"></state>
+		<state readOnly="true" pattern="%.0f"></state>
 	</channel-type>
 	<channel-type id="eventLength">
 		<item-type>Number:Time</item-type>
