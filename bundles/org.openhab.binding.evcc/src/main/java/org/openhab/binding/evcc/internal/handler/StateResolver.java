@@ -56,8 +56,9 @@ public final class StateResolver {
      */
     @Nullable
     public State resolveState(String key, JsonElement value) {
-        if (value.isJsonNull() || !value.isJsonPrimitive())
+        if (value.isJsonNull() || !value.isJsonPrimitive()) {
             return null;
+        }
         JsonPrimitive prim = value.getAsJsonPrimitive();
         if (prim.isNumber()) {
             double raw = prim.getAsDouble();
@@ -94,25 +95,34 @@ public final class StateResolver {
     private Unit<?> determineBaseUnitFromKey(String key) {
         String lower = key.toLowerCase();
 
-        if (lower.contains("soc") || lower.contains("percentage"))
+        if (lower.contains("soc") || lower.contains("percentage")) {
             return Units.PERCENT;
-        if (lower.contains("power") || lower.contains("threshold") || lower.contains("tariffsolar"))
+        }
+        if (lower.contains("power") || lower.contains("threshold") || lower.contains("tariffsolar")) {
             return Units.WATT;
-        if (lower.contains("energy") || lower.contains("capacity") || lower.contains("import"))
+        }
+        if (lower.contains("energy") || lower.contains("capacity") || lower.contains("import")) {
             return Units.WATT_HOUR;
-        if (lower.contains("temp") || lower.contains("temperature") || lower.contains("heating"))
+        }
+        if (lower.contains("temp") || lower.contains("temperature") || lower.contains("heating")) {
             return SIUnits.CELSIUS;
-        if (lower.contains("voltage"))
+        }
+        if (lower.contains("voltage")) {
             return Units.VOLT;
-        if (lower.contains("current"))
+        }
+        if (lower.contains("current")) {
             return Units.AMPERE;
+        }
         if (lower.contains("duration") || lower.contains("time") || lower.contains("delay")
-                || lower.contains("remaining") || lower.contains("overrun") || lower.contains("precondition"))
+                || lower.contains("remaining") || lower.contains("overrun") || lower.contains("precondition")) {
             return Units.SECOND;
-        if (lower.contains("odometer") || lower.contains("distance") || lower.contains("range"))
+        }
+        if (lower.contains("odometer") || lower.contains("distance") || lower.contains("range")) {
             return SIUnits.METRE;
-        if (lower.contains("co2"))
+        }
+        if (lower.contains("co2")) {
             return Units.GRAM_PER_KILOWATT_HOUR;
+        }
         return Units.ONE;
     }
 }
