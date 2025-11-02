@@ -18,10 +18,14 @@ classDiagram
     }
 
     class ConfigurationManager {
-        +analyzeUriConfiguration(URI, Configuration) ConfigurationUpdate
-        +analyzeSystemInfoConfiguration(SystemInfo, Configuration) ConfigurationUpdate
-        +applyConfigurationChanges(Configuration, Map)
+        +analyze~T~(ConfigurationExtractor~T~, T, Configuration) ConfigurationUpdate
     }
+
+    class ConfigurationExtractor~T~ {
+        <<interface>>
+    }
+
+    ConfigurationManager --> ConfigurationExtractor : uses
 
     class ServerStateManager {
         +analyzeServerState(ServerState, Configuration, Thing) StateAnalysis
@@ -45,4 +49,10 @@ classDiagram
 
 Utility classes provide focused, testable logic for user management,
 configuration, and state analysis.
+
+The `ConfigurationManager` uses the Strategy pattern with
+`ConfigurationExtractor<T>` interface to support multiple configuration sources.
+See [Configuration Management Architecture](configuration-management.md) for
+detailed documentation.
+
 See the [architecture overview](../architecture.md) for context.

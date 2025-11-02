@@ -4,7 +4,7 @@
 
 This document provides a high-level overview of the server discovery process for
 Jellyfin servers in the openHAB Jellyfin binding.
-For architectural context, see [architecture.md](./architecture.md).
+For architectural context, see [architecture.md](../architecture.md).
 
 ## Discovery Workflow
 
@@ -31,4 +31,4 @@ flowchart TD
 
 ## Further Information
 
-For more details on the overall architecture, see [architecture.md](./architecture.md).
+For more details on the overall architecture, see [architecture.md](../architecture.md).

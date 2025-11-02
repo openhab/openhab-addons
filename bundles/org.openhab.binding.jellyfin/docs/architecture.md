@@ -66,6 +66,8 @@ For detailed diagrams and explanations, see:
     Overview of handler structure and dependency injection.
 - [Utility Classes Architecture](architecture/utility-classes.md):
     Focused classes for user management, configuration, and state analysis.
+- [Configuration Management Architecture](architecture/configuration-management.md):
+    Strategy pattern-based configuration extraction and management system.
 - [Task Management Architecture](architecture/task-management.md):
     Task manager and factory design for extensibility.
 - [Error Handling Architecture](architecture/error-handling.md):
@@ -93,8 +95,12 @@ classDiagram
     }
     class ConfigurationUpdate {
         <<record>>
-        +Map~String,Object~ configMap
+        +String hostname
+        +int port
+        +boolean ssl
+        +String path
         +boolean hasChanges
+        +applyTo(Configuration) void
     }
     class StateAnalysis {
         <<record>>
