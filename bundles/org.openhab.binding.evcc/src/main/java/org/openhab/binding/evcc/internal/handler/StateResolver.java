@@ -72,7 +72,8 @@ public final class StateResolver {
                         || lowerKey.contains("capacity")) {
                     return new QuantityType<>(raw, MetricPrefix.KILO(base));
                 }
-            } else if (lowerKey.contains("capacity") || lowerKey.contains("odometer") || lowerKey.contains("range")) {
+            } else if (lowerKey.contains("capacity") || lowerKey.contains("odometer") || lowerKey.contains("range")
+                    || lowerKey.contains("chargetotalimport")) {
                 return new QuantityType<>(raw, MetricPrefix.KILO(base));
             }
             return new QuantityType<>(raw, base);

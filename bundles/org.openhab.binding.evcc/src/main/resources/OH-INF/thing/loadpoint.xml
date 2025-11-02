@@ -194,7 +194,7 @@
 			<tag>Status</tag>
 			<tag>Mode</tag>
 		</tags>
-		<state pattern="%f %unit%" readOnly="true">
+		<state readOnly="true">
 			<options>
 				<option value="ON">Charging</option>
 				<option value="OFF">Not charging</option>
