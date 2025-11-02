@@ -225,20 +225,27 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
 
         // Check for valid discovery configurations and discover again if not
         if (!config.isValid()) {
+            // Mark thing as unknown while asynchronous discovery/login is running to avoid race conditions
             updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_PENDING, "Configuration not valid");
+
             if (config.isDiscoveryPossible()) {
                 updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_PENDING,
                         "Configuration missing, discovery needed. Discovering...");
                 MideaACDiscoveryService discoveryService = new MideaACDiscoveryService();
 
-                try {
-                    discoveryService.discoverThing(config.ipAddress, this);
-                    return;
-                } catch (Exception e) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                            "Discovery failure. Check IP Address.");
-                    return;
-                }
+                // Run discovery asynchronously so initialize() can return quickly, but keep the thing in UNKNOWN
+                // until the discovery attempt finishes and updates the thing status accordingly.
+                scheduler.execute(() -> {
+                    try {
+                        // perform the potentially blocking discovery/login work here
+                        discoveryService.discoverThing(config.ipAddress, this);
+                    } catch (Exception e) {
+                        // discovery failed — update status to OFFLINE with an explanation
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                                "Discovery failure. Check IP Address.");
+                    }
+                });
+                return;
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "Invalid MideaAC config. Check IP Address.");
@@ -251,15 +258,18 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
         // Check for valid token and key and/or contact cloud account to get them
         if (config.version == 3 && !config.isV3ConfigValid()) {
             if (config.isTokenKeyObtainable()) {
-                try {
-                    CloudProvider cloudProvider = CloudProvider.getCloudProvider(config.cloud);
-                    Executors.newSingleThreadExecutor().submit(() -> getTokenKeyCloud(cloudProvider));
-                    return;
-                } catch (Exception e) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                            "Token and key could not be obtained from Cloud");
-                    return;
-                }
+                updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_PENDING,
+                        "Retrieving token and key from cloud");
+                scheduler.execute(() -> {
+                    try {
+                        CloudProvider cloudProvider = CloudProvider.getCloudProvider(config.cloud);
+                        getTokenKeyCloud(cloudProvider);
+                    } catch (Exception e) {
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                                "Token and key could not be obtained from Cloud");
+                    }
+                });
+                return;
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "No account info to retrieve from cloud");
@@ -312,8 +322,8 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
         if (config.keyTokenUpdate != 0 && scheduledKeyTokenUpdate == null) {
             scheduledKeyTokenUpdate = scheduler.scheduleWithFixedDelay(
                     () -> getTokenKeyCloud(CloudProvider.getCloudProvider(config.cloud)), config.keyTokenUpdate,
-                    config.keyTokenUpdate, TimeUnit.DAYS);
-            logger.debug("Token Key Update Scheduler started, update interval {} days", config.keyTokenUpdate);
+                    config.keyTokenUpdate, TimeUnit.HOURS);
+            logger.debug("Token Key Update Scheduler started, update interval {} hours", config.keyTokenUpdate);
         } else {
             logger.debug("Token Key Scheduler already running or disabled");
         }

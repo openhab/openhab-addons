@@ -205,7 +205,7 @@ public class Cloud {
             String msg = result.get("msg").getAsString();
             if (code != 0) {
                 errMsg = msg;
-                logger.warn("Error {} logging to Cloud: {}", code, msg);
+                logger.debug("Error {} logging to Cloud: {}", code, msg);
                 throw new LoginFailedException("Login failed with error code " + code + ": " + msg);
             } else {
                 logger.debug("Api response ok: {} ({})", code, msg);

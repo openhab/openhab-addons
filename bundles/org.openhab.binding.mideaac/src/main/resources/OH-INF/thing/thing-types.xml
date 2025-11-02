@@ -41,24 +41,23 @@
 
 		<config-description>
 			<parameter name="ipAddress" type="text" required="true">
-				<context>ipAddress</context>
+				<context>network-address</context>
 				<label>IP Address</label>
 				<description>IP Address of the device.</description>
 			</parameter>
 			<parameter name="ipPort" type="decimal" required="true">
-				<context>ipPort</context>
 				<label>IP Port</label>
 				<description>IP port of the device.</description>
 				<default>6444</default>
+				<advanced>true</advanced>
 			</parameter>
 			<parameter name="deviceId" type="text" required="true">
-				<context>deviceId</context>
 				<label>Device ID</label>
 				<description>ID of the device. Leave 0 to do ID discovery.</description>
 				<default>0</default>
+				<advanced>true</advanced>
 			</parameter>
 			<parameter name="cloud" type="text" required="false">
-				<context>cloud</context>
 				<label>Cloud Provider</label>
 				<description>Cloud Provider name for email and password.</description>
 				<options>
@@ -83,58 +82,54 @@
 				<default>password1</default>
 			</parameter>
 			<parameter name="token" type="text" required="false">
-				<context>token</context>
 				<label>Token</label>
 				<description>Secret Token (length 128 HEX) used for secure connection authentication used with devices v3 (if not
 					known, enter email, password for Cloud account to retrieve it).</description>
+				<advanced>true</advanced>
 			</parameter>
 			<parameter name="key" type="text" required="false">
-				<context>key</context>
 				<label>Key</label>
 				<description>Secret Key (length 64 HEX) used for secure connection authentication used with devices v3 (if not
 					known, enter email, password for Cloud account to retrieve it).</description>
+				<advanced>true</advanced>
 			</parameter>
 			<parameter name="pollingTime" type="decimal" required="true" min="30" unit="s">
-				<context>pollingTime</context>
-				<label>Poll Frequency in Seconds</label>
-				<description>Poll device status. Minimum is 30, default 60.</description>
+				<label>Poll Frequency</label>
+				<description>Base device poll in seconds. Minimum is 30, default 60.</description>
 				<default>60</default>
 			</parameter>
 			<parameter name="energyPoll" type="decimal" required="true" min="0" unit="m">
-				<context>energyPoll</context>
-				<label>Energy poll in minutes</label>
-				<description>Energy polling frequency. default 0 ; (in case not supported).</description>
+				<label>Energy Poll</label>
+				<description>Energy polling in minutes. default 0 ; (in case not supported).</description>
 				<default>0</default>
 			</parameter>
-			<parameter name="keyTokenUpdate" type="decimal" required="false" min="0" unit="d">
-				<context>keyTokenUpdate</context>
-				<label>Key token update frequency in days</label>
-				<description>Update the Key and Token from the cloud, default 0 to disable.</description>
+			<parameter name="keyTokenUpdate" type="decimal" required="false" min="0" unit="h">
+				<label>Key Token Update</label>
+				<description>Update the Key and Token from the cloud in hours, default 0 to disable.</description>
 				<default>0</default>
+				<advanced>true</advanced>
 			</parameter>
 			<parameter name="timeout" type="decimal" required="true" min="2" max="10" unit="s">
-				<context>timeout</context>
-				<label>Socket timeout in seconds</label>
-				<description>Connecting socket timeout. Minimum is 2, maximum is 10 (4 is default).</description>
+				<label>Socket Timeout</label>
+				<description>Connecting socket timeout (seconds). Minimum is 2, maximum is 10 (4 is default).</description>
 				<default>4</default>
 			</parameter>
 			<parameter name="promptTone" type="boolean" required="true">
-				<context>promptTone</context>
-				<label>Prompt tone</label>
+				<label>Prompt Tone</label>
 				<description>After sending a command device will play "ding" tone when command is received and executed.</description>
 				<default>false</default>
 			</parameter>
 			<parameter name="version" type="decimal" required="true">
-				<context>version</context>
 				<label>AC Version</label>
 				<description>Version 3 requires Token, Key and Cloud provider. Version 2 doesn't.</description>
 				<default>0</default>
+				<advanced>true</advanced>
 			</parameter>
 			<parameter name="energyDecode" type="boolean" required="true">
-				<context>energyDecode</context>
-				<label>Energy response decode method</label>
+				<label>Energy Response Decode Method</label>
 				<description>Binary-Coded Decimal (BCD) = true. Big-endian = false.</description>
 				<default>true</default>
+				<advanced>true</advanced>
 			</parameter>
 		</config-description>
 
@@ -300,7 +295,7 @@
 	</channel-type>
 	<channel-type id="filter-status" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Filter needs cleaning</label>
+		<label>Filter Needs Cleaning</label>
 		<category>Switch</category>
 		<tags>
 			<tag>Alarm</tag>

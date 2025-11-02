@@ -29,23 +29,23 @@ No binding configuration is required.
 
 ## Thing Configuration
 
-| Parameter     | Required ?  | Comment                                                      | Default                   |
-|---------------|-------------|--------------------------------------------------------------|---------------------------|
-| ipAddress     | Yes         | IP Address of the device.                                    |                           |
-| ipPort        | Yes         | IP port of the device                                        | 6444                      |
-| deviceId      | Yes         | ID of the device. Leave 0 to do ID discovery.                | 0                         |
-| cloud         | Yes for V.3 | Your Cloud Provider name (or default).                       | NetHome Plus              |
-| email         | No          | Email for your cloud account (or default).                   | nethome+us@mailinator.com |
-| password      | No          | Password for your cloud account (or default).                | password1                 |
-| token         | Yes for V.3 | Secret Token - Retrieved from cloud                          |                           |
-| key           | Yes for V.3 | Secret Key - Retrieved from cloud                            |                           |
-| pollingTime   | Yes         | Frequency to Poll AC Status in seconds. Minimum is 30.       | 60 seconds                |
-| keyTokenUpdate| No          | Frequency to update key and token from cloud in days         | 0 days (disabled)         |
-| energyPoll    | Yes         | Frequency to poll energy data (if supported)                 | 0 minutes (disabled)      |
-| timeout       | Yes         | Socket connection timeout in seconds. Min. is 2, max. 10.    | 4 seconds                 |
-| promptTone    | Yes         | "Ding" tone when command is received and executed.           | false                     |
-| version       | Yes         | Version 3 has token, key and cloud requirements.             | 0                         |
-| energyDecode  | Yes         | Binary Coded Decimal (BCD) = true. Big-endian = false.       | true
+| Parameter     | Required ?  | Comment                                                      | Default                   | Advanced |
+|---------------|-------------|--------------------------------------------------------------|---------------------------|----------|
+| ipAddress     | Yes         | IP Address of the device.                                    |                           |          |
+| ipPort        | Yes         | IP port of the device                                        | 6444                      | Yes      |
+| deviceId      | Yes         | ID of the device. Leave 0 to do ID discovery.                | 0                         | Yes      |
+| cloud         | Yes for V.3 | Your Cloud Provider name (or default).                       | NetHome Plus              |          |
+| email         | No          | Email for your cloud account (or default).                   | nethome+us@mailinator.com |          |
+| password      | No          | Password for your cloud account (or default).                | password1                 |          |
+| token         | Yes for V.3 | Secret Token - Retrieved from cloud                          |                           | Yes      |
+| key           | Yes for V.3 | Secret Key - Retrieved from cloud                            |                           | Yes      |
+| pollingTime   | Yes         | Frequency to Poll AC Status in seconds. Minimum is 30.       | 60 seconds                |          |
+| keyTokenUpdate| No          | Frequency to update key and token from cloud in hours        | 0 hours (disabled)        | Yes      |
+| energyPoll    | Yes         | Frequency to poll energy data (if supported)                 | 0 minutes (disabled)      |          |
+| timeout       | Yes         | Socket connection timeout in seconds. Min. is 2, max. 10.    | 4 seconds                 |          |
+| promptTone    | Yes         | "Ding" tone when command is received and executed.           | false                     |          |
+| version       | Yes         | Version 3 has token, key and cloud requirements.             | 0                         | Yes      |
+| energyDecode  | Yes         | Binary Coded Decimal (BCD) = true. Big-endian = false.       | true                      | Yes      |
 
 ## Channels
 
