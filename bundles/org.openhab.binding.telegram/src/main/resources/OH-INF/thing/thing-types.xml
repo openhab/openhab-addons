@@ -38,9 +38,10 @@
 					<option value="">No Formatting</option>
 					<option value="HTML">HTML</option>
 					<option value="Markdown">Markdown</option>
+					<option value="MarkdownV2">MarkdownV2</option>
 				</options>
 				<default></default>
-				<description>Support for formatted messages, values: Markdown or HTML. Default: no formatting is used.</description>
+				<description>Support for formatted messages, values: Markdown, MarkdownV2 or HTML. Default: no formatting is used.</description>
 			</parameter>
 			<parameter name="proxyHost" type="text">
 				<context>network-address</context>
