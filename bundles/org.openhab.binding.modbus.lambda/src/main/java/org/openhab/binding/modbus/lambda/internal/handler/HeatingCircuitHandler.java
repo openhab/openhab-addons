@@ -193,7 +193,7 @@ public class HeatingCircuitHandler extends BaseThingHandler {
      * @return short the value of the command as short
      */
     private short getInt16Value(Command command) throws LambdaException {
-        if (command instanceof QuantityType quantityCommand) {
+        if (command instanceof QuantityType<?> quantityCommand) {
             QuantityType<?> c = quantityCommand.toUnit(WATT);
             if (c != null) {
                 return c.shortValue();
