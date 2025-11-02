@@ -350,7 +350,6 @@ public class HeatpumpHandler extends BaseThingHandler {
      * Unregister the poll tasks and release the endpoint reference
      */
     private void tearDown() {
-
         AbstractBasePoller poller = heatpumpPoller;
         if (poller != null) {
             poller.unregisterPollTask();
