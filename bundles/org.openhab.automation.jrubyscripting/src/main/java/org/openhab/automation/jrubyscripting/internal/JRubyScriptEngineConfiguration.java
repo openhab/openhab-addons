@@ -241,6 +241,16 @@ public class JRubyScriptEngineConfiguration {
                     "The Gemfile setting is set to '{}' which is a directory. It should be set to a file. Setting it to '{}'",
                     gemfilePath, gemfile);
         }
+
+        File bundleUserConfigDir = gemfilePath.resolveSibling(".bundle").toFile();
+        if (!bundleUserConfigDir.exists()) {
+            boolean created = bundleUserConfigDir.mkdirs();
+            if (created) {
+                LOGGER.debug("Created directory for Ruby Bundler user config path: {}", bundleUserConfigDir);
+            } else {
+                LOGGER.warn("Could not create directory for Ruby Bundler user config path: {}", bundleUserConfigDir);
+            }
+        }
         return gemfile;
     }
 
@@ -432,6 +442,8 @@ public class JRubyScriptEngineConfiguration {
         setEnvironmentVariable(scriptEngine, "BUNDLE_USER_HOME", BUNDLE_USER_HOME.toString());
         if (bundleGemfile.exists()) {
             setEnvironmentVariable(scriptEngine, "BUNDLE_GEMFILE", bundleGemfile.toString());
+            setEnvironmentVariable(scriptEngine, "BUNDLE_USER_CONFIG",
+                    bundleGemfile.toPath().resolveSibling(".bundle").resolve("config").toString());
         }
 
         configureRubyLib(scriptEngine);
