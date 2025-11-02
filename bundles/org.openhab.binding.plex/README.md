@@ -125,7 +125,7 @@ The PLEX Player supports the following channels:
 `.things` file:
 
 ```java
-Bridge plex:server:plexrServer "Bridge Plex : Plex" [host="IP.Address.Or.Hostname", token="SadhjsajjA3AG", refreshRate=5]
+Bridge plex:server:plexServer "Bridge Plex : Plex" [host="IP.Address.Or.Hostname", token="SadhjsajjA3AG", refreshRate=5]
 {
     Thing plex:player:MyViewerName01 "My Viewer Name 01" [playerID="ClientIdentifierFromDevices.XML1"]
     Thing plex:player:MyViewerName02 "My Viewer Name 02" [playerID="ClientIdentifierFromDevices.XML2"]
@@ -135,18 +135,24 @@ Bridge plex:server:plexrServer "Bridge Plex : Plex" [host="IP.Address.Or.Hostnam
 `.items` file
 
 ```java
-String    BridgePlexCurrent            "Current players"           {channel="plex:server:plexrServer:currentPlayers"}
-String    BridgePlexCurrentActive      "Current players active"    {channel="plex:server:plexrServer:currentPlayersActive"}
+String    BridgePlexCurrent            "Current players"           {channel="plex:server:plexServer:currentPlayers"}
+String    BridgePlexCurrentActive      "Current players active"    {channel="plex:server:plexServer:currentPlayersActive"}
+
 Switch    PlexTVPower01                "Power"                     {channel="plex:player:MyViewerName01:power"}
 String    PlexTVStatus01               "Status [%s]"               {channel="plex:player:MyViewerName01:state"}
+Player    PlexTVControl01              "Player"                    {channel="plex:player:MyViewerName01:player"}
+String    PlexTVUser01                 "User [%s]"                 {channel="plex:player:MyViewerName01:user"}
 String    PlexTVTitle01                "Title [%s]"                {channel="plex:player:MyViewerName01:title"}
 String    PlexTVType01                 "Type [%s]"                 {channel="plex:player:MyViewerName01:type"}
 String    PlexTVEndTime01              "End time"                  {channel="plex:player:MyViewerName01:endtime"}
 Dimmer    PlexTVProgress01             "Progress [%.1f%%]"         {channel="plex:player:MyViewerName01:progress"}
 String    PlexTVCover1                 "Cover"                     {channel="plex:player:MyViewerName01:thumb"}
 String    ShellArt01                   "Background art"            {channel="plex:player:MyViewerName01:art"}
+
 Switch    PlexTVPower02                "Power"                     {channel="plex:player:MyViewerName02:power"}
 String    PlexTVStatus02               "Status [%s]"               {channel="plex:player:MyViewerName02:state"}
+Player    PlexTVControl02              "Player"                    {channel="plex:player:MyViewerName02:player"}
+String    PlexTVUser02                 "User [%s]"                 {channel="plex:player:MyViewerName02:user"}
 String    PlexTVTitle02                "Title [%s]"                {channel="plex:player:MyViewerName02:title"}
 String    PlexTVType02                 "Type [%s]"                 {channel="plex:player:MyViewerName02:type"}
 String    PlexTVEndTime02              "End time"                  {channel="plex:player:MyViewerName02:endtime"}
