@@ -239,7 +239,6 @@ public class HeatpumpHandler extends BaseThingHandler {
             }
         } else {
             try {
-
                 if (GROUP_HEAT_PUMP.equals(channelUID.getGroupId())) {
 
                     switch (channelUID.getIdWithoutGroup()) {
