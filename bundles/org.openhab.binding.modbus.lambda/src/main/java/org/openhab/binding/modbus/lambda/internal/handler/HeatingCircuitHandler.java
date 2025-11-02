@@ -347,7 +347,7 @@ public class HeatingCircuitHandler extends BaseThingHandler {
             return;
         }
 
-        HeatingCircuitConfiguration myconfig = HeatingCircuitHandler.this.config;
+        HeatingCircuitConfiguration myconfig = Objects.requireNonNull(HeatingCircuitHandler.this.config);
 
         baseadress = 5000 + 100 * myconfig.getSubindex();
         reg50baseadress = baseadress + 50;
