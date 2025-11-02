@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.evcc.internal.handler;
 
-import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
@@ -20,7 +20,6 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openhab.core.config.core.Configuration;
@@ -79,11 +78,6 @@ public class EvccBatteryHandlerTest extends AbstractThingHandlerTestClass<EvccBa
         };
     }
 
-    @BeforeAll
-    static void setUpOnce() {
-        batteryState = exampleResponse.getAsJsonArray("battery").get(0).getAsJsonObject();
-    }
-
     @SuppressWarnings("null")
     @BeforeEach
     public void setup() {
@@ -99,6 +93,16 @@ public class EvccBatteryHandlerTest extends AbstractThingHandlerTestClass<EvccBa
         EvccBridgeHandler bridgeHandler = mock(EvccBridgeHandler.class);
         handler.bridgeHandler = bridgeHandler;
         when(bridgeHandler.getCachedEvccState()).thenReturn(exampleResponse);
+        batteryState = exampleResponse.getAsJsonArray("battery").get(0).getAsJsonObject();
+    }
+
+    @SuppressWarnings("null")
+    @Test
+    public void testPrepareApiResponseForChannelStateUpdateIsNotInitialized() {
+        handler.isInitialized = false;
+        handler.prepareApiResponseForChannelStateUpdate(exampleResponse);
+        verify(handler).updateStatesFromApiResponse(batteryState);
+        assertSame(ThingStatus.UNKNOWN, lastThingStatus);
     }
 
     @SuppressWarnings("null")
@@ -114,14 +118,6 @@ public class EvccBatteryHandlerTest extends AbstractThingHandlerTestClass<EvccBa
         handler.isInitialized = true;
         handler.prepareApiResponseForChannelStateUpdate(exampleResponse);
         assertSame(ThingStatus.ONLINE, lastThingStatus);
-    }
-
-    @SuppressWarnings("null")
-    @Test
-    public void testPrepareApiResponseForChannelStateUpdateIsNotInitialized() {
-        handler.prepareApiResponseForChannelStateUpdate(exampleResponse);
-        verify(handler).updateStatesFromApiResponse(batteryState);
-        assertSame(ThingStatus.UNKNOWN, lastThingStatus);
     }
 
     @SuppressWarnings("null")
