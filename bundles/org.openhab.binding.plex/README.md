@@ -32,9 +32,9 @@ The PLEX Server needs to be configured first. The hostname of the PLEX server is
 
 Then find the PLEX token please follow the instructions from the PLEX support forum:
 
-1. Sign in to your Plex account in Plex Web App
-1. Browse to a library item and view the XML for it
-1. Look in the URL and find the token as the X-Plex-Token value
+1. [Sign in to your Plex account](https://support.plex.tv/articles/200933616-plex-account/) in Plex Web App
+1. Browse to a library item and [view the XML](https://support.plex.tv/articles/201998867-investigate-media-information-and-formats/) for it
+1. Look in the URL and find the token as the `X-Plex-Token` value
 
 ### `PLEX Server` Thing Configuration
 
@@ -58,7 +58,7 @@ The player will be found and you can add it.
 
 #### Manual adding a player Thing
 
-When you want to add them manually go to the following url [https://plex.tv/devices.xml] and login when needed.
+When you want to add them manually go to the following url [https://plex.tv/devices.xml?X-Plex-Token=YOURTOKENVALUEHERE] .
 
 It will display the following XML file.
 
