@@ -427,7 +427,6 @@ public class HeatpumpHandler extends BaseThingHandler {
      */
 
     protected void handlePolledHeatpumpData(ModbusRegisterArray registers) {
-
         HeatpumpBlock block = heatpumpBlockParser.parse(registers);
 
         // Heatpump group
