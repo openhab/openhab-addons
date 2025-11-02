@@ -7,7 +7,7 @@
 	<config-description uri="profile:transform:VAT">
 		<parameter name="percentage" type="text">
 			<label>VAT Percentage</label>
-			<description>Manually configured VAT percentage (overriding VAT rate for configured country).</description>
+			<description>Manually configured VAT percentage, overriding the VAT rate for the configured country.</description>
 			<advanced>true</advanced>
 		</parameter>
 	</config-description>
