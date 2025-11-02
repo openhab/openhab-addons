@@ -1,33 +1,33 @@
-# rrd4j Persistence
+# RRD4J Persistence
 
 The [rrd4j](https://github.com/rrd4j/rrd4j) persistence service is based on a round-robin database.
 
 In contrast to a "normal" database such as db4o, a round-robin database does not grow in size - it has a fixed allocated size.
-This is accomplished by saving a fixed amount of datapoints and by doing data compression, which means that the older the data is, the less values are available.
+This is accomplished by saving a fixed amount of data points and by doing data compression, which means that the older the data is, the fewer values are available.
 The data is kept in several "archives", each holding the data for its set timeframe at a defined level of granularity.
-The starting point for all archives is the actually saved data sample (Item value).
+The starting point for all archives is the actual saved data sample (Item value).
 So while you might store a sample value every minute for the last 8 hours, you might store the average per day for the last year.
 
-This service cannot be directly queried, because of its data compression, which means that it cannot provide precise answers to all queries.
+This service cannot be queried directly due to its data compression and cannot provide precise answers to all queries.
 
-NOTE: rrd4j is for storing numerical data only.
+NOTE: RRD4J is for storing numeric data only.
 It cannot store complex data types.
 The supported item types are therefore only `Switch` (internally mapped to 0/1), `Dimmer`, `Number`, `Contact` (internally mapped to 0/1), `Rollershutter` and `Color` (only brightness component stored).
 
 ## Configuration
 
-The rrd4j persistence services comes with a default persistence strategy which persists every Item on every state change and at least once a minute.
+The RRD4J persistence service comes with a default persistence strategy which persists every Item on every state change and at least once a minute.
 Additionally, it restores the last stored value at system startup.
 
 If you want to define a custom behavior, you will need to create a `rrd4j.persist` file in the `persistence` configuration folder.
 
 ## Persistence Process
 
-Round-robin databases (RRDs) have fixed length so called "archives" for storing values.
+Round-robin databases (RRDs) have fixed-length, so-called "archives" for storing values.
 Think of an archive as a "drawer" with a fixed number of "storage boxes" in it.
 
 The persistence service reads data "samples" from the openHAB core at regular intervals, and these are then put into the storage boxes.
-Either a) the samples are stored singly directly into a box, or b) multiple samples are consolidated (using a consolidation function) into a box.
+Either the samples are stored directly into a box, or multiple samples are consolidated (using a consolidation function) into a box.
 
 The service starts by storing samples in the leftmost box in the drawer.
 Once the leftmost box is full, the service starts filling the next box to the right; and so on.
@@ -55,7 +55,7 @@ The various datasource property values are explained in the table below.
 | `<dsName>`.archives | List of archives to be created. Each archive defines which subset of data samples shall be archived, and for how long. Consists of one or more archive entries separated by a ":" character. The format for one archive entry is `<consolidationFunction>,<xff>,<samplesPerBox>,<boxCount>` |
 | `<dsName>`.items    | List of Items whose values shall be sampled and stored in the archive. The format is `Item1,Item2` _**Note: the same Item is not allowed to be listed in more than one datasource!**_ |
 
-For example..
+For example:
 
 ```ini
 ctr24h.def=COUNTER,900,0,U,60
@@ -75,19 +75,19 @@ It must be an alphanumeric string.
 Defines the type of data to be stored.
 It must be one of the following string values:
 
-- **COUNTER** represents an ever-incrementing value (historically this was used for packet counters or traffic counters on network interfaces, a typical home-automation application would be your electricity meter). If you store the values of this counter in a simple database and make a chart of that, you'll most likely see a nearly flat line, because the increments per time are small compared to the absolute value (e.g. your electricity meter reads 60567 kWh, and you add 0.5 kWh per hour, than your chart over the whole day will show 60567 at the start and 60579 at the end of your chart. That is nearly invisible. RRD4J helps you out and will display the difference from one stored value to the other (depending on the selected size). Please note that the persistence extensions will return difference instead of the actual values if you use this type; this especially leads to wrong values if you try to restoreOnStartup!
-- **GAUGE** represents the reading of e.g. a temperature sensor. You'll see only small deviation over the day and your values will be within a small range, clearly visible within a chart.
+- **COUNTER** represents an ever-incrementing value (historically this was used for packet counters or traffic counters on network interfaces; a typical home-automation application would be your electricity meter). If you store the values of this counter in a simple database and make a chart of that, you'll most likely see a nearly flat line, because the increments per time are small compared to the absolute value (e.g., your electricity meter reads 60567 kWh, and you add 0.5 kWh per hour, then your chart over the whole day will show 60567 at the start and 60579 at the end of your chart. That is nearly invisible). RRD4J helps you out and will display the difference from one stored value to the next (depending on the selected granularity). Please note that the persistence extensions will return the difference instead of the actual values if you use this type; this can especially lead to wrong values if you try to restoreOnStartup!
+- **GAUGE** represents the reading of, e.g., a temperature sensor. You'll see only small deviations over the day, and your values will be within a small range, clearly visible in a chart.
 - **ABSOLUTE** is like a counter, but RRD4J assumes that the counter is reset when the value is read. So these are basically the delta values between the reads.
 - **DERIVE** is like a counter, but it can also decrease and therefore have a negative delta.
 
-### `<heartBeat>` (Heart Beat)
+### `<heartBeat>` (Heartbeat)
 
 The heartbeat parameter helps the database to detect missing values.
 i.e. if no new sample is stored after "heartBeat" seconds, the value is considered missing when charting.
 
 It must be a positive integer value.
 
-### `<minValue> / <maxValue>` (Minimum resp. Maximum Value)
+### `<minValue> / <maxValue>` (Minimum and Maximum Value)
 
 These parameters define the range of acceptable sample values for that datasource.
 They must be either:
@@ -101,8 +101,8 @@ The time interval (seconds) between reading consecutive samples from the openHAB
 
 It must be a positive integer value.
 
-Relation between the sample intervall and openHABs persistence strategy.
-The persistence strategy determines on which events (time, change, startUp) a new value is provided to the persistence service, the sample intervall determines at which time steps the actually provided value is being read (i.e an everyMinute strategy provides a new value at every full minute, a sample intervall of 10 seconds would use such a provided value 6 times).
+Relation between the sample interval and openHAB's persistence strategy:
+The persistence strategy determines on which events (time, change, startup) a new value is provided to the persistence service; the sample interval determines at which time steps the provided value is read (i.e., an everyMinute strategy provides a new value at every full minute; a sample interval of 10 seconds would use such a provided value six times).
 
 ### `<consolidationFunction>` (Consolidation Function)
 
@@ -144,9 +144,9 @@ It must be a positive integer value.
 ### Multiple Possible Archives
 
 As already said, each datasource can have one or more archives.
-The purpose of having several archives is that it allows a different granularity of data storage over different timespans.
+The purpose of having several archives is that it allows a different granularity of data storage over different time spans.
 
-In the example below..
+In the example below:
 
 ```ini
 ctr24h.def=COUNTER,900,0,U,60
@@ -154,9 +154,9 @@ ctr24h.archives=AVERAGE,0.5,1,480:AVERAGE,0.5,10,144
 ctr24h.items=Item1,Item2
 ```
 
-The `ctr24.def` defines a datasource which is using a COUNTER, a `<hearBeat>` of 900 seconds, a `<minValue>` of 0, a `<maxValue>` of unlimited  and a `<sampleInterval>` of 60 seconds.
+The `ctr24h.def` defines a datasource that uses a COUNTER, a `<heartBeat>` of 900 seconds, a `<minValue>` of 0, a `<maxValue>` of unlimited, and a `<sampleInterval>` of 60 seconds.
 
-The first archive entry in the `ctr24.archives` parameter has `480` boxes each containing `1` sample (or to be exact the `AVERAGE` of `1` sample).
+The first archive entry in the `ctr24h.archives` parameter has `480` boxes, each containing `1` sample (or to be exact the `AVERAGE` of `1` sample).
 So it covers `480 X 60` seconds of data (8 hours) at a granularity of one minute.
 As a general rule the first archive (and maybe the only one) should have `<samplesPerBox> = 1` so that each sample is stored in one box.
 
@@ -168,19 +168,19 @@ So it covers `144 X 10 X 60` seconds of data (24 hours) at a granularity of ten 
 The service automatically creates three default datasources with the properties below.
 
 There is no `.items` parameter for the default datasources.
-This means that any Item with an allocated strategy in the `rrd4j.persist` file is persisted using one the default settings, unless the Item is explicitly listed in an `.items` property value of a datasource in the `rrd4j.cfg` file.
+This means that any Item with an allocated strategy in the `rrd4j.persist` file is persisted using one of the default settings, unless the Item is explicitly listed in an `.items` property value of a datasource in the `rrd4j.cfg` file.
 
 ### default_numeric
 
 This datasource is used for plain `Number` items.
-It does not build averages over values, so that it is ensured that discrete values are kept when being read (e.g. an Item which has only states 0 and 1 will not be set to 0.5).
+It does not build averages over values, ensuring that discrete values are preserved when read (e.g., an Item which has only states 0 and 1 will not be set to 0.5).
 
 ```ini
 default_numeric.def=GAUGE,600,U,U,10
 default_numeric.archives=LAST,0.5,1,360:LAST,0.5,6,10080:LAST,0.5,90,36500:LAST,0.5,360,43800:LAST,0.5,8640,3650
 ```
 
-It uses 10 seconds as a step size for numeric values and allows a 10 minute silence between updates.
+It uses 10 seconds as a step size for numeric values and allows a 10-minute silence between updates.
 
 It defines 5 archives:
 
@@ -200,7 +200,7 @@ default_quantifiable.def=GAUGE,600,U,U,10
 default_quantifiable.archives=AVERAGE,0.5,1,360:AVERAGE,0.5,6,10080:AVERAGE,0.5,90,36500:AVERAGE,0.5,360,43800:AVERAGE,0.5,8640,3650
 ```
 
-It uses 10 seconds as a step size for numeric values and allows a 10 minute silence between updates.
+It uses 10 seconds as a step size for numeric values and allows a 10-minute silence between updates.
 
 It defines 5 archives:
 
@@ -213,14 +213,14 @@ It defines 5 archives:
 ### default_other
 
 This datasource is used for any other items.
-Their values are considered to be discrete, similar to the `default_numeric` datasource, but it keeps the data in more fine-granular archives.
+Their values are considered to be discrete, similar to the `default_numeric` datasource, but it keeps the data in more fine-grained archives.
 
 ```ini
 default_other.def=GAUGE,3600,U,U,5
 default_other.archives=LAST,0.5,1,720:LAST,0.5,12,10080:LAST,0.5,180,35040:LAST,0.5,2880,21900
 ```
 
-It uses 5 seconds as a step size for discrete values and allows a 1h silence between updates.
+It uses 5 seconds as a step size for discrete values and allows a 1-hour silence between updates.
 
 It defines 4 archives:
 
@@ -261,6 +261,6 @@ When creating a custom datasource in the `rrd4j.cfg` file the used [sample inter
 
 ## Troubleshooting
 
-From time to time, you may find that if you change the Item type of a persisted data point, you may experience charting or other problems. To resolve this issue, remove the old `<item_name>`.rrd file in the `${openhab_home}/userdata/persistence/rrd4j` folder or `/var/lib/openhab/persistence/rrd4j` folder for apt-get installed openHABs.
+From time to time, you may find that if you change the Item type of a persisted data point, you may experience charting or other problems. To resolve this issue, remove the old `<item_name>`.rrd file in the `${openhab_home}/userdata/persistence/rrd4j` folder or in `/var/lib/openhab/persistence/rrd4j` for APT installations of openHAB.
 
-Restoring Item values after startup takes some time. Rules may already have started to run in parallel. Especially in rules that are started via the "System started" trigger, it may happen that the restore has not yet completed resulting in non-defined Item values. In these cases the use of restored Item values should be delayed by a couple of seconds. This delay has to be determined experimentally.
+Restoring Item values after startup takes some time. Rules may already have started to run in parallel. Especially in rules that are started via the "System started" trigger, it may happen that the restore has not yet completed, resulting in undefined Item values. In these cases the use of restored Item values should be delayed by a couple of seconds. This delay has to be determined experimentally.
