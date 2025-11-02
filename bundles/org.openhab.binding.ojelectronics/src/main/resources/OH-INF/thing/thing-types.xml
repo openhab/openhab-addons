@@ -68,6 +68,7 @@
 		</channels>
 		<properties>
 			<property name="vendor">OJ Electronics</property>
+			<property name="thingTypeVersion">1</property>
 		</properties>
 		<representation-property>serialNumber</representation-property>
 		<config-description>
@@ -183,11 +184,13 @@
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="vacationBeginDay">
-		<item-type>Switch</item-type>
+		<item-type>DateTime</item-type>
 		<label>Vacation Begin Day</label>
+		<description>Vacation start date</description>
 	</channel-type>
 	<channel-type id="vacationEndDay">
-		<item-type>Switch</item-type>
+		<item-type>DateTime</item-type>
 		<label>Vacation End Day</label>
+		<description>Vacation end date</description>
 	</channel-type>
 </thing:thing-descriptions>
