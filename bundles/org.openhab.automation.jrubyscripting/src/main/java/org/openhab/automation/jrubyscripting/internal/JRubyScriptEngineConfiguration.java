@@ -87,15 +87,7 @@ public class JRubyScriptEngineConfiguration {
     private File bundleGemfile = DEFAULT_GEMFILE_PATH.toFile();
 
     JRubyScriptEngineConfiguration() {
-        File dir = BUNDLE_USER_HOME.toFile();
-        if (!dir.exists()) {
-            boolean created = dir.mkdirs();
-            if (created) {
-                LOGGER.debug("Created directory for Ruby Bundler user path: {}", dir);
-            } else {
-                LOGGER.warn("Could not create directory for Ruby Bundler user path: {}", dir);
-            }
-        }
+        ensureDirectoryExists(BUNDLE_USER_HOME.toString(), "Ruby Bundler user path");
     }
 
     /**
@@ -214,12 +206,15 @@ public class JRubyScriptEngineConfiguration {
             return false;
         }
 
-        File gemHomeDirectory = new File(gemHome);
-        if (!gemHomeDirectory.exists()) {
-            LOGGER.debug("gem_home directory '{}' does not exist, creating", gemHome);
-            if (!gemHomeDirectory.mkdirs()) {
-                LOGGER.warn("Error creating gem_home directory: {}", gemHome);
-                return false;
+        return ensureDirectoryExists(gemHome, "gem_home directory");
+    }
+
+    private boolean ensureDirectoryExists(String dir, String description) {
+        File directory = new File(dir);
+        if (!directory.exists()) {
+            LOGGER.debug("{} '{}' does not exist, creating", description, dir);
+            if (!directory.mkdirs()) {
+                LOGGER.warn("Error creating {}: {}", description, dir);
             }
         }
         return true;
@@ -240,16 +235,6 @@ public class JRubyScriptEngineConfiguration {
             LOGGER.warn(
                     "The Gemfile setting is set to '{}' which is a directory. It should be set to a file. Setting it to '{}'",
                     gemfilePath, gemfile);
-        }
-
-        File bundleUserConfigDir = gemfilePath.resolveSibling(".bundle").toFile();
-        if (!bundleUserConfigDir.exists()) {
-            boolean created = bundleUserConfigDir.mkdirs();
-            if (created) {
-                LOGGER.debug("Created directory for Ruby Bundler user config path: {}", bundleUserConfigDir);
-            } else {
-                LOGGER.warn("Could not create directory for Ruby Bundler user config path: {}", bundleUserConfigDir);
-            }
         }
         return gemfile;
     }
@@ -439,11 +424,13 @@ public class JRubyScriptEngineConfiguration {
     public void configureRubyEnvironment(ScriptEngine scriptEngine) {
         setEnvironmentVariable(scriptEngine, "GEM_HOME", getSpecificGemHome());
         setEnvironmentVariable(scriptEngine, "RUBYLIB", configuration.rubylib);
-        setEnvironmentVariable(scriptEngine, "BUNDLE_USER_HOME", BUNDLE_USER_HOME.toString());
         if (bundleGemfile.exists()) {
-            setEnvironmentVariable(scriptEngine, "BUNDLE_GEMFILE", bundleGemfile.toString());
+            Path bundleUserConfigDir = bundleGemfile.toPath().resolveSibling(".bundle");
+            ensureDirectoryExists(bundleUserConfigDir.toString(), "Ruby Bundler user config path");
+            setEnvironmentVariable(scriptEngine, "BUNDLE_USER_HOME", BUNDLE_USER_HOME.toString());
             setEnvironmentVariable(scriptEngine, "BUNDLE_USER_CONFIG",
-                    bundleGemfile.toPath().resolveSibling(".bundle").resolve("config").toString());
+                    bundleUserConfigDir.resolve("config").toString());
+            setEnvironmentVariable(scriptEngine, "BUNDLE_GEMFILE", bundleGemfile.toString());
         }
 
         configureRubyLib(scriptEngine);
