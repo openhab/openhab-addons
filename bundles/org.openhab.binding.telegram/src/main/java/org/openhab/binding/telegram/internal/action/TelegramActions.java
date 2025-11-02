@@ -606,7 +606,7 @@ public class TelegramActions implements ThingActions {
                     }
 
                     mediaArray[i] = media;
-                } catch (Exception e) {
+                } catch (IllegalArgumentException e) {
                     logger.warn("Failed to create media object for URL {}: {}", url, e.getMessage());
                     successful = false;
                     break;
@@ -886,6 +886,23 @@ public class TelegramActions implements ThingActions {
     public static boolean sendTelegramAnswer(ThingActions actions, @Nullable Long chatId, @Nullable String replyId,
             @Nullable String message) {
         return ((TelegramActions) actions).sendTelegramAnswer(chatId, replyId, message);
+    }
+
+    public static boolean sendTelegramMediaGroup(ThingActions actions, @Nullable Long chatId,
+            @Nullable List<String> mediaUrls, @Nullable List<String> mediaTypes) {
+        return ((TelegramActions) actions).sendTelegramMediaGroup(chatId, mediaUrls, mediaTypes);
+    }
+
+    public static boolean sendTelegramMediaGroup(ThingActions actions, @Nullable List<String> mediaUrls,
+            @Nullable List<String> mediaTypes) {
+        return ((TelegramActions) actions).sendTelegramMediaGroup(mediaUrls, mediaTypes);
+    }
+
+    public static boolean sendTelegramMediaGroup(ThingActions actions, @Nullable Long chatId,
+            @Nullable List<String> mediaUrls, @Nullable List<String> mediaTypes, @Nullable Integer replyToMessageId,
+            @Nullable Boolean disableNotification, @Nullable Integer messageThreadId) {
+        return ((TelegramActions) actions).sendTelegramMediaGroup(chatId, mediaUrls, mediaTypes, replyToMessageId,
+                disableNotification, messageThreadId);
     }
 
     public static boolean sendTelegramAnswer(ThingActions actions, @Nullable String chatId, @Nullable String replyId,
