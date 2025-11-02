@@ -208,7 +208,7 @@ public class HeatingCircuitHandler extends BaseThingHandler {
     }
 
     private short getScaledInt16Value(Command command) throws LambdaException {
-        if (command instanceof QuantityType quantityCommand) {
+        if (command instanceof QuantityType<?> quantityCommand) {
             QuantityType<?> c = quantityCommand.toUnit(CELSIUS);
             if (c != null) {
                 return (short) (c.doubleValue() * 10);
