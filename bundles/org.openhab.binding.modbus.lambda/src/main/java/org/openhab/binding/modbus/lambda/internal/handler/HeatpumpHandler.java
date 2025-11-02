@@ -241,7 +241,6 @@ public class HeatpumpHandler extends BaseThingHandler {
             try {
                 if (GROUP_HEAT_PUMP.equals(channelUID.getGroupId())) {
                     switch (channelUID.getIdWithoutGroup()) {
-
                         case CHANNEL_HEAT_PUMP_REQUEST_T_FLOW:
                             writeInt16(baseadress + 16, getScaledInt16Value(command));
                             break;
