@@ -73,7 +73,7 @@ public final class StateResolver {
                     return new QuantityType<>(raw, MetricPrefix.KILO(base));
                 }
             } else if (lowerKey.contains("capacity") || lowerKey.contains("odometer") || lowerKey.contains("range")
-                    || lowerKey.contains("chargetotalimport")) {
+                    || lowerKey.contains("import")) {
                 return new QuantityType<>(raw, MetricPrefix.KILO(base));
             }
             return new QuantityType<>(raw, base);
@@ -121,7 +121,8 @@ public final class StateResolver {
             return Units.AMPERE;
         }
         if (lower.contains("duration") || lower.contains("time") || lower.contains("delay")
-                || lower.contains("remaining") || lower.contains("overrun") || lower.contains("precondition")) {
+                || lower.contains("interval") || lower.contains("remaining") || lower.contains("overrun")
+                || lower.contains("precondition")) {
             return Units.SECOND;
         }
         if (lower.contains("odometer") || lower.contains("distance") || lower.contains("range")) {
