@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.jellyfin.internal.util;
+package org.openhab.binding.jellyfin.internal.util.config;
 
 import static org.junit.jupiter.api.Assertions.*;
 

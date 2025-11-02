@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.jellyfin.internal.util;
+package org.openhab.binding.jellyfin.internal.util.user;
 
 import java.util.List;
 import java.util.function.Predicate;
