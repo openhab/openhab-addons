@@ -15,6 +15,7 @@ package org.openhab.binding.homekit.internal.handler;
 import static org.openhab.binding.homekit.internal.HomekitBindingConstants.*;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
@@ -55,7 +56,6 @@ import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
-import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.thing.type.ChannelDefinition;
@@ -176,14 +176,14 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
     protected abstract void accessoriesLoaded();
 
     /**
-     * Extracts the accessory ID from the 'Accessory UID' property.
+     * Returns the accessory ID from the 'AccessoryID' configuration parameter.
      *
      * @return the accessory ID, or null if it cannot be determined
      */
     protected @Nullable Integer getAccessoryId() {
-        if (thing.getProperties().get(PROPERTY_ACCESSORY_UID) instanceof String accessoryUid) {
+        if (getConfig().get(CONFIG_ACCESSORY_ID) instanceof BigDecimal accessoryId) {
             try {
-                return Integer.parseInt(new ThingUID(accessoryUid).getId());
+                return accessoryId.intValue();
             } catch (NumberFormatException e) {
             }
         }
@@ -367,10 +367,10 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
     }
 
     private @Nullable String checkedMacAddress() {
-        String macAddress = getThing().getProperties().get(Thing.PROPERTY_MAC_ADDRESS);
-        if (macAddress == null) {
+        if (!(getConfig().get(Thing.PROPERTY_MAC_ADDRESS) instanceof String macAddress) || macAddress.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     i18nProvider.getText(bundle, "error.missing-mac-address", "Missing MAC address", null));
+            return null;
         }
         return macAddress;
     }
@@ -458,9 +458,9 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
             logger.warn("Cannot unpair child accessory '{}'", thing.getUID());
             return false;
         }
-        String macAddress = getThing().getProperties().get(Thing.PROPERTY_MAC_ADDRESS);
-        if (macAddress == null) {
-            logger.warn("Cannot unpair accessory '{}' due to missing mac address property", thing.getUID());
+
+        if (!(getConfig().get(Thing.PROPERTY_MAC_ADDRESS) instanceof String macAddress) || macAddress.isBlank()) {
+            logger.warn("Cannot unpair accessory '{}' due to missing mac address configuration", thing.getUID());
             return false;
         }
         try {

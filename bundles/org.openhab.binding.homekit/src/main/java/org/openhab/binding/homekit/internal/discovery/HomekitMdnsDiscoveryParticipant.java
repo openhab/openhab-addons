@@ -89,7 +89,7 @@ public class HomekitMdnsDiscoveryParticipant implements MDNSDiscoveryParticipant
                         .withProperty(CONFIG_HOST, host) //
                         .withProperty(Thing.PROPERTY_MAC_ADDRESS, mac) //
                         .withProperty(PROPERTY_ACCESSORY_CATEGORY, category.toString()) //
-                        .withProperty(PROPERTY_ACCESSORY_UID, new ThingUID(THING_TYPE_ACCESSORY, "1").toString()) //
+                        .withProperty(CONFIG_ACCESSORY_ID, "1".toString()) //
                         .withRepresentationProperty(Thing.PROPERTY_MAC_ADDRESS);
 
                 if (properties.get("md") instanceof String model) {

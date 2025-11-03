@@ -13,6 +13,16 @@
 				<label>IP Address</label>
 				<description>IP v4 address of the HomeKit accessory.</description>
 			</parameter>
+			<parameter name="macAddress" type="text" required="true">
+				<label>MAC Address</label>
+				<description>Unique accessory identifier.</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="accessoryID" type="integer" required="true">
+				<label>Accessory ID</label>
+				<description>ID of the accessory.</description>
+				<advanced>true</advanced>
+			</parameter>
 			<parameter name="refreshInterval" type="integer" unit="s" min="10" required="false">
 				<label>Refresh Interval</label>
 				<description>Interval at which the accessory is polled in sec.</description>
@@ -31,6 +41,16 @@
 				<context>network-address</context>
 				<label>IP Address</label>
 				<description>IP v4 address of the HomeKit bridge.</description>
+			</parameter>
+			<parameter name="macAddress" type="text" required="true">
+				<label>MAC Address</label>
+				<description>Unique accessory identifier.</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="accessoryID" type="integer" required="true">
+				<label>Accessory ID</label>
+				<description>ID of the accessory.</description>
+				<advanced>true</advanced>
 			</parameter>
 		</config-description>
 	</bridge-type>

@@ -47,9 +47,9 @@ public class HomekitBindingConstants {
     // configuration parameters
     public static final String CONFIG_HOST = "host";
     public static final String CONFIG_REFRESH_INTERVAL = "refreshInterval";
+    public static final String CONFIG_ACCESSORY_ID = "accessoryID";
 
     // thing properties
-    public static final String PROPERTY_ACCESSORY_UID = "accessoryUID";
     public static final String PROPERTY_PROTOCOL_VERSION = "protocolVersion";
     public static final String PROPERTY_ACCESSORY_CATEGORY = "accessoryCategory";
 
