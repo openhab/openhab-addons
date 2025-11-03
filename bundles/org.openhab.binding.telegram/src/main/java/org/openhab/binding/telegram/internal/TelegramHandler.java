@@ -473,7 +473,10 @@ public class TelegramHandler extends BaseThingHandler {
         OkHttpClient localClient = botLibClient;
         TelegramBot localBot = bot;
         if (localClient != null && localBot != null) {
-            localBot.removeGetUpdatesListener();
+            TelegramConfiguration config = this.getConfig().as(TelegramConfiguration.class);
+            if (config.getLongPollingTime() > 0) {
+                localBot.removeGetUpdatesListener();
+            }
             localClient.dispatcher().executorService().shutdown();
             localClient.connectionPool().evictAll();
             logger.debug("Telegram client closed");
