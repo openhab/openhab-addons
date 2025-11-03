@@ -18,6 +18,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.util.Map;
 
@@ -73,7 +74,7 @@ public class MailBuilderTest {
 
     @Test
     public void withURLAttachmentReturnsMultiPartEmail()
-            throws AddressException, EmailException, MalformedURLException {
+            throws AddressException, EmailException, MalformedURLException, URISyntaxException {
         MailBuilder builder = new MailBuilder(TEST_EMAIL);
         String url = Path.of("src/test/resources/attachment.txt").toUri().toURL().toString();
         Email mail = builder.withText("boo").withURLAttachment(url).build();
