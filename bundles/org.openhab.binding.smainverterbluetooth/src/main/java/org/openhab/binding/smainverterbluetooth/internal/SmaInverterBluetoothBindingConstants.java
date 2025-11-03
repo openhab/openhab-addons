@@ -38,4 +38,5 @@ public class SmaInverterBluetoothBindingConstants {
     public static final String CHANNEL_INVERTER_STATUS_CODE = "inverter-status-code";
     public static final String CHANNEL_INVERTER_STATUS_MESSAGE = "inverter-status-message";
     public static final String CHANNEL_INVERTER_TIME = "inverter-time";
+    public static final String CHANNEL_THING_POLLING_SWITCH = "thing-polling-switch";
 }

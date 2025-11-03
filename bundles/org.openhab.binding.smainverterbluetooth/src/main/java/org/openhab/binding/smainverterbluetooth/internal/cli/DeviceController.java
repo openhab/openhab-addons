@@ -1,7 +1,11 @@
 package org.openhab.binding.smainverterbluetooth.internal.cli;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -28,7 +32,9 @@ import com.google.gson.Gson;
 public class DeviceController {
 
     private InverterData inverterData = new InverterData();
+    @Nullable
     private String bluetoothAddress = "";
+    @Nullable
     private String password = "";
     int exitCode = -1;
     @SuppressWarnings("null")
@@ -41,8 +47,8 @@ public class DeviceController {
     }
 
     public DeviceController(SmaInverterBluetoothConfiguration config) {
-        this.bluetoothAddress = config.getBluetoothAddress() != null ? config.getBluetoothAddress() : "";
-        this.password = config.getPassword() != null ? config.getPassword() : "";
+        this.bluetoothAddress = config.getBluetoothAddress();
+        this.password = config.getPassword();
     }
 
     public int fetchInverterData() {
@@ -51,15 +57,21 @@ public class DeviceController {
         List<String> command = new ArrayList<>();
         command.add(OPENHAB_HOME + "\\userdata\\files\\sma2json.exe");
         command.add("-b");
-        command.add(this.bluetoothAddress);
-        command.add("-p");
-        command.add(this.password);
+        command.add(this.bluetoothAddress + "");
+        command.add("-s");
         @SuppressWarnings("null")
         ProcessBuilder pb = new ProcessBuilder(command);
         logger.debug("Trying Grid Solar Data from CLI");
         this.exitCode = -1;
         try {
             Process p = pb.start();
+            // Setup to write to the process's stdin (improves password security)
+            String inputToSend = this.password + "\n";
+            try (OutputStream stdin = p.getOutputStream();
+                    BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(stdin, StandardCharsets.UTF_8))) {
+                writer.write(inputToSend);
+                writer.flush();
+            }
             // Capture the standard output
             BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
             StringBuilder output = new StringBuilder();
@@ -74,7 +86,6 @@ public class DeviceController {
             while ((errorLine = errorReader.readLine()) != null) {
                 errorOutput.append(errorLine).append(System.lineSeparator());
             }
-
             // Wait for the process to complete, with a timeout
             boolean finished = p.waitFor(10, TimeUnit.SECONDS);
 

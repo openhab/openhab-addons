@@ -1,11 +1,19 @@
-# smainverterbluetooth Binding
+# SMA Inverter Bluetooth Binding
 
-_Give some details about what this binding is meant for - a protocol, system, specific device._
+This binding fetches data from a SMA inverter over Bluetooth. If your inverter works with [Sunny Explorer](https://www.sma.de/en/products/energy-management/sunny-explorer) then it is likely to work with this binding.
+SMA's Bluetooth protocol is proprietary and has been partly reverse engineered by the GitHub community.
+As the Java BlueCove library is not maintained and likely not compatible with Java 21 or later, the development of a Bluetooth interface is better achieved using the Python [pybluez](https://github.com/pybluez/pybluez) module for low-level Bluetooth Classic (BR/EDR) socket communication.
 
-_If possible, provide some resources like pictures (only PNG is supported currently), a video, etc. to give an impression of what can be done with this binding._
-_You can place such resources into a `doc` folder next to this README.md._
 
-_Put each sentence in a separate line to improve readability of diffs._
+The project calls extensively on work done by others:
+
+* [SBFspot](https://github.com/SBFspot/SBFspot/tree/master/SBFspot)
+* [understanding-sma-bluetooth-protocol](http://blog.jamesball.co.uk/2013/02/understanding-sma-bluetooth-protocol-in.html?q=SMA)
+* [python-smadata2](https://github.com/dgibson/python-smadata2)
+
+There has been previous discussion in the openHAB Community Forum on this subject and this may be of interest to some. [Example on how to access data of a Sunny Boy SMA solar inverter](https://community.openhab.org/t/example-on-how-to-access-data-of-a-sunny-boy-sma-solar-inverter/50963)
+
+This binding requires the installation of a Command Line Interface (CLI) programme specifically written for this binding.The legacy code used for the core of the CLI has been shown to work on inverters SMA3000HF, 3000TL, 4000TL - but in theory should work with all Bluetooth enabled SMA inverters.
 
 ## Supported Things
 
@@ -18,8 +26,18 @@ _Note that it is planned to generate some part of this based on the XML files wi
 
 ## Discovery
 
-_Describe the available auto-discovery features here._
-_Mention for what it works and what needs to be kept in mind when using it._
+Discovery is manual, the inverter Thing needs to know the Bluetooth address of the SMA inverter. To find this you can use the linux command line.
+
+```shell
+>> hcitool Scan
+Scanning ...
+        00:00:00:00:00:00       SomethingElse
+         ...
+        00:80:25:00:00:00       SMA001d SN: XXXXXXXXXX SNXXXXXXXXXX
+```
+The SMA Inverter is identified with SMA001d SN: XXXXXXXXXX where XXXXXXXXXX is the same serial number you see in Sunny Explorer and the Bluetooth address is to the left.
+If you don't have Linux available there are various Apps for Android or Windows that have a similar function
+
 
 ## Binding Configuration
 
@@ -93,3 +111,9 @@ Remove this section, if not needed.
 ## Any custom content here!
 
 _Feel free to add additional sections for whatever you think should also be mentioned about your binding!_
+
+## Trouble Shooting
+
+If the bluetooth from your inverter is disabled you will need to set  the NetID to 1 (default). The Bluetooth NetID is a physical setting that must be changed using a rotary switch inside the inverter's enclosure. See the [Installation Manual](https://www.inbalance-energy.co.uk/datasheets_downloads/SunnyBoy/sb3600tl_installation_manual.pdf)
+
+

@@ -23,6 +23,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.smainverterbluetooth.internal.cli.DeviceController;
 import org.openhab.binding.smainverterbluetooth.internal.config.SmaInverterBluetoothConfiguration;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -50,6 +51,8 @@ public class SmaInverterBluetoothHandler extends BaseThingHandler {
     private SmaInverterBluetoothConfiguration config = new SmaInverterBluetoothConfiguration();
     private @Nullable ScheduledFuture<?> refreshTask;
     private DeviceController inverter = new DeviceController();
+    @Nullable
+    private String currentControlState = "ON";
 
     public SmaInverterBluetoothHandler(Thing thing) {
         super(thing);
@@ -57,6 +60,9 @@ public class SmaInverterBluetoothHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        if ("thing-polling-switch".equals(channelUID.getId())) { // track the current state of the polling switch
+            this.currentControlState = command.toString();
+        }
         if (command instanceof RefreshType) {
             refreshStateAndUpdate();
         }
@@ -70,6 +76,8 @@ public class SmaInverterBluetoothHandler extends BaseThingHandler {
         inverter = new DeviceController(config);
         startAutomaticRefresh();
         updateStatus(ThingStatus.ONLINE);
+        updateState(CHANNEL_THING_POLLING_SWITCH, OnOffType.ON);
+        this.currentControlState = "ON";
     }
 
     @Override
@@ -83,6 +91,10 @@ public class SmaInverterBluetoothHandler extends BaseThingHandler {
     }
 
     private void refreshStateAndUpdate() {
+        if (currentControlState == "OFF") { // polling disabled
+            logger.debug("Polling disabled, skipping refresh");
+            return;
+        }
         ZonedDateTime lockoutTimer = this.lockoutTimer;
         if (lockoutTimer != null && lockoutTimer.isAfter(ZonedDateTime.now())) { // lockout calls that come
                                                                                  // too fast

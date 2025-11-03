@@ -15,6 +15,7 @@
 
 		<label>SMAInverterBluetooth Binding Thing</label>
 		<description>SMA Solar Inverter Bluetooth Binding</description>
+		<semantic-equipment-tag>Inverter</semantic-equipment-tag>
 
 		<channels>
 			<channel id="inverter-day-generation" typeId="system.electric-energy">
@@ -48,6 +49,10 @@
 			<channel id="inverter-time" typeId="inverter-reading-time">
 				<label>Inverter Reading Time</label>
 				<description>Time of the last reading from the inverter.</description>
+			</channel>
+			<channel id="thing-polling-switch" typeId="polling-switch">
+				<label>Polling Control</label>
+				<description>Switch to enable or disable polling of the inverter.</description>
 			</channel>
 		</channels>
 		<properties>
@@ -96,5 +101,9 @@
 		<item-type>String</item-type>
 		<label>Inverter Reading Time</label>
 		<state readOnly="true" pattern="%s"/>
+	</channel-type>
+	<channel-type id="polling-switch">
+		<item-type>Switch</item-type>
+		<label>Polling Control</label>
 	</channel-type>
 </thing:thing-descriptions>
