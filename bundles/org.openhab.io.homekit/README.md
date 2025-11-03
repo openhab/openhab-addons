@@ -565,7 +565,7 @@ If "useFahrenheitTemperature" is set to true, the min and max temperature must b
 
 #### Thermostat Modes
 
-The HomeKit thermostat supports the following modes:
+The HomeKit thermostat accessory supports the following modes:
 
 - CurrentHeatingCoolingMode: OFF, HEAT, COOL
 - TargetHeatingCoolingMode: OFF, HEAT, COOL, AUTO
