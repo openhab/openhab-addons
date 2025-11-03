@@ -15,6 +15,10 @@ package org.openhab.binding.mail.internal;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URI;
+<<<<<<< Upstream, based on main
+=======
+import java.net.URISyntaxException;
+>>>>>>> a1a1b86 Adressing Copilot code review comments
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -123,14 +127,24 @@ public class MailBuilder {
      *
      * @param urlString the URL as String
      * @return a MailBuilder
+<<<<<<< Upstream, based on main
      * @throws IllegalArgumentException if url has invalid format
+=======
+     * @throws MalformedURLException if url has invalid format
+     * @throws URISyntaxException
+>>>>>>> a1a1b86 Adressing Copilot code review comments
      */
+<<<<<<< Upstream, based on main
     public MailBuilder withURLAttachment(String urlString) throws IllegalArgumentException {
         try {
             attachmentURLs.add(URI.create(urlString).toURL());
         } catch (MalformedURLException e) {
             throw new IllegalArgumentException("Invalid URL format", e);
         }
+=======
+    public MailBuilder withURLAttachment(String urlString) throws URISyntaxException, MalformedURLException {
+        attachmentURLs.add(new URI(urlString).toURL());
+>>>>>>> a1a1b86 Adressing Copilot code review comments
         return this;
     }
 

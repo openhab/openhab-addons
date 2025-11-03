@@ -12,6 +12,11 @@
  */
 package org.openhab.binding.mail.internal.action;
 
+<<<<<<< Upstream, based on main
+=======
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+>>>>>>> a1a1b86 Adressing Copilot code review comments
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -106,7 +111,11 @@ public class SendMailActions implements ThingActions {
             } else {
                 return handler.sendMail(builder.build());
             }
+<<<<<<< Upstream, based on main
         } catch (AddressException | IllegalArgumentException | EmailException e) {
+=======
+        } catch (AddressException | MalformedURLException | EmailException | URISyntaxException e) {
+>>>>>>> a1a1b86 Adressing Copilot code review comments
             logger.warn("Could not send mail: {}", e.getMessage());
             return false;
         }
@@ -197,7 +206,11 @@ public class SendMailActions implements ThingActions {
             } else {
                 return handler.sendMail(builder.build());
             }
+<<<<<<< Upstream, based on main
         } catch (AddressException | IllegalArgumentException | EmailException e) {
+=======
+        } catch (AddressException | MalformedURLException | EmailException | URISyntaxException e) {
+>>>>>>> a1a1b86 Adressing Copilot code review comments
             logger.warn("Could not send mail: {}", e.getMessage());
             return false;
         }

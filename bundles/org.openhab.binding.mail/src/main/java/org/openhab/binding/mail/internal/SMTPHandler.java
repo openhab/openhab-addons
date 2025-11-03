@@ -23,6 +23,7 @@ import javax.mail.AuthenticationFailedException;
 import javax.mail.MessagingException;
 import javax.mail.Part;
 import javax.mail.Session;
+import javax.mail.Transport;
 import javax.mail.internet.MimeMultipart;
 
 import org.apache.commons.mail.Email;
@@ -81,8 +82,8 @@ public class SMTPHandler extends BaseThingHandler {
         }
 
         SMTPConfig config = getConfigAs(SMTPConfig.class);
-        if (config.sender instanceof String confSender) {
-            this.sender = confSender;
+        if (config.sender != null) {
+            this.sender = config.sender;
         }
 
         Email mail = new SimpleEmail();
@@ -107,7 +108,9 @@ public class SMTPHandler extends BaseThingHandler {
 
         try {
             localSession = mail.getMailSession();
-            localSession.getTransport().connect();
+            Transport transport = localSession.getTransport();
+            transport.connect();
+            transport.close();
         } catch (AuthenticationFailedException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
             return null;
