@@ -61,8 +61,12 @@ public class MailBuilderTest {
 
     @Test
     public void illegalURLThrowsException() {
+<<<<<<< Upstream, based on main
         assertThrows(IllegalArgumentException.class,
                 () -> new MailBuilder("TEST_EMAIL").withURLAttachment("foo bar.zinga"));
+=======
+        assertThrows(URISyntaxException.class, () -> new MailBuilder("TEST_EMAIL").withURLAttachment("foo bar.zinga"));
+>>>>>>> dc4bb93 Test correction
     }
 
     @Test
