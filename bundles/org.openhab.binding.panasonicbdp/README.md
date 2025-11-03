@@ -9,7 +9,7 @@ This binding connects Panasonic Blu-ray players from 2011/2012 and UHD Blu-ray p
 **Please note:** The player must be on the same IP subnet as the openHAB server for this binding to function.
 If the connection to the player originates from a different subnet, HTTP 404 errors are returned for all requests.
 
-To enable network remote control of the Blu-ray players, configure the following settings:
+To enable network remote control of the Blu-ray players (`bd-player`), configure the following settings:
 
 - **Player Settings/Network/Network Settings/Remote Device Settings**
 
