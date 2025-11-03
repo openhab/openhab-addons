@@ -261,8 +261,10 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
                 logger.warn("Warning, maxAgeSeconds for device uid={} is low, value={}", getThing().getUID(),
                         maxAgeSeconds);
             }
-            logger.trace("updateDeviceConfig(): uid: {}, pooling a deviceSearchRequest maxAge:uid: {}",
+
+            logger.trace("updateDeviceConfig(): uid: {}, pooling a deviceSearchRequest maxAge:uid: {} {}",
                     this.getThing().getUID(), maxAgeSeconds);
+            maxAgeSeconds = (int) (0.7 * maxAgeSeconds);
             keepAliveJob = upnpScheduler.scheduleWithFixedDelay(this::sendDeviceSearchRequest, maxAgeSeconds,
                     maxAgeSeconds, TimeUnit.SECONDS);
         }
