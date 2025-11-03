@@ -112,7 +112,7 @@
 	</thing-type>
 
 	<channel-type id="light-mode">
-		<item-type>Number</item-type>
+		<item-type>String</item-type>
 		<label>Light Mode</label>
 		<tags>
 			<tag>Control</tag>
