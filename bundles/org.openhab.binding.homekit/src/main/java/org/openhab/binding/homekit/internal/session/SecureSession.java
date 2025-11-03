@@ -16,11 +16,10 @@ import static org.openhab.binding.homekit.internal.crypto.CryptoUtils.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
-import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -38,7 +37,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class SecureSession {
 
-    private final InputStream in;
+    private static final int SLEEP_INTERVAL_MILLISECONDS = 50;
+
+    private final DataInputStream in;
     private final OutputStream out;
     private final byte[] writeKey;
     private final byte[] readKey;
@@ -46,7 +47,7 @@ public class SecureSession {
     private final AtomicInteger readCounter = new AtomicInteger(0);
 
     public SecureSession(Socket socket, AsymmetricSessionKeys keys) throws IOException {
-        in = socket.getInputStream();
+        in = new DataInputStream(socket.getInputStream());
         out = socket.getOutputStream();
         writeKey = keys.getWriteKey();
         readKey = keys.getReadKey();
@@ -89,48 +90,59 @@ public class SecureSession {
 
     /**
      * Reads multiple data frames from the input stream until a complete HTTP message is reconstructed.
-     * Repeatedly calls receiveFrame() to read and decrypt individual frames. It accumulates the decrypted
-     * plaintext until it detects the end of the HTTP message. The end of the message is determined by checking
-     * for the presence of complete HTTP headers and a completed Content-Length, or a complete chunked payload.
+     * Repeatedly whenever there is data available on the input stream, it calls receiveFrame() to read and
+     * decrypt a frame. It accumulates the decrypted plaintext until it detects the end of the HTTP message.
+     * The end of the message is determined by checking for the presence of complete HTTP headers and a
+     * completed Content-Length, or a complete chunked payload.
      *
      * @param trace if true, captures the raw decrypted frames for debugging purposes.
      * @return a 3D byte array where the first element is the HTTP headers, the second element is the content,
      *         and the third is the raw trace (if enabled).
      * @throws IOException
      * @throws InvalidCipherTextException
+     * @throws IllegalStateException if the received data is malformed
      */
-    public byte[][] receive(boolean trace)
-            throws IOException, InvalidCipherTextException, BufferUnderflowException, SecurityException {
+    public byte[][] receive(boolean trace) throws IOException, InvalidCipherTextException, IllegalStateException {
         HttpPayloadParser httpParser = new HttpPayloadParser();
-        ByteArrayOutputStream raw = trace ? new ByteArrayOutputStream() : null;
+        ByteArrayOutputStream traceStream = new ByteArrayOutputStream();
         do {
-            byte[] frame = receiveFrame();
-            if (raw != null) {
-                raw.write(frame);
+            if (in.available() == 0) {
+                try {
+                    Thread.sleep(SLEEP_INTERVAL_MILLISECONDS); // wait for data to arrive
+                } catch (InterruptedException e) {
+                    // coninue
+                }
+            } else {
+                byte[] frame = receiveFrame();
+                if (trace) {
+                    traceStream.write(frame);
+                }
+                httpParser.accept(frame);
             }
-            httpParser.accept(frame);
         } while (!httpParser.isComplete());
-        return new byte[][] { httpParser.getHeaders(), httpParser.getContent(),
-                raw != null ? raw.toByteArray() : new byte[0] };
+        return new byte[][] { httpParser.getHeaders(), httpParser.getContent(), traceStream.toByteArray() };
     }
 
     /**
-     * Reads a single frame from the input stream, decrypts it, and returns the plaintext. Reads the 2-byte length
-     * prefix, retrieves the corresponding ciphertext, and decrypts it. The length prefix is included in the cipher
-     * AAD to ensure integrity. The read counter is incremented after reading the frame to ensure nonce uniqueness.
+     * Reads a single frame from the input stream, decrypts it, and returns the plaintext. Blocks until a full frame
+     * is received or an IO exception occurs. Reads the 2-byte length prefix, retrieves the corresponding ciphertext,
+     * and decrypts it. The length prefix is included in the cipher AAD to ensure integrity. The read counter is
+     * incremented after reading the frame to ensure nonce uniqueness.
      *
      * @return the decrypted plaintext of the single frame.
      * @throws IOException
      * @throws InvalidCipherTextException
+     * @throws IllegalStateException if the frame length is invalid
      */
-    private byte[] receiveFrame()
-            throws IOException, InvalidCipherTextException, BufferUnderflowException, SecurityException {
-        byte[] frameAad = in.readNBytes(2);
+    private byte[] receiveFrame() throws IOException, InvalidCipherTextException, IllegalStateException {
+        byte[] frameAad = new byte[2]; // AAD data length prefix
+        in.readFully(frameAad, 0, frameAad.length);
         short frameLen = ByteBuffer.wrap(frameAad).order(ByteOrder.LITTLE_ENDIAN).getShort();
         if (frameLen < 0 || frameLen > 1024) {
-            throw new SecurityException("Invalid frame length");
+            throw new IllegalStateException("Invalid frame length");
         }
-        byte[] cipherText = in.readNBytes(frameLen + 16); // read 16 extra bytes for the auth tag
+        byte[] cipherText = new byte[frameLen + 16]; // read 16 extra bytes for the auth tag
+        in.readFully(cipherText, 0, cipherText.length);
         byte[] nonce64 = generateNonce64(readCounter.getAndIncrement());
         return decrypt(readKey, nonce64, cipherText, frameAad);
     }

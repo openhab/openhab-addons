@@ -57,14 +57,25 @@ public class PairSetupClient {
     private final String password;
     private final byte[] controllerId;
     private final Ed25519PrivateKeyParameters controllerKey;
+    private final boolean withExternalAuthentication;
 
+    /**
+     * Constructs a PairSetupClient with the given transport, controller ID, controller key, and pairing code.
+     *
+     * @param ipTransport the IP transport for communication
+     * @param controllerId the controller's identifier
+     * @param controllerKey the controller's long-term private key
+     * @param pairingCode the accessory's setup code for pairing
+     * @param withExternalAuthentication whether to use external authentication e.g. from an app
+     */
     public PairSetupClient(IpTransport ipTransport, byte[] controllerId, Ed25519PrivateKeyParameters controllerKey,
-            String pairingCode) {
+            String pairingCode, boolean withExternalAuthentication) {
         logger.debug("Created with pairing code: {}", pairingCode);
         this.ipTransport = ipTransport;
         this.password = pairingCode;
         this.controllerId = controllerId;
         this.controllerKey = controllerKey;
+        this.withExternalAuthentication = withExternalAuthentication;
     }
 
     /**
@@ -78,9 +89,11 @@ public class PairSetupClient {
      * @throws InvalidCipherTextException
      * @throws SecurityException
      * @throws NoSuchAlgorithmException
+     * @throws IllegalStateException
      */
-    public Ed25519PublicKeyParameters pair() throws NoSuchAlgorithmException, SecurityException,
-            InvalidCipherTextException, IOException, InterruptedException, TimeoutException, ExecutionException {
+    public Ed25519PublicKeyParameters pair()
+            throws NoSuchAlgorithmException, SecurityException, InvalidCipherTextException, IOException,
+            InterruptedException, TimeoutException, ExecutionException, IllegalStateException {
         SRPclient client = m1Execute();
         return client.getAccessoryLongTermPublicKey();
     }
@@ -96,13 +109,15 @@ public class PairSetupClient {
      * @throws InvalidCipherTextException
      * @throws SecurityException
      * @throws NoSuchAlgorithmException
+     * @throws IllegalStateException
      */
     private SRPclient m1Execute() throws IOException, InterruptedException, TimeoutException, ExecutionException,
-            NoSuchAlgorithmException, SecurityException, InvalidCipherTextException {
+            NoSuchAlgorithmException, SecurityException, InvalidCipherTextException, IllegalStateException {
         logger.debug("Pair-Setup M1: Send pairing start request to server");
         Map<Integer, byte[]> tlv = new LinkedHashMap<>();
         tlv.put(TlvType.STATE.value, new byte[] { PairingState.M1.value });
-        tlv.put(TlvType.METHOD.value, new byte[] { PairingMethod.SETUP.value });
+        tlv.put(TlvType.METHOD.value,
+                new byte[] { withExternalAuthentication ? PairingMethod.SETUP_AUTH.value : PairingMethod.SETUP.value });
         loggerTraceTlv(tlv);
         Validator.validate(PairingMethod.SETUP, tlv);
         byte[] m1Response = ipTransport.post(ENDPOINT_PAIR_SETUP, CONTENT_TYPE_PAIRING, Tlv8Codec.encode(tlv));
@@ -121,9 +136,11 @@ public class PairSetupClient {
      * @throws IOException
      * @throws InvalidCipherTextException
      * @throws SecurityException
+     * @throws IllegalStateException
      */
-    private SRPclient m2Execute(byte[] m1Response) throws NoSuchAlgorithmException, SecurityException,
-            InvalidCipherTextException, IOException, InterruptedException, TimeoutException, ExecutionException {
+    private SRPclient m2Execute(byte[] m1Response)
+            throws NoSuchAlgorithmException, SecurityException, InvalidCipherTextException, IOException,
+            InterruptedException, TimeoutException, ExecutionException, IllegalStateException {
         logger.debug("Pair-Setup M2: Read server salt and accessory ephemeral PK; initialize SRP client");
         Map<Integer, byte[]> tlv = Tlv8Codec.decode(m1Response);
         loggerTraceTlv(tlv);
@@ -145,9 +162,10 @@ public class PairSetupClient {
      * @throws IOException
      * @throws SecurityException
      * @throws InvalidCipherTextException
+     * @throws IllegalStateException
      */
     private SRPclient m3Execute(SRPclient client) throws SecurityException, IOException, InterruptedException,
-            TimeoutException, ExecutionException, InvalidCipherTextException {
+            TimeoutException, ExecutionException, InvalidCipherTextException, IllegalStateException {
         logger.debug("Pair-Setup M3: Send controller ephemeral PK and M1 proof to accessory");
         Map<Integer, byte[]> tlv = new LinkedHashMap<>();
         tlv.put(TlvType.STATE.value, new byte[] { PairingState.M3.value });
@@ -168,9 +186,10 @@ public class PairSetupClient {
      * @throws InterruptedException
      * @throws IOException
      * @throws InvalidCipherTextException
+     * @throws IllegalStateException
      */
-    private SRPclient m4Execute(SRPclient client, byte[] m3Response)
-            throws InvalidCipherTextException, IOException, InterruptedException, TimeoutException, ExecutionException {
+    private SRPclient m4Execute(SRPclient client, byte[] m3Response) throws InvalidCipherTextException, IOException,
+            InterruptedException, TimeoutException, ExecutionException, IllegalStateException {
         logger.debug("Pair-Setup M4: Read accessory M2 proof; and verify it");
         Map<Integer, byte[]> tlv = Tlv8Codec.decode(m3Response);
         loggerTraceTlv(tlv);
@@ -190,9 +209,10 @@ public class PairSetupClient {
      * @throws InterruptedException
      * @throws IOException
      * @throws InvalidCipherTextException
+     * @throws IllegalStateException
      */
-    private SRPclient m5Execute(SRPclient client)
-            throws IOException, InterruptedException, TimeoutException, ExecutionException, InvalidCipherTextException {
+    private SRPclient m5Execute(SRPclient client) throws IOException, InterruptedException, TimeoutException,
+            ExecutionException, InvalidCipherTextException, IllegalStateException {
         logger.debug("Pair-Setup M5: Send controller id, LTPK, and signature to accessory");
         byte[] cipherText = client.m5EncodeControllerInfoAndSign(controllerId, controllerKey);
         Map<Integer, byte[]> tlv = new LinkedHashMap<>();

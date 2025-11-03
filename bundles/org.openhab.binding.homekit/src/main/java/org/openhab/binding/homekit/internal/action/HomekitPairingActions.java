@@ -38,9 +38,9 @@ public class HomekitPairingActions implements ThingActions {
     private final Logger logger = LoggerFactory.getLogger(HomekitPairingActions.class);
     private @Nullable HomekitBaseAccessoryHandler handler;
 
-    public static void pair(ThingActions actions, String code) {
+    public static void pair(ThingActions actions, String code, boolean auth) {
         if (actions instanceof HomekitPairingActions accessoryActions) {
-            accessoryActions.pair(code);
+            accessoryActions.pair(code, auth);
         } else {
             throw new IllegalArgumentException("The 'actions' argument is not an instance of HomekitAccessoryActions");
         }
@@ -66,10 +66,11 @@ public class HomekitPairingActions implements ThingActions {
 
     @RuleAction(label = "@text/actions.pairing-action.label", description = "@text/actions.pairing-action.description")
     public void pair(
-            @ActionInput(name = "code", label = "@text/actions.pairing-code.label", description = "@text/actions.pairing-code.description") String code) {
+            @ActionInput(name = "code", label = "@text/actions.pairing-code.label", description = "@text/actions.pairing-code.description") String code,
+            @ActionInput(name = "auth", label = "@text/actions.pairing-auth.label", description = "@text/actions.pairing-auth.description", defaultValue = "false") boolean auth) {
         HomekitBaseAccessoryHandler handler = this.handler;
         if (handler != null) {
-            handler.pair(code);
+            handler.pair(code, auth);
         } else {
             logger.warn("ThingHandler is null.");
         }

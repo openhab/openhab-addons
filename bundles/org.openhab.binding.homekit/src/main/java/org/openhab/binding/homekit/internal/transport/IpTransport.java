@@ -18,10 +18,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.net.SocketTimeoutException;
-import java.nio.BufferUnderflowException;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
@@ -33,7 +32,6 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import org.bouncycastle.crypto.InvalidCipherTextException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homekit.internal.session.AsymmetricSessionKeys;
@@ -54,12 +52,11 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class IpTransport implements AutoCloseable {
 
-    private static final int TIMEOUT_MILLI_SECONDS = (int) Duration.ofSeconds(10).toMillis();
+    private static final int TIMEOUT_MILLI_SECONDS = 10000;
+    private static final Duration MINIMUM_REQUEST_INTERVAL = Duration.ofMillis(200);
 
     private final Logger logger = LoggerFactory.getLogger(IpTransport.class);
-
-    private final ExecutorService writeExecutor = Executors
-            .newSingleThreadExecutor(r -> new Thread(r, "homekit-writer"));
+    private final ExecutorService executor = Executors.newSingleThreadExecutor(r -> new Thread(r, "homekit-io"));
 
     private final String host; // ip address with optional port e.g. "192.168.1.42:9123"
     private final Socket socket;
@@ -67,9 +64,10 @@ public class IpTransport implements AutoCloseable {
 
     private @Nullable SecureSession secureSession = null;
     private @Nullable Thread readThread = null;
-    private @Nullable CompletableFuture<byte[][]> readFuture = null;
+    private @Nullable CompletableFuture<byte[][]> readHttpResponseFuture = null;
 
     private boolean closing = false;
+    private Instant earliestNextRequestTime = Instant.MIN;
 
     /**
      * Creates a new IpTransport instance with the given socket and session keys.
@@ -92,75 +90,136 @@ public class IpTransport implements AutoCloseable {
         int port = Integer.parseInt(parts[1]);
         socket = new Socket();
         socket.connect(new InetSocketAddress(ipAddress, port), TIMEOUT_MILLI_SECONDS); // connect timeout
-        socket.setSoTimeout(TIMEOUT_MILLI_SECONDS); // read timeout
         socket.setKeepAlive(false); // HAP spec forbids TCP keepalive
         logger.debug("Connected to {}", host);
     }
 
     public void setSessionKeys(AsymmetricSessionKeys keys) throws IOException {
         secureSession = new SecureSession(socket, keys);
-        Thread thread = new Thread(this::readTask, "homekit-reader");
-        thread.start();
+        Thread thread = new Thread(this::readTask, "homekit-thread");
         readThread = thread;
+        thread.start();
     }
 
+    /**
+     * Sends a GET request to the specified endpoint with the given content type.
+     *
+     * @param endpoint the endpoint to which the request is sent
+     * @param contentType the content type of the request
+     * @return the response content as a byte array
+     * @throws IOException if an I/O error occurs
+     * @throws InterruptedException if the operation is interrupted
+     * @throws TimeoutException if the operation times out
+     * @throws ExecutionException if an error occurs during execution
+     * @throws IllegalStateException if the state is invalid
+     */
     public byte[] get(String endpoint, String contentType)
-            throws IOException, InterruptedException, TimeoutException, ExecutionException {
+            throws IOException, InterruptedException, ExecutionException, IllegalStateException, TimeoutException {
         return execute("GET", endpoint, contentType, new byte[0]);
     }
 
+    /**
+     * Sends a POST request to the specified endpoint with the given content type and content.
+     *
+     * @param endpoint the endpoint to which the request is sent
+     * @param contentType the content type of the request
+     * @param content the content of the request
+     * @return the response content as a byte array
+     * @throws IOException if an I/O error occurs
+     * @throws InterruptedException if the operation is interrupted
+     * @throws TimeoutException if the operation times out
+     * @throws ExecutionException if an error occurs during execution
+     * @throws IllegalStateException if the state is invalid
+     */
     public byte[] post(String endpoint, String contentType, byte[] content)
-            throws IOException, InterruptedException, TimeoutException, ExecutionException {
+            throws IOException, InterruptedException, ExecutionException, IllegalStateException, TimeoutException {
         return execute("POST", endpoint, contentType, content);
     }
 
+    /**
+     * Sends a PUT request to the specified endpoint with the given content type and content.
+     *
+     * @param endpoint the endpoint to which the request is sent
+     * @param contentType the content type of the request
+     * @param content the content of the request
+     * @return the response content as a byte array
+     * @throws IOException if an I/O error occurs
+     * @throws InterruptedException if the operation is interrupted
+     * @throws TimeoutException if the operation times out
+     * @throws ExecutionException if an error occurs during execution
+     * @throws IllegalStateException if the state is invalid
+     */
     public byte[] put(String endpoint, String contentType, byte[] content)
-            throws IOException, InterruptedException, TimeoutException, ExecutionException {
+            throws IOException, InterruptedException, ExecutionException, IllegalStateException, TimeoutException {
         return execute("PUT", endpoint, contentType, content);
     }
 
+    /**
+     * Executes an HTTP request with the specified method, endpoint, content type, and content.
+     *
+     * @param method the HTTP method (e.g., "GET", "POST", "PUT")
+     * @param endpoint the endpoint to which the request is sent
+     * @param contentType the content type of the request
+     * @param content the content of the request
+     * @return the response content as a byte array
+     * @throws IOException if an I/O error occurs
+     * @throws InterruptedException if the operation is interrupted
+     * @throws TimeoutException if the operation times out
+     * @throws ExecutionException if an error occurs during execution
+     * @throws IllegalStateException if the state is invalid
+     */
     private synchronized byte[] execute(String method, String endpoint, String contentType, byte[] content)
-            throws IOException, InterruptedException, TimeoutException, ExecutionException {
+            throws IOException, InterruptedException, ExecutionException, IllegalStateException, TimeoutException {
         byte[] request = buildRequest(method, endpoint, contentType, content);
+
+        Duration delay = Duration.between(Instant.now(), earliestNextRequestTime);
+        if (delay.isPositive()) {
+            Thread.sleep(delay.toMillis()); // rate limit the HTTP requests
+        }
 
         boolean trace = logger.isTraceEnabled();
         if (trace) {
-            logger.trace("Request:\n{}", new String(request, StandardCharsets.ISO_8859_1));
+            logger.trace("HTTP request:\n{}", new String(request, StandardCharsets.ISO_8859_1));
         }
 
         byte[][] response; // 0 = headers, 1 = content, 2 = raw trace (if enabled)
+        earliestNextRequestTime = Instant.now().plus(MINIMUM_REQUEST_INTERVAL); // assume zero processing time
         if (secureSession instanceof SecureSession secureSession) {
             // before we write request, create CompletableFuture to read response (with a timeout)
-            CompletableFuture<byte[][]> readFuture = new CompletableFuture<>();
-            this.readFuture = readFuture;
+            CompletableFuture<byte[][]> readHttpResponseFuture = new CompletableFuture<>();
+            this.readHttpResponseFuture = readHttpResponseFuture;
             // create Future to write the request (with a timeout)
-            Future<@Nullable Void> writeTask = writeExecutor.submit(() -> {
+            Future<@Nullable Void> writeTask = executor.submit(() -> {
                 secureSession.send(request);
                 return null;
             });
             // now wait for both write and read to complete
             writeTask.get(TIMEOUT_MILLI_SECONDS, TimeUnit.MILLISECONDS);
-            response = readFuture.get(TIMEOUT_MILLI_SECONDS, TimeUnit.MILLISECONDS);
+            response = readHttpResponseFuture.get(TIMEOUT_MILLI_SECONDS, TimeUnit.MILLISECONDS);
         } else {
             OutputStream out = socket.getOutputStream();
             InputStream in = socket.getInputStream();
             // create Future to write the request (with a timeout)
-            Future<@Nullable Void> writeTask = writeExecutor.submit(() -> {
+            Future<@Nullable Void> writeTask = executor.submit(() -> {
                 out.write(request);
                 out.flush();
                 return null;
             });
-            // now wait for both write and read to complete
+            // wait for write to complete
             writeTask.get(TIMEOUT_MILLI_SECONDS, TimeUnit.MILLISECONDS);
-            response = readPlainResponse(in, trace);
+            // create Future to read the response (with a timeout)
+            Future<byte[][]> readTask = executor.submit(() -> readPlainResponse(in, trace));
+            // wait for read to complete
+            response = readTask.get(TIMEOUT_MILLI_SECONDS, TimeUnit.MILLISECONDS);
         }
+        earliestNextRequestTime = Instant.now().plus(MINIMUM_REQUEST_INTERVAL); // allow actual processing time
 
         if (response.length != 3) {
             throw new IOException("Response must contain 3 arrays");
         }
 
         if (trace) {
-            logger.trace("Response:\n{}", new String(response[2], StandardCharsets.ISO_8859_1));
+            logger.trace("HTTP response:\n{}", new String(response[2], StandardCharsets.ISO_8859_1));
         }
 
         checkHeaders(response[0]);
@@ -237,8 +296,9 @@ public class IpTransport implements AutoCloseable {
      * Checks the HTTP headers for a successful response (status code < 300).
      *
      * @throws IOException if the response indicates an error.
+     * @throws IllegalStateException if the headers are invalid.
      */
-    private void checkHeaders(byte[] headers) throws IOException {
+    private void checkHeaders(byte[] headers) throws IOException, IllegalStateException {
         int httpStatusCode = HttpPayloadParser.getHttpStatusCode(headers);
         if (httpStatusCode >= 300) {
             throw new IOException("HTTP " + httpStatusCode);
@@ -259,6 +319,7 @@ public class IpTransport implements AutoCloseable {
         } catch (IOException | InterruptedException e) {
             // shut down quietly
         }
+        readThread = null;
     }
 
     /**
@@ -267,17 +328,20 @@ public class IpTransport implements AutoCloseable {
      * @param response the received response as a 3D byte array
      */
     private void handleResponse(byte[][] response) {
-        if (readFuture instanceof CompletableFuture<byte[][]> future) {
-            readFuture = null;
-            future.complete(response);
-        }
         String headers = new String(response[0], StandardCharsets.ISO_8859_1);
-        if (headers.startsWith("EVENT")) {
-            logger.trace("Event:\n{}", new String(response[2], StandardCharsets.ISO_8859_1));
+        if (headers.startsWith("HTTP")) {
+            if (readHttpResponseFuture instanceof CompletableFuture<byte[][]> future) {
+                readHttpResponseFuture = null;
+                future.complete(response);
+            }
+        } else if (headers.startsWith("EVENT")) {
+            logger.trace("HTTP event:\n{}", new String(response[2], StandardCharsets.ISO_8859_1));
             String jsonContent = new String(response[1], StandardCharsets.UTF_8);
             for (EventListener eventListener : eventListeners) {
                 eventListener.onEvent(jsonContent);
             }
+        } else {
+            logger.warn("Unexpected response headers:\n{}", headers);
         }
     }
 
@@ -296,25 +360,20 @@ public class IpTransport implements AutoCloseable {
                 }
                 byte[][] response = session.receive(logger.isTraceEnabled());
                 handleResponse(response);
-            } catch (SocketTimeoutException e) { // ignore socket timeout; continue listening
-            } catch (IllegalStateException | InvalidCipherTextException | IOException | BufferUnderflowException
-                    | SecurityException e) {
+            } catch (Exception e) {
+                // catch all; capture cause and exit
                 cause = e;
                 break;
             }
         } while (!Thread.currentThread().isInterrupted());
 
-        if (readFuture instanceof CompletableFuture<byte[][]> future) {
-            readFuture = null;
+        if (readHttpResponseFuture instanceof CompletableFuture<byte[][]> future) {
+            readHttpResponseFuture = null;
             future.completeExceptionally(cause != null ? cause : new InterruptedException("Listener interrupted"));
         }
 
         if (cause != null && !closing) {
-            if (logger.isTraceEnabled()) {
-                logger.trace("Error while listening for events", cause);
-            } else {
-                logger.debug("Error while listening for events {}", cause.getMessage());
-            }
+            logger.debug("Error '{}' while listening for HTTP responses", cause.getMessage(), cause);
         }
     }
 

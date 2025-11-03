@@ -107,7 +107,11 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
 
     @Override
     public void dispose() {
-        unsubscribeEvents();
+        try {
+            unsubscribeEvents();
+        } catch (IllegalAccessException | IllegalStateException e) {
+            // closing; ignore
+        }
         if (connectionAttemptTask instanceof ScheduledFuture<?> task) {
             task.cancel(true);
         }
@@ -130,19 +134,26 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
      */
     private void fetchAccessories() {
         try {
+            accessories.clear();
             String json = new String(getIpTransport().get(ENDPOINT_ACCESSORIES, CONTENT_TYPE_HAP),
                     StandardCharsets.UTF_8);
             Accessories acc0 = GSON.fromJson(json, Accessories.class);
             if (acc0 instanceof Accessories acc1 && acc1.accessories instanceof List<Accessory> acc2) {
-                accessories.clear();
                 accessories.putAll(acc2.stream().filter(a -> Objects.nonNull(a.aid))
                         .collect(Collectors.toMap(a -> a.aid, Function.identity())));
             }
             logger.debug("Fetched {} accessories", accessories.size());
             scheduler.submit(this::accessoriesLoaded); // notify subclass in scheduler thread
-        } catch (IOException | InterruptedException | TimeoutException | ExecutionException | IllegalAccessException
-                | IllegalStateException e) {
-            logger.debug("Failed to get accessories", e);
+        } catch (Exception e) {
+            if (isCommunicationException(e)) {
+                // communication exception; log at debug and try to reconnect
+                logger.debug("Communication error '{}' fetching accessories, reconnecting..", e.getMessage());
+                scheduleConnectionAttempt();
+            } else {
+                // other exception; log at warn and don't try to reconnect
+                logger.warn("Unexpected error '{}' fetching accessories", e.getMessage());
+            }
+            logger.debug("Stack trace", e);
         }
     }
 
@@ -332,24 +343,22 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
 
     /**
      * Subscribes to events from the IP transport.
+     *
+     * @throws IllegalStateException
+     * @throws IllegalAccessException
      */
-    protected void subscribeEvents() {
-        try {
-            getIpTransport().subscribe(this);
-        } catch (IllegalAccessException | IllegalStateException e) {
-            logger.debug("Failed to subscribe to events '{}", e.getMessage());
-        }
+    protected void subscribeEvents() throws IllegalAccessException, IllegalStateException {
+        getIpTransport().subscribe(this);
     }
 
     /**
      * Unsubscribes from events from the IP transport.
+     *
+     * @throws IllegalStateException
+     * @throws IllegalAccessException
      */
-    protected void unsubscribeEvents() {
-        try {
-            getIpTransport().unsubscribe(this);
-        } catch (IllegalAccessException | IllegalStateException e) {
-            logger.debug("Failed to unsubscribe from events '{}", e.getMessage());
-        }
+    protected void unsubscribeEvents() throws IllegalAccessException, IllegalStateException {
+        getIpTransport().unsubscribe(this);
     }
 
     @Override
@@ -399,7 +408,6 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
             return ipTransport;
         } catch (IOException e) {
             logger.warn("Error '{}' creating transport", e.getMessage());
-            logger.debug("Stack trace", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     i18nProvider.getText(bundle, "error.failed-to-connect", "Failed to connect", null));
         }
@@ -410,8 +418,9 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
      * Thing Action that pairs the accessory using the provided pairing code.
      *
      * @param code the pairing code
+     * @param withExternalAuthentication true to setup with external authentication e.g. from an app, false otherwise
      */
-    public void pair(String code) {
+    public void pair(String code, boolean withExternalAuthentication) {
         if (isChildAccessory) {
             logger.warn("Cannot pair child accessory '{}'", thing.getUID());
             return; // child accessories cannot be paired directly
@@ -440,7 +449,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
         try {
             logger.debug("Starting Pair-Setup for {}", thing.getUID());
             PairSetupClient pairSetupClient = new PairSetupClient(getIpTransport(), keyStore.getControllerUUID(),
-                    keyStore.getControllerKey(), pairingCode);
+                    keyStore.getControllerKey(), pairingCode, withExternalAuthentication);
 
             Ed25519PublicKeyParameters accessoryKey = pairSetupClient.pair();
             keyStore.setAccessoryKey(macAddress, accessoryKey);
@@ -448,8 +457,8 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
             logger.debug("Pair-Setup completed; starting Pair-Verify for {}", thing.getUID());
             connectionAttemptDelay = MIN_CONNECTION_ATTEMPT_DELAY; // reset delay on manual pairing
             scheduleConnectionAttempt();
-        } catch (NoSuchAlgorithmException | IllegalAccessException | InvalidCipherTextException | IOException
-                | InterruptedException | TimeoutException | ExecutionException | IllegalStateException e) {
+        } catch (Exception e) {
+            // catch all; log all exceptions
             logger.warn("Pairing / verification failed '{}' for {}", e.getMessage(), thing.getUID());
             logger.debug("Stack trace", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, i18nProvider.getText(bundle,
@@ -490,5 +499,19 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     i18nProvider.getText(bundle, "error.not-paired", "Not paired", null));
         }
+    }
+
+    /**
+     * Determines if the given throwable is an IOException or TimeoutException, including checking the cause
+     * if it is wrapped in an ExecutionException. Used to identify communication-related exceptions that can
+     * potentially be recovered.
+     *
+     * @param throwable the exception to check
+     * @return true if it's an IOException or TimeoutException, false otherwise
+     */
+    protected boolean isCommunicationException(Throwable throwable) {
+        return (throwable instanceof IOException || throwable instanceof TimeoutException) ? true
+                : (throwable instanceof ExecutionException outer) && (outer.getCause() instanceof Throwable inner)
+                        && (inner instanceof IOException || inner instanceof TimeoutException) ? true : false;
     }
 }

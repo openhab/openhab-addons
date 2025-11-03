@@ -172,7 +172,11 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
         }
 
         if (eventedChannels.isEmpty()) {
-            unsubscribeEvents();
+            try {
+                unsubscribeEvents();
+            } catch (IllegalAccessException | IllegalStateException e) {
+                logger.warn("Unexpected error '{}' unsubscribing evented channels", e.getMessage());
+            }
         } else {
             Service service = new Service();
             service.characteristics = new ArrayList<>();
@@ -189,12 +193,19 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
                 getRwService().writeCharacteristic(GSON.toJson(service));
                 subscribeEvents();
                 logger.debug("Eventing enabled for {} channels", eventedChannels.size());
-            } catch (IOException | TimeoutException e) {
-                logger.debug("Communication error '{}' subscribing to evented channels", e.getMessage());
-            } catch (IllegalAccessException | ExecutionException e) {
-                logger.warn("Unexpected error '{}' subscribing to evented channels", e.getMessage());
+            } catch (InterruptedException e) {
+                // shutting down; do nothing
+            } catch (Exception e) {
+                if (isCommunicationException(e)) {
+                    // communication exception; log at debug and try to reconnect
+                    logger.debug("Communication error '{}' subscribing to evented channels, reconnecting..",
+                            e.getMessage());
+                    scheduleConnectionAttempt();
+                } else {
+                    // other exception; log at warn and don't try to reconnect
+                    logger.warn("Unexpected error '{}' subscribing to evented channels", e.getMessage());
+                }
                 logger.debug("Stack trace", e);
-            } catch (InterruptedException e) { // shutting down
             }
         }
     }
@@ -539,14 +550,19 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
                 writeChannel(channel, command, getRwService());
             }
             return; // success
-        } catch (IOException | TimeoutException e) {
-            logger.debug("Communication error '{}' sending command '{}' to '{}', restarting", e.getMessage(), command,
-                    channelUID);
-            scheduleConnectionAttempt();
-        } catch (IllegalAccessException | ExecutionException e) {
-            logger.warn("Unexpected error '{}' sending command '{}' to '{}'", e.getMessage(), command, channelUID);
+        } catch (InterruptedException e) {
+            // shutting down; do nothing
+        } catch (Exception e) {
+            if (isCommunicationException(e)) {
+                // communication exception; log at debug and try to reconnect
+                logger.debug("Communication error '{}' sending command '{}' to '{}', reconnecting..", e.getMessage(),
+                        command, channelUID);
+                scheduleConnectionAttempt();
+            } else {
+                // other exception; log at warn and don't try to reconnect
+                logger.warn("Unexpected error '{}' sending command '{}' to '{}'", e.getMessage(), command, channelUID);
+            }
             logger.debug("Stack trace", e);
-        } catch (InterruptedException e) { // shutting down
         }
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                 i18nProvider.getText(bundle, "error.error-sending-command", "Error sending command", null));
@@ -592,13 +608,18 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
             String json = getRwService().readCharacteristic(String.join(",", queries));
             updateChannelsFromJson(json);
             return;
-        } catch (IOException | TimeoutException e) {
-            logger.debug("Communication error '{}' polling accessory, restarting", e.getMessage());
-            scheduleConnectionAttempt();
-        } catch (IllegalAccessException | ExecutionException e) {
-            logger.warn("Unexpected error '{}' polling accessory", e.getMessage());
+        } catch (InterruptedException e) {
+            // shutting down; do nothing
+        } catch (Exception e) {
+            if (isCommunicationException(e)) {
+                // communication exception; log at debug and try to reconnect
+                logger.debug("Communication error '{}' polling accessory, reconnecting..", e.getMessage());
+                scheduleConnectionAttempt();
+            } else {
+                // other exception; log at warn and don't try to reconnect
+                logger.warn("Unexpected error '{}' polling accessory", e.getMessage());
+            }
             logger.debug("Stack trace", e);
-        } catch (InterruptedException e) { // shutting down
         }
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                 i18nProvider.getText(bundle, "error.polling-error", "Polling error", null));

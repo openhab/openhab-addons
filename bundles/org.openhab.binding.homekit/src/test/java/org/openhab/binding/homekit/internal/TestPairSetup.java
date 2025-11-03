@@ -102,7 +102,8 @@ class TestPairSetup {
 
         // create SRP client and server
         SRPserver server = new SRPserver(password, serverSalt, accessoryId, accessoryLongTermSecretKey, null, null);
-        PairSetupClient client = new PairSetupClient(mockTransport, iOSDeviceId, controllerLongTermSecretKey, password);
+        PairSetupClient client = new PairSetupClient(mockTransport, iOSDeviceId, controllerLongTermSecretKey, password,
+                false);
 
         // mock the HTTP transport to simulate the SRP exchange
         doAnswer(invocation -> {

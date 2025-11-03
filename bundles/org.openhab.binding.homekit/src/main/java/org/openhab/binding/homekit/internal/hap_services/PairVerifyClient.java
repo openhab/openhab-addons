@@ -84,16 +84,26 @@ public class PairVerifyClient {
      * @throws InterruptedException
      * @throws IOException
      * @throws InvalidCipherTextException
+     * @throws IllegalStateException
      */
-    public AsymmetricSessionKeys verify()
-            throws IOException, InterruptedException, TimeoutException, ExecutionException, InvalidCipherTextException {
+    public AsymmetricSessionKeys verify() throws IOException, InterruptedException, TimeoutException,
+            ExecutionException, InvalidCipherTextException, IllegalStateException {
         m1Execute();
         return new AsymmetricSessionKeys(readKey, writeKey);
     }
 
-    // M1 — Create new random client ephemeral X25519 public key and send it to server
-    private void m1Execute()
-            throws IOException, InterruptedException, TimeoutException, ExecutionException, InvalidCipherTextException {
+    /**
+     * M1 — Create new random client ephemeral X25519 public key and send it to server
+     *
+     * @throws IOException
+     * @throws InterruptedException
+     * @throws TimeoutException
+     * @throws ExecutionException
+     * @throws InvalidCipherTextException
+     * @throws IllegalStateException
+     */
+    private void m1Execute() throws IOException, InterruptedException, TimeoutException, ExecutionException,
+            InvalidCipherTextException, IllegalStateException {
         logger.debug("Pair-Verify M1: Send verification start request with client ephemeral X25519 PK to server");
         Map<Integer, byte[]> tlv = new LinkedHashMap<>();
         tlv.put(TlvType.STATE.value, new byte[] { PairingState.M1.value });
@@ -104,7 +114,16 @@ public class PairVerifyClient {
         m2Execute(m1Response);
     }
 
-    // M2 — Receive server ephemeral X25519 public key and encrypted TLV
+    /**
+     * M2 — Receive server ephemeral X25519 public key and encrypted TLV
+     *
+     * @param m1Response
+     * @throws InvalidCipherTextException
+     * @throws IOException
+     * @throws InterruptedException
+     * @throws TimeoutException
+     * @throws ExecutionException
+     */
     private void m2Execute(byte[] m1Response)
             throws InvalidCipherTextException, IOException, InterruptedException, TimeoutException, ExecutionException {
         logger.debug("Pair-Verify M2: Read server ephemeral X25519 PK and encrypted id; validate signature");
@@ -133,9 +152,18 @@ public class PairVerifyClient {
         m3Execute();
     }
 
-    // M3 — Send encrypted controller identifier and signature
-    private void m3Execute()
-            throws InvalidCipherTextException, IOException, InterruptedException, TimeoutException, ExecutionException {
+    /**
+     * M3 — Send encrypted controller identifier and signature
+     *
+     * @throws InvalidCipherTextException
+     * @throws IOException
+     * @throws InterruptedException
+     * @throws TimeoutException
+     * @throws ExecutionException
+     * @throws IllegalStateException
+     */
+    private void m3Execute() throws InvalidCipherTextException, IOException, InterruptedException, TimeoutException,
+            ExecutionException, IllegalStateException {
         logger.debug("Pair-Verify M3: Send encrypted controller id with signature");
         byte[] clientSignature = signMessage(controllerKey,
                 concat(controllerEphemeralSecretKey.generatePublicKey().getEncoded(), clientPairingId,
@@ -158,7 +186,11 @@ public class PairVerifyClient {
         m4Execute(m3Response);
     }
 
-    // M4 — Final confirmation
+    /**
+     * M4 — Final confirmation
+     *
+     * @param m3Response
+     */
     private void m4Execute(byte[] m3Response) {
         logger.debug("Pair-Verify M4: Confirm validation; derive session keys");
         Map<Integer, byte[]> tlv = Tlv8Codec.decode(m3Response);

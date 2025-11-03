@@ -45,7 +45,9 @@ public class HomekitChildDiscoveryService extends AbstractThingHandlerDiscoveryS
 
     @Override
     public void startScan() {
-        discoverChildren(thingHandler.getThing(), thingHandler.getAccessories());
+        if (thingHandler instanceof HomekitBridgeHandler handler) {
+            discoverChildren(handler.getThing(), handler.getAccessories());
+        }
     }
 
     private void discoverChildren(Thing bridge, Collection<Accessory> accessories) {

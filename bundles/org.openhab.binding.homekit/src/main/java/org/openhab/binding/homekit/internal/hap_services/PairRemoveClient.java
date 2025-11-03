@@ -53,7 +53,17 @@ public class PairRemoveClient {
         this.controllerId = controllerId;
     }
 
-    public void remove() throws IOException, InterruptedException, TimeoutException, ExecutionException {
+    /**
+     * Removes an existing pairing with the accessory.
+     *
+     * @throws ExecutionException
+     * @throws TimeoutException
+     * @throws InterruptedException
+     * @throws IOException
+     * @throws IllegalStateException
+     */
+    public void remove()
+            throws IOException, InterruptedException, TimeoutException, ExecutionException, IllegalStateException {
         logger.debug("Pair-Remove: starting removal");
         Map<Integer, byte[]> tlv = new LinkedHashMap<>();
         tlv.put(TlvType.STATE.value, new byte[] { PairingState.M1.value });
