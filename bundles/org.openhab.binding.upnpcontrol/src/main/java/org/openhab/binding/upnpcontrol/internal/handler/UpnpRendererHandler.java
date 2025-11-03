@@ -220,7 +220,7 @@ public class UpnpRendererHandler extends UpnpHandler {
     @Override
     protected void initJob() {
         synchronized (jobLock) {
-            sendDeviceSearchRequest();
+            logger.trace("UpnpRenderHandler:initJob() uid:{} udn:{}", this.getThing().getUID(), getUDN());
 
             if (!upnpIOService.isRegistered(this)) {
                 String msg = String.format("@text/offline.device-not-registered [ \"%s\" ]", getUDN());
@@ -244,8 +244,8 @@ public class UpnpRendererHandler extends UpnpHandler {
                 playlistsListChanged();
 
                 RemoteDevice device = getDevice();
-                if (device != null) { // The handler factory will update the device config later when it has not been
-                                      // set yet
+                if (device != null && (this.getDevice() == null || !device.equals(this.getDevice()))) {
+                    // The handler factory will update the device config later when it has not been set yet
                     updateDeviceConfig(device);
                 }
 

@@ -252,10 +252,17 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
      * @param device
      */
     public void updateDeviceConfig(RemoteDevice device) {
+        logger.trace("updateDeviceConfig(): uid: {}", this.getThing().getUID());
         this.device = device;
         cancelKeepAliveJob();
         int maxAgeSeconds = device.getIdentity().getMaxAgeSeconds();
-        if (maxAgeSeconds > 0) {
+        if (maxAgeSeconds > 0 && config.keepAlive) {
+            if (maxAgeSeconds < 360) {
+                logger.warn("Warning, maxAgeSeconds for device uid={} is low, value={}", getThing().getUID(),
+                        maxAgeSeconds);
+            }
+            logger.trace("updateDeviceConfig(): uid: {}, pooling a deviceSearchRequest maxAge:uid: {}",
+                    this.getThing().getUID(), maxAgeSeconds);
             keepAliveJob = upnpScheduler.scheduleWithFixedDelay(this::sendDeviceSearchRequest, maxAgeSeconds,
                     maxAgeSeconds, TimeUnit.SECONDS);
         }
@@ -679,13 +686,14 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
 
     /**
      * Send a device search request to the UPnP remote device.
-     * 
+     *
      * Some devices, such as LinkPlay based systems (WiiM, Arylic, etc.) loose their registrations over time. Sending a
      * periodic search request will help keep the device registered.
      */
     protected void sendDeviceSearchRequest() {
         ControlPoint controlPoint = upnpService.getControlPoint();
         if (controlPoint != null) {
+            logger.trace("sendDeviceSearchRequest1(): uid: {} udn: {}", this.getThing().getUID(), getUDN());
             controlPoint.search(new UDNHeader(new UDN(getUDN())));
             logger.debug("M-SEARCH query sent for device UDN: {}", getUDN());
         }

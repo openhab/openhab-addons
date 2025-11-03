@@ -72,6 +72,11 @@
 				<default>2500</default>
 				<advanced>true</advanced>
 			</parameter>
+			<parameter name="keepAlive" type="boolean">
+				<label>Keep Alive</label>
+				<description>Does openhab will do m-search request to the device to keep it alive</description>
+				<default>true</default>
+			</parameter>
 		</config-description>
 	</thing-type>
 
@@ -129,6 +134,11 @@
 				<label>Search From Root</label>
 				<description>Always search from the root directory</description>
 				<default>false</default>
+			</parameter>
+			<parameter name="keepAlive" type="boolean">
+				<label>Keep Alive</label>
+				<description>Does openhab will do m-search request to the device to keep it alive</description>
+				<default>true</default>
 			</parameter>
 			<parameter name="responseTimeout" type="integer" unit="ms">
 				<label>UPnP Response Timeout</label>
