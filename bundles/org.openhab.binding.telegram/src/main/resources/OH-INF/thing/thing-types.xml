@@ -63,7 +63,7 @@
 			</parameter>
 			<parameter name="longPollingTime" type="integer" min="0" max="50" unit="s">
 				<label>Long Polling Time</label>
-				<description>Enter the long polling time in seconds.</description>
+				<description>Enter the long polling time in seconds. Set 0 to disable.</description>
 				<default>25</default>
 			</parameter>
 		</config-description>

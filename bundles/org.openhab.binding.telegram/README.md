@@ -67,7 +67,7 @@ In order to send a message, an action must be used instead.
 | `proxyHost`       | None    | No       | Proxy host for telegram binding.                                                                                    |
 | `proxyPort`       | None    | No       | Proxy port for telegram binding.                                                                                    |
 | `proxyType`       | SOCKS5  | No       | Type of proxy server for telegram binding (SOCKS5 or HTTP).                                                         |
-| `longPollingTime` | 25      | No       | Timespan in seconds for long polling the telegram API.                                                              |
+| `longPollingTime` | 25      | No       | Timespan in seconds for long polling the telegram API. (0 to disable)                                               |
 
 By default chat ids are bi-directionally, i.e. they can send and receive messages.
 They can be prefixed with an access modifier:
