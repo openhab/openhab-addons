@@ -7,6 +7,7 @@
 		<instruction-set targetVersion="1">
 			<update-channel id="fire">
 				<type>souliss:buttonReadOnly</type>
+				<label>Fire</label>
 			</update-channel>
 		</instruction-set>
 	</thing-type>
@@ -15,6 +16,7 @@
 		<instruction-set targetVersion="1">
 			<update-channel id="statusAlarm">
 				<type>souliss:buttonReadOnly</type>
+				<label>Alarm Status</label>
 			</update-channel>
 		</instruction-set>
 	</thing-type>
@@ -23,6 +25,7 @@
 		<instruction-set targetVersion="1">
 			<update-channel id="statusAlarm">
 				<type>souliss:buttonReadOnly</type>
+				<label>Alarm Status</label>
 			</update-channel>
 		</instruction-set>
 	</thing-type>
