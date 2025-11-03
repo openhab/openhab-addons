@@ -82,8 +82,8 @@ public class SMTPHandler extends BaseThingHandler {
         }
 
         SMTPConfig config = getConfigAs(SMTPConfig.class);
-        if (config.sender != null) {
-            this.sender = config.sender;
+        if (config.sender instanceof String confSender) {
+            this.sender = confSender;
         }
 
         Email mail = new SimpleEmail();
