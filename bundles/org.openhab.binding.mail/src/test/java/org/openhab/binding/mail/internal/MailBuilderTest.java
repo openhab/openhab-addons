@@ -61,8 +61,7 @@ public class MailBuilderTest {
 
     @Test
     public void illegalURLThrowsException() {
-        assertThrows(MalformedURLException.class,
-                () -> new MailBuilder("TEST_EMAIL").withURLAttachment("foo bar.zinga"));
+        assertThrows(URISyntaxException.class, () -> new MailBuilder("TEST_EMAIL").withURLAttachment("foo bar.zinga"));
     }
 
     @Test
