@@ -22,9 +22,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Arrays;
-import java.util.Set;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -60,7 +58,7 @@ public class IpTransport implements AutoCloseable {
 
     private final String host; // ip address with optional port e.g. "192.168.1.42:9123"
     private final Socket socket;
-    private final Set<EventListener> eventListeners = ConcurrentHashMap.newKeySet();
+    private final EventListener eventListener;
 
     private @Nullable SecureSession secureSession = null;
     private @Nullable Thread readThread = null;
@@ -70,13 +68,13 @@ public class IpTransport implements AutoCloseable {
     private Instant earliestNextRequestTime = Instant.MIN;
 
     /**
-     * Creates a new IpTransport instance with the given socket and session keys.
+     * Creates a new IpTransport instance on the given host.
      *
      * @param host the IP address and port of the HomeKit accessory
      * @throws IOException
      * @throws IllegalArgumentException if the host or port are invalid
      */
-    public IpTransport(String host) throws IOException, IllegalArgumentException {
+    public IpTransport(String host, EventListener listener) throws IOException, IllegalArgumentException {
         logger.debug("Connecting to {}", host);
         this.host = host;
         String[] parts = host.split(":");
@@ -88,9 +86,11 @@ public class IpTransport implements AutoCloseable {
         }
         String ipAddress = parts[0];
         int port = Integer.parseInt(parts[1]);
+        eventListener = listener;
         socket = new Socket();
         socket.connect(new InetSocketAddress(ipAddress, port), TIMEOUT_MILLI_SECONDS); // connect timeout
-        socket.setKeepAlive(false); // HAP spec forbids TCP keepalive
+        // keep-alive is forbiddden for accessories, but client should use it to avoid multiple reconnection
+        socket.setKeepAlive(true);
         logger.debug("Connected to {}", host);
     }
 
@@ -247,6 +247,7 @@ public class IpTransport implements AutoCloseable {
         } else {
             sb.append("Content-Length: 0\r\n");
         }
+        sb.append("Connection: keep-alive\r\n"); // force keep-alive
         sb.append("\r\n");
 
         byte[] headerBytes = sb.toString().getBytes(StandardCharsets.UTF_8);
@@ -309,7 +310,6 @@ public class IpTransport implements AutoCloseable {
     public void close() {
         closing = true;
         secureSession = null;
-        eventListeners.clear();
         try {
             socket.close();
             if (readThread instanceof Thread thread) {
@@ -337,9 +337,7 @@ public class IpTransport implements AutoCloseable {
         } else if (headers.startsWith("EVENT")) {
             logger.trace("HTTP event:\n{}", new String(response[2], StandardCharsets.ISO_8859_1));
             String jsonContent = new String(response[1], StandardCharsets.UTF_8);
-            for (EventListener eventListener : eventListeners) {
-                eventListener.onEvent(jsonContent);
-            }
+            eventListener.onEvent(jsonContent);
         } else {
             logger.warn("Unexpected response headers:\n{}", headers);
         }
@@ -375,13 +373,5 @@ public class IpTransport implements AutoCloseable {
         if (cause != null && !closing) {
             logger.debug("Error '{}' while listening for HTTP responses", cause.getMessage(), cause);
         }
-    }
-
-    public void subscribe(EventListener listener) {
-        eventListeners.add(listener);
-    }
-
-    public void unsubscribe(EventListener listener) {
-        eventListeners.remove(listener);
     }
 }

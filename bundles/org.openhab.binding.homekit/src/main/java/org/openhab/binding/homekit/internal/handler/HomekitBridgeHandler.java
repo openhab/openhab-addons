@@ -12,18 +12,15 @@
  */
 package org.openhab.binding.homekit.internal.handler;
 
-import static org.openhab.binding.homekit.internal.HomekitBindingConstants.FAKE_PROPERTY_CHANNEL_TYPE_UID;
-
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.homekit.internal.action.HomekitPairingActions;
 import org.openhab.binding.homekit.internal.discovery.HomekitChildDiscoveryService;
-import org.openhab.binding.homekit.internal.dto.Accessory;
 import org.openhab.binding.homekit.internal.dto.Characteristic;
-import org.openhab.binding.homekit.internal.dto.Service;
-import org.openhab.binding.homekit.internal.enums.ServiceType;
 import org.openhab.binding.homekit.internal.persistence.HomekitKeyStore;
 import org.openhab.binding.homekit.internal.persistence.HomekitTypeProvider;
 import org.openhab.core.i18n.TranslationProvider;
@@ -34,11 +31,8 @@ import org.openhab.core.thing.binding.BridgeHandler;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.thing.binding.builder.BridgeBuilder;
-import org.openhab.core.thing.type.ChannelDefinition;
 import org.openhab.core.types.Command;
 import org.osgi.framework.Bundle;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Handler for HomeKit bridge devices.
@@ -52,8 +46,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class HomekitBridgeHandler extends HomekitBaseAccessoryHandler implements BridgeHandler {
-
-    private final Logger logger = LoggerFactory.getLogger(HomekitBridgeHandler.class);
 
     public HomekitBridgeHandler(Bridge bridge, HomekitTypeProvider typeProvider, HomekitKeyStore keyStore,
             TranslationProvider i18nProvider, Bundle bundle) {
@@ -96,8 +88,21 @@ public class HomekitBridgeHandler extends HomekitBaseAccessoryHandler implements
 
     @Override
     protected void accessoriesLoaded() {
-        logger.debug("Bridge accessories loaded {}", accessories.size());
-        createProperties(); // create properties from accessory information
+        createProperties();
+        getThing().getThings().forEach(thing -> {
+            if (thing.getHandler() instanceof HomekitAccessoryHandler homekitAccessoryHandler) {
+                homekitAccessoryHandler.accessoriesLoaded();
+            }
+        });
+    }
+
+    @Override
+    public void onEvent(String jsonContent) {
+        getThing().getThings().forEach(thing -> {
+            if (thing.getHandler() instanceof HomekitAccessoryHandler homekitAccessoryHandler) {
+                homekitAccessoryHandler.onEvent(jsonContent);
+            }
+        });
     }
 
     @Override
@@ -110,37 +115,14 @@ public class HomekitBridgeHandler extends HomekitBaseAccessoryHandler implements
         return Set.of(HomekitChildDiscoveryService.class, HomekitPairingActions.class);
     }
 
-    /**
-     * Creates properties for the bridge based on the characteristics within the ACCESSORY_INFORMATION
-     * service (if any).
-     */
-    private void createProperties() {
-        if (accessories.isEmpty()) {
-            return;
-        }
-        Integer accessoryId = getAccessoryId();
-        if (accessoryId == null) {
-            return;
-        }
-        Accessory accessory = accessories.get(accessoryId);
-        if (accessory == null) {
-            return;
-        }
-        // search for the accessory information service and collect its properties
-        for (Service service : accessory.services) {
-            if (ServiceType.ACCESSORY_INFORMATION == service.getServiceType()) {
-                for (Characteristic characteristic : service.characteristics) {
-                    ChannelDefinition channelDef = characteristic.buildAndRegisterChannelDefinition(thing.getUID(),
-                            typeProvider, i18nProvider, bundle);
-                    if (channelDef != null && FAKE_PROPERTY_CHANNEL_TYPE_UID.equals(channelDef.getChannelTypeUID())) {
-                        String name = channelDef.getId();
-                        if (channelDef.getLabel() instanceof String value) {
-                            thing.setProperty(name, value);
-                        }
-                    }
-                }
-                break; // only one accessory information service per accessory
+    @Override
+    protected List<Characteristic> getEventedCharacteristics() {
+        List<Characteristic> result = new ArrayList<>();
+        getThing().getThings().forEach(thing -> {
+            if (thing.getHandler() instanceof HomekitAccessoryHandler homekitAccessoryHandler) {
+                result.addAll(homekitAccessoryHandler.getEventedCharacteristics());
             }
-        }
+        });
+        return result;
     }
 }

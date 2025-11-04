@@ -18,12 +18,13 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -38,6 +39,9 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homekit.internal.action.HomekitPairingActions;
 import org.openhab.binding.homekit.internal.dto.Accessories;
 import org.openhab.binding.homekit.internal.dto.Accessory;
+import org.openhab.binding.homekit.internal.dto.Characteristic;
+import org.openhab.binding.homekit.internal.dto.Service;
+import org.openhab.binding.homekit.internal.enums.ServiceType;
 import org.openhab.binding.homekit.internal.hap_services.CharacteristicReadWriteClient;
 import org.openhab.binding.homekit.internal.hap_services.PairRemoveClient;
 import org.openhab.binding.homekit.internal.hap_services.PairSetupClient;
@@ -54,6 +58,7 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
+import org.openhab.core.thing.type.ChannelDefinition;
 import org.osgi.framework.Bundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -79,7 +84,8 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
 
     private final Logger logger = LoggerFactory.getLogger(HomekitBaseAccessoryHandler.class);
 
-    protected final Map<Integer, Accessory> accessories = new HashMap<>();
+    private final Map<Integer, Accessory> accessories = new ConcurrentHashMap<>();
+
     protected final HomekitTypeProvider typeProvider;
     protected final HomekitKeyStore keyStore;
     protected final TranslationProvider i18nProvider;
@@ -108,8 +114,8 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
     @Override
     public void dispose() {
         try {
-            unsubscribeEvents();
-        } catch (IllegalAccessException | IllegalStateException e) {
+            enableEventsOrThrow(false);
+        } catch (Exception e) {
             // closing; ignore
         }
         if (connectionAttemptTask instanceof ScheduledFuture<?> task) {
@@ -124,10 +130,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
     }
 
     /**
-     * Get information about embedded accessories and their respective channels.
-     * Uses the /accessories endpoint.
-     * Returns an empty list if there was a problem.
-     * Requires a valid secure session.
+     * Get information about embedded accessories and their respective channels from the /accessories endpoint.
      *
      * @return list of accessories (may be empty)
      * @see <a href="https://datatracker.ietf.org/doc/html/draft-ietf-homekit-http">HomeKit HTTP</a>
@@ -143,7 +146,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
                         .collect(Collectors.toMap(a -> a.aid, Function.identity())));
             }
             logger.debug("Fetched {} accessories", accessories.size());
-            scheduler.submit(this::accessoriesLoaded); // notify subclass in scheduler thread
+            scheduler.submit(this::accessoriesLoadedTask); // notify subclass (and children) in scheduler thread
         } catch (Exception e) {
             if (isCommunicationException(e)) {
                 // communication exception; log at debug and try to reconnect
@@ -155,6 +158,14 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
             }
             logger.debug("Stack trace", e);
         }
+    }
+
+    /**
+     * Processes the loaded accessories by calling the overloaded abstract methods, and then enables eventing.
+     */
+    private void accessoriesLoadedTask() {
+        accessoriesLoaded();
+        enableEvents(true);
     }
 
     /**
@@ -195,17 +206,9 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
 
     @Override
     public void initialize() {
-        if (getBridge() instanceof Bridge bridge && bridge.getHandler() instanceof HomekitBridgeHandler bridgeHandler) {
+        if (getBridge() instanceof Bridge) {
             // accessory is hosted by a bridge, so use bridge's pairing session and read/write service
             isChildAccessory = true;
-            try {
-                bridgeHandler.getRwService(); // ensure that bridge has a read/write service
-                fetchAccessories();
-                updateStatus(ThingStatus.ONLINE);
-            } catch (IllegalAccessException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
-                        i18nProvider.getText(bundle, "error.bridge-not-connected", "Bridge not connected", null));
-            }
         } else {
             // standalone accessory or bridge accessory, so do pairing and session setup here
             isChildAccessory = false;
@@ -260,8 +263,11 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
         }
     }
 
-    public Collection<Accessory> getAccessories() {
-        return accessories.values();
+    public Map<Integer, Accessory> getAccessories() {
+        if (getBridge() instanceof Bridge bridge && bridge.getHandler() instanceof HomekitBridgeHandler bridgeHandler) {
+            return bridgeHandler.getAccessories();
+        }
+        return accessories;
     }
 
     /**
@@ -341,30 +347,8 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
         return rwService;
     }
 
-    /**
-     * Subscribes to events from the IP transport.
-     *
-     * @throws IllegalStateException
-     * @throws IllegalAccessException
-     */
-    protected void subscribeEvents() throws IllegalAccessException, IllegalStateException {
-        getIpTransport().subscribe(this);
-    }
-
-    /**
-     * Unsubscribes from events from the IP transport.
-     *
-     * @throws IllegalStateException
-     * @throws IllegalAccessException
-     */
-    protected void unsubscribeEvents() throws IllegalAccessException, IllegalStateException {
-        getIpTransport().unsubscribe(this);
-    }
-
     @Override
-    public void onEvent(String jsonContent) {
-        // default implementation does nothing; subclasses must override
-    }
+    public abstract void onEvent(String jsonContent);
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
@@ -403,7 +387,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
 
     private @Nullable IpTransport checkedCreateIpTransport(String hostName) {
         try {
-            IpTransport ipTransport = new IpTransport(hostName);
+            IpTransport ipTransport = new IpTransport(hostName, this);
             this.ipTransport = ipTransport;
             return ipTransport;
         } catch (IOException e) {
@@ -513,5 +497,98 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
         return (throwable instanceof IOException || throwable instanceof TimeoutException) ? true
                 : (throwable instanceof ExecutionException outer) && (outer.getCause() instanceof Throwable inner)
                         && (inner instanceof IOException || inner instanceof TimeoutException) ? true : false;
+    }
+
+    /**
+     * Creates properties for the accessory based on the characteristics within the ACCESSORY_INFORMATION
+     * service (if any).
+     */
+    protected void createProperties() {
+        Map<Integer, Accessory> accessories = getAccessories();
+        if (accessories.isEmpty()) {
+            return;
+        }
+        Integer accessoryId = getAccessoryId();
+        if (accessoryId == null) {
+            return;
+        }
+        Accessory accessory = accessories.get(accessoryId);
+        if (accessory == null) {
+            return;
+        }
+        // search for the accessory information service and collect its properties
+        for (Service service : accessory.services) {
+            if (ServiceType.ACCESSORY_INFORMATION == service.getServiceType()) {
+                for (Characteristic characteristic : service.characteristics) {
+                    ChannelDefinition channelDef = characteristic.buildAndRegisterChannelDefinition(thing.getUID(),
+                            typeProvider, i18nProvider, bundle);
+                    if (channelDef != null && FAKE_PROPERTY_CHANNEL_TYPE_UID.equals(channelDef.getChannelTypeUID())) {
+                        String name = channelDef.getId();
+                        if (channelDef.getLabel() instanceof String value) {
+                            thing.setProperty(name, value);
+                        }
+                    }
+                }
+                break; // only one accessory information service per accessory
+            }
+        }
+    }
+
+    /**
+     * Gets the list of characteristics that should be evented (subscribed to).
+     * Subclasses must implement this to return the relevant list of characteristics.
+     *
+     * @return list of evented characteristics
+     */
+    protected abstract List<Characteristic> getEventedCharacteristics();
+
+    /**
+     * Wrapper to enable or disable events with exception handling.
+     *
+     * @param enable true to enable events, false to disable
+     */
+    private void enableEvents(boolean enable) {
+        try {
+            enableEventsOrThrow(enable);
+        } catch (InterruptedException e) {
+            // shutting down; do nothing
+        } catch (Exception e) {
+            if (isCommunicationException(e)) {
+                // communication exception; log at debug and try to reconnect
+                logger.debug("Communication error '{}' subscribing to events, reconnecting..", e.getMessage());
+                scheduleConnectionAttempt();
+            } else {
+                // other exception; log at warn and don't try to reconnect
+                logger.warn("Unexpected error '{}' subscribing to events", e.getMessage());
+            }
+            logger.debug("Stack trace", e);
+        }
+    }
+
+    /**
+     * Inner method to enable or disable events for the characteristics returned by getEventedCharacteristics().
+     * All exceptions are thrown upwards to the caller.
+     *
+     * @param enable true to enable events, false to disable
+     * @throws IllegalStateException if this is a child accessory or if the read/write service is not initialized
+     * @throws IllegalAccessException if this is a child accessory
+     * @throws IOException if there is a communication error
+     * @throws InterruptedException if the operation is interrupted
+     * @throws TimeoutException if the operation times out
+     * @throws ExecutionException if there is an execution error
+     */
+    private void enableEventsOrThrow(boolean enable) throws IllegalStateException, IllegalAccessException, IOException,
+            InterruptedException, TimeoutException, ExecutionException {
+        if (isChildAccessory) {
+            return; // child accessories delegate to bridge
+        }
+        Service service = new Service();
+        service.characteristics = new ArrayList<>();
+        service.characteristics.addAll(getEventedCharacteristics().stream().map(characteristic -> {
+            characteristic.ev = enable;
+            return characteristic;
+        }).toList());
+        getRwService().writeCharacteristic(GSON.toJson(service));
+        logger.debug("Eventing {}abled for {} channels", enable ? "en" : "dis", service.characteristics.size());
     }
 }
