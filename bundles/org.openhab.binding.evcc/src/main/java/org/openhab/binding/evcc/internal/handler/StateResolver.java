@@ -68,12 +68,13 @@ public final class StateResolver {
                 return new DecimalType(raw);
             } else if (raw.toString().contains(".")) {
                 if ("energy".equals(lowerKey) || "gridenergy".equals(lowerKey) || "chargedenergy".equals(lowerKey)
-                        || "pvenergy".equals(lowerKey) || "chargedkwh".equals(lowerKey) || lowerKey.contains("import")
+                        || "pvenergy".equals(lowerKey) || "limitenergy".equals(lowerKey)
+                        || "chargedkwh".equals(lowerKey) || lowerKey.contains("import")
                         || lowerKey.contains("capacity")) {
                     return new QuantityType<>(raw, MetricPrefix.KILO(base));
                 }
             } else if (lowerKey.contains("capacity") || lowerKey.contains("odometer") || lowerKey.contains("range")
-                    || lowerKey.contains("import")) {
+                    || lowerKey.contains("import") || "limitenergy".equals(lowerKey)) {
                 return new QuantityType<>(raw, MetricPrefix.KILO(base));
             }
             return new QuantityType<>(raw, base);
