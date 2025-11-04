@@ -36,7 +36,6 @@ import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.jupnp.UpnpService;
 import org.jupnp.model.meta.RemoteDevice;
 import org.openhab.binding.upnpcontrol.internal.UpnpChannelName;
 import org.openhab.binding.upnpcontrol.internal.UpnpDynamicCommandDescriptionProvider;
@@ -161,12 +160,11 @@ public class UpnpRendererHandler extends UpnpHandler {
     private volatile @Nullable ScheduledFuture<?> trackPositionRefresh;
     private volatile int posAtNotificationStart = 0;
 
-    public UpnpRendererHandler(Thing thing, UpnpIOService upnpIOService, UpnpService upnpService,
-            UpnpAudioSinkReg audioSinkReg, UpnpDynamicStateDescriptionProvider upnpStateDescriptionProvider,
+    public UpnpRendererHandler(Thing thing, UpnpIOService upnpIOService, UpnpAudioSinkReg audioSinkReg,
+            UpnpDynamicStateDescriptionProvider upnpStateDescriptionProvider,
             UpnpDynamicCommandDescriptionProvider upnpCommandDescriptionProvider,
             UpnpControlBindingConfiguration configuration) {
-        super(thing, upnpIOService, upnpService, configuration, upnpStateDescriptionProvider,
-                upnpCommandDescriptionProvider);
+        super(thing, upnpIOService, configuration, upnpStateDescriptionProvider, upnpCommandDescriptionProvider);
 
         serviceSubscriptions.add(AV_TRANSPORT);
         serviceSubscriptions.add(RENDERING_CONTROL);
@@ -260,8 +258,6 @@ public class UpnpRendererHandler extends UpnpHandler {
 
     @Override
     public void updateDeviceConfig(RemoteDevice device) {
-        super.updateDeviceConfig(device);
-
         UpnpRenderingControlConfiguration config = new UpnpRenderingControlConfiguration(device);
         renderingControlConfiguration = config;
         for (String audioChannel : config.audioChannels) {
