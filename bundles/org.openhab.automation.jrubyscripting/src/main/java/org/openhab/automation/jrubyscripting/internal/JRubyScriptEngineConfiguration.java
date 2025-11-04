@@ -216,7 +216,7 @@ public class JRubyScriptEngineConfiguration {
                 LOGGER.warn("Error creating {}: {}", description, dir);
             }
         }
-        return true;
+        return directory.exists();
     }
 
     private File resolveGemfile() {
@@ -265,8 +265,6 @@ public class JRubyScriptEngineConfiguration {
                 require "bundler"
                 require "bundler/cli"
 
-                Gem.instance_variable_set(:@user_home, ENV['BUNDLE_USER_HOME'])
-
                 Bundler::CLI.start(["%s"])
                 """.formatted(operation);
 
@@ -294,8 +292,6 @@ public class JRubyScriptEngineConfiguration {
                 require "jruby"
                 JRuby.runtime.instance_config.update_native_env_enabled = false
                 require  "bundler"
-
-                Gem.instance_variable_set(:@user_home, ENV['BUNDLE_USER_HOME'])
 
                 Bundler.settings.temporary(auto_install: true) do
                   require "bundler/setup"
@@ -357,13 +353,22 @@ public class JRubyScriptEngineConfiguration {
         }
 
         // Set update_native_env_enabled to false so that bundler doesn't leak into other script engines
+        // Override unbundle_env to reinsert BUNDLE_USER_HOME into the environment,
+        // so that the inline bundler creates the bundle cache in BUNDLE_USER_HOME instead of in ~openhab/.bundle
         String gemCommand = """
                 require 'jruby'
                 JRuby.runtime.instance_config.update_native_env_enabled = false
+                require 'bundler'
                 require 'bundler/inline'
                 require 'openssl'
 
-                Gem.instance_variable_set(:@user_home, ENV['BUNDLE_USER_HOME'])
+                module BundlerEnvironmentOverride
+                  def unbundle_env(...)
+                    bundle_user_home = ENV['BUNDLE_USER_HOME']
+                    super.tap { |env| env['BUNDLE_USER_HOME'] = bundle_user_home }
+                  end
+                end
+                Bundler.singleton_class.prepend(BundlerEnvironmentOverride)
 
                 gemfile(%b) do
                   source 'https://rubygems.org/'
