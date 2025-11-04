@@ -34,6 +34,7 @@ class UriConfigurationExtractorTest {
     void setUp() {
         extractor = new UriConfigurationExtractor();
         baseConfig = new Configuration();
+        baseConfig.serverName = "";
         baseConfig.hostname = "original.example.com";
         baseConfig.port = 8096;
         baseConfig.ssl = false;
@@ -47,10 +48,10 @@ class UriConfigurationExtractorTest {
         ConfigurationUpdate update = extractor.extract(uri, baseConfig);
 
         assertTrue(update.hasChanges());
-        assertEquals("new.example.com", update.hostname());
-        assertEquals(8920, update.port());
-        assertTrue(update.ssl());
-        assertEquals("/newpath", update.path());
+        assertEquals("new.example.com", update.configuration().hostname);
+        assertEquals(8920, update.configuration().port);
+        assertTrue(update.configuration().ssl);
+        assertEquals("/newpath", update.configuration().path);
     }
 
     @Test
@@ -60,10 +61,10 @@ class UriConfigurationExtractorTest {
         ConfigurationUpdate update = extractor.extract(uri, baseConfig);
 
         assertTrue(update.hasChanges());
-        assertEquals("new.example.com", update.hostname());
-        assertEquals(8096, update.port());
-        assertFalse(update.ssl());
-        assertEquals("/jellyfin", update.path());
+        assertEquals("new.example.com", update.configuration().hostname);
+        assertEquals(8096, update.configuration().port);
+        assertFalse(update.configuration().ssl);
+        assertEquals("/jellyfin", update.configuration().path);
     }
 
     @Test
@@ -73,10 +74,10 @@ class UriConfigurationExtractorTest {
         ConfigurationUpdate update = extractor.extract(uri, baseConfig);
 
         assertTrue(update.hasChanges());
-        assertEquals("original.example.com", update.hostname());
-        assertEquals(9000, update.port());
-        assertFalse(update.ssl());
-        assertEquals("/jellyfin", update.path());
+        assertEquals("original.example.com", update.configuration().hostname);
+        assertEquals(9000, update.configuration().port);
+        assertFalse(update.configuration().ssl);
+        assertEquals("/jellyfin", update.configuration().path);
     }
 
     @Test
@@ -86,10 +87,10 @@ class UriConfigurationExtractorTest {
         ConfigurationUpdate update = extractor.extract(uri, baseConfig);
 
         assertTrue(update.hasChanges());
-        assertEquals("original.example.com", update.hostname());
-        assertEquals(8096, update.port());
-        assertTrue(update.ssl());
-        assertEquals("/jellyfin", update.path());
+        assertEquals("original.example.com", update.configuration().hostname);
+        assertEquals(8096, update.configuration().port);
+        assertTrue(update.configuration().ssl);
+        assertEquals("/jellyfin", update.configuration().path);
     }
 
     @Test
@@ -99,10 +100,10 @@ class UriConfigurationExtractorTest {
         ConfigurationUpdate update = extractor.extract(uri, baseConfig);
 
         assertTrue(update.hasChanges());
-        assertEquals("original.example.com", update.hostname());
-        assertEquals(8096, update.port());
-        assertFalse(update.ssl());
-        assertEquals("/newpath", update.path());
+        assertEquals("original.example.com", update.configuration().hostname);
+        assertEquals(8096, update.configuration().port);
+        assertFalse(update.configuration().ssl);
+        assertEquals("/newpath", update.configuration().path);
     }
 
     @Test
@@ -112,10 +113,10 @@ class UriConfigurationExtractorTest {
         ConfigurationUpdate update = extractor.extract(uri, baseConfig);
 
         assertFalse(update.hasChanges());
-        assertEquals("original.example.com", update.hostname());
-        assertEquals(8096, update.port());
-        assertFalse(update.ssl());
-        assertEquals("/jellyfin", update.path());
+        assertEquals("original.example.com", update.configuration().hostname);
+        assertEquals(8096, update.configuration().port);
+        assertFalse(update.configuration().ssl);
+        assertEquals("/jellyfin", update.configuration().path);
     }
 
     @Test
@@ -125,10 +126,10 @@ class UriConfigurationExtractorTest {
         ConfigurationUpdate update = extractor.extract(uri, baseConfig);
 
         assertTrue(update.hasChanges());
-        assertEquals("new.example.com", update.hostname());
-        assertEquals(8096, update.port()); // Should preserve original port
-        assertFalse(update.ssl());
-        assertEquals("/jellyfin", update.path());
+        assertEquals("new.example.com", update.configuration().hostname);
+        assertEquals(8096, update.configuration().port); // Should preserve original port
+        assertFalse(update.configuration().ssl);
+        assertEquals("/jellyfin", update.configuration().path);
     }
 
     @Test
@@ -138,10 +139,10 @@ class UriConfigurationExtractorTest {
         ConfigurationUpdate update = extractor.extract(uri, baseConfig);
 
         assertTrue(update.hasChanges());
-        assertEquals("new.example.com", update.hostname());
-        assertEquals(8096, update.port());
-        assertFalse(update.ssl());
-        assertEquals("/jellyfin", update.path()); // Should preserve original path
+        assertEquals("new.example.com", update.configuration().hostname);
+        assertEquals(8096, update.configuration().port);
+        assertFalse(update.configuration().ssl);
+        assertEquals("/jellyfin", update.configuration().path); // Should preserve original path
     }
 
     @Test
@@ -151,7 +152,7 @@ class UriConfigurationExtractorTest {
         ConfigurationUpdate update = extractor.extract(uri, baseConfig);
 
         assertTrue(update.hasChanges());
-        assertTrue(update.ssl());
+        assertTrue(update.configuration().ssl);
     }
 
     @Test
@@ -162,6 +163,21 @@ class UriConfigurationExtractorTest {
         ConfigurationUpdate update = extractor.extract(uri, baseConfig);
 
         assertTrue(update.hasChanges());
-        assertFalse(update.ssl());
+        assertFalse(update.configuration().ssl);
+    }
+
+    @Test
+    void testExtractPreservesServerName() throws Exception {
+        baseConfig.serverName = "My Custom Server Name";
+        URI uri = new URI("https://new.example.com:8920/newpath");
+
+        ConfigurationUpdate update = extractor.extract(uri, baseConfig);
+
+        assertTrue(update.hasChanges());
+        assertEquals("My Custom Server Name", update.configuration().serverName); // Should be preserved
+        assertEquals("new.example.com", update.configuration().hostname);
+        assertEquals(8920, update.configuration().port);
+        assertTrue(update.configuration().ssl);
+        assertEquals("/newpath", update.configuration().path);
     }
 }

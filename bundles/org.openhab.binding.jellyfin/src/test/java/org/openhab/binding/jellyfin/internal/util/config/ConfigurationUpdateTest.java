@@ -25,86 +25,91 @@ import org.openhab.binding.jellyfin.internal.Configuration;
  */
 class ConfigurationUpdateTest {
 
-    private Configuration targetConfig;
+    private Configuration baseConfig;
 
     @BeforeEach
     void setUp() {
-        targetConfig = new Configuration();
-        targetConfig.hostname = "original.example.com";
-        targetConfig.port = 8096;
-        targetConfig.ssl = false;
-        targetConfig.path = "/jellyfin";
+        baseConfig = new Configuration();
+        baseConfig.hostname = "original.example.com";
+        baseConfig.port = 8096;
+        baseConfig.ssl = false;
+        baseConfig.path = "/jellyfin";
+        baseConfig.token = "test-token";
+        baseConfig.refreshSeconds = 30;
+        baseConfig.clientActiveWithInSeconds = 60;
     }
 
     @Test
-    void testApplyToWithChanges() {
-        ConfigurationUpdate update = new ConfigurationUpdate("new.example.com", 9000, true, "/newpath", true);
+    void testConfigurationUpdateWithChanges() {
+        Configuration updated = new Configuration();
+        updated.hostname = "new.example.com";
+        updated.port = 9000;
+        updated.ssl = true;
+        updated.path = "/newpath";
+        updated.token = baseConfig.token;
+        updated.refreshSeconds = baseConfig.refreshSeconds;
+        updated.clientActiveWithInSeconds = baseConfig.clientActiveWithInSeconds;
 
-        update.applyTo(targetConfig);
-
-        assertEquals("new.example.com", targetConfig.hostname);
-        assertEquals(9000, targetConfig.port);
-        assertTrue(targetConfig.ssl);
-        assertEquals("/newpath", targetConfig.path);
-    }
-
-    @Test
-    void testApplyToWithoutChanges() {
-        ConfigurationUpdate update = new ConfigurationUpdate("original.example.com", 8096, false, "/jellyfin", false);
-
-        update.applyTo(targetConfig);
-
-        // Should not modify anything when hasChanges is false
-        assertEquals("original.example.com", targetConfig.hostname);
-        assertEquals(8096, targetConfig.port);
-        assertFalse(targetConfig.ssl);
-        assertEquals("/jellyfin", targetConfig.path);
-    }
-
-    @Test
-    void testHasChangesTrue() {
-        ConfigurationUpdate update = new ConfigurationUpdate("new.example.com", 8096, false, "/jellyfin", true);
+        ConfigurationUpdate update = new ConfigurationUpdate(updated, true);
 
         assertTrue(update.hasChanges());
+        assertEquals("new.example.com", update.configuration().hostname);
+        assertEquals(9000, update.configuration().port);
+        assertTrue(update.configuration().ssl);
+        assertEquals("/newpath", update.configuration().path);
     }
 
     @Test
-    void testHasChangesFalse() {
-        ConfigurationUpdate update = new ConfigurationUpdate("original.example.com", 8096, false, "/jellyfin", false);
+    void testConfigurationUpdateWithoutChanges() {
+        ConfigurationUpdate update = new ConfigurationUpdate(baseConfig, false);
 
         assertFalse(update.hasChanges());
+        assertEquals("original.example.com", update.configuration().hostname);
+        assertEquals(8096, update.configuration().port);
+        assertFalse(update.configuration().ssl);
+        assertEquals("/jellyfin", update.configuration().path);
     }
 
     @Test
     void testRecordAccessors() {
-        ConfigurationUpdate update = new ConfigurationUpdate("test.example.com", 9000, true, "/test", true);
+        Configuration updated = new Configuration();
+        updated.hostname = "test.example.com";
+        updated.port = 9000;
+        updated.ssl = true;
+        updated.path = "/test";
 
-        assertEquals("test.example.com", update.hostname());
-        assertEquals(9000, update.port());
-        assertTrue(update.ssl());
-        assertEquals("/test", update.path());
+        ConfigurationUpdate update = new ConfigurationUpdate(updated, true);
+
+        assertNotNull(update.configuration());
         assertTrue(update.hasChanges());
+        assertEquals("test.example.com", update.configuration().hostname);
+        assertEquals(9000, update.configuration().port);
+        assertTrue(update.configuration().ssl);
+        assertEquals("/test", update.configuration().path);
     }
 
     @Test
-    void testApplyToPreservesOtherConfigFields() {
-        targetConfig.refreshSeconds = 30;
-        targetConfig.clientActiveWithInSeconds = 60;
-        targetConfig.token = "test-token";
+    void testPreservesAllConfigurationFields() {
+        Configuration updated = new Configuration();
+        updated.hostname = "new.example.com";
+        updated.port = 9000;
+        updated.ssl = true;
+        updated.path = "/newpath";
+        updated.token = baseConfig.token;
+        updated.refreshSeconds = baseConfig.refreshSeconds;
+        updated.clientActiveWithInSeconds = baseConfig.clientActiveWithInSeconds;
 
-        ConfigurationUpdate update = new ConfigurationUpdate("new.example.com", 9000, true, "/newpath", true);
+        ConfigurationUpdate update = new ConfigurationUpdate(updated, true);
 
-        update.applyTo(targetConfig);
-
-        // Verify update fields were applied
-        assertEquals("new.example.com", targetConfig.hostname);
-        assertEquals(9000, targetConfig.port);
-        assertTrue(targetConfig.ssl);
-        assertEquals("/newpath", targetConfig.path);
+        // Verify update fields
+        assertEquals("new.example.com", update.configuration().hostname);
+        assertEquals(9000, update.configuration().port);
+        assertTrue(update.configuration().ssl);
+        assertEquals("/newpath", update.configuration().path);
 
         // Verify other fields were preserved
-        assertEquals(30, targetConfig.refreshSeconds);
-        assertEquals(60, targetConfig.clientActiveWithInSeconds);
-        assertEquals("test-token", targetConfig.token);
+        assertEquals("test-token", update.configuration().token);
+        assertEquals(30, update.configuration().refreshSeconds);
+        assertEquals(60, update.configuration().clientActiveWithInSeconds);
     }
 }

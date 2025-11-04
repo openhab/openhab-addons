@@ -34,10 +34,21 @@ public class UriConfigurationExtractor implements ConfigurationExtractor<URI> {
         boolean ssl = extractSsl(source, current);
         String path = extractPath(source, current);
 
+        // Create updated configuration, preserving serverName
+        Configuration updated = new Configuration();
+        updated.serverName = current.serverName;
+        updated.hostname = hostname;
+        updated.port = port;
+        updated.ssl = ssl;
+        updated.path = path;
+        updated.token = current.token;
+        updated.refreshSeconds = current.refreshSeconds;
+        updated.clientActiveWithInSeconds = current.clientActiveWithInSeconds;
+
         boolean hasChanges = !Objects.equals(hostname, current.hostname) || port != current.port || ssl != current.ssl
                 || !Objects.equals(path, current.path);
 
-        return new ConfigurationUpdate(hostname, port, ssl, path, hasChanges);
+        return new ConfigurationUpdate(updated, hasChanges);
     }
 
     private String extractHostname(URI source, Configuration current) {

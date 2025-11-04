@@ -56,7 +56,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class TaskManager implements TaskManagerInterface {
 
-    private static final Logger logger = LoggerFactory.getLogger(TaskManager.class);
+    private final Logger logger = LoggerFactory.getLogger(TaskManager.class);
 
     private final @Nullable TaskFactoryInterface taskFactory;
 

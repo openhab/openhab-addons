@@ -33,11 +33,11 @@ import org.openhab.binding.jellyfin.internal.events.ErrorEventListener;
 import org.openhab.binding.jellyfin.internal.handler.tasks.AbstractTask;
 import org.openhab.binding.jellyfin.internal.types.ServerState;
 import org.openhab.binding.jellyfin.internal.util.client.ClientListUpdater;
-import org.openhab.binding.jellyfin.internal.util.config.ConfigurationManager;
 import org.openhab.binding.jellyfin.internal.util.config.SystemInfoConfigurationExtractor;
 import org.openhab.binding.jellyfin.internal.util.config.UriConfigurationExtractor;
 import org.openhab.binding.jellyfin.internal.util.state.ServerStateManager;
 import org.openhab.binding.jellyfin.internal.util.user.UserManager;
+import org.openhab.core.config.core.validation.ConfigValidationException;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
@@ -68,7 +68,6 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
 
     // Utility classes for better separation of concerns
     private final UserManager userManager;
-    private final ConfigurationManager configurationManager;
     private final ServerStateManager serverStateManager;
 
     private ServerState state = ServerState.INITIALIZING;
@@ -96,7 +95,6 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
 
         // Initialize utility classes for better separation of concerns
         this.userManager = new UserManager();
-        this.configurationManager = new ConfigurationManager();
         this.serverStateManager = new ServerStateManager();
 
         // Create event bus and register as listener
@@ -164,11 +162,6 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
         try {
             var stateAnalysis = serverStateManager.analyzeServerState(this.state, this.configuration, this.thing);
 
-            if (stateAnalysis.recommendedState() == ServerState.CONFIGURED && stateAnalysis.serverUri() != null) {
-                // Authenticate with token when moving to CONFIGURED state
-                this.apiClient.authenticateWithToken(this.configuration.token);
-            }
-
             logger.debug("State analysis: {} - {}", stateAnalysis.recommendedState(), stateAnalysis.reason());
             return stateAnalysis.recommendedState();
 
@@ -212,6 +205,60 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
         super.dispose();
     }
 
+    @Override
+    public void handleConfigurationUpdate(Map<String, Object> configurationParameters)
+            throws ConfigValidationException {
+        // Validate configuration parameters before applying
+        super.handleConfigurationUpdate(configurationParameters);
+
+        logger.debug("Configuration update received: {}", configurationParameters.keySet());
+
+        // Check if token was updated (this is the most critical parameter)
+        boolean tokenChanged = configurationParameters.containsKey("token");
+        boolean connectionParametersChanged = configurationParameters.containsKey("hostname")
+                || configurationParameters.containsKey("port") || configurationParameters.containsKey("ssl")
+                || configurationParameters.containsKey("path");
+
+        if (tokenChanged || connectionParametersChanged) {
+            logger.info("Critical configuration parameters changed (token: {}, connection: {}), re-initializing",
+                    tokenChanged, connectionParametersChanged);
+
+            // Stop all running tasks before re-initialization
+            taskManager.stopAllTasks(scheduledTasks);
+
+            // Reload configuration from the Thing
+            // Note: The configuration object is updated by the framework via reflection
+            // but we need to ensure we're using the latest values
+            Configuration newConfig = getConfigAs(Configuration.class);
+
+            // Update the configuration fields (framework has already persisted the changes)
+            this.configuration.hostname = newConfig.hostname;
+            this.configuration.port = newConfig.port;
+            this.configuration.ssl = newConfig.ssl;
+            this.configuration.path = newConfig.path;
+            this.configuration.token = newConfig.token;
+            this.configuration.refreshSeconds = newConfig.refreshSeconds;
+            this.configuration.clientActiveWithInSeconds = newConfig.clientActiveWithInSeconds;
+
+            // Re-initialize the handler to apply the new configuration
+            // This will re-authenticate with the new token and restart tasks
+            initialize();
+        } else {
+            logger.debug("Non-critical configuration parameters changed, applying without re-initialization");
+
+            // For non-critical parameters (like refresh intervals), just update the config object
+            Configuration newConfig = getConfigAs(Configuration.class);
+            this.configuration.refreshSeconds = newConfig.refreshSeconds;
+            this.configuration.clientActiveWithInSeconds = newConfig.clientActiveWithInSeconds;
+
+            // Restart tasks with new refresh interval if needed
+            if (configurationParameters.containsKey("refreshSeconds")) {
+                taskManager.stopAllTasks(scheduledTasks);
+                taskManager.processStateChange(this.state, tasks, scheduledTasks, scheduler);
+            }
+        }
+    }
+
     /**
      * Processes server initialization with a state-driven approach
      * 
@@ -240,7 +287,7 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
                 this.apiClient.updateBaseUri(serverUri.toString());
 
                 if (initialState == ServerState.CONFIGURED) {
-                    // Has token, authenticate (tasks will be started by setState)
+                    // Authenticate with token - tasks have already been started by setState()
                     this.apiClient.authenticateWithToken(this.configuration.token);
                 } else if (initialState == ServerState.DISCOVERED || initialState == ServerState.NEEDS_AUTHENTICATION) {
                     // No token, set offline with configuration error
@@ -323,22 +370,27 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
      */
     private void updateConfiguration(URI uri) {
         try {
-            var configUpdate = configurationManager.analyze(new UriConfigurationExtractor(), uri, this.configuration);
+            var extractor = new UriConfigurationExtractor();
+            var configUpdate = extractor.extract(uri, this.configuration);
 
             if (configUpdate.hasChanges()) {
-                // Apply changes to the current configuration object
-                configUpdate.applyTo(this.configuration);
+                // Update the current configuration object with new values
+                var updatedConfig = configUpdate.configuration();
+                this.configuration.hostname = updatedConfig.hostname;
+                this.configuration.port = updatedConfig.port;
+                this.configuration.ssl = updatedConfig.ssl;
+                this.configuration.path = updatedConfig.path;
 
-                logger.info("Configuration changed, updating Thing configuration");
+                logger.info("Configuration changed from URI, updating Thing configuration");
 
                 org.openhab.core.config.core.Configuration config = editConfiguration();
-                config.put("hostname", configUpdate.hostname());
-                config.put("port", configUpdate.port());
-                config.put("ssl", configUpdate.ssl());
-                config.put("path", configUpdate.path());
+                config.put("hostname", updatedConfig.hostname);
+                config.put("port", updatedConfig.port);
+                config.put("ssl", updatedConfig.ssl);
+                config.put("path", updatedConfig.path);
                 updateConfiguration(config);
             } else {
-                logger.debug("No configuration changes needed");
+                logger.debug("No configuration changes needed from URI");
             }
         } catch (Exception e) {
             logger.warn("Failed to update configuration from URI: {}", e.getMessage(), e);
@@ -350,20 +402,20 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
 
     private void updateConfiguration(SystemInfo systemInfo) {
         try {
-            var configUpdate = configurationManager.analyze(new SystemInfoConfigurationExtractor(), systemInfo,
-                    this.configuration);
+            var extractor = new SystemInfoConfigurationExtractor();
+            var configUpdate = extractor.extract(systemInfo, this.configuration);
 
             if (configUpdate.hasChanges()) {
-                // Apply changes to the current configuration object
-                configUpdate.applyTo(this.configuration);
+                // Update the current configuration object with new values
+                var updatedConfig = configUpdate.configuration();
+                this.configuration.serverName = updatedConfig.serverName;
+                this.configuration.hostname = updatedConfig.hostname;
 
                 logger.info("Configuration updated from SystemInfo");
 
                 org.openhab.core.config.core.Configuration config = editConfiguration();
-                config.put("hostname", configUpdate.hostname());
-                config.put("port", configUpdate.port());
-                config.put("ssl", configUpdate.ssl());
-                config.put("path", configUpdate.path());
+                config.put("serverName", updatedConfig.serverName);
+                config.put("hostname", updatedConfig.hostname);
                 updateConfiguration(config);
             }
         } catch (Exception e) {

@@ -35,6 +35,7 @@ class ConfigurationManagerTest {
     void setUp() {
         manager = new ConfigurationManager();
         baseConfig = new Configuration();
+        baseConfig.serverName = "";
         baseConfig.hostname = "original.example.com";
         baseConfig.port = 8096;
         baseConfig.ssl = false;
@@ -49,25 +50,27 @@ class ConfigurationManagerTest {
         ConfigurationUpdate update = manager.analyze(extractor, uri, baseConfig);
 
         assertTrue(update.hasChanges());
-        assertEquals("new.example.com", update.hostname());
-        assertEquals(9000, update.port());
-        assertTrue(update.ssl());
-        assertEquals("/newpath", update.path());
+        assertEquals("new.example.com", update.configuration().hostname);
+        assertEquals(9000, update.configuration().port);
+        assertTrue(update.configuration().ssl);
+        assertEquals("/newpath", update.configuration().path);
     }
 
     @Test
     void testAnalyzeWithSystemInfoExtractor() {
         SystemInfo systemInfo = new SystemInfo();
-        systemInfo.setServerName("new.example.com");
+        systemInfo.setServerName("My Jellyfin Server");
+        systemInfo.setLocalAddress("new.example.com");
         SystemInfoConfigurationExtractor extractor = new SystemInfoConfigurationExtractor();
 
         ConfigurationUpdate update = manager.analyze(extractor, systemInfo, baseConfig);
 
         assertTrue(update.hasChanges());
-        assertEquals("new.example.com", update.hostname());
-        assertEquals(8096, update.port()); // Preserved from base config
-        assertFalse(update.ssl()); // Preserved from base config
-        assertEquals("/jellyfin", update.path()); // Preserved from base config
+        assertEquals("My Jellyfin Server", update.configuration().serverName);
+        assertEquals("new.example.com", update.configuration().hostname);
+        assertEquals(8096, update.configuration().port); // Preserved from base config
+        assertFalse(update.configuration().ssl); // Preserved from base config
+        assertEquals("/jellyfin", update.configuration().path); // Preserved from base config
     }
 
     @Test
@@ -85,18 +88,27 @@ class ConfigurationManagerTest {
         // Test with a custom extractor to verify the generic pattern works
         ConfigurationExtractor<String> customExtractor = (source, current) -> {
             // Simple custom extractor that sets hostname to the source string
+            Configuration updated = new Configuration();
+            updated.hostname = source;
+            updated.port = current.port;
+            updated.ssl = current.ssl;
+            updated.path = current.path;
+            updated.token = current.token;
+            updated.refreshSeconds = current.refreshSeconds;
+            updated.clientActiveWithInSeconds = current.clientActiveWithInSeconds;
+
             boolean hasChanges = !source.equals(current.hostname);
-            return new ConfigurationUpdate(source, current.port, current.ssl, current.path, hasChanges);
+            return new ConfigurationUpdate(updated, hasChanges);
         };
 
         String newHostname = "custom.example.com";
         ConfigurationUpdate update = manager.analyze(customExtractor, newHostname, baseConfig);
 
         assertTrue(update.hasChanges());
-        assertEquals("custom.example.com", update.hostname());
-        assertEquals(8096, update.port());
-        assertFalse(update.ssl());
-        assertEquals("/jellyfin", update.path());
+        assertEquals("custom.example.com", update.configuration().hostname);
+        assertEquals(8096, update.configuration().port);
+        assertFalse(update.configuration().ssl);
+        assertEquals("/jellyfin", update.configuration().path);
     }
 
     @Test

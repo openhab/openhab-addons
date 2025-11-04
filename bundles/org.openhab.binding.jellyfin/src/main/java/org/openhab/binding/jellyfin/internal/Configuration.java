@@ -26,11 +26,15 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class Configuration {
     /**
-     * Server hostname
+     * Human-readable server name (e.g., "Living Room Jellyfin")
+     */
+    public String serverName = "";
+    /**
+     * Server hostname or IP address
      */
     public String hostname = "";
     /**
-     * Server hostname
+     * Server port
      */
     public int port = 8096;
     /**

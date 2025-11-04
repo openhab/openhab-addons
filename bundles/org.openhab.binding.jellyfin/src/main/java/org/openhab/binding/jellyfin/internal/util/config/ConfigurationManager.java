@@ -42,10 +42,11 @@ public class ConfigurationManager {
         ConfigurationUpdate update = extractor.extract(source, current);
 
         if (update.hasChanges()) {
+            Configuration updated = update.configuration();
             logger.info(
                     "Configuration changes detected from {}: hostname={} -> {}, port={} -> {}, ssl={} -> {}, path={} -> {}",
-                    source.getClass().getSimpleName(), current.hostname, update.hostname(), current.port, update.port(),
-                    current.ssl, update.ssl(), current.path, update.path());
+                    source.getClass().getSimpleName(), current.hostname, updated.hostname, current.port, updated.port,
+                    current.ssl, updated.ssl, current.path, updated.path);
         } else {
             logger.debug("No configuration changes detected from {}", source.getClass().getSimpleName());
         }

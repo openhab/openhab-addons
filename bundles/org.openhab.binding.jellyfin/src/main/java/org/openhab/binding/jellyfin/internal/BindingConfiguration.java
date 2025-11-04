@@ -18,8 +18,6 @@ import java.util.Enumeration;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.osgi.service.cm.ConfigurationAdmin;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link BindingConfiguration} class contains fields mapping binding
@@ -29,8 +27,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class BindingConfiguration {
-    private static final Logger logger = LoggerFactory.getLogger(BindingConfiguration.class);
-
     /**
      * Port used to locate available servers on local network(s).
      */
@@ -58,13 +54,10 @@ public class BindingConfiguration {
                     String key = keys.nextElement();
                     config.put(key, properties.get(key));
                 }
-                logger.debug("Applied binding configuration from OSGi configuration");
                 return config.as(BindingConfiguration.class);
-            } else {
-                logger.debug("No configuration found for binding, using defaults");
             }
         } catch (IOException e) {
-            logger.warn("Unable to read binding configuration: {}", e.getMessage());
+            // IOException reading configuration - use defaults
         }
 
         return bindingConfig;

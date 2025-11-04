@@ -29,17 +29,39 @@ public class SystemInfoConfigurationExtractor implements ConfigurationExtractor<
 
     @Override
     public ConfigurationUpdate extract(SystemInfo source, Configuration current) {
+        String serverName = extractServerName(source, current);
         String hostname = extractHostname(source, current);
 
         // SystemInfo doesn't typically contain port, ssl, or path information,
-        // so we preserve the current values
-        boolean hasChanges = !Objects.equals(hostname, current.hostname);
+        // so we create a new Configuration with serverName and hostname updated
+        Configuration updated = new Configuration();
+        updated.serverName = serverName;
+        updated.hostname = hostname;
+        updated.port = current.port;
+        updated.ssl = current.ssl;
+        updated.path = current.path;
+        updated.token = current.token;
+        updated.refreshSeconds = current.refreshSeconds;
+        updated.clientActiveWithInSeconds = current.clientActiveWithInSeconds;
 
-        return new ConfigurationUpdate(hostname, current.port, current.ssl, current.path, hasChanges);
+        boolean hasChanges = !Objects.equals(serverName, current.serverName)
+                || !Objects.equals(hostname, current.hostname);
+
+        return new ConfigurationUpdate(updated, hasChanges);
+    }
+
+    private String extractServerName(SystemInfo source, Configuration current) {
+        // Only update serverName if it's currently empty (user hasn't set a custom name)
+        if (current.serverName.isEmpty()) {
+            String name = source.getServerName();
+            return name != null ? name : "";
+        }
+        // Preserve user-configured server name
+        return current.serverName;
     }
 
     private String extractHostname(SystemInfo source, Configuration current) {
-        String serverName = source.getServerName();
-        return serverName != null ? serverName : current.hostname;
+        String localAddress = source.getLocalAddress();
+        return localAddress != null ? localAddress : current.hostname;
     }
 }

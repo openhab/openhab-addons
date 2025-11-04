@@ -7,6 +7,10 @@
 		<label>Jellyfin Server</label>
 		<description>Represents a running Jellyfin server instance</description>
 		<config-description>
+			<parameter name="serverName" type="text" required="false">
+				<label>Server Name</label>
+				<description>Human-readable name for the server (auto-discovered from server if not set)</description>
+			</parameter>
 			<parameter name="hostname" type="text" required="true">
 				<context>network-address</context>
 				<label>Hostname/IP</label>
