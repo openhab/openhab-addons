@@ -21,7 +21,7 @@
 				<label>Ads Blocked Today</label>
 				<description>The number of ads blocked today.</description>
 			</channel>
-			<channel id="ads-percentage-today" typeId="number-channel">
+			<channel id="ads-percentage-today" typeId="percentage-channel">
 				<label>Ads Percentage Today</label>
 				<description>The percentage of ads blocked today.</description>
 			</channel>
@@ -117,7 +117,7 @@
 			<channel id="disable-enable" typeId="disable-enable-channel"/>
 		</channels>
 		<properties>
-			<property name="thingTypeVersion">1</property>
+			<property name="thingTypeVersion">2</property>
 		</properties>
 
 		<config-description>
@@ -153,6 +153,11 @@
 		<item-type>Number</item-type>
 		<label>Number channel</label>
 		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="percentage-channel">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Percentage Channel</label>
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="enabled-channel">
 		<item-type>Switch</item-type>

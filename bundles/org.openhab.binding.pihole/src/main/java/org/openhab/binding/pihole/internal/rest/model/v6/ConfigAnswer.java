@@ -70,10 +70,14 @@ public record ConfigAnswer(Config config, double took) {
     public record RateLimit(int count, int interval) {
     }
 
+    public record Domain(String name, boolean local) {
+
+    }
+
     public record Dns(List<String> upstreams, boolean cNAMEdeepInspect, boolean blockESNI, boolean edns0ecs,
             boolean ignoreLocalhost, boolean showDNSSEC, boolean analyzeOnlyAandAAAA, String piholePTR,
             String replyWhenBusy, int blockTTL, List<String> hosts, boolean domainNeeded, boolean expandHosts,
-            String domain, boolean bogusPriv, boolean dnssec, String _interface, String hostRecord,
+            Domain domain, boolean bogusPriv, boolean dnssec, String _interface, String hostRecord,
             String listeningMode, boolean queryLogging, List<Object> cnameRecords, int port, List<Object> revServers,
             Cache cache, Blocking blocking, SpecialDomains specialDomains, Reply reply, RateLimit rateLimit) {
     }

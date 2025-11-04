@@ -97,7 +97,7 @@ public class PiHoleHandler extends BaseThingHandler {
 
         URI hostname;
         try {
-            hostname = new URI(config.hostname);
+            hostname = new URI(config.hostname).resolve("/");
         } catch (URISyntaxException e) {
             updateStatus(OFFLINE, CONFIGURATION_ERROR,
                     "@text/handler.init.invalidHostname[\"" + config.hostname + "\"]");

@@ -29,38 +29,38 @@ The Pi-hole Binding allows you to monitor Pi-hole statistics and control its fun
 
 ## Channels
 
-| Channel                 | Type     | Read/Write | Description                                                |
-|-------------------------|----------|------------|------------------------------------------------------------|
-| domains-being-blocked   | Number   | RO         | The total number of domains currently being blocked.       |
-| dns-queries-today       | Number   | RO         | The count of DNS queries made today.                       |
-| ads-blocked-today       | Number   | RO         | The number of ads blocked today.                           |
-| ads-percentage-today    | Number   | RO         | The percentage of ads blocked today.                       |
-| unique-domains          | Number   | RO         | The count of unique domains queried.                       |
-| queries-forwarded       | Number   | RO         | The number of queries forwarded to an external DNS server. |
-| queries-cached          | Number   | RO         | The number of queries served from the cache.               |
-| clients-ever-seen       | Number   | RO         | The total number of unique clients ever seen.              |
-| unique-clients          | Number   | RO         | The current count of unique clients.                       |
-| dns-queries-all-types   | Number   | RO         | The total number of DNS queries of all types.              |
-| reply-unknown           | Number   | RO         | DNS replies with an unknown status.                        |
-| reply-nodata            | Number   | RO         | DNS replies indicating no data.                            |
-| reply-nxdomain          | Number   | RO         | DNS replies indicating non-existent domain.                |
-| reply-cname             | Number   | RO         | DNS replies with a CNAME record.                           |
-| reply-ip                | Number   | RO         | DNS replies with an IP address.                            |
-| reply-domain            | Number   | RO         | DNS replies with a domain name.                            |
-| reply-rrname            | Number   | RO         | DNS replies with a resource record name.                   |
-| reply-servfail          | Number   | RO         | DNS replies indicating a server failure.                   |
-| reply-refused           | Number   | RO         | DNS replies indicating refusal.                            |
-| reply-notimp            | Number   | RO         | DNS replies indicating not implemented.                    |
-| reply-other             | Number   | RO         | DNS replies with other statuses.                           |
-| reply-dnssec            | Number   | RO         | DNS replies with DNSSEC information.                       |
-| reply-none              | Number   | RO         | DNS replies with no data.                                  |
-| reply-blob              | Number   | RO         | DNS replies with a BLOB (binary large object).             |
-| dns-queries-all-replies | Number   | RO         | The total number of DNS queries with all reply types.      |
-| privacy-level           | Number   | RO         | The privacy level setting.                                 |
-| enabled                 | Switch   | RO         | The current status of blocking                             |
-| disable-enable          | String   | RW         | Is blocking enabled/disabled                               |
-| gravity-last-update     | DateTime | RO         | Last update of gravity                                     |
-| gravity-file-exists     | DateTime | RO         | Does gravity file exists                                   |
+| Channel                 | Type                 | Read/Write | Description                                                |
+|-------------------------|----------------------|------------|------------------------------------------------------------|
+| domains-being-blocked   | Number               | RO         | The total number of domains currently being blocked.       |
+| dns-queries-today       | Number               | RO         | The count of DNS queries made today.                       |
+| ads-blocked-today       | Number               | RO         | The number of ads blocked today.                           |
+| ads-percentage-today    | Number:Dimensionless | RO         | The percentage of ads blocked today.                       |
+| unique-domains          | Number               | RO         | The count of unique domains queried.                       |
+| queries-forwarded       | Number               | RO         | The number of queries forwarded to an external DNS server. |
+| queries-cached          | Number               | RO         | The number of queries served from the cache.               |
+| clients-ever-seen       | Number               | RO         | The total number of unique clients ever seen.              |
+| unique-clients          | Number               | RO         | The current count of unique clients.                       |
+| dns-queries-all-types   | Number               | RO         | The total number of DNS queries of all types.              |
+| reply-unknown           | Number               | RO         | DNS replies with an unknown status.                        |
+| reply-nodata            | Number               | RO         | DNS replies indicating no data.                            |
+| reply-nxdomain          | Number               | RO         | DNS replies indicating non-existent domain.                |
+| reply-cname             | Number               | RO         | DNS replies with a CNAME record.                           |
+| reply-ip                | Number               | RO         | DNS replies with an IP address.                            |
+| reply-domain            | Number               | RO         | DNS replies with a domain name.                            |
+| reply-rrname            | Number               | RO         | DNS replies with a resource record name.                   |
+| reply-servfail          | Number               | RO         | DNS replies indicating a server failure.                   |
+| reply-refused           | Number               | RO         | DNS replies indicating refusal.                            |
+| reply-notimp            | Number               | RO         | DNS replies indicating not implemented.                    |
+| reply-other             | Number               | RO         | DNS replies with other statuses.                           |
+| reply-dnssec            | Number               | RO         | DNS replies with DNSSEC information.                       |
+| reply-none              | Number               | RO         | DNS replies with no data.                                  |
+| reply-blob              | Number               | RO         | DNS replies with a BLOB (binary large object).             |
+| dns-queries-all-replies | Number               | RO         | The total number of DNS queries with all reply types.      |
+| privacy-level           | Number               | RO         | The privacy level setting.                                 |
+| enabled                 | Switch               | RO         | The current status of blocking                             |
+| disable-enable          | String               | RW         | Is blocking enabled/disabled                               |
+| gravity-last-update     | DateTime             | RO         | Last update of gravity                                     |
+| gravity-file-exists     | DateTime             | RO         | Does gravity file exists                                   |
 
 ## Full Example
 
@@ -77,7 +77,7 @@ Thing pihole:server:a4a077edb8 "Pi-hole" @ "Location"
         Type number : domains_being_blocked "Domains Blocked" [ ]
         Type number : dns_queries_today "DNS Queries Today" [ ]
         Type number : ads_blocked_today "Ads Blocked Today" [ ]
-        Type number : ads_percentage_today "Ads Percentage Today" [ ]
+        Type number:dimensionless : ads_percentage_today "Ads Percentage Today" [ ]
         Type number : unique_domains "Unique Domains" [ ]
         Type number : queries_forwarded "Queries Forwarded" [ ]
         Type number : queries_cached "Queries Cached" [ ]
@@ -111,7 +111,7 @@ Thing pihole:server:a4a077edb8 "Pi-hole" @ "Location"
 Number domains_being_blocked "Domains Blocked" { channel="pihole:server:a4a077edb8:domains_being_blocked" }
 Number dns_queries_today "DNS Queries Today" { channel="pihole:server:a4a077edb8:dns_queries_today" }
 Number ads_blocked_today "Ads Blocked Today" { channel="pihole:server:a4a077edb8:ads_blocked_today" }
-Number ads_percentage_today "Ads Percentage Today" { channel="pihole:server:a4a077edb8:ads_percentage_today" }
+Number:Dimensionless ads_percentage_today "Ads Percentage Today" { channel="pihole:server:a4a077edb8:ads_percentage_today" }
 Number unique_domains "Unique Domains" { channel="pihole:server:a4a077edb8:unique_domains" }
 Number queries_forwarded "Queries Forwarded" { channel="pihole:server:a4a077edb8:queries_forwarded" }
 Number queries_cached "Queries Cached" { channel="pihole:server:a4a077edb8:queries_cached" }
