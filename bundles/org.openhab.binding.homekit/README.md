@@ -19,6 +19,35 @@ Whereas child `accessory` Things communicate via their respective `bridge` Thing
 Both `bridge` and stand-alone `accessory` Things will be auto discovered via mDNS.
 Once a `bridge` Thing has been instantiated and paired, its child `accessory` Things will also be auto- discovered.
 
+## Thing Configuration
+
+The following table shows the thing configuration parameters.
+
+| Name              | Type    | Description                                       | Default | Required  | Advanced  |
+|-------------------|---------|---------------------------------------------------|---------|-----------|-----------|
+| `host`            | text    | IP v4 address of the HomeKit accessory.           | N/A     | see below | no        |
+| `macAddress`      | text    | Unique accessory identifier.                      | N/A     | see below | yes       |
+| `accessoryID`     | integer | ID of the accessory                               | N/A     | see below | yes       |
+| `refreshInterval` | integer | Interval at which the accessory is polled in sec. | 60      | no        | yes       |
+
+NOTE: as a general rule, if you create the things via the Inbox, then all of the above configuration parameters will have their proper values already preset.
+
+As a gernal rule `host` is set by the mDNS auto- discovery process.
+However you can configure it manually if you wish.
+It must match the format `123.123.123.123:4567` representing its IP v4 address and port.
+Child `accessory` Things do not require a `host`.
+Therefore child things have this parameter preset to `n/a`.
+
+As a general rule, `macAddress` is set by the mDNS auto- discovery process.
+However you can configure it manually if you wish.
+It must be the unique accessory identifier as found manually via (say) an mDNS discovery app.
+Child `accessory` Things do not require a `macAddress`.
+Therefore child things have this parameter preset to `n/a`.
+
+As a general rule, `accessoryID` is set by the mDNS auto- discovery process, or child discovery process.
+However you can configure it manually if you wish.
+It must be the ID of the accessory within the bridge, or `1` if it is a root accessory.
+
 ## Thing Pairing
 
 The `bridge` and stand-alone `accessory` Things need to be paired with their respective HomeKit accessories.
@@ -39,20 +68,6 @@ The Pairing Code must match the format `XXX-XX-XXX` or `XXXX-XXXX` or `XXXXXXXX`
 
 For case 1. above, the `With External Authentication` switch must be `OFF`.
 Whereas for case 2. above, must be `ON`.
-
-## Thing Configuration
-
-The following table shows the thing configuration parameters.
-
-| Name              | Type    | Description                                       | Default | Required  | Advanced  |
-|-------------------|---------|---------------------------------------------------|---------|-----------|-----------|
-| `host`            | text    | IP v4 address of the HomeKit accessory.           | N/A     | see below | see below |
-| `refreshInterval` | integer | Interval at which the accessory is polled in sec. | 60      | no        | yes       |
-
-The `host` is set by the mDNS auto- discovery process.
-It must match the format `123.123.123.123:4567` representing its IP v4 address and port.
-Child `accessory` Things do not require a `host`.
-Therefore child things have this parameter preset to `n/a`.
 
 ## Channels
 
