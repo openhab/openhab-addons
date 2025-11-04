@@ -233,7 +233,6 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
      * @param device
      */
     public void updateDeviceConfig(RemoteDevice device) {
-        logger.trace("updateDeviceConfig(): uid: {}", this.getThing().getUID());
         this.device = device;
     }
 

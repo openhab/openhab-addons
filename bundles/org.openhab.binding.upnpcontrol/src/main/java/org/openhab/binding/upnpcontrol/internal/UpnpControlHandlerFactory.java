@@ -294,8 +294,7 @@ public class UpnpControlHandlerFactory extends BaseThingHandlerFactory implement
         String udn = device.getIdentity().getUdn().getIdentifierString();
         UpnpHandler handler = handlers.get(udn);
         if (handler != null) {
-            logger.trace("UpnpControlHandlerFactory:remoteDeviceUpdated() uid: {} udn:{}", handler.getThing().getUID(),
-                    device.getIdentity().getUdn().getIdentifierString());
+            handler.updateDeviceConfig(device);
         }
     }
 
