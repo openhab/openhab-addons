@@ -19,30 +19,40 @@ Whereas child `accessory` Things communicate via their respective `bridge` Thing
 Both `bridge` and stand-alone `accessory` Things will be auto discovered via mDNS.
 Once a `bridge` Thing has been instantiated and paired, its child `accessory` Things will also be auto- discovered.
 
-## Thing Configuration
+## Thing Pairing
 
 The `bridge` and stand-alone `accessory` Things need to be paired with their respective HomeKit accessories.
-This requires entering the HomeKit pairing code as a configuration parameter in the binding.
+This requires entering the HomeKit pairing code by means of a Thing Action.
+
 Note that HomeKit accessories can only be paired with one controller, so if it is already paired with something else, you will need to remove that pairing first.
+There are two forms of pairing:
+
+1. Simple pairing.
+This works directly between two devices – a HomeKit client (this binding) and a HomeKit accessory.
+In this case you need only to enter the pairing code into the Thing Action.
+1. Pairing with external authorization.
+In addition to the HomeKit client (this binding) and the HomeKit accessory, it requires an additional third party to put the accessory into pairing mode.
+Typically the additional third party can be either a) using the accessory's app to put it into pairing mode, or b) pressing a pairing button on the device.
+
+In either case above, the Pairing Code must be entered manually into the Thing Action dialog.
+The Pairing Code must match the format `XXX-XX-XXX` or `XXXX-XXXX` or `XXXXXXXX` where `X` is a single digit.
+
+For case 1. above, the `With External Authentication` switch must be `OFF`.
+Whereas for case 2. above, must be `ON`.
+
+## Thing Configuration
 
 The following table shows the thing configuration parameters.
 
 | Name              | Type    | Description                                       | Default | Required  | Advanced  |
 |-------------------|---------|---------------------------------------------------|---------|-----------|-----------|
 | `host`            | text    | IP v4 address of the HomeKit accessory.           | N/A     | see below | see below |
-| `pairingCode`     | text    | Code used for pairing with the HomeKit accessory. | N/A     | see below | see below |
 | `refreshInterval` | integer | Interval at which the accessory is polled in sec. | 60      | no        | yes       |
-
-Things of type `bridge` and `accessory` require both a `host` and a `pairingCode`.
 
 The `host` is set by the mDNS auto- discovery process.
 It must match the format `123.123.123.123:4567` representing its IP v4 address and port.
-
-The `pairingCode` must be entered manually.
-It must match the format `XXX-XX-XXX` or `XXXX-XXXX` or `XXXXXXXX` where `X` is a single digit.
-
-Child `accessory` Things do not require neither a `host` nor a `pairingCode`.
-Therefore child things have these parameters preset to `n/a`.
+Child `accessory` Things do not require a `host`.
+Therefore child things have this parameter preset to `n/a`.
 
 ## Channels
 
