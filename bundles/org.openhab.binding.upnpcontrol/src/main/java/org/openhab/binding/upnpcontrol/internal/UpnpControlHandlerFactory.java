@@ -152,7 +152,7 @@ public class UpnpControlHandlerFactory extends BaseThingHandlerFactory implement
         logger.debug("Media server handler created for {} with UID {}", thing.getLabel(), thing.getUID());
 
         String udn = handler.getUDN();
-        if (udn != null) {
+        if (!UpnpHandler.UNDEFINED_UDN.equals(udn)) {
             handlers.put(udn, handler);
             remoteDeviceUpdated(null, devices.get(udn));
         }
@@ -170,7 +170,7 @@ public class UpnpControlHandlerFactory extends BaseThingHandlerFactory implement
         logger.debug("Media renderer handler created for {} with UID {}", thing.getLabel(), thing.getUID());
 
         String udn = handler.getUDN();
-        if (udn != null) {
+        if (!UpnpHandler.UNDEFINED_UDN.equals(udn)) {
             handlers.put(udn, handler);
             remoteDeviceUpdated(null, devices.get(udn));
         }
@@ -185,7 +185,10 @@ public class UpnpControlHandlerFactory extends BaseThingHandlerFactory implement
         }
         logger.debug("Removing media server handler for {} with UID {}", handler.getThing().getLabel(),
                 handler.getThing().getUID());
-        handlers.remove(handler.getUDN());
+        String udn = handler.getUDN();
+        if (!UpnpHandler.UNDEFINED_UDN.equals(udn)) {
+            handlers.remove(udn);
+        }
         upnpServers.remove(key);
     }
 
@@ -217,7 +220,10 @@ public class UpnpControlHandlerFactory extends BaseThingHandlerFactory implement
         }
 
         upnpServers.forEach((thingId, value) -> value.removeRendererOption(key));
-        handlers.remove(handler.getUDN());
+        String udn = handler.getUDN();
+        if (!UpnpHandler.UNDEFINED_UDN.equals(udn)) {
+            handlers.remove(udn);
+        }
         upnpRenderers.remove(key);
     }
 

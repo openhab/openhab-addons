@@ -69,6 +69,8 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
 
     private final Logger logger = LoggerFactory.getLogger(UpnpHandler.class);
 
+    public final static String UNDEFINED_UDN = "undefined";
+
     // UPnP constants
     static final String CONNECTION_MANAGER = "ConnectionManager";
     static final String CONNECTION_ID = "ConnectionID";
@@ -188,7 +190,7 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
      */
     protected void initDevice() {
         String udn = getUDN();
-        if ((udn != null) && !udn.isEmpty()) {
+        if (!UpnpHandler.UNDEFINED_UDN.equals(udn)) {
             updateStatus(ThingStatus.UNKNOWN);
 
             if (config.refresh == 0) {
@@ -554,8 +556,8 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
     }
 
     @Override
-    public @Nullable String getUDN() {
-        return config.udn;
+    public String getUDN() {
+        return config.udn == null ? UNDEFINED_UDN : config.udn;
     }
 
     protected boolean checkForConnectionIds() {

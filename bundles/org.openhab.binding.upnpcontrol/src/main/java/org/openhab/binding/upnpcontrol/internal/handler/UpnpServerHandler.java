@@ -516,7 +516,7 @@ public class UpnpServerHandler extends UpnpHandler {
             if (mediaQueue.isEmpty() && !currentEntry.isContainer()) {
                 mediaQueue.add(currentEntry);
             }
-            UpnpEntryQueue queue = new UpnpEntryQueue(mediaQueue, config.udn);
+            UpnpEntryQueue queue = new UpnpEntryQueue(mediaQueue, getUDN());
             queue.persistQueue(playlistName, append, bindingConfig.path);
             UpnpControlUtil.updatePlaylistsList(bindingConfig.path);
         }

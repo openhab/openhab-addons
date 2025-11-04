@@ -26,6 +26,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.openhab.binding.onkyo.internal.OnkyoAlbumArt;
 import org.openhab.binding.onkyo.internal.OnkyoConnection;
 import org.openhab.binding.onkyo.internal.OnkyoEventListener;
@@ -858,7 +859,7 @@ public class OnkyoHandler extends OnkyoUpnpHandler implements OnkyoEventListener
     }
 
     private boolean isChannelAvailable(String channel) {
-        List<Channel> channels = getThing().getChannels();
+        List<@NonNull Channel> channels = getThing().getChannels();
         for (Channel c : channels) {
             if (c.getUID().getId().equals(channel)) {
                 return true;
