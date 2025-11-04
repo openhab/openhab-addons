@@ -20,5 +20,5 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public record Blocking(boolean blocking, @Nullable Long timer) {
-    public static Blocking BLOCK = new Blocking(true, null);
+    public static final Blocking BLOCK = new Blocking(true, null);
 }
