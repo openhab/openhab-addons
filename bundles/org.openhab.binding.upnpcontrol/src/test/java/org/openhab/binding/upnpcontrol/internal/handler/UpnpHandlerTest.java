@@ -106,7 +106,7 @@ public class UpnpHandlerTest {
         // stub upnpIOService methods for initialize
         when(upnpIOService.isRegistered(any())).thenReturn(true);
 
-        Map<String, String> result = new HashMap<>();
+        Map<String, @Nullable String> result = new HashMap<>();
         result.put("ConnectionID", "0");
         result.put("AVTransportID", "0");
         result.put("RcsID", "0");

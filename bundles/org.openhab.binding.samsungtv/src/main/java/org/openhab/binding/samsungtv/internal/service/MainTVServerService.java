@@ -273,18 +273,19 @@ public class MainTVServerService implements UpnpIOParticipant, SamsungTvService 
         }
     }
 
-    protected Map<String, String> updateResourceState(String actionId) {
+    protected Map<String, @Nullable String> updateResourceState(String actionId) {
         return updateResourceState(actionId, Map.of());
     }
 
-    protected synchronized Map<String, String> updateResourceState(String actionId, Map<String, String> inputs) {
-        Map<String, String> result = Objects.requireNonNull(
+    protected synchronized Map<String, @Nullable String> updateResourceState(String actionId,
+            Map<String, String> inputs) {
+        Map<String, @Nullable String> result = Objects.requireNonNull(
                 Optional.of(service).map(a -> a.invokeAction(this, SERVICE_MAIN_AGENT, actionId, inputs))
                         .filter(a -> !a.isEmpty()).orElse(Map.of("Result", "Command Failed")));
         if (isOk(result)) {
             result.keySet().stream().filter(a -> !"Result".equals(a)).forEach(a -> {
                 String val = result.getOrDefault(a, "");
-                if ("CurrentChannel".equals(a)) {
+                if (val != null && "CurrentChannel".equals(a)) {
                     val = parseCurrentChannel(val);
                     a = "MajorCh";
                 }
@@ -294,8 +295,8 @@ public class MainTVServerService implements UpnpIOParticipant, SamsungTvService 
         return result;
     }
 
-    public boolean isOk(Map<String, String> result) {
-        return result.getOrDefault("Result", "Error").equals("OK");
+    public boolean isOk(Map<String, @Nullable String> result) {
+        return "OK".equals(result.getOrDefault("Result", "Error"));
     }
 
     /**
@@ -308,25 +309,26 @@ public class MainTVServerService implements UpnpIOParticipant, SamsungTvService 
         }
         String source = Objects.requireNonNull(sources.entrySet().stream().filter(a -> a.getValue().equals(tmpSource))
                 .map(a -> a.getKey()).findFirst().orElse(tmpSource));
-        Map<String, String> result = updateResourceState("SetMainTVSource",
+        Map<String, @Nullable String> result = updateResourceState("SetMainTVSource",
                 Map.of("Source", source, "ID", sources.getOrDefault(source, "0"), "UiID", "0"));
         logResult(result.getOrDefault("Result", "Unable to Set Source Name: " + source));
         return isOk(result);
     }
 
     private boolean setBrowserUrl(Command command) {
-        Map<String, String> result = updateResourceState("RunBrowser", Map.of("BrowserURL", command.toString()));
+        Map<String, @Nullable String> result = updateResourceState("RunBrowser",
+                Map.of("BrowserURL", command.toString()));
         logResult(result.getOrDefault("Result", "Unable to Set browser URL: " + command.toString()));
         return isOk(result);
     }
 
     private boolean stopBrowser() {
-        Map<String, String> result = updateResourceState("StopBrowser");
+        Map<String, @Nullable String> result = updateResourceState("StopBrowser");
         logResult(result.getOrDefault("Result", "Unable to Stop Browser"));
         return isOk(result);
     }
 
-    private void logResult(String ok) {
+    private void logResult(@Nullable String ok) {
         if ("OK".equals(ok)) {
             logger.debug("{}: Command successfully executed", host);
         } else {
@@ -370,7 +372,7 @@ public class MainTVServerService implements UpnpIOParticipant, SamsungTvService 
     public void visitRecursively(Node node) {
         // get all child nodes, NodeList doesn't have a stream, so do this
         Optional.ofNullable(node.getChildNodes()).ifPresent(nList -> IntStream.range(0, nList.getLength())
-                .mapToObj(i -> (Node) nList.item(i)).forEach(childNode -> parseNode(childNode)));
+                .mapToObj(i -> nList.item(i)).forEach(childNode -> parseNode(childNode)));
     }
 
     public void parseNode(Node node) {

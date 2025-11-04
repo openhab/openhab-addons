@@ -1134,8 +1134,9 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
         }
     }
 
-    private Map<String, String> executeAction(String serviceId, String actionId, @Nullable Map<String, String> inputs) {
-        Map<String, String> result = service.invokeAction(this, serviceId, actionId, inputs);
+    private Map<String, @Nullable String> executeAction(String serviceId, String actionId,
+            @Nullable Map<String, String> inputs) {
+        Map<String, @Nullable String> result = service.invokeAction(this, serviceId, actionId, inputs);
         result.forEach((variable, value) -> {
             this.onValueReceived(variable, value, serviceId);
         });
@@ -1175,7 +1176,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
     }
 
     protected void updateRunningAlarmProperties() {
-        Map<String, String> result = service.invokeAction(this, SERVICE_AV_TRANSPORT,
+        Map<String, @Nullable String> result = service.invokeAction(this, SERVICE_AV_TRANSPORT,
                 ACTION_GET_RUNNING_ALARM_PROPERTIES, null);
 
         String alarmID = result.get("AlarmID");
@@ -1194,7 +1195,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
     }
 
     protected boolean updateZoneInfo() {
-        Map<String, String> result = executeAction(SERVICE_DEVICE_PROPERTIES, ACTION_GET_ZONE_INFO, null);
+        Map<String, @Nullable String> result = executeAction(SERVICE_DEVICE_PROPERTIES, ACTION_GET_ZONE_INFO, null);
 
         Map<String, String> properties = editProperties();
         String value = stateMap.get("HardwareVersion");
@@ -1611,7 +1612,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
         inputs.put("RequestedCount", Integer.toString(200));
         inputs.put("SortCriteria", "");
 
-        Map<String, String> result = service.invokeAction(this, SERVICE_CONTENT_DIRECTORY, "Browse", inputs);
+        Map<String, @Nullable String> result = service.invokeAction(this, SERVICE_CONTENT_DIRECTORY, "Browse", inputs);
 
         String initialResult = result.get("Result");
         if (initialResult == null) {
@@ -1653,7 +1654,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
         inputs.put("RequestedCount", "1");
         inputs.put("SortCriteria", "");
 
-        Map<String, String> result = service.invokeAction(this, SERVICE_CONTENT_DIRECTORY, "Browse", inputs);
+        Map<String, @Nullable String> result = service.invokeAction(this, SERVICE_CONTENT_DIRECTORY, "Browse", inputs);
 
         return getResultEntry(result, "TotalMatches", type, "dc:title");
     }
@@ -1668,7 +1669,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
      *
      * @return 0 as long or the value corresponding to the requiredKey if found
      */
-    private Long getResultEntry(Map<String, String> resultInput, String requestedKey, String entriesType,
+    private Long getResultEntry(Map<String, @Nullable String> resultInput, String requestedKey, String entriesType,
             String entriesFilter) {
         long result = 0;
 
@@ -2362,7 +2363,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
     }
 
     public List<SonosAlarm> getCurrentAlarmList() {
-        Map<String, String> result = executeAction(SERVICE_ALARM_CLOCK, "ListAlarms", null);
+        Map<String, @Nullable String> result = executeAction(SERVICE_ALARM_CLOCK, "ListAlarms", null);
         String alarmList = result.get("CurrentAlarmList");
         return alarmList == null ? Collections.emptyList() : SonosXMLParser.getAlarmsFromStringResult(alarmList);
     }
@@ -3119,7 +3120,8 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
 
     private @Nullable List<SonosMusicService> getAvailableMusicServices() {
         if (musicServices == null) {
-            Map<String, String> result = service.invokeAction(this, "MusicServices", "ListAvailableServices", null);
+            Map<String, @Nullable String> result = service.invokeAction(this, "MusicServices", "ListAvailableServices",
+                    null);
 
             String serviceList = result.get("AvailableServiceDescriptorList");
             if (serviceList != null) {

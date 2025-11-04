@@ -710,6 +710,10 @@ public class UpnpRendererHandlerTest extends UpnpHandlerTest {
 
     @Test
     public void testFavorite() {
+        UpnpRendererHandler handler = this.handler;
+        if (handler == null) {
+            return;
+        }
         logger.info("testFavorite");
 
         // Check already called in initialize
@@ -769,6 +773,10 @@ public class UpnpRendererHandlerTest extends UpnpHandlerTest {
     }
 
     private void expectLastChangeOnStop(boolean respond) {
+        UpnpRendererHandler handler = this.handler;
+        if (handler == null) {
+            return;
+        }
         String value = LAST_CHANGE_HEADER + TRANSPORT_STATE + "STOPPED" + CLOSE + LAST_CHANGE_FOOTER;
         doAnswer(invocation -> {
             if (respond) {
@@ -779,6 +787,10 @@ public class UpnpRendererHandlerTest extends UpnpHandlerTest {
     }
 
     private void expectLastChangeOnPlay(boolean respond) {
+        UpnpRendererHandler handler = this.handler;
+        if (handler == null) {
+            return;
+        }
         String value = LAST_CHANGE_HEADER + TRANSPORT_STATE + "PLAYING" + CLOSE + LAST_CHANGE_FOOTER;
         doAnswer(invocation -> {
             if (respond) {
@@ -799,6 +811,10 @@ public class UpnpRendererHandlerTest extends UpnpHandlerTest {
     }
 
     private void expectLastChangeOnSetVolume(boolean respond, long volume) {
+        UpnpRendererHandler handler = this.handler;
+        if (handler == null) {
+            return;
+        }
         Map<String, String> inputs = new HashMap<>();
         inputs.put("InstanceID", "0");
         inputs.put("Channel", UPNP_MASTER);
@@ -812,6 +828,10 @@ public class UpnpRendererHandlerTest extends UpnpHandlerTest {
     }
 
     private void expectLastChangeOnGetPositionInfo(boolean respond, String seekTarget) {
+        UpnpRendererHandler handler = this.handler;
+        if (handler == null) {
+            return;
+        }
         Map<String, String> inputs = new HashMap<>();
         inputs.put("InstanceID", "0");
         doAnswer(invocation -> {
@@ -827,6 +847,10 @@ public class UpnpRendererHandlerTest extends UpnpHandlerTest {
     }
 
     private void expectLastChangeOnSetAVTransportURI(boolean respond, boolean withMetadata, int mediaId) {
+        UpnpRendererHandler handler = this.handler;
+        if (handler == null) {
+            return;
+        }
         String uri = upnpEntryQueue.get(mediaId).getRes();
         String metadata = UpnpXMLParser.compileMetadataString(requireNonNull(upnpEntryQueue.get(mediaId)));
         Map<String, String> inputs = new HashMap<>();
@@ -846,6 +870,10 @@ public class UpnpRendererHandlerTest extends UpnpHandlerTest {
 
     private void checkInternalState(@Nullable Integer currentEntry, @Nullable Integer nextEntry, boolean playerStopped,
             boolean playing, boolean registeredQueue, boolean playingQueue) {
+        UpnpRendererHandler handler = this.handler;
+        if (handler == null) {
+            return;
+        }
         if (currentEntry == null) {
             assertNull(handler.currentEntry);
         } else {
