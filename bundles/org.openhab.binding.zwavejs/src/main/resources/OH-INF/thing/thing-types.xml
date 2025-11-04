@@ -50,7 +50,7 @@
 		<representation-property>id</representation-property>
 
 		<config-description>
-			<parameter name="id" type="integer" min="1" max="255" readOnly="true" required="true">
+			<parameter name="id" type="integer" min="1" max="4095" readOnly="true" required="true">
 				<label>ID</label>
 				<advanced>true</advanced>
 			</parameter>
