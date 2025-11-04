@@ -18,7 +18,7 @@ Then make sure you have the following values set:
 - **Remote Device Operation: On**
 - **Registration Type: Automatic**
 
-For the UHD models, Voice Control must be enabled for the player's HTTP interface to be active:
+For the UHD models (`uhd-player`), Voice Control must be enabled for the player's HTTP interface to be active:
 
 - **Player Settings/Network/Voice Control: On**
 
