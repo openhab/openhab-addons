@@ -105,7 +105,7 @@
 			</parameter>
 			<parameter name="keyTokenUpdate" type="decimal" required="false" min="0" unit="h">
 				<label>Key Token Update</label>
-				<description>Update the Key and Token from the cloud in hours, default 0 to disable.</description>
+				<description>Update the Key and Token from the cloud in hours, min 24h, default 0 to disable.</description>
 				<default>0</default>
 				<advanced>true</advanced>
 			</parameter>

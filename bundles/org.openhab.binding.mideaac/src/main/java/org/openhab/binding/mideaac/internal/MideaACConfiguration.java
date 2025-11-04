@@ -77,7 +77,8 @@ public class MideaACConfiguration {
     public int energyPoll = 0;
 
     /**
-     * Key and Token Update Frequency in days
+     * Key and Token Update Frequency in hours
+     * 0 to disable. Minimum 24 hours best practice if used
      */
     public int keyTokenUpdate = 0;
 
@@ -94,7 +95,7 @@ public class MideaACConfiguration {
     /**
      * AC Version
      */
-    public int version = 0;
+    public int version = 3;
 
     /**
      * Choose between Energy Decoding methods

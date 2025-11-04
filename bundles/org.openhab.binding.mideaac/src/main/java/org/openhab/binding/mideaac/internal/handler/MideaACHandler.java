@@ -222,97 +222,109 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
     @Override
     public void initialize() {
         config = getConfigAs(MideaACConfiguration.class);
+        updateStatus(ThingStatus.UNKNOWN);
 
         // Check for valid discovery configurations and discover again if not
+        // Mostly needed for partial textual configurations. UI discovery should be valid
         if (!config.isValid()) {
-            // Mark thing as unknown while asynchronous discovery/login is running to avoid race conditions
-            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_PENDING, "Configuration not valid");
+            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Required configuration parameter(s) are missing or invalid.");
 
             if (config.isDiscoveryPossible()) {
+                // Mark thing as UNKNOWN with message while attempting discovery.
                 updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_PENDING,
-                        "Configuration missing, discovery needed. Discovering...");
+                        "Retriving required parameters from device or the cloud.");
                 MideaACDiscoveryService discoveryService = new MideaACDiscoveryService();
 
-                // Run discovery asynchronously so initialize() can return quickly, but keep the thing in UNKNOWN
-                // until the discovery attempt finishes and updates the thing status accordingly.
+                // Run discovery asynchronously and end this initialization thread.
+                // If successful, initialize() will be called again.
                 scheduler.execute(() -> {
                     try {
-                        // perform the potentially blocking discovery/login work here
                         discoveryService.discoverThing(config.ipAddress, this);
                     } catch (Exception e) {
-                        // discovery failed — update status to OFFLINE with an explanation
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                                "Discovery failure. Check IP Address.");
+                        // Required parameter discovery failed
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                "Could not retrieve required parameters from device or the cloud.");
                     }
                 });
                 return;
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Invalid MideaAC config. Check IP Address.");
+                        "Invalid configuration parameters provided. Retrieval from device or cloud not possible.");
                 return;
             }
         } else {
-            logger.debug("Valid discovery for {}", thing.getUID());
+            logger.debug("Discovery parameters are valid for {}", thing.getUID());
         }
 
         // Check for valid token and key and/or contact cloud account to get them
         if (config.version == 3 && !config.isV3ConfigValid()) {
+            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Required configuration parameter(s) are missing or invalid.");
+
             if (config.isTokenKeyObtainable()) {
+                // Mark thing as UNKNOWN with message while attempting token/key retrieval.
                 updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_PENDING,
-                        "Retrieving token and key from cloud");
+                        "Retriving required parameters from device or the cloud.");
+
+                // Run token and key retrieval asynchronously and end this initialization thread.
+                // If successful, initialize() will be called again.
                 scheduler.execute(() -> {
                     try {
                         CloudProvider cloudProvider = CloudProvider.getCloudProvider(config.cloud);
                         getTokenKeyCloud(cloudProvider);
                     } catch (Exception e) {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                                "Token and key could not be obtained from Cloud");
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                "Could not retrieve required parameters from device or the cloud.");
                     }
                 });
                 return;
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "No account info to retrieve from cloud");
+                        "Invalid configuration parameters provided. Retrieval from device or cloud not possible.");
                 return;
             }
         } else {
-            logger.debug("Valid security for V.3 device {}", thing.getUID());
+            logger.debug("Valid token and key for V.3 device {}", thing.getUID());
         }
-
-        updateStatus(ThingStatus.UNKNOWN);
 
         // Initialize connectionManager for communication with the AC
         connectionManager = new org.openhab.binding.mideaac.internal.connection.ConnectionManager(config.ipAddress,
                 config.ipPort, config.timeout, config.key, config.token, config.cloud, config.email, config.password,
                 config.deviceId, config.version, config.promptTone);
 
-        // Form and send capabilities command if not already present in properties
+        // Form and send capabilities command if not already present in properties (async)
         if (!properties.containsKey("modeFanOnly")) {
-            try {
-                CommandSet initializationCommand = new CommandSet();
-                initializationCommand.getCapabilities();
-                connectionManager.sendCommand(initializationCommand, this);
-            } catch (Exception e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "AC capabilities not returned");
-            }
-            CapabilityParser parser = new CapabilityParser();
-            logger.debug("additional capabilities {}", parser.hasAdditionalCapabilities());
-            if (parser.hasAdditionalCapabilities()) {
+            scheduler.execute(() -> {
                 try {
                     CommandSet initializationCommand = new CommandSet();
-                    initializationCommand.getAdditionalCapabilities();
-                    connectionManager.sendCommand(initializationCommand, this);
+                    initializationCommand.getCapabilities();
+                    this.connectionManager.sendCommand(initializationCommand, this);
+
+                    // Check if additional capabilities should be fetched
+                    CapabilityParser parser = new CapabilityParser();
+                    logger.debug("additional capabilities {}", parser.hasAdditionalCapabilities());
+                    if (parser.hasAdditionalCapabilities()) {
+                        // Attempt to fetch additional capabilities after a short delay
+                        scheduler.schedule(() -> {
+                            try {
+                                CommandSet additionalCommand = new CommandSet();
+                                additionalCommand.getAdditionalCapabilities();
+                                this.connectionManager.sendCommand(additionalCommand, this);
+                            } catch (Exception e) {
+                                logger.debug("AC additional capabilities not returned {}", e.getMessage());
+                            }
+                        }, 2, TimeUnit.SECONDS);
+                    }
                 } catch (Exception e) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                            "AC additional capabilities not returned");
+                    logger.debug("AC capabilities not returned {}", e.getMessage());
                 }
-            }
+            });
         }
 
         // Establish routine polling per configuration or defaults
         if (scheduledTask == null) {
-            scheduledTask = scheduler.scheduleWithFixedDelay(this::pollJob, 2, config.pollingTime, TimeUnit.SECONDS);
+            scheduledTask = scheduler.scheduleWithFixedDelay(this::pollJob, 5, config.pollingTime, TimeUnit.SECONDS);
             logger.debug("Scheduled task started, Poll Time {} seconds", config.pollingTime);
         } else {
             logger.debug("Scheduler already running");
@@ -577,8 +589,8 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
             logger.debug("Token and Key obtained from cloud, saving, back to initialize");
             initialize();
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, String
-                    .format("Can't retrieve Token and Key from Cloud; email, password and/or cloud parameter error"));
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Invalid configuration parameters provided. Retrieval from device or cloud not possible.");
         }
     }
 

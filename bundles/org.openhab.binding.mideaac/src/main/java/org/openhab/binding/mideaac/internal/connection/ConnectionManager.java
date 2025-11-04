@@ -144,13 +144,14 @@ public class ConnectionManager {
         int maxTries = 3;
         int retrySocket = 0;
 
-        // If resending command add delay to avoid connection rejection
-        // Suspect that the AC device needs a few seconds to clear.
+        // If resending command add delay. Device needs time to clear.
         if (!resend) {
             try {
                 Thread.sleep(5000);
             } catch (InterruptedException ex) {
-                logger.debug("An interupted error (resend command delay-connect) has occured {}", ex.getMessage());
+                logger.debug("An interupted sleep error (resend command delay) has occured {}", ex.getMessage());
+                Thread.currentThread().interrupt();
+                throw new MideaConnectionException(ex);
             }
         }
 
@@ -165,12 +166,13 @@ public class ConnectionManager {
             } catch (SocketTimeoutException e) {
                 retrySocket++;
                 if (retrySocket < maxTries) {
+                    // Device needs time to clear after timeout exception.
                     try {
                         Thread.sleep(5000);
                     } catch (InterruptedException ex) {
-                        logger.debug("An interupted error (socket retry) has occured {}", ex.getMessage());
+                        logger.debug("An interupted sleep error (socket retry delay) has occured {}", ex.getMessage());
                         Thread.currentThread().interrupt();
-                        throw new MideaConnectionException("Socket connection interrupted");
+                        throw new MideaConnectionException(ex);
                     }
                     logger.debug("Socket retry count {}, Socket timeout connecting to {}: {}", retrySocket, ipAddress,
                             e.getMessage());
@@ -257,11 +259,13 @@ public class ConnectionManager {
                             Utils.hexStringToByteArray(key));
                     if (success) {
                         logger.debug("Authentication successful");
-                        // Altering the sleep can cause write errors problems. Use caution.
+                        // Reducing the sleep can cause write failures. Device needs time to clear.
                         try {
                             Thread.sleep(1000);
                         } catch (InterruptedException e) {
-                            logger.debug("An interupted error (success) has occured {}", e.getMessage());
+                            logger.debug("An interupted sleep error (Authentication) has occured {}", e.getMessage());
+                            Thread.currentThread().interrupt();
+                            throw new MideaConnectionException(e);
                         }
                     } else {
                         throw new MideaAuthenticationException("Invalid Key. Correct Key in configuration.");
@@ -343,13 +347,13 @@ public class ConnectionManager {
             } catch (InterruptedException e) {
                 logger.debug("An interupted error (write command2) has occured {}", e.getMessage());
                 Thread.currentThread().interrupt();
-                throw new MideaConnectionException("Command interrupted during wait");
+                throw new MideaConnectionException(e);
             }
 
             // Input stream is checked after 1.5 seconds
             // Socket timeout (UI parameter) 2 seconds minimum.
             if (inputStream.available() == 0) {
-                logger.debug("Input stream empty sending second write {}", command);
+                logger.debug("Input stream still empty sending second write {}", command);
                 write(bytes);
             }
 
