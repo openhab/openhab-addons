@@ -10,6 +10,12 @@
 
 		<label>Battery</label>
 		<description>A battery configured in your evcc instance</description>
+		<config-description>
+			<parameter name="index" type="integer">
+				<label>Index</label>
+				<description>The index of the battery in your evcc setup (starting with 0)</description>
+			</parameter>
+		</config-description>
 	</thing-type>
 	<channel-type id="battery-capacity">
 		<item-type unitHint="kWh">Number:Energy</item-type>
