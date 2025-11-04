@@ -92,7 +92,15 @@ So the thing creates one additional `HSBType` channel that amalgamates hue, satu
 ### Thing Configuration
 
 Things are automatically configured when they are discovered.
-So for this reason it is extremely difficult to create Things via a '.things' file, and is therefore not recommeneded.
+So for this reason it is extremely difficult to create Things via a '.things' file, and is therefore not recommended.
+
+```java
+Bridge homekit:bridge:velux "VELUX Gateway" [ host="192.168.0.235:5001", macAddress="XX:XX:XX:XX:XX:XX", accessoryID=1 ] {
+    Thing accessory 2 "VELUX Sensor" @ "Hallway" [ host="n/a", accessoryID=2 ]
+    Thing accessory 3 "VELUX Window" @ "Hallway" [ host="n/a", accessoryID=3 ]
+    Thing accessory 4 "VELUX Window" @ "Small bathroom" [ host="n/a", accessoryID=4 ]
+}
+```
 
 ### Item Configuration
 
