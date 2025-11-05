@@ -4,9 +4,70 @@
 
 This document outlines the implementation plan for adding Ruuvi Air support to the openHAB ecosystem via both Bluetooth Low Energy (BLE) and Ruuvi Gateway MQTT payloads. Ruuvi Air is an advanced indoor air quality monitor that extends beyond the existing RuuviTag environmental sensors with additional air quality measurements including PM2.5, CO2, VOC, NOx, and luminosity.
 
-## 1. Product Overview
+## 1. Maintainer Discussion & Decisions
 
-### 1.1 Ruuvi Air Specifications
+### 1.1 Discussion with Bluetooth Maintainers (@cdjackson, @cpmeister)
+
+**Background:**
+- openHAB has support for Ruuvi Tag (BLE temperature/humidity sensor) in `bluetooth.ruuvitag`
+- Ruuvi Air is a new device from the same vendor (BLE air quality sensor)
+- Advertisement formats share common structure between devices
+
+**Question 1: Separate or Combined Binding?**
+
+> Should I create new addon for the bluetooth Ruuvi Air support? Or would it be ok to combine the new functionality with the existing bluetooth.ruuvitag binding?
+
+**Decision: ✅ COMBINE WITH EXISTING BINDING**
+
+**Rationale:**
+- Most convenient for users
+- Ruuvi users likely to have multiple devices from same vendor
+- Things will be separated into their own types
+- Binding name (`bluetooth.ruuvitag`) is specific, but functionality is acceptable
+- **Preference: Combine and ignore naming topic**
+
+**Question 2: Sharing Parsing Logic**
+
+> There will be common parsing logic for Air payload in both `binding.mqtt.ruuvigateway` (BLE payloads republished via MQTT) and bluetooth parser. What would be the best way to share the code?
+
+**Current State:**
+- Both bindings rely on https://github.com/Scrin/ruuvitag-common-java
+- Does not support Ruuvi Air at this moment
+- Maintainer is active in Ruuvi community but moved to golang
+
+**Options Considered:**
+
+1. **Option 1**: Contribute to ruuvitag-common-java (fork to openhab org if maintainer unreachable), take as Maven dependency
+2. **Option 2**: Make simple parsing library in openHAB org, embed at compile-time to both bindings, store JAR in binding repo
+3. **Option 3**: Copy-paste parsing code to both bindings as static utility
+
+**Decision: ✅ OPTION 2 (with fork of ruuvitag-common-java)**
+
+**Implementation:**
+- Take ruuvitag-common-java and expand it with Ruuvi Air support
+- Fork to `/home/salski/src/openhab-main/git/ruuvitag-common-java` (already done)
+- **Embed dependency at compile-time** using BND tool
+- Reference: https://www.openhab.org/docs/developer/buildsystem.html#embedding-dependency
+- No separate bundle deployment needed
+- Both `bluetooth.ruuvitag` and `mqtt.ruuvigateway` embed the same parser
+
+**Rationale:**
+- Keeps shared logic in one place
+- Simpler than managing external dependency
+- Follows documented openHAB practice
+- Both bindings use identical parser code
+
+### 1.2 Implementation Summary
+
+**Final Approach:**
+1. ✅ **Single binding**: Extend existing `bluetooth.ruuvitag` to support both RuuviTag and Ruuvi Air
+2. ✅ **Single MQTT binding**: Extend existing `mqtt.ruuvigateway` to support both devices
+3. ✅ **Shared parser**: Fork and extend `ruuvitag-common-java`, embed at compile-time in both bindings
+4. ✅ **Naming**: Keep `bluetooth.ruuvitag` name despite supporting Ruuvi Air
+
+## 2. Product Overview
+
+### 2.1 Ruuvi Air Specifications
 
 **Sensor Capabilities:**
 - **Temperature**: -20°C to +60°C (same sensor as RuuviTag)
@@ -226,12 +287,14 @@ The following channels need to be added to support Ruuvi Air's air quality measu
 - **Use BND tool to embed the dependency at compile-time** into both bindings
 - Reference: https://www.openhab.org/docs/developer/buildsystem.html#embedding-dependency
 
-**Why Compile-Time Embedding:**
+**Why Compile-Time Embedding (Decision from Maintainer Discussion):**
 - No separate bundle deployment needed
-- Simpler dependency management
+- Simpler dependency management for small libraries
 - Both BLE and MQTT bindings embed the same parser library
-- Follows openHAB best practices for small dependencies
+- Follows documented openHAB practice: https://www.openhab.org/docs/developer/buildsystem.html#embedding-dependency
 - Easier testing and deployment
+- Avoids complexity of separate bundle versioning
+- **Preferred by implementation team for simplicity**
 
 **BND Configuration (pom.xml):**
 ```xml
@@ -561,10 +624,11 @@ public static final Unit<Dimensionless> ONE = addUnit(AbstractUnit.ONE);
 ### 6.1 Backward Compatibility
 
 **Critical Requirements:**
-- Existing RuuviTag bindings MUST continue to work unchanged
-- Do NOT modify existing RuuviTag bindings unless necessary
-- Separate thing types: `ruuvitag_beacon` vs `ruuviair_beacon`
-- Users can run both bindings simultaneously
+- Existing RuuviTag things MUST continue to work unchanged
+- **Single thing type** (`ruuvitag_beacon`) supports both RuuviTag and Ruuvi Air
+- New air quality channels only populate for Ruuvi Air devices (Format 6/E1)
+- RuuviTag devices (Format 3/5) work exactly as before
+- No breaking changes to existing users
 
 ### 6.2 Data Format Detection
 
@@ -684,10 +748,11 @@ switch (formatByte) {
 ### 7.2 External Libraries
 
 **Parser Library (Forked & Extended):**
-- Original: `fi.tkgwf.ruuvi:ruuvitag-common:1.0.2`
+- Original: `fi.tkgwf.ruuvi:ruuvitag-common:1.0.2` (from https://github.com/Scrin/ruuvitag-common-java)
 - Forked: `/home/salski/src/openhab-main/git/ruuvitag-common-java`
 - New version: `com.github.scrin:ruuvitag-common:1.1.0-openhab` (or similar)
-- Will be embedded at compile-time via BND (not a separate bundle)
+- **Will be embedded at compile-time via BND** (not a separate bundle)
+- Decision made in maintainer discussion: simpler than managing external dependency or creating separate bundle
 
 ### 7.3 openHAB Framework Dependencies
 
@@ -1028,27 +1093,46 @@ Where `<FORMAT_6_DATA_HEX>` contains encoded Format 6 measurements.
 
 ## 13. Open Questions
 
-1. **Data Format Specification:**
-   - Is Format E1 specification publicly available?
-   - Any differences in Format 6 vs E1 beyond BLE version?
-   - Does Ruuvi Air support encrypted formats?
+### 13.1 Answered Questions ✅
 
-2. **Hardware Availability:**
+1. **Should we create separate binding or combine?** ✅ ANSWERED
+   - **Decision**: Combine with existing `bluetooth.ruuvitag` binding
+   - Source: Maintainer discussion with @cdjackson and @cpmeister
+   - Ignore naming concern, prioritize user convenience
+
+2. **How to share parsing logic?** ✅ ANSWERED
+   - **Decision**: Fork ruuvitag-common-java and embed at compile-time
+   - Use BND tool as documented in openHAB build system docs
+   - Both bindings embed the same parser library
+
+3. **Is Format E1 specification available?** ✅ ANSWERED
+   - Yes, fully documented at https://docs.ruuvi.com/communication/bluetooth-advertisements/data-format-e1
+   - 40-byte payload with all PM sizes
+   - Will be future enhancement (BT5 extended advertisement support unclear)
+
+4. **Are official test vectors available?** ✅ ANSWERED
+   - Yes, all 4 test cases documented at docs.ruuvi.com
+   - Valid, maximum, minimum, invalid cases provided
+   - Will be used in unit tests with exact URL references
+
+### 13.2 Remaining Questions
+
+1. **Hardware Availability:**
    - Can we obtain Ruuvi Air device for testing?
    - What is timeline for general availability?
    - Pre-production devices available for developers?
 
-3. **Library Updates:**
-   - Is `ruuvitag-common` still maintained?
-   - Would maintainer accept PR for Format 6 support?
-   - Alternative parser libraries available?
-
-4. **MQTT Payload:**
+2. **MQTT Payload:**
    - Does Ruuvi Gateway already support Ruuvi Air?
    - What Gateway firmware version required?
    - Any payload differences for Ruuvi Air vs RuuviTag?
 
-5. **Community:**
+3. **BT5 Extended Advertisements:**
+   - What is openHAB's support for BT5 extended advertisements?
+   - Do bluez/bluegiga adapters support extended advertisements?
+   - Any changes needed in core bluetooth binding?
+
+4. **Community:**
    - Any existing openHAB community members with Ruuvi Air?
    - Interest level in this integration?
    - Beta testers available?

@@ -3,6 +3,22 @@
 ## Overview
 Implementation plan for adding Ruuvi Air support to existing openHAB RuuviTag bindings via BLE and MQTT Gateway.
 
+## Maintainer Discussion Summary
+
+**Discussion with**: @cdjackson and @cpmeister (Bluetooth maintainers)
+
+**Key Questions & Decisions:**
+
+1. **Q: Separate or combined binding?**
+   - **A: ✅ COMBINE** - Extend existing `bluetooth.ruuvitag` to support both devices
+   - Rationale: User convenience, most have multiple Ruuvi devices
+   - Keep existing binding name despite specificity
+
+2. **Q: How to share parsing logic between BLE and MQTT bindings?**
+   - **A: ✅ FORK + EMBED** - Fork `ruuvitag-common-java`, extend with Format 6, embed at compile-time
+   - Reference: https://www.openhab.org/docs/developer/buildsystem.html#embedding-dependency
+   - Simpler than separate bundle or copy-paste approach
+
 ## Key Decisions ✅
 
 ### 1. **Single Bindings for Both Devices**
