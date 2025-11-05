@@ -11,6 +11,7 @@ The Pi-hole Binding allows you to monitor Pi-hole statistics and control its fun
 - Real-time Statistics: Monitor key metrics such as the number of domains being blocked, DNS queries made today, ads blocked today, and more.
 - Control: Enable or disable Pi-hole's blocking functionality, configure blocking options, and adjust privacy settings directly from openHAB.
 - Integration: Seamlessly integrate Pi-hole data and controls with other openHAB items and rules to create advanced automation scenarios.
+- Version 6 of piHole is supported (configured via the `serverVersion` configuration parameter) starting with version 6.3 (6.2 will not work).
 
 ## Supported Things
 
