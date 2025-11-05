@@ -29,9 +29,9 @@ import org.openhab.binding.jellyfin.internal.events.ErrorEventBus;
 import org.openhab.binding.jellyfin.internal.exceptions.ContextualExceptionHandler;
 import org.openhab.binding.jellyfin.internal.handler.tasks.AbstractTask;
 import org.openhab.binding.jellyfin.internal.handler.tasks.ConnectionTask;
+import org.openhab.binding.jellyfin.internal.handler.tasks.ServerSyncTask;
 import org.openhab.binding.jellyfin.internal.handler.tasks.TaskFactoryInterface;
 import org.openhab.binding.jellyfin.internal.handler.tasks.UpdateTask;
-import org.openhab.binding.jellyfin.internal.handler.tasks.UsersListTask;
 import org.openhab.binding.jellyfin.internal.types.ServerState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -86,8 +86,8 @@ public class TaskManager implements TaskManagerInterface {
         tasks.put(UpdateTask.TASK_ID,
                 taskFactory.createUpdateTask(apiClient, new ContextualExceptionHandler(errorEventBus, "UpdateTask")));
 
-        tasks.put(UsersListTask.TASK_ID, taskFactory.createUsersListTask(apiClient, usersHandler,
-                new ContextualExceptionHandler(errorEventBus, "UsersListTask")));
+        tasks.put(ServerSyncTask.TASK_ID, taskFactory.createServerSyncTask(apiClient, usersHandler,
+                new ContextualExceptionHandler(errorEventBus, "ServerSyncTask")));
 
         logger.debug("Initialized {} tasks: {}", tasks.size(), String.join(", ", tasks.keySet()));
         return tasks;
@@ -137,9 +137,9 @@ public class TaskManager implements TaskManagerInterface {
                 // When configured but not connected, run connection task to establish connection
                 return List.of(ConnectionTask.TASK_ID);
             case CONNECTED:
-                // When connected, run update tasks to keep data synchronized
+                // When connected, run sync task to keep server state (users and sessions) synchronized
                 // Note: Connection task stops automatically when successful
-                return List.of(UsersListTask.TASK_ID);
+                return List.of(ServerSyncTask.TASK_ID);
             case DISCOVERED:
                 // For discovered servers, potentially run registration task in the future
                 return List.of();

@@ -16,17 +16,26 @@ scenarios.
 The server state is determined by analyzing the current state, thing properties,
 and configuration.
 State transitions trigger task management operations through the
-`TaskManager.processStateChange()` method.
+`TaskManager.processStateChange()` method, which automatically starts and stops
+tasks based on the new state.
+
+For detailed information about which tasks are active in each state, see
+[Task Management Architecture](task-management.md#tasks-by-server-state).
 
 The main states are:
 
 - **INITIALIZING**: Initial state when the handler is first created.
+  No tasks active.
 - **DISCOVERED**: The server was found via discovery and has a valid URI property.
+  No tasks active.
 - **NEEDS_AUTHENTICATION**: Configuration exists but no access token is available.
-- **CONFIGURED**: The configuration contains a valid access token (tasks are started in this state).
-- **CONNECTED**: Successfully connected to the server and authenticated.
+  No tasks active.
+- **CONFIGURED**: The configuration contains a valid access token. `ConnectionTask` is started to establish connection.
+- **CONNECTED**: Successfully connected to the server and authenticated. `ServerSyncTask` is started to synchronize server state (users and sessions).
 - **ERROR**: An error occurred (invalid URI, authentication failure, etc.).
+  All tasks stopped.
 - **DISPOSED**: The thing is disposed and no further transitions occur.
+  All tasks permanently stopped.
 
 ## State Transition Diagram
 

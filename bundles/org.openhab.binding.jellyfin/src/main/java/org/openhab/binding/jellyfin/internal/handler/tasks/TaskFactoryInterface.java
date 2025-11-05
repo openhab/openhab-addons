@@ -51,13 +51,13 @@ public interface TaskFactoryInterface {
     UpdateTask createUpdateTask(ApiClient client, ExceptionHandlerType exceptionHandler);
 
     /**
-     * Creates a users list task with the specified parameters.
+     * Creates a server sync task to synchronize server state (users and sessions).
      * 
-     * @param client The API client to use for the users list request
+     * @param client The API client to use for the server sync request
      * @param usersHandler The handler for processing the retrieved users list
      * @param exceptionHandler The handler for exceptions
-     * @return A configured users list task
+     * @return A configured server sync task
      */
-    UsersListTask createUsersListTask(ApiClient client, Consumer<List<UserDto>> usersHandler,
+    ServerSyncTask createServerSyncTask(ApiClient client, Consumer<List<UserDto>> usersHandler,
             ExceptionHandlerType exceptionHandler);
 }

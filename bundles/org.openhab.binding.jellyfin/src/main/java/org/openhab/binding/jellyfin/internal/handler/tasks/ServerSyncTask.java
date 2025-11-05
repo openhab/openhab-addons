@@ -29,18 +29,20 @@ import org.openhab.binding.jellyfin.internal.types.ExceptionHandlerType;
 import com.fasterxml.jackson.core.type.TypeReference;
 
 /**
- * Task for retrieving available users from the Jellyfin server
+ * Task for synchronizing server state (users and sessions) with the Jellyfin server.
+ * This task retrieves the list of users and their active sessions to keep the handler
+ * state synchronized with the server.
  *
  * @author Patrik Gfeller - Initial contribution
  */
 @NonNullByDefault
-public class UsersListTask extends AbstractTask {
+public class ServerSyncTask extends AbstractTask {
 
-    /** Task ID for the users list task */
-    public static final String TASK_ID = "UsersList";
-    /** Default startup delay for the users list task in seconds */
+    /** Task ID for the server sync task */
+    public static final String TASK_ID = "ServerSync";
+    /** Default startup delay for the server sync task in seconds */
     public static final int DEFAULT_STARTUP_DELAY = 5;
-    /** Default interval for the users list task in seconds */
+    /** Default interval for the server sync task in seconds */
     public static final int DEFAULT_INTERVAL = 60;
 
     private final Consumer<List<UserDto>> usersHandler;
@@ -48,13 +50,13 @@ public class UsersListTask extends AbstractTask {
     private final ApiClient client;
 
     /**
-     * Create a new UsersListTask to retrieve information about available users
+     * Create a new ServerSyncTask to synchronize server state (users and sessions).
      *
      * @param client The API client to use for the request
      * @param usersHandler The handler that will process the list of retrieved users
      * @param exceptionHandler The handler that will handle any exceptions that occur
      */
-    public UsersListTask(ApiClient client, Consumer<List<UserDto>> usersHandler,
+    public ServerSyncTask(ApiClient client, Consumer<List<UserDto>> usersHandler,
             ExceptionHandlerType exceptionHandler) {
         super(TASK_ID, DEFAULT_STARTUP_DELAY, DEFAULT_INTERVAL);
 
