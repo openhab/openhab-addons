@@ -206,66 +206,68 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
     }
 
     /**
-     * To initialize an AC Thing, first check if discovery on your LAN has
-     * been completed. In the discovery process the IP address, IP port, device ID
-     * and version are established. Next for V.3 devices, if the token and key are not
-     * known, the cloud needs to be contacted to get the token and key using either
-     * the default NetHome Plus cloud or your own cloud account with your password and
-     * email. LAN discovery DOES NOT include the token key retrieval needed to communicate
-     * with the AC. V2 devices bypass the cloud connection step because they use a simplier
-     * hard-coded encryption. Next the Connection Manager is established. Then a command
-     * is formed and sent to retrieve the AC capabilities if they have not been
-     * discovered. Capabilities are not returned in the initial LAN Discovery.
-     * Lastly the routine polling, token key update and Energy polling frequency are set.
-     * 
+     * To initialize an AC Thing, 1) Checks if discovery using the UI or your textual
+     * configuration has all the required parameters (IP address, IP port, device ID
+     * and version). If not, attempt LAN discovery (mostly for incomplete textual configs).
+     * 2) For V.3 devices, if the token and key are not known, attempt to retrieve
+     * them from the cloud using your email and password or the defaults. V2 devices
+     * bypass the cloud connection step because they use a simplier hard-coded encryption.
+     * 3) Initialize the Connection Manager to manage commands. At this point the device
+     * is fully functional.
+     * 4) The first command(s) retrieve the AC capabilities. These capabilities are not
+     * returned in the initial LAN Discovery.
+     * 5) Lastly the routine polling, Energy polling and token key update command
+     * frequencies are set.
      */
     @Override
     public void initialize() {
         config = getConfigAs(MideaACConfiguration.class);
-        updateStatus(ThingStatus.UNKNOWN);
 
-        // Check for valid discovery configurations and discover again if not
+        // 1. Check for valid discovery configurations and discover again if not
         // Mostly needed for partial textual configurations. UI discovery should be valid
         if (!config.isValid()) {
-            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Required configuration parameter(s) are missing or invalid.");
+            // Mark thing as OFFLINE with message about discovery error.
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/offline.configuration_error_discovery");
 
             if (config.isDiscoveryPossible()) {
-                // Mark thing as UNKNOWN with message while attempting discovery.
-                updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_PENDING,
-                        "Retriving required parameters from device or the cloud.");
+                // Keep thing OFFLINE with message about attempting discovery.
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "@text/offline.configuration_pending_discovery");
                 MideaACDiscoveryService discoveryService = new MideaACDiscoveryService();
 
-                // Run discovery asynchronously and end this initialization thread.
+                // Kick off discovery asynchronously and end this initialization thread.
                 // If successful, initialize() will be called again.
                 scheduler.execute(() -> {
                     try {
                         discoveryService.discoverThing(config.ipAddress, this);
                     } catch (Exception e) {
-                        // Required parameter discovery failed
+                        // Required parameter discovery failed due to communication error.
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                "Could not retrieve required parameters from device or the cloud.");
+                                "@text/offline.communication_error_discovery");
                     }
                 });
                 return;
             } else {
+                // Required parameters are missing and cannot be discovered.
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Invalid configuration parameters provided. Retrieval from device or cloud not possible.");
+                        "@text/offline.configuration_error_invalid_discovery");
                 return;
             }
         } else {
             logger.debug("Discovery parameters are valid for {}", thing.getUID());
         }
 
-        // Check for valid token and key and/or contact cloud account to get them
+        // 2. Check for valid token and key and/or contact cloud account to get them
         if (config.version == 3 && !config.isV3ConfigValid()) {
-            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Required configuration parameter(s) are missing or invalid.");
+            // Mark thing as OFFLINE with message about token/key error.
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/offline.configuration_error_token");
 
             if (config.isTokenKeyObtainable()) {
-                // Mark thing as UNKNOWN with message while attempting token/key retrieval.
-                updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_PENDING,
-                        "Retriving required parameters from device or the cloud.");
+                // Keep thing OFFLINE with message about attempting token/key retrieval.
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "@text/offline.configuration_pending_token");
 
                 // Run token and key retrieval asynchronously and end this initialization thread.
                 // If successful, initialize() will be called again.
@@ -275,25 +277,26 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
                         getTokenKeyCloud(cloudProvider);
                     } catch (Exception e) {
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                "Could not retrieve required parameters from device or the cloud.");
+                                "@text/offline.communication_error_token");
                     }
                 });
                 return;
             } else {
+                // Token and/or key are missing or invalid and cannot be obtained from cloud.
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Invalid configuration parameters provided. Retrieval from device or cloud not possible.");
+                        "@text/offline.configuration_error_invalid_token ");
                 return;
             }
         } else {
             logger.debug("Valid token and key for V.3 device {}", thing.getUID());
         }
 
-        // Initialize connectionManager for communication with the AC
+        // 3. Initialize connectionManager with valid configuration parameters for communication with the AC
         connectionManager = new org.openhab.binding.mideaac.internal.connection.ConnectionManager(config.ipAddress,
                 config.ipPort, config.timeout, config.key, config.token, config.cloud, config.email, config.password,
                 config.deviceId, config.version, config.promptTone);
 
-        // Form and send capabilities command if not already present in properties (async)
+        // 4. Send capabilities command (async) as first command if not previously retrieved (use default key as marker)
         if (!properties.containsKey("modeFanOnly")) {
             scheduler.execute(() -> {
                 try {
@@ -301,11 +304,10 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
                     initializationCommand.getCapabilities();
                     this.connectionManager.sendCommand(initializationCommand, this);
 
-                    // Check if additional capabilities should be fetched
+                    // Check if additional capabilities are available and fetch them if so
                     CapabilityParser parser = new CapabilityParser();
                     logger.debug("additional capabilities {}", parser.hasAdditionalCapabilities());
                     if (parser.hasAdditionalCapabilities()) {
-                        // Attempt to fetch additional capabilities after a short delay
                         scheduler.schedule(() -> {
                             try {
                                 CommandSet additionalCommand = new CommandSet();
@@ -317,20 +319,26 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
                         }, 2, TimeUnit.SECONDS);
                     }
                 } catch (Exception e) {
+                    // Will not affect AC device readiness, just log the issue
                     logger.debug("AC capabilities not returned {}", e.getMessage());
                 }
             });
         }
 
-        // Establish routine polling per configuration or defaults
+        // Set status to UNKNOWN first before going ONLINE (will be updated in pollJob to ONLINE)
+        // With the initial delay and the time for authentication and communication, the ac will
+        // be unknown for 4-5 seconds.
+        updateStatus(ThingStatus.UNKNOWN);
+
+        // 5a. Establish routine polling per configuration or defaults
         if (scheduledTask == null) {
-            scheduledTask = scheduler.scheduleWithFixedDelay(this::pollJob, 5, config.pollingTime, TimeUnit.SECONDS);
+            scheduledTask = scheduler.scheduleWithFixedDelay(this::pollJob, 2, config.pollingTime, TimeUnit.SECONDS);
             logger.debug("Scheduled task started, Poll Time {} seconds", config.pollingTime);
         } else {
             logger.debug("Scheduler already running");
         }
 
-        // Establish token key update frequency, if not disabled
+        // 5b. Establish token key update frequency, if not disabled
         if (config.keyTokenUpdate != 0 && scheduledKeyTokenUpdate == null) {
             scheduledKeyTokenUpdate = scheduler.scheduleWithFixedDelay(
                     () -> getTokenKeyCloud(CloudProvider.getCloudProvider(config.cloud)), config.keyTokenUpdate,
@@ -340,7 +348,7 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
             logger.debug("Token Key Scheduler already running or disabled");
         }
 
-        // Establish Energy polling, if not disabled.
+        // 5c. Establish Energy polling, if not disabled.
         if (config.energyPoll != 0 && scheduledEnergyUpdate == null) {
             scheduledEnergyUpdate = scheduler.scheduleWithFixedDelay(this::energyUpdate, 1, config.energyPoll,
                     TimeUnit.MINUTES);
@@ -373,6 +381,7 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
 
         try {
             connectionManager.getStatus(callbackLambda);
+            // If we reach here, the device is online.
             updateStatus(ThingStatus.ONLINE);
         } catch (MideaAuthenticationException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
@@ -590,7 +599,7 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
             initialize();
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Invalid configuration parameters provided. Retrieval from device or cloud not possible.");
+                    "@text/offline.configuration_error_invalid_token ");
         }
     }
 

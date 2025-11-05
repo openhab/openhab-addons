@@ -113,6 +113,7 @@
 				<label>Socket Timeout</label>
 				<description>Connecting socket timeout (seconds). Minimum is 2, maximum is 10 (4 is default).</description>
 				<default>4</default>
+				<advanced>true</advanced>
 			</parameter>
 			<parameter name="promptTone" type="boolean" required="true">
 				<label>Prompt Tone</label>
@@ -122,7 +123,7 @@
 			<parameter name="version" type="decimal" required="true">
 				<label>AC Version</label>
 				<description>Version 3 requires Token, Key and Cloud provider. Version 2 doesn't.</description>
-				<default>0</default>
+				<default>3</default>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="energyDecode" type="boolean" required="true">
