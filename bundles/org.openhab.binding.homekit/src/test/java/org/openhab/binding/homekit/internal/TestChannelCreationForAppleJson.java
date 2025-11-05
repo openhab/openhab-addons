@@ -343,7 +343,7 @@ class TestChannelCreationForAppleJson {
     void testDetailJsonParsing() {
         Accessories accessories = GSON.fromJson(TEST_JSON, Accessories.class);
         assertNotNull(accessories);
-        Accessory accessory = accessories.getAccessory(1);
+        Accessory accessory = accessories.getAccessory(1L);
         assertNotNull(accessory);
         assertEquals(1, accessory.aid);
         assertEquals(2, accessory.services.size());
@@ -389,7 +389,7 @@ class TestChannelCreationForAppleJson {
          * Test the LED Light Bulb accessory #3 which has live data channels
          */
         ThingUID thingUID = new ThingUID("hhh", "aaa", "bridge1", "accessory3");
-        Accessory accessory = accessories.getAccessory(3);
+        Accessory accessory = accessories.getAccessory(3L);
         assertNotNull(accessory);
         List<ChannelGroupDefinition> channelGroupDefinitions = accessory
                 .buildAndRegisterChannelGroupDefinitions(thingUID, typeProvider, i18nProvider, bundle);
@@ -449,7 +449,7 @@ class TestChannelCreationForAppleJson {
         assertEquals(BigDecimal.valueOf(1.0), state.getStep());
 
         // get the accessory information for the bridge (accessory 1) and create properties from it
-        accessory = accessories.getAccessory(1);
+        accessory = accessories.getAccessory(1L);
         assertNotNull(accessory);
         Map<String, String> properties = new HashMap<>();
         for (Service service : accessory.services) {

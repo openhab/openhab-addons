@@ -79,12 +79,12 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
 
     protected static final Gson GSON = new Gson();
 
-    private static final int MIN_CONNECTION_ATTEMPT_DELAY = 2;
-    private static final int MAX_CONNECTION_ATTEMPT_DELAY = 600;
+    private static final int MIN_CONNECTION_ATTEMPT_DELAY_SECONDS = 2;
+    private static final int MAX_CONNECTION_ATTEMPT_DELAY_SECONDS = 600;
 
     private final Logger logger = LoggerFactory.getLogger(HomekitBaseAccessoryHandler.class);
 
-    private final Map<Integer, Accessory> accessories = new ConcurrentHashMap<>();
+    private final Map<Long, Accessory> accessories = new ConcurrentHashMap<>();
 
     protected final HomekitTypeProvider typeProvider;
     protected final HomekitKeyStore keyStore;
@@ -94,13 +94,13 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
     protected boolean isChildAccessory = false;
     private boolean isConfigured = false;
 
-    private int connectionAttemptDelay = MIN_CONNECTION_ATTEMPT_DELAY;
+    private int connectionAttemptDelay = MIN_CONNECTION_ATTEMPT_DELAY_SECONDS;
 
     private @Nullable ScheduledFuture<?> connectionAttemptTask;
     private @Nullable CharacteristicReadWriteClient rwService;
     private @Nullable IpTransport ipTransport;
 
-    protected @NonNullByDefault({}) Integer accessoryId;
+    protected @NonNullByDefault({}) Long accessoryId;
 
     public HomekitBaseAccessoryHandler(Thing thing, HomekitTypeProvider typeProvider, HomekitKeyStore keyStore,
             TranslationProvider translationProvider, Bundle bundle) {
@@ -127,6 +127,11 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
         connectionAttemptTask = null;
         ipTransport = null;
         super.dispose();
+    }
+
+    private void fetchAccessoriesTask() {
+        fetchAccessories();
+        updateStatus(ThingStatus.ONLINE);
     }
 
     /**
@@ -180,10 +185,10 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
      *
      * @return the accessory ID, or null if it cannot be determined
      */
-    protected @Nullable Integer getAccessoryId() {
+    protected @Nullable Long getAccessoryId() {
         if (getConfig().get(CONFIG_ACCESSORY_ID) instanceof BigDecimal accessoryId) {
             try {
-                return accessoryId.intValue();
+                return accessoryId.longValue();
             } catch (NumberFormatException e) {
             }
         }
@@ -222,16 +227,17 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
      */
     private synchronized void verifyPairing() {
         isConfigured = false;
-        Integer accessoryId = checkedAccessoryId();
+        Long accessoryId = checkedAccessoryId();
         String hostName = checkedHostName();
         String macAddress = checkedMacAddress();
-        if (accessoryId == null || hostName == null || macAddress == null) {
+        String mdnsServiceName = checkedMdnsServiceName(hostName);
+        if (accessoryId == null || hostName == null || macAddress == null || mdnsServiceName == null) {
             return; // configuration error
         }
         isConfigured = true;
 
         // create new transport
-        if (checkedCreateIpTransport(hostName) == null) {
+        if (checkedCreateIpTransport(hostName, mdnsServiceName) == null) {
             return; // transport creation failed
         }
 
@@ -245,8 +251,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
                 rwService = new CharacteristicReadWriteClient(getIpTransport());
 
                 logger.debug("Restored pairing was verified for {}", thing.getUID());
-                fetchAccessories();
-                updateStatus(ThingStatus.ONLINE);
+                scheduler.schedule(this::fetchAccessoriesTask, MIN_CONNECTION_ATTEMPT_DELAY_SECONDS, TimeUnit.SECONDS);
                 return; // pairing restore succeeded => exit
             } catch (NoSuchAlgorithmException | NoSuchProviderException | IllegalAccessException
                     | InvalidCipherTextException | IOException | InterruptedException | TimeoutException
@@ -263,7 +268,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
         }
     }
 
-    public Map<Integer, Accessory> getAccessories() {
+    public Map<Long, Accessory> getAccessories() {
         if (getBridge() instanceof Bridge bridge && bridge.getHandler() instanceof HomekitBridgeHandler bridgeHandler) {
             return bridgeHandler.getAccessories();
         }
@@ -305,10 +310,11 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
         }
         verifyPairing();
         if (isConfigured && thing.getStatus() != ThingStatus.ONLINE) { // config ok but connection failed => try again
-            connectionAttemptDelay = Math.min(MAX_CONNECTION_ATTEMPT_DELAY, (int) Math.pow(connectionAttemptDelay, 2));
+            connectionAttemptDelay = Math.min(MAX_CONNECTION_ATTEMPT_DELAY_SECONDS,
+                    (int) Math.pow(connectionAttemptDelay, 2));
             connectionAttemptTask = scheduler.schedule(this::attemptConnect, connectionAttemptDelay, TimeUnit.SECONDS);
         } else { // succeeded => reset delay
-            connectionAttemptDelay = MIN_CONNECTION_ATTEMPT_DELAY;
+            connectionAttemptDelay = MIN_CONNECTION_ATTEMPT_DELAY_SECONDS;
             connectionAttemptTask = null;
         }
     }
@@ -375,7 +381,36 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
         return macAddress;
     }
 
-    private @Nullable Integer checkedAccessoryId() {
+    /**
+     * Checks and formats the mDNS service name from the configuration. The result is in the
+     * format 'foobar.hap.tcp.local' or 'foobar.hap.tcp.local:port'; the port is included if it
+     * is specified in the host name and is not default port '80'; spaces are escaped to '\032'.
+     *
+     * @param hostName the host name (may contain port)
+     * @return the formatted mDNS service name, or null if there is a configuration error
+     */
+    private @Nullable String checkedMdnsServiceName(@Nullable String hostName) {
+        if (!(getConfig().get(CONFIG_MDNS_SERVICE_NAME) instanceof String mdnsServiceName)
+                || mdnsServiceName.isBlank()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    i18nProvider.getText(bundle, "error.missing-mdns-service-name", "Missing mDNS service name", null));
+            return null;
+        }
+        if (hostName == null) {
+            return null;
+        }
+        if (mdnsServiceName.endsWith(".")) {
+            mdnsServiceName = mdnsServiceName.substring(0, mdnsServiceName.length() - 1);
+        }
+        mdnsServiceName = mdnsServiceName.replace(" ", "\\032");
+        String[] parts = hostName.split(":");
+        if (parts.length == 2 && !"80".equals(parts[1])) {
+            mdnsServiceName += ":" + parts[1];
+        }
+        return mdnsServiceName;
+    }
+
+    private @Nullable Long checkedAccessoryId() {
         accessoryId = getAccessoryId();
         if (accessoryId == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -385,9 +420,9 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
         return accessoryId;
     }
 
-    private @Nullable IpTransport checkedCreateIpTransport(String hostName) {
+    private @Nullable IpTransport checkedCreateIpTransport(String hostName, String mdnsServiceName) {
         try {
-            IpTransport ipTransport = new IpTransport(hostName, this);
+            IpTransport ipTransport = new IpTransport(hostName, mdnsServiceName, this);
             this.ipTransport = ipTransport;
             return ipTransport;
         } catch (IOException e) {
@@ -417,16 +452,17 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
         String pairingCode = normalizePairingCode(code);
 
         isConfigured = false;
-        Integer accessoryId = checkedAccessoryId();
+        Long accessoryId = checkedAccessoryId();
         String hostName = checkedHostName();
         String macAddress = checkedMacAddress();
-        if (accessoryId == null || hostName == null || macAddress == null) {
+        String mdnsServiceName = checkedMdnsServiceName(hostName);
+        if (accessoryId == null || hostName == null || macAddress == null || mdnsServiceName == null) {
             return; // configuration error
         }
         isConfigured = true;
 
         // create new transport
-        if (checkedCreateIpTransport(hostName) == null) {
+        if (checkedCreateIpTransport(hostName, mdnsServiceName) == null) {
             return; // transport creation failed
         }
 
@@ -439,7 +475,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
             keyStore.setAccessoryKey(macAddress, accessoryKey);
 
             logger.debug("Pair-Setup completed; starting Pair-Verify for {}", thing.getUID());
-            connectionAttemptDelay = MIN_CONNECTION_ATTEMPT_DELAY; // reset delay on manual pairing
+            connectionAttemptDelay = MIN_CONNECTION_ATTEMPT_DELAY_SECONDS; // reset delay on manual pairing
             scheduleConnectionAttempt();
         } catch (Exception e) {
             // catch all; log all exceptions
@@ -504,11 +540,11 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
      * service (if any).
      */
     protected void createProperties() {
-        Map<Integer, Accessory> accessories = getAccessories();
+        Map<Long, Accessory> accessories = getAccessories();
         if (accessories.isEmpty()) {
             return;
         }
-        Integer accessoryId = getAccessoryId();
+        Long accessoryId = getAccessoryId();
         if (accessoryId == null) {
             return;
         }
@@ -588,7 +624,9 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
             characteristic.ev = enable;
             return characteristic;
         }).toList());
-        getRwService().writeCharacteristic(GSON.toJson(service));
-        logger.debug("Eventing {}abled for {} channels", enable ? "en" : "dis", service.characteristics.size());
+        if (!service.characteristics.isEmpty()) {
+            getRwService().writeCharacteristic(GSON.toJson(service));
+            logger.debug("Eventing {}abled for {} channels", enable ? "en" : "dis", service.characteristics.size());
+        }
     }
 }

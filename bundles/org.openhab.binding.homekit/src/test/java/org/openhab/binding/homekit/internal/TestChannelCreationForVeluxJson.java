@@ -1564,7 +1564,7 @@ class TestChannelCreationForVeluxJson {
     void testDetailJsonParsing() {
         Accessories accessories = GSON.fromJson(TEST_JSON, Accessories.class);
         assertNotNull(accessories);
-        Accessory accessory = accessories.getAccessory(1);
+        Accessory accessory = accessories.getAccessory(1L);
         assertNotNull(accessory);
         assertEquals(1, accessory.aid);
         assertEquals(3, accessory.services.size());
@@ -1608,7 +1608,7 @@ class TestChannelCreationForVeluxJson {
 
         // get the accessory information for the bridge (accessory 1) and create properties from it
         ThingUID thingUID = new ThingUID("hhh", "aaa", "bridge1", "accessory1");
-        Accessory accessory = accessories.getAccessory(1);
+        Accessory accessory = accessories.getAccessory(1L);
         assertNotNull(accessory);
         Map<String, String> properties = new HashMap<>();
         for (Service service : accessory.services) {
@@ -1663,7 +1663,7 @@ class TestChannelCreationForVeluxJson {
 
         // test channel definitions for Temperature, Humidity, and CO2 sensors
         ThingUID thingUID = new ThingUID("hhh", "aaa", "bridge1", "accessory2");
-        Accessory accessory = accessories.getAccessory(2);
+        Accessory accessory = accessories.getAccessory(2L);
         assertNotNull(accessory);
         List<ChannelGroupDefinition> channelGroupDefinitions = accessory
                 .buildAndRegisterChannelGroupDefinitions(thingUID, typeProvider, i18nProvider, bundle);
@@ -1822,7 +1822,7 @@ class TestChannelCreationForVeluxJson {
         }).when(typeProvider).putChannelType(any(ChannelType.class));
 
         ThingUID thingUID = new ThingUID("hhh", "aaa", "bridge1", "accessory9");
-        Accessory accessory = accessories.getAccessory(9);
+        Accessory accessory = accessories.getAccessory(9L);
         assertNotNull(accessory);
         List<ChannelGroupDefinition> channelGroupDefinitions = accessory
                 .buildAndRegisterChannelGroupDefinitions(thingUID, typeProvider, i18nProvider, bundle);

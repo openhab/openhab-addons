@@ -26,7 +26,7 @@ import org.eclipse.jdt.annotation.Nullable;
 public class Accessories {
     public List<Accessory> accessories;
 
-    public @Nullable Accessory getAccessory(Integer aid) {
+    public @Nullable Accessory getAccessory(Long aid) {
         return accessories.stream().filter(a -> aid.equals(a.aid)).findFirst().orElse(null);
     }
 }

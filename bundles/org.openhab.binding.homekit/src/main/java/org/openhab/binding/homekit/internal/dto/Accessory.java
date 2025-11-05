@@ -39,7 +39,7 @@ import com.google.gson.JsonElement;
  */
 @NonNullByDefault
 public class Accessory {
-    public @NonNullByDefault({}) Integer aid; // e.g. 1
+    public @NonNullByDefault({}) Long aid; // e.g. 1
     public @NonNullByDefault({}) List<Service> services;
     public @NonNullByDefault({}) String name;
     public @NonNullByDefault({}) String manufacturer;

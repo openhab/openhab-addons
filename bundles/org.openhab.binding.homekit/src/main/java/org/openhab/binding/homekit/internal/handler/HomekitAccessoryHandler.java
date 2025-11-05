@@ -150,7 +150,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
     /**
      * Called when the thing handler has been initialized, the pairing verified, the accessories loaded,
      * and the channels and properties created. Sets up a scheduled task to periodically refresh the state
-     * of the accessory. And subscribes to evented channels if applicable.
+     * of the accessory.
      */
     private void startRefreshTask() {
         if (getConfig().get(CONFIG_REFRESH_INTERVAL) instanceof Object refreshInterval) {
@@ -349,11 +349,11 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
      * Each service creates a channel group, and each characteristic creates a channel within it.
      */
     private void createChannels() {
-        Map<Integer, Accessory> accessories = getAccessories();
+        Map<Long, Accessory> accessories = getAccessories();
         if (accessories.isEmpty()) {
             return;
         }
-        Integer accessoryId = getAccessoryId();
+        Long accessoryId = getAccessoryId();
         if (accessoryId == null) {
             return;
         }
@@ -555,7 +555,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
      * This method is called periodically by a scheduled executor.
      */
     private void refresh() {
-        Integer aid = getAccessoryId();
+        Long aid = getAccessoryId();
         List<String> queries = new ArrayList<>();
         thing.getChannels().stream().forEach(c -> {
             if (c.getProperties().get(PROPERTY_IID) instanceof String iid) {
@@ -826,7 +826,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
      */
     private synchronized @Nullable State readChannel(Channel channel, CharacteristicReadWriteClient reader)
             throws IOException, InterruptedException, TimeoutException, ExecutionException, IllegalStateException {
-        Integer aid = getAccessoryId();
+        Long aid = getAccessoryId();
         String iid = channel.getProperties().get(PROPERTY_IID);
         if (aid == null || iid == null) {
             throw new IllegalStateException(
@@ -858,7 +858,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
      */
     private synchronized void writeChannel(Channel channel, Command command, CharacteristicReadWriteClient writer)
             throws IOException, InterruptedException, TimeoutException, ExecutionException, IllegalStateException {
-        Integer aid = getAccessoryId();
+        Long aid = getAccessoryId();
         String iid = channel.getProperties().get(PROPERTY_IID);
         if (aid == null || iid == null) {
             throw new IllegalStateException(
@@ -898,7 +898,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
      * @param json the JSON content containing characteristic values
      */
     private void updateChannelsFromJson(String json) {
-        Integer aid = getAccessoryId();
+        Long aid = getAccessoryId();
         ChannelUID hsbChannelUID = null;
         Service service = GSON.fromJson(json, Service.class);
         if (service != null && service.characteristics instanceof List<Characteristic> characteristics) {

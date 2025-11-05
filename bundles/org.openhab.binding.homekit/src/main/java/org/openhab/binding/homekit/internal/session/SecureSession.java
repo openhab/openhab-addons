@@ -48,6 +48,9 @@ public class SecureSession {
 
     public SecureSession(Socket socket, AsymmetricSessionKeys keys) throws IOException {
         in = new DataInputStream(socket.getInputStream());
+        if (in.available() > 0) {
+            in.readAllBytes(); // clear any pre-existing data
+        }
         out = socket.getOutputStream();
         writeKey = keys.getWriteKey();
         readKey = keys.getReadKey();

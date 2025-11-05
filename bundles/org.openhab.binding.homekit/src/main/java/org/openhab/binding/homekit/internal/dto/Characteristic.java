@@ -68,7 +68,7 @@ public class Characteristic {
     public @NonNullByDefault({}) JsonElement value; // e.g. true, 23, "Some String"
     public @NonNullByDefault({}) String description;
     public @NonNullByDefault({}) Boolean ev; // e.g. true (events requested)
-    public @NonNullByDefault({}) Integer aid; // e.g. 10
+    public @NonNullByDefault({}) Long aid; // e.g. 10
     public @NonNullByDefault({}) @SerializedName("valid-values") List<Integer> validValues;
     public @NonNullByDefault({}) @SerializedName("valid-values-range") List<Integer> validValuesRange;
     public @NonNullByDefault({}) Integer status;

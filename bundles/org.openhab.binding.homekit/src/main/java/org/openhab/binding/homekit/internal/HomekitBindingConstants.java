@@ -46,6 +46,7 @@ public class HomekitBindingConstants {
 
     // configuration parameters
     public static final String CONFIG_HOST = "host";
+    public static final String CONFIG_MDNS_SERVICE_NAME = "mdnsServiceName";
     public static final String CONFIG_REFRESH_INTERVAL = "refreshInterval";
     public static final String CONFIG_ACCESSORY_ID = "accessoryID";
 

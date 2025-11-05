@@ -27,12 +27,13 @@ The following table shows the thing configuration parameters.
 |-------------------|---------|---------------------------------------------------|---------|-----------|-----------|
 | `host`            | text    | IP v4 address of the HomeKit accessory.           | N/A     | see below | no        |
 | `macAddress`      | text    | Unique accessory identifier.                      | N/A     | see below | yes       |
-| `accessoryID`     | integer | ID of the accessory                               | N/A     | see below | yes       |
+| `mdnsServiceName` | text    | The name of the discovered mDNS service.          | N/A     | see below | yes       |
+| `accessoryID`     | integer | ID of the accessory.                              | N/A     | see below | yes       |
 | `refreshInterval` | integer | Interval at which the accessory is polled in sec. | 60      | no        | yes       |
 
 NOTE: as a general rule, if you create the things via the Inbox, then all of the above configuration parameters will have their proper values already preset.
 
-As a gernal rule `host` is set by the mDNS auto- discovery process.
+As a general rule `host` is set by the mDNS auto- discovery process.
 However you can configure it manually if you wish.
 It must match the format `123.123.123.123:4567` representing its IP v4 address and port.
 Child `accessory` Things do not require a `host`.
@@ -42,6 +43,12 @@ As a general rule, `macAddress` is set by the mDNS auto- discovery process.
 However you can configure it manually if you wish.
 It must be the unique accessory identifier as found manually via (say) an mDNS discovery app.
 Child `accessory` Things do not require a `macAddress`.
+Therefore child things have this parameter preset to `n/a`.
+
+As a general rule, `mdnsServiceName` is set by the mDNS auto- discovery process.
+However you can configure it manually if you wish.
+It must be the fully qualified mDNS service name as found manually via (say) an mDNS discovery app.
+Child `accessory` Things do not require a `mdnsServiceName`.
 Therefore child things have this parameter preset to `n/a`.
 
 As a general rule, `accessoryID` is set by the mDNS auto- discovery process, or child discovery process.

@@ -56,8 +56,8 @@ public class IpTransport implements AutoCloseable {
     private final Logger logger = LoggerFactory.getLogger(IpTransport.class);
     private final ExecutorService executor = Executors.newSingleThreadExecutor(r -> new Thread(r, "homekit-io"));
 
-    private final String host; // ip address with optional port e.g. "192.168.1.42:9123"
     private final Socket socket;
+    private final String mdnsServiceName;
     private final EventListener eventListener;
 
     private @Nullable SecureSession secureSession = null;
@@ -70,33 +70,24 @@ public class IpTransport implements AutoCloseable {
     /**
      * Creates a new IpTransport instance on the given host.
      *
-     * @param host the IP address and port of the HomeKit accessory
+     * @param hostName the IP address and port of the HomeKit accessory
      * @throws IOException
-     * @throws IllegalArgumentException if the host or port are invalid
      */
-    public IpTransport(String host, EventListener listener) throws IOException, IllegalArgumentException {
-        logger.debug("Connecting to {}", host);
-        this.host = host;
-        String[] parts = host.split(":");
-        if (parts.length < 1) {
-            throw new IllegalArgumentException("Missing host: " + host);
-        }
-        if (parts.length < 2) {
-            throw new IllegalArgumentException("Missing port: " + host);
-        }
-        String ipAddress = parts[0];
-        int port = Integer.parseInt(parts[1]);
-        eventListener = listener;
+    public IpTransport(String hostName, String mdnsServiceName, EventListener eventListener) throws IOException {
+        logger.debug("Connecting to {}", hostName);
+        this.mdnsServiceName = mdnsServiceName;
+        this.eventListener = eventListener;
+        String[] parts = hostName.split(":");
         socket = new Socket();
-        socket.connect(new InetSocketAddress(ipAddress, port), TIMEOUT_MILLI_SECONDS); // connect timeout
-        // keep-alive is forbiddden for accessories, but client should use it to avoid multiple reconnection
-        socket.setKeepAlive(true);
-        logger.debug("Connected to {}", host);
+        socket.setKeepAlive(true); // keep-alive forbiddden for accessories but client should use it
+        socket.setTcpNoDelay(true); // disable Nagle algorithm to force immediate flushing of packets
+        socket.connect(new InetSocketAddress(parts[0], Integer.parseInt(parts[1])), TIMEOUT_MILLI_SECONDS);
+        logger.debug("Connected to {}", hostName);
     }
 
     public void setSessionKeys(AsymmetricSessionKeys keys) throws IOException {
         secureSession = new SecureSession(socket, keys);
-        Thread thread = new Thread(this::readTask, "homekit-thread");
+        Thread thread = new Thread(this::readTask, "homekit-read");
         readThread = thread;
         thread.start();
     }
@@ -239,15 +230,11 @@ public class IpTransport implements AutoCloseable {
     private byte[] buildRequest(String method, String endpoint, String contentType, byte[] content) throws IOException {
         StringBuilder sb = new StringBuilder();
         sb.append(method).append(" ").append(endpoint).append(" HTTP/1.1\r\n");
-        sb.append("Host: ").append(host).append("\r\n");
-        sb.append("Accept: ").append(contentType).append("\r\n");
+        sb.append("Host: ").append(mdnsServiceName).append("\r\n");
         if (!contentIsEmpty(method)) {
-            sb.append("Content-Type: ").append(contentType).append("\r\n");
             sb.append("Content-Length: ").append(content.length).append("\r\n");
-        } else {
-            sb.append("Content-Length: 0\r\n");
+            sb.append("Content-Type: ").append(contentType).append("\r\n");
         }
-        sb.append("Connection: keep-alive\r\n"); // force keep-alive
         sb.append("\r\n");
 
         byte[] headerBytes = sb.toString().getBytes(StandardCharsets.UTF_8);

@@ -52,7 +52,7 @@ public class HomekitChildDiscoveryService extends AbstractThingHandlerDiscoveryS
 
     private void discoverChildren(Thing bridge, Collection<Accessory> accessories) {
         accessories.forEach(accessory -> {
-            if (accessory.aid instanceof Integer aid && aid != 1 && accessory.services != null) {
+            if (accessory.aid instanceof Long aid && aid != 1 && accessory.services != null) {
                 ThingUID uid = new ThingUID(THING_TYPE_ACCESSORY, bridge.getUID(), aid.toString());
                 String thingLabel = "%s (%d)".formatted(accessory.getAccessoryInstanceLabel(), accessory.aid);
                 thingDiscovered(DiscoveryResultBuilder.create(uid) //
@@ -61,6 +61,7 @@ public class HomekitChildDiscoveryService extends AbstractThingHandlerDiscoveryS
                         .withProperty(CONFIG_HOST, "n/a") //
                         .withProperty(Thing.PROPERTY_MAC_ADDRESS, "n/a") //
                         .withProperty(CONFIG_ACCESSORY_ID, aid.toString()) //
+                        .withProperty(CONFIG_MDNS_SERVICE_NAME, "n/a") //
                         .withRepresentationProperty(CONFIG_ACCESSORY_ID).build());
             }
         });
