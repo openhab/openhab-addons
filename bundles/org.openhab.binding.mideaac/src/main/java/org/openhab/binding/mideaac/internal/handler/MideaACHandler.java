@@ -206,131 +206,158 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
     }
 
     /**
-     * To initialize an AC Thing, 1) Checks if discovery using the UI or your textual
-     * configuration has all the required parameters (IP address, IP port, device ID
-     * and version). If not, attempt LAN discovery (mostly for incomplete textual configs).
-     * 2) For V.3 devices, if the token and key are not known, attempt to retrieve
-     * them from the cloud using your email and password or the defaults. V2 devices
-     * bypass the cloud connection step because they use a simplier hard-coded encryption.
-     * 3) Initialize the Connection Manager to manage commands. At this point the device
-     * is fully functional.
-     * 4) The first command(s) retrieve the AC capabilities. These capabilities are not
-     * returned in the initial LAN Discovery.
-     * 5) Lastly the routine polling, Energy polling and token key update command
-     * frequencies are set.
+     * Initializes the handler by performing the following steps:
+     * <ol>
+     * <li>Retrieves the configuration for the handler.</li>
+     * <li>Ensures the discovery or configuration is valid. If not, starts the discovery process and exits early.</li>
+     * <li>Ensures the token and key for V3 devices are available. If not, starts the retrieval process and exits
+     * early.</li>
+     * <li>Updates the thing's status to {@link ThingStatus#UNKNOWN}.</li>
+     * <li>Initializes the connection manager using the configuration.</li>
+     * <li>Requests device capabilities if they are missing.</li>
+     * <li>Starts any necessary schedulers for the handler.</li>
+     * </ol>
      */
     @Override
     public void initialize() {
         config = getConfigAs(MideaACConfiguration.class);
 
-        // 1. Check for valid discovery configurations and discover again if not
-        // Mostly needed for partial textual configurations. UI discovery should be valid
-        if (!config.isValid()) {
-            // Mark thing as OFFLINE with message about discovery error.
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.configuration_error_discovery");
+        // 1) Ensure discovery/config is valid or start discovery and exit early
+        if (!ensureConfigOrStartDiscovery()) {
+            return;
+        }
 
-            if (config.isDiscoveryPossible()) {
+        // 2) Ensure token/key for V3 devices or start retrieval and exit early
+        if (!ensureTokenKeyOrStartRetrieval()) {
+            return;
+        }
+
+        updateStatus(ThingStatus.UNKNOWN);
+
+        initConnectionManagerFromConfig();
+
+        requestCapabilitiesIfMissing();
+
+        startSchedulers();
+    }
+
+    /**
+     * Ensure we have all configuration needed to reach the device. If incomplete
+     * but discoverable,
+     * trigger discovery asynchronously and return false to stop current
+     * initialization.
+     */
+    private boolean ensureConfigOrStartDiscovery() {
+        if (config.isValid()) {
+            logger.debug("Discovery parameters are valid for {}", thing.getUID());
+            return true;
+        }
+
+        if (!config.isDiscoveryPossible()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/offline.configuration_error_invalid_discovery");
+            return false;
+        }
+
+        MideaACDiscoveryService discoveryService = new MideaACDiscoveryService();
+
+        // Kick off discovery asynchronously and end this initialization thread.
+
+        scheduler.execute(() -> {
+            try {
                 // Keep thing OFFLINE with message about attempting discovery.
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "@text/offline.configuration_pending_discovery");
-                MideaACDiscoveryService discoveryService = new MideaACDiscoveryService();
-
-                // Kick off discovery asynchronously and end this initialization thread.
-                // If successful, initialize() will be called again.
-                scheduler.execute(() -> {
-                    try {
-                        discoveryService.discoverThing(config.ipAddress, this);
-                    } catch (Exception e) {
-                        // Required parameter discovery failed due to communication error.
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                "@text/offline.communication_error_discovery");
-                    }
-                });
-                return;
-            } else {
-                // Required parameters are missing and cannot be discovered.
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "@text/offline.configuration_error_invalid_discovery");
-                return;
+                discoveryService.discoverThing(config.ipAddress, this);
+            } catch (Exception e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "@text/offline.communication_error_discovery");
             }
-        } else {
-            logger.debug("Discovery parameters are valid for {}", thing.getUID());
+        });
+
+        return false;
+    }
+
+    /**
+     * Ensure token/key are available for V3 devices. If retrievable from cloud,
+     * trigger async
+     * retrieval and return false to stop current initialization.
+     */
+    private boolean ensureTokenKeyOrStartRetrieval() {
+        if (config.version != 3 || config.isV3ConfigValid()) {
+            logger.debug("Valid token and key for V.3 device {}", thing.getUID());
+            return true;
         }
 
-        // 2. Check for valid token and key and/or contact cloud account to get them
-        if (config.version == 3 && !config.isV3ConfigValid()) {
-            // Mark thing as OFFLINE with message about token/key error.
+        if (!config.isTokenKeyObtainable()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.configuration_error_token");
+                    "@text/offline.configuration_error_invalid_token");
+            return false;
+        }
 
-            if (config.isTokenKeyObtainable()) {
-                // Keep thing OFFLINE with message about attempting token/key retrieval.
+        scheduler.execute(() -> {
+            try {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "@text/offline.configuration_pending_token");
-
-                // Run token and key retrieval asynchronously and end this initialization thread.
-                // If successful, initialize() will be called again.
-                scheduler.execute(() -> {
-                    try {
-                        CloudProvider cloudProvider = CloudProvider.getCloudProvider(config.cloud);
-                        getTokenKeyCloud(cloudProvider);
-                    } catch (Exception e) {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                "@text/offline.communication_error_token");
-                    }
-                });
-                return;
-            } else {
-                // Token and/or key are missing or invalid and cannot be obtained from cloud.
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "@text/offline.configuration_error_invalid_token ");
-                return;
+                CloudProvider cloudProvider = CloudProvider.getCloudProvider(config.cloud);
+                getTokenKeyCloud(cloudProvider);
+            } catch (Exception e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "@text/offline.communication_error_token");
             }
-        } else {
-            logger.debug("Valid token and key for V.3 device {}", thing.getUID());
-        }
+        });
 
-        // 3. Initialize connectionManager with valid configuration parameters for communication with the AC
+        return false;
+    }
+
+    /** Initialize the connection manager from the current configuration. */
+    private void initConnectionManagerFromConfig() {
         connectionManager = new org.openhab.binding.mideaac.internal.connection.ConnectionManager(config.ipAddress,
                 config.ipPort, config.timeout, config.key, config.token, config.cloud, config.email, config.password,
                 config.deviceId, config.version, config.promptTone);
+    }
 
-        // 4. Send capabilities command (async) as first command if not previously retrieved (use default key as marker)
-        if (!properties.containsKey("modeFanOnly")) {
-            scheduler.execute(() -> {
-                try {
-                    CommandSet initializationCommand = new CommandSet();
-                    initializationCommand.getCapabilities();
-                    this.connectionManager.sendCommand(initializationCommand, this);
-
-                    // Check if additional capabilities are available and fetch them if so
-                    CapabilityParser parser = new CapabilityParser();
-                    logger.debug("additional capabilities {}", parser.hasAdditionalCapabilities());
-                    if (parser.hasAdditionalCapabilities()) {
-                        scheduler.schedule(() -> {
-                            try {
-                                CommandSet additionalCommand = new CommandSet();
-                                additionalCommand.getAdditionalCapabilities();
-                                this.connectionManager.sendCommand(additionalCommand, this);
-                            } catch (Exception e) {
-                                logger.debug("AC additional capabilities not returned {}", e.getMessage());
-                            }
-                        }, 2, TimeUnit.SECONDS);
-                    }
-                } catch (Exception e) {
-                    // Will not affect AC device readiness, just log the issue
-                    logger.debug("AC capabilities not returned {}", e.getMessage());
-                }
-            });
+    /**
+     * Send capabilities command(s) if we don't yet have them stored in properties.
+     */
+    private void requestCapabilitiesIfMissing() {
+        if (properties.containsKey("modeFanOnly")) {
+            return;
         }
 
-        // Set status to UNKNOWN first before going ONLINE (will be updated in pollJob to ONLINE)
-        // With the initial delay and the time for authentication and communication, the ac will
-        // be unknown for 4-5 seconds.
-        updateStatus(ThingStatus.UNKNOWN);
+        scheduler.execute(() -> {
+            try {
+                CommandSet initializationCommand = new CommandSet();
+                initializationCommand.getCapabilities();
+                this.connectionManager.sendCommand(initializationCommand, this);
 
-        // 5a. Establish routine polling per configuration or defaults
+                // Check if additional capabilities are available and fetch them if so
+                CapabilityParser parser = new CapabilityParser();
+                logger.debug("additional capabilities {}", parser.hasAdditionalCapabilities());
+                if (parser.hasAdditionalCapabilities()) {
+                    scheduler.schedule(() -> {
+                        try {
+                            CommandSet additionalCommand = new CommandSet();
+                            additionalCommand.getAdditionalCapabilities();
+                            this.connectionManager.sendCommand(additionalCommand, this);
+                        } catch (Exception e) {
+                            logger.debug("AC additional capabilities not returned {}", e.getMessage());
+                        }
+                    }, 2, TimeUnit.SECONDS);
+                }
+            } catch (Exception e) {
+                // Will not affect AC device readiness, just log the issue
+                logger.debug("AC capabilities not returned {}", e.getMessage());
+            }
+        });
+    }
+
+    /**
+     * Start routine, token refresh and energy schedulers according to
+     * configuration.
+     */
+    private void startSchedulers() {
+        // Routine polling
         if (scheduledTask == null) {
             scheduledTask = scheduler.scheduleWithFixedDelay(this::pollJob, 2, config.pollingTime, TimeUnit.SECONDS);
             logger.debug("Scheduled task started, Poll Time {} seconds", config.pollingTime);
@@ -338,7 +365,7 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
             logger.debug("Scheduler already running");
         }
 
-        // 5b. Establish token key update frequency, if not disabled
+        // Token/key update
         if (config.keyTokenUpdate != 0 && scheduledKeyTokenUpdate == null) {
             scheduledKeyTokenUpdate = scheduler.scheduleWithFixedDelay(
                     () -> getTokenKeyCloud(CloudProvider.getCloudProvider(config.cloud)), config.keyTokenUpdate,
@@ -348,7 +375,7 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
             logger.debug("Token Key Scheduler already running or disabled");
         }
 
-        // 5c. Establish Energy polling, if not disabled.
+        // Energy polling
         if (config.energyPoll != 0 && scheduledEnergyUpdate == null) {
             scheduledEnergyUpdate = scheduler.scheduleWithFixedDelay(this::energyUpdate, 1, config.energyPoll,
                     TimeUnit.MINUTES);
