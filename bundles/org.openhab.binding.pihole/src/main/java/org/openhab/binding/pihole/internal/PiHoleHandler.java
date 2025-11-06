@@ -33,8 +33,10 @@ import java.util.concurrent.ScheduledFuture;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.pihole.internal.PiHoleBindingConstants.Channels.DisableEnable;
 import org.openhab.binding.pihole.internal.rest.AdminService;
 import org.openhab.binding.pihole.internal.rest.JettyAdminService;
+import org.openhab.binding.pihole.internal.rest.JettyAdminServiceV6;
 import org.openhab.binding.pihole.internal.rest.model.DnsStatistics;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DateTimeType;
@@ -51,6 +53,8 @@ import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.Gson;
+
 /**
  * The {@link PiHoleHandler} is responsible for handling commands, which are
  * sent to one of the channels.
@@ -58,21 +62,23 @@ import org.slf4j.LoggerFactory;
  * @author Martin Grzeslowski - Initial contribution
  */
 @NonNullByDefault
-public class PiHoleHandler extends BaseThingHandler implements AdminService {
+public class PiHoleHandler extends BaseThingHandler {
     private static final int HTTP_DELAY_SECONDS = 1;
     private final Logger logger = LoggerFactory.getLogger(PiHoleHandler.class);
     private final Object lock = new Object();
     private final TimeZoneProvider timeZoneProvider;
     private final HttpClient httpClient;
+    private final Gson gson;
 
     private @Nullable AdminService adminService;
     private @Nullable DnsStatistics dnsStatistics;
     private @Nullable ScheduledFuture<?> scheduledFuture;
 
-    public PiHoleHandler(Thing thing, TimeZoneProvider timeZoneProvider, HttpClient httpClient) {
+    public PiHoleHandler(Thing thing, TimeZoneProvider timeZoneProvider, HttpClient httpClient, Gson gson) {
         super(thing);
         this.timeZoneProvider = timeZoneProvider;
         this.httpClient = httpClient;
+        this.gson = gson;
     }
 
     @Override
@@ -101,7 +107,11 @@ public class PiHoleHandler extends BaseThingHandler implements AdminService {
             updateStatus(OFFLINE, CONFIGURATION_ERROR, "@text/handler.init.noToken");
             return;
         }
-        adminService = new JettyAdminService(config.token, hostname, httpClient);
+
+        adminService = PiHoleConfiguration.API_V6.equals(config.serverVersion)
+                ? new JettyAdminServiceV6(config.token, hostname, httpClient, gson)
+                : new JettyAdminService(config.token, hostname, httpClient, gson);
+
         scheduledFuture = scheduler.scheduleWithFixedDelay(this::update, 0, config.refreshIntervalSeconds, SECONDS);
 
         // do not set status here, the background task will do it.
@@ -234,7 +244,6 @@ public class PiHoleHandler extends BaseThingHandler implements AdminService {
         super.dispose();
     }
 
-    @Override
     public Optional<DnsStatistics> summary() throws PiHoleException {
         var local = adminService;
         if (local == null) {
@@ -243,7 +252,6 @@ public class PiHoleHandler extends BaseThingHandler implements AdminService {
         return local.summary();
     }
 
-    @Override
     public void disableBlocking(long seconds) throws PiHoleException {
         var local = adminService;
         if (local == null) {
@@ -259,7 +267,6 @@ public class PiHoleHandler extends BaseThingHandler implements AdminService {
         }
     }
 
-    @Override
     public void enableBlocking() throws PiHoleException {
         var local = adminService;
         if (local == null) {

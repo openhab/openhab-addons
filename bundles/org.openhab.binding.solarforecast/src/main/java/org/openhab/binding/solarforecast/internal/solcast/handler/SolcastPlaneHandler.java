@@ -188,11 +188,6 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
                         case GROUP_PESSIMISTIC:
                             mode = QueryMode.Pessimistic;
                             break;
-                        case GROUP_RAW:
-                            currentForecastOptional.ifPresent(f -> {
-                                updateState(GROUP_RAW + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_JSON,
-                                        StringType.valueOf(f.getRaw().toString()));
-                            });
                     }
                     switch (channel) {
                         case CHANNEL_ENERGY_ESTIMATE:
@@ -269,8 +264,6 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
                             SolcastObject localForecast = new SolcastObject(thing.getUID().getAsString(), forecast,
                                     expiration, bridge, storage);
                             setForecast(localForecast);
-                            updateState(GROUP_RAW + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_JSON,
-                                    StringType.valueOf(forecast.toString()));
                             updateStatus(ThingStatus.ONLINE);
                         } else {
                             apiCallFailure(forecastUrl, crForecast.getStatus());

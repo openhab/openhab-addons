@@ -44,8 +44,8 @@ public class SiteDiscoveryMapper implements EvccDiscoveryMapper {
         String siteTitle = state.get("siteTitle").getAsString();
         ThingUID uid = new ThingUID(EvccBindingConstants.THING_TYPE_SITE, bridgeHandler.getThing().getUID(), "site");
         DiscoveryResult result = DiscoveryResultBuilder.create(uid).withLabel(siteTitle)
-                .withBridge(bridgeHandler.getThing().getUID()).withProperty(PROPERTY_TYPE, PROPERTY_TYPE_SITE)
-                .withProperty(PROPERTY_SITE_TITLE, siteTitle).withRepresentationProperty(PROPERTY_SITE_TITLE).build();
+                .withBridge(bridgeHandler.getThing().getUID()).withProperty(PROPERTY_SITE_TITLE, siteTitle)
+                .withRepresentationProperty(PROPERTY_SITE_TITLE).build();
         results.add(result);
         return results;
     }

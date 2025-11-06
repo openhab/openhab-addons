@@ -17,9 +17,9 @@ Step are:
 
     ``` java
     Bridge linky:enedis:local "EnedisWebBridge" [
-        username="laurent@clae.net",
-        password="Mnbo32tyu123!",
-        internalAuthId="eyJhbGciOiJBMTI4S1ciLCJlbmMiOiJBMTI4Q0JDLUhTMjU2In0.u_mxXO7_d4I5bLvJzGtc2MARvpkYv0iM0EsO6a24k-tW9493_Myxwg.LVlfephhGTiCBxii8bRIkA.GOf9Ea8PTGshvkfjl62b6w.hSH97IkmBcEAz2udU-FqQg"] {
+        username="myUserName@myDomain.com",
+        password="MyPassword",
+        internalAuthId="zeJhbGciOiJBMTIdaqzerZiLCJlbmMiOiJBMTIcwxdsq..."] {
        }
     ```
 
@@ -27,7 +27,7 @@ Step are:
 1. Link your old thing to the new created bridge thing:
 
      ```java
-     Thing linky:linky:linkremotemelody "Linky Melody" (linky:enedis:local)
+     Thing linky:linky:linkremotexxxx "Linky xxxx" (linky:enedis:local)
      ```
 
 1. Start using the new channels added by the enhanced binding..
@@ -251,6 +251,37 @@ The retrieved information is available in multiple groups.
   | contactMail                              | The usage point Contact Mail                    |
   | contactPhone                             | The usage point Contact Phone                   |
   
+#### Dynamic Thing Channels  
+
+The binding (as of openHAB 5.1.0) supports reading consumption indexes from the Enedis website.  
+This makes it possible to view consumption for different tariffs such as *heures pleines / heures creuses* or *tempo*.  
+
+To handle this, binding will create a new set of channels for daily, weekly, monthly, and yearly groups.  
+
+You will have two different sets of indexes:  
+
+- **Raw consumption indexes:**  
+  These are the default indexes returned by Enedis. The naming uses base indexes, so there is no direct way to know which tariff each index corresponds to.  
+  Channels will be named as follows:  
+
+
+  consumptionSupplierIdx0, consumptionSupplierIdx1, ..., consumptionSupplierIdx9
+  consumptionDistributorIdx0, consumptionDistributorIdx1, ..., consumptionDistributorIdx3
+
+  In France, the distributor is most often Enedis — they are responsible for distributing electricity on your network.  
+  The supplier is the commercial company with which you have a contract (EDF, TotalEnergies, etc.). This is where your specific supplier tariff is defined.  
+
+- **Named consumption indexes:**  
+To make things simpler, the binding also exposes tariff-named channels.  
+For example:  
+
+   daily#heuresPleines, daily#heuresCreuses, daily#bleuHeuresCreuses,
+  daily#bleuHeuresPleines, daily#redHeuresCreuses, ...
+
+⚠️ **Warning:** 
+Dynamic channels and indexes are currently only supported with the **EnedisWebBridge**.  
+Support for other bridges will be introduced later, once Enedis provides an API to access this data.  
+
 ### Full Example
 
 #### Remote Enedis Web Connection
@@ -269,11 +300,27 @@ Number:Energy ConsoMoisEnCours "Conso ce mois [%.0f %unit%]" <energy> { channel=
 Number:Energy ConsoMoisDernier "Conso mois dernier [%.0f %unit%]" <energy> { channel="linky:linky:linkyremotexxxx:monthly#lastMonth" }
 Number:Energy ConsoAnneeEnCours "Conso cette année [%.0f %unit%]" <energy> { channel="linky:linky:linkyremotexxxx:yearly#thisYear" }
 Number:Energy ConsoAnneeDerniere "Conso année dernière [%.0f %unit%]" <energy> { channel="linky:linky:linkyremotexxxx:yearly#lastYear" }
+
+Number:Energy ConsoDay "Linky Conso Day -x Histo [%d]" <energy> { channel="linky:linky:linkyremotexxxx:daily#consumption" }
+Number:Energy ConsoMonth "Linky Conso Month -x Histo [%d]" <energy> { channel="linky:linky:linkyremotexxxx:monthly#consumption" }
+
+Number:Energy ConsoMonthHeuresPleines "Linky Conso Month Heures Pleines -x Histo [%d]" <energy> { channel="linky:linky:linkyremotexxxx:monthly#heuresPleines" }
+Number:Energy ConsoMonthHeuresCreuses "Linky Conso Month Heures Creuses -x Histo [%d]" <energy> { channel="linky:linky:linkyremotexxxx:monthly#heuresCreuses" }
+
+Number:Energy ConsoMonthHeuresCreusesBlanc "Linky Conso Month Heures Creuses Bleue -x Histo [%d]" <energy> { channel="linky:linky:linkyremotexxxx:monthly#blancHeuresCreuses" }
+Number:Energy ConsoMonthHeuresCreusesBleue "Linky Conso Month Heures Creuses Blanc -x Histo [%d]" <energy> { channel="linky:linky:linkyremotexxxx:monthly#bleueHeuresCreuses" }
+Number:Energy ConsoMonthHeuresCreusesRouge "Linky Conso Month Heures Rouge -x Histo [%d]" <energy> { channel="linky:linky:linkyremotexxxx:monthly#rougeHeuresCreuses" }
+
+Number:Energy ConsoMonthHeuresPleinesBlanc "Linky Conso Month Heures Pleines Blanc -x Histo [%d]" <energy> { channel="linky:linky:linkyremotexxxx:monthly#blancHeuresPleines" }
+Number:Energy ConsoMonthHeuresPleinesBleue "Linky Conso Month Heures Pleines Bleue -x Histo [%d]" <energy> { channel="linky:linky:linkyremotexxxx:monthly#bleueHeuresPleines" }
+Number:Energy ConsoMonthHeuresPleinesRouge "Linky Conso Month Heures Pleines Rouge -x Histo [%d]" <energy> { channel="linky:linky:linkyremotexxxx:monthly#rougeHeuresPleines" }
+
+Number Linky_Tempo "Linky Tempo Day [%s]" channel="linky:tempo-calendar:local:tempo-calendar#tempo-info-timeseries" }
 ```
 
 ### Displaying Information Graph
 
-Using the timeseries channel, you will be able to easily create a calendar graph to display the Tempo calendar.
+Using the timeseries channel and the binding version in openHAB 5.1.0, you will be able to easily create a chart to show the consumption graph. 
 To do this, you need to enable a timeseries persistence framework.
 Graph definitions will look like this:
 
@@ -284,7 +331,7 @@ Sample code:
 ```java
 config:
   future: false
-  label: Linky Melody Conso Journalière
+  label: Conso Day
   order: "110"
   period: 2W
   sidebar: true
@@ -310,7 +357,7 @@ slots:
         areaStyle:
           opacity: 0.2
         gridIndex: 0
-        item: Linky_Melody_Daily_Conso_Day
+        item: ConsoDay
         label:
           formatter: =v=>Number.parseFloat(v.data[1]).toFixed(2) + " Kwh"
           position: inside
@@ -350,6 +397,239 @@ slots:
         gridIndex: 0
         max: "150"
         min: "0"
+        name: kWh
+        nameLocation: center
+```
+
+### Displaying Information Graph / New version with tariff
+
+Using the timeseries channel and new version of the addons, you will be able to easily create a chart to show the consumption graph with tariff differentiation.
+
+To do this, you need to enable a timeseries persistence framework.
+Graph definitions will look like this:
+
+![TempoGraph](doc/GraphConsoWithTarif.png)
+
+Sample code:
+
+```java
+config:
+  future: false
+  label: ConsoMonth
+  order: "9999999"
+  period: Y
+  sidebar: true
+slots:
+  dataZoom:
+    - component: oh-chart-datazoom
+      config:
+        type: inside
+  grid:
+    - component: oh-chart-grid
+      config:
+        containLabel: true
+        includeLabels: true
+        show: true
+  legend:
+    - component: oh-chart-legend
+      config:
+        bottom: 3
+        orient: horizontal
+        show: true
+        type: scroll
+  series:
+    - component: oh-time-series
+      config:
+        barGap: -100%
+        gridIndex: 0
+        item: ConsoMonth
+        label:
+          formatter: =v=>Number.parseFloat(v.data[1]).toFixed(2) + " Kwh"
+          position: top
+          show: true
+        name: Consumption
+        noBoundary: true
+        noItemState: true
+        service: inmemory
+        type: bar
+        xAxisIndex: 0
+        yAxisIndex: 0
+    - component: oh-time-series
+      config:
+        color: "#1010ff"
+        gridIndex: 0
+        item: ConsoMonthHeuresPleinesBleue
+        label:
+          formatter: =v=>v.data[1]!="0"?Number.parseFloat(v.data[1]).toFixed(2) + "
+            Kwh":''
+          position: inside
+          show: true
+        name: Bleue HP
+        noBoundary: true
+        noItemState: true
+        service: inmemory
+        stack: total
+        type: bar
+        xAxisIndex: 0
+        yAxisIndex: 0
+    - component: oh-time-series
+      config:
+        color: "#f0f0f0"
+        emphasis:
+          disabled: true
+        gridIndex: 0
+        item: ConsoMonthHeuresPleinesBlanc
+        label:
+          formatter: =v=>v.data[1]!="0"?Number.parseFloat(v.data[1]).toFixed(2) + "
+            Kwh":''
+          position: inside
+          show: true
+        name: Blanc HP
+        noBoundary: true
+        noItemState: true
+        service: inmemory
+        stack: total
+        type: bar
+        xAxisIndex: 0
+        yAxisIndex: 0
+    - component: oh-time-series
+      config:
+        color: "#ff7070"
+        emphasis:
+          disabled: true
+        gridIndex: 0
+        item: ConsoMonthHeuresCreusesRouge
+        label:
+          formatter: =v=>v.data[1]!="0"?Number.parseFloat(v.data[1]).toFixed(2) + "
+            Kwh":''
+          position: inside
+          show: true
+        name: Rouge HC
+        noBoundary: true
+        noItemState: true
+        service: inmemory
+        stack: total
+        type: bar
+        xAxisIndex: 0
+        yAxisIndex: 0
+    - component: oh-time-series
+      config:
+        color: "#d0d0d0"
+        emphasis:
+          disabled: true
+        gridIndex: 0
+        item: ConsoMonthHeuresCreusesBlanc
+        label:
+          formatter: =v=>v.data[1]!="0"?Number.parseFloat(v.data[1]).toFixed(2) + "
+            Kwh":''
+          position: inside
+          show: true
+        name: Blanc HC
+        noBoundary: true
+        noItemState: true
+        service: inmemory
+        stack: total
+        type: bar
+        xAxisIndex: 0
+        yAxisIndex: 0
+    - component: oh-time-series
+      config:
+        color: "#7070ff"
+        emphasis:
+          disabled: true
+        gridIndex: 0
+        item: ConsoMonthHeuresCreusesBleue
+        label:
+          formatter: =v=>v.data[1]!="0"?Number.parseFloat(v.data[1]).toFixed(2) + "
+            Kwh":''
+          position: inside
+          show: true
+        name: Bleue HC
+        noBoundary: true
+        noItemState: true
+        service: inmemory
+        stack: total
+        type: bar
+        xAxisIndex: 0
+        yAxisIndex: 0
+    - component: oh-time-series
+      config:
+        color: "#ff1010"
+        emphasis:
+          disabled: true
+        gridIndex: 0
+        item: ConsoMonthHeuresPleinesRouge
+        label:
+          formatter: =v=>v.data[1]!="0"?Number.parseFloat(v.data[1]).toFixed(2) + "
+            Kwh":''
+          position: inside
+          show: true
+        name: Rouge HP
+        noBoundary: true
+        noItemState: true
+        service: inmemory
+        stack: total
+        type: bar
+        xAxisIndex: 0
+        yAxisIndex: 0
+    - component: oh-time-series
+      config:
+        color: "#00ff00"
+        emphasis:
+          disabled: true
+        gridIndex: 0
+        item: ConsoMonthHeuresPleines
+        label:
+          formatter: =v=>v.data[1]!="0"?Number.parseFloat(v.data[1]).toFixed(2) + "
+            Kwh":''
+          position: inside
+          show: true
+        name: HP
+        noBoundary: true
+        noItemState: true
+        service: inmemory
+        stack: total
+        type: bar
+        xAxisIndex: 0
+        yAxisIndex: 0
+    - component: oh-time-series
+      config:
+        color: "#80ff80"
+        emphasis:
+          disabled: true
+        gridIndex: 0
+        item: ConsoMonthHeuresCreuses
+        label:
+          formatter: =v=>v.data[1]!="0"?Number.parseFloat(v.data[1]).toFixed(2) + "
+            Kwh":''
+          position: inside
+          show: true
+        name: HC
+        noBoundary: true
+        noItemState: true
+        service: inmemory
+        stack: total
+        type: bar
+        xAxisIndex: 0
+        yAxisIndex: 0
+  tooltip:
+    - component: oh-chart-tooltip
+      config:
+        confine: true
+        orient: vertical
+        show: true
+        smartFormatter: true
+  visualMap: []
+  xAxis:
+    - component: oh-time-axis
+      config:
+        gridIndex: 0
+        nameLocation: center
+        splitNumber: 10
+  yAxis:
+    - component: oh-value-axis
+      config:
+        gridIndex: 0
         name: kWh
         nameLocation: center
 ```
@@ -422,7 +702,7 @@ slots:
         aggregationFunction: average
         calendarIndex: 0
         coordinateSystem: calendar
-        item: Linky_Melody_Tempo
+        item: Linky_Tempo
         label:
           formatter: =v=> JSON.stringify(v.data[0]).substring(1,11)
           show: true

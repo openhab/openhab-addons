@@ -373,6 +373,7 @@ public class TibberHandler extends BaseThingHandler {
 
                 if (!priceInfo.isEmpty()) {
                     try {
+                        boolean updateTrigger = false;
                         // now check if tomorrows prices are updated for the given hour
                         if (tibberConfig.updateHour <= Instant.now().atZone(timeZoneProvider.getTimeZone()).getHour()) {
                             JsonArray tomorrowPrices = priceInfo.getAsJsonArray("tomorrow");
@@ -383,6 +384,7 @@ public class TibberHandler extends BaseThingHandler {
                             } else {
                                 logger.debug("update found - continue");
                                 retryCounter = 0;
+                                updateTrigger = true;
                             }
                         }
                         JsonArray spotPrices = new JsonArray();
@@ -435,6 +437,10 @@ public class TibberHandler extends BaseThingHandler {
                         });
                         averageCache = avgSeries;
                         sendTimeSeries(new ChannelUID(thing.getUID(), CHANNEL_GROUP_PRICE, CHANNEL_AVERAGE), avgSeries);
+                        if (updateTrigger) {
+                            triggerChannel(new ChannelUID(thing.getUID(), CHANNEL_GROUP_PRICE, CHANNEL_EVENT),
+                                    EVENT_DAY_AHEAD_AVAILABLE);
+                        }
                         updateStatus(ThingStatus.ONLINE);
                     } catch (JsonSyntaxException | DateTimeParseException e) {
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,

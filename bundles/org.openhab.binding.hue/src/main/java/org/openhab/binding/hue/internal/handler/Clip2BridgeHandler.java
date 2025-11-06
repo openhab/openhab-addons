@@ -45,6 +45,7 @@ import org.openhab.binding.hue.internal.config.Clip2BridgeConfig;
 import org.openhab.binding.hue.internal.connection.Clip2Bridge;
 import org.openhab.binding.hue.internal.connection.HueTlsTrustManagerProvider;
 import org.openhab.binding.hue.internal.discovery.Clip2ThingDiscoveryService;
+import org.openhab.binding.hue.internal.discovery.HueBridgeMDNSDiscoveryParticipant;
 import org.openhab.binding.hue.internal.exceptions.ApiException;
 import org.openhab.binding.hue.internal.exceptions.AssetNotLoadedException;
 import org.openhab.binding.hue.internal.exceptions.HttpUnauthorizedException;
@@ -494,8 +495,10 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
                 return;
             }
 
+            boolean useSignifyCaCertificateVersion2 = HueBridgeMDNSDiscoveryParticipant
+                    .modelIsOrAboveBSB003(thing.getProperties().get(Thing.PROPERTY_MODEL_ID));
             HueTlsTrustManagerProvider trustManagerProvider = new HueTlsTrustManagerProvider(ipAddress + ":443",
-                    config.useSelfSignedCertificate);
+                    config.useSelfSignedCertificate, useSignifyCaCertificateVersion2);
 
             if (Objects.isNull(trustManagerProvider.getPEMTrustManager())) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,

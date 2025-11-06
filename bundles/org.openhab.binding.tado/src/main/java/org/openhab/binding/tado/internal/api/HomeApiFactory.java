@@ -29,9 +29,9 @@ import com.google.gson.Gson;
 @NonNullByDefault
 public class HomeApiFactory {
 
-    public HomeApi create(OAuthClientService oAuthClientService) {
+    public HomeApi create(OAuthClientService oAuthClientService, String baseUrl) {
         Gson gson = GsonBuilderFactory.defaultGsonBuilder().create();
         OAuthorizerV2 authorizer = new OAuthorizerV2(oAuthClientService);
-        return new HomeApi(gson, authorizer);
+        return new HomeApi(gson, authorizer, baseUrl);
     }
 }
