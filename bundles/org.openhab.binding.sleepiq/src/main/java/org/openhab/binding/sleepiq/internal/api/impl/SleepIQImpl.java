@@ -370,8 +370,12 @@ public class SleepIQImpl implements SleepIQ {
             logger.trace("SleepIQ: doRequest: status={} response={}", response.getStatus(),
                     response.getContentAsString());
             return response;
-        } catch (InterruptedException | TimeoutException | ExecutionException e) {
+        } catch (InterruptedException | TimeoutException e) {
             logger.debug("SleepIQ: doRequest: Exception message={}", e.getMessage(), e);
+            throw new CommunicationException("Communication error while accessing API: " + e.getMessage());
+        } catch (ExecutionException e) {
+            logger.debug("SleepIQ: doRequest: ExecutionException, force a new login: message={}", e.getMessage());
+            resetLogin();
             throw new CommunicationException("Communication error while accessing API: " + e.getMessage());
         }
     }
