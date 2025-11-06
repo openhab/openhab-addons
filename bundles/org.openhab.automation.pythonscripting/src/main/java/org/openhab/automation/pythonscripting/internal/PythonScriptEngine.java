@@ -216,7 +216,7 @@ public class PythonScriptEngine extends InvocationInterceptingPythonScriptEngine
         if (pythonScriptEngineConfiguration.isVEnvEnabled()) {
             @SuppressWarnings("null")
             String venvExecutable = pythonScriptEngineConfiguration.getVEnvExecutable().toString();
-            contextConfig = contextConfig.option(PYTHON_OPTION_EXECUTABLE, venvExecutable)
+            contextConfig.option(PYTHON_OPTION_EXECUTABLE, venvExecutable) //
                     .option(PYTHON_OPTION_ISOLATENATIVEMODULES, Boolean.toString(true));
         }
 
