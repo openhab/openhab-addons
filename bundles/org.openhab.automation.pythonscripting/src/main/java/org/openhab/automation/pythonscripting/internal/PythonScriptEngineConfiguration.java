@@ -75,7 +75,6 @@ public class PythonScriptEngineConfiguration {
         public boolean dependencyTrackingEnabled = true;
         public boolean cachingEnabled = true;
         public boolean jythonEmulation = false;
-        public boolean nativeModules = false;
         public String pipModules = "";
     }
 
@@ -206,10 +205,6 @@ public class PythonScriptEngineConfiguration {
 
     public boolean isJythonEmulation() {
         return configuration.jythonEmulation;
-    }
-
-    public boolean isNativeModulesEnabled() {
-        return configuration.nativeModules;
     }
 
     public String getPIPModules() {

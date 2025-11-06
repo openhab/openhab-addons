@@ -15,7 +15,7 @@
   <name>openHAB Add-ons :: Bundles :: Automation :: Python Scripting</name>
 
   <properties>
-    <helperlib.version>1.0.11</helperlib.version>
+    <helperlib.version>1.0.12</helperlib.version>
   </properties>
 
   <dependencies>
