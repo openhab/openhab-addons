@@ -26,8 +26,8 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bluetooth.BeaconBluetoothHandler;
 import org.openhab.binding.bluetooth.notification.BluetoothScanNotification;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
@@ -174,9 +174,10 @@ public class RuuviTagHandler extends BeaconBluetoothHandler {
                                 atLeastOneRuuviFieldPresent |= updateStateIfLinked(channelUID,
                                         ruuvitagData.getLuminosity(), Units.LUX);
                                 break;
-                            case CHANNEL_ID_CALIBRATION_STATUS:
+                            case CHANNEL_ID_CALIBRATION_COMPLETED:
                                 if (ruuvitagData.isCalibrationInProgress() != null) {
-                                    String status = ruuvitagData.isCalibrationInProgress() ? "IN_PROGRESS" : "COMPLETE";
+                                    OnOffType status = ruuvitagData.isCalibrationInProgress() ? OnOffType.OFF
+                                            : OnOffType.ON;
                                     atLeastOneRuuviFieldPresent |= updateStateIfLinked(channelUID, status);
                                 }
                                 break;
@@ -240,20 +241,17 @@ public class RuuviTagHandler extends BeaconBluetoothHandler {
     }
 
     /**
-     * Update StringType channel state
+     * Update OnOffType channel state
      *
-     * Update is not done when value is null.
+     * Update is done when value is not null.
      *
      * @param channelUID channel UID
      * @param value value to update
-     * @return whether the value was present
+     * @return true (value is always present)
      */
-    private boolean updateStateIfLinked(ChannelUID channelUID, @Nullable String value) {
-        if (value == null) {
-            return false;
-        }
+    private boolean updateStateIfLinked(ChannelUID channelUID, OnOffType value) {
         if (isLinked(channelUID)) {
-            updateState(channelUID, new StringType(value));
+            updateState(channelUID, value);
         }
         return true;
     }

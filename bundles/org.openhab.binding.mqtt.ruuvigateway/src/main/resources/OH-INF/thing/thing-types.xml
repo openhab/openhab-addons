@@ -4,36 +4,31 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
+	<!-- RuuviTag via MQTT Gateway (Environmental sensor) -->
 	<thing-type id="ruuvitag_beacon">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="broker"/>
 		</supported-bridge-type-refs>
 
-		<label>RuuviTag SmartBeacon</label>
-		<description>A RuuviTag SmartBeacon</description>
+		<label>RuuviTag</label>
+		<description>RuuviTag environmental sensor via Ruuvi Gateway (temperature, humidity, pressure, acceleration)</description>
 
 		<channels>
 			<channel id="rssi" typeId="ruuvitag_rssi"/>
 			<channel id="ts" typeId="ruuvitag_ts"/>
 			<channel id="gwts" typeId="ruuvitag_gwts"/>
 			<channel id="gwmac" typeId="ruuvitag_gwmac"/>
+			<channel id="temperature" typeId="ruuvi_temperature"/>
+			<channel id="humidity" typeId="ruuvi_humidity"/>
+			<channel id="pressure" typeId="ruuvi_pressure"/>
 			<channel id="accelerationx" typeId="ruuvitag_accelerationx"/>
 			<channel id="accelerationy" typeId="ruuvitag_accelerationy"/>
 			<channel id="accelerationz" typeId="ruuvitag_accelerationz"/>
 			<channel id="batteryVoltage" typeId="ruuvitag_batteryVoltage"/>
-			<channel id="dataFormat" typeId="ruuvitag_dataFormat"/>
-			<channel id="humidity" typeId="ruuvitag_humidity"/>
+			<channel id="txPower" typeId="ruuvitag_txPower"/>
+			<channel id="dataFormat" typeId="ruuvi_dataFormat"/>
 			<channel id="measurementSequenceNumber" typeId="ruuvitag_measurementSequenceNumber"/>
 			<channel id="movementCounter" typeId="ruuvitag_movementCounter"/>
-			<channel id="pressure" typeId="ruuvitag_pressure"/>
-			<channel id="temperature" typeId="ruuvitag_temperature"/>
-			<channel id="txPower" typeId="ruuvitag_txPower"/>
-			<channel id="pm25" typeId="ruuvitag_pm25"/>
-			<channel id="co2" typeId="ruuvitag_co2"/>
-			<channel id="vocIndex" typeId="ruuvitag_vocIndex"/>
-			<channel id="noxIndex" typeId="ruuvitag_noxIndex"/>
-			<channel id="luminosity" typeId="ruuvitag_luminosity"/>
-			<channel id="calibrationStatus" typeId="ruuvitag_calibrationStatus"/>
 		</channels>
 
 		<properties>
@@ -49,6 +44,48 @@
 
 	</thing-type>
 
+	<!-- Ruuvi Air via MQTT Gateway (Air quality sensor) -->
+	<thing-type id="ruuviair_beacon">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="broker"/>
+		</supported-bridge-type-refs>
+
+		<label>Ruuvi Air</label>
+		<description>Ruuvi Air quality sensor via Ruuvi Gateway (temperature, humidity, pressure, PM2.5, CO2, VOC, NOx,
+			luminosity)</description>
+
+		<channels>
+			<channel id="rssi" typeId="ruuvitag_rssi"/>
+			<channel id="ts" typeId="ruuvitag_ts"/>
+			<channel id="gwts" typeId="ruuvitag_gwts"/>
+			<channel id="gwmac" typeId="ruuvitag_gwmac"/>
+			<channel id="temperature" typeId="ruuvi_temperature"/>
+			<channel id="humidity" typeId="ruuvi_humidity"/>
+			<channel id="pressure" typeId="ruuvi_pressure"/>
+			<channel id="pm25" typeId="ruuvi_pm25"/>
+			<channel id="co2" typeId="ruuvi_co2"/>
+			<channel id="vocIndex" typeId="ruuvi_vocIndex"/>
+			<channel id="noxIndex" typeId="ruuvi_noxIndex"/>
+			<channel id="luminosity" typeId="ruuvi_luminosity"/>
+			<channel id="calibrationCompleted" typeId="ruuvi_calibrationCompleted"/>
+			<channel id="dataFormat" typeId="ruuvi_dataFormat"/>
+			<channel id="measurementSequenceNumber" typeId="ruuvitag_measurementSequenceNumber"/>
+		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
+		<config-description>
+			<parameter name="topic" type="text">
+				<label>MQTT Topic</label>
+				<description>MQTT topic containing the payload</description>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<!-- Gateway metadata channels (shared) -->
 	<channel-type id="ruuvitag_rssi">
 		<item-type unitHint="dBm">Number:Power</item-type>
 		<label>RSSI</label>
@@ -81,6 +118,41 @@
 		<state readOnly="true"/>
 	</channel-type>
 
+	<!-- Shared channel-types (RuuviTag and Ruuvi Air) -->
+	<channel-type id="ruuvi_temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="ruuvi_humidity">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Humidity</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Humidity</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="ruuvi_pressure">
+		<item-type>Number:Pressure</item-type>
+		<label>Pressure</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Pressure</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+	<channel-type id="ruuvi_dataFormat" advanced="true">
+		<item-type>Number</item-type>
+		<label>Data Format Version</label>
+		<state readOnly="true" pattern="%.0f"/>
+	</channel-type>
+
+	<!-- RuuviTag specific channel-types -->
 	<channel-type id="ruuvitag_accelerationx">
 		<item-type>Number:Acceleration</item-type>
 		<label>Acceleration X</label>
@@ -105,19 +177,14 @@
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
-	<channel-type id="ruuvitag_dataFormat" advanced="true">
-		<item-type>Number</item-type>
-		<label>Data Format Version</label>
-		<state readOnly="true" pattern="%.0f"/>
-	</channel-type>
-	<channel-type id="ruuvitag_humidity">
-		<item-type unitHint="%">Number:Dimensionless</item-type>
-		<label>Humidity</label>
+	<channel-type id="ruuvitag_txPower">
+		<item-type>Number:Power</item-type>
+		<label>TX Power</label>
 		<tags>
 			<tag>Measurement</tag>
-			<tag>Humidity</tag>
+			<tag>Power</tag>
 		</tags>
-		<state readOnly="true" pattern="%.1f %unit%"/>
+		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="ruuvitag_measurementSequenceNumber" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
@@ -129,41 +196,19 @@
 		<label>Movement Counter</label>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
-	<channel-type id="ruuvitag_pressure">
-		<item-type>Number:Pressure</item-type>
-		<label>Pressure</label>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Pressure</tag>
-		</tags>
-		<state readOnly="true" pattern="%.0f %unit%"/>
-	</channel-type>
-	<channel-type id="ruuvitag_temperature">
-		<item-type>Number:Temperature</item-type>
-		<label>Temperature</label>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
-		</tags>
-		<state readOnly="true" pattern="%.1f %unit%"/>
-	</channel-type>
-	<channel-type id="ruuvitag_txPower">
-		<item-type>Number:Power</item-type>
-		<label>TX Power</label>
-		<state readOnly="true" pattern="%.0f %unit%"/>
-	</channel-type>
 
-	<channel-type id="ruuvitag_pm25">
+	<!-- Ruuvi Air specific channel-types -->
+	<channel-type id="ruuvi_pm25">
 		<item-type>Number:Density</item-type>
 		<label>PM2.5</label>
-		<description>PM2.5 particulate matter concentration</description>
+		<description><![CDATA[particulate matter <= 2.5 μm concentration]]></description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>AirQuality</tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
-	<channel-type id="ruuvitag_co2">
+	<channel-type id="ruuvi_co2">
 		<item-type unitHint="ppm">Number:Dimensionless</item-type>
 		<label>CO2</label>
 		<description>CO2 concentration</description>
@@ -173,32 +218,32 @@
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
-	<channel-type id="ruuvitag_vocIndex" advanced="true">
+	<channel-type id="ruuvi_vocIndex" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
 		<label>VOC Index</label>
 		<description>Volatile Organic Compounds index (0-500)</description>
 		<state readOnly="true" pattern="%.0f"/>
 	</channel-type>
-	<channel-type id="ruuvitag_noxIndex" advanced="true">
+	<channel-type id="ruuvi_noxIndex" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
 		<label>NOx Index</label>
 		<description>Nitrogen Oxides index (0-500)</description>
 		<state readOnly="true" pattern="%.0f"/>
 	</channel-type>
-	<channel-type id="ruuvitag_luminosity">
+	<channel-type id="ruuvi_luminosity">
 		<item-type>Number:Illuminance</item-type>
 		<label>Luminosity</label>
-		<description>Light intensity</description>
+		<description>Light intensity (logarithmic scale)</description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Light</tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
-	<channel-type id="ruuvitag_calibrationStatus">
-		<item-type>String</item-type>
-		<label>Calibration Status</label>
-		<description>Sensor calibration status (COMPLETE = calibration done, IN_PROGRESS = values still improving)</description>
+	<channel-type id="ruuvi_calibrationCompleted">
+		<item-type>Switch</item-type>
+		<label>Calibration Completed</label>
+		<description>Sensor calibration completed (ON = complete, OFF = in progress)</description>
 		<state readOnly="true"/>
 	</channel-type>
 

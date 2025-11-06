@@ -33,7 +33,7 @@ import org.osgi.service.component.annotations.Component;
 public class RuuviTagHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set
-            .of(RuuviTagBindingConstants.THING_TYPE_BEACON);
+            .of(RuuviTagBindingConstants.THING_TYPE_BEACON, RuuviTagBindingConstants.THING_TYPE_AIR_BEACON);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -45,7 +45,7 @@ public class RuuviTagHandlerFactory extends BaseThingHandlerFactory {
     protected ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (thingTypeUID.equals(RuuviTagBindingConstants.THING_TYPE_BEACON)) {
+        if (SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
             return new RuuviTagHandler(thing);
         }
 

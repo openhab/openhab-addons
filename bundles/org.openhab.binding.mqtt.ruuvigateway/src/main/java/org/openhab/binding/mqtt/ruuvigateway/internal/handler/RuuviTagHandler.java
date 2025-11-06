@@ -37,12 +37,14 @@ import org.openhab.binding.mqtt.generic.ChannelState;
 import org.openhab.binding.mqtt.ruuvigateway.internal.RuuviCachedDateTimeState;
 import org.openhab.binding.mqtt.ruuvigateway.internal.RuuviCachedNumberState;
 import org.openhab.binding.mqtt.ruuvigateway.internal.RuuviCachedStringState;
+import org.openhab.binding.mqtt.ruuvigateway.internal.RuuviCachedSwitchState;
 import org.openhab.binding.mqtt.ruuvigateway.internal.RuuviGatewayBindingConstants;
 import org.openhab.binding.mqtt.ruuvigateway.internal.parser.GatewayPayloadParser;
 import org.openhab.binding.mqtt.ruuvigateway.internal.parser.GatewayPayloadParser.GatewayPayload;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.core.io.transport.mqtt.MqttMessageSubscriber;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
@@ -94,7 +96,7 @@ public class RuuviTagHandler extends AbstractMQTTThingHandler implements MqttMes
         unitByChannelUID.put(CHANNEL_ID_VOC_INDEX, Units.ONE);
         unitByChannelUID.put(CHANNEL_ID_NOX_INDEX, Units.ONE);
         unitByChannelUID.put(CHANNEL_ID_LUMINOSITY, Units.LUX);
-        unitByChannelUID.put(CHANNEL_ID_CALIBRATION_STATUS, RuuviCachedStringState.class);
+        unitByChannelUID.put(CHANNEL_ID_CALIBRATION_COMPLETED, RuuviCachedSwitchState.class);
         // Gateway metadata
         unitByChannelUID.put(CHANNEL_ID_RSSI, Units.DECIBEL_MILLIWATTS);
         unitByChannelUID.put(CHANNEL_ID_TS, RuuviCachedDateTimeState.class);
@@ -326,10 +328,10 @@ public class RuuviTagHandler extends AbstractMQTTThingHandler implements MqttMes
                 case CHANNEL_ID_LUMINOSITY:
                     atLeastOneRuuviFieldPresent |= updateStateIfLinked(channelUID, ruuvitagData.getLuminosity());
                     break;
-                case CHANNEL_ID_CALIBRATION_STATUS:
+                case CHANNEL_ID_CALIBRATION_COMPLETED:
                     if (ruuvitagData.isCalibrationInProgress() != null) {
-                        String status = ruuvitagData.isCalibrationInProgress() ? "IN_PROGRESS" : "COMPLETE";
-                        atLeastOneRuuviFieldPresent |= updateStringStateIfLinked(channelUID, Optional.of(status));
+                        OnOffType status = ruuvitagData.isCalibrationInProgress() ? OnOffType.OFF : OnOffType.ON;
+                        atLeastOneRuuviFieldPresent |= updateSwitchStateIfLinked(channelUID, status);
                     }
                     break;
                 //
@@ -457,5 +459,28 @@ public class RuuviTagHandler extends AbstractMQTTThingHandler implements MqttMes
             }
             return true;
         }
+    }
+
+    /**
+     * Update OnOffType (Switch) channel state
+     *
+     * Update is done when value is not null.
+     *
+     * @param channelUID channel UID
+     * @param value value to update
+     * @return true (value is always present)
+     */
+    private boolean updateSwitchStateIfLinked(ChannelUID channelUID, OnOffType value) {
+        RuuviCachedSwitchState cache = (RuuviCachedSwitchState) channelStateByChannelUID.get(channelUID);
+        if (cache == null) {
+            // Invariant as channels should be initialized already
+            logger.error("Channel {} not initialized. BUG", channelUID);
+            return false;
+        }
+        cache.update(value);
+        if (isLinked(channelUID)) {
+            updateChannelState(channelUID, cache.getCache().getChannelState());
+        }
+        return true;
     }
 }

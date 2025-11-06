@@ -28,6 +28,8 @@ public class RuuviTagBindingConstants {
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_BEACON = new ThingTypeUID(BluetoothBindingConstants.BINDING_ID,
             "ruuvitag_beacon");
+    public static final ThingTypeUID THING_TYPE_AIR_BEACON = new ThingTypeUID(BluetoothBindingConstants.BINDING_ID,
+            "ruuviair_beacon");
 
     // Channel IDs - Environmental (RuuviTag)
     public static final String CHANNEL_ID_TEMPERATURE = "temperature";
@@ -48,5 +50,5 @@ public class RuuviTagBindingConstants {
     public static final String CHANNEL_ID_VOC_INDEX = "vocIndex";
     public static final String CHANNEL_ID_NOX_INDEX = "noxIndex";
     public static final String CHANNEL_ID_LUMINOSITY = "luminosity";
-    public static final String CHANNEL_ID_CALIBRATION_STATUS = "calibrationStatus";
+    public static final String CHANNEL_ID_CALIBRATION_COMPLETED = "calibrationCompleted";
 }
