@@ -74,7 +74,7 @@ public class EnergiDataServiceActionsTest {
     private Gson gson = new GsonBuilder().registerTypeAdapter(Instant.class, new InstantDeserializer())
             .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeDeserializer()).create();
 
-    private record SpotPrice(Instant hourStart, BigDecimal spotPrice) {
+    private record SpotPrice(Instant start, BigDecimal spotPrice) {
     }
 
     private <T> T getObjectFromJson(String filename, Class<T> clazz) throws IOException {
@@ -304,9 +304,9 @@ public class EnergiDataServiceActionsTest {
                 QuantityType.valueOf(0, Units.WATT));
         Map<String, Object> actual = actions.calculateCheapestPeriod(Instant.parse("2023-02-05T16:00:00Z"),
                 Instant.parse("2023-02-06T06:00:00Z"), durations, consumptions);
-        assertThat(actual.get("LowestPrice"), is(equalTo(new BigDecimal("1.024218147103792520"))));
+        assertThat(actual.get("LowestPrice"), is(equalTo(new BigDecimal("1.025294945411153446372484"))));
         assertThat(actual.get("CheapestStart"), is(equalTo(Instant.parse("2023-02-05T19:23:00Z"))));
-        assertThat(actual.get("HighestPrice"), is(equalTo(new BigDecimal("1.530671034828983196"))));
+        assertThat(actual.get("HighestPrice"), is(equalTo(new BigDecimal("1.532265826213251122904843"))));
         assertThat(actual.get("MostExpensiveStart"), is(equalTo(Instant.parse("2023-02-05T16:00:00Z"))));
     }
 
@@ -393,6 +393,18 @@ public class EnergiDataServiceActionsTest {
         assertThat(actual.get("MostExpensiveStart"), is(equalTo(Instant.parse("2023-02-04T17:00:00Z"))));
     }
 
+    @Test
+    void calculateCheapestPeriodForLinearPowerUsageQuarterHourly() throws IOException {
+        mockCommonDatasets(actions, "DayAheadPrices20251104.json");
+
+        Map<String, Object> actual = actions.calculateCheapestPeriod(Instant.parse("2025-11-04T12:00:00Z"),
+                Instant.parse("2025-11-05T23:00:00Z"), Duration.ofMinutes(16), QuantityType.valueOf(1000, Units.WATT));
+        assertThat(actual.get("LowestPrice"), is(equalTo(new BigDecimal("0.312552960288615000"))));
+        assertThat(actual.get("CheapestStart"), is(equalTo(Instant.parse("2025-11-04T23:00:00Z"))));
+        assertThat(actual.get("HighestPrice"), is(equalTo(new BigDecimal("0.699644304600659000"))));
+        assertThat(actual.get("MostExpensiveStart"), is(equalTo(Instant.parse("2025-11-05T16:15:00Z"))));
+    }
+
     private void mockCommonDatasets(EnergiDataServiceActions actions) throws IOException {
         mockCommonDatasets(actions, "SpotPrices20230204.json");
     }
@@ -405,10 +417,10 @@ public class EnergiDataServiceActionsTest {
             boolean isReducedElectricityTax) throws IOException {
         SpotPrice[] spotPriceRecords = getObjectFromJson(spotPricesFilename, SpotPrice[].class);
         Map<Instant, BigDecimal> spotPrices = Arrays.stream(spotPriceRecords)
-                .collect(Collectors.toMap(SpotPrice::hourStart, SpotPrice::spotPrice));
+                .collect(Collectors.toMap(SpotPrice::start, SpotPrice::spotPrice));
 
         PriceListParser priceListParser = new PriceListParser(
-                Clock.fixed(spotPriceRecords[0].hourStart, EnergiDataServiceBindingConstants.DATAHUB_TIMEZONE));
+                Clock.fixed(spotPriceRecords[0].start, EnergiDataServiceBindingConstants.DATAHUB_TIMEZONE));
         DatahubPricelistRecords datahubRecords = getObjectFromJson("GridTariffs.json", DatahubPricelistRecords.class);
         Map<Instant, BigDecimal> gridTariffs = priceListParser
                 .toHourly(Arrays.stream(datahubRecords.records()).toList());
