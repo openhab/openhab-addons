@@ -319,7 +319,7 @@ public class HeatpumpHandler extends BaseThingHandler {
             return;
         }
 
-        HeatpumpConfiguration myconfig = HeatpumpHandler.this.config;
+        HeatpumpConfiguration myconfig = Objects.requireNonNull(HeatpumpHandler.this.config);
 
         baseadress = 1000 + 100 * myconfig.getSubindex();
 
