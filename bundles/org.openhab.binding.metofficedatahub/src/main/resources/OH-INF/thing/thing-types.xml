@@ -26,6 +26,12 @@
 				<default>250</default>
 				<advanced>true</advanced>
 			</parameter>
+			<parameter name="disableKeyValidation" type="boolean">
+				<label>Disable Key Validation</label>
+				<description>If enabled then API key validation is disabled, and API communication will be attempted</description>
+				<default>false</default>
+				<advanced>true</advanced>
+			</parameter>
 		</config-description>
 	</bridge-type>
 
