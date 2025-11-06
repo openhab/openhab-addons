@@ -78,7 +78,7 @@ Thing pihole:server:a4a077edb8 "Pi-hole" @ "Location"
         Type number : domains_being_blocked "Domains Blocked" [ ]
         Type number : dns_queries_today "DNS Queries Today" [ ]
         Type number : ads_blocked_today "Ads Blocked Today" [ ]
-        Type number:dimensionless : ads_percentage_today "Ads Percentage Today" [ ]
+        Type Number:Dimensionless : ads_percentage_today "Ads Percentage Today" [ ]
         Type number : unique_domains "Unique Domains" [ ]
         Type number : queries_forwarded "Queries Forwarded" [ ]
         Type number : queries_cached "Queries Cached" [ ]

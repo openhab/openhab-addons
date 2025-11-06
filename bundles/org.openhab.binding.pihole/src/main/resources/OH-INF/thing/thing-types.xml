@@ -22,7 +22,7 @@
 				<description>The number of ads blocked today.</description>
 			</channel>
 			<channel id="ads-percentage-today" typeId="percentage-channel">
-				<label>Ads Percentage Today</label>
+				<label>Ads Today</label>
 				<description>The percentage of ads blocked today.</description>
 			</channel>
 			<channel id="unique-domains" typeId="number-channel">
