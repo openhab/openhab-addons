@@ -80,7 +80,7 @@ public class MetOfficeDataHubBridgeHandler extends BaseBridgeHandler
         config = getConfigAs(MetOfficeDataHubBridgeConfiguration.class);
 
         siteApi.setLimits(config.siteRateDailyLimit);
-        siteApi.setApiKey(config.siteApiKey);
+        siteApi.setApiKey(config.siteApiKey, !config.disableKeyValidation);
         siteApi.validateSiteApi();
     }
 
