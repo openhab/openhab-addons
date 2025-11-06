@@ -27,8 +27,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class BoilerReg50BlockParser extends AbstractBaseParser {
-    private final Logger logger = LoggerFactory.getLogger(BoilerReg50BlockParser.class);
-
     public BoilerReg50Block parse(ModbusRegisterArray raw) {
         BoilerReg50Block block = new BoilerReg50Block();
         block.boilerMaximumBoilerTemperature = extractInt16(raw, 0, (short) 0);
