@@ -113,9 +113,9 @@ public class SiteApi {
         requestLimiter.updateLimit(maxDailyCallLimit);
     }
 
-    public void setApiKey(final String apiKey) {
+    public void setApiKey(final String apiKey, final boolean validate) {
         try {
-            apiAuth.setApiKey(apiKey);
+            apiAuth.setApiKey(apiKey, validate);
         } catch (AuthTokenException ate) {
             notifyAuthenticationListeners(false);
         }
