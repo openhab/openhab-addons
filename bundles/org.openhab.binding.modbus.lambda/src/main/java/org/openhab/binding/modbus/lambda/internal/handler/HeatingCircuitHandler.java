@@ -16,6 +16,8 @@ import static org.openhab.binding.modbus.lambda.internal.LambdaBindingConstants.
 import static org.openhab.core.library.unit.SIUnits.CELSIUS;
 import static org.openhab.core.library.unit.Units.*;
 
+import java.util.Objects;
+
 import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -87,7 +89,7 @@ public class HeatingCircuitHandler extends BaseThingHandler {
             logger.debug("Setting up regular polling Address: {}", address);
 
             ModbusCommunicationInterface mycomms = HeatingCircuitHandler.this.comms;
-            HeatingCircuitConfiguration myconfig = HeatingCircuitHandler.this.config;
+            HeatingCircuitConfiguration myconfig = Objects.requireNonNull(HeatingCircuitHandler.this.config);
             if (myconfig == null || mycomms == null) {
                 throw new IllegalStateException("HeatingCircuit: registerPollTask called without proper configuration");
             }
@@ -163,7 +165,7 @@ public class HeatingCircuitHandler extends BaseThingHandler {
      * @param shortValue value to be written on the modbus
      */
     protected void writeInt16(int address, short shortValue) {
-        HeatingCircuitConfiguration myconfig = HeatingCircuitHandler.this.config;
+        HeatingCircuitConfiguration myconfig = Objects.requireNonNull(HeatingCircuitHandler.this.config);
         ModbusCommunicationInterface mycomms = HeatingCircuitHandler.this.comms;
 
         if (myconfig == null || mycomms == null) {

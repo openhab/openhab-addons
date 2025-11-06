@@ -16,6 +16,8 @@ import static org.openhab.binding.modbus.lambda.internal.LambdaBindingConstants.
 import static org.openhab.core.library.unit.SIUnits.CELSIUS;
 import static org.openhab.core.library.unit.Units.*;
 
+import java.util.Objects;
+
 import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -81,7 +83,7 @@ public class HeatpumpHandler extends BaseThingHandler {
          */
         public synchronized void registerPollTask(int address, int length, ModbusReadFunctionCode readFunctionCode) {
             ModbusCommunicationInterface mycomms = HeatpumpHandler.this.comms;
-            HeatpumpConfiguration myconfig = HeatpumpHandler.this.config;
+            HeatpumpConfiguration myconfig = Objects.requireNonNull(HeatpumpHandler.this.config);
 
             if (myconfig == null || mycomms == null) {
                 throw new IllegalStateException("Heatpump: registerPollTask called without proper configuration");
@@ -153,7 +155,7 @@ public class HeatpumpHandler extends BaseThingHandler {
      * @param shortValue value to be written on the modbus
      */
     protected void writeInt16(int address, short shortValue) {
-        HeatpumpConfiguration myconfig = HeatpumpHandler.this.config;
+        HeatpumpConfiguration myconfig = Objects.requireNonNull(HeatpumpHandler.this.config);
         ModbusCommunicationInterface mycomms = HeatpumpHandler.this.comms;
 
         if (myconfig == null || mycomms == null) {
@@ -176,7 +178,6 @@ public class HeatpumpHandler extends BaseThingHandler {
             HeatpumpHandler.this.handleWriteError(failure);
         });
     }
-
 
     private short getScaledInt16Value(Command command) throws LambdaException {
         if (command instanceof QuantityType<?> quantityCommand) {

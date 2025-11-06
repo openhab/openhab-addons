@@ -15,6 +15,8 @@ package org.openhab.binding.modbus.lambda.internal.handler;
 import static org.openhab.binding.modbus.lambda.internal.LambdaBindingConstants.*;
 import static org.openhab.core.library.unit.SIUnits.CELSIUS;
 
+import java.util.Objects;
+
 import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -80,7 +82,7 @@ public class SolarHandler extends BaseThingHandler {
 
         public synchronized void registerPollTask(int address, int length, ModbusReadFunctionCode readFunctionCode) {
             ModbusCommunicationInterface mycomms = SolarHandler.this.comms;
-            SolarConfiguration myconfig = SolarHandler.this.config;
+            SolarConfiguration myconfig = Objects.requireNonNull(SolarHandler.this.config);
 
             if (myconfig == null || mycomms == null) {
                 throw new IllegalStateException("Solar: registerPollTask called without proper configuration");
@@ -140,7 +142,7 @@ public class SolarHandler extends BaseThingHandler {
      * @param shortValue value to be written on the modbus
      */
     protected void writeInt16(int address, short shortValue) {
-        SolarConfiguration myconfig = SolarHandler.this.config;
+        SolarConfiguration myconfig = Objects.requireNonNull(SolarHandler.this.config);
         ModbusCommunicationInterface mycomms = SolarHandler.this.comms;
 
         if (myconfig == null || mycomms == null) {

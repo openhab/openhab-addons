@@ -15,8 +15,6 @@ package org.openhab.binding.modbus.lambda.internal.parser;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.modbus.lambda.internal.dto.BoilerReg50Block;
 import org.openhab.core.io.transport.modbus.ModbusRegisterArray;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Parses modbus data into an BoilerReg50 Block

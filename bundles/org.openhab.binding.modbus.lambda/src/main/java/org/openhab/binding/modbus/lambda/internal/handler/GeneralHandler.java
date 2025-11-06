@@ -16,6 +16,8 @@ import static org.openhab.binding.modbus.lambda.internal.LambdaBindingConstants.
 import static org.openhab.core.library.unit.SIUnits.CELSIUS;
 import static org.openhab.core.library.unit.Units.*;
 
+import java.util.Objects;
+
 import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -83,7 +85,7 @@ public class GeneralHandler extends BaseThingHandler {
          */
         public synchronized void registerPollTask(int address, int length, ModbusReadFunctionCode readFunctionCode) {
             ModbusCommunicationInterface mycomms = GeneralHandler.this.comms;
-            GeneralConfiguration myconfig = GeneralHandler.this.config;
+            GeneralConfiguration myconfig = Objects.requireNonNull(GeneralHandler.this.config);
             if (myconfig == null || mycomms == null) {
                 throw new IllegalStateException("registerPollTask called without proper configuration");
             }
@@ -157,7 +159,7 @@ public class GeneralHandler extends BaseThingHandler {
      * @param shortValue value to be written on the modbus
      */
     protected void writeInt16(int address, short shortValue) {
-        GeneralConfiguration myconfig = GeneralHandler.this.config;
+        GeneralConfiguration myconfig = Objects.requireNonNull(GeneralHandler.this.config);
         ModbusCommunicationInterface mycomms = GeneralHandler.this.comms;
 
         if (myconfig == null || mycomms == null) {

@@ -16,6 +16,8 @@ import static org.openhab.binding.modbus.lambda.internal.LambdaBindingConstants.
 import static org.openhab.core.library.unit.SIUnits.CELSIUS;
 import static org.openhab.core.library.unit.Units.*;
 
+import java.util.Objects;
+
 import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -83,7 +85,7 @@ public class BufferHandler extends BaseThingHandler {
          */
         public synchronized void registerPollTask(int address, int length, ModbusReadFunctionCode readFunctionCode) {
             ModbusCommunicationInterface mycomms = BufferHandler.this.comms;
-            BufferConfiguration myconfig = BufferHandler.this.config;
+            BufferConfiguration myconfig = Objects.requireNonNull(BufferHandler.this.config);
             if (myconfig == null || mycomms == null) {
                 throw new IllegalStateException("registerPollTask called without proper configuration");
             }
@@ -158,7 +160,7 @@ public class BufferHandler extends BaseThingHandler {
      * @param shortValue value to be written on the modbus
      */
     protected void writeInt16(int address, short shortValue) {
-        BufferConfiguration myconfig = BufferHandler.this.config;
+        BufferConfiguration myconfig = Objects.requireNonNull(BufferHandler.this.config);
         ModbusCommunicationInterface mycomms = BufferHandler.this.comms;
 
         if (myconfig == null || mycomms == null) {
@@ -339,7 +341,7 @@ public class BufferHandler extends BaseThingHandler {
             return;
         }
 
-        BufferConfiguration myconfig = BufferHandler.this.config;
+        BufferConfiguration myconfig = Objects.requireNonNull(BufferHandler.this.config);
 
         baseadress = 3000 + 100 * myconfig.getSubindex();
         reg50baseadress = baseadress + 50;
