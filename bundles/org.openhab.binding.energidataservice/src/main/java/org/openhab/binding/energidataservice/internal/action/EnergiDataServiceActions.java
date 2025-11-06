@@ -17,6 +17,7 @@ import static org.openhab.binding.energidataservice.internal.EnergiDataServiceBi
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -242,11 +243,29 @@ public class EnergiDataServiceActions implements ThingActions {
 
             if (priceComponents.contains(priceComponent)) {
                 Map<Instant, BigDecimal> tariffMap = handler.getTariffs(datahubTariff);
+                if (spotPricesRequired) {
+                    tariffMap = expandToQuarterHourly(tariffMap);
+                }
                 mergeMaps(prices, tariffMap, !spotPricesRequired);
             }
         }
 
         return prices;
+    }
+
+    private Map<Instant, BigDecimal> expandToQuarterHourly(Map<Instant, BigDecimal> hourlyMap) {
+        Map<Instant, BigDecimal> quarterHourly = new HashMap<>();
+
+        for (Map.Entry<Instant, BigDecimal> entry : hourlyMap.entrySet()) {
+            Instant hourStart = entry.getKey();
+            BigDecimal value = entry.getValue();
+
+            for (int i = 0; i < 4; i++) {
+                quarterHourly.put(hourStart.plus(i * 15, ChronoUnit.MINUTES), value);
+            }
+        }
+
+        return quarterHourly;
     }
 
     private void mergeMaps(Map<Instant, BigDecimal> destinationMap, Map<Instant, BigDecimal> sourceMap,
