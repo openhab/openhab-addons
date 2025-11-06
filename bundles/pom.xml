@@ -265,6 +265,7 @@
     <module>org.openhab.binding.meteostick</module>
     <module>org.openhab.binding.metofficedatahub</module>
     <module>org.openhab.binding.mffan</module>
+    <module>org.openhab.binding.mideaac</module>
     <module>org.openhab.binding.miele</module>
     <module>org.openhab.binding.mielecloud</module>
     <module>org.openhab.binding.mihome</module>
