@@ -268,7 +268,7 @@ public class SolarHandler extends BaseThingHandler {
             return;
         }
 
-        SolarConfiguration myconfig = SolarHandler.this.config;
+        SolarConfiguration myconfig = Objects.requireNonNull(SolarHandler.this.config);
 
         // Base address for solar is 4000 as mentioned in README.md
         baseadress = 4000 + 100 * myconfig.getSubindex();
