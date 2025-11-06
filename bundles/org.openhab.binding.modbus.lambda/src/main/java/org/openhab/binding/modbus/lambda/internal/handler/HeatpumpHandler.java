@@ -80,7 +80,6 @@ public class HeatpumpHandler extends BaseThingHandler {
          * Register poll task This is where we set up our regular poller
          */
         public synchronized void registerPollTask(int address, int length, ModbusReadFunctionCode readFunctionCode) {
-
             ModbusCommunicationInterface mycomms = HeatpumpHandler.this.comms;
             HeatpumpConfiguration myconfig = HeatpumpHandler.this.config;
 
