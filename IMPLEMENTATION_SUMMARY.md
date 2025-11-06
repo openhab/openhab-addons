@@ -200,7 +200,7 @@ Update `org.openhab.binding.mqtt.ruuvigateway.tests`:
    ```
 3. Document exact source URLs in JavaDoc
 
-## New Channels (5 for Format 6)
+## New Channels (7 for Format 6)
 
 | Channel ID | Type | Unit | Description |
 |------------|------|------|-------------|
@@ -209,9 +209,42 @@ Update `org.openhab.binding.mqtt.ruuvigateway.tests`:
 | `vocIndex` | Number:Dimensionless | unitless | VOC index (baseline 100) |
 | `noxIndex` | Number:Dimensionless | unitless | NOx index (baseline 1) |
 | `luminosity` | Number:Illuminance | lux | Light intensity |
+| `calibrationStatus` | String | - | **NEW** Sensor calibration state (COMPLETE, IN_PROGRESS, UNRELIABLE) |
+| `airQualityIndex` | Number:Dimensionless | 0-100 | **Calculated** air quality (higher = better) |
+
+**Air Quality Index Calculation:**
+- Source: https://github.com/ruuvi/com.ruuvi.station.webui/blob/master/src/decoder/untils.js
+- Combines PM2.5 (0-60 µg/m³) and CO2 (420-2300 ppm)
+- Formula: `AQI = clamp(100 - √((pm25×1.6667)² + ((co2-420)×0.05319)²), 0, 100)`
+- Higher values = better air quality
 
 **Future (Format E1):**
 - `pm1`, `pm4`, `pm10` (when BT5 extended advertisements supported)
+
+## Format 6 Flags Support
+
+**Calibration Status (Bits 0-2 of Flags Byte)**
+
+The calibration status indicates sensor reliability:
+
+| Value | Status | Description |
+|-------|--------|-------------|
+| 0 | COMPLETE | Sensor fully calibrated, values reliable |
+| 1-4 | IN_PROGRESS | Sensor calibrating, values improving |
+| 5-7 | UNRELIABLE | Calibration not started or incomplete |
+
+**VOC/NOx High Bits (Bits 6-7 of Flags Byte)**
+
+VOC and NOx indices are 9-bit values stored across two bytes:
+- VOC: byte 11 (8 bits) + bit 6 of flags byte (1 bit) = 9-bit value
+- NOx: byte 12 (8 bits) + bit 7 of flags byte (1 bit) = 9-bit value
+- Range: 0-511 per official spec, valid range 0-500, sentinel 511
+
+**Implementation Status:**
+- ✅ VOC/NOx 9-bit extraction: Already implemented in DataFormat6Parser
+- ✅ Calibration status parsing: Extracted from flags byte (bits 0-2)
+- ✅ Calibration status channel: New `calibrationStatus` channel added to RuuviMeasurement
+- ✅ All sentinel values respected per official specification
 
 ## Test Vector Reference
 

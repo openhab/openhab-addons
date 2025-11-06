@@ -265,6 +265,7 @@ The following channels need to be added to support Ruuvi Air's air quality measu
 | `vocIndex` | Number:Dimensionless | (unitless) | Volatile Organic Compounds index | ✅ 0-500 (9-bit) | ✅ 0-500 (9-bit) |
 | `noxIndex` | Number:Dimensionless | (unitless) | Nitrogen oxides index | ✅ 0-500 (9-bit) | ✅ 0-500 (9-bit) |
 | `luminosity` | Number:Illuminance | lux | Light intensity | ✅ 0-65535 (logarithmic, 8-bit) | ✅ 0-144284 (linear, 24-bit, 0.01 res) |
+| `airQualityIndex` | Number:Dimensionless | 0-100 | **Calculated** indoor air quality index | ✅ Calculated from PM2.5 + CO2 | ✅ Calculated from PM2.5 + CO2 |
 
 **Notes:**
 - **Format 6** (BT4 compatible): 20-byte payload, PM2.5 only, logarithmic luminosity
@@ -274,7 +275,10 @@ The following channels need to be added to support Ruuvi Air's air quality measu
 - NOx baseline is 1 (values >1 = more nitrogen oxides than usual)
 - PM measurements are cumulative: PM10 includes PM4, which includes PM2.5, which includes PM1.0
 - All existing RuuviTag channels remain supported (temperature, humidity, pressure, accelerometer, battery, etc.)
-- IAQS (Indoor Air Quality Score 0-100) is calculated by Ruuvi Station app, not transmitted in BLE packets
+- **Air Quality Index (0-100)**: Calculated locally from PM2.5 and CO2, higher = better air quality
+  - Algorithm from Ruuvi Station WebUI: https://github.com/ruuvi/com.ruuvi.station.webui/blob/master/src/decoder/untils.js
+  - Combines normalized PM2.5 (0-60 µg/m³) and CO2 (420-2300 ppm) using distance formula
+  - `AQI = clamp(100 - √((pm25×1.6667)² + ((co2-420)×0.05319)²), 0, 100)`
 
 ### 4.2 Data Format Support - REVISED APPROACH
 
@@ -329,6 +333,69 @@ The following channels need to be added to support Ruuvi Air's air quality measu
 - Discovery creates things based on MQTT topics
 - Thing type determination based on first received data format
 
+### 4.4 Format 6 Technical Specification
+
+**Format 6 Payload: 20-byte Structure**
+
+| Byte Offset | Size | Field | Type | Range | Sentinel | Notes |
+|-------------|------|-------|------|-------|----------|-------|
+| 0 | 1 | Data Format | uint8 | 0x06 | N/A | Format identifier |
+| 1-2 | 2 | Temperature | int16 | -163.835 to 163.835°C | 0x8000 | /200.0 conversion |
+| 3-4 | 2 | Humidity | uint16 | 0.0 to 100.0% | 0xFFFF | /400.0 conversion |
+| 5-6 | 2 | Pressure | uint16 | 50000 to 115534 Pa | 0xFFFF | + 50000 offset |
+| 7-8 | 2 | PM2.5 | uint16 | 0 to 1000 µg/m³ | 0xFFFF | /10.0 conversion |
+| 9-10 | 2 | CO2 | uint16 | 0 to 40000 ppm | 0xFFFF | Direct value |
+| 11 | 1 | VOC Index (bits 0-7) | uint8 | 0-255 | Part of 9-bit value | Combined with bit 6 of byte 16 |
+| 12 | 1 | NOx Index (bits 0-7) | uint8 | 0-255 | Part of 9-bit value | Combined with bit 7 of byte 16 |
+| 13 | 1 | Luminosity | uint8 (log) | 0 to 65535 lux | 0xFF | Logarithmic: exp(CODE × ln(65536)/254) - 1 |
+| 14 | 1 | Reserved | - | - | - | For future use |
+| 15 | 1 | Measurement Sequence | uint8 | 0-254 | 0xFF | Counter, 255 = not available |
+| 16 | 1 | Flags | uint8 | Bit-encoded | - | See details below |
+| 17-19 | 3 | MAC Address | uint8[3] | Valid MAC | - | Last 3 bytes of device MAC |
+
+**Flags Byte (Byte 16) - Bit Layout:**
+
+Per https://docs.ruuvi.com/communication/bluetooth-advertisements/data-format-6#flags
+
+| Bit | Field | Value | Description |
+|-----|-------|-------|-------------|
+| 0 | Calibration Status | 0 = Complete, 1 = In Progress | Sensor calibration state |
+| 1-3 | Reserved | - | Reserved for future use |
+| 4 | VOC Index Bit 9 | 0-1 | **High bit (bit 8) of 9-bit VOC value** (combined with byte 11) |
+| 5-6 | Reserved | - | Reserved for future use |
+| 7 | NOx Index Bit 9 | 0-1 | **High bit (bit 8) of 9-bit NOx value** (combined with byte 12) |
+
+**VOC/NOx Index Extraction:**
+
+VOC and NOx indices are 9-bit unsigned values stored across two bytes and flags:
+
+**VOC Index (9-bit):**
+- Bits 0-7: Byte 11
+- Bit 8: Bit 4 of Flags Byte (Byte 16)
+- Combined: `vocIndex = (byte11 & 0xFF) | ((flags & 0x10) << 4)`
+- Range: 0-511, Sentinel: 511 = not available, Valid: 0-500
+
+**NOx Index (9-bit):**
+- Bits 0-7: Byte 12
+- Bit 8: Bit 7 of Flags Byte (Byte 16)
+- Combined: `noxIndex = (byte12 & 0xFF) | ((flags & 0x80) << 1)`
+- Range: 0-511, Sentinel: 511 = not available, Valid: 0-500
+
+**Calibration Status (Bit 0 of Flags Byte):**
+- Bit value 0: Calibration complete, values reliable
+- Bit value 1: Calibration in progress, values improving
+
+**Sentinel Values Summary:**
+
+Per https://docs.ruuvi.com/communication/bluetooth-advertisements/data-format-6:
+> "Not available is signified by largest presentable number for unsigned values, smallest presentable number for signed values and all bits set for mac."
+
+- **Signed 16-bit** (temperature): 0x8000 (-32768)
+- **Unsigned 16-bit** (humidity, pressure, PM, CO2): 0xFFFF (65535)
+- **Unsigned 8-bit** (luminosity, sequence): 0xFF (255)
+- **9-bit unsigned** (VOC, NOx): 0x1FF (511)
+- **MAC address**: All 0xFF (in BLE advertisement header)
+
 ## 5. Implementation Plan - REVISED
 
 ### 5.1 Phase 1: Fork and Extend ruuvitag-common-java
@@ -354,8 +421,37 @@ The following channels need to be added to support Ruuvi Air's air quality measu
 3. **Extend RuuviMeasurement Model**
    - Add fields for Format 6: pm25, co2, vocIndex, noxIndex, luminosity
    - Add fields for Format E1: pm1, pm4, pm10 (optional, null if Format 6)
+   - Add calculated field: airQualityIndex (computed from pm25 + co2)
    - Maintain backward compatibility with existing fields
    - Use `@Nullable` annotations for new fields
+
+3a. **Implement Air Quality Index Calculation**
+   - **Source**: https://github.com/ruuvi/com.ruuvi.station.webui/blob/master/src/decoder/untils.js
+   - **Algorithm**:
+     ```java
+     public Double calculateAirQualityIndex(Double pm25, Integer co2) {
+         if (pm25 == null || co2 == null) return null;
+
+         // Clamp values to valid ranges
+         double pm = Math.max(0, Math.min(60, pm25));
+         double co2Val = Math.max(420, Math.min(2300, co2));
+
+         // Normalize to 0-100 scale
+         double dx = pm * (100.0 / 60.0);  // 1.6667
+         double dy = (co2Val - 420) * (100.0 / 1880.0);  // 0.05319
+
+         // Distance formula
+         double r = Math.sqrt(dx * dx + dy * dy);
+
+         // Inverse scale (higher = better)
+         double aqi = 100 - r;
+
+         // Clamp to 0-100
+         return Math.max(0, Math.min(100, aqi));
+     }
+     ```
+   - Returns 0-100 where higher values = better air quality
+   - Combines PM2.5 and CO2 using normalized distance from ideal conditions
 
 4. **Unit Tests with Official Test Vectors**
    - **Test vectors from https://docs.ruuvi.com/communication/bluetooth-advertisements/data-format-6**
@@ -364,6 +460,13 @@ The following channels need to be added to support Ruuvi Air's air quality measu
    - Minimum values: `0x0680010000000000000000000000XX00004C884F`
    - Invalid values: `0x068000FFFFFFFFFFFFFFFFFFFFFFFFXXFFFFFFFFFF`
    - JavaDoc: "Test vector from https://docs.ruuvi.com/... - Valid data case"
+   - **Verify implementation against canonical parsers**:
+     - Format 6: https://github.com/ruuvi/com.ruuvi.station.webui/blob/master/src/decoder/6.js
+     - Format E1: https://github.com/ruuvi/com.ruuvi.station.webui/blob/master/src/decoder/e1.js
+     - Decoder organization: https://github.com/ruuvi/com.ruuvi.station.webui/blob/master/src/decoder/decode.js
+   - **Test Air Quality Index calculation**:
+     - Valid case: pm25=11.2, co2=201 → AQI ≈ 81.3
+     - Edge cases: missing values, out of range, etc.
 
 5. **Build JAR for Embedding**
    - Update Maven coordinates (e.g., `com.github.scrin:ruuvitag-common:1.1.0-openhab`)
@@ -394,14 +497,16 @@ bundles/org.openhab.binding.bluetooth.ruuvitag/
 
 1. **Update Constants (RuuviTagBindingConstants.java)**
    - Add 5 new channel IDs for Format 6 air quality: `pm25`, `co2`, `vocIndex`, `noxIndex`, `luminosity`
+   - Add calculated channel: `airQualityIndex` (computed from PM2.5 + CO2)
    - Add 3 future channels for Format E1: `pm1`, `pm4`, `pm10` (mark as experimental)
    - Keep all 11 existing RuuviTag channel IDs
-   - Total: 19 channels (11 RuuviTag + 5 Ruuvi Air + 3 E1 future)
+   - Total: 20 channels (11 RuuviTag + 6 Ruuvi Air calculated + 3 E1 future)
 
 2. **Update Handler (RuuviTagHandler.java)**
    - Modify `onScanRecordReceived()` to detect format byte (0x03, 0x05, 0x06, 0xE1)
    - Use updated `AnyDataFormatParser` (supports Format 3/5/6/E1)
    - Add channel updates for new air quality measurements
+   - **Calculate Air Quality Index** if both PM2.5 and CO2 are available
    - **Check if new fields are not null before updating** (Format 3/5 won't have air quality data)
    - Maintain existing behavior for Format 3/5 (RuuviTag)
    - **Single thing type supports both RuuviTag and Ruuvi Air**
@@ -412,11 +517,14 @@ bundles/org.openhab.binding.bluetooth.ruuvitag/
    - Thing label: "RuuviTag" or "Ruuvi Air" based on detected format
 
 4. **Update Thing Definition (ruuvitag.xml)**
-   - Add 5 new air quality channels to existing `ruuvitag_beacon` thing
+   - Add 6 new air quality channels to existing `ruuvitag_beacon` thing:
+     - 5 measured: pm25, co2, vocIndex, noxIndex, luminosity
+     - 1 calculated: airQualityIndex
    - Mark air quality channels as "advanced" (only populated for Ruuvi Air)
    - All channels remain read-only
    - Set appropriate state patterns and units
    - Add note: "Air quality channels only available for Ruuvi Air devices"
+   - airQualityIndex description: "Calculated from PM2.5 and CO2 (0-100, higher = better)"
 
 5. **Update Documentation (README.md)**
    - **Document support for both RuuviTag and Ruuvi Air**
@@ -1128,9 +1236,10 @@ Where `<FORMAT_6_DATA_HEX>` contains encoded Format 6 measurements.
    - Any payload differences for Ruuvi Air vs RuuviTag?
 
 3. **BT5 Extended Advertisements:**
-   - What is openHAB's support for BT5 extended advertisements?
-   - Do bluez/bluegiga adapters support extended advertisements?
-   - Any changes needed in core bluetooth binding?
+   - **PRIORITY**: Does openHAB core Bluetooth binding support BT5 extended advertisements needed for Format E1?
+   - Which adapters support extended advertisements (bluez, bluegiga, etc.)?
+   - Any changes needed in core bluetooth binding for Format E1 support?
+   - **Note**: Format 6 uses standard BLE advertisements (BT4 compatible), no special support needed
 
 4. **Community:**
    - Any existing openHAB community members with Ruuvi Air?
@@ -1150,10 +1259,30 @@ Where `<FORMAT_6_DATA_HEX>` contains encoded Format 6 measurements.
 - Bluetooth Advertisements: https://docs.ruuvi.com/communication/bluetooth-advertisements
 - Ruuvi Gateway Formats: https://docs.ruuvi.com/ruuvi-gateway-firmware/data-formats
 
+### Canonical Parser Implementations (Ruuvi Station WebUI):
+- **Main decoder**: https://github.com/ruuvi/com.ruuvi.station.webui/blob/master/src/decoder/decode.js
+- **Format 6 parser**: https://github.com/ruuvi/com.ruuvi.station.webui/blob/master/src/decoder/6.js
+- **Format E1 parser**: https://github.com/ruuvi/com.ruuvi.station.webui/blob/master/src/decoder/e1.js
+- **Format 5 parser**: https://github.com/ruuvi/com.ruuvi.station.webui/blob/master/src/decoder/5.js
+- **Air Quality Index calculation**: https://github.com/ruuvi/com.ruuvi.station.webui/blob/master/src/decoder/untils.js
+- **All decoders**: https://github.com/ruuvi/com.ruuvi.station.webui/tree/master/src/decoder
+
 ### Existing Implementations:
+
+**Home Assistant Integration:**
 - Home Assistant RuuviTag BLE: https://github.com/home-assistant/core/tree/dev/homeassistant/components/ruuvitag_ble
 - Home Assistant Ruuvi Gateway: https://github.com/home-assistant/core/tree/dev/homeassistant/components/ruuvi_gateway
+- **Home Assistant Format 6 Decoder (Python)**: https://raw.githubusercontent.com/Bluetooth-Devices/ruuvitag-ble/refs/heads/main/src/ruuvitag_ble/df6_decoder.py
+- **Home Assistant Format 6 Tests**: https://raw.githubusercontent.com/Bluetooth-Devices/ruuvitag-ble/refs/heads/main/tests/test_v6.py
+- **Home Assistant Format E1 Decoder (Python)**: https://raw.githubusercontent.com/Bluetooth-Devices/ruuvitag-ble/refs/heads/main/src/ruuvitag_ble/dfe1_decoder.py
+- **Home Assistant Format E1 Tests**: https://raw.githubusercontent.com/Bluetooth-Devices/ruuvitag-ble/refs/heads/main/tests/test_e1.py
+
+**RuuviBridge (Go Implementation):**
 - RuuviBridge: https://github.com/Scrin/RuuviBridge
+- **Format 6 Parser (Go)**: https://raw.githubusercontent.com/Scrin/RuuviBridge/1b9264f2dbdb5e29c8c6f98e7576c75251b34ca4/parser/format_6.go
+- **Format 6 Tests (Go)**: https://raw.githubusercontent.com/Scrin/RuuviBridge/1b9264f2dbdb5e29c8c6f98e7576c75251b34ca4/parser/format_6_test.go
+- **Format E1 Parser (Go)**: https://raw.githubusercontent.com/Scrin/RuuviBridge/1b9264f2dbdb5e29c8c6f98e7576c75251b34ca4/parser/format_e1.go
+- **Format E1 Tests (Go)**: https://raw.githubusercontent.com/Scrin/RuuviBridge/1b9264f2dbdb5e29c8c6f98e7576c75251b34ca4/parser/format_e1_test.go
 
 ### openHAB Code:
 - Bluetooth RuuviTag: `/bundles/org.openhab.binding.bluetooth.ruuvitag/`

@@ -27,6 +27,7 @@ import org.openhab.binding.bluetooth.BeaconBluetoothHandler;
 import org.openhab.binding.bluetooth.notification.BluetoothScanNotification;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
@@ -153,6 +154,32 @@ public class RuuviTagHandler extends BeaconBluetoothHandler {
                                 atLeastOneRuuviFieldPresent |= updateStateIfLinked(channelUID,
                                         ruuvitagData.getTxPower(), Units.DECIBEL_MILLIWATTS);
                                 break;
+                            case CHANNEL_ID_PM25:
+                                atLeastOneRuuviFieldPresent |= updateStateIfLinked(channelUID, ruuvitagData.getPm25(),
+                                        Units.MICROGRAM_PER_CUBICMETRE);
+                                break;
+                            case CHANNEL_ID_CO2:
+                                atLeastOneRuuviFieldPresent |= updateStateIfLinked(channelUID, ruuvitagData.getCo2(),
+                                        Units.PARTS_PER_MILLION);
+                                break;
+                            case CHANNEL_ID_VOC_INDEX:
+                                atLeastOneRuuviFieldPresent |= updateStateIfLinked(channelUID,
+                                        ruuvitagData.getVocIndex(), Units.ONE);
+                                break;
+                            case CHANNEL_ID_NOX_INDEX:
+                                atLeastOneRuuviFieldPresent |= updateStateIfLinked(channelUID,
+                                        ruuvitagData.getNoxIndex(), Units.ONE);
+                                break;
+                            case CHANNEL_ID_LUMINOSITY:
+                                atLeastOneRuuviFieldPresent |= updateStateIfLinked(channelUID,
+                                        ruuvitagData.getLuminosity(), Units.LUX);
+                                break;
+                            case CHANNEL_ID_CALIBRATION_STATUS:
+                                if (ruuvitagData.isCalibrationInProgress() != null) {
+                                    String status = ruuvitagData.isCalibrationInProgress() ? "IN_PROGRESS" : "COMPLETE";
+                                    atLeastOneRuuviFieldPresent |= updateStateIfLinked(channelUID, status);
+                                }
+                                break;
                         }
                     }
                     if (atLeastOneRuuviFieldPresent) {
@@ -208,6 +235,25 @@ public class RuuviTagHandler extends BeaconBluetoothHandler {
         }
         if (isLinked(channelUID)) {
             updateState(channelUID, new DecimalType(value));
+        }
+        return true;
+    }
+
+    /**
+     * Update StringType channel state
+     *
+     * Update is not done when value is null.
+     *
+     * @param channelUID channel UID
+     * @param value value to update
+     * @return whether the value was present
+     */
+    private boolean updateStateIfLinked(ChannelUID channelUID, @Nullable String value) {
+        if (value == null) {
+            return false;
+        }
+        if (isLinked(channelUID)) {
+            updateState(channelUID, new StringType(value));
         }
         return true;
     }

@@ -75,7 +75,7 @@ public class RuuviTagHandler extends AbstractMQTTThingHandler implements MqttMes
     // - Unit (QuantityType Number), uses RuuviCachedNumberState with unit
     // - Class object, uses given class object with String constructor
 
-    private static final Map<String, @Nullable Object> unitByChannelUID = new HashMap<>(11);
+    private static final Map<String, @Nullable Object> unitByChannelUID = new HashMap<>(21);
     static {
         unitByChannelUID.put(CHANNEL_ID_ACCELERATIONX, Units.STANDARD_GRAVITY);
         unitByChannelUID.put(CHANNEL_ID_ACCELERATIONY, Units.STANDARD_GRAVITY);
@@ -88,6 +88,14 @@ public class RuuviTagHandler extends AbstractMQTTThingHandler implements MqttMes
         unitByChannelUID.put(CHANNEL_ID_PRESSURE, SIUnits.PASCAL);
         unitByChannelUID.put(CHANNEL_ID_TEMPERATURE, SIUnits.CELSIUS);
         unitByChannelUID.put(CHANNEL_ID_TX_POWER, Units.DECIBEL_MILLIWATTS);
+        // Air quality measurements (Format 6+)
+        unitByChannelUID.put(CHANNEL_ID_PM25, Units.MICROGRAM_PER_CUBICMETRE);
+        unitByChannelUID.put(CHANNEL_ID_CO2, Units.PARTS_PER_MILLION);
+        unitByChannelUID.put(CHANNEL_ID_VOC_INDEX, Units.ONE);
+        unitByChannelUID.put(CHANNEL_ID_NOX_INDEX, Units.ONE);
+        unitByChannelUID.put(CHANNEL_ID_LUMINOSITY, Units.LUX);
+        unitByChannelUID.put(CHANNEL_ID_CALIBRATION_STATUS, RuuviCachedStringState.class);
+        // Gateway metadata
         unitByChannelUID.put(CHANNEL_ID_RSSI, Units.DECIBEL_MILLIWATTS);
         unitByChannelUID.put(CHANNEL_ID_TS, RuuviCachedDateTimeState.class);
         unitByChannelUID.put(CHANNEL_ID_GWTS, RuuviCachedDateTimeState.class);
@@ -301,6 +309,28 @@ public class RuuviTagHandler extends AbstractMQTTThingHandler implements MqttMes
                     break;
                 case CHANNEL_ID_TX_POWER:
                     atLeastOneRuuviFieldPresent |= updateStateIfLinked(channelUID, ruuvitagData.getTxPower());
+                    break;
+                // Air quality measurements (Format 6+)
+                case CHANNEL_ID_PM25:
+                    atLeastOneRuuviFieldPresent |= updateStateIfLinked(channelUID, ruuvitagData.getPm25());
+                    break;
+                case CHANNEL_ID_CO2:
+                    atLeastOneRuuviFieldPresent |= updateStateIfLinked(channelUID, ruuvitagData.getCo2());
+                    break;
+                case CHANNEL_ID_VOC_INDEX:
+                    atLeastOneRuuviFieldPresent |= updateStateIfLinked(channelUID, ruuvitagData.getVocIndex());
+                    break;
+                case CHANNEL_ID_NOX_INDEX:
+                    atLeastOneRuuviFieldPresent |= updateStateIfLinked(channelUID, ruuvitagData.getNoxIndex());
+                    break;
+                case CHANNEL_ID_LUMINOSITY:
+                    atLeastOneRuuviFieldPresent |= updateStateIfLinked(channelUID, ruuvitagData.getLuminosity());
+                    break;
+                case CHANNEL_ID_CALIBRATION_STATUS:
+                    if (ruuvitagData.isCalibrationInProgress() != null) {
+                        String status = ruuvitagData.isCalibrationInProgress() ? "IN_PROGRESS" : "COMPLETE";
+                        atLeastOneRuuviFieldPresent |= updateStringStateIfLinked(channelUID, Optional.of(status));
+                    }
                     break;
                 //
                 // Auxiliary channels, not part of bluetooth advertisement

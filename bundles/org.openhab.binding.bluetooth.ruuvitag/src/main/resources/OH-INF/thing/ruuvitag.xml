@@ -27,6 +27,12 @@
 			<channel id="pressure" typeId="ruuvitag_pressure"/>
 			<channel id="temperature" typeId="ruuvitag_temperature"/>
 			<channel id="txPower" typeId="ruuvitag_txPower"/>
+			<channel id="pm25" typeId="ruuvitag_pm25"/>
+			<channel id="co2" typeId="ruuvitag_co2"/>
+			<channel id="vocIndex" typeId="ruuvitag_vocIndex"/>
+			<channel id="noxIndex" typeId="ruuvitag_noxIndex"/>
+			<channel id="luminosity" typeId="ruuvitag_luminosity"/>
+			<channel id="calibrationStatus" typeId="ruuvitag_calibrationStatus"/>
 		</channels>
 
 		<config-description>
@@ -112,5 +118,53 @@
 			<tag>Power</tag>
 		</tags>
 		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+	<channel-type id="ruuvitag_pm25">
+		<item-type>Number:Density</item-type>
+		<label>PM2.5</label>
+		<description>PM2.5 particulate matter concentration</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>AirQuality</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="ruuvitag_co2">
+		<item-type unitHint="ppm">Number:Dimensionless</item-type>
+		<label>CO2</label>
+		<description>CO2 concentration</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>AirQuality</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+	<channel-type id="ruuvitag_vocIndex" advanced="true">
+		<item-type>Number:Dimensionless</item-type>
+		<label>VOC Index</label>
+		<description>Volatile Organic Compounds index (0-500)</description>
+		<state readOnly="true" pattern="%.0f"/>
+	</channel-type>
+	<channel-type id="ruuvitag_noxIndex" advanced="true">
+		<item-type>Number:Dimensionless</item-type>
+		<label>NOx Index</label>
+		<description>Nitrogen Oxides index (0-500)</description>
+		<state readOnly="true" pattern="%.0f"/>
+	</channel-type>
+	<channel-type id="ruuvitag_luminosity">
+		<item-type>Number:Illuminance</item-type>
+		<label>Luminosity</label>
+		<description>Light intensity</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Light</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="ruuvitag_calibrationStatus">
+		<item-type>String</item-type>
+		<label>Calibration Status</label>
+		<description>Sensor calibration status (COMPLETE = calibration done, IN_PROGRESS = values still improving)</description>
+		<state readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>
