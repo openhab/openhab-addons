@@ -85,7 +85,11 @@ public class SiteApiAuthentication {
             }
         }
 
-        logger.trace("Validated API JWT token successfully");
+        if (validate) {
+            logger.trace("Validated API JWT token successfully");
+        } else {
+            logger.trace("API JWT token accepted without validation");
+        }
         this.apiKey = newApiKey;
     }
 

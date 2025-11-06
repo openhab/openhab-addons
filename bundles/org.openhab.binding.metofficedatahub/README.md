@@ -36,11 +36,12 @@ This binding supports the follow thing types:
 The bridge counts the total number of requests from 00:00 -> 23:59 under its properties during the runtime of the system.
 (This reset's if OH restarts, or the binding resets).
 
-| Name                 | Type   | Description                                                                               | Default Values |
-|----------------------|--------|-------------------------------------------------------------------------------------------|----------------|
-| siteRateDailyLimit   | Number | This is a daily poll limit for the SiteSpecific API, while the Thing ID remains the same. | 250            |
-| siteApiKey           | String | The API Key for the Site Specific subscription in your MET Office Data Hub account.       |                |
+| Name                 | Type    | Description                                                                               | Default Values |
+|----------------------|---------|-------------------------------------------------------------------------------------------|----------------|
+| siteRateDailyLimit   | Number  | This is a daily poll limit for the SiteSpecific API, while the Thing ID remains the same. | 250            |
+| siteApiKey           | String  | The API Key for the Site Specific subscription in your MET Office Data Hub account.       |                |
 | disableKeyValidation | Boolean | If enabled the binding will not attempt to validate a valid key format has been entered.  | false          |
+
 **NOTE:** siteRateDailyLimit: This **should** prevent any more poll's for the rest of the day to the SiteSpecific API, once this limit is reached as a failsafe against a bad configuration, if you don't reboot / delete and re-add the bridge. This is reset at 00:00UTC in-line with MET Office DataHub behaviours.
 
 ### `site` Configuration Parameters
