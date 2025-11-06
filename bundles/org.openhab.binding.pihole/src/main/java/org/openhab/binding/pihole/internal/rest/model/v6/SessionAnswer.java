@@ -13,12 +13,13 @@
 package org.openhab.binding.pihole.internal.rest.model.v6;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public record SessionAnswer(Session session, double took) {
+public record SessionAnswer(@Nullable Session session, double took) {
     public record Session(boolean valid, boolean totp, String sid, String csrf, int validity, String message) {
         public int cautiousValidity() {
             return validity / 3 * 2;

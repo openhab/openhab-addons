@@ -87,9 +87,13 @@ public class JettyAdminServiceV6 extends AdminService {
         var request = client.newRequest(authURI).timeout(TIMEOUT_SECONDS, SECONDS).method(HttpMethod.POST)
                 .header(HttpHeader.ACCEPT, "application/json").content(new StringContentProvider(tokenJson));
         var content = send(request).getContentAsString();
+        logger.debug("Session update request answer: {}", content);
 
         if (gson.fromJson(content, SessionAnswer.class) instanceof SessionAnswer answer) {
             Session session = answer.session();
+            if (session == null) {
+                throw new PiHoleException("Received an empty session");
+            }
             sid = session.sid();
             sessionValidity = Instant.now().plusSeconds(session.cautiousValidity());
             return session.sid();
