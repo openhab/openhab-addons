@@ -158,7 +158,7 @@ public class HomekitMdnsDiscoveryParticipant implements MDNSDiscoveryParticipant
      * @return the normalized host name.
      */
     private String getHostName(ServiceInfo service) {
-        String hostName = service.getServer();
+        String hostName = service.getServer().replace(" ", "\032"); // escape spaces
         if (hostName.endsWith(".")) {
             hostName = hostName.substring(0, hostName.length() - 1);
         }
