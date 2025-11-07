@@ -10,7 +10,7 @@ There are three things: `smtp`, `imap` and `pop3` which represents respective se
 
 ### SMTP Server (`smtp`)
 
-There are two mandatory parameters `hostname` and `sender`.
+Mandatory parameters are `hostname` and `sender`.
 
 The `hostname` may contain an IP address or a FQDN like `smtp.gmail.com`.
 The `sender` must be a valid mail address used as sender address for mails.
