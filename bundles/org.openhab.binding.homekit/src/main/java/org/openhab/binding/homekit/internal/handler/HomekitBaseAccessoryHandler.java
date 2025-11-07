@@ -392,7 +392,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
                     i18nProvider.getText(bundle, "error.invalid-host-name", "Invalid fully qualified host name", null));
             return null;
         }
-        return hostName;
+        return hostName.replace(" ", "\\032"); // escape mDNS spaces
     }
 
     private @Nullable Long checkedAccessoryId() {
