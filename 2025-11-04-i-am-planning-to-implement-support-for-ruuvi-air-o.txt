@@ -1,0 +1,1157 @@
+
+╭─── Claude Code v2.0.32 ──────────────────────────────────────────────────╮
+│                                                    │ Tips for getting    │
+│                 Welcome back Sami!                 │ started             │
+│                                                    │ Run /init to creat… │
+│                       ▐▛███▜▌                      │ ─────────────────── │
+│                      ▝▜█████▛▘                     │ Recent activity     │
+│                        ▘▘ ▝▝                       │ No recent activity  │
+│                                                    │                     │
+│              Sonnet 4.5 · Claude Pro               │                     │
+│  /home/salski/src/openhab-main/git/openhab-addons  │                     │
+╰──────────────────────────────────────────────────────────────────────────╯
+
+> I am planning to implement support for Ruuvi Air openHAB integration 
+via BLE and Ruuvi Gateway MQTT payload
+
+In this repo you have implementations for Ruuvi Tag (similar product 
+from same vendor) for bluetooth 
+(org.openhab.binding.bluetooth.ruuvitag), ruuvi gateway mqtt payload 
+(org.openhab.binding.mqtt.ruuvigateway), and integration tests for mqtt 
+payloads (org.openhab.binding.mqtt.ruuvigateway.tests)
+
+Plan this out properly in PLAN.md 
+
+● I'll help you plan the Ruuvi Air openHAB integration. Let me first
+  explore the existing Ruuvi implementations to understand the patterns
+  and architecture.
+
+● Explore(Explore Ruuvi Tag BLE binding)
+  ⎿  Done (22 tool uses · 34.9k tokens · 1m 38s)                       
+
+● Explore(Explore Ruuvi Gateway MQTT binding)
+  ⎿  Done (24 tool uses · 49.9k tokens · 1m 11s)                       
+
+● Explore(Explore Ruuvi Gateway tests)
+  ⎿  Done (10 tool uses · 33.8k tokens · 44.8s)                        
+
+> I would like you to search reference implementations from internet, 
+likely home assistant has some early implementation. Possibly  the 
+github.com/ruuvi has reference data as well. 
+
+● I'll search for reference implementations for Ruuvi Air from Home
+  Assistant and the official Ruuvi GitHub repositories.
+
+● Web Search("Home Assistant Ruuvi Air integration BLE MQTT 2024 2025")
+  ⎿  Did 1 search in 21s                                               
+
+● Web Search("site:github.com/ruuvi Ruuvi Air sensor data format
+            specification")
+  ⎿  Did 1 search in 26s                                               
+
+● Fetch(https://github.com/ruuvi)
+  ⎿  Received 281.5KB (200 OK)
+
+● Let me search more specifically for Ruuvi Air and fetch the official
+  protocol documentation:
+
+● Web Search(""Ruuvi Air" sensor VOC CO2 IAQ specifications data format")
+  ⎿  Did 1 search in 21s                                               
+
+● Fetch(https://github.com/ruuvi/ruuvi-sensor-protocols/blob/master/broadcas
+       t_formats.md)
+  ⎿  Received 205.7KB (200 OK)
+
+● Fetch(https://www.home-assistant.io/integrations/ruuvitag_ble/)
+  ⎿  Received 23.3KB (200 OK)
+
+● Fetch(https://ruuvi.com/i/u/ruuvi-air-tech-spec-2025.pdf)
+  ⎿  Received 165.5KB (200 OK)
+
+● Web Search("site:github.com/home-assistant/core ruuvitag_ble sensor
+            implementation code")
+  ⎿  Did 1 search in 23s                                               
+
+● Fetch(https://github.com/home-assistant/core/tree/dev/homeassistant/compon
+       ents/ruuvitag_ble)
+  ⎿  Received 274.5KB (200 OK)
+
+> /cost 
+
+● Fetch(https://github.com/home-assistant/core/blob/dev/homeassistant/compon
+       ents/ruuvitag_ble/sensor.py)
+  ⎿  Received 297.2KB (200 OK)
+
+● Web Search(""Ruuvi Air" data format protocol BLE advertisement packet
+            structure")
+  ⎿  Did 6 searches in 64s                                             
+
+● Web Search("site:github.com ruuvi air quality sensor firmware data
+            format")
+  ⎿  Did 1 search in 26s                                               
+
+● Fetch(https://docs.ruuvi.com/communication/bluetooth-advertisements/data-f
+       ormat-6)
+  ⎿  Error: Unable to verify if domain docs.ruuvi.com is safe to fetch. This 
+     may be due to network restrictions or enterprise security policies 
+     blocking claude.ai.
+
+● Fetch(https://docs.ruuvi.com/communication/bluetooth-advertisements)
+  ⎿  Error: Unable to verify if domain docs.ruuvi.com is safe to fetch. This 
+     may be due to network restrictions or enterprise security policies 
+     blocking claude.ai.
+
+● Web Search("site:docs.ruuvi.com "data format" "E1" OR "extended v1" ruuvi
+            air")
+  ⎿  Did 1 search in 19s                                               
+
+● Fetch(https://mybeacons.info/packetFormats.html)
+  ⎿  Received 43.4KB (200 OK)
+
+● Web Search("ruuvi air format E1 extended v1 packet structure bytes PM2.5
+            CO2 VOC specification")
+  ⎿  Did 7 searches in 54s                                             
+
+● Now I have enough information to create a comprehensive plan. Let me
+  write the PLAN.md file with all the research findings:
+
+● Now I'll create a comprehensive plan document. Let me start by
+  creating a todo for this task:
+
+● Write(PLAN.md)
+  ⎿  Wrote 893 lines to PLAN.md                                        
+     # Ruuvi Air openHAB Integration Implementation Plan
+     ## Executive Summary
+     This document outlines the implementation plan for adding Ruuvi Air
+      support to the openHAB ecosystem via both Bluetooth Low Energy
+     (BLE) and Ruuvi Gateway MQTT payloads. Ruuvi Air is an advanced
+     indoor air quality monitor that extends beyond the existing
+     RuuviTag environmental sensors with additional air quality
+     measurements including PM2.5, CO2, VOC, NOx, and luminosity.
+     ## 1. Product Overview
+     ### 1.1 Ruuvi Air Specifications
+     … +883 lines (ctrl+o to expand)
+
+● Perfect! I've created a comprehensive PLAN.md at
+  /home/salski/src/openhab-main/git/openhab-addons/PLAN.md.
+
+  Plan Summary
+
+  The plan covers implementing Ruuvi Air support for openHAB via both
+  BLE and MQTT Gateway, building on the existing RuuviTag
+  implementations you already have.
+
+  Key Findings:
+
+  Ruuvi Air Specifications:
+  - Extends RuuviTag with air quality sensors: PM1.0/2.5/4.0/10.0, CO2
+  (0-40,000 ppm), VOC index, NOx index, and luminosity
+  - Uses Data Format 6 (BT4 compatible) and Format E1 (BT5+ preferred)
+  - Same manufacturer ID as RuuviTag (0x0499)
+  - Broadcasts every 1 second (vs RuuviTag's ~10 seconds)
+
+  Critical Gap:
+  The existing fi.tkgwf.ruuvi:ruuvitag-common:1.0.2 library used by both
+   bindings only supports Formats 3 and 5 (RuuviTag), NOT Format 6 or E1
+   (Ruuvi Air).
+
+  Recommended Approach:
+
+  1. Create separate bindings (don't modify existing ones):
+    - org.openhab.binding.bluetooth.ruuviair - BLE binding
+    - org.openhab.binding.mqtt.ruuviair - MQTT Gateway binding
+    - org.openhab.binding.ruuvi.common - Shared parser library
+  2. Implement custom Format 6 parser since existing library doesn't
+  support it
+  3. Add 9 new channels for air quality measurements:
+    - pm1, pm25, pm4, pm10 (particulate matter)
+    - co2 (concentration in ppm)
+    - vocIndex, noxIndex (air quality indices)
+    - luminosity (light intensity)
+    - iaqs (indoor air quality score, if available)
+  4. Reference implementations found:
+    - Home Assistant has both RuuviTag BLE and Ruuvi Gateway
+  integrations
+    - Official Ruuvi protocol specs at
+  github.com/ruuvi/ruuvi-sensor-protocols
+    - Data Format 6 documentation available
+
+  Implementation Timeline:
+
+  - Total: 18-26 days (3-5 weeks)
+  - Common parser library: 3-5 days
+  - BLE binding: 5-7 days
+  - MQTT binding: 5-7 days
+  - Integration tests: 3-4 days
+  - Documentation: 2-3 days
+
+  The plan includes detailed technical specifications, architecture
+  diagrams, risk analysis, and step-by-step implementation guidance.
+  Ready to proceed with implementation when you are!
+
+> Does the github.com/ruuvi/ruuvi-sensor-protocols actually contain 
+reference to protocol 6? To my understanding the repo is archived and 
+docs are actually at docs.ruuvi.com. That page also has different github
+ link 
+
+● You're absolutely right! Let me verify the actual state of the
+  repository and find the correct documentation sources.
+
+● Fetch(https://github.com/ruuvi/ruuvi-sensor-protocols)
+  ⎿  Received 259.8KB (200 OK)
+
+● Web Search("site:docs.ruuvi.com github repository link documentation
+            source")
+  ⎿  Did 1 search in 14s                                               
+
+● Fetch(https://docs.ruuvi.com)
+  ⎿  Received 190.9KB (200 OK)
+
+● Excellent catch! You're absolutely correct:
+
+  1. github.com/ruuvi/ruuvi-sensor-protocols is ARCHIVED (since March
+  10, 2022) with a notice: "Please go to docs.ruuvi.com for up-to-date 
+  information, this repository is online only for reference."
+  2. Current documentation is at docs.ruuvi.com
+  3. Documentation source repository is at github.com/ruuvi/docs
+
+  Let me now check if Format 6 is actually documented and update the
+  plan with correct references:
+
+● Web Search("site:github.com/ruuvi/docs "format 6" OR "format E1" data
+            format specification")
+  ⎿  Did 0 searches in 12s                                             
+
+● Web Search(""docs.ruuvi.com" "data format 6" protocol specification
+            complete")
+  ⎿  Did 0 searches in 11s                                             
+
+● Fetch(https://github.com/ruuvi/docs)
+  ⎿  Received 251.4KB (200 OK)
+
+● Let me try to access the documentation pages directly:
+
+● Fetch(https://github.com/ruuvi/docs/tree/main/communication/bluetooth-adve
+       rtisements)
+  ⎿  Error: Request failed with status code 404
+
+● Web Search("ruuvi docs github communication bluetooth advertisements
+            markdown files")
+  ⎿  Did 1 search in 21s                                               
+
+● Fetch(https://github.com/ruuvi/docs/blob/master/communication/bluetooth-ad
+       vertisements/data-format-c5-rawv2.md)
+  ⎿  Received 226.6KB (200 OK)
+
+● Bash(git clone --depth 1 https://github.com/ruuvi/docs.git /tmp/ruuvi-docs
+       2>&1 | head -20)
+  ⎿  Cloning into '/tmp/ruuvi-docs'...
+
+● Great! The documentation confirms there ARE files for both Format 6
+  and E1. Let me examine them:
+
+● Bash(ls -la /tmp/ruuvi-docs/communication/bluetooth-advertisements/data-fo
+      rmat-*.md)
+  ⎿ -rw-r--r-- 1 salski salski  4940  4.11. 18:53 /tmp/ruuvi-docs/commu
+    nication/bluetooth-advertisements/data-format-3-rawv1.md
+    -rw-r--r-- 1 salski salski  2727  4.11. 18:53 /tmp/ruuvi-docs/commu
+    … +12 lines (ctrl+o to expand)
+
+
+
+● Read(/tmp/ruuvi-docs/communication/bluetooth-advertisements/data-format-6.
+      md)
+  ⎿  Read 244 lines
+
+● Perfect! Now let me check Format E1 as well:
+
+● Read(/tmp/ruuvi-docs/communication/bluetooth-advertisements/data-format-e1
+      .md)
+  ⎿  Read 150 lines
+
+● Excellent findings! You're absolutely right. Now I have the complete
+  and accurate specifications. Let me update the PLAN.md with the
+  correct information:
+
+● Update(PLAN.md)
+  ⎿  Updated PLAN.md with 11 additions and 3 removals                
+       171    ### 3.2 Ruuvi Official Resources
+       172    
+       173    **Protocol Documentation:**
+       174 -  - Repository: `github.com/ruuvi/ruuvi-sensor-protocols`
+       175 -  - Contains specifications for formats 3, 5, 6, 8, E1
+       174 +  - **ARCHIVED Repository**
+           +  : `github.com/ruuvi/ruuvi-sensor-protocols`
+           +   (archived March 10, 2022)
+       175 +    - Contains historical reference only
+       176 +    - Notice: "Please go to docs.ruuvi.com for up-to-date
+           +  information"
+       177 +  - **Current Documentation**: `docs.ruuvi.com`
+       178 +    - Official documentation site with up-to-date 
+           + specifications
+       179 +  - **Documentation Source**: `github.com/ruuvi/docs`
+       180 +    - Contains markdown source files for all formats
+       181 +    - Includes `/communication/bluetooth-advertisements/d
+           + ata-format-6.md` (20 bytes payload)
+       182 +    - Includes `/communication/bluetooth-advertisements/d
+           + ata-format-e1.md` (40 bytes payload)
+       183 +    - Both formats documented with test vectors
+       184    - Manufacturer ID: 0x0499 (0x9904 in raw data)
+       185    
+       186    **Parsing Library:**
+       187    - `fi.tkgwf.ruuvi:ruuvitag-common:1.0.2` (current 
+             version in openHAB)
+       188 -  - Supports formats 3 and 5
+       188 +  - Supports formats 3 and 5 only
+       189    - **Needs update/replacement for Format 6 and E1 
+             support**
+       190    
+       191    ## 4. Implementation Requirements
+
+● Update(PLAN.md)
+  ⎿  Updated PLAN.md with 17 additions and 13 removals               
+       194    
+       195    The following channels need to be added to support 
+             Ruuvi Air's air quality measurements:
+       196    
+       197 -  | Channel ID | Item Type | Unit | Description | 
+           -  Range/Resolution |
+       198 -  |------------|-----------|------|-------------|--------
+           -  ----------|
+       199 -  | `pm1` | Number:Density | µg/m³ | PM1.0 particulate 
+           -  matter | 0-1000, 0.1/bit resolution |
+       200 -  | `pm25` | Number:Density | µg/m³ | PM2.5 particulate 
+           -  matter | 0-1000, 0.1/bit resolution |
+       201 -  | `pm4` | Number:Density | µg/m³ | PM4.0 particulate 
+           -  matter | 0-1000, 0.1/bit resolution |
+       202 -  | `pm10` | Number:Density | µg/m³ | PM10 particulate 
+           -  matter | 0-1000, 0.1/bit resolution |
+       203 -  | `co2` | Number:Dimensionless | ppm | CO2 
+           -  concentration | 0-40000, 1 ppm resolution |
+       204 -  | `vocIndex` | Number:Dimensionless | (unitless) | 
+           -  Volatile Organic Compounds index | 0-500, 1/bit 
+           -  resolution |
+       205 -  | `noxIndex` | Number:Dimensionless | (unitless) | 
+           -  Nitrogen oxides index | 0-500, 1/bit resolution |
+       206 -  | `luminosity` | Number:Illuminance | lux | Light 
+           -  intensity | Logarithmic scale |
+       207 -  | `iaqs` | Number:Dimensionless | (unitless) | Indoor 
+           - Air Quality Score | 0-100 (if available) |
+       197 +  | Channel ID | Item Type | Unit | Description | Format 
+           +  6 | Format E1 |
+       198 +  |------------|-----------|------|-------------|--------
+           +  --|-----------|
+       199 +  | `pm1` | Number:Density | µg/m³ | PM1.0 particulate 
+           +  matter | ❌ Not available | ✅ 0-1000, 0.1/bit |
+       200 +  | `pm25` | Number:Density | µg/m³ | PM2.5 particulate 
+           +  matter | ✅ 0-1000, 0.1/bit | ✅ 0-1000, 0.1/bit |
+       201 +  | `pm4` | Number:Density | µg/m³ | PM4.0 particulate 
+           +  matter | ❌ Not available | ✅ 0-1000, 0.1/bit |
+       202 +  | `pm10` | Number:Density | µg/m³ | PM10 particulate 
+           +  matter | ❌ Not available | ✅ 0-1000, 0.1/bit |
+       203 +  | `co2` | Number:Dimensionless | ppm | CO2 
+           +  concentration | ✅ 0-40000, 1 ppm | ✅ 0-40000, 1 ppm |
+       204 +  | `vocIndex` | Number:Dimensionless | (unitless) | 
+           +  Volatile Organic Compounds index | ✅ 0-500 (9-bit) | 
+           +  ✅ 0-500 (9-bit) |
+       205 +  | `noxIndex` | Number:Dimensionless | (unitless) | 
+           +  Nitrogen oxides index | ✅ 0-500 (9-bit) | 
+           +  ✅ 0-500 (9-bit) |
+       206 +  | `luminosity` | Number:Illuminance | lux | Light 
+           +  intensity | ✅ 0-65535 (logarithmic, 8-bit) |
+           +   ✅ 0-144284 (linear, 24-bit, 0.01 res) |
+       207    
+       208    **Notes:**
+       209 +  - **Format 6** (BT4 compatible): 20-byte payload, PM2.5
+           +  only, logarithmic luminosity
+       210 +  - **Format E1** (BT5+ extended): 40-byte payload, all 4
+           +  PM sizes, linear luminosity, full MAC address
+       211    - Density unit for PM measurements: µg/m³ (micrograms 
+             per cubic meter)
+       212 -  - VOC and NOx are relative indices, not absolute 
+           - measurements
+       213 -  - All existing RuuviTag channels remain supported 
+           - (temperature, humidity, pressure, etc.)
+       212 +  - VOC average baseline is 100 (values <100 = improving,
+           +  >100 = worsening)
+       213 +  - NOx baseline is 1 (values >1 = more nitrogen oxides 
+           + than usual)
+       214 +  - PM measurements are cumulative: PM10 includes PM4, 
+           + which includes PM2.5, which includes PM1.0
+       215 +  - All existing RuuviTag channels remain supported 
+           + (temperature, humidity, pressure, accelerometer, 
+           + battery, etc.)
+       216 +  - IAQS (Indoor Air Quality Score 0-100) is calculated 
+           + by Ruuvi Station app, not transmitted in BLE packets
+       217    
+       218    ### 4.2 Data Format Support
+       219    
+
+● Update(PLAN.md)
+  ⎿  Updated PLAN.md with 6 additions and 1 removal                  
+       877    
+       878    ### Official Documentation:
+       879    - Ruuvi Air Product: https://ruuvi.com/air/
+       880 -  - Ruuvi Sensor Protocols: 
+           - https://github.com/ruuvi/ruuvi-sensor-protocols
+       880 +  - **Current Documentation**: https://docs.ruuvi.com
+       881 +  - **Documentation Source**: 
+           + https://github.com/ruuvi/docs
+       882 +  - **ARCHIVED Protocol Repo**: 
+           + https://github.com/ruuvi/ruuvi-sensor-protocols 
+           + (reference only, archived March 2022)
+       883    - Data Format 6: https://docs.ruuvi.com/communication/b
+             luetooth-advertisements/data-format-6
+       884 +  - Data Format E1: https://docs.ruuvi.com/communication/
+           + bluetooth-advertisements/data-format-e1
+       885 +  - Data Format 5 (RuuviTag): https://docs.ruuvi.com/comm
+           + unication/bluetooth-advertisements/data-format-5-rawv2
+       886 +  - Bluetooth Advertisements: https://docs.ruuvi.com/comm
+           + unication/bluetooth-advertisements
+       887    - Ruuvi Gateway Formats: https://docs.ruuvi.com/ruuvi-g
+             ateway-firmware/data-formats
+       888    
+       889    ### Existing Implementations:
+
+● Update(PLAN.md)
+  ⎿  Updated PLAN.md with 22 additions and 9 removals                
+       538    
+       539    ### 6.6 Format 6 vs E1 Support
+       540    
+       541 -  **Initial Implementation:**
+       542 -  - **Focus on Format 6** (BT4 compatible)
+       543 -  - Format E1 documentation is sparse
+       544 -  - Format 6 contains all necessary air quality 
+           - measurements
+       545 -  - Most devices will use Format 6 for compatibility
+       541 +  **Format Comparison:**
+       542    
+       543 -  **Future Enhancement:**
+       544 -  - Add Format E1 parser when specification becomes 
+           - clearer
+       545 -  - E1 may have additional fields or optimizations
+       546 -  - Same handler can support both formats
+       543 +  | Feature | Format 6 | Format E1 |
+       544 +  |---------|----------|-----------|
+       545 +  | BLE Version | BT4 compatible | BT5+ extended 
+           + advertisements |
+       546 +  | Payload Size | 20 bytes | 40 bytes |
+       547 +  | PM Sensors | PM2.5 only | PM1.0, PM2.5, PM4.0, PM10.0
+           +  |
+       548 +  | Luminosity | 8-bit logarithmic (0-65535 lux) | 24-bit
+           +  linear (0-144284 lux, 0.01 res) |
+       549 +  | Sequence Counter | 8-bit (0-255) | 24-bit 
+           + (0-16777214) |
+       550 +  | MAC Address | 24 LSB bits only | Full 48-bit address 
+           + |
+       551 +  | Reserved Bytes | 1 byte | 8 bytes (for future use) |
+       552    
+       553 +  **Implementation Strategy:**
+       554 +  - **Implement BOTH Format 6 and E1** - both are fully 
+           + documented with test vectors
+       555 +  - Format 6 should be primary focus (wider 
+           + compatibility)
+       556 +  - Format E1 provides better data (all PM sizes, full 
+           + MAC, higher precision)
+       557 +  - Same handler can support both formats using format 
+           + byte detection
+       558 +  - If device sends both, prefer E1 data (per 
+           + specification)
+       559 +  
+       560 +  **Recommendation:**
+       561 +  - Start with Format 6 implementation (simpler, 20 
+           + bytes)
+       562 +  - Add Format E1 support in same milestone (both are 
+           + well-documented)
+       563 +  - Use format byte (0x06 vs 0xE1) to route to 
+           + appropriate parser
+       564 +  
+       565    ## 7. Dependencies
+       566    
+       567    ### 7.1 External Libraries
+
+● Perfect! I've updated the PLAN.md with the correct and verified
+  information. Here's a summary of the key corrections:
+
+  Corrected Information
+
+  1. Documentation Sources ✅
+
+  - ARCHIVED: github.com/ruuvi/ruuvi-sensor-protocols (March 10, 2022)
+  - CURRENT: docs.ruuvi.com (official documentation)
+  - SOURCE: github.com/ruuvi/docs (markdown files)
+
+  2. Format 6 - FULLY DOCUMENTED ✅
+
+  From /communication/bluetooth-advertisements/data-format-6.md:
+  - 20-byte payload for BT4 compatibility
+  - Includes: Temperature, Humidity, Pressure, PM2.5, CO2, VOC, NOx,
+  Luminosity (logarithmic)
+  - Complete test vectors provided (valid, max, min, invalid cases)
+  - Example: 0x06170C5668C79E007000C90501D9XXCD004C884F
+
+  3. Format E1 - FULLY DOCUMENTED ✅
+
+  From /communication/bluetooth-advertisements/data-format-e1.md:
+  - 40-byte payload for BT5+ extended advertisements
+  - Includes: All Format 6 fields PLUS PM1.0, PM4.0, PM10.0
+  - Linear luminosity (24-bit, 0.01 resolution vs 8-bit logarithmic)
+  - 24-bit sequence counter (vs 8-bit)
+  - Full 48-bit MAC address (vs 24-bit LSB)
+  - 8 reserved bytes for future expansion
+
+  4. Key Differences Between Formats
+
+  | Feature     | Format 6   | Format E1             |
+  |-------------|------------|-----------------------|
+  | BLE Support | BT4+       | BT5+ only             |
+  | Size        | 20 bytes   | 40 bytes              |
+  | PM Sensors  | PM2.5 only | PM1.0, 2.5, 4.0, 10.0 |
+  | Precision   | Good       | Better                |
+
+  5. Important Notes
+
+  - IAQS is NOT in BLE packets - it's calculated by the Ruuvi Station
+  app from PM2.5 and CO2
+  - VOC baseline is 100 (not 0) - values <100 = improving, >100 =
+  worsening
+  - NOx baseline is 1 - values >1 indicate elevated nitrogen oxides
+  - PM values are cumulative: PM10 ⊃ PM4 ⊃ PM2.5 ⊃ PM1.0
+
+  The updated PLAN.md now correctly references the active documentation
+  and includes accurate Format 6 and E1 specifications with all test
+  vectors available. Both formats are production-ready and fully
+  documented! 🎯
+
+> /cost 
+  ⎿  With your Claude Pro subscription, no need to monitor cost — your 
+     subscription includes Claude Code usage
+
+> /usage 
+  ⎿  Status dialog dismissed
+
+> /usage 
+  ⎿  Status dialog dismissed
+
+> /usage 
+  ⎿  Status dialog dismissed
+
+> I like option 3  (custom parse for Air). I think it makes more sense 
+to add functionality to existing bluetooth ruuvi binding, not add a new 
+one. For the unit tests of Format6Parser, I would like to use the test 
+vectors / test cases in the official ruuvi documentation. Java docs 
+should refer to the doc cases. 
+  ⎿  Interrupted · What should Claude do instead?
+
+> I like option 3  (custom parse for Air). I think it makes more sense 
+to add functionality to existing bluetooth ruuvi binding, not add a new 
+one. For the unit tests of Format6Parser, I would like to use the test 
+vectors / test cases in the official ruuvi documentation. Java docs 
+should refer to the doc cases. 
+  ⎿  Interrupted · What should Claude do instead?
+
+> I like option 3  (custom parse for Air). I think it makes more sense 
+to add functionality to existing bluetooth ruuvi binding, not add a new 
+one. For the unit tests of Format6Parser, I would like to use the test 
+vectors / test cases in the official ruuvi documentation. Java docs 
+should refer to the doc cases. 
+  ⎿  Interrupted · What should Claude do instead?
+
+> I like option 3  (custom parse for Air). I think it makes more sense 
+to add functionality to existing bluetooth ruuvi binding, not add a new 
+one. For the unit tests of Format6Parser, I would like to use the test 
+vectors / test cases in the official ruuvi documentation. Java docs 
+should refer to the doc cases. 
+  ⎿  Interrupted · What should Claude do instead?
+
+> I like option 3  (custom parse for Air). FOR BLE: I think it makes 
+more sense to add functionality to existing bluetooth ruuvi binding, not
+ add a new one. For the unit tests of Format6Parser, I would like to use
+ the test vectors / test cases in the official ruuvi documentation. Java
+ docs should refer to the doc cases. FOR MQTT: this actually fits 
+existing ruuvi gateway binding perfectly - it is just different payload 
+served by gateway via mqtt. 
+
+Seems like units needs checking. Cross-reference 
+https://github.com/openhab/openhab-core units definition. We actually 
+might need to add the new units to openhab-core's bundles/org.openhab.co
+re/src/main/java/org/openhab/core/library/unit/Units.java
+
+I beleve the current plan to include "common binding" is unusual. Such 
+practice has not been used in openHAB previously. Currently we rely on 
+https://github.com/Scrin/ruuvitag-common-java ... Let's fork the repo 
+and add support for new formats. I have cloned the fork at 
+/home/salski/src/openhab-main/git/ruuvitag-common-java 
+  ⎿  Interrupted · What should Claude do instead?
+
+> I like option 3  (custom parse for Air). FOR BLE: I think it makes 
+more sense to add functionality to existing bluetooth ruuvi binding, not
+ add a new one. For the unit tests of Format6Parser, I would like to use
+ the test vectors / test cases in the official ruuvi documentation. Java
+ docs should refer to the doc cases. FOR MQTT: this actually fits 
+existing ruuvi gateway binding perfectly - it is just different payload 
+served by gateway via mqtt. 
+
+Seems like units needs checking. Cross-reference 
+https://github.com/openhab/openhab-core units definition. We actually 
+might need to add the new units to openhab-core's bundles/org.openhab.co
+re/src/main/java/org/openhab/core/library/unit/Units.java
+
+I beleve the current plan to include "common binding" is unusual. Such 
+practice has not been used in openHAB previously. Currently we rely on 
+https://github.com/Scrin/ruuvitag-common-java ... Let's fork the repo 
+and add support for new formats. I have cloned the fork at 
+/home/salski/src/openhab-main/git/ruuvitag-common-java. 
+
+● Perfect! That's a much cleaner approach. Let me update the PLAN.md to
+  reflect this revised strategy and then explore the required units and
+  the ruuvitag-common-java fork.
+
+● Update(PLAN.md)
+  ⎿  Updated PLAN.md with 19 additions and 35 removals               
+       215    - All existing RuuviTag channels remain supported 
+             (temperature, humidity, pressure, accelerometer, 
+             battery, etc.)
+       216    - IAQS (Indoor Air Quality Score 0-100) is calculated 
+             by Ruuvi Station app, not transmitted in BLE packets
+       217    
+       218 -  ### 4.2 Data Format Support
+       218 +  ### 4.2 Data Format Support - REVISED APPROACH
+       219    
+       220 -  #### Option 1: Update Existing Parser Library
+       221 -  **Approach:** Request update to 
+           - `fi.tkgwf.ruuvi:ruuvitag-common` library
+       222 -  - **Pros:**
+       223 -    - Maintains consistency with existing code
+       224 -    - Minimal changes to handler code
+       225 -    - Library owner may maintain it
+       226 -  - **Cons:**
+       227 -    - Dependency on external maintainer
+       228 -    - May take time to implement
+       229 -    - Library appears inactive (last version 1.0.2)
+       220 +  **Selected: Fork and Extend ruuvitag-common-java** ✅
+       221    
+       222 -  #### Option 2: Fork and Extend Parser Library
+       223 -  **Approach:** Create openHAB-maintained fork with 
+           - Format 6/E1 support
+       224 -  - **Pros:**
+       225 -    - Full control over implementation
+       226 -    - Can add openHAB-specific optimizations
+       227 -    - Faster implementation timeline
+       228 -  - **Cons:**
+       229 -    - Maintenance burden
+       230 -    - May diverge from upstream
+       231 -    - Duplicate code if upstream updates
+       222 +  **Implementation Strategy:**
+       223 +  - Fork https://github.com/Scrin/ruuvitag-common-java
+       224 +  - Add Format 6 and Format E1 parser support to the fork
+       225 +  - Keep existing Format 3/5 support intact
+       226 +  - Update dependency in both BLE and MQTT bindings
+       227 +  - User has already cloned fork at 
+           + `/home/salski/src/openhab-main/git/ruuvitag-common-java`
+       228    
+       229 -  #### Option 3: Implement Custom Parser (RECOMMENDED)
+       230 -  **Approach:** Create internal parser for Formats 6 and 
+           - E1
+       231 -  - **Pros:**
+       232 -    - Full control and flexibility
+       233 -    - No external dependencies for air quality parsing
+       234 -    - Can optimize for openHAB patterns
+       235 -    - Keeps existing parser for backward compatibility
+       236 -  - **Cons:**
+       237 -    - More initial implementation work
+       238 -    - Need to maintain protocol compatibility
+       229 +  **Why This Approach:**
+       230 +  - Maintains consistency with current openHAB practice
+       231 +  - No "common binding" pattern (unusual for openHAB)
+       232 +  - Centralized parser logic in dedicated library
+       233 +  - Both BLE and MQTT bindings can use the same updated 
+           + library
+       234 +  - Can contribute improvements back upstream if 
+           + maintainer is active
+       235    
+       236 -  **Recommended Implementation:**
+       237 -  - Keep `ruuvitag-common` for Format 3/5 support 
+           - (existing RuuviTag)
+       238 -  - Add new internal parsers for Format 6/E1 (Ruuvi Air)
+       239 -  - Use format detection (first byte) to route to 
+           - appropriate parser
+       236 +  **Test Requirements:**
+       237 +  - Use official Ruuvi test vectors from docs.ruuvi.com
+       238 +  - JavaDoc must reference official test cases
+       239 +  - Test cases: valid data, maximum values, minimum 
+           + values, invalid values
+       240 +  - Bidirectional tests (encode-decode must match)
+       241    
+       242    ### 4.3 Discovery Requirements
+       243    
+
+● Update(PLAN.md)
+  ⎿  Updated PLAN.md with 47 additions and 20 removals               
+       252    - Discovery creates things based on MQTT topics
+       253    - Thing type determination based on first received data
+              format
+       254    
+       255 -  ## 5. Implementation Plan
+       255 +  ## 5. Implementation Plan - REVISED
+       256    
+       257 -  ### 5.1 Phase 1: Bluetooth Binding 
+           - (org.openhab.binding.bluetooth.ruuviair)
+       257 +  ### 5.1 Phase 1: Fork and Extend ruuvitag-common-java
+       258    
+       259 -  **NEW BINDING** - Separate from existing RuuviTag 
+           - binding to maintain backward compatibility
+       259 +  **Repository:** 
+           + `/home/salski/src/openhab-main/git/ruuvitag-common-java`
+           +  (already cloned)
+       260    
+       261 -  **Directory Structure:**
+       261 +  **Tasks:**
+       262 +  1. **Add Format 6 Parser**
+       263 +     - Create parser for 20-byte Format 6 payload
+       264 +     - Implement all field extractions (temp, humidity, 
+           + pressure, PM2.5, CO2, VOC, NOx, luminosity)
+       265 +     - Handle "not available" sentinel values
+       266 +     - Use official test vectors from docs.ruuvi.com
+       267 +  
+       268 +  2. **Add Format E1 Parser**
+       269 +     - Create parser for 40-byte Format E1 payload
+       270 +     - Support all PM sizes (1.0, 2.5, 4.0, 10.0)
+       271 +     - Linear luminosity parsing (24-bit, 0.01 
+           + resolution)
+       272 +     - 24-bit sequence counter
+       273 +     - Full 48-bit MAC address
+       274 +  
+       275 +  3. **Extend RuuviMeasurement Model**
+       276 +     - Add fields: pm1, pm25, pm4, pm10, co2, vocIndex, 
+           + noxIndex, luminosity
+       277 +     - Maintain backward compatibility with existing 
+           + fields
+       278 +  
+       279 +  4. **Unit Tests with Official Test Vectors**
+       280 +     - Valid data test case
+       281 +     - Maximum values test case
+       282 +     - Minimum values test case
+       283 +     - Invalid values test case
+       284 +     - JavaDoc referencing docs.ruuvi.com test cases
+       285 +  
+       286 +  5. **Build and Publish**
+       287 +     - Update Maven coordinates
+       288 +     - Build JAR for local testing
+       289 +     - Consider publishing to Maven Central (or local 
+           + repository)
+       290 +  
+       291 +  ### 5.2 Phase 2: Extend Bluetooth RuuviTag Binding
+       292 +  
+       293 +  **EXTEND EXISTING BINDING** - 
+           + `org.openhab.binding.bluetooth.ruuvitag` ✅
+       294 +  
+       295 +  **Directory Structure:** (existing binding)
+       296    ```
+       297 -  bundles/org.openhab.binding.bluetooth.ruuviair/
+       298 -  ├── src/main/java/org/openhab/binding/bluetooth/
+           -  ruuviair/internal/
+       299 -  │   ├── RuuviAirBindingConstants.java
+       300 -  │   ├── RuuviAirHandler.java
+       301 -  │   ├── RuuviAirHandlerFactory.java
+       302 -  │   ├── RuuviAirDiscoveryParticipant.java
+       303 -  │   └── parser/
+       304 -  │       ├── Format6Parser.java
+       305 -  │       └── FormatE1Parser.java (if E1 needed 
+           - separately)
+       297 +  bundles/org.openhab.binding.bluetooth.ruuvitag/
+       298 +  ├── src/main/java/org/openhab/binding/bluetooth/
+           +  ruuvitag/internal/
+       299 +  │   ├── RuuviTagBindingConstants.java (UPDATE - add new
+           +  channels)
+       300 +  │   ├── RuuviTagHandler.java (UPDATE - handle Format 
+           + 6/E1)
+       301 +  │   ├── RuuviTagHandlerFactory.java (no changes needed)
+       302 +  │   └── RuuviTagDiscoveryParticipant.java (UPDATE - 
+           + detect Format 6/E1)
+       303    ├── src/main/resources/OH-INF/
+       304 -  │   ├── thing/ruuviair.xml
+       305 -  │   └── i18n/
+       306 -  │       ├── bluetooth.properties
+       307 -  │       ├── bluetooth_de.properties (optional)
+       308 -  │       └── bluetooth_fi.properties (optional)
+       309 -  ├── pom.xml
+       310 -  └── README.md
+       304 +  │   ├── thing/ruuvitag.xml (UPDATE - add air quality 
+           + channels)
+       305 +  │   └── i18n/bluetooth.properties (UPDATE - add 
+           + translations)
+       306 +  └── pom.xml (UPDATE - use new ruuvitag-common-java 
+           + version)
+       307    ```
+       308    
+       309    **Implementation Steps:**
+
+● Update(PLAN.md)
+  ⎿  Updated PLAN.md with 26 additions and 32 removals               
+       308    
+       309    **Implementation Steps:**
+       310    
+       311 -  1. **Create Constants (RuuviAirBindingConstants.java)**
+       312 -     - Define new thing type: `ruuviair_beacon`
+       313 -     - Define 20 channel IDs (11 existing + 9 new air 
+           - quality channels)
+       314 -     - Maintain compatibility with existing RuuviTag 
+           - constants
+       311 +  1. **Update Constants (RuuviTagBindingConstants.java)**
+       312 +     - Add 8 new channel IDs for air quality (pm25, co2, 
+           + vocIndex, noxIndex, luminosity)
+       313 +     - Add 3 conditional channels for Format E1 only 
+           + (pm1, pm4, pm10)
+       314 +     - Keep all 11 existing RuuviTag channel IDs
+       315    
+       316 -  2. **Implement Format 6 Parser (Format6Parser.java)**
+       317 -     - Parse BLE manufacturer-specific data (format byte 
+           - = 0x06)
+       318 -     - Extract all environmental sensors (temp, humidity,
+           -  pressure)
+       319 -     - Extract air quality sensors (PM1/2.5/4/10, CO2, 
+           - VOC, NOx, luminosity)
+       320 -     - Handle "not available" values (max unsigned for 
+           - unsigned, min signed for signed)
+       321 -     - Return typed measurement object similar to 
+           - `RuuviMeasurement`
+       316 +  2. **Update Handler (RuuviTagHandler.java)**
+       317 +     - Modify `onScanRecordReceived()` to detect format 
+           + byte (0x03, 0x05, 0x06, 0xE1)
+       318 +     - Use updated `AnyDataFormatParser` (supports Format
+           +  6/E1)
+       319 +     - Add channel updates for new air quality 
+           + measurements
+       320 +     - Check if new fields are present (not null) before 
+           + updating channels
+       321 +     - Maintain existing behavior for Format 3/5 
+           + (RuuviTag)
+       322    
+       323 -  3. **Implement Handler (RuuviAirHandler.java)**
+       324 -     - Extend `BeaconBluetoothHandler` (same pattern as 
+           - RuuviTag)
+       325 -     - Override `onScanRecordReceived()`
+       326 -     - Detect format byte and route to appropriate parser
+       327 -     - Update all 20 channels with parsed data
+       328 -     - Implement 60-second heartbeat timeout
+       329 -     - Handle offline detection and channel clearing
+       323 +  3. **Update Discovery 
+           + (RuuviTagDiscoveryParticipant.java)**
+       324 +     - No changes needed (same manufacturer ID 0x0499)
+       325 +     - Discovery already detects all Ruuvi devices
+       326 +     - Thing label can indicate device type based on 
+           + available channels
+       327    
+       328 -  4. **Implement Discovery 
+           - (RuuviAirDiscoveryParticipant.java)**
+       329 -     - Listen for manufacturer ID 0x0499 (same as 
+           - RuuviTag)
+       330 -     - Check data format byte (0x06 or 0xE1)
+       331 -     - Create `ruuviair_beacon` thing type
+       332 -     - Set vendor property: "Ruuvi Innovations Ltd (Oy)"
+       328 +  4. **Update Thing Definition (ruuvitag.xml)**
+       329 +     - Add 8 new air quality channels to existing 
+           + `ruuvitag_beacon` thing
+       330 +     - Mark new channels as "advanced" (optional)
+       331 +     - All channels remain read-only
+       332 +     - Set appropriate state patterns and units
+       333    
+       334 -  5. **Create Thing Definition (ruuviair.xml)**
+       335 -     - Define `ruuviair_beacon` thing type
+       336 -     - Add all 20 channels with proper types and 
+           - semantics
+       337 -     - Mark all channels as read-only
+       338 -     - Set appropriate state patterns (precision, units)
+       334 +  5. **Update Documentation (README.md)**
+       335 +     - Add Ruuvi Air support section
+       336 +     - Document new air quality channels
+       337 +     - Note that Format 6/E1 devices will populate 
+           + additional channels
+       338 +     - Configuration examples remain same 
+           + (auto-discovery)
+       339    
+       340 -  6. **Create Documentation (README.md)**
+       341 -     - Describe Ruuvi Air capabilities
+       342 -     - Configuration examples (things, items)
+       343 -     - Note differences from RuuviTag
+       344 -     - Link to Ruuvi Air product information
+       340 +  6. **Update POM (pom.xml)**
+       341 +     - Update ruuvitag-common-java dependency to new 
+           + forked version
+       342    
+       343    ### 5.2 Phase 2: MQTT Gateway Binding 
+             (org.openhab.binding.mqtt.ruuviair)
+       344    
+
+● Update(PLAN.md)
+  ⎿  Updated PLAN.md with 42 additions and 37 removals               
+       340    6. **Update POM (pom.xml)**
+       341       - Update ruuvitag-common-java dependency to new 
+             forked version
+       342    
+       343 -  ### 5.2 Phase 2: MQTT Gateway Binding 
+           - (org.openhab.binding.mqtt.ruuviair)
+       343 +  ### 5.3 Phase 3: Extend MQTT RuuviGateway Binding
+       344    
+       345 -  **NEW BINDING** - Separate from existing RuuviGateway 
+           - binding
+       345 +  **EXTEND EXISTING BINDING** - 
+           + `org.openhab.binding.mqtt.ruuvigateway` ✅
+       346    
+       347 -  **Directory Structure:**
+       347 +  **Directory Structure:** (existing binding)
+       348    ```
+       349 -  bundles/org.openhab.binding.mqtt.ruuviair/
+       350 -  ├── src/main/java/org/openhab/binding/mqtt/ruuviair
+           -  /internal/
+       351 -  │   ├── RuuviAirBindingConstants.java
+       352 -  │   ├── RuuviAirHandlerFactory.java
+       349 +  bundles/org.openhab.binding.mqtt.ruuvigateway/
+       350 +  ├── src/main/java/org/openhab/binding/mqtt/ruuvigateway
+           +  /internal/
+       351 +  │   ├── RuuviGatewayBindingConstants.java (UPDATE - add
+           +  new channels)
+       352 +  │   ├── RuuviTagHandlerFactory.java (no changes needed)
+       353    │   ├── handler/
+       354 -  │   │   └── RuuviAirHandler.java
+       354 +  │   │   └── RuuviTagHandler.java (UPDATE - handle 
+           + Format 6/E1)
+       355    │   ├── parser/
+       356 -  │   │   ├── GatewayPayloadParser.java (adapted 
+           -  from ruuvigateway)
+       357 -  │   │   ├── Format6Parser.java (shared with BLE 
+           - binding)
+       358 -  │   │   └── FormatE1Parser.java (if needed)
+       356 +  │   │   └── GatewayPayloadParser.java (minimal/no 
+           +  changes)
+       357    │   └── discovery/
+       358 -  │       └── RuuviAirGatewayDiscoveryService.java
+       358 +  │       └── RuuviGatewayDiscoveryService.java (no 
+           + changes needed)
+       359    ├── src/main/resources/OH-INF/
+       360 -  │   ├── thing/thing-types.xml
+       361 -  │   └── i18n/
+       362 -  │       └── mqtt.properties
+       363 -  ├── pom.xml
+       364 -  └── README.md
+       360 +  │   ├── thing/thing-types.xml
+           +   (UPDATE - add air quality channels)
+       361 +  │   └── i18n/mqtt.properties (UPDATE - add 
+           + translations)
+       362 +  └── pom.xml (UPDATE - use new ruuvitag-common-java 
+           + version)
+       363    ```
+       364    
+       365    **Implementation Steps:**
+       366    
+       367 -  1. **Adapt Gateway Payload Parser**
+       368 -     - Reuse JSON parsing logic from 
+           - `org.openhab.binding.mqtt.ruuvigateway`
+       369 -     - Extract hex-encoded BLE data from `data` field
+       370 -     - Route to Format 6/E1 parser based on format byte
+       367 +  1. **Update Constants 
+           + (RuuviGatewayBindingConstants.java)**
+       368 +     - Add same 8 new channel IDs as BLE binding
+       369 +     - Add 3 conditional channels for Format E1 (pm1, 
+           + pm4, pm10)
+       370 +     - Keep all 15 existing channels (11 sensor + 4 
+           + gateway metadata)
+       371    
+       372 -  2. **Implement Handler (RuuviAirHandler.java)**
+       373 -     - Extend `AbstractMQTTThingHandler`
+       374 -     - Subscribe to MQTT topic pattern: 
+           - `ruuvi/{gateway_id}/{tag_mac}`
+       375 -     - Process incoming JSON payloads
+       376 -     - Update 24 channels (20 sensor + 4 gateway 
+           - metadata)
+       377 -     - Implement 60-second heartbeat timeout
+       372 +  2. **Update Handler (RuuviTagHandler.java)**
+       373 +     - Modify `processMessage()` to use updated parser 
+           + library
+       374 +     - Updated `AnyDataFormatParser` automatically 
+           + handles Format 6/E1
+       375 +     - Add channel updates for new air quality 
+           + measurements
+       376 +     - Check if new fields are present before updating 
+           + channels
+       377 +     - Existing Format 3/5 handling remains unchanged
+       378    
+       379 -  3. **Implement Discovery 
+           - (RuuviAirGatewayDiscoveryService.java)**
+       380 -     - Subscribe to `ruuvi/#` discovery topic
+       381 -     - Parse incoming messages to detect format byte
+       382 -     - Create thing if format is 0x06 or 0xE1
+       383 -     - Extract MAC from topic path
+       379 +  3. **Gateway Payload Parser 
+           + (GatewayPayloadParser.java)**
+       380 +     - No changes needed (already extracts manufacturer 
+           + data correctly)
+       381 +     - Parser library handles format detection 
+           + automatically
+       382    
+       383 -  4. **Create Thing Definition (thing-types.xml)**
+       384 -     - Define `mqtt:ruuviair_beacon` thing type
+       385 -     - Require MQTT broker bridge
+       386 -     - Define 24 channels (20 sensor + 4 gateway)
+       387 -     - Configuration parameter: `topic` (required)
+       383 +  4. **Discovery Service 
+           + (RuuviGatewayDiscoveryService.java)**
+       384 +     - No changes needed (works with all formats)
+       385    
+       386 +  5. **Update Thing Definition (thing-types.xml)**
+       387 +     - Add 8 new air quality channels to existing 
+           + `mqtt:ruuvitag_beacon` thing
+       388 +     - Mark new channels as "advanced" (optional)
+       389 +     - Total channels: 23 (15 existing + 8 new)
+       390 +     - Configuration remains same
+       391 +  
+       392 +  6. **Update Documentation (README.md)**
+       393 +     - Add Ruuvi Air support section
+       394 +     - Document new air quality channels
+       395 +     - Note Gateway firmware requirements (if any)
+       396 +  
+       397 +  7. **Update POM (pom.xml)**
+       398 +     - Update ruuvitag-common-java dependency to new 
+           + forked version
+       399 +  
+       400    ### 5.3 Phase 3: Integration Tests
+       401    
+       402    **Directory Structure:**
+
+● Update(PLAN.md)
+  ⎿  Updated PLAN.md with 1 addition and 1 removal               
+       397    7. **Update POM (pom.xml)**
+       398       - Update ruuvitag-common-java dependency to new 
+             forked version
+       399    
+       400 -  ### 5.3 Phase 3: Integration Tests
+       400 +  ### 5.4 Phase 4: Integration Tests
+       401    
+       402    **Directory Structure:**
+       403    ```
+
+● Update(PLAN.md)
+  ⎿  Updated PLAN.md with 10 additions and 27 removals               
+       437    - Document data format specifications for testing
+       438    - May need to contact Ruuvi for example packets or use 
+             simulated data based on spec
+       439    
+       440 -  ### 5.4 Phase 4: Code Sharing Strategy
+       440 +  ### 5.5 Phase 5: Unit Support in openHAB Core
+       441    
+       442 -  **Shared Parser Library Option:**
+       442 +  **Check Required Units:**
+       443 +  - Number:Density for PM measurements (µg/m³)
+       444 +  - Number:Illuminance for luminosity (lux)
+       445 +  - Number:Dimensionless for CO2 (ppm), VOC, NOx indices
+       446    
+       447 -  Create internal library bundle:
+       448 -  ```
+       449 -  bundles/org.openhab.binding.ruuvi.common/
+       450 -  ├── src/main/java/org/openhab/binding/ruuvi/common/
+       451 -  │   ├── parser/
+       452 -  │   │   ├── Format6Parser.java
+       453 -  │   │   ├── FormatE1Parser.java
+       454 -  │   │   └── RuuviAirMeasurement.java
+       455 -  │   └── RuuviAirConstants.java
+       456 -  └── pom.xml
+       457 -  ```
+       447 +  **Potential Core Changes:**
+       448 +  - Check `bundles/org.openhab.core/src/main/java/org/ope
+           + nhab/core/library/unit/Units.java`
+       449 +  - Add `MICROGRAM_PER_CUBICMETRE` if not present
+       450 +  - Verify LUX is available (should be)
+       451 +  - Verify PARTS_PER_MILLION or use ONE for dimensionless
+       452    
+       453 -  Both BLE and MQTT bindings would depend on this common 
+           - library.
+       454 -  
+       455 -  **Benefits:**
+       456 -  - Single parser implementation
+       457 -  - Consistent behavior across bindings
+       458 -  - Easier maintenance
+       459 -  - Follows existing openHAB patterns
+       460 -  
+       461 -  **Implementation:**
+       462 -  - Create common bundle first
+       463 -  - BLE binding references it
+       464 -  - MQTT binding references it
+       465 -  - Tests can target common parser directly
+       466 -  
+       453    ## 6. Technical Considerations
+       454    
+       455    ### 6.1 Backward Compatibility
+
+● Now let me check the available units in openhab-core and explore the
+  ruuvitag-common-java fork:
+
+● Read(~/src/openhab-main/git/openhab-core/bundles/org.openhab.core/src/main
+      /java/org/openhab/core/library/unit/Units.java)
+  ⎿  Error reading file
+
+● Bash(find /home/salski/src -type d -name "openhab-core" 2>/dev/null | head
+       -5)
+  ⎿ /home/salski/src/openhab-master-core/git/openhab-core              
+    /home/salski/src/openhab-master-core/git/openhab-core/bom/openhab-c
+    ore
+    … +4 lines (ctrl+o to expand)
+
+
+● Read(~/src/openhab-master-core/git/openhab-core/bundles/org.openhab.core/s
+      rc/main/java/org/openhab/core/library/unit/Units.java)
+  ⎿  Error reading file
+
+● Search(pattern: "MICROGRAM|DENSITY|LUX|ILLUMINANCE|PARTS_PER_MILLION|PPM",
+         path: "~/src/openhab-master-core/git/openhab-core/bundles/org.openh
+        ab.core/src/main/java/org/openhab/core/library/unit/Units.java",
+        output_mode: "content")
+  ⎿  Error searching files
+
+● Bash(find /home/salski/src/openhab-master-core/git/openhab-core -name
+      "Units.java" -type f 2>/dev/null)
+  ⎿  (No content)
+  ⎿  Interrupted · What should Claude do instead?
+
+> what is the error reading file? 
+
+● The file doesn't exist at the paths I tried. Let me find the correct
+  location:
+
+● Bash(find /home/salski/src -name "Units.java" -path
+      "*/openhab*/library/unit/*" 2>/dev/null | head -5)
+  ⎿ /home/salski/src/openhab-main-old/git/openhab-core/bundles/org.open
+    hab.core/src/main/java/org/openhab/core/library/unit/Units.java
+
+
+● Bash(ls -la /home/salski/src/openhab-master-core/git/ 2>/dev/null || echo
+      "Path does not exist")
+  ⎿  total 0                                                 
+     drwxrwxr-x 1 salski salski  24  5. 4.  2019 .
+     drwxrwxr-x 1 salski salski  24  5. 4.  2019 ..
+     drwxrwxr-x 1 salski salski 230  5. 4.  2019 openhab-core
+  ⎿  Session limit reached ∙ resets 11pm
+     /upgrade to increase your usage limit.
+
+> /model 
+  ⎿  Kept model as Sonnet
+
+> /usage 
+  ⎿  Status dialog dismissed
+
+> what is the error reading file? 
+  ⎿  Session limit reached ∙ resets 11pm
+     /upgrade to increase your usage limit.
+  ⎿  Interrupted · What should Claude do instead?
+
+> /context 
+  ⎿ Error: 429 
+    {"type":"error","error":{"type":"rate_limit_error","message":"This 
+    request would exceed your account's rate limit. Please try again 
+    later."},"request_id":"req_011CUoKLjBGsjsHfzTuCqYWw"}
+
+> /upgrade 
+  ⎿  Login interrupted
+
+
+

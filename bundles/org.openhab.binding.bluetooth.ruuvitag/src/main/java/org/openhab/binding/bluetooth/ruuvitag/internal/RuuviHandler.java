@@ -43,23 +43,23 @@ import fi.tkgwf.ruuvi.common.bean.RuuviMeasurement;
 import fi.tkgwf.ruuvi.common.parser.impl.AnyDataFormatParser;
 
 /**
- * The {@link RuuviTagHandler} is responsible for handling commands, which are
+ * The {@link RuuviHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
  * @author Sami Salonen - Initial contribution
  */
 @NonNullByDefault
-public class RuuviTagHandler extends BeaconBluetoothHandler {
+public class RuuviHandler extends BeaconBluetoothHandler {
 
     // Ruuvitag sends an update every 10 seconds. So we keep a heartbeat to give it some slack
     private static final int HEARTBEAT_TIMEOUT_MINUTES = 1;
-    private final Logger logger = LoggerFactory.getLogger(RuuviTagHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(RuuviHandler.class);
     private final AnyDataFormatParser parser = new AnyDataFormatParser();
     private final AtomicBoolean receivedStatus = new AtomicBoolean();
 
     private @NonNullByDefault({}) ScheduledFuture<?> heartbeatFuture;
 
-    public RuuviTagHandler(Thing thing) {
+    public RuuviHandler(Thing thing) {
         super(thing);
     }
 

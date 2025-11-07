@@ -60,13 +60,13 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.JsonSyntaxException;
 
 /**
- * The {@link RuuviTagHandler} is responsible updating RuuviTag Sensor data received from
+ * The {@link RuuviHandler} is responsible updating RuuviTag Sensor data received from
  * Ruuvi Gateway via MQTT.
  *
  * @author Sami Salonen - Initial contribution
  */
 @NonNullByDefault
-public class RuuviTagHandler extends AbstractMQTTThingHandler implements MqttMessageSubscriber {
+public class RuuviHandler extends AbstractMQTTThingHandler implements MqttMessageSubscriber {
 
     // Ruuvitag sends an update every 10 seconds. So we keep a heartbeat to give it some slack
     private int heartbeatTimeoutMillisecs = 60_000;
@@ -104,7 +104,7 @@ public class RuuviTagHandler extends AbstractMQTTThingHandler implements MqttMes
         unitByChannelUID.put(CHANNEL_ID_GWMAC, RuuviCachedStringState.class);
     }
 
-    private final Logger logger = LoggerFactory.getLogger(RuuviTagHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(RuuviHandler.class);
     /**
      * Indicator whether we have received data recently
      */
@@ -117,7 +117,7 @@ public class RuuviTagHandler extends AbstractMQTTThingHandler implements MqttMes
      */
     private @NonNullByDefault({}) String topic;
 
-    public RuuviTagHandler(Thing thing, int subscribeTimeout) {
+    public RuuviHandler(Thing thing, int subscribeTimeout) {
         super(thing, subscribeTimeout);
     }
 
