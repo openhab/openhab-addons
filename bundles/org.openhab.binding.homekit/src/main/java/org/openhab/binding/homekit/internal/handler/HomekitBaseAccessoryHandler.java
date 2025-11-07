@@ -19,6 +19,8 @@ import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -77,30 +79,32 @@ import com.google.gson.Gson;
 @NonNullByDefault
 public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler implements EventListener {
 
-    protected static final Gson GSON = new Gson();
-
     private static final int MIN_CONNECTION_ATTEMPT_DELAY_SECONDS = 2;
     private static final int MAX_CONNECTION_ATTEMPT_DELAY_SECONDS = 600;
 
+    private static final Duration HANDLER_INITIALIZATION_TIMEOUT = Duration.ofSeconds(10);
+
     private final Logger logger = LoggerFactory.getLogger(HomekitBaseAccessoryHandler.class);
-
     private final Map<Long, Accessory> accessories = new ConcurrentHashMap<>();
+    private final HomekitKeyStore keyStore;
 
-    protected final HomekitTypeProvider typeProvider;
-    protected final HomekitKeyStore keyStore;
-    protected final TranslationProvider i18nProvider;
-    protected final Bundle bundle;
-
-    protected boolean isChildAccessory = false;
     private boolean isConfigured = false;
-
     private int connectionAttemptDelay = MIN_CONNECTION_ATTEMPT_DELAY_SECONDS;
 
     private @Nullable ScheduledFuture<?> connectionAttemptTask;
     private @Nullable CharacteristicReadWriteClient rwService;
     private @Nullable IpTransport ipTransport;
 
-    protected @NonNullByDefault({}) Long accessoryId;
+    private @NonNullByDefault({}) Long accessoryId;
+
+    protected static final Gson GSON = new Gson();
+
+    protected final List<Characteristic> eventedCharacteristics = new ArrayList<>();
+    protected final HomekitTypeProvider typeProvider;
+    protected final TranslationProvider i18nProvider;
+    protected final Bundle bundle;
+
+    protected boolean isChildAccessory = false;
 
     public HomekitBaseAccessoryHandler(Thing thing, HomekitTypeProvider typeProvider, HomekitKeyStore keyStore,
             TranslationProvider translationProvider, Bundle bundle) {
@@ -129,11 +133,6 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
         super.dispose();
     }
 
-    private void fetchAccessoriesTask() {
-        fetchAccessories();
-        updateStatus(ThingStatus.ONLINE);
-    }
-
     /**
      * Get information about embedded accessories and their respective channels from the /accessories endpoint.
      *
@@ -151,7 +150,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
                         .collect(Collectors.toMap(a -> a.aid, Function.identity())));
             }
             logger.debug("Fetched {} accessories", accessories.size());
-            scheduler.submit(this::accessoriesLoadedTask); // notify subclass (and children) in scheduler thread
+            scheduler.submit(this::processAccessories);
         } catch (Exception e) {
             if (isCommunicationException(e)) {
                 // communication exception; log at debug and try to reconnect
@@ -166,19 +165,24 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
     }
 
     /**
-     * Processes the loaded accessories by calling the overloaded abstract methods, and then enables eventing.
+     * Processes the loaded accessories by calling the overloaded abstract methods, then enables eventing,
+     * and finally sets thing as online.
      */
-    private void accessoriesLoadedTask() {
-        accessoriesLoaded();
+    private void processAccessories() {
+        Instant timeout = Instant.now().plus(HANDLER_INITIALIZATION_TIMEOUT);
+        while (!checkHandlersInitialized() && Instant.now().isBefore(timeout)) {
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                return; // shutting down
+            }
+        }
+        onAccessoriesLoaded();
+        onRootHandlerReady();
         enableEvents(true);
+        updateStatus(ThingStatus.ONLINE);
     }
-
-    /**
-     * Called when the thing handler has been initialized, the pairing verified, and the accessories have been loaded.
-     * Subclasses override this to perform any processing required.
-     * This method is called in the context of a scheduler thread, to avoid blocking operations.
-     */
-    protected abstract void accessoriesLoaded();
 
     /**
      * Returns the accessory ID from the 'AccessoryID' configuration parameter.
@@ -211,34 +215,33 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
 
     @Override
     public void initialize() {
-        if (getBridge() instanceof Bridge) {
-            // accessory is hosted by a bridge, so use bridge's pairing session and read/write service
-            isChildAccessory = true;
-        } else {
-            // standalone accessory or bridge accessory, so do pairing and session setup here
-            isChildAccessory = false;
+        eventedCharacteristics.clear();
+        accessories.clear();
+        isChildAccessory = getBridge() instanceof Bridge;
+        if (!isChildAccessory) {
             scheduleConnectionAttempt();
         }
+        updateStatus(ThingStatus.UNKNOWN);
     }
 
     /**
      * Restores an existing pairing.
      * Updates the thing status accordingly.
      */
-    private synchronized void verifyPairing() {
+    private synchronized boolean verifyPairing() {
         isConfigured = false;
         Long accessoryId = checkedAccessoryId();
-        String hostName = checkedHostName();
+        String ipAddress = checkedIpAddress();
         String macAddress = checkedMacAddress();
-        String mdnsServiceName = checkedMdnsServiceName(hostName);
-        if (accessoryId == null || hostName == null || macAddress == null || mdnsServiceName == null) {
-            return; // configuration error
+        String hostName = checkedHostName();
+        if (accessoryId == null || ipAddress == null || macAddress == null || hostName == null) {
+            return false; // configuration error
         }
         isConfigured = true;
 
         // create new transport
-        if (checkedCreateIpTransport(hostName, mdnsServiceName) == null) {
-            return; // transport creation failed
+        if (checkedCreateIpTransport(ipAddress, hostName) == null) {
+            return false; // transport creation failed
         }
 
         if (keyStore.getAccessoryKey(macAddress) instanceof Ed25519PublicKeyParameters accessoryKey) {
@@ -251,8 +254,8 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
                 rwService = new CharacteristicReadWriteClient(getIpTransport());
 
                 logger.debug("Restored pairing was verified for {}", thing.getUID());
-                scheduler.schedule(this::fetchAccessoriesTask, MIN_CONNECTION_ATTEMPT_DELAY_SECONDS, TimeUnit.SECONDS);
-                return; // pairing restore succeeded => exit
+                scheduler.schedule(this::fetchAccessories, MIN_CONNECTION_ATTEMPT_DELAY_SECONDS, TimeUnit.SECONDS);
+                return true; // pairing restore succeeded => exit
             } catch (NoSuchAlgorithmException | NoSuchProviderException | IllegalAccessException
                     | InvalidCipherTextException | IOException | InterruptedException | TimeoutException
                     | ExecutionException | IllegalStateException e) {
@@ -266,6 +269,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     i18nProvider.getText(bundle, "error.not-paired", "Not paired", null));
         }
+        return false;
     }
 
     public Map<Long, Accessory> getAccessories() {
@@ -294,8 +298,12 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
     protected void scheduleConnectionAttempt() {
         if (getBridge() instanceof Bridge bridge && bridge.getHandler() instanceof HomekitBridgeHandler bridgeHandler) {
             bridgeHandler.scheduleConnectionAttempt();
-        } else if (connectionAttemptTask == null) {
-            connectionAttemptTask = scheduler.schedule(this::attemptConnect, connectionAttemptDelay, TimeUnit.SECONDS);
+        } else {
+            ScheduledFuture<?> task = connectionAttemptTask;
+            if (task == null || task.isDone() || task.isCancelled()) {
+                connectionAttemptTask = scheduler.schedule(this::attemptConnect, connectionAttemptDelay,
+                        TimeUnit.SECONDS);
+            }
         }
     }
 
@@ -308,14 +316,13 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
             transport.close();
             ipTransport = null;
         }
-        verifyPairing();
-        if (isConfigured && thing.getStatus() != ThingStatus.ONLINE) { // config ok but connection failed => try again
+        if (verifyPairing()) {
+            connectionAttemptDelay = MIN_CONNECTION_ATTEMPT_DELAY_SECONDS;
+            connectionAttemptTask = null;
+        } else if (isConfigured) { // config ok but connection failed => try again
             connectionAttemptDelay = Math.min(MAX_CONNECTION_ATTEMPT_DELAY_SECONDS,
                     (int) Math.pow(connectionAttemptDelay, 2));
             connectionAttemptTask = scheduler.schedule(this::attemptConnect, connectionAttemptDelay, TimeUnit.SECONDS);
-        } else { // succeeded => reset delay
-            connectionAttemptDelay = MIN_CONNECTION_ATTEMPT_DELAY_SECONDS;
-            connectionAttemptTask = null;
         }
     }
 
@@ -354,22 +361,19 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
     }
 
     @Override
-    public abstract void onEvent(String jsonContent);
-
-    @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
         // only non child accessories require pairing support
         return thing.getBridgeUID() != null ? Set.of() : Set.of(HomekitPairingActions.class);
     }
 
-    private @Nullable String checkedHostName() {
-        Object host = getConfig().get(CONFIG_HOST);
-        if (host == null || !(host instanceof String hostName) || !HOST_PATTERN.matcher(hostName).matches()) {
+    private @Nullable String checkedIpAddress() {
+        Object obj = getConfig().get(CONFIG_IP_ADDRESS);
+        if (obj == null || !(obj instanceof String ipAddress) || !IPV4_PATTERN.matcher(ipAddress).matches()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    i18nProvider.getText(bundle, "error.invalid-host", "Invalid host", null));
+                    i18nProvider.getText(bundle, "error.invalid-ip-address", "Invalid IP address", null));
             return null;
         }
-        return hostName;
+        return ipAddress;
     }
 
     private @Nullable String checkedMacAddress() {
@@ -381,33 +385,14 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
         return macAddress;
     }
 
-    /**
-     * Checks and formats the mDNS service name from the configuration. The result is in the
-     * format 'foobar.hap.tcp.local' or 'foobar.hap.tcp.local:port'; the port is included if it
-     * is specified in the host name and is not default port '80'; spaces are escaped to '\032'.
-     *
-     * @param hostName the host name (may contain port)
-     * @return the formatted mDNS service name, or null if there is a configuration error
-     */
-    private @Nullable String checkedMdnsServiceName(@Nullable String hostName) {
-        if (!(getConfig().get(CONFIG_MDNS_SERVICE_NAME) instanceof String mdnsServiceName)
-                || mdnsServiceName.isBlank()) {
+    private @Nullable String checkedHostName() {
+        Object obj = getConfig().get(CONFIG_HOST_NAME);
+        if (obj == null || !(obj instanceof String hostName) || !HOST_PATTERN.matcher(hostName).matches()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    i18nProvider.getText(bundle, "error.missing-mdns-service-name", "Missing mDNS service name", null));
+                    i18nProvider.getText(bundle, "error.invalid-host-name", "Invalid fully qualified host name", null));
             return null;
         }
-        if (hostName == null) {
-            return null;
-        }
-        if (mdnsServiceName.endsWith(".")) {
-            mdnsServiceName = mdnsServiceName.substring(0, mdnsServiceName.length() - 1);
-        }
-        mdnsServiceName = mdnsServiceName.replace(" ", "\\032");
-        String[] parts = hostName.split(":");
-        if (parts.length == 2 && !"80".equals(parts[1])) {
-            mdnsServiceName += ":" + parts[1];
-        }
-        return mdnsServiceName;
+        return hostName;
     }
 
     private @Nullable Long checkedAccessoryId() {
@@ -420,9 +405,9 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
         return accessoryId;
     }
 
-    private @Nullable IpTransport checkedCreateIpTransport(String hostName, String mdnsServiceName) {
+    private @Nullable IpTransport checkedCreateIpTransport(String ipAddress, String hostName) {
         try {
-            IpTransport ipTransport = new IpTransport(hostName, mdnsServiceName, this);
+            IpTransport ipTransport = new IpTransport(ipAddress, hostName, this);
             this.ipTransport = ipTransport;
             return ipTransport;
         } catch (IOException e) {
@@ -453,16 +438,16 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
 
         isConfigured = false;
         Long accessoryId = checkedAccessoryId();
-        String hostName = checkedHostName();
+        String ipAddress = checkedIpAddress();
         String macAddress = checkedMacAddress();
-        String mdnsServiceName = checkedMdnsServiceName(hostName);
-        if (accessoryId == null || hostName == null || macAddress == null || mdnsServiceName == null) {
+        String hostName = checkedHostName();
+        if (accessoryId == null || ipAddress == null || macAddress == null || hostName == null) {
             return; // configuration error
         }
         isConfigured = true;
 
         // create new transport
-        if (checkedCreateIpTransport(hostName, mdnsServiceName) == null) {
+        if (checkedCreateIpTransport(ipAddress, hostName) == null) {
             return; // transport creation failed
         }
 
@@ -571,14 +556,6 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
     }
 
     /**
-     * Gets the list of characteristics that should be evented (subscribed to).
-     * Subclasses must implement this to return the relevant list of characteristics.
-     *
-     * @return list of evented characteristics
-     */
-    protected abstract List<Characteristic> getEventedCharacteristics();
-
-    /**
      * Wrapper to enable or disable events with exception handling.
      *
      * @param enable true to enable events, false to disable
@@ -602,7 +579,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
     }
 
     /**
-     * Inner method to enable or disable events for the characteristics returned by getEventedCharacteristics().
+     * Inner method to enable or disable events members of the eventedCharacteristics list.
      * All exceptions are thrown upwards to the caller.
      *
      * @param enable true to enable events, false to disable
@@ -616,11 +593,12 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
     private void enableEventsOrThrow(boolean enable) throws IllegalStateException, IllegalAccessException, IOException,
             InterruptedException, TimeoutException, ExecutionException {
         if (isChildAccessory) {
-            return; // child accessories delegate to bridge
+            logger.warn("Forbidden to enable/disable events on child accessory '{}'", thing.getUID());
+            return;
         }
         Service service = new Service();
         service.characteristics = new ArrayList<>();
-        service.characteristics.addAll(getEventedCharacteristics().stream().map(characteristic -> {
+        service.characteristics.addAll(eventedCharacteristics.stream().map(characteristic -> {
             characteristic.ev = enable;
             return characteristic;
         }).toList());
@@ -629,4 +607,25 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
             logger.debug("Eventing {}abled for {} channels", enable ? "en" : "dis", service.characteristics.size());
         }
     }
+
+    /**
+     * Checks if all handler instances are initialized.
+     * Subclasses override this to implement the waiting logic.
+     */
+    protected abstract boolean checkHandlersInitialized();
+
+    /**
+     * Called when the root thing has finished loading the accessories.
+     * Subclasses override this to perform any processing required.
+     */
+    protected abstract void onAccessoriesLoaded();
+
+    /**
+     * Called when the root handler is fully online.
+     * Subclasses override this to perform any processing required.
+     */
+    protected abstract void onRootHandlerReady();
+
+    @Override
+    public abstract void onEvent(String jsonContent);
 }

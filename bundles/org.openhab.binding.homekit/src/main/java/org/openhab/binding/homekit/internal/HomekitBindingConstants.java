@@ -45,8 +45,8 @@ public class HomekitBindingConstants {
     public static final String THING_LABEL_FMT = "%s on %s";
 
     // configuration parameters
-    public static final String CONFIG_HOST = "host";
-    public static final String CONFIG_MDNS_SERVICE_NAME = "mdnsServiceName";
+    public static final String CONFIG_HOST_NAME = "hostName";
+    public static final String CONFIG_IP_ADDRESS = "ipAddress";
     public static final String CONFIG_REFRESH_INTERVAL = "refreshInterval";
     public static final String CONFIG_ACCESSORY_ID = "accessoryID";
 
@@ -72,6 +72,10 @@ public class HomekitBindingConstants {
     public static final Pattern PAIRING_CODE_PATTERN = Pattern.compile("\\d{3}-\\d{2}-\\d{3}|\\d{4}-\\d{4}|\\d{8}");
 
     // pattern matcher for host ipv4 address 123.123.123.123:12345
-    public static final Pattern HOST_PATTERN = Pattern.compile(
+    public static final Pattern IPV4_PATTERN = Pattern.compile(
             "^(((25[0-5]|2[0-4]\\d|1\\d{2}|[1-9]?\\d)\\.){3}(25[0-5]|2[0-4]\\d|1\\d{2}|[1-9]?\\d)):(6553[0-5]|655[0-2]\\d|65[0-4]\\d{2}|6[0-4]\\d{3}|[1-5]?\\d{1,4})$");
+
+    // pattern matcher for a fully qualified host name like foobar.local or foobar.local:12345
+    // NOTE: this specially allows '\' characters in the host name -- even if normally not allowed by the RFC
+    public static final Pattern HOST_PATTERN = Pattern.compile("^([a-zA-Z0-9\\\\-]+)\\.local(?::(\\d{1,5}))?$");
 }

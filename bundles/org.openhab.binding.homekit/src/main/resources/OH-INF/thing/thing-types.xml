@@ -8,7 +8,7 @@
 		<label>HomeKit Device</label>
 		<description>HomeKit Accessory Device</description>
 		<config-description>
-			<parameter name="host" type="text" required="true">
+			<parameter name="ipAddress" type="text" required="true">
 				<context>network-address</context>
 				<label>IP Address</label>
 				<description>IP v4 address of the HomeKit accessory.</description>
@@ -18,9 +18,9 @@
 				<description>Unique accessory identifier.</description>
 				<advanced>true</advanced>
 			</parameter>
-			<parameter name="mdnsServiceName" type="text" required="true">
-				<label>mDNS Service Name</label>
-				<description>The name of the discovered mDNS service.</description>
+			<parameter name="hostName" type="text" required="true">
+				<label>Host Name</label>
+				<description>The accessory fully qualified host name as discovered by mDNS.</description>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="accessoryID" type="integer" required="true">
@@ -42,7 +42,7 @@
 		<label>HomeKit Bridge</label>
 		<description>HomeKit Accessory Bridge</description>
 		<config-description>
-			<parameter name="host" type="text" required="true">
+			<parameter name="ipAddress" type="text" required="true">
 				<context>network-address</context>
 				<label>IP Address</label>
 				<description>IP v4 address of the HomeKit bridge.</description>
@@ -52,9 +52,9 @@
 				<description>Unique accessory identifier.</description>
 				<advanced>true</advanced>
 			</parameter>
-			<parameter name="mdnsServiceName" type="text" required="true">
-				<label>mDNS Service Name</label>
-				<description>The name of the discovered mDNS service.</description>
+			<parameter name="hostName" type="text" required="true">
+				<label>Host Name</label>
+				<description>The bridge fully qualified host name as discovered by mDNS.</description>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="accessoryID" type="integer" required="true">

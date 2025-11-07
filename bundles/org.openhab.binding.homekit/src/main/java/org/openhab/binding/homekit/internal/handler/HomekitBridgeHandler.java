@@ -12,15 +12,12 @@
  */
 package org.openhab.binding.homekit.internal.handler;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.homekit.internal.action.HomekitPairingActions;
 import org.openhab.binding.homekit.internal.discovery.HomekitChildDiscoveryService;
-import org.openhab.binding.homekit.internal.dto.Characteristic;
 import org.openhab.binding.homekit.internal.persistence.HomekitKeyStore;
 import org.openhab.binding.homekit.internal.persistence.HomekitTypeProvider;
 import org.openhab.core.i18n.TranslationProvider;
@@ -31,6 +28,7 @@ import org.openhab.core.thing.binding.BridgeHandler;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.thing.binding.builder.BridgeBuilder;
+import org.openhab.core.thing.util.ThingHandlerHelper;
 import org.openhab.core.types.Command;
 import org.osgi.framework.Bundle;
 
@@ -72,8 +70,13 @@ public class HomekitBridgeHandler extends HomekitBaseAccessoryHandler implements
     }
 
     @Override
-    public void initialize() {
-        super.initialize();
+    public void handleCommand(ChannelUID channelUID, Command command) {
+        // do nothing
+    }
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Set.of(HomekitChildDiscoveryService.class, HomekitPairingActions.class);
     }
 
     @Override
@@ -87,42 +90,37 @@ public class HomekitBridgeHandler extends HomekitBaseAccessoryHandler implements
     }
 
     @Override
-    protected void accessoriesLoaded() {
+    protected boolean checkHandlersInitialized() {
+        return getThing().getThings().stream().allMatch(child -> ThingHandlerHelper.isHandlerInitialized(child));
+    }
+
+    @Override
+    protected void onAccessoriesLoaded() {
         createProperties();
-        getThing().getThings().forEach(thing -> {
-            if (thing.getHandler() instanceof HomekitAccessoryHandler homekitAccessoryHandler) {
-                homekitAccessoryHandler.accessoriesLoaded();
+        getThing().getThings().forEach(child -> {
+            if (child.getHandler() instanceof HomekitBaseAccessoryHandler childHandler) {
+                childHandler.onAccessoriesLoaded();
+            }
+        });
+    }
+
+    @Override
+    protected void onRootHandlerReady() {
+        eventedCharacteristics.clear();
+        getThing().getThings().forEach(child -> {
+            if (child.getHandler() instanceof HomekitBaseAccessoryHandler childHandler) {
+                childHandler.onRootHandlerReady();
+                eventedCharacteristics.addAll(childHandler.eventedCharacteristics);
             }
         });
     }
 
     @Override
     public void onEvent(String jsonContent) {
-        getThing().getThings().forEach(thing -> {
-            if (thing.getHandler() instanceof HomekitAccessoryHandler homekitAccessoryHandler) {
-                homekitAccessoryHandler.onEvent(jsonContent);
+        getThing().getThings().forEach(child -> {
+            if (child.getHandler() instanceof HomekitBaseAccessoryHandler childHandler) {
+                childHandler.onEvent(jsonContent);
             }
         });
-    }
-
-    @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
-        // do nothing
-    }
-
-    @Override
-    public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Set.of(HomekitChildDiscoveryService.class, HomekitPairingActions.class);
-    }
-
-    @Override
-    protected List<Characteristic> getEventedCharacteristics() {
-        List<Characteristic> result = new ArrayList<>();
-        getThing().getThings().forEach(thing -> {
-            if (thing.getHandler() instanceof HomekitAccessoryHandler homekitAccessoryHandler) {
-                result.addAll(homekitAccessoryHandler.getEventedCharacteristics());
-            }
-        });
-        return result;
     }
 }

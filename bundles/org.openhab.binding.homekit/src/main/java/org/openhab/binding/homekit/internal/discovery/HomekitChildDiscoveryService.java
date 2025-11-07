@@ -58,10 +58,10 @@ public class HomekitChildDiscoveryService extends AbstractThingHandlerDiscoveryS
                 thingDiscovered(DiscoveryResultBuilder.create(uid) //
                         .withBridge(bridge.getUID()) //
                         .withLabel(THING_LABEL_FMT.formatted(thingLabel, bridge.getLabel())) //
-                        .withProperty(CONFIG_HOST, "n/a") //
+                        .withProperty(CONFIG_HOST_NAME, "n/a") //
+                        .withProperty(CONFIG_IP_ADDRESS, "n/a") //
                         .withProperty(Thing.PROPERTY_MAC_ADDRESS, "n/a") //
                         .withProperty(CONFIG_ACCESSORY_ID, aid.toString()) //
-                        .withProperty(CONFIG_MDNS_SERVICE_NAME, "n/a") //
                         .withRepresentationProperty(CONFIG_ACCESSORY_ID).build());
             }
         });

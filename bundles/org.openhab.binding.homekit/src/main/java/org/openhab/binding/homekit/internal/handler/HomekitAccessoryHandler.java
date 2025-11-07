@@ -67,7 +67,6 @@ import org.openhab.core.thing.DefaultSystemChannelTypeProvider;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
-import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.type.ChannelGroupType;
@@ -127,7 +126,6 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
     }
 
     private final List<LightModelLink> lightModelLinks = new ArrayList<>();
-    private final List<Characteristic> eventedCharacteristics = new ArrayList<>();
 
     private @Nullable Channel stopMoveChannel = null; // channel for the stop button (rollershutters)
     private @Nullable ScheduledFuture<?> refreshTask;
@@ -138,13 +136,6 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
         super(thing, typeProvider, keyStore, i18nProvider, bundle);
         this.channelTypeRegistry = channelTypeRegistry;
         this.channelGroupTypeRegistry = channelGroupTypeRegistry;
-    }
-
-    @Override
-    protected void accessoriesLoaded() {
-        createProperties();
-        createChannels();
-        startRefreshTask();
     }
 
     /**
@@ -470,7 +461,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
             return;
         }
         if (command == RefreshType.REFRESH) {
-            return;
+            refresh();
         }
         try {
             if (command instanceof StopMoveType stopMoveType && StopMoveType.STOP == stopMoveType) {
@@ -532,6 +523,16 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
     @Override
     public void initialize() {
         super.initialize();
+        if (isChildAccessory) {
+            if (getBridge() instanceof Bridge bridge && bridge.getStatus() == ThingStatus.ONLINE) {
+                scheduler.submit(() -> {
+                    onAccessoriesLoaded();
+                    onRootHandlerReady();
+                });
+            } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            }
+        }
     }
 
     @Override
@@ -568,9 +569,6 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
         try {
             String json = getRwService().readCharacteristic(String.join(",", queries));
             updateChannelsFromJson(json);
-            if (thing.getStatus() != ThingStatus.ONLINE) {
-                updateStatus(ThingStatus.ONLINE);
-            }
             return;
         } catch (InterruptedException e) {
             // shutting down; do nothing
@@ -883,16 +881,6 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
     }
 
     /**
-     * Handles incoming events by updating the corresponding channels based on the characteristic values.
-     *
-     * @param json the JSON content of the event
-     */
-    @Override
-    public void onEvent(String json) {
-        updateChannelsFromJson(json);
-    }
-
-    /**
      * Updates the channels based on the provided JSON content.
      *
      * @param json the JSON content containing characteristic values
@@ -968,16 +956,23 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
     }
 
     @Override
-    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
-        super.bridgeStatusChanged(bridgeStatusInfo);
-        if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE && thing.getStatus() != ThingStatus.ONLINE) {
-            updateStatus(ThingStatus.ONLINE);
-            startRefreshTask();
-        }
+    protected boolean checkHandlersInitialized() {
+        return isInitialized();
     }
 
     @Override
-    protected List<Characteristic> getEventedCharacteristics() {
-        return eventedCharacteristics;
+    protected void onAccessoriesLoaded() {
+        createProperties();
+        createChannels();
+    }
+
+    @Override
+    protected void onRootHandlerReady() {
+        startRefreshTask();
+    }
+
+    @Override
+    public void onEvent(String json) {
+        updateChannelsFromJson(json);
     }
 }

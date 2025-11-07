@@ -57,7 +57,7 @@ public class IpTransport implements AutoCloseable {
     private final ExecutorService executor = Executors.newSingleThreadExecutor(r -> new Thread(r, "homekit-io"));
 
     private final Socket socket;
-    private final String mdnsServiceName;
+    private final String hostName;
     private final EventListener eventListener;
 
     private @Nullable SecureSession secureSession = null;
@@ -70,26 +70,29 @@ public class IpTransport implements AutoCloseable {
     /**
      * Creates a new IpTransport instance on the given host.
      *
-     * @param hostName the IP address and port of the HomeKit accessory
+     * @param ipAddress the IP address and port of the HomeKit accessory
+     * @param hostName the fully qualified host name (e.g. 'foobar.local') of the HomeKit accessory
      * @throws IOException
      */
-    public IpTransport(String hostName, String mdnsServiceName, EventListener eventListener) throws IOException {
-        logger.debug("Connecting to {}", hostName);
-        this.mdnsServiceName = mdnsServiceName;
+    public IpTransport(String ipAddress, String hostName, EventListener eventListener) throws IOException {
+        logger.debug("Connecting to {} alias {}", ipAddress, hostName);
+        this.hostName = hostName;
         this.eventListener = eventListener;
-        String[] parts = hostName.split(":");
+        String[] parts = ipAddress.split(":");
         socket = new Socket();
         socket.setKeepAlive(true); // keep-alive forbiddden for accessories but client should use it
         socket.setTcpNoDelay(true); // disable Nagle algorithm to force immediate flushing of packets
         socket.connect(new InetSocketAddress(parts[0], Integer.parseInt(parts[1])), TIMEOUT_MILLI_SECONDS);
-        logger.debug("Connected to {}", hostName);
+        logger.debug("Connected to {} alias {}", ipAddress, hostName);
     }
 
     public void setSessionKeys(AsymmetricSessionKeys keys) throws IOException {
+        logger.trace("setSessionKeys()");
         secureSession = new SecureSession(socket, keys);
         Thread thread = new Thread(this::readTask, "homekit-read");
         readThread = thread;
         thread.start();
+        logger.trace("setSessionKeys() {}", secureSession);
     }
 
     /**
@@ -230,7 +233,7 @@ public class IpTransport implements AutoCloseable {
     private byte[] buildRequest(String method, String endpoint, String contentType, byte[] content) throws IOException {
         StringBuilder sb = new StringBuilder();
         sb.append(method).append(" ").append(endpoint).append(" HTTP/1.1\r\n");
-        sb.append("Host: ").append(mdnsServiceName).append("\r\n");
+        sb.append("Host: ").append(hostName).append("\r\n");
         if (!contentIsEmpty(method)) {
             sb.append("Content-Length: ").append(content.length).append("\r\n");
             sb.append("Content-Type: ").append(contentType).append("\r\n");

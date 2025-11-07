@@ -68,11 +68,11 @@ public class HomekitMdnsDiscoveryParticipant implements MDNSDiscoveryParticipant
         if (getThingUID(service) instanceof ThingUID uid) {
             Map<String, String> properties = getProperties(service);
 
-            String mac = properties.get("id"); // MAC address
-            String host = service.getHostAddresses()[0]; // ipV4 address
+            String macAddress = properties.get("id"); // MAC address
+            String ipAddress = service.getHostAddresses()[0]; // ipV4 address
             int port = service.getPort();
             if (port != 0) {
-                host = host + ":" + port;
+                ipAddress = ipAddress + ":" + port;
             }
 
             AccessoryCategory category;
@@ -83,14 +83,14 @@ public class HomekitMdnsDiscoveryParticipant implements MDNSDiscoveryParticipant
                 category = null;
             }
 
-            if (host != null && mac != null && category != null) {
+            if (ipAddress != null && macAddress != null && category != null) {
                 DiscoveryResultBuilder builder = DiscoveryResultBuilder.create(uid);
-                builder.withLabel(THING_LABEL_FMT.formatted(service.getName(), host)) //
-                        .withProperty(CONFIG_HOST, host) //
-                        .withProperty(Thing.PROPERTY_MAC_ADDRESS, mac) //
+                builder.withLabel(THING_LABEL_FMT.formatted(service.getName(), ipAddress)) //
+                        .withProperty(CONFIG_HOST_NAME, getHostName(service)) //
+                        .withProperty(CONFIG_IP_ADDRESS, ipAddress) //
+                        .withProperty(Thing.PROPERTY_MAC_ADDRESS, macAddress) //
                         .withProperty(PROPERTY_ACCESSORY_CATEGORY, category.toString()) //
                         .withProperty(CONFIG_ACCESSORY_ID, "1".toString()) //
-                        .withProperty(CONFIG_MDNS_SERVICE_NAME, service.getQualifiedName()) //
                         .withRepresentationProperty(Thing.PROPERTY_MAC_ADDRESS);
 
                 if (properties.get("md") instanceof String model) {
@@ -148,5 +148,27 @@ public class HomekitMdnsDiscoveryParticipant implements MDNSDiscoveryParticipant
             i += len;
         }
         return map;
+    }
+
+    /**
+     * Returns the fully qualified host name by ensuring it ends with ".local" plus, if the port is
+     * neither '0' nor the default 80, the respective suffix e.g. 'foobar.local' or 'foobar.local:12345'
+     *
+     * @param service the ServiceInfo object.
+     * @return the normalized host name.
+     */
+    private String getHostName(ServiceInfo service) {
+        String hostName = service.getServer();
+        if (hostName.endsWith(".")) {
+            hostName = hostName.substring(0, hostName.length() - 1);
+        }
+        if (!hostName.endsWith(".local")) {
+            hostName += ".local";
+        }
+        int port = service.getPort();
+        if (port != 80 && port != 0) {
+            hostName += ":" + port;
+        }
+        return hostName;
     }
 }
