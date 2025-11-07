@@ -18,12 +18,14 @@
     <dependency>
       <groupId>software.amazon.awssdk.iotdevicesdk</groupId>
       <artifactId>aws-iot-device-sdk</artifactId>
-      <version>1.15.0</version>
+      <version>1.27.4</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>software.amazon.awssdk.crt</groupId>
       <artifactId>aws-crt</artifactId>
-      <version>0.25.1</version>
+      <version>0.38.13</version>
+      <scope>provided</scope>
     </dependency>
   </dependencies>
 
