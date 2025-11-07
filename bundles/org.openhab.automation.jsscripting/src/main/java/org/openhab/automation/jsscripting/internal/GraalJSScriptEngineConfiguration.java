@@ -102,7 +102,7 @@ public class GraalJSScriptEngineConfiguration {
         logger.debug("JavaScript Script Engine Configuration: {}", config);
 
         injectionEnabled = ConfigParser.valueAsOrElse(config.get(CFG_INJECTION_ENABLED), Integer.class,
-                INJECTION_ENABLED_FOR_SCRIPT_MODULES_ONLY);
+                INJECTION_ENABLED_FOR_ALL_SCRIPTS);
         injectionCachingEnabled = ConfigParser.valueAsOrElse(config.get(CFG_INJECTION_CACHING_ENABLED), Boolean.class,
                 true);
         scriptConditionWrapperEnabled = ConfigParser.valueAsOrElse(config.get(CFG_SCRIPT_CONDITION_WRAPPER_ENABLED),
