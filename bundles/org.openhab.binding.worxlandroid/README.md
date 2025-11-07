@@ -3,7 +3,7 @@
 
 This is the binding for Worx Landroid robotic lawn mowers.
 It connects openHAB with your WorxLandroid mower using the API and MQTT.
-This binding allows you to integrate, view and control supported Worx lawn mowers in the openHAB environment.
+This binding allows you to integrate, view and control supported Worx lawn mowers with openHAB.
 
 ## Supported Things
 
