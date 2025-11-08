@@ -43,7 +43,10 @@ public class RuuviTagBindingConstants {
     public static final String CHANNEL_ID_DATA_FORMAT = "dataFormat";
 
     // Channel IDs - Air Quality (Ruuvi Air Format 6+)
+    public static final String CHANNEL_ID_PM1 = "pm1";
     public static final String CHANNEL_ID_PM25 = "pm25";
+    public static final String CHANNEL_ID_PM4 = "pm4";
+    public static final String CHANNEL_ID_PM10 = "pm10";
     public static final String CHANNEL_ID_CO2 = "co2";
     public static final String CHANNEL_ID_VOC_INDEX = "vocIndex";
     public static final String CHANNEL_ID_NOX_INDEX = "noxIndex";

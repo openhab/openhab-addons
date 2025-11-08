@@ -180,8 +180,20 @@ public class RuuviHandler extends BeaconBluetoothHandler {
                                 atLeastOneRuuviFieldPresent |= updateStateIfLinked(channelUID,
                                         ruuvitagData.getTxPower(), Units.DECIBEL_MILLIWATTS);
                                 break;
+                            case CHANNEL_ID_PM1:
+                                atLeastOneRuuviFieldPresent |= updateStateIfLinked(channelUID, ruuvitagData.getPm1(),
+                                        Units.MICROGRAM_PER_CUBICMETRE);
+                                break;
                             case CHANNEL_ID_PM25:
                                 atLeastOneRuuviFieldPresent |= updateStateIfLinked(channelUID, ruuvitagData.getPm25(),
+                                        Units.MICROGRAM_PER_CUBICMETRE);
+                                break;
+                            case CHANNEL_ID_PM4:
+                                atLeastOneRuuviFieldPresent |= updateStateIfLinked(channelUID, ruuvitagData.getPm4(),
+                                        Units.MICROGRAM_PER_CUBICMETRE);
+                                break;
+                            case CHANNEL_ID_PM10:
+                                atLeastOneRuuviFieldPresent |= updateStateIfLinked(channelUID, ruuvitagData.getPm10(),
                                         Units.MICROGRAM_PER_CUBICMETRE);
                                 break;
                             case CHANNEL_ID_CO2:

@@ -34,7 +34,10 @@
 			<channel id="movementCounter" typeId="ruuvitag_movementCounter"/>
 
 			<!-- Ruuvi Air only channels (not available on RuuviTag) -->
+			<channel id="pm1" typeId="ruuvi_pm1"/>
 			<channel id="pm25" typeId="ruuvi_pm25"/>
+			<channel id="pm4" typeId="ruuvi_pm4"/>
+			<channel id="pm10" typeId="ruuvi_pm10"/>
 			<channel id="co2" typeId="ruuvi_co2"/>
 			<channel id="vocIndex" typeId="ruuvi_vocIndex"/>
 			<channel id="noxIndex" typeId="ruuvi_noxIndex"/>
@@ -131,10 +134,40 @@
 	</channel-type>
 
 	<!-- Ruuvi Air specific channel-types -->
+	<channel-type id="ruuvi_pm1">
+		<item-type unitHint="μg/m³">Number:Density</item-type>
+		<label>PM1.0</label>
+		<description><![CDATA[particulate matter <= 1.0 μm concentration (E1 format only)]]></description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>AirQuality</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
 	<channel-type id="ruuvi_pm25">
 		<item-type unitHint="μg/m³">Number:Density</item-type>
 		<label>PM2.5</label>
 		<description><![CDATA[particulate matter <= 2.5 μm concentration]]></description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>AirQuality</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="ruuvi_pm4">
+		<item-type unitHint="μg/m³">Number:Density</item-type>
+		<label>PM4.0</label>
+		<description><![CDATA[particulate matter <= 4.0 μm concentration (E1 format only)]]></description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>AirQuality</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="ruuvi_pm10">
+		<item-type unitHint="μg/m³">Number:Density</item-type>
+		<label>PM10.0</label>
+		<description><![CDATA[particulate matter <= 10.0 μm concentration (E1 format only)]]></description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>AirQuality</tag>
