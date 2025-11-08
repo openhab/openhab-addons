@@ -7,6 +7,8 @@
 	<bridge-type id="account">
 		<label>Account</label>
 		<description>This is the account for which your device(s) are registered at Daikin Onecta.</description>
+		<category>WebService</category>
+		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 
 		<config-description>
 			<parameter name="refreshInterval" type="integer" unit="s" min="5">

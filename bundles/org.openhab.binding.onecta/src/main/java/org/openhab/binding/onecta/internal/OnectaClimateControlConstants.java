@@ -38,7 +38,6 @@ public class OnectaClimateControlConstants {
     public static final String CHANNEL_INDOOR_HUMIDITY = "basic#humidity";
     public static final String CHANNEL_AC_POWER = "basic#power";
     public static final String CHANNEL_AC_POWERFULMODE = "basic#powerful-mode";
-    public static final String CHANNEL_AC_RAWDATA = "extra#rawdata";
     public static final String CHANNEL_AC_OPERATIONMODE = "basic#operation-mode";
     public static final String CHANNEL_AC_NAME = "basic#name";
     public static final String CHANNEL_AC_FANSPEED = "basic#fan-speed";

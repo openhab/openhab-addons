@@ -11,7 +11,7 @@
 
 		<label>Domestic Hot Water Tank</label>
 		<description>Daikin Onecta Domestic HotWater Tank</description>
-        <semantic-equipment-tag>Boiler</semantic-equipment-tag>
+		<semantic-equipment-tag>Boiler</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="basic" typeId="basic-group-watertank"/>

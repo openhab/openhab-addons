@@ -11,7 +11,7 @@
 
 		<label>Indoor Unit</label>
 		<description>Daikin Onecta Indoor Unit</description>
-        <semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
+		<semantic-equipment-tag>ControlDevice</semantic-equipment-tag>
 		<channel-groups>
 			<channel-group id="basic" typeId="basic-group-indoor-unit"/>
 		</channel-groups>

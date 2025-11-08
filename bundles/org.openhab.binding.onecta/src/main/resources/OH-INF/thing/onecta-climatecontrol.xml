@@ -11,15 +11,13 @@
 
 		<label>Device climateControl</label>
 		<description>Daikin Onecta device climateControl</description>
-        <semantic-equipment-tag>AirConditioner</semantic-equipment-tag>
+		<semantic-equipment-tag>AirConditioner</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="basic" typeId="basic-group"/>
 			<channel-group id="demandcontrol" typeId="demandcontrol-group"/>
 			<channel-group id="consumption-data-cooling" typeId="consumption-data-cooling-group"/>
 			<channel-group id="consumption-data-heating" typeId="consumption-data-heating-group"/>
-
-			<channel-group id="extra" typeId="extra-group"/>
 		</channel-groups>
 
 		<properties>
@@ -84,13 +82,7 @@
 			<channel id="demand-control-fixed-max-value" typeId="acunit-demand-control-fixed-max-value"/>
 		</channels>
 	</channel-group-type>
-	<channel-group-type id="extra-group">
-		<label>Extra</label>
-		<description>Extra special information</description>
-		<channels>
-			<channel id="rawdata" typeId="acunit-rawdata"/>
-		</channels>
-	</channel-group-type>
+
 	<channel-group-type id="consumption-data-cooling-group">
 		<label>Consumption data cooling</label>
 		<description>Consumption data cooling</description>
@@ -528,7 +520,6 @@
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
-
 	<channel-type id="acunit-energy-heating-day-0" advanced="true">
 		<item-type>Number:Energy</item-type>
 		<label>Energy heating yesterday (00:00 - 02:00)</label>
@@ -714,176 +705,6 @@
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
-	<channel-type id="acunit-energy-heating-current-year-1" advanced="true">
-		<item-type>Number:Energy</item-type>
-		<label>Energy Heating Current Year January</label>
-		<description>The energy usage for heating this year January</description>
-		<category>Energy</category>
-		<state readOnly="true" pattern="%.1f %unit%"/>
-	</channel-type>
-	<channel-type id="acunit-energy-heating-current-year-2" advanced="true">
-		<item-type>Number:Energy</item-type>
-		<label>Energy Heating Current Year February</label>
-		<description>The energy usage for heating this year February</description>
-		<category>Energy</category>
-		<state readOnly="true" pattern="%.1f %unit%"/>
-	</channel-type>
-	<channel-type id="acunit-energy-heating-current-year-3" advanced="true">
-		<item-type>Number:Energy</item-type>
-		<label>Energy Heating Current Year March</label>
-		<description>The energy usage for heating this year March</description>
-		<category>Energy</category>
-		<state readOnly="true" pattern="%.1f %unit%"/>
-	</channel-type>
-	<channel-type id="acunit-energy-heating-current-year-4" advanced="true">
-		<item-type>Number:Energy</item-type>
-		<label>Energy Heating Current Year April</label>
-		<description>The energy usage for heating this year April</description>
-		<category>Energy</category>
-		<state readOnly="true" pattern="%.1f %unit%"/>
-	</channel-type>
-	<channel-type id="acunit-energy-heating-current-year-5" advanced="true">
-		<item-type>Number:Energy</item-type>
-		<label>Energy Heating Current Year May</label>
-		<description>The energy usage for heating this year May</description>
-		<category>Energy</category>
-		<state readOnly="true" pattern="%.1f %unit%"/>
-	</channel-type>
-	<channel-type id="acunit-energy-heating-current-year-6" advanced="true">
-		<item-type>Number:Energy</item-type>
-		<label>Energy Heating Current Year June</label>
-		<description>The energy usage for heating this year June</description>
-		<category>Energy</category>
-		<state readOnly="true" pattern="%.1f %unit%"/>
-	</channel-type>
-	<channel-type id="acunit-energy-heating-current-year-7" advanced="true">
-		<item-type>Number:Energy</item-type>
-		<label>Energy Heating Current Year July</label>
-		<description>The energy usage for heating this year July</description>
-		<category>Energy</category>
-		<state readOnly="true" pattern="%.1f %unit%"/>
-	</channel-type>
-	<channel-type id="acunit-energy-heating-current-year-8" advanced="true">
-		<item-type>Number:Energy</item-type>
-		<label>Energy Heating Current Year August</label>
-		<description>The energy usage for heating this year August</description>
-		<category>Energy</category>
-		<state readOnly="true" pattern="%.1f %unit%"/>
-	</channel-type>
-	<channel-type id="acunit-energy-heating-current-year-9" advanced="true">
-		<item-type>Number:Energy</item-type>
-		<label>Energy Heating Current Year September</label>
-		<description>The energy usage for heating this year September</description>
-		<category>Energy</category>
-		<state readOnly="true" pattern="%.1f %unit%"/>
-	</channel-type>
-	<channel-type id="acunit-energy-heating-current-year-10" advanced="true">
-		<item-type>Number:Energy</item-type>
-		<label>Energy Heating Current Year October</label>
-		<description>The energy usage for heating this year October</description>
-		<category>Energy</category>
-		<state readOnly="true" pattern="%.1f %unit%"/>
-	</channel-type>
-	<channel-type id="acunit-energy-heating-current-year-11" advanced="true">
-		<item-type>Number:Energy</item-type>
-		<label>Energy Heating Current Year November</label>
-		<description>The energy usage for heating this year November</description>
-		<category>Energy</category>
-		<state readOnly="true" pattern="%.1f %unit%"/>
-	</channel-type>
-	<channel-type id="acunit-energy-heating-current-year-12" advanced="true">
-		<item-type>Number:Energy</item-type>
-		<label>Energy Heating Current Year December</label>
-		<description>The energy usage for heating this year December</description>
-		<category>Energy</category>
-		<state readOnly="true" pattern="%.1f %unit%"/>
-	</channel-type>
-	<channel-type id="acunit-energy-heating-current-year-1" advanced="true">
-		<item-type>Number:Energy</item-type>
-		<label>Energy heating Current Year January</label>
-		<description>The energy usage for heating this year January</description>
-		<category>Energy</category>
-		<state readOnly="true" pattern="%.1f %unit%"/>
-	</channel-type>
-	<channel-type id="acunit-energy-heating-current-year-2" advanced="true">
-		<item-type>Number:Energy</item-type>
-		<label>Energy heating Current Year February</label>
-		<description>The energy usage for heating this year February</description>
-		<category>Energy</category>
-		<state readOnly="true" pattern="%.1f %unit%"/>
-	</channel-type>
-	<channel-type id="acunit-energy-heating-current-year-3" advanced="true">
-		<item-type>Number:Energy</item-type>
-		<label>Energy heating Current Year March</label>
-		<description>The energy usage for heating this year March</description>
-		<category>Energy</category>
-		<state readOnly="true" pattern="%.1f %unit%"/>
-	</channel-type>
-	<channel-type id="acunit-energy-heating-current-year-4" advanced="true">
-		<item-type>Number:Energy</item-type>
-		<label>Energy heating Current Year April</label>
-		<description>The energy usage for heating this year April</description>
-		<category>Energy</category>
-		<state readOnly="true" pattern="%.1f %unit%"/>
-	</channel-type>
-	<channel-type id="acunit-energy-heating-current-year-5" advanced="true">
-		<item-type>Number:Energy</item-type>
-		<label>Energy heating Current Year May</label>
-		<description>The energy usage for heating this year May</description>
-		<category>Energy</category>
-		<state readOnly="true" pattern="%.1f %unit%"/>
-	</channel-type>
-	<channel-type id="acunit-energy-heating-current-year-6" advanced="true">
-		<item-type>Number:Energy</item-type>
-		<label>Energy heating Current Year June</label>
-		<description>The energy usage for heating this year June</description>
-		<category>Energy</category>
-		<state readOnly="true" pattern="%.1f %unit%"/>
-	</channel-type>
-	<channel-type id="acunit-energy-heating-current-year-7" advanced="true">
-		<item-type>Number:Energy</item-type>
-		<label>Energy heating Current Year July</label>
-		<description>The energy usage for heating this year July</description>
-		<category>Energy</category>
-		<state readOnly="true" pattern="%.1f %unit%"/>
-	</channel-type>
-	<channel-type id="acunit-energy-heating-current-year-8" advanced="true">
-		<item-type>Number:Energy</item-type>
-		<label>Energy heating Current Year August</label>
-		<description>The energy usage for heating this year August</description>
-		<category>Energy</category>
-		<state readOnly="true" pattern="%.1f %unit%"/>
-	</channel-type>
-	<channel-type id="acunit-energy-heating-current-year-9" advanced="true">
-		<item-type>Number:Energy</item-type>
-		<label>Energy heating Current Year September</label>
-		<description>The energy usage for heating this year September</description>
-		<category>Energy</category>
-		<state readOnly="true" pattern="%.1f %unit%"/>
-	</channel-type>
-	<channel-type id="acunit-energy-heating-current-year-10" advanced="true">
-		<item-type>Number:Energy</item-type>
-		<label>Energy heating Current Year October</label>
-		<description>The energy usage for heating this year October</description>
-		<category>Energy</category>
-		<state readOnly="true" pattern="%.1f %unit%"/>
-	</channel-type>
-	<channel-type id="acunit-energy-heating-current-year-11" advanced="true">
-		<item-type>Number:Energy</item-type>
-		<label>Energy heating Current Year November</label>
-		<description>The energy usage for heating this year November</description>
-		<category>Energy</category>
-		<state readOnly="true" pattern="%.1f %unit%"/>
-	</channel-type>
-	<channel-type id="acunit-energy-heating-current-year-12" advanced="true">
-		<item-type>Number:Energy</item-type>
-		<label>Energy heating Current Year December</label>
-		<description>The energy usage for heating this year December</description>
-		<category>Energy</category>
-		<state readOnly="true" pattern="%.1f %unit%"/>
-	</channel-type>
-
-
 	<channel-type id="acunit-energy-cooling-month-0" advanced="true">
 		<item-type>Number:Energy</item-type>
 		<label>Energy Cooling last year (00) January</label>
@@ -968,7 +789,6 @@
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
-
 
 	<channel-type id="acunit-energy-cooling-month-12" advanced="true">
 		<item-type>Number:Energy</item-type>
@@ -1358,176 +1178,6 @@
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
-	<channel-type id="acunit-energy-heating-current-year-1" advanced="true">
-		<item-type>Number:Energy</item-type>
-		<label>Energy Heating Current Year January</label>
-		<description>The energy usage for heating this year January</description>
-		<category>Energy</category>
-		<state readOnly="true" pattern="%.1f %unit%"/>
-	</channel-type>
-	<channel-type id="acunit-energy-heating-current-year-2" advanced="true">
-		<item-type>Number:Energy</item-type>
-		<label>Energy Heating Current Year February</label>
-		<description>The energy usage for heating this year February</description>
-		<category>Energy</category>
-		<state readOnly="true" pattern="%.1f %unit%"/>
-	</channel-type>
-	<channel-type id="acunit-energy-heating-current-year-3" advanced="true">
-		<item-type>Number:Energy</item-type>
-		<label>Energy Heating Current Year March</label>
-		<description>The energy usage for heating this year March</description>
-		<category>Energy</category>
-		<state readOnly="true" pattern="%.1f %unit%"/>
-	</channel-type>
-	<channel-type id="acunit-energy-heating-current-year-4" advanced="true">
-		<item-type>Number:Energy</item-type>
-		<label>Energy Heating Current Year April</label>
-		<description>The energy usage for heating this year April</description>
-		<category>Energy</category>
-		<state readOnly="true" pattern="%.1f %unit%"/>
-	</channel-type>
-	<channel-type id="acunit-energy-heating-current-year-5" advanced="true">
-		<item-type>Number:Energy</item-type>
-		<label>Energy Heating Current Year May</label>
-		<description>The energy usage for heating this year May</description>
-		<category>Energy</category>
-		<state readOnly="true" pattern="%.1f %unit%"/>
-	</channel-type>
-	<channel-type id="acunit-energy-heating-current-year-6" advanced="true">
-		<item-type>Number:Energy</item-type>
-		<label>Energy Heating Current Year June</label>
-		<description>The energy usage for heating this year June</description>
-		<category>Energy</category>
-		<state readOnly="true" pattern="%.1f %unit%"/>
-	</channel-type>
-	<channel-type id="acunit-energy-heating-current-year-7" advanced="true">
-		<item-type>Number:Energy</item-type>
-		<label>Energy Heating Current Year July</label>
-		<description>The energy usage for heating this year July</description>
-		<category>Energy</category>
-		<state readOnly="true" pattern="%.1f %unit%"/>
-	</channel-type>
-	<channel-type id="acunit-energy-heating-current-year-8" advanced="true">
-		<item-type>Number:Energy</item-type>
-		<label>Energy Heating Current Year August</label>
-		<description>The energy usage for heating this year August</description>
-		<category>Energy</category>
-		<state readOnly="true" pattern="%.1f %unit%"/>
-	</channel-type>
-	<channel-type id="acunit-energy-heating-current-year-9" advanced="true">
-		<item-type>Number:Energy</item-type>
-		<label>Energy Heating Current Year September</label>
-		<description>The energy usage for heating this year September</description>
-		<category>Energy</category>
-		<state readOnly="true" pattern="%.1f %unit%"/>
-	</channel-type>
-	<channel-type id="acunit-energy-heating-current-year-10" advanced="true">
-		<item-type>Number:Energy</item-type>
-		<label>Energy Heating Current Year October</label>
-		<description>The energy usage for heating this year October</description>
-		<category>Energy</category>
-		<state readOnly="true" pattern="%.1f %unit%"/>
-	</channel-type>
-	<channel-type id="acunit-energy-heating-current-year-11" advanced="true">
-		<item-type>Number:Energy</item-type>
-		<label>Energy Heating Current Year November</label>
-		<description>The energy usage for heating this year November</description>
-		<category>Energy</category>
-		<state readOnly="true" pattern="%.1f %unit%"/>
-	</channel-type>
-	<channel-type id="acunit-energy-heating-current-year-12" advanced="true">
-		<item-type>Number:Energy</item-type>
-		<label>Energy Heating Current Year December</label>
-		<description>The energy usage for heating this year December</description>
-		<category>Energy</category>
-		<state readOnly="true" pattern="%.1f %unit%"/>
-	</channel-type>
-	<channel-type id="acunit-energy-cooling-current-year-1" advanced="true">
-		<item-type>Number:Energy</item-type>
-		<label>Energy Cooling Current Year January</label>
-		<description>The energy usage for cooling this year January</description>
-		<category>Energy</category>
-		<state readOnly="true" pattern="%.1f %unit%"/>
-	</channel-type>
-	<channel-type id="acunit-energy-cooling-current-year-2" advanced="true">
-		<item-type>Number:Energy</item-type>
-		<label>Energy Cooling Current Year February</label>
-		<description>The energy usage for cooling this year February</description>
-		<category>Energy</category>
-		<state readOnly="true" pattern="%.1f %unit%"/>
-	</channel-type>
-	<channel-type id="acunit-energy-cooling-current-year-3" advanced="true">
-		<item-type>Number:Energy</item-type>
-		<label>Energy Cooling Current Year March</label>
-		<description>The energy usage for cooling this year March</description>
-		<category>Energy</category>
-		<state readOnly="true" pattern="%.1f %unit%"/>
-	</channel-type>
-	<channel-type id="acunit-energy-cooling-current-year-4" advanced="true">
-		<item-type>Number:Energy</item-type>
-		<label>Energy Cooling Current Year April</label>
-		<description>The energy usage for cooling this year April</description>
-		<category>Energy</category>
-		<state readOnly="true" pattern="%.1f %unit%"/>
-	</channel-type>
-	<channel-type id="acunit-energy-cooling-current-year-5" advanced="true">
-		<item-type>Number:Energy</item-type>
-		<label>Energy Cooling Current Year May</label>
-		<description>The energy usage for cooling this year May</description>
-		<category>Energy</category>
-		<state readOnly="true" pattern="%.1f %unit%"/>
-	</channel-type>
-	<channel-type id="acunit-energy-cooling-current-year-6" advanced="true">
-		<item-type>Number:Energy</item-type>
-		<label>Energy Cooling Current Year June</label>
-		<description>The energy usage for cooling this year June</description>
-		<category>Energy</category>
-		<state readOnly="true" pattern="%.1f %unit%"/>
-	</channel-type>
-	<channel-type id="acunit-energy-cooling-current-year-7" advanced="true">
-		<item-type>Number:Energy</item-type>
-		<label>Energy Cooling Current Year July</label>
-		<description>The energy usage for cooling this year July</description>
-		<category>Energy</category>
-		<state readOnly="true" pattern="%.1f %unit%"/>
-	</channel-type>
-	<channel-type id="acunit-energy-cooling-current-year-8" advanced="true">
-		<item-type>Number:Energy</item-type>
-		<label>Energy Cooling Current Year August</label>
-		<description>The energy usage for cooling this year August</description>
-		<category>Energy</category>
-		<state readOnly="true" pattern="%.1f %unit%"/>
-	</channel-type>
-	<channel-type id="acunit-energy-cooling-current-year-9" advanced="true">
-		<item-type>Number:Energy</item-type>
-		<label>Energy Cooling Current Year September</label>
-		<description>The energy usage for cooling this year September</description>
-		<category>Energy</category>
-		<state readOnly="true" pattern="%.1f %unit%"/>
-	</channel-type>
-	<channel-type id="acunit-energy-cooling-current-year-10" advanced="true">
-		<item-type>Number:Energy</item-type>
-		<label>Energy Cooling Current Year October</label>
-		<description>The energy usage for cooling this year October</description>
-		<category>Energy</category>
-		<state readOnly="true" pattern="%.1f %unit%"/>
-	</channel-type>
-	<channel-type id="acunit-energy-cooling-current-year-11" advanced="true">
-		<item-type>Number:Energy</item-type>
-		<label>Energy Cooling Current Year November</label>
-		<description>The energy usage for cooling this year November</description>
-		<category>Energy</category>
-		<state readOnly="true" pattern="%.1f %unit%"/>
-	</channel-type>
-
-	<channel-type id="acunit-energy-cooling-current-year-12" advanced="true">
-		<item-type>Number:Energy</item-type>
-		<label>Energy Cooling Current Year December</label>
-		<description>The energy usage for cooling this year December</description>
-		<category>Energy</category>
-		<state readOnly="true" pattern="%.1f %unit%"/>
-	</channel-type>
-
 	<channel-type id="acunit-power">
 		<item-type>Switch</item-type>
 		<label>Power</label>
@@ -1689,15 +1339,6 @@
 			</options>
 		</state>
 	</channel-type>
-
-	<channel-type id="acunit-rawdata" advanced="true">
-		<item-type>String</item-type>
-		<label>Raw Json data</label>
-		<description>Unit data as collected from Daikin Onecta (readonly)</description>
-		<category>Text</category>
-		<state readOnly="true"/>
-	</channel-type>
-
 	<channel-type id="acunit-fan-dir-hor">
 		<item-type>String</item-type>
 		<label>Fan Swing Horizontal</label>

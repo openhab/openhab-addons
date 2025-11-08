@@ -176,8 +176,6 @@ public class OnectaDeviceHandler extends AbstractOnectaHandler {
             updateStatus(ThingStatus.ONLINE);
             getThing().setProperty(PROPERTY_AC_NAME, dataTransService.getUnitName());
 
-            updateState(CHANNEL_AC_RAWDATA, getRawData());
-
             if (channelsRefreshDelay.isDelayPassed(CHANNEL_AC_POWER)) {
                 updateState(CHANNEL_AC_POWER, getPowerOnOff());
             }
