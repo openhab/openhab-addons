@@ -49,20 +49,26 @@ The following channels are available on these sensors:
 | temperature               | Number:Temperature       | ✓        | ✓         | Measured temperature                                                    |
 | humidity                  | Number:Dimensionless     | ✓        | ✓         | Measured humidity                                                       |
 | pressure                  | Number:Pressure          | ✓        | ✓         | Measured air pressure                                                   |
+| dataFormat                | Number                   | ✓        | ✓         | Data format version                                                     |
+| measurementSequenceNumber | Number:Dimensionless     | ✓        | ✓         | Measurement sequence number                                             |
+| **RuuviTag Channels**     | | | | |
 | batteryVoltage            | Number:ElectricPotential | ✓        |           | Measured battery voltage                                                |
 | accelerationx             | Number:Acceleration      | ✓        |           | Acceleration on X axis                                                  |
 | accelerationy             | Number:Acceleration      | ✓        |           | Acceleration on Y axis                                                  |
 | accelerationz             | Number:Acceleration      | ✓        |           | Acceleration on Z axis                                                  |
 | txPower                   | Number:Power             | ✓        |           | TX power                                                                |
-| dataFormat                | Number                   | ✓        | ✓         | Data format version                                                     |
-| measurementSequenceNumber | Number:Dimensionless     | ✓        | ✓         | Measurement sequence number                                             |
 | movementCounter           | Number:Dimensionless     | ✓        |           | Movement counter                                                        |
+| **Ruuvi Air Channels**    | | | | |
+| pm1                       | Number:Density           |          | ✓         | PM1.0 particulate matter (≤1.0 μm concentration, E1 only)              |
 | pm25                      | Number:Density           |          | ✓         | PM2.5 particulate matter (≤2.5 μm concentration)                        |
+| pm4                       | Number:Density           |          | ✓         | PM4.0 particulate matter (≤4.0 μm concentration, E1 only)              |
+| pm10                      | Number:Density           |          | ✓         | PM10 particulate matter (≤10.0 μm concentration, E1 only)              |
 | co2                       | Number:Dimensionless     |          | ✓         | CO2 concentration (ppm)                                                 |
-| vocIndex                  | Number:Dimensionless     |          | ✓         | VOC (Volatile Organic Compounds) index (0-500, avg=100)                 |
-| noxIndex                  | Number:Dimensionless     |          | ✓         | NOX (Nitrogen Oxides) index (0-500, base=1)                             |
+| vocIndex                  | Number:Dimensionless     |          | ✓         | VOC (Volatile Organic Compounds) index (0-500)                          |
+| noxIndex                  | Number:Dimensionless     |          | ✓         | NOX (Nitrogen Oxides) index (0-500)                                     |
 | luminosity                | Number:Illuminance       |          | ✓         | Light intensity (lux)                                                   |
 | calibrationCompleted      | Switch                   |          | ✓         | Sensor calibration status                                               |
+| **Gateway Channels**      | | | | |
 | ts                        | DateTime                 | ✓        | ✓         | Timestamp when the message from sensor was received by gateway          |
 | gwts                      | DateTime                 | ✓        | ✓         | Timestamp when the message from sensor was relayed by gateway           |
 | gwmac                     | String                   | ✓        | ✓         | MAC address of Ruuvi Gateway                                            |
@@ -102,7 +108,11 @@ Number:Dimensionless    humidity    "Humidity [%.0f %unit%]"           { channel
 Number:Pressure         pressure    "Air Pressure [%.0f %unit%]"       { channel="mqtt:ruuvitag_beacon:myTag1:pressure" }
 
 // Ruuvi Air sensor channels
+Number:Density          pm1         "PM1.0 [%.1f %unit%]"             { channel="mqtt:ruuviair_beacon:myAir1:pm1" }
 Number:Density          pm25        "PM2.5 [%.1f %unit%]"             { channel="mqtt:ruuviair_beacon:myAir1:pm25" }
+Number:Density          pm4         "PM4.0 [%.1f %unit%]"             { channel="mqtt:ruuviair_beacon:myAir1:pm4" }
+Number:Density          pm10        "PM10 [%.1f %unit%]"              { channel="mqtt:ruuviair_beacon:myAir1:pm10" }
 Number:Dimensionless    co2         "CO2 [%.0f ppm]"                  { channel="mqtt:ruuviair_beacon:myAir1:co2" }
+Number:Dimensionless    vocIndex    "VOC Index [%.0f]"                { channel="mqtt:ruuviair_beacon:myAir1:vocIndex" }
 Switch                  cal_status  "Calibration Completed"           { channel="mqtt:ruuviair_beacon:myAir1:calibrationCompleted" }
 ```

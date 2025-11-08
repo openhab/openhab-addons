@@ -77,7 +77,7 @@ public class RuuviHandler extends AbstractMQTTThingHandler implements MqttMessag
     // - Unit (QuantityType Number), uses RuuviCachedNumberState with unit
     // - Class object, uses given class object with String constructor
 
-    private static final Map<String, @Nullable Object> unitByChannelUID = new HashMap<>(21);
+    private static final Map<String, @Nullable Object> unitByChannelUID = new HashMap<>(25);
     static {
         unitByChannelUID.put(CHANNEL_ID_ACCELERATIONX, Units.STANDARD_GRAVITY);
         unitByChannelUID.put(CHANNEL_ID_ACCELERATIONY, Units.STANDARD_GRAVITY);
@@ -91,7 +91,10 @@ public class RuuviHandler extends AbstractMQTTThingHandler implements MqttMessag
         unitByChannelUID.put(CHANNEL_ID_TEMPERATURE, SIUnits.CELSIUS);
         unitByChannelUID.put(CHANNEL_ID_TX_POWER, Units.DECIBEL_MILLIWATTS);
         // Air quality measurements (Format 6+)
+        unitByChannelUID.put(CHANNEL_ID_PM1, Units.MICROGRAM_PER_CUBICMETRE);
         unitByChannelUID.put(CHANNEL_ID_PM25, Units.MICROGRAM_PER_CUBICMETRE);
+        unitByChannelUID.put(CHANNEL_ID_PM4, Units.MICROGRAM_PER_CUBICMETRE);
+        unitByChannelUID.put(CHANNEL_ID_PM10, Units.MICROGRAM_PER_CUBICMETRE);
         unitByChannelUID.put(CHANNEL_ID_CO2, Units.PARTS_PER_MILLION);
         unitByChannelUID.put(CHANNEL_ID_VOC_INDEX, Units.ONE);
         unitByChannelUID.put(CHANNEL_ID_NOX_INDEX, Units.ONE);
