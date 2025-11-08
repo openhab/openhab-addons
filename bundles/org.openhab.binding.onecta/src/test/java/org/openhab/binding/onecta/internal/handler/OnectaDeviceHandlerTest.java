@@ -141,8 +141,6 @@ public class OnectaDeviceHandlerTest {
 
         when(channelsRefreshDelayMock.isDelayPassed(CHANNEL_AC_DEMANDCONTROLFIXEDVALUE)).thenReturn(true);
 
-        when(dataTransServiceMock.getRawData()).thenReturn((jsonObject));
-
         when(dataTransServiceMock.getPowerOnOff()).thenReturn("ON");
         when(dataTransServiceMock.getPowerfulModeOnOff()).thenReturn("ON");
         when(dataTransServiceMock.getCurrentOperationMode()).thenReturn(Enums.OperationMode.HEAT);
@@ -366,8 +364,6 @@ public class OnectaDeviceHandlerTest {
 
         when(channelsRefreshDelayMock.isDelayPassed(CHANNEL_AC_DEMANDCONTROLFIXEDVALUE)).thenReturn(true);
 
-        when(dataTransServiceMock.getRawData()).thenReturn((jsonObject));
-
         when(dataTransServiceMock.getPowerOnOff()).thenReturn(null);
         when(dataTransServiceMock.getPowerfulModeOnOff()).thenReturn(null);
         when(dataTransServiceMock.getCurrentOperationMode()).thenReturn(null);
@@ -516,8 +512,6 @@ public class OnectaDeviceHandlerTest {
         when(channelsRefreshDelayMock.isDelayPassed(CHANNEL_AC_DEMANDCONTROL)).thenReturn(false);
 
         when(channelsRefreshDelayMock.isDelayPassed(CHANNEL_AC_DEMANDCONTROLFIXEDVALUE)).thenReturn(false);
-
-        when(dataTransServiceMock.getRawData()).thenReturn((jsonObject));
 
         lenient().when(dataTransServiceMock.getPowerOnOff()).thenThrow(new RuntimeException("Simulating exception"));
         lenient().when(dataTransServiceMock.getPowerfulModeOnOff())
