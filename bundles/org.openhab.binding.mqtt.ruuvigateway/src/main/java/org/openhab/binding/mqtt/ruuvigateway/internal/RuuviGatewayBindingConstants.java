@@ -31,7 +31,6 @@ public class RuuviGatewayBindingConstants {
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_BEACON = new ThingTypeUID(BINDING_ID, "ruuvitag_beacon");
-    public static final ThingTypeUID THING_TYPE_AIR_BEACON = new ThingTypeUID(BINDING_ID, "ruuviair_beacon");
 
     // Channel IDs - Environmental measurements (RuuviTag)
     public static final String CHANNEL_ID_BATTERY = "batteryVoltage";
@@ -63,7 +62,7 @@ public class RuuviGatewayBindingConstants {
     public static final String CHANNEL_ID_GWTS = "gwts";
     public static final String CHANNEL_ID_GWMAC = "gwmac";
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_BEACON, THING_TYPE_AIR_BEACON);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_BEACON);
     public static final int RUUVI_GATEWAY_SUBSCRIBE_TIMEOUT_MS = 30000;
 
     // Thing properties

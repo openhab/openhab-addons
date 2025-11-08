@@ -24,12 +24,11 @@ This binding discovers the Ruuvi Tags via the MQTT bridge; the discovered things
 
 ## Thing Configuration
 
-This binding supports two thing types:
+This binding supports the following thing type:
 
 | Thing Type ID    | Description                          |
 | ---------------- | ------------------------------------ |
-| ruuvitag_beacon  | RuuviTag sensor (all variants)       |
-| ruuviair_beacon  | Ruuvi Air air quality sensor         |
+| ruuvitag_beacon  | Ruuvi Beacon (RuuviTag or Ruuvi Air) |
 
 No manual configuration is needed as discovery can be used instead.
 
@@ -96,23 +95,27 @@ The first line in the things file will create a `broker` thing and this can be r
 ```java
 Bridge mqtt:broker:myBroker [ host="localhost", secure=false, password="*******", qos=1, username="user"]
 mqtt:ruuvitag_beacon:myTag1  "RuuviTag Sensor" (mqtt:broker:myBroker) [ topic="ruuvi/mygw/DE:AD:BE:EF:AA:01" ]
-mqtt:ruuviair_beacon:myAir1  "Ruuvi Air Sensor" (mqtt:broker:myBroker) [ topic="ruuvi/mygw/DE:AD:BE:EF:AA:02" ]
+mqtt:ruuvitag_beacon:myAir1  "Ruuvi Air Sensor" (mqtt:broker:myBroker) [ topic="ruuvi/mygw/DE:AD:BE:EF:AA:02" ]
 ```
 
 ### *.items
 
 ```java
-// RuuviTag sensor channels
+// Common channels (available on both RuuviTag and Ruuvi Air)
 Number:Temperature      temperature "Room Temperature [%.1f %unit%]"  { channel="mqtt:ruuvitag_beacon:myTag1:temperature" }
 Number:Dimensionless    humidity    "Humidity [%.0f %unit%]"           { channel="mqtt:ruuvitag_beacon:myTag1:humidity" }
 Number:Pressure         pressure    "Air Pressure [%.0f %unit%]"       { channel="mqtt:ruuvitag_beacon:myTag1:pressure" }
 
+// RuuviTag-specific channels
+Number:Acceleration     accelX      "Acceleration X [%.3f %unit%]"    { channel="mqtt:ruuvitag_beacon:myTag1:accelerationx" }
+Number:ElectricPotential battery    "Battery Voltage [%.2f %unit%]"   { channel="mqtt:ruuvitag_beacon:myTag1:batteryVoltage" }
+
 // Ruuvi Air sensor channels
-Number:Density          pm1         "PM1.0 [%.1f %unit%]"             { channel="mqtt:ruuviair_beacon:myAir1:pm1" }
-Number:Density          pm25        "PM2.5 [%.1f %unit%]"             { channel="mqtt:ruuviair_beacon:myAir1:pm25" }
-Number:Density          pm4         "PM4.0 [%.1f %unit%]"             { channel="mqtt:ruuviair_beacon:myAir1:pm4" }
-Number:Density          pm10        "PM10 [%.1f %unit%]"              { channel="mqtt:ruuviair_beacon:myAir1:pm10" }
-Number:Dimensionless    co2         "CO2 [%.0f ppm]"                  { channel="mqtt:ruuviair_beacon:myAir1:co2" }
-Number:Dimensionless    vocIndex    "VOC Index [%.0f]"                { channel="mqtt:ruuviair_beacon:myAir1:vocIndex" }
-Switch                  cal_status  "Calibration Completed"           { channel="mqtt:ruuviair_beacon:myAir1:calibrationCompleted" }
+Number:Density          pm1         "PM1.0 [%.1f %unit%]"             { channel="mqtt:ruuvitag_beacon:myAir1:pm1" }
+Number:Density          pm25        "PM2.5 [%.1f %unit%]"             { channel="mqtt:ruuvitag_beacon:myAir1:pm25" }
+Number:Density          pm4         "PM4.0 [%.1f %unit%]"             { channel="mqtt:ruuvitag_beacon:myAir1:pm4" }
+Number:Density          pm10        "PM10 [%.1f %unit%]"              { channel="mqtt:ruuvitag_beacon:myAir1:pm10" }
+Number:Dimensionless    co2         "CO2 [%.0f ppm]"                  { channel="mqtt:ruuvitag_beacon:myAir1:co2" }
+Number:Dimensionless    vocIndex    "VOC Index [%.0f]"                { channel="mqtt:ruuvitag_beacon:myAir1:vocIndex" }
+Switch                  cal_status  "Calibration Completed"           { channel="mqtt:ruuvitag_beacon:myAir1:calibrationCompleted" }
 ```
