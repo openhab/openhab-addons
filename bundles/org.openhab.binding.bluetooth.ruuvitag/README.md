@@ -56,7 +56,7 @@ The following channels are available on these sensors:
 | luminosity                | Number:Illuminance       |          | ✓         | 6, E1       | Light intensity (lux)                 |
 | calibrationCompleted      | Switch                   |          | ✓         | 6, E1       | Sensor calibration status             |
 
-Note: not all channels are available on all data formats. Availability depends on the [Ruuvi Data Format](https://github.com/ruuvi/ruuvi-sensor-protocols) used by the device.
+Note: not all channels are available on all data formats. Availability depends on the [Ruuvi Data Format](https://docs.ruuvi.com/communication/bluetooth-advertisements) used by the device.
 
 ### Air Quality Index Interpretation (Ruuvi Air only)
 

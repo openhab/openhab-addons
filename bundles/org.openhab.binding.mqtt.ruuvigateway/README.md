@@ -67,7 +67,7 @@ The following channels are available on these sensors:
 | gwts                      | DateTime                 | ✓        | ✓         | Timestamp when the message from sensor was relayed by gateway           |
 | gwmac                     | String                   | ✓        | ✓         | MAC address of Ruuvi Gateway                                            |
 
-Note: Not all channels are available on all data formats. Availability depends on the [Ruuvi Data Format](https://github.com/ruuvi/ruuvi-sensor-protocols) used by the device.
+Note: Not all channels are available on all data formats. Availability depends on the [Ruuvi Data Format](https://docs.ruuvi.com/communication/bluetooth-advertisements) used by the device.
 
 Some measurements may not be meaningful for all device types. For example, RuuviTag Pro 2in1 does not have humidity measurement capability.
 
