@@ -137,7 +137,7 @@
 	<channel-type id="ruuvi_pm1">
 		<item-type unitHint="μg/m³">Number:Density</item-type>
 		<label>PM1.0</label>
-		<description><![CDATA[particulate matter <= 1.0 μm concentration (E1 format only)]]></description>
+		<description><![CDATA[particulate matter <= 1.0 μm concentration]]></description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>AirQuality</tag>
@@ -157,7 +157,7 @@
 	<channel-type id="ruuvi_pm4">
 		<item-type unitHint="μg/m³">Number:Density</item-type>
 		<label>PM4.0</label>
-		<description><![CDATA[particulate matter <= 4.0 μm concentration (E1 format only)]]></description>
+		<description><![CDATA[particulate matter <= 4.0 μm concentration]]></description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>AirQuality</tag>
@@ -167,7 +167,7 @@
 	<channel-type id="ruuvi_pm10">
 		<item-type unitHint="μg/m³">Number:Density</item-type>
 		<label>PM10.0</label>
-		<description><![CDATA[particulate matter <= 10.0 μm concentration (E1 format only)]]></description>
+		<description><![CDATA[particulate matter <= 10.0 μm concentration]]></description>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>AirQuality</tag>
