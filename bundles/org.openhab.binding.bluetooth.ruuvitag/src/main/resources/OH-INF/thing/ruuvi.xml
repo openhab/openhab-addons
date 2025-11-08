@@ -4,7 +4,7 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<!-- RuuviTag (Temperature/Humidity/Pressure sensor) -->
+	<!-- Ruuvi Beacon (RuuviTag or Ruuvi Air) -->
 	<thing-type id="ruuvitag_beacon">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="roaming"/>
@@ -12,57 +12,34 @@
 			<bridge-type-ref id="bluez"/>
 		</supported-bridge-type-refs>
 
-		<label>RuuviTag</label>
-		<description>RuuviTag environmental sensor (temperature, humidity, pressure, acceleration)</description>
+		<label>Ruuvi Sensor</label>
+		<description>Ruuvi environmental sensor (RuuviTag or Ruuvi Air with temperature, humidity, pressure, acceleration, air
+			quality, etc.)</description>
 		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
 		<channels>
+			<!-- Common channels for all devices -->
 			<channel id="rssi" typeId="rssi"/>
 			<channel id="temperature" typeId="ruuvi_temperature"/>
 			<channel id="humidity" typeId="ruuvi_humidity"/>
 			<channel id="pressure" typeId="ruuvi_pressure"/>
+			<channel id="dataFormat" typeId="ruuvi_dataFormat"/>
+			<channel id="measurementSequenceNumber" typeId="ruuvitag_measurementSequenceNumber"/>
+
+			<!-- RuuviTag only channels (not available on Ruuvi Air) -->
 			<channel id="accelerationx" typeId="ruuvitag_accelerationx"/>
 			<channel id="accelerationy" typeId="ruuvitag_accelerationy"/>
 			<channel id="accelerationz" typeId="ruuvitag_accelerationz"/>
 			<channel id="batteryVoltage" typeId="ruuvitag_batteryVoltage"/>
 			<channel id="txPower" typeId="ruuvitag_txPower"/>
-			<channel id="dataFormat" typeId="ruuvi_dataFormat"/>
-			<channel id="measurementSequenceNumber" typeId="ruuvitag_measurementSequenceNumber"/>
 			<channel id="movementCounter" typeId="ruuvitag_movementCounter"/>
-		</channels>
 
-		<config-description>
-			<parameter name="address" type="text">
-				<label>Address</label>
-				<description>Bluetooth address in XX:XX:XX:XX:XX:XX format</description>
-			</parameter>
-		</config-description>
-
-	</thing-type>
-
-	<!-- Ruuvi Air (Air quality sensor) -->
-	<thing-type id="ruuviair_beacon">
-		<supported-bridge-type-refs>
-			<bridge-type-ref id="roaming"/>
-			<bridge-type-ref id="bluegiga"/>
-			<bridge-type-ref id="bluez"/>
-		</supported-bridge-type-refs>
-
-		<label>Ruuvi Air</label>
-		<description>Ruuvi Air quality sensor (temperature, humidity, pressure, PM2.5, CO2, VOC, NOx, luminosity)</description>
-		<semantic-equipment-tag>Sensor</semantic-equipment-tag>
-		<channels>
-			<channel id="rssi" typeId="rssi"/>
-			<channel id="temperature" typeId="ruuvi_temperature"/>
-			<channel id="humidity" typeId="ruuvi_humidity"/>
-			<channel id="pressure" typeId="ruuvi_pressure"/>
+			<!-- Ruuvi Air only channels (not available on RuuviTag) -->
 			<channel id="pm25" typeId="ruuvi_pm25"/>
 			<channel id="co2" typeId="ruuvi_co2"/>
 			<channel id="vocIndex" typeId="ruuvi_vocIndex"/>
 			<channel id="noxIndex" typeId="ruuvi_noxIndex"/>
 			<channel id="luminosity" typeId="ruuvi_luminosity"/>
 			<channel id="calibrationCompleted" typeId="ruuvi_calibrationCompleted"/>
-			<channel id="dataFormat" typeId="ruuvi_dataFormat"/>
-			<channel id="measurementSequenceNumber" typeId="ruuvitag_measurementSequenceNumber"/>
 		</channels>
 
 		<config-description>
