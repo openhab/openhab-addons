@@ -26,6 +26,7 @@ import org.openhab.binding.viessmann.internal.handler.ViessmannGatewayHandler;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
+import org.openhab.core.items.ManagedItemProvider;
 import org.openhab.core.net.HttpServiceUtil;
 import org.openhab.core.storage.Storage;
 import org.openhab.core.storage.StorageService;
@@ -60,6 +61,7 @@ public class ViessmannHandlerFactory extends BaseThingHandlerFactory {
     private final BindingServlet bindingServlet;
     private final ViessmannDynamicStateDescriptionProvider stateDescriptionProvider;
     private final ItemChannelLinkRegistry linkRegistry;
+    private final ManagedItemProvider managedItemProvider;
     private final LocaleProvider localeProvider;
     private final TranslationProvider i18Provider;
     private @Nullable String callbackUrl;
@@ -71,6 +73,7 @@ public class ViessmannHandlerFactory extends BaseThingHandlerFactory {
     public ViessmannHandlerFactory(final @Reference HttpService httpService,
             final @Reference HttpClientFactory httpClientFactory, final @Reference StorageService storageService,
             final @Reference ViessmannDynamicStateDescriptionProvider stateDescriptionProvider,
+            final @Reference ManagedItemProvider managedItemProvider,
             final @Reference ItemChannelLinkRegistry linkRegistry, final @Reference LocaleProvider localeProvider,
             final @Reference TranslationProvider i18Provider) {
         this.httpClientFactory = httpClientFactory;
@@ -78,6 +81,7 @@ public class ViessmannHandlerFactory extends BaseThingHandlerFactory {
         this.storageService = storageService;
         this.stateDescriptionProvider = stateDescriptionProvider;
         this.linkRegistry = linkRegistry;
+        this.managedItemProvider = managedItemProvider;
         this.localeProvider = localeProvider;
         this.i18Provider = i18Provider;
     }
@@ -117,7 +121,8 @@ public class ViessmannHandlerFactory extends BaseThingHandlerFactory {
             return new ViessmannBridgeHandler((Bridge) thing, storage, httpClientFactory.getCommonHttpClient(),
                     createCallbackUrl(), linkRegistry);
         } else if (THING_TYPE_DEVICE.equals(thingTypeUID)) {
-            return new DeviceHandler(thing, stateDescriptionProvider, linkRegistry, i18Provider, localeProvider);
+            return new DeviceHandler(thing, stateDescriptionProvider, linkRegistry, managedItemProvider, i18Provider,
+                    localeProvider);
         }
         return null;
     }

@@ -47,6 +47,7 @@ import org.openhab.binding.viessmann.internal.interfaces.BridgeInterface;
 import org.openhab.binding.viessmann.internal.util.ViessmannUtil;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TranslationProvider;
+import org.openhab.core.items.ManagedItemProvider;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
@@ -92,6 +93,7 @@ public class DeviceHandler extends ViessmannThingHandler {
     private final Map<String, HeatingCircuit> heatingCircuits = new HashMap<>();
 
     private final ItemChannelLinkRegistry linkRegistry;
+    private final ManagedItemProvider managedItemProvider;
 
     private final TranslationProvider i18Provider;
     private final LocaleProvider localeProvider;
@@ -99,9 +101,11 @@ public class DeviceHandler extends ViessmannThingHandler {
     private final Bundle bundle;
 
     public DeviceHandler(Thing thing, ViessmannDynamicStateDescriptionProvider stateDescriptionProvider,
-            ItemChannelLinkRegistry linkRegistry, TranslationProvider i18Provider, LocaleProvider localeProvider) {
+            ItemChannelLinkRegistry linkRegistry, ManagedItemProvider managedItemProvider,
+            TranslationProvider i18Provider, LocaleProvider localeProvider) {
         super(thing, stateDescriptionProvider);
         this.linkRegistry = linkRegistry;
+        this.managedItemProvider = managedItemProvider;
         this.i18Provider = i18Provider;
         this.localeProvider = localeProvider;
         bundle = FrameworkUtil.getBundle(getClass());
@@ -222,14 +226,16 @@ public class DeviceHandler extends ViessmannThingHandler {
 
             for (ItemChannelLink link : links) {
                 String item = link.getItemName();
-                try {
-                    linkRegistry.remove(link.getUID());
-                } catch (Exception ex) {
-                    logger.warn("Could not remove old link {} -> {}: {}", item, oldUid, ex.getMessage());
-                }
+                if (isManagedItem(item)) {
+                    try {
+                        linkRegistry.remove(link.getUID());
+                    } catch (Exception ex) {
+                        logger.warn("Could not remove old link {} -> {}: {}", item, oldUid, ex.getMessage());
+                    }
 
-                linkRegistry.add(new ItemChannelLink(item, newUid));
-                logger.info("Re-linked item '{}' from '{}' to '{}'", item, oldUid.getId(), newUid.getId());
+                    linkRegistry.add(new ItemChannelLink(item, newUid));
+                    logger.info("Re-linked item '{}' from '{}' to '{}'", item, oldUid.getId(), newUid.getId());
+                }
             }
         }
     }
@@ -1165,5 +1171,17 @@ public class DeviceHandler extends ViessmannThingHandler {
             logger.debug("Invalid thingTypeVersion '{}', assuming 0", versionString);
             return 0;
         }
+    }
+
+    private boolean isManagedItem(String itemName) {
+        boolean isManaged = managedItemProvider.getAll().stream().anyMatch(item -> item.getName().equals(itemName));
+
+        if (isManaged) {
+            return true; // item comes from UI / JSONDB
+        }
+
+        // fallback: treat as file-based
+        logger.debug("Item '{}' not found in managed provider – treating as file-based.", itemName);
+        return false;
     }
 }
