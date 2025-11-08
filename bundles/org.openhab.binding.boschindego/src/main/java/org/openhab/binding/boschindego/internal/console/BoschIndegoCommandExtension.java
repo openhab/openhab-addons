@@ -43,7 +43,7 @@ import org.osgi.service.component.annotations.Reference;
 public class BoschIndegoCommandExtension extends AbstractConsoleCommandExtension implements ConsoleCommandCompleter {
 
     private static final String AUTHORIZE = "authorize";
-    private static final StringsCompleter SUBCMD_COMPLETER = new StringsCompleter(List.of(AUTHORIZE), false);
+    private static final StringsCompleter CMD_COMPLETER = new StringsCompleter(List.of(AUTHORIZE), false);
 
     private final ThingRegistry thingRegistry;
 
@@ -56,12 +56,12 @@ public class BoschIndegoCommandExtension extends AbstractConsoleCommandExtension
     @Override
     public void execute(String[] args, Console console) {
 
-        if (args.length != 3 || !AUTHORIZE.equals(args[1])) {
+        if (args.length != 3 || !AUTHORIZE.equals(args[0])) {
             printUsage(console);
             return;
         }
 
-        String bridgeId = args[0];
+        String bridgeId = args[1];
         String authCode = args[2];
 
         Thing bridge = getBridgeById(bridgeId);
@@ -84,8 +84,7 @@ public class BoschIndegoCommandExtension extends AbstractConsoleCommandExtension
 
     @Override
     public List<String> getUsages() {
-        return List
-                .of(buildCommandUsage("<bridgeId> " + AUTHORIZE + " <AuthToken>", "authorize by authorization code"));
+        return List.of(buildCommandUsage(AUTHORIZE + " <bridgeId> <AuthToken>", "authorize by authorization code"));
     }
 
     @Override
@@ -96,10 +95,10 @@ public class BoschIndegoCommandExtension extends AbstractConsoleCommandExtension
     @Override
     public boolean complete(String[] args, int cursorArgumentIndex, int cursorPosition, List<String> candidates) {
         if (cursorArgumentIndex <= 0) {
+            return CMD_COMPLETER.complete(args, cursorArgumentIndex, cursorPosition, candidates);
+        } else if (cursorArgumentIndex == 1 && AUTHORIZE.equals(args[0])) {
             return new StringsCompleter(getBridgeIds(), true).complete(args, cursorArgumentIndex, cursorPosition,
                     candidates);
-        } else if (cursorArgumentIndex == 1 && !AUTHORIZE.equals(args[0])) {
-            return SUBCMD_COMPLETER.complete(args, cursorArgumentIndex, cursorPosition, candidates);
         }
         return false;
     }
