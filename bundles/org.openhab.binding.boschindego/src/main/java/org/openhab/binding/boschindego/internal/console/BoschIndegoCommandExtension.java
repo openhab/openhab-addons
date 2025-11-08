@@ -84,7 +84,8 @@ public class BoschIndegoCommandExtension extends AbstractConsoleCommandExtension
 
     @Override
     public List<String> getUsages() {
-        return List.of(buildCommandUsage(AUTHORIZE + " <bridgeId> <AuthToken>", "authorize by authorization code"));
+        return List.of(
+                buildCommandUsage(AUTHORIZE + " <bridgeId> <authorizationCode>", "authorize by authorization code"));
     }
 
     @Override
