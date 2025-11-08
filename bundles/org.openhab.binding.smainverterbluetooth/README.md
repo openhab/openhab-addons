@@ -18,6 +18,7 @@ This binding requires the installation of a Command Line Interface (CLI) program
 ## Supported Things
 
 There is only a single Thing type supported.
+
  - `solar-inverter`: fetches data from an SMA Solar inverter via Bluetooth. Thing UID `smainverterbluetooth:solar-inverter:xxxxxxx`
 
 ## Discovery
@@ -31,6 +32,7 @@ Scanning ...
          ...
         00:80:25:00:00:00       SMA001d SN: XXXXXXXXXX SNXXXXXXXXXX
 ```
+
 The SMA Inverter is identified with SMA001d SN: XXXXXXXXXX where XXXXXXXXXX is the same serial number you see in Sunny Explorer and the Bluetooth address is to the left.
 If you don't have Linux available there are Apps for Android or Windows that have a similar function.
 
@@ -48,10 +50,12 @@ For Windows ```curl "https:// TODO .zip"```
  Unzip and follow the instructions.
 
 Once you have completed the installation you should have the sma2json.exe utility in the folder $OPENHAB_HOME/userdata/files. You can test it out from its home directory with this command.
+
 ```
 >> sma2json.exe -b<00:00:00:00:00:00> -p<yourpassword>
 {"code" : 0, "message" : "Success", "data" : {"daily" : 1888, "total" : 42555658, "watts" : 165, "temperature" : 27.62, "acvolts" : 241.02, "time" : "Fri, 31 Oct 2025 16:10:53 GMT Standard Time"}}
 ```
+
 You should get a response similar to the above.
 
 ## Thing Configuration

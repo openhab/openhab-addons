@@ -18,6 +18,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -52,8 +53,8 @@ public class DeviceController {
     @SuppressWarnings("null")
     private final Logger logger = LoggerFactory.getLogger(DeviceController.class);
 
-    @Nullable
-    private final String OPENHAB_USERDATA = System.getenv("OPENHAB_USERDATA");
+    @SuppressWarnings("null")
+    private final String PATH = Path.of(System.getenv("OPENHAB_USERDATA"), "files", "sma2json.exe").toString();
 
     public DeviceController() {
     }
@@ -64,10 +65,11 @@ public class DeviceController {
     }
 
     public int fetchInverterData() {
+        logger.debug("Using CLI Path: {}", PATH);
 
         // Define the command and its arguments as a List
         List<String> command = new ArrayList<>();
-        command.add(OPENHAB_USERDATA + "\\files\\sma2json.exe");
+        command.add(PATH);
         command.add("-b");
         command.add(this.bluetoothAddress + "");
         command.add("-s");
