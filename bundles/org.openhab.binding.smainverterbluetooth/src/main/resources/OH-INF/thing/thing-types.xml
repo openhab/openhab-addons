@@ -38,11 +38,11 @@
 				<label>Spot Temperature</label>
 				<description>Current internal temperature of the inverter.</description>
 			</channel>
-			<channel id="inverter-status-code" typeId="status-code">
+			<channel id="sma2json-status-code" typeId="status-code">
 				<label>Status Code</label>
 				<description>Status code from the inverter CLI bridge.</description>
 			</channel>
-			<channel id="inverter-status-message" typeId="status-message">
+			<channel id="sma2json-status-message" typeId="status-message">
 				<label>Status Message</label>
 				<description>Status message from the inverter CLI bridge.</description>
 			</channel>
@@ -52,7 +52,7 @@
 			</channel>
 			<channel id="thing-polling-switch" typeId="polling-switch">
 				<label>Polling Control</label>
-				<description>Switch to enable or disable polling of the inverter.</description>
+				<description>Switch to enable or disable the binding polling of the inverter.</description>
 			</channel>
 		</channels>
 		<properties>
@@ -73,7 +73,7 @@
 			</parameter>
 			<parameter name="refreshInterval" type="integer" unit="s" min="1">
 				<label>Refresh Interval</label>
-				<description>Interval the device is polled in sec.</description>
+				<description>Interval the device is polled in seconds [20s or slower].</description>
 				<default>60</default>
 				<advanced>true</advanced>
 			</parameter>

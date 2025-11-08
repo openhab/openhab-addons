@@ -91,7 +91,7 @@ public class SmaInverterBluetoothHandler extends BaseThingHandler {
     }
 
     private void refreshStateAndUpdate() {
-        if (currentControlState == "OFF") { // polling disabled
+        if ("OFF".equals(currentControlState)) { // polling disabled
             logger.debug("Polling disabled, skipping refresh");
             return;
         }

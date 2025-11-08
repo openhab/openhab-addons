@@ -1,3 +1,15 @@
+/*
+ * Copyright (c) 2010-2025 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 package org.openhab.binding.smainverterbluetooth.internal.cli;
 
 import java.io.BufferedReader;
@@ -41,7 +53,7 @@ public class DeviceController {
     private final Logger logger = LoggerFactory.getLogger(DeviceController.class);
 
     @Nullable
-    private final String OPENHAB_HOME = System.getenv("OPENHAB_HOME");
+    private final String OPENHAB_USERDATA = System.getenv("OPENHAB_USERDATA");
 
     public DeviceController() {
     }
@@ -55,7 +67,7 @@ public class DeviceController {
 
         // Define the command and its arguments as a List
         List<String> command = new ArrayList<>();
-        command.add(OPENHAB_HOME + "\\userdata\\files\\sma2json.exe");
+        command.add(OPENHAB_USERDATA + "\\files\\sma2json.exe");
         command.add("-b");
         command.add(this.bluetoothAddress + "");
         command.add("-s");
