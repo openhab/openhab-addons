@@ -528,6 +528,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
                 scheduler.submit(() -> {
                     onAccessoriesLoaded();
                     onRootHandlerReady();
+                    updateStatus(ThingStatus.ONLINE);
                 });
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
@@ -559,7 +560,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
         Long aid = getAccessoryId();
         List<String> queries = new ArrayList<>();
         thing.getChannels().stream().forEach(c -> {
-            if (c.getProperties().get(PROPERTY_IID) instanceof String iid) {
+            if (isLinked(c.getUID()) && c.getProperties().get(PROPERTY_IID) instanceof String iid) {
                 queries.add("%s.%s".formatted(aid, iid));
             }
         });
@@ -794,7 +795,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
     private void eventingFinalize(Accessory accessory, List<Channel> channels) {
         eventedCharacteristics.clear();
         for (Channel channel : channels) {
-            if (channel.getProperties().get(PROPERTY_IID) instanceof String iid) {
+            if (isLinked(channel.getUID()) && channel.getProperties().get(PROPERTY_IID) instanceof String iid) {
                 for (Service service : accessory.services) {
                     for (Characteristic cxx : service.characteristics) {
                         if (iid.equals(String.valueOf(cxx.iid)) && cxx.perms instanceof List<String> perms
@@ -911,6 +912,9 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
                     }
                 }
             }
+        }
+        if (thing.getStatus() != ThingStatus.ONLINE) {
+            updateStatus(ThingStatus.ONLINE);
         }
         if (hsbChannelUID != null) {
             updateState(hsbChannelUID, Objects.requireNonNull(lightModel).getHsb());
