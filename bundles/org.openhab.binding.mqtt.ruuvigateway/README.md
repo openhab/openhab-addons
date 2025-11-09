@@ -67,6 +67,7 @@ The following channels are available on these sensors:
 | noxIndex                  | Number:Dimensionless     |          | ✓         | NOX (Nitrogen Oxides) index (0-500)                                     |
 | luminosity                | Number:Illuminance       |          | ✓         | Light intensity (lux)                                                   |
 | calibrationCompleted      | Switch                   |          | ✓         | Sensor calibration status                                               |
+| airQualityIndex           | Number:Dimensionless     |          | ✓         | Air quality index (0-100%, higher = better)                             |
 | **Gateway Channels**      | | | | |
 | ts                        | DateTime                 | ✓        | ✓         | Timestamp when the message from sensor was received by gateway          |
 | gwts                      | DateTime                 | ✓        | ✓         | Timestamp when the message from sensor was relayed by gateway           |
@@ -117,5 +118,6 @@ Number:Density          pm4         "PM4.0 [%.1f %unit%]"             { channel=
 Number:Density          pm10        "PM10 [%.1f %unit%]"              { channel="mqtt:ruuvitag_beacon:myAir1:pm10" }
 Number:Dimensionless    co2         "CO2 [%.0f ppm]"                  { channel="mqtt:ruuvitag_beacon:myAir1:co2" }
 Number:Dimensionless    vocIndex    "VOC Index [%.0f]"                { channel="mqtt:ruuvitag_beacon:myAir1:vocIndex" }
+Number:Dimensionless    aqi         "Air Quality Index [%.0f %unit%]" { channel="mqtt:ruuvitag_beacon:myAir1:airQualityIndex" }
 Switch                  cal_status  "Calibration Completed"           { channel="mqtt:ruuvitag_beacon:myAir1:calibrationCompleted" }
 ```

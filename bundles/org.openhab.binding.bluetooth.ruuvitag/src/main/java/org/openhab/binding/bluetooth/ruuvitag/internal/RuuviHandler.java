@@ -219,6 +219,10 @@ public class RuuviHandler extends BeaconBluetoothHandler {
                                     atLeastOneRuuviFieldPresent |= updateStateIfLinked(channelUID, status);
                                 }
                                 break;
+                            case CHANNEL_ID_AIR_QUALITY_INDEX:
+                                atLeastOneRuuviFieldPresent |= updateStateIfLinked(channelUID,
+                                        ruuvitagData.getAirQualityIndex(), Units.PERCENT);
+                                break;
                         }
                     }
                     if (atLeastOneRuuviFieldPresent) {

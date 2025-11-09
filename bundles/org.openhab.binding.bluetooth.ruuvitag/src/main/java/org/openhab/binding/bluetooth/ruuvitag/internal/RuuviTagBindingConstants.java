@@ -52,4 +52,5 @@ public class RuuviTagBindingConstants {
     public static final String CHANNEL_ID_NOX_INDEX = "noxIndex";
     public static final String CHANNEL_ID_LUMINOSITY = "luminosity";
     public static final String CHANNEL_ID_CALIBRATION_COMPLETED = "calibrationCompleted";
+    public static final String CHANNEL_ID_AIR_QUALITY_INDEX = "airQualityIndex";
 }

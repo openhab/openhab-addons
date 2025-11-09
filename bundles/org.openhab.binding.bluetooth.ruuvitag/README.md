@@ -55,6 +55,7 @@ The following channels are available on these sensors:
 | noxIndex                  | Number:Dimensionless     |          | ✓         | 6, E1       | NOX (Nitrogen Oxides) index (0-500) |
 | luminosity                | Number:Illuminance       |          | ✓         | 6, E1       | Light intensity (lux)                 |
 | calibrationCompleted      | Switch                   |          | ✓         | 6, E1       | Sensor calibration status             |
+| airQualityIndex           | Number:Dimensionless     |          | ✓         | 6, E1       | Air quality index (0-100%, higher = better) |
 
 Note: not all channels are available on all data formats. Availability depends on the [Ruuvi Data Format](https://docs.ruuvi.com/communication/bluetooth-advertisements) used by the device.
 
@@ -94,6 +95,7 @@ Number:Density          pm10        "PM10.0 [%.1f %unit%]"            { channel=
 Number:Dimensionless    co2         "CO2 [%.0f ppm]"                  { channel="bluetooth:ruuvitag_beacon:hci0:air1:co2" }
 Number:Dimensionless    vocIndex    "VOC Index [%.0f]"                { channel="bluetooth:ruuvitag_beacon:hci0:air1:vocIndex" }
 Number:Illuminance      luminosity  "Light Intensity [%.0f %unit%]"   { channel="bluetooth:ruuvitag_beacon:hci0:air1:luminosity" }
+Number:Dimensionless    aqi         "Air Quality Index [%.0f %unit%]" { channel="bluetooth:ruuvitag_beacon:hci0:air1:airQualityIndex" }
 ```
 
 ## Data Format Support

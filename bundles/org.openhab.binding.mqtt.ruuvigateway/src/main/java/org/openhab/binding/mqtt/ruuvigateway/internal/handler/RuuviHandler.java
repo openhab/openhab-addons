@@ -100,6 +100,7 @@ public class RuuviHandler extends AbstractMQTTThingHandler implements MqttMessag
         unitByChannelUID.put(CHANNEL_ID_NOX_INDEX, Units.ONE);
         unitByChannelUID.put(CHANNEL_ID_LUMINOSITY, Units.LUX);
         unitByChannelUID.put(CHANNEL_ID_CALIBRATION_COMPLETED, RuuviCachedSwitchState.class);
+        unitByChannelUID.put(CHANNEL_ID_AIR_QUALITY_INDEX, Units.PERCENT);
         // Gateway metadata
         unitByChannelUID.put(CHANNEL_ID_RSSI, Units.DECIBEL_MILLIWATTS);
         unitByChannelUID.put(CHANNEL_ID_TS, RuuviCachedDateTimeState.class);
@@ -345,6 +346,9 @@ public class RuuviHandler extends AbstractMQTTThingHandler implements MqttMessag
                         OnOffType status = ruuvitagData.isCalibrationInProgress() ? OnOffType.OFF : OnOffType.ON;
                         atLeastOneRuuviFieldPresent |= updateSwitchStateIfLinked(channelUID, status);
                     }
+                    break;
+                case CHANNEL_ID_AIR_QUALITY_INDEX:
+                    atLeastOneRuuviFieldPresent |= updateStateIfLinked(channelUID, ruuvitagData.getAirQualityIndex());
                     break;
                 //
                 // Auxiliary channels, not part of bluetooth advertisement

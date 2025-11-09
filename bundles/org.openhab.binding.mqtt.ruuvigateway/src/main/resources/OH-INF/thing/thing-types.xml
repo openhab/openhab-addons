@@ -41,6 +41,7 @@
 			<channel id="noxIndex" typeId="ruuvi_noxIndex"/>
 			<channel id="luminosity" typeId="ruuvi_luminosity"/>
 			<channel id="calibrationCompleted" typeId="ruuvi_calibrationCompleted"/>
+			<channel id="airQualityIndex" typeId="ruuvi_airQualityIndex"/>
 
 			<!-- Gateway metadata channels -->
 			<channel id="ts" typeId="ruuvitag_ts"/>
@@ -251,6 +252,16 @@
 		<label>Calibration Completed</label>
 		<description>Sensor calibration completed (ON = complete, OFF = in progress)</description>
 		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="ruuvi_airQualityIndex">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Air Quality Index</label>
+		<description>Calculated indoor air quality index from PM2.5 and CO2 (0-100%, higher = better)</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>AirQuality</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
 </thing:thing-descriptions>
