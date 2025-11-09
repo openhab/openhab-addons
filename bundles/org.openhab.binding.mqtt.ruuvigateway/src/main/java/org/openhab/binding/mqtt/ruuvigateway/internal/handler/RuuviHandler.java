@@ -286,22 +286,24 @@ public class RuuviHandler extends AbstractMQTTThingHandler implements MqttMessag
         }
         var ruuvitagData = parsed.measurement;
 
-        // Per Ruuvi specification: once E1 format is detected, ignore Format 6 packets
-        // This ensures BT5.0+ capable devices prefer E1 over Format 6
-        Integer currentFormat = ruuvitagData.getDataFormat();
-        if (currentFormat != null) {
-            int detected = detectedFormat.get();
-            if (detected == FORMAT_E1 && currentFormat == FORMAT_6) {
-                // E1 already detected, discard Format 6 packet
-                logger.trace("Ignoring Format 6 packet as E1 format has already been detected");
-                return;
-            } else if (detected == 0 || detected == currentFormat) {
-                // First detection or same format, record it
-                detectedFormat.set(currentFormat);
-            } else if (detected == FORMAT_6 && currentFormat == FORMAT_E1) {
-                // Format 6 was detected first, but now E1 received - switch preference
-                logger.debug("Switching from Format 6 to Format E1 as per specification");
-                detectedFormat.set(FORMAT_E1);
+        synchronized (detectedFormat) {
+            // Per Ruuvi specification: once E1 format is detected, ignore Format 6 packets
+            // This ensures BT5.0+ capable devices prefer E1 over Format 6
+            Integer currentFormat = ruuvitagData.getDataFormat();
+            if (currentFormat != null) {
+                int detected = detectedFormat.get();
+                if (detected == FORMAT_E1 && currentFormat == FORMAT_6) {
+                    // E1 already detected, discard Format 6 packet
+                    logger.trace("Ignoring Format 6 packet as E1 format has already been detected");
+                    return;
+                } else if (detected == 0 || detected == currentFormat) {
+                    // First detection or same format, record it
+                    detectedFormat.set(currentFormat);
+                } else if (detected == FORMAT_6 && currentFormat == FORMAT_E1) {
+                    // Format 6 was detected first, but now E1 received - switch preference
+                    logger.debug("Switching from Format 6 to Format E1 as per specification");
+                    detectedFormat.set(FORMAT_E1);
+                }
             }
         }
 
