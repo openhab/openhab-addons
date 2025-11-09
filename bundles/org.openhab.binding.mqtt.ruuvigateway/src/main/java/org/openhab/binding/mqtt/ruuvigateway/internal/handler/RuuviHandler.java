@@ -316,8 +316,17 @@ public class RuuviHandler extends AbstractMQTTThingHandler implements MqttMessag
                     atLeastOneRuuviFieldPresent |= updateStateIfLinked(channelUID, ruuvitagData.getTxPower());
                     break;
                 // Air quality measurements (Format 6+)
+                case CHANNEL_ID_PM1:
+                    atLeastOneRuuviFieldPresent |= updateStateIfLinked(channelUID, ruuvitagData.getPm1());
+                    break;
                 case CHANNEL_ID_PM25:
                     atLeastOneRuuviFieldPresent |= updateStateIfLinked(channelUID, ruuvitagData.getPm25());
+                    break;
+                case CHANNEL_ID_PM4:
+                    atLeastOneRuuviFieldPresent |= updateStateIfLinked(channelUID, ruuvitagData.getPm4());
+                    break;
+                case CHANNEL_ID_PM10:
+                    atLeastOneRuuviFieldPresent |= updateStateIfLinked(channelUID, ruuvitagData.getPm10());
                     break;
                 case CHANNEL_ID_CO2:
                     atLeastOneRuuviFieldPresent |= updateStateIfLinked(channelUID, ruuvitagData.getCo2());
