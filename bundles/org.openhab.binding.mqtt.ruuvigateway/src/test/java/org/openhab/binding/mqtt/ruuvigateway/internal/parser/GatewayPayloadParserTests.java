@@ -42,6 +42,38 @@ public class GatewayPayloadParserTests {
     }
 
     /**
+     * Test with example Ruuvi Air data from the field.
+     * Note how 0xFF byte is at different position compared to other formats
+     */
+    @Test
+    public void testAirExample() {
+        GatewayPayload parsed = GatewayPayloadParser.parse(bytes(//
+                "{\"gw_mac\": \"DE:AD:BE:EF:00:00\","//
+                        + "  \"rssi\": -83,"//
+                        + "  \"aoa\": [],"//
+                        + "  \"gwts\": \"1659365438\","//
+                        + "  \"ts\": \"1659365439\","//
+                        + "  \"data\": \"2BFF9904E1108B4578C7BD000A00170020002503401100FFFFFFFFFFFF0634D3B8FFFFFFFFFFE5E267239CF903FFFFFF\","//
+                        + "  \"coords\": \"\"" + "}"));
+        assertNotNull(parsed);
+        assertEquals(-83, parsed.rssi);
+        assertEquals(Optional.of(Instant.ofEpochSecond(1659365438)), parsed.gwts);
+        assertEquals(Optional.of(Instant.ofEpochSecond(1659365439)), parsed.ts);
+        assertEquals(21.175, parsed.measurement.getTemperature());
+        assertEquals(101133, parsed.measurement.getPressure());
+        assertEquals(0xe1, parsed.measurement.getDataFormat());
+        assertEquals(44.46, parsed.measurement.getHumidity());
+        assertEquals(1.0, parsed.measurement.getPm1());
+        assertEquals(2.3, parsed.measurement.getPm25());
+        assertEquals(3.2, parsed.measurement.getPm4());
+        assertEquals(3.7, parsed.measurement.getPm10());
+        assertEquals(34, parsed.measurement.getVocIndex());
+        assertEquals(1, parsed.measurement.getNoxIndex());
+        assertEquals(77.75237076248787, parsed.measurement.calculateAirQualityIndex(), 0.01);
+        assertEquals(406739, parsed.measurement.getMeasurementSequenceNumber());
+    }
+
+    /**
      * Test with valid data.
      *
      * See 'valid case' test vector from
