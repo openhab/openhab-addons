@@ -348,7 +348,8 @@ public class RuuviHandler extends AbstractMQTTThingHandler implements MqttMessag
                     }
                     break;
                 case CHANNEL_ID_AIR_QUALITY_INDEX:
-                    atLeastOneRuuviFieldPresent |= updateStateIfLinked(channelUID, ruuvitagData.getAirQualityIndex());
+                    atLeastOneRuuviFieldPresent |= updateStateIfLinked(channelUID,
+                            ruuvitagData.calculateAirQualityIndex());
                     break;
                 //
                 // Auxiliary channels, not part of bluetooth advertisement
