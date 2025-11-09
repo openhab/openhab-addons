@@ -121,10 +121,6 @@ public class OnectaDeviceHandlerTest {
         when(channelsRefreshDelayMock.isDelayPassed(CHANNEL_AC_TEMPMIN)).thenReturn(true);
         when(channelsRefreshDelayMock.isDelayPassed(CHANNEL_AC_TEMPMAX)).thenReturn(true);
         when(channelsRefreshDelayMock.isDelayPassed(CHANNEL_AC_TEMPSTEP)).thenReturn(true);
-        when(channelsRefreshDelayMock.isDelayPassed(CHANNEL_AC_TARGETTEMP)).thenReturn(true);
-        when(channelsRefreshDelayMock.isDelayPassed(CHANNEL_AC_TARGETTEMPMIN)).thenReturn(true);
-        when(channelsRefreshDelayMock.isDelayPassed(CHANNEL_AC_TARGETTEMPMAX)).thenReturn(true);
-        when(channelsRefreshDelayMock.isDelayPassed(CHANNEL_AC_TARGETTEMPSTEP)).thenReturn(true);
         when(channelsRefreshDelayMock.isDelayPassed(CHANNEL_AC_SETPOINT_LEAVINGWATER_OFFSET)).thenReturn(true);
         when(channelsRefreshDelayMock.isDelayPassed(CHANNEL_AC_SETPOINT_LEAVINGWATER_TEMP)).thenReturn(true);
 
@@ -137,9 +133,6 @@ public class OnectaDeviceHandlerTest {
         when(channelsRefreshDelayMock.isDelayPassed(CHANNEL_AC_FANMOVEMENT_VER)).thenReturn(true);
 
         when(channelsRefreshDelayMock.isDelayPassed(CHANNEL_AC_HOLIDAYMODE)).thenReturn(true);
-        when(channelsRefreshDelayMock.isDelayPassed(CHANNEL_AC_DEMANDCONTROL)).thenReturn(true);
-
-        when(channelsRefreshDelayMock.isDelayPassed(CHANNEL_AC_DEMANDCONTROLFIXEDVALUE)).thenReturn(true);
 
         when(dataTransServiceMock.getPowerOnOff()).thenReturn("ON");
         when(dataTransServiceMock.getPowerfulModeOnOff()).thenReturn("ON");
@@ -148,11 +141,6 @@ public class OnectaDeviceHandlerTest {
         when(dataTransServiceMock.getCurrentTemperatureSetMin()).thenReturn(10.2);
         when(dataTransServiceMock.getCurrentTemperatureSetMax()).thenReturn(20.2);
         when(dataTransServiceMock.getCurrentTemperatureSetStep()).thenReturn(0.5);
-
-        when(dataTransServiceMock.getTargetTemperatur()).thenReturn(19.2);
-        when(dataTransServiceMock.getTargetTemperaturMin()).thenReturn(10.2);
-        when(dataTransServiceMock.getTargetTemperaturMax()).thenReturn(20.2);
-        when(dataTransServiceMock.getTargetTemperaturStep()).thenReturn(0.5);
 
         when(dataTransServiceMock.getSetpointLeavingWaterTemperature()).thenReturn(21.2);
         when(dataTransServiceMock.getSetpointLeavingWaterOffset()).thenReturn(15.5);
@@ -166,8 +154,6 @@ public class OnectaDeviceHandlerTest {
         when(dataTransServiceMock.getCurrentFanDirectionVer()).thenReturn(Enums.FanMovementVer.WINDNICE);
 
         when(dataTransServiceMock.getHolidayMode()).thenReturn("ON");
-        when(dataTransServiceMock.getDemandControl()).thenReturn(Enums.DemandControl.SCHEDULED);
-        when(dataTransServiceMock.getDemandControlFixedValue()).thenReturn(1234);
 
         // Test updatestate where no DelayPassed is required.
         when(dataTransServiceMock.getIndoorTemperature()).thenReturn(12.5);
@@ -178,10 +164,6 @@ public class OnectaDeviceHandlerTest {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX");
         when(dataTransServiceMock.getTimeStamp())
                 .thenReturn(ZonedDateTime.parse("2024-03-31T09:03:09.879Z", formatter));
-
-        when(dataTransServiceMock.getDemandControlFixedStepValue()).thenReturn(15);
-        when(dataTransServiceMock.getDemandControlFixedMinValue()).thenReturn(12);
-        when(dataTransServiceMock.getDemandControlFixedMaxValue()).thenReturn(34);
 
         when(dataTransServiceMock.getConsumptionCoolingDay()).thenReturn(new Float[] { 1.0f, 2.0f, 3.0f });
         when(dataTransServiceMock.getConsumptionCoolingWeek()).thenReturn(new Float[] { 1.0f, 2.0f, 3.0f });
@@ -278,15 +260,6 @@ public class OnectaDeviceHandlerTest {
         verify(callbackMock, times(1)).stateUpdated(new ChannelUID(thingMock.getUID(), CHANNEL_AC_TEMPSTEP),
                 new DecimalType(0.5));
 
-        verify(callbackMock, times(1)).stateUpdated(new ChannelUID(thingMock.getUID(), CHANNEL_AC_TARGETTEMP),
-                new DecimalType(19.2));
-        verify(callbackMock, times(1)).stateUpdated(new ChannelUID(thingMock.getUID(), CHANNEL_AC_TARGETTEMPMIN),
-                new DecimalType(10.2));
-        verify(callbackMock, times(1)).stateUpdated(new ChannelUID(thingMock.getUID(), CHANNEL_AC_TARGETTEMPMAX),
-                new DecimalType(20.2));
-        verify(callbackMock, times(1)).stateUpdated(new ChannelUID(thingMock.getUID(), CHANNEL_AC_TARGETTEMPSTEP),
-                new DecimalType(0.5));
-
         verify(callbackMock, times(1)).stateUpdated(
                 new ChannelUID(thingMock.getUID(), CHANNEL_AC_SETPOINT_LEAVINGWATER_TEMP), new DecimalType(21.2));
         verify(callbackMock, times(1)).stateUpdated(
@@ -307,11 +280,6 @@ public class OnectaDeviceHandlerTest {
                 new StringType("WINDNICE"));
         verify(callbackMock).stateUpdated(new ChannelUID(thingMock.getUID(), CHANNEL_AC_HOLIDAYMODE),
                 OnOffType.from("ON"));
-        verify(callbackMock, times(1)).stateUpdated(new ChannelUID(thingMock.getUID(), CHANNEL_AC_DEMANDCONTROL),
-                new StringType("SCHEDULED"));
-
-        verify(callbackMock, times(1)).stateUpdated(
-                new ChannelUID(thingMock.getUID(), CHANNEL_AC_DEMANDCONTROLFIXEDVALUE), new DecimalType(1234));
 
         // Test updatestate where no DelayPassed is required.
         verify(callbackMock, times(1)).stateUpdated(new ChannelUID(thingMock.getUID(), CHANNEL_INDOOR_TEMP),
@@ -324,13 +292,6 @@ public class OnectaDeviceHandlerTest {
                 new DecimalType(25));
         verify(callbackMock, times(1)).stateUpdated(new ChannelUID(thingMock.getUID(), CHANNEL_AC_TIMESTAMP),
                 new DateTimeType("2024-03-31T09:03:09.879Z"));
-
-        verify(callbackMock, times(1)).stateUpdated(
-                new ChannelUID(thingMock.getUID(), CHANNEL_AC_DEMANDCONTROLFIXEDSTEPVALUE), new DecimalType(15));
-        verify(callbackMock, times(1)).stateUpdated(
-                new ChannelUID(thingMock.getUID(), CHANNEL_AC_DEMANDCONTROLFIXEDMINVALUE), new DecimalType(12));
-        verify(callbackMock, times(1)).stateUpdated(
-                new ChannelUID(thingMock.getUID(), CHANNEL_AC_DEMANDCONTROLFIXEDMAXVALUE), new DecimalType(34));
     }
 
     @Test
@@ -344,10 +305,6 @@ public class OnectaDeviceHandlerTest {
         when(channelsRefreshDelayMock.isDelayPassed(CHANNEL_AC_TEMPMIN)).thenReturn(true);
         when(channelsRefreshDelayMock.isDelayPassed(CHANNEL_AC_TEMPMAX)).thenReturn(true);
         when(channelsRefreshDelayMock.isDelayPassed(CHANNEL_AC_TEMPSTEP)).thenReturn(true);
-        when(channelsRefreshDelayMock.isDelayPassed(CHANNEL_AC_TARGETTEMP)).thenReturn(true);
-        when(channelsRefreshDelayMock.isDelayPassed(CHANNEL_AC_TARGETTEMPMIN)).thenReturn(true);
-        when(channelsRefreshDelayMock.isDelayPassed(CHANNEL_AC_TARGETTEMPMAX)).thenReturn(true);
-        when(channelsRefreshDelayMock.isDelayPassed(CHANNEL_AC_TARGETTEMPSTEP)).thenReturn(true);
         when(channelsRefreshDelayMock.isDelayPassed(CHANNEL_AC_SETPOINT_LEAVINGWATER_OFFSET)).thenReturn(true);
         when(channelsRefreshDelayMock.isDelayPassed(CHANNEL_AC_SETPOINT_LEAVINGWATER_TEMP)).thenReturn(true);
 
@@ -360,9 +317,6 @@ public class OnectaDeviceHandlerTest {
         when(channelsRefreshDelayMock.isDelayPassed(CHANNEL_AC_FANMOVEMENT_VER)).thenReturn(true);
 
         when(channelsRefreshDelayMock.isDelayPassed(CHANNEL_AC_HOLIDAYMODE)).thenReturn(true);
-        when(channelsRefreshDelayMock.isDelayPassed(CHANNEL_AC_DEMANDCONTROL)).thenReturn(true);
-
-        when(channelsRefreshDelayMock.isDelayPassed(CHANNEL_AC_DEMANDCONTROLFIXEDVALUE)).thenReturn(true);
 
         when(dataTransServiceMock.getPowerOnOff()).thenReturn(null);
         when(dataTransServiceMock.getPowerfulModeOnOff()).thenReturn(null);
@@ -371,11 +325,6 @@ public class OnectaDeviceHandlerTest {
         when(dataTransServiceMock.getCurrentTemperatureSetMin()).thenReturn(null);
         when(dataTransServiceMock.getCurrentTemperatureSetMax()).thenReturn(null);
         when(dataTransServiceMock.getCurrentTemperatureSetStep()).thenReturn(null);
-
-        when(dataTransServiceMock.getTargetTemperatur()).thenReturn(null);
-        when(dataTransServiceMock.getTargetTemperaturMin()).thenReturn(null);
-        when(dataTransServiceMock.getTargetTemperaturMax()).thenReturn(null);
-        when(dataTransServiceMock.getTargetTemperaturStep()).thenReturn(null);
 
         when(dataTransServiceMock.getSetpointLeavingWaterTemperature()).thenReturn(null);
         when(dataTransServiceMock.getSetpointLeavingWaterOffset()).thenReturn(null);
@@ -389,8 +338,6 @@ public class OnectaDeviceHandlerTest {
         when(dataTransServiceMock.getCurrentFanDirectionVer()).thenReturn(null);
 
         when(dataTransServiceMock.getHolidayMode()).thenReturn(null);
-        when(dataTransServiceMock.getDemandControl()).thenReturn(null);
-        when(dataTransServiceMock.getDemandControlFixedValue()).thenReturn(null);
 
         // Test updatestate where no DelayPassed is required.
         when(dataTransServiceMock.getIndoorTemperature()).thenReturn(null);
@@ -399,10 +346,6 @@ public class OnectaDeviceHandlerTest {
         when(dataTransServiceMock.getIndoorHumidity()).thenReturn(null);
 
         when(dataTransServiceMock.getTimeStamp()).thenReturn(null);
-
-        when(dataTransServiceMock.getDemandControlFixedStepValue()).thenReturn(null);
-        when(dataTransServiceMock.getDemandControlFixedMinValue()).thenReturn(null);
-        when(dataTransServiceMock.getDemandControlFixedMaxValue()).thenReturn(null);
 
         handler.refreshDevice();
 
@@ -425,15 +368,6 @@ public class OnectaDeviceHandlerTest {
         verify(callbackMock, times(1)).stateUpdated(new ChannelUID(thingMock.getUID(), CHANNEL_AC_TEMPSTEP),
                 UnDefType.UNDEF);
 
-        verify(callbackMock, times(1)).stateUpdated(new ChannelUID(thingMock.getUID(), CHANNEL_AC_TARGETTEMP),
-                UnDefType.UNDEF);
-        verify(callbackMock, times(1)).stateUpdated(new ChannelUID(thingMock.getUID(), CHANNEL_AC_TARGETTEMPMIN),
-                UnDefType.UNDEF);
-        verify(callbackMock, times(1)).stateUpdated(new ChannelUID(thingMock.getUID(), CHANNEL_AC_TARGETTEMPMAX),
-                UnDefType.UNDEF);
-        verify(callbackMock, times(1)).stateUpdated(new ChannelUID(thingMock.getUID(), CHANNEL_AC_TARGETTEMPSTEP),
-                UnDefType.UNDEF);
-
         verify(callbackMock, times(1)).stateUpdated(
                 new ChannelUID(thingMock.getUID(), CHANNEL_AC_SETPOINT_LEAVINGWATER_TEMP), UnDefType.UNDEF);
         verify(callbackMock, times(1)).stateUpdated(
@@ -453,11 +387,6 @@ public class OnectaDeviceHandlerTest {
         verify(callbackMock, times(1)).stateUpdated(new ChannelUID(thingMock.getUID(), CHANNEL_AC_FANMOVEMENT_VER),
                 UnDefType.UNDEF);
         verify(callbackMock).stateUpdated(new ChannelUID(thingMock.getUID(), CHANNEL_AC_HOLIDAYMODE), UnDefType.UNDEF);
-        verify(callbackMock, times(1)).stateUpdated(new ChannelUID(thingMock.getUID(), CHANNEL_AC_DEMANDCONTROL),
-                UnDefType.UNDEF);
-
-        verify(callbackMock, times(1))
-                .stateUpdated(new ChannelUID(thingMock.getUID(), CHANNEL_AC_DEMANDCONTROLFIXEDVALUE), UnDefType.UNDEF);
 
         // Test updatestate where no DelayPassed is required.
         verify(callbackMock, times(1)).stateUpdated(new ChannelUID(thingMock.getUID(), CHANNEL_INDOOR_TEMP),
@@ -470,13 +399,6 @@ public class OnectaDeviceHandlerTest {
                 UnDefType.UNDEF);
         verify(callbackMock, times(1)).stateUpdated(new ChannelUID(thingMock.getUID(), CHANNEL_AC_TIMESTAMP),
                 UnDefType.UNDEF);
-
-        verify(callbackMock, times(1)).stateUpdated(
-                new ChannelUID(thingMock.getUID(), CHANNEL_AC_DEMANDCONTROLFIXEDSTEPVALUE), UnDefType.UNDEF);
-        verify(callbackMock, times(1)).stateUpdated(
-                new ChannelUID(thingMock.getUID(), CHANNEL_AC_DEMANDCONTROLFIXEDMINVALUE), UnDefType.UNDEF);
-        verify(callbackMock, times(1)).stateUpdated(
-                new ChannelUID(thingMock.getUID(), CHANNEL_AC_DEMANDCONTROLFIXEDMAXVALUE), UnDefType.UNDEF);
 
         verify(callbackMock, times(0)).statusUpdated(eq(thingMock),
                 argThat(arg -> arg.getStatus().equals(ThingStatus.UNKNOWN)));
@@ -493,10 +415,6 @@ public class OnectaDeviceHandlerTest {
         when(channelsRefreshDelayMock.isDelayPassed(CHANNEL_AC_TEMPMIN)).thenReturn(false);
         when(channelsRefreshDelayMock.isDelayPassed(CHANNEL_AC_TEMPMAX)).thenReturn(false);
         when(channelsRefreshDelayMock.isDelayPassed(CHANNEL_AC_TEMPSTEP)).thenReturn(false);
-        when(channelsRefreshDelayMock.isDelayPassed(CHANNEL_AC_TARGETTEMP)).thenReturn(false);
-        when(channelsRefreshDelayMock.isDelayPassed(CHANNEL_AC_TARGETTEMPMIN)).thenReturn(false);
-        when(channelsRefreshDelayMock.isDelayPassed(CHANNEL_AC_TARGETTEMPMAX)).thenReturn(false);
-        when(channelsRefreshDelayMock.isDelayPassed(CHANNEL_AC_TARGETTEMPSTEP)).thenReturn(false);
         when(channelsRefreshDelayMock.isDelayPassed(CHANNEL_AC_SETPOINT_LEAVINGWATER_OFFSET)).thenReturn(false);
         when(channelsRefreshDelayMock.isDelayPassed(CHANNEL_AC_SETPOINT_LEAVINGWATER_TEMP)).thenReturn(false);
 
@@ -509,9 +427,6 @@ public class OnectaDeviceHandlerTest {
         when(channelsRefreshDelayMock.isDelayPassed(CHANNEL_AC_FANMOVEMENT_VER)).thenReturn(false);
 
         when(channelsRefreshDelayMock.isDelayPassed(CHANNEL_AC_HOLIDAYMODE)).thenReturn(false);
-        when(channelsRefreshDelayMock.isDelayPassed(CHANNEL_AC_DEMANDCONTROL)).thenReturn(false);
-
-        when(channelsRefreshDelayMock.isDelayPassed(CHANNEL_AC_DEMANDCONTROLFIXEDVALUE)).thenReturn(false);
 
         lenient().when(dataTransServiceMock.getPowerOnOff()).thenThrow(new RuntimeException("Simulating exception"));
         lenient().when(dataTransServiceMock.getPowerfulModeOnOff())
@@ -525,15 +440,6 @@ public class OnectaDeviceHandlerTest {
         lenient().when(dataTransServiceMock.getCurrentTemperatureSetMax())
                 .thenThrow(new RuntimeException("Simulating exception"));
         lenient().when(dataTransServiceMock.getCurrentTemperatureSetStep())
-                .thenThrow(new RuntimeException("Simulating exception"));
-
-        lenient().when(dataTransServiceMock.getTargetTemperatur())
-                .thenThrow(new RuntimeException("Simulating exception"));
-        lenient().when(dataTransServiceMock.getTargetTemperaturMin())
-                .thenThrow(new RuntimeException("Simulating exception"));
-        lenient().when(dataTransServiceMock.getTargetTemperaturMax())
-                .thenThrow(new RuntimeException("Simulating exception"));
-        lenient().when(dataTransServiceMock.getTargetTemperaturStep())
                 .thenThrow(new RuntimeException("Simulating exception"));
 
         lenient().when(dataTransServiceMock.getSetpointLeavingWaterTemperature())
@@ -554,9 +460,6 @@ public class OnectaDeviceHandlerTest {
                 .thenThrow(new RuntimeException("Simulating exception"));
 
         lenient().when(dataTransServiceMock.getHolidayMode()).thenThrow(new RuntimeException("Simulating exception"));
-        lenient().when(dataTransServiceMock.getDemandControl()).thenThrow(new RuntimeException("Simulating exception"));
-        lenient().when(dataTransServiceMock.getDemandControlFixedValue())
-                .thenThrow(new RuntimeException("Simulating exception"));
 
         handler.refreshDevice();
 
@@ -574,15 +477,6 @@ public class OnectaDeviceHandlerTest {
         verify(callbackMock, times(0)).stateUpdated(new ChannelUID(thingMock.getUID(), CHANNEL_AC_TEMPMAX),
                 UnDefType.UNDEF);
         verify(callbackMock, times(0)).stateUpdated(new ChannelUID(thingMock.getUID(), CHANNEL_AC_TEMPSTEP),
-                UnDefType.UNDEF);
-
-        verify(callbackMock, times(0)).stateUpdated(new ChannelUID(thingMock.getUID(), CHANNEL_AC_TARGETTEMP),
-                UnDefType.UNDEF);
-        verify(callbackMock, times(0)).stateUpdated(new ChannelUID(thingMock.getUID(), CHANNEL_AC_TARGETTEMPMIN),
-                UnDefType.UNDEF);
-        verify(callbackMock, times(0)).stateUpdated(new ChannelUID(thingMock.getUID(), CHANNEL_AC_TARGETTEMPMAX),
-                UnDefType.UNDEF);
-        verify(callbackMock, times(0)).stateUpdated(new ChannelUID(thingMock.getUID(), CHANNEL_AC_TARGETTEMPSTEP),
                 UnDefType.UNDEF);
 
         verify(callbackMock, times(0)).stateUpdated(
@@ -605,11 +499,6 @@ public class OnectaDeviceHandlerTest {
                 UnDefType.UNDEF);
         verify(callbackMock, times(0)).stateUpdated(new ChannelUID(thingMock.getUID(), CHANNEL_AC_HOLIDAYMODE),
                 UnDefType.UNDEF);
-        verify(callbackMock, times(0)).stateUpdated(new ChannelUID(thingMock.getUID(), CHANNEL_AC_DEMANDCONTROL),
-                UnDefType.UNDEF);
-
-        verify(callbackMock, times(0))
-                .stateUpdated(new ChannelUID(thingMock.getUID(), CHANNEL_AC_DEMANDCONTROLFIXEDVALUE), UnDefType.UNDEF);
     }
 
     @Test
@@ -651,17 +540,6 @@ public class OnectaDeviceHandlerTest {
         handler.handleCommand(new ChannelUID(new ThingUID("1:2:3"), CHANNEL_AC_HOLIDAYMODE), OnOffType.ON);
         verify(dataTransServiceMock).setHolidayMode(Enums.OnOff.ON);
 
-        handler.handleCommand(new ChannelUID(new ThingUID("1:2:3"), CHANNEL_AC_DEMANDCONTROL),
-                new StringType("SCHEDULED"));
-        verify(dataTransServiceMock).setDemandControl(Enums.DemandControl.SCHEDULED);
-
-        handler.handleCommand(new ChannelUID(new ThingUID("1:2:3"), CHANNEL_AC_DEMANDCONTROLFIXEDVALUE),
-                new QuantityType<>("25"));
-        verify(dataTransServiceMock).setDemandControlFixedValue(25);
-
-        handler.handleCommand(new ChannelUID(new ThingUID("1:2:3"), CHANNEL_AC_TARGETTEMP), new QuantityType<>("26"));
-        verify(dataTransServiceMock).setTargetTemperatur(26);
-
         handler.handleCommand(new ChannelUID(new ThingUID("1:2:3"), CHANNEL_AC_SETPOINT_LEAVINGWATER_OFFSET),
                 new QuantityType<>("27"));
         verify(dataTransServiceMock).setSetpointLeavingWaterOffset(27);
@@ -670,7 +548,7 @@ public class OnectaDeviceHandlerTest {
                 new QuantityType<>("28"));
         verify(dataTransServiceMock).setSetpointLeavingWaterTemperature(28);
 
-        verify(callbackMock, times(16)).statusUpdated(eq(thingMock),
+        verify(callbackMock, times(13)).statusUpdated(eq(thingMock),
                 argThat(arg -> arg.getStatus().equals(ThingStatus.ONLINE)));
 
         doThrow(new RuntimeException("Simulating exception")).when(channelsRefreshDelayMock).add(anyString());

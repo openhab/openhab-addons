@@ -121,21 +121,6 @@ public class OnectaDeviceHandler extends AbstractOnectaHandler {
                         dataTransService.setHolidayMode(Enums.OnOff.valueOf(command.toString()));
                     }
                     break;
-                case CHANNEL_AC_DEMANDCONTROL:
-                    if (command instanceof StringType) {
-                        dataTransService.setDemandControl(Enums.DemandControl.valueOf(command.toString()));
-                    }
-                    break;
-                case CHANNEL_AC_DEMANDCONTROLFIXEDVALUE:
-                    if (command instanceof QuantityType) {
-                        dataTransService.setDemandControlFixedValue(((QuantityType<?>) command).intValue());
-                    }
-                    break;
-                case CHANNEL_AC_TARGETTEMP:
-                    if (command instanceof QuantityType) {
-                        dataTransService.setTargetTemperatur(((QuantityType<?>) command).intValue());
-                    }
-                    break;
                 case CHANNEL_AC_SETPOINT_LEAVINGWATER_OFFSET:
                     if (command instanceof QuantityType) {
                         dataTransService.setSetpointLeavingWaterOffset(((QuantityType<?>) command).intValue());
@@ -200,20 +185,6 @@ public class OnectaDeviceHandler extends AbstractOnectaHandler {
                 updateState(CHANNEL_AC_TEMPSTEP, getCurrentTemperatureSetStep());
             }
 
-            // Target temp
-            if (channelsRefreshDelay.isDelayPassed(CHANNEL_AC_TARGETTEMP)) {
-                updateState(CHANNEL_AC_TARGETTEMP, getTargetTemperatur());
-            }
-            if (channelsRefreshDelay.isDelayPassed(CHANNEL_AC_TARGETTEMPMIN)) {
-                updateState(CHANNEL_AC_TARGETTEMPMIN, getTargetTemperaturMin());
-            }
-            if (channelsRefreshDelay.isDelayPassed(CHANNEL_AC_TARGETTEMPMAX)) {
-                updateState(CHANNEL_AC_TARGETTEMPMAX, getTargetTemperaturMax());
-            }
-            if (channelsRefreshDelay.isDelayPassed(CHANNEL_AC_TARGETTEMPSTEP)) {
-                updateState(CHANNEL_AC_TARGETTEMPSTEP, getTargetTemperaturStep());
-            }
-
             if (channelsRefreshDelay.isDelayPassed(CHANNEL_AC_SETPOINT_LEAVINGWATER_OFFSET)) {
                 updateState(CHANNEL_AC_SETPOINT_LEAVINGWATER_OFFSET, getSetpointLeavingWaterOffset());
             }
@@ -251,18 +222,6 @@ public class OnectaDeviceHandler extends AbstractOnectaHandler {
             if (channelsRefreshDelay.isDelayPassed(CHANNEL_AC_HOLIDAYMODE)) {
                 updateState(CHANNEL_AC_HOLIDAYMODE, getHolidayMode());
             }
-            if (channelsRefreshDelay.isDelayPassed(CHANNEL_AC_DEMANDCONTROL)) {
-                updateState(CHANNEL_AC_DEMANDCONTROL, getDemandControl());
-            }
-
-            // DEMANDCONTROL
-            if (channelsRefreshDelay.isDelayPassed(CHANNEL_AC_DEMANDCONTROLFIXEDVALUE)) {
-                updateState(CHANNEL_AC_DEMANDCONTROLFIXEDVALUE, getDemandControlFixedValue());
-            }
-            updateState(CHANNEL_AC_DEMANDCONTROLFIXEDSTEPVALUE, getDemandControlFixedStepValue());
-            updateState(CHANNEL_AC_DEMANDCONTROLFIXEDMINVALUE, getDemandControlFixedMinValue());
-            updateState(CHANNEL_AC_DEMANDCONTROLFIXEDMAXVALUE, getDemandControlFixedMaxValue());
-
             // Energy consumption Cooling Day
             if (dataTransService.getConsumptionCoolingDay() != null) {
                 for (int i = 0; i < dataTransService.getConsumptionCoolingDay().length; i++) {
@@ -382,38 +341,6 @@ public class OnectaDeviceHandler extends AbstractOnectaHandler {
         return TypeHandler.decimalType(dataTransService.getLeavingWaterTemperature());
     }
 
-    private State getTargetTemperatur() {
-        return TypeHandler.decimalType(dataTransService.getTargetTemperatur());
-    }
-
-    private State getTargetTemperaturMax() {
-        return TypeHandler.decimalType(dataTransService.getTargetTemperaturMax());
-    }
-
-    private State getTargetTemperaturMin() {
-        return TypeHandler.decimalType(dataTransService.getTargetTemperaturMin());
-    }
-
-    private State getTargetTemperaturStep() {
-        return TypeHandler.decimalType(dataTransService.getTargetTemperaturStep());
-    }
-
-    private State getDemandControlFixedValue() {
-        return TypeHandler.decimalType(dataTransService.getDemandControlFixedValue());
-    }
-
-    private State getDemandControlFixedStepValue() {
-        return TypeHandler.decimalType(dataTransService.getDemandControlFixedStepValue());
-    }
-
-    private State getDemandControlFixedMinValue() {
-        return TypeHandler.decimalType(dataTransService.getDemandControlFixedMinValue());
-    }
-
-    private State getDemandControlFixedMaxValue() {
-        return TypeHandler.decimalType(dataTransService.getDemandControlFixedMaxValue());
-    }
-
     private State getIndoorHumidity() {
         return TypeHandler.decimalType(dataTransService.getIndoorHumidity());
     }
@@ -444,10 +371,6 @@ public class OnectaDeviceHandler extends AbstractOnectaHandler {
 
     private State getHolidayMode() {
         return TypeHandler.onOffType(dataTransService.getHolidayMode());
-    }
-
-    private State getDemandControl() {
-        return TypeHandler.stringType(dataTransService.getDemandControl());
     }
 
     private int getCurrentDayOfWeek() {

@@ -108,11 +108,6 @@ public class DataTransportServiceTest {
         assertEquals(false, dataTransportService.getIsHolidayModeActive());
         assertEquals(false, dataTransportService.getIsPowerfulModeActive());
         assertEquals(null, dataTransportService.getIsInEmergencyState());
-        assertEquals(Enums.DemandControl.OFF, dataTransportService.getDemandControl());
-        assertEquals((Integer) 100, dataTransportService.getDemandControlFixedValue());
-        assertEquals((Integer) 5, dataTransportService.getDemandControlFixedStepValue());
-        assertEquals((Integer) 40, dataTransportService.getDemandControlFixedMinValue());
-        assertEquals((Integer) 100, dataTransportService.getDemandControlFixedMaxValue());
 
         assertArrayEquals((new Float[] { 0f, 0f, 0f, 0f, 0f, 0f, 0.1f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0.1f, 0f, 0f,
                 0f, 0f, 0f, 0f, 0f }), dataTransportService.getConsumptionCoolingDay());
@@ -142,10 +137,6 @@ public class DataTransportServiceTest {
 
         assertEquals(Enums.FanSpeed.LEVEL_5, dataTransportService.getCurrentFanspeed());
         assertEquals(Enums.FanMovementHor.SWING, dataTransportService.getCurrentFanDirectionHor());
-        assertEquals(null, dataTransportService.getTargetTemperatur());
-        assertEquals(null, dataTransportService.getTargetTemperaturMax());
-        assertEquals(null, dataTransportService.getTargetTemperaturMin());
-        assertEquals(null, dataTransportService.getTargetTemperaturStep());
 
         assertEquals(null, dataTransportService.getCurrentTankTemperatureSet());
     }
@@ -264,10 +255,6 @@ public class DataTransportServiceTest {
         assertEquals(null, dataTransportService.getTankTemperature());
 
         assertEquals((float) 30.0, dataTransportService.getOutdoorTemperature());
-        assertEquals((float) 10.0, dataTransportService.getTargetTemperatur());
-        assertEquals((float) 22.0, dataTransportService.getTargetTemperaturMax());
-        assertEquals((float) 8.0, dataTransportService.getTargetTemperaturMin());
-        assertEquals((float) 1.0, dataTransportService.getTargetTemperaturStep());
         assertEquals(false, dataTransportService.getIsInEmergencyState());
     }
 
@@ -318,20 +305,10 @@ public class DataTransportServiceTest {
         dataTransportService.setHolidayMode(Enums.OnOff.OFF);
         verify(onectaConnectionClientMock).setHolidayMode(UNITID, MANAGEMENTPOINT.getValue(), Enums.OnOff.OFF);
 
-        dataTransportService.setDemandControl(Enums.DemandControl.SCHEDULED);
-        verify(onectaConnectionClientMock).setDemandControl(UNITID, MANAGEMENTPOINT.getValue(),
-                Enums.DemandControl.SCHEDULED);
-
-        dataTransportService.setDemandControlFixedValue(12);
-        verify(onectaConnectionClientMock).setDemandControlFixedValue(UNITID, MANAGEMENTPOINT.getValue(), 12);
-
         dataTransportService.setCurrentTemperatureSet(20f);
         dataTransportService.setCurrentTemperatureSet(50f);
         verify(onectaConnectionClientMock, times(1)).setCurrentTemperatureRoomSet(UNITID, MANAGEMENTPOINT.getValue(),
                 Enums.OperationMode.COLD, 20f);
-
-        dataTransportService.setTargetTemperatur(50f);
-        verify(onectaConnectionClientMock, times(1)).setTargetTemperatur(UNITID, MANAGEMENTPOINT.getValue(), 50f);
     }
 
     @Test

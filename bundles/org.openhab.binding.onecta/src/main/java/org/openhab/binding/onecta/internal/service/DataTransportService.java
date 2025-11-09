@@ -385,38 +385,6 @@ public class DataTransportService {
                 .orElse(null);
     }
 
-    public Number getTargetTemperatur() {
-        return Optional.ofNullable(getManagementPoint(Enums.ManagementPoint.CLIMATECONTROL))//
-                .map(ManagementPoint::getTargetTemperature)//
-                .map(IconID::getValue)//
-                .orElse(null);
-    }
-
-    public void setTargetTemperatur(float value) {
-        onectaConnectionClient.setTargetTemperatur(unitId, getEmbeddedId(), value);
-    }
-
-    public Number getTargetTemperaturMax() {
-        return Optional.ofNullable(getManagementPoint(Enums.ManagementPoint.CLIMATECONTROL))//
-                .map(ManagementPoint::getTargetTemperature)//
-                .map(IconID::getMaxValue)//
-                .orElse(null);
-    }
-
-    public Number getTargetTemperaturMin() {
-        return Optional.ofNullable(getManagementPoint(Enums.ManagementPoint.CLIMATECONTROL))//
-                .map(ManagementPoint::getTargetTemperature)//
-                .map(IconID::getMinValue)//
-                .orElse(null);
-    }
-
-    public Number getTargetTemperaturStep() {
-        return Optional.ofNullable(getManagementPoint(Enums.ManagementPoint.CLIMATECONTROL))//
-                .map(ManagementPoint::getTargetTemperature)//
-                .map(IconID::getStepValue)//
-                .orElse(null);
-    }
-
     public String getStreamerMode() {
         return Optional.ofNullable(getManagementPoint(Enums.ManagementPoint.CLIMATECONTROL))//
                 .map(ManagementPoint::getStreamerMode)//
@@ -451,60 +419,6 @@ public class DataTransportService {
 
     public void setHolidayMode(Enums.OnOff value) {
         onectaConnectionClient.setHolidayMode(unitId, getEmbeddedId(), value);
-    }
-
-    public Enums.DemandControl getDemandControl() {
-        return Optional.ofNullable(getManagementPoint(Enums.ManagementPoint.CLIMATECONTROL))//
-                .map(ManagementPoint::getDemandControl)//
-                .map(DemandControl::getValue)//
-                .map(DemandControlValue::getCurrentMode).map(GatwaySubValueString::getValue)
-                .map(Enums.DemandControl::fromValue)//
-                .orElse(null);
-    }
-
-    public void setDemandControl(Enums.DemandControl value) {
-        onectaConnectionClient.setDemandControl(unitId, getEmbeddedId(), value);
-    }
-
-    public Integer getDemandControlFixedValue() {
-        return Optional.ofNullable(getManagementPoint(Enums.ManagementPoint.CLIMATECONTROL))//
-                .map(ManagementPoint::getDemandControl)//
-                .map(DemandControl::getValue)//
-                .map(DemandControlValue::getModes)//
-                .map(DemandControlModes::getFixedValues)//
-                .map(DemandControlModesFixed::getValue).orElse(null);
-    }
-
-    public Integer getDemandControlFixedStepValue() {
-        return Optional.ofNullable(getManagementPoint(Enums.ManagementPoint.CLIMATECONTROL))//
-                .map(ManagementPoint::getDemandControl)//
-                .map(DemandControl::getValue)//
-                .map(DemandControlValue::getModes)//
-                .map(DemandControlModes::getFixedValues)//
-                .map(DemandControlModesFixed::getStepValue)//
-                .orElse(null);
-    }
-
-    public Integer getDemandControlFixedMinValue() {
-        return Optional.ofNullable(getManagementPoint(Enums.ManagementPoint.CLIMATECONTROL))//
-                .map(ManagementPoint::getDemandControl)//
-                .map(DemandControl::getValue)//
-                .map(DemandControlValue::getModes)//
-                .map(DemandControlModes::getFixedValues)//
-                .map(DemandControlModesFixed::getMinValue).orElse(null);
-    }
-
-    public Integer getDemandControlFixedMaxValue() {
-        return Optional.ofNullable(getManagementPoint(Enums.ManagementPoint.CLIMATECONTROL))//
-                .map(ManagementPoint::getDemandControl)//
-                .map(DemandControl::getValue)//
-                .map(DemandControlValue::getModes)//
-                .map(DemandControlModes::getFixedValues)//
-                .map(DemandControlModesFixed::getMaxValue).orElse(null);
-    }
-
-    public void setDemandControlFixedValue(Integer value) {
-        onectaConnectionClient.setDemandControlFixedValue(unitId, getEmbeddedId(), value);
     }
 
     public Float[] getConsumptionCoolingDay() {

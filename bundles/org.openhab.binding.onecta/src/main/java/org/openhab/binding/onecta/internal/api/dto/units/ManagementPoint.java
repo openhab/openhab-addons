@@ -192,10 +192,6 @@ public class ManagementPoint {
         return setpointMode;
     }
 
-    public IconID getTargetTemperature() {
-        return targetTemperature;
-    }
-
     public GatwaySubValueString getOutdoorSilentMode() {
         return outdoorSilentMode;
     }

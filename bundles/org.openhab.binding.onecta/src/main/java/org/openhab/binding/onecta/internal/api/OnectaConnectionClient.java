@@ -305,22 +305,6 @@ public class OnectaConnectionClient {
         doBearerRequestPatch(getHolidayMode(unitId, embeddedId), commandTrueFalse);
     }
 
-    public void setDemandControl(String unitId, String embeddedId, Enums.DemandControl value) {
-        logger.debug("setDemandControl: {}, {}, {}", unitId, embeddedId, value);
-        doBearerRequestPatch(getTDemandControlUrl(unitId, embeddedId), getTDemandControlCommand(value));
-    }
-
-    public void setDemandControlFixedValue(String unitId, String embeddedId, Integer value) {
-        logger.debug("setDemandControlFixedValue: {}, {}, {}", unitId, embeddedId, value);
-
-        doBearerRequestPatch(getTDemandControlUrl(unitId, embeddedId), getTDemandControlFixedValueCommand(value));
-    }
-
-    public void setTargetTemperatur(String unitId, String embeddedId, Float value) {
-        logger.debug("setRefreshToken: {}, {}, {}", unitId, embeddedId, value);
-        doBearerRequestPatch(getTargetTemperaturUrl(unitId, embeddedId), getTargetTemperaturCommand(value));
-    }
-
     public void setSetpointLeavingWaterOffset(String unitId, String embeddedId, Enums.OperationMode operationMode,
             Float value) {
         logger.debug("setRefreshToken: {}, {}, {}. {}", unitId, embeddedId, operationMode, value);

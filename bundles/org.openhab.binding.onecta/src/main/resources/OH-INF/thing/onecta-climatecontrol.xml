@@ -11,11 +11,9 @@
 
 		<label>Device climateControl</label>
 		<description>Daikin Onecta device climateControl</description>
-		<semantic-equipment-tag>AirConditioner</semantic-equipment-tag>
 
 		<channel-groups>
 			<channel-group id="basic" typeId="basic-group"/>
-			<channel-group id="demandcontrol" typeId="demandcontrol-group"/>
 			<channel-group id="consumption-data-cooling" typeId="consumption-data-cooling-group"/>
 			<channel-group id="consumption-data-heating" typeId="consumption-data-heating-group"/>
 		</channel-groups>
@@ -60,26 +58,10 @@
 			<channel id="streamer" typeId="acunit-streamer"/>
 			<channel id="powerful-mode" typeId="acunit-powerful-mode"/>
 			<channel id="holiday-mode" typeId="acunit-holiday-mode"/>
-			<channel id="target-temp" typeId="acunit-target-temp"/>
-			<channel id="target-temp-min" typeId="acunit-target-temp-min"/>
-			<channel id="target-temp-max" typeId="acunit-target-temp-max"/>
-			<channel id="target-temp-step" typeId="acunit-target-temp-step"/>
 			<channel id="set-leaving-water-offset" typeId="acunit-set-leaving-water-offset"/>
 			<channel id="set-leaving-water-temp" typeId="acunit-set-leaving-water-temp"/>
 
 			<channel id="timestamp" typeId="acunit-timestamp"/>
-		</channels>
-	</channel-group-type>
-
-	<channel-group-type id="demandcontrol-group">
-		<label>Demandcontrol</label>
-		<description>Demandcontrol related information</description>
-		<channels>
-			<channel id="demand-control" typeId="acunit-demand-control"/>
-			<channel id="demand-control-fixed-value" typeId="acunit-demand-control-fixed-value"/>
-			<channel id="demand-control-fixed-step-value" typeId="acunit-demand-control-fixed-step-value"/>
-			<channel id="demand-control-fixed-min-value" typeId="acunit-demand-control-fixed-min-value"/>
-			<channel id="demand-control-fixed-max-value" typeId="acunit-demand-control-fixed-max-value"/>
 		</channels>
 	</channel-group-type>
 
@@ -237,6 +219,10 @@
 		<label>Energy heating last year (00) January</label>
 		<description>The energy usage for heating last year January</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-heating-month-1" advanced="true">
@@ -251,6 +237,10 @@
 		<label>Energy heating last year (02) March</label>
 		<description>The energy usage for heating last year March</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-heating-month-3" advanced="true">
@@ -258,6 +248,10 @@
 		<label>Energy heating last year (03) April</label>
 		<description>The energy usage for heating last year April</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-heating-month-4" advanced="true">
@@ -265,6 +259,10 @@
 		<label>Energy heating last year (04) May</label>
 		<description>The energy usage for heating last year May</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-heating-month-5" advanced="true">
@@ -272,6 +270,10 @@
 		<label>Energy heating last year (05) June</label>
 		<description>The energy usage for heating last year June</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-heating-month-6" advanced="true">
@@ -279,6 +281,10 @@
 		<label>Energy heating last year (06) July</label>
 		<description>The energy usage for heating last year July</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-heating-month-7" advanced="true">
@@ -286,6 +292,10 @@
 		<label>Energy heating last year (07) August</label>
 		<description>The energy usage for heating last year August</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-heating-month-8" advanced="true">
@@ -293,6 +303,10 @@
 		<label>Energy heating last year (08) September</label>
 		<description>The energy usage for heating last year September</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-heating-month-9" advanced="true">
@@ -300,6 +314,10 @@
 		<label>Energy heating last year (09) October</label>
 		<description>The energy usage for heating last year October</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-heating-month-10" advanced="true">
@@ -307,6 +325,10 @@
 		<label>Energy heating last year (10) November</label>
 		<description>The energy usage for heating last year November</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-heating-month-11" advanced="true">
@@ -314,6 +336,10 @@
 		<label>Energy heating last year (11) December</label>
 		<description>The energy usage for heating last year December</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -323,6 +349,10 @@
 		<label>Energy heating current year (00) January</label>
 		<description>The energy usage for heating current year January</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-heating-month-13" advanced="true">
@@ -330,6 +360,10 @@
 		<label>Energy heating current year (01) February</label>
 		<description>The energy usage for heating current year February</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-heating-month-14" advanced="true">
@@ -337,6 +371,10 @@
 		<label>Energy heating current year (02) March</label>
 		<description>The energy usage for heating current year March</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-heating-month-15" advanced="true">
@@ -344,6 +382,10 @@
 		<label>Energy heating current year (03) April</label>
 		<description>The energy usage for heating current year April</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-heating-month-16" advanced="true">
@@ -351,6 +393,10 @@
 		<label>Energy heating current year (04) May</label>
 		<description>The energy usage for heating current year May</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-heating-month-17" advanced="true">
@@ -358,6 +404,10 @@
 		<label>Energy heating current year (05) June</label>
 		<description>The energy usage for heating current year June</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-heating-month-18" advanced="true">
@@ -365,6 +415,10 @@
 		<label>Energy heating current year (06) July</label>
 		<description>The energy usage for heating current year July</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-heating-month-19" advanced="true">
@@ -372,6 +426,10 @@
 		<label>Energy heating current year (07) August</label>
 		<description>The energy usage for heating current year August</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-heating-month-20" advanced="true">
@@ -379,6 +437,10 @@
 		<label>Energy heating current year (08) September</label>
 		<description>The energy usage for heating current year September</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-heating-month-21" advanced="true">
@@ -386,6 +448,10 @@
 		<label>Energy heating current year (09) October</label>
 		<description>The energy usage for heating current year October</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-heating-month-22" advanced="true">
@@ -393,6 +459,10 @@
 		<label>Energy heating current year (10) November</label>
 		<description>The energy usage for heating current year November</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-heating-month-23" advanced="true">
@@ -400,6 +470,10 @@
 		<label>Energy heating current year (11) December</label>
 		<description>The energy usage for heating current year December</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -408,6 +482,10 @@
 		<label>Energy Heating current day total</label>
 		<description>The energy usage for heating current day total</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-heating-current-year">
@@ -415,16 +493,22 @@
 		<label>Energy Heating current year total</label>
 		<description>The energy usage for heating current year total</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
-
-
 
 	<channel-type id="acunit-energy-heating-week-0" advanced="true">
 		<item-type>Number:Energy</item-type>
 		<label>Energy heating last week (0) Monday</label>
 		<description>The energy usage for heating last week Monday</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-heating-week-1" advanced="true">
@@ -432,6 +516,10 @@
 		<label>Energy heating last week (1) Tuesday</label>
 		<description>The energy usage for heating last week Tuesday</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-heating-week-2" advanced="true">
@@ -439,6 +527,10 @@
 		<label>Energy heating last week (2) Wednesday</label>
 		<description>The energy usage for heating last week Wednesday</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-heating-week-3" advanced="true">
@@ -446,6 +538,10 @@
 		<label>Energy heating last week (3) Thursday</label>
 		<description>The energy usage for heating last week Thursday</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-heating-week-4" advanced="true">
@@ -453,6 +549,10 @@
 		<label>Energy heating last week (4) Friday</label>
 		<description>The energy usage for heating last week Friday</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-heating-week-5" advanced="true">
@@ -460,6 +560,10 @@
 		<label>Energy heating last week (5) Saturday</label>
 		<description>The energy usage for heating last week Saturday</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-heating-week-6" advanced="true">
@@ -467,6 +571,10 @@
 		<label>Energy heating last week (6) Sunday</label>
 		<description>The energy usage for heating last week Sunday</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -475,6 +583,10 @@
 		<label>Energy heating current week (0) Monday</label>
 		<description>The energy usage for heating current week Monday</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-heating-week-8" advanced="true">
@@ -482,6 +594,10 @@
 		<label>Energy heating current week (1) Tuesday</label>
 		<description>The energy usage for heating current week Tuesday</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-heating-week-9" advanced="true">
@@ -489,6 +605,10 @@
 		<label>Energy heating current week (2) Wednesday</label>
 		<description>The energy usage for heating current week Wednesday</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-heating-week-10" advanced="true">
@@ -503,6 +623,10 @@
 		<label>Energy heating current week (4) Friday</label>
 		<description>The energy usage for heating current week Friday</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-heating-week-12" advanced="true">
@@ -510,6 +634,10 @@
 		<label>Energy heating current week (5) Saturday</label>
 		<description>The energy usage for heating current week Saturday</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-heating-week-13" advanced="true">
@@ -517,6 +645,10 @@
 		<label>Energy heating current week (6) Sunday</label>
 		<description>The energy usage for heating current week Sunday</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -525,6 +657,10 @@
 		<label>Energy heating yesterday (00:00 - 02:00)</label>
 		<description>The energy usage for heating yesterday (00:00 - 02:00)</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-heating-day-1" advanced="true">
@@ -532,6 +668,10 @@
 		<label>Energy heating yesterday (02:00 - 04:00)</label>
 		<description>The energy usage for heating yesterday (02:00 - 04:00)</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-heating-day-2" advanced="true">
@@ -539,6 +679,10 @@
 		<label>Energy heating yesterday (04:00 - 06:00)</label>
 		<description>The energy usage for heating yesterday (04:00 - 06:00)</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-heating-day-3" advanced="true">
@@ -546,6 +690,10 @@
 		<label>Energy heating yesterday (06:00 - 08:00)</label>
 		<description>The energy usage for heating yesterday (06:00 - 08:00)</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-heating-day-4" advanced="true">
@@ -553,6 +701,10 @@
 		<label>Energy heating yesterday (08:00 - 10:00)</label>
 		<description>The energy usage for heating yesterday (08:00 - 10:00)</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-heating-day-5" advanced="true">
@@ -560,6 +712,10 @@
 		<label>Energy heating yesterday (10:00 - 12:00)</label>
 		<description>The energy usage for heating yesterday (10:00 - 12:00)</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-heating-day-6" advanced="true">
@@ -567,6 +723,10 @@
 		<label>Energy heating yesterday (12:00 - 14:00)</label>
 		<description>The energy usage for heating yesterday (12:00 - 14:00)</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-heating-day-7" advanced="true">
@@ -574,6 +734,10 @@
 		<label>Energy heating yesterday (14:00 - 16:00)</label>
 		<description>The energy usage for heating yesterday (14:00 - 16:00)</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-heating-day-8" advanced="true">
@@ -581,6 +745,10 @@
 		<label>Energy heating yesterday (16:00 - 18:00)</label>
 		<description>The energy usage for heating yesterday (16:00 - 18:00)</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-heating-day-9" advanced="true">
@@ -588,6 +756,10 @@
 		<label>Energy heating yesterday (18:00 - 20:00)</label>
 		<description>The energy usage for heating yesterday (18:00 - 20:00)</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-heating-day-10" advanced="true">
@@ -595,6 +767,10 @@
 		<label>Energy heating yesterday (20:00 - 22:00)</label>
 		<description>The energy usage for heating yesterday (20:00 - 22:00)</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-heating-day-11" advanced="true">
@@ -602,6 +778,10 @@
 		<label>Energy heating yesterday (22:00 - 24:00)</label>
 		<description>The energy usage for heating yesterday (22:00 - 24:00)</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-heating-day-12" advanced="true">
@@ -609,6 +789,10 @@
 		<label>Energy heating Today (00:00 - 02:00)</label>
 		<description>The energy usage for heating today (00:00 - 02:00)</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-heating-day-13" advanced="true">
@@ -616,6 +800,10 @@
 		<label>Energy heating Today (02:00 - 04:00)</label>
 		<description>The energy usage for heating today (02:00 - 04:00)</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-heating-day-14" advanced="true">
@@ -623,6 +811,10 @@
 		<label>Energy heating Today (04:00 - 06:00)</label>
 		<description>The energy usage for heating today (04:00 - 06:00)</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-heating-day-15" advanced="true">
@@ -630,6 +822,10 @@
 		<label>Energy heating Today (06:00 - 08:00)</label>
 		<description>The energy usage for heating today (06:00 - 08:00)</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-heating-day-16" advanced="true">
@@ -637,6 +833,10 @@
 		<label>Energy heating Today (08:00 - 10:00)</label>
 		<description>The energy usage for heating today (08:00 - 10:00)</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-heating-day-17" advanced="true">
@@ -644,6 +844,10 @@
 		<label>Energy heating Today (10:00 - 12:00)</label>
 		<description>The energy usage for heating today (10:00 - 12:00)</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-heating-day-18" advanced="true">
@@ -651,6 +855,10 @@
 		<label>Energy heating Today (12:00 - 14:00)</label>
 		<description>The energy usage for heating today (12:00 - 14:00)</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-heating-day-19" advanced="true">
@@ -658,6 +866,10 @@
 		<label>Energy heating Today (14:00 - 16:00)</label>
 		<description>The energy usage for heating today (14:00 - 16:00)</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-heating-day-20" advanced="true">
@@ -665,6 +877,10 @@
 		<label>Energy heating Today (16:00 - 18:00)</label>
 		<description>The energy usage for heating today (16:00 - 18:00)</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-heating-day-21" advanced="true">
@@ -672,6 +888,10 @@
 		<label>Energy heating Today (18:00 - 20:00)</label>
 		<description>The energy usage for heating today (18:00 - 20:00)</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-heating-day-22" advanced="true">
@@ -679,6 +899,10 @@
 		<label>Energy heating Today (20:00 - 22:00)</label>
 		<description>The energy usage for heating today (20:00 - 22:00)</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-heating-day-23" advanced="true">
@@ -686,6 +910,10 @@
 		<label>Energy heating Today (22:00 - 24:00)</label>
 		<description>The energy usage for heating today (22:00 - 24:00)</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -694,6 +922,10 @@
 		<label>Energy heating This Week</label>
 		<description>The energy usage for heating this week</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -702,6 +934,10 @@
 		<label>Energy heating Last Week</label>
 		<description>The energy usage for heating last week</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -710,6 +946,10 @@
 		<label>Energy Cooling last year (00) January</label>
 		<description>The energy usage for cooling last year January</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-cooling-month-1" advanced="true">
@@ -717,6 +957,10 @@
 		<label>Energy Cooling last year (01) February</label>
 		<description>The energy usage for cooling last year February</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-cooling-month-2" advanced="true">
@@ -724,6 +968,10 @@
 		<label>Energy Cooling last year (02) March</label>
 		<description>The energy usage for cooling last year March</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-cooling-month-3" advanced="true">
@@ -731,6 +979,10 @@
 		<label>Energy Cooling last year (03) April</label>
 		<description>The energy usage for cooling last year April</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-cooling-month-4" advanced="true">
@@ -738,6 +990,10 @@
 		<label>Energy Cooling last year (04) May</label>
 		<description>The energy usage for cooling last year May</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-cooling-month-5" advanced="true">
@@ -745,6 +1001,10 @@
 		<label>Energy Cooling last year (05) June</label>
 		<description>The energy usage for cooling last year June</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-cooling-month-6" advanced="true">
@@ -752,6 +1012,10 @@
 		<label>Energy Cooling last year (06) July</label>
 		<description>The energy usage for cooling last year July</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-cooling-month-7" advanced="true">
@@ -759,6 +1023,10 @@
 		<label>Energy Cooling last year (07) August</label>
 		<description>The energy usage for cooling last year August</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-cooling-month-8" advanced="true">
@@ -766,6 +1034,10 @@
 		<label>Energy Cooling last year (08) September</label>
 		<description>The energy usage for cooling last year September</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-cooling-month-9" advanced="true">
@@ -773,6 +1045,10 @@
 		<label>Energy Cooling last year (09) October</label>
 		<description>The energy usage for cooling last year October</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-cooling-month-10" advanced="true">
@@ -780,6 +1056,10 @@
 		<label>Energy Cooling last year (10) November</label>
 		<description>The energy usage for cooling last year November</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-cooling-month-11" advanced="true">
@@ -787,6 +1067,10 @@
 		<label>Energy Cooling last year (11) December</label>
 		<description>The energy usage for cooling last year December</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -795,6 +1079,10 @@
 		<label>Energy Cooling current year (00) January</label>
 		<description>The energy usage for cooling current year January</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-cooling-month-13" advanced="true">
@@ -802,6 +1090,10 @@
 		<label>Energy Cooling current year (01) February</label>
 		<description>The energy usage for cooling current year February</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-cooling-month-14" advanced="true">
@@ -809,6 +1101,10 @@
 		<label>Energy Cooling current year (02) March</label>
 		<description>The energy usage for cooling current year March</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-cooling-month-15" advanced="true">
@@ -816,6 +1112,10 @@
 		<label>Energy Cooling current year (03) April</label>
 		<description>The energy usage for cooling current year April</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-cooling-month-16" advanced="true">
@@ -823,6 +1123,10 @@
 		<label>Energy Cooling current year (04) May</label>
 		<description>The energy usage for cooling current year May</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-cooling-month-17" advanced="true">
@@ -830,6 +1134,10 @@
 		<label>Energy Cooling current year (05) June</label>
 		<description>The energy usage for cooling current year June</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-cooling-month-18" advanced="true">
@@ -837,6 +1145,10 @@
 		<label>Energy Cooling current year (06) July</label>
 		<description>The energy usage for cooling current year July</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-cooling-month-19" advanced="true">
@@ -844,6 +1156,10 @@
 		<label>Energy Cooling current year (07) August</label>
 		<description>The energy usage for cooling current year August</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-cooling-month-20" advanced="true">
@@ -851,6 +1167,10 @@
 		<label>Energy Cooling current year (08) September</label>
 		<description>The energy usage for cooling current year September</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-cooling-month-21" advanced="true">
@@ -858,6 +1178,10 @@
 		<label>Energy Cooling current year (09) October</label>
 		<description>The energy usage for cooling current year October</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-cooling-month-22" advanced="true">
@@ -865,6 +1189,10 @@
 		<label>Energy Cooling current year (10) November</label>
 		<description>The energy usage for cooling current year November</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-cooling-month-23" advanced="true">
@@ -872,6 +1200,10 @@
 		<label>Energy Cooling current year (11) December</label>
 		<description>The energy usage for cooling current year December</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -880,6 +1212,10 @@
 		<label>Energy Cooling current day total</label>
 		<description>The energy usage for cooling current day total</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-cooling-current-year">
@@ -887,16 +1223,22 @@
 		<label>Energy Cooling current year total</label>
 		<description>The energy usage for cooling current year total</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
-
-
 
 	<channel-type id="acunit-energy-cooling-week-0" advanced="true">
 		<item-type>Number:Energy</item-type>
 		<label>Energy Cooling last week (0) Monday</label>
 		<description>The energy usage for cooling last week Monday</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-cooling-week-1" advanced="true">
@@ -904,6 +1246,10 @@
 		<label>Energy Cooling last week (1) Tuesday</label>
 		<description>The energy usage for cooling last week Tuesday</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-cooling-week-2" advanced="true">
@@ -911,6 +1257,10 @@
 		<label>Energy Cooling last week (2) Wednesday</label>
 		<description>The energy usage for cooling last week Wednesday</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-cooling-week-3" advanced="true">
@@ -918,6 +1268,10 @@
 		<label>Energy Cooling last week (3) Thursday</label>
 		<description>The energy usage for cooling last week Thursday</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-cooling-week-4" advanced="true">
@@ -925,6 +1279,10 @@
 		<label>Energy Cooling last week (4) Friday</label>
 		<description>The energy usage for cooling last week Friday</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-cooling-week-5" advanced="true">
@@ -932,6 +1290,10 @@
 		<label>Energy Cooling last week (5) Saturday</label>
 		<description>The energy usage for cooling last week Saturday</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-cooling-week-6" advanced="true">
@@ -939,6 +1301,10 @@
 		<label>Energy Cooling last week (6) Sunday</label>
 		<description>The energy usage for cooling last week Sunday</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -947,6 +1313,10 @@
 		<label>Energy Cooling current week (0) Monday</label>
 		<description>The energy usage for cooling current week Monday</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-cooling-week-8" advanced="true">
@@ -954,6 +1324,10 @@
 		<label>Energy Cooling current week (1) Tuesday</label>
 		<description>The energy usage for cooling current week Tuesday</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-cooling-week-9" advanced="true">
@@ -961,6 +1335,10 @@
 		<label>Energy Cooling current week (2) Wednesday</label>
 		<description>The energy usage for cooling current week Wednesday</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-cooling-week-10" advanced="true">
@@ -968,6 +1346,10 @@
 		<label>Energy Cooling current week (3) Thursday</label>
 		<description>The energy usage for cooling current week Thursday</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-cooling-week-11" advanced="true">
@@ -975,6 +1357,10 @@
 		<label>Energy Cooling current week (4) Friday</label>
 		<description>The energy usage for cooling current week Friday</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-cooling-week-12" advanced="true">
@@ -982,6 +1368,10 @@
 		<label>Energy Cooling current week (5) Saturday</label>
 		<description>The energy usage for cooling current week Saturday</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-cooling-week-13" advanced="true">
@@ -989,6 +1379,10 @@
 		<label>Energy Cooling current week (6) Sunday</label>
 		<description>The energy usage for cooling current week Sunday</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -998,6 +1392,10 @@
 		<label>Energy Cooling yesterday (00:00 - 02:00)</label>
 		<description>The energy usage for cooling yesterday (00:00 - 02:00)</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-cooling-day-1" advanced="true">
@@ -1005,6 +1403,10 @@
 		<label>Energy Cooling yesterday (02:00 - 04:00)</label>
 		<description>The energy usage for cooling yesterday (02:00 - 04:00)</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-cooling-day-2" advanced="true">
@@ -1012,6 +1414,10 @@
 		<label>Energy Cooling yesterday (04:00 - 06:00)</label>
 		<description>The energy usage for cooling yesterday (04:00 - 06:00)</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-cooling-day-3" advanced="true">
@@ -1019,6 +1425,10 @@
 		<label>Energy Cooling yesterday (06:00 - 08:00)</label>
 		<description>The energy usage for cooling yesterday (06:00 - 08:00)</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-cooling-day-4" advanced="true">
@@ -1026,6 +1436,10 @@
 		<label>Energy Cooling yesterday (08:00 - 10:00)</label>
 		<description>The energy usage for cooling yesterday (08:00 - 10:00)</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-cooling-day-5" advanced="true">
@@ -1033,6 +1447,10 @@
 		<label>Energy Cooling yesterday (10:00 - 12:00)</label>
 		<description>The energy usage for cooling yesterday (10:00 - 12:00)</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-cooling-day-6" advanced="true">
@@ -1040,6 +1458,10 @@
 		<label>Energy Cooling yesterday (12:00 - 14:00)</label>
 		<description>The energy usage for cooling yesterday (12:00 - 14:00)</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-cooling-day-7" advanced="true">
@@ -1047,6 +1469,10 @@
 		<label>Energy Cooling yesterday (14:00 - 16:00)</label>
 		<description>The energy usage for cooling yesterday (14:00 - 16:00)</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-cooling-day-8" advanced="true">
@@ -1054,6 +1480,10 @@
 		<label>Energy Cooling yesterday (16:00 - 18:00)</label>
 		<description>The energy usage for cooling yesterday (16:00 - 18:00)</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-cooling-day-9" advanced="true">
@@ -1061,6 +1491,10 @@
 		<label>Energy Cooling yesterday (18:00 - 20:00)</label>
 		<description>The energy usage for cooling yesterday (18:00 - 20:00)</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-cooling-day-10" advanced="true">
@@ -1068,6 +1502,10 @@
 		<label>Energy Cooling yesterday (20:00 - 22:00)</label>
 		<description>The energy usage for cooling yesterday (20:00 - 22:00)</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-cooling-day-11" advanced="true">
@@ -1075,6 +1513,10 @@
 		<label>Energy Cooling yesterday (22:00 - 24:00)</label>
 		<description>The energy usage for cooling yesterday (22:00 - 24:00)</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-cooling-day-12" advanced="true">
@@ -1082,6 +1524,10 @@
 		<label>Energy Cooling Today (00:00 - 02:00)</label>
 		<description>The energy usage for cooling today (00:00 - 02:00)</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-cooling-day-13" advanced="true">
@@ -1089,6 +1535,10 @@
 		<label>Energy Cooling Today (02:00 - 04:00)</label>
 		<description>The energy usage for cooling today (02:00 - 04:00)</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-cooling-day-14" advanced="true">
@@ -1096,6 +1546,10 @@
 		<label>Energy Cooling Today (04:00 - 06:00)</label>
 		<description>The energy usage for cooling today (04:00 - 06:00)</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-cooling-day-15" advanced="true">
@@ -1103,6 +1557,10 @@
 		<label>Energy Cooling Today (06:00 - 08:00)</label>
 		<description>The energy usage for cooling today (06:00 - 08:00)</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-cooling-day-16" advanced="true">
@@ -1110,6 +1568,10 @@
 		<label>Energy Cooling Today (08:00 - 10:00)</label>
 		<description>The energy usage for cooling today (08:00 - 10:00)</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-cooling-day-17" advanced="true">
@@ -1117,6 +1579,10 @@
 		<label>Energy Cooling Today (10:00 - 12:00)</label>
 		<description>The energy usage for cooling today (10:00 - 12:00)</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-cooling-day-18" advanced="true">
@@ -1124,6 +1590,10 @@
 		<label>Energy Cooling Today (12:00 - 14:00)</label>
 		<description>The energy usage for cooling today (12:00 - 14:00)</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-cooling-day-19" advanced="true">
@@ -1131,6 +1601,10 @@
 		<label>Energy Cooling Today (14:00 - 16:00)</label>
 		<description>The energy usage for cooling today (14:00 - 16:00)</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-cooling-day-20" advanced="true">
@@ -1138,6 +1612,10 @@
 		<label>Energy Cooling Today (16:00 - 18:00)</label>
 		<description>The energy usage for cooling today (16:00 - 18:00)</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-cooling-day-21" advanced="true">
@@ -1145,6 +1623,10 @@
 		<label>Energy Cooling Today (18:00 - 20:00)</label>
 		<description>The energy usage for cooling today (18:00 - 20:00)</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-cooling-day-22" advanced="true">
@@ -1152,6 +1634,10 @@
 		<label>Energy Cooling Today (20:00 - 22:00)</label>
 		<description>The energy usage for cooling today (20:00 - 22:00)</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-cooling-day-23" advanced="true">
@@ -1159,6 +1645,10 @@
 		<label>Energy Cooling Today (22:00 - 24:00)</label>
 		<description>The energy usage for cooling today (22:00 - 24:00)</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -1167,6 +1657,10 @@
 		<label>Energy Cooling This Week</label>
 		<description>The energy usage for cooling this week</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -1175,6 +1669,10 @@
 		<label>Energy Cooling Last Week</label>
 		<description>The energy usage for cooling last week</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -1183,6 +1681,10 @@
 		<label>Power</label>
 		<description>Power for the AC unit</description>
 		<category>Switch</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="acunit-econo-mode">
@@ -1190,6 +1692,10 @@
 		<label>Ecomode</label>
 		<description>Set the unit to ecomode</description>
 		<category>Switch</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Power</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="acunit-settemp">
@@ -1197,6 +1703,10 @@
 		<label>SetPoint</label>
 		<description>Thermostat temperature setpoint</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state step="0.5" pattern="%.1d %unit%"/>
 	</channel-type>
 
@@ -1205,6 +1715,10 @@
 		<label>Set Point Min value</label>
 		<description>The set point min temperature</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -1213,6 +1727,10 @@
 		<label>Set Point Max value</label>
 		<description>The set point max temperature</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-settemp-step">
@@ -1220,6 +1738,10 @@
 		<label>Set Point value steps</label>
 		<description>The set point temperature value steps</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -1228,6 +1750,10 @@
 		<label>SetPoint Leaving water offset.</label>
 		<description>SetPoint Leaving water offset.</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state step="1" pattern="%.0f %unit%" min="-100"/>
 	</channel-type>
 
@@ -1236,42 +1762,21 @@
 		<label>SetPoint Leaving water temperature</label>
 		<description>SetPoint Leaving water temperature</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state step="1" pattern="%.1d %unit%"/>
-	</channel-type>
-
-	<channel-type id="acunit-target-temp">
-		<item-type>Number:Temperature</item-type>
-		<label>Target Temperatur</label>
-		<description>The set point temperature</description>
-		<category>Temperature</category>
-		<state pattern="%.1f %unit%"/>
-	</channel-type>
-	<channel-type id="acunit-target-temp-min">
-		<item-type>Number:Temperature</item-type>
-		<label>Target Temperature Min value</label>
-		<description>The target min temperature</description>
-		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f %unit%"/>
-	</channel-type>
-	<channel-type id="acunit-target-temp-max">
-		<item-type>Number:Temperature</item-type>
-		<label>Target Temperature Max value</label>
-		<description>The target max temperature</description>
-		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f %unit%"/>
-	</channel-type>
-	<channel-type id="acunit-target-temp-step">
-		<item-type>Number:Temperature</item-type>
-		<label>Target Temperature value step</label>
-		<description>The target temperature value step</description>
-		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-timestamp">
 		<item-type>DateTime</item-type>
 		<label>Timestamp of unit</label>
 		<description>Timestamp of unit</description>
 		<category>Time</category>
+		<tags>
+			<tag>Info</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -1280,6 +1785,10 @@
 		<label>Indoor Temperature</label>
 		<description>The indoor temperature (readonly)</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%" step="0.5"/>
 	</channel-type>
 
@@ -1288,6 +1797,10 @@
 		<label>Outdoor Temperature</label>
 		<description>The outdoor temperature (readonly)</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%" step="0.5"/>
 	</channel-type>
 
@@ -1296,6 +1809,10 @@
 		<label>Leaving Water Temperature</label>
 		<description>The leaving water temperature (readonly)</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%" step="0.5"/>
 	</channel-type>
 
@@ -1304,6 +1821,10 @@
 		<label>Indoor Humidity</label>
 		<description>The indoor humidity as measured by the A/C unit (readonly)</description>
 		<category>Humidity</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Humidity</tag>
+		</tags>
 		<state readOnly="true" pattern="%d%%"/>
 	</channel-type>
 
@@ -1311,6 +1832,10 @@
 		<item-type>String</item-type>
 		<label>Operation mode</label>
 		<description>Current operation mode of the AC unit</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="AUTO">Auto</option>
@@ -1327,6 +1852,10 @@
 		<label>Fan Speed</label>
 		<description>Current fan speed setting of the AC unit</description>
 		<category>fan</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="AUTO">Auto</option>
@@ -1344,6 +1873,10 @@
 		<label>Fan Swing Horizontal</label>
 		<description>Current fan horizontal swing setting of the AC unit</description>
 		<category>f7:arrow_right_arrow_left_circle</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="STOPPED">Stopped</option>
@@ -1357,6 +1890,10 @@
 		<label>Fan Swing Vertical</label>
 		<description>Current fan vertical swing setting of the AC unit</description>
 		<category>f7:arrow_up_arrow_down_circle</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="STOPPED">Stopped</option>
@@ -1371,6 +1908,10 @@
 		<label>Fan Swing</label>
 		<description>Current fan swing setting of the AC unit</description>
 		<category>f7:view_3d</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Mode</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="STOPPED">Stopped</option>
@@ -1388,61 +1929,29 @@
 		<label>Streamer</label>
 		<description>Streamer Mode</description>
 		<category>Switch</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
 	<channel-type id="acunit-powerful-mode">
 		<item-type>Switch</item-type>
 		<label>Powerful mode</label>
 		<description>Powerful mode</description>
 		<category>Switch</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
-
 	<channel-type id="acunit-holiday-mode">
 		<item-type>Switch</item-type>
 		<label>Holiday</label>
 		<description>Holiday Mode (Not updatable)</description>
 		<category>Switch</category>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Mode</tag>
+		</tags>
 	</channel-type>
-
-	<channel-type id="acunit-demand-control">
-		<item-type>String</item-type>
-		<label>Demand control</label>
-		<description>Demand control</description>
-		<state>
-			<options>
-				<option value="OFF">Off</option>
-				<option value="AUTO">Auto</option>
-				<option value="FIXED">Fixed</option>
-				<option value="SCHEDULED">Scheduled</option>
-			</options>
-		</state>
-	</channel-type>
-	<channel-type id="acunit-demand-control-fixed-value">
-		<item-type>Number</item-type>
-		<label>Demand control fixed value</label>
-		<description>Value of fixed demand control. Only available when Demand Control is set to FIXED</description>
-		<category>Demand Control</category>
-		<state pattern="%d %%"/>
-	</channel-type>
-	<channel-type id="acunit-demand-control-fixed-step-value">
-		<item-type>Number:Dimensionless</item-type>
-		<label>Demand Control fixed Step value</label>
-		<description>Step value of fixed demand control (readonly)</description>
-		<category>Demand Control</category>
-		<state readOnly="true" pattern="%d "/>
-	</channel-type>
-	<channel-type id="acunit-demand-control-fixed-min-value">
-		<item-type>Number:Dimensionless</item-type>
-		<label>Demand Control fixed Min value</label>
-		<description>Min value of fixed demand control (readonly)</description>
-		<category>Demand Control</category>
-		<state readOnly="true" pattern="%d "/>
-	</channel-type>
-	<channel-type id="acunit-demand-control-fixed-max-value">
-		<item-type>Number:Dimensionless</item-type>
-		<label>Demand Control fixed Max value</label>
-		<description>Max value of fixed demand control (readonly)</description>
-		<category>Demand Control</category>
-		<state readOnly="true" pattern="%d "/>
-	</channel-type>
-
 </thing:thing-descriptions>

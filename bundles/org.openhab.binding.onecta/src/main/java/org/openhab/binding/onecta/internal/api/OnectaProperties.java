@@ -34,7 +34,6 @@ public class OnectaProperties {
     private static final String COMMAND_ECONOMODE = "econoMode";
     private static final String COMMAND_OPERATIONMODE = "operationMode";
     private static final String COMMAND_TEMPERATURECONTROL = "temperatureControl";
-    private static final String COMMAND_TARGETTEMPERATURE = "targetTemperature";
     private static final String COMMAND_STREAMERMODE = "streamerMode";
     private static final String COMMAND_HOLIDAYMODE = "holidayMode";
     private static final String COMMAND_SUBPATH_TEMPERATURECONTROL_ROOM = "/operationModes/%s/setpoints/roomTemperature";
@@ -42,7 +41,6 @@ public class OnectaProperties {
     private static final String COMMAND_SUBPATH_TEMPERATURECONTROL_LEAVINGWATEROFFSET = "/operationModes/%s/setpoints/leavingWaterOffset";
     private static final String COMMAND_SUBPATH_TEMPERATURECONTROL_LEAVINGWATERTEMP = "/operationModes/%s/setpoints/leavingWaterTemperature";
     private static final String COMMAND_FANSPEED_CONTROL = "fanControl";
-    private static final String COMMAND_DEMAND_CONTROL = "demandControl";
     private static final String COMMAND_SUBPATH_FANSPEED = "/operationModes/%s/fanSpeed/currentMode";
     private static final String COMMAND_SUBPATH_FANSPEED_FIXED = "/operationModes/%s/fanSpeed/modes/fixed";
     private static final String COMMAND_SUBPATH_FANDITECTION_HOR = "/operationModes/%s/fanDirection/horizontal/currentMode";
@@ -70,10 +68,6 @@ public class OnectaProperties {
     public static String getOperationModeUrl(String unitId, Enums.ManagementPoint managementPointType) {
         return String.format(getBaseUrl(unitId) + BASE_URL_COMMAND, managementPointType.getValue(),
                 COMMAND_OPERATIONMODE);
-    }
-
-    public static String getTargetTemperaturUrl(String unitId, String embeddedId) {
-        return String.format(getBaseUrl(unitId) + BASE_URL_COMMAND, embeddedId, COMMAND_TARGETTEMPERATURE);
     }
 
     public static CommandFloat getTargetTemperaturCommand(float value) {
@@ -139,10 +133,6 @@ public class OnectaProperties {
 
     public static String getHolidayMode(String unitId, String embeddedId) {
         return String.format(getBaseUrl(unitId) + BASE_URL_COMMAND, embeddedId, COMMAND_HOLIDAYMODE);
-    }
-
-    public static String getTDemandControlUrl(String unitId, String embeddedId) {
-        return String.format(getBaseUrl(unitId) + BASE_URL_COMMAND, embeddedId, COMMAND_DEMAND_CONTROL);
     }
 
     public static CommandString getTDemandControlCommand(Enums.DemandControl value) {

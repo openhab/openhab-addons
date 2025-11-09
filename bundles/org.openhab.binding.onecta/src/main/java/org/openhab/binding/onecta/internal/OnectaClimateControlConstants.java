@@ -28,10 +28,6 @@ public class OnectaClimateControlConstants {
     public static final String CHANNEL_AC_TEMPMIN = "basic#settemp-min";
     public static final String CHANNEL_AC_TEMPMAX = "basic#settemp-max";
     public static final String CHANNEL_AC_TEMPSTEP = "basic#settemp-step";
-    public static final String CHANNEL_AC_TARGETTEMP = "basic#target-temp";
-    public static final String CHANNEL_AC_TARGETTEMPMIN = "basic#target-temp-min";
-    public static final String CHANNEL_AC_TARGETTEMPMAX = "basic#target-temp-max";
-    public static final String CHANNEL_AC_TARGETTEMPSTEP = "basic#target-temp-step";
     public static final String CHANNEL_INDOOR_TEMP = "basic#indoor-temp";
     public static final String CHANNEL_LEAVINGWATER_TEMP = "basic#leaving-water-temp";
     public static final String CHANNEL_OUTDOOR_TEMP = "basic#outdoor-temp";
@@ -50,11 +46,6 @@ public class OnectaClimateControlConstants {
     public static final String CHANNEL_AC_SETPOINT_LEAVINGWATER_OFFSET = "basic#set-leaving-water-offset";
     public static final String CHANNEL_AC_SETPOINT_LEAVINGWATER_TEMP = "basic#set-leaving-water-temp";
     public static final String CHANNEL_AC_TIMESTAMP = "basic#timestamp";
-    public static final String CHANNEL_AC_DEMANDCONTROL = "demandcontrol#demand-control";
-    public static final String CHANNEL_AC_DEMANDCONTROLFIXEDVALUE = "demandcontrol#demand-control-fixed-value";
-    public static final String CHANNEL_AC_DEMANDCONTROLFIXEDSTEPVALUE = "demandcontrol#demand-control-fixed-step-value";
-    public static final String CHANNEL_AC_DEMANDCONTROLFIXEDMINVALUE = "demandcontrol#demand-control-fixed-min-value";
-    public static final String CHANNEL_AC_DEMANDCONTROLFIXEDMAXVALUE = "demandcontrol#demand-control-fixed-max-value";
     public static final String CHANNEL_AC_ENERGY_COOLING_DAY = "consumption-data-cooling#energy-cooling-day-%s";
     public static final String CHANNEL_AC_ENERGY_COOLING_WEEK = "consumption-data-cooling#energy-cooling-week-%s";
     public static final String CHANNEL_AC_ENERGY_COOLING_MONTH = "consumption-data-cooling#energy-cooling-month-%s";

@@ -103,22 +103,11 @@ Switch               Streamer           "Streamer mode"            <switch>     
 Switch               Powerful           "Powerful mode"            <switch>        ["Point"] {channel="onecta:climate-control:bridge:livingRoom:basic#powerful-mode"}
 Switch               Holiday            "Holiday mode"             <switch>        ["Point"] {channel="onecta:climate-control:bridge:livingRoom:basic#holiday-mode", readOnly="true"}
 
-Number:Temperature   TargetTemp         "TargetTemp [%.1f °C]"     <Temperature>   ["Point"] {channel="onecta:climate-control:bridge:livingRoom:basic#target-temp"}
-Number:Temperature   TargetTempMin      "TargetTempMin [%.1f °C]"  <Temperature>   ["Point"] {channel="onecta:climate-control:bridge:livingRoom:basic#target-temp-min", readOnly="true"}
-Number:Temperature   TargetTempMax      "TargetTempMax [%.1f °C]"  <Temperature>   ["Point"] {channel="onecta:climate-control:bridge:livingRoom:basic#target-temp-max", readOnly="true"}
-Number:Temperature   TargetTempStep     "TargetTempStep [%.1f °C]" <Temperature>   ["Point"] {channel="onecta:climate-control:bridge:livingRoom:basic#target-temp-step", readOnly="true"}
-
 Number:Temperature   SetPointLeavingWaterOffset     "SetPointLeavingWaterOffset [%.1f °C]" <Temperature>   ["Point"] {channel="onecta:climate-control:bridge:livingRoom:basic#set-leaving-water-offset", readOnly="true"}
 Number:Temperature   SetPointLeavingWaterTemp     "SetPointLeavingWaterTemp [%.1f °C]" <Temperature>   ["Point"] {channel="onecta:climate-control:bridge:livingRoom:basic#set-leaving-water-temp", readOnly="true"}
 
 Number:Temperature   TargetTempStep     "TargetTempStep [%.1f °C]" <Temperature>   ["Point"] {channel="onecta:climate-control:bridge:livingRoom:basic#target-temp-step", readOnly="true"}
 DateTime    TimeStamp "Time stamp"          ["Point"] {channel="onecta:climate-control:bridge:livingRoom:basic#timestamp"}
-
-String      DemandControl               "Demand Controle"                          ["Point"] {channel="onecta:climate-control:bridge:livingRoom:demandcontrol#demand-control"}
-Number      DemandControlFixedValue     "Demand Control (fixed)"                   ["Point"] {channel="onecta:climate-control:bridge:livingRoom:demandcontrol#demand-control-fixed-value"}
-Number      DemandControlFixedMinValue  "Demand Control fixed Min value"           ["Point"] {channel="onecta:climate-control:bridge:livingRoom:demandcontrol#demand-control-fixed-min-value"}
-Number      DemandControlFixedMaxValue  "Demand Control fixed Max value"           ["Point"] {channel="onecta:climate-control:bridge:livingRoom:demandcontrol#demand-control-fixed-max-value"}
-Number      DemandControlFixedStepValue "Demand Control fixed step value"          ["Point"] {channel="onecta:climate-control:bridge:livingRoom:demandcontrol#demand-control-fixed-step-value"}
 
 Number:Energy   EnergyCoolingCurrentYear "The energy usage for cooling current year total" <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-cooling#energy-cooling-current-year"}
 Number:Energy   EnergyCoolingCurrentDay  "The energy usage for cooling current day total"  <Energy> ["Point"] {channel="onecta:climate-control:bridge:livingRoom:consumption-data-cooling#energy-cooling-current-day"}

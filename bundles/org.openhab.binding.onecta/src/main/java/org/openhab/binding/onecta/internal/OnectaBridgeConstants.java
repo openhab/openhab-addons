@@ -37,7 +37,6 @@ public class OnectaBridgeConstants {
     // List of config parameters
     public static final String CONFIG_PAR_REFRESHINTERVAL = "refreshInterval";
     public static final String CONFIG_PAR_UNITID = "unitID";
-    public static final String CHANNEL_OPENHAB_HOST = "openhabHost";
 
     // List of all Bridge Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, BRIDGE);
