@@ -75,8 +75,8 @@ public class HomekitBindingConstants {
     public static final Pattern IPV4_PATTERN = Pattern.compile(
             "^(((25[0-5]|2[0-4]\\d|1\\d{2}|[1-9]?\\d)\\.){3}(25[0-5]|2[0-4]\\d|1\\d{2}|[1-9]?\\d)):(6553[0-5]|655[0-2]\\d|65[0-4]\\d{2}|6[0-4]\\d{3}|[1-5]?\\d{1,4})$");
 
-    // pattern matcher for a fully qualified host name like foobar.local or foobar.local:12345
+    // pattern matcher for a fully qualified host name like foobar._hap._tcp.local. or foobar._hap._tcp.local.:12345
     // NOTE: this specially allows space characters in the host name -- even if normally not allowed by the RFC
     public static final Pattern HOST_PATTERN = Pattern.compile(
-            "^([a-zA-Z0-9\\-\\x20]+)\\.local(?::([1-9]\\d{0,3}|[1-5]\\d{4}|6[0-4]\\d{3}|65[0-4]\\d{2}|655[0-2]\\d|6553[0-5]))?$");
+            "^([a-zA-Z0-9\\-\\x20]+)\\._hap\\._tcp\\.local\\.(?::([1-9]\\d{0,3}|[1-5]\\d{4}|6[0-4]\\d{3}|65[0-4]\\d{2}|655[0-2]\\d|6553[0-5]))?$");
 }

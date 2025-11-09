@@ -186,7 +186,7 @@ public class Accessory {
         return toString();
     }
 
-    public @Nullable Service getService(Integer iid) {
+    public @Nullable Service getService(Long iid) {
         return services.stream().filter(s -> iid.equals(s.iid)).findFirst().orElse(null);
     }
 

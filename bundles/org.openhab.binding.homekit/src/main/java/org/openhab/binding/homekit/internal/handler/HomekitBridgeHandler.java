@@ -16,6 +16,7 @@ import java.util.Collection;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homekit.internal.action.HomekitPairingActions;
 import org.openhab.binding.homekit.internal.discovery.HomekitChildDiscoveryService;
 import org.openhab.binding.homekit.internal.persistence.HomekitKeyStore;
@@ -44,6 +45,8 @@ import org.osgi.framework.Bundle;
  */
 @NonNullByDefault
 public class HomekitBridgeHandler extends HomekitBaseAccessoryHandler implements BridgeHandler {
+
+    private @Nullable HomekitChildDiscoveryService childDiscoveryService = null;
 
     public HomekitBridgeHandler(Bridge bridge, HomekitTypeProvider typeProvider, HomekitKeyStore keyStore,
             TranslationProvider i18nProvider, Bundle bundle) {
@@ -122,5 +125,22 @@ public class HomekitBridgeHandler extends HomekitBaseAccessoryHandler implements
                 childHandler.onEvent(jsonContent);
             }
         });
+    }
+
+    @Override
+    protected void onThingOnline() {
+        super.onThingOnline();
+        HomekitChildDiscoveryService discoveryService = childDiscoveryService;
+        if (discoveryService != null) {
+            discoveryService.startScan();
+        }
+    }
+
+    public void registerDiscoveryService(HomekitChildDiscoveryService discoveryService) {
+        childDiscoveryService = discoveryService;
+    }
+
+    public void unregisterDiscoveryService() {
+        childDiscoveryService = null;
     }
 }

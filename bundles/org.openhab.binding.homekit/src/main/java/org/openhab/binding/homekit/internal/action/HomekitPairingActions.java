@@ -16,6 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homekit.internal.handler.HomekitBaseAccessoryHandler;
 import org.openhab.core.automation.annotation.ActionInput;
+import org.openhab.core.automation.annotation.ActionOutput;
 import org.openhab.core.automation.annotation.RuleAction;
 import org.openhab.core.thing.binding.ThingActions;
 import org.openhab.core.thing.binding.ThingActionsScope;
@@ -38,17 +39,17 @@ public class HomekitPairingActions implements ThingActions {
     private final Logger logger = LoggerFactory.getLogger(HomekitPairingActions.class);
     private @Nullable HomekitBaseAccessoryHandler handler;
 
-    public static void pair(ThingActions actions, String code, boolean auth) {
+    public static Boolean pair(ThingActions actions, String code, boolean auth) {
         if (actions instanceof HomekitPairingActions accessoryActions) {
-            accessoryActions.pair(code, auth);
+            return accessoryActions.pair(code, auth);
         } else {
             throw new IllegalArgumentException("The 'actions' argument is not an instance of HomekitAccessoryActions");
         }
     }
 
-    public static void unpair(ThingActions actions) {
+    public static Boolean unpair(ThingActions actions) {
         if (actions instanceof HomekitPairingActions accessoryActions) {
-            accessoryActions.unpair();
+            return accessoryActions.unpair();
         } else {
             throw new IllegalArgumentException("The 'actions' argument is not an instance of HomekitAccessoryActions");
         }
@@ -65,24 +66,26 @@ public class HomekitPairingActions implements ThingActions {
     }
 
     @RuleAction(label = "@text/actions.pairing-action.label", description = "@text/actions.pairing-action.description")
-    public void pair(
+    public @ActionOutput(type = "java.lang.Boolean", label = "@text/actions.pairing-success.label", description = "@text/actions.pairing-success.description") Boolean pair(
             @ActionInput(name = "code", label = "@text/actions.pairing-code.label", description = "@text/actions.pairing-code.description") String code,
             @ActionInput(name = "auth", label = "@text/actions.pairing-auth.label", description = "@text/actions.pairing-auth.description", defaultValue = "false") boolean auth) {
         HomekitBaseAccessoryHandler handler = this.handler;
         if (handler != null) {
-            handler.pair(code, auth);
+            return handler.pair(code, auth);
         } else {
             logger.warn("ThingHandler is null.");
         }
+        return false;
     }
 
     @RuleAction(label = "@text/actions.unpairing-action.label", description = "@text/actions.unpairing-action.description")
-    public void unpair() {
+    public @ActionOutput(type = "java.lang.Boolean", label = "@text/actions.unpairing-success.label", description = "@text/actions.unpairing-success.description") Boolean unpair() {
         HomekitBaseAccessoryHandler handler = this.handler;
         if (handler != null) {
-            handler.unpair();
+            return handler.unpair();
         } else {
             logger.warn("ThingHandler is null.");
         }
+        return false;
     }
 }

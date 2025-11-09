@@ -60,7 +60,7 @@ public class Characteristic {
     public @NonNullByDefault({}) String type; // 25 = public.hap.characteristic.on
     public @NonNullByDefault({}) String format; // e.g. "bool"
     public @NonNullByDefault({}) List<String> perms; // e.g. ["pr", "pw", "ev"]
-    public @NonNullByDefault({}) Integer iid; // e.g. 10
+    public @NonNullByDefault({}) Long iid; // e.g. 10
     public @NonNullByDefault({}) String unit; // e.g. "celsius" or "percentage"
     public @NonNullByDefault({}) Double maxValue; // e.g. 100
     public @NonNullByDefault({}) Double minValue; // e.g. 0

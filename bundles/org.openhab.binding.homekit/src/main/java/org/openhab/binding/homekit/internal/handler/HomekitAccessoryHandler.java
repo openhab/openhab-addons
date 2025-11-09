@@ -122,7 +122,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
      * Internal record representing a link between an OH channel and a HomeKit characteristic type & iid.
      * Used for light model management.
      */
-    private record LightModelLink(Channel channel, CharacteristicType cxxType, Integer cxxIid) {
+    private record LightModelLink(Channel channel, CharacteristicType cxxType, Long cxxIid) {
     }
 
     private final List<LightModelLink> lightModelLinks = new ArrayList<>();
@@ -800,7 +800,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
                         if (iid.equals(String.valueOf(cxx.iid)) && cxx.perms instanceof List<String> perms
                                 && perms.contains("ev")) {
                             Characteristic eventedCxx = new Characteristic();
-                            eventedCxx.iid = Integer.parseInt(iid);
+                            eventedCxx.iid = Long.parseLong(iid);
                             eventedCxx.aid = getAccessoryId();
                             eventedCharacteristics.add(eventedCxx);
                         }
@@ -865,7 +865,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
         Service service = new Service();
         Characteristic characteristic = new Characteristic();
         characteristic.aid = aid;
-        characteristic.iid = Integer.parseInt(iid);
+        characteristic.iid = Long.parseLong(iid);
         characteristic.value = commandToJsonPrimitive(command, channel);
         service.characteristics = List.of(characteristic);
         String response = writer.writeCharacteristic(GSON.toJson(service));

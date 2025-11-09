@@ -347,11 +347,11 @@ class TestChannelCreationForAppleJson {
         assertNotNull(accessory);
         assertEquals(1, accessory.aid);
         assertEquals(2, accessory.services.size());
-        Service service = accessory.getService(1);
+        Service service = accessory.getService(1L);
         assertNotNull(service);
         assertEquals("3E", service.type);
         assertEquals(6, service.characteristics.size());
-        Characteristic characteristic = service.getCharacteristic(2);
+        Characteristic characteristic = service.getCharacteristic(2L);
         assertNotNull(characteristic);
         JsonElement value = characteristic.value;
         assertNotNull(value);

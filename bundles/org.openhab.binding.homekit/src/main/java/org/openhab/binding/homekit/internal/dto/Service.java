@@ -43,7 +43,7 @@ import com.google.gson.JsonElement;
 @NonNullByDefault
 public class Service {
     public @NonNullByDefault({}) String type; // e.g. '96' => 'public.hap.service.battery'
-    public @NonNullByDefault({}) Integer iid; // e.g. 10
+    public @NonNullByDefault({}) Long iid; // e.g. 10
     public @NonNullByDefault({}) String name;
     public @NonNullByDefault({}) List<Characteristic> characteristics;
     public @NonNullByDefault({}) Boolean primary;
@@ -119,7 +119,7 @@ public class Service {
         }
     }
 
-    public @Nullable Characteristic getCharacteristic(Integer iid) {
+    public @Nullable Characteristic getCharacteristic(Long iid) {
         return characteristics.stream().filter(c -> iid.equals(c.iid)).findFirst().orElse(null);
     }
 

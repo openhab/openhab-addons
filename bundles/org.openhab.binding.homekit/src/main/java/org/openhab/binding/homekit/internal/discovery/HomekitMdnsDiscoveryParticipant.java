@@ -151,20 +151,14 @@ public class HomekitMdnsDiscoveryParticipant implements MDNSDiscoveryParticipant
     }
 
     /**
-     * Returns the fully qualified host name by ensuring it ends with ".local" plus, if the port is
-     * neither '0' nor the default 80, the respective suffix e.g. 'foobar.local' or 'foobar.local:12345'
+     * Returns the fully qualified host name being the mDNS qualified service name plus, if the port is neither '0'
+     * nor the default 80, the respective suffix e.g. 'foobar._hap._tcp.local.' or 'foobar._hap._tcp.local.:12345'
      *
      * @param service the ServiceInfo object.
      * @return the normalized host name.
      */
     private String getHostName(ServiceInfo service) {
-        String hostName = service.getServer();
-        if (hostName.endsWith(".")) {
-            hostName = hostName.substring(0, hostName.length() - 1);
-        }
-        if (!hostName.endsWith(".local")) {
-            hostName += ".local";
-        }
+        String hostName = service.getQualifiedName();
         int port = service.getPort();
         if (port != 80 && port != 0) {
             hostName += ":" + port;

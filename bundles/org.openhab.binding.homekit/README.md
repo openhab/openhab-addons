@@ -41,7 +41,7 @@ Therefore child things have this parameter preset to `n/a`.
 
 As a general rule, `hostName` is set by the mDNS auto- discovery process.
 However you can configure it manually if you wish.
-It must be the fully qualified host name (e.g. `foobar.local` or, if the port is not 0 or 80, `foobar.local:1234` ) as found manually via (say) an mDNS discovery app.
+It must be the fully qualified host name (e.g. `foobar._hap._tcp.local.` or, if the port is not 0 or 80, `foobar._hap._tcp.local.:1234` ) as found manually via (say) an mDNS discovery app.
 Child `accessory` Things do not require a `hostName`.
 Therefore child things have this parameter preset to `n/a`.
 

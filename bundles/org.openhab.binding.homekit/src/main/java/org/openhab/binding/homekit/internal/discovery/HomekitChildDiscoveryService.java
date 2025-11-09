@@ -44,6 +44,18 @@ public class HomekitChildDiscoveryService extends AbstractThingHandlerDiscoveryS
     }
 
     @Override
+    public void initialize() {
+        super.initialize();
+        thingHandler.registerDiscoveryService(this);
+    }
+
+    @Override
+    public void dispose() {
+        thingHandler.unregisterDiscoveryService();
+        super.dispose();
+    }
+
+    @Override
     public void startScan() {
         if (thingHandler instanceof HomekitBridgeHandler handler) {
             discoverChildren(handler.getThing(), handler.getAccessories().values());
@@ -52,7 +64,7 @@ public class HomekitChildDiscoveryService extends AbstractThingHandlerDiscoveryS
 
     private void discoverChildren(Thing bridge, Collection<Accessory> accessories) {
         accessories.forEach(accessory -> {
-            if (accessory.aid instanceof Long aid && aid != 1 && accessory.services != null) {
+            if (accessory.aid instanceof Long aid && aid != 1L && accessory.services != null) {
                 ThingUID uid = new ThingUID(THING_TYPE_ACCESSORY, bridge.getUID(), aid.toString());
                 String thingLabel = "%s (%d)".formatted(accessory.getAccessoryInstanceLabel(), accessory.aid);
                 thingDiscovered(DiscoveryResultBuilder.create(uid) //

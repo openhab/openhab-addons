@@ -14,7 +14,6 @@ package org.openhab.binding.homekit.internal.session;
 
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -41,13 +40,12 @@ public class HttpPayloadParser {
 
     private final ByteArrayOutputStream headerBuffer = new ByteArrayOutputStream();
     private final ByteArrayOutputStream contentBuffer = new ByteArrayOutputStream();
-    private final ByteArrayOutputStream chunkHeaderBuffer = new ByteArrayOutputStream();
+    private final ByteArrayOutputStream chunkDataBuffer = new ByteArrayOutputStream();
 
     private boolean headersDone = false;
     private int contentLength = -1;
     private int headersLength = -1;
     private boolean isChunked = false;
-    private int currentChunkRemaining = -1;
     private boolean finalChunkSeen = false;
 
     /**
@@ -57,9 +55,9 @@ public class HttpPayloadParser {
      * allowed length, a SecurityException is thrown.
      *
      * @param frame the byte array containing a fragment of the HTTP message.
-     * @throws SecurityException if the content exceeds maximum allowed length or if headers are malformed.
+     * @throws IllegalStateException
      */
-    public void accept(byte[] frame) throws SecurityException {
+    public void accept(byte[] frame) throws IllegalStateException {
         if (frame.length == 0) {
             return;
         }
@@ -181,79 +179,36 @@ public class HttpPayloadParser {
      * If the chunked data is malformed or exceeds maximum allowed length, a SecurityException is thrown.
      *
      * @param block the byte array containing chunked data to be parsed.
-     * @throws SecurityException if the chunked data is malformed or exceeds maximum allowed length.
+     * @throws IllegalStateException if the chunked data is malformed.
      */
-    private void parseChunkedBytes(byte[] block) throws SecurityException {
-        int pos = 0, blockLength = block.length;
-        while (pos < blockLength && !finalChunkSeen) {
-            // are we expecting a new chunk-size line?
-            if (currentChunkRemaining == -1) {
-                // look for CRLF wholly inside this data block
-                int lfPos = indexOfCRLF(block, pos);
-                // or CR at end of buffer + LF at start of data
-                boolean boundaryLF = chunkHeaderBuffer.size() > 0
-                        && chunkHeaderBuffer.toByteArray()[chunkHeaderBuffer.size() - 1] == '\r' && pos < blockLength
-                        && block[pos] == '\n';
-                if (lfPos < 0 && !boundaryLF) {
-                    // no complete CRLF yet - buffer everything
-                    chunkHeaderBuffer.write(block, pos, blockLength - pos);
-                    return;
+    private void parseChunkedBytes(byte[] block) throws IllegalStateException {
+        chunkDataBuffer.write(block, 0, block.length); // copy all incoming data into the buffer
+        byte[] chunkBuffer = chunkDataBuffer.toByteArray();
+        if (indexOfFinalChunkMarker(chunkBuffer) >= 0) {
+            finalChunkSeen = true;
+            int pos = 0;
+            int max = chunkBuffer.length;
+            while (pos < max) {
+                byte[] sizeBuffer = readln(chunkBuffer, pos);
+                if ((pos += sizeBuffer.length + 2) >= max) { // move past size and CRLF; exit on overrun
+                    break;
                 }
-                // we have a CRLF either wholly in data, or spanning buffer + data
-                byte[] chunkHeaderBytes;
-                if (boundaryLF) {
-                    // CR was in buffer, LF is data[pos] - drop buffer trailing '\r' and data[pos]
-                    byte[] chunkHeaderPrefix = chunkHeaderBuffer.toByteArray();
-                    // copy prefix without the last byte
-                    chunkHeaderBytes = Arrays.copyOf(chunkHeaderPrefix, chunkHeaderPrefix.length - 1);
-                    pos += 1; // consume the '\n'
-                } else {
-                    // entire line is in data block
-                    int chunkHeaderLen = lfPos - pos;
-                    chunkHeaderBytes = new byte[chunkHeaderLen];
-                    System.arraycopy(block, pos, chunkHeaderBytes, 0, chunkHeaderLen);
-                    pos = lfPos + 2; // skip '\r\n'
+                if (sizeBuffer.length == 0) {
+                    continue; // some implementations insert empty lines, so skip them
                 }
-
-                String chunkHeader = new String(chunkHeaderBytes, StandardCharsets.ISO_8859_1).trim();
-                int chunkSize;
+                int size;
                 try {
-                    chunkSize = Integer.parseInt(chunkHeader, 16);
+                    size = Integer.parseInt(new String(sizeBuffer, StandardCharsets.ISO_8859_1).trim(), 16);
                 } catch (NumberFormatException e) {
-                    throw new SecurityException("Invalid chunk size: " + chunkHeader);
+                    throw new IllegalStateException("Invalid chunk size: " + sizeBuffer);
                 }
-                chunkHeaderBuffer.reset();
-                if (chunkSize == 0) {
-                    finalChunkSeen = true;
-                    return;
+                contentBuffer.write(chunkBuffer, pos, size);
+                if ((pos += size) >= max) { // move past data; exit on overrun
+                    break;
                 }
-                currentChunkRemaining = chunkSize;
-            }
-
-            // we are in the middle of a chunk
-            int take = Math.min(currentChunkRemaining, blockLength - pos);
-            if (take > 0) {
-                contentBuffer.write(block, pos, take);
-                pos += take;
-                currentChunkRemaining -= take;
-                if (contentBuffer.size() > MAX_CONTENT_LENGTH) {
-                    throw new SecurityException("Content exceeds maximum allowed length");
-                }
-            }
-
-            // once we finish this chunk, we must consume the trailing CRLF
-            if (currentChunkRemaining == 0) {
-                if (blockLength - pos >= 2) {
-                    if (block[pos] == '\r' && block[pos + 1] == '\n') {
-                        pos += 2;
-                        currentChunkRemaining = -1;
-                    } else {
-                        throw new SecurityException("Missing CRLF after chunk data");
-                    }
-                } else {
-                    // buffer partial CRLF after chunk content for next accept()
-                    chunkHeaderBuffer.write(block, pos, blockLength - pos);
-                    return;
+                byte[] leftover = readln(chunkBuffer, pos); // read to the next CRLF after the chunk data
+                if ((pos += leftover.length + 2) >= max) { // skip leftover data and CRLF; exit on overrun
+                    break;
                 }
             }
         }
@@ -267,10 +222,10 @@ public class HttpPayloadParser {
      * If the content exceeds the maximum allowed length, a SecurityException is thrown.
      *
      * @param data the byte array containing content data to be processed.
-     * @throws SecurityException if the content exceeds maximum allowed length.
+     * @throws IllegalStateException
      */
-    private void processContentBytes(byte[] data) throws SecurityException {
-        if (isChunked) {
+    private void processContentBytes(byte[] data) throws IllegalStateException {
+        if (isChunked && !finalChunkSeen) {
             parseChunkedBytes(data);
         } else if (contentLength >= 0) {
             // fixed-length content: accept up to contentLength
@@ -283,7 +238,7 @@ public class HttpPayloadParser {
             contentBuffer.write(data, 0, data.length);
         }
         if (contentBuffer.size() > MAX_CONTENT_LENGTH) {
-            throw new SecurityException("Content exceeds maximum allowed length");
+            throw new IllegalStateException("Content exceeds maximum allowed length");
         }
     }
 
@@ -316,5 +271,48 @@ public class HttpPayloadParser {
             }
         }
         return -1;
+    }
+
+    /**
+     * Finds the index of the final chunk marker ("0\r\n\r\n") in the given byte array.
+     *
+     * @param data the byte array to search
+     * @return the index of the final chunk marker, or -1 if not found
+     */
+    public static int indexOfFinalChunkMarker(byte[] data) {
+        byte[] marker = new byte[] { '0', '\r', '\n', '\r', '\n' };
+        int len = data.length;
+        // start from the last possible position where the marker could begin
+        for (int i = len - marker.length; i >= 0; i--) {
+            boolean match = true;
+            for (int j = 0; j < marker.length; j++) {
+                if (data[i + j] != marker[j]) {
+                    match = false;
+                    break;
+                }
+            }
+            if (match) {
+                return i; // found the final chunk marker
+            }
+        }
+        return -1; // not found
+    }
+
+    /**
+     * Reads a line from the given byte array starting at the specified index until a CRLF sequence is found.
+     *
+     * @param data the byte array to read from
+     * @param start the starting index for reading
+     * @return a byte array containing the line read (excluding CRLF)
+     * @throws IllegalStateException if no CRLF is found
+     */
+    public static byte[] readln(byte[] data, int start) throws IllegalStateException {
+        int end = indexOfCRLF(data, start);
+        if (end < 0) {
+            throw new IllegalStateException("No CRLF found in chunked data");
+        }
+        byte[] line = new byte[end - start];
+        System.arraycopy(data, start, line, 0, line.length);
+        return line;
     }
 }

@@ -255,17 +255,18 @@ public class IpTransport implements AutoCloseable {
         return "GET".equals(method) || "DELETE".equals(method);
     }
 
-    /*
+    /**
      * Reads a plain (non-secure) HTTP response from the input stream.
      *
      * @param trace if true, captures the raw data for debugging purposes.
      *
      * @return a 3D byte array where the first element is the HTTP headers, the second element is the content,
-     * and the third is the raw trace (if enabled).
+     *         and the third is the raw trace (if enabled).
      *
      * @throws IOException if an I/O error occurs or if the response is invalid.
+     * @throws IllegalStateException if the response is invalid.
      */
-    private byte[][] readPlainResponse(InputStream in, boolean trace) throws IOException {
+    private byte[][] readPlainResponse(InputStream in, boolean trace) throws IOException, IllegalStateException {
         HttpPayloadParser httpParser = new HttpPayloadParser();
         ByteArrayOutputStream raw = trace ? new ByteArrayOutputStream() : null;
         byte[] buf = new byte[4096];
