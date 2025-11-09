@@ -126,7 +126,7 @@ public class RuuviGatewayDiscoveryService extends AbstractMQTTDiscovery {
     }
 
     private static boolean isRuuviAirFormat(Integer dataFormat) {
-        // Ruuvi Air formats: 6 (BLE4.1) and E1 (BLE5.0+)
+        // Ruuvi Air formats: 6 (BT 4.1) and E1 (BT 5.0+)
         return dataFormat == 6 || dataFormat == 0xE1;
     }
 }
