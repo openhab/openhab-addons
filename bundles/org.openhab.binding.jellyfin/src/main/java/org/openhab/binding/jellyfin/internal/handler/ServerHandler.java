@@ -14,6 +14,8 @@ package org.openhab.binding.jellyfin.internal.handler;
 
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,8 +27,10 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.jellyfin.internal.Configuration;
 import org.openhab.binding.jellyfin.internal.Constants;
 import org.openhab.binding.jellyfin.internal.api.ApiClient;
+import org.openhab.binding.jellyfin.internal.api.generated.current.model.SessionInfoDto;
 import org.openhab.binding.jellyfin.internal.api.generated.current.model.SystemInfo;
 import org.openhab.binding.jellyfin.internal.api.generated.current.model.UserDto;
+import org.openhab.binding.jellyfin.internal.discovery.ClientDiscoveryService;
 import org.openhab.binding.jellyfin.internal.events.ErrorEvent;
 import org.openhab.binding.jellyfin.internal.events.ErrorEventBus;
 import org.openhab.binding.jellyfin.internal.events.ErrorEventListener;
@@ -44,6 +48,7 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -77,7 +82,11 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
     private final List<String> activeUserIds = new ArrayList<>();
 
     // Maintains the list of Jellyfin clients (key: session/client id, value: session info)
-    private final Map<String, org.openhab.binding.jellyfin.internal.api.generated.current.model.SessionInfoDto> clients = new HashMap<>();
+    private final Map<String, SessionInfoDto> clients = new HashMap<>();
+
+    // Discovery service for automatically discovering client devices
+    @Nullable
+    private ClientDiscoveryService discoveryService;
 
     /**
      * Constructor with dependency injection for TaskManager
@@ -104,6 +113,22 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
         // Initialize tasks through the task manager
         this.tasks.putAll(taskManager.initializeTasks(apiClient, errorEventBus,
                 systemInfo -> this.handleConnection(systemInfo), users -> this.handleUsersList(users)));
+    }
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Collections.singleton(ClientDiscoveryService.class);
+    }
+
+    /**
+     * Returns the current map of active Jellyfin clients.
+     * 
+     * This method is used by the {@link ClientDiscoveryService} to discover client devices.
+     * 
+     * @return the map of clients, where the key is the session/client ID and the value is the session info
+     */
+    public Map<String, SessionInfoDto> getClients() {
+        return clients;
     }
 
     /**
@@ -358,6 +383,11 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
     private void updateClientList() {
         try {
             ClientListUpdater.updateClients(apiClient, Set.copyOf(activeUserIds), clients);
+
+            // Trigger client discovery after updating the client list
+            if (discoveryService != null) {
+                discoveryService.discoverClients();
+            }
         } catch (Exception e) {
             logger.warn("Failed to update client list: {}", e.getMessage(), e);
         }
