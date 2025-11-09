@@ -51,8 +51,8 @@ The following channels are available on these sensors:
 | pm4                       | Number:Density           |          | ✓         | E1          | PM4.0 particulate matter (≤4.0 μm)    |
 | pm10                      | Number:Density           |          | ✓         | E1          | PM10 particulate matter (≤10.0 μm)    |
 | co2                       | Number:Dimensionless     |          | ✓         | 6, E1       | CO2 concentration (ppm)               |
-| vocIndex                  | Number:Dimensionless     |          | ✓         | 6, E1       | VOC (Volatile Organic Compounds) index (0-500) |
-| noxIndex                  | Number:Dimensionless     |          | ✓         | 6, E1       | NOX (Nitrogen Oxides) index (0-500) |
+| vocIndex                  | Number                   |          | ✓         | 6, E1       | VOC (Volatile Organic Compounds) index (0-500) |
+| noxIndex                  | Number                   |          | ✓         | 6, E1       | NOX (Nitrogen Oxides) index (0-500) |
 | luminosity                | Number:Illuminance       |          | ✓         | 6, E1       | Light intensity (lux)                 |
 | calibrationCompleted      | Switch                   |          | ✓         | 6, E1       | Sensor calibration status             |
 | airQualityIndex           | Number:Dimensionless     |          | ✓         | 6, E1       | Air quality index (0-100%, higher = better) |
@@ -89,11 +89,13 @@ Number:Acceleration     accelX      "Acceleration X [%.3f %unit%]"    { channel=
 Number:ElectricPotential battery    "Battery Voltage [%.2f %unit%]"   { channel="bluetooth:ruuvitag_beacon:hci0:tag1:batteryVoltage" }
 
 // Ruuvi Air channels (Format 6 or E1)
-Number:Density          pm25        "PM2.5 [%.1f %unit%]"             { channel="bluetooth:ruuvitag_beacon:hci0:air1:pm25" }
 Number:Density          pm1         "PM1.0 [%.1f %unit%]"             { channel="bluetooth:ruuvitag_beacon:hci0:air1:pm1" }
+Number:Density          pm25        "PM2.5 [%.1f %unit%]"             { channel="bluetooth:ruuvitag_beacon:hci0:air1:pm25" }
+Number:Density          pm4         "PM4.0 [%.1f %unit%]"             { channel="bluetooth:ruuvitag_beacon:hci0:air1:pm4" }
 Number:Density          pm10        "PM10.0 [%.1f %unit%]"            { channel="bluetooth:ruuvitag_beacon:hci0:air1:pm10" }
 Number:Dimensionless    co2         "CO2 [%.0f ppm]"                  { channel="bluetooth:ruuvitag_beacon:hci0:air1:co2" }
-Number:Dimensionless    vocIndex    "VOC Index [%.0f]"                { channel="bluetooth:ruuvitag_beacon:hci0:air1:vocIndex" }
+Number                  vocIndex    "VOC Index [%.0f]"                { channel="bluetooth:ruuvitag_beacon:hci0:air1:vocIndex" }
+Number                  noxIndex    "NOx Index [%.0f]"                { channel="bluetooth:ruuvitag_beacon:hci0:air1:noxIndex" }
 Number:Illuminance      luminosity  "Light Intensity [%.0f %unit%]"   { channel="bluetooth:ruuvitag_beacon:hci0:air1:luminosity" }
 Number:Dimensionless    aqi         "Air Quality Index [%.0f %unit%]" { channel="bluetooth:ruuvitag_beacon:hci0:air1:airQualityIndex" }
 ```
