@@ -226,13 +226,13 @@
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="ruuvi_vocIndex" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type>Number</item-type>
 		<label>VOC Index</label>
 		<description>Volatile Organic Compounds index (0-500)</description>
 		<state readOnly="true" pattern="%.0f"/>
 	</channel-type>
 	<channel-type id="ruuvi_noxIndex" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type>Number</item-type>
 		<label>NOx Index</label>
 		<description>Nitrogen Oxides index (0-500)</description>
 		<state readOnly="true" pattern="%.0f"/>

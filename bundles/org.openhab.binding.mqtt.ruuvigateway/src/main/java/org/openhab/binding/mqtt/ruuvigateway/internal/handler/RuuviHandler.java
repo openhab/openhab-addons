@@ -100,8 +100,8 @@ public class RuuviHandler extends AbstractMQTTThingHandler implements MqttMessag
         unitByChannelUID.put(CHANNEL_ID_PM4, Units.MICROGRAM_PER_CUBICMETRE);
         unitByChannelUID.put(CHANNEL_ID_PM10, Units.MICROGRAM_PER_CUBICMETRE);
         unitByChannelUID.put(CHANNEL_ID_CO2, Units.PARTS_PER_MILLION);
-        unitByChannelUID.put(CHANNEL_ID_VOC_INDEX, Units.ONE);
-        unitByChannelUID.put(CHANNEL_ID_NOX_INDEX, Units.ONE);
+        unitByChannelUID.put(CHANNEL_ID_VOC_INDEX, null);
+        unitByChannelUID.put(CHANNEL_ID_NOX_INDEX, null);
         unitByChannelUID.put(CHANNEL_ID_LUMINOSITY, Units.LUX);
         unitByChannelUID.put(CHANNEL_ID_CALIBRATION_COMPLETED, RuuviCachedSwitchState.class);
         unitByChannelUID.put(CHANNEL_ID_AIR_QUALITY_INDEX, Units.PERCENT);
