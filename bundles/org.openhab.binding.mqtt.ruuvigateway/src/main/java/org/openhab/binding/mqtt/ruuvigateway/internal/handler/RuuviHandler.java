@@ -70,6 +70,9 @@ public class RuuviHandler extends AbstractMQTTThingHandler implements MqttMessag
 
     // Ruuvitag sends an update every 10 seconds. So we keep a heartbeat to give it some slack
     private int heartbeatTimeoutMillisecs = 60_000;
+    // Per Ruuvi specification: BT5.0+ devices should discard Format 6 once E1 is detected
+    private static final int FORMAT_E1 = 0xE1;
+    private static final int FORMAT_6 = 6;
     // This map is used to initialize channel caches.
     // Key is channel ID.
     // Value is one of the following
@@ -113,6 +116,10 @@ public class RuuviHandler extends AbstractMQTTThingHandler implements MqttMessag
      * Indicator whether we have received data recently
      */
     private final AtomicBoolean receivedData = new AtomicBoolean();
+    /**
+     * Track detected format to prefer E1 over Format 6 as per spec
+     */
+    private final AtomicInteger detectedFormat = new AtomicInteger(0);
     private final Map<ChannelUID, ChannelState> channelStateByChannelUID = new HashMap<>();
     private @NonNullByDefault({}) ScheduledFuture<?> heartbeatFuture;
 
@@ -277,6 +284,25 @@ public class RuuviHandler extends AbstractMQTTThingHandler implements MqttMessag
             return;
         }
         var ruuvitagData = parsed.measurement;
+
+        // Per Ruuvi specification: once E1 format is detected, ignore Format 6 packets
+        // This ensures BT5.0+ capable devices prefer E1 over Format 6
+        Integer currentFormat = ruuvitagData.getDataFormat();
+        if (currentFormat != null) {
+            int detected = detectedFormat.get();
+            if (detected == FORMAT_E1 && currentFormat == FORMAT_6) {
+                // E1 already detected, discard Format 6 packet
+                logger.trace("Ignoring Format 6 packet as E1 format has already been detected");
+                return;
+            } else if (detected == 0 || detected == currentFormat) {
+                // First detection or same format, record it
+                detectedFormat.set(currentFormat);
+            } else if (detected == FORMAT_6 && currentFormat == FORMAT_E1) {
+                // Format 6 was detected first, but now E1 received - switch preference
+                logger.debug("Switching from Format 6 to Format E1 as per specification");
+                detectedFormat.set(FORMAT_E1);
+            }
+        }
 
         boolean atLeastOneRuuviFieldPresent = false;
         for (Channel channel : thing.getChannels()) {
