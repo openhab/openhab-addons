@@ -25,8 +25,10 @@ import java.util.concurrent.TimeoutException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.HttpResponseException;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.api.Response;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
@@ -370,8 +372,25 @@ public class SleepIQImpl implements SleepIQ {
             logger.trace("SleepIQ: doRequest: status={} response={}", response.getStatus(),
                     response.getContentAsString());
             return response;
-        } catch (InterruptedException | TimeoutException | ExecutionException e) {
+        } catch (InterruptedException | TimeoutException e) {
             logger.debug("SleepIQ: doRequest: Exception message={}", e.getMessage(), e);
+            throw new CommunicationException("Communication error while accessing API: " + e.getMessage());
+        } catch (ExecutionException e) {
+            logger.debug("SleepIQ: doRequest: ExecutionException message={}", e.getMessage(), e);
+            Throwable cause = e.getCause();
+            if (cause instanceof HttpResponseException httpResponseException) {
+                Response response = httpResponseException.getResponse();
+                if (response.getStatus() == HttpStatus.UNAUTHORIZED_401) {
+                    /*
+                     * The service may respond with HTTP code 401 without any "WWW-Authenticate"
+                     * header, violating RFC 7235. Jetty will then throw HttpResponseException.
+                     * We need to handle this in order to attempt reauthentication.
+                     */
+                    logger.debug("SleepIQ: doRequest: Unauthorized, force a new login");
+                    resetLogin();
+                    throw new CommunicationException("Unauthorized, force a new login");
+                }
+            }
             throw new CommunicationException("Communication error while accessing API: " + e.getMessage());
         }
     }
