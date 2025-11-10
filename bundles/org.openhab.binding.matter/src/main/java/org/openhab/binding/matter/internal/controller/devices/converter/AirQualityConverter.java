@@ -60,8 +60,8 @@ public class AirQualityConverter extends GenericConverter<AirQualityCluster> {
             options.add(new StateOption(e.getValue().toString(), e.getLabel()));
         }
 
-        StateDescription stateDescription = StateDescriptionFragmentBuilder.create().withPattern("%d")
-                .withOptions(options).build().toStateDescription();
+        StateDescription stateDescription = StateDescriptionFragmentBuilder.create().withOptions(options).build()
+                .toStateDescription();
 
         return Collections.singletonMap(channel, stateDescription);
     }
