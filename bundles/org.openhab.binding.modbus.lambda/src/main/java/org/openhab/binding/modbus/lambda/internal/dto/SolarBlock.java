@@ -16,7 +16,7 @@ package org.openhab.binding.modbus.lambda.internal.dto;
  * Data transfer object for solar thermic component data
  *
  * @author Paul Frank - Initial contribution
- * @author Christian Koch - modified for lambda heat pump based on stiebeleltron binding for modbus
+ * @author Christian Koch - modified for lambda heat pump based on stiebeleltron binding for modbus to add handler
  */
 public class SolarBlock {
     public int solarErrorNumber;
