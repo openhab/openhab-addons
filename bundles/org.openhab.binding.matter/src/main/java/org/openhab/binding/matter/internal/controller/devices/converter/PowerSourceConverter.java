@@ -73,8 +73,8 @@ public class PowerSourceConverter extends GenericConverter<PowerSourceCluster> {
                 for (BatChargeLevelEnum mode : BatChargeLevelEnum.values()) {
                     options.add(new StateOption(mode.getValue().toString(), mode.getLabel()));
                 }
-                StateDescription stateDescription = StateDescriptionFragmentBuilder.create().withPattern("%d")
-                        .withOptions(options).build().toStateDescription();
+                StateDescription stateDescription = StateDescriptionFragmentBuilder.create().withOptions(options)
+                        .build().toStateDescription();
                 channels.put(channel, stateDescription);
             }
         }

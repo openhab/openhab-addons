@@ -87,8 +87,8 @@ public class ThermostatConverter extends GenericConverter<ThermostatCluster> {
         modeOptions.add(new StateOption(ThermostatCluster.SystemModeEnum.SLEEP.getValue().toString(),
                 ThermostatCluster.SystemModeEnum.SLEEP.getLabel()));
 
-        StateDescription stateDescriptionMode = StateDescriptionFragmentBuilder.create().withPattern("%d")
-                .withOptions(modeOptions).build().toStateDescription();
+        StateDescription stateDescriptionMode = StateDescriptionFragmentBuilder.create().withOptions(modeOptions)
+                .build().toStateDescription();
         channels.put(channel, stateDescriptionMode);
 
         if (!initializingCluster.featureMap.localTemperatureNotExposed) {
