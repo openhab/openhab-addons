@@ -376,9 +376,9 @@ public class SleepIQImpl implements SleepIQ {
             logger.debug("SleepIQ: doRequest: Exception message={}", e.getMessage(), e);
             throw new CommunicationException("Communication error while accessing API: " + e.getMessage());
         } catch (ExecutionException e) {
-            logger.debug("SleepIQ: doRequest: ExecutionException message={}", e.getMessage());
+            logger.debug("SleepIQ: doRequest: ExecutionException message={}", e.getMessage(), e);
             Throwable cause = e.getCause();
-            if (cause != null && cause instanceof HttpResponseException httpResponseException) {
+            if (cause instanceof HttpResponseException httpResponseException) {
                 Response response = httpResponseException.getResponse();
                 if (response.getStatus() == HttpStatus.UNAUTHORIZED_401) {
                     /*
@@ -391,8 +391,6 @@ public class SleepIQImpl implements SleepIQ {
                     throw new CommunicationException("Unauthorized, force a new login");
                 }
             }
-            // Want the stack trace for everything else
-            logger.debug("SleepIQ: doRequest: ", e);
             throw new CommunicationException("Communication error while accessing API: " + e.getMessage());
         }
     }
