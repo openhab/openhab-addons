@@ -242,6 +242,7 @@
 /bundles/org.openhab.binding.minecraft/ @ibaton
 /bundles/org.openhab.binding.modbus/ @ssalonen
 /bundles/org.openhab.binding.modbus.e3dc/ @weymann
+/bundles/org.openhab.binding.modbus.foxinverter/ @holgerfriedrich
 /bundles/org.openhab.binding.modbus.helioseasycontrols/ @bern77
 /bundles/org.openhab.binding.modbus.kermi/ @KaaNee
 /bundles/org.openhab.binding.modbus.sbc/ @fwolter

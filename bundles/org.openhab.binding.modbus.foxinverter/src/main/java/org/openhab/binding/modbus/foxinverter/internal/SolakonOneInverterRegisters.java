@@ -213,7 +213,7 @@ public enum SolakonOneInverterRegisters {
      * Creates the {@link State} for the given register value.
      *
      * @param registerValue the value for the channel.
-     * @return {@link State] for the given value.
+     * @return {@link State} for the given value.
      */
     public State createState(DecimalType registerValue) {
         final BigDecimal scaledValue = registerValue.toBigDecimal().multiply(this.multiplier);

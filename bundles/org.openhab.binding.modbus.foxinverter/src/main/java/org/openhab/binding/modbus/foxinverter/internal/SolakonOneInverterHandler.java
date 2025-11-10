@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The {@link SolakonOneInverterHandler} is responsible for reading the Modbus values of the
- * sungrow inverter.
+ * Solakon ONE inverter.
  *
  * @author Holger Friedrich - Initial contribution
  */
@@ -78,7 +78,7 @@ public class SolakonOneInverterHandler extends BaseModbusThingHandler {
     }
 
     /**
-     * Splits the SungrowInverterRegisters into multiple ModbusRequest, to ensure the max request size.
+     * Splits the Solakon ONE Inverter Registers into multiple ModbusRequest, to ensure the max request size.
      */
     private List<ModbusRequest> buildRequests(int tries) {
         final List<ModbusRequest> requests = new ArrayList<>();
@@ -86,7 +86,7 @@ public class SolakonOneInverterHandler extends BaseModbusThingHandler {
         int currentRequestFirstRegister = 0;
 
         for (SolakonOneInverterRegisters channel : SolakonOneInverterRegisters.values()) {
-            logger.warn("Evaluating register {}", channel.name());
+            logger.debug("Evaluating register {}", channel.name());
 
             if (currentRequest.isEmpty()) {
                 currentRequest.add(channel);
@@ -119,7 +119,7 @@ public class SolakonOneInverterHandler extends BaseModbusThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType && !this.modbusRequests.isEmpty()) {
-            logger.warn("REFRESH command received, submitting one-time polls for all registers.");
+            logger.info("REFRESH command received, submitting one-time polls for all registers.");
 
             readStaticData();
 
@@ -176,26 +176,25 @@ public class SolakonOneInverterHandler extends BaseModbusThingHandler {
                         logger.debug("Inverter Model: {}, S/N: {}, Manufacturer ID: {}", modelInfo, serialNo,
                                 manufacturerId);
                         if (!modelInfo.isEmpty()) {
-                            properties.put(MODEL_NAME, modelInfo);
+                            properties.put(PROPERTY_MODEL_NAME, modelInfo);
                         }
                         if (!serialNo.isEmpty()) {
-                            properties.put(SERIAL_NO, serialNo);
+                            properties.put(PROPERTY_SERIAL_NO, serialNo);
                         }
                         if (!manufacturerId.isEmpty()) {
-                            properties.put(MANUFACTURER_ID, manufacturerId);
+                            properties.put(PROPERTY_MANUFACTURER_ID, manufacturerId);
                         }
                     }, (AsyncModbusFailure<ModbusReadRequestBlueprint> error) -> {
-                        logger.info("Initial poll failed", error.getCause());
+                        logger.warn("Initial poll failed", error.getCause());
                     });
             Thread.sleep(1000);
             // b) firmware versions
             submitOneTimePoll(new ModbusReadRequestBlueprint(getSlaveId(),
                     ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, 36001, 3, 3), (AsyncModbusReadResult result) -> {
                         byte[] res = result.getRegisters().get().getBytes();
-                        properties.put(FIRMWARE_WR, String.format("%d.%03d", res[0], res[1]));
-                        properties.put(FIRMWARE_PV, String.format("%d.%03d", res[2], res[3])); // not sure, could also
-                                                                                               // be 4,5
-
+                        properties.put(PROPERTY_FIRMWARE_WR, String.format("%d.%03d", res[0], res[1]));
+                        // not sure, could also be 4,5
+                        properties.put(PROPERTY_FIRMWARE_PV, String.format("%d.%03d", res[2], res[3]));
                     }, (AsyncModbusFailure<ModbusReadRequestBlueprint> error) -> {
                     });
             Thread.sleep(1000);
@@ -203,7 +202,7 @@ public class SolakonOneInverterHandler extends BaseModbusThingHandler {
             submitOneTimePoll(new ModbusReadRequestBlueprint(getSlaveId(),
                     ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, 37003, 1, 3), (AsyncModbusReadResult result) -> {
                         byte[] res = result.getRegisters().get().getBytes();
-                        properties.put(FIRMWARE_BMS, String.format("%d.%03d", res[0], res[1]));
+                        properties.put(PROPERTY_FIRMWARE_BMS, String.format("%d.%03d", res[0], res[1]));
                     }, (AsyncModbusFailure<ModbusReadRequestBlueprint> error) -> {
                     });
             Thread.sleep(1000);
@@ -213,11 +212,11 @@ public class SolakonOneInverterHandler extends BaseModbusThingHandler {
                     (AsyncModbusReadResult result) -> {
                         ModbusBitUtilities.extractStateFromRegisters(result.getRegisters().get(), 0,
                                 ModbusConstants.ValueType.UINT32).ifPresent(v -> {
-                                    properties.put(RATED_POWER, v.toBigDecimal().toString() + " W");
+                                    properties.put(PROPERTY_RATED_POWER, v.toBigDecimal().toString() + " W");
                                 });
                         ModbusBitUtilities.extractStateFromRegisters(result.getRegisters().get(), 2,
                                 ModbusConstants.ValueType.UINT32).ifPresent(v -> {
-                                    properties.put(MAX_ACTIVE_POWER, v.toBigDecimal().toString() + " W");
+                                    properties.put(PROPERTY_MAX_ACTIVE_POWER, v.toBigDecimal().toString() + " W");
                                 });
                     }, (AsyncModbusFailure<ModbusReadRequestBlueprint> error) -> {
                     });
@@ -228,7 +227,7 @@ public class SolakonOneInverterHandler extends BaseModbusThingHandler {
     }
 
     private void readSuccessful(ModbusRequest request, AsyncModbusReadResult result) {
-        logger.debug("readSuccessful {}: {}", request, result);
+        logger.trace("readSuccessful {}: {}", request, result);
         result.getRegisters().ifPresent(registers -> {
             if (getThing().getStatus() != ThingStatus.ONLINE) {
                 updateStatus(ThingStatus.ONLINE);
@@ -244,7 +243,7 @@ public class SolakonOneInverterHandler extends BaseModbusThingHandler {
                         .map(channel::createState).ifPresentOrElse(v -> {
                             updateState(createChannelUid(channel), v);
                             if (channel.getChannelName().startsWith("hidden-")) {
-                                logger.warn("Updated internal channel {} to {}", channel.getChannelName(), v);
+                                logger.debug("Updated internal channel {} to {}", channel.getChannelName(), v);
                             }
                         }, () -> {
                             logger.warn("Could not extract state for channel {}", channel.getChannelName());

@@ -25,14 +25,14 @@ import org.openhab.core.thing.ThingTypeUID;
 @NonNullByDefault
 public class ModbusFoxInverterBindingConstants {
 
-    public static final String MODEL_NAME = "modelName";
-    public static final String SERIAL_NO = "serialNumber";
-    public static final String MANUFACTURER_ID = "manufacturerId";
-    public static final String RATED_POWER = "ratedPower";
-    public static final String MAX_ACTIVE_POWER = "maxActivePower";
-    public static final String FIRMWARE_BMS = "firmwareBMS";
-    public static final String FIRMWARE_WR = "firmwareWR";
-    public static final String FIRMWARE_PV = "firmwarePV";
+    public static final String PROPERTY_MODEL_NAME = "modelName";
+    public static final String PROPERTY_SERIAL_NO = "serialNumber";
+    public static final String PROPERTY_MANUFACTURER_ID = "manufacturerId";
+    public static final String PROPERTY_RATED_POWER = "ratedPower";
+    public static final String PROPERTY_MAX_ACTIVE_POWER = "maxActivePower";
+    public static final String PROPERTY_FIRMWARE_BMS = "firmwareBMS";
+    public static final String PROPERTY_FIRMWARE_WR = "firmwareWR";
+    public static final String PROPERTY_FIRMWARE_PV = "firmwarePV";
 
     /**
      * ThingType-ID for Inverter.
