@@ -436,6 +436,13 @@ public class LinkPlayHandler extends BaseThingHandler implements LinkPlayUpnpDev
             scheduler.schedule(() -> initFromUpnp(device), 0, TimeUnit.MILLISECONDS);
         }
         int maxAgeSeconds = device.getIdentity().getMaxAgeSeconds();
+        // if the ip has changed, which it seems to do more periodically then other devices for some reason, update the
+        // API client host
+        String host = device.getIdentity().getDescriptorURL().getHost();
+        if (host != null && !host.equals(this.host)) {
+            this.host = host;
+            apiClient.setHost(host);
+        }
         cancelUpnpServiceCheckJob();
         logger.debug("{}: updateDeviceConfig: maxAgeSeconds: {}", udn, maxAgeSeconds);
         if (maxAgeSeconds > 0) {
