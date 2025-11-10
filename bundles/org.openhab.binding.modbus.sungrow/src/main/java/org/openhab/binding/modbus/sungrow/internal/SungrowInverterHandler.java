@@ -195,15 +195,16 @@ public class SungrowInverterHandler extends BaseModbusThingHandler {
             }
 
             long protocolNo = ModbusBitUtilities.extractUInt32(registers.getBytes(), 0);
-            getThing().setProperty("Protocol No", String.valueOf(protocolNo));
+            getThing().setProperty(ModbusSungrowBindingConstants.PROP_KEY_PROTOCOL_NUMBER, String.valueOf(protocolNo));
             long protocolVersion = ModbusBitUtilities.extractUInt32(registers.getBytes(), 4);
-            getThing().setProperty("Protocol Version", String.valueOf(protocolVersion));
+            getThing().setProperty(ModbusSungrowBindingConstants.PROP_KEY_PROTOCOL_VERSION,
+                    String.valueOf(protocolVersion));
             String certVersionArm = ModbusBitUtilities.extractStringFromRegisters(registers, 4, 28,
                     StandardCharsets.UTF_8);
-            getThing().setProperty("Certification version number of ARM software", certVersionArm);
+            getThing().setProperty(ModbusSungrowBindingConstants.PROP_KEY_ARM_CERT_VERSION_NUMBER, certVersionArm);
             String certVersionDsp = ModbusBitUtilities.extractStringFromRegisters(registers, 19, 28,
                     StandardCharsets.UTF_8);
-            getThing().setProperty("Certification version number of DSP software", certVersionDsp);
+            getThing().setProperty(ModbusSungrowBindingConstants.PROP_KEY_DSP_CERT_VERSION_NUMBER, certVersionDsp);
         });
     }
 
@@ -214,13 +215,16 @@ public class SungrowInverterHandler extends BaseModbusThingHandler {
             }
             String serialNumber = ModbusBitUtilities.extractStringFromRegisters(registers, 0, 20,
                     StandardCharsets.UTF_8);
-            getThing().setProperty("Serial Number", serialNumber);
+            getThing().setProperty(ModbusSungrowBindingConstants.PROP_KEY_SERIAL_NUMBER, serialNumber);
             int deviceTypeCode = ModbusBitUtilities.extractUInt16(registers.getBytes(), 20);
-            getThing().setProperty("Device Type", DeviceTypeMapper.instance().map(deviceTypeCode));
+            getThing().setProperty(ModbusSungrowBindingConstants.PROP_KEY_DEVICE_TYPE,
+                    DeviceTypeMapper.instance().map(deviceTypeCode));
             int outputPower = ModbusBitUtilities.extractUInt16(registers.getBytes(), 22);
-            getThing().setProperty("Nominal Output Power", outputPower * 100 + " W");
+            getThing().setProperty(ModbusSungrowBindingConstants.PROP_KEY_NOMINAL_OUTPUT_POWER,
+                    outputPower * 100 + " W");
             int outputType = ModbusBitUtilities.extractUInt16(registers.getBytes(), 24);
-            getThing().setProperty("Output Type", OutputTypeMapper.instance().map(outputType));
+            getThing().setProperty(ModbusSungrowBindingConstants.PROP_KEY_OUTPUT_TYPE,
+                    OutputTypeMapper.instance().map(outputType));
         });
     }
 
