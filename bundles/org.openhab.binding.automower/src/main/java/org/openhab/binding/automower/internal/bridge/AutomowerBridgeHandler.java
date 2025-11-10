@@ -30,10 +30,15 @@ import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.eclipse.jetty.websocket.common.WebSocketSession;
+import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.Capabilities;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.Mower;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.MowerListResult;
+import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.StayOutZone;
+import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.StayOutZones;
 import org.openhab.binding.automower.internal.rest.exceptions.AutomowerCommunicationException;
 import org.openhab.binding.automower.internal.things.AutomowerHandler;
+import org.openhab.binding.automower.internal.things.AutomowerStayoutZoneHandler;
+import org.openhab.binding.automower.internal.things.AutomowerWorkAreaHandler;
 import org.openhab.core.auth.client.oauth2.OAuthClientService;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.thing.Bridge;
@@ -51,6 +56,7 @@ import org.slf4j.LoggerFactory;
  * sent to one of the channels.
  *
  * @author Markus Pfleger - Initial contribution
+ * @author MikeTheTux - API Extension, WSS Support, Refactoring
  */
 @NonNullByDefault
 public class AutomowerBridgeHandler extends BaseBridgeHandler {
@@ -71,6 +77,9 @@ public class AutomowerBridgeHandler extends BaseBridgeHandler {
     private final WebSocketClient webSocketClient;
     private boolean closing;
     private Map<String, AutomowerHandler> automowerHandlers = new HashMap<>();
+    private Map<String, AutomowerStayoutZoneHandler> automowerStayoutZoneHandlers = new HashMap<>();
+    private Map<String, String> zoneId2mowerid = new HashMap<>();
+    private Map<String, AutomowerWorkAreaHandler> automowerWorkAreaHandlers = new HashMap<>();
 
     public AutomowerBridgeHandler(Bridge bridge, OAuthFactory oAuthFactory, HttpClient httpClient,
             WebSocketClient webSocketClient) {
@@ -88,6 +97,50 @@ public class AutomowerBridgeHandler extends BaseBridgeHandler {
     public void unregisterAutomowerHandler(String mowerId) {
         automowerHandlers.remove(mowerId);
         logger.trace("Unregistered AutomowerHandler for mower with ID: {}", mowerId);
+    }
+
+    public @Nullable AutomowerHandler getAutomowerHandlerByMowerId(@Nullable String mowerId) {
+        return automowerHandlers.get(mowerId);
+    }
+
+    public @Nullable AutomowerHandler getAutomowerHandlerByStayoutZoneId(@Nullable String zoneId) {
+        return automowerHandlers.get(zoneId2mowerid.get(zoneId));
+    }
+
+    public void registerAutomowerStayoutZoneHandler(String zoneId, AutomowerStayoutZoneHandler handler) {
+        automowerStayoutZoneHandlers.put(zoneId, handler);
+        logger.trace("Registered AutomowerStayoutZoneHandler for zone with ID: {}", zoneId);
+    }
+
+    public void unregisterAutomowerStayoutZoneHandler(String zoneId) {
+        automowerStayoutZoneHandlers.remove(zoneId);
+        logger.trace("Unregistered AutomowerStayoutZoneHandler for zone with ID: {}", zoneId);
+    }
+
+    public @Nullable AutomowerStayoutZoneHandler getAutomowerStayoutZoneHandlerByThingId(@Nullable String thingId) {
+        return automowerStayoutZoneHandlers.get(thingId);
+    }
+
+    public void registerMowerIdForZoneId(String zoneId, String mowerId) {
+        zoneId2mowerid.put(zoneId, mowerId);
+    }
+
+    public @Nullable String getMowerIdByZoneId(@Nullable String zoneId) {
+        return zoneId2mowerid.get(zoneId);
+    }
+
+    public void registerAutomowerWorkAreaHandler(String areaId, AutomowerWorkAreaHandler handler) {
+        automowerWorkAreaHandlers.put(areaId, handler);
+        logger.trace("Registered AutomowerWorkAreaHandler for area with ID: {}", areaId);
+    }
+
+    public void unregisterAutomowerWorkAreaHandler(String areaId) {
+        automowerWorkAreaHandlers.remove(areaId);
+        logger.trace("Unregistered AutomowerWorkAreaHandler for area with ID: {}", areaId);
+    }
+
+    public @Nullable AutomowerWorkAreaHandler getAutomowerWorkAreaHandlerByThingId(@Nullable String thingId) {
+        return automowerWorkAreaHandlers.get(thingId);
     }
 
     public WebSocketClient getWebSocketClient() {
@@ -114,10 +167,6 @@ public class AutomowerBridgeHandler extends BaseBridgeHandler {
         this.closing = closing;
     }
 
-    public @Nullable AutomowerHandler getAutomowerHandlerByThingId(@Nullable String thingId) {
-        return automowerHandlers.get(thingId);
-    }
-
     public synchronized void pollAutomowers(AutomowerBridge bridge) {
         MowerListResult automowers;
         try {
@@ -132,13 +181,22 @@ public class AutomowerBridgeHandler extends BaseBridgeHandler {
                 logger.debug("Found {} automowers in the response from REST API", mowers.size());
                 // Update all known AutomowerHandlers with the data from the REST API
                 for (Mower mower : mowers) {
-                    String id = mower.getId();
-                    AutomowerHandler automowerHandler = getAutomowerHandlerByThingId(id);
+                    String mowerId = mower.getId();
+                    Capabilities capabilities = mower.getAttributes().getCapabilities();
+                    if (capabilities.hasStayOutZones()) {
+                        StayOutZones stayOutZones = mower.getAttributes().getStayOutZones();
+                        if (stayOutZones != null) {
+                            for (StayOutZone stayOutZone : stayOutZones.getZones()) {
+                                registerMowerIdForZoneId(stayOutZone.getId(), mowerId);
+                            }
+                        }
+                    }
+                    AutomowerHandler automowerHandler = getAutomowerHandlerByMowerId(mowerId);
                     if (automowerHandler != null) {
-                        logger.debug("Data from REST API for known AutomowerHandler with id: {}", id);
+                        logger.debug("Data from REST API for known AutomowerHandler with mowerId: {}", mowerId);
                         automowerHandler.updateAutomowerStateViaREST(mower);
                     } else {
-                        logger.debug("Data from REST API for unknown AutomowerHandler with id: {}", id);
+                        logger.debug("Data from REST API for unknown AutomowerHandler with mowerId: {}", mowerId);
                     }
                 }
             }
@@ -218,8 +276,8 @@ public class AutomowerBridgeHandler extends BaseBridgeHandler {
         ScheduledFuture<?> currentPollingJob = automowerBridgePollingJob;
         if (currentPollingJob == null) {
             final long pollingIntervalToUse = pollingIntervalS == null ? DEFAULT_POLLING_INTERVAL_S : pollingIntervalS;
-            automowerBridgePollingJob = scheduler.scheduleWithFixedDelay(() -> pollAutomowers(bridge),
-                    pollingIntervalToUse, pollingIntervalToUse, TimeUnit.SECONDS);
+            automowerBridgePollingJob = scheduler.scheduleWithFixedDelay(() -> pollAutomowers(bridge), 1,
+                    pollingIntervalToUse, TimeUnit.SECONDS);
         }
     }
 

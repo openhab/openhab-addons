@@ -156,7 +156,8 @@ public class TelegramHandler extends BaseThingHandler {
             try {
                 parseMode = ParseMode.valueOf(parseModeAsString);
             } catch (IllegalArgumentException e) {
-                logger.warn("parseMode is invalid and will be ignored. Only Markdown or HTML are allowed values");
+                logger.warn(
+                        "parseMode is invalid and will be ignored. Only Markdown, MarkdownV2 or HTML are allowed values");
             }
         }
 
@@ -186,8 +187,11 @@ public class TelegramHandler extends BaseThingHandler {
         updateStatus(ThingStatus.UNKNOWN);
         delayThingOnlineStatus();
         TelegramBot localBot = bot = new TelegramBot.Builder(botToken).okHttpClient(botLibClient).build();
-        localBot.setUpdatesListener(this::handleUpdates, this::handleExceptions,
-                getGetUpdatesRequest(config.getLongPollingTime()));
+        int longPollingTime = config.getLongPollingTime();
+        if (longPollingTime > 0) {
+            localBot.setUpdatesListener(this::handleUpdates, this::handleExceptions,
+                    getGetUpdatesRequest(longPollingTime));
+        }
     }
 
     private void createReceiverChatIdsAndAuthorizedSenderChatIds(List<String> chatIds) {
@@ -470,7 +474,10 @@ public class TelegramHandler extends BaseThingHandler {
         OkHttpClient localClient = botLibClient;
         TelegramBot localBot = bot;
         if (localClient != null && localBot != null) {
-            localBot.removeGetUpdatesListener();
+            TelegramConfiguration config = this.getConfig().as(TelegramConfiguration.class);
+            if (config.getLongPollingTime() > 0) {
+                localBot.removeGetUpdatesListener();
+            }
             localClient.dispatcher().executorService().shutdown();
             localClient.connectionPool().evictAll();
             logger.debug("Telegram client closed");

@@ -41,6 +41,9 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public abstract class BaseDevice implements StateChangeListener {
+    // The "source" sent with command events so rules can identify them as coming from Matter
+    public static final String MATTER_SOURCE = "org.openhab.binding.matter";
+
     protected final Logger logger = LoggerFactory.getLogger(getClass());
 
     protected final GenericItem primaryItem;

@@ -51,6 +51,8 @@ public class BridgeRemoteEnedisHandler extends BridgeRemoteApiHandler {
     private static final String ADDRESS_URL = "customers_upa/v5/usage_points/addresses?usage_point_id=%s";
 
     private static final String MEASURE_DAILY_CONSUMPTION_URL = "metering_data_dc/v5/daily_consumption?usage_point_id=%s&start=%s&end=%s";
+    private static final String MEASURE_DAILY_INDEX_URL = MEASURE_DAILY_CONSUMPTION_URL;
+
     private static final String MEASURE_MAX_POWER_URL = "metering_data_dcmp/v5/daily_consumption_max_power?usage_point_id=%s&start=%s&end=%s";
     private static final String LOAD_CURVE_CONSUMPTION_URL = "metering_data_clc/v5/consumption_load_curve?usage_point_id=%s&start=%s&end=%s";
 
@@ -177,6 +179,11 @@ public class BridgeRemoteEnedisHandler extends BridgeRemoteApiHandler {
     @Override
     public String getDailyConsumptionUrl() {
         return getBaseUrl() + MEASURE_DAILY_CONSUMPTION_URL;
+    }
+
+    @Override
+    public String getDailyIndexUrl() {
+        return getBaseUrl() + MEASURE_DAILY_INDEX_URL;
     }
 
     @Override

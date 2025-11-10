@@ -77,11 +77,11 @@ public class FanDevice extends BaseDevice {
                         int mode = ((Double) data).intValue();
                         String mappedMode = fanModeMapper.toCustomValue(mode);
                         if (item instanceof NumberItem numberItem) {
-                            numberItem.send(new DecimalType(mappedMode));
+                            numberItem.send(new DecimalType(mappedMode), MATTER_SOURCE);
                         } else if (item instanceof StringItem stringItem) {
-                            stringItem.send(new StringType(mappedMode));
+                            stringItem.send(new StringType(mappedMode), MATTER_SOURCE);
                         } else if (item instanceof SwitchItem switchItem) {
-                            switchItem.send(mode > 0 ? OnOffType.ON : OnOffType.OFF);
+                            switchItem.send(mode > 0 ? OnOffType.ON : OnOffType.OFF, MATTER_SOURCE);
                         }
                     } catch (FanModeMappingException e) {
                         logger.debug("Could not convert {} to custom value", data);
@@ -90,15 +90,15 @@ public class FanDevice extends BaseDevice {
                 case FanControlCluster.ATTRIBUTE_PERCENT_SETTING:
                     int level = ((Double) data).intValue();
                     if (item instanceof GroupItem groupItem) {
-                        groupItem.send(new PercentType(level));
+                        groupItem.send(new PercentType(level), MATTER_SOURCE);
                     } else if (item instanceof DimmerItem dimmerItem) {
-                        dimmerItem.send(new PercentType(level));
+                        dimmerItem.send(new PercentType(level), MATTER_SOURCE);
                     }
                     break;
                 case OnOffCluster.ATTRIBUTE_ON_OFF:
                     if (item instanceof SwitchItem switchItem) {
                         OnOffType onOff = OnOffType.from((Boolean) data);
-                        switchItem.send(onOff);
+                        switchItem.send(onOff, MATTER_SOURCE);
                         lastOnOff = onOff;
                     }
                     break;
@@ -114,7 +114,7 @@ public class FanDevice extends BaseDevice {
                     GenericItem genericItem = itemForAttribute(OnOffCluster.CLUSTER_PREFIX,
                             OnOffCluster.ATTRIBUTE_ON_OFF);
                     if (genericItem instanceof SwitchItem switchItem) {
-                        switchItem.send(OnOffType.from(level > 0));
+                        switchItem.send(OnOffType.from(level > 0), MATTER_SOURCE);
                     }
                     // try and update the fan mode if set
                     genericItem = itemForAttribute(FanControlCluster.CLUSTER_PREFIX,
@@ -124,11 +124,11 @@ public class FanDevice extends BaseDevice {
                                 .toCustomValue(level > 0 ? FanControlCluster.FanModeEnum.ON.getValue()
                                         : FanControlCluster.FanModeEnum.OFF.getValue());
                         if (genericItem instanceof NumberItem numberItem) {
-                            numberItem.send(new DecimalType(mappedMode));
+                            numberItem.send(new DecimalType(mappedMode), MATTER_SOURCE);
                         } else if (genericItem instanceof StringItem stringItem) {
-                            stringItem.send(new StringType(mappedMode));
+                            stringItem.send(new StringType(mappedMode), MATTER_SOURCE);
                         } else if (genericItem instanceof SwitchItem switchItem) {
-                            switchItem.send(OnOffType.from(level > 0));
+                            switchItem.send(OnOffType.from(level > 0), MATTER_SOURCE);
                         }
                     } catch (FanModeMappingException e) {
                         logger.debug("Could not convert {} to custom value", data);
@@ -141,14 +141,14 @@ public class FanDevice extends BaseDevice {
                             FanControlCluster.ATTRIBUTE_PERCENT_SETTING);
                     PercentType level = mode > 0 ? PercentType.HUNDRED : PercentType.ZERO;
                     if (genericItem instanceof GroupItem groupItem) {
-                        groupItem.send(level);
+                        groupItem.send(level, MATTER_SOURCE);
                     } else if (genericItem instanceof DimmerItem dimmerItem) {
-                        dimmerItem.send(level);
+                        dimmerItem.send(level, MATTER_SOURCE);
                     }
                     // try and update the on/off state if set
                     genericItem = itemForAttribute(OnOffCluster.CLUSTER_PREFIX, OnOffCluster.ATTRIBUTE_ON_OFF);
                     if (genericItem instanceof SwitchItem switchItem) {
-                        switchItem.send(OnOffType.from(mode > 0));
+                        switchItem.send(OnOffType.from(mode > 0), MATTER_SOURCE);
                     }
                 }
                     break;

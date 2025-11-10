@@ -63,6 +63,8 @@ public class BoschSHCBindingConstants {
     public static final ThingTypeUID THING_TYPE_DIMMER = new ThingTypeUID(BINDING_ID, "dimmer");
     public static final ThingTypeUID THING_TYPE_WATER_DETECTOR = new ThingTypeUID(BINDING_ID, "water-detector");
     public static final ThingTypeUID THING_TYPE_RELAY = new ThingTypeUID(BINDING_ID, "relay");
+    public static final ThingTypeUID THING_TYPE_PRESENCE_SIMULATION = new ThingTypeUID(BINDING_ID,
+            "presence-simulation");
 
     public static final ThingTypeUID THING_TYPE_USER_DEFINED_STATE = new ThingTypeUID(BINDING_ID, "user-defined-state");
 
@@ -122,6 +124,7 @@ public class BoschSHCBindingConstants {
     public static final String CHANNEL_VIBRATION_SENSOR_ENABLED = "vibration-sensor-enabled";
     public static final String CHANNEL_VIBRATION_SENSOR_SENSITIVITY = "vibration-sensor-sensitivity";
     public static final String CHANNEL_VIBRATION_SENSOR_STATE = "vibration-sensor-state";
+    public static final String CHANNEL_PRESENCE_SIMULATION_ENABLED = "presence-simulation-enabled";
     // numbered channels
     // the rationale for introducing numbered channels was discussed in
     // https://github.com/openhab/openhab-addons/pull/16400
@@ -134,6 +137,7 @@ public class BoschSHCBindingConstants {
 
     // static device/service names
     public static final String SERVICE_INTRUSION_DETECTION = "intrusionDetectionSystem";
+    public static final String SERVICE_PRESENCE_SIMULATION = "presenceSimulationService";
 
     // thing properties
     public static final String PROPERTY_LOCATION_LEGACY = "Location";

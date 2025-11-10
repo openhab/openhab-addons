@@ -12,6 +12,7 @@ Binding for Bosch Smart Home devices.
     - [Door/Window Contact II](#doorwindow-contact-ii)
     - [Light Control II](#light-control-ii)
     - [Motion Detector](#motion-detector)
+    - [Presence Simulation](#presence-simulation)
     - [Shutter Control](#shutter-control)
     - [Shutter Control II](#shutter-control-ii)
     - [Thermostat](#thermostat)
@@ -176,6 +177,16 @@ Detects every movement through an intelligent combination of passive infra-red t
 | illuminance     | Number    | &#9744;  | The illuminance level measured by the sensor as integer value in the range 0 to 1000. Note that the sensor only reports the value if the motion light service is activated or if the illuminance state is used in a scenario trigger condition. |
 | battery-level   | Number    | &#9744;  | Current battery level percentage as integer number. Bosch-specific battery levels are mapped to numbers as follows: `OK`: 100, `LOW_BATTERY`: 10, `CRITICAL_LOW`: 1, `CRITICALLY_LOW_BATTERY`: 1, `NOT_AVAILABLE`: `UNDEF`. |
 | low-battery     | Switch    | &#9744;  | Indicates whether the battery is low (`ON`) or OK (`OFF`). |
+
+### Presence Simulation
+
+Simulates that someone is home.
+
+**Thing Type ID**: `presence-simulation`
+
+| Channel Type ID             | Item Type | Writable | Description                                  |
+| --------------------------- | --------- | :------: | -------------------------------------------- |
+| presence-simulation-enabled | Switch    | &#9745;  | Enables or disables the presence simulation. |
 
 ### Shutter Control
 

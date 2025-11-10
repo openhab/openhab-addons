@@ -16,6 +16,8 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.folding.internal.handler.FoldingClientHandler;
 import org.openhab.binding.folding.internal.handler.SlotHandler;
 import org.openhab.core.thing.Bridge;
@@ -32,6 +34,7 @@ import org.osgi.service.component.annotations.Component;
  *
  * @author Marius Bjoernstad - Initial contribution
  */
+@NonNullByDefault
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.folding")
 public class FoldingHandlerFactory extends BaseThingHandlerFactory {
 
@@ -44,7 +47,7 @@ public class FoldingHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Override
-    protected ThingHandler createHandler(Thing thing) {
+    protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(FoldingBindingConstants.THING_TYPE_CLIENT)) {

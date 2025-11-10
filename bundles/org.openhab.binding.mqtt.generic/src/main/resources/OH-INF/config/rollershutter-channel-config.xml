@@ -88,18 +88,19 @@
 		<parameter name="on" type="text">
 			<label>Up Command Value</label>
 			<description>A string (like "OPEN") that is sent when commanding the rollershutter to open. If not provided, 0 (or
-				100, if inverted) will be sent instead.</description>
+				100, if inverted) will be sent instead. The Outgoing Value Format is not applied to this value.</description>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="off" type="text">
 			<label>Down Command Value</label>
 			<description>A string (like "CLOSE") that is sent when commanding the rollershutter to close. If not provided, 100
-				(or 0, if inverted) will be sent instead.</description>
+				(or 0, if inverted) will be sent instead. The Outgoing Value Format is not applied to this value.</description>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="stop" type="text">
 			<label>Stop Command</label>
-			<description>A string (like "STOP") that is sent when commanding the rollershutter to stop.</description>
+			<description>A string (like "STOP") that is sent when commanding the rollershutter to stop. The Outgoing Value Format
+				is not applied to this value.</description>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="onState" type="text">

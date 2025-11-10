@@ -21,7 +21,6 @@
 /bundles/org.openhab.binding.airquality/ @openhab/add-ons-maintainers
 /bundles/org.openhab.binding.airvisualnode/ @3cky
 /bundles/org.openhab.binding.alarmdecoder/ @bobadair @billfor
-/bundles/org.openhab.binding.allplay/ @dominicdesu
 /bundles/org.openhab.binding.amazondashbutton/ @openhab/add-ons-maintainers
 /bundles/org.openhab.binding.amazonechocontrol/ @mgeramb
 /bundles/org.openhab.binding.amberelectric/ @psmedley
@@ -233,6 +232,7 @@
 /bundles/org.openhab.binding.meteostick/ @cdjackson
 /bundles/org.openhab.binding.metofficedatahub/ @dag81
 /bundles/org.openhab.binding.mffan/ @mark-brooks-180
+/bundles/org.openhab.binding.mideaac/ @apella12
 /bundles/org.openhab.binding.miele/ @kgoderis @jlaur
 /bundles/org.openhab.binding.mielecloud/ @BjoernLange
 /bundles/org.openhab.binding.mihome/ @pboos
@@ -337,6 +337,7 @@
 /bundles/org.openhab.binding.ring/ @psmedley
 /bundles/org.openhab.binding.rme/ @kgoderis
 /bundles/org.openhab.binding.robonect/ @reyem
+/bundles/org.openhab.binding.roborock/ @psmedley
 /bundles/org.openhab.binding.roku/ @mlobstein
 /bundles/org.openhab.binding.rotel/ @lolodomo
 /bundles/org.openhab.binding.russound/ @openhab/add-ons-maintainers

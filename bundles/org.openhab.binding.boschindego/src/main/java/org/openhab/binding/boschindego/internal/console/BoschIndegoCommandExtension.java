@@ -12,7 +12,8 @@
  */
 package org.openhab.binding.boschindego.internal.console;
 
-import java.util.Arrays;
+import static org.openhab.binding.boschindego.internal.BoschIndegoBindingConstants.THING_TYPE_ACCOUNT;
+
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -27,7 +28,7 @@ import org.openhab.core.io.console.extensions.AbstractConsoleCommandExtension;
 import org.openhab.core.io.console.extensions.ConsoleCommandExtension;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingRegistry;
-import org.openhab.core.thing.binding.ThingHandler;
+import org.openhab.core.thing.ThingUID;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -42,7 +43,7 @@ import org.osgi.service.component.annotations.Reference;
 public class BoschIndegoCommandExtension extends AbstractConsoleCommandExtension implements ConsoleCommandCompleter {
 
     private static final String AUTHORIZE = "authorize";
-    private static final StringsCompleter SUBCMD_COMPLETER = new StringsCompleter(List.of(AUTHORIZE), false);
+    private static final StringsCompleter CMD_COMPLETER = new StringsCompleter(List.of(AUTHORIZE), false);
 
     private final ThingRegistry thingRegistry;
 
@@ -54,26 +55,37 @@ public class BoschIndegoCommandExtension extends AbstractConsoleCommandExtension
 
     @Override
     public void execute(String[] args, Console console) {
-        if (args.length != 2 || !AUTHORIZE.equals(args[0])) {
+
+        if (args.length != 3 || !AUTHORIZE.equals(args[0])) {
             printUsage(console);
             return;
         }
 
-        for (Thing thing : thingRegistry.getAll()) {
-            ThingHandler thingHandler = thing.getHandler();
-            if (thingHandler instanceof BoschAccountHandler accountHandler) {
-                try {
-                    accountHandler.authorize(args[1]);
-                } catch (IndegoAuthenticationException e) {
-                    console.println("Authorization error: " + e.getMessage());
-                }
+        String bridgeId = args[1];
+        String authCode = args[2];
+
+        Thing bridge = getBridgeById(bridgeId);
+        if (bridge == null) {
+            console.println("Unknown bridge id '" + bridgeId + "'");
+            return;
+        }
+
+        if (bridge.getHandler() instanceof BoschAccountHandler accountHandler) {
+            try {
+                accountHandler.authorize(authCode);
+            } catch (IndegoAuthenticationException e) {
+                console.println("Authorization error: " + e.getMessage());
             }
+        } else {
+            console.println("Bridge is not a valid BoschIndego bridge");
+            printUsage(console);
         }
     }
 
     @Override
     public List<String> getUsages() {
-        return Arrays.asList(buildCommandUsage(AUTHORIZE, "authorize by authorization code"));
+        return List.of(
+                buildCommandUsage(AUTHORIZE + " <bridgeId> <authorizationCode>", "authorize by authorization code"));
     }
 
     @Override
@@ -84,8 +96,24 @@ public class BoschIndegoCommandExtension extends AbstractConsoleCommandExtension
     @Override
     public boolean complete(String[] args, int cursorArgumentIndex, int cursorPosition, List<String> candidates) {
         if (cursorArgumentIndex <= 0) {
-            return SUBCMD_COMPLETER.complete(args, cursorArgumentIndex, cursorPosition, candidates);
+            return CMD_COMPLETER.complete(args, cursorArgumentIndex, cursorPosition, candidates);
+        } else if (cursorArgumentIndex == 1 && AUTHORIZE.equals(args[0])) {
+            return new StringsCompleter(getBridgeIds(), true).complete(args, cursorArgumentIndex, cursorPosition,
+                    candidates);
         }
         return false;
+    }
+
+    private List<String> getBridgeIds() {
+        return thingRegistry.getAll().stream().filter(thing -> thing.getHandler() instanceof BoschAccountHandler)
+                .map(thing -> thing.getUID().getId()).toList();
+    }
+
+    private @Nullable Thing getBridgeById(String bridgeId) {
+        try {
+            return thingRegistry.get(new ThingUID(THING_TYPE_ACCOUNT, bridgeId));
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
     }
 }

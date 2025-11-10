@@ -24,7 +24,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.http.HttpHeader;
-import org.openhab.binding.evcc.internal.EvccConfiguration;
+import org.openhab.binding.evcc.internal.EvccBridgeConfiguration;
 import org.openhab.binding.evcc.internal.discovery.EvccDiscoveryService;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TranslationProvider;
@@ -78,7 +78,7 @@ public class EvccBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void initialize() {
-        EvccConfiguration config = getConfigAs(EvccConfiguration.class);
+        EvccBridgeConfiguration config = getConfigAs(EvccBridgeConfiguration.class);
         endpoint = config.scheme + "://" + config.host + ":" + config.port + "/api/state";
 
         startPolling(config.pollInterval);
@@ -150,12 +150,12 @@ public class EvccBridgeHandler extends BaseBridgeHandler {
     private void notifyListeners(JsonObject state) {
         for (EvccThingLifecycleAware listener : listeners) {
             try {
-                listener.updateFromEvccState(state);
+                listener.prepareApiResponseForChannelStateUpdate(state);
             } catch (Exception e) {
                 if (listener instanceof BaseThingHandler handler) {
                     logger.warn("Listener {} couldn't parse evcc state", handler.getThing().getUID(), e);
                 } else {
-                    logger.debug("Listener {} is not instance of BaseThingHandlder", listener, e);
+                    logger.debug("Listener {} is not instance of BaseThingHandler", listener, e);
                 }
             }
         }
@@ -167,7 +167,9 @@ public class EvccBridgeHandler extends BaseBridgeHandler {
 
     public void register(EvccThingLifecycleAware handler) {
         listeners.addIfAbsent(handler);
-        Optional.of(lastState).ifPresent(handler::updateFromEvccState);
+        if (!lastState.isEmpty()) {
+            handler.prepareApiResponseForChannelStateUpdate(lastState);
+        }
     }
 
     public void unregister(EvccThingLifecycleAware handler) {

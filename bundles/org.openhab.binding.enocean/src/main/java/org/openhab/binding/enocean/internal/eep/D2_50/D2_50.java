@@ -152,9 +152,9 @@ public class D2_50 extends _VLDMessage {
                 return new QuantityType<>(-63 + ((bytes[8] & 0xff) >>> 4) + ((bytes[7] & 0b111) << 4), SIUnits.CELSIUS);
             case CHANNEL_SUPPLYAIRFANAIRFLOWRATE:
                 return new QuantityType<>(((bytes[9] & 0xff) >>> 2) + ((bytes[8] & 0b1111) << 6),
-                        Units.CUBICMETRE_PER_MINUTE);
+                        Units.CUBICMETRE_PER_HOUR);
             case CHANNEL_EXHAUSTAIRFANAIRFLOWRATE:
-                return new QuantityType<>((bytes[10] & 0xff) + ((bytes[9] & 0b11) << 8), Units.CUBICMETRE_PER_MINUTE);
+                return new QuantityType<>((bytes[10] & 0xff) + ((bytes[9] & 0b11) << 8), Units.CUBICMETRE_PER_HOUR);
             case CHANNEL_SUPPLYFANSPEED:
                 return new DecimalType(((bytes[12] & 0xff) >>> 4) + (bytes[11] << 4));
             case CHANNEL_EXHAUSTFANSPEED:

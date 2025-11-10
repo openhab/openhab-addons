@@ -298,7 +298,7 @@
 	</channel-type>
 
 	<channel-type id="room-heating-percent">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Heating Power</label>
 		<description>Percentage of heating power.</description>
 		<category>Energy</category>
@@ -330,7 +330,7 @@
 	</channel-type>
 
 	<channel-type id="co2">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="ppm">Number:Dimensionless</item-type>
 		<label>CO2</label>
 		<description>Air Quality indicator.</description>
 		<category>Carbondioxide</category>

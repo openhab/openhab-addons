@@ -21,8 +21,9 @@ import org.openhab.binding.solarforecast.internal.actions.SolarForecast;
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-@SuppressWarnings("serial")
 public class SolarForecastException extends RuntimeException {
+
+    private static final long serialVersionUID = -574726706964225181L;
 
     public SolarForecastException(SolarForecast ref, String message) {
         super(ref.getIdentifier() + " # " + message);

@@ -330,14 +330,12 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
 
         // Also add any openHAB NuvoNet source favorites to the list
         IntStream.range(1, MAX_SRC + 1).forEach(src -> {
-            NuvoEnum source = NuvoEnum.valueOf(SOURCE + src);
-            String[] favorites = favoriteMap.get(source);
-            if (favorites != null) {
-                IntStream.range(0, favorites.length).forEach(fav -> {
-                    favoriteLabelsStateOptions.add(new StateOption(String.valueOf(src * 100 + fav),
-                            favPrefixMap.get(source) + favorites[fav]));
-                });
-            }
+            final NuvoEnum source = NuvoEnum.valueOf(SOURCE + src);
+            final String[] favorites = favoriteMap.getOrDefault(source, new String[0]);
+            IntStream.range(0, favorites.length).forEach(fav -> {
+                favoriteLabelsStateOptions.add(
+                        new StateOption(String.valueOf(src * 100 + fav), favPrefixMap.get(source) + favorites[fav]));
+            });
         });
 
         // Put the global favorites labels on all active zones
@@ -1135,21 +1133,18 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                                 sourceMenuStateOptions);
                     }
 
-                    String[] favorites = favoriteMap.get(source);
-                    if (favorites != null) {
-                        connector.sendCommand(source.getId() + "FAVORITES"
-                                + (favorites.length < 20 ? favorites.length : 20) + COMMA
-                                + (source.getNum() == 1 ? ONE : ZERO) + COMMA + (source.getNum() == 2 ? ONE : ZERO)
-                                + COMMA + (source.getNum() == 3 ? ONE : ZERO) + COMMA
-                                + (source.getNum() == 4 ? ONE : ZERO) + COMMA + (source.getNum() == 5 ? ONE : ZERO)
-                                + COMMA + (source.getNum() == 6 ? ONE : ZERO));
-                        Thread.sleep(SLEEP_BETWEEN_CMD_MS);
+                    final String[] favorites = favoriteMap.getOrDefault(source, new String[0]);
+                    connector.sendCommand(source.getId() + "FAVORITES" + (favorites.length < 20 ? favorites.length : 20)
+                            + COMMA + (source.getNum() == 1 ? ONE : ZERO) + COMMA + (source.getNum() == 2 ? ONE : ZERO)
+                            + COMMA + (source.getNum() == 3 ? ONE : ZERO) + COMMA + (source.getNum() == 4 ? ONE : ZERO)
+                            + COMMA + (source.getNum() == 5 ? ONE : ZERO) + COMMA
+                            + (source.getNum() == 6 ? ONE : ZERO));
+                    Thread.sleep(SLEEP_BETWEEN_CMD_MS);
 
-                        for (int i = 0; i < (favorites.length < 20 ? favorites.length : 20); i++) {
-                            connector.sendCommand(source.getId() + "FAVORITESITEM" + (i + 1000) + ",0,0,\""
-                                    + favPrefixMap.get(source) + favorites[i] + "\"");
-                            Thread.sleep(SLEEP_BETWEEN_CMD_MS);
-                        }
+                    for (int i = 0; i < (favorites.length < 20 ? favorites.length : 20); i++) {
+                        connector.sendCommand(source.getId() + "FAVORITESITEM" + (i + 1000) + ",0,0,\""
+                                + favPrefixMap.get(source) + favorites[i] + "\"");
+                        Thread.sleep(SLEEP_BETWEEN_CMD_MS);
                     }
 
                     if (showReady) {
@@ -1607,7 +1602,7 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
     }
 
     private String getFavorite(NuvoEnum source, int playlistIdx) {
-        final String[] favoritesArr = favoriteMap.get(source);
-        return favoritesArr != null ? favoritesArr[playlistIdx] : BLANK;
+        final String[] favoritesArr = favoriteMap.getOrDefault(source, new String[0]);
+        return playlistIdx < favoritesArr.length ? favoritesArr[playlistIdx] : BLANK;
     }
 }

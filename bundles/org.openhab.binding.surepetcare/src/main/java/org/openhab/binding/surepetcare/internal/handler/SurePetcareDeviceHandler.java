@@ -135,11 +135,14 @@ public class SurePetcareDeviceHandler extends SurePetcareBaseObjectHandler {
                 updateState(DEVICE_CHANNEL_PAIRING_MODE, new StringType(device.status.pairingModeId.toString()));
             } else {
                 float batVol = device.status.battery;
-                updateState(DEVICE_CHANNEL_BATTERY_VOLTAGE, new DecimalType(batVol));
-                updateState(DEVICE_CHANNEL_BATTERY_LEVEL, new DecimalType(Math.min(
-                        (batVol - BATTERY_EMPTY_VOLTAGE) / (BATTERY_FULL_VOLTAGE - BATTERY_EMPTY_VOLTAGE) * 100.0f,
-                        100.0f)));
+                updateState(DEVICE_CHANNEL_BATTERY_VOLTAGE, new QuantityType<>(batVol, Units.VOLT));
+                updateState(DEVICE_CHANNEL_BATTERY_LEVEL,
+                        new QuantityType<>(
+                                Math.min((batVol - BATTERY_EMPTY_VOLTAGE)
+                                        / (BATTERY_FULL_VOLTAGE - BATTERY_EMPTY_VOLTAGE) * 100.0f, 100.0f),
+                                Units.PERCENT));
                 updateState(DEVICE_CHANNEL_LOW_BATTERY, OnOffType.from(batVol < LOW_BATTERY_THRESHOLD));
+
                 if (device.status.signal != null && device.status.signal.deviceRssi != null) {
                     updateState(DEVICE_CHANNEL_DEVICE_RSSI,
                             new QuantityType<>(device.status.signal.deviceRssi, Units.DECIBEL_MILLIWATTS));
@@ -185,6 +188,8 @@ public class SurePetcareDeviceHandler extends SurePetcareBaseObjectHandler {
                             new StringType(device.control.lid.closeDelayId.toString()));
                     updateState(DEVICE_CHANNEL_BOWLS_TRAINING_MODE,
                             new StringType(device.control.trainingModeId.toString()));
+                } else if (thing.getThingTypeUID().equals(THING_TYPE_WATER_DEVICE)) {
+                    // Currently no specific channels for water stations are supported by this binding
                 } else {
                     logger.warn("Unknown product type for device {}", thing.getUID().getAsString());
                 }

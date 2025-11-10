@@ -136,14 +136,17 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
 
             updateProperties(device, editProperties());
 
-            if (device.isPowermeter()) {
-                updatePowermeter(device.getPowermeter());
+            if (device.isPowerMeter()) {
+                updatePowerMeter(device.getPowerMeter());
             }
             if (device.isSwitchableOutlet()) {
                 updateSwitchableOutlet(device.getSwitch());
             }
             if (device.isHeatingThermostat()) {
                 updateHeatingThermostat(device.getHkr());
+            }
+            if (device.isHANFUNBlinds()) {
+                updateLevelControl(device.getLevelControlModel());
             }
             if (device instanceof DeviceModel deviceModel) {
                 if (deviceModel.isTemperatureSensor()) {
@@ -159,9 +162,7 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
                         updateHANFUNAlarmSensor(deviceModel.getAlert());
                     }
                 }
-                if (deviceModel.isHANFUNBlinds()) {
-                    updateLevelControl(deviceModel.getLevelControlModel());
-                } else if (deviceModel.isColorLight()) {
+                if (deviceModel.isColorLight()) {
                     updateColorLight(deviceModel.getColorControlModel(), deviceModel.getLevelControlModel(),
                             deviceModel.getSimpleOnOffUnit());
                 } else if (deviceModel.isDimmableLight() && !deviceModel.isHANFUNBlinds()) {
@@ -318,7 +319,7 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
         }
     }
 
-    private void updatePowermeter(@Nullable PowerMeterModel powerMeterModel) {
+    private void updatePowerMeter(@Nullable PowerMeterModel powerMeterModel) {
         if (powerMeterModel != null) {
             updateThingChannelState(CHANNEL_ENERGY, new QuantityType<>(powerMeterModel.getEnergy(), Units.WATT_HOUR));
             updateThingChannelState(CHANNEL_POWER, new QuantityType<>(powerMeterModel.getPower(), Units.WATT));
@@ -334,6 +335,7 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
      */
     protected void updateProperties(AVMFritzBaseModel device, Map<String, String> editProperties) {
         editProperties.put(Thing.PROPERTY_FIRMWARE_VERSION, device.getFirmwareVersion());
+        editProperties.put(PROPERTY_DEVICE_ID, device.getDeviceId());
         updateProperties(editProperties);
     }
 
@@ -472,7 +474,7 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
                 } else if (command instanceof OnOffType) {
                     fritzBox.setSwitch(ain, OnOffType.ON.equals(command));
                 } else if (command instanceof IncreaseDecreaseType) {
-                    brightness = ((DeviceModel) currentDevice).getLevelControlModel().getLevelPercentage();
+                    brightness = currentDevice.getLevelControlModel().getLevelPercentage();
                     if (IncreaseDecreaseType.INCREASE.equals(command)) {
                         brightness.add(BigDecimal.TEN);
                     } else {
@@ -552,23 +554,23 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
                 BigDecimal targetTemperature = null;
                 if (command instanceof StringType) {
                     switch (command.toString()) {
-                        case MODE_ON:
+                        case HEATING_MODE_ON:
                             targetTemperature = TEMP_FRITZ_ON;
                             break;
-                        case MODE_OFF:
+                        case HEATING_MODE_OFF:
                             targetTemperature = TEMP_FRITZ_OFF;
                             break;
-                        case MODE_COMFORT:
+                        case HEATING_MODE_COMFORT:
                             targetTemperature = currentDevice.getHkr().getKomfort();
                             break;
-                        case MODE_ECO:
+                        case HEATING_MODE_ECO:
                             targetTemperature = currentDevice.getHkr().getAbsenk();
                             break;
-                        case MODE_BOOST:
+                        case HEATING_MODE_BOOST:
                             targetTemperature = TEMP_FRITZ_MAX;
                             break;
-                        case MODE_UNKNOWN:
-                        case MODE_WINDOW_OPEN:
+                        case HEATING_MODE_UNKNOWN:
+                        case HEATING_MODE_WINDOW_OPEN:
                             logger.debug("Command '{}' is a read-only command for channel {}.", command, channelId);
                             break;
                     }
@@ -609,9 +611,9 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
      * Handles a command for a given action.
      *
      * @param action
-     * @param duration
+     * @param param
      */
-    protected void handleAction(String action, long duration) {
+    protected void handleAction(String action, long param) {
         FritzAhaWebInterface fritzBox = getWebInterface();
         if (fritzBox == null) {
             logger.debug("Cannot handle action '{}' because connection is missing", action);
@@ -622,17 +624,15 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
             logger.debug("Cannot handle action '{}' because AIN is missing", action);
             return;
         }
-        if (duration < 0 || 86400 < duration) {
-            throw new IllegalArgumentException("Duration must not be less than zero or greater than 86400");
-        }
         switch (action) {
-            case MODE_BOOST:
-                fritzBox.setBoostMode(ain,
-                        duration > 0 ? ZonedDateTime.now().plusSeconds(duration).toEpochSecond() : 0);
+            case HEATING_MODE_BOOST:
+                fritzBox.setBoostMode(ain, param > 0 ? ZonedDateTime.now().plusSeconds(param).toEpochSecond() : 0);
                 break;
-            case MODE_WINDOW_OPEN:
-                fritzBox.setWindowOpenMode(ain,
-                        duration > 0 ? ZonedDateTime.now().plusSeconds(duration).toEpochSecond() : 0);
+            case HEATING_MODE_WINDOW_OPEN:
+                fritzBox.setWindowOpenMode(ain, param > 0 ? ZonedDateTime.now().plusSeconds(param).toEpochSecond() : 0);
+                break;
+            case GET_ENERGY_STATS:
+                fritzBox.getEnergyStats((AVMFritzPowerMeterDeviceHandler) this, param);
                 break;
             default:
                 logger.debug("Received unknown action '{}'", action);

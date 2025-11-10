@@ -57,6 +57,27 @@ Z-Wave nodes can have multiple channels corresponding to their capabilities.
 The channels can be linked to items in openHAB to control and monitor the device.
 These channels are dynamically added to the Thing during node initialization; therefore, there is no list of possible channels in this documentation.
 
+### Notification-Virtual Channel
+
+The binding automatically adds a `notification-virtual` channel for endpoints that have both a Notification (Alarm) and a Door Lock command class.
+This virtual channel is designed to provide a unified state update when a notification event occurs.
+It provides the event payload in JSON as a string value.
+A common scenario is using this JSON to determine the userId that unlocked a door lock.
+This channel is added automatically; no manual configuration is required.
+
+## Channel Configuration and Inversion
+
+Channels in the `zwavejs` binding support an **inversion** configuration option.
+This feature allows you to reverse the logical behavior of a channel, which is particularly useful for devices where the default open/close, on/off, or up/down logic does not align with your installation or preferences.
+The following devices and parameters support inversion:
+
+- **Switch, Contact, and Dimmer**: These channels have a single configuration parameter, `inverted`, which reverses the logical state.
+- **RollerShutter**: These channels have two configuration parameters:
+  - `inverted`: Reverses the logical state, similar to the above.
+  - `isUpdownInverted`: Independently inverts the up and down directions.
+
+**note:** Without any inversion, the binding regards 100% as fully open (up position) and 0% is fully closed (down position).
+
 ## Full Example
 
 ### `demo.things` Example

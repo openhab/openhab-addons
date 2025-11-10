@@ -16,8 +16,8 @@
 
   <properties>
     <!-- Remember to check if the fix https://github.com/openhab/openhab-core/pull/4437 still works when upgrading GraalJS -->
-    <graaljs.version>24.2.1</graaljs.version>
-    <ohjs.version>openhab@5.13.0</ohjs.version>
+    <node.version>v22.17.1</node.version>
+    <ohjs.version>openhab@5.14.0</ohjs.version>
   </properties>
 
   <dependencies>
@@ -25,7 +25,7 @@
     <dependency>
       <groupId>org.openhab.osgiify</groupId>
       <artifactId>org.graalvm.polyglot.polyglot</artifactId>
-      <version>${graaljs.version}</version>
+      <version>${graalvm.version}</version>
       <!-- provided as OSGi bundle at runtime, available only at compile time -->
       <scope>provided</scope>
     </dependency>
@@ -33,7 +33,7 @@
     <dependency>
       <groupId>org.openhab.osgiify</groupId>
       <artifactId>org.graalvm.js.js-scriptengine</artifactId>
-      <version>${graaljs.version}</version>
+      <version>${graalvm.version}</version>
       <!-- provided as OSGi bundle at runtime, available only at compile time -->
       <scope>provided</scope>
     </dependency>
@@ -45,9 +45,9 @@
       <plugin>
         <groupId>com.github.eirslett</groupId>
         <artifactId>frontend-maven-plugin</artifactId>
-        <version>1.15.1</version>
+        <version>1.15.4</version>
         <configuration>
-          <nodeVersion>v22.13.1</nodeVersion>
+          <nodeVersion>${node.version}</nodeVersion>
           <workingDirectory>target/js</workingDirectory>
         </configuration>
         <executions>
@@ -65,7 +65,7 @@
             </goals>
             <configuration>
               <!--suppress UnresolvedMavenProperty -->
-              <arguments>install ${ohjs.version} webpack@^5.101.3 webpack-cli@^5.1.4 --prefix .</arguments>
+              <arguments>install ${ohjs.version} webpack@^5.101.3 webpack-cli@^6.0.1 --prefix .</arguments>
               <!-- webpack & webpack-cli versions should match to the ones from openhab-js -->
             </configuration>
           </execution>

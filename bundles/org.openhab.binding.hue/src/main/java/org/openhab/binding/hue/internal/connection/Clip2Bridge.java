@@ -16,11 +16,18 @@ import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.Closeable;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -28,8 +35,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
-import java.util.Properties;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
@@ -41,6 +46,8 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
 import javax.ws.rs.core.MediaType;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -82,7 +89,7 @@ import org.openhab.binding.hue.internal.exceptions.ApiException;
 import org.openhab.binding.hue.internal.exceptions.HttpUnauthorizedException;
 import org.openhab.binding.hue.internal.handler.Clip2BridgeHandler;
 import org.openhab.core.io.net.http.HttpClientFactory;
-import org.openhab.core.io.net.http.HttpUtil;
+import org.openhab.core.io.net.http.TrustAllTrustManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -433,16 +440,19 @@ public class Clip2Bridge implements Closeable {
      * forced to wait if the session is being created via its single thread access 'write' lock.
      */
     private class SessionSynchronizer implements AutoCloseable {
-        private final Optional<Lock> lockOptional;
+        private final @Nullable Lock lock;
 
         SessionSynchronizer(boolean requireExclusiveAccess) throws InterruptedException {
             Lock lock = requireExclusiveAccess ? sessionUseCreateLock.writeLock() : sessionUseCreateLock.readLock();
-            lockOptional = lock.tryLock(TIMEOUT_SECONDS, TimeUnit.SECONDS) ? Optional.of(lock) : Optional.empty();
+            this.lock = lock.tryLock(TIMEOUT_SECONDS, TimeUnit.SECONDS) ? lock : null;
         }
 
         @Override
         public void close() {
-            lockOptional.ifPresent(lock -> lock.unlock());
+            Lock lock = this.lock;
+            if (lock != null) {
+                lock.unlock();
+            }
         }
     }
 
@@ -469,8 +479,8 @@ public class Clip2Bridge implements Closeable {
      * <p>
      * The Hue Bridge can get confused if they receive too many HTTP requests in a short period of time (e.g. on start
      * up), or if too many HTTP sessions are opened at the same time, which cause it to respond with an HTML error page.
-     * So this class a) waits to acquire permitCount (or no more than MAX_CONCURRENT_SESSIONS) stream permits, and b)
-     * throttles the requests to a maximum of one per REQUEST_INTERVAL_MILLISECS.
+     * So this class a) waits to acquire permitCount (or no more than {@link #MAX_CONCURRENT_STREAMS}) stream permits,
+     * and b) throttles the requests to a maximum of one per {@link #REQUEST_INTERVAL}.
      */
     private class Throttler implements AutoCloseable {
         private final int permitCount;
@@ -482,13 +492,14 @@ public class Clip2Bridge implements Closeable {
         Throttler(int permitCount) throws InterruptedException {
             this.permitCount = permitCount;
             streamMutex.acquire(permitCount);
-            long delay;
+            Duration delay;
             synchronized (Clip2Bridge.this) {
+                Instant lastRequestTime = Clip2Bridge.this.lastRequestTime;
                 Instant now = Instant.now();
-                delay = Objects.requireNonNull(lastRequestTime
-                        .map(t -> Math.max(0, Duration.between(now, t).toMillis() + REQUEST_INTERVAL_MILLISECS))
-                        .orElse(0L));
-                lastRequestTime = Optional.of(now.plusMillis(delay));
+                delay = lastRequestTime != null ? REQUEST_INTERVAL.minus(Duration.between(lastRequestTime, now))
+                        : Duration.ZERO;
+                delay = delay.isNegative() ? Duration.ZERO : delay;
+                Clip2Bridge.this.lastRequestTime = now.plus(delay);
             }
             Thread.sleep(delay);
         }
@@ -514,7 +525,7 @@ public class Clip2Bridge implements Closeable {
 
     public static final int TIMEOUT_SECONDS = 10;
     private static final int CHECK_ALIVE_SECONDS = 300;
-    private static final int REQUEST_INTERVAL_MILLISECS = 50;
+    private static final Duration REQUEST_INTERVAL = Duration.ofMillis(50);
     private static final int MAX_CONCURRENT_STREAMS = 3;
 
     private static final ResourceReference BRIDGE = new ResourceReference().setType(ResourceType.BRIDGE);
@@ -529,11 +540,46 @@ public class Clip2Bridge implements Closeable {
      * @throws NumberFormatException if the bridge firmware version is invalid.
      */
     public static boolean isClip2Supported(String hostName) throws IOException {
-        String response;
-        Properties headers = new Properties();
-        headers.put(HttpHeader.ACCEPT, MediaType.APPLICATION_JSON);
-        response = HttpUtil.executeUrl("GET", String.format(FORMAT_URL_CONFIG, hostName), headers, null, null,
-                TIMEOUT_SECONDS * 1000);
+        String response = null;
+        HttpURLConnection httpConnection = null;
+        HttpsURLConnection httpsConnection = null;
+        try {
+            URL url = new URI(String.format(FORMAT_URL_CONFIG, hostName)).toURL();
+            httpConnection = (HttpURLConnection) url.openConnection();
+            /*
+             * TODO we manually check if the bridge redirects to HTTPS, and if so, since v3 bridges
+             * currently don't provide a full certificate chain we force use of a TrustAllTrustManager
+             */
+            httpConnection.setInstanceFollowRedirects(false);
+            int status = httpConnection.getResponseCode();
+            if (status == 301 || status == 302) {
+                String redirectUrl = httpConnection.getHeaderField("Location");
+                if (redirectUrl != null && redirectUrl.startsWith("https://")) {
+                    SSLContext sslContext = SSLContext.getInstance("TLS");
+                    sslContext.init(null, new TrustAllTrustManager[] { TrustAllTrustManager.getInstance() }, null);
+                    httpsConnection = (HttpsURLConnection) new URI(redirectUrl).toURL().openConnection();
+                    httpsConnection.setSSLSocketFactory(sslContext.getSocketFactory());
+                    try (InputStream in = httpsConnection.getInputStream()) {
+                        response = new String(in.readAllBytes(), StandardCharsets.UTF_8);
+                    }
+                }
+            }
+            if (response == null) {
+                try (InputStream in = httpConnection.getInputStream()) {
+                    response = new String(in.readAllBytes(), StandardCharsets.UTF_8);
+                }
+            }
+        } catch (NoSuchAlgorithmException | KeyManagementException | URISyntaxException e) {
+            throw new IOException("isClip2Supported() error connecting to bridge", e);
+        } finally {
+            if (httpConnection != null) {
+                httpConnection.disconnect();
+            }
+            if (httpsConnection != null) {
+                httpsConnection.disconnect();
+            }
+        }
+
         BridgeConfig config = new Gson().fromJson(response, BridgeConfig.class);
         if (Objects.nonNull(config)) {
             String swVersion = config.swversion;
@@ -567,7 +613,7 @@ public class Clip2Bridge implements Closeable {
     private boolean recreatingSession;
     private boolean closing;
     private State onlineState = State.CLOSED;
-    private Optional<Instant> lastRequestTime = Optional.empty();
+    private @Nullable Instant lastRequestTime;
     private Instant sessionExpireTime = Instant.MAX;
 
     private @Nullable Session http2Session;

@@ -27,6 +27,7 @@ import org.openhab.core.thing.internal.ThingImpl;
  * The {@link ForecastSolarPlaneMock} mocks Plane Handler for solar.forecast
  *
  * @author Bernd Weymann - Initial contribution
+ * @author Bernd Weymann - Constructor correction
  */
 @NonNullByDefault
 public class ForecastSolarPlaneMock extends ForecastSolarPlaneHandler {

@@ -5,9 +5,10 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<bridge-type id="fs-site">
-		<label>ForecastSolar Site</label>
-		<description>Site location for Forecast Solar</description>
+		<label>Forecast Solar Site</label>
+		<description>Site location for forecast solar public subscription</description>
 		<semantic-equipment-tag>WebService</semantic-equipment-tag>
+
 		<channels>
 			<channel id="power-estimate" typeId="power-estimate"/>
 			<channel id="energy-estimate" typeId="energy-estimate"/>

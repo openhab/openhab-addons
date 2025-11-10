@@ -32,6 +32,8 @@ public class Inverter {
     private String gateSerialNo = "";
     private String id = "";
     private String alias = "";
+    private String plantId = "";
+    private String plantName = "";
     private int refresh;
 
     public void setUID(String uid) {
@@ -58,6 +60,14 @@ public class Inverter {
         this.alias = alias;
     }
 
+    public void setPlantId(String plantId) {
+        this.plantId = plantId;
+    }
+
+    public void setPlantName(String plantName) {
+        this.plantName = plantName;
+    }
+
     public void setRefresh(int refresh) {
         this.refresh = refresh;
     }
@@ -68,6 +78,14 @@ public class Inverter {
 
     public String getToken() {
         return this.token;
+    }
+
+    public String getPlantId() {
+        return this.plantId;
+    }
+
+    public String getPlantName() {
+        return this.plantName;
     }
 
     public String getSerialNo() {

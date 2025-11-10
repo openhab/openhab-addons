@@ -106,21 +106,32 @@ public abstract class AVMFritzBaseModel implements BatteryModel {
     private @Nullable SimpleOnOffModel simpleOnOffUnit;
 
     @XmlElement(name = "powermeter")
-    private PowerMeterModel powermeterModel;
+    private PowerMeterModel powerMeterModel;
 
     @XmlElement(name = "hkr")
     private HeatingModel heatingModel;
+
+    @XmlElement(name = "levelcontrol")
+    private @Nullable LevelControlModel levelControlModel;
+
+    public SwitchModel getSwitch() {
+        return switchModel;
+    }
+
+    public void setSwitch(SwitchModel switchModel) {
+        this.switchModel = switchModel;
+    }
 
     public @Nullable SimpleOnOffModel getSimpleOnOffUnit() {
         return simpleOnOffUnit;
     }
 
-    public PowerMeterModel getPowermeter() {
-        return powermeterModel;
+    public PowerMeterModel getPowerMeter() {
+        return powerMeterModel;
     }
 
-    public void setPowermeter(PowerMeterModel powermeter) {
-        this.powermeterModel = powermeter;
+    public void setPowerMeter(PowerMeterModel powerMeter) {
+        this.powerMeterModel = powerMeter;
     }
 
     public HeatingModel getHkr() {
@@ -131,12 +142,12 @@ public abstract class AVMFritzBaseModel implements BatteryModel {
         this.heatingModel = heatingModel;
     }
 
-    public SwitchModel getSwitch() {
-        return switchModel;
+    public @Nullable LevelControlModel getLevelControlModel() {
+        return levelControlModel;
     }
 
-    public void setSwitch(SwitchModel switchModel) {
-        this.switchModel = switchModel;
+    public void setLevelcontrol(LevelControlModel levelControlModel) {
+        this.levelControlModel = levelControlModel;
     }
 
     public String getIdentifier() {
@@ -179,7 +190,7 @@ public abstract class AVMFritzBaseModel implements BatteryModel {
         return (bitmask & HUMIDITY_SENSOR_BIT) > 0;
     }
 
-    public boolean isPowermeter() {
+    public boolean isPowerMeter() {
         return (bitmask & POWERMETER_BIT) > 0;
     }
 
@@ -256,7 +267,7 @@ public abstract class AVMFritzBaseModel implements BatteryModel {
                 .append(",isHANFUNAlarmSensor=").append(isHANFUNAlarmSensor()).append(",isButton=").append(isButton())
                 .append(",isSwitchableOutlet=").append(isSwitchableOutlet()).append(",isTemperatureSensor=")
                 .append(isTemperatureSensor()).append(",isHumiditySensor=").append(isHumiditySensor())
-                .append(",isPowermeter=").append(isPowermeter()).append(",isDectRepeater=").append(isDectRepeater())
+                .append(",isPowermeter=").append(isPowerMeter()).append(",isDectRepeater=").append(isDectRepeater())
                 .append(",isHeatingThermostat=").append(isHeatingThermostat()).append(",hasMicrophone=")
                 .append(hasMicrophone()).append(",isHANFUNUnit=").append(isHANFUNUnit()).append(",isHANFUNOnOff=")
                 .append(isHANFUNOnOff()).append(",isDimmableLight=").append(isDimmableLight()).append(",isColorLight=")
@@ -265,7 +276,8 @@ public abstract class AVMFritzBaseModel implements BatteryModel {
                 .append(productName).append(",fwversion=").append(firmwareVersion).append(",present=").append(present)
                 .append(",name=").append(name).append(",battery=").append(getBattery()).append(",batterylow=")
                 .append(getBatterylow()).append(",").append(getSwitch()).append(",").append(getSimpleOnOffUnit())
-                .append(",").append(getPowermeter()).append(",").append(getHkr()).append(",").toString();
+                .append(",").append(getPowerMeter()).append(",").append(getHkr()).append(",").append(levelControlModel)
+                .append(",").toString();
     }
 
     public transient boolean isLinked;
