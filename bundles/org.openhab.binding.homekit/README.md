@@ -36,24 +36,30 @@ NOTE: as a general rule, if you create the things via the Inbox, then all of the
 As a general rule `ipAddress` is set by the mDNS auto- discovery process.
 However you can configure it manually if you wish.
 It must match the format `123.123.123.123:4567` representing its IP v4 address and port.
-Child `accessory` Things do not require a `ipAddress`.
-Therefore child things have this parameter preset to `n/a`.
 
 As a general rule, `hostName` is set by the mDNS auto- discovery process.
 However you can configure it manually if you wish.
 It must be the fully qualified host name (e.g. `foobar._hap._tcp.local.` or, if the port is not 0 or 80, `foobar._hap._tcp.local.:1234` ) as found manually via (say) an mDNS discovery app.
-Child `accessory` Things do not require a `hostName`.
-Therefore child things have this parameter preset to `n/a`.
 
 As a general rule, `macAddress` is set by the mDNS auto- discovery process.
 However you can configure it manually if you wish.
 It must be the unique accessory identifier as found manually via (say) an mDNS discovery app.
-Child `accessory` Things do not require a `macAddress`.
-Therefore child things have this parameter preset to `n/a`.
 
 As a general rule, `accessoryID` is set by the mDNS auto- discovery process, or child discovery process.
 However you can configure it manually if you wish.
 It must be the ID of the accessory within the bridge, or `1` if it is a root accessory.
+
+### Thing Configuration for Child Accessories of a Bridge
+
+Child accessories are `accessory` things which are hosted by a bridge.
+Such accessories do not have an own Internet connetion, so all communications are handled by the bridge.
+Therefore the following preset values are applied (and changing these values has no impact):
+
+- The only *required* parameter is `accessoryID` so it MUST have the correct value.
+- The `ipAddress` parameter is not used so it is preset to `n/a`.
+- The `hostName` parameter is not used so it is preset to `n/a`.
+- The `macAddress` parameter is not used so it is preset to `n/a`.
+- The `refreshInterval` parameter is not used so it is preset to `60`.
 
 ## Thing Pairing
 

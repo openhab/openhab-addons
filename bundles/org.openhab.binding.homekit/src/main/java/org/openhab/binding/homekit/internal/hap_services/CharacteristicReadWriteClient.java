@@ -48,7 +48,7 @@ public class CharacteristicReadWriteClient {
      * @throws IOException
      * @throws IllegalStateException
      */
-    public String readCharacteristic(String query)
+    public String readCharacteristics(String query)
             throws IOException, InterruptedException, TimeoutException, ExecutionException, IllegalStateException {
         String endpoint = "%s?id=%s".formatted(ENDPOINT_CHARACTERISTICS, query);
         byte[] result = ipTransport.get(endpoint, CONTENT_TYPE_HAP);
@@ -66,7 +66,7 @@ public class CharacteristicReadWriteClient {
      * @throws IOException
      * @throws IllegalStateException
      */
-    public String writeCharacteristic(String json)
+    public String writeCharacteristics(String json)
             throws IOException, InterruptedException, TimeoutException, ExecutionException, IllegalStateException {
         byte[] result = ipTransport.put(ENDPOINT_CHARACTERISTICS, CONTENT_TYPE_HAP,
                 json.getBytes(StandardCharsets.UTF_8));

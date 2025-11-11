@@ -27,8 +27,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -55,6 +57,7 @@ import org.openhab.binding.homekit.internal.session.EventListener;
 import org.openhab.binding.homekit.internal.transport.IpTransport;
 import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
@@ -81,6 +84,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
 
     private static final int MIN_CONNECTION_ATTEMPT_DELAY_SECONDS = 2;
     private static final int MAX_CONNECTION_ATTEMPT_DELAY_SECONDS = 600;
+    private static final int MANUAL_REFRESH_DELAY_SECONDS = 3;
 
     private static final Duration HANDLER_INITIALIZATION_TIMEOUT = Duration.ofSeconds(10);
 
@@ -94,17 +98,63 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
     private @Nullable ScheduledFuture<?> connectionAttemptTask;
     private @Nullable CharacteristicReadWriteClient rwService;
     private @Nullable IpTransport ipTransport;
+    private @Nullable ScheduledFuture<?> refreshTask;
+    private @Nullable Future<?> manualRefreshTask;
 
     private @NonNullByDefault({}) Long accessoryId;
 
     protected static final Gson GSON = new Gson();
 
-    protected final List<Characteristic> eventedCharacteristics = new ArrayList<>();
+    protected final Map<ChannelUID, Characteristic> eventedCharacteristics = new ConcurrentHashMap<>();
+    protected final Map<ChannelUID, Characteristic> polledCharacteristics = new ConcurrentHashMap<>();
+
     protected final HomekitTypeProvider typeProvider;
     protected final TranslationProvider i18nProvider;
     protected final Bundle bundle;
 
     protected boolean isChildAccessory = false;
+    protected final Throttler throttler = new Throttler();
+
+    /**
+     * A helper class that runs a {@link Callable} and enforces a minimum delay between calls.
+     * This is to avoid overwhelming accessories with too many requests in a short time.
+     */
+    private class Throttler {
+        private static final Duration MIN_INTERVAL = Duration.ofSeconds(2);
+        private @Nullable Instant notBeforeInstant = null;
+
+        /**
+         * Calls the given task. The method is synchronized to ensure that only one HTTP call is
+         * executed at a time. It calculates the required delay based on the last call time and
+         * sleeps if necessary. And it updates the notBeforeInstant after each call to enforce the
+         * delay. It initializes notBeforeInstant if required.
+         *
+         * @param task the task to be called
+         * @return the String result of the task
+         * @throws Exception the compiler us to handle any exception, but will actually be more specific
+         */
+        public synchronized String call(Callable<String> task) throws Exception {
+            try {
+                Instant next = notBeforeInstant;
+                if (next == null) {
+                    notBeforeInstant = next = Instant.now().plus(MIN_INTERVAL);
+                }
+                long delay = Duration.between(Instant.now(), next).toMillis();
+                if (delay > 0) {
+                    delay = Math.min(delay, MIN_INTERVAL.toMillis());
+                    logger.trace("Throttling call for {} ms to respect minimum interval", delay);
+                    Thread.sleep(delay);
+                }
+                return task.call();
+            } finally {
+                notBeforeInstant = Instant.now().plus(MIN_INTERVAL);
+            }
+        }
+
+        public void reset() {
+            notBeforeInstant = null;
+        }
+    }
 
     public HomekitBaseAccessoryHandler(Thing thing, HomekitTypeProvider typeProvider, HomekitKeyStore keyStore,
             TranslationProvider translationProvider, Bundle bundle) {
@@ -117,6 +167,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
 
     @Override
     public void dispose() {
+        cancelRefreshTasks();
         try {
             enableEventsOrThrow(false);
         } catch (Exception e) {
@@ -142,15 +193,15 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
     private void fetchAccessories() {
         try {
             accessories.clear();
-            String json = new String(getIpTransport().get(ENDPOINT_ACCESSORIES, CONTENT_TYPE_HAP),
-                    StandardCharsets.UTF_8);
+            String json = throttler.call(() -> new String(getIpTransport().get(ENDPOINT_ACCESSORIES, CONTENT_TYPE_HAP),
+                    StandardCharsets.UTF_8));
             Accessories acc0 = GSON.fromJson(json, Accessories.class);
             if (acc0 instanceof Accessories acc1 && acc1.accessories instanceof List<Accessory> acc2) {
                 accessories.putAll(acc2.stream().filter(a -> Objects.nonNull(a.aid))
                         .collect(Collectors.toMap(a -> a.aid, Function.identity())));
             }
-            logger.debug("Fetched {} accessories", accessories.size());
-            scheduler.submit(this::processAccessories);
+            logger.debug("{} fetched {} accessories", thing.getUID(), accessories.size());
+            scheduler.submit(this::processDependentThings);
         } catch (Exception e) {
             if (isCommunicationException(e)) {
                 // communication exception; log at debug and try to reconnect
@@ -165,22 +216,22 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
     }
 
     /**
-     * Processes the loaded accessories by calling the overloaded abstract methods, then enables eventing,
-     * and finally sets thing as online.
+     * Waits for all dependent accessory things to be initialized, then processes them by calling the
+     * overloaded abstract 'onRootAccessoriesLoaded' methods, and finally calls the 'onRootThingOnline'
+     * methods (and its eventual overloaded implementations).
      */
-    private void processAccessories() {
+    private void processDependentThings() {
         Instant timeout = Instant.now().plus(HANDLER_INITIALIZATION_TIMEOUT);
-        while (!checkHandlersInitialized() && Instant.now().isBefore(timeout)) {
+        while (!dependentThingsInitialized() && Instant.now().isBefore(timeout)) {
             try {
                 Thread.sleep(100);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
-                return; // shutting down
+                return; // shutting down; exit immediately
             }
         }
-        onAccessoriesLoaded();
-        onRootHandlerReady();
-        onThingOnline();
+        onRootThingAccessoriesLoaded();
+        onRootThingOnline();
     }
 
     /**
@@ -201,6 +252,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
 
     @Override
     public void handleRemoval() {
+        cancelRefreshTasks();
         if (isChildAccessory) {
             updateStatus(ThingStatus.REMOVED);
         } else {
@@ -260,6 +312,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
 
             getIpTransport().setSessionKeys(client.verify());
             rwService = new CharacteristicReadWriteClient(getIpTransport());
+            throttler.reset();
 
             logger.debug("Restored pairing was verified for {}", thing.getUID());
             scheduler.schedule(this::fetchAccessories, MIN_CONNECTION_ATTEMPT_DELAY_SECONDS, TimeUnit.SECONDS);
@@ -349,17 +402,9 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
     /**
      * Gets the read/write service.
      *
-     * @throws IllegalAccessException if this is a child accessory or if the service is not initialized
      * @return the CharacteristicReadWriteClient
      */
-    protected CharacteristicReadWriteClient getRwService() throws IllegalAccessException {
-        if (isChildAccessory) {
-            throw new IllegalAccessException("Child accessories must delegate to bridge read/write service");
-        }
-        CharacteristicReadWriteClient rwService = this.rwService;
-        if (rwService == null) {
-            throw new IllegalAccessException("Read/write service not initialized");
-        }
+    protected @Nullable CharacteristicReadWriteClient getRwService() {
         return rwService;
     }
 
@@ -566,7 +611,8 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
     }
 
     /**
-     * Wrapper to enable or disable events with exception handling.
+     * Wrapper to enable or disable eventing for members of the eventedCharacteristics list of the
+     * accessory or its children, with exception handling.
      *
      * @param enable true to enable events, false to disable
      */
@@ -589,63 +635,212 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
     }
 
     /**
-     * Inner method to enable or disable events members of the eventedCharacteristics list.
-     * All exceptions are thrown upwards to the caller.
+     * Inner method to enable or disable eventing for members of the eventedCharacteristics list of the
+     * accessory or its children. All exceptions are thrown upwards to the caller.
      *
      * @param enable true to enable events, false to disable
-     * @throws IllegalStateException if this is a child accessory or if the read/write service is not initialized
-     * @throws IllegalAccessException if this is a child accessory
-     * @throws IOException if there is a communication error
-     * @throws InterruptedException if the operation is interrupted
-     * @throws TimeoutException if the operation times out
-     * @throws ExecutionException if there is an execution error
+     * @throws Exception the compiler requires us to handle any error; but it will actually be one of the following:
+     *             IllegalStateException if this is a child accessory or if the read/write service is not initialized,
+     *             IllegalAccessException if this is a child accessory,
+     *             IOException if there is a communication error,
+     *             InterruptedException if the operation is interrupted,
+     *             TimeoutException if the operation times out,
+     *             ExecutionException if there is an execution error
      */
-    private void enableEventsOrThrow(boolean enable) throws IllegalStateException, IllegalAccessException, IOException,
-            InterruptedException, TimeoutException, ExecutionException {
+    private void enableEventsOrThrow(boolean enable) throws Exception {
         if (isChildAccessory) {
             logger.warn("Forbidden to enable/disable events on child accessory '{}'", thing.getUID());
             return;
         }
         Service service = new Service();
         service.characteristics = new ArrayList<>();
-        service.characteristics.addAll(eventedCharacteristics.stream().map(characteristic -> {
-            characteristic.ev = enable;
-            return characteristic;
+        service.characteristics.addAll(getEventedCharacteristics().values().stream().map(cxx -> {
+            cxx.ev = enable;
+            return cxx;
         }).toList());
-        if (!service.characteristics.isEmpty()) {
-            getRwService().writeCharacteristic(GSON.toJson(service));
-            logger.debug("Eventing {}abled for {} channels", enable ? "en" : "dis", service.characteristics.size());
+        if (service.characteristics.isEmpty()) {
+            return;
+        }
+        final CharacteristicReadWriteClient rwService = this.rwService;
+        if (rwService == null) {
+            throw new IllegalStateException("Read/write service not initialized");
+        }
+        throttler.call(() -> rwService.writeCharacteristics(GSON.toJson(service)));
+        logger.debug("Eventing {}abled for {} channels", enable ? "en" : "dis", service.characteristics.size());
+    }
+
+    /**
+     * Polls all characteristics in the polledCharacteristics list of the accessory or its children.
+     * Called periodically by the refresh task and on-demand when RefreshType.REFRESH is called.
+     */
+    private synchronized void refresh() {
+        List<String> queries = getPolledCharacteristics().values().stream().filter(c -> c.iid != null && c.aid != null)
+                .map(c -> "%s.%s".formatted(c.aid, c.iid)).toList();
+        if (queries.isEmpty()) {
+            return;
+        }
+        final CharacteristicReadWriteClient rwService = this.rwService;
+        if (rwService == null) {
+            throw new IllegalStateException("Read/write service not initialized");
+        }
+        try {
+            String json = throttler.call(() -> rwService.readCharacteristics(String.join(",", queries)));
+            onEvent(json);
+        } catch (Exception e) {
+            if (isCommunicationException(e)) {
+                // communication exception; log at debug and try to reconnect
+                logger.debug("Communication error '{}' polling accessories, reconnecting..", e.getMessage());
+                scheduleConnectionAttempt();
+            } else {
+                // other exception; log at warn and don't try to reconnect
+                logger.warn("Unexpected error '{}' polling accessories", e.getMessage());
+            }
+            logger.debug("Stack trace", e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    i18nProvider.getText(bundle, "error.polling-error", "Polling error", null));
         }
     }
 
     /**
-     * Checks if all handler instances are initialized.
-     * Subclasses override this to implement the waiting logic.
+     * Checks if all dependent accessory things have the reached status UNKNOWN, OFFLINE, or ONLINE.
+     * Subclasses MUST override this to perform the check.
      */
-    protected abstract boolean checkHandlersInitialized();
+    protected abstract boolean dependentThingsInitialized();
 
     /**
      * Called when the root thing has finished loading the accessories.
-     * Subclasses override this to perform any processing required.
+     * Subclasses MUST override this to perform any extra processing required.
      */
-    protected abstract void onAccessoriesLoaded();
+    protected abstract void onRootThingAccessoriesLoaded();
 
     /**
-     * Called when the root handler is fully online.
-     * Subclasses override this to perform any processing required.
+     * Gets the evented characteristics list for this accessory or its children.
+     * Subclasses MUST override this to perform any extra processing required.
+     *
+     * @return map of channel UID to characteristic
      */
-    protected abstract void onRootHandlerReady();
+    protected abstract Map<ChannelUID, Characteristic> getEventedCharacteristics();
+
+    /**
+     * Gets the polled characteristics list for this accessory or its children.
+     * Subclasses MUST override this to perform any extra processing required.
+     *
+     * @return map of channel UID to characteristic
+     */
+    protected abstract Map<ChannelUID, Characteristic> getPolledCharacteristics();
 
     @Override
-    public abstract void onEvent(String jsonContent);
+    public abstract void onEvent(String json);
 
     /**
-     * Called when the thing is fully online.
-     * Enables eventing and updates the thing status to ONLINE.
-     * Subclasses override this to perform any extra processing required.
+     * Called when the root thing is fully online. Updates the thing status to ONLINE. And if the thing
+     * is not a child, enables eventing,and starts the refresh task.
+     * Subclasses MAY override this to perform any extra processing required.
      */
-    protected void onThingOnline() {
-        enableEvents(true);
+    protected void onRootThingOnline() {
         updateStatus(ThingStatus.ONLINE);
+        if (!isChildAccessory) {
+            enableEvents(true);
+            startRootThingRefreshTask();
+        }
+    }
+
+    /**
+     * Called when the root thing handler has been initialized, the pairing verified, the accessories
+     * loaded, and the channels and properties created. Sets up a scheduled task to periodically
+     * refresh the state of the accessory.
+     */
+    private void startRootThingRefreshTask() {
+        if (getConfig().get(CONFIG_REFRESH_INTERVAL) instanceof Object refreshInterval) {
+            try {
+                int refreshIntervalSeconds = Integer.parseInt(refreshInterval.toString());
+                if (refreshIntervalSeconds > 0) {
+                    ScheduledFuture<?> task = refreshTask;
+                    if (task == null || task.isCancelled() || task.isDone()) {
+                        refreshTask = scheduler.scheduleWithFixedDelay(this::refresh, refreshIntervalSeconds,
+                                refreshIntervalSeconds, TimeUnit.SECONDS);
+                    }
+                }
+            } catch (NumberFormatException e) {
+                // logged below
+            }
+        }
+        if (refreshTask == null) {
+            logger.warn("Invalid refresh interval configuration, polling disabled");
+        }
+    }
+
+    /**
+     * Cancels the refresh tasks if either is running.
+     */
+    private void cancelRefreshTasks() {
+        if (refreshTask instanceof ScheduledFuture<?> task) {
+            task.cancel(true);
+        }
+        if (manualRefreshTask instanceof Future<?> task) {
+            task.cancel(true);
+        }
+        refreshTask = null;
+        manualRefreshTask = null;
+    }
+
+    /**
+     * Requests a manual refresh by scheduling a refresh task after a short debounce delay. Defers to the
+     * bridge handler if this is a child accessory. And if a manual refresh task is already scheduled or
+     * running, it does nothing more.
+     */
+    protected void requestManualRefresh() {
+        if (getBridge() instanceof Bridge bridge && bridge.getHandler() instanceof HomekitBridgeHandler bridgeHandler) {
+            bridgeHandler.requestManualRefresh();
+        } else {
+            Future<?> task = manualRefreshTask;
+            if (task == null || task.isDone() || task.isCancelled()) {
+                manualRefreshTask = scheduler.schedule(this::refresh, MANUAL_REFRESH_DELAY_SECONDS, TimeUnit.SECONDS);
+            }
+        }
+    }
+
+    /**
+     * Reads characteristic(s) from the accessory. Defers to the bridge handler if this is a child accessory.
+     *
+     * @param query a comma delimited HTTP query string e.g. "1.10,1.11" for aid 1 and iid 10 and 11
+     * @return JSON response as String
+     * @throws Exception compiler requires us to handle any exception; but actually will be one of the following:
+     *             ExecutionException,
+     *             TimeoutException,
+     *             InterruptedException,
+     *             IOException,
+     *             IllegalStateException
+     */
+    protected String readCharacteristics(String query) throws Exception {
+        CharacteristicReadWriteClient rwService = getBridge() instanceof Bridge bridge
+                && bridge.getHandler() instanceof HomekitBridgeHandler bridgeHandler ? bridgeHandler.getRwService()
+                        : getRwService();
+        if (rwService == null) {
+            throw new IllegalStateException("Read/write service not initialized");
+        }
+        return throttler.call(() -> rwService.readCharacteristics(query));
+    }
+
+    /**
+     * Writes characteristic(s) to the accessory. Defers to the bridge handler if this is a child accessory.
+     *
+     * @param json the JSON to write
+     * @return the JSON response
+     * @throws Exception compiler requires us to handle any exception; but actually will be one of the following:
+     *             ExecutionException,
+     *             TimeoutException,
+     *             InterruptedException,
+     *             IOException,
+     *             IllegalStateException
+     */
+    protected String writeCharacteristics(String json) throws Exception {
+        CharacteristicReadWriteClient rwService = getBridge() instanceof Bridge bridge
+                && bridge.getHandler() instanceof HomekitBridgeHandler bridgeHandler ? bridgeHandler.getRwService()
+                        : getRwService();
+        if (rwService == null) {
+            throw new IllegalStateException("Read/write service not initialized");
+        }
+        return throttler.call(() -> rwService.writeCharacteristics(json));
     }
 }

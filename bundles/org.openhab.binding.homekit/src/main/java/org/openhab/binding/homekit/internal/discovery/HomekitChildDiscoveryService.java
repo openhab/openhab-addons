@@ -74,6 +74,7 @@ public class HomekitChildDiscoveryService extends AbstractThingHandlerDiscoveryS
                         .withProperty(CONFIG_IP_ADDRESS, "n/a") //
                         .withProperty(Thing.PROPERTY_MAC_ADDRESS, "n/a") //
                         .withProperty(CONFIG_ACCESSORY_ID, aid.toString()) //
+                        .withProperty(CONFIG_REFRESH_INTERVAL, "60") //
                         .withRepresentationProperty(CONFIG_ACCESSORY_ID).build());
             }
         });

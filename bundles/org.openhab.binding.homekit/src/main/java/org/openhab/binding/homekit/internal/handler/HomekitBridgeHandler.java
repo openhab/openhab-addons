@@ -13,18 +13,21 @@
 package org.openhab.binding.homekit.internal.handler;
 
 import java.util.Collection;
+import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.homekit.internal.action.HomekitPairingActions;
 import org.openhab.binding.homekit.internal.discovery.HomekitChildDiscoveryService;
+import org.openhab.binding.homekit.internal.dto.Characteristic;
 import org.openhab.binding.homekit.internal.persistence.HomekitKeyStore;
 import org.openhab.binding.homekit.internal.persistence.HomekitTypeProvider;
 import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.binding.BridgeHandler;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
@@ -93,27 +96,16 @@ public class HomekitBridgeHandler extends HomekitBaseAccessoryHandler implements
     }
 
     @Override
-    protected boolean checkHandlersInitialized() {
+    protected boolean dependentThingsInitialized() {
         return getThing().getThings().stream().allMatch(child -> ThingHandlerHelper.isHandlerInitialized(child));
     }
 
     @Override
-    protected void onAccessoriesLoaded() {
+    protected void onRootThingAccessoriesLoaded() {
         createProperties();
         getThing().getThings().forEach(child -> {
-            if (child.getHandler() instanceof HomekitBaseAccessoryHandler childHandler) {
-                childHandler.onAccessoriesLoaded();
-            }
-        });
-    }
-
-    @Override
-    protected void onRootHandlerReady() {
-        eventedCharacteristics.clear();
-        getThing().getThings().forEach(child -> {
-            if (child.getHandler() instanceof HomekitBaseAccessoryHandler childHandler) {
-                childHandler.onRootHandlerReady();
-                eventedCharacteristics.addAll(childHandler.eventedCharacteristics);
+            if (child.getHandler() instanceof HomekitAccessoryHandler childAccessoryHandler) {
+                childAccessoryHandler.onRootThingAccessoriesLoaded();
             }
         });
     }
@@ -121,15 +113,21 @@ public class HomekitBridgeHandler extends HomekitBaseAccessoryHandler implements
     @Override
     public void onEvent(String jsonContent) {
         getThing().getThings().forEach(child -> {
-            if (child.getHandler() instanceof HomekitBaseAccessoryHandler childHandler) {
-                childHandler.onEvent(jsonContent);
+            if (child.getHandler() instanceof HomekitAccessoryHandler childAccessoryHandler) {
+                childAccessoryHandler.onEvent(jsonContent);
             }
         });
     }
 
     @Override
-    protected void onThingOnline() {
-        super.onThingOnline();
+    protected void onRootThingOnline() {
+        updateStatus(ThingStatus.ONLINE);
+        getThing().getThings().forEach(child -> {
+            if (child.getHandler() instanceof HomekitAccessoryHandler childAccessoryHandler) {
+                childAccessoryHandler.onRootThingOnline();
+            }
+        });
+        super.onRootThingOnline();
         HomekitChildDiscoveryService discoveryService = childDiscoveryService;
         if (discoveryService != null) {
             discoveryService.startScan();
@@ -142,5 +140,27 @@ public class HomekitBridgeHandler extends HomekitBaseAccessoryHandler implements
 
     public void unregisterDiscoveryService() {
         childDiscoveryService = null;
+    }
+
+    @Override
+    protected Map<ChannelUID, Characteristic> getEventedCharacteristics() {
+        eventedCharacteristics.clear();
+        getThing().getThings().forEach(child -> {
+            if (child.getHandler() instanceof HomekitAccessoryHandler childAccessoryHandler) {
+                eventedCharacteristics.putAll(childAccessoryHandler.getPolledCharacteristics());
+            }
+        });
+        return eventedCharacteristics;
+    }
+
+    @Override
+    protected Map<ChannelUID, Characteristic> getPolledCharacteristics() {
+        polledCharacteristics.clear();
+        getThing().getThings().forEach(child -> {
+            if (child.getHandler() instanceof HomekitAccessoryHandler childAccessoryHandler) {
+                polledCharacteristics.putAll(childAccessoryHandler.getPolledCharacteristics());
+            }
+        });
+        return polledCharacteristics;
     }
 }

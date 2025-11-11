@@ -62,6 +62,12 @@
 				<description>ID of the accessory.</description>
 				<advanced>true</advanced>
 			</parameter>
+			<parameter name="refreshInterval" type="integer" unit="s" min="10" required="false">
+				<label>Refresh Interval</label>
+				<description>Interval at which the bridge is polled in sec.</description>
+				<default>60</default>
+				<advanced>true</advanced>
+			</parameter>
 		</config-description>
 	</bridge-type>
 

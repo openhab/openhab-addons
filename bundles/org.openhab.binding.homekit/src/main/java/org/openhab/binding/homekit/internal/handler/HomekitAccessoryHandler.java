@@ -14,7 +14,6 @@ package org.openhab.binding.homekit.internal.handler;
 
 import static org.openhab.binding.homekit.internal.HomekitBindingConstants.*;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,10 +22,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import javax.measure.Unit;
 import javax.measure.format.MeasurementParseException;
@@ -40,7 +35,6 @@ import org.openhab.binding.homekit.internal.dto.Service;
 import org.openhab.binding.homekit.internal.enums.CharacteristicType;
 import org.openhab.binding.homekit.internal.enums.DataFormatType;
 import org.openhab.binding.homekit.internal.enums.StatusCode;
-import org.openhab.binding.homekit.internal.hap_services.CharacteristicReadWriteClient;
 import org.openhab.binding.homekit.internal.persistence.HomekitKeyStore;
 import org.openhab.binding.homekit.internal.persistence.HomekitTypeProvider;
 import org.openhab.binding.homekit.internal.temporary.LightModel;
@@ -74,6 +68,7 @@ import org.openhab.core.thing.type.ChannelGroupTypeRegistry;
 import org.openhab.core.thing.type.ChannelType;
 import org.openhab.core.thing.type.ChannelTypeRegistry;
 import org.openhab.core.thing.type.ChannelTypeUID;
+import org.openhab.core.thing.util.ThingHandlerHelper;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
@@ -98,8 +93,6 @@ import com.google.gson.JsonPrimitive;
  */
 @NonNullByDefault
 public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
-
-    private static final int INITIAL_DELAY_SECONDS = 2;
 
     // Characteristic types relevant for light model management
     private static final Set<CharacteristicType> LIGHT_MODEL_RELEVANT_TYPES = Set.of(CharacteristicType.HUE,
@@ -128,7 +121,6 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
     private final List<LightModelLink> lightModelLinks = new ArrayList<>();
 
     private @Nullable Channel stopMoveChannel = null; // channel for the stop button (rollershutters)
-    private @Nullable ScheduledFuture<?> refreshTask;
 
     public HomekitAccessoryHandler(Thing thing, HomekitTypeProvider typeProvider,
             ChannelTypeRegistry channelTypeRegistry, ChannelGroupTypeRegistry channelGroupTypeRegistry,
@@ -136,31 +128,6 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
         super(thing, typeProvider, keyStore, i18nProvider, bundle);
         this.channelTypeRegistry = channelTypeRegistry;
         this.channelGroupTypeRegistry = channelGroupTypeRegistry;
-    }
-
-    /**
-     * Called when the thing handler has been initialized, the pairing verified, the accessories loaded,
-     * and the channels and properties created. Sets up a scheduled task to periodically refresh the state
-     * of the accessory.
-     */
-    private void startRefreshTask() {
-        if (getConfig().get(CONFIG_REFRESH_INTERVAL) instanceof Object refreshInterval) {
-            try {
-                int refreshIntervalSeconds = Integer.parseInt(refreshInterval.toString());
-                if (refreshIntervalSeconds > 0) {
-                    ScheduledFuture<?> task = refreshTask;
-                    if (task == null || task.isCancelled() || task.isDone()) {
-                        refreshTask = scheduler.scheduleWithFixedDelay(this::refresh, INITIAL_DELAY_SECONDS,
-                                refreshIntervalSeconds, TimeUnit.SECONDS);
-                    }
-                }
-            } catch (NumberFormatException e) {
-                // logged below
-            }
-        }
-        if (refreshTask == null) {
-            logger.warn("Invalid refresh interval configuration, polling disabled");
-        }
     }
 
     /**
@@ -364,22 +331,24 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
         Map<String, String> properties = new HashMap<>(thing.getProperties()); // keep existing properties
         accessory.buildAndRegisterChannelGroupDefinitions(thing.getUID(), typeProvider, i18nProvider, bundle)
                 .forEach(groupDef -> {
-                    logger.trace("+ChannelGroupDefinition id:{}, typeUID:{}, label:{}, description:{}",
-                            groupDef.getId(), groupDef.getTypeUID(), groupDef.getLabel(), groupDef.getDescription());
+                    logger.trace("{} ChannelGroupDefinition id:{}, typeUID:{}, label:{}, description:{}",
+                            thing.getUID(), groupDef.getId(), groupDef.getTypeUID(), groupDef.getLabel(),
+                            groupDef.getDescription());
 
                     ChannelGroupType channelGroupType = channelGroupTypeRegistry
                             .getChannelGroupType(groupDef.getTypeUID());
                     if (channelGroupType == null) {
-                        logger.warn("Fatal Error: ChannelGroupType '{}' is not registered", groupDef.getTypeUID());
+                        logger.warn("{} fatal error ChannelGroupType '{}' is not registered", thing.getUID(),
+                                groupDef.getTypeUID());
                     } else {
-                        logger.trace("++ChannelGroupType UID:{}, label:{}, category:{}, description:{}",
-                                channelGroupType.getUID(), channelGroupType.getLabel(), channelGroupType.getCategory(),
-                                channelGroupType.getDescription());
+                        logger.trace("{}  ChannelGroupType UID:{}, label:{}, category:{}, description:{}",
+                                thing.getUID(), channelGroupType.getUID(), channelGroupType.getLabel(),
+                                channelGroupType.getCategory(), channelGroupType.getDescription());
 
                         channelGroupType.getChannelDefinitions().forEach(chanDef -> {
                             logger.trace(
-                                    "+++ChannelDefinition id:{}, label:{}, description:{}, channelTypeUID:{}, autoUpdatePolicy:{}, properties:{}",
-                                    chanDef.getId(), chanDef.getLabel(), chanDef.getDescription(),
+                                    "{}   ChannelDefinition id:{}, label:{}, description:{}, channelTypeUID:{}, autoUpdatePolicy:{}, properties:{}",
+                                    thing.getUID(), chanDef.getId(), chanDef.getLabel(), chanDef.getDescription(),
                                     chanDef.getChannelTypeUID(), chanDef.getAutoUpdatePolicy(),
                                     chanDef.getProperties());
 
@@ -388,19 +357,19 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
                                 String name = chanDef.getId();
                                 if (chanDef.getLabel() instanceof String value) {
                                     properties.put(name, value);
-                                    logger.trace("++++Property '{}:{}'", name, value);
+                                    logger.trace("{}    Property '{}:{}'", thing.getUID(), name, value);
                                 }
                             } else {
                                 // this is a real channel
                                 ChannelType channelType = channelTypeRegistry
                                         .getChannelType(chanDef.getChannelTypeUID());
                                 if (channelType == null) {
-                                    logger.warn("Fatal Error: ChannelType '{}' is not registered",
+                                    logger.warn("{} fatal rrror ChannelType '{}' is not registered", thing.getUID(),
                                             chanDef.getChannelTypeUID());
                                 } else {
                                     logger.trace(
-                                            "++++ChannelType category:{}, description:{}, itemType:{}, label:{}, autoUpdatePolicy:{}, itemType:{}, kind:{}, tags:{}, uid:{}, unitHint:{}",
-                                            channelType.getCategory(), channelType.getDescription(),
+                                            "{}    ChannelType category:{}, description:{}, itemType:{}, label:{}, autoUpdatePolicy:{}, itemType:{}, kind:{}, tags:{}, uid:{}, unitHint:{}",
+                                            thing.getUID(), channelType.getCategory(), channelType.getDescription(),
                                             channelType.getItemType(), channelType.getLabel(),
                                             channelType.getAutoUpdatePolicy(), channelType.getItemType(),
                                             channelType.getKind(), channelType.getTags(), channelType.getUID(),
@@ -419,8 +388,8 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
                                     channels.add(channel);
 
                                     logger.trace(
-                                            "+++++Channel acceptedItemType:{}, defaultTags:{}, description:{}, kind:{}, label:{}, properties:{}, uid:{}",
-                                            channel.getAcceptedItemType(), channel.getDefaultTags(),
+                                            "{}     Channel acceptedItemType:{}, defaultTags:{}, description:{}, kind:{}, label:{}, properties:{}, uid:{}",
+                                            thing.getUID(), channel.getAcceptedItemType(), channel.getDefaultTags(),
                                             channel.getDescription(), channel.getKind(), channel.getLabel(),
                                             channel.getProperties(), channel.getUID());
 
@@ -432,7 +401,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
 
         lightModelFinalize(accessory, channels);
         stopMoveFinalize(accessory, channels);
-        eventingFinalize(accessory, channels);
+        eventingPollingFinalize(accessory, channels);
 
         String oldLabel = thing.getLabel();
         String newLabel = oldLabel == null || oldLabel.isEmpty() ? accessory.getAccessoryInstanceLabel() : null;
@@ -448,7 +417,9 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
             Optional.ofNullable(newTag).ifPresent(builder::withSemanticEquipmentTag);
 
             updateThing(builder.build());
-            logger.debug("Updated thing {} channels, {} properties, label {}, tag {}", channels.size(),
+            logger.debug(
+                    "{} updated with {} channels (of which {} polled, {} evented), {} properties, label '{}', tag '{}'",
+                    thing.getUID(), channels.size(), polledCharacteristics.size(), eventedCharacteristics.size(),
                     properties.size(), newLabel, newTag);
         }
     }
@@ -461,17 +432,18 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
             return;
         }
         if (command == RefreshType.REFRESH) {
-            refresh();
+            requestManualRefresh();
+            return;
         }
         try {
             if (command instanceof StopMoveType stopMoveType && StopMoveType.STOP == stopMoveType) {
                 if (stopMoveChannel instanceof Channel stopMoveChannel) {
-                    writeChannel(stopMoveChannel, OnOffType.ON, getRwService());
-                } else if (readChannel(channel, getRwService()) instanceof Command actualPosition) {
-                    writeChannel(channel, actualPosition, getRwService());
+                    writeChannel(stopMoveChannel, OnOffType.ON);
+                } else if (readChannel(channel) instanceof Command actualPosition) {
+                    writeChannel(channel, actualPosition);
                 }
             } else if (channelUID.equals(lightModelClientHSBTypeChannel)) {
-                lightModelHandleCommand(command, getRwService());
+                lightModelHandleCommand(command);
                 if (lightModel instanceof LightModel lightModel) {
                     lightModelLinks.forEach(link -> {
                         switch (link.cxxType) {
@@ -499,7 +471,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
                     });
                 }
             } else {
-                writeChannel(channel, command, getRwService());
+                writeChannel(channel, command);
             }
             return; // success
         } catch (InterruptedException e) {
@@ -526,8 +498,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
         if (isChildAccessory) {
             if (getBridge() instanceof Bridge bridge && bridge.getStatus() == ThingStatus.ONLINE) {
                 scheduler.submit(() -> {
-                    onAccessoriesLoaded();
-                    onRootHandlerReady();
+                    onRootThingAccessoriesLoaded();
                     updateStatus(ThingStatus.ONLINE);
                 });
             } else {
@@ -537,62 +508,13 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
     }
 
     @Override
-    public void handleRemoval() {
-        cancelRefreshTask();
-        super.handleRemoval();
-    }
-
-    @Override
     public void dispose() {
-        cancelRefreshTask();
         lightModel = null;
         lightModelLinks.clear();
         lightModelClientHSBTypeChannel = null;
         eventedCharacteristics.clear();
+        polledCharacteristics.clear();
         super.dispose();
-    }
-
-    /**
-     * Polls the accessory for its current state and updates the corresponding channels.
-     * This method is called periodically by a scheduled executor.
-     */
-    private void refresh() {
-        Long aid = getAccessoryId();
-        List<String> queries = new ArrayList<>();
-        thing.getChannels().stream().forEach(c -> {
-            if (isLinked(c.getUID()) && c.getProperties().get(PROPERTY_IID) instanceof String iid) {
-                queries.add("%s.%s".formatted(aid, iid));
-            }
-        });
-        if (queries.isEmpty()) {
-            return;
-        }
-        try {
-            String json = getRwService().readCharacteristic(String.join(",", queries));
-            updateChannelsFromJson(json);
-            return;
-        } catch (InterruptedException e) {
-            // shutting down; do nothing
-        } catch (Exception e) {
-            if (isCommunicationException(e)) {
-                // communication exception; log at debug and try to reconnect
-                logger.debug("Communication error '{}' polling accessory, reconnecting..", e.getMessage());
-                scheduleConnectionAttempt();
-            } else {
-                // other exception; log at warn and don't try to reconnect
-                logger.warn("Unexpected error '{}' polling accessory", e.getMessage());
-            }
-            logger.debug("Stack trace", e);
-        }
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                i18nProvider.getText(bundle, "error.polling-error", "Polling error", null));
-    }
-
-    private void cancelRefreshTask() {
-        if (refreshTask instanceof ScheduledFuture<?> task) {
-            task.cancel(true);
-        }
-        refreshTask = null;
     }
 
     private @Nullable StateDescription getStateDescription(Channel channel) {
@@ -691,14 +613,14 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
      *
      * @param hsbCommand the HSBType command containing hue, saturation, and brightness
      * @param writer the CharacteristicReadWriteClient to send the command
-     * @throws ExecutionException
-     * @throws TimeoutException
-     * @throws InterruptedException
-     * @throws IOException
-     * @throws IllegalStateException
+     * @throws Exception compiler requires us to handle any exception; but actually will be one of the following:
+     *             ExecutionException,
+     *             TimeoutException,
+     *             InterruptedException,
+     *             IOException,
+     *             IllegalStateException
      */
-    private void lightModelHandleCommand(Command command, CharacteristicReadWriteClient writer)
-            throws IOException, InterruptedException, TimeoutException, ExecutionException, IllegalStateException {
+    private void lightModelHandleCommand(Command command) throws Exception {
         LightModel lightModel = this.lightModel;
         if (lightModel == null) {
             throw new IllegalStateException("Light model is not initialized");
@@ -708,20 +630,20 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
         link = lightModelLinks.stream().filter(e -> CharacteristicType.HUE == e.cxxType).findFirst();
         if (link.isPresent()) {
             QuantityType<Angle> hue = QuantityType.valueOf(lightModel.getHue(), Units.DEGREE_ANGLE);
-            writeChannel(link.get().channel, hue, writer);
+            writeChannel(link.get().channel, hue);
         }
         link = lightModelLinks.stream().filter(e -> CharacteristicType.SATURATION == e.cxxType).findFirst();
         if (link.isPresent()) {
             PercentType saturation = new PercentType(BigDecimal.valueOf(lightModel.getSaturation()));
-            writeChannel(link.get().channel, saturation, writer);
+            writeChannel(link.get().channel, saturation);
         }
         link = lightModelLinks.stream().filter(e -> CharacteristicType.BRIGHTNESS == e.cxxType).findFirst();
         if (link.isPresent() && lightModel.getBrightness(true) instanceof PercentType brightness) {
-            writeChannel(link.get().channel, brightness, writer);
+            writeChannel(link.get().channel, brightness);
         }
         link = lightModelLinks.stream().filter(e -> CharacteristicType.ON == e.cxxType).findFirst();
         if (link.isPresent() && lightModel.getOnOff(true) instanceof OnOffType onOff) {
-            writeChannel(link.get().channel, onOff, writer);
+            writeChannel(link.get().channel, onOff);
         }
     }
 
@@ -787,29 +709,51 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
     }
 
     /**
-     * Identifies evented channels by checking for characteristics with the 'ev' permission.
+     * Finalizes the polled and evented characteristics by identifying which characteristics are linked
+     * and adding them to the polledCharacteristics list, and which subset of those are evented and adding
+     * them also to the eventedCharacteristics list.
      *
      * @param accessory the accessory containing the characteristics
-     * @param channels the list of channels to check
+     * @param channels the list of channels to check for polled and evented characteristics
      */
-    private void eventingFinalize(Accessory accessory, List<Channel> channels) {
+    private void eventingPollingFinalize(Accessory accessory, List<Channel> channels) {
         eventedCharacteristics.clear();
+        polledCharacteristics.clear();
+
+        final Long aid = getAccessoryId();
+        if (aid == null) {
+            return;
+        }
+
         for (Channel channel : channels) {
-            if (isLinked(channel.getUID()) && channel.getProperties().get(PROPERTY_IID) instanceof String iid) {
+            final ChannelUID channelUID = channel.getUID();
+            if (isLinked(channelUID) && channel.getProperties().get(PROPERTY_IID) instanceof String iidProperty) {
+                final Long iid;
+                try {
+                    iid = Long.parseLong(iidProperty);
+                } catch (NumberFormatException e) {
+                    continue; // error will already have been logged elsewhere
+                }
+                nestedLoops: // break marker for nested loops below
                 for (Service service : accessory.services) {
-                    for (Characteristic cxx : service.characteristics) {
-                        if (iid.equals(String.valueOf(cxx.iid)) && cxx.perms instanceof List<String> perms
-                                && perms.contains("ev")) {
-                            Characteristic eventedCxx = new Characteristic();
-                            eventedCxx.iid = Long.parseLong(iid);
-                            eventedCxx.aid = getAccessoryId();
-                            eventedCharacteristics.add(eventedCxx);
+                    for (Characteristic characteristic : service.characteristics) {
+                        if (iid.equals(characteristic.iid)) {
+                            Characteristic entry = new Characteristic();
+                            entry.aid = aid;
+                            entry.iid = iid;
+                            polledCharacteristics.put(channelUID, entry);
+                            if (characteristic.perms instanceof List<String> perms && perms.contains("ev")) {
+                                entry = new Characteristic();
+                                entry.aid = aid;
+                                entry.iid = iid;
+                                eventedCharacteristics.put(channelUID, entry);
+                            }
+                            break nestedLoops; // break from nested loops; i.e. continue to next channel
                         }
                     }
                 }
             }
         }
-        logger.debug("Identified {} evented channels", eventedCharacteristics.size());
     }
 
     /**
@@ -817,21 +761,21 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
      *
      * @param channel the channel to read
      * @return the current state of the channel, or null if not found
-     * @throws ExecutionException
-     * @throws TimeoutException
-     * @throws InterruptedException
-     * @throws IOException
-     * @throws IllegalStateException
+     * @throws Exception compiler requires us to handle any exception; but actually will be one of the following:
+     *             ExecutionException,
+     *             TimeoutException,
+     *             InterruptedException,
+     *             IOException,
+     *             IllegalStateException
      */
-    private synchronized @Nullable State readChannel(Channel channel, CharacteristicReadWriteClient reader)
-            throws IOException, InterruptedException, TimeoutException, ExecutionException, IllegalStateException {
+    private synchronized @Nullable State readChannel(Channel channel) throws Exception {
         Long aid = getAccessoryId();
         String iid = channel.getProperties().get(PROPERTY_IID);
         if (aid == null || iid == null) {
             throw new IllegalStateException(
                     "Missing accessory ID or characteristic IID for channel " + channel.getUID());
         }
-        String jsonResponse = reader.readCharacteristic("%s.%s".formatted(aid, iid));
+        String jsonResponse = readCharacteristics("%s.%s".formatted(aid, iid));
         Service service = GSON.fromJson(jsonResponse, Service.class);
         if (service != null && service.characteristics instanceof List<Characteristic> characteristics) {
             for (Characteristic cxx : characteristics) {
@@ -849,14 +793,14 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
      * @param channel the channel to which the command is sent
      * @param command the command to send
      * @param writer the CharacteristicReadWriteClient to send the command
-     * @throws ExecutionException
-     * @throws TimeoutException
-     * @throws InterruptedException
-     * @throws IOException
-     * @throws IllegalStateException
+     * @throws Exception compiler requires us to handle any exception; but actually will be one of the following:
+     *             ExecutionException,
+     *             TimeoutException,
+     *             InterruptedException,
+     *             IOException,
+     *             IllegalStateException
      */
-    private synchronized void writeChannel(Channel channel, Command command, CharacteristicReadWriteClient writer)
-            throws IOException, InterruptedException, TimeoutException, ExecutionException, IllegalStateException {
+    private synchronized void writeChannel(Channel channel, Command command) throws Exception {
         Long aid = getAccessoryId();
         String iid = channel.getProperties().get(PROPERTY_IID);
         if (aid == null || iid == null) {
@@ -869,7 +813,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
         characteristic.iid = Long.parseLong(iid);
         characteristic.value = commandToJsonPrimitive(command, channel);
         service.characteristics = List.of(characteristic);
-        String response = writer.writeCharacteristic(GSON.toJson(service));
+        String response = writeCharacteristics(GSON.toJson(service));
         Service serviceResponse = GSON.fromJson(response, Service.class); // check for errors
         if (serviceResponse != null
                 && serviceResponse.characteristics instanceof List<Characteristic> characteristics) {
@@ -940,43 +884,93 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
         return super.getIpTransport();
     }
 
-    /**
-     * Override method to delegate to the bridge read/write service if we are a child accessory.
-     *
-     * @return own CharacteristicReadWriteClient service or bridge service if we are a child.
-     * @throws IllegalAccessException if access to the service is denied.
-     */
     @Override
-    protected CharacteristicReadWriteClient getRwService() throws IllegalAccessException {
-        if (isChildAccessory) {
-            if (getBridge() instanceof Bridge bridge
-                    && bridge.getHandler() instanceof HomekitBridgeHandler bridgeHandler) {
-                return bridgeHandler.getRwService();
-            } else {
-                throw new IllegalAccessException("Cannot access bridge read/write service");
-            }
-        }
-        return super.getRwService();
+    protected boolean dependentThingsInitialized() {
+        return ThingHandlerHelper.isHandlerInitialized(thing); // no children; return own status
     }
 
     @Override
-    protected boolean checkHandlersInitialized() {
-        return isInitialized();
-    }
-
-    @Override
-    protected void onAccessoriesLoaded() {
+    protected void onRootThingAccessoriesLoaded() {
         createProperties();
         createChannels();
     }
 
     @Override
-    protected void onRootHandlerReady() {
-        startRefreshTask();
+    public void onEvent(String json) {
+        updateChannelsFromJson(json);
+    }
+
+    /**
+     * When a channel is linked, check if it corresponds to a characteristic in this accessory.
+     * If so, add it to the polledCharacteristics and eventedCharacteristics maps as appropriate.
+     */
+    @Override
+    public void channelLinked(ChannelUID channelUID) {
+        try {
+            if (polledCharacteristics.containsKey(channelUID)) {
+                return;
+            }
+            final Channel channel = thing.getChannel(channelUID);
+            if (channel == null) {
+                return; // OH core ensures this does not happen
+            }
+            final Long aid = getAccessoryId();
+            if (aid == null) {
+                return; // error will already have been logged elsewhere
+            }
+            final Accessory accessory = getAccessories().get(aid);
+            if (accessory == null) {
+                return; // error will already have been logged elsewhere
+            }
+            final String iidProperty = channel.getProperties().get(PROPERTY_IID);
+            if (iidProperty == null) {
+                return; // error will already have been logged elsewhere
+            }
+            final Long iid;
+            try {
+                iid = Long.parseLong(iidProperty);
+            } catch (NumberFormatException e) {
+                return; // error will already have been logged elsewhere
+            }
+            for (Service service : accessory.services) {
+                for (Characteristic characteristic : service.characteristics) {
+                    if (iid.equals(characteristic.iid)) {
+                        Characteristic entry = new Characteristic();
+                        entry.aid = aid;
+                        entry.iid = iid;
+                        polledCharacteristics.put(channelUID, entry);
+                        if (characteristic.perms instanceof List<String> perms && perms.contains("ev")) {
+                            entry = new Characteristic();
+                            entry.aid = aid;
+                            entry.iid = iid;
+                            eventedCharacteristics.put(channelUID, entry);
+                        }
+                        return; // unique match found; return directly
+                    }
+                }
+            }
+        } finally {
+            super.channelLinked(channelUID);
+        }
+    }
+
+    /**
+     * When a channel is unlinked, remove it from the polledCharacteristics and eventedCharacteristics maps.
+     */
+    @Override
+    public void channelUnlinked(ChannelUID channelUID) {
+        eventedCharacteristics.remove(channelUID);
+        polledCharacteristics.remove(channelUID);
+        super.channelUnlinked(channelUID);
     }
 
     @Override
-    public void onEvent(String json) {
-        updateChannelsFromJson(json);
+    protected Map<ChannelUID, Characteristic> getEventedCharacteristics() {
+        return eventedCharacteristics;
+    }
+
+    @Override
+    protected Map<ChannelUID, Characteristic> getPolledCharacteristics() {
+        return polledCharacteristics;
     }
 }
