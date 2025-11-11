@@ -63,6 +63,7 @@ public class GatewayPayloadParserTests {
         assertEquals(101133, parsed.measurement.getPressure());
         assertEquals(0xe1, parsed.measurement.getDataFormat());
         assertEquals(44.46, parsed.measurement.getHumidity());
+        assertEquals(832, parsed.measurement.getCo2());
         assertEquals(1.0, parsed.measurement.getPm1());
         assertEquals(2.3, parsed.measurement.getPm25());
         assertEquals(3.2, parsed.measurement.getPm4());
