@@ -60,6 +60,8 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonSyntaxException;
 
+import fi.tkgwf.ruuvi.common.utils.MeasurementValueCalculator;
+
 /**
  * The {@link RuuviHandler} is responsible updating RuuviTag Sensor data received from
  * Ruuvi Gateway via MQTT.
@@ -378,7 +380,7 @@ public class RuuviHandler extends AbstractMQTTThingHandler implements MqttMessag
                     break;
                 case CHANNEL_ID_AIR_QUALITY_INDEX:
                     atLeastOneRuuviFieldPresent |= updateStateIfLinked(channelUID,
-                            ruuvitagData.calculateAirQualityIndex());
+                            MeasurementValueCalculator.airQualityIndex(ruuvitagData.getPm25(), ruuvitagData.getCo2()));
                     break;
                 //
                 // Auxiliary channels, not part of bluetooth advertisement

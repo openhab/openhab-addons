@@ -42,6 +42,7 @@ import org.slf4j.LoggerFactory;
 
 import fi.tkgwf.ruuvi.common.bean.RuuviMeasurement;
 import fi.tkgwf.ruuvi.common.parser.impl.AnyDataFormatParser;
+import fi.tkgwf.ruuvi.common.utils.MeasurementValueCalculator;
 
 /**
  * The {@link RuuviHandler} is responsible for handling commands, which are
@@ -221,7 +222,9 @@ public class RuuviHandler extends BeaconBluetoothHandler {
                                 break;
                             case CHANNEL_ID_AIR_QUALITY_INDEX:
                                 atLeastOneRuuviFieldPresent |= updateStateIfLinked(channelUID,
-                                        ruuvitagData.calculateAirQualityIndex(), Units.PERCENT);
+                                        MeasurementValueCalculator.airQualityIndex(ruuvitagData.getPm25(),
+                                                ruuvitagData.getCo2()),
+                                        Units.PERCENT);
                                 break;
                         }
                     }

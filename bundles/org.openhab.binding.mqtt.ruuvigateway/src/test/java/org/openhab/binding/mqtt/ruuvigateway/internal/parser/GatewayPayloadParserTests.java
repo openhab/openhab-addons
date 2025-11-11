@@ -70,7 +70,6 @@ public class GatewayPayloadParserTests {
         assertEquals(3.7, parsed.measurement.getPm10());
         assertEquals(34, parsed.measurement.getVocIndex());
         assertEquals(1, parsed.measurement.getNoxIndex());
-        assertEquals(77.75237076248787, parsed.measurement.calculateAirQualityIndex(), 0.01);
         assertEquals(406739, parsed.measurement.getMeasurementSequenceNumber());
     }
 
