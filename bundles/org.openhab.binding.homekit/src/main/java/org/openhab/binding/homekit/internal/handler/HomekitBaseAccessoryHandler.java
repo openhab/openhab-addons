@@ -168,10 +168,12 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
     @Override
     public void dispose() {
         cancelRefreshTasks();
-        try {
-            enableEventsOrThrow(false);
-        } catch (Exception e) {
-            // closing; ignore
+        if (!isChildAccessory) {
+            try {
+                enableEventsOrThrow(false);
+            } catch (Exception e) {
+                // closing; ignore
+            }
         }
         if (connectionAttemptTask instanceof ScheduledFuture<?> task) {
             task.cancel(true);
