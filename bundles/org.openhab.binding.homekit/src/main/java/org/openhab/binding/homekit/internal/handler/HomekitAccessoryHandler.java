@@ -426,8 +426,8 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
             updateThing(builder.build());
             logger.debug(
                     "{} updated with {} channels (of which {} polled, {} evented), {} properties, label: '{}', equipment tag: '{}'",
-                    thing.getUID(), channels.size(), polledCharacteristics.size(), eventedCharacteristics.size(),
-                    properties.size(), newLabel, newEquipmentTag);
+                    thing.getUID(), uniqueChannelsMap.size(), polledCharacteristics.size(),
+                    eventedCharacteristics.size(), properties.size(), newLabel, newEquipmentTag);
         }
     }
 
