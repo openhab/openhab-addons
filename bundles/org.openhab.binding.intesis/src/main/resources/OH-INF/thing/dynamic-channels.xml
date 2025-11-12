@@ -82,7 +82,7 @@
 	</channel-type>
 
 	<channel-type id="errorStatus">
-		<item-type>Switch</item-type>
+		<item-type>String</item-type>
 		<label>@text/channel-type.intesis.errorStatus.label</label>
 		<description>@text/channel-type.intesis.errorStatus.description</description>
 		<state readOnly="true"></state>
