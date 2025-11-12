@@ -37,33 +37,36 @@ import org.openhab.core.types.State;
 public enum SolakonOneInverterRegisters {
     METER_CONNECTED(38801, UINT16, BigDecimal.ONE, switchFactory(), "overview"),
 
+    // status is 1 during start and shutdown, 4 during normal operation, 0x40 on fault
+    // (poweroff cannot be read, as it will shut down Modbus communication)
     HIDDEN_STATUS1(39063, UINT16, BigDecimal.ONE, DecimalType::new, ""),
-    HIDDEN_STATUS3(39065, UINT32, BigDecimal.ONE, DecimalType::new, ""),
+    // STATUS3 seems to use only bit0, but it does not indicate the grid status properly
+    // grid outage could be detected via GRID_FREQUENCY register
+    // STATUS_ON_GRID(39065, UINT32, BigDecimal.ONE, switchFactory(), "status"),
     HIDDEN_ALARM1(39067, UINT16, BigDecimal.ONE, DecimalType::new, ""),
     HIDDEN_ALARM2(39068, UINT16, BigDecimal.ONE, DecimalType::new, ""),
     HIDDEN_ALARM3(39069, UINT16, BigDecimal.ONE, DecimalType::new, ""),
 
     // NOTE: this list needs to be sorted by register number!
     MPPT1_VOLTAGE(39070, UINT16, ConversionConstants.DIV_BY_TEN, quantityFactory(Units.VOLT), "mppt-information"),
-    MPPT1_CURRENT(39071, UINT16, ConversionConstants.DIV_BY_TEN, quantityFactory(Units.AMPERE), "mppt-information"),
+    MPPT1_CURRENT(39071, UINT16, ConversionConstants.DIV_BY_HUNDRED, quantityFactory(Units.AMPERE), "mppt-information"),
     MPPT2_VOLTAGE(39072, UINT16, ConversionConstants.DIV_BY_TEN, quantityFactory(Units.VOLT), "mppt-information"),
-    MPPT2_CURRENT(39073, UINT16, ConversionConstants.DIV_BY_TEN, quantityFactory(Units.AMPERE), "mppt-information"),
+    MPPT2_CURRENT(39073, UINT16, ConversionConstants.DIV_BY_HUNDRED, quantityFactory(Units.AMPERE), "mppt-information"),
     MPPT3_VOLTAGE(39074, UINT16, ConversionConstants.DIV_BY_TEN, quantityFactory(Units.VOLT), "mppt-information"),
-    MPPT3_CURRENT(39075, UINT16, ConversionConstants.DIV_BY_TEN, quantityFactory(Units.AMPERE), "mppt-information"),
+    MPPT3_CURRENT(39075, UINT16, ConversionConstants.DIV_BY_HUNDRED, quantityFactory(Units.AMPERE), "mppt-information"),
     MPPT4_VOLTAGE(39076, UINT16, ConversionConstants.DIV_BY_TEN, quantityFactory(Units.VOLT), "mppt-information"),
-    MPPT4_CURRENT(39077, UINT16, ConversionConstants.DIV_BY_TEN, quantityFactory(Units.AMPERE), "mppt-information"),
+    MPPT4_CURRENT(39077, UINT16, ConversionConstants.DIV_BY_HUNDRED, quantityFactory(Units.AMPERE), "mppt-information"),
 
-    TOTAL_PV_POWER(39118, INT32_SWAP, ConversionConstants.DIV_BY_THOUSAND, quantityFactory(Units.WATT),
-            "mppt-information"),
+    TOTAL_PV_POWER(39118, INT32, BigDecimal.ONE, quantityFactory(Units.WATT), "mppt-information"),
 
-    GRID_FREQUENCY(39139, UINT16, new BigDecimal(BigInteger.ONE, 2), quantityFactory(Units.HERTZ), "overview"),
+    HIDDEN_GRID_FREQUENCY(39139, UINT16, new BigDecimal(BigInteger.ONE, 2), quantityFactory(Units.HERTZ), "overview"),
 
     PHASE_A_VOLTAGE(39123, INT16, ConversionConstants.DIV_BY_TEN, quantityFactory(Units.VOLT), "grid-information"),
     PHASE_B_VOLTAGE(39124, INT16, ConversionConstants.DIV_BY_TEN, quantityFactory(Units.VOLT), "grid-information"),
     PHASE_C_VOLTAGE(39125, INT16, ConversionConstants.DIV_BY_TEN, quantityFactory(Units.VOLT), "grid-information"),
 
-    ACTIVE_POWER(39134, INT32, ConversionConstants.DIV_BY_THOUSAND, quantityFactory(Units.WATT), "overview"),
-    REACTIVE_POWER(39136, INT32_SWAP, ConversionConstants.DIV_BY_THOUSAND, quantityFactory(Units.VAR), "overview"),
+    ACTIVE_POWER(39134, INT32, BigDecimal.ONE, quantityFactory(Units.WATT), "overview"),
+    REACTIVE_POWER(39136, INT32, BigDecimal.ONE, quantityFactory(Units.VAR), "overview"),
     POWER_FACTOR(39138, INT16, ConversionConstants.DIV_BY_THOUSAND, DecimalType::new, "overview"),
     INTERNAL_TEMPERATURE(39141, INT16, ConversionConstants.DIV_BY_TEN, quantityFactory(Units.KELVIN),
             ConversionConstants.CELSIUS_TO_KELVIN, "overview"),
@@ -76,25 +79,40 @@ public enum SolakonOneInverterRegisters {
     CHARGING_POWER(39162, INT32, BigDecimal.ONE, quantityFactory(Units.WATT), "battery-information"),
     EXPORT_POWER(39168, INT32, BigDecimal.ONE, quantityFactory(Units.WATT), "grid-information"),
 
+    EPS_POWER(39216, INT32, BigDecimal.ONE, quantityFactory(Units.WATT), "emergency-power-supply"),
+
     BATTERY_VOLTAGE(39227, UINT16, ConversionConstants.DIV_BY_TEN, quantityFactory(Units.VOLT), "battery-information"),
-    BATTERY_CURRENT(39228, INT32_SWAP, ConversionConstants.DIV_BY_THOUSAND, quantityFactory(Units.AMPERE),
+    BATTERY_CURRENT(39228, INT32, ConversionConstants.DIV_BY_THOUSAND, quantityFactory(Units.AMPERE),
             "battery-information"),
-    BATTERY_POWER(39237, INT32_SWAP, BigDecimal.ONE, quantityFactory(Units.WATT), "battery-information"), // prefer
-                                                                                                          // combined
-                                                                                                          // power over
-                                                                                                          // bat1 power
 
-    MPPT1_POWER(39279, INT32_SWAP, BigDecimal.ONE, quantityFactory(Units.WATT), "mppt-information"),
-    MPPT2_POWER(39281, INT32_SWAP, BigDecimal.ONE, quantityFactory(Units.WATT), "mppt-information"),
-    MPPT3_POWER(39283, INT32_SWAP, BigDecimal.ONE, quantityFactory(Units.WATT), "mppt-information"),
-    MPPT4_POWER(39285, INT32_SWAP, BigDecimal.ONE, quantityFactory(Units.WATT), "mppt-information"),
+    // prefer combined power over bat1 power
+    BATTERY_POWER(39237, INT32, BigDecimal.ONE, quantityFactory(Units.WATT), "battery-information"),
 
-    BATTERY_LEVEL(39424, UINT16, BigDecimal.ONE, DecimalType::new, "battery-information"),
+    MPPT1_POWER(39279, INT32, BigDecimal.ONE, quantityFactory(Units.WATT), "mppt-information"),
+    MPPT2_POWER(39281, INT32, BigDecimal.ONE, quantityFactory(Units.WATT), "mppt-information"),
+    MPPT3_POWER(39283, INT32, BigDecimal.ONE, quantityFactory(Units.WATT), "mppt-information"),
+    MPPT4_POWER(39285, INT32, BigDecimal.ONE, quantityFactory(Units.WATT), "mppt-information"),
 
-    EPS_OUTPUT(46613, UINT16, BigDecimal.ONE, DecimalType::new, "emergency-power-supply"); // 0:off 2:on
+    BATTERY_LEVEL(39424, UINT16, ConversionConstants.DIV_BY_HUNDRED, DecimalType::new, "battery-information"),
 
+    // 0:off 2:on, special handling in SolakonOneInverterHandler
+    HIDDEN_EPS_OUTPUT(46613, UINT16, BigDecimal.ONE, DecimalType::new, "emergency-power-supply");
+
+    // does not work, always returns 7
+    // WORK_MODE(49203, UINT16, BigDecimal.ONE, DecimalType::new, "overview"),
+
+    // some registers in between cannot be read and will make the Modbus request fail
+    // BLOCKER(ENFORCE_NEW_REQUEST, UINT16, BigDecimal.ONE, DecimalType::new, ""),
+    // does not change during manual shutdown using the button on the device
+    // SYSTEM_POWER_STATE(49228, UINT16, BigDecimal.ONE, DecimalType::new, "overview"),
+    // idle state seems to be 0
+    // IDLE_STATE(49229, UINT16, BigDecimal.ONE, DecimalType::new, "overview"),
+    // IDLE_LOAD_POWER_THRESHOLD(49230, UINT16, BigDecimal.ONE, DecimalType::new, "overview");
+
+    // seems not useful yet, always 0
+    // Thing data protocolVersion "Protocol version" [ readStart="39000", readValueType="uint32" ] // always 0
     /*
-     * Thing data protocolVersion "Protokoll Version" [ readStart="39000", readValueType="uint32" ] // always 0
+     * TODO
      * Thing data inverterL1Current "Wechselrichter L1 Strom" [ readStart="39126", readValueType="int32_swap",
      * readTransform="JS(divide1000.js)" ]
      * Thing data inverterL2Current "Wechselrichter L2 Strom" [ readStart="39128", readValueType="int32_swap",
@@ -121,6 +139,7 @@ public enum SolakonOneInverterRegisters {
      * Thing data epsOutput "EPS Ausgabe" [ readStart="46613", readValueType="uint16", writeStart="46613",
      * writeValueType="uint16", writeType="holding" ]
      */
+
     private final BigDecimal multiplier;
     private final int registerNumber;
     private final ValueType type;
@@ -165,9 +184,9 @@ public enum SolakonOneInverterRegisters {
     }
 
     /**
-     * Returns the modbus register number.
+     * Returns the Modbus register number.
      *
-     * @return modbus register number.
+     * @return Modbus register number.
      */
     public int getRegisterNumber() {
         return registerNumber;

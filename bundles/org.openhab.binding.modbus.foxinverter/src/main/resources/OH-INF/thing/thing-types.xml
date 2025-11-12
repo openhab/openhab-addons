@@ -17,7 +17,7 @@
 			<channel-group id="fi-mppt-information" typeId="fi-mppt-information"/>
 			<channel-group id="fi-battery-information" typeId="fi-battery-information"/>
 			<channel-group id="fi-grid-information" typeId="fi-grid-information"/>
-			<!-- <channel-group id="fi-load-information" typeId="fi-load-information"/> -->
+			<channel-group id="fi-emergency-power-supply" typeId="fi-emergency-power-supply"/>
 		</channel-groups>
 		<config-description-ref uri="thing-type:foxinverter:solakon-one-inverter"/>
 	</thing-type>
@@ -63,18 +63,6 @@
 			<channel id="fi-battery-power" typeId="fi-battery-power"/>
 			<channel id="fi-battery-level" typeId="fi-battery-level"/>
 			<channel id="fi-charging-power" typeId="fi-charging-power"/>
-
-			<!--
-				<channel id="fi-battery-healthy" typeId="fi-battery-healthy"/>
-				<channel id="fi-battery-temperature" typeId="fi-battery-temperature"/>
-				<channel id="fi-battery-capacity" typeId="fi-battery-capacity"/>
-				<channel id="fi-daily-charge-energy" typeId="fi-daily-charge-energy"/>
-				<channel id="fi-total-charge-energy" typeId="fi-total-charge-energy"/>
-				<channel id="fi-daily-battery-charge" typeId="fi-daily-battery-charge"/>
-				<channel id="fi-total-battery-charge" typeId="fi-total-battery-charge"/>
-				<channel id="fi-daily-battery-discharge-energy" typeId="fi-daily-battery-discharge-energy"/>
-				<channel id="fi-total-battery-discharge-energy" typeId="fi-total-battery-discharge-energy"/>
-			-->
 		</channels>
 	</channel-group-type>
 
@@ -85,32 +73,17 @@
 			<channel id="fi-phase-b-voltage" typeId="fi-phase-b-voltage"/>
 			<channel id="fi-phase-c-voltage" typeId="fi-phase-c-voltage"/>
 			<channel id="fi-grid-frequency" typeId="fi-grid-frequency"/>
-			<!--
-				<channel id="fi-phase-a-current" typeId="fi-phase-a-current"/>
-				<channel id="fi-phase-b-current" typeId="fi-phase-b-current"/>
-				<channel id="fi-phase-c-current" typeId="fi-phase-c-current"/>
-				<channel id="fi-daily-export-energy" typeId="fi-daily-export-energy"/>
-				<channel id="fi-total-export-energy" typeId="fi-total-export-energy"/>
-				<channel id="fi-daily-import-energy" typeId="fi-daily-import-energy"/>
-				<channel id="fi-total-import-energy" typeId="fi-total-import-energy"/>
-				<channel id="fi-daily-export-power-from-pv" typeId="fi-daily-export-power-from-pv"/>
-				<channel id="fi-total-export-energy-from-pv" typeId="fi-total-export-energy-from-pv"/>
-			-->
 			<channel id="fi-export-power" typeId="fi-export-power"/>
 		</channels>
 	</channel-group-type>
 
-	<!--
-		<channel-group-type id="fi-load-information">
-		<label>Load Information</label>
+	<channel-group-type id="fi-emergency-power-supply">
+		<label>EPS Information</label>
 		<channels>
-		<channel id="fi-load-power" typeId="fi-load-power"/>
-		<channel id="fi-daily-direct-energy-consumption" typeId="fi-daily-direct-energy-consumption"/>
-		<channel id="fi-total-direct-energy-consumption" typeId="fi-total-direct-energy-consumption"/>
-		<channel id="fi-self-consumption-today" typeId="fi-self-consumption-today"/>
+			<channel id="fi-eps-output" typeId="fi-eps-output"/>
+			<channel id="fi-eps-power" typeId="fi-eps-power"/>
 		</channels>
-		</channel-group-type>
-	-->
+	</channel-group-type>
 	<channel-type id="fi-active-power">
 		<item-type>Number:Power</item-type>
 		<label>Active Power</label>
@@ -134,7 +107,7 @@
 	<channel-type id="fi-daily-pv-generation">
 		<item-type>Number:Energy</item-type>
 		<label>Daily PV Generation</label>
-		<category>Energy</category>
+		<category>Line</category>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Energy</tag>
@@ -144,7 +117,7 @@
 	<channel-type id="fi-total-pv-generation">
 		<item-type>Number:Energy</item-type>
 		<label>Total PV Generation</label>
-		<category>Energy</category>
+		<category>Line</category>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Energy</tag>
@@ -168,12 +141,12 @@
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="fi-meter-connected" advanced="true">
-		<item-type>Contact</item-type>
+		<item-type>Switch</item-type>
 		<label>Meter Connected</label>
 		<tags>
 			<tag>Status</tag>
 		</tags>
-		<state pattern="%.2f %unit%" readOnly="true"/>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="fi-total-pv-power">
@@ -340,6 +313,7 @@
 	<channel-type id="fi-grid-frequency" advanced="true">
 		<item-type>Number:Frequency</item-type>
 		<label>Grid Frequency</label>
+		<category>Line</category>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Frequency</tag>
@@ -380,7 +354,7 @@
 	<channel-type id="fi-battery-power">
 		<item-type>Number:Power</item-type>
 		<label>Battery Power</label>
-		<category>Battery</category>
+		<category>Power</category>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Power</tag>
@@ -388,7 +362,7 @@
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="fi-battery-level">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="one">Number:Dimensionless</item-type>
 		<label>Battery Level</label>
 		<category>Battery</category>
 		<tags>
@@ -400,6 +374,26 @@
 	<channel-type id="fi-charging-power">
 		<item-type>Number:Power</item-type>
 		<label>Charging Power</label>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="fi-eps-output">
+		<item-type>Switch</item-type>
+		<label>EPS Enabled</label>
+		<category>Energy</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Power</tag>
+		</tags>
+		<state readOnly="false"/>
+	</channel-type>
+	<channel-type id="fi-eps-power">
+		<item-type>Number:Power</item-type>
+		<label>EPS Power</label>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>

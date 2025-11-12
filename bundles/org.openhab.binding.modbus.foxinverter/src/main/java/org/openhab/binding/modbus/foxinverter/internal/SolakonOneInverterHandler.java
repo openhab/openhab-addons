@@ -28,6 +28,8 @@ import org.openhab.core.io.transport.modbus.ModbusBitUtilities;
 import org.openhab.core.io.transport.modbus.ModbusConstants;
 import org.openhab.core.io.transport.modbus.ModbusReadFunctionCode;
 import org.openhab.core.io.transport.modbus.ModbusReadRequestBlueprint;
+import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -45,6 +47,9 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class SolakonOneInverterHandler extends BaseModbusThingHandler {
+    // used by Register definition to mark a new request must be created,
+    // required if you are not allowed to read certain registers ranges
+    public static final int ENFORCE_NEW_REQUEST = -1;
 
     @NonNullByDefault
     private static final class ModbusRequest {
@@ -91,6 +96,12 @@ public class SolakonOneInverterHandler extends BaseModbusThingHandler {
             if (currentRequest.isEmpty()) {
                 currentRequest.add(channel);
                 currentRequestFirstRegister = channel.getRegisterNumber();
+            } else if (ENFORCE_NEW_REQUEST == channel.getRegisterNumber()) {
+                // marker, start new request
+                if (!currentRequest.isEmpty()) {
+                    requests.add(new ModbusRequest(currentRequest, getSlaveId(), tries));
+                }
+                currentRequest = new ArrayDeque<>();
             } else {
                 int sizeWithRegisterAdded = channel.getRegisterNumber() - currentRequestFirstRegister
                         + channel.getRegisterCount();
@@ -101,7 +112,7 @@ public class SolakonOneInverterHandler extends BaseModbusThingHandler {
                     currentRequest.add(channel);
                     currentRequestFirstRegister = channel.getRegisterNumber();
 
-                    logger.debug("Starting new modbus request template due to size limit, first register {} ({})",
+                    logger.debug("Starting new Modbus request template due to size limit, first register {} ({})",
                             channel.name(), currentRequestFirstRegister);
                 } else {
                     currentRequest.add(channel);
@@ -112,7 +123,7 @@ public class SolakonOneInverterHandler extends BaseModbusThingHandler {
         if (!currentRequest.isEmpty()) {
             requests.add(new ModbusRequest(currentRequest, getSlaveId(), tries));
         }
-        logger.debug("Created {} modbus request templates.", requests.size());
+        logger.debug("Created {} Modbus request templates.", requests.size());
         return requests;
     }
 
@@ -241,9 +252,50 @@ public class SolakonOneInverterHandler extends BaseModbusThingHandler {
                         .extractStateFromRegisters(registers, index, channel.getType()).map(channel::createState));
                 ModbusBitUtilities.extractStateFromRegisters(registers, index, channel.getType())
                         .map(channel::createState).ifPresentOrElse(v -> {
-                            updateState(createChannelUid(channel), v);
-                            if (channel.getChannelName().startsWith("hidden-")) {
-                                logger.debug("Updated internal channel {} to {}", channel.getChannelName(), v);
+                            if (!channel.getChannelName().startsWith("hidden-")) {
+                                updateState(createChannelUid(channel), v);
+                            } else {
+                                logger.trace("Update on internal channel {} to {}", channel.getChannelName(), v);
+                                int i = v.as(DecimalType.class).intValue();
+                                switch (channel.getChannelName()) {
+                                    case "hidden-grid-frequency":
+                                        logger.debug("{} {}", "GRID_FREQUENCY", v);
+                                        updateState(new ChannelUID(thing.getUID(), "fi-" + channel.getChannelGroup(),
+                                                "fi-grid-frequency"), v);
+                                        OnOffType state = OnOffType.from(i >= 1);
+                                        logger.debug("{} {}", "STATUS_ON_GRID", state);
+                                        updateState(new ChannelUID(thing.getUID(), "fi-" + channel.getChannelGroup(),
+                                                "fi-status-on-grid"), state);
+                                        break;
+                                    case "hidden-status1":
+                                        boolean statusStandby = (i & 0x01) != 0;
+                                        boolean statusOperation = (i & 0x02) != 0;
+                                        boolean statusFault = (i & 0x40) != 0;
+                                        updateState(new ChannelUID(thing.getUID(), "fi-" + channel.getChannelGroup(),
+                                                "fi-status-standby"), OnOffType.from(statusStandby));
+                                        updateState(new ChannelUID(thing.getUID(), "fi-" + channel.getChannelGroup(),
+                                                "fi-status-operation"), OnOffType.from(statusOperation));
+                                        updateState(new ChannelUID(thing.getUID(), "fi-" + channel.getChannelGroup(),
+                                                "fi-status-fault"), OnOffType.from(statusFault));
+                                        break;
+                                    case "hidden-alarm1":
+                                        break;
+                                    case "hidden-alarm2":
+                                        break;
+                                    case "hidden-alarm3":
+                                        break;
+                                    case "hidden-eps-output":
+                                        OnOffType epsState = OnOffType.OFF;
+                                        if (i == 2) {
+                                            epsState = OnOffType.ON;
+                                        }
+                                        logger.debug("{} {}", "EPS_OUTPUT", epsState);
+                                        updateState(new ChannelUID(thing.getUID(), "fi-" + channel.getChannelGroup(),
+                                                "fi-eps-output"), epsState);
+                                        break;
+                                    default:
+                                        logger.warn("Unhandled internal channel {}", channel.getChannelName());
+                                }
                             }
                         }, () -> {
                             logger.warn("Could not extract state for channel {}", channel.getChannelName());
@@ -253,7 +305,7 @@ public class SolakonOneInverterHandler extends BaseModbusThingHandler {
     }
 
     private void readError(AsyncModbusFailure<ModbusReadRequestBlueprint> error) {
-        this.logger.debug("Failed to get modbus data", error.getCause());
+        this.logger.debug("Failed to get Modbus data", error.getCause());
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                 "Failed to retrieve data: " + error.getCause().getMessage());
     }
