@@ -364,7 +364,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
                                 ChannelType channelType = channelTypeRegistry
                                         .getChannelType(chanDef.getChannelTypeUID());
                                 if (channelType == null) {
-                                    logger.warn("{} fatal rrror ChannelType '{}' is not registered", thing.getUID(),
+                                    logger.warn("{} fatal error ChannelType '{}' is not registered", thing.getUID(),
                                             chanDef.getChannelTypeUID());
                                 } else {
                                     logger.trace(
@@ -406,14 +406,13 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
                     }
                 });
 
-        List<Channel> channels = new ArrayList<>(uniqueChannelsMap.values());
-        lightModelFinalize(accessory, channels);
-        stopMoveFinalize(accessory, channels);
-        eventingPollingFinalize(accessory, channels);
+        lightModelFinalize(accessory, uniqueChannelsMap);
+        stopMoveFinalize(accessory, uniqueChannelsMap);
+        eventingPollingFinalize(accessory, uniqueChannelsMap);
 
         String oldLabel = thing.getLabel();
         String newLabel = oldLabel == null || oldLabel.isEmpty() ? accessory.getAccessoryInstanceLabel() : null;
-        List<Channel> newChannels = !channels.isEmpty() ? channels : null;
+        List<Channel> newChannels = !uniqueChannelsMap.isEmpty() ? uniqueChannelsMap.values().stream().toList() : null;
         Map<String, String> newProperties = !properties.isEmpty() ? properties : null;
         SemanticTag newEquipmentTag = accessory.getSemanticEquipmentTag();
 
@@ -662,13 +661,13 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
      * @param accessory the accessory containing the characteristics
      * @param channels the list of channels to finalize
      */
-    private void lightModelFinalize(Accessory accessory, List<Channel> channels) {
+    private void lightModelFinalize(Accessory accessory, Map<String, Channel> channels) {
         if (lightModel == null) {
             return;
         }
         // link channels to characteristic types & iids for the light model
         lightModelLinks.clear();
-        for (Channel channel : channels) {
+        for (Channel channel : channels.values()) {
             if (channel.getProperties().get(PROPERTY_IID) instanceof String iid) {
                 for (Service service : accessory.services) {
                     for (Characteristic cxx : service.characteristics) {
@@ -686,11 +685,11 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
         ChannelUID uid = new ChannelUID(thing.getUID(), "hsb-combined-channel");
         Channel channel = ChannelBuilder.create(uid, CoreItemFactory.COLOR)
                 .withType(DefaultSystemChannelTypeProvider.SYSTEM_CHANNEL_TYPE_UID_COLOR).build();
-        channels.add(channel);
+        channels.put(uid.getId(), channel); // add to channels map
         logger.trace(
-                "+++++Channel acceptedItemType:{}, defaultTags:{}, description:{}, kind:{}, label:{}, properties:{}, uid:{}",
-                channel.getAcceptedItemType(), channel.getDefaultTags(), channel.getDescription(), channel.getKind(),
-                channel.getLabel(), channel.getProperties(), channel.getUID());
+                "{}     Channel acceptedItemType:{}, defaultTags:{}, description:{}, kind:{}, label:{}, properties:{}, uid:{}",
+                uid, channel.getAcceptedItemType(), channel.getDefaultTags(), channel.getDescription(),
+                channel.getKind(), channel.getLabel(), channel.getProperties(), channel.getUID());
         lightModelClientHSBTypeChannel = uid;
     }
 
@@ -700,8 +699,8 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
      * @param accessory the accessory containing the characteristics
      * @param channels the list of channels to search
      */
-    private void stopMoveFinalize(Accessory accessory, List<Channel> channels) {
-        for (Channel channel : channels) {
+    private void stopMoveFinalize(Accessory accessory, Map<String, Channel> channels) {
+        for (Channel channel : channels.values()) {
             if (channel.getProperties().get(PROPERTY_IID) instanceof String iid) {
                 for (Service service : accessory.services) {
                     for (Characteristic cxx : service.characteristics) {
@@ -724,7 +723,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
      * @param accessory the accessory containing the characteristics
      * @param channels the list of channels to check for polled and evented characteristics
      */
-    private void eventingPollingFinalize(Accessory accessory, List<Channel> channels) {
+    private void eventingPollingFinalize(Accessory accessory, Map<String, Channel> channels) {
         eventedCharacteristics.clear();
         polledCharacteristics.clear();
 
@@ -733,7 +732,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
             return;
         }
 
-        for (Channel channel : channels) {
+        for (Channel channel : channels.values()) {
             final ChannelUID channelUID = channel.getUID();
             if (isLinked(channelUID) && channel.getProperties().get(PROPERTY_IID) instanceof String iidProperty) {
                 final Long iid;
