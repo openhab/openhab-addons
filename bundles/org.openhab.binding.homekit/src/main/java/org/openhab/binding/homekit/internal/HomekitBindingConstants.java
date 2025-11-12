@@ -79,4 +79,10 @@ public class HomekitBindingConstants {
     // NOTE: this specially allows space characters in the host name -- even if normally not allowed by the RFC
     public static final Pattern HOST_PATTERN = Pattern.compile(
             "^([a-zA-Z0-9\\-\\x20]+)\\._hap\\._tcp\\.local\\.(?::([1-9]\\d{0,3}|[1-5]\\d{4}|6[0-4]\\d{3}|65[0-4]\\d{2}|655[0-2]\\d|6553[0-5]))?$");
+
+    // result messages for ThingActions; !! DO NOT LOCALIZE !!
+    public static final String ACTION_RESULT_OK = "OK";
+    public static final String ACTION_RESULT_OK_FORMAT = ACTION_RESULT_OK + " (%s)";
+    public static final String ACTION_RESULT_ERROR = "ERROR";
+    public static final String ACTION_RESULT_ERROR_FORMAT = ACTION_RESULT_ERROR + " (%s)";
 }

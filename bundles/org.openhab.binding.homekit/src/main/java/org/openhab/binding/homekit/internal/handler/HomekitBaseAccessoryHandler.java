@@ -259,7 +259,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
             updateStatus(ThingStatus.REMOVED);
         } else {
             scheduler.submit(() -> {
-                if (unpairInner()) {
+                if (unpairInner().startsWith(ACTION_RESULT_OK)) {
                     updateStatus(ThingStatus.REMOVED);
                 }
             });
@@ -476,16 +476,18 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
      *
      * @param code the pairing code
      * @param withExternalAuthentication true to setup with external authentication e.g. from an app, false otherwise
+     *
+     * @return OK or ERROR with reason
      */
-    public boolean pair(String code, boolean withExternalAuthentication) {
+    public String pair(String code, boolean withExternalAuthentication) {
         if (isChildAccessory) {
             logger.warn("Cannot pair child accessory '{}'", thing.getUID());
-            return false; // child accessories cannot be paired directly
+            return ACTION_RESULT_ERROR_FORMAT.formatted("child accessory");
         }
 
         if (!PAIRING_CODE_PATTERN.matcher(code).matches()) {
             logger.debug("Pairing code must match XXX-XX-XXX or XXXX-XXXX or XXXXXXXX");
-            return false; // invalid pairing code format
+            return ACTION_RESULT_ERROR_FORMAT.formatted("code format");
         }
         String pairingCode = normalizePairingCode(code);
 
@@ -495,13 +497,17 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
         String macAddress = checkedMacAddress();
         String hostName = checkedHostName();
         if (accessoryId == null || ipAddress == null || macAddress == null || hostName == null) {
-            return false; // configuration error
+            return ACTION_RESULT_ERROR_FORMAT.formatted("config error");
         }
         isConfigured = true;
 
+        if (keyStore.getAccessoryKey(macAddress) != null) {
+            return ACTION_RESULT_OK_FORMAT.formatted("already paired"); // OK if already paired
+        }
+
         // create new transport
         if (checkedCreateIpTransport(ipAddress, hostName) == null) {
-            return false; // transport creation failed
+            return ACTION_RESULT_ERROR_FORMAT.formatted("no transport");
         }
 
         try {
@@ -515,52 +521,61 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
             logger.debug("Pair-Setup completed; starting Pair-Verify for {}", thing.getUID());
             connectionAttemptDelay = MIN_CONNECTION_ATTEMPT_DELAY_SECONDS; // reset delay on manual pairing
             scheduleConnectionAttempt();
-            return true; // pairing succeeded
+            return ACTION_RESULT_OK; // pairing succeeded
         } catch (Exception e) {
             // catch all; log all exceptions
             logger.warn("Pairing / verification failed '{}' for {}", e.getMessage(), thing.getUID());
             logger.debug("Stack trace", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, i18nProvider.getText(bundle,
                     "error.pairing-verification-failed", "Pairing / Verification failed", null));
-            return false; // pairing failed
+            return ACTION_RESULT_ERROR_FORMAT.formatted("pairing error");
         }
     }
 
     /**
      * Inner method to unpair and clear stored key.
+     *
+     * @return OK or ERROR with reason
      */
-    private boolean unpairInner() {
+    private String unpairInner() {
         if (isChildAccessory) {
             logger.warn("Cannot unpair child accessory '{}'", thing.getUID());
-            return false;
+            return ACTION_RESULT_ERROR_FORMAT.formatted("child accessory");
         }
 
         if (!(getConfig().get(Thing.PROPERTY_MAC_ADDRESS) instanceof String macAddress) || macAddress.isBlank()) {
             logger.warn("Cannot unpair accessory '{}' due to missing mac address configuration", thing.getUID());
-            return false;
+            return ACTION_RESULT_ERROR_FORMAT.formatted("config error");
         }
+
+        if (keyStore.getAccessoryKey(macAddress) == null) {
+            return ACTION_RESULT_ERROR_FORMAT.formatted("not paired");
+        }
+
         try {
             PairRemoveClient service = new PairRemoveClient(getIpTransport(), keyStore.getControllerUUID());
             service.remove();
             keyStore.setAccessoryKey(macAddress, null);
-            return true;
+            return ACTION_RESULT_OK;
         } catch (IOException | InterruptedException | TimeoutException | ExecutionException | IllegalAccessException
                 | IllegalStateException e) {
             logger.warn("Error '{}' unpairing accessory '{}'", e.getMessage(), thing.getUID());
-            return false;
+            return ACTION_RESULT_ERROR_FORMAT.formatted("unpairing error");
         }
     }
 
     /**
      * Thing Action that unpairs the accessory.
+     *
+     * @return OK or ERROR with reason
      */
-    public boolean unpair() {
-        boolean unpaired = unpairInner();
-        if (unpaired) {
+    public String unpair() {
+        String result = unpairInner();
+        if (result.startsWith(ACTION_RESULT_OK)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     i18nProvider.getText(bundle, "error.not-paired", "Not paired", null));
         }
-        return unpaired;
+        return result;
     }
 
     /**
