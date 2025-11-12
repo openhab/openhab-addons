@@ -50,6 +50,9 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
 
+    private static final List<DSCAlarmCode> EVL_WIRELESS_LOW_BATTERY_CODES = List.of(DSCAlarmCode.HomeAutomationTrouble,
+            DSCAlarmCode.HomeAutomationTroubleRestore);
+
     private final Logger logger = LoggerFactory.getLogger(DSCAlarmBaseBridgeHandler.class);
 
     /** The DSC Alarm bridge type. */
@@ -535,7 +538,9 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
             return;
         }
 
-        if (DSCAlarmCode.BypassedZonesBitfield.equals(dscAlarmCode)) {
+        if (DSCAlarmCode.BypassedZonesBitfield.equals(dscAlarmCode)
+                || (EVL_WIRELESS_LOW_BATTERY_CODES.contains(dscAlarmCode)
+                        && dscAlarmProtocol.equals(DSCAlarmProtocol.ENVISALINK_TPI))) {
             List<Thing> allZoneThings = findAllZoneThings();
             for (Thing zone : allZoneThings) {
                 handleIncomingMessage(event, zone, dscAlarmThingType);

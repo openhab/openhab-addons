@@ -92,6 +92,11 @@ public class ZoneThingHandler extends DSCAlarmBaseThingHandler {
                     onOffType = OnOffType.from(trigger);
                     updateState(channelUID, onOffType);
                     break;
+                case ZONE_BATTERY_LOW:
+                    trigger = state != 0;
+                    onOffType = OnOffType.from(trigger);
+                    updateState(channelUID, onOffType);
+                    break;
                 default:
                     logger.debug("updateChannel(): Zone Channel not updated - {}.", channelUID);
                     break;
@@ -180,6 +185,19 @@ public class ZoneThingHandler extends DSCAlarmBaseThingHandler {
                         channelUID = new ChannelUID(getThing().getUID(), ZONE_BYPASS_MODE);
                         updateChannel(channelUID, state, "");
                         break;
+                    case HomeAutomationTrouble: /* For EnvisaLink, 832 reports a wireless zone with low battery */
+                        if (isZoneInMessage(dscAlarmMessage)) {
+                            state = 1;
+                            channelUID = new ChannelUID(getThing().getUID(), ZONE_BATTERY_LOW);
+                            updateChannel(channelUID, state, "");
+                        }
+                    case HomeAutomationTroubleRestore: /* For EnvisaLink, 833 reports a low battery has restored */
+                        if (isZoneInMessage(dscAlarmMessage)) {
+                            state = 0;
+                            channelUID = new ChannelUID(getThing().getUID(), ZONE_BATTERY_LOW);
+                            updateChannel(channelUID, state, "");
+                        }
+
                     default:
                         break;
                 }
@@ -215,5 +233,10 @@ public class ZoneThingHandler extends DSCAlarmBaseThingHandler {
             }
         }
         return bypassedZones;
+    }
+
+    private boolean isZoneInMessage(DSCAlarmMessage dscAlarmMessage) {
+        final String data = dscAlarmMessage.getMessageInfo(DSCAlarmMessageInfoType.DATA);
+        return data.chars().allMatch(Character::isDigit) && Integer.parseInt(data) == getZoneNumber();
     }
 }
