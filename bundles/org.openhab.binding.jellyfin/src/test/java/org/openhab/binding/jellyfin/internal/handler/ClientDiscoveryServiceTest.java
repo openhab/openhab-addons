@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.openhab.binding.jellyfin.internal.Constants;
-import org.openhab.binding.jellyfin.internal.discovery.ClientDiscoveryService;
 import org.openhab.core.thing.ThingUID;
 
 class ClientDiscoveryServiceTest {
@@ -17,7 +16,6 @@ class ClientDiscoveryServiceTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        discoveryService = new ClientDiscoveryService();
     }
 
     @Test
