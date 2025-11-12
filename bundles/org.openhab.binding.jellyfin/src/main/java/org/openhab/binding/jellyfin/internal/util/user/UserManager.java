@@ -51,29 +51,19 @@ public class UserManager {
         logger.info("Retrieved users list from Jellyfin server:");
         logger.info("  Total users: {}", users.size());
 
-        // Local predicates for user filtering - following Single Responsibility Principle
-        Predicate<UserDto> isUserEnabled = user -> {
-            var policy = user.getPolicy();
-            if (policy == null) {
-                return true; // No policy means no restrictions
-            }
-            Boolean disabled = policy.getIsDisabled();
-            return disabled == null || !disabled;
-        };
+        Predicate<UserDto> isVisible = user -> !user.getPolicy().getIsHidden();
+        Predicate<UserDto> isEnabled = user -> !user.getPolicy().getIsDisabled();
 
-        Predicate<UserDto> isUserVisible = user -> true; // Placeholder for visibility logic
+        List<UserDto> currentUsers = users.stream().filter(isEnabled).filter(isVisible).toList();
 
-        List<UserDto> enabledVisibleUsers = users.stream().filter(isUserEnabled).filter(isUserVisible).toList();
-
-        List<String> currentUserIds = enabledVisibleUsers.stream().map(u -> u.getId().toString()).toList();
+        List<String> currentUserIds = currentUsers.stream().map(u -> u.getId().toString()).toList();
         List<String> addedUserIds = currentUserIds.stream().filter(id -> !previousUserIds.contains(id)).toList();
         List<String> removedUserIds = previousUserIds.stream().filter(id -> !currentUserIds.contains(id)).toList();
 
-        logger.info("  Enabled & visible users: {}", enabledVisibleUsers.size());
+        logger.info("  Enabled & visible users: {}", currentUsers.size());
         logger.info("  Added users: {}", addedUserIds);
         logger.info("  Removed users: {}", removedUserIds);
 
-        return new UserChangeResult(currentUserIds, addedUserIds, removedUserIds, enabledVisibleUsers);
+        return new UserChangeResult(currentUserIds, addedUserIds, removedUserIds, currentUsers);
     }
-    // ...existing code...
 }

@@ -129,16 +129,12 @@ public class ClientDiscoveryService extends AbstractThingHandlerDiscoveryService
             // Prefer deviceName for user-friendliness, fallback to client app name
             String deviceName = session.getDeviceName();
             String label;
-            String representationPropertyValue;
 
             if (deviceName != null && !deviceName.isBlank()) {
                 label = deviceName;
-                representationPropertyValue = deviceName;
             } else {
                 String clientName = session.getClient();
                 label = clientName != null && !clientName.isBlank() ? clientName : "Jellyfin Client";
-                representationPropertyValue = clientName != null && !clientName.isBlank() ? clientName
-                        : sanitizedDeviceId;
             }
 
             // Build discovery result
