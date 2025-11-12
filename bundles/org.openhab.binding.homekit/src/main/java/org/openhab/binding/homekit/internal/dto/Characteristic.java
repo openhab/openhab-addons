@@ -779,6 +779,9 @@ public class Characteristic {
                 itemType = null;
                 break;
 
+            case CUSTOM_CXX:
+                // custom or unknown characteristic; fall through to default
+
             default:
                 return null;
         }
@@ -943,7 +946,7 @@ public class Characteristic {
             String firstPart = type.split("-")[0];
             return CharacteristicType.from(Integer.parseInt(firstPart, 16));
         } catch (IllegalArgumentException e) {
-            return CharacteristicType.UNKNOWN_CHARACTERISTIC;
+            return CharacteristicType.CUSTOM_CXX;
         }
     }
 

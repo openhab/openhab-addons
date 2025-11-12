@@ -327,7 +327,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
         lightModelInitialize(accessory);
 
         // create the channels and properties
-        List<Channel> channels = new ArrayList<>();
+        Map<String, Channel> uniqueChannelsMap = new HashMap<>(); // use map to prevent duplicate Channel ID
         Map<String, String> properties = new HashMap<>(thing.getProperties()); // keep existing properties
         accessory.buildAndRegisterChannelGroupDefinitions(thing.getUID(), typeProvider, i18nProvider, bundle)
                 .forEach(groupDef -> {
@@ -375,8 +375,15 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
                                             channelType.getKind(), channelType.getTags(), channelType.getUID(),
                                             channelType.getUnitHint());
 
-                                    ChannelUID channelUID = new ChannelUID(thing.getUID(), groupDef.getId(),
-                                            chanDef.getId());
+                                    // if necessary append a suffix to ensure unique channel IDs
+                                    final String base = chanDef.getId();
+                                    String channelId = base;
+                                    int suffix = 0;
+                                    while (uniqueChannelsMap.containsKey(channelId)) {
+                                        channelId = "%s-%d".formatted(base, ++suffix);
+                                    }
+                                    ChannelUID channelUID = new ChannelUID(thing.getUID(), groupDef.getId(), channelId);
+
                                     ChannelBuilder builder = ChannelBuilder.create(channelUID)
                                             .withAcceptedItemType(channelType.getItemType())
                                             .withAutoUpdatePolicy(channelType.getAutoUpdatePolicy())
@@ -385,7 +392,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
                                     Optional.ofNullable(chanDef.getLabel()).ifPresent(builder::withLabel);
                                     Optional.ofNullable(chanDef.getDescription()).ifPresent(builder::withDescription);
                                     Channel channel = builder.build();
-                                    channels.add(channel);
+                                    uniqueChannelsMap.put(channelId, channel);
 
                                     logger.trace(
                                             "{}     Channel acceptedItemType:{}, defaultTags:{}, description:{}, kind:{}, label:{}, properties:{}, uid:{}",
@@ -399,6 +406,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
                     }
                 });
 
+        List<Channel> channels = new ArrayList<>(uniqueChannelsMap.values());
         lightModelFinalize(accessory, channels);
         stopMoveFinalize(accessory, channels);
         eventingPollingFinalize(accessory, channels);
@@ -407,20 +415,20 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
         String newLabel = oldLabel == null || oldLabel.isEmpty() ? accessory.getAccessoryInstanceLabel() : null;
         List<Channel> newChannels = !channels.isEmpty() ? channels : null;
         Map<String, String> newProperties = !properties.isEmpty() ? properties : null;
-        SemanticTag newTag = accessory.getSemanticEquipmentTag();
+        SemanticTag newEquipmentTag = accessory.getSemanticEquipmentTag();
 
-        if (newLabel != null || newChannels != null || newProperties != null || newTag != null) {
-            ThingBuilder builder = editThing().withProperties(properties).withChannels(channels);
+        if (newLabel != null || newChannels != null || newProperties != null || newEquipmentTag != null) {
+            ThingBuilder builder = editThing();
             Optional.ofNullable(newLabel).ifPresent(builder::withLabel);
             Optional.ofNullable(newChannels).ifPresent(builder::withChannels);
             Optional.ofNullable(newProperties).ifPresent(builder::withProperties);
-            Optional.ofNullable(newTag).ifPresent(builder::withSemanticEquipmentTag);
+            Optional.ofNullable(newEquipmentTag).ifPresent(builder::withSemanticEquipmentTag);
 
             updateThing(builder.build());
             logger.debug(
-                    "{} updated with {} channels (of which {} polled, {} evented), {} properties, label '{}', tag '{}'",
+                    "{} updated with {} channels (of which {} polled, {} evented), {} properties, label: '{}', equipment tag: '{}'",
                     thing.getUID(), channels.size(), polledCharacteristics.size(), eventedCharacteristics.size(),
-                    properties.size(), newLabel, newTag);
+                    properties.size(), newLabel, newEquipmentTag);
         }
     }
 

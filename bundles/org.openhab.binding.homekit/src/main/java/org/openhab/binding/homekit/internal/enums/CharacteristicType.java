@@ -157,7 +157,7 @@ public enum CharacteristicType {
     ZOOM_DIGITAL(0x11D, "public.hap.characteristic.zoom-digital"),
     ZOOM_OPTICAL(0x11C, "public.hap.characteristic.zoom-optical"),
     // placeholder for any custom or unsupported characteristic
-    UNKNOWN_CHARACTERISTIC(0xFF, "public.hap.characteristic.unknown");
+    CUSTOM_CXX(0xFF, "public.hap.characteristic.custom");
     //@formatter:on
 
     private final int id;
