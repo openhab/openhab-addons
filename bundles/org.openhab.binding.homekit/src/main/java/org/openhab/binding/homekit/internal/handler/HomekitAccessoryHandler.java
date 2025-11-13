@@ -718,7 +718,9 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
     /**
      * Finalizes the polled and evented characteristics by identifying which characteristics are linked
      * and adding them to the polledCharacteristics list, and which subset of those are evented and adding
-     * them also to the eventedCharacteristics list.
+     * them also to the eventedCharacteristics list. In case of the special light model HSB channel then we
+     * also add the component HUE, SATURATION, BRIGHTNESS, ON, and color temperature characteristsics to
+     * the list of polled and evented characteristics.
      *
      * @param accessory the accessory containing the characteristics
      * @param channels the list of channels to check for polled and evented characteristics
@@ -734,28 +736,35 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
 
         for (Channel channel : channels.values()) {
             final ChannelUID channelUID = channel.getUID();
-            if (isLinked(channelUID) && channel.getProperties().get(PROPERTY_IID) instanceof String iidProperty) {
-                final Long iid;
-                try {
-                    iid = Long.parseLong(iidProperty);
-                } catch (NumberFormatException e) {
-                    continue; // error will already have been logged elsewhere
+            if (isLinked(channelUID)) {
+                Long iid = 0L;
+                boolean checkChannelLinkByIID = !channelUID.equals(lightModelClientHSBTypeChannel);
+                if (checkChannelLinkByIID && channel.getProperties().get(PROPERTY_IID) instanceof String iidProperty) {
+                    try {
+                        iid = Long.parseLong(iidProperty);
+                    } catch (NumberFormatException e) {
+                        continue; // error will already have been logged elsewhere
+                    }
                 }
+
                 nestedLoops: // break marker for nested loops below
                 for (Service service : accessory.services) {
                     for (Characteristic characteristic : service.characteristics) {
-                        if (iid.equals(characteristic.iid)) {
+                        if ((checkChannelLinkByIID && iid.equals(characteristic.iid))
+                                || LIGHT_MODEL_RELEVANT_TYPES.contains(characteristic.getCharacteristicType())) {
                             Characteristic entry = new Characteristic();
                             entry.aid = aid;
-                            entry.iid = iid;
-                            polledCharacteristics.put(channelUID, entry);
+                            entry.iid = characteristic.iid;
+                            polledCharacteristics.put(AID_IID_FORMAT.formatted(entry.aid, entry.iid), entry);
                             if (characteristic.perms instanceof List<String> perms && perms.contains("ev")) {
                                 entry = new Characteristic();
                                 entry.aid = aid;
-                                entry.iid = iid;
-                                eventedCharacteristics.put(channelUID, entry);
+                                entry.iid = characteristic.iid;
+                                eventedCharacteristics.put(AID_IID_FORMAT.formatted(entry.aid, entry.iid), entry);
                             }
-                            break nestedLoops; // break from nested loops; i.e. continue to next channel
+                            if (checkChannelLinkByIID) {
+                                break nestedLoops; // unique match found; continue to next channel
+                            }
                         }
                     }
                 }
@@ -914,9 +923,6 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
     @Override
     public void channelLinked(ChannelUID channelUID) {
         try {
-            if (polledCharacteristics.containsKey(channelUID)) {
-                return;
-            }
             final Channel channel = thing.getChannel(channelUID);
             if (channel == null) {
                 return; // OH core ensures this does not happen
@@ -929,30 +935,38 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
             if (accessory == null) {
                 return; // error will already have been logged elsewhere
             }
-            final String iidProperty = channel.getProperties().get(PROPERTY_IID);
-            if (iidProperty == null) {
-                return; // error will already have been logged elsewhere
+
+            Long iid = 0L;
+            boolean checkChannelLinkByIID = !channelUID.equals(lightModelClientHSBTypeChannel);
+            if (checkChannelLinkByIID) {
+                final String iidProperty = channel.getProperties().get(PROPERTY_IID);
+                if (iidProperty == null) {
+                    return; // error will already have been logged elsewhere
+                }
+                try {
+                    iid = Long.parseLong(iidProperty);
+                } catch (NumberFormatException e) {
+                    return; // error will already have been logged elsewhere
+                }
             }
-            final Long iid;
-            try {
-                iid = Long.parseLong(iidProperty);
-            } catch (NumberFormatException e) {
-                return; // error will already have been logged elsewhere
-            }
+
             for (Service service : accessory.services) {
                 for (Characteristic characteristic : service.characteristics) {
-                    if (iid.equals(characteristic.iid)) {
+                    if ((checkChannelLinkByIID && iid.equals(characteristic.iid))
+                            || LIGHT_MODEL_RELEVANT_TYPES.contains(characteristic.getCharacteristicType())) {
                         Characteristic entry = new Characteristic();
                         entry.aid = aid;
                         entry.iid = iid;
-                        polledCharacteristics.put(channelUID, entry);
+                        polledCharacteristics.put(AID_IID_FORMAT.formatted(entry.aid, entry.iid), entry);
                         if (characteristic.perms instanceof List<String> perms && perms.contains("ev")) {
                             entry = new Characteristic();
                             entry.aid = aid;
                             entry.iid = iid;
-                            eventedCharacteristics.put(channelUID, entry);
+                            eventedCharacteristics.put(AID_IID_FORMAT.formatted(entry.aid, entry.iid), entry);
                         }
-                        return; // unique match found; return directly
+                        if (checkChannelLinkByIID) {
+                            return; // unique match found; return directly
+                        }
                     }
                 }
             }
@@ -961,23 +975,13 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
         }
     }
 
-    /**
-     * When a channel is unlinked, remove it from the polledCharacteristics and eventedCharacteristics maps.
-     */
     @Override
-    public void channelUnlinked(ChannelUID channelUID) {
-        eventedCharacteristics.remove(channelUID);
-        polledCharacteristics.remove(channelUID);
-        super.channelUnlinked(channelUID);
-    }
-
-    @Override
-    protected Map<ChannelUID, Characteristic> getEventedCharacteristics() {
+    protected Map<String, Characteristic> getEventedCharacteristics() {
         return eventedCharacteristics;
     }
 
     @Override
-    protected Map<ChannelUID, Characteristic> getPolledCharacteristics() {
+    protected Map<String, Characteristic> getPolledCharacteristics() {
         return polledCharacteristics;
     }
 }

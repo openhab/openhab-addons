@@ -57,7 +57,6 @@ import org.openhab.binding.homekit.internal.session.EventListener;
 import org.openhab.binding.homekit.internal.transport.IpTransport;
 import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.thing.Bridge;
-import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
@@ -105,8 +104,13 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
 
     protected static final Gson GSON = new Gson();
 
-    protected final Map<ChannelUID, Characteristic> eventedCharacteristics = new ConcurrentHashMap<>();
-    protected final Map<ChannelUID, Characteristic> polledCharacteristics = new ConcurrentHashMap<>();
+    /**
+     * Maps of evented and polled Characteristics.
+     * The maps are keyed on the unique "aid,iid" combination to prevent duplicate entries.
+     */
+    protected static final String AID_IID_FORMAT = "%s,%s";
+    protected final Map<String, Characteristic> eventedCharacteristics = new ConcurrentHashMap<>();
+    protected final Map<String, Characteristic> polledCharacteristics = new ConcurrentHashMap<>();
 
     protected final HomekitTypeProvider typeProvider;
     protected final TranslationProvider i18nProvider;
@@ -736,7 +740,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
      *
      * @return map of channel UID to characteristic
      */
-    protected abstract Map<ChannelUID, Characteristic> getEventedCharacteristics();
+    protected abstract Map<String, Characteristic> getEventedCharacteristics();
 
     /**
      * Gets the polled characteristics list for this accessory or its children.
@@ -744,7 +748,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
      *
      * @return map of channel UID to characteristic
      */
-    protected abstract Map<ChannelUID, Characteristic> getPolledCharacteristics();
+    protected abstract Map<String, Characteristic> getPolledCharacteristics();
 
     @Override
     public abstract void onEvent(String json);

@@ -143,7 +143,7 @@ public class HomekitBridgeHandler extends HomekitBaseAccessoryHandler implements
     }
 
     @Override
-    protected Map<ChannelUID, Characteristic> getEventedCharacteristics() {
+    protected Map<String, Characteristic> getEventedCharacteristics() {
         eventedCharacteristics.clear();
         getThing().getThings().forEach(child -> {
             if (child.getHandler() instanceof HomekitAccessoryHandler childAccessoryHandler) {
@@ -154,7 +154,7 @@ public class HomekitBridgeHandler extends HomekitBaseAccessoryHandler implements
     }
 
     @Override
-    protected Map<ChannelUID, Characteristic> getPolledCharacteristics() {
+    protected Map<String, Characteristic> getPolledCharacteristics() {
         polledCharacteristics.clear();
         getThing().getThings().forEach(child -> {
             if (child.getHandler() instanceof HomekitAccessoryHandler childAccessoryHandler) {
