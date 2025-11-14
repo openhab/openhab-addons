@@ -711,6 +711,7 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-antrun-plugin</artifactId>
         <version>3.1.0</version>
+        <inherited>false</inherited>
         <executions>
           <!-- 1. Download XSD -->
           <execution>
@@ -721,8 +722,8 @@
             <phase>generate-resources</phase>
             <configuration>
               <target>
-                <mkdir dir="${project.build.directory}/schemas"/>
-                <get dest="${project.build.directory}/schemas/thing-description-1.0.0.xsd" src="https://openhab.org/schemas/thing-description-1.0.0.xsd" usetimestamp="true"/>
+                <mkdir dir="${maven.multiModuleProjectDirectory}/target/schemas"/>
+                <get dest="${maven.multiModuleProjectDirectory}/target/schemas/thing-description-1.0.0.xsd" src="https://openhab.org/schemas/thing-description-1.0.0.xsd" usetimestamp="true"/>
               </target>
             </configuration>
           </execution>
@@ -736,11 +737,11 @@
             <phase>generate-resources</phase>
             <configuration>
               <target>
-                <mkdir dir="${project.build.directory}/schemas"/>
-                <echo file="${project.build.directory}/schemas/thing-type-xml-validation-catalog.xml"><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+                <mkdir dir="${maven.multiModuleProjectDirectory}/target/schemas"/>
+                <echo file="${maven.multiModuleProjectDirectory}/target/schemas/thing-type-xml-validation-catalog.xml"><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
 <catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog">
     <uri name="https://openhab.org/schemas/thing-description-1.0.0.xsd"
-         uri="file://${project.build.directory}/schemas/thing-description-1.0.0.xsd"/>
+         uri="file:///${maven.multiModuleProjectDirectory}/target/schemas/thing-description-1.0.0.xsd"/>
 </catalog>]]></echo>
               </target>
             </configuration>
@@ -762,7 +763,7 @@
             </validationSet>
           </validationSets>
           <catalogs>
-            <catalog>${project.build.directory}/schemas/thing-type-xml-validation-catalog.xml</catalog>
+            <catalog>file:///${session.topLevelProject.build.directory}/schemas/thing-type-xml-validation-catalog.xml</catalog>
           </catalogs>
         </configuration>
         <executions>
