@@ -411,6 +411,12 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
         if (status) {
             initJob();
         } else {
+            cancelPollingJob();
+
+            for (String subscription : serviceSubscriptions) {
+                removeSubscription(subscription);
+            }
+
             String msg = String.format("@text/offline.communication-lost [ \"%s\" ]", thing.getLabel());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, msg);
         }
@@ -613,12 +619,13 @@ public abstract class UpnpHandler extends BaseThingHandler implements UpnpIOPart
         for (String subscription : serviceSubscriptions) {
             addSubscription(subscription, SUBSCRIPTION_DURATION_SECONDS);
         }
-        subscriptionRefreshJob = upnpScheduler.scheduleWithFixedDelay(subscriptionRefresh,
-                SUBSCRIPTION_DURATION_SECONDS / 2, SUBSCRIPTION_DURATION_SECONDS / 2, TimeUnit.SECONDS);
+
+        // subscriptionRefreshJob = upnpScheduler.scheduleWithFixedDelay(subscriptionRefresh,
+        // SUBSCRIPTION_DURATION_SECONDS / 2, SUBSCRIPTION_DURATION_SECONDS / 2, TimeUnit.SECONDS);
 
         // This action should exist on all media devices and return a result, so a good candidate for testing the
         // connection.
-        upnpIOService.addStatusListener(this, CONNECTION_MANAGER, "GetCurrentConnectionIDs", config.refresh);
+        // upnpIOService.addStatusListener(this, CONNECTION_MANAGER, "GetCurrentConnectionIDs", config.refresh);
     }
 
     protected void removeSubscriptions() {
