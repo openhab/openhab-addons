@@ -208,7 +208,7 @@ public class CloudClient {
             options.callFactory = okHttpBuilder.build();
             options.webSocketFactory = okHttpBuilder.build();
             socket = IO.socket(baseURL, options);
-            URL parsed = new URL(baseURL);
+            URL parsed = URI.create(baseURL).toURL();
             protocol = parsed.getProtocol();
         } catch (URISyntaxException e) {
             logger.error("Error creating Socket.IO: {}", e.getMessage());

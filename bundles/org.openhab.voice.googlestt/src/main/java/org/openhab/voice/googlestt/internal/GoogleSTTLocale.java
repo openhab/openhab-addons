@@ -14,6 +14,7 @@ package org.openhab.voice.googlestt.internal;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -54,7 +55,7 @@ public class GoogleSTTLocale {
         }
         logger.debug("Loading languages from doc");
         try {
-            URL url = new URL(GC_STT_DOC_LANGUAGES);
+            URL url = URI.create(GC_STT_DOC_LANGUAGES).toURL();
             HttpURLConnection con = (HttpURLConnection) url.openConnection();
             con.setRequestMethod("GET");
             con.setRequestProperty("Content-Type", "text/html");

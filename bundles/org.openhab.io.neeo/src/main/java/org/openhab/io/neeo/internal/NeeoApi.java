@@ -17,6 +17,7 @@ import java.beans.PropertyChangeSupport;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.URI;
 import java.net.URL;
 import java.util.Map;
 import java.util.Objects;
@@ -189,8 +190,8 @@ public class NeeoApi implements AutoCloseable {
                     "Unable to create a callback URL because there is no primary address specified (please set the primary address in the configuration)");
         }
 
-        callbackUrl = new URL("http://" + primaryAddress + ":"
-                + (port == -1 ? NeeoConstants.DEFAULT_OPENHAB_PORT : port) + NeeoUtil.getServletUrl(brainId));
+        callbackUrl = URI.create("http://" + primaryAddress + ":"
+                + (port == -1 ? NeeoConstants.DEFAULT_OPENHAB_PORT : port) + NeeoUtil.getServletUrl(brainId)).toURL();
     }
 
     /**
