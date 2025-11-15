@@ -18,12 +18,16 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * The {@link ModbusFoxInverterHandlerFactory} is responsible for creating things and thing
@@ -36,6 +40,15 @@ import org.osgi.service.component.annotations.Component;
 public class ModbusFoxInverterHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_INVERTER);
+    private @Nullable LocaleProvider localeProvider;
+    private @Nullable TranslationProvider translationProvider;
+
+    @Activate
+    public ModbusFoxInverterHandlerFactory(final @Reference TranslationProvider translationProvider,
+            final @Reference LocaleProvider localeProvider) {
+        this.translationProvider = translationProvider;
+        this.localeProvider = localeProvider;
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -47,7 +60,7 @@ public class ModbusFoxInverterHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_INVERTER.equals(thingTypeUID)) {
-            return new SolakonOneInverterHandler(thing);
+            return new SolakonOneInverterHandler(thing, translationProvider, localeProvider);
         }
 
         return null;

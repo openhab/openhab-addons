@@ -14,15 +14,20 @@ package org.openhab.binding.modbus.foxinverter.internal;
 
 import static org.openhab.binding.modbus.foxinverter.internal.ModbusFoxInverterBindingConstants.*;
 
+import java.text.MessageFormat;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.modbus.handler.BaseModbusThingHandler;
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.io.transport.modbus.AsyncModbusFailure;
 import org.openhab.core.io.transport.modbus.AsyncModbusReadResult;
 import org.openhab.core.io.transport.modbus.ModbusBitUtilities;
@@ -37,6 +42,8 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -75,6 +82,9 @@ public class SolakonOneInverterHandler extends BaseModbusThingHandler {
     }
 
     private final Logger logger = LoggerFactory.getLogger(SolakonOneInverterHandler.class);
+    private @Nullable LocaleProvider localeProvider;
+    private @Nullable TranslationProvider translationProvider;
+    private final Bundle bundle;
 
     private List<ModbusRequest> modbusRequests = new ArrayList<>();
 
@@ -82,8 +92,12 @@ public class SolakonOneInverterHandler extends BaseModbusThingHandler {
     private boolean alarmState = false; // previous alarm state
     private boolean statusFault = false; // cache status of fault bit
 
-    public SolakonOneInverterHandler(Thing thing) {
+    public SolakonOneInverterHandler(Thing thing, final @Nullable TranslationProvider translationProvider,
+            final @Nullable LocaleProvider localeProvider) {
         super(thing);
+        this.localeProvider = localeProvider;
+        this.translationProvider = translationProvider;
+        bundle = FrameworkUtil.getBundle(this.getClass());
     }
 
     /**
@@ -153,13 +167,13 @@ public class SolakonOneInverterHandler extends BaseModbusThingHandler {
 
         if (config.pollInterval <= 0) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Invalid poll interval: " + config.pollInterval);
+                    getTranslation("offline.config.poll_interval", config.pollInterval));
             return;
         }
 
         if (config.maxTries <= 0) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Invalid Maximum Tries When Reading: " + config.maxTries);
+                    getTranslation("offline.config.max_tries", config.maxTries));
             return;
         }
 
@@ -371,10 +385,36 @@ public class SolakonOneInverterHandler extends BaseModbusThingHandler {
         // TODO improve error handling, stop regular polling on repeated errors, sporadic polling only
         this.logger.debug("Failed to get Modbus data", error.getCause());
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                "Failed to retrieve data: " + error.getCause().getMessage());
+                getTranslation("offline.communication_error", error.getCause().getMessage()));
     }
 
     private ChannelUID createChannelUid(SolakonOneInverterRegisters register) {
         return new ChannelUID(thing.getUID(), "fi-" + register.getChannelGroup(), "fi-" + register.getChannelName());
+    }
+
+    /**
+     * get translated text
+     *
+     * @param text text to be translated, may contain placeholders \{n\} for the n-th optional argument of this function
+     * @param arguments any optional arguments, will be inserted
+     * @return translated text with substitutions if translationProvider is set and provides a translation, otherwise
+     *         returns original text with substitutions
+     */
+    public String getTranslation(final String text, @Nullable Object @Nullable... arguments) {
+        if (translationProvider != null) {
+            // localeProvider might be null, but if not, getLocale will return NonNull Locale;
+            // locale cannot be cached, as getLocale() will return different result once locale is changed by user
+            final Locale locale = (localeProvider != null) ? localeProvider.getLocale() : Locale.getDefault();
+            final String res = translationProvider.getText(bundle, text, text, locale, arguments);
+            if (res != null) {
+                return res;
+            }
+        }
+        // translating not possible, we still have the original text without any substitutions
+        if (arguments == null || arguments.length == 0) {
+            return text;
+        }
+        // else execute pattern substitution in untranslated text
+        return MessageFormat.format(text, arguments);
     }
 }
