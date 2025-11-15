@@ -763,7 +763,7 @@
             </validationSet>
           </validationSets>
           <catalogs>
-            <catalog>file:///${session.topLevelProject.build.directory}/schemas/thing-type-xml-validation-catalog.xml</catalog>
+            <catalog>file:///${maven.multiModuleProjectDirectory}/target/schemas/thing-type-xml-validation-catalog.xml</catalog>
           </catalogs>
         </configuration>
         <executions>
