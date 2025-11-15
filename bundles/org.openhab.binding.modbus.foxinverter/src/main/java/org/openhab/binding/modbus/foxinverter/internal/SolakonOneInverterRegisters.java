@@ -39,7 +39,7 @@ public enum SolakonOneInverterRegisters {
 
     // status is 1 during start and shutdown, 4 during normal operation, 0x40 on fault
     // (poweroff cannot be read, as it will shut down Modbus communication)
-    HIDDEN_STATUS1(39063, UINT16, BigDecimal.ONE, DecimalType::new, ""),
+    HIDDEN_STATUS1(39063, UINT16, BigDecimal.ONE, DecimalType::new, "overview"),
     // STATUS3 seems to use only bit0, but it does not indicate the grid status properly
     // grid outage could be detected via GRID_FREQUENCY register
     // STATUS_ON_GRID(39065, UINT32, BigDecimal.ONE, switchFactory(), "status"),
@@ -65,7 +65,7 @@ public enum SolakonOneInverterRegisters {
     PHASE_B_VOLTAGE(39124, INT16, ConversionConstants.DIV_BY_TEN, quantityFactory(Units.VOLT), "grid-information"),
     PHASE_C_VOLTAGE(39125, INT16, ConversionConstants.DIV_BY_TEN, quantityFactory(Units.VOLT), "grid-information"),
 
-    ACTIVE_POWER(39134, INT32, BigDecimal.ONE, quantityFactory(Units.WATT), "overview"),
+    HIDDEN_ACTIVE_POWER(39134, INT32, BigDecimal.ONE, quantityFactory(Units.WATT), "overview"),
     REACTIVE_POWER(39136, INT32, BigDecimal.ONE, quantityFactory(Units.VAR), "overview"),
     POWER_FACTOR(39138, INT16, ConversionConstants.DIV_BY_THOUSAND, DecimalType::new, "overview"),
     INTERNAL_TEMPERATURE(39141, INT16, ConversionConstants.DIV_BY_TEN, quantityFactory(Units.KELVIN),
@@ -94,6 +94,11 @@ public enum SolakonOneInverterRegisters {
     MPPT4_POWER(39285, INT32, BigDecimal.ONE, quantityFactory(Units.WATT), "mppt-information"),
 
     BATTERY_LEVEL(39424, UINT16, ConversionConstants.DIV_BY_HUNDRED, DecimalType::new, "battery-information"),
+
+    BATTERY_MINIMUM_SOC(46609, UINT16, ConversionConstants.DIV_BY_HUNDRED, DecimalType::new, "battery-information"),
+    BATTERY_MAXIMUM_SOC(46610, UINT16, ConversionConstants.DIV_BY_HUNDRED, DecimalType::new, "battery-information"),
+    BATTERY_MINIMUM_SOC_ON_GRID(46611, UINT16, ConversionConstants.DIV_BY_HUNDRED, DecimalType::new,
+            "battery-information"),
 
     // 0:off 2:on, special handling in SolakonOneInverterHandler
     HIDDEN_EPS_OUTPUT(46613, UINT16, BigDecimal.ONE, DecimalType::new, "emergency-power-supply");
@@ -129,15 +134,6 @@ public enum SolakonOneInverterRegisters {
      * Thing data remoteReactivePower "Fernsteuerung Blindleistung" [ readStart="46005", readValueType="int32_swap",
      * writeStart="46005", writeValueType="int32_swap", writeType="holding" ]
      * Thing data remoteTimeoutCountdown "Fernsteuerung Countdown" [ readStart="46007", readValueType="uint16" ]
-     * 
-     * Thing data minimumSoc "Minimaler SOC" [ readStart="46609", readValueType="uint16", writeStart="46609",
-     * writeValueType="uint16", writeType="holding" ]
-     * Thing data maximumSoc "Maximaler SOC" [ readStart="46610", readValueType="uint16", writeStart="46610",
-     * writeValueType="uint16", writeType="holding" ]
-     * Thing data minimumSocOnGrid "Minimaler SOC OnGrid" [ readStart="46611", readValueType="uint16",
-     * writeStart="46611", writeValueType="uint16", writeType="holding" ]
-     * Thing data epsOutput "EPS Ausgabe" [ readStart="46613", readValueType="uint16", writeStart="46613",
-     * writeValueType="uint16", writeType="holding" ]
      */
 
     private final BigDecimal multiplier;

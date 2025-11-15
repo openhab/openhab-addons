@@ -32,6 +32,9 @@
 			<channel id="fi-power-factor" typeId="fi-power-factor"/>
 			<channel id="fi-internal-temperature" typeId="fi-internal-temperature"/>
 			<channel id="fi-meter-connected" typeId="fi-meter-connected"/>
+			<channel id="fi-status-alarm" typeId="fi-status-alarm"/>
+			<channel id="fi-status-operation" typeId="fi-status-operation"/>
+			<channel id="fi-status-standby" typeId="fi-status-standby"/>
 		</channels>
 	</channel-group-type>
 
@@ -63,6 +66,9 @@
 			<channel id="fi-battery-power" typeId="fi-battery-power"/>
 			<channel id="fi-battery-level" typeId="fi-battery-level"/>
 			<channel id="fi-charging-power" typeId="fi-charging-power"/>
+			<channel id="fi-battery-minimum-soc" typeId="fi-battery-minimum-soc"/>
+			<channel id="fi-battery-maximum-soc" typeId="fi-battery-maximum-soc"/>
+			<channel id="fi-battery-minimum-soc-on-grid" typeId="fi-battery-minimum-soc-on-grid"/>
 		</channels>
 	</channel-group-type>
 
@@ -74,6 +80,7 @@
 			<channel id="fi-phase-c-voltage" typeId="fi-phase-c-voltage"/>
 			<channel id="fi-grid-frequency" typeId="fi-grid-frequency"/>
 			<channel id="fi-export-power" typeId="fi-export-power"/>
+			<channel id="fi-status-on-grid" typeId="fi-status-on-grid"/>
 		</channels>
 	</channel-group-type>
 
@@ -143,6 +150,30 @@
 	<channel-type id="fi-meter-connected" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Meter Connected</label>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="fi-status-alarm" advanced="false">
+		<item-type>Switch</item-type>
+		<label>System Status: Alarm</label>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="fi-status-operation" advanced="false">
+		<item-type>Switch</item-type>
+		<label>System Status: Operation</label>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="fi-status-standby" advanced="true">
+		<item-type>Switch</item-type>
+		<label>System Status: Standby</label>
 		<tags>
 			<tag>Status</tag>
 		</tags>
@@ -330,6 +361,16 @@
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
+	<channel-type id="fi-status-on-grid" advanced="true">
+		<item-type>Switch</item-type>
+		<label>On Grid</label>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
 
 	<channel-type id="fi-battery-voltage" advanced="true">
 		<item-type>Number:ElectricPotential</item-type>
@@ -380,6 +421,33 @@
 			<tag>Power</tag>
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="fi-battery-minimum-soc">
+		<item-type unitHint="one">Number:Dimensionless</item-type>
+		<label>Battery minimum state of charge</label>
+		<category>Battery</category>
+		<tags>
+			<tag>Energy</tag>
+		</tags>
+		<state pattern="%d %%" readOnly="false"/>
+	</channel-type>
+	<channel-type id="fi-battery-maximum-soc">
+		<item-type unitHint="one">Number:Dimensionless</item-type>
+		<label>Battery maximum state of charge</label>
+		<category>Battery</category>
+		<tags>
+			<tag>Energy</tag>
+		</tags>
+		<state pattern="%d %%" readOnly="false"/>
+	</channel-type>
+	<channel-type id="fi-battery-minimum-soc-on-grid">
+		<item-type unitHint="one">Number:Dimensionless</item-type>
+		<label>Battery minimum state of charge (on grid)</label>
+		<category>Battery</category>
+		<tags>
+			<tag>Energy</tag>
+		</tags>
+		<state pattern="%d %%" readOnly="false"/>
 	</channel-type>
 	<channel-type id="fi-eps-output">
 		<item-type>Switch</item-type>

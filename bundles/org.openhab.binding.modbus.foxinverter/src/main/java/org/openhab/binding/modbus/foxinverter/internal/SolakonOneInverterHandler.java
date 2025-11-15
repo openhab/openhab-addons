@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.modbus.handler.BaseModbusThingHandler;
@@ -51,7 +52,6 @@ public class SolakonOneInverterHandler extends BaseModbusThingHandler {
     // required if you are not allowed to read certain registers ranges
     public static final int ENFORCE_NEW_REQUEST = -1;
 
-    @NonNullByDefault
     private static final class ModbusRequest {
 
         private final Deque<SolakonOneInverterRegisters> registers;
@@ -64,9 +64,9 @@ public class SolakonOneInverterHandler extends BaseModbusThingHandler {
 
         private ModbusReadRequestBlueprint initReadRequest(Deque<SolakonOneInverterRegisters> registers, int slaveId,
                 int tries) {
-            int firstRegister = registers.getFirst().getRegisterNumber();
-            int lastRegister = registers.getLast().getRegisterNumber();
-            int length = lastRegister - firstRegister + registers.getLast().getRegisterCount();
+            int firstRegister = Objects.requireNonNull(registers.getFirst()).getRegisterNumber();
+            int lastRegister = Objects.requireNonNull(registers.getLast()).getRegisterNumber();
+            int length = lastRegister - firstRegister + Objects.requireNonNull(registers.getLast()).getRegisterCount();
             assert length <= ModbusConstants.MAX_REGISTERS_READ_COUNT;
 
             return new ModbusReadRequestBlueprint(slaveId, ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS,
@@ -77,6 +77,10 @@ public class SolakonOneInverterHandler extends BaseModbusThingHandler {
     private final Logger logger = LoggerFactory.getLogger(SolakonOneInverterHandler.class);
 
     private List<ModbusRequest> modbusRequests = new ArrayList<>();
+
+    private int[] alarm = new int[3]; // cache status of the 3 alarm registers
+    private boolean alarmState = false; // previous alarm state
+    private boolean statusFault = false; // cache status of fault bit
 
     public SolakonOneInverterHandler(Thing thing) {
         super(thing);
@@ -129,6 +133,8 @@ public class SolakonOneInverterHandler extends BaseModbusThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        logger.debug("Inverter {}, channel {} received command {}", getThing().getUID(), channelUID, command);
+
         if (command instanceof RefreshType && !this.modbusRequests.isEmpty()) {
             logger.info("REFRESH command received, submitting one-time polls for all registers.");
 
@@ -223,11 +229,11 @@ public class SolakonOneInverterHandler extends BaseModbusThingHandler {
                     (AsyncModbusReadResult result) -> {
                         ModbusBitUtilities.extractStateFromRegisters(result.getRegisters().get(), 0,
                                 ModbusConstants.ValueType.UINT32).ifPresent(v -> {
-                                    properties.put(PROPERTY_RATED_POWER, v.toBigDecimal().toString() + " W");
+                                    properties.put(PROPERTY_RATED_POWER, Objects.toString(v.toBigDecimal()) + " W");
                                 });
                         ModbusBitUtilities.extractStateFromRegisters(result.getRegisters().get(), 2,
                                 ModbusConstants.ValueType.UINT32).ifPresent(v -> {
-                                    properties.put(PROPERTY_MAX_ACTIVE_POWER, v.toBigDecimal().toString() + " W");
+                                    properties.put(PROPERTY_MAX_ACTIVE_POWER, Objects.toString(v.toBigDecimal()) + " W");
                                 });
                     }, (AsyncModbusFailure<ModbusReadRequestBlueprint> error) -> {
                     });
@@ -237,14 +243,109 @@ public class SolakonOneInverterHandler extends BaseModbusThingHandler {
         return properties;
     }
 
+    private void processAlarmState() {
+        boolean currentAlarmState = (alarm[0] != 0) || (alarm[1] != 0) || (alarm[2] != 0) || statusFault;
+        if (currentAlarmState != alarmState) {
+            alarmState = currentAlarmState;
+            if (alarmState) {
+                logger.warn("Inverter {} is in Alarm State: Alarm1=0x{}, Alarm2=0x{}, Alarm3=0x{}, StatusFault={}",
+                        getThing().getUID(), Integer.toHexString(alarm[0]), Integer.toHexString(alarm[1]),
+                        Integer.toHexString(alarm[2]), statusFault);
+                // indicate severe error also by setting the ThingStatus
+                // (UNKNOWN seems more appropriate than OFFLINE, as the device still gets commands)
+                updateStatus(ThingStatus.UNKNOWN);
+            } else {
+                logger.info("Inverter {}, alarm resolved", getThing().getUID());
+                updateStatus(ThingStatus.ONLINE);
+            }
+        }
+        logger.debug("{} {}", "STATUS_ALARM", OnOffType.from(alarmState));
+        updateState(new ChannelUID(thing.getUID(), "fi-overview", "fi-status-alarm"), OnOffType.from(alarmState));
+    }
+
+    private void processHiddenChannel(SolakonOneInverterRegisters channel, org.openhab.core.types.State v) {
+        // this block deals with channels which are not directly exposed, but
+        // used to update other channels
+        logger.trace("Update on internal channel {} to {}", channel.getChannelName(), v);
+        DecimalType d = v.as(DecimalType.class);
+        if (d == null) {
+            logger.warn("Internal channel {} is not DecimalType, cannot process", channel.getChannelName());
+        } else {
+            int i = d.intValue();
+            switch (channel.getChannelName()) {
+                // active power reports -30000 W during startup, to be suppressed
+                case "hidden-active-power":
+                    if (i != -30000) {
+                        logger.debug("{} {}", "ACTIVE_POWER", v);
+                        updateState(new ChannelUID(thing.getUID(), "fi-" + channel.getChannelGroup(), "fi-active-power"),
+                            v);
+                    }
+                    break;
+                // grid frequency is used to create STATUS_ON_GRID
+                case "hidden-grid-frequency":
+                    logger.debug("{} {}", "GRID_FREQUENCY", v);
+                    updateState(new ChannelUID(thing.getUID(), "fi-" + channel.getChannelGroup(), "fi-grid-frequency"),
+                            v);
+                    OnOffType state = OnOffType.from(i >= 1);
+                    logger.debug("{} {}", "STATUS_ON_GRID", state);
+                    updateState(new ChannelUID(thing.getUID(), "fi-" + channel.getChannelGroup(), "fi-status-on-grid"),
+                            state);
+                    break;
+                // status seems to use only 3 bits, export a separate channel for each
+                case "hidden-status1":
+                    boolean statusStandby = (i & 0x01) != 0;
+                    boolean statusOperation = (i & 0x02) != 0;
+                    logger.debug("{} {}", "STATUS_STANDBY", OnOffType.from(statusStandby));
+                    updateState(new ChannelUID(thing.getUID(), "fi-" + channel.getChannelGroup(), "fi-status-standby"),
+                            OnOffType.from(statusStandby));
+                    logger.debug("{} {}", "STATUS_OPERATION", OnOffType.from(statusOperation));
+                    updateState(
+                            new ChannelUID(thing.getUID(), "fi-" + channel.getChannelGroup(), "fi-status-operation"),
+                            OnOffType.from(statusOperation));
+                    // this is a global variable, as the fault state is stored and evaluated for alarm output
+                    statusFault = (i & 0x40) != 0;
+                    processAlarmState();
+                    break;
+                // alarm states are currently
+                case "hidden-alarm1":
+                    alarm[0] = i;
+                    processAlarmState();
+                    break;
+                case "hidden-alarm2":
+                    alarm[1] = i;
+                    processAlarmState();
+                    break;
+                case "hidden-alarm3":
+                    alarm[2] = i;
+                    processAlarmState();
+                    break;
+                // EPS output state is set to 0 or 2 by the app
+                case "hidden-eps-output":
+                    OnOffType epsState = OnOffType.OFF;
+                    if (i == 2) {
+                        epsState = OnOffType.ON;
+                    }
+                    logger.debug("{} {}", "EPS_OUTPUT", epsState);
+                    updateState(new ChannelUID(thing.getUID(), "fi-" + channel.getChannelGroup(), "fi-eps-output"),
+                            epsState);
+                    break;
+                default:
+                    logger.warn("Unhandled internal channel {}", channel.getChannelName());
+            }
+        }
+    }
+
     private void readSuccessful(ModbusRequest request, AsyncModbusReadResult result) {
         logger.trace("readSuccessful {}: {}", request, result);
         result.getRegisters().ifPresent(registers -> {
             if (getThing().getStatus() != ThingStatus.ONLINE) {
-                updateStatus(ThingStatus.ONLINE);
+                // if alarm is set, do not set ONLINE as is would override the alarm indication
+                if (!alarmState) {
+                    updateStatus(ThingStatus.ONLINE);
+                }
             }
 
-            int firstRegister = request.registers.getFirst().getRegisterNumber();
+            int firstRegister = Objects.requireNonNull(request.registers.getFirst()).getRegisterNumber();
 
             for (SolakonOneInverterRegisters channel : request.registers) {
                 int index = channel.getRegisterNumber() - firstRegister;
@@ -255,47 +356,7 @@ public class SolakonOneInverterHandler extends BaseModbusThingHandler {
                             if (!channel.getChannelName().startsWith("hidden-")) {
                                 updateState(createChannelUid(channel), v);
                             } else {
-                                logger.trace("Update on internal channel {} to {}", channel.getChannelName(), v);
-                                int i = v.as(DecimalType.class).intValue();
-                                switch (channel.getChannelName()) {
-                                    case "hidden-grid-frequency":
-                                        logger.debug("{} {}", "GRID_FREQUENCY", v);
-                                        updateState(new ChannelUID(thing.getUID(), "fi-" + channel.getChannelGroup(),
-                                                "fi-grid-frequency"), v);
-                                        OnOffType state = OnOffType.from(i >= 1);
-                                        logger.debug("{} {}", "STATUS_ON_GRID", state);
-                                        updateState(new ChannelUID(thing.getUID(), "fi-" + channel.getChannelGroup(),
-                                                "fi-status-on-grid"), state);
-                                        break;
-                                    case "hidden-status1":
-                                        boolean statusStandby = (i & 0x01) != 0;
-                                        boolean statusOperation = (i & 0x02) != 0;
-                                        boolean statusFault = (i & 0x40) != 0;
-                                        updateState(new ChannelUID(thing.getUID(), "fi-" + channel.getChannelGroup(),
-                                                "fi-status-standby"), OnOffType.from(statusStandby));
-                                        updateState(new ChannelUID(thing.getUID(), "fi-" + channel.getChannelGroup(),
-                                                "fi-status-operation"), OnOffType.from(statusOperation));
-                                        updateState(new ChannelUID(thing.getUID(), "fi-" + channel.getChannelGroup(),
-                                                "fi-status-fault"), OnOffType.from(statusFault));
-                                        break;
-                                    case "hidden-alarm1":
-                                        break;
-                                    case "hidden-alarm2":
-                                        break;
-                                    case "hidden-alarm3":
-                                        break;
-                                    case "hidden-eps-output":
-                                        OnOffType epsState = OnOffType.OFF;
-                                        if (i == 2) {
-                                            epsState = OnOffType.ON;
-                                        }
-                                        logger.debug("{} {}", "EPS_OUTPUT", epsState);
-                                        updateState(new ChannelUID(thing.getUID(), "fi-" + channel.getChannelGroup(),
-                                                "fi-eps-output"), epsState);
-                                        break;
-                                    default:
-                                        logger.warn("Unhandled internal channel {}", channel.getChannelName());
-                                }
+                                processHiddenChannel(channel, v);
                             }
                         }, () -> {
                             logger.warn("Could not extract state for channel {}", channel.getChannelName());
@@ -305,6 +366,7 @@ public class SolakonOneInverterHandler extends BaseModbusThingHandler {
     }
 
     private void readError(AsyncModbusFailure<ModbusReadRequestBlueprint> error) {
+        // TODO improve error handling, stop regular polling on repeated errors, sporadic polling only
         this.logger.debug("Failed to get Modbus data", error.getCause());
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                 "Failed to retrieve data: " + error.getCause().getMessage());

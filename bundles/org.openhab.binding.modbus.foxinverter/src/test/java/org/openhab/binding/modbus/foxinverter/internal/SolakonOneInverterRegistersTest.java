@@ -48,7 +48,7 @@ class SolakonOneInverterRegistersTest {
 
         State state = batteryLevelRegister.createState(decimalTypeValue);
         assertInstanceOf(DecimalType.class, state);
-        assertEquals("100", state.toFullString());
+        assertEquals("1.00", state.toFullString());
     }
 
     @Test
