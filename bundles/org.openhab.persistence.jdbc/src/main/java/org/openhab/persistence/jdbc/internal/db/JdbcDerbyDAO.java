@@ -186,7 +186,7 @@ public class JdbcDerbyDAO extends JdbcBaseDAO {
             String simpleName, ZoneId timeZone) {
         logger.debug(
                 "JDBC::getHistItemFilterQueryProvider filter = {}, numberDecimalcount = {}, table = {}, simpleName = {}",
-                StringUtilsExt.filterToString(filter), numberDecimalcount, table, simpleName);
+                filter, numberDecimalcount, table, simpleName);
 
         String filterString = "";
         ZonedDateTime beginDate = filter.getBeginDate();
