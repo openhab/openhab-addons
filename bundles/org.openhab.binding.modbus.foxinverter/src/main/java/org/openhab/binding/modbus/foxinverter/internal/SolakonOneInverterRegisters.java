@@ -25,6 +25,7 @@ import org.openhab.core.io.transport.modbus.ModbusConstants.ValueType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.State;
 
@@ -68,8 +69,7 @@ public enum SolakonOneInverterRegisters {
     HIDDEN_ACTIVE_POWER(39134, INT32, BigDecimal.ONE, quantityFactory(Units.WATT), "overview"),
     REACTIVE_POWER(39136, INT32, BigDecimal.ONE, quantityFactory(Units.VAR), "overview"),
     POWER_FACTOR(39138, INT16, ConversionConstants.DIV_BY_THOUSAND, DecimalType::new, "overview"),
-    INTERNAL_TEMPERATURE(39141, INT16, ConversionConstants.DIV_BY_TEN, quantityFactory(Units.KELVIN),
-            ConversionConstants.CELSIUS_TO_KELVIN, "overview"),
+    INTERNAL_TEMPERATURE(39141, INT16, ConversionConstants.DIV_BY_TEN, quantityFactory(SIUnits.CELSIUS), "overview"),
 
     TOTAL_PV_GENERATION(39149, UINT32, ConversionConstants.DIV_BY_HUNDRED, quantityFactory(Units.KILOWATT_HOUR),
             "overview"),

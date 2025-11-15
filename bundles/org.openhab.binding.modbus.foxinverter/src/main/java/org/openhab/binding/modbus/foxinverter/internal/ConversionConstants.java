@@ -14,7 +14,6 @@ package org.openhab.binding.modbus.foxinverter.internal;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.function.Function;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -36,10 +35,4 @@ final class ConversionConstants {
     static final BigDecimal DIV_BY_TEN = new BigDecimal(BigInteger.ONE, 1);
     static final BigDecimal DIV_BY_HUNDRED = new BigDecimal(BigInteger.ONE, 2);
     static final BigDecimal DIV_BY_THOUSAND = new BigDecimal(BigInteger.ONE, 3);
-
-    /**
-     * Value conversion from Celsius to Kelvin.
-     */
-    static final Function<BigDecimal, BigDecimal> CELSIUS_TO_KELVIN = (BigDecimal celsius) -> celsius
-            .add(new BigDecimal(273.15f));
 }
