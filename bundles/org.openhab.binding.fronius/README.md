@@ -78,8 +78,8 @@ The binding has no configuration options, all configuration is done at `bridge`,
 | `inverterdatachanneludc`             | Number:ElectricPotential | DC voltage                                                                                                        |
 | `inverterdatachanneludc2`            | Number:ElectricPotential | DC voltage of MPPT tracker 2                                                                                      |
 | `inverterdatachanneludc3`            | Number:ElectricPotential | DC voltage of MPPT tracker 3                                                                                      |
-| `inverterdatachanneldayenergy`       | Number:Energy            | Energy generated on current day                                                                                   |
-| `inverterdatachannelyear`            | Number:Energy            | Energy generated in current year                                                                                  |
+| `inverterdatachanneldayenergy`       | Number:Energy            | Energy generated on current day, GEN24/Tauro/Verto: will always report null                                                                                   |
+| `inverterdatachannelyear`            | Number:Energy            | Energy generated in current year, GEN24/Tauro/Verto: will always report null                                                                                  |
 | `inverterdatachanneltotal`           | Number:Energy            | Energy generated overall                                                                                          |
 | `inverterdatadevicestatuserrorcode`  | Number                   | Device error code                                                                                                 |
 | `inverterdatadevicestatusstatuscode` | Number                   | Device status code<br />`0` - `6` Startup<br />`7` Running <br />`8` Standby<br />`9` Bootloading<br />`10` Error |
