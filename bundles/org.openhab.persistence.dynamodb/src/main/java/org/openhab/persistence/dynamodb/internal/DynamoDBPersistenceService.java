@@ -358,7 +358,7 @@ public class DynamoDBPersistenceService implements QueryablePersistenceService {
         logIfManyQueuedTasks();
         Instant start = Instant.now();
         String filterDescription = filter.toString();
-        logger.trace("Got a query with filter {}", filter);
+        logger.trace("Got a query with filter {}", filterDescription);
         DynamoDbEnhancedAsyncClient localClient = client;
         DynamoDBTableNameResolver localTableNameResolver = tableNameResolver;
         if (!isProperlyConfigured) {

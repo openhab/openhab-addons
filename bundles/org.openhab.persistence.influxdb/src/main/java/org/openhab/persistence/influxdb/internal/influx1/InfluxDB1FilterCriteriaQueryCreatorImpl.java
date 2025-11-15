@@ -30,7 +30,6 @@ import org.openhab.core.types.State;
 import org.openhab.persistence.influxdb.internal.FilterCriteriaQueryCreator;
 import org.openhab.persistence.influxdb.internal.InfluxDBConfiguration;
 import org.openhab.persistence.influxdb.internal.InfluxDBMetadataService;
-import org.openhab.persistence.influxdb.internal.InfluxDBVersion;
 
 /**
  * Implementation of {@link FilterCriteriaQueryCreator} for InfluxDB 1.0
@@ -74,8 +73,8 @@ public class InfluxDB1FilterCriteriaQueryCreatorImpl implements FilterCriteriaQu
 
         State filterState = criteria.getState();
         if (filterState != null) {
-            where.and(new SimpleClause(COLUMN_VALUE_NAME_V1,
-                    getOperationSymbol(criteria.getOperator()), stateToObject(filterState)));
+            where.and(new SimpleClause(COLUMN_VALUE_NAME_V1, getOperationSymbol(criteria.getOperator()),
+                    stateToObject(filterState)));
         }
 
         if (criteria.getOrdering() == FilterCriteria.Ordering.DESCENDING) {
@@ -122,7 +121,7 @@ public class InfluxDB1FilterCriteriaQueryCreatorImpl implements FilterCriteriaQu
     }
 
     private String getOperationSymbol(FilterCriteria.Operator operator) {
-        if (operator == NEQ) {
+        if (operator == FilterCriteria.Operator.NEQ) {
             return "<>";
         }
         return operator.getSymbol();

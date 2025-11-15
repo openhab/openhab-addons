@@ -26,7 +26,6 @@ import org.openhab.core.types.State;
 import org.openhab.persistence.influxdb.internal.FilterCriteriaQueryCreator;
 import org.openhab.persistence.influxdb.internal.InfluxDBConfiguration;
 import org.openhab.persistence.influxdb.internal.InfluxDBMetadataService;
-import org.openhab.persistence.influxdb.internal.InfluxDBVersion;
 
 import com.influxdb.query.dsl.Flux;
 import com.influxdb.query.dsl.functions.RangeFlux;
@@ -81,8 +80,7 @@ public class InfluxDB2FilterCriteriaQueryCreatorImpl implements FilterCriteriaQu
         State filterState = criteria.getState();
         if (filterState != null) {
             Restrictions restrictions = Restrictions.and(Restrictions.field().equal(FIELD_VALUE_NAME),
-                    Restrictions.value().custom(stateToObject(filterState),
-                            criteria.getOperator().getSymbol()));
+                    Restrictions.value().custom(stateToObject(filterState), criteria.getOperator().getSymbol()));
             flux = flux.filter(restrictions);
         }
 

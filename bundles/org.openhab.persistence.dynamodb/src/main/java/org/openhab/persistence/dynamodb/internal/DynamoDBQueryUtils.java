@@ -21,7 +21,6 @@ import org.openhab.core.i18n.UnitProvider;
 import org.openhab.core.items.GenericItem;
 import org.openhab.core.items.Item;
 import org.openhab.core.persistence.FilterCriteria;
-import org.openhab.core.persistence.FilterCriteria.Operator;
 import org.openhab.core.persistence.FilterCriteria.Ordering;
 
 import software.amazon.awssdk.enhanced.dynamodb.AttributeConverter;
