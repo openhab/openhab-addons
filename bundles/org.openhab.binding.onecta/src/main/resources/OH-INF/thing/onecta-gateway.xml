@@ -55,6 +55,10 @@
 		<item-type>Switch</item-type>
 		<label>Daylight saving time enabled</label>
 		<description>Daylight saving time enabled</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="false"/>
 	</channel-type>
 
@@ -62,6 +66,9 @@
 		<item-type>String</item-type>
 		<label>firmware-version</label>
 		<description>firmware-version</description>
+		<tags>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -69,6 +76,10 @@
 		<item-type>Switch</item-type>
 		<label>Is firmware update supported</label>
 		<description>Is firmware update supported</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -76,6 +87,10 @@
 		<item-type>Switch</item-type>
 		<label>Is in error state</label>
 		<description>Is in error state</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -83,6 +98,10 @@
 		<item-type>Switch</item-type>
 		<label>Led enabled</label>
 		<description>Led enabled</description>
+		<tags>
+			<tag>Switch</tag>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="false"/>
 	</channel-type>
 
@@ -90,6 +109,9 @@
 		<item-type>String</item-type>
 		<label>Region code</label>
 		<description>Region code</description>
+		<tags>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -97,6 +119,9 @@
 		<item-type>String</item-type>
 		<label>Serial number</label>
 		<description>Serial number</description>
+		<tags>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -105,6 +130,9 @@
 		<label>SSID</label>
 		<description>SSID</description>
 		<category>network</category>
+		<tags>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -112,6 +140,10 @@
 		<item-type>String</item-type>
 		<label>Time zone</label>
 		<description>Time zone</description>
+		<tags>
+			<tag>Info</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="false"/>
 	</channel-type>
 
@@ -120,15 +152,21 @@
 		<label>WiFi connection SSID</label>
 		<description>WiFi connection SSID</description>
 		<category>network</category>
+		<tags>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="gw-wifi-connection-strength">
 		<item-type>Number</item-type>
-
 		<label>Wifi connection strength</label>
 		<description>Wifi connection strength</description>
 		<category>QualityOfService</category>
+		<tags>
+			<tag>Info</tag>
+			<tag>SignalStrength</tag>
+		</tags>
 		<state readOnly="true" pattern="%.0fdB"/>
 	</channel-type>
 
@@ -136,6 +174,9 @@
 		<item-type>String</item-type>
 		<label>Model info</label>
 		<description>Model info</description>
+		<tags>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -144,6 +185,9 @@
 		<label>IP address</label>
 		<description>IP address</description>
 		<category>network</category>
+		<tags>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -152,6 +196,9 @@
 		<label>MAC address</label>
 		<description>MAC address</description>
 		<category>network</category>
+		<tags>
+			<tag>Info</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 

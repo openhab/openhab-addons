@@ -230,6 +230,10 @@
 		<label>Energy heating last year (01) February</label>
 		<description>The energy usage for heating last year February</description>
 		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="acunit-energy-heating-month-2" advanced="true">

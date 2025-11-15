@@ -49,6 +49,10 @@
 		<label>Dry keep setting</label>
 		<description>Dry keep setting</description>
 		<category>Switch</category>
+        <tags>
+            <tag>Switch</tag>
+            <tag>Info</tag>
+        </tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="idu-deltad-value">
