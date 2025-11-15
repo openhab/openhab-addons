@@ -25,10 +25,12 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.jellyfin.internal.api.ApiClient;
 import org.openhab.binding.jellyfin.internal.api.generated.current.model.SystemInfo;
 import org.openhab.binding.jellyfin.internal.api.generated.current.model.UserDto;
+import org.openhab.binding.jellyfin.internal.discovery.ClientDiscoveryService;
 import org.openhab.binding.jellyfin.internal.events.ErrorEventBus;
 import org.openhab.binding.jellyfin.internal.exceptions.ContextualExceptionHandler;
 import org.openhab.binding.jellyfin.internal.handler.tasks.AbstractTask;
 import org.openhab.binding.jellyfin.internal.handler.tasks.ConnectionTask;
+import org.openhab.binding.jellyfin.internal.handler.tasks.DiscoveryTask;
 import org.openhab.binding.jellyfin.internal.handler.tasks.ServerSyncTask;
 import org.openhab.binding.jellyfin.internal.handler.tasks.TaskFactoryInterface;
 import org.openhab.binding.jellyfin.internal.handler.tasks.UpdateTask;
@@ -71,7 +73,8 @@ public class TaskManager implements TaskManagerInterface {
 
     @Override
     public Map<String, AbstractTask> initializeTasks(ApiClient apiClient, ErrorEventBus errorEventBus,
-            Consumer<SystemInfo> connectionHandler, Consumer<List<UserDto>> usersHandler) {
+            Consumer<SystemInfo> connectionHandler, Consumer<List<UserDto>> usersHandler, ServerHandler serverHandler,
+            @Nullable ClientDiscoveryService discoveryService) {
 
         if (taskFactory == null) {
             throw new IllegalStateException("TaskFactory not injected. Use constructor with TaskFactory parameter.");
@@ -88,6 +91,10 @@ public class TaskManager implements TaskManagerInterface {
 
         tasks.put(ServerSyncTask.TASK_ID, taskFactory.createServerSyncTask(apiClient, usersHandler,
                 new ContextualExceptionHandler(errorEventBus, "ServerSyncTask")));
+
+        // Note: DiscoveryTask is NOT created here because discoveryService is null during initial
+        // handler initialization. It will be added later when the ClientDiscoveryService is injected
+        // and calls ServerHandler.onDiscoveryServiceInitialized().
 
         logger.debug("Initialized {} tasks: {}", tasks.size(), String.join(", ", tasks.keySet()));
         return tasks;
@@ -138,8 +145,9 @@ public class TaskManager implements TaskManagerInterface {
                 return List.of(ConnectionTask.TASK_ID);
             case CONNECTED:
                 // When connected, run sync task to keep server state (users and sessions) synchronized
+                // Also run discovery task to discover Jellyfin clients in the background
                 // Note: Connection task stops automatically when successful
-                return List.of(ServerSyncTask.TASK_ID);
+                return List.of(ServerSyncTask.TASK_ID, DiscoveryTask.TASK_ID);
             case DISCOVERED:
                 // For discovered servers, potentially run registration task in the future
                 return List.of();
@@ -232,5 +240,16 @@ public class TaskManager implements TaskManagerInterface {
         }
 
         scheduledTask.cancel(true);
+    }
+
+    @Override
+    public AbstractTask createDiscoveryTask(ServerHandler serverHandler, ClientDiscoveryService discoveryService,
+            ErrorEventBus errorEventBus) {
+        if (taskFactory == null) {
+            throw new IllegalStateException("TaskFactory not injected. Use constructor with TaskFactory parameter.");
+        }
+
+        return taskFactory.createDiscoveryTask(serverHandler, discoveryService,
+                new ContextualExceptionHandler(errorEventBus, "DiscoveryTask"));
     }
 }

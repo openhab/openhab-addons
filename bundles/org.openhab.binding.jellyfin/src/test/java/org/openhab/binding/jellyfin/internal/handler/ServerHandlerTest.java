@@ -78,7 +78,8 @@ class ServerHandlerTest {
         configuration = mock(Configuration.class);
         thing = mock(Thing.class);
         TaskManagerInterface mockTaskManager = mock(TaskManagerInterface.class);
-        when(mockTaskManager.initializeTasks(any(), any(), any(), any())).thenReturn(new java.util.HashMap<>());
+        when(mockTaskManager.initializeTasks(any(), any(), any(), any(), any(), any()))
+                .thenReturn(new java.util.HashMap<>());
         handler = new TestServerHandler(TestServerHandler.setConfigForCtor(configuration), thing, mockTaskManager);
     }
 
@@ -172,7 +173,7 @@ class ServerHandlerTest {
         // Setup
         TaskManagerInterface mockTaskManager = mock(TaskManagerInterface.class);
         Map<String, AbstractTask> tasks = new HashMap<>();
-        when(mockTaskManager.initializeTasks(any(), any(), any(), any())).thenReturn(tasks);
+        when(mockTaskManager.initializeTasks(any(), any(), any(), any(), any(), any())).thenReturn(tasks);
 
         Configuration config = new Configuration();
         config.hostname = "test-server";
@@ -209,7 +210,7 @@ class ServerHandlerTest {
         // Setup
         TaskManagerInterface mockTaskManager = mock(TaskManagerInterface.class);
         Map<String, AbstractTask> tasks = new HashMap<>();
-        when(mockTaskManager.initializeTasks(any(), any(), any(), any())).thenReturn(tasks);
+        when(mockTaskManager.initializeTasks(any(), any(), any(), any(), any(), any())).thenReturn(tasks);
 
         Configuration config = new Configuration();
         config.hostname = "test-server";
@@ -241,7 +242,7 @@ class ServerHandlerTest {
     void testGetState_ReturnsCurrentState() throws Exception {
         // Setup
         TaskManagerInterface mockTaskManager = mock(TaskManagerInterface.class);
-        when(mockTaskManager.initializeTasks(any(), any(), any(), any())).thenReturn(new HashMap<>());
+        when(mockTaskManager.initializeTasks(any(), any(), any(), any(), any(), any())).thenReturn(new HashMap<>());
 
         Configuration config = new Configuration();
         config.hostname = "test-server";
@@ -272,7 +273,7 @@ class ServerHandlerTest {
     void testUpdateConfiguration_SystemInfo_UpdatesBothProperties() throws Exception {
         // Setup
         TaskManagerInterface mockTaskManager = mock(TaskManagerInterface.class);
-        when(mockTaskManager.initializeTasks(any(), any(), any(), any())).thenReturn(new HashMap<>());
+        when(mockTaskManager.initializeTasks(any(), any(), any(), any(), any(), any())).thenReturn(new HashMap<>());
 
         Configuration config = new Configuration();
         config.serverName = "";
@@ -314,7 +315,7 @@ class ServerHandlerTest {
     void testUpdateConfiguration_SystemInfo_PreservesUserSetServerName() throws Exception {
         // Setup
         TaskManagerInterface mockTaskManager = mock(TaskManagerInterface.class);
-        when(mockTaskManager.initializeTasks(any(), any(), any(), any())).thenReturn(new HashMap<>());
+        when(mockTaskManager.initializeTasks(any(), any(), any(), any(), any(), any())).thenReturn(new HashMap<>());
 
         Configuration config = new Configuration();
         config.serverName = "UserSetName"; // User has already set a custom name
@@ -356,7 +357,7 @@ class ServerHandlerTest {
     void testUpdateConfiguration_SystemInfo_NoChangesWhenValuesMatch() throws Exception {
         // Setup
         TaskManagerInterface mockTaskManager = mock(TaskManagerInterface.class);
-        when(mockTaskManager.initializeTasks(any(), any(), any(), any())).thenReturn(new HashMap<>());
+        when(mockTaskManager.initializeTasks(any(), any(), any(), any(), any(), any())).thenReturn(new HashMap<>());
 
         Configuration config = new Configuration();
         config.serverName = "ExistingName";

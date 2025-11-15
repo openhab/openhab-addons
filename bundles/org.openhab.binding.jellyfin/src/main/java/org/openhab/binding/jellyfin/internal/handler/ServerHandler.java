@@ -111,13 +111,40 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
         this.errorEventBus.addListener(this);
 
         // Initialize tasks through the task manager
-        this.tasks.putAll(taskManager.initializeTasks(apiClient, errorEventBus,
-                systemInfo -> this.handleConnection(systemInfo), users -> this.handleUsersList(users)));
+        this.tasks.putAll(
+                taskManager.initializeTasks(apiClient, errorEventBus, systemInfo -> this.handleConnection(systemInfo),
+                        users -> this.handleUsersList(users), this, discoveryService));
     }
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
         return Collections.singleton(ClientDiscoveryService.class);
+    }
+
+    /**
+     * Called by {@link ClientDiscoveryService} when it has been initialized by the framework.
+     * 
+     * This callback ensures that the discovery service reference is available before initializing
+     * the DiscoveryTask through the TaskManager. The openHAB framework injects ThingHandlerServices
+     * asynchronously after initialize() completes, so we cannot pass the service reference during
+     * ServerHandler initialization.
+     * 
+     * @param discoveryService the initialized discovery service
+     */
+    public void onDiscoveryServiceInitialized(ClientDiscoveryService discoveryService) {
+        this.discoveryService = discoveryService;
+
+        // Now that the discovery service is available, create and register the DiscoveryTask
+        AbstractTask discoveryTask = taskManager.createDiscoveryTask(this, discoveryService, errorEventBus);
+        tasks.put(discoveryTask.getId(), discoveryTask);
+
+        logger.debug("DiscoveryTask initialized and added to task registry");
+
+        // If we're already in CONNECTED state, the discovery task should be started
+        if (state == ServerState.CONNECTED) {
+            logger.debug("Server already CONNECTED, starting DiscoveryTask");
+            taskManager.processStateChange(ServerState.CONNECTED, tasks, scheduledTasks, scheduler);
+        }
     }
 
     /**

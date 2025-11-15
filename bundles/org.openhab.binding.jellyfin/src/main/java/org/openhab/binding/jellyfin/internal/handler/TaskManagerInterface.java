@@ -23,6 +23,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.jellyfin.internal.api.ApiClient;
 import org.openhab.binding.jellyfin.internal.api.generated.current.model.SystemInfo;
 import org.openhab.binding.jellyfin.internal.api.generated.current.model.UserDto;
+import org.openhab.binding.jellyfin.internal.discovery.ClientDiscoveryService;
 import org.openhab.binding.jellyfin.internal.events.ErrorEventBus;
 import org.openhab.binding.jellyfin.internal.types.ServerState;
 
@@ -40,14 +41,22 @@ public interface TaskManagerInterface {
      * Initializes all required tasks for the server handler.
      * Creates tasks using the injected factory and sets up the task registry.
      * 
+     * Note: The discoveryService may be null during initial handler initialization because
+     * ThingHandlerServices are injected asynchronously by the openHAB framework. The DiscoveryTask
+     * will be created later when the ClientDiscoveryService calls back via
+     * {@link ServerHandler#onDiscoveryServiceInitialized}.
+     * 
      * @param apiClient The API client for task operations
      * @param errorEventBus The error event bus for exception handling
      * @param connectionHandler Handler for connection success events
      * @param usersHandler Handler for users list retrieval events
+     * @param serverHandler The server handler for state checking
+     * @param discoveryService The discovery service for client discovery (may be null initially)
      * @return Map of initialized tasks by their IDs
      */
     Map<String, org.openhab.binding.jellyfin.internal.handler.tasks.AbstractTask> initializeTasks(ApiClient apiClient,
-            ErrorEventBus errorEventBus, Consumer<SystemInfo> connectionHandler, Consumer<List<UserDto>> usersHandler);
+            ErrorEventBus errorEventBus, Consumer<SystemInfo> connectionHandler, Consumer<List<UserDto>> usersHandler,
+            ServerHandler serverHandler, @Nullable ClientDiscoveryService discoveryService);
 
     /**
      * Manages task transitions for a server state change.
@@ -68,4 +77,18 @@ public interface TaskManagerInterface {
      * @param scheduledTasks Map of currently scheduled tasks
      */
     void stopAllTasks(Map<String, @Nullable ScheduledFuture<?>> scheduledTasks);
+
+    /**
+     * Creates and adds a DiscoveryTask after the discovery service has been injected.
+     * 
+     * This method is called from {@link ServerHandler#onDiscoveryServiceInitialized} when the
+     * ClientDiscoveryService becomes available after async injection by the openHAB framework.
+     * 
+     * @param serverHandler The server handler for state checking
+     * @param discoveryService The discovery service for client discovery
+     * @param errorEventBus The error event bus for exception handling
+     * @return The created DiscoveryTask
+     */
+    org.openhab.binding.jellyfin.internal.handler.tasks.AbstractTask createDiscoveryTask(ServerHandler serverHandler,
+            ClientDiscoveryService discoveryService, ErrorEventBus errorEventBus);
 }

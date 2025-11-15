@@ -44,7 +44,6 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class ClientDiscoveryService extends AbstractThingHandlerDiscoveryService<ServerHandler> {
     private static final Logger logger = LoggerFactory.getLogger(ClientDiscoveryService.class);
-    private static final int BACKGROUND_DISCOVERY_INTERVAL_SEC = 60;
 
     /**
      * Creates a new instance of the client discovery service.
@@ -52,7 +51,15 @@ public class ClientDiscoveryService extends AbstractThingHandlerDiscoveryService
      * @throws IllegalArgumentException if service initialization fails
      */
     public ClientDiscoveryService() throws IllegalArgumentException {
-        super(ServerHandler.class, DISCOVERABLE_CLIENT_THING_TYPES, DISCOVERY_RESULT_TTL_SEC, true);
+        super(ServerHandler.class, DISCOVERABLE_CLIENT_THING_TYPES, DISCOVERY_RESULT_TTL_SEC, false);
+    }
+
+    @Override
+    public void initialize() {
+        // Notify the server handler that the discovery service is now available
+        // This allows the TaskManager to initialize DiscoveryTask with a valid service reference
+        thingHandler.onDiscoveryServiceInitialized(this);
+        super.initialize();
     }
 
     @Override
@@ -66,18 +73,6 @@ public class ClientDiscoveryService extends AbstractThingHandlerDiscoveryService
 
         logger.debug("Starting client discovery scan for server {}", thingHandler.getThing().getLabel());
         discoverClients();
-    }
-
-    @Override
-    protected void startBackgroundDiscovery() {
-        logger.debug("Starting background client discovery with {}-second interval", BACKGROUND_DISCOVERY_INTERVAL_SEC);
-        super.startBackgroundDiscovery();
-    }
-
-    @Override
-    protected void stopBackgroundDiscovery() {
-        logger.debug("Stopping background client discovery");
-        super.stopBackgroundDiscovery();
     }
 
     /**

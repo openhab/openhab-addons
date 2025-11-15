@@ -12,6 +12,10 @@ This page documents the task management system in the Jellyfin binding.
     - [State-Task Mapping](#state-task-mapping)
     - [Task Lifecycle](#task-lifecycle)
     - [ServerSyncTask Processing Flow](#serversynctask-processing-flow)
+  - [Client Discovery Integration](#client-discovery-integration)
+    - [Async Service Injection Pattern](#async-service-injection-pattern)
+    - [Deferred Task Creation Flow](#deferred-task-creation-flow)
+    - [Key Design Decisions](#key-design-decisions)
   - [Summary](#summary)
 
 ## Overview
@@ -34,6 +38,7 @@ classDiagram
     class TaskManager {
         -TaskFactoryInterface taskFactory
         +initializeTasks(...) Map
+        +createDiscoveryTask(...) DiscoveryTask
         +processStateChange(...)
         +stopAllTasks(Map)
         -getTaskIdsForState(ServerState) List
@@ -44,12 +49,14 @@ classDiagram
         +createConnectionTask(...) ConnectionTask
         +createUpdateTask(...) UpdateTask
         +createServerSyncTask(...) ServerSyncTask
+        +createDiscoveryTask(...) DiscoveryTask
     }
     
     class TaskFactory {
         +createConnectionTask(...) ConnectionTask
         +createUpdateTask(...) UpdateTask
         +createServerSyncTask(...) ServerSyncTask
+        +createDiscoveryTask(...) DiscoveryTask
     }
     
     class AbstractTask {
@@ -72,20 +79,22 @@ on the server's current state.
 
 The following table shows which tasks are active for each server state:
 
-| Server State             | Active Tasks      | Purpose                                                                 |
-| ------------------------ | ----------------- | ----------------------------------------------------------------------- |
-| **INITIALIZING**         | None              | Initial state before configuration is analyzed                          |
-| **DISCOVERED**           | None              | Server was found via discovery but not yet configured                   |
-| **NEEDS_AUTHENTICATION** | None              | Configuration exists but no access token is available                   |
-| **CONFIGURED**           | `ConnectionTask`  | Establishes connection and authenticates with the server                |
-| **CONNECTED**            | `ServerSyncTask`  | Synchronizes server state (users and sessions) with the handler         |
-| **ERROR**                | None              | Error state - tasks stopped until error is resolved                     |
-| **DISPOSED**             | None              | Handler is disposed - all tasks permanently stopped                     |
+| Server State             | Active Tasks                      | Purpose                                                              |
+| ------------------------ | --------------------------------- | -------------------------------------------------------------------- |
+| **INITIALIZING**         | None                              | Initial state before configuration is analyzed                       |
+| **DISCOVERED**           | None                              | Server was found via discovery but not yet configured                |
+| **NEEDS_AUTHENTICATION** | None                              | Configuration exists but no access token is available                |
+| **CONFIGURED**           | `ConnectionTask`                  | Establishes connection and authenticates with the server             |
+| **CONNECTED**            | `ServerSyncTask`, `DiscoveryTask` | Synchronizes server state (users and sessions) and discovers clients |
+| **ERROR**                | None                              | Error state - tasks stopped until error is resolved                  |
+| **DISPOSED**             | None                              | Handler is disposed - all tasks permanently stopped                  |
 
 ### Task Lifecycle
 
-1. **Initialization**: When the handler initializes, `initializeTasks()` creates all
-   available tasks but does not start them.
+1. **Initialization**: When the handler initializes, `initializeTasks()` creates
+   `ConnectionTask`, `UpdateTask`, and `ServerSyncTask` but does not start them.
+   The `DiscoveryTask` is created later when the `ClientDiscoveryService` becomes
+   available (see [Client Discovery Integration](#client-discovery-integration)).
 
 2. **State Transition**: When `setState()` is called, it triggers
    `TaskManager.processStateChange()` which:
@@ -97,8 +106,9 @@ The following table shows which tasks are active for each server state:
    - In `CONFIGURED` state, `ConnectionTask` starts running
    - `ConnectionTask` attempts to connect and authenticate
    - On successful authentication, state transitions to `CONNECTED`
-   - `ConnectionTask` stops automatically (not needed in `CONFIGURED` state)
+   - `ConnectionTask` stops automatically (not needed in `CONNECTED` state)
    - `ServerSyncTask` starts to synchronize server state (users and sessions)
+   - `DiscoveryTask` starts to automatically discover Jellyfin clients (if available)
 
 4. **Disposal**: When the handler is disposed, `stopAllTasks()` is called to
    cancel all scheduled tasks and clear the task registry.
@@ -152,12 +162,87 @@ sequenceDiagram
 This process ensures that the handler maintains an up-to-date view of all active
 users and their current sessions.
 
+## Client Discovery Integration
+
+The `DiscoveryTask` is created differently from other tasks due to the asynchronous
+nature of openHAB's `ThingHandlerService` injection lifecycle.
+
+### Async Service Injection Pattern
+
+openHAB injects `ThingHandlerService` instances (like `ClientDiscoveryService`)
+asynchronously after the handler's `initialize()` method completes.
+This means:
+
+1. **Handler Initialize**: `ServerHandler.initialize()` is called first
+2. **Task Initialization**: `TaskManager.initializeTasks()` creates `ConnectionTask`,
+   `UpdateTask`, and `ServerSyncTask` (but NOT `DiscoveryTask` yet)
+3. **Service Injection**: openHAB framework injects `ClientDiscoveryService`
+4. **Service Initialize**: `ClientDiscoveryService.initialize()` is called
+5. **Callback**: Discovery service notifies handler via
+   `ServerHandler.onDiscoveryServiceInitialized()`
+6. **Discovery Task Creation**: Handler calls `TaskManager.createDiscoveryTask()`
+   to create the `DiscoveryTask`
+7. **Task Registration**: `DiscoveryTask` is added to the task registry
+8. **State Check**: If server is already `CONNECTED`, `DiscoveryTask` starts immediately
+
+### Deferred Task Creation Flow
+
+```mermaid
+sequenceDiagram
+    participant FW as openHAB Framework
+    participant Handler as ServerHandler
+    participant DiscSvc as ClientDiscoveryService
+    participant TaskMgr as TaskManager
+    participant Task as DiscoveryTask
+    
+    FW->>Handler: initialize()
+    Handler->>TaskMgr: initializeTasks()
+    TaskMgr-->>Handler: 3 tasks created<br/>(no DiscoveryTask yet)
+    
+    Note over FW,Handler: Service injection happens async
+    
+    FW->>DiscSvc: <<inject service>>
+    FW->>DiscSvc: initialize()
+    DiscSvc->>Handler: onDiscoveryServiceInitialized(this)
+    Handler->>TaskMgr: createDiscoveryTask(...)
+    TaskMgr->>Task: <<create>>
+    TaskMgr-->>Handler: DiscoveryTask
+    Handler->>Handler: Add to task registry
+    
+    alt Server already CONNECTED
+        Handler->>TaskMgr: processStateChange(CONNECTED)
+        TaskMgr->>Task: schedule()
+        Note over Task: DiscoveryTask starts<br/>running every 60s
+    end
+```
+
+### Key Design Decisions
+
+1. **Callback Pattern**: Discovery service notifies handler when ready, rather than
+   handler polling for service availability
+2. **Lazy Creation**: `DiscoveryTask` is created only when `ClientDiscoveryService`
+   becomes available
+3. **State-Driven**: Once created, `DiscoveryTask` follows the same state-driven
+   lifecycle as other tasks (active in `CONNECTED` state only)
+4. **Automatic Discovery**: Runs every 60 seconds in `CONNECTED` state to detect
+   new Jellyfin clients
+
 ## Summary
 
 Task management is handled by a dedicated manager and factory, supporting
 extensibility and testability.
 The state-driven task lifecycle ensures that only necessary tasks are running,
 optimizing resource usage and maintaining proper server communication patterns.
+
+The binding manages four task types:
+
+- **ConnectionTask**: Establishes initial connection and authentication (`CONFIGURED` state)
+- **UpdateTask**: Updates handler state (as needed by configuration changes)
+- **ServerSyncTask**: Synchronizes users and sessions (`CONNECTED` state)
+- **DiscoveryTask**: Automatically discovers Jellyfin clients (`CONNECTED` state)
+
+The `DiscoveryTask` uses a callback pattern to handle asynchronous service injection,
+ensuring proper integration with openHAB's `ThingHandlerService` lifecycle.
 
 See the [architecture overview](../architecture.md) for context and
 [server state transitions](server-state.md) for details on state management.

@@ -19,6 +19,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.jellyfin.internal.api.ApiClient;
 import org.openhab.binding.jellyfin.internal.api.generated.current.model.SystemInfo;
 import org.openhab.binding.jellyfin.internal.api.generated.current.model.UserDto;
+import org.openhab.binding.jellyfin.internal.discovery.ClientDiscoveryService;
+import org.openhab.binding.jellyfin.internal.handler.ServerHandler;
 import org.openhab.binding.jellyfin.internal.types.ExceptionHandlerType;
 
 /**
@@ -59,5 +61,16 @@ public interface TaskFactoryInterface {
      * @return A configured server sync task
      */
     ServerSyncTask createServerSyncTask(ApiClient client, Consumer<List<UserDto>> usersHandler,
+            ExceptionHandlerType exceptionHandler);
+
+    /**
+     * Creates a discovery task for client device discovery.
+     *
+     * @param serverHandler The server handler to check status
+     * @param discoveryService The discovery service to trigger
+     * @param exceptionHandler The handler for exceptions
+     * @return A configured discovery task
+     */
+    DiscoveryTask createDiscoveryTask(ServerHandler serverHandler, ClientDiscoveryService discoveryService,
             ExceptionHandlerType exceptionHandler);
 }
