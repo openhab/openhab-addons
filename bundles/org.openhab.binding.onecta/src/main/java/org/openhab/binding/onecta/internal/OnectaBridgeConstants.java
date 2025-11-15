@@ -46,11 +46,10 @@ public class OnectaBridgeConstants {
             DEVICE_TYPE_CLIMATECONTROL);
     public static final ThingTypeUID THING_TYPE_GATEWAY = new ThingTypeUID(BINDING_ID, DEVICE_TYPE_GATEWAY);
     public static final ThingTypeUID THING_TYPE_WATERTANK = new ThingTypeUID(BINDING_ID, DEVICE_TYPE_WATERTANK);
-    public static final ThingTypeUID THING_TYPE_INDOORUNIT = new ThingTypeUID(BINDING_ID, DEVICE_TYPE_INDOORUNIT);
 
     // The supported thing types.
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_BRIDGE, THING_TYPE_CLIMATECONTROL,
-            THING_TYPE_WATERTANK, THING_TYPE_GATEWAY, THING_TYPE_INDOORUNIT);
+            THING_TYPE_WATERTANK, THING_TYPE_GATEWAY);
 
     public static final String THIRD_PARTY_ENDPOINTS_BASENAME = "https://idp.onecta.daikineurope.com/v1/oidc";
     public static final String OAUTH2_SERVICE_HANDLE = BINDING_ID + ":" + BRIDGE;

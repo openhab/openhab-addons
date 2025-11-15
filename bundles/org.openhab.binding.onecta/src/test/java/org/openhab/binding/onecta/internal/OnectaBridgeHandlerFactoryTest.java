@@ -61,8 +61,6 @@ public class OnectaBridgeHandlerFactoryTest {
     @Mock
     private OnectaWaterTankHandler onectaWaterTankHandlerMock;
     @Mock
-    private OnectaIndoorUnitHandler onectaIndoorUnitHandlerMock;
-    @Mock
     private BundleContext bundleContextMock;
 
     @BeforeEach
@@ -77,7 +75,6 @@ public class OnectaBridgeHandlerFactoryTest {
         assertEquals(true, handler.supportsThingType(THING_TYPE_CLIMATECONTROL));
         assertEquals(true, handler.supportsThingType(THING_TYPE_GATEWAY));
         assertEquals(true, handler.supportsThingType(THING_TYPE_WATERTANK));
-        assertEquals(true, handler.supportsThingType(THING_TYPE_INDOORUNIT));
     }
 
     @Test
@@ -108,10 +105,5 @@ public class OnectaBridgeHandlerFactoryTest {
         dummyThing.setConfiguration(configuration);
         thingHandler = handler.createHandler(dummyThing);
         assertInstanceOf(OnectaWaterTankHandler.class, thingHandler);
-
-        dummyThing = new DummyThing(THING_TYPE_INDOORUNIT, onectaIndoorUnitHandlerMock, ThingStatus.ONLINE);
-        dummyThing.setConfiguration(configuration);
-        thingHandler = handler.createHandler(dummyThing);
-        assertInstanceOf(OnectaIndoorUnitHandler.class, thingHandler);
     }
 }

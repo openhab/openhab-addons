@@ -60,7 +60,6 @@ public class DeviceDiscoveryService extends AbstractThingHandlerDiscoveryService
         discoveryMap.put(ManagementPoint.CLIMATECONTROL, THING_TYPE_CLIMATECONTROL);
         discoveryMap.put(ManagementPoint.GATEWAY, THING_TYPE_GATEWAY);
         discoveryMap.put(ManagementPoint.WATERTANK, THING_TYPE_WATERTANK);
-        discoveryMap.put(ManagementPoint.INDOORUNIT, THING_TYPE_INDOORUNIT);
     }
 
     @Override

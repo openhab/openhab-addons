@@ -65,8 +65,6 @@ public class OnectaBridgeHandlerTest {
     private OnectaGatewayHandler onectaGatewayHandlerMock;
     @Mock
     private OnectaWaterTankHandler onectaWaterTankHandlerMock;
-    @Mock
-    private OnectaIndoorUnitHandler onectaIndoorUnitHandlerMock;
 
     @BeforeEach
     public void setUp() throws NoSuchFieldException, IllegalAccessException {
@@ -102,7 +100,6 @@ public class OnectaBridgeHandlerTest {
         things.add(new DummyThing(THING_TYPE_CLIMATECONTROL, onectaDeviceHandlerMock, ThingStatus.ONLINE));
         things.add(new DummyThing(THING_TYPE_GATEWAY, onectaGatewayHandlerMock, ThingStatus.ONLINE));
         things.add(new DummyThing(THING_TYPE_WATERTANK, onectaWaterTankHandlerMock, ThingStatus.ONLINE));
-        things.add(new DummyThing(THING_TYPE_INDOORUNIT, onectaIndoorUnitHandlerMock, ThingStatus.ONLINE));
 
         when(handler.getThing().getThings()).thenReturn(things);
         when(handler.getThing().getStatus()).thenReturn(ThingStatus.ONLINE);
@@ -113,7 +110,6 @@ public class OnectaBridgeHandlerTest {
         verify(onectaDeviceHandlerMock).refreshDevice();
         verify(onectaGatewayHandlerMock).refreshDevice();
         verify(onectaWaterTankHandlerMock).refreshDevice();
-        verify(onectaIndoorUnitHandlerMock).refreshDevice();
     }
 
     @Test
@@ -130,7 +126,6 @@ public class OnectaBridgeHandlerTest {
         things.add(new DummyThing(THING_TYPE_CLIMATECONTROL, onectaDeviceHandlerMock, ThingStatus.OFFLINE));
         things.add(new DummyThing(THING_TYPE_GATEWAY, onectaGatewayHandlerMock, ThingStatus.OFFLINE));
         things.add(new DummyThing(THING_TYPE_WATERTANK, onectaWaterTankHandlerMock, ThingStatus.OFFLINE));
-        things.add(new DummyThing(THING_TYPE_INDOORUNIT, onectaIndoorUnitHandlerMock, ThingStatus.OFFLINE));
 
         handler.getThing();
 
@@ -142,6 +137,5 @@ public class OnectaBridgeHandlerTest {
         verify(onectaDeviceHandlerMock, times(0)).refreshDevice();
         verify(onectaGatewayHandlerMock, times(0)).refreshDevice();
         verify(onectaWaterTankHandlerMock, times(0)).refreshDevice();
-        verify(onectaIndoorUnitHandlerMock, times(0)).refreshDevice();
     }
 }

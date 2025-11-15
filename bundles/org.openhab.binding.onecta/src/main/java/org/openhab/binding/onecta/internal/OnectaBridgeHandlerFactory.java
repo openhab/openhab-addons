@@ -46,7 +46,7 @@ import org.osgi.service.component.annotations.Reference;
 public class OnectaBridgeHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_BRIDGE,
-            THING_TYPE_CLIMATECONTROL, THING_TYPE_GATEWAY, THING_TYPE_WATERTANK, THING_TYPE_INDOORUNIT);
+            THING_TYPE_CLIMATECONTROL, THING_TYPE_GATEWAY, THING_TYPE_WATERTANK);
 
     private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
     private final OnectaTranslationProvider translation;
@@ -81,8 +81,6 @@ public class OnectaBridgeHandlerFactory extends BaseThingHandlerFactory {
             return new OnectaGatewayHandler(thing);
         } else if (thingTypeUID.equals((THING_TYPE_WATERTANK))) {
             return new OnectaWaterTankHandler(thing);
-        } else if (thingTypeUID.equals((THING_TYPE_INDOORUNIT))) {
-            return new OnectaIndoorUnitHandler(thing);
         }
         return null;
     }
