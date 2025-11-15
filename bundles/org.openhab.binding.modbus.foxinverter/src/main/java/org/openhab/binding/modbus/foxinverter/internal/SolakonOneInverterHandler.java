@@ -233,7 +233,8 @@ public class SolakonOneInverterHandler extends BaseModbusThingHandler {
                                 });
                         ModbusBitUtilities.extractStateFromRegisters(result.getRegisters().get(), 2,
                                 ModbusConstants.ValueType.UINT32).ifPresent(v -> {
-                                    properties.put(PROPERTY_MAX_ACTIVE_POWER, Objects.toString(v.toBigDecimal()) + " W");
+                                    properties.put(PROPERTY_MAX_ACTIVE_POWER,
+                                            Objects.toString(v.toBigDecimal()) + " W");
                                 });
                     }, (AsyncModbusFailure<ModbusReadRequestBlueprint> error) -> {
                     });
@@ -277,8 +278,9 @@ public class SolakonOneInverterHandler extends BaseModbusThingHandler {
                 case "hidden-active-power":
                     if (i != -30000) {
                         logger.debug("{} {}", "ACTIVE_POWER", v);
-                        updateState(new ChannelUID(thing.getUID(), "fi-" + channel.getChannelGroup(), "fi-active-power"),
-                            v);
+                        updateState(
+                                new ChannelUID(thing.getUID(), "fi-" + channel.getChannelGroup(), "fi-active-power"),
+                                v);
                     }
                     break;
                 // grid frequency is used to create STATUS_ON_GRID
