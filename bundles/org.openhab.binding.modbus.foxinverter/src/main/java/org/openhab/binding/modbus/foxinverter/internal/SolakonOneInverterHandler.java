@@ -224,7 +224,8 @@ public class SolakonOneInverterHandler extends BaseModbusThingHandler {
                     ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, 36001, 3, 3), (AsyncModbusReadResult result) -> {
                         byte[] res = result.getRegisters().get().getBytes();
                         properties.put(PROPERTY_FIRMWARE_WR, String.format("%d.%03d", res[0], res[1]));
-                        // TODO The mapping for PROPERTY_FIRMWARE_PV is not confirmed, PV FW could also be stored in res[4,5]
+                        // TODO The mapping for PROPERTY_FIRMWARE_PV is not confirmed, PV FW could also be stored in
+                        // res[4,5]
                         properties.put(PROPERTY_FIRMWARE_PV, String.format("%d.%03d", res[2], res[3]));
                     }, (AsyncModbusFailure<ModbusReadRequestBlueprint> error) -> {
                         // reading properties is not critical, just log at debug level
