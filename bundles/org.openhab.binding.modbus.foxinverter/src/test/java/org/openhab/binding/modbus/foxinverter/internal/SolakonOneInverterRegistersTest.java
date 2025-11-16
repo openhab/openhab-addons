@@ -53,20 +53,20 @@ class SolakonOneInverterRegistersTest {
 
     @Test
     public void testCreateQuantityTypeState() {
-        SolakonOneInverterRegisters mpttVoltage = SolakonOneInverterRegisters.MPPT1_VOLTAGE;
+        SolakonOneInverterRegisters mpptVoltage = SolakonOneInverterRegisters.MPPT1_VOLTAGE;
 
         ModbusRegisterArray registers = new ModbusRegisterArray(1234);
         Optional<DecimalType> value = ModbusBitUtilities.extractStateFromRegisters( //
                 registers, //
                 0, //
-                mpttVoltage.getType() //
+                mpptVoltage.getType() //
         );
         assertTrue(value.isPresent());
         DecimalType decimalTypeValue = value.get();
         // Value is not scaled yet
         assertEquals(BigDecimal.valueOf(1234), decimalTypeValue.toBigDecimal());
 
-        State state = mpttVoltage.createState(decimalTypeValue);
+        State state = mpptVoltage.createState(decimalTypeValue);
         assertInstanceOf(QuantityType.class, state);
         assertEquals("123.4 V", state.toFullString());
     }

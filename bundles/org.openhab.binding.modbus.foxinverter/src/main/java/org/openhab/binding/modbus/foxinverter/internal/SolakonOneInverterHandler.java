@@ -216,27 +216,31 @@ public class SolakonOneInverterHandler extends BaseModbusThingHandler {
                             properties.put(PROPERTY_MANUFACTURER_ID, manufacturerId);
                         }
                     }, (AsyncModbusFailure<ModbusReadRequestBlueprint> error) -> {
-                        logger.warn("Initial poll failed", error.getCause());
+                        logger.warn("Initial read of model information failed", error.getCause());
                     });
-            Thread.sleep(1000);
+            Thread.sleep(100);
             // b) firmware versions
             submitOneTimePoll(new ModbusReadRequestBlueprint(getSlaveId(),
                     ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, 36001, 3, 3), (AsyncModbusReadResult result) -> {
                         byte[] res = result.getRegisters().get().getBytes();
                         properties.put(PROPERTY_FIRMWARE_WR, String.format("%d.%03d", res[0], res[1]));
-                        // not sure, could also be 4,5
+                        // TODO The mapping for PROPERTY_FIRMWARE_PV is not confirmed, PV FW could also be stored in res[4,5]
                         properties.put(PROPERTY_FIRMWARE_PV, String.format("%d.%03d", res[2], res[3]));
                     }, (AsyncModbusFailure<ModbusReadRequestBlueprint> error) -> {
+                        // reading properties is not critical, just log at debug level
+                        logger.debug("Reading firmware WR/PV failed", error.getCause());
                     });
-            Thread.sleep(1000);
+            Thread.sleep(100);
             // c) firmware versions
             submitOneTimePoll(new ModbusReadRequestBlueprint(getSlaveId(),
                     ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, 37003, 1, 3), (AsyncModbusReadResult result) -> {
                         byte[] res = result.getRegisters().get().getBytes();
                         properties.put(PROPERTY_FIRMWARE_BMS, String.format("%d.%03d", res[0], res[1]));
                     }, (AsyncModbusFailure<ModbusReadRequestBlueprint> error) -> {
+                        // reading properties is not critical, just log at debug level
+                        logger.debug("Reading firmware BMS failed", error.getCause());
                     });
-            Thread.sleep(1000);
+            Thread.sleep(100);
             // d) rated power, max active power
             submitOneTimePoll(new ModbusReadRequestBlueprint(getSlaveId(),
                     ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, 39053, 2 * 2, 3),
@@ -251,9 +255,14 @@ public class SolakonOneInverterHandler extends BaseModbusThingHandler {
                                             Objects.toString(v.toBigDecimal()) + " W");
                                 });
                     }, (AsyncModbusFailure<ModbusReadRequestBlueprint> error) -> {
+                        // reading properties is not critical, just log at debug level
+                        logger.debug("Reading rated/max active power failed", error.getCause());
                     });
+            // wait for async polls to complete; waiting is not ideal but not worth implementing a complex logic here
             Thread.sleep(1000);
         } catch (InterruptedException e) {
+            // totally fine if this part in interrupted, no need to log an error
+            Thread.currentThread().interrupt();
         }
         return properties;
     }
@@ -395,7 +404,7 @@ public class SolakonOneInverterHandler extends BaseModbusThingHandler {
     /**
      * get translated text
      *
-     * @param text text to be translated, may contain placeholders \{n\} for the n-th optional argument of this function
+     * @param text text to be translated, may contain placeholders {n} for the n-th optional argument of this function
      * @param arguments any optional arguments, will be inserted
      * @return translated text with substitutions if translationProvider is set and provides a translation, otherwise
      *         returns original text with substitutions

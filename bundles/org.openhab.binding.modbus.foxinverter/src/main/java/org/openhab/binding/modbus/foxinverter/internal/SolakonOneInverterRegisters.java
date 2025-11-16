@@ -68,6 +68,7 @@ public enum SolakonOneInverterRegisters {
 
     HIDDEN_ACTIVE_POWER(39134, INT32, BigDecimal.ONE, quantityFactory(Units.WATT), "overview"),
     REACTIVE_POWER(39136, INT32, BigDecimal.ONE, quantityFactory(Units.VAR), "overview"),
+    // TODO check if the returned value makes sense
     POWER_FACTOR(39138, INT16, ConversionConstants.DIV_BY_THOUSAND, DecimalType::new, "overview"),
     INTERNAL_TEMPERATURE(39141, INT16, ConversionConstants.DIV_BY_TEN, quantityFactory(SIUnits.CELSIUS), "overview"),
 
@@ -124,7 +125,7 @@ public enum SolakonOneInverterRegisters {
      * readTransform="JS(divide1000.js)" ]
      * Thing data inverterL3Current "Wechselrichter L3 Strom" [ readStart="39130", readValueType="int32_swap",
      * readTransform="JS(divide1000.js)" ]
-     * 
+     *
      * Thing data remoteControlStatus "Fernsteuerung Status" [ readStart="46001", readValueType="uint16",
      * writeStart="46001", writeValueType="uint16", writeType="holding" ]
      * Thing data remoteTimeoutSet "Fernsteuerung Timeout" [ readStart="46002", readValueType="uint16",
@@ -190,7 +191,7 @@ public enum SolakonOneInverterRegisters {
 
     /**
      * Returns the {@link ValueType} for the channel.
-     * 
+     *
      * @return {@link ValueType} for the channel.
      */
     public ValueType getType() {
@@ -199,7 +200,7 @@ public enum SolakonOneInverterRegisters {
 
     /**
      * Returns the count of registers read to return the value of this register.
-     * 
+     *
      * @return register count.
      */
     public int getRegisterCount() {
@@ -208,7 +209,7 @@ public enum SolakonOneInverterRegisters {
 
     /**
      * Returns the channel group.
-     * 
+     *
      * @return channel group id.
      */
     public String getChannelGroup() {
@@ -217,7 +218,7 @@ public enum SolakonOneInverterRegisters {
 
     /**
      * Returns the channel name.
-     * 
+     *
      * @return the channel name.
      */
     public String getChannelName() {
