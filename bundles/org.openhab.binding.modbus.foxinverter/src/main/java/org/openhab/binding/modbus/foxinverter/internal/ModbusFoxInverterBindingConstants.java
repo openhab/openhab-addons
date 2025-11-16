@@ -37,6 +37,6 @@ public class ModbusFoxInverterBindingConstants {
     /**
      * ThingType-ID for Inverter.
      */
-    public static final ThingTypeUID THING_TYPE_INVERTER = new ThingTypeUID(ModbusBindingConstants.BINDING_ID,
-            "solakon-one-inverter");
+    public static final ThingTypeUID THING_TYPE_MQ2200_INVERTER = new ThingTypeUID(ModbusBindingConstants.BINDING_ID,
+            "mq2200-inverter");
 }

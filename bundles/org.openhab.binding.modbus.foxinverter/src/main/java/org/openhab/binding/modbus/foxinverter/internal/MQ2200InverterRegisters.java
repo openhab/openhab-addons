@@ -24,19 +24,20 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.io.transport.modbus.ModbusConstants.ValueType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.State;
 
 /**
- * The {@link SolakonOneInverterRegisters} is responsible for defining Modbus registers and their units.
+ * The {@link MQ2200InverterRegisters} is responsible for defining Modbus registers and their units.
  *
  * @author Holger Friedrich - Initial contribution
  */
 @NonNullByDefault
-public enum SolakonOneInverterRegisters {
-    METER_CONNECTED(38801, UINT16, BigDecimal.ONE, switchFactory(), "overview"),
+public enum MQ2200InverterRegisters {
+    METER_CONNECTED(38801, UINT16, BigDecimal.ONE, contactFactory(), "overview"),
 
     // seems not useful yet, always 0
     // Thing data protocolVersion "Protocol version" [ readStart="39000", readValueType="uint32" ] // always 0
@@ -46,7 +47,7 @@ public enum SolakonOneInverterRegisters {
     HIDDEN_STATUS1(39063, UINT16, BigDecimal.ONE, DecimalType::new, "overview"),
     // STATUS3 seems to use only bit0, but it does not indicate the grid status properly
     // grid outage could be detected via GRID_FREQUENCY register
-    // STATUS_ON_GRID(39065, UINT32, BigDecimal.ONE, switchFactory(), "status"),
+    // STATUS_ON_GRID(39065, UINT32, BigDecimal.ONE, contactFactory(), "status"),
     HIDDEN_ALARM1(39067, UINT16, BigDecimal.ONE, DecimalType::new, ""),
     HIDDEN_ALARM2(39068, UINT16, BigDecimal.ONE, DecimalType::new, ""),
     HIDDEN_ALARM3(39069, UINT16, BigDecimal.ONE, DecimalType::new, ""),
@@ -63,7 +64,7 @@ public enum SolakonOneInverterRegisters {
 
     TOTAL_PV_POWER(39118, INT32, BigDecimal.ONE, quantityFactory(Units.WATT), "mppt-information"),
 
-    HIDDEN_GRID_FREQUENCY(39139, UINT16, new BigDecimal(BigInteger.ONE, 2), quantityFactory(Units.HERTZ), "overview"),
+    HIDDEN_GRID_FREQUENCY(39139, UINT16, new BigDecimal(BigInteger.ONE, 2), quantityFactory(Units.HERTZ), "grid-information"),
 
     PHASE_A_VOLTAGE(39123, INT16, ConversionConstants.DIV_BY_TEN, quantityFactory(Units.VOLT), "grid-information"),
     PHASE_B_VOLTAGE(39124, INT16, ConversionConstants.DIV_BY_TEN, quantityFactory(Units.VOLT), "grid-information"),
@@ -109,14 +110,14 @@ public enum SolakonOneInverterRegisters {
     BATTERY_MINIMUM_SOC_ON_GRID(46611, UINT16, ConversionConstants.DIV_BY_HUNDRED, DecimalType::new,
             "battery-information"),
 
-    // 0:off 2:on, special handling in SolakonOneInverterHandler
+    // 0:off 2:on, special handling in MQ2200InverterHandler
     HIDDEN_EPS_OUTPUT(46613, UINT16, BigDecimal.ONE, DecimalType::new, "emergency-power-supply");
 
     // does not work, always returns 7
     // WORK_MODE(49203, UINT16, BigDecimal.ONE, DecimalType::new, "overview"),
 
     // some registers in between cannot be read and will make the Modbus request fail
-    // BLOCKER(SolakonOneInverterHandler.ENFORCE_NEW_REQUEST, UINT16, BigDecimal.ONE, DecimalType::new, ""),
+    // BLOCKER(MQ2200InverterHandler.ENFORCE_NEW_REQUEST, UINT16, BigDecimal.ONE, DecimalType::new, ""),
     // does not change during manual shutdown using the button on the device
     // SYSTEM_POWER_STATE(49228, UINT16, BigDecimal.ONE, DecimalType::new, "overview"),
     // idle state seems to be 0
@@ -131,7 +132,7 @@ public enum SolakonOneInverterRegisters {
     private final Function<BigDecimal, State> stateFactory;
     private final String channelGroup;
 
-    SolakonOneInverterRegisters(int registerNumber, ValueType type, BigDecimal multiplier,
+    MQ2200InverterRegisters(int registerNumber, ValueType type, BigDecimal multiplier,
             Function<BigDecimal, State> stateFactory, Function<BigDecimal, BigDecimal> conversion,
             String channelGroup) {
         this.multiplier = multiplier;
@@ -142,7 +143,7 @@ public enum SolakonOneInverterRegisters {
         this.channelGroup = channelGroup;
     }
 
-    SolakonOneInverterRegisters(int registerNumber, ValueType type, BigDecimal multiplier,
+    MQ2200InverterRegisters(int registerNumber, ValueType type, BigDecimal multiplier,
             Function<BigDecimal, State> stateFactory, String channelGroup) {
         this.multiplier = multiplier;
         this.registerNumber = registerNumber;
@@ -150,6 +151,10 @@ public enum SolakonOneInverterRegisters {
         this.conversion = Function.identity();
         this.stateFactory = stateFactory;
         this.channelGroup = channelGroup;
+    }
+
+    private static Function<BigDecimal, State> contactFactory() {
+        return (BigDecimal value) -> value.intValue() == 0 ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
     }
 
     private static Function<BigDecimal, State> switchFactory() {

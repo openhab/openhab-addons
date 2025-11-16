@@ -4,13 +4,13 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<thing-type id="solakon-one-inverter">
+	<thing-type id="mq2200-inverter">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="tcp"/>
 		</supported-bridge-type-refs>
 
-		<label>Solakon ONE Inverter</label>
-		<description>Solakon ONE inverter connected via Modbus.</description>
+		<label>FoxESS MQ2200 / Solakon ONE, Avocado 22 Pro</label>
+		<description>FoxESS MQ2200 / Solakon ONE, Avocado 22 Pro inverter connected via Modbus TCP.</description>
 		<category>Inverter</category>
 		<channel-groups>
 			<channel-group id="fi-overview" typeId="fi-overview"/>
@@ -19,7 +19,7 @@
 			<channel-group id="fi-grid-information" typeId="fi-grid-information"/>
 			<channel-group id="fi-emergency-power-supply" typeId="fi-emergency-power-supply"/>
 		</channel-groups>
-		<config-description-ref uri="thing-type:foxinverter:solakon-one-inverter"/>
+		<config-description-ref uri="thing-type:foxinverter:mq2200-inverter"/>
 	</thing-type>
 
 	<channel-group-type id="fi-overview">
@@ -130,7 +130,7 @@
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="fi-meter-connected" advanced="true">
-		<item-type>Switch</item-type>
+		<item-type>Contact</item-type>
 		<label>Meter Connected</label>
 		<tags>
 			<tag>Status</tag>
@@ -138,7 +138,7 @@
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="fi-status-alarm" advanced="false">
-		<item-type>Switch</item-type>
+		<item-type>Contact</item-type>
 		<label>System Status: Alarm</label>
 		<tags>
 			<tag>Status</tag>
@@ -146,7 +146,7 @@
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="fi-status-operation" advanced="false">
-		<item-type>Switch</item-type>
+		<item-type>Contact</item-type>
 		<label>System Status: Operation</label>
 		<tags>
 			<tag>Status</tag>
@@ -154,7 +154,7 @@
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="fi-status-standby" advanced="true">
-		<item-type>Switch</item-type>
+		<item-type>Contact</item-type>
 		<label>System Status: Standby</label>
 		<tags>
 			<tag>Status</tag>
@@ -344,7 +344,7 @@
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="fi-status-on-grid" advanced="true">
-		<item-type>Switch</item-type>
+		<item-type>Contact</item-type>
 		<label>On Grid</label>
 		<category>Energy</category>
 		<tags>
@@ -404,7 +404,7 @@
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
-	<channel-type id="fi-battery-minimum-soc">
+	<channel-type id="fi-battery-minimum-soc" advanced="true">
 		<item-type unitHint="one">Number:Dimensionless</item-type>
 		<label>Battery minimum state of charge</label>
 		<category>Battery</category>
@@ -413,7 +413,7 @@
 		</tags>
 		<state pattern="%d %%" readOnly="false"/>
 	</channel-type>
-	<channel-type id="fi-battery-maximum-soc">
+	<channel-type id="fi-battery-maximum-soc" advanced="true">
 		<item-type unitHint="one">Number:Dimensionless</item-type>
 		<label>Battery maximum state of charge</label>
 		<category>Battery</category>
@@ -422,7 +422,7 @@
 		</tags>
 		<state pattern="%d %%" readOnly="false"/>
 	</channel-type>
-	<channel-type id="fi-battery-minimum-soc-on-grid">
+	<channel-type id="fi-battery-minimum-soc-on-grid" advanced="true">
 		<item-type unitHint="one">Number:Dimensionless</item-type>
 		<label>Battery minimum state of charge (on grid)</label>
 		<category>Battery</category>

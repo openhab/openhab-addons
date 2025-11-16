@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.modbus.foxinverter.internal;
 
-import static org.openhab.binding.modbus.foxinverter.internal.ModbusFoxInverterBindingConstants.THING_TYPE_INVERTER;
+import static org.openhab.binding.modbus.foxinverter.internal.ModbusFoxInverterBindingConstants.THING_TYPE_MQ2200_INVERTER;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -61,7 +61,7 @@ public class ModbusFoxInverterDiscoveryParticipant implements ModbusDiscoveryPar
         }
 
         public void detectModel() throws EndpointNotInitializedException {
-            logger.trace("Beginning scan for FoxESS MQ2200 device at address {}", MQ2200_START_ADDRESS);
+            logger.debug("Beginning scan for FoxESS MQ2200 device at address {}", MQ2200_START_ADDRESS);
             ModbusCommunicationInterface comms = handler.getCommunicationInterface();
             if (comms == null) {
                 throw new EndpointNotInitializedException();
@@ -87,7 +87,7 @@ public class ModbusFoxInverterDiscoveryParticipant implements ModbusDiscoveryPar
                             if (deviceId.isBlank()) {
                                 logger.debug("Device ID is blank, cannot create discovery result");
                             } else {
-                                ThingTypeUID thingTypeUID = THING_TYPE_INVERTER;
+                                ThingTypeUID thingTypeUID = THING_TYPE_MQ2200_INVERTER;
                                 ThingUID thingUID = new ThingUID(thingTypeUID, handler.getUID(), deviceId);
 
                                 Map<String, Object> properties = new HashMap<>();
@@ -96,14 +96,14 @@ public class ModbusFoxInverterDiscoveryParticipant implements ModbusDiscoveryPar
 
                                 DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID)
                                         .withProperties(properties).withRepresentationProperty(PROPERTY_UNIQUE_ADDRESS)
-                                        .withBridge(handler.getUID()).withLabel("FoxESS MQ2200 / Solakon ONE").build();
+                                        .withBridge(handler.getUID()).withLabel("FoxESS MQ2200 / Solakon ONE, Avocado 22 Pro").build();
 
                                 listener.thingDiscovered(discoveryResult);
                             }
                         }
                         listener.discoveryFinished();
                     }, (AsyncModbusFailure<ModbusReadRequestBlueprint> error) -> {
-                        logger.info("Initial poll failed", error.getCause());
+                        logger.debug("Reading device info from MQ2200 failed, skipping detection", error.getCause());
                         listener.discoveryFinished();
                     });
         }
@@ -111,7 +111,7 @@ public class ModbusFoxInverterDiscoveryParticipant implements ModbusDiscoveryPar
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
-        return Set.of(THING_TYPE_INVERTER);
+        return Set.of(THING_TYPE_MQ2200_INVERTER);
     }
 
     @Override

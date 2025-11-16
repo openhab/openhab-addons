@@ -15,12 +15,12 @@ package org.openhab.binding.modbus.foxinverter.internal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link SolakonOneInverterConfiguration} class contains fields mapping thing configuration parameters.
+ * The {@link MQ2200InverterConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Holger Friedrich - Initial contribution
  */
 @NonNullByDefault
-public class SolakonOneInverterConfiguration {
+public class MQ2200InverterConfiguration {
 
     public int pollInterval;
     public int maxTries;

@@ -39,7 +39,7 @@ import org.osgi.service.component.annotations.Reference;
 @Component(configurationPid = "binding.foxinverter", service = ThingHandlerFactory.class)
 public class ModbusFoxInverterHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_INVERTER);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_MQ2200_INVERTER);
     private LocaleProvider localeProvider;
     private TranslationProvider translationProvider;
 
@@ -59,8 +59,8 @@ public class ModbusFoxInverterHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (THING_TYPE_INVERTER.equals(thingTypeUID)) {
-            return new SolakonOneInverterHandler(thing, translationProvider, localeProvider);
+        if (THING_TYPE_MQ2200_INVERTER.equals(thingTypeUID)) {
+            return new MQ2200InverterHandler(thing, translationProvider, localeProvider);
         }
 
         return null;

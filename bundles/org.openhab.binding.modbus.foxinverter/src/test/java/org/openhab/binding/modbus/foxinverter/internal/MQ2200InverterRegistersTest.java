@@ -30,10 +30,10 @@ import org.openhab.core.types.State;
  * @author Holger Friedrich - Carry over from SunGrow, change BatteryLevel test to Number:Dimensionless
  */
 @NonNullByDefault
-class SolakonOneInverterRegistersTest {
+class MQ2200InverterRegistersTest {
     @Test
     public void testCreatePercentTypeState() {
-        SolakonOneInverterRegisters batteryLevelRegister = SolakonOneInverterRegisters.BATTERY_LEVEL;
+        MQ2200InverterRegisters batteryLevelRegister = MQ2200InverterRegisters.BATTERY_LEVEL;
 
         ModbusRegisterArray registers = new ModbusRegisterArray(100);
         Optional<DecimalType> value = ModbusBitUtilities.extractStateFromRegisters( //
@@ -53,7 +53,7 @@ class SolakonOneInverterRegistersTest {
 
     @Test
     public void testCreateQuantityTypeState() {
-        SolakonOneInverterRegisters mpptVoltage = SolakonOneInverterRegisters.MPPT1_VOLTAGE;
+        MQ2200InverterRegisters mpptVoltage = MQ2200InverterRegisters.MPPT1_VOLTAGE;
 
         ModbusRegisterArray registers = new ModbusRegisterArray(1234);
         Optional<DecimalType> value = ModbusBitUtilities.extractStateFromRegisters( //

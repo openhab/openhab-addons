@@ -36,6 +36,7 @@ import org.openhab.core.io.transport.modbus.ModbusReadFunctionCode;
 import org.openhab.core.io.transport.modbus.ModbusReadRequestBlueprint;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -48,28 +49,28 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link SolakonOneInverterHandler} is responsible for reading the Modbus values of the
- * Solakon ONE inverter.
+ * The {@link MQ2200InverterHandler} is responsible for reading the Modbus values of the
+ * FoxESS MQ2200 inverter.
  *
  * @author Holger Friedrich - Initial contribution
  */
 @NonNullByDefault
-public class SolakonOneInverterHandler extends BaseModbusThingHandler {
+public class MQ2200InverterHandler extends BaseModbusThingHandler {
     // used by Register definition to mark a new request must be created,
     // required if you are not allowed to read certain registers ranges
     public static final int ENFORCE_NEW_REQUEST = -1;
 
     private static final class ModbusRequest {
 
-        private final Deque<SolakonOneInverterRegisters> registers;
+        private final Deque<MQ2200InverterRegisters> registers;
         private final ModbusReadRequestBlueprint blueprint;
 
-        public ModbusRequest(Deque<SolakonOneInverterRegisters> registers, int slaveId, int tries) {
+        public ModbusRequest(Deque<MQ2200InverterRegisters> registers, int slaveId, int tries) {
             this.registers = registers;
             this.blueprint = initReadRequest(registers, slaveId, tries);
         }
 
-        private ModbusReadRequestBlueprint initReadRequest(Deque<SolakonOneInverterRegisters> registers, int slaveId,
+        private ModbusReadRequestBlueprint initReadRequest(Deque<MQ2200InverterRegisters> registers, int slaveId,
                 int tries) {
             int firstRegister = Objects.requireNonNull(registers.getFirst()).getRegisterNumber();
             int lastRegister = Objects.requireNonNull(registers.getLast()).getRegisterNumber();
@@ -81,7 +82,7 @@ public class SolakonOneInverterHandler extends BaseModbusThingHandler {
         }
     }
 
-    private final Logger logger = LoggerFactory.getLogger(SolakonOneInverterHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(MQ2200InverterHandler.class);
     private LocaleProvider localeProvider;
     private TranslationProvider translationProvider;
     private final Bundle bundle;
@@ -92,23 +93,23 @@ public class SolakonOneInverterHandler extends BaseModbusThingHandler {
     private volatile boolean alarmState = false; // previous alarm state
     private volatile boolean statusFault = false; // cache status of fault bit
 
-    public SolakonOneInverterHandler(Thing thing, final TranslationProvider translationProvider,
+    public MQ2200InverterHandler(Thing thing, final TranslationProvider translationProvider,
             final LocaleProvider localeProvider) {
         super(thing);
         this.localeProvider = localeProvider;
-        this.translationProvider = translationProvider;
+            this.translationProvider = translationProvider;
         bundle = FrameworkUtil.getBundle(this.getClass());
     }
 
     /**
-     * Splits the Solakon ONE Inverter Registers into multiple ModbusRequest, to ensure the max request size.
+     * Splits the inverter Registers into multiple ModbusRequest, to ensure the max request size.
      */
     private List<ModbusRequest> buildRequests(int tries) {
         final List<ModbusRequest> requests = new ArrayList<>();
-        Deque<SolakonOneInverterRegisters> currentRequest = new ArrayDeque<>();
+        Deque<MQ2200InverterRegisters> currentRequest = new ArrayDeque<>();
         int currentRequestFirstRegister = 0;
 
-        for (SolakonOneInverterRegisters channel : SolakonOneInverterRegisters.values()) {
+        for (MQ2200InverterRegisters channel : MQ2200InverterRegisters.values()) {
             logger.debug("Evaluating register {}", channel.name());
 
             if (currentRequest.isEmpty()) {
@@ -166,7 +167,7 @@ public class SolakonOneInverterHandler extends BaseModbusThingHandler {
 
     @Override
     public void modbusInitialize() {
-        final SolakonOneInverterConfiguration config = getConfigAs(SolakonOneInverterConfiguration.class);
+        final MQ2200InverterConfiguration config = getConfigAs(MQ2200InverterConfiguration.class);
 
         if (config.pollInterval <= 0) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -265,7 +266,7 @@ public class SolakonOneInverterHandler extends BaseModbusThingHandler {
             // wait for async polls to complete; waiting is not ideal but not worth implementing a complex logic here
             Thread.sleep(1000);
         } catch (InterruptedException e) {
-            // totally fine if this part in interrupted, no need to log an error
+            logger.debug("Interrupted while reading device properties");
             Thread.currentThread().interrupt();
         }
         return properties;
@@ -287,11 +288,12 @@ public class SolakonOneInverterHandler extends BaseModbusThingHandler {
                 updateStatus(ThingStatus.ONLINE);
             }
         }
-        logger.debug("{} {}", "STATUS_ALARM", OnOffType.from(alarmState));
-        updateState(new ChannelUID(thing.getUID(), "fi-overview", "fi-status-alarm"), OnOffType.from(alarmState));
+        OpenClosedType state = alarmState ? OpenClosedType.CLOSED : OpenClosedType.OPEN;
+        logger.debug("STATUS_ALARM {} -> {}", alarmState, state);
+        updateState(new ChannelUID(thing.getUID(), "fi-overview", "fi-status-alarm"), state);
     }
 
-    private void processHiddenChannel(SolakonOneInverterRegisters channel, org.openhab.core.types.State v) {
+    private void processHiddenChannel(MQ2200InverterRegisters channel, org.openhab.core.types.State v) {
         // this block deals with channels which are not directly exposed, but
         // used to update other channels
         logger.trace("Update on internal channel {} to {}", channel.getChannelName(), v);
@@ -312,25 +314,27 @@ public class SolakonOneInverterHandler extends BaseModbusThingHandler {
                     break;
                 // grid frequency is used to create STATUS_ON_GRID
                 case "hidden-grid-frequency":
-                    logger.debug("{} {}", "GRID_FREQUENCY", v);
+                    logger.debug("GRID_FREQUENCY {}", v);
                     updateState(new ChannelUID(thing.getUID(), "fi-" + channel.getChannelGroup(), "fi-grid-frequency"),
                             v);
-                    OnOffType state = OnOffType.from(i >= 1);
-                    logger.debug("{} {}", "STATUS_ON_GRID", state);
+                    OpenClosedType state = (i >= 1) ? OpenClosedType.CLOSED : OpenClosedType.OPEN;
+                    logger.debug("STATUS_ON_GRID {} -> {}", i>=1, state);
                     updateState(new ChannelUID(thing.getUID(), "fi-" + channel.getChannelGroup(), "fi-status-on-grid"),
                             state);
                     break;
                 // status seems to use only 3 bits, export a separate channel for each
                 case "hidden-status1":
                     boolean statusStandby = (i & 0x01) != 0;
-                    boolean statusOperation = (i & 0x02) != 0;
-                    logger.debug("{} {}", "STATUS_STANDBY", OnOffType.from(statusStandby));
+                    boolean statusOperation = (i & 0x04) != 0;
+                    OpenClosedType stateUpdate = statusStandby ? OpenClosedType.CLOSED : OpenClosedType.OPEN;
+                    logger.debug("STATUS_STANDBY {} -> {}", statusStandby, stateUpdate);
                     updateState(new ChannelUID(thing.getUID(), "fi-" + channel.getChannelGroup(), "fi-status-standby"),
-                            OnOffType.from(statusStandby));
-                    logger.debug("{} {}", "STATUS_OPERATION", OnOffType.from(statusOperation));
+                            stateUpdate);
+                    stateUpdate = statusOperation ? OpenClosedType.CLOSED : OpenClosedType.OPEN;
+                    logger.debug("STATUS_OPERATION {} -> {}", statusOperation, stateUpdate);
                     updateState(
                             new ChannelUID(thing.getUID(), "fi-" + channel.getChannelGroup(), "fi-status-operation"),
-                            OnOffType.from(statusOperation));
+                            stateUpdate);
                     // this is a global variable, as the fault state is stored and evaluated for alarm output
                     statusFault = (i & 0x40) != 0;
                     processAlarmState();
@@ -376,7 +380,7 @@ public class SolakonOneInverterHandler extends BaseModbusThingHandler {
 
             int firstRegister = Objects.requireNonNull(request.registers.getFirst()).getRegisterNumber();
 
-            for (SolakonOneInverterRegisters channel : request.registers) {
+            for (MQ2200InverterRegisters channel : request.registers) {
                 int index = channel.getRegisterNumber() - firstRegister;
                 logger.debug("{} {}", channel.toString(), ModbusBitUtilities
                         .extractStateFromRegisters(registers, index, channel.getType()).map(channel::createState));
@@ -401,7 +405,7 @@ public class SolakonOneInverterHandler extends BaseModbusThingHandler {
                 getTranslation("offline.communication_error", error.getCause().getMessage()));
     }
 
-    private ChannelUID createChannelUid(SolakonOneInverterRegisters register) {
+    private ChannelUID createChannelUid(MQ2200InverterRegisters register) {
         return new ChannelUID(thing.getUID(), "fi-" + register.getChannelGroup(), "fi-" + register.getChannelName());
     }
 
