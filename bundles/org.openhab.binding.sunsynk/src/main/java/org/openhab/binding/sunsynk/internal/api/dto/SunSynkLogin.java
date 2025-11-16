@@ -35,8 +35,6 @@ public class SunSynkLogin {
     private String grantType = "password";
     @SerializedName("client_id")
     private String clientId = "csp-web";
-    @SerializedName("source")
-    private String source = "sunsynk";
 
     public SunSynkLogin(String UserName, String PassWord) {
         this.userName = UserName;

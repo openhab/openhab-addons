@@ -14,6 +14,7 @@ package org.openhab.binding.sunsynk.internal.handler;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -22,7 +23,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.sunsynk.internal.api.AccountController;
 import org.openhab.binding.sunsynk.internal.api.dto.Inverter;
 import org.openhab.binding.sunsynk.internal.api.exception.SunSynkAuthenticateException;
-import org.openhab.binding.sunsynk.internal.api.exception.SunSynkClientAuthenticateException;
 import org.openhab.binding.sunsynk.internal.api.exception.SunSynkInverterDiscoveryException;
 import org.openhab.binding.sunsynk.internal.api.exception.SunSynkTokenException;
 import org.openhab.binding.sunsynk.internal.config.SunSynkAccountConfig;
@@ -108,20 +108,17 @@ public class SunSynkAccountHandler extends BaseBridgeHandler {
             return;
         }
         try {
-            this.sunAccount.clientAuthenticate(accountConfig.getEmail(), accountConfig.getPassword());
-        } catch (SunSynkClientAuthenticateException e) {
+            this.sunAccount.authenticate(accountConfig.getEmail(), accountConfig.getPassword());
+        } catch (SunSynkAuthenticateException | SunSynkTokenException e) {
             if (logger.isDebugEnabled()) {
-                logger.debug("Error attempting to authenticate client: {}.", e.getMessage());
+                String message = Objects.requireNonNullElse(e.getMessage(), "unkown error message");
+                Throwable cause = e.getCause();
+                String causeMessage = cause != null ? Objects.requireNonNullElse(cause.getMessage(), "unkown cause")
+                        : "unkown cause";
+                logger.debug("Error attempting to authenticate account Msg = {} Cause = {}", message, causeMessage);
             }
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Error attempting to authenticate binding with SunSynk");
-            return;
-        } catch (SunSynkAuthenticateException e) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Error attempting to authenticate user: {}.", e.getMessage());
-            }
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Error attempting to authenticate user credentials");
+                    "Error attempting to authenticate account");
             return;
         }
         updateStatus(ThingStatus.ONLINE);
