@@ -40,8 +40,8 @@ import org.osgi.service.component.annotations.Reference;
 public class ModbusFoxInverterHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_INVERTER);
-    private @Nullable LocaleProvider localeProvider;
-    private @Nullable TranslationProvider translationProvider;
+    private LocaleProvider localeProvider;
+    private TranslationProvider translationProvider;
 
     @Activate
     public ModbusFoxInverterHandlerFactory(final @Reference TranslationProvider translationProvider,

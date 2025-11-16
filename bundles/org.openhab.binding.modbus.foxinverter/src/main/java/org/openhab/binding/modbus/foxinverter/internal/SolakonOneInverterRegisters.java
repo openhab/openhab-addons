@@ -38,6 +38,9 @@ import org.openhab.core.types.State;
 public enum SolakonOneInverterRegisters {
     METER_CONNECTED(38801, UINT16, BigDecimal.ONE, switchFactory(), "overview"),
 
+    // seems not useful yet, always 0
+    // Thing data protocolVersion "Protocol version" [ readStart="39000", readValueType="uint32" ] // always 0
+
     // status is 1 during start and shutdown, 4 during normal operation, 0x40 on fault
     // (poweroff cannot be read, as it will shut down Modbus communication)
     HIDDEN_STATUS1(39063, UINT16, BigDecimal.ONE, DecimalType::new, "overview"),
@@ -65,6 +68,8 @@ public enum SolakonOneInverterRegisters {
     PHASE_A_VOLTAGE(39123, INT16, ConversionConstants.DIV_BY_TEN, quantityFactory(Units.VOLT), "grid-information"),
     PHASE_B_VOLTAGE(39124, INT16, ConversionConstants.DIV_BY_TEN, quantityFactory(Units.VOLT), "grid-information"),
     PHASE_C_VOLTAGE(39125, INT16, ConversionConstants.DIV_BY_TEN, quantityFactory(Units.VOLT), "grid-information"),
+    INVERTER_L1_CURRENT(39126, INT32, ConversionConstants.DIV_BY_THOUSAND, quantityFactory(Units.AMPERE),
+            "grid-information"),
 
     HIDDEN_ACTIVE_POWER(39134, INT32, BigDecimal.ONE, quantityFactory(Units.WATT), "overview"),
     REACTIVE_POWER(39136, INT32, BigDecimal.ONE, quantityFactory(Units.VAR), "overview"),
@@ -96,6 +101,8 @@ public enum SolakonOneInverterRegisters {
 
     BATTERY_LEVEL(39424, UINT16, ConversionConstants.DIV_BY_HUNDRED, DecimalType::new, "battery-information"),
 
+    // TODO implement remote control, regisers 46001-46007
+
     BATTERY_MINIMUM_SOC(46609, UINT16, ConversionConstants.DIV_BY_HUNDRED, DecimalType::new, "battery-information"),
     BATTERY_MAXIMUM_SOC(46610, UINT16, ConversionConstants.DIV_BY_HUNDRED, DecimalType::new, "battery-information"),
     BATTERY_MINIMUM_SOC_ON_GRID(46611, UINT16, ConversionConstants.DIV_BY_HUNDRED, DecimalType::new,
@@ -114,28 +121,6 @@ public enum SolakonOneInverterRegisters {
     // idle state seems to be 0
     // IDLE_STATE(49229, UINT16, BigDecimal.ONE, DecimalType::new, "overview"),
     // IDLE_LOAD_POWER_THRESHOLD(49230, UINT16, BigDecimal.ONE, DecimalType::new, "overview");
-
-    // seems not useful yet, always 0
-    // Thing data protocolVersion "Protocol version" [ readStart="39000", readValueType="uint32" ] // always 0
-    /*
-     * TODO
-     * Thing data inverterL1Current "Wechselrichter L1 Strom" [ readStart="39126", readValueType="int32_swap",
-     * readTransform="JS(divide1000.js)" ]
-     * Thing data inverterL2Current "Wechselrichter L2 Strom" [ readStart="39128", readValueType="int32_swap",
-     * readTransform="JS(divide1000.js)" ]
-     * Thing data inverterL3Current "Wechselrichter L3 Strom" [ readStart="39130", readValueType="int32_swap",
-     * readTransform="JS(divide1000.js)" ]
-     *
-     * Thing data remoteControlStatus "Fernsteuerung Status" [ readStart="46001", readValueType="uint16",
-     * writeStart="46001", writeValueType="uint16", writeType="holding" ]
-     * Thing data remoteTimeoutSet "Fernsteuerung Timeout" [ readStart="46002", readValueType="uint16",
-     * writeStart="46002", writeValueType="uint16", writeType="holding" ]
-     * Thing data remoteActivePower "Fernsteuerung Wirkleistung" [ readStart="46003", readValueType="int32_swap",
-     * writeStart="46003", writeValueType="int32_swap", writeType="holding" ]
-     * Thing data remoteReactivePower "Fernsteuerung Blindleistung" [ readStart="46005", readValueType="int32_swap",
-     * writeStart="46005", writeValueType="int32_swap", writeType="holding" ]
-     * Thing data remoteTimeoutCountdown "Fernsteuerung Countdown" [ readStart="46007", readValueType="uint16" ]
-     */
 
     private final BigDecimal multiplier;
     private final int registerNumber;

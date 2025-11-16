@@ -82,18 +82,18 @@ public class SolakonOneInverterHandler extends BaseModbusThingHandler {
     }
 
     private final Logger logger = LoggerFactory.getLogger(SolakonOneInverterHandler.class);
-    private @Nullable LocaleProvider localeProvider;
-    private @Nullable TranslationProvider translationProvider;
+    private LocaleProvider localeProvider;
+    private TranslationProvider translationProvider;
     private final Bundle bundle;
 
     private List<ModbusRequest> modbusRequests = new ArrayList<>();
 
-    private int[] alarm = new int[3]; // cache status of the 3 alarm registers
-    private boolean alarmState = false; // previous alarm state
-    private boolean statusFault = false; // cache status of fault bit
+    private volatile int[] alarm = new int[3]; // cache status of the 3 alarm registers
+    private volatile boolean alarmState = false; // previous alarm state
+    private volatile boolean statusFault = false; // cache status of fault bit
 
-    public SolakonOneInverterHandler(Thing thing, final @Nullable TranslationProvider translationProvider,
-            final @Nullable LocaleProvider localeProvider) {
+    public SolakonOneInverterHandler(Thing thing, final TranslationProvider translationProvider,
+            final LocaleProvider localeProvider) {
         super(thing);
         this.localeProvider = localeProvider;
         this.translationProvider = translationProvider;
@@ -158,6 +158,8 @@ public class SolakonOneInverterHandler extends BaseModbusThingHandler {
                 submitOneTimePoll(request.blueprint,
                         (AsyncModbusReadResult result) -> this.readSuccessful(request, result), this::readError);
             }
+        } else {
+            logger.warn("Command {} on channel {} is not supported yet.", command, channelUID);
         }
     }
 
@@ -411,14 +413,11 @@ public class SolakonOneInverterHandler extends BaseModbusThingHandler {
      *         returns original text with substitutions
      */
     public String getTranslation(final String text, @Nullable Object @Nullable... arguments) {
-        if (translationProvider != null) {
-            // localeProvider might be null, but if not, getLocale will return NonNull Locale;
-            // locale cannot be cached, as getLocale() will return different result once locale is changed by user
-            final Locale locale = (localeProvider != null) ? localeProvider.getLocale() : Locale.getDefault();
-            final String res = translationProvider.getText(bundle, text, text, locale, arguments);
-            if (res != null) {
-                return res;
-            }
+        // locale cannot be cached, as getLocale() will return different result once locale is changed by user
+        final Locale locale = localeProvider.getLocale();
+        final String res = translationProvider.getText(bundle, text, text, locale, arguments);
+        if (res != null) {
+            return res;
         }
         // translating not possible, we still have the original text without any substitutions
         if (arguments == null || arguments.length == 0) {
