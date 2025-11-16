@@ -68,13 +68,14 @@ public enum SolakonOneInverterRegisters {
     PHASE_A_VOLTAGE(39123, INT16, ConversionConstants.DIV_BY_TEN, quantityFactory(Units.VOLT), "grid-information"),
     PHASE_B_VOLTAGE(39124, INT16, ConversionConstants.DIV_BY_TEN, quantityFactory(Units.VOLT), "grid-information"),
     PHASE_C_VOLTAGE(39125, INT16, ConversionConstants.DIV_BY_TEN, quantityFactory(Units.VOLT), "grid-information"),
-    INVERTER_L1_CURRENT(39126, INT32, ConversionConstants.DIV_BY_THOUSAND, quantityFactory(Units.AMPERE),
-            "grid-information"),
+
+    // INVERTER_x_CURRENT 39126, 39128, 39130 seem not to work for MQ-2200
 
     HIDDEN_ACTIVE_POWER(39134, INT32, BigDecimal.ONE, quantityFactory(Units.WATT), "overview"),
-    REACTIVE_POWER(39136, INT32, BigDecimal.ONE, quantityFactory(Units.VAR), "overview"),
-    // TODO check if the returned value makes sense
-    POWER_FACTOR(39138, INT16, ConversionConstants.DIV_BY_THOUSAND, DecimalType::new, "overview"),
+
+    // seems not to work for MQ-2200
+    // REACTIVE_POWER(39136, INT32, BigDecimal.ONE, quantityFactory(Units.VAR), "overview"),
+    // POWER_FACTOR(39138, INT16, ConversionConstants.DIV_BY_THOUSAND, DecimalType::new, "overview"),
     INTERNAL_TEMPERATURE(39141, INT16, ConversionConstants.DIV_BY_TEN, quantityFactory(SIUnits.CELSIUS), "overview"),
 
     TOTAL_PV_GENERATION(39149, UINT32, ConversionConstants.DIV_BY_HUNDRED, quantityFactory(Units.KILOWATT_HOUR),
@@ -115,7 +116,7 @@ public enum SolakonOneInverterRegisters {
     // WORK_MODE(49203, UINT16, BigDecimal.ONE, DecimalType::new, "overview"),
 
     // some registers in between cannot be read and will make the Modbus request fail
-    // BLOCKER(ENFORCE_NEW_REQUEST, UINT16, BigDecimal.ONE, DecimalType::new, ""),
+    // BLOCKER(SolakonOneInverterHandler.ENFORCE_NEW_REQUEST, UINT16, BigDecimal.ONE, DecimalType::new, ""),
     // does not change during manual shutdown using the button on the device
     // SYSTEM_POWER_STATE(49228, UINT16, BigDecimal.ONE, DecimalType::new, "overview"),
     // idle state seems to be 0

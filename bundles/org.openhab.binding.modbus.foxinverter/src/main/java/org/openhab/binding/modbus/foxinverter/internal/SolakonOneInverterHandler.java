@@ -159,6 +159,7 @@ public class SolakonOneInverterHandler extends BaseModbusThingHandler {
                         (AsyncModbusReadResult result) -> this.readSuccessful(request, result), this::readError);
             }
         } else {
+            // TODO implement sending commands to device, maybe safeguarded by checking the model info first
             logger.warn("Command {} on channel {} is not supported yet.", command, channelUID);
         }
     }
