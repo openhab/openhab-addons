@@ -303,6 +303,7 @@ public class DeviceHandler extends ViessmannThingHandler {
         if (command instanceof OnOffType onOff) {
             uri = prop.get(onOff == OnOffType.ON ? "activateUri" : "deactivateUri");
             String feature = prop.get("feature");
+            param = "{}";
             if (feature != null && feature.contains("oneTimeCharge")) {
                 initState = true;
                 initStateDelay = 2;
