@@ -97,7 +97,7 @@ public class MQ2200InverterHandler extends BaseModbusThingHandler {
             final LocaleProvider localeProvider) {
         super(thing);
         this.localeProvider = localeProvider;
-            this.translationProvider = translationProvider;
+        this.translationProvider = translationProvider;
         bundle = FrameworkUtil.getBundle(this.getClass());
     }
 
@@ -318,7 +318,7 @@ public class MQ2200InverterHandler extends BaseModbusThingHandler {
                     updateState(new ChannelUID(thing.getUID(), "fi-" + channel.getChannelGroup(), "fi-grid-frequency"),
                             v);
                     OpenClosedType state = (i >= 1) ? OpenClosedType.CLOSED : OpenClosedType.OPEN;
-                    logger.debug("STATUS_ON_GRID {} -> {}", i>=1, state);
+                    logger.debug("STATUS_ON_GRID {} -> {}", i >= 1, state);
                     updateState(new ChannelUID(thing.getUID(), "fi-" + channel.getChannelGroup(), "fi-status-on-grid"),
                             state);
                     break;

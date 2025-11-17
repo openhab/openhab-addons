@@ -64,7 +64,8 @@ public enum MQ2200InverterRegisters {
 
     TOTAL_PV_POWER(39118, INT32, BigDecimal.ONE, quantityFactory(Units.WATT), "mppt-information"),
 
-    HIDDEN_GRID_FREQUENCY(39139, UINT16, new BigDecimal(BigInteger.ONE, 2), quantityFactory(Units.HERTZ), "grid-information"),
+    HIDDEN_GRID_FREQUENCY(39139, UINT16, new BigDecimal(BigInteger.ONE, 2), quantityFactory(Units.HERTZ),
+            "grid-information"),
 
     PHASE_A_VOLTAGE(39123, INT16, ConversionConstants.DIV_BY_TEN, quantityFactory(Units.VOLT), "grid-information"),
     PHASE_B_VOLTAGE(39124, INT16, ConversionConstants.DIV_BY_TEN, quantityFactory(Units.VOLT), "grid-information"),
