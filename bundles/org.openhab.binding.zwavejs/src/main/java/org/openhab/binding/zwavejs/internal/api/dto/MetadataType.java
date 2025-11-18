@@ -33,5 +33,7 @@ public enum MetadataType {
     @SerializedName("number")
     NUMBER,
     @SerializedName("boolean")
-    BOOLEAN
+    BOOLEAN,
+    @SerializedName("timeout")
+    TIMEOUT
 }

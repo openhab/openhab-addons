@@ -420,8 +420,6 @@ public abstract class BaseMetadata {
         switch (type) {
             case ANY:
                 return determineTypeFromValue(value, commandClass);
-            case DURATION:
-                return MetadataType.NUMBER;
             case NUMBER:
                 if (COMMAND_CLASS_ALARM == commandClass && optionList != null && optionList.size() == 2) {
                     return MetadataType.BOOLEAN;
@@ -486,6 +484,9 @@ public abstract class BaseMetadata {
         type = correctedType(type, value, commandClass, optionList);
 
         switch (type) {
+            case DURATION:
+            case TIMEOUT:
+                return CoreItemFactory.NUMBER + ":Time";
             case NUMBER:
                 Unit<?> unit = this.unit;
                 if (unit != null) {
