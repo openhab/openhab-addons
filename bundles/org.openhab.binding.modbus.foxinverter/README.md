@@ -31,7 +31,6 @@ I have not found a way to set a static IP on the Solakon ONE.
 
 To troubleshoot, it is recommended to open a telnet connection to port 502. If it connects, you have likely found your device with an active Modbus server.
 
-
 ## Thing Configuration
 
 Once you've configured the Modbus TCP Slave as Bridge, you can configure the mq2200-inverter thing.
@@ -49,7 +48,6 @@ The foxinverter binding supports autodiscovery, so if you enable discovery in th
 ## Channels
 
 > NOTE: All channels are currently read-only. Writing is not yet implemented.
-
 
 The `mq2200-inverter` thing has channels that serve the current state of the FoxESS inverter, as you are used to from the vendor app.
 

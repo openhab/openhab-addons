@@ -61,7 +61,7 @@ public class ModbusFoxInverterDiscoveryParticipant implements ModbusDiscoveryPar
         }
 
         public void detectModel() throws EndpointNotInitializedException {
-            logger.debug("Beginning scan for FoxESS MQ2200 device at address {}", MQ2200_START_ADDRESS);
+            logger.debug("Beginning scan for FoxESS MQ-2200 device at address {}", MQ2200_START_ADDRESS);
             ModbusCommunicationInterface comms = handler.getCommunicationInterface();
             if (comms == null) {
                 throw new EndpointNotInitializedException();
@@ -96,8 +96,7 @@ public class ModbusFoxInverterDiscoveryParticipant implements ModbusDiscoveryPar
 
                                 DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID)
                                         .withProperties(properties).withRepresentationProperty(PROPERTY_UNIQUE_ADDRESS)
-                                        .withBridge(handler.getUID())
-                                        .withLabel("FoxESS MQ2200 / Solakon ONE, Avocado 22 Pro").build();
+                                        .withBridge(handler.getUID()).withLabel("FoxESS MQ-2200 Variant").build();
 
                                 listener.thingDiscovered(discoveryResult);
                             }

@@ -9,8 +9,8 @@
 			<bridge-type-ref id="tcp"/>
 		</supported-bridge-type-refs>
 
-		<label>FoxESS MQ2200 / Solakon ONE, Avocado 22 Pro</label>
-		<description>FoxESS MQ2200 / Solakon ONE, Avocado 22 Pro inverter connected via Modbus TCP.</description>
+		<label>FoxESS MQ-2200 Variant</label>
+		<description>FoxESS MQ-2200 / Solakon ONE, Avocado 22 Pro inverter connected via Modbus TCP.</description>
 		<category>Inverter</category>
 		<channel-groups>
 			<channel-group id="fi-overview" typeId="fi-overview"/>

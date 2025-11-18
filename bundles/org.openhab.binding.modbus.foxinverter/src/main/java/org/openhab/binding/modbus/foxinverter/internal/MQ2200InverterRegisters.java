@@ -71,11 +71,11 @@ public enum MQ2200InverterRegisters {
     PHASE_B_VOLTAGE(39124, INT16, ConversionConstants.DIV_BY_TEN, quantityFactory(Units.VOLT), "grid-information"),
     PHASE_C_VOLTAGE(39125, INT16, ConversionConstants.DIV_BY_TEN, quantityFactory(Units.VOLT), "grid-information"),
 
-    // INVERTER_x_CURRENT 39126, 39128, 39130 seem not to work for MQ-2200
+    // INVERTER_x_CURRENT 39126, 39128, 39130 seem not to work for MQ2200
 
     HIDDEN_ACTIVE_POWER(39134, INT32, BigDecimal.ONE, quantityFactory(Units.WATT), "overview"),
 
-    // seems not to work for MQ-2200
+    // seems not to work for MQ2200
     // REACTIVE_POWER(39136, INT32, BigDecimal.ONE, quantityFactory(Units.VAR), "overview"),
     // POWER_FACTOR(39138, INT16, ConversionConstants.DIV_BY_THOUSAND, DecimalType::new, "overview"),
     INTERNAL_TEMPERATURE(39141, INT16, ConversionConstants.DIV_BY_TEN, quantityFactory(SIUnits.CELSIUS), "overview"),
@@ -104,7 +104,7 @@ public enum MQ2200InverterRegisters {
 
     BATTERY_LEVEL(39424, UINT16, ConversionConstants.DIV_BY_HUNDRED, DecimalType::new, "battery-information"),
 
-    // TODO implement remote control, regisers 46001-46007
+    // TODO implement remote control, registers 46001-46007
 
     BATTERY_MINIMUM_SOC(46609, UINT16, ConversionConstants.DIV_BY_HUNDRED, DecimalType::new, "battery-information"),
     BATTERY_MAXIMUM_SOC(46610, UINT16, ConversionConstants.DIV_BY_HUNDRED, DecimalType::new, "battery-information"),
