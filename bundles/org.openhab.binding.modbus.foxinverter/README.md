@@ -77,11 +77,11 @@ The `mq2200-inverter` thing has channels that serve the current state of the Fox
 | fi-battery-voltage                 | Number:ElectricPotential | Battery Voltage                       | yes       | Battery Information |
 | fi-battery-current                 | Number:ElectricCurrent   | Battery Current                       | yes       | Battery Information |
 | fi-battery-power                   | Number:Power             | Battery Power                         | no        | Battery Information |
-| fi-battery-level                   | Number:Dimensionless     | Battery Level                         | no        | Battery Information |
+| fi-battery-level                   | Number                   | Battery Level                         | no        | Battery Information |
 | fi-charging-power                  | Number:Power             | Charging Power                        | no        | Battery Information |
-| fi-battery-minimum-soc             | Number:Dimensionless     | Battery Min Charging Level            | yes       | Battery Information |
-| fi-battery-maximum-soc             | Number:Dimensionless     | Battery Max Charging Level            | yes       | Battery Information |
-| fi-battery-minimum-soc-on-grid     | Number:Dimensionless     | Battery Min Charging Level on Grid    | yes       | Battery Information |
+| fi-battery-minimum-soc             | Number                   | Battery Min Charging Level            | yes       | Battery Information |
+| fi-battery-maximum-soc             | Number                   | Battery Max Charging Level            | yes       | Battery Information |
+| fi-battery-minimum-soc-on-grid     | Number                   | Battery Min Charging Level on Grid    | yes       | Battery Information |
 | fi-phase-a-voltage                 | Number:ElectricPotential | Phase A Voltage                       | yes       | Grid Information    |
 | fi-phase-b-voltage                 | Number:ElectricPotential | Phase B Voltage                       | yes       | Grid Information    |
 | fi-phase-c-voltage                 | Number:ElectricPotential | Phase C Voltage                       | yes       | Grid Information    |

@@ -50,7 +50,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The {@link MQ2200InverterHandler} is responsible for reading the Modbus values of the
- * FoxESS MQ2200 inverter.
+ * FoxESS MQ-2200 inverter.
  *
  * @author Holger Friedrich - Initial contribution
  */
