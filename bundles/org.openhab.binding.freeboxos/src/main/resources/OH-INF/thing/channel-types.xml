@@ -446,24 +446,24 @@
 		<description>Number of clients connected to the server</description>
 		<state readOnly="true"/>
 	</channel-type>
-	
-    <channel-type id="vpn-state">
-        <item-type>String</item-type>
-        <label>Server State</label>
-        <description>Current state of the VPN Server</description>
-        <tags>
-            <tag>Status</tag>
-        </tags>
-        <state readOnly="true" pattern="%s">
-            <options>
-                <option value="STOPPED">Stopped</option>
-                <option value="STARTING">Starting</option>
-                <option value="STARTED">Started</option>
-                <option value="STOPPING">Stopping</option>
-                <option value="ERROR">Error</option>
-            </options>
-        </state>
-    </channel-type>
+
+	<channel-type id="vpn-state">
+		<item-type>String</item-type>
+		<label>Server State</label>
+		<description>Current state of the VPN Server</description>
+		<tags>
+			<tag>Status</tag>
+		</tags>
+		<state readOnly="true" pattern="%s">
+			<options>
+				<option value="STOPPED">Stopped</option>
+				<option value="STARTING">Starting</option>
+				<option value="STARTED">Started</option>
+				<option value="STOPPING">Stopping</option>
+				<option value="ERROR">Error</option>
+			</options>
+		</state>
+	</channel-type>
 
 	<channel-type id="keyfob-enable">
 		<item-type>Switch</item-type>

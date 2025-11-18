@@ -54,7 +54,7 @@
 		<label>Freebox Delta</label>
 		<description>Provides various informations regarding the status of the Freebox Delta Server</description>
 		<semantic-equipment-tag>Router</semantic-equipment-tag>
-		
+
 		<channel-groups>
 			<channel-group typeId="sensors" id="sensors"/>
 			<channel-group typeId="fans" id="fans"/>
