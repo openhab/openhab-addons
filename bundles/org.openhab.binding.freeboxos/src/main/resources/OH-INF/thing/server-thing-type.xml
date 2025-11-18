@@ -23,10 +23,22 @@
 			<channel-group typeId="connection-status" id="connection-status"/>
 			<channel-group typeId="ftth" id="ftth"/>
 			<channel-group typeId="xdsl" id="xdsl"/>
+			<channel-group typeId="wireguard" id="vpn-server">
+				<label>Wireguard VPN</label>
+			</channel-group>
+			<channel-group typeId="openvpn-bridged" id="vpn-server">
+				<label>OpenVPN Bridged VPN</label>
+			</channel-group>
+			<channel-group typeId="openvpn-routed" id="vpn-server">
+				<label>OpenVPN Routed VPN</label>
+			</channel-group>
+			<channel-group typeId="pptp" id="vpn-server">
+				<label>PPTP VPN</label>
+			</channel-group>
 		</channel-groups>
 
 		<properties>
-			<property name="thingTypeVersion">1</property>
+			<property name="thingTypeVersion">2</property>
 		</properties>
 
 		<representation-property>macAddress</representation-property>
@@ -41,7 +53,8 @@
 
 		<label>Freebox Delta</label>
 		<description>Provides various informations regarding the status of the Freebox Delta Server</description>
-
+		<semantic-equipment-tag>Router</semantic-equipment-tag>
+		
 		<channel-groups>
 			<channel-group typeId="sensors" id="sensors"/>
 			<channel-group typeId="fans" id="fans"/>
@@ -51,10 +64,22 @@
 			<channel-group typeId="connection-status" id="connection-status"/>
 			<channel-group typeId="ftth" id="ftth"/>
 			<channel-group typeId="xdsl" id="xdsl"/>
+			<channel-group typeId="vpn-server" id="wireguard">
+				<label>Wireguard VPN</label>
+			</channel-group>
+			<channel-group typeId="vpn-server" id="openvpn-bridge">
+				<label>OpenVPN Bridged VPN</label>
+			</channel-group>
+			<channel-group typeId="vpn-server" id="openvpn-routed">
+				<label>OpenVPN Routed VPN</label>
+			</channel-group>
+			<channel-group typeId="vpn-server" id="pptp">
+				<label>PPTP VPN</label>
+			</channel-group>
 		</channel-groups>
 
 		<properties>
-			<property name="thingTypeVersion">1</property>
+			<property name="thingTypeVersion">2</property>
 		</properties>
 
 		<representation-property>macAddress</representation-property>
