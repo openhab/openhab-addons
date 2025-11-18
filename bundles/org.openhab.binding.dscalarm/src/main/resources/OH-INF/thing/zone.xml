@@ -46,7 +46,7 @@
 			</channel>
 			<channel id="zone_battery_low" typeId="status">
 				<label>Zone Battery Low</label>
-				<description>Wireless Zone Low Battery Indicator</description>
+				<description>Wireless zone low battery indicator</description>
 			</channel>
 		</channels>
 

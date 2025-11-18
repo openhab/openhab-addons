@@ -558,6 +558,8 @@ public class DSCAlarmMessage {
                 new MessageParameters(DSCAlarmMessageType.PANEL_EVENT, false, false));
         DSCALARM_MESSAGE_PARAMETERS.put(DSCAlarmCode.HomeAutomationTroubleRestore,
                 new MessageParameters(DSCAlarmMessageType.PANEL_EVENT, false, false));
+        DSCALARM_MESSAGE_PARAMETERS.put(DSCAlarmCode.WirelessSensorLowBatteryRestore,
+                new MessageParameters(DSCAlarmMessageType.PANEL_EVENT, false, false));
         DSCALARM_MESSAGE_PARAMETERS.put(DSCAlarmCode.TroubleLEDOn,
                 new MessageParameters(DSCAlarmMessageType.PANEL_EVENT, true, false));
         DSCALARM_MESSAGE_PARAMETERS.put(DSCAlarmCode.TroubleLEDOff,

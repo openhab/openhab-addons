@@ -8,7 +8,7 @@
 			<add-channel id="zone_battery_low">
 				<type>dscalarm:status</type>
 				<label>Zone Battery Low</label>
-				<description>Wireless Zone Low Battery Indicator</description>
+				<description>Wireless zone low battery indicator</description>
 			</add-channel>
 		</instruction-set>
 	</thing-type>

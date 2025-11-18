@@ -50,8 +50,8 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
 
-    private static final List<DSCAlarmCode> EVL_WIRELESS_LOW_BATTERY_CODES = List.of(DSCAlarmCode.HomeAutomationTrouble,
-            DSCAlarmCode.HomeAutomationTroubleRestore);
+    private static final List<DSCAlarmCode> EVL_WIRELESS_LOW_BATTERY_CODES = List
+            .of(DSCAlarmCode.HomeAutomationTroubleRestore, DSCAlarmCode.WirelessSensorLowBatteryRestore);
 
     private final Logger logger = LoggerFactory.getLogger(DSCAlarmBaseBridgeHandler.class);
 
