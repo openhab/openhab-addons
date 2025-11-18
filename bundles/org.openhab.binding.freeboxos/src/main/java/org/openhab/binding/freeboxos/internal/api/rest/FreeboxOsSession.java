@@ -147,7 +147,7 @@ public class FreeboxOsSession {
                     webSocketManager = getManager(WebSocketManager.class);
                     loginManager = getManager(LoginManager.class);
                 } catch (FreeboxException e) {
-                    logger.warn("Error closing session: {}", e.getMessage());
+                    logger.warn("Error preparing to close session: {}", e.getMessage());
                     logger.trace("", e);
                 }
             }
@@ -162,8 +162,12 @@ public class FreeboxOsSession {
             try {
                 loginManager.closeSession();
             } catch (FreeboxException e) {
-                logger.warn("Error closing session: {}", e.getMessage());
-                logger.trace("", e);
+                if (e.getErrorCode() == ErrorCode.INVALID_SESSION) {
+                    // just ignore, it's what we want to do
+                } else {
+                    logger.warn("Error closing session: {}", e.getMessage());
+                    logger.trace("", e);
+                }
             }
         }
     }

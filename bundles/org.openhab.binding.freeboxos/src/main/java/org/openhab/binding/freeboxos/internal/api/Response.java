@@ -59,6 +59,7 @@ public class Response<ResultType> {
         INSECURE_PASSWORD,
         INVALID_PROVIDER,
         INVALID_NEXT_HOP,
+        INVALID_SESSION,
         INVALID_API_VERSION,
         INVAL_WPS_MACFILTER,
         INVAL_WPS_NEEDS_CCMP,
