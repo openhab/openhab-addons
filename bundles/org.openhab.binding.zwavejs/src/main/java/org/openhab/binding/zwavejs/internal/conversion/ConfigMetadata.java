@@ -46,6 +46,7 @@ public class ConfigMetadata extends BaseMetadata {
     private Type configTypeFromMetadata(MetadataType type, Object value, int commandClass) {
         type = correctedType(type, value, commandClass, null);
         switch (type) {
+            case TIMEOUT:
             case NUMBER:
                 return Type.INTEGER;
             // Might be future cases that require DECIMAL, might depend on scale?
