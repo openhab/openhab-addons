@@ -26,5 +26,5 @@ public class AzureBlobWatcherConfiguration {
     public boolean azureAnonymous;
     public String azureAccessKey = "";
     public int pollIntervalAzure;
-    public String contanerPath = "";
+    public String containerPath = "";
 }

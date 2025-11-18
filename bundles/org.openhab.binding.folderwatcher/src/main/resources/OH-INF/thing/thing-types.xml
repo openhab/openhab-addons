@@ -186,7 +186,7 @@
 				<label>Azure Blob Container Name</label>
 				<description>Name of the Azure container to be watched</description>
 			</parameter>
-			<parameter name="contanerPath" type="text">
+			<parameter name="containerPath" type="text">
 				<label>Container Path</label>
 				<description>Container path (folder) to be monitored</description>
 			</parameter>

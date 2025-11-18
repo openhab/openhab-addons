@@ -107,7 +107,7 @@ public class AzureBlobWatcherHandler extends BaseThingHandler {
 
         List<String> currentBlobListing = new ArrayList<>();
         try {
-            currentBlobListing = azure.listContainer(config.contanerPath);
+            currentBlobListing = azure.listContainer(config.containerPath);
             updateStatus(ThingStatus.ONLINE);
             List<String> difBlobListing = new ArrayList<>(currentBlobListing);
             difBlobListing.removeAll(previousBlobListing);
