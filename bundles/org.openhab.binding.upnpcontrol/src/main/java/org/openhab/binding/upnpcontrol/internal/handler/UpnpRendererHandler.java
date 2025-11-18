@@ -1029,8 +1029,8 @@ public class UpnpRendererHandler extends UpnpHandler {
     }
 
     @Override
-    protected @Nullable String preProcessValueReceived(Map<String, String> inputs, @Nullable String variable,
-            @Nullable String value, @Nullable String service, @Nullable String action) {
+    protected String preProcessValueReceived(Map<String, String> inputs, String variable, @Nullable String value,
+            @Nullable String service, @Nullable String action) {
         if (variable == null) {
             return null;
         } else {

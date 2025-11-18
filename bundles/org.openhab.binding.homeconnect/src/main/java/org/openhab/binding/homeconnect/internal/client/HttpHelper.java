@@ -104,17 +104,21 @@ public class HttpHelper {
                 }
 
                 if (accessTokenResponse != null) {
+                    Instant tokenCreated = accessTokenResponse.getCreatedOn();
                     String lastToken = lastAccessToken;
                     if (lastToken == null) {
-                        LoggerFactory.getLogger(HttpHelper.class).debug("The used access token was created at {}",
-                                LocalDateTime.ofInstant(accessTokenResponse.getCreatedOn(), ZoneId.systemDefault())
-                                        .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+                        if (tokenCreated != null) {
+                            LoggerFactory.getLogger(HttpHelper.class).debug("The used access token was created at {}",
+                                    LocalDateTime.ofInstant(tokenCreated, ZoneId.systemDefault())
+                                            .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+                        }
                     } else if (!lastToken.equals(accessTokenResponse.getAccessToken())) {
-                        LoggerFactory.getLogger(HttpHelper.class)
-                                .debug("The access token changed. New one created at {}",
-                                        LocalDateTime
-                                                .ofInstant(accessTokenResponse.getCreatedOn(), ZoneId.systemDefault())
-                                                .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+                        if (tokenCreated != null) {
+                            LoggerFactory.getLogger(HttpHelper.class).debug(
+                                    "The access token changed. New one created at {}",
+                                    LocalDateTime.ofInstant(tokenCreated, ZoneId.systemDefault())
+                                            .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+                        }
                     }
                     lastAccessToken = accessTokenResponse.getAccessToken();
 

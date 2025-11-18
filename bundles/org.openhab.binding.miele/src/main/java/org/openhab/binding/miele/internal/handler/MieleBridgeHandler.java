@@ -425,7 +425,7 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
         }
     };
 
-    private @Nullable NetworkInterface getMulticastNetworkInterface(String gatewayIpAddress) {
+    private @Nullable NetworkInterface getMulticastNetworkInterface(@Nullable String gatewayIpAddress) {
         try {
             InetAddress gatewayAddress = InetAddress.getByName(gatewayIpAddress);
 

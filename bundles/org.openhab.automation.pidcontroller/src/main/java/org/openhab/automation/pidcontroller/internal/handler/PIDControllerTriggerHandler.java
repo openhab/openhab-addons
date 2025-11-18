@@ -81,8 +81,8 @@ public class PIDControllerTriggerHandler extends BaseTriggerModuleHandler implem
 
         Configuration config = module.getConfiguration();
 
-        String inputItemName = (String) requireNonNull(config.get(CONFIG_INPUT_ITEM), "Input item is not set");
-        String setpointItemName = (String) requireNonNull(config.get(CONFIG_SETPOINT_ITEM), "Setpoint item is not set");
+        String inputItemName = requireNonNull((String) config.get(CONFIG_INPUT_ITEM), "Input item is not set");
+        String setpointItemName = requireNonNull((String) config.get(CONFIG_SETPOINT_ITEM), "Setpoint item is not set");
 
         try {
             inputItem = itemRegistry.getItem(inputItemName);

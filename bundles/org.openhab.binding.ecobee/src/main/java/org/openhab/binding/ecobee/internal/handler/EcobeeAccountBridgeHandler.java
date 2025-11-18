@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -141,7 +142,8 @@ public class EcobeeAccountBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void childHandlerInitialized(ThingHandler thermostatHandler, Thing thermostatThing) {
-        String thermostatId = (String) thermostatThing.getConfiguration().get(CONFIG_THERMOSTAT_ID);
+        String thermostatId = Objects
+                .requireNonNull((String) thermostatThing.getConfiguration().get(CONFIG_THERMOSTAT_ID));
         thermostatHandlers.put(thermostatId, (EcobeeThermostatBridgeHandler) thermostatHandler);
         thermostatIds.add(thermostatId);
         scheduleQuickPoll();

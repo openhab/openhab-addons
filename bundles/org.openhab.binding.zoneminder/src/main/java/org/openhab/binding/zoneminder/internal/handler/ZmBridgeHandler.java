@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
@@ -170,7 +171,7 @@ public class ZmBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void childHandlerInitialized(ThingHandler childHandler, Thing childThing) {
-        String monitorId = (String) childThing.getConfiguration().get(CONFIG_MONITOR_ID);
+        String monitorId = Objects.requireNonNull((String) childThing.getConfiguration().get(CONFIG_MONITOR_ID));
         monitorHandlers.put(monitorId, (ZmMonitorHandler) childHandler);
         logger.debug("Bridge: Monitor handler was initialized for {} with id {}", childThing.getUID(), monitorId);
     }

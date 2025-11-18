@@ -18,6 +18,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -93,7 +94,7 @@ public class XiaomiHandlerFactory extends BaseThingHandlerFactory {
 
     private ThingUID getBridgeThingUID(ThingTypeUID thingTypeUID, ThingUID thingUID, Configuration configuration) {
         if (thingUID == null) {
-            String serialNumber = (String) configuration.get(SERIAL_NUMBER);
+            String serialNumber = Objects.requireNonNullElse((String) configuration.get(SERIAL_NUMBER), "");
             return new ThingUID(thingTypeUID, serialNumber);
         }
         return thingUID;
@@ -102,7 +103,7 @@ public class XiaomiHandlerFactory extends BaseThingHandlerFactory {
     private ThingUID getThingUID(ThingTypeUID thingTypeUID, ThingUID thingUID, Configuration configuration,
             ThingUID bridgeUID) {
         if (thingUID == null) {
-            String itemId = (String) configuration.get(ITEM_ID);
+            String itemId = Objects.requireNonNullElse((String) configuration.get(ITEM_ID), "");
             return new ThingUID(thingTypeUID, itemId, bridgeUID.getId());
         }
         return thingUID;

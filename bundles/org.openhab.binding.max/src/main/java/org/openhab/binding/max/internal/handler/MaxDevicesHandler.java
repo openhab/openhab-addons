@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -544,7 +545,7 @@ public class MaxDevicesHandler extends BaseThingHandler implements DeviceStatusL
                 configChanged = true;
             }
             if (getConfig().get(PROPERTY_ROOMID) == null || new BigDecimal(device.getRoomId())
-                    .compareTo((BigDecimal) getConfig().get(PROPERTY_ROOMID)) != 0) {
+                    .compareTo(Objects.requireNonNull((BigDecimal) getConfig().get(PROPERTY_ROOMID))) != 0) {
                 configuration.put(PROPERTY_ROOMID, new BigDecimal(device.getRoomId()));
                 configChanged = true;
             }

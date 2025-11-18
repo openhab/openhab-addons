@@ -15,6 +15,7 @@ package org.openhab.binding.pulseaudio.internal.discovery;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.regex.PatternSyntaxException;
 
@@ -112,9 +113,14 @@ public class PulseaudioDeviceDiscoveryService extends AbstractDiscoveryService i
         for (Thing thing : pulseaudioBridgeHandler.getThing().getThings()) {
             Configuration configuration = thing.getConfiguration();
             try {
-                alreadyConfiguredThings.add(new DeviceIdentifier(
-                        (String) configuration.get(PulseaudioBindingConstants.DEVICE_PARAMETER_NAME_OR_DESCRIPTION),
-                        (String) configuration.get(PulseaudioBindingConstants.DEVICE_PARAMETER_ADDITIONAL_FILTERS)));
+                alreadyConfiguredThings
+                        .add(new DeviceIdentifier(
+                                Objects.requireNonNullElse(
+                                        (String) configuration
+                                                .get(PulseaudioBindingConstants.DEVICE_PARAMETER_NAME_OR_DESCRIPTION),
+                                        ""),
+                                (String) configuration
+                                        .get(PulseaudioBindingConstants.DEVICE_PARAMETER_ADDITIONAL_FILTERS)));
             } catch (PatternSyntaxException p) {
                 logger.debug(
                         "There is an error with an already configured things. Cannot compare with discovery, skipping it");

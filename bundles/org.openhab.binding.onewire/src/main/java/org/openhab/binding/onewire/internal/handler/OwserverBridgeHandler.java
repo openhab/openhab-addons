@@ -95,11 +95,11 @@ public class OwserverBridgeHandler extends BaseBridgeHandler {
     public void initialize() {
         Configuration configuration = getConfig();
 
-        if (configuration.get(CONFIG_ADDRESS) != null) {
-            owserverConnection.setHost((String) configuration.get(CONFIG_ADDRESS));
+        if (((String) configuration.get(CONFIG_ADDRESS)) instanceof String s) {
+            owserverConnection.setHost(s);
         }
-        if (configuration.get(CONFIG_PORT) != null) {
-            owserverConnection.setPort(((BigDecimal) configuration.get(CONFIG_PORT)).intValue());
+        if (((BigDecimal) configuration.get(CONFIG_PORT)) instanceof BigDecimal dec) {
+            owserverConnection.setPort(dec.intValue());
         }
 
         for (Channel channel : thing.getChannels()) {

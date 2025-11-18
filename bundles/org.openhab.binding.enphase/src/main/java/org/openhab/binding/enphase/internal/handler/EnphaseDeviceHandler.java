@@ -15,6 +15,7 @@ package org.openhab.binding.enphase.internal.handler;
 import static org.openhab.binding.enphase.internal.EnphaseBindingConstants.*;
 
 import java.util.Map;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -136,8 +137,9 @@ abstract class EnphaseDeviceHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        serialNumber = (String) getConfig().get(EnphaseBindingConstants.CONFIG_SERIAL_NUMBER);
+        String tmpSerialNumber = (String) getConfig().get(EnphaseBindingConstants.CONFIG_SERIAL_NUMBER);
         if (!EnphaseBindingConstants.isValidSerial(serialNumber)) {
+            serialNumber = Objects.requireNonNull(tmpSerialNumber);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Serial Number is not valid");
         } else {
             updateStatus(ThingStatus.UNKNOWN);

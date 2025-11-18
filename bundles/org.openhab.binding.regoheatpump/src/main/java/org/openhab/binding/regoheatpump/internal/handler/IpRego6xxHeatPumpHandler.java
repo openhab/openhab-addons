@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.regoheatpump.internal.handler;
 
+import java.io.IOException;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.regoheatpump.internal.RegoHeatPumpBindingConstants;
 import org.openhab.binding.regoheatpump.internal.protocol.IpRegoConnection;
@@ -31,10 +33,13 @@ public class IpRego6xxHeatPumpHandler extends Rego6xxHeatPumpHandler {
     }
 
     @Override
-    protected RegoConnection createConnection() {
+    protected RegoConnection createConnection() throws IOException {
         String host = (String) getConfig().get(RegoHeatPumpBindingConstants.HOST_PARAMETER);
         Integer port = ((Number) getConfig().get(RegoHeatPumpBindingConstants.TCP_PORT_PARAMETER)).intValue();
-
+        if (host == null || port == null) {
+            // IOException is handled by superclass when createConnection is called
+            throw new IOException("Host and port must be specified in the configuration.");
+        }
         return new IpRegoConnection(host, port);
     }
 }

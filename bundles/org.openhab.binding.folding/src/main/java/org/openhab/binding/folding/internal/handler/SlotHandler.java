@@ -13,6 +13,7 @@
 package org.openhab.binding.folding.internal.handler;
 
 import java.io.IOException;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -59,7 +60,7 @@ public class SlotHandler extends BaseThingHandler implements SlotUpdateListener 
     }
 
     private String myId() {
-        return (String) getThing().getConfiguration().get("id");
+        return Objects.requireNonNull((String) getThing().getConfiguration().get("id"));
     }
 
     @Override
