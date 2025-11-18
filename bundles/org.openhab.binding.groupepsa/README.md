@@ -34,14 +34,14 @@ The Client ID and Client Secret should not need to be updated.
 
 ## Vehicle Configuration
 
-Normally the vehicles will be autodiscovered.
+Normally the vehicles will be auto-discovered.
 The Polling Interval and Online Timeout can be adjusted.
 
 ### parameters
 
 | Property        | Default | Required | Description                                                                                       |                                                                                            |
 |-----------------|---------|----------|---------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------|
-| id              | None    | Yes      | Vehicle API ID.                                                                                   | The ID is the vehicle API ID (not equal to the VIN), which is autodiscovered by the bridge. |
+| id              | None    | Yes      | Vehicle API ID.                                                                                   | The ID is the vehicle API ID (not equal to the VIN), which is auto-discovered by the bridge. |
 | pollingInterval | 5       | No       | The Polling Interval (in minutes) determines how often the car is polled for updated information. |                                                                                            |
 | onlineInterval  | 15      | No       | The Online Timeout (in minutes) determines when the car is deemed to be offline.                  |                                                                                            |
 
