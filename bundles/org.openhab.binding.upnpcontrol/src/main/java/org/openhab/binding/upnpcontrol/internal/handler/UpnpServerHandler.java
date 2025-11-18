@@ -164,7 +164,7 @@ public class UpnpServerHandler extends UpnpHandler {
     protected void initJob() {
         synchronized (jobLock) {
             if (!upnpIOService.isRegistered(this)) {
-                String msg = String.format("@text/offline.device-not-registered [ \"%s\" ]", getUDN());
+                String msg = String.format("@text/offline.device-not-registered [ \"%s\" ]", getDeviceUDN());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, msg);
                 return;
             }
@@ -516,7 +516,7 @@ public class UpnpServerHandler extends UpnpHandler {
             if (mediaQueue.isEmpty() && !currentEntry.isContainer()) {
                 mediaQueue.add(currentEntry);
             }
-            UpnpEntryQueue queue = new UpnpEntryQueue(mediaQueue, getUDN());
+            UpnpEntryQueue queue = new UpnpEntryQueue(mediaQueue, getDeviceUDN());
             queue.persistQueue(playlistName, append, bindingConfig.path);
             UpnpControlUtil.updatePlaylistsList(bindingConfig.path);
         }
@@ -732,7 +732,7 @@ public class UpnpServerHandler extends UpnpHandler {
                 logger.debug("Nothing to serve from server {} to renderer {}", thing.getLabel(),
                         handler.getThing().getLabel());
             } else {
-                UpnpEntryQueue queue = new UpnpEntryQueue(mediaQueue, getUDN());
+                UpnpEntryQueue queue = new UpnpEntryQueue(mediaQueue, getDeviceUDN());
                 handler.registerQueue(queue);
                 logger.debug("Serving media queue {} from server {} to renderer {}", mediaQueue, thing.getLabel(),
                         handler.getThing().getLabel());

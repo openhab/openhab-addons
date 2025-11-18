@@ -86,13 +86,13 @@ public class UpnpAudioSink extends AudioSinkAsync {
                 } catch (IOException ex) {
                 }
                 throw new UnsupportedAudioStreamException(
-                        handler.getUDN() + " was not able to handle the audio stream (cache on disk failed).",
+                        handler.getDeviceUDN() + " was not able to handle the audio stream (cache on disk failed).",
                         audioStream.getClass(), e);
             }
             streamServed.playEnd().thenRun(() -> this.playbackFinished(audioStream));
             playMedia(callbackUrl + streamServed.url());
         } else {
-            logger.warn("We do not have any callback url, so {} cannot play the audio stream!", handler.getUDN());
+            logger.warn("We do not have any callback url, so {} cannot play the audio stream!", handler.getDeviceUDN());
             try {
                 audioStream.close();
             } catch (IOException e) {

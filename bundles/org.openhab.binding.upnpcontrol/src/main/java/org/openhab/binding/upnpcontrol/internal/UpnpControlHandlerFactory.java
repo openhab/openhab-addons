@@ -14,7 +14,9 @@ package org.openhab.binding.upnpcontrol.internal;
 
 import static org.openhab.binding.upnpcontrol.internal.UpnpControlBindingConstants.*;
 
+import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -151,7 +153,7 @@ public class UpnpControlHandlerFactory extends BaseThingHandlerFactory implement
         upnpServers.put(key, handler);
         logger.debug("Media server handler created for {} with UID {}", thing.getLabel(), thing.getUID());
 
-        String udn = handler.getUDN();
+        String udn = handler.getDeviceUDN();
         if (!UpnpHandler.UNDEFINED_UDN.equals(udn)) {
             handlers.put(udn, handler);
             remoteDeviceUpdated(null, devices.get(udn));
@@ -169,7 +171,7 @@ public class UpnpControlHandlerFactory extends BaseThingHandlerFactory implement
         upnpServers.forEach((thingId, value) -> value.addRendererOption(key));
         logger.debug("Media renderer handler created for {} with UID {}", thing.getLabel(), thing.getUID());
 
-        String udn = handler.getUDN();
+        String udn = handler.getDeviceUDN();
         if (!UpnpHandler.UNDEFINED_UDN.equals(udn)) {
             handlers.put(udn, handler);
             remoteDeviceUpdated(null, devices.get(udn));
@@ -185,7 +187,7 @@ public class UpnpControlHandlerFactory extends BaseThingHandlerFactory implement
         }
         logger.debug("Removing media server handler for {} with UID {}", handler.getThing().getLabel(),
                 handler.getThing().getUID());
-        String udn = handler.getUDN();
+        String udn = handler.getDeviceUDN();
         if (!UpnpHandler.UNDEFINED_UDN.equals(udn)) {
             handlers.remove(udn);
         }
@@ -220,7 +222,7 @@ public class UpnpControlHandlerFactory extends BaseThingHandlerFactory implement
         }
 
         upnpServers.forEach((thingId, value) -> value.removeRendererOption(key));
-        String udn = handler.getUDN();
+        String udn = handler.getDeviceUDN();
         if (!UpnpHandler.UNDEFINED_UDN.equals(udn)) {
             handlers.remove(udn);
         }
@@ -281,13 +283,17 @@ public class UpnpControlHandlerFactory extends BaseThingHandlerFactory implement
             return;
         }
 
-        String udn = device.getIdentity().getUdn().getIdentifierString();
-        if ("MediaServer".equals(device.getType().getType()) || "MediaRenderer".equals(device.getType().getType())) {
-            devices.put(udn, device);
-        }
+        List<RemoteDevice> allDevices = enumerateAllDevices(device);
+        String udn;
+        for (RemoteDevice d : allDevices) {
+            udn = d.getIdentity().getUdn().getIdentifierString();
+            if ("MediaServer".equals(d.getType().getType()) || "MediaRenderer".equals(d.getType().getType())) {
+                devices.put(udn, d);
+            }
 
-        if (handlers.containsKey(udn)) {
-            remoteDeviceUpdated(registry, device);
+            if (handlers.containsKey(udn)) {
+                remoteDeviceUpdated(registry, d);
+            }
         }
     }
 
@@ -297,10 +303,15 @@ public class UpnpControlHandlerFactory extends BaseThingHandlerFactory implement
             return;
         }
 
-        String udn = device.getIdentity().getUdn().getIdentifierString();
-        UpnpHandler handler = handlers.get(udn);
-        if (handler != null) {
-            handler.updateDeviceConfig(device);
+        List<RemoteDevice> allDevices = enumerateAllDevices(device);
+        String udn;
+        UpnpHandler handler;
+        for (RemoteDevice d : allDevices) {
+            udn = d.getIdentity().getUdn().getIdentifierString();
+            handler = handlers.get(udn);
+            if (handler != null) {
+                handler.updateDeviceConfig(device);
+            }
         }
     }
 
@@ -309,7 +320,10 @@ public class UpnpControlHandlerFactory extends BaseThingHandlerFactory implement
         if (device == null) {
             return;
         }
-        devices.remove(device.getIdentity().getUdn().getIdentifierString());
+        List<RemoteDevice> allDevices = enumerateAllDevices(device);
+        for (RemoteDevice d : allDevices) {
+            devices.remove(d.getIdentity().getUdn().getIdentifierString());
+        }
     }
 
     @Override
@@ -327,5 +341,31 @@ public class UpnpControlHandlerFactory extends BaseThingHandlerFactory implement
 
     @Override
     public void afterShutdown() {
+    }
+
+    /**
+     * Generates a {@link List} of the specified {@link RemoteDevice} itself and its embedded/child devices.
+     *
+     * @param device the {@link RemoteDevice} whose device tree to enumerate.
+     * @return The resulting {@link List} of {@link RemoteDevice}s.
+     */
+    private static List<RemoteDevice> enumerateAllDevices(RemoteDevice device) {
+        List<RemoteDevice> result = new ArrayList<>();
+        result.add(device);
+        enumerateChildDevices(device, result);
+        return result;
+    }
+
+    /**
+     * Traverses and adds child/embedded devices to the provided {@link List} recursively.
+     *
+     * @param device the {@link RemoteDevice} whose descendants to add to {@code devices}.
+     * @param devices the {@link List} to add the descendants to.
+     */
+    private static void enumerateChildDevices(RemoteDevice device, List<RemoteDevice> devices) {
+        for (RemoteDevice child : device.getEmbeddedDevices()) {
+            devices.add(child);
+            enumerateChildDevices(device, devices);
+        }
     }
 }

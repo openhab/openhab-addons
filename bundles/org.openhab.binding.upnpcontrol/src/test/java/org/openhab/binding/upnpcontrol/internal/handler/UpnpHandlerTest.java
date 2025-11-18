@@ -124,7 +124,7 @@ public class UpnpHandlerTest {
         // No timeouts for responses, as we don't actually communicate with a UPnP device
         handler.config.responseTimeout = 0;
 
-        doReturn("12345").when(handler).getUDN();
+        doReturn("12345").when(handler).getDeviceUDN();
     }
 
     /**

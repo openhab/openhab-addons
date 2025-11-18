@@ -23,6 +23,12 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class UpnpControlConfiguration {
     public @Nullable String udn;
+    public @Nullable String rootUdn;
     public int refresh = 60;
     public int responseTimeout = 2500;
+
+    @Nullable
+    public String getRootUdn() {
+        return rootUdn != null && !rootUdn.isEmpty() ? rootUdn : udn;
+    }
 }

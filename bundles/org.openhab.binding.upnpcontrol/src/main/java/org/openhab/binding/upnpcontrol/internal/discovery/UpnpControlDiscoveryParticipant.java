@@ -15,7 +15,10 @@ package org.openhab.binding.upnpcontrol.internal.discovery;
 import static org.openhab.binding.upnpcontrol.internal.UpnpControlBindingConstants.*;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -47,8 +50,7 @@ public class UpnpControlDiscoveryParticipant implements UpnpDiscoveryParticipant
         return SUPPORTED_THING_TYPES_UIDS;
     }
 
-    @Override
-    public @Nullable DiscoveryResult createResult(RemoteDevice device) {
+    public @Nullable DiscoveryResult createResultInternal(RemoteDevice device) {
         DiscoveryResult result = null;
         ThingUID thingUid = getThingUID(device);
         if (thingUid != null) {
@@ -58,6 +60,10 @@ public class UpnpControlDiscoveryParticipant implements UpnpDiscoveryParticipant
             URL descriptorURL = device.getIdentity().getDescriptorURL();
             properties.put("ipAddress", descriptorURL.getHost());
             properties.put("udn", device.getIdentity().getUdn().getIdentifierString());
+            RemoteDevice rootDevice = device.getRoot();
+            if (!device.equals(rootDevice)) {
+                properties.put("rootUdn", rootDevice.getIdentity().getUdn().getIdentifierString());
+            }
             properties.put("deviceDescrURL", descriptorURL.toString());
             URL baseURL = device.getDetails().getBaseURL();
             if (baseURL != null) {
@@ -68,6 +74,20 @@ public class UpnpControlDiscoveryParticipant implements UpnpDiscoveryParticipant
             }
             result = DiscoveryResultBuilder.create(thingUid).withLabel(label).withProperties(properties)
                     .withRepresentationProperty("udn").build();
+        }
+        return result;
+    }
+
+    @Override
+    public @Nullable Collection<DiscoveryResult> createResults(RemoteDevice device) {
+        List<DiscoveryResult> result = new ArrayList<>();
+        List<RemoteDevice> devices = UpnpDiscoveryParticipant.enumerateAllDevices(device);
+        DiscoveryResult aResult;
+        for (RemoteDevice aDevice : devices) {
+            aResult = createResultInternal(aDevice);
+            if (aResult != null) {
+                result.add(aResult);
+            }
         }
         return result;
     }
