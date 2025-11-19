@@ -23,7 +23,6 @@ import javax.measure.Unit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.io.transport.modbus.ModbusConstants.ValueType;
 import org.openhab.core.library.types.DecimalType;
-import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.SIUnits;
@@ -106,7 +105,7 @@ public enum MQ2200InverterRegisters {
 
     // TODO implement remote control, registers 46001-46007
 
-    BATTERY_MINIMUM_SOC(46609, UINT16, BigDecimal.ONE, DecimalType::new, "battery-information"),
+    BATTERY_MINIMUM_SOC(46609, UINT16, BigDecimal.ONE, percentFactory(), "battery-information"),
     BATTERY_MAXIMUM_SOC(46610, UINT16, BigDecimal.ONE, percentFactory(), "battery-information"),
     BATTERY_MINIMUM_SOC_ON_GRID(46611, UINT16, BigDecimal.ONE, percentFactory(), "battery-information"),
 
@@ -159,10 +158,6 @@ public enum MQ2200InverterRegisters {
 
     private static Function<BigDecimal, State> percentFactory() {
         return (BigDecimal value) -> new QuantityType<>(value, Units.PERCENT);
-    }
-
-    private static Function<BigDecimal, State> switchFactory() {
-        return (BigDecimal value) -> OnOffType.from(value.toString());
     }
 
     /**

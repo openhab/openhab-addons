@@ -60,6 +60,11 @@ public class MQ2200InverterHandler extends BaseModbusThingHandler {
     // required if you are not allowed to read certain registers ranges
     public static final int ENFORCE_NEW_REQUEST = -1;
 
+    private static final int INVALID_ACTIVE_POWER_VALUE = -30000;
+    private static final int STATUS_BIT_STANDBY = 0x01;
+    private static final int STATUS_BIT_OPERATION = 0x04;
+    private static final int STATUS_BIT_FAULT = 0x40;
+
     private static final class ModbusRequest {
 
         private final Deque<MQ2200InverterRegisters> registers;
@@ -305,7 +310,7 @@ public class MQ2200InverterHandler extends BaseModbusThingHandler {
             switch (channel.getChannelName()) {
                 // active power reports -30000 W during startup, to be suppressed
                 case "hidden-active-power":
-                    if (i != -30000) {
+                    if (i != INVALID_ACTIVE_POWER_VALUE) {
                         logger.debug("{} {}", "ACTIVE_POWER", v);
                         updateState(
                                 new ChannelUID(thing.getUID(), "fi-" + channel.getChannelGroup(), "fi-active-power"),
@@ -324,8 +329,8 @@ public class MQ2200InverterHandler extends BaseModbusThingHandler {
                     break;
                 // status seems to use only 3 bits, export a separate channel for each
                 case "hidden-status1":
-                    boolean statusStandby = (i & 0x01) != 0;
-                    boolean statusOperation = (i & 0x04) != 0;
+                    boolean statusStandby = (i & STATUS_BIT_STANDBY) != 0;
+                    boolean statusOperation = (i & STATUS_BIT_OPERATION) != 0;
                     OpenClosedType stateUpdate = statusStandby ? OpenClosedType.CLOSED : OpenClosedType.OPEN;
                     logger.debug("STATUS_STANDBY {} -> {}", statusStandby, stateUpdate);
                     updateState(new ChannelUID(thing.getUID(), "fi-" + channel.getChannelGroup(), "fi-status-standby"),
@@ -336,7 +341,7 @@ public class MQ2200InverterHandler extends BaseModbusThingHandler {
                             new ChannelUID(thing.getUID(), "fi-" + channel.getChannelGroup(), "fi-status-operation"),
                             stateUpdate);
                     // this is a global variable, as the fault state is stored and evaluated for alarm output
-                    statusFault = (i & 0x40) != 0;
+                    statusFault = (i & STATUS_BIT_FAULT) != 0;
                     processAlarmState();
                     break;
                 // alarm states are currently
@@ -355,7 +360,7 @@ public class MQ2200InverterHandler extends BaseModbusThingHandler {
                 // EPS output state is set to 0 or 2 by the app
                 case "hidden-eps-output":
                     OnOffType epsState = OnOffType.OFF;
-                    if (i == 2) {
+                    if (i == EPS_OUTPUT_ON_VALUE) {
                         epsState = OnOffType.ON;
                     }
                     logger.debug("{} {}", "EPS_OUTPUT", epsState);
