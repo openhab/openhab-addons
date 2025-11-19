@@ -96,7 +96,7 @@ public class ModbusFoxInverterDiscoveryParticipant implements ModbusDiscoveryPar
 
                                 DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID)
                                         .withProperties(properties).withRepresentationProperty(PROPERTY_UNIQUE_ADDRESS)
-                                        .withBridge(handler.getUID()).withLabel("FoxESS MQ-2200 Variant").build();
+                                        .withBridge(handler.getUID()).withLabel("FoxESS MQ-2200 Inverter").build();
 
                                 listener.thingDiscovered(discoveryResult);
                             }

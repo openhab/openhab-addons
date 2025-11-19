@@ -47,8 +47,8 @@ class MQ2200InverterRegistersTest {
         assertEquals(BigDecimal.valueOf(100), decimalTypeValue.toBigDecimal());
 
         State state = batteryLevelRegister.createState(decimalTypeValue);
-        assertInstanceOf(DecimalType.class, state);
-        assertEquals("100", state.toFullString());
+        assertInstanceOf(QuantityType.class, state);
+        assertEquals("100 %", state.toFullString());
     }
 
     @Test

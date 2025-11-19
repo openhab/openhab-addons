@@ -9,7 +9,7 @@
 			<bridge-type-ref id="tcp"/>
 		</supported-bridge-type-refs>
 
-		<label>FoxESS MQ-2200 Variant</label>
+		<label>FoxESS MQ-2200 Inverter</label>
 		<description>FoxESS MQ-2200 / Solakon ONE, Avocado 22 Pro inverter connected via Modbus TCP.</description>
 		<category>Inverter</category>
 		<channel-groups>
@@ -385,14 +385,14 @@
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="fi-battery-level">
-		<item-type>Number</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Battery Level</label>
 		<category>Battery</category>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Energy</tag>
 		</tags>
-		<state pattern="%.0f %%" readOnly="true"/>
+		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="fi-charging-power">
 		<item-type>Number:Power</item-type>
@@ -405,31 +405,31 @@
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="fi-battery-minimum-soc" advanced="true">
-		<item-type>Number</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Battery minimum state of charge</label>
 		<category>Battery</category>
 		<tags>
 			<tag>Energy</tag>
 		</tags>
-		<state pattern="%.0f %%" readOnly="false"/>
+		<state pattern="%.0f %unit%" readOnly="false"/>
 	</channel-type>
 	<channel-type id="fi-battery-maximum-soc" advanced="true">
-		<item-type>Number</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Battery maximum state of charge</label>
 		<category>Battery</category>
 		<tags>
 			<tag>Energy</tag>
 		</tags>
-		<state pattern="%.0f %%" readOnly="false"/>
+		<state pattern="%.0f %unit%" readOnly="false"/>
 	</channel-type>
 	<channel-type id="fi-battery-minimum-soc-on-grid" advanced="true">
-		<item-type>Number</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Battery minimum state of charge (on grid)</label>
 		<category>Battery</category>
 		<tags>
 			<tag>Energy</tag>
 		</tags>
-		<state pattern="%.0f %%" readOnly="false"/>
+		<state pattern="%.0f %unit%" readOnly="false"/>
 	</channel-type>
 	<channel-type id="fi-eps-output">
 		<item-type>Switch</item-type>

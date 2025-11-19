@@ -12,10 +12,7 @@
  */
 package org.openhab.binding.modbus.foxinverter.internal;
 
-import static org.openhab.core.io.transport.modbus.ModbusConstants.ValueType.INT16;
-import static org.openhab.core.io.transport.modbus.ModbusConstants.ValueType.INT32;
-import static org.openhab.core.io.transport.modbus.ModbusConstants.ValueType.UINT16;
-import static org.openhab.core.io.transport.modbus.ModbusConstants.ValueType.UINT32;
+import static org.openhab.core.io.transport.modbus.ModbusConstants.ValueType.*;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -105,13 +102,13 @@ public enum MQ2200InverterRegisters {
     MPPT3_POWER(39283, INT32, BigDecimal.ONE, quantityFactory(Units.WATT), "mppt-information"),
     MPPT4_POWER(39285, INT32, BigDecimal.ONE, quantityFactory(Units.WATT), "mppt-information"),
 
-    BATTERY_LEVEL(39424, UINT16, BigDecimal.ONE, DecimalType::new, "battery-information"),
+    BATTERY_LEVEL(39424, UINT16, BigDecimal.ONE, percentFactory(), "battery-information"),
 
     // TODO implement remote control, registers 46001-46007
 
     BATTERY_MINIMUM_SOC(46609, UINT16, BigDecimal.ONE, DecimalType::new, "battery-information"),
-    BATTERY_MAXIMUM_SOC(46610, UINT16, BigDecimal.ONE, DecimalType::new, "battery-information"),
-    BATTERY_MINIMUM_SOC_ON_GRID(46611, UINT16, BigDecimal.ONE, DecimalType::new, "battery-information"),
+    BATTERY_MAXIMUM_SOC(46610, UINT16, BigDecimal.ONE, percentFactory(), "battery-information"),
+    BATTERY_MINIMUM_SOC_ON_GRID(46611, UINT16, BigDecimal.ONE, percentFactory(), "battery-information"),
 
     // 0:off 2:on, special handling in MQ2200InverterHandler
     HIDDEN_EPS_OUTPUT(46613, UINT16, BigDecimal.ONE, DecimalType::new, "emergency-power-supply");
@@ -158,6 +155,10 @@ public enum MQ2200InverterRegisters {
 
     private static Function<BigDecimal, State> contactFactory() {
         return (BigDecimal value) -> value.intValue() == 0 ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
+    }
+
+    private static Function<BigDecimal, State> percentFactory() {
+        return (BigDecimal value) -> new QuantityType<>(value, Units.PERCENT);
     }
 
     private static Function<BigDecimal, State> switchFactory() {

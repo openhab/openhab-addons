@@ -77,11 +77,11 @@ The `mq2200-inverter` thing has channels that serve the current state of the Fox
 | fi-battery-voltage                 | Number:ElectricPotential | Battery Voltage                       | yes       | Battery Information |
 | fi-battery-current                 | Number:ElectricCurrent   | Battery Current                       | yes       | Battery Information |
 | fi-battery-power                   | Number:Power             | Battery Power                         | no        | Battery Information |
-| fi-battery-level                   | Number                   | Battery Level                         | no        | Battery Information |
+| fi-battery-level                   | Number:Dimensionless     | Battery Level                         | no        | Battery Information |
 | fi-charging-power                  | Number:Power             | Charging Power                        | no        | Battery Information |
-| fi-battery-minimum-soc             | Number                   | Battery Min Charging Level            | yes       | Battery Information |
-| fi-battery-maximum-soc             | Number                   | Battery Max Charging Level            | yes       | Battery Information |
-| fi-battery-minimum-soc-on-grid     | Number                   | Battery Min Charging Level on Grid    | yes       | Battery Information |
+| fi-battery-minimum-soc             | Number:Dimensionless     | Battery Min Charging Level            | yes       | Battery Information |
+| fi-battery-maximum-soc             | Number:Dimensionless     | Battery Max Charging Level            | yes       | Battery Information |
+| fi-battery-minimum-soc-on-grid     | Number:Dimensionless     | Battery Min Charging Level on Grid    | yes       | Battery Information |
 | fi-phase-a-voltage                 | Number:ElectricPotential | Phase A Voltage                       | yes       | Grid Information    |
 | fi-phase-b-voltage                 | Number:ElectricPotential | Phase B Voltage                       | yes       | Grid Information    |
 | fi-phase-c-voltage                 | Number:ElectricPotential | Phase C Voltage                       | yes       | Grid Information    |
@@ -130,7 +130,7 @@ Contact status_standby "Status Standby" (overview) ["Measurement"]
 {channel="modbus:mq2200-inverter:powerplant:inverter:fi-overview#fi-status-standby"}
 
 // MPPT information
-Number:Power total_pv_power "Total PV Power" <line> (mppt) ["Measurement", "Power"]
+Number:Power total_pv_power "Total PV Power" <line> (mppt,overview) ["Measurement", "Power"]
 {channel="modbus:mq2200-inverter:powerplant:inverter:fi-mppt-information#fi-total-pv-power"}
 Number:ElectricPotential mppt1_voltage "MPPT1 Voltage" <energy> (mppt) ["Measurement", "Voltage"]
 {channel="modbus:mq2200-inverter:powerplant:inverter:fi-mppt-information#fi-mppt1-voltage"}
@@ -158,16 +158,16 @@ Number:Power mppt4_power "MPPT4 Power" <line> (mppt) ["Measurement", "Power"]
 {channel="modbus:mq2200-inverter:powerplant:inverter:fi-mppt-information#fi-mppt4-power"}
 
 // Battery information
+Number:Dimensionless battery_level "Battery Level [%.0f %%]" <battery> (batteryInformation,overview) ["Measurement", "Energy"] {channel="modbus:mq2200-inverter:powerplant:inverter:fi-battery-information#fi-battery-level", unit="%"}
+Number:Power battery_power "Battery Power" <line> (batteryInformation,overview) ["Measurement", "Power"] {channel="modbus:mq2200-inverter:powerplant:inverter:fi-battery-information#fi-battery-power"}
+Number:Power charging_power "Charging Power" <line> (batteryInformation,overview) ["Measurement", "Power"] {channel="modbus:mq2200-inverter:powerplant:inverter:fi-battery-information#fi-charging-power"}
 Number:ElectricPotential battery_voltage "Battery Voltage" <energy> (batteryInformation) ["Measurement", "Voltage"]
 {channel="modbus:mq2200-inverter:powerplant:inverter:fi-battery-information#fi-battery-voltage"}
 Number:ElectricCurrent battery_current "Battery Current" <energy> (batteryInformation) ["Measurement", "Current"]
 {channel="modbus:mq2200-inverter:powerplant:inverter:fi-battery-information#fi-battery-current"}
-Number:Power battery_power "Battery Power" <line> (batteryInformation) ["Measurement", "Power"] {channel="modbus:mq2200-inverter:powerplant:inverter:fi-battery-information#fi-battery-power"}
-Number:Dimensionless battery_level "Battery Level" <battery> (batteryInformation) ["Measurement", "Energy"] {channel="modbus:mq2200-inverter:powerplant:inverter:fi-battery-information#fi-battery-level"}
-Number:Power charging_power "Charging Power" <line> (batteryInformation) ["Measurement", "Power"] {channel="modbus:mq2200-inverter:powerplant:inverter:fi-battery-information#fi-charging-power"}
-Number:Dimensionless battery_minimum_soc "Battery Min Charging Level" <battery> (batteryInformation) ["Control"] {channel="modbus:mq2200-inverter:powerplant:inverter:fi-battery-information#fi-battery-minimum-soc"}
-Number:Dimensionless battery_maximum_soc "Battery Max Charging Level" <battery> (batteryInformation) ["Control"] {channel="modbus:mq2200-inverter:powerplant:inverter:fi-battery-information#fi-battery-maximum-soc"}
-Number:Dimensionless battery_minimum_soc_on_grid "Battery Min Charging Level on Grid" <battery> (batteryInformation) ["Control"] {channel="modbus:mq2200-inverter:powerplant:inverter:fi-battery-information#fi-battery-minimum-soc-on-grid"}
+Number:Dimensionless battery_minimum_soc "Battery Min Charging Level [%.0f %%]" <battery> (batteryInformation) ["Control"] {channel="modbus:mq2200-inverter:powerplant:inverter:fi-battery-information#fi-battery-minimum-soc", unit="%"}
+Number:Dimensionless battery_maximum_soc "Battery Max Charging Level [%.0f %%]" <battery> (batteryInformation) ["Control"] {channel="modbus:mq2200-inverter:powerplant:inverter:fi-battery-information#fi-battery-maximum-soc", unit="%"}
+Number:Dimensionless battery_minimum_soc_on_grid "Battery Min Charging Level on Grid" <battery> (batteryInformation) ["Control"] {channel="modbus:mq2200-inverter:powerplant:inverter:fi-battery-information#fi-battery-minimum-soc-on-grid", unit="%"}
 
 // Grid information
 Number:ElectricPotential phase_a_voltage "Phase A Voltage" <energy> (gridInformation) ["Measurement"] {channel="modbus:mq2200-inverter:powerplant:inverter:fi-grid-information#fi-phase-a-voltage"}
