@@ -20,7 +20,8 @@ import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.Response;
 
 /**
- * The {@link VpnServerManager} is the Java class used to handle api requests related to calls
+ * The {@link VpnServerManager} is the Java class used to handle api requests related to
+ * VPN Server monitoring
  *
  * @author Gaël L'hopital - Initial contribution
  */
@@ -46,7 +47,6 @@ public class VpnServerManager extends ListableRest<VpnServerManager.VpnServer, V
 
     public static record VpnServer(ServerState state, ServerType type, String name, int connectionCount,
             int authConnectionCount) {
-
     }
 
     public static record VpnConnection(//
@@ -60,7 +60,6 @@ public class VpnServerManager extends ListableRest<VpnServerManager.VpnServer, V
             String localIp, // attributed IP address from VPN adress pool
             ZonedDateTime authTime // timestamp of the authentication
     ) {
-
     }
 
     protected class VpnServerResponse extends Response<VpnServer> {
@@ -71,7 +70,7 @@ public class VpnServerManager extends ListableRest<VpnServerManager.VpnServer, V
     }
 
     public VpnServerManager(FreeboxOsSession session) throws FreeboxException {
-        super(session, LoginManager.Permission.VM, VpnServerResponse.class, session.getUriBuilder().path(PATH));
+        super(session, LoginManager.Permission.NONE, VpnServerResponse.class, session.getUriBuilder().path(PATH));
     }
 
     public List<VpnConnection> getVpnConnections() throws FreeboxException {

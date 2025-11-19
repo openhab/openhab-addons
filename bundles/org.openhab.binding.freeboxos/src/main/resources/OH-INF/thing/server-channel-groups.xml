@@ -13,7 +13,7 @@
 	</channel-group-type>
 
 	<channel-group-type id="vpn-server">
-		<label>VPN Informations</label>
+		<label>VPN Information</label>
 		<channels>
 			<channel id="state" typeId="vpn-state"/>
 			<channel id="connections" typeId="connection-count">

@@ -101,10 +101,6 @@ public class FreeboxOsBindingConstants {
     public static final String GROUP_REPEATER_MISC = "repeater-misc";
     public static final String GROUP_XDSL = "xdsl";
     public static final String GROUP_FTTH = "ftth";
-    public static final String GROUP_VPN_WIREGUARD = "wireguard";
-    public static final String GROUP_VPN_ROUTED = "openvpn-routed";
-    public static final String GROUP_VPN_BRIDGED = "openvpn-bridged";
-    public static final String GROUP_VPN_PPTP = "pptp";
 
     // List of all Channel ids
     public static final String RSSI = "rssi";

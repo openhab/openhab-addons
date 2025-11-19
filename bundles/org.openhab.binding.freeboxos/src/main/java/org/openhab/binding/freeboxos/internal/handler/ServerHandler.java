@@ -187,7 +187,7 @@ public class ServerHandler extends ApiConsumerHandler implements FreeDeviceIntf 
             var groupName = vpnServer.name().replace("_", "-");
             updateChannelString(groupName, VPN_STATE, vpnServer.state().toString());
             updateChannelDecimal(groupName, VPN_CONNECTIONS, vpnServer.connectionCount());
-            updateChannelDecimal(groupName, VPN_AUTHENTICATED, vpnServer.connectionCount());
+            updateChannelDecimal(groupName, VPN_AUTHENTICATED, vpnServer.authConnectionCount());
         });
 
         var connections = vpnManager.getVpnConnections();
@@ -200,8 +200,9 @@ public class ServerHandler extends ApiConsumerHandler implements FreeDeviceIntf 
             }
         });
 
-        vpnConnections.removeAll(currentConnections);
-        vpnConnections.forEach(connection -> triggerChannel(eventChannelUID, "disconnected %s".formatted(connection)));
+        Set<String> disconnected = new HashSet<>(vpnConnections);
+        disconnected.removeAll(currentConnections);
+        disconnected.forEach(c -> triggerChannel(eventChannelUID, "disconnected %s".formatted(c)));
 
         vpnConnections = currentConnections;
     }
