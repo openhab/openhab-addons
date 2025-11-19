@@ -64,6 +64,7 @@ public class MQ2200InverterHandler extends BaseModbusThingHandler {
     private static final int STATUS_BIT_STANDBY = 0x01;
     private static final int STATUS_BIT_OPERATION = 0x04;
     private static final int STATUS_BIT_FAULT = 0x40;
+    private static final int EPS_OUTPUT_ON_VALUE = 2;
 
     private static final class ModbusRequest {
 
