@@ -57,6 +57,8 @@ public class HomeWizardBindingConstants {
     public static final String CHANNEL_GROUP_SKT_CONTROL = "control";
 
     // Energy Meter Channels
+    public static final String CHANNEL_TARIFF = "tariff";
+
     public static final String CHANNEL_ENERGY_IMPORT = "energy_import";
     public static final String CHANNEL_ENERGY_IMPORT_T1 = "energy_import_t1";
     public static final String CHANNEL_ENERGY_IMPORT_T2 = "energy_import_t2";
