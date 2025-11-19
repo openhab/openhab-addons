@@ -428,11 +428,17 @@ public class CloudClient {
             // Create URI builder with base request URI of openHAB and path from request
             String newPath = URIUtil.addPaths(localBaseUrl, requestPath);
 
-            String source = requestHeadersJson.getString("x-openhab-source");
-            if (source == null) {
-                requestQueryJson.getString("source");
+            String source = null;
+            if (requestHeadersJson.has("x-openhab-source")) {
+                source = requestHeadersJson.getString("x-openhab-source");
             }
-            String userId = data.getString("userId");
+            if (source == null && requestQueryJson.has("source")) {
+                source = requestQueryJson.getString("source");
+            }
+            String userId = null;
+            if (data.has("userId")) {
+                userId = data.getString("userId");
+            }
             requestHeadersJson.put("x-openhab-source",
                     AbstractEvent.buildDelegatedSource(source, CloudService.CLOUD_EVENT_SOURCE, userId));
 
