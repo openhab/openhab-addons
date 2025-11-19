@@ -1,5 +1,8 @@
 # Smhi Binding
 
+> __IMPORTANT NOTE:__ Due to updates to SMHI's API, the channel ids have changed. 
+> Measures have been taken to ensure backwards compatibility, but to avoid future issues all items need to be relinked to the new channels.
+
 This binding gets hourly and daily forecast from SMHI - the Swedish Meteorological and Hydrological Institute.
 It can get forecasts for the nordic countries (Sweden, Norway, Denmark and Finland).
 
@@ -26,64 +29,85 @@ You can also choose for which hours and which days you would like to get forecas
 
 ## Channels
 
-The channels are the same for all forecasts, but the daily forecast provides some additional aggregated values.
-For the other daily forecast channels, the values are for 12:00 UTC.
+The Thing has one or more channel groups (depending on configuration).
+The first channel group (Complete Forecast) provides the full forecast and is meant to be used with the `forecast` persistence strategy.
+The other configurable channel groups represent a point in time (hour or day) and gets updated with the latest forecasted value for that time.
 
-The complete channel identifier is the channel group id (`hour_<offset>` or `day_<offset>`, where offset is 0 for the current hour/day
+The channels are the same for all forecasts, but the daily forecast provides some additional aggregated values.
+For the other channels in the daily forecast, the values are for 12:00 UTC.
+
+The complete channel identifier is the channel group id (`timeseries`, `hour_<offset>` or `day_<offset>`, where offset is 0 for the current hour/day
 or the number of hours/days from now) + the channel id, concatenated with a `#`.
+
+If there is no data for the specified time, the binding will update the channel with the numeric value `-1`, for all channels except the temperature channels, for which the value `9999` will be used instead.
 
 Examples:
 
-- Temperature for the current hour: `hour_0#t`
-- Total precipitation 3 days from now: `day_3#ptotal`
+- Temperature for the current hour: `hour_0#air_temperature`
+- Total precipitation 3 days from now: `day_3#precipitation_amount_total`
 
 ### Basic channels
 
-| channel                 | type                 | channel id | description                                                               |
-|-------------------------|----------------------|------------|---------------------------------------------------------------------------|
-| Temperature             | Number:Temperature   | t          | Temperature in Celsius                                                    |
-| Max Temperature         | Number:Temperature   | tmax       | Highest temperature of the day (daily forecast only)                      |
-| Min Temperature         | Number:Temperature   | tmin       | Lowest temperature of the day (daily forecast only)                       |
-| Wind direction          | Number:Angle         | wd         | Wind direction in degrees                                                 |
-| Wind Speed              | Number:Speed         | ws         | Wind speed in m/s                                                         |
-| Max Wind Speed          | Number:Speed         | wsmax      | Highest wind speed of the day (daily forecast only)                       |
-| Min Wind Speed          | Number:Speed         | wsmin      | Lowest wind speed of the day (daily forecast only)                        |
-| Wind gust speed         | Number:Speed         | gust       | Wind gust speed in m/s                                                    |
-| Minimum precipitation   | Number:Speed         | pmin       | Minimum precipitation intensity in mm/h                                   |
-| Maximum precipitation   | Number:Speed         | pmax       | Maximum precipitation intensity in mm/h                                   |
-| Total precipitation     | Number:Length        | ptotal     | Total amount of precipitation during the day, in mm (daily forecast only) |
-| Precipitation category* | Number               | pcat       | Type of precipitation                                                     |
-| Air pressure            | Number:Pressure      | msl        | Air pressure in hPa                                                       |
-| Relative humidity       | Number:Dimensionless | r          | Relative humidity in percent                                              |
-| Total cloud cover       | Number:Dimensionless | tcc_mean   | Mean value of total cloud cover in percent                                |
-| Weather condition**     | Number               | wsymb2     | Short description of the weather conditions                               |
+| channel                   | type                 | channel id                                | description                                                                       |
+|---------------------------|----------------------|-------------------------------------------|-----------------------------------------------------------------------------------|
+| Temperature               | Number:Temperature   | air_temperature                           | Temperature in Celsius                                                            |
+| Max Temperature           | Number:Temperature   | temperature_max                           | Highest temperature of the day (daily forecast only)                              |
+| Min Temperature           | Number:Temperature   | temperature_min                           | Lowest temperature of the day (daily forecast only)                               |
+| Wind direction            | Number:Angle         | wind_from_direction                       | Wind direction in degrees                                                         |
+| Wind Speed                | Number:Speed         | wind_speed                                | Wind speed in m/s                                                                 |
+| Max Wind Speed            | Number:Speed         | wind_speed_max                            | Highest wind speed of the day (daily forecast only)                               |
+| Min Wind Speed            | Number:Speed         | wind_speed_min                            | Lowest wind speed of the day (daily forecast only)                                |
+| Wind gust speed           | Number:Speed         | wind_speed_of_gust                        | Wind gust speed in m/s                                                            |
+| Minimum precipitation     | Number:Speed         | precipitation_amount_min                  | Minimum precipitation intensity in mm/h                                           |
+| Maximum precipitation     | Number:Speed         | precipitation_amount_max                  | Maximum precipitation intensity in mm/h                                           |
+| Total precipitation       | Number:Length        | precipitation_amount_total                | Total amount of precipitation during the day, in mm (daily forecast only)         |
+| Precipitation Probability | Number:Dimensionless | probability_of_precipitation              | Probability of Precipitation                                                      |
+| Precipitation category    | Number               | predominant_precipitation_type_at_surface | Type of precipitation ([Descriptions](#precipitation-category))                   |
+| Air pressure              | Number:Pressure      | air_pressure_at_mean_sea_level            | Air pressure in hPa                                                               |
+| Relative humidity         | Number:Dimensionless | relative_humidity                         | Relative humidity in percent                                                      |
+| Total cloud cover         | Number:Dimensionless | cloud_area_fraction                       | Mean value of total cloud cover in percent                                        |
+| Weather condition         | Number               | symbol_code                               | Short description of the weather conditions ([Descriptions](#weather-conditions)) |
 
 ### Advanced channels
 
-| channel                  | type                 | channel id | description                                                                                |
-|--------------------------|----------------------|------------|--------------------------------------------------------------------------------------------|
-| Visibility               | Number:Length        | vis        | Horizontal visibility in km                                                                |
-| Thunder probability      | Number:Dimensionless | tstm       | Probability of thunder in percent                                                          |
-| Frozen precipitation     | Number:Dimensionless | spp        | Percent of precipitation in frozen form (will be set to UNDEF if there's no precipitation) |
-| Low level cloud cover    | Number:Dimensionless | lcc_mean   | Mean value of low level cloud cover (0-2500 m) in percent                                  |
-| Medium level cloud cover | Number:Dimensionless | mcc_mean   | Mean value of medium level cloud cover (2500-6000 m) in percent                            |
-| High level cloud cover   | Number:Dimensionless | hcc_mean   | Mean value of high level cloud cover (> 6000 m) in percent                                 |
-| Mean precipitation       | Number:Speed         | pmean      | Mean precipitation intensity in mm/h                                                       |
-| Median precipitation     | Number:Speed         | pmedian    | Median precipitation intensity in mm/h                                                     |
+| channel                             | type                  | channel id                          | description                                                     |
+|-------------------------------------|-----------------------|-------------------------------------|-----------------------------------------------------------------|
+| Visibility                          | Number:Length         | visibility_in_air                   | Horizontal visibility in km                                     |
+| Thunder probability                 | Number:Dimensionless  | thunderstorm_probability            | Probability of thunder in percent                               |
+| Frozen precipitation                | Number:Dimensionless  | precipitation_frozen_part           | Percent of precipitation in frozen form                         |
+| Probability of frozen precipitation | Number:Dimensionless  | probability_of_frozen_precipitation | Probability that the precipitation is in frozen form            |
+| Low level cloud cover               | Number:Dimensionless  | low_type_cloud_area_fraction        | Mean value of low level cloud cover (0-2500 m) in percent       |
+| Medium level cloud cover            | Number:Dimensionless  | medium_type_cloud_area_fraction     | Mean value of medium level cloud cover (2500-6000 m) in percent |
+| High level cloud cover              | Number:Dimensionless  | high_type_cloud_area_fraction       | Mean value of high level cloud cover (> 6000 m) in percent      |
+| Cloud base altitude                 | Number:Length         | cloud_base_altitude                 | Altitude of the cloud cover base                                |
+| Cloud top altitude                  | Number:Length         | cloud_top_altitude                  | Altitude of the cloud cover top                                 |
+| Mean precipitation                  | Number:Speed          | precipitation_amount_mean           | Mean precipitation intensity in mm/h                            |
+| Median precipitation                | Number:Speed          | precipitation_amount_median         | Median precipitation intensity in mm/h                          |
 
-\* The precipitation category can have a value from 0-6, representing different types of precipitation:
+### Precipitation category
 
-| Value | Meaning          |
-|-------|------------------|
-| 0     | No precipitation |
-| 1     | Snow             |
-| 2     | Snow and rain    |
-| 3     | Rain             |
-| 4     | Drizzle          |
-| 5     | Freezing rain    |
-| 6     | Freezing drizzle |
+The precipitation category can have a value from 0-6, representing different types of precipitation:
 
-\** The weather condition channel can take values from 1-27, each corresponding to a different weather condition:
+| Value | Meaning                  |
+|-------|--------------------------|
+| 0     | No precipitation         |
+| 1     | Rain                     |
+| 2     | Thunderstorm             |
+| 3     | Freezing rain            |
+| 4     | Mixed/ice                |
+| 5     | Snow                     |
+| 6     | Wet snow                 |
+| 7     | Mixture of rain and snow |
+| 8     | Ice pellets              |
+| 9     | Graupel                  |
+| 10    | Hail                     |
+| 11    | Drizzle                  |
+| 12    | Freezing drizzle         |
+
+
+### Weather conditions
+
+The weather condition channel can take values from 1-27, each corresponding to a different weather condition:
 
 | Value | Condition              |
 |-------|------------------------|
@@ -126,14 +150,18 @@ Thing smhi:forecast:demoforecast "Demo forecast" [ latitude=57.997072, longitude
 ### demo.items
 
 ```java
-Number:Temperature Smhi_Temperature_Now "Current temperature [%.1f °C]" {channel="smhi:forecast:demoforecast:hour_0#t"}
-Number:Speed Smhi_Min_Precipitation_Now "Current precipitation (min) [%.1f mm/h]" {channel="smhi:forecast:demoforecast:hour_0#pmin"}
+Group Smhi_Forecasts
+Number:Temperature Smhi_Temperature_Forecast (Smhi_Forecasts) "Forecasted temperature [%.1f °C]" {channel="smhi:forecast:demoforecast:timeseries#air_temperature"}
+Number:Speed Smhi_Min_Precipitation_Forecast (Smhi_Forecasts) "Forecasted precipitation (min) [%.1f mm/h]" {channel="smhi:forecast:demoforecast:timeseries#precipitation_amount_min"}
 
-Number:Temperature Smhi_Temperature_1hour "Temperature next hour [%.1f °C]" {channel="smhi:forecast:demoforecast:hour_1#t"}
-Number:Speed Smhi_Min_Precipitation_1hour "Precipitaion next hour (min) [%.1f mm/h]" {channel="smhi:forecast:demoforecast:hour_1#pmin"}
+Number:Temperature Smhi_Temperature_Now "Current temperature [%.1f °C]" {channel="smhi:forecast:demoforecast:hour_0#air_temperature"}
+Number:Speed Smhi_Min_Precipitation_Now "Current precipitation (min) [%.1f mm/h]" {channel="smhi:forecast:demoforecast:hour_0#precipitation_amount_min"}
 
-Number:Temperature Smhi_Temperature_Tomorrow "Temperature tomorrow [%.1f °C]" {channel="smhi:forecast:demoforecast:day_1#t"}
-Number:Speed Smhi_Min_Precipitation_Tomorrow "Precipitaion tomorrow (min) [%.1f mm/h]" {channel="smhi:forecast:demoforecast:hour_1#pmin"}
+Number:Temperature Smhi_Temperature_1hour "Temperature next hour [%.1f °C]" {channel="smhi:forecast:demoforecast:hour_1#air_temperature"}
+Number:Speed Smhi_Min_Precipitation_1hour "Precipitaion next hour (min) [%.1f mm/h]" {channel="smhi:forecast:demoforecast:hour_1#precipitation_amount_min"}
+
+Number:Temperature Smhi_Temperature_Tomorrow "Temperature tomorrow [%.1f °C]" {channel="smhi:forecast:demoforecast:day_1#air_temperature"}
+Number:Speed Smhi_Min_Precipitation_Tomorrow "Precipitaion tomorrow (min) [%.1f mm/h]" {channel="smhi:forecast:demoforecast:hour_1#precipitation_amount_min"}
 ```
 
 ### `demo.sitemap` Example
@@ -152,5 +180,13 @@ sitemap demo label="Smhi" {
         Text item=Smhi_Temperature_Tomorrow
         Text item=Smhi_Min_Precipitation_Tomorrow
     }
+}
+```
+
+### `inmemory.persist` Example
+
+```java
+Items {
+    Smhi_Forecasts* : strategy = forecast
 }
 ```
