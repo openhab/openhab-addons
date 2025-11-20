@@ -153,7 +153,7 @@ public enum MQ2200InverterRegisters {
     }
 
     private static Function<BigDecimal, State> contactFactory() {
-        return (BigDecimal value) -> value.intValue() == 0 ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
+        return (BigDecimal value) -> value.intValue() == 0 ? OpenClosedType.CLOSED : OpenClosedType.OPEN;
     }
 
     private static Function<BigDecimal, State> percentFactory() {

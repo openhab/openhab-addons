@@ -306,7 +306,7 @@ public class MQ2200InverterHandler extends BaseModbusThingHandler {
                 updateStatus(ThingStatus.ONLINE);
             }
         }
-        OpenClosedType state = alarmState ? OpenClosedType.CLOSED : OpenClosedType.OPEN;
+        OpenClosedType state = alarmState ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
         logger.debug("{} {} -> {}", CHANNEL_STATUS_ALARM.toUpperCase(), alarmState, state);
         updateState(new ChannelUID(thing.getUID(), "fi-overview", "fi-" + CHANNEL_STATUS_ALARM), state);
     }
@@ -334,7 +334,7 @@ public class MQ2200InverterHandler extends BaseModbusThingHandler {
                     logger.debug("{} {}", CHANNEL_GRID_FREQUENCY.toUpperCase(), v);
                     updateState(new ChannelUID(thing.getUID(), "fi-" + channel.getChannelGroup(),
                             "fi-" + CHANNEL_GRID_FREQUENCY), v);
-                    OpenClosedType state = (i >= 1) ? OpenClosedType.CLOSED : OpenClosedType.OPEN;
+                    OpenClosedType state = (i >= 1) ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
                     logger.debug("{} {} -> {}", CHANNEL_STATUS_ON_GRID.toUpperCase(), i >= 1, state);
                     updateState(new ChannelUID(thing.getUID(), "fi-" + channel.getChannelGroup(),
                             "fi-" + CHANNEL_STATUS_ON_GRID), state);
@@ -343,11 +343,11 @@ public class MQ2200InverterHandler extends BaseModbusThingHandler {
                 case CHANNEL_STATUS1:
                     boolean statusStandby = (i & STATUS_BIT_STANDBY) != 0;
                     boolean statusOperation = (i & STATUS_BIT_OPERATION) != 0;
-                    OpenClosedType stateUpdate = statusStandby ? OpenClosedType.CLOSED : OpenClosedType.OPEN;
+                    OpenClosedType stateUpdate = statusStandby ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
                     logger.debug("{} {} -> {}", CHANNEL_STATUS_STANDBY.toUpperCase(), statusStandby, stateUpdate);
                     updateState(new ChannelUID(thing.getUID(), "fi-" + channel.getChannelGroup(),
                             "fi-" + CHANNEL_STATUS_STANDBY), stateUpdate);
-                    stateUpdate = statusOperation ? OpenClosedType.CLOSED : OpenClosedType.OPEN;
+                    stateUpdate = statusOperation ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
                     logger.debug("{} {} -> {}", CHANNEL_STATUS_OPERATION.toUpperCase(), statusOperation, stateUpdate);
                     updateState(new ChannelUID(thing.getUID(), "fi-" + channel.getChannelGroup(),
                             "fi-" + CHANNEL_STATUS_OPERATION), stateUpdate);
