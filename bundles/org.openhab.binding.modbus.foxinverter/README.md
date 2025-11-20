@@ -62,7 +62,7 @@ The `mq2200-inverter` thing has channels that serve the current state of the Fox
 | fi-status-alarm                    | Contact                  | System Warning                        | no        | Overview            |
 | fi-status-operation                | Contact                  | System in Operational Mode            | no        | Overview            |
 | fi-status-standby                  | Contact                  | System in Standby Mode (not yet off)  | yes       | Overview            |
-| fi-total-pv-power                  | Number:Power             | PV Power                              | no        | MPPT Information    |
+| fi-pv-power                        | Number:Power             | PV Power                              | no        | MPPT Information    |
 | fi-mppt1-voltage                   | Number:ElectricPotential | MPPT1 Voltage                         | yes       | MPPT Information    |
 | fi-mppt1-current                   | Number:ElectricCurrent   | MPPT1 Current                         | yes       | MPPT Information    |
 | fi-mppt1-power                     | Number:Power             | MPPT1 Power                           | no        | MPPT Information    |
@@ -131,7 +131,7 @@ Contact status_standby "Status Standby" (overview) ["Measurement"]
 {channel="modbus:mq2200-inverter:powerplant:inverter:fi-overview#fi-status-standby"}
 
 // MPPT information
-Number:Power total_pv_power "PV Power" <line> (mppt,overview) ["Measurement", "Power"]
+Number:Power pv_power "PV Power" <line> (mppt,overview) ["Measurement", "Power"]
 {channel="modbus:mq2200-inverter:powerplant:inverter:fi-mppt-information#fi-pv-power"}
 Number:ElectricPotential mppt1_voltage "MPPT1 Voltage" <energy> (mppt) ["Measurement", "Voltage"]
 {channel="modbus:mq2200-inverter:powerplant:inverter:fi-mppt-information#fi-mppt1-voltage"}
