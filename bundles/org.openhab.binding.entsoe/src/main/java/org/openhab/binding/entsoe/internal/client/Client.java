@@ -55,8 +55,7 @@ import org.xml.sax.SAXException;
  */
 @NonNullByDefault
 public class Client {
-    private final Logger logger = LoggerFactory.getLogger(Client.class);
-    private final DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+    private static final Logger LOGGER = LoggerFactory.getLogger(Client.class);
     private final HttpClient httpClient;
     private final String userAgent;
 
@@ -74,7 +73,7 @@ public class Client {
                 .method(HttpMethod.GET);
 
         try {
-            logger.debug("Sending GET request with parameters: {}", entsoeRequest);
+            LOGGER.debug("Sending GET request with parameters: {}", entsoeRequest);
 
             ContentResponse response = request.send();
 
@@ -91,7 +90,7 @@ public class Client {
             if (responseContent == null) {
                 throw new EntsoeResponseException("Request failed");
             }
-            logger.trace("Response: {}", responseContent);
+            LOGGER.trace("Response: {}", responseContent);
 
             return parseXmlResponse(responseContent, configResolution);
         } catch (ExecutionException e) {
@@ -112,11 +111,13 @@ public class Client {
         }
     }
 
-    private Map<Instant, SpotPrice> parseXmlResponse(String responseText, String configResolution)
+    public static Map<Instant, SpotPrice> parseXmlResponse(String responseText, String configResolution)
             throws ParserConfigurationException, SAXException, IOException, EntsoeResponseException,
             EntsoeConfigurationException {
+        LOGGER.info("Entso-E response {}", responseText);
         Map<Instant, SpotPrice> responseMap = new LinkedHashMap<>();
 
+        DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
         Document document = documentBuilder.parse(new InputSource(new StringReader(responseText)));
         document.getDocumentElement().normalize();
@@ -165,7 +166,7 @@ public class Client {
                 Duration durationTotal = Duration.between(startTimeInstant, endTimeInstant);
                 int numberOfDurations = Math.round(durationTotal.toMinutes() / durationResolution.toMinutes());
 
-                logger.debug("\"timeSeries\" node: {}/{} with start time: {} and resolution {}", (i + 1),
+                LOGGER.debug("\"timeSeries\" node: {}/{} with start time: {} and resolution {}", (i + 1),
                         listOfTimeSeries.getLength(), startTimeInstant.atZone(ZoneId.of("UTC")), resolution);
 
                 NodeList listOfPoints = periodElement.getElementsByTagName("Point");
@@ -189,7 +190,7 @@ public class Client {
                         SpotPrice t = new SpotPrice(currency, measureUnit, priceAsDouble, startTimeInstant, multiplier,
                                 resolution);
                         responseMap.put(t.getInstant(), t);
-                        logger.trace("\"Point\" node: {}/{} with values: {} - {} {}/{}", (p + 1), numberOfDurations,
+                        LOGGER.trace("\"Point\" node: {}/{} with values: {} - {} {}/{}", (p + 1), numberOfDurations,
                                 t.getInstant(), priceAsDouble, currency, measureUnit);
                     }
 

@@ -26,7 +26,7 @@
 			<parameter name="area" type="text" required="true">
 				<label>Area</label>
 				<description>Choose from list or enter custom EIC area. See
-					https://transparency.entsoe.eu/content/static_content/Static%20content/web%20api/Guide.html#_areas
+					https://transparency.entsoe.eu/
 					and
 					https://www.entsoe.eu/data/energy-identification-codes-eic/eic-approved-codes/ (Area Y, Bidding Zone)</description>
 				<limitToOptions>false</limitToOptions>
@@ -157,14 +157,15 @@
 			</parameter>
 			<parameter name="resolution" type="text" required="false">
 				<label>Resolution</label>
-				<default>PT60M</default>
-				<description>Data resolution</description>
+				<default>PT15M</default>
+				<description>OBSOLETE: Data resolution is fixed value of 15 minutes. Manual change not possible</description>
 				<limitToOptions>true</limitToOptions>
 				<options>
 					<option value="PT15M">15 minutes</option>
 					<option value="PT30M">30 minutes</option>
 					<option value="PT60M">60 minutes</option>
 				</options>
+				<advanced>true</advanced>
 			</parameter>
 			<parameter name="spotPricesAvailableCetHour" type="integer" min="0" max="23" required="false">
 				<label>Publish Hour</label>
