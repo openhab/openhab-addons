@@ -115,7 +115,8 @@ Group gridInformation "Grid information" <energy> (inverter)
 Group eps "Emergency Power Supply" <energy> (inverter)
 
 // Overview
-Number:Power active_power "Active Power" <line> (overview) ["Measurement", "Power"] {channel="modbus:mq2200-inverter:powerplant:inverter:fi-overview#fi-active-power"}
+Number:Power active_power "Inverter Power" <line> (overview) ["Measurement", "Power"] {channel="modbus:mq2200-inverter:powerplant:inverter:fi-overview#fi-inverter-power"}
+Number:Power battery_power "Home Import Power" <line> (batteryInformation,overview) ["Measurement", "Power"] {channel="modbus:mq2200-inverter:powerplant:inverter:fi-overview#fi-home-import-power"}
 Number:Energy daily_pv_generation "Daily PV Generation" <line> (overview) ["Measurement", "Energy"] {channel="modbus:mq2200-inverter:powerplant:inverter:fi-overview#fi-daily-pv-generation"}
 Number:Energy total_pv_generation "Total PV Generation" <line> (overview) ["Measurement", "Energy"] {channel="modbus:mq2200-inverter:powerplant:inverter:fi-overview#fi-total-pv-generation"}
 Number:Temperature internal_temperature "Internal Temperature" <temperature> (overview) ["Measurement", "Temperature"]
@@ -130,8 +131,8 @@ Contact status_standby "Status Standby" (overview) ["Measurement"]
 {channel="modbus:mq2200-inverter:powerplant:inverter:fi-overview#fi-status-standby"}
 
 // MPPT information
-Number:Power total_pv_power "Total PV Power" <line> (mppt,overview) ["Measurement", "Power"]
-{channel="modbus:mq2200-inverter:powerplant:inverter:fi-mppt-information#fi-total-pv-power"}
+Number:Power total_pv_power "PV Power" <line> (mppt,overview) ["Measurement", "Power"]
+{channel="modbus:mq2200-inverter:powerplant:inverter:fi-mppt-information#fi-pv-power"}
 Number:ElectricPotential mppt1_voltage "MPPT1 Voltage" <energy> (mppt) ["Measurement", "Voltage"]
 {channel="modbus:mq2200-inverter:powerplant:inverter:fi-mppt-information#fi-mppt1-voltage"}
 Number:ElectricCurrent mppt1_current "MPPT1 Current" <energy> (mppt) ["Measurement", "Current"]
@@ -159,8 +160,7 @@ Number:Power mppt4_power "MPPT4 Power" <line> (mppt) ["Measurement", "Power"]
 
 // Battery information
 Number:Dimensionless battery_level "Battery Level [%.0f %%]" <battery> (batteryInformation,overview) ["Measurement", "Energy"] {channel="modbus:mq2200-inverter:powerplant:inverter:fi-battery-information#fi-battery-level", unit="%"}
-Number:Power battery_power "Battery Power" <line> (batteryInformation,overview) ["Measurement", "Power"] {channel="modbus:mq2200-inverter:powerplant:inverter:fi-battery-information#fi-battery-power"}
-Number:Power charging_power "Charging Power" <line> (batteryInformation,overview) ["Measurement", "Power"] {channel="modbus:mq2200-inverter:powerplant:inverter:fi-battery-information#fi-charging-power"}
+Number:Power battery_charging_power "Battery Charging Power" <line> (batteryInformation,overview) ["Measurement", "Power"] {channel="modbus:mq2200-inverter:powerplant:inverter:fi-battery-information#fi-battery-charging-power"}
 Number:ElectricPotential battery_voltage "Battery Voltage" <energy> (batteryInformation) ["Measurement", "Voltage"]
 {channel="modbus:mq2200-inverter:powerplant:inverter:fi-battery-information#fi-battery-voltage"}
 Number:ElectricCurrent battery_current "Battery Current" <energy> (batteryInformation) ["Measurement", "Current"]
@@ -174,10 +174,10 @@ Number:ElectricPotential phase_a_voltage "Phase A Voltage" <energy> (gridInforma
 Number:ElectricPotential phase_b_voltage "Phase B Voltage" <energy> (gridInformation) ["Measurement"] {channel="modbus:mq2200-inverter:powerplant:inverter:fi-grid-information#fi-phase-b-voltage"}
 Number:ElectricPotential phase_c_voltage "Phase C Voltage" <energy> (gridInformation) ["Measurement"] {channel="modbus:mq2200-inverter:powerplant:inverter:fi-grid-information#fi-phase-c-voltage"}
 Number:Frequency grid_frequency "Grid Frequency" <pump> (gridInformation) ["Measurement"] {channel="modbus:mq2200-inverter:powerplant:inverter:fi-grid-information#fi-grid-frequency"}
-Number:Power export_power "Export Power" <line> (gridInformation) ["Measurement", "Power"] {channel="modbus:mq2200-inverter:powerplant:inverter:fi-grid-information#fi-export-power"}
+Number:Power grid_export_power "Export Power" <line> (gridInformation) ["Measurement", "Power"] {channel="modbus:mq2200-inverter:powerplant:inverter:fi-grid-information#fi-grid-export-power"}
 Contact status_on_grid "Status Power Grid Available" (gridInformation) ["Measurement"] {channel="modbus:mq2200-inverter:powerplant:inverter:fi-grid-information#fi-status-on-grid"}
 
 // EPS
 Switch eps_output "EPS Output Enabled" (eps) ["Control"] {channel="modbus:mq2200-inverter:powerplant:inverter:fi-emergency-power-supply#fi-eps-output"}
-Number:Power eps_power "EPS Power" <energy> (eps) ["Measurement", "Power"] {channel="modbus:mq2200-inverter:powerplant:inverter:fi-emergency-power-supply#fi-eps-power"}
+Number:Power eps_export_power "EPS Export Power" <energy> (eps) ["Measurement", "Power"] {channel="modbus:mq2200-inverter:powerplant:inverter:fi-emergency-power-supply#fi-eps-export-power"}
 ```

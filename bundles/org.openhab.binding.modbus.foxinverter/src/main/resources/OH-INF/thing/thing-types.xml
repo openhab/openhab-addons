@@ -25,7 +25,8 @@
 	<channel-group-type id="fi-overview">
 		<label>Overview</label>
 		<channels>
-			<channel id="fi-active-power" typeId="fi-active-power"/>
+			<channel id="fi-inverter-power" typeId="fi-inverter-power"/>
+			<channel id="fi-home-import-power" typeId="fi-home-import-power"/>
 			<channel id="fi-daily-pv-generation" typeId="fi-daily-pv-generation"/>
 			<channel id="fi-total-pv-generation" typeId="fi-total-pv-generation"/>
 			<channel id="fi-internal-temperature" typeId="fi-internal-temperature"/>
@@ -39,7 +40,7 @@
 	<channel-group-type id="fi-mppt-information">
 		<label>MPPT Information</label>
 		<channels>
-			<channel id="fi-total-pv-power" typeId="fi-total-pv-power"/>
+			<channel id="fi-pv-power" typeId="fi-pv-power"/>
 			<channel id="fi-mppt1-voltage" typeId="fi-mppt1-voltage"/>
 			<channel id="fi-mppt1-current" typeId="fi-mppt1-current"/>
 			<channel id="fi-mppt1-power" typeId="fi-mppt1-power"/>
@@ -61,9 +62,8 @@
 		<channels>
 			<channel id="fi-battery-voltage" typeId="fi-battery-voltage"/>
 			<channel id="fi-battery-current" typeId="fi-battery-current"/>
-			<channel id="fi-battery-power" typeId="fi-battery-power"/>
 			<channel id="fi-battery-level" typeId="fi-battery-level"/>
-			<channel id="fi-charging-power" typeId="fi-charging-power"/>
+			<channel id="fi-battery-charging-power" typeId="fi-battery-charging-power"/>
 			<channel id="fi-battery-minimum-soc" typeId="fi-battery-minimum-soc"/>
 			<channel id="fi-battery-maximum-soc" typeId="fi-battery-maximum-soc"/>
 			<channel id="fi-battery-minimum-soc-on-grid" typeId="fi-battery-minimum-soc-on-grid"/>
@@ -77,7 +77,7 @@
 			<channel id="fi-phase-b-voltage" typeId="fi-phase-b-voltage"/>
 			<channel id="fi-phase-c-voltage" typeId="fi-phase-c-voltage"/>
 			<channel id="fi-grid-frequency" typeId="fi-grid-frequency"/>
-			<channel id="fi-export-power" typeId="fi-export-power"/>
+			<channel id="fi-grid-export-power" typeId="fi-grid-export-power"/>
 			<channel id="fi-status-on-grid" typeId="fi-status-on-grid"/>
 		</channels>
 	</channel-group-type>
@@ -86,12 +86,24 @@
 		<label>EPS Information</label>
 		<channels>
 			<channel id="fi-eps-output" typeId="fi-eps-output"/>
-			<channel id="fi-eps-power" typeId="fi-eps-power"/>
+			<channel id="fi-eps-export-power" typeId="fi-eps-export-power"/>
 		</channels>
 	</channel-group-type>
-	<channel-type id="fi-active-power">
+	<channel-type id="fi-inverter-power">
 		<item-type>Number:Power</item-type>
-		<label>Active Power</label>
+		<label>Inverter Power</label>
+		<description>Inverter active power output. Always positive.</description>
+		<category>Energy</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="fi-home-import-power">
+		<item-type>Number:Power</item-type>
+		<label>Home Import Power</label>
+		<description>Power flow with home network. Negative when feeding home, positive when drawing from grid.</description>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -162,9 +174,10 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="fi-total-pv-power">
+	<channel-type id="fi-pv-power">
 		<item-type>Number:Power</item-type>
-		<label>Total PV Power</label>
+		<label>PV Power</label>
+		<description>Current solar power generation from PV panels. Always positive.</description>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -333,9 +346,11 @@
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
-	<channel-type id="fi-export-power">
+	<channel-type id="fi-grid-export-power">
 		<item-type>Number:Power</item-type>
-		<label>Export Power</label>
+		<label>Grid Export Power</label>
+		<description>Power flow with public grid. Positive values indicate export to grid, negative values indicate import
+			from grid.</description>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -349,7 +364,6 @@
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
-			<tag>Power</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -374,10 +388,11 @@
 		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
-	<channel-type id="fi-battery-power">
+	<channel-type id="fi-battery-charging-power">
 		<item-type>Number:Power</item-type>
-		<label>Battery Power</label>
-		<category>Power</category>
+		<label>Battery Charging Power</label>
+		<description>Battery power flow. Positive values indicate charging, negative values indicate discharging.</description>
+		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Power</tag>
@@ -393,16 +408,6 @@
 			<tag>Energy</tag>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
-	</channel-type>
-	<channel-type id="fi-charging-power">
-		<item-type>Number:Power</item-type>
-		<label>Charging Power</label>
-		<category>Energy</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Power</tag>
-		</tags>
-		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="fi-battery-minimum-soc" advanced="true">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
@@ -441,9 +446,11 @@
 		</tags>
 		<state readOnly="false"/>
 	</channel-type>
-	<channel-type id="fi-eps-power">
+	<channel-type id="fi-eps-export-power">
 		<item-type>Number:Power</item-type>
-		<label>EPS Power</label>
+		<label>EPS Export Power</label>
+		<description>Emergency power supply socket power. Positive values indicate supplying connected devices, negative
+			values indicate receiving power from external source.</description>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>

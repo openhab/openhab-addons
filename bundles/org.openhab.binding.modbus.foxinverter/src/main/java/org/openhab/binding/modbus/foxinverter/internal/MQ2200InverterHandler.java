@@ -65,6 +65,13 @@ public class MQ2200InverterHandler extends BaseModbusThingHandler {
     private static final int STATUS_BIT_OPERATION = 0x04;
     private static final int STATUS_BIT_FAULT = 0x40;
     private static final int EPS_OUTPUT_ON_VALUE = 2;
+    private static final String HIDDEN_CHANNEL_PREFIX = "hidden-";
+    private static final String CHANNEL_ALARM1 = "alarm1";
+    private static final String CHANNEL_ALARM2 = "alarm2";
+    private static final String CHANNEL_ALARM3 = "alarm3";
+    private static final String CHANNEL_GRID_FREQUENCY = "grid-frequency";
+    private static final String CHANNEL_INVERTER_POWER = "inverter-power";
+    private static final String CHANNEL_STATUS1 = "status1";
 
     private static final class ModbusRequest {
 
@@ -308,18 +315,17 @@ public class MQ2200InverterHandler extends BaseModbusThingHandler {
             logger.warn("Internal channel {} is not DecimalType, cannot process", channel.getChannelName());
         } else {
             int i = d.intValue();
-            switch (channel.getChannelName()) {
+            switch (channel.getChannelName().substring(HIDDEN_CHANNEL_PREFIX.length())) {
                 // active power reports -30000 W during startup, to be suppressed
-                case "hidden-inverter-power":
+                case CHANNEL_INVERTER_POWER:
                     if (i != INVALID_ACTIVE_POWER_VALUE) {
-                        logger.debug("{} {}", "INVERTER_POWER", v);
-                        updateState(
-                                new ChannelUID(thing.getUID(), "fi-" + channel.getChannelGroup(), "fi-inverter-power"),
-                                v);
+                        logger.debug("{} {}", CHANNEL_INVERTER_POWER.toUpperCase(), v);
+                        updateState(new ChannelUID(thing.getUID(), "fi-" + channel.getChannelGroup(),
+                                "fi-" + CHANNEL_INVERTER_POWER), v);
                     }
                     break;
                 // grid frequency is used to create STATUS_ON_GRID
-                case "hidden-grid-frequency":
+                case CHANNEL_GRID_FREQUENCY:
                     logger.debug("GRID_FREQUENCY {}", v);
                     updateState(new ChannelUID(thing.getUID(), "fi-" + channel.getChannelGroup(), "fi-grid-frequency"),
                             v);
@@ -329,7 +335,7 @@ public class MQ2200InverterHandler extends BaseModbusThingHandler {
                             state);
                     break;
                 // status seems to use only 3 bits, export a separate channel for each
-                case "hidden-status1":
+                case CHANNEL_STATUS1:
                     boolean statusStandby = (i & STATUS_BIT_STANDBY) != 0;
                     boolean statusOperation = (i & STATUS_BIT_OPERATION) != 0;
                     OpenClosedType stateUpdate = statusStandby ? OpenClosedType.CLOSED : OpenClosedType.OPEN;
@@ -346,20 +352,20 @@ public class MQ2200InverterHandler extends BaseModbusThingHandler {
                     processAlarmState();
                     break;
                 // alarm states are currently
-                case "hidden-alarm1":
+                case CHANNEL_ALARM1:
                     alarm[0] = i;
                     processAlarmState();
                     break;
-                case "hidden-alarm2":
+                case CHANNEL_ALARM2:
                     alarm[1] = i;
                     processAlarmState();
                     break;
-                case "hidden-alarm3":
+                case CHANNEL_ALARM3:
                     alarm[2] = i;
                     processAlarmState();
                     break;
                 // EPS output state is set to 0 or 2 by the app
-                case "hidden-eps-output":
+                case "eps-output":
                     OnOffType epsState = OnOffType.OFF;
                     if (i == EPS_OUTPUT_ON_VALUE) {
                         epsState = OnOffType.ON;
@@ -392,7 +398,7 @@ public class MQ2200InverterHandler extends BaseModbusThingHandler {
                         .extractStateFromRegisters(registers, index, channel.getType()).map(channel::createState));
                 ModbusBitUtilities.extractStateFromRegisters(registers, index, channel.getType())
                         .map(channel::createState).ifPresentOrElse(v -> {
-                            if (!channel.getChannelName().startsWith("hidden-")) {
+                            if (!channel.getChannelName().startsWith(HIDDEN_CHANNEL_PREFIX)) {
                                 updateState(createChannelUid(channel), v);
                             } else {
                                 processHiddenChannel(channel, v);
