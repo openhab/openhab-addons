@@ -332,12 +332,12 @@ public class MQ2200InverterHandler extends BaseModbusThingHandler {
                 // grid frequency is used to create STATUS_ON_GRID
                 case CHANNEL_GRID_FREQUENCY:
                     logger.debug("{} {}", CHANNEL_GRID_FREQUENCY.toUpperCase(), v);
-                    updateState(new ChannelUID(thing.getUID(), "fi-" + channel.getChannelGroup(), "fi-" + CHANNEL_GRID_FREQUENCY),
-                            v);
+                    updateState(new ChannelUID(thing.getUID(), "fi-" + channel.getChannelGroup(),
+                            "fi-" + CHANNEL_GRID_FREQUENCY), v);
                     OpenClosedType state = (i >= 1) ? OpenClosedType.CLOSED : OpenClosedType.OPEN;
                     logger.debug("{} {} -> {}", CHANNEL_STATUS_ON_GRID.toUpperCase(), i >= 1, state);
-                    updateState(new ChannelUID(thing.getUID(), "fi-" + channel.getChannelGroup(), "fi-" + CHANNEL_STATUS_ON_GRID),
-                            state);
+                    updateState(new ChannelUID(thing.getUID(), "fi-" + channel.getChannelGroup(),
+                            "fi-" + CHANNEL_STATUS_ON_GRID), state);
                     break;
                 // status seems to use only 3 bits, export a separate channel for each
                 case CHANNEL_STATUS1:
@@ -345,13 +345,12 @@ public class MQ2200InverterHandler extends BaseModbusThingHandler {
                     boolean statusOperation = (i & STATUS_BIT_OPERATION) != 0;
                     OpenClosedType stateUpdate = statusStandby ? OpenClosedType.CLOSED : OpenClosedType.OPEN;
                     logger.debug("{} {} -> {}", CHANNEL_STATUS_STANDBY.toUpperCase(), statusStandby, stateUpdate);
-                    updateState(new ChannelUID(thing.getUID(), "fi-" + channel.getChannelGroup(), "fi-" + CHANNEL_STATUS_STANDBY),
-                            stateUpdate);
+                    updateState(new ChannelUID(thing.getUID(), "fi-" + channel.getChannelGroup(),
+                            "fi-" + CHANNEL_STATUS_STANDBY), stateUpdate);
                     stateUpdate = statusOperation ? OpenClosedType.CLOSED : OpenClosedType.OPEN;
                     logger.debug("{} {} -> {}", CHANNEL_STATUS_OPERATION.toUpperCase(), statusOperation, stateUpdate);
-                    updateState(
-                            new ChannelUID(thing.getUID(), "fi-" + channel.getChannelGroup(), "fi-" + CHANNEL_STATUS_OPERATION),
-                            stateUpdate);
+                    updateState(new ChannelUID(thing.getUID(), "fi-" + channel.getChannelGroup(),
+                            "fi-" + CHANNEL_STATUS_OPERATION), stateUpdate);
                     // this is a global variable, as the fault state is stored and evaluated for alarm output
                     statusFault = (i & STATUS_BIT_FAULT) != 0;
                     processAlarmState();
@@ -376,8 +375,8 @@ public class MQ2200InverterHandler extends BaseModbusThingHandler {
                         epsState = OnOffType.ON;
                     }
                     logger.debug("{} {}", CHANNEL_EPS_OUTPUT.toUpperCase(), epsState);
-                    updateState(new ChannelUID(thing.getUID(), "fi-" + channel.getChannelGroup(), "fi-" + CHANNEL_EPS_OUTPUT),
-                            epsState);
+                    updateState(new ChannelUID(thing.getUID(), "fi-" + channel.getChannelGroup(),
+                            "fi-" + CHANNEL_EPS_OUTPUT), epsState);
                     break;
                 default:
                     logger.warn("Unhandled internal channel {}", channel.getChannelName());
