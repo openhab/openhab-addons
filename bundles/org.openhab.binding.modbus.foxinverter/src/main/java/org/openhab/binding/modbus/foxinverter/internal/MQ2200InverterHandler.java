@@ -69,9 +69,14 @@ public class MQ2200InverterHandler extends BaseModbusThingHandler {
     private static final String CHANNEL_ALARM1 = "alarm1";
     private static final String CHANNEL_ALARM2 = "alarm2";
     private static final String CHANNEL_ALARM3 = "alarm3";
+    private static final String CHANNEL_EPS_OUTPUT = "eps-output";
     private static final String CHANNEL_GRID_FREQUENCY = "grid-frequency";
     private static final String CHANNEL_INVERTER_POWER = "inverter-power";
     private static final String CHANNEL_STATUS1 = "status1";
+    private static final String CHANNEL_STATUS_ALARM = "status-alarm";
+    private static final String CHANNEL_STATUS_ON_GRID = "status-on-grid";
+    private static final String CHANNEL_STATUS_OPERATION = "status-operation";
+    private static final String CHANNEL_STATUS_STANDBY = "status-standby";
 
     private static final class ModbusRequest {
 
@@ -302,8 +307,8 @@ public class MQ2200InverterHandler extends BaseModbusThingHandler {
             }
         }
         OpenClosedType state = alarmState ? OpenClosedType.CLOSED : OpenClosedType.OPEN;
-        logger.debug("STATUS_ALARM {} -> {}", alarmState, state);
-        updateState(new ChannelUID(thing.getUID(), "fi-overview", "fi-status-alarm"), state);
+        logger.debug("{} {} -> {}", CHANNEL_STATUS_ALARM.toUpperCase(), alarmState, state);
+        updateState(new ChannelUID(thing.getUID(), "fi-overview", "fi-" + CHANNEL_STATUS_ALARM), state);
     }
 
     private void processHiddenChannel(MQ2200InverterRegisters channel, org.openhab.core.types.State v) {
@@ -326,12 +331,12 @@ public class MQ2200InverterHandler extends BaseModbusThingHandler {
                     break;
                 // grid frequency is used to create STATUS_ON_GRID
                 case CHANNEL_GRID_FREQUENCY:
-                    logger.debug("GRID_FREQUENCY {}", v);
-                    updateState(new ChannelUID(thing.getUID(), "fi-" + channel.getChannelGroup(), "fi-grid-frequency"),
+                    logger.debug("{} {}", CHANNEL_GRID_FREQUENCY.toUpperCase(), v);
+                    updateState(new ChannelUID(thing.getUID(), "fi-" + channel.getChannelGroup(), "fi-" + CHANNEL_GRID_FREQUENCY),
                             v);
                     OpenClosedType state = (i >= 1) ? OpenClosedType.CLOSED : OpenClosedType.OPEN;
-                    logger.debug("STATUS_ON_GRID {} -> {}", i >= 1, state);
-                    updateState(new ChannelUID(thing.getUID(), "fi-" + channel.getChannelGroup(), "fi-status-on-grid"),
+                    logger.debug("{} {} -> {}", CHANNEL_STATUS_ON_GRID.toUpperCase(), i >= 1, state);
+                    updateState(new ChannelUID(thing.getUID(), "fi-" + channel.getChannelGroup(), "fi-" + CHANNEL_STATUS_ON_GRID),
                             state);
                     break;
                 // status seems to use only 3 bits, export a separate channel for each
@@ -339,13 +344,13 @@ public class MQ2200InverterHandler extends BaseModbusThingHandler {
                     boolean statusStandby = (i & STATUS_BIT_STANDBY) != 0;
                     boolean statusOperation = (i & STATUS_BIT_OPERATION) != 0;
                     OpenClosedType stateUpdate = statusStandby ? OpenClosedType.CLOSED : OpenClosedType.OPEN;
-                    logger.debug("STATUS_STANDBY {} -> {}", statusStandby, stateUpdate);
-                    updateState(new ChannelUID(thing.getUID(), "fi-" + channel.getChannelGroup(), "fi-status-standby"),
+                    logger.debug("{} {} -> {}", CHANNEL_STATUS_STANDBY.toUpperCase(), statusStandby, stateUpdate);
+                    updateState(new ChannelUID(thing.getUID(), "fi-" + channel.getChannelGroup(), "fi-" + CHANNEL_STATUS_STANDBY),
                             stateUpdate);
                     stateUpdate = statusOperation ? OpenClosedType.CLOSED : OpenClosedType.OPEN;
-                    logger.debug("STATUS_OPERATION {} -> {}", statusOperation, stateUpdate);
+                    logger.debug("{} {} -> {}", CHANNEL_STATUS_OPERATION.toUpperCase(), statusOperation, stateUpdate);
                     updateState(
-                            new ChannelUID(thing.getUID(), "fi-" + channel.getChannelGroup(), "fi-status-operation"),
+                            new ChannelUID(thing.getUID(), "fi-" + channel.getChannelGroup(), "fi-" + CHANNEL_STATUS_OPERATION),
                             stateUpdate);
                     // this is a global variable, as the fault state is stored and evaluated for alarm output
                     statusFault = (i & STATUS_BIT_FAULT) != 0;
@@ -365,13 +370,13 @@ public class MQ2200InverterHandler extends BaseModbusThingHandler {
                     processAlarmState();
                     break;
                 // EPS output state is set to 0 or 2 by the app
-                case "eps-output":
+                case CHANNEL_EPS_OUTPUT:
                     OnOffType epsState = OnOffType.OFF;
                     if (i == EPS_OUTPUT_ON_VALUE) {
                         epsState = OnOffType.ON;
                     }
-                    logger.debug("{} {}", "EPS_OUTPUT", epsState);
-                    updateState(new ChannelUID(thing.getUID(), "fi-" + channel.getChannelGroup(), "fi-eps-output"),
+                    logger.debug("{} {}", CHANNEL_EPS_OUTPUT.toUpperCase(), epsState);
+                    updateState(new ChannelUID(thing.getUID(), "fi-" + channel.getChannelGroup(), "fi-" + CHANNEL_EPS_OUTPUT),
                             epsState);
                     break;
                 default:
