@@ -53,7 +53,8 @@ The `mq2200-inverter` thing has channels that serve the current state of the Fox
 
 | Channel Type ID                    | Item Type                | Description                           | Advanced  | Channel Group       |
 |------------------------------------|--------------------------|---------------------------------------|-----------|---------------------|
-| fi-active-power                    | Number:Power             | Total Active Power                    | no        | Overview            |
+| fi-inverter-power                  | Number:Power             | Inverter Active Power                 | no        | Overview            |
+| fi-home-import-power               | Number:Power             | Power flow with home network          | no        | Overview            |
 | fi-daily-pv-generation             | Number:Energy            | Daily PV Generation                   | no        | Overview            |
 | fi-total-pv-generation             | Number:Energy            | Total PV Generation                   | no        | Overview            |
 | fi-internal-temperature            | Number:Temperature       | Internal Temperature                  | yes       | Overview            |
@@ -61,7 +62,7 @@ The `mq2200-inverter` thing has channels that serve the current state of the Fox
 | fi-status-alarm                    | Contact                  | System Warning                        | no        | Overview            |
 | fi-status-operation                | Contact                  | System in Operational Mode            | no        | Overview            |
 | fi-status-standby                  | Contact                  | System in Standby Mode (not yet off)  | yes       | Overview            |
-| fi-total-pv-power                  | Number:Power             | Total PV Power                        | no        | MPPT Information    |
+| fi-total-pv-power                  | Number:Power             | PV Power                              | no        | MPPT Information    |
 | fi-mppt1-voltage                   | Number:ElectricPotential | MPPT1 Voltage                         | yes       | MPPT Information    |
 | fi-mppt1-current                   | Number:ElectricCurrent   | MPPT1 Current                         | yes       | MPPT Information    |
 | fi-mppt1-power                     | Number:Power             | MPPT1 Power                           | no        | MPPT Information    |
@@ -76,9 +77,8 @@ The `mq2200-inverter` thing has channels that serve the current state of the Fox
 | fi-mppt4-power                     | Number:Power             | MPPT4 Power                           | no        | MPPT Information    |
 | fi-battery-voltage                 | Number:ElectricPotential | Battery Voltage                       | yes       | Battery Information |
 | fi-battery-current                 | Number:ElectricCurrent   | Battery Current                       | yes       | Battery Information |
-| fi-battery-power                   | Number:Power             | Battery Power                         | no        | Battery Information |
 | fi-battery-level                   | Number:Dimensionless     | Battery Level                         | no        | Battery Information |
-| fi-charging-power                  | Number:Power             | Charging Power                        | no        | Battery Information |
+| fi-battery-charging-power          | Number:Power             | Battery Charging Power                | no        | Battery Information |
 | fi-battery-minimum-soc             | Number:Dimensionless     | Battery Min Charging Level            | yes       | Battery Information |
 | fi-battery-maximum-soc             | Number:Dimensionless     | Battery Max Charging Level            | yes       | Battery Information |
 | fi-battery-minimum-soc-on-grid     | Number:Dimensionless     | Battery Min Charging Level on Grid    | yes       | Battery Information |
@@ -86,10 +86,10 @@ The `mq2200-inverter` thing has channels that serve the current state of the Fox
 | fi-phase-b-voltage                 | Number:ElectricPotential | Phase B Voltage                       | yes       | Grid Information    |
 | fi-phase-c-voltage                 | Number:ElectricPotential | Phase C Voltage                       | yes       | Grid Information    |
 | fi-grid-frequency                  | Number:Frequency         | Grid Frequency                        | yes       | Grid Information    |
-| fi-export-power                    | Number:Power             | Export Power                          | no        | Grid Information    |
+| fi-grid-export-power               | Number:Power             | Overall Power Export to Grid          | no        | Grid Information    |
 | fi-status-on-grid                  | Contact                  | Power Grid Available                  | yes       | Grid Information    |
 | fi-eps-output                      | Switch                   | Enable EPS Output                     | no        | EPS                 |
-| fi-eps-power                       | Number:Power             | EPS Output Power                      | no        | EPS                 |
+| fi-eps-export-power                | Number:Power             | EPS Output Power                      | no        | EPS                 |
 
 ## Full Example
 

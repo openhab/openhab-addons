@@ -310,11 +310,11 @@ public class MQ2200InverterHandler extends BaseModbusThingHandler {
             int i = d.intValue();
             switch (channel.getChannelName()) {
                 // active power reports -30000 W during startup, to be suppressed
-                case "hidden-active-power":
+                case "hidden-inverter-power":
                     if (i != INVALID_ACTIVE_POWER_VALUE) {
-                        logger.debug("{} {}", "ACTIVE_POWER", v);
+                        logger.debug("{} {}", "INVERTER_POWER", v);
                         updateState(
-                                new ChannelUID(thing.getUID(), "fi-" + channel.getChannelGroup(), "fi-active-power"),
+                                new ChannelUID(thing.getUID(), "fi-" + channel.getChannelGroup(), "fi-inverter-power"),
                                 v);
                     }
                     break;

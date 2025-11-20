@@ -61,7 +61,7 @@ public enum MQ2200InverterRegisters {
     MPPT4_VOLTAGE(39076, UINT16, ConversionConstants.DIV_BY_TEN, quantityFactory(Units.VOLT), "mppt-information"),
     MPPT4_CURRENT(39077, UINT16, ConversionConstants.DIV_BY_HUNDRED, quantityFactory(Units.AMPERE), "mppt-information"),
 
-    TOTAL_PV_POWER(39118, INT32, BigDecimal.ONE, quantityFactory(Units.WATT), "mppt-information"),
+    PV_POWER(39118, INT32, BigDecimal.ONE, quantityFactory(Units.WATT), "mppt-information"),
 
     HIDDEN_GRID_FREQUENCY(39139, UINT16, new BigDecimal(BigInteger.ONE, 2), quantityFactory(Units.HERTZ),
             "grid-information"),
@@ -72,7 +72,7 @@ public enum MQ2200InverterRegisters {
 
     // INVERTER_x_CURRENT 39126, 39128, 39130 seem not to work for MQ2200
 
-    HIDDEN_ACTIVE_POWER(39134, INT32, BigDecimal.ONE, quantityFactory(Units.WATT), "overview"),
+    HIDDEN_INVERTER_POWER(39134, INT32, BigDecimal.ONE, quantityFactory(Units.WATT), "overview"),
 
     // seems not to work for MQ2200
     // REACTIVE_POWER(39136, INT32, BigDecimal.ONE, quantityFactory(Units.VAR), "overview"),
@@ -84,17 +84,17 @@ public enum MQ2200InverterRegisters {
     DAILY_PV_GENERATION(39151, UINT32, ConversionConstants.DIV_BY_HUNDRED, quantityFactory(Units.KILOWATT_HOUR),
             "overview"),
 
-    CHARGING_POWER(39162, INT32, BigDecimal.ONE, quantityFactory(Units.WATT), "battery-information"),
-    EXPORT_POWER(39168, INT32, BigDecimal.ONE, quantityFactory(Units.WATT), "grid-information"),
+    HOME_IMPORT_POWER(39162, INT32, BigDecimal.ONE, quantityFactory(Units.WATT), "overview"),
+    GRID_EXPORT_POWER(39168, INT32, BigDecimal.ONE, quantityFactory(Units.WATT), "grid-information"),
 
-    EPS_POWER(39216, INT32, BigDecimal.ONE, quantityFactory(Units.WATT), "emergency-power-supply"),
+    EPS_EXPORT_POWER(39216, INT32, BigDecimal.ONE, quantityFactory(Units.WATT), "emergency-power-supply"),
 
     BATTERY_VOLTAGE(39227, UINT16, ConversionConstants.DIV_BY_TEN, quantityFactory(Units.VOLT), "battery-information"),
     BATTERY_CURRENT(39228, INT32, ConversionConstants.DIV_BY_THOUSAND, quantityFactory(Units.AMPERE),
             "battery-information"),
 
     // prefer combined power over bat1 power
-    BATTERY_POWER(39237, INT32, BigDecimal.ONE, quantityFactory(Units.WATT), "battery-information"),
+    BATTERY_CHARGING_POWER(39237, INT32, BigDecimal.ONE, quantityFactory(Units.WATT), "battery-information"),
 
     MPPT1_POWER(39279, INT32, BigDecimal.ONE, quantityFactory(Units.WATT), "mppt-information"),
     MPPT2_POWER(39281, INT32, BigDecimal.ONE, quantityFactory(Units.WATT), "mppt-information"),
