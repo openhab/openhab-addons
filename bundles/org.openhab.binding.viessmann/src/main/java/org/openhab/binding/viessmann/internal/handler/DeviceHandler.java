@@ -507,6 +507,8 @@ public class DeviceHandler extends ViessmannThingHandler {
                                 viUnit = "gas-" + prop.day.unit;
                             } else if (featureDataDTO.feature.contains("power")) {
                                 viUnit = "power-" + prop.day.unit;
+                            } else if (featureDataDTO.feature.contains(".heat.")) {
+                                viUnit = "heat-" + prop.day.unit;
                             } else {
                                 viUnit = prop.day.unit;
                             }
@@ -519,6 +521,8 @@ public class DeviceHandler extends ViessmannThingHandler {
                                 viUnit = "gas-" + prop.week.unit;
                             } else if (featureDataDTO.feature.contains("power")) {
                                 viUnit = "power-" + prop.week.unit;
+                            } else if (featureDataDTO.feature.contains(".heat.")) {
+                                viUnit = "heat-" + prop.week.unit;
                             } else {
                                 viUnit = prop.week.unit;
                             }
@@ -531,6 +535,8 @@ public class DeviceHandler extends ViessmannThingHandler {
                                 viUnit = "gas-" + prop.month.unit;
                             } else if (featureDataDTO.feature.contains("power")) {
                                 viUnit = "power-" + prop.month.unit;
+                            } else if (featureDataDTO.feature.contains(".heat.")) {
+                                viUnit = "heat-" + prop.month.unit;
                             } else {
                                 viUnit = prop.month.unit;
                             }
@@ -543,6 +549,8 @@ public class DeviceHandler extends ViessmannThingHandler {
                                 viUnit = "gas-" + prop.year.unit;
                             } else if (featureDataDTO.feature.contains("power")) {
                                 viUnit = "power-" + prop.year.unit;
+                            } else if (featureDataDTO.feature.contains(".heat.")) {
+                                viUnit = "heat-" + prop.year.unit;
                             } else {
                                 viUnit = prop.year.unit;
                             }

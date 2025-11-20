@@ -66,6 +66,7 @@ public class ViessmannBindingConstants {
             entry("kilowattHour/year", "kilowattHour/year"), //
             entry("gas-kilowattHour", Units.KILOWATT_HOUR.toString()), //
             entry("power-kilowattHour", Units.KILOWATT_HOUR.toString()), //
+            entry("heat-kilowattHour", Units.KILOWATT_HOUR.toString()), //
             entry("percent", Units.PERCENT.toString()), //
             entry("minute", Units.MINUTE.toString()), //
             entry("hour", Units.HOUR.toString()), //
@@ -76,13 +77,15 @@ public class ViessmannBindingConstants {
             entry("watt", Units.WATT.toString()), //
             entry("gas-cubicMeter", SIUnits.CUBIC_METRE.toString()), //
             entry("bar", Units.BAR.toString()), //
+            entry("ampere", Units.AMPERE.toString()), //
             entry("revolutionsPerSecond", Units.HERTZ.toString()));
 
     public static final Map<String, String> SUB_CHANNEL_TYPE_MAP = Map.of( //
             "cubicMeter", "volume", //
             "gas-kilowattHour", "gas-energy", //
             "power-kilowattHour", "power-energy", //
-            "gas-cubicMeter", "gas-volume");
+            "gas-cubicMeter", "gas-volume", //
+            "heat-kilowattHour", "heat-energy");
 
     public static final String CHANNEL_LAST_ERROR_MESSAGE = "last-error-message";
     public static final String CHANNEL_ERROR_IS_ACTIVE = "error-is-active";
