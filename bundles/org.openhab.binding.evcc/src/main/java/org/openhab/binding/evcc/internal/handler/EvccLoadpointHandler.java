@@ -89,7 +89,7 @@ public class EvccLoadpointHandler extends EvccBaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (command instanceof State) {
+        if (command instanceof State state) {
             String datapoint = Utils.getKeyFromChannelUID(channelUID).toLowerCase();
             // Correct the datapoint for the API call
             if ("phasesconfigured".equals(datapoint)) {
@@ -102,17 +102,19 @@ public class EvccLoadpointHandler extends EvccBaseThingHandler {
                 datapoint += "/disable/" + datapoint.replace("disable", "");
             }
             String value = "";
-            if (command instanceof OnOffType) {
-                value = command == OnOffType.ON ? "true" : "false";
+            if (state instanceof OnOffType) {
+                value = state == OnOffType.ON ? "true" : "false";
             } else {
-                value = command.toString();
+                value = state.toString();
                 if (value.contains(" ")) {
-                    value = value.substring(0, command.toString().indexOf(" "));
+                    value = value.substring(0, state.toString().indexOf(" "));
                 }
             }
             String url = endpoint + "/" + datapoint + "/" + value;
             logger.debug("Sending command to this url: {}", url);
-            sendCommand(url);
+            if (sendCommand(url)) {
+                updateState(channelUID, state);
+            }
         } else {
             super.handleCommand(channelUID, command);
         }

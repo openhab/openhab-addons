@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.evcc.internal.handler;
 
+import java.util.Set;
+
 import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -43,6 +45,23 @@ public final class StateResolver {
         return INSTANCE;
     }
 
+    // Exact-match keys (case-insensitive) that should use KILO of the base unit
+    private static final Set<String> KILO_KEYS_EQ = Set.of("energy", "grid-energy", "charged-energy", "pv-energy",
+            "charged-kwh");
+
+    // Contains-match keys that should use KILO of the base unit
+    private static final Set<String> KILO_KEYS_CONTAINS = Set.of("limit-energy", "import", "capacity", "odometer",
+            "range");
+
+    // Decimal-like keys (exact) that still prefers DecimalType (e.g., price/tariff)
+    private static final Set<String> DECIMAL_EQ = Set.of("price", "tariff");
+
+    // Contains-match variant for decimal types
+    private static final Set<String> DECIMAL_CONTAINS = Set.of("price", "tariff");
+
+    // Timestamp exact key (normalized)
+    private static final Set<String> TIMESTAMP_EQ = Set.of("timestamp");
+
     /**
      * Resolves a {@link State} object from a given JSON element based on the provided key.
      * This method interprets the JSON value heuristically, mapping numeric values to
@@ -59,36 +78,55 @@ public final class StateResolver {
         if (value.isJsonNull() || !value.isJsonPrimitive()) {
             return null;
         }
-        JsonPrimitive prim = value.getAsJsonPrimitive();
+
+        final JsonPrimitive prim = value.getAsJsonPrimitive();
+        final String lowerKey = key.toLowerCase();
+
         if (prim.isNumber()) {
-            String lowerKey = key.toLowerCase();
-            Number raw = prim.getAsNumber();
-            Unit<?> base = determineBaseUnitFromKey(key);
-            if (lowerKey.contains("price") || key.contains("tariff")) {
-                return new DecimalType(raw);
-            } else if (raw.toString().contains(".")) {
-                if ("energy".equals(lowerKey) || "gridenergy".equals(lowerKey) || "chargedenergy".equals(lowerKey)
-                        || "pvenergy".equals(lowerKey) || "limitenergy".equals(lowerKey)
-                        || "chargedkwh".equals(lowerKey) || lowerKey.contains("import")
-                        || lowerKey.contains("capacity")) {
-                    return new QuantityType<>(raw, MetricPrefix.KILO(base));
-                }
-            } else if (lowerKey.contains("capacity") || lowerKey.contains("odometer") || lowerKey.contains("range")
-                    || lowerKey.contains("import") || "limitenergy".equals(lowerKey)) {
-                return new QuantityType<>(raw, MetricPrefix.KILO(base));
-            }
-            return new QuantityType<>(raw, base);
-        } else if (prim.isString()) {
-            if (key.contains("Timestamp")) {
-                return new DateTimeType(value.getAsString());
-            } else {
-                return new StringType(value.getAsString());
-            }
-        } else if (prim.isBoolean()) {
-            return value.getAsBoolean() ? OnOffType.ON : OnOffType.OFF;
-        } else {
-            return null;
+            return resolveNumberState(lowerKey, prim.getAsNumber());
         }
+        if (prim.isString()) {
+            return resolveStringState(lowerKey, prim.getAsString());
+        }
+        if (prim.isBoolean()) {
+            return prim.getAsBoolean() ? OnOffType.ON : OnOffType.OFF;
+        }
+        return null;
+    }
+
+    private State resolveNumberState(String lowerKey, Number raw) {
+        // Decimal overrides first (price/tariff)
+        if (isDecimalKey(lowerKey)) {
+            return new DecimalType(raw);
+        }
+
+        final Unit<?> base = determineBaseUnitFromKey(lowerKey);
+
+        // Exact-match KILO keys
+        if (KILO_KEYS_EQ.contains(lowerKey)) {
+            return new QuantityType<>(raw, MetricPrefix.KILO(base));
+        }
+
+        // Contains-match KILO keys
+        if (KILO_KEYS_CONTAINS.stream().anyMatch(lowerKey::contains)) {
+            return new QuantityType<>(raw, MetricPrefix.KILO(base));
+        }
+
+        // Default: base unit
+        return new QuantityType<>(raw, base);
+    }
+
+    private boolean isDecimalKey(String lowerKey) {
+        // prefer exact first, then contains
+        return DECIMAL_EQ.contains(lowerKey) || DECIMAL_CONTAINS.stream().anyMatch(lowerKey::contains);
+    }
+
+    private State resolveStringState(String lowerKey, String raw) {
+        // prefer exact first, then contains fallback if needed
+        if (TIMESTAMP_EQ.contains(lowerKey) || lowerKey.contains("timestamp")) {
+            return new DateTimeType(raw);
+        }
+        return new StringType(raw);
     }
 
     /**

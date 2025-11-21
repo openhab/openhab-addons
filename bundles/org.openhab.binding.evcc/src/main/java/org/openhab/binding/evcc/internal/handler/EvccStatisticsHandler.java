@@ -19,7 +19,6 @@ import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.thing.ChannelGroupUID;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -89,7 +88,7 @@ public class EvccStatisticsHandler extends EvccBaseThingHandler {
                         key = "chargedEnergy";
                     }
                     ChannelUID channelUID = new ChannelUID(channelGroupUID, Utils.sanitizeChannelID(key));
-                    updateState(channelUID, new DecimalType(value.getAsDouble()));
+                    resolveAndUpdateState(channelUID, channelUID.getIdWithoutGroup(), value);
                 }
             }
         }

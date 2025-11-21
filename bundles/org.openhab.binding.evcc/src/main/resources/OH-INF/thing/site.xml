@@ -392,10 +392,10 @@
 			</options>
 		</state>
 	</channel-type>
-	<channel-type id="site-startup">
+	<channel-type id="site-startup-completed">
 		<item-type>Switch</item-type>
-		<label>Start Up</label>
-		<description>Indicates whether restart is needed or not</description>
+		<label>Start Up Complete</label>
+		<description>Indicates whether start up is completed or not</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>Enabled</tag>
