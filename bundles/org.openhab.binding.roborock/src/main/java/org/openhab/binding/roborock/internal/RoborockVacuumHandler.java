@@ -636,8 +636,7 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                         new QuantityType<>(TimeUnit.SECONDS.toMinutes(getStatus.result[0].dryStatus), Units.MINUTE));
             }
             if (deviceCapabilities.containsKey(RobotCapabilities.CLEAN_PERCENT)) {
-                updateState(CHANNEL_MOP_TOTAL_DRYTIME,
-                        new QuantityType<>(TimeUnit.SECONDS.toMinutes(getStatus.result[0].cleanPercent), Units.MINUTE));
+                updateState(CHANNEL_CLEAN_PERCENT, new DecimalType(getStatus.result[0].cleanPercent));
             }
         }
     }
@@ -777,9 +776,9 @@ public class RoborockVacuumHandler extends BaseThingHandler {
                 long duration = TimeUnit.SECONDS.toMinutes(getCleanRecord.result[0].duration);
                 historyRecord.put("duration", duration);
                 updateState(CHANNEL_HISTORY_DURATION, new QuantityType<>(duration, Units.MINUTE));
-                historyRecord.put("area", getCleanRecord.result[0].area);
+                historyRecord.put("area", getCleanRecord.result[0].cleanedArea);
                 updateState(CHANNEL_HISTORY_AREA,
-                        new QuantityType<>(getCleanRecord.result[0].area, SIUnits.SQUARE_METRE));
+                        new QuantityType<>(getCleanRecord.result[0].cleanedArea / 1000000D, SIUnits.SQUARE_METRE));
                 historyRecord.put("error", getCleanRecord.result[0].error);
                 updateState(CHANNEL_HISTORY_ERROR, new DecimalType(getCleanRecord.result[0].error));
                 historyRecord.put("complete", getCleanRecord.result[0].complete);

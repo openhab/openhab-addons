@@ -88,7 +88,6 @@
 			<channel id="segment-status" typeId="segment-status"/>
 			<channel id="map-status" typeId="map-status"/>
 			<channel id="led-status" typeId="led-status"/>
-			<channel id="clean-percent" typeId="clean-percent"/>
 		</channels>
 	</channel-group-type>
 	<channel-group-type id="consumables">
