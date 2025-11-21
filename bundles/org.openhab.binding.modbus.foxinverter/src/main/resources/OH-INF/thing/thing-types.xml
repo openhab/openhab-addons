@@ -363,7 +363,7 @@
 		<label>On Grid</label>
 		<category>Energy</category>
 		<tags>
-			<tag>Measurement</tag>
+			<tag>Status</tag>
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
@@ -414,6 +414,7 @@
 		<label>Battery minimum state of charge</label>
 		<category>Battery</category>
 		<tags>
+			<tag>Control</tag>
 			<tag>Energy</tag>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="false"/>
@@ -423,6 +424,7 @@
 		<label>Battery maximum state of charge</label>
 		<category>Battery</category>
 		<tags>
+			<tag>Control</tag>
 			<tag>Energy</tag>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="false"/>
@@ -432,6 +434,7 @@
 		<label>Battery minimum state of charge (on grid)</label>
 		<category>Battery</category>
 		<tags>
+			<tag>Control</tag>
 			<tag>Energy</tag>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="false"/>

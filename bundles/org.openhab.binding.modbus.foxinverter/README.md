@@ -14,7 +14,6 @@ Others are untested, but might work:
 
 - FoxESS Avocado 22 Pro
 
-
 ## Supported Things
 
 The binding supports only one thing:
