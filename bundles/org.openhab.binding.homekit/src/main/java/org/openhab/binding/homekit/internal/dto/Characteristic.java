@@ -815,13 +815,12 @@ public class Characteristic {
          * we create and persist a unique channel type ID for each characteristic
          * instance
          */
-        String channelTypeId = CHANNEL_TYPE_ID_FMT.formatted(characteristicType.getOpenhabType());
-        if (thingUID.getBridgeIds().isEmpty()) {
-            channelTypeId += thingUID.getId();
-        } else {
-            channelTypeId += thingUID.getBridgeIds().getFirst() + "-" + thingUID.getId();
-        }
-        ChannelTypeUID channelTypeUid = new ChannelTypeUID(BINDING_ID, channelTypeId);
+        String charactersticIdentifier = characteristicType.getOpenhabType();
+        String channelTypeIdentifier = thingUID.getBridgeIds().isEmpty()
+                ? CHANNEL_TYPE_ID_FMT.formatted(charactersticIdentifier, iid, thingUID.getId(), "1")
+                : CHANNEL_TYPE_ID_FMT.formatted(charactersticIdentifier, iid, thingUID.getBridgeIds().getFirst(),
+                        thingUID.getId());
+        ChannelTypeUID channelTypeUid = new ChannelTypeUID(BINDING_ID, channelTypeIdentifier);
         String channelTypeLabel = characteristicType.toString();
 
         if (!isStateChannel) {
@@ -911,7 +910,9 @@ public class Characteristic {
         Optional.ofNullable(format).ifPresent(s -> props.put(PROPERTY_FORMAT, s));
         Optional.ofNullable(dataType).ifPresent(s -> props.put(PROPERTY_DATA_TYPE, s));
 
-        ChannelDefinitionBuilder channelDefBuilder = new ChannelDefinitionBuilder(characteristicType.getOpenhabType(),
+        String channelDefinitionIdentifier = CHANNEL_DEFINITION_ID_FMT.formatted(charactersticIdentifier, iid);
+
+        ChannelDefinitionBuilder channelDefBuilder = new ChannelDefinitionBuilder(channelDefinitionIdentifier,
                 channelTypeUid).withLabel(getChannelLabel(characteristicType, i18nProvider, bundle))
                 .withProperties(props);
         Optional.ofNullable(getChannelDescription()).ifPresent(d -> channelDefBuilder.withDescription(d));

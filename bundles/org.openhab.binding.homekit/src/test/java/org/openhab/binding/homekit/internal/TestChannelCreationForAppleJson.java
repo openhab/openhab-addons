@@ -410,10 +410,11 @@ class TestChannelCreationForAppleJson {
 
         // Check that the channel group type and its UID and label are set
         ChannelGroupType channelGroupType = channelGroupTypes.stream()
-                .filter(cgt -> "channel-group-type-lightbulb".equals(cgt.getUID().getId())).findFirst().orElse(null);
+                .filter(cgt -> "channel-group-type-lightbulb-7-bridge1-accessory3".equals(cgt.getUID().getId()))
+                .findFirst().orElse(null);
         assertNotNull(channelGroupType);
         assertEquals("Light Bulb", channelGroupType.getLabel());
-        assertEquals("channel-group-type-lightbulb", channelGroupType.getUID().getId());
+        assertEquals("channel-group-type-lightbulb-7-bridge1-accessory3", channelGroupType.getUID().getId());
 
         // There should be two channel definitions for the Light Bulb service: On and Brightness
         assertEquals(2, channelGroupType.getChannelDefinitions().size());
@@ -422,7 +423,7 @@ class TestChannelCreationForAppleJson {
         ChannelDefinition channelDefinition = channelGroupType.getChannelDefinitions().stream()
                 .filter(cd -> "Brightness".equals(cd.getLabel())).findFirst().orElse(null);
         assertNotNull(channelDefinition);
-        assertEquals("channel-type-brightness-bridge1-accessory3", channelDefinition.getChannelTypeUID().getId());
+        assertEquals("channel-type-brightness-9-bridge1-accessory3", channelDefinition.getChannelTypeUID().getId());
         assertEquals("Brightness", channelDefinition.getLabel());
         assertEquals("int", channelDefinition.getProperties().get("format"));
 
@@ -433,7 +434,7 @@ class TestChannelCreationForAppleJson {
         ChannelType channelType = channelTypes.stream().filter(ct -> "Dimmer".equals(ct.getItemType())).findFirst()
                 .orElse(null);
         assertNotNull(channelType);
-        assertEquals("channel-type-brightness-bridge1-accessory3", channelType.getUID().getId());
+        assertEquals("channel-type-brightness-9-bridge1-accessory3", channelType.getUID().getId());
         assertEquals("Brightness", channelType.getLabel());
         assertEquals("Dimmer", channelType.getItemType());
         assertEquals("light", channelType.getCategory());

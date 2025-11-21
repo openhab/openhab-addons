@@ -37,9 +37,26 @@ public class HomekitBindingConstants {
     public static final ChannelTypeUID FAKE_PROPERTY_CHANNEL_TYPE_UID = new ChannelTypeUID(BINDING_ID,
             FAKE_PROPERTY_CHANNEL);
 
-    // prefixes for channel-group-type and channel-type UIDs
-    public static final String CHANNEL_GROUP_TYPE_ID_FMT = "channel-group-type-%s";
-    public static final String CHANNEL_TYPE_ID_FMT = "channel-type-%s-";
+    /*
+     * format string for channel-group-type UIDs which represent services
+     * format: 'channel-group-type'-[serviceIdentifier]-[serviceIid]-[rootThingId]-[accessoryId]
+     * example: channel-group-type-accessory-information-1-1234567890abcdef-1
+     */
+    public static final String CHANNEL_GROUP_TYPE_ID_FMT = "channel-group-type-%s-%d-%s-%s";
+
+    /*
+     * format string for channel-type UIDs which represent characteristics
+     * format: 'channel-type'-[characteristicIdentifier]-[characteristicIid]-[rootThingId]-[accessoryId]
+     * example: channel-type-occupancy-detected-2694-1234567890abcdef-1
+     */
+    public static final String CHANNEL_TYPE_ID_FMT = "channel-type-%s-%d-%s-%s";
+
+    /*
+     * format string for channel-definition IDs which are used to instantiate channels
+     * format: [characteristicIdentifier]-[characteristicIid]
+     * example: occupancy-detected-2694
+     */
+    public static final String CHANNEL_DEFINITION_ID_FMT = "%s-%d";
 
     // labels
     public static final String THING_LABEL_FMT = "%s on %s";

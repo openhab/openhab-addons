@@ -73,8 +73,12 @@ public class Service {
             return null;
         }
 
-        ChannelGroupTypeUID channelGroupTypeUID = new ChannelGroupTypeUID(BINDING_ID,
-                CHANNEL_GROUP_TYPE_ID_FMT.formatted(serviceType.getOpenhabType()));
+        String serviceIdentifier = serviceType.getOpenhabType();
+        String channelGroupTypeIdentifier = thingUID.getBridgeIds().isEmpty()
+                ? CHANNEL_GROUP_TYPE_ID_FMT.formatted(serviceIdentifier, iid, thingUID.getId(), "1")
+                : CHANNEL_GROUP_TYPE_ID_FMT.formatted(serviceIdentifier, iid, thingUID.getBridgeIds().getFirst(),
+                        thingUID.getId());
+        ChannelGroupTypeUID channelGroupTypeUID = new ChannelGroupTypeUID(BINDING_ID, channelGroupTypeIdentifier);
 
         String channelGroupTypeLabel = serviceType.toString();
 

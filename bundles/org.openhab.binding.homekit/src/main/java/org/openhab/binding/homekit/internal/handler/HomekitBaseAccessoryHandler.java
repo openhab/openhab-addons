@@ -146,7 +146,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
                 long delay = Duration.between(Instant.now(), next).toMillis();
                 if (delay > 0) {
                     delay = Math.min(delay, MIN_INTERVAL.toMillis());
-                    logger.trace("Throttling call for {} ms to respect minimum interval", delay);
+                    logger.trace("{} throttling call for {} ms to respect minimum interval", thing.getUID(), delay);
                     Thread.sleep(delay);
                 }
                 return task.call();
@@ -211,11 +211,12 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
         } catch (Exception e) {
             if (isCommunicationException(e)) {
                 // communication exception; log at debug and try to reconnect
-                logger.debug("Communication error '{}' fetching accessories, reconnecting..", e.getMessage());
+                logger.debug("{} communication error '{}' fetching accessories, reconnecting..", thing.getUID(),
+                        e.getMessage());
                 scheduleConnectionAttempt();
             } else {
                 // other exception; log at warn and don't try to reconnect
-                logger.warn("Unexpected error '{}' fetching accessories", e.getMessage());
+                logger.warn("{} unexpected error '{}' fetching accessories", thing.getUID(), e.getMessage());
             }
             logger.debug("Stack trace", e);
         }
@@ -252,7 +253,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
             } catch (NumberFormatException e) {
             }
         }
-        logger.debug("Missing or invalid accessory id");
+        logger.debug("{} missing or invalid accessory id", thing.getUID());
         return null;
     }
 
@@ -299,7 +300,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
         // check if we have a stored key
         Ed25519PublicKeyParameters accessoryKey = keyStore.getAccessoryKey(macAddress);
         if (accessoryKey == null) {
-            logger.debug("No stored pairing credentials for {}", thing.getUID());
+            logger.debug("{} no stored pairing credentials", thing.getUID());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     i18nProvider.getText(bundle, "error.not-paired", "Not paired", null));
             return false;
@@ -312,7 +313,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
 
         // attempt to verify pairing
         try {
-            logger.debug("Starting Pair-Verify with existing key for {}", thing.getUID());
+            logger.debug("{} starting Pair-Verify with existing key", thing.getUID());
             PairVerifyClient client = new PairVerifyClient(getIpTransport(), keyStore.getControllerUUID(),
                     keyStore.getControllerKey(), accessoryKey);
 
@@ -320,13 +321,13 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
             rwService = new CharacteristicReadWriteClient(getIpTransport());
             throttler.reset();
 
-            logger.debug("Restored pairing was verified for {}", thing.getUID());
+            logger.debug("{} restored pairing was verified", thing.getUID());
             scheduler.schedule(this::fetchAccessories, MIN_CONNECTION_ATTEMPT_DELAY_SECONDS, TimeUnit.SECONDS);
             return true; // pairing restore succeeded => exit
         } catch (NoSuchAlgorithmException | NoSuchProviderException | IllegalAccessException
                 | InvalidCipherTextException | IOException | InterruptedException | TimeoutException
                 | ExecutionException | IllegalStateException e) {
-            logger.debug("Restored pairing was not verified for {}", thing.getUID(), e);
+            logger.debug("{} restored pairing was not verified", thing.getUID(), e);
             // pairing restore failed => exit and perhaps try again later
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, i18nProvider.getText(bundle,
                     "error.pairing-verification-failed", "Pairing / Verification failed", null));
@@ -447,7 +448,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
             return null;
         }
         if (!HOST_PATTERN.matcher(hostName).matches()) {
-            logger.warn("Host name '{}' does not match expected pattern; using anyway..", hostName);
+            logger.warn("{} host name '{}' does not match expected pattern; using anyway..", thing.getUID(), hostName);
         }
         return hostName.replace(" ", "\\032"); // escape mDNS spaces
     }
@@ -468,7 +469,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
             this.ipTransport = ipTransport;
             return ipTransport;
         } catch (IOException e) {
-            logger.warn("Error '{}' creating transport", e.getMessage());
+            logger.warn("{} error '{}' creating transport", thing.getUID(), e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     i18nProvider.getText(bundle, "error.failed-to-connect", "Failed to connect", null));
         }
@@ -485,12 +486,12 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
      */
     public String pair(String code, boolean withExternalAuthentication) {
         if (isChildAccessory) {
-            logger.warn("Cannot pair child accessory '{}'", thing.getUID());
+            logger.warn("{} forbidden to pair a child accessory", thing.getUID());
             return ACTION_RESULT_ERROR_FORMAT.formatted("child accessory");
         }
 
         if (!PAIRING_CODE_PATTERN.matcher(code).matches()) {
-            logger.debug("Pairing code must match XXX-XX-XXX or XXXX-XXXX or XXXXXXXX");
+            logger.debug("{} pairing code must match XXX-XX-XXX or XXXX-XXXX or XXXXXXXX", thing.getUID());
             return ACTION_RESULT_ERROR_FORMAT.formatted("code format");
         }
         String pairingCode = normalizePairingCode(code);
@@ -515,20 +516,20 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
         }
 
         try {
-            logger.debug("Starting Pair-Setup for {}", thing.getUID());
+            logger.debug("{} starting Pair-Setup", thing.getUID());
             PairSetupClient pairSetupClient = new PairSetupClient(getIpTransport(), keyStore.getControllerUUID(),
                     keyStore.getControllerKey(), pairingCode, withExternalAuthentication);
 
             Ed25519PublicKeyParameters accessoryKey = pairSetupClient.pair();
             keyStore.setAccessoryKey(macAddress, accessoryKey);
 
-            logger.debug("Pair-Setup completed; starting Pair-Verify for {}", thing.getUID());
+            logger.debug("{} completed Pair-Setup; starting Pair-Verify", thing.getUID());
             connectionAttemptDelay = MIN_CONNECTION_ATTEMPT_DELAY_SECONDS; // reset delay on manual pairing
             scheduleConnectionAttempt();
             return ACTION_RESULT_OK; // pairing succeeded
         } catch (Exception e) {
             // catch all; log all exceptions
-            logger.warn("Pairing / verification failed '{}' for {}", e.getMessage(), thing.getUID());
+            logger.warn("{} pairing / verification failed '{}'", thing.getUID(), e.getMessage());
             logger.debug("Stack trace", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, i18nProvider.getText(bundle,
                     "error.pairing-verification-failed", "Pairing / Verification failed", null));
@@ -543,12 +544,12 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
      */
     private String unpairInner() {
         if (isChildAccessory) {
-            logger.warn("Cannot unpair child accessory '{}'", thing.getUID());
+            logger.warn("{} forbidden to unpair a child accessory", thing.getUID());
             return ACTION_RESULT_ERROR_FORMAT.formatted("child accessory");
         }
 
         if (!(getConfig().get(Thing.PROPERTY_MAC_ADDRESS) instanceof String macAddress) || macAddress.isBlank()) {
-            logger.warn("Cannot unpair accessory '{}' due to missing mac address configuration", thing.getUID());
+            logger.warn("{} cannot unpair accessory due to missing mac address configuration", thing.getUID());
             return ACTION_RESULT_ERROR_FORMAT.formatted("config error");
         }
 
@@ -563,7 +564,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
             return ACTION_RESULT_OK;
         } catch (IOException | InterruptedException | TimeoutException | ExecutionException | IllegalAccessException
                 | IllegalStateException e) {
-            logger.warn("Error '{}' unpairing accessory '{}'", e.getMessage(), thing.getUID());
+            logger.warn("{} error '{}' unpairing accessory", thing.getUID(), e.getMessage());
             return ACTION_RESULT_ERROR_FORMAT.formatted("unpairing error");
         }
     }
@@ -645,11 +646,12 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
         } catch (Exception e) {
             if (isCommunicationException(e)) {
                 // communication exception; log at debug and try to reconnect
-                logger.debug("Communication error '{}' subscribing to events, reconnecting..", e.getMessage());
+                logger.debug("{} communication error '{}' subscribing to events, reconnecting..", thing.getUID(),
+                        e.getMessage());
                 scheduleConnectionAttempt();
             } else {
                 // other exception; log at warn and don't try to reconnect
-                logger.warn("Unexpected error '{}' subscribing to events", e.getMessage());
+                logger.warn("{} unexpected error '{}' subscribing to events", thing.getUID(), e.getMessage());
             }
             logger.debug("Stack trace", e);
         }
@@ -670,7 +672,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
      */
     private void enableEventsOrThrow(boolean enable) throws Exception {
         if (isChildAccessory) {
-            logger.warn("Forbidden to enable/disable events on child accessory '{}'", thing.getUID());
+            logger.warn("{} forbidden to enable/disable events on child accessory", thing.getUID());
             return;
         }
         Service service = new Service();
@@ -687,7 +689,8 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
             throw new IllegalStateException("Read/write service not initialized");
         }
         throttler.call(() -> rwService.writeCharacteristics(GSON.toJson(service)));
-        logger.debug("Eventing {}abled for {} channels", enable ? "en" : "dis", service.characteristics.size());
+        logger.debug("{} eventing {}abled for {} channels", thing.getUID(), enable ? "en" : "dis",
+                service.characteristics.size());
     }
 
     /**
@@ -710,11 +713,12 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
         } catch (Exception e) {
             if (isCommunicationException(e)) {
                 // communication exception; log at debug and try to reconnect
-                logger.debug("Communication error '{}' polling accessories, reconnecting..", e.getMessage());
+                logger.debug("{} communication error '{}' polling accessories, reconnecting..", thing.getUID(),
+                        e.getMessage());
                 scheduleConnectionAttempt();
             } else {
                 // other exception; log at warn and don't try to reconnect
-                logger.warn("Unexpected error '{}' polling accessories", e.getMessage());
+                logger.warn("{} unexpected error '{}' polling accessories", thing.getUID(), e.getMessage());
             }
             logger.debug("Stack trace", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
@@ -787,7 +791,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
             }
         }
         if (refreshTask == null) {
-            logger.warn("Invalid refresh interval configuration, polling disabled");
+            logger.warn("{} invalid refresh interval configuration, polling disabled", thing.getUID());
         }
     }
 

@@ -165,7 +165,8 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
                     QuantityType<?> temp = quantity.toUnit(channelUnit);
                     object = temp != null ? temp : quantity;
                 } catch (MeasurementParseException e) {
-                    logger.warn("Unexpected unit '{}' for channel '{}'", channelUnit, channel.getUID());
+                    logger.warn("{} unexpected unit '{}' for channel '{}'", thing.getUID(), channelUnit,
+                            channel.getUID());
                 }
             }
         }
@@ -181,8 +182,8 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
                             object = Integer.parseInt(optionValue);
                             break;
                         } catch (NumberFormatException e) {
-                            logger.warn("Unexpected state option value '{}' for channel '{}'", optionValue,
-                                    channel.getUID());
+                            logger.warn("{} unexpected state option value '{}' for channel '{}'", thing.getUID(),
+                                    optionValue, channel.getUID());
                         }
                     }
                 }
@@ -273,7 +274,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
         } else if (value.isNumber()) {
             return switch (acceptedItemType) {
                 case CoreItemFactory.COLOR -> {
-                    logger.warn("Channel {} wrong item type 'COLOR'", channel.getUID());
+                    logger.warn("{} channel {} wrong item type 'COLOR'", thing.getUID(), channel.getUID());
                     yield UnDefType.UNDEF;
                 }
                 case CoreItemFactory.SWITCH -> OnOffType.from(value.getAsInt() != 0);
@@ -375,31 +376,29 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
                                             channelType.getKind(), channelType.getTags(), channelType.getUID(),
                                             channelType.getUnitHint());
 
-                                    // if necessary append a suffix to ensure unique channel IDs
-                                    final String base = chanDef.getId();
-                                    String channelId = base;
-                                    int suffix = 0;
-                                    while (uniqueChannelsMap.containsKey(channelId)) {
-                                        channelId = "%s-%d".formatted(base, ++suffix);
+                                    String channelId = chanDef.getId();
+                                    if (uniqueChannelsMap.containsKey(channelId)) {
+                                        logger.debug("{}     Error duplicate channelId:{}", thing.getUID(), channelId);
+                                    } else {
+                                        ChannelUID channelUID = new ChannelUID(thing.getUID(), groupDef.getId(),
+                                                channelId);
+                                        ChannelBuilder builder = ChannelBuilder.create(channelUID)
+                                                .withAcceptedItemType(channelType.getItemType())
+                                                .withAutoUpdatePolicy(channelType.getAutoUpdatePolicy())
+                                                .withDefaultTags(channelType.getTags()).withKind(channelType.getKind())
+                                                .withProperties(chanDef.getProperties()).withType(channelType.getUID());
+                                        Optional.ofNullable(chanDef.getLabel()).ifPresent(builder::withLabel);
+                                        Optional.ofNullable(chanDef.getDescription())
+                                                .ifPresent(builder::withDescription);
+                                        Channel channel = builder.build();
+                                        uniqueChannelsMap.put(channelId, channel);
+
+                                        logger.trace(
+                                                "{}     Channel acceptedItemType:{}, defaultTags:{}, description:{}, kind:{}, label:{}, properties:{}, uid:{}",
+                                                thing.getUID(), channel.getAcceptedItemType(), channel.getDefaultTags(),
+                                                channel.getDescription(), channel.getKind(), channel.getLabel(),
+                                                channel.getProperties(), channel.getUID());
                                     }
-                                    ChannelUID channelUID = new ChannelUID(thing.getUID(), groupDef.getId(), channelId);
-
-                                    ChannelBuilder builder = ChannelBuilder.create(channelUID)
-                                            .withAcceptedItemType(channelType.getItemType())
-                                            .withAutoUpdatePolicy(channelType.getAutoUpdatePolicy())
-                                            .withDefaultTags(channelType.getTags()).withKind(channelType.getKind())
-                                            .withProperties(chanDef.getProperties()).withType(channelType.getUID());
-                                    Optional.ofNullable(chanDef.getLabel()).ifPresent(builder::withLabel);
-                                    Optional.ofNullable(chanDef.getDescription()).ifPresent(builder::withDescription);
-                                    Channel channel = builder.build();
-                                    uniqueChannelsMap.put(channelId, channel);
-
-                                    logger.trace(
-                                            "{}     Channel acceptedItemType:{}, defaultTags:{}, description:{}, kind:{}, label:{}, properties:{}, uid:{}",
-                                            thing.getUID(), channel.getAcceptedItemType(), channel.getDefaultTags(),
-                                            channel.getDescription(), channel.getKind(), channel.getLabel(),
-                                            channel.getProperties(), channel.getUID());
-
                                 }
                             }
                         });
@@ -435,7 +434,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         Channel channel = thing.getChannel(channelUID);
         if (channel == null) {
-            logger.warn("Received command '{}' for unknown channel '{}'", command, channelUID);
+            logger.warn("{} received command '{}' for unknown channel '{}'", thing.getUID(), command, channelUID);
             return;
         }
         if (command == RefreshType.REFRESH) {
@@ -486,12 +485,13 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
         } catch (Exception e) {
             if (isCommunicationException(e)) {
                 // communication exception; log at debug and try to reconnect
-                logger.debug("Communication error '{}' sending command '{}' to '{}', reconnecting..", e.getMessage(),
-                        command, channelUID);
+                logger.debug("{} communication error '{}' sending command '{}' to '{}', reconnecting..", thing.getUID(),
+                        e.getMessage(), command, channelUID);
                 scheduleConnectionAttempt();
             } else {
                 // other exception; log at warn and don't try to reconnect
-                logger.warn("Unexpected error '{}' sending command '{}' to '{}'", e.getMessage(), command, channelUID);
+                logger.warn("{} unexpected error '{}' sending command '{}' to '{}'", thing.getUID(), e.getMessage(),
+                        command, channelUID);
             }
             logger.debug("Stack trace", e);
         }
@@ -528,12 +528,13 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
         ChannelTypeUID uid = channel.getChannelTypeUID();
         ChannelType ct = channelTypeRegistry.getChannelType(uid);
         if (ct == null) {
-            logger.warn("Channel '{}' is missing a channel type", uid);
+            logger.warn("{} channel '{}' is missing a channel type", thing.getUID(), uid);
             return null;
         }
         StateDescription st = ct.getState();
         if (st == null) {
-            logger.warn("Channel '{}' of type '{}' is missing a state description", uid, ct.getUID());
+            logger.warn("{} channel '{}' of type '{}' is missing a state description", thing.getUID(), uid,
+                    ct.getUID());
             return null;
         }
         return st;
@@ -688,7 +689,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
         channels.put(uid.getId(), channel); // add to channels map
         logger.trace(
                 "{}     Channel acceptedItemType:{}, defaultTags:{}, description:{}, kind:{}, label:{}, properties:{}, uid:{}",
-                uid, channel.getAcceptedItemType(), channel.getDefaultTags(), channel.getDescription(),
+                thing.getUID(), channel.getAcceptedItemType(), channel.getDefaultTags(), channel.getDescription(),
                 channel.getKind(), channel.getLabel(), channel.getProperties(), channel.getUID());
         lightModelClientHSBTypeChannel = uid;
     }
@@ -835,7 +836,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
                 && serviceResponse.characteristics instanceof List<Characteristic> characteristics) {
             for (Characteristic cxx : characteristics) {
                 if (cxx.getStatusCode() instanceof StatusCode code && code != StatusCode.SUCCESS) {
-                    logger.warn("Error writing to channel '{}': {}", channel.getUID(), code);
+                    logger.warn("{} error writing to channel '{}': {}", thing.getUID(), channel.getUID(), code);
                 }
             }
         }
