@@ -13,6 +13,7 @@
 package org.openhab.binding.entsoe;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -24,6 +25,7 @@ import java.util.Scanner;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.HttpClient;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.entsoe.internal.client.Client;
 import org.openhab.binding.entsoe.internal.client.SpotPrice;
@@ -59,8 +61,9 @@ public class TestResponse {
     }
 
     private Map<Instant, SpotPrice> parseResponse(String content) {
+        Client client = new Client(mock(HttpClient.class));
         try {
-            return Client.parseXmlResponse(content, "PT15M");
+            return client.parseXmlResponse(content, "PT15M");
         } catch (ParserConfigurationException | SAXException | IOException | EntsoeResponseException
                 | EntsoeConfigurationException e) {
             fail("Failed to parse XML response: " + e.getMessage());
