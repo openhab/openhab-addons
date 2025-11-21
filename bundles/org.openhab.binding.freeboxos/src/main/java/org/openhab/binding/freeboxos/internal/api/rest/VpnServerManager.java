@@ -57,7 +57,7 @@ public class VpnServerManager extends ListableRest<VpnServerManager.VpnServer, V
             String id, // connection id
             String vpn, // related VPN server id
             String srcIp, // connection source IP address
-            String localIp, // attributed IP address from VPN adress pool
+            String localIp, // attributed IP address from VPN address pool
             ZonedDateTime authTime // timestamp of the authentication
     ) {
     }

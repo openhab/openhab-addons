@@ -185,7 +185,7 @@ public class ServerHandler extends ApiConsumerHandler implements FreeDeviceIntf 
         var servers = vpnManager.getDevices();
         servers.forEach(vpnServer -> {
             var groupName = vpnServer.name().replace("_", "-");
-            updateChannelString(groupName, VPN_STATE, vpnServer.state().toString());
+            updateChannelString(groupName, VPN_STATE, vpnServer.state());
             updateChannelDecimal(groupName, VPN_CONNECTIONS, vpnServer.connectionCount());
             updateChannelDecimal(groupName, VPN_AUTHENTICATED, vpnServer.authConnectionCount());
         });
