@@ -15,10 +15,16 @@ package org.openhab.binding.tidal.internal.api;
 import static org.eclipse.jetty.http.HttpMethod.GET;
 import static org.openhab.binding.tidal.internal.TidalBindingConstants.TIDAL_API_URL;
 
+import java.io.BufferedWriter;
+import java.io.ByteArrayInputStream;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.Hashtable;
 import java.util.List;
@@ -233,39 +239,103 @@ public class TidalApi {
         return session;
     }
 
-    public String getTrackStreamUrl(String trackId) {
+    public InputStream getTrackStream(String trackId) {
         String sessionId = getSession().getSessionId();
         // sessionId = "b022c7a2-3016-4a64-a657-8afa88f5102c";
         User me = getMe();
+        // String uri = TidalBindingConstants.TIDAL_V1_API_URL + "/tracks/";
+        // uri = uri + trackId;
+        // uri = uri + "/urlpostpaywall?sessionId=" + sessionId;
+        // uri = uri + "&countryCode=" + me.getCountry();
+        // uri = uri + "&limit=1000";
+        // uri = uri + "&urlusagemode=STREAM";
+        // uri = uri + "&audioquality=LOSSLESS";
+        // uri = uri + "&assetpresentation=FULL";
+        //
+        // Stream stream = request(GET, uri, "", Stream.class);
+        // String[] urls = stream.getUrls();
+
         String uri = TidalBindingConstants.TIDAL_V1_API_URL + "/tracks/";
         uri = uri + trackId;
-        uri = uri + "/urlpostpaywall?sessionId=" + sessionId;
+        uri = uri + "/playbackinfopostpaywall?sessionId=" + sessionId;
         uri = uri + "&countryCode=" + me.getCountry();
         uri = uri + "&limit=1000";
-        uri = uri + "&urlusagemode=STREAM";
-        uri = uri + "&audioquality=LOSSLESS";
+        uri = uri + "&playbackmode=STREAM";
+        uri = uri + "&audioquality=HI_RES_LOSSLESS";
         uri = uri + "&assetpresentation=FULL";
 
         Stream stream = request(GET, uri, "", Stream.class);
         String[] urls = stream.getUrls();
+        String manifest = stream.getManifest();
 
+        String manifestDecode = new String(Base64.getDecoder().decode(manifest), StandardCharsets.UTF_8);
+        InputStream inputStream = new ByteArrayInputStream(manifestDecode.getBytes(StandardCharsets.UTF_8));
+
+        /*
+         * try (BufferedWriter writer = new BufferedWriter(
+         * new FileWriter("C:/eclipse/openhab-main/git/openhab-distro/launch/app/runtime/conf/html/test.mpd"))) {
+         * writer.write(manifestDecode);
+         * return "http://192.168.254.101:8080/static/test.mpd";
+         * } catch (IOException e) {
+         * e.printStackTrace();
+         * }
+         *
+         * if (urls != null && urls.length > 0) {
+         * return urls[0];
+         * }
+         *
+         *
+         * return "";
+         */
+
+        return inputStream;
+    }
+
+    public String getTrackStreamUri(String trackId) {
+        String sessionId = getSession().getSessionId();
+        // sessionId = "b022c7a2-3016-4a64-a657-8afa88f5102c";
+        User me = getMe();
         // String uri = TidalBindingConstants.TIDAL_V1_API_URL + "/tracks/";
         // uri = uri + trackId;
-        // uri = uri + "/playbackinfopostpaywall?sessionId=" + sessionId;
+        // uri = uri + "/urlpostpaywall?sessionId=" + sessionId;
         // uri = uri + "&countryCode=" + me.getCountry();
         // uri = uri + "&limit=1000";
-        // uri = uri + "&playbackmode=STREAM";
+        // uri = uri + "&urlusagemode=STREAM";
         // uri = uri + "&audioquality=LOSSLESS";
         // uri = uri + "&assetpresentation=FULL";
-
+        //
         // Stream stream = request(GET, uri, "", Stream.class);
         // String[] urls = stream.getUrls();
+
+        String uri = TidalBindingConstants.TIDAL_V1_API_URL + "/tracks/";
+        uri = uri + trackId;
+        uri = uri + "/playbackinfopostpaywall?sessionId=" + sessionId;
+        uri = uri + "&countryCode=" + me.getCountry();
+        uri = uri + "&limit=1000";
+        uri = uri + "&playbackmode=STREAM";
+        uri = uri + "&audioquality=HI_RES_LOSSLESS";
+        uri = uri + "&assetpresentation=FULL";
+
+        Stream stream = request(GET, uri, "", Stream.class);
+        String[] urls = stream.getUrls();
+        String manifest = stream.getManifest();
+
+        String manifestDecode = new String(Base64.getDecoder().decode(manifest), StandardCharsets.UTF_8);
+
+        try (BufferedWriter writer = new BufferedWriter(
+                new FileWriter("C:/eclipse/openhab-main/git/openhab-distro/launch/app/runtime/conf/html/test.mpd"))) {
+            writer.write(manifestDecode);
+            return "http://192.168.254.101:8080/static/test.mpd";
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         if (urls != null && urls.length > 0) {
             return urls[0];
         }
 
         return "";
+
     }
 
     /**

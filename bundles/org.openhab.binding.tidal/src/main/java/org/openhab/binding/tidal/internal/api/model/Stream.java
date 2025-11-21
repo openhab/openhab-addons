@@ -65,6 +65,10 @@ public class Stream {
         return streamingSessionId;
     }
 
+    public String getManifest() {
+        return manifest;
+    }
+
     public String getCodec() {
         return codec;
     }

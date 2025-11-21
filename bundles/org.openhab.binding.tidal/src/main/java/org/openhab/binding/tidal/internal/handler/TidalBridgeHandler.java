@@ -43,6 +43,8 @@ import org.openhab.binding.tidal.internal.api.model.Artist;
 import org.openhab.binding.tidal.internal.api.model.Playlist;
 import org.openhab.binding.tidal.internal.api.model.Track;
 import org.openhab.binding.tidal.internal.api.model.User;
+import org.openhab.core.audio.AudioException;
+import org.openhab.core.audio.AudioManager;
 import org.openhab.core.auth.client.oauth2.AccessTokenRefreshListener;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
 import org.openhab.core.auth.client.oauth2.DeviceCodeResponseDTO;
@@ -123,6 +125,7 @@ public class TidalBridgeHandler extends BaseBridgeHandler
     private @NonNullByDefault({}) TidalApi tidalApi;
     private @NonNullByDefault({}) TidalBridgeConfiguration configuration;
     private @NonNullByDefault({}) TidalHandleCommands handleCommand;
+    private @NonNullByDefault({}) AudioManager audioManager;
     private final MediaService mediaService;
 
     /**
@@ -136,11 +139,12 @@ public class TidalBridgeHandler extends BaseBridgeHandler
     private int imageChannelAlbumImageUrlIndex;
 
     public TidalBridgeHandler(Bridge bridge, OAuthFactory oAuthFactory, HttpClient httpClient,
-            MediaService mediaService) {
+            MediaService mediaService, AudioManager audioManager) {
         super(bridge);
         this.oAuthFactory = oAuthFactory;
         this.httpClient = httpClient;
         this.mediaService = mediaService;
+        this.audioManager = audioManager;
         devicesChannelUID = new ChannelUID(bridge.getUID(), CHANNEL_DEVICES);
         playlistsChannelUID = new ChannelUID(bridge.getUID(), CHANNEL_PLAYLISTS);
     }
@@ -361,8 +365,19 @@ public class TidalBridgeHandler extends BaseBridgeHandler
     public String getStreamUri(String cmdVal) {
         int p1 = cmdVal.lastIndexOf('/');
         String trackId = cmdVal.substring(p1 + 1);
-        String uri = tidalApi.getTrackStreamUrl(trackId);
-        return uri;
+
+        // InputStream inputStream = tidalApi.getTrackStream(trackId);
+        String uri = tidalApi.getTrackStreamUri(trackId);
+
+        //
+        try {
+            // URLAudioStream urlAudioStream = new URLAudioStream(inputStream);
+            // audioManager.play(urlAudioStream);
+            audioManager.stream(uri);
+        } catch (AudioException ex) {
+            logger.error("error streaming media", ex);
+        }
+        return "";
     }
 
     private int getIntChannelParameter(String channelName, String parameter, int _default) {

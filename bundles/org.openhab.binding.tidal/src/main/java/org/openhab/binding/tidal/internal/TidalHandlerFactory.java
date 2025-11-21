@@ -16,6 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.tidal.internal.handler.TidalBridgeHandler;
+import org.openhab.core.audio.AudioManager;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.media.MediaService;
@@ -43,15 +44,17 @@ public class TidalHandlerFactory extends BaseThingHandlerFactory {
     private final HttpClient httpClient;
     private final TidalAuthService authService;
     private final MediaService mediaService;
+    private final AudioManager audioManager;
 
     @Activate
     public TidalHandlerFactory(@Reference OAuthFactory oAuthFactory,
             @Reference final HttpClientFactory httpClientFactory, @Reference TidalAuthService authService,
-            @Reference MediaService mediaService) {
+            @Reference MediaService mediaService, @Reference AudioManager audioManager) {
         this.oAuthFactory = oAuthFactory;
         this.httpClient = httpClientFactory.getCommonHttpClient();
         this.authService = authService;
         this.mediaService = mediaService;
+        this.audioManager = audioManager;
     }
 
     @Override
@@ -65,7 +68,7 @@ public class TidalHandlerFactory extends BaseThingHandlerFactory {
 
         if (TidalBindingConstants.THING_TYPE_PLAYER.equals(thingTypeUID)) {
             final TidalBridgeHandler handler = new TidalBridgeHandler((Bridge) thing, oAuthFactory, httpClient,
-                    mediaService);
+                    mediaService, audioManager);
             authService.addTidalAccountHandler(handler);
             return handler;
         }
