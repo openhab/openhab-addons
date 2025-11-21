@@ -71,7 +71,7 @@ public class IpTransport implements AutoCloseable {
      * Creates a new IpTransport instance on the given host.
      *
      * @param ipAddress the IP address and port of the HomeKit accessory
-     * @param hostName the fully qualified host name (e.g. 'foobar.local') of the HomeKit accessory
+     * @param hostName the fully qualified host name (e.g. 'foobar._hap._tcp.local') of the HomeKit accessory
      * @throws IOException
      */
     public IpTransport(String ipAddress, String hostName, EventListener eventListener) throws IOException {
@@ -80,7 +80,7 @@ public class IpTransport implements AutoCloseable {
         this.eventListener = eventListener;
         String[] parts = ipAddress.split(":");
         socket = new Socket();
-        socket.setKeepAlive(true); // keep-alive forbiddden for accessories but client should use it
+        socket.setKeepAlive(true); // keep-alive forbidden for accessories but client should use it
         socket.setTcpNoDelay(true); // disable Nagle algorithm to force immediate flushing of packets
         socket.connect(new InetSocketAddress(parts[0], Integer.parseInt(parts[1])), TIMEOUT_MILLI_SECONDS);
         logger.debug("Connected to {} alias {}", ipAddress, hostName);
@@ -256,7 +256,7 @@ public class IpTransport implements AutoCloseable {
     }
 
     /**
-     * Reads a plain (non-secure) HTTP response from the input stream.
+     * Reads a plain (non secure) HTTP response from the input stream.
      *
      * @param trace if true, captures the raw data for debugging purposes.
      *

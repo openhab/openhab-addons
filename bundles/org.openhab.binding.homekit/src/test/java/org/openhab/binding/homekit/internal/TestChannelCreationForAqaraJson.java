@@ -38,7 +38,7 @@ import org.osgi.framework.Bundle;
 import com.google.gson.Gson;
 
 /**
- * Test cases for loading channel creation data from JSON provided by Aqara presnce sensors.
+ * Test cases for loading channel creation data from JSON provided by Aqara presence sensors.
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
