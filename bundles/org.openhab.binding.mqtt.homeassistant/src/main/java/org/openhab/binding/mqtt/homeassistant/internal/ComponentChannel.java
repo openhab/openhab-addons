@@ -119,7 +119,7 @@ public class ComponentChannel {
     }
 
     public ChannelDefinition channelDefinition() {
-        return new ChannelDefinitionBuilder(channel.getUID().getId(),
+        return new ChannelDefinitionBuilder(channel.getUID().getIdWithoutGroup(),
                 Objects.requireNonNull(channel.getChannelTypeUID())).withLabel(channel.getLabel()).build();
     }
 
