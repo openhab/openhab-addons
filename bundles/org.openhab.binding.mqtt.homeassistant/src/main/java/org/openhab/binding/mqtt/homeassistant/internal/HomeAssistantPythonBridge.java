@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.mqtt.homeassistant.internal;
 
+import java.io.File;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -28,6 +30,7 @@ import org.graalvm.polyglot.Value;
 import org.graalvm.python.embedding.GraalPyResources;
 import org.graalvm.python.embedding.VirtualFileSystem;
 import org.openhab.binding.mqtt.homeassistant.internal.exception.ConfigurationException;
+import org.openhab.core.OpenHAB;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
@@ -53,6 +56,8 @@ public class HomeAssistantPythonBridge {
         VirtualFileSystem vfs = VirtualFileSystem.newBuilder().resourceLoadingClass(HomeAssistantPythonBridge.class)
                 .build();
 
+        File cachePath = Path.of(OpenHAB.getUserDataFolder(), "cache", "org.graalvm.polyglot").toFile();
+        System.setProperty("polyglot.engine.userResourceCache", cachePath.getAbsolutePath());
         context = GraalPyResources.contextBuilder(vfs).logHandler(new LogHandler(logger))
                 .option("engine.WarnInterpreterOnly", "false").build();
 

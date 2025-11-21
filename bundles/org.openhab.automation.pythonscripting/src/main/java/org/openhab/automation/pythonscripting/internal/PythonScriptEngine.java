@@ -58,6 +58,7 @@ import org.openhab.automation.pythonscripting.internal.provider.LifecycleTracker
 import org.openhab.automation.pythonscripting.internal.provider.ScriptExtensionModuleProvider;
 import org.openhab.automation.pythonscripting.internal.scriptengine.InvocationInterceptingPythonScriptEngine;
 import org.openhab.automation.pythonscripting.internal.scriptengine.graal.GraalPythonScriptEngine;
+import org.openhab.core.OpenHAB;
 import org.openhab.core.automation.module.script.ScriptExtensionAccessor;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
@@ -85,6 +86,7 @@ public class PythonScriptEngine extends InvocationInterceptingPythonScriptEngine
     private static final String PYTHON_OPTION_ENGINE_WARNINTERPRETERONLY = "engine.WarnInterpreterOnly";
 
     private static final String SYSTEM_PROPERTY_ATTACH_LIBRARY_FAILURE_ACTION = "polyglotimpl.AttachLibraryFailureAction";
+    private static final String SYSTEM_PROPERTY_USER_RESOURCE_CACHE = "polyglot.engine.userResourceCache";
 
     private static final String PYTHON_OPTION_PYTHONPATH = "python.PythonPath";
     private static final String PYTHON_OPTION_EMULATEJYTHON = "python.EmulateJython";
@@ -113,6 +115,10 @@ public class PythonScriptEngine extends InvocationInterceptingPythonScriptEngine
     static {
         // disable warning about missing TruffleAttach library (is only available in graalvm)
         System.getProperties().setProperty(SYSTEM_PROPERTY_ATTACH_LIBRARY_FAILURE_ACTION, "ignore");
+
+        // Set GraalVM cache path
+        File cachePath = Path.of(OpenHAB.getUserDataFolder(), "cache", "org.graalvm.polyglot").toFile();
+        System.setProperty(SYSTEM_PROPERTY_USER_RESOURCE_CACHE, cachePath.getAbsolutePath());
     }
 
     // private static final boolean isPosix = FileSystems.getDefault().supportedFileAttributeViews().contains("posix");

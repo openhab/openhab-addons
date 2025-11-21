@@ -15,6 +15,7 @@ package org.openhab.automation.jsscripting.internal;
 import static org.openhab.core.automation.module.script.ScriptEngineFactory.*;
 import static org.openhab.core.automation.module.script.ScriptTransformationService.OPENHAB_TRANSFORMATION_SCRIPT;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -58,6 +59,7 @@ import org.openhab.automation.jsscripting.internal.fs.ReadOnlySeekableByteArrayC
 import org.openhab.automation.jsscripting.internal.fs.watch.JSDependencyTracker;
 import org.openhab.automation.jsscripting.internal.scriptengine.InvocationInterceptingScriptEngineWithInvocableAndCompilableAndAutoCloseable;
 import org.openhab.automation.jsscripting.internal.scriptengine.helper.LifecycleTracker;
+import org.openhab.core.OpenHAB;
 import org.openhab.core.automation.module.script.ScriptExtensionAccessor;
 import org.openhab.core.automation.module.script.internal.handler.AbstractScriptModuleHandler;
 import org.openhab.core.automation.module.script.internal.handler.ScriptActionHandler;
@@ -112,6 +114,11 @@ public class OpenhabGraalJSScriptEngine
             .compile("^\\s*([\"'])use wrapper(?:=(?<enabled>true|false))?\\1;?\\s*$");
 
     private static final String REQUIRE_WRAPPER_NAME = "__wraprequire__";
+
+    static {
+        File cachePath = Path.of(OpenHAB.getUserDataFolder(), "cache", "org.graalvm.polyglot").toFile();
+        System.setProperty("polyglot.engine.userResourceCache", cachePath.getAbsolutePath());
+    }
     /** Shared Polyglot {@link Engine} across all instances of {@link OpenhabGraalJSScriptEngine} */
     private static final Engine ENGINE = Engine.newBuilder().allowExperimentalOptions(true)
             .option("engine.WarnInterpreterOnly", "false").build();
