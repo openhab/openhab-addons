@@ -21,6 +21,7 @@ import org.openhab.core.i18n.UnitProvider;
 import org.openhab.core.items.GenericItem;
 import org.openhab.core.items.Item;
 import org.openhab.core.persistence.FilterCriteria;
+import org.openhab.core.persistence.FilterCriteria.Operator;
 import org.openhab.core.persistence.FilterCriteria.Ordering;
 
 import software.amazon.awssdk.enhanced.dynamodb.AttributeConverter;
@@ -144,7 +145,7 @@ public class DynamoDBQueryUtils {
         if (filter.getState() != null) {
             // Convert filter's state to DynamoDBItem in order get suitable string representation for the state
             Expression.Builder stateFilterExpressionBuilder = Expression.builder()
-                    .expression(String.format("#attr %s :value", filter.getOperator().getSymbol()));
+                    .expression(String.format("#attr %s :value", operatorAsString(filter.getOperator())));
             // Following will throw IllegalArgumentException when filter state is not compatible with
             // item. This is acceptable.
             GenericItem stateToFind = DynamoDBPersistenceService.copyItem(item, item, filter.getItemName(),
@@ -203,6 +204,19 @@ public class DynamoDBQueryUtils {
                     k -> k.partitionValue(partition).sortValue(timeConverter.transformFrom(begin)),
                     k -> k.partitionValue(partition).sortValue(timeConverter.transformFrom(end))));
         }
+    }
+
+    /**
+     * Convert op to string suitable for dynamodb filter expression
+     *
+     * @param op
+     * @return string representation corresponding to the given the Operator
+     */
+    private static String operatorAsString(Operator op) {
+        if (op == Operator.NEQ) {
+            return "<>";
+        }
+        return op.getSymbol();
     }
 
     private static <T> void acceptAsDTO(Item item, boolean legacy, DynamoDBItemVisitor<T> visitor) {
