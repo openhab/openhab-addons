@@ -868,9 +868,11 @@ public class UpnpRendererHandler extends UpnpHandler {
                 } else {
                     String streamUri = mediaService.getMediaListenner("tidal").getStreamUri(val);
                     logger.info("Stream uri is:{}", streamUri);
+                    if (!streamUri.isBlank()) {
                     setCurrentURI(streamUri, "");
                     play();
                 }
+            }
             }
         } else if (command instanceof StringType) {
             String val = ((StringType) command).toFullString();
@@ -1220,9 +1222,7 @@ public class UpnpRendererHandler extends UpnpHandler {
 <<<<<<< HEAD
                 case "TrackMetaData": // Some (non-compliant) renderers emit TrackMetaData instead of
                                       // CurrentTrackMetaData/CurrentURIMetaData
-=======
-                case "TrackMetaData": // Some (non-compliant) renderers emit 	rackMetaData instead of CurrentTrackMetaData/CurrentURIMetaData
->>>>>>> 8571fe1b02 (add TrackMetadata keys)
+
                     onValueReceivedCurrentMetaData(value);
                     break;
                 case "NextAVTransportURIMetaData":

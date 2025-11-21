@@ -70,7 +70,7 @@ public class UpnpAudioSink extends AudioSinkAsync {
             return;
         }
 
-        if (audioStream instanceof URLAudioStream urlAudioStream) {
+        if (audioStream instanceof URLAudioStream urlAudioStream && urlAudioStream.hasDirectURL()) {
             playMedia(urlAudioStream.getURL());
             try {
                 audioStream.close();
