@@ -15,6 +15,7 @@ package org.openhab.binding.tidal.internal.handler;
 import static org.openhab.binding.tidal.internal.TidalBindingConstants.*;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -45,6 +46,7 @@ import org.openhab.binding.tidal.internal.api.model.Track;
 import org.openhab.binding.tidal.internal.api.model.User;
 import org.openhab.core.audio.AudioException;
 import org.openhab.core.audio.AudioManager;
+import org.openhab.core.audio.URLAudioStream;
 import org.openhab.core.auth.client.oauth2.AccessTokenRefreshListener;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
 import org.openhab.core.auth.client.oauth2.DeviceCodeResponseDTO;
@@ -366,14 +368,14 @@ public class TidalBridgeHandler extends BaseBridgeHandler
         int p1 = cmdVal.lastIndexOf('/');
         String trackId = cmdVal.substring(p1 + 1);
 
-        // InputStream inputStream = tidalApi.getTrackStream(trackId);
-        String uri = tidalApi.getTrackStreamUri(trackId);
+        InputStream inputStream = tidalApi.getTrackStream(trackId);
+        // String uri = tidalApi.getTrackStreamUri(trackId);
 
         //
         try {
-            // URLAudioStream urlAudioStream = new URLAudioStream(inputStream);
-            // audioManager.play(urlAudioStream);
-            audioManager.stream(uri);
+            URLAudioStream urlAudioStream = new URLAudioStream(inputStream);
+            audioManager.play(urlAudioStream);
+            // audioManager.stream(uri);
         } catch (AudioException ex) {
             logger.error("error streaming media", ex);
         }
