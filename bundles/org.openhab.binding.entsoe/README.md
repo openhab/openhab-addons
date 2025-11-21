@@ -2,7 +2,7 @@
 
 This binding fetches day-ahead energy spot prices from ENTSO-E, the European Network of Transmission System Operators for Electricity.
 
-[Users can select a specific area to retrieve the relevant energy prices](https://transparency.entsoe.eu/).
+Users can select a [specific area](https://transparency.entsoe.eu/) to retrieve the relevant energy prices.
 This binding helps users monitor and manage their energy consumption based on real-time pricing data.
 It is recommended to use this binding together with a currency provider (e.g. [Freecurrency binding](https://www.openhab.org/addons/bindings/freecurrency/)) for exchanging euro spot prices to local currency.
 

@@ -56,6 +56,7 @@ import org.xml.sax.SAXException;
 @NonNullByDefault
 public class Client {
     private static final Logger LOGGER = LoggerFactory.getLogger(Client.class);
+    private static final DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
     private final HttpClient httpClient;
     private final String userAgent;
 
@@ -114,10 +115,11 @@ public class Client {
     public static Map<Instant, SpotPrice> parseXmlResponse(String responseText, String configResolution)
             throws ParserConfigurationException, SAXException, IOException, EntsoeResponseException,
             EntsoeConfigurationException {
-        LOGGER.info("Entso-E response {}", responseText);
+        if (LOGGER.isTraceEnabled()) {
+            LOGGER.trace("Entso-E response {}", responseText);
+        }
         Map<Instant, SpotPrice> responseMap = new LinkedHashMap<>();
 
-        DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
         Document document = documentBuilder.parse(new InputSource(new StringReader(responseText)));
         document.getDocumentElement().normalize();
