@@ -251,7 +251,7 @@ public class Connection {
             }
             return true;
         } catch (ConnectionException e) {
-            logger.debug("Bootstrapping failed", e);
+            logger.debug("Getting customer data failed", e);
         }
         return false;
     }
