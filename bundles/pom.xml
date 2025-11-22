@@ -707,6 +707,50 @@
           </execution>
         </executions>
       </plugin>
+      <!-- 1. Download XSD -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <version>3.2.0</version>
+        <inherited>false</inherited>
+        <executions>
+          <!-- 1. Download XSD -->
+          <execution>
+            <id>download-xsd</id>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <phase>generate-resources</phase>
+            <configuration>
+              <target>
+                <mkdir dir="${maven.multiModuleProjectDirectory}/target/schemas"/>
+                <get dest="${maven.multiModuleProjectDirectory}/target/schemas/thing-description-1.0.0.xsd" src="https://openhab.org/schemas/thing-description-1.0.0.xsd" usetimestamp="true"/>
+              </target>
+            </configuration>
+          </execution>
+
+          <!-- 2. Generate catalog dynamically -->
+          <execution>
+            <id>generate-catalog</id>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <phase>generate-resources</phase>
+            <configuration>
+              <target>
+                <mkdir dir="${maven.multiModuleProjectDirectory}/target/schemas"/>
+                <echo file="${maven.multiModuleProjectDirectory}/target/schemas/thing-type-xml-validation-catalog.xml"><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog">
+    <uri name="https://openhab.org/schemas/thing-description-1.0.0.xsd"
+         uri="file:///${maven.multiModuleProjectDirectory}/target/schemas/thing-description-1.0.0.xsd"/>
+</catalog>]]></echo>
+              </target>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- 3. XML validation plugin -->
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>xml-maven-plugin</artifactId>
@@ -720,7 +764,7 @@
             </validationSet>
           </validationSets>
           <catalogs>
-            <catalog>${basedirRoot}/src/thing-type-xml-validation-catalog.xml</catalog>
+            <catalog>file:///${maven.multiModuleProjectDirectory}/target/schemas/thing-type-xml-validation-catalog.xml</catalog>
           </catalogs>
         </configuration>
         <executions>
