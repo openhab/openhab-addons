@@ -238,7 +238,7 @@ public class Connection {
         return false;
     }
 
-    // this replaces the old getBootstrap() call which is no longer available
+    // this replaces the old tryGetBootstrap() call which is no longer available
     private boolean tryGetCustomerData() {
         try {
             // Just check if the endpoint returns success (HTTP 200)
@@ -261,25 +261,20 @@ public class Connection {
             logger.debug("Customer profile exists {} {}", this.customerName, this.loginData.getAccountCustomerId());
             return;
         }
-
         String url = getAlexaServer() + "/api/users/me?platform=ios&version="
                 + AmazonEchoControlBindingConstants.API_VERSION;
         UsersMeTO userProfile = requestBuilder.get(url).retry(false).redirect(false).syncSend(UsersMeTO.class);
-        if (userProfile != null) {
-            if (userProfile.id != null && !userProfile.id.isBlank()) {
-                this.loginData.setAccountCustomerId(userProfile.id);
-            }
-            if (userProfile.fullName != null && !userProfile.fullName.isBlank()) {
-                this.customerName = userProfile.fullName;
-            } else if (userProfile.email != null && !userProfile.email.isBlank()) {
-                this.customerName = userProfile.email;
-            }
-            if (userProfile.marketPlaceDomainName != null && !userProfile.marketPlaceDomainName.isBlank()) {
-                String normalizedDomain = normalizeRetailDomain(userProfile.marketPlaceDomainName);
-                this.loginData.setRetailDomain(normalizedDomain);
-            }
-        } else {
-            throw new ConnectionException("Fetching customer profile failed");
+        if (userProfile.id != null && !userProfile.id.isBlank()) {
+            this.loginData.setAccountCustomerId(userProfile.id);
+        }
+        if (userProfile.fullName != null && !userProfile.fullName.isBlank()) {
+            this.customerName = userProfile.fullName;
+        } else if (userProfile.email != null && !userProfile.email.isBlank()) {
+            this.customerName = userProfile.email;
+        }
+        if (userProfile.marketPlaceDomainName != null && !userProfile.marketPlaceDomainName.isBlank()) {
+            String normalizedDomain = normalizeRetailDomain(userProfile.marketPlaceDomainName);
+            this.loginData.setRetailDomain(normalizedDomain);
         }
     }
 
