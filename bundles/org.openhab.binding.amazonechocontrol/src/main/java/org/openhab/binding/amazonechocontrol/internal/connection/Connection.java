@@ -270,19 +270,15 @@ public class Connection {
         if (userProfile != null) {
             if (userProfile.id != null && !userProfile.id.isBlank()) {
                 this.loginData.setAccountCustomerId(userProfile.id);
-                logger.debug("Setting account customer id {}", userProfile.id);
             }
             if (userProfile.fullName != null && !userProfile.fullName.isBlank()) {
                 this.customerName = userProfile.fullName;
-                logger.debug("Setting customer name {}", userProfile.fullName);
             } else if (userProfile.email != null && !userProfile.email.isBlank()) {
                 this.customerName = userProfile.email;
-                logger.debug("Setting customer name {}", userProfile.email);
             }
             if (userProfile.marketPlaceDomainName != null && !userProfile.marketPlaceDomainName.isBlank()) {
                 String normalizedDomain = normalizeRetailDomain(userProfile.marketPlaceDomainName);
                 this.loginData.setRetailDomain(normalizedDomain);
-                logger.debug("Setting retail domain {}", normalizedDomain);
             }
         } else {
             throw new ConnectionException("Fetching customer profile failed");
@@ -290,18 +286,17 @@ public class Connection {
     }
 
     private String normalizeRetailDomain(@Nullable String domain) {
-        if (domain == null || domain.isBlank()) {
-            return "amazon.com";
-        }
-        try {
-            URI uri = new URI(domain.trim());
-            String host = uri.getHost();
-            if (host != null && !host.isBlank()) {
-                return host.toLowerCase();
+        if (domain != null && !domain.isBlank()) {
+            try {
+                URI uri = new URI(domain.trim());
+                String host = uri.getHost();
+                if (host != null && !host.isBlank()) {
+                    return host.toLowerCase();
+                }
+            } catch (URISyntaxException ignored) {
             }
-        } catch (URISyntaxException ignored) {
         }
-        return "amazon.com";
+        return AmazonEchoControlBindingConstants.DEFAULT_RETAIL_DOMAIN;
     }
 
     public boolean registerConnectionAsApp(String accessToken) {
