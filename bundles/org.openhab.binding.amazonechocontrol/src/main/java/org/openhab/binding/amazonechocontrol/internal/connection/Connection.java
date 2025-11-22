@@ -21,6 +21,7 @@ import java.net.CookieManager;
 import java.net.CookieStore;
 import java.net.HttpCookie;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
@@ -84,8 +85,6 @@ import org.openhab.binding.amazonechocontrol.internal.dto.response.AutomationTO;
 import org.openhab.binding.amazonechocontrol.internal.dto.response.AutomationTriggerTO;
 import org.openhab.binding.amazonechocontrol.internal.dto.response.BluetoothStateTO;
 import org.openhab.binding.amazonechocontrol.internal.dto.response.BluetoothStatesTO;
-import org.openhab.binding.amazonechocontrol.internal.dto.response.BootstrapAuthenticationTO;
-import org.openhab.binding.amazonechocontrol.internal.dto.response.BootstrapTO;
 import org.openhab.binding.amazonechocontrol.internal.dto.response.CustomerHistoryRecordTO;
 import org.openhab.binding.amazonechocontrol.internal.dto.response.CustomerHistoryRecordsTO;
 import org.openhab.binding.amazonechocontrol.internal.dto.response.DeviceListTO;
@@ -225,7 +224,7 @@ public class Connection {
             // verify stored data
             if (data != null && !data.isEmpty() && loginData.deserialize(data)) {
                 if (overloadedDomain != null) {
-                    loginData.setRetailDomain(overloadedDomain);
+                    loginData.setRetailDomain(normalizeRetailDomain(overloadedDomain));
                 }
                 renewTokens();
                 if (verifyLogin()) {
@@ -239,20 +238,58 @@ public class Connection {
         return false;
     }
 
-    private boolean tryGetBootstrap() {
+    // this replaces the old tryGetBootstrap() call which is no longer available
+    private boolean tryGetCustomerData() {
         try {
-            BootstrapTO result = requestBuilder.get(getAlexaServer() + "/api/bootstrap").retry(false).redirect(false)
-                    .syncSend(BootstrapTO.class);
-            BootstrapAuthenticationTO authentication = result.authentication;
-            if (authentication != null && authentication.authenticated) {
-                this.customerName = authentication.customerName;
-                this.loginData.setAccountCustomerId(authentication.customerId);
-                return authentication.authenticated;
+            // Just check if the endpoint returns success (HTTP 200)
+            requestBuilder.get(getAlexaServer() + "/api/customer-status").retry(false).redirect(false)
+                    .syncSend(String.class);
+            getCustomerProfile();
+            if (loginData.getLoginTime() == null) {
+                logger.debug("Setting login time");
+                loginData.setLoginTime(new Date());
             }
+            return true;
         } catch (ConnectionException e) {
-            logger.debug("Bootstrapping failed", e);
+            logger.debug("Getting customer data failed", e);
         }
         return false;
+    }
+
+    private void getCustomerProfile() throws ConnectionException {
+        if (this.customerName != null && this.loginData.getAccountCustomerId() != null) {
+            logger.debug("Customer profile exists {} {}", this.customerName, this.loginData.getAccountCustomerId());
+            return;
+        }
+        String url = getAlexaServer() + "/api/users/me?platform=ios&version="
+                + AmazonEchoControlBindingConstants.API_VERSION;
+        UsersMeTO userProfile = requestBuilder.get(url).retry(false).redirect(false).syncSend(UsersMeTO.class);
+        if (userProfile.id != null && !userProfile.id.isBlank()) {
+            this.loginData.setAccountCustomerId(userProfile.id);
+        }
+        if (userProfile.fullName != null && !userProfile.fullName.isBlank()) {
+            this.customerName = userProfile.fullName;
+        } else if (userProfile.email != null && !userProfile.email.isBlank()) {
+            this.customerName = userProfile.email;
+        }
+        if (userProfile.marketPlaceDomainName != null && !userProfile.marketPlaceDomainName.isBlank()) {
+            String normalizedDomain = normalizeRetailDomain(userProfile.marketPlaceDomainName);
+            this.loginData.setRetailDomain(normalizedDomain);
+        }
+    }
+
+    private String normalizeRetailDomain(@Nullable String domain) {
+        if (domain != null && !domain.isBlank()) {
+            try {
+                URI uri = new URI(domain.trim());
+                String host = uri.getHost();
+                if (host != null && !host.isBlank()) {
+                    return host.toLowerCase();
+                }
+            } catch (URISyntaxException ignored) {
+            }
+        }
+        return AmazonEchoControlBindingConstants.DEFAULT_RETAIL_DOMAIN;
     }
 
     public boolean registerConnectionAsApp(String accessToken) {
@@ -290,7 +327,7 @@ public class Connection {
             exchangeToken(usersMeResponse.marketPlaceDomainName);
             EndpointTO endpoints = requestBuilder.get("https://alexa.amazon.com/api/endpoints")
                     .syncSend(EndpointTO.class);
-            this.loginData.setRetailDomain(endpoints.retailDomain);
+            this.loginData.setRetailDomain(normalizeRetailDomain(endpoints.retailDomain));
             this.loginData.setWebsiteApiUrl(endpoints.websiteApiUrl);
             this.loginData.setRetailUrl(endpoints.retailUrl);
 
@@ -303,7 +340,7 @@ public class Connection {
                 logger.warn("Registering capabilities failed, HTTP/2 stream will not work");
             }
 
-            tryGetBootstrap();
+            tryGetCustomerData();
             this.loginData.setDeviceName(registerAppResponse.success.extensions.deviceInfo.deviceName);
 
             return true;
@@ -438,7 +475,7 @@ public class Connection {
     }
 
     public boolean verifyLogin() throws ConnectionException {
-        if (this.loginData.getRefreshToken() == null || !tryGetBootstrap()) {
+        if (this.loginData.getRefreshToken() == null || !tryGetCustomerData()) {
             verifyTime = null;
             return false;
         }
