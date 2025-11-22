@@ -64,6 +64,7 @@
 			<channel id="fi-battery-current" typeId="fi-battery-current"/>
 			<channel id="fi-battery-level" typeId="fi-battery-level"/>
 			<channel id="fi-battery-charging-power" typeId="fi-battery-charging-power"/>
+			<channel id="fi-battery-temperature" typeId="fi-battery-temperature"/>
 			<channel id="fi-battery-minimum-soc" typeId="fi-battery-minimum-soc"/>
 			<channel id="fi-battery-maximum-soc" typeId="fi-battery-maximum-soc"/>
 			<channel id="fi-battery-minimum-soc-on-grid" typeId="fi-battery-minimum-soc-on-grid"/>
@@ -408,6 +409,16 @@
 			<tag>Energy</tag>
 		</tags>
 		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="fi-battery-temperature" advanced="false">
+		<item-type>Number:Temperature</item-type>
+		<label>Battery Temperature</label>
+		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="fi-battery-minimum-soc" advanced="true">
 		<item-type unitHint="%">Number:Dimensionless</item-type>

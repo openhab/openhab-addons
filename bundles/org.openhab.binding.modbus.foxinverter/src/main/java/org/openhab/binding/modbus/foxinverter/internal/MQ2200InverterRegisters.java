@@ -36,6 +36,9 @@ import org.openhab.core.types.State;
  */
 @NonNullByDefault
 public enum MQ2200InverterRegisters {
+    // this temperature is shown in the app
+    BATTERY_TEMPERATURE(37617, INT16, ConversionConstants.DIV_BY_TEN, quantityFactory(SIUnits.CELSIUS), "battery-information"),
+
     METER_CONNECTED(38801, UINT16, BigDecimal.ONE, contactFactory(), "overview"),
 
     // seems not useful yet, always 0

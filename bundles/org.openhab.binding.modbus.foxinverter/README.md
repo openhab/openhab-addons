@@ -78,6 +78,7 @@ The `mq2200-inverter` thing has channels that serve the current state of the Fox
 | fi-battery-current                 | Number:ElectricCurrent   | Battery Current                       | yes       | Battery Information |
 | fi-battery-level                   | Number:Dimensionless     | Battery Level                         | no        | Battery Information |
 | fi-battery-charging-power          | Number:Power             | Battery Charging Power                | no        | Battery Information |
+| fi-battery-temperature             | Number:Temperature       | Internal Temperature                  | no        | Battery Information |
 | fi-battery-minimum-soc             | Number:Dimensionless     | Battery Min Charging Level            | yes       | Battery Information |
 | fi-battery-maximum-soc             | Number:Dimensionless     | Battery Max Charging Level            | yes       | Battery Information |
 | fi-battery-minimum-soc-on-grid     | Number:Dimensionless     | Battery Min Charging Level on Grid    | yes       | Battery Information |
@@ -164,6 +165,7 @@ Number:ElectricPotential battery_voltage "Battery Voltage" <energy> (batteryInfo
 {channel="modbus:mq2200-inverter:powerplant:inverter:fi-battery-information#fi-battery-voltage"}
 Number:ElectricCurrent battery_current "Battery Current" <energy> (batteryInformation) ["Measurement", "Current"]
 {channel="modbus:mq2200-inverter:powerplant:inverter:fi-battery-information#fi-battery-current"}
+Number:Temperature battery_temperature "Battery Temperature" <temperature> (overview) ["Measurement", "Temperature"]{channel="modbus:mq2200-inverter:powerplant:inverter:fi-battery-information#fi-battery-temperature"}
 Number:Dimensionless battery_minimum_soc "Battery Min Charging Level [%.0f %%]" <battery> (batteryInformation) ["Control"] {channel="modbus:mq2200-inverter:powerplant:inverter:fi-battery-information#fi-battery-minimum-soc", unit="%"}
 Number:Dimensionless battery_maximum_soc "Battery Max Charging Level [%.0f %%]" <battery> (batteryInformation) ["Control"] {channel="modbus:mq2200-inverter:powerplant:inverter:fi-battery-information#fi-battery-maximum-soc", unit="%"}
 Number:Dimensionless battery_minimum_soc_on_grid "Battery Min Charging Level on Grid" <battery> (batteryInformation) ["Control"] {channel="modbus:mq2200-inverter:powerplant:inverter:fi-battery-information#fi-battery-minimum-soc-on-grid", unit="%"}
