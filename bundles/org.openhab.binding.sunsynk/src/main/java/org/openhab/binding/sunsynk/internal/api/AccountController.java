@@ -188,7 +188,7 @@ public class AccountController {
         try {
             response = HttpUtil.executeUrl(HttpMethod.POST.asString(), httpsURL, headers, stream,
                     MediaType.APPLICATION_JSON, TIMEOUT_IN_MS);
-            if (gson.fromJson(response, Client.class) instanceof Client client){
+            if (gson.fromJson(response, Client.class) instanceof Client client) {
                 this.sunAccount = client;
             } else {
                 throw new SunSynkAuthenticateException(
