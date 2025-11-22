@@ -257,9 +257,8 @@ public class Connection {
     }
 
     private void getCustomerProfile() throws ConnectionException {
-        logger.debug("Ensuring customer profile");
         if (this.customerName != null && this.loginData.getAccountCustomerId() != null) {
-            logger.debug("Customer profile already exists {} {}", this.customerName,
+            logger.debug("Customer profile exists {} {}", this.customerName,
                     this.loginData.getAccountCustomerId());
             return;
         }
