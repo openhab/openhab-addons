@@ -290,19 +290,16 @@ public class Connection {
     }
 
     private String normalizeRetailDomain(@Nullable String domain) {
-        String[] attempts = { domain, domain == null ? null : "https://" + domain };
-        for (String attempt : attempts) {
-            if (attempt == null || attempt.isBlank()) {
-                continue;
+        if (domain == null || domain.isBlank()) {
+            return "amazon.com";
+        }
+        try {
+            URI uri = new URI(domain.trim());
+            String host = uri.getHost();
+            if (host != null && !host.isBlank()) {
+                return host.toLowerCase();
             }
-            try {
-                URI uri = new URI(attempt.trim());
-                String host = uri.getHost();
-                if (host != null && !host.isBlank()) {
-                    return host.toLowerCase();
-                }
-            } catch (URISyntaxException ignored) {
-            }
+        } catch (URISyntaxException ignored) {
         }
         return "amazon.com";
     }
