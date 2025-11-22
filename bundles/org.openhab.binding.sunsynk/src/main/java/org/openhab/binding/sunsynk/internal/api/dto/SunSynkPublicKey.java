@@ -12,19 +12,22 @@
  */
 package org.openhab.binding.sunsynk.internal.api.dto;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
- * The {@link SunSynkPublicKey} is the internal class for the SunSync public key
- * to a Sun Synk Connect Account.
+ * The {@link SunSynkPublicKey} is the internal class for the SunSynk public key
+ * for a SunSynk Connect Account.
  * Login via Username and Password
  * 
  * @author Lee Charlton - Initial contribution
  */
 
+@NonNullByDefault
 public class SunSynkPublicKey {
     private int code;
     private String msg = "";
     private boolean success;
-    private String data;
+    private String data = "";
 
     public String getPublicKey() {
         return this.data;
