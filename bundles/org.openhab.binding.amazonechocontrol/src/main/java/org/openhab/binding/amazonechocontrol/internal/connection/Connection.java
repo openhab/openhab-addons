@@ -258,8 +258,7 @@ public class Connection {
 
     private void getCustomerProfile() throws ConnectionException {
         if (this.customerName != null && this.loginData.getAccountCustomerId() != null) {
-            logger.debug("Customer profile exists {} {}", this.customerName,
-                    this.loginData.getAccountCustomerId());
+            logger.debug("Customer profile exists {} {}", this.customerName, this.loginData.getAccountCustomerId());
             return;
         }
 
