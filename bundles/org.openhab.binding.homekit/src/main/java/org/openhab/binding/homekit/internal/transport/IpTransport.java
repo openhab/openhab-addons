@@ -50,8 +50,8 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class IpTransport implements AutoCloseable {
 
-    private static final int TIMEOUT_MILLI_SECONDS = 10000;
-    private static final Duration MINIMUM_REQUEST_INTERVAL = Duration.ofMillis(200);
+    private static final int TIMEOUT_MILLI_SECONDS = 15000; // HomeKit spec expects "around 10 seconds" so be safe
+    private static final Duration MINIMUM_REQUEST_INTERVAL = Duration.ofMillis(250);
 
     private final Logger logger = LoggerFactory.getLogger(IpTransport.class);
     private final ExecutorService executor = Executors.newSingleThreadExecutor(r -> new Thread(r, "homekit-io"));
@@ -60,9 +60,9 @@ public class IpTransport implements AutoCloseable {
     private final String hostName;
     private final EventListener eventListener;
 
-    private @Nullable SecureSession secureSession = null;
-    private @Nullable Thread readThread = null;
-    private @Nullable CompletableFuture<byte[][]> readHttpResponseFuture = null;
+    private volatile @Nullable SecureSession secureSession = null;
+    private volatile @Nullable Thread readThread = null;
+    private volatile @Nullable CompletableFuture<byte[][]> readHttpResponseFuture = null;
 
     private boolean closing = false;
     private Instant earliestNextRequestTime = Instant.MIN;
@@ -150,6 +150,7 @@ public class IpTransport implements AutoCloseable {
 
     /**
      * Executes an HTTP request with the specified method, endpoint, content type, and content.
+     * Note: for thread safety only one request may be in flight at a time
      *
      * @param method the HTTP method (e.g., "GET", "POST", "PUT")
      * @param endpoint the endpoint to which the request is sent
@@ -267,21 +268,22 @@ public class IpTransport implements AutoCloseable {
      * @throws IllegalStateException if the response is invalid.
      */
     private byte[][] readPlainResponse(InputStream in, boolean trace) throws IOException, IllegalStateException {
-        HttpPayloadParser httpParser = new HttpPayloadParser();
-        ByteArrayOutputStream raw = trace ? new ByteArrayOutputStream() : null;
-        byte[] buf = new byte[4096];
-        do {
-            int read = in.read(buf, 0, buf.length);
-            if (read > 0) {
-                byte[] frame = Arrays.copyOf(buf, read);
-                if (raw != null) {
-                    raw.write(frame);
+        try (HttpPayloadParser httpParser = new HttpPayloadParser();
+                ByteArrayOutputStream raw = trace ? new ByteArrayOutputStream() : null) {
+            byte[] buf = new byte[4096];
+            do {
+                int read = in.read(buf, 0, buf.length);
+                if (read > 0) {
+                    byte[] frame = Arrays.copyOf(buf, read);
+                    if (raw != null) {
+                        raw.write(frame);
+                    }
+                    httpParser.accept(frame);
                 }
-                httpParser.accept(frame);
-            }
-        } while (!httpParser.isComplete());
-        return new byte[][] { httpParser.getHeaders(), httpParser.getContent(),
-                raw != null ? raw.toByteArray() : new byte[0] };
+            } while (!httpParser.isComplete());
+            return new byte[][] { httpParser.getHeaders(), httpParser.getContent(),
+                    raw != null ? raw.toByteArray() : new byte[0] };
+        }
     }
 
     /**
@@ -303,14 +305,22 @@ public class IpTransport implements AutoCloseable {
         secureSession = null;
         try {
             socket.close();
-            if (readThread instanceof Thread thread) {
-                thread.interrupt();
-                thread.join();
-            }
-        } catch (IOException | InterruptedException e) {
+        } catch (IOException e) {
             // shut down quietly
         }
+        if (readThread instanceof Thread thread) {
+            try {
+                thread.interrupt();
+                thread.join();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt(); // restore interrupt flag, and shut down quietly
+            }
+        }
         readThread = null;
+        if (readHttpResponseFuture instanceof CompletableFuture<byte[][]> readFuture) {
+            readFuture.complete(new byte[3][0]); // complete with an empty response
+        }
+        executor.shutdown();
     }
 
     /**
@@ -340,29 +350,39 @@ public class IpTransport implements AutoCloseable {
      * thread is interrupted, or an error occurs.
      */
     private void readTask() {
-        Throwable cause = null;
-        do {
-            try {
+        try {
+            do {
                 SecureSession session = secureSession;
                 if (session == null) {
                     throw new IllegalStateException("Secure session is null");
                 }
                 byte[][] response = session.receive(logger.isTraceEnabled());
                 handleResponse(response);
-            } catch (Exception e) {
-                // catch all; capture cause and exit
-                cause = e;
-                break;
+            } while (!Thread.currentThread().isInterrupted());
+        } catch (Exception e) {
+            // catch all; log the cause and log any residual data in the socket
+            if (!closing) {
+                logger.debug("Error '{}' while listening for HTTP responses", e.getMessage(), e);
+                try {
+                    InputStream in = socket.getInputStream();
+                    int available = in.available();
+                    if (available > 0) {
+                        byte[] leftover = new byte[available];
+                        int read = in.read(leftover);
+                        if (read > 0) {
+                            logger.debug("Unprocessed socket data ({} bytes):\n{}", read,
+                                    new String(leftover, 0, read, StandardCharsets.ISO_8859_1));
+                        }
+                    }
+                } catch (IOException ioe) {
+                    logger.debug("Unable to read leftover socket data: {}", ioe.getMessage(), ioe);
+                }
             }
-        } while (!Thread.currentThread().isInterrupted());
-
-        if (readHttpResponseFuture instanceof CompletableFuture<byte[][]> future) {
-            readHttpResponseFuture = null;
-            future.completeExceptionally(cause != null ? cause : new InterruptedException("Listener interrupted"));
         }
 
-        if (cause != null && !closing) {
-            logger.debug("Error '{}' while listening for HTTP responses", cause.getMessage(), cause);
+        if (readHttpResponseFuture instanceof CompletableFuture<byte[][]> readFuture) {
+            readHttpResponseFuture = null;
+            readFuture.completeExceptionally(new InterruptedException("Listener interrupted"));
         }
     }
 }

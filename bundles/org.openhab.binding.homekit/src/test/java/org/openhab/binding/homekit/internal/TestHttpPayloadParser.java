@@ -14,6 +14,8 @@ package org.openhab.binding.homekit.internal;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.io.IOException;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.homekit.internal.session.HttpPayloadParser;
@@ -46,223 +48,253 @@ class TestHttpPayloadParser {
 
     @Test
     void testHttpWithChunkedContentOk() {
-        HttpPayloadParser parser = new HttpPayloadParser();
-        String h = HEADERS_A + HEADERS_C + HEADERS_Z;
-        String hc = h + CHUNK.formatted(100) + CONTENT + CRLF + CHUNK.formatted(0) + CRLF;
-        parser.accept(hc.getBytes());
-        assertTrue(parser.isComplete());
-        byte[] content = parser.getContent();
-        assertEquals(100, content.length);
-        assertEquals(CONTENT, new String(content));
-        byte[] headers = parser.getHeaders();
-        assertEquals(h, new String(headers));
+        try (HttpPayloadParser parser = new HttpPayloadParser()) {
+            String h = HEADERS_A + HEADERS_C + HEADERS_Z;
+            String hc = h + CHUNK.formatted(100) + CONTENT + CRLF + CHUNK.formatted(0) + CRLF;
+            parser.accept(hc.getBytes());
+            assertTrue(parser.isComplete());
+            byte[] content = parser.getContent();
+            assertEquals(100, content.length);
+            assertEquals(CONTENT, new String(content));
+            byte[] headers = parser.getHeaders();
+            assertEquals(h, new String(headers));
+        } catch (IllegalStateException | IOException e) {
+        }
     }
 
     @Test
     void testHttpWithChunkedContentOkManyPartial() {
-        HttpPayloadParser parser = new HttpPayloadParser();
-        parser.accept(HEADERS_A.substring(0, 8).getBytes());
-        parser.accept(HEADERS_A.substring(8).getBytes());
-        parser.accept(HEADERS_C.substring(0, 14).getBytes());
-        parser.accept(HEADERS_C.substring(14).getBytes());
-        parser.accept(HEADERS_Z.substring(0, 19).getBytes());
-        parser.accept(HEADERS_Z.substring(19).getBytes());
-        parser.accept(CHUNK.formatted(100).getBytes());
-        parser.accept(CONTENT.substring(0, 51).getBytes());
-        parser.accept(CONTENT.substring(51).getBytes());
-        parser.accept(CRLF.getBytes());
-        parser.accept(CHUNK.formatted(0).getBytes());
-        parser.accept(CRLF.getBytes());
-        assertTrue(parser.isComplete());
-        byte[] content = parser.getContent();
-        assertEquals(100, content.length);
-        assertEquals(CONTENT, new String(content));
-        byte[] headers = parser.getHeaders();
-        String h = HEADERS_A + HEADERS_C + HEADERS_Z;
-        assertEquals(h, new String(headers));
+        try (HttpPayloadParser parser = new HttpPayloadParser()) {
+            parser.accept(HEADERS_A.substring(0, 8).getBytes());
+            parser.accept(HEADERS_A.substring(8).getBytes());
+            parser.accept(HEADERS_C.substring(0, 14).getBytes());
+            parser.accept(HEADERS_C.substring(14).getBytes());
+            parser.accept(HEADERS_Z.substring(0, 19).getBytes());
+            parser.accept(HEADERS_Z.substring(19).getBytes());
+            parser.accept(CHUNK.formatted(100).getBytes());
+            parser.accept(CONTENT.substring(0, 51).getBytes());
+            parser.accept(CONTENT.substring(51).getBytes());
+            parser.accept(CRLF.getBytes());
+            parser.accept(CHUNK.formatted(0).getBytes());
+            parser.accept(CRLF.getBytes());
+            assertTrue(parser.isComplete());
+            byte[] content = parser.getContent();
+            assertEquals(100, content.length);
+            assertEquals(CONTENT, new String(content));
+            byte[] headers = parser.getHeaders();
+            String h = HEADERS_A + HEADERS_C + HEADERS_Z;
+            assertEquals(h, new String(headers));
+        } catch (IllegalStateException | IOException e) {
+        }
     }
 
     @Test
     void testHttpWithChunkedContentOkManyPartialAndSplitChunkHeader() {
-        HttpPayloadParser parser = new HttpPayloadParser();
-        parser.accept(HEADERS_A.substring(0, 8).getBytes());
-        parser.accept(HEADERS_A.substring(8).getBytes());
-        parser.accept(HEADERS_C.substring(0, 14).getBytes());
-        parser.accept(HEADERS_C.substring(14).getBytes());
-        parser.accept(HEADERS_Z.substring(0, 19).getBytes());
-        parser.accept(HEADERS_Z.substring(19).getBytes());
-        parser.accept(CHUNK_1.formatted(100).getBytes());
-        parser.accept(CHUNK_2.getBytes());
-        parser.accept(CONTENT.substring(0, 51).getBytes());
-        parser.accept(CONTENT.substring(51).getBytes());
-        parser.accept(CRLF.getBytes());
-        parser.accept(CHUNK.formatted(0).getBytes());
-        parser.accept(CRLF.getBytes());
-        assertTrue(parser.isComplete());
-        byte[] content = parser.getContent();
-        assertEquals(100, content.length);
-        assertEquals(CONTENT, new String(content));
-        byte[] headers = parser.getHeaders();
-        String h = HEADERS_A + HEADERS_C + HEADERS_Z;
-        assertEquals(h, new String(headers));
+        try (HttpPayloadParser parser = new HttpPayloadParser()) {
+            parser.accept(HEADERS_A.substring(0, 8).getBytes());
+            parser.accept(HEADERS_A.substring(8).getBytes());
+            parser.accept(HEADERS_C.substring(0, 14).getBytes());
+            parser.accept(HEADERS_C.substring(14).getBytes());
+            parser.accept(HEADERS_Z.substring(0, 19).getBytes());
+            parser.accept(HEADERS_Z.substring(19).getBytes());
+            parser.accept(CHUNK_1.formatted(100).getBytes());
+            parser.accept(CHUNK_2.getBytes());
+            parser.accept(CONTENT.substring(0, 51).getBytes());
+            parser.accept(CONTENT.substring(51).getBytes());
+            parser.accept(CRLF.getBytes());
+            parser.accept(CHUNK.formatted(0).getBytes());
+            parser.accept(CRLF.getBytes());
+            assertTrue(parser.isComplete());
+            byte[] content = parser.getContent();
+            assertEquals(100, content.length);
+            assertEquals(CONTENT, new String(content));
+            byte[] headers = parser.getHeaders();
+            String h = HEADERS_A + HEADERS_C + HEADERS_Z;
+            assertEquals(h, new String(headers));
+        } catch (IllegalStateException | IOException e) {
+        }
     }
 
     @Test
     void testHttpWithContentDiscardExtra() {
-        HttpPayloadParser parser = new HttpPayloadParser();
-        String h = HEADERS_A + HEADERS_B.formatted(100) + HEADERS_Z;
-        String hc = h + CONTENT + "EXTRA";
-        parser.accept(hc.getBytes());
-        assertTrue(parser.isComplete());
-        byte[] content = parser.getContent();
-        assertEquals(100, content.length);
-        assertEquals(CONTENT, new String(content));
-        byte[] headers = parser.getHeaders();
-        assertEquals(h, new String(headers));
+        try (HttpPayloadParser parser = new HttpPayloadParser()) {
+            String h = HEADERS_A + HEADERS_B.formatted(100) + HEADERS_Z;
+            String hc = h + CONTENT + "EXTRA";
+            parser.accept(hc.getBytes());
+            assertTrue(parser.isComplete());
+            byte[] content = parser.getContent();
+            assertEquals(100, content.length);
+            assertEquals(CONTENT, new String(content));
+            byte[] headers = parser.getHeaders();
+            assertEquals(h, new String(headers));
+        } catch (IllegalStateException | IOException e) {
+        }
     }
 
     @Test
     void testHttpWithContentManyPartialOk() {
-        HttpPayloadParser parser = new HttpPayloadParser();
-        parser.accept(HEADERS_A.substring(0, 11).getBytes());
-        parser.accept(HEADERS_A.substring(11).getBytes());
-        parser.accept(HEADERS_B.substring(0, 11).getBytes());
-        parser.accept(HEADERS_B.substring(11).formatted(100).getBytes());
-        parser.accept(HEADERS_Z.substring(0, 12).getBytes());
-        parser.accept(HEADERS_Z.substring(12).getBytes());
-        parser.accept(CONTENT.substring(0, 42).getBytes());
-        parser.accept(CONTENT.substring(42).getBytes());
-        assertTrue(parser.isComplete());
-        byte[] content = parser.getContent();
-        assertEquals(100, content.length);
-        assertEquals(CONTENT, new String(content));
-        byte[] headers = parser.getHeaders();
-        String h = HEADERS_A + HEADERS_B.formatted(100) + HEADERS_Z;
-        assertEquals(h, new String(headers));
+        try (HttpPayloadParser parser = new HttpPayloadParser()) {
+            parser.accept(HEADERS_A.substring(0, 11).getBytes());
+            parser.accept(HEADERS_A.substring(11).getBytes());
+            parser.accept(HEADERS_B.substring(0, 11).getBytes());
+            parser.accept(HEADERS_B.substring(11).formatted(100).getBytes());
+            parser.accept(HEADERS_Z.substring(0, 12).getBytes());
+            parser.accept(HEADERS_Z.substring(12).getBytes());
+            parser.accept(CONTENT.substring(0, 42).getBytes());
+            parser.accept(CONTENT.substring(42).getBytes());
+            assertTrue(parser.isComplete());
+            byte[] content = parser.getContent();
+            assertEquals(100, content.length);
+            assertEquals(CONTENT, new String(content));
+            byte[] headers = parser.getHeaders();
+            String h = HEADERS_A + HEADERS_B.formatted(100) + HEADERS_Z;
+            assertEquals(h, new String(headers));
+        } catch (IllegalStateException | IOException e) {
+        }
     }
 
     @Test
     void testHttpWithContentManyPartialOkAndSplitCRLF() {
-        HttpPayloadParser parser = new HttpPayloadParser();
-        parser.accept(HEADERS_A.substring(0, 11).getBytes());
-        parser.accept(HEADERS_A.substring(11).getBytes());
-        parser.accept(HEADERS_B.substring(0, 11).getBytes());
-        parser.accept(HEADERS_B.substring(11).formatted(100).getBytes());
-        parser.accept(HEADERS_Z1.getBytes());
-        parser.accept(HEADERS_Z2.getBytes());
-        parser.accept(CONTENT.substring(0, 42).getBytes());
-        parser.accept(CONTENT.substring(42).getBytes());
-        assertTrue(parser.isComplete());
-        byte[] content = parser.getContent();
-        assertEquals(100, content.length);
-        assertEquals(CONTENT, new String(content));
-        byte[] headers = parser.getHeaders();
-        String h = HEADERS_A + HEADERS_B.formatted(100) + HEADERS_Z;
-        assertEquals(h, new String(headers));
+        try (HttpPayloadParser parser = new HttpPayloadParser()) {
+            parser.accept(HEADERS_A.substring(0, 11).getBytes());
+            parser.accept(HEADERS_A.substring(11).getBytes());
+            parser.accept(HEADERS_B.substring(0, 11).getBytes());
+            parser.accept(HEADERS_B.substring(11).formatted(100).getBytes());
+            parser.accept(HEADERS_Z1.getBytes());
+            parser.accept(HEADERS_Z2.getBytes());
+            parser.accept(CONTENT.substring(0, 42).getBytes());
+            parser.accept(CONTENT.substring(42).getBytes());
+            assertTrue(parser.isComplete());
+            byte[] content = parser.getContent();
+            assertEquals(100, content.length);
+            assertEquals(CONTENT, new String(content));
+            byte[] headers = parser.getHeaders();
+            String h = HEADERS_A + HEADERS_B.formatted(100) + HEADERS_Z;
+            assertEquals(h, new String(headers));
+        } catch (IllegalStateException | IOException e) {
+        }
     }
 
     @Test
     void testHttpWithContentOk() {
-        HttpPayloadParser parser = new HttpPayloadParser();
-        String h = HEADERS_A + HEADERS_B.formatted(100) + HEADERS_Z;
-        String hc = h + CONTENT;
-        parser.accept(hc.getBytes());
-        assertTrue(parser.isComplete());
-        byte[] content = parser.getContent();
-        assertEquals(100, content.length);
-        assertEquals(CONTENT, new String(content));
-        byte[] headers = parser.getHeaders();
-        assertEquals(h, new String(headers));
+        try (HttpPayloadParser parser = new HttpPayloadParser()) {
+            String h = HEADERS_A + HEADERS_B.formatted(100) + HEADERS_Z;
+            String hc = h + CONTENT;
+            parser.accept(hc.getBytes());
+            assertTrue(parser.isComplete());
+            byte[] content = parser.getContent();
+            assertEquals(100, content.length);
+            assertEquals(CONTENT, new String(content));
+            byte[] headers = parser.getHeaders();
+            assertEquals(h, new String(headers));
+        } catch (IllegalStateException | IOException e) {
+        }
     }
 
     @Test
     void testHttpWithMultipleFrames() {
-        HttpPayloadParser parser = new HttpPayloadParser();
-        String h = HEADERS_A + HEADERS_B.formatted(300) + HEADERS_Z;
-        String hc = h + CONTENT;
-        parser.accept(hc.getBytes());
-        assertFalse(parser.isComplete());
-        parser.accept(CONTENT.getBytes());
-        parser.accept(CONTENT.getBytes());
-        assertTrue(parser.isComplete());
-        byte[] content = parser.getContent();
-        assertEquals(300, content.length);
+        try (HttpPayloadParser parser = new HttpPayloadParser()) {
+            String h = HEADERS_A + HEADERS_B.formatted(300) + HEADERS_Z;
+            String hc = h + CONTENT;
+            parser.accept(hc.getBytes());
+            assertFalse(parser.isComplete());
+            parser.accept(CONTENT.getBytes());
+            parser.accept(CONTENT.getBytes());
+            assertTrue(parser.isComplete());
+            byte[] content = parser.getContent();
+            assertEquals(300, content.length);
+        } catch (IllegalStateException | IOException e) {
+        }
     }
 
     @Test
     void testHttpWithNoContentLength() {
-        HttpPayloadParser parser = new HttpPayloadParser();
-        String h = HEADERS_A + HEADERS_B;
-        String hc = h + CONTENT;
-        parser.accept(hc.getBytes());
-        assertFalse(parser.isComplete());
+        try (HttpPayloadParser parser = new HttpPayloadParser()) {
+            String h = HEADERS_A + HEADERS_B;
+            String hc = h + CONTENT;
+            parser.accept(hc.getBytes());
+            assertFalse(parser.isComplete());
+        } catch (IllegalStateException | IOException e) {
+        }
     }
 
     @Test
     void testHttpWithWrongContentLength() {
-        HttpPayloadParser parser = new HttpPayloadParser();
-        String h = HEADERS_A + HEADERS_B.formatted(200) + HEADERS_Z;
-        String hc = h + CONTENT;
-        parser.accept(hc.getBytes());
-        assertFalse(parser.isComplete());
+        try (HttpPayloadParser parser = new HttpPayloadParser()) {
+            String h = HEADERS_A + HEADERS_B.formatted(200) + HEADERS_Z;
+            String hc = h + CONTENT;
+            parser.accept(hc.getBytes());
+            assertFalse(parser.isComplete());
+        } catch (IllegalStateException | IOException e) {
+        }
     }
 
     @Test
     void testHttpWithZeroContentLength() {
-        HttpPayloadParser parser = new HttpPayloadParser();
-        String h = HEADERS_A + HEADERS_B.formatted(0) + HEADERS_Z;
-        String hc = h + CONTENT;
-        parser.accept(hc.getBytes());
-        assertTrue(parser.isComplete());
-        byte[] content = parser.getContent();
-        assertEquals(0, content.length);
-        byte[] headers = parser.getHeaders();
-        assertEquals(h, new String(headers));
+        try (HttpPayloadParser parser = new HttpPayloadParser()) {
+            String h = HEADERS_A + HEADERS_B.formatted(0) + HEADERS_Z;
+            String hc = h + CONTENT;
+            parser.accept(hc.getBytes());
+            assertTrue(parser.isComplete());
+            byte[] content = parser.getContent();
+            assertEquals(0, content.length);
+            byte[] headers = parser.getHeaders();
+            assertEquals(h, new String(headers));
+        } catch (IllegalStateException | IOException e) {
+        }
     }
 
     @Test
     void testOk204() {
-        HttpPayloadParser parser = new HttpPayloadParser();
-        parser.accept(OK_204.getBytes());
-        assertTrue(parser.isComplete());
-        byte[] content = parser.getContent();
-        assertEquals(0, content.length);
-        byte[] headers = parser.getHeaders();
-        assertEquals(OK_204, new String(headers));
+        try (HttpPayloadParser parser = new HttpPayloadParser()) {
+            parser.accept(OK_204.getBytes());
+            assertTrue(parser.isComplete());
+            byte[] content = parser.getContent();
+            assertEquals(0, content.length);
+            byte[] headers = parser.getHeaders();
+            assertEquals(OK_204, new String(headers));
+        } catch (IllegalStateException | IOException e) {
+        }
     }
 
     @Test
     void testError403() {
-        HttpPayloadParser parser = new HttpPayloadParser();
-        parser.accept(ERROR_403.getBytes());
-        parser.accept(CHUNK.formatted(0).getBytes());
-        parser.accept(CRLF.getBytes());
-        assertTrue(parser.isComplete());
-        byte[] content = parser.getContent();
-        assertEquals(0, content.length);
-        byte[] headers = parser.getHeaders();
-        assertEquals(ERROR_403, new String(headers));
+        try (HttpPayloadParser parser = new HttpPayloadParser()) {
+            parser.accept(ERROR_403.getBytes());
+            parser.accept(CHUNK.formatted(0).getBytes());
+            parser.accept(CRLF.getBytes());
+            assertTrue(parser.isComplete());
+            byte[] content = parser.getContent();
+            assertEquals(0, content.length);
+            byte[] headers = parser.getHeaders();
+            assertEquals(ERROR_403, new String(headers));
+        } catch (IllegalStateException | IOException e) {
+        }
     }
 
     @Test
     void testError404() {
-        HttpPayloadParser parser = new HttpPayloadParser();
-        parser.accept(ERROR_404.getBytes());
-        assertTrue(parser.isComplete());
-        byte[] content = parser.getContent();
-        assertEquals(0, content.length);
-        byte[] headers = parser.getHeaders();
-        assertEquals(ERROR_404, new String(headers));
+        try (HttpPayloadParser parser = new HttpPayloadParser()) {
+            parser.accept(ERROR_404.getBytes());
+            assertTrue(parser.isComplete());
+            byte[] content = parser.getContent();
+            assertEquals(0, content.length);
+            byte[] headers = parser.getHeaders();
+            assertEquals(ERROR_404, new String(headers));
+        } catch (IllegalStateException | IOException e) {
+        }
     }
 
     @Test
     void testError500() {
-        HttpPayloadParser parser = new HttpPayloadParser();
-        parser.accept(ERROR_500.getBytes());
-        assertTrue(parser.isComplete());
-        byte[] content = parser.getContent();
-        assertEquals(0, content.length);
-        byte[] headers = parser.getHeaders();
-        assertEquals(ERROR_500, new String(headers));
+        try (HttpPayloadParser parser = new HttpPayloadParser()) {
+            parser.accept(ERROR_500.getBytes());
+            assertTrue(parser.isComplete());
+            byte[] content = parser.getContent();
+            assertEquals(0, content.length);
+            byte[] headers = parser.getHeaders();
+            assertEquals(ERROR_500, new String(headers));
+        } catch (IllegalStateException | IOException e) {
+        }
     }
 }

@@ -13,6 +13,7 @@
 package org.openhab.binding.homekit.internal.session;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -29,7 +30,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-public class HttpPayloadParser {
+public class HttpPayloadParser implements AutoCloseable {
 
     private static final String NEWLINE_REGEX = "\\r?\\n";
     private static final int MAX_CONTENT_LENGTH = 65536;
@@ -314,5 +315,12 @@ public class HttpPayloadParser {
         byte[] line = new byte[end - start];
         System.arraycopy(data, start, line, 0, line.length);
         return line;
+    }
+
+    @Override
+    public void close() throws IOException {
+        headerBuffer.close();
+        contentBuffer.close();
+        chunkDataBuffer.close();
     }
 }

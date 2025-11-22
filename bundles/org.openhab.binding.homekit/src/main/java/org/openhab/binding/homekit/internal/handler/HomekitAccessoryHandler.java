@@ -108,8 +108,13 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
      * Used to create a combined HSB channel and handle commands accordingly.
      * This is only initialized if the accessory has relevant light characteristics.
      */
-    private @Nullable LightModel lightModel = null;
-    private @Nullable ChannelUID lightModelClientHSBTypeChannel = null; // special HSB combined channel
+    private volatile @Nullable LightModel lightModel = null;
+    private volatile @Nullable ChannelUID lightModelClientHSBTypeChannel = null; // special HSB combined channel
+
+    /*
+     * Channel for the stop button (rollershutters)
+     */
+    private volatile @Nullable Channel stopMoveChannel = null;
 
     /*
      * Internal record representing a link between an OH channel and a HomeKit characteristic type & iid.
@@ -119,8 +124,6 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
     }
 
     private final List<LightModelLink> lightModelLinks = new ArrayList<>();
-
-    private @Nullable Channel stopMoveChannel = null; // channel for the stop button (rollershutters)
 
     public HomekitAccessoryHandler(Thing thing, HomekitTypeProvider typeProvider,
             ChannelTypeRegistry channelTypeRegistry, ChannelGroupTypeRegistry channelGroupTypeRegistry,

@@ -16,8 +16,9 @@ import static org.openhab.binding.homekit.internal.crypto.CryptoUtils.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
+import java.io.EOFException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.nio.ByteBuffer;
@@ -39,18 +40,16 @@ public class SecureSession {
 
     private static final int SLEEP_INTERVAL_MILLISECONDS = 50;
 
-    private final DataInputStream in;
+    private final InputStream in;
     private final OutputStream out;
-    private final byte[] writeKey;
-    private final byte[] readKey;
+    private final AsymmetricSessionKeys keys;
     private final AtomicInteger writeCounter = new AtomicInteger(0);
     private final AtomicInteger readCounter = new AtomicInteger(0);
 
     public SecureSession(Socket socket, AsymmetricSessionKeys keys) throws IOException {
-        in = new DataInputStream(socket.getInputStream());
+        in = socket.getInputStream();
         out = socket.getOutputStream();
-        writeKey = keys.getWriteKey();
-        readKey = keys.getReadKey();
+        this.keys = keys;
     }
 
     /**
@@ -62,11 +61,11 @@ public class SecureSession {
      * @throws InvalidCipherTextException
      */
     public void send(byte[] plainText) throws IOException, InvalidCipherTextException {
-        ByteArrayInputStream plainTextStream = new ByteArrayInputStream(plainText);
-        while (plainTextStream.available() > 0) {
-            sendFrame(plainTextStream);
+        try (ByteArrayInputStream plainTextStream = new ByteArrayInputStream(plainText)) {
+            while (plainTextStream.available() > 0) {
+                sendFrame(plainTextStream);
+            }
         }
-        out.flush();
     }
 
     /**
@@ -81,11 +80,15 @@ public class SecureSession {
      */
     private void sendFrame(ByteArrayInputStream plainTextStream) throws IOException, InvalidCipherTextException {
         short frameLen = (short) Math.min(1024, plainTextStream.available());
-        ByteBuffer frameAad = ByteBuffer.allocate(2).order(ByteOrder.LITTLE_ENDIAN).putShort(frameLen);
-        out.write(frameAad.array(), 0, frameAad.array().length); // send length prefix
+        byte[] frameAad = ByteBuffer.allocate(2).order(ByteOrder.LITTLE_ENDIAN).putShort(frameLen).array();
         byte[] plainText = plainTextStream.readNBytes(frameLen);
         byte[] nonce64 = generateNonce64(writeCounter.getAndIncrement());
-        out.write(encrypt(writeKey, nonce64, plainText, frameAad.array())); // AAD = lenBytes; outputs extra 16 byte tag
+        byte[] cipherText = encrypt(keys.getWriteKey(), nonce64, plainText, frameAad);
+        byte[] frame = new byte[frameAad.length + cipherText.length];
+        System.arraycopy(frameAad, 0, frame, 0, frameAad.length);
+        System.arraycopy(cipherText, 0, frame, frameAad.length, cipherText.length);
+        out.write(frame);
+        out.flush();
     }
 
     /**
@@ -103,24 +106,26 @@ public class SecureSession {
      * @throws IllegalStateException if the received data is malformed
      */
     public byte[][] receive(boolean trace) throws IOException, InvalidCipherTextException, IllegalStateException {
-        HttpPayloadParser httpParser = new HttpPayloadParser();
-        ByteArrayOutputStream traceStream = new ByteArrayOutputStream();
-        do {
-            if (in.available() == 0) {
-                try {
-                    Thread.sleep(SLEEP_INTERVAL_MILLISECONDS); // wait for data to arrive
-                } catch (InterruptedException e) {
-                    // coninue
+        try (HttpPayloadParser httpParser = new HttpPayloadParser();
+                ByteArrayOutputStream traceStream = new ByteArrayOutputStream()) {
+            do {
+                if (in.available() == 0) {
+                    try {
+                        Thread.sleep(SLEEP_INTERVAL_MILLISECONDS); // wait for data to arrive
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt(); // restore interrupt flag
+                        throw new IOException("Thread interrupted while waiting for data", e);
+                    }
+                } else {
+                    byte[] frame = receiveFrame();
+                    if (trace) {
+                        traceStream.write(frame);
+                    }
+                    httpParser.accept(frame);
                 }
-            } else {
-                byte[] frame = receiveFrame();
-                if (trace) {
-                    traceStream.write(frame);
-                }
-                httpParser.accept(frame);
-            }
-        } while (!httpParser.isComplete());
-        return new byte[][] { httpParser.getHeaders(), httpParser.getContent(), traceStream.toByteArray() };
+            } while (!httpParser.isComplete());
+            return new byte[][] { httpParser.getHeaders(), httpParser.getContent(), traceStream.toByteArray() };
+        }
     }
 
     /**
@@ -136,14 +141,31 @@ public class SecureSession {
      */
     private byte[] receiveFrame() throws IOException, InvalidCipherTextException, IllegalStateException {
         byte[] frameAad = new byte[2]; // AAD data length prefix
-        in.readFully(frameAad, 0, frameAad.length);
+        readFully(in, frameAad);
         short frameLen = ByteBuffer.wrap(frameAad).order(ByteOrder.LITTLE_ENDIAN).getShort();
         if (frameLen < 0 || frameLen > 1024) {
             throw new IllegalStateException("Invalid frame length");
         }
         byte[] cipherText = new byte[frameLen + 16]; // read 16 extra bytes for the auth tag
-        in.readFully(cipherText, 0, cipherText.length);
+        readFully(in, cipherText);
         byte[] nonce64 = generateNonce64(readCounter.getAndIncrement());
-        return decrypt(readKey, nonce64, cipherText, frameAad);
+        return decrypt(keys.getReadKey(), nonce64, cipherText, frameAad);
+    }
+
+    /**
+     * Reads bytes from the given input stream until the buffer is completely filled.
+     *
+     * @param buffer
+     * @throws IOException
+     */
+    private void readFully(InputStream in, byte[] buffer) throws IOException {
+        int offset = 0;
+        while (offset < buffer.length) {
+            int read = in.read(buffer, offset, buffer.length - offset);
+            if (read == -1) {
+                throw new EOFException("Unexpected end of stream");
+            }
+            offset += read;
+        }
     }
 }

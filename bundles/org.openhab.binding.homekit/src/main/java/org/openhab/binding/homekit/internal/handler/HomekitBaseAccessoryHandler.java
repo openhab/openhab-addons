@@ -94,11 +94,11 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
     private boolean isConfigured = false;
     private int connectionAttemptDelay = MIN_CONNECTION_ATTEMPT_DELAY_SECONDS;
 
-    private @Nullable ScheduledFuture<?> connectionAttemptTask;
-    private @Nullable CharacteristicReadWriteClient rwService;
-    private @Nullable IpTransport ipTransport;
-    private @Nullable ScheduledFuture<?> refreshTask;
-    private @Nullable Future<?> manualRefreshTask;
+    private volatile @Nullable ScheduledFuture<?> connectionAttemptTask;
+    private volatile @Nullable CharacteristicReadWriteClient rwService;
+    private volatile @Nullable IpTransport ipTransport;
+    private volatile @Nullable ScheduledFuture<?> refreshTask;
+    private volatile @Nullable Future<?> manualRefreshTask;
 
     private @NonNullByDefault({}) Long accessoryId;
 
@@ -182,10 +182,10 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
         if (connectionAttemptTask instanceof ScheduledFuture<?> task) {
             task.cancel(true);
         }
+        connectionAttemptTask = null;
         if (ipTransport instanceof IpTransport transport) {
             transport.close();
         }
-        connectionAttemptTask = null;
         ipTransport = null;
         super.dispose();
     }
@@ -233,8 +233,8 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
             try {
                 Thread.sleep(100);
             } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                return; // shutting down; exit immediately
+                Thread.currentThread().interrupt(); // shutting down; restore interrupt flag, and exit immediately
+                return;
             }
         }
         onRootThingAccessoriesLoaded();
@@ -642,7 +642,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
         try {
             enableEventsOrThrow(enable);
         } catch (InterruptedException e) {
-            // shutting down; do nothing
+            Thread.currentThread().interrupt(); // shutting down; restore interrupt flag and do nothing
         } catch (Exception e) {
             if (isCommunicationException(e)) {
                 // communication exception; log at debug and try to reconnect
