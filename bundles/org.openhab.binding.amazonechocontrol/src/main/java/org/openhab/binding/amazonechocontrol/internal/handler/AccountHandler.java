@@ -322,7 +322,14 @@ public class AccountHandler extends BaseBridgeHandler implements PushConnection.
         try {
             ThingUID uid = getThing().getUID();
             logger.debug("check login {}", uid.getAsString());
-
+            logger.debug("connection.getLoginData().getLoginTime(): {}", connection.getLoginData().getLoginTime());
+            logger.debug("connection.isLoggedIn(): {}", connection.isLoggedIn());
+            logger.debug("connection.getLoginData(): {}", connection.getLoginData());
+            logger.debug("connection.getRetailDomain(): {}", connection.getRetailDomain());
+            logger.debug("connection.getRetailUrl(): {}", connection.getRetailUrl());
+            logger.debug("connection.getAlexaServer(): {}", connection.getAlexaServer());
+            logger.debug("connection.getCustomerName(): {}", connection.getCustomerName());
+            logger.debug("connection.getVerifyTime(): {}", connection.getVerifyTime());
             synchronized (synchronizeConnection) {
                 try {
                     if (connection.isLoggedIn()) {
