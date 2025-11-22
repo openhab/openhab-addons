@@ -78,7 +78,7 @@ The `mq2200-inverter` thing has channels that serve the current state of the Fox
 | fi-battery-current                 | Number:ElectricCurrent   | Battery Current                       | yes       | Battery Information |
 | fi-battery-level                   | Number:Dimensionless     | Battery Level                         | no        | Battery Information |
 | fi-battery-charging-power          | Number:Power             | Battery Charging Power                | no        | Battery Information |
-| fi-battery-temperature             | Number:Temperature       | Internal Temperature                  | no        | Battery Information |
+| fi-battery-temperature             | Number:Temperature       | Battery Temperature                   | no        | Battery Information |
 | fi-battery-minimum-soc             | Number:Dimensionless     | Battery Min Charging Level            | yes       | Battery Information |
 | fi-battery-maximum-soc             | Number:Dimensionless     | Battery Max Charging Level            | yes       | Battery Information |
 | fi-battery-minimum-soc-on-grid     | Number:Dimensionless     | Battery Min Charging Level on Grid    | yes       | Battery Information |
