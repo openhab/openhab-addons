@@ -122,12 +122,13 @@ public class PythonScriptEngineConfiguration {
             throw new IllegalArgumentException("Unable to load build.properties");
         }
 
+        Properties props = System.getProperties();
+        props.setProperty(SYSTEM_PROPERTY_POLYGLOT_ENGINE_USERRESOURCECACHE,
+                userdataDir.resolve("cache").resolve("org.graalvm.polyglot").toString());
+
         String packageName = PythonScriptEngineConfiguration.class.getPackageName();
         packageName = packageName.substring(0, packageName.lastIndexOf("."));
         Path bindingDirectory = userdataDir.resolve("cache").resolve(packageName);
-
-        Properties props = System.getProperties();
-        props.setProperty(SYSTEM_PROPERTY_POLYGLOT_ENGINE_USERRESOURCECACHE, bindingDirectory.toString());
         bytecodeDirectory = PythonScriptEngineHelper.initDirectory(bindingDirectory.resolve("resources"));
         venvDirectory = PythonScriptEngineHelper.initDirectory(bindingDirectory.resolve("venv"));
 
