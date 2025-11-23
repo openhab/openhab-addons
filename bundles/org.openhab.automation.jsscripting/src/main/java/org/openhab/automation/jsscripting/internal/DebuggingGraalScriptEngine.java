@@ -111,7 +111,7 @@ class DebuggingGraalScriptEngine<T extends ScriptEngine & Invocable & AutoClosea
 
         String identifier = "stack";
         if (fileName != null) {
-            identifier = "file. " + fileName.toString().replaceAll("^.*[/\\\\]", "");
+            identifier = "file." + fileName.toString().replaceAll("^.*[/\\\\]", "");
         } else if (ruleUID != null) {
             identifier = "rule." + ruleUID;
         } else if (ohEngineIdentifier != null
