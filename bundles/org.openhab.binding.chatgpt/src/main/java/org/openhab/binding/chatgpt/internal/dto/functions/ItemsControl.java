@@ -25,6 +25,7 @@ public class ItemsControl {
     private String type;
     @JsonProperty("state")
     private String state;
+    private String answer;
 
     public String getName() {
         return name;
@@ -48,5 +49,14 @@ public class ItemsControl {
 
     public void setState(String state) {
         this.state = state;
+    }
+
+    @JsonProperty("answer")
+    public String getAnswer() {
+        return answer;
+    }
+
+    public void setAnswer(String answer) {
+        this.answer = answer;
     }
 }

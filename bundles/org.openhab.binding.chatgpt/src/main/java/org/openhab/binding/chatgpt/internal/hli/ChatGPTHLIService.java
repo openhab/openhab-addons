@@ -27,6 +27,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -40,8 +42,13 @@ import org.openhab.binding.chatgpt.internal.dto.ChatResponse;
 import org.openhab.binding.chatgpt.internal.dto.ChatToolCalls;
 import org.openhab.binding.chatgpt.internal.dto.ChatTools;
 import org.openhab.binding.chatgpt.internal.dto.ToolChoice;
+import org.openhab.binding.chatgpt.internal.dto.functions.CreateIntent;
 import org.openhab.binding.chatgpt.internal.dto.functions.ItemsControl;
 import org.openhab.core.events.EventPublisher;
+import org.openhab.core.hli.Card;
+import org.openhab.core.hli.ChatReply;
+import org.openhab.core.hli.EnhancedHLIInterpreter;
+import org.openhab.core.hli.Intent;
 import org.openhab.core.items.Item;
 import org.openhab.core.items.ItemNotFoundException;
 import org.openhab.core.items.ItemRegistry;
@@ -66,6 +73,7 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -76,7 +84,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 @Component(service = { ChatGPTHLIService.class, HumanLanguageInterpreter.class })
 @NonNullByDefault
-public class ChatGPTHLIService implements ThingHandlerService, HumanLanguageInterpreter {
+public class ChatGPTHLIService implements ThingHandlerService, EnhancedHLIInterpreter {
 
     private @Nullable ThingHandler thingHandler;
     private List<ChatMessage> messages = new ArrayList<>();
@@ -88,11 +96,16 @@ public class ChatGPTHLIService implements ThingHandlerService, HumanLanguageInte
     private @Nullable ItemRegistry itemRegistry;
     private @Nullable EventPublisher eventPublisher;
     private @Nullable ChatGPTConfiguration config;
+    private @Nullable Intent lastCreatedIntent;
+    private @Nullable CardBuilder cardBuilder;
+    private @Nullable Collection<Item> matchedItemsCache;
 
     @Activate
-    public ChatGPTHLIService(@Reference ItemRegistry itemRegistry, @Reference EventPublisher eventPublisher) {
+    public ChatGPTHLIService(@Reference ItemRegistry itemRegistry, @Reference EventPublisher eventPublisher,
+            @Reference CardBuilder cardBuilder) {
         this.itemRegistry = itemRegistry;
         this.eventPublisher = eventPublisher;
+        this.cardBuilder = cardBuilder;
 
         try (InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream("/json/tools.json");
                 InputStreamReader reader = new InputStreamReader(is, StandardCharsets.UTF_8)) {
@@ -126,10 +139,56 @@ public class ChatGPTHLIService implements ThingHandlerService, HumanLanguageInte
 
             itemControlFunction.setExecutor(p -> {
                 ItemsControl parameters = (ItemsControl) p;
-                return sendCommand(parameters.getName(), parameters.getState());
+                return sendCommand(parameters.getName(), parameters.getState(), parameters.getAnswer());
+            });
+        }
+        ChatFunction createIntentFunction = functions.get("create_intent");
+        if (createIntentFunction != null) {
+            createIntentFunction.setParametersClass(CreateIntent.class);
+            createIntentFunction.setExecutor(p -> {
+                CreateIntent params = (CreateIntent) p;
+                return createIntentFromParams(params);
             });
         }
         logger.debug("ChatGPTHLIService activated");
+    }
+
+    private String createIntentFromParams(CreateIntent params) {
+
+        Intent intent = new Intent(params.getName());
+
+        if (params.getEntities() != null) {
+            ObjectMapper mapper = new ObjectMapper();
+            Map<String, String> map = mapper.convertValue(params.getEntities(),
+                    new TypeReference<Map<String, String>>() {
+                    });
+            intent.setEntities(map);
+        }
+
+        this.lastCreatedIntent = intent;
+
+        if (params.getMatchedItems() != null && !params.getMatchedItems().isEmpty()) {
+            Collection<Item> matchedItems = params.getMatchedItems().stream().flatMap(name -> {
+                try {
+                    return Stream.of(itemRegistry.getItem(name));
+                } catch (ItemNotFoundException e) {
+                    logger.warn("Item '{}' from OpenAI not found in registry", name);
+                    return Stream.empty();
+                }
+            }).collect(Collectors.toUnmodifiableList());
+
+            if (!matchedItems.isEmpty()) {
+                this.matchedItemsCache = matchedItems;
+                logger.debug("Matched items from OpenAI: {}", matchedItems);
+            } else {
+                logger.warn("No valid items resolved from OpenAI intent: {}", params.getMatchedItems());
+            }
+        }
+
+        logger.debug("Intent created: {} with entities {} and items {}", params.getName(), params.getEntities(),
+                params.getMatchedItems());
+
+        return params.getAnswer();
     }
 
     @Override
@@ -157,6 +216,56 @@ public class ChatGPTHLIService implements ThingHandlerService, HumanLanguageInte
     }
 
     @Override
+    public ChatReply reply(Locale locale, String text) {
+
+        ChatReply reply = new ChatReply(locale, text);
+
+        this.lastCreatedIntent = null;
+        this.matchedItemsCache = null;
+
+        String requestBody = prepareRequestBody(text, true);
+        if (requestBody == null) {
+            reply.setAnswer("Failed to prepare request body");
+            return reply;
+        }
+
+        if (thingHandler instanceof ChatGPTHandler chatGPTHandler) {
+            String response = chatGPTHandler.sendPrompt(requestBody);
+            String answer = processChatResponse(response);
+
+            if (!answer.isEmpty()) {
+                reply.setAnswer(answer);
+            }
+
+            if (this.lastCreatedIntent != null && cardBuilder != null) {
+                Intent intent = this.lastCreatedIntent;
+                reply.setIntent(intent);
+
+                if (this.matchedItemsCache != null) {
+                    Collection<Item> matchedItems = this.matchedItemsCache;
+
+                    String[] itemStrings = matchedItems.stream().map(Item::getName).toArray(String[]::new);
+                    reply.setMatchedItems(itemStrings);
+
+                    Card card;
+                    if ("show-chart".equalsIgnoreCase(intent.getName())) {
+                        String period = intent.getEntities().getOrDefault("period", "D");
+                        card = cardBuilder.buildChartCard(intent, matchedItems, period);
+                    } else {
+                        card = cardBuilder.buildCard(intent, matchedItems);
+                    }
+                    reply.setCard(card);
+                }
+            }
+
+        } else {
+            reply.setAnswer("Failed to interpret text");
+        }
+
+        return reply;
+    }
+
+    @Override
     public Set<Locale> getSupportedLocales() {
         return Set.of();
     }
@@ -174,6 +283,7 @@ public class ChatGPTHLIService implements ThingHandlerService, HumanLanguageInte
 
     @Override
     public void setThingHandler(ThingHandler handler) {
+        logger.info("ChatGPTHLIService bound to ThingHandler: {}", handler);
         this.thingHandler = handler;
     }
 
@@ -186,8 +296,23 @@ public class ChatGPTHLIService implements ThingHandlerService, HumanLanguageInte
     public void activate() {
     }
 
+    @Override
+    public void initialize() {
+        if (thingHandler instanceof ChatGPTHandler chatGPTHandler) {
+            this.config = chatGPTHandler.getConfigAs();
+            logger.info("ChatGPT configuration initialized: {}", config);
+        } else {
+            logger.warn("ThingHandler not ChatGPTHandler — unable to initialize config");
+        }
+    }
+
     private String processChatResponse(@Nullable String response) {
         if (response == null || response.isEmpty()) {
+            return "";
+        }
+
+        if (this.config == null) {
+            logger.warn("ChatGPT configuration is still null");
             return "";
         }
 
@@ -199,11 +324,6 @@ public class ChatGPTHLIService implements ThingHandlerService, HumanLanguageInte
             chatResponse = objectMapper.readValue(response, ChatResponse.class);
         } catch (JsonProcessingException e) {
             logger.debug("Failed to parse ChatGPT response: {}", e.getMessage(), e);
-            return "";
-        }
-
-        if (chatResponse == null) {
-            logger.warn("Didn't receive any response from ChatGPT - this is unexpected.");
             return "";
         }
 
@@ -242,14 +362,16 @@ public class ChatGPTHLIService implements ThingHandlerService, HumanLanguageInte
         this.messages.add(chatResponseMessage);
 
         if ("tool_calls".equals(finishReason)) {
-            executeToolCalls(chatResponseMessage.getToolCalls());
-            return "";
-        } else {
-            return (chatResponseMessage.getContent() == null) ? "" : chatResponseMessage.getContent();
+            return executeToolCalls(chatResponseMessage.getToolCalls());
         }
+
+        return (chatResponseMessage.getContent() == null) ? "" : chatResponseMessage.getContent();
     }
 
-    private void executeToolCalls(@Nullable List<ChatToolCalls> toolCalls) {
+    private String executeToolCalls(List<ChatToolCalls> toolCalls) {
+
+        StringBuilder combinedAnswer = new StringBuilder();
+
         toolCalls.forEach(tool -> {
             if (tool.getType().equals("function")) {
                 ChatFunctionCall functionCall = tool.getFunction();
@@ -279,23 +401,39 @@ public class ChatGPTHLIService implements ThingHandlerService, HumanLanguageInte
                         message.setToolCallId(tool.getId());
                         message.setContent(resultString);
                         messages.add(message);
+
+                        if (!resultString.isEmpty()) {
+                            combinedAnswer.append(resultString).append(" ");
+                        }
                     } else {
                         logger.debug("Function '{}' not found", functionName);
                     }
                 }
             }
         });
+
+        return combinedAnswer.toString().trim();
     }
 
     private @Nullable String prepareRequestBody(String message) {
-        if (this.config == null) {
-            if (thingHandler instanceof ChatGPTHandler chatGPTHandler) {
-                this.config = chatGPTHandler.getConfigAs();
-            }
-        }
+        return prepareRequestBody(message, false);
+    }
+
+    private @Nullable String prepareRequestBody(String message, boolean habot) {
 
         if (this.config == null) {
-            logger.debug("Could not get configuration");
+            if (thingHandler == null) {
+                logger.error("ThingHandler is null in ChatGPTHLIService, cannot get configuration!");
+                return null;
+            } else if (thingHandler instanceof ChatGPTHandler chatGPTHandler) {
+                this.config = chatGPTHandler.getConfigAs();
+                logger.debug("Loaded ChatGPT config: {}", this.config);
+            } else {
+                logger.error("ThingHandler is not ChatGPTHandler: {}", thingHandler.getClass());
+            }
+        }
+        if (this.config == null) {
+            logger.error("ChatGPT configuration is still null, aborting request body preparation.");
             return null;
         }
 
@@ -309,17 +447,23 @@ public class ChatGPTHLIService implements ThingHandlerService, HumanLanguageInte
         }
 
         this.lastMessageTime = currentTime;
+
         ChatMessage userMessage = new ChatMessage();
         userMessage.setRole(ChatMessage.Role.USER.value());
         userMessage.setContent(message);
         this.messages.add(userMessage);
-        ChatRequestBody chatRequestBody = new ChatRequestBody();
 
-        if (this.config.model == null || this.config.model.isEmpty()) {
-            logger.debug("Model is not set");
-            return null;
+        if (habot) {
+            ChatMessage habotSystemMessage = new ChatMessage();
+            habotSystemMessage.setRole(ChatMessage.Role.SYSTEM.value());
+            habotSystemMessage.setContent("You are operating in HABot chat mode.\n"
+                    + "- If the user asks to display or query information about items, or to show charts, use the `create_intent` function.\n"
+                    + "- If the user only wants to control an item (e.g. turn on/off, set dimmer value, send command), use the `items_control` function instead.\n"
+                    + "Do not mix them: `create_intent` is only for displaying cards, `items_control` is for commands.");
+            this.messages.add(habotSystemMessage);
         }
 
+        ChatRequestBody chatRequestBody = new ChatRequestBody();
         chatRequestBody.setModel(this.config.model);
         chatRequestBody.setTemperature(this.config.temperature);
         chatRequestBody.setMaxTokens(this.config.maxTokens);
@@ -345,10 +489,10 @@ public class ChatGPTHLIService implements ThingHandlerService, HumanLanguageInte
         StringBuilder content = new StringBuilder();
         content.append(this.config.systemMessage);
 
-        Collection<Item> openaiItems = itemRegistry.getItemsByTag("ChatGPT");
+        Collection<Item> chatGPTItems = itemRegistry.getItemsByTag("ChatGPT");
 
-        if (!openaiItems.isEmpty()) {
-            openaiItems.forEach(item -> {
+        if (!chatGPTItems.isEmpty()) {
+            chatGPTItems.forEach(item -> {
                 String location = "";
                 String itemType = item.getType();
                 CommandDescription description = item.getCommandDescription();
@@ -392,7 +536,7 @@ public class ChatGPTHLIService implements ThingHandlerService, HumanLanguageInte
         return systemMessage;
     }
 
-    public String sendCommand(String itemName, String commandString) {
+    public String sendCommand(String itemName, String commandString, String answer) {
         try {
             Item item = itemRegistry.getItem(itemName);
             Command command = null;
@@ -413,7 +557,7 @@ public class ChatGPTHLIService implements ThingHandlerService, HumanLanguageInte
             if (command != null) {
                 logger.debug("Received command '{}' for item '{}'", commandString, itemName);
                 eventPublisher.post(ItemEventFactory.createCommandEvent(itemName, command));
-                return "Done";
+                return answer;
             } else {
                 return "Invalid command";
             }

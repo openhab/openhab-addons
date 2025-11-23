@@ -14,4 +14,17 @@
 
   <name>openHAB Add-ons :: Bundles :: ChatGPT Binding</name>
 
+  <dependencies>
+    <dependency>
+      <groupId>com.google.code.gson</groupId>
+      <artifactId>gson</artifactId>
+      <version>${gson.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.openhab.core.bundles</groupId>
+      <artifactId>org.openhab.core.hli</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+  </dependencies>
 </project>

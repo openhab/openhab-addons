@@ -33,4 +33,5 @@ public class ChatGPTConfiguration {
     public String systemMessage = "";
     public Integer keepContext = 2;
     public Integer contextThreshold = 10000;
+    public Integer requestTimeout = 10000;
 }
