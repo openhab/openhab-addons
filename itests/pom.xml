@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.openhab.addons</groupId>
     <artifactId>org.openhab.addons.reactor</artifactId>
-    <version>5.0.3-SNAPSHOT</version>
+    <version>5.0.3</version>
   </parent>
 
   <groupId>org.openhab.addons.itests</groupId>
