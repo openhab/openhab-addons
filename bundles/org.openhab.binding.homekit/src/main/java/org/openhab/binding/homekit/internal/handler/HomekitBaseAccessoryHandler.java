@@ -242,19 +242,23 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
     }
 
     /**
-     * Returns the accessory ID from the 'AccessoryID' configuration parameter.
+     * Returns the accessory ID. For bridges and root accessories this is always 1. Whereas for child
+     * accessories it comes from the thing's configuration parameter value.
      *
      * @return the accessory ID, or null if it cannot be determined
      */
     protected @Nullable Long getAccessoryId() {
-        if (getConfig().get(CONFIG_ACCESSORY_ID) instanceof BigDecimal accessoryId) {
-            try {
-                return accessoryId.longValue();
-            } catch (NumberFormatException e) {
+        if (THING_TYPE_CHILD_ACCESSORY.equals(thing.getThingTypeUID())) {
+            if (getConfig().get(CONFIG_ACCESSORY_ID) instanceof BigDecimal accessoryId) {
+                try {
+                    return accessoryId.longValue();
+                } catch (NumberFormatException e) {
+                }
             }
+            logger.debug("{} missing or invalid accessory id", thing.getUID());
+            return null;
         }
-        logger.debug("{} missing or invalid accessory id", thing.getUID());
-        return null;
+        return 1L;
     }
 
     @Override

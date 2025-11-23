@@ -4,9 +4,9 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<thing-type id="accessory">
+	<thing-type id="root-accessory">
 		<label>HomeKit Device</label>
-		<description>HomeKit Accessory Device</description>
+		<description>HomeKit Root Accessory Device</description>
 		<config-description>
 			<parameter name="ipAddress" type="text" required="true">
 				<context>network-address</context>
@@ -23,11 +23,6 @@
 				<description>The accessory fully qualified host name as discovered by mDNS.</description>
 				<advanced>true</advanced>
 			</parameter>
-			<parameter name="accessoryID" type="integer" required="true">
-				<label>Accessory ID</label>
-				<description>ID of the accessory.</description>
-				<advanced>true</advanced>
-			</parameter>
 			<parameter name="refreshInterval" type="integer" unit="s" min="10" required="false">
 				<label>Refresh Interval</label>
 				<description>Interval at which the accessory is polled in sec.</description>
@@ -37,10 +32,9 @@
 		</config-description>
 	</thing-type>
 
-	<!-- Bridges are created dynamically; please ignore the warning from OH CI build.. -->
 	<bridge-type id="bridge">
 		<label>HomeKit Bridge</label>
-		<description>HomeKit Accessory Bridge</description>
+		<description>HomeKit Bridge</description>
 		<config-description>
 			<parameter name="ipAddress" type="text" required="true">
 				<context>network-address</context>
@@ -57,11 +51,6 @@
 				<description>The bridge fully qualified host name as discovered by mDNS.</description>
 				<advanced>true</advanced>
 			</parameter>
-			<parameter name="accessoryID" type="integer" required="true">
-				<label>Accessory ID</label>
-				<description>ID of the accessory.</description>
-				<advanced>true</advanced>
-			</parameter>
 			<parameter name="refreshInterval" type="integer" unit="s" min="10" required="false">
 				<label>Refresh Interval</label>
 				<description>Interval at which the bridge is polled in sec.</description>
@@ -70,5 +59,20 @@
 			</parameter>
 		</config-description>
 	</bridge-type>
+
+	<thing-type id="child-accessory">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+		<label>HomeKit Device</label>
+		<description>HomeKit Child Accessory Device</description>
+		<config-description>
+			<parameter name="accessoryID" type="integer" required="true">
+				<label>Accessory ID</label>
+				<description>ID of the accessory.</description>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
 
 </thing:thing-descriptions>

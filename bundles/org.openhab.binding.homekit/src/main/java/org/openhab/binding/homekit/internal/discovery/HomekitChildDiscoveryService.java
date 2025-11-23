@@ -29,7 +29,9 @@ import org.osgi.service.component.annotations.Component;
 
 /**
  * Discovery service component that publishes newly discovered child accessories of a HomeKit bridge accessory.
- * Discovered accessories are published with a ThingUID based on their accessory ID (aid) and service ID (iid).
+ * Discovered devices are published as Things of type
+ * {@link org.openhab.binding.homekit.internal.HomekitBindingConstants#THING_TYPE_CHILD_ACCESSORY} with a ThingUID
+ * based on their accessory ID (aid).
  *
  * @author Andrew Fiddian-Green - Initial Contribution
  */
@@ -40,7 +42,7 @@ public class HomekitChildDiscoveryService extends AbstractThingHandlerDiscoveryS
     private static final int TIMEOUT_SECONDS = 10;
 
     public HomekitChildDiscoveryService() {
-        super(HomekitBridgeHandler.class, Set.of(THING_TYPE_ACCESSORY), TIMEOUT_SECONDS);
+        super(HomekitBridgeHandler.class, Set.of(THING_TYPE_CHILD_ACCESSORY), TIMEOUT_SECONDS);
     }
 
     @Override
@@ -63,19 +65,18 @@ public class HomekitChildDiscoveryService extends AbstractThingHandlerDiscoveryS
     }
 
     private void discoverChildren(Thing bridge, Collection<Accessory> accessories) {
+        String representationPropertyPrefix = thingHandler.getThing().getConfiguration()
+                .get(Thing.PROPERTY_MAC_ADDRESS) instanceof String mac ? mac + "-" : "";
         accessories.forEach(accessory -> {
             if (accessory.aid instanceof Long aid && aid != 1L && accessory.services != null) {
-                ThingUID uid = new ThingUID(THING_TYPE_ACCESSORY, bridge.getUID(), aid.toString());
-                String thingLabel = "%s (%d)".formatted(accessory.getAccessoryInstanceLabel(), accessory.aid);
+                String aidString = aid.toString();
+                ThingUID uid = new ThingUID(THING_TYPE_CHILD_ACCESSORY, bridge.getUID(), aidString);
                 thingDiscovered(DiscoveryResultBuilder.create(uid) //
                         .withBridge(bridge.getUID()) //
-                        .withLabel(THING_LABEL_FMT.formatted(thingLabel, bridge.getLabel())) //
-                        .withProperty(CONFIG_HOST_NAME, "n/a") //
-                        .withProperty(CONFIG_IP_ADDRESS, "n/a") //
-                        .withProperty(Thing.PROPERTY_MAC_ADDRESS, "n/a") //
-                        .withProperty(CONFIG_ACCESSORY_ID, aid.toString()) //
-                        .withProperty(CONFIG_REFRESH_INTERVAL, "60") //
-                        .withRepresentationProperty(CONFIG_ACCESSORY_ID).build());
+                        .withLabel(THING_LABEL_FMT.formatted(accessory.getAccessoryInstanceLabel(), bridge.getLabel()))
+                        .withProperty(CONFIG_ACCESSORY_ID, aidString)
+                        .withProperty(PROPERTY_REPRESENTATION, representationPropertyPrefix + aidString)
+                        .withRepresentationProperty(PROPERTY_REPRESENTATION).build());
             }
         });
     }
