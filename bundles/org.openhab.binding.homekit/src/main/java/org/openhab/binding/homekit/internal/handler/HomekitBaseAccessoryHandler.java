@@ -248,7 +248,7 @@ public abstract class HomekitBaseAccessoryHandler extends BaseThingHandler imple
      * @return the accessory ID, or null if it cannot be determined
      */
     protected @Nullable Long getAccessoryId() {
-        if (THING_TYPE_CHILD_ACCESSORY.equals(thing.getThingTypeUID())) {
+        if (isChildAccessory) {
             if (getConfig().get(CONFIG_ACCESSORY_ID) instanceof BigDecimal accessoryId) {
                 try {
                     return accessoryId.longValue();
