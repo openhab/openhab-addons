@@ -10,6 +10,12 @@
 
 		<label>Photovoltaic</label>
 		<description>A photovoltaic system configured in your evcc instance</description>
+		<config-description>
+			<parameter name="index" type="integer">
+				<label>Index</label>
+				<description>The index of the photovoltaic system in your evcc setup (starting with 0)</description>
+			</parameter>
+		</config-description>
 	</thing-type>
 	<!-- Already declared in site.xml maybe evcc is going to change it in the future -->
 	<channel-type id="pv-power">

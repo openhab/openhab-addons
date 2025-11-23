@@ -52,7 +52,8 @@ public class AVMFritzPowerMeterActions implements ThingActions {
         if (deviceId == null) {
             throw new IllegalArgumentException("Cannot enable power meter high refresh as 'deviceId' is null!");
         }
-        actionsHandler.enablePowerMeterHighRefresh(deviceId.longValue());
+        // TODO add input for polling interval
+        actionsHandler.enablePowerMeterHighRefresh(deviceId.longValue(), 10L);
     }
 
     public static void enablePowerMeterHighRefresh(ThingActions actions, @Nullable Long deviceId) {

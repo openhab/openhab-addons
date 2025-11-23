@@ -10,20 +10,15 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.evcc.internal;
+package org.openhab.binding.pihole.internal.rest.model.v6;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * The {@link EvccConfiguration} class contains fields mapping thing configuration parameters.
- *
- * @author Florian Hotze - Initial contribution
- * @author Marcel Goerentz - Rework the binding
+ * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class EvccConfiguration {
-    public String host = "";
-    public int pollInterval = 30;
-    public int port = 7070;
-    public String scheme = "http";
+public record Blocking(boolean blocking, @Nullable Long timer) {
+    public static final Blocking BLOCK = new Blocking(true, null);
 }

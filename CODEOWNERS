@@ -232,6 +232,7 @@
 /bundles/org.openhab.binding.meteostick/ @cdjackson
 /bundles/org.openhab.binding.metofficedatahub/ @dag81
 /bundles/org.openhab.binding.mffan/ @mark-brooks-180
+/bundles/org.openhab.binding.mideaac/ @apella12
 /bundles/org.openhab.binding.miele/ @kgoderis @jlaur
 /bundles/org.openhab.binding.mielecloud/ @BjoernLange
 /bundles/org.openhab.binding.mihome/ @pboos

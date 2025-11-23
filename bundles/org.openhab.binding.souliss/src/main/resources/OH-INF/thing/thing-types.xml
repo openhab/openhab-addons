@@ -495,6 +495,9 @@
 			<channel id="lastStatusStored" typeId="lastStatusStored"/>
 			<channel id="healthy" typeId="healthy"/>
 		</channels>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 		<config-description>
 			<parameter name="node" type="integer" min="0" max="256">
 				<label>Node</label>
@@ -527,8 +530,10 @@
 			</channel>
 			<channel id="lastStatusStored" typeId="lastStatusStored"/>
 			<channel id="healthy" typeId="healthy"/>
-
 		</channels>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 		<config-description>
 			<parameter name="node" type="integer" min="0" max="256">
 				<label>Node</label>
@@ -568,6 +573,9 @@
 			<channel id="lastStatusStored" typeId="lastStatusStored"/>
 			<channel id="healthy" typeId="healthy"/>
 		</channels>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 		<config-description>
 			<parameter name="node" type="integer" min="0" max="256">
 				<label>Node</label>
@@ -773,10 +781,13 @@
 		<label>T58</label>
 		<description>Pressure measure (0, 1500) hPa</description>
 		<channels>
-			<channel id="value" typeId="power"/>
+			<channel id="value" typeId="pressure"/>
 			<channel id="lastStatusStored" typeId="lastStatusStored"/>
 			<channel id="healthy" typeId="healthy"/>
 		</channels>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 		<config-description>
 			<parameter name="node" type="integer" min="0" max="256">
 				<label>Node</label>
@@ -1058,11 +1069,11 @@
 
 	<channel-type id="buttonReadOnly">
 		<item-type>Switch</item-type>
-		<label>Button</label>
-		<description>Button to trigger something</description>
+		<label>Status</label>
+		<description>Read-only status indicator</description>
 		<category>Switch</category>
+		<state readOnly="true"/>
 	</channel-type>
-
 
 	<channel-type id="pulse">
 		<item-type>Switch</item-type>

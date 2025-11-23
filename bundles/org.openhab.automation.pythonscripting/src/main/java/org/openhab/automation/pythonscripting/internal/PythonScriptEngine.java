@@ -97,7 +97,6 @@ public class PythonScriptEngine extends InvocationInterceptingPythonScriptEngine
     private static final String PYTHON_OPTION_EXECUTABLE = "python.Executable";
     // private static final String PYTHON_OPTION_PYTHONHOME = "python.PythonHome";
     // private static final String PYTHON_OPTION_SYSPREFIX = "python.SysPrefix";
-    private static final String PYTHON_OPTION_NATIVEMODULES = "python.NativeModules";
     private static final String PYTHON_OPTION_ISOLATENATIVEMODULES = "python.IsolateNativeModules";
 
     private static final String PYTHON_OPTION_CACHEDIR = "python.PyCachePrefix";
@@ -217,15 +216,8 @@ public class PythonScriptEngine extends InvocationInterceptingPythonScriptEngine
         if (pythonScriptEngineConfiguration.isVEnvEnabled()) {
             @SuppressWarnings("null")
             String venvExecutable = pythonScriptEngineConfiguration.getVEnvExecutable().toString();
-            contextConfig = contextConfig.option(PYTHON_OPTION_EXECUTABLE, venvExecutable);
-            // Path venvPath = this.pythonScriptEngineConfiguration.getVEnvDirectory();
-            // .option(PYTHON_OPTION_PYTHONHOME, venvPath.toString()) //
-            // .option(PYTHON_OPTION_SYSPREFIX, venvPath.toString()) //
-
-            if (pythonScriptEngineConfiguration.isNativeModulesEnabled()) {
-                contextConfig = contextConfig.option(PYTHON_OPTION_NATIVEMODULES, Boolean.toString(true)) //
-                        .option(PYTHON_OPTION_ISOLATENATIVEMODULES, Boolean.toString(true));
-            }
+            contextConfig.option(PYTHON_OPTION_EXECUTABLE, venvExecutable) //
+                    .option(PYTHON_OPTION_ISOLATENATIVEMODULES, Boolean.toString(true));
         }
 
         if (pythonScriptEngineConfiguration.isCachingEnabled()) {

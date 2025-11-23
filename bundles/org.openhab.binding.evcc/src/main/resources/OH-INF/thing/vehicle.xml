@@ -10,6 +10,12 @@
 		<label>Vehicle</label>
 		<description>A vehicle configured in your evcc instance</description>
 		<representation-property>id</representation-property>
+		<config-description>
+			<parameter name="id" type="text">
+				<label>ID</label>
+				<description>The ID of the vehicle in your evcc setup (database ID)</description>
+			</parameter>
+		</config-description>
 	</thing-type>
 	<channel-type id="vehicle-capacity">
 		<item-type unitHint="kWh">Number:Energy</item-type>

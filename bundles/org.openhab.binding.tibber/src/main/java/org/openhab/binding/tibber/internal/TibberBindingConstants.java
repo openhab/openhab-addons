@@ -52,6 +52,7 @@ public class TibberBindingConstants {
     public static final String CHANNEL_TAX = "tax";
     public static final String CHANNEL_PRICE_LEVELS = "level";
     public static final String CHANNEL_AVERAGE = "average";
+    public static final String CHANNEL_EVENT = "event";
 
     // live channels
     public static final String CHANNEL_CONSUMPTION = "consumption";
@@ -77,6 +78,9 @@ public class TibberBindingConstants {
     public static final String CHANNEL_TOTAL_PRODUCTION = "total-production";
     public static final String CHANNEL_DAILY_PRODUCTION = "daily-production";
     public static final String CHANNEL_LAST_HOUR_PRODUCTION = "last-hour-production";
+
+    // List of all events
+    public static final String EVENT_DAY_AHEAD_AVAILABLE = "DAY_AHEAD_AVAILABLE";
 
     public static final Map<String, String> PRICE_COST_CHANNELS = Map.of(
             CHANNEL_GROUP_PRICE + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_TOTAL_PRICE, "price",

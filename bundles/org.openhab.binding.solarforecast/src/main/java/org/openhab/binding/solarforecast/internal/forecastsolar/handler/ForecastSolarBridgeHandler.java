@@ -49,9 +49,12 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.TimeSeries;
 import org.openhab.core.types.TimeSeries.Policy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * The {@link ForecastSolarBridgeHandler} is a non active handler instance. It will be triggerer by the bridge.
+ * The {@link ForecastSolarBridgeHandler} is responsible for handling the attached planes and give an accumulated
+ * update.
  *
  * @author Bernd Weymann - Initial contribution
  */
@@ -59,11 +62,14 @@ import org.openhab.core.types.TimeSeries.Policy;
 public class ForecastSolarBridgeHandler extends BaseBridgeHandler implements SolarForecastProvider {
     private static final int CALM_DOWN_TIME_MINUTES = 61;
 
-    private List<ForecastSolarPlaneHandler> planes = new ArrayList<>();
-    private Optional<PointType> homeLocation;
-    private Optional<ForecastSolarBridgeConfiguration> configuration = Optional.empty();
+    private final Logger logger = LoggerFactory.getLogger(ForecastSolarBridgeHandler.class);
+
+    private ForecastSolarBridgeConfiguration configuration = new ForecastSolarBridgeConfiguration();
     private Optional<ScheduledFuture<?>> refreshJob = Optional.empty();
+    private Optional<PointType> homeLocation;
     private Instant calmDownEnd = Instant.MIN;
+
+    protected List<ForecastSolarPlaneHandler> planes = new ArrayList<>();
 
     public ForecastSolarBridgeHandler(Bridge bridge, Optional<PointType> location) {
         super(bridge);
@@ -77,11 +83,11 @@ public class ForecastSolarBridgeHandler extends BaseBridgeHandler implements Sol
 
     @Override
     public void initialize() {
-        ForecastSolarBridgeConfiguration config = getConfigAs(ForecastSolarBridgeConfiguration.class);
+        configuration = getConfigAs(ForecastSolarBridgeConfiguration.class);
         PointType locationConfigured;
 
         // handle location error cases
-        if (config.location.isBlank()) {
+        if (configuration.location.isBlank()) {
             if (homeLocation.isEmpty()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "@text/solarforecast.site.status.location-missing");
@@ -92,18 +98,28 @@ public class ForecastSolarBridgeHandler extends BaseBridgeHandler implements Sol
             }
         } else {
             try {
-                locationConfigured = new PointType(config.location);
+                locationConfigured = new PointType(configuration.location);
                 // continue with location from configuration
             } catch (Exception e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
                 return;
             }
         }
+
+        // update configuration with location
         Configuration editConfig = editConfiguration();
         editConfig.put("location", locationConfigured.toString());
         updateConfiguration(editConfig);
-        config = getConfigAs(ForecastSolarBridgeConfiguration.class);
-        configuration = Optional.of(config);
+        configuration = getConfigAs(ForecastSolarBridgeConfiguration.class);
+
+        // update attached planes with changed parameters
+        planes.forEach(plane -> {
+            plane.setLocation(new PointType(configuration.location));
+            if (!configuration.apiKey.isBlank()) {
+                plane.setApiKey(configuration.apiKey);
+            }
+        });
+
         updateStatus(ThingStatus.UNKNOWN);
         refreshJob = Optional
                 .of(scheduler.scheduleWithFixedDelay(this::getData, 0, REFRESH_ACTUAL_INTERVAL, TimeUnit.MINUTES));
@@ -131,8 +147,10 @@ public class ForecastSolarBridgeHandler extends BaseBridgeHandler implements Sol
     /**
      * Get data for all planes. Synchronized to protect plane list from being modified during update
      */
-    private synchronized void getData() {
+    protected synchronized void getData() {
         if (planes.isEmpty()) {
+            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NOT_YET_READY,
+                    "@text/solarforecast.site.status.no-planes");
             return;
         }
         if (calmDownEnd.isAfter(Utils.now())) {
@@ -221,18 +239,18 @@ public class ForecastSolarBridgeHandler extends BaseBridgeHandler implements Sol
     }
 
     public synchronized void addPlane(ForecastSolarPlaneHandler sfph) {
+        logger.trace("Adding plane {}", sfph.getThing().getUID());
         planes.add(sfph);
         // update passive PV plane with necessary data
-        if (configuration.isPresent()) {
-            sfph.setLocation(new PointType(configuration.get().location));
-            if (!configuration.get().apiKey.isBlank()) {
-                sfph.setApiKey(configuration.get().apiKey);
-            }
+        sfph.setLocation(new PointType(configuration.location));
+        if (!configuration.apiKey.isBlank()) {
+            sfph.setApiKey(configuration.apiKey);
         }
         getData();
     }
 
     public synchronized void removePlane(ForecastSolarPlaneHandler sfph) {
+        logger.trace("Removing plane {}", sfph.getThing().getUID());
         planes.remove(sfph);
     }
 

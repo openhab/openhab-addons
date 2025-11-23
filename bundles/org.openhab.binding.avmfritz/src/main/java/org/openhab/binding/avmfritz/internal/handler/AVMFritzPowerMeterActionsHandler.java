@@ -37,8 +37,9 @@ public interface AVMFritzPowerMeterActionsHandler extends ThingHandler {
      * Enables high refresh polling for this power meter.
      *
      * @param deviceId Id of the device.
+     * @param pollingInterval The interval for polling.
      */
-    void enablePowerMeterHighRefresh(long deviceId);
+    void enablePowerMeterHighRefresh(long deviceId, long pollingInterval);
 
     /**
      * Disables high refresh polling for this power meter.

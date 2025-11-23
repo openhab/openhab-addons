@@ -92,12 +92,6 @@ Additionally, you can configure the Add-on via a config file `/openhab/services/
 #
 #org.openhab.automation.pythonscripting:injectionEnabled = 2
 
-# Enables native modules (requires a manually configured venv)
-#
-# Native modules are sometimes necessary for pip modules which depends on native libraries.
-#
-#org.openhab.automation.pythonscripting:nativeModules = false
-
 # Enable dependency tracking
 #
 # Dependency tracking allows your scripts to automatically reload when one of its dependencies is updated.
@@ -145,7 +139,7 @@ VEnv based python runtimes are optional, but needed to provide support for addit
 
 1. Login into [openHAB console](https://www.openhab.org/docs/administration/console.html) and check your current pythonscripting environment by calling `pythonscripting info`<br/><br/>Important values are:
 
-- `GraalVM version: 24.2.1`
+- `GraalVM version: 25.0.1`
 - `VEnv path: /openhab/userdata/cache/org.openhab.automation.pythonscripting/venv`<br/><br/>![Add-on informations](doc/venv_info.png)
 
 These values are needed during the next step
@@ -154,8 +148,8 @@ These values are needed during the next step
 
     ```shell
     # The downloaded graalpy-community tar.gz must match your operating system (linux, windows or macos), your architecture (amd64, aarch64) and your "GraalVM version" of openHAB
-    wget -qO- https://github.com/oracle/graalpython/releases/download/graal-24.2.1/graalpy-community-24.2.1-linux-amd64.tar.gz | gunzip | tar xvf -
-    cd graalpy-community-24.2.1-linux-amd64/
+    wget -qO- https://github.com/oracle/graalpython/releases/download/graal-25.0.1/graalpy-community-25.0.1-linux-amd64.tar.gz | gunzip | tar xvf -
+    cd graalpy-community-25.0.1-linux-amd64/
 
     # The venv target dir must match your "VEnv path" of openHAB
     ./bin/graalpy -m venv /openhab/userdata/cache/org.openhab.automation.pythonscripting/venv
@@ -164,6 +158,7 @@ These values are needed during the next step
 3. Install 'patchelf' which is needed for native module support in graalpy (optional).
 
     ```
+    apt update
     apt-get install patchelf
     # zypper install patchelf
     # yum install patchelf

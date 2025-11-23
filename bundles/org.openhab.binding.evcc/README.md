@@ -55,20 +55,20 @@ These channels are dynamically added to the Thing during their initialization; t
 ### `demo.things` Example
 
 ```java
-Bridge evcc:server:demo-server "Demo" [scheme="https", url="demo.evcc.io", port=80, refreshInterval=30] {
+Bridge evcc:server:demo-server "Demo" [scheme="https", host="demo.evcc.io", port=443, refreshInterval=30] {
     // This thing will only exist once per evcc instance
     Thing site demo-site "Site - evcc Demo"
     // You can define as many Battery things as you have batteries configured in your evcc instance
-    Thing battery demo-battery1 "Battery - evcc Demo Battery 1"
+    Thing battery demo-battery1 "Battery - evcc Demo Battery 1"[index=0]
     ..
     // You can define as many PV things as you have photovoltaics configured in your evcc instance
-    Thing pv demo-pv1 "PV - evcc Demo Photovoltaic 1"
+    Thing pv demo-pv1 "PV - evcc Demo Photovoltaic 1"[index=0]
     ..
     // You can define as many Loadpoint things as you have loadpoints configured in your evcc instance
-    Thing loadpoint demo-loadpoint-carport "Loadpoint - evcc Demo Loadpoint 1"
+    Thing loadpoint demo-loadpoint-carport "Loadpoint - evcc Demo Loadpoint 1"[index=0]
     ..
     // You can define as many Vehicle things as you have vehicles configured in your evcc instance
-    Thing vehicle demo-vehicle1 "Vehicle - evcc Demo Vehicle 1"
+    Thing vehicle demo-vehicle1 "Vehicle - evcc Demo Vehicle 1"[id="vehicle_1"]
     ..
 }
 ```

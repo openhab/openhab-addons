@@ -23,7 +23,6 @@ import static org.openhab.binding.evcc.internal.EvccBindingConstants.NUMBER_TIME
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Objects;
-import java.util.StringJoiner;
 
 import javax.measure.Unit;
 
@@ -53,26 +52,6 @@ public class Utils {
     public static Unit<?> getUnitFromChannelType(String itemType) {
         Unit<?> unit = UNIT_MAP.get(itemType);
         return Objects.requireNonNullElse(unit, Units.ONE);
-    }
-
-    /**
-     * This method will capitalize the words of a given string
-     * 
-     * @param input string containing hyphenized words
-     * @return A string with spaces instead of hyphens and the first letter of each word is capitalized
-     */
-    public static String capitalizeWords(String input) {
-        String[] allParts = input.split("-");
-        String[] parts = Arrays.stream(allParts, 1, allParts.length).toArray(String[]::new);
-        StringJoiner joiner = new StringJoiner(" ");
-
-        for (String part : parts) {
-            if (!part.isEmpty()) {
-                joiner.add(Character.toUpperCase(part.charAt(0)) + part.substring(1));
-            }
-        }
-
-        return joiner.toString();
     }
 
     /**
@@ -121,5 +100,18 @@ public class Utils {
             return new int[] { 0, 0, 0 };
         }
         return Arrays.stream(input.split("\\.")).mapToInt(Integer::parseInt).toArray();
+    }
+
+    /**
+     * Capitalizes the first character of a string.
+     *
+     * @param input The input string.
+     * @return The string with the first character in uppercase.
+     */
+    public static String capitalizeFirstLetter(String input) {
+        if (input.isEmpty()) {
+            return input;
+        }
+        return input.substring(0, 1).toUpperCase() + input.substring(1);
     }
 }
