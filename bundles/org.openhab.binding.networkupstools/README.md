@@ -60,7 +60,7 @@ The following channels are available:
 | upsLoad             | Number:Dimensionless     | %    | Load on UPS (percent)                                               | yes      |
 | upsPower            | Number:Power             | VA   | Current value of apparent power (Volt-Amps)                         | yes      |
 | upsRealpower        | Number:Power             | W    | Current value of real power (Watts)                                 | no       |
-| upsStatus           | String                   |      | Status of the UPS: OFF, OL,OB,LB,RB,OVER,TRIM,BOOST,CAL,BYPASS,NULL | no       |
+| upsStatus           | String                   |      | Status flags for the UPS.                                           | no       |
 | upsTemperature      | Number:Temperature       | °C   | UPS temperature (degrees C)                                         | yes      |
 | upsTestResult       | String                   |      | Results of last self test (opaque string)                           | yes      |
 | inputCurrent        | Number:ElectricCurrent   | A    | Input current (A)                                                   | yes      |
