@@ -109,8 +109,10 @@ public class ConfigurationAccess {
         if (!userManagement.authorizeUser(username)) {
             return NetworkUtils.singleError(cs.gson, uri, HueResponse.UNAUTHORIZED, "Not Authorized");
         }
-        final HueChangeRequest changes;
-        changes = cs.gson.fromJson(body, HueChangeRequest.class);
+        final HueChangeRequest changes = cs.gson.fromJson(body, HueChangeRequest.class);
+        if (changes == null) {
+            return NetworkUtils.singleError(cs.gson, uri, HueResponse.INVALID_JSON, "Empty body");
+        }
         String devicename = changes.devicename;
         if (devicename != null) {
             cs.ds.config.devicename = devicename;
