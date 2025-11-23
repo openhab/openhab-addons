@@ -38,7 +38,7 @@ It must match the format `123.123.123.123:4567` representing its IP v4 address a
 
 As a general rule, `hostName` is set by the mDNS auto- discovery process.
 However you can configure it manually if you wish.
-It must be the fully qualified host name (e.g. `foobar._hap._tcp.local.` or, if the port is not 0 or 80, `foobar._hap._tcp.local.` ) as found manually via (say) an mDNS discovery app.
+It must be the fully qualified host name (e.g. `foobar._hap._tcp.local.` or, if the port is not 0 or 80, `foobar._hap._tcp.local.:1234` ) as found manually via (say) an mDNS discovery app.
 
 As a general rule, `macAddress` is set by the mDNS auto- discovery process.
 However you can configure it manually if you wish.
