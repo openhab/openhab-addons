@@ -213,11 +213,29 @@ public class DateTimeUtils {
     }
 
     public static Calendar getAdjustedEarliest(Calendar cal, AstroChannelConfig config) {
-        return config.earliest == null ? cal : adjustTime(cal, getMinutesFromTime(config.earliest));
+        if (config.earliest == null) {
+            return truncateToMidnight(cal);
+        } else {
+            int minutes = getMinutesFromTime(config.earliest);
+            if (minutes > 0) {
+                return adjustTime(cal, minutes);
+            } else {
+                return truncateToMidnight(cal);
+            }
+        }
     }
 
     public static Calendar getAdjustedLatest(Calendar cal, AstroChannelConfig config) {
-        return config.latest == null ? cal : adjustTime(cal, getMinutesFromTime(config.latest));
+        if (config.latest == null) {
+            return endOfDayDate(cal);
+        } else {
+            int minutes = getMinutesFromTime(config.latest);
+            if (minutes > 0) {
+                return adjustTime(cal, minutes);
+            } else {
+                return endOfDayDate(cal);
+            }
+        }
     }
 
     /**
