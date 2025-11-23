@@ -22,9 +22,10 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.thing.profiles.ProfileCallback;
 import org.openhab.core.thing.profiles.ProfileContext;
 import org.openhab.core.thing.profiles.ProfileTypeUID;
-import org.openhab.core.thing.profiles.StateProfile;
+import org.openhab.core.thing.profiles.TimeSeriesProfile;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
+import org.openhab.core.types.TimeSeries;
 import org.openhab.core.types.Type;
 import org.openhab.core.types.UnDefType;
 import org.openhab.transform.basicprofiles.internal.config.RoundStateProfileConfig;
@@ -38,7 +39,7 @@ import org.slf4j.LoggerFactory;
  * @author Christoph Weitkamp - Initial contribution
  */
 @NonNullByDefault
-public class RoundStateProfile implements StateProfile {
+public class RoundStateProfile implements TimeSeriesProfile {
 
     private final Logger logger = LoggerFactory.getLogger(RoundStateProfile.class);
 
@@ -58,7 +59,7 @@ public class RoundStateProfile implements StateProfile {
         int localScale = 0;
         Integer configScale = config.scale;
         if (configScale != null) {
-            localScale = ((Number) configScale).intValue();
+            localScale = configScale.intValue();
         } else {
             logger.error("Parameter 'scale' is not of type String or Number.");
         }
@@ -101,6 +102,14 @@ public class RoundStateProfile implements StateProfile {
     @Override
     public void onStateUpdateFromHandler(State state) {
         callback.sendUpdate((State) applyRound(state));
+    }
+
+    @Override
+    public void onTimeSeriesFromHandler(TimeSeries timeSeries) {
+        TimeSeries transformedTimeSeries = new TimeSeries(timeSeries.getPolicy());
+        timeSeries.getStates()
+                .forEach(entry -> transformedTimeSeries.add(entry.timestamp(), (State) applyRound(entry.state())));
+        callback.sendTimeSeries(transformedTimeSeries);
     }
 
     private Type applyRound(Type state) {
