@@ -71,6 +71,7 @@
             <configuration>
               <features>
                 <feature>openhab-binding-bluetooth</feature>
+                <feature>openhab-binding-homeassistant</feature>
                 <feature>openhab-binding-modbus</feature>
                 <feature>openhab-binding-mqtt</feature>
               </features>
