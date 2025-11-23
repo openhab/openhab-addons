@@ -346,7 +346,8 @@ public class OpenhabGraalJSScriptEngine
                 } else {
                     logger.debug("Evaluating openhab-js injection from the file system for engine '{}' ...",
                             engineIdentifier);
-                    eval(OPENHAB_JS_INJECTION_CODE);
+                    // use delegate::eval instead of this::eval to avoid invocation of beforeInvocation, onScript, etc.
+                    delegate.eval(OPENHAB_JS_INJECTION_CODE);
                 }
             }
             logger.debug("Successfully initialized GraalJS script engine '{}'.", engineIdentifier);
