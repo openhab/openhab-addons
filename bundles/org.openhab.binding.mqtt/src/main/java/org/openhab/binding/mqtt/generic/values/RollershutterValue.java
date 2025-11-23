@@ -16,6 +16,7 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.mqtt.generic.IgnoreType;
 import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.StopMoveType;
@@ -149,8 +150,12 @@ public class RollershutterValue extends Value {
 
     @Override
     public Type parseMessage(Command command) throws IllegalArgumentException {
-        if (command instanceof StringType string && string.toString().isEmpty()) {
-            return UnDefType.NULL;
+        if (command instanceof StringType string) {
+            if (string.toString().equals(nullValue) || string.toString().isEmpty()) {
+                return UnDefType.NULL;
+            } else if (string.toString().equals(ignoreValue)) {
+                return IgnoreType.SENTINEL;
+            }
         }
         command = parseType(command, upStateString, downStateString);
         if (inverted && command instanceof PercentType percentType) {

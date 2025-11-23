@@ -21,6 +21,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.graalvm.polyglot.Value;
 import org.openhab.binding.homeassistant.internal.ComponentChannel;
 import org.openhab.binding.homeassistant.internal.ComponentChannelType;
+import org.openhab.binding.homeassistant.internal.HomeAssistantChannelTransformation;
 import org.openhab.binding.mqtt.generic.ChannelStateUpdateListener;
 import org.openhab.binding.mqtt.generic.mapping.ColorMode;
 import org.openhab.binding.mqtt.generic.values.ColorValue;
@@ -292,6 +293,7 @@ public class BasicSchemaLight extends Light<BasicSchemaLight.Configuration> {
                 this.config.getPayloadOff());
         brightnessValue = new PercentageValue(null, new BigDecimal(this.config.getBrightnessScale()), null, null, null,
                 FORMAT_INTEGER);
+        brightnessValue.setIgnoreValue(HomeAssistantChannelTransformation.PAYLOAD_SENTINEL_DEFAULT);
 
         AutoUpdatePolicy autoUpdatePolicy = optimistic ? AutoUpdatePolicy.RECOMMEND : null;
         ComponentChannel onOffChannel = this.onOffChannel = buildChannel(SWITCH_CHANNEL_ID, ComponentChannelType.SWITCH,
@@ -309,7 +311,8 @@ public class BasicSchemaLight extends Light<BasicSchemaLight.Configuration> {
                     .commandTopic(brightnessCommandTopic, config.isRetain(), config.getQos(),
                             config.getBrightnessCommandTemplate())
                     .withAutoUpdatePolicy(autoUpdatePolicy).withFormat("%.0f")
-                    .commandFilter(this::handleBrightnessCommand).build(false);
+                    .commandFilter(this::handleBrightnessCommand)
+                    .withTemplateDefault(HomeAssistantChannelTransformation.PAYLOAD_SENTINEL_DEFAULT).build(false);
         }
 
         String whiteCommandTopic = config.getWhiteCommandTopic();

@@ -204,7 +204,9 @@ public class ChannelState implements MqttMessageSubscriber {
             return;
         }
 
-        if (parsedType instanceof State parsedState) {
+        if (parsedType instanceof IgnoreType) {
+            // sentinel to ignore this message
+        } else if (parsedType instanceof State parsedState) {
             cachedValue.update(parsedState);
         } else {
             // things that are only Commands _must_ be posted as a command (like STOP)

@@ -78,6 +78,13 @@ public class SensorTests extends AbstractComponentTests {
         assertState(component, Sensor.SENSOR_CHANNEL_ID, QuantityType.valueOf(10, Units.WATT));
         publishMessage("zigbee2mqtt/sensor/state", "20");
         assertState(component, Sensor.SENSOR_CHANNEL_ID, QuantityType.valueOf(20, Units.WATT));
+        // doesn't change the state
+        publishMessage("zigbee2mqtt/sensor/state", "Default");
+        assertState(component, Sensor.SENSOR_CHANNEL_ID, QuantityType.valueOf(20, Units.WATT));
+        // Sets it to NULL
+        publishMessage("zigbee2mqtt/sensor/state", Sensor.PAYLOAD_NONE);
+        assertState(component, Sensor.SENSOR_CHANNEL_ID, UnDefType.NULL);
+
         assertThat(component.getChannel(Sensor.SENSOR_CHANNEL_ID).getState().getCache().createStateDescription(true)
                 .build().getPattern(), is("%.0f %unit%"));
 
