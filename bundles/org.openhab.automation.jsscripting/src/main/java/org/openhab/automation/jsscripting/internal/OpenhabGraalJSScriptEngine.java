@@ -116,7 +116,7 @@ public class OpenhabGraalJSScriptEngine
      * Pattern to match the header of a JavaScript Immediately Invoked Function Expression (IIFE).
      */
     private static final Pattern IIFE_HEADER = Pattern
-            .compile("^\\s*\\(\\s*(?:function\\s*[\\w$]*\\s*\\([^)]*\\)|\\([^)]*\\)\\s*=>)\\s*\\{.*$");
+            .compile("^\\s*\\(\\s*(?:function\\s*[\\w$]*\\s*\\([^)]*\\)|\\([^)]*\\)\\s*=>)\\s*\\{?.*$");
 
     private static final String REQUIRE_WRAPPER_NAME = "__wraprequire__";
 
@@ -398,6 +398,7 @@ public class OpenhabGraalJSScriptEngine
             for (int i = 0; i < header.size(); i++) {
                 if (IIFE_HEADER.matcher(header.get(i)).matches()) {
                     lineNumber = i + 1;
+                    break;
                 }
             }
             logger.debug("Injecting event conversion code into script for engine '{}' after line {} ...",
