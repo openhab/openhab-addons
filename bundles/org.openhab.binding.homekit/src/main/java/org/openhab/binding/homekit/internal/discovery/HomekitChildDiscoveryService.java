@@ -65,17 +65,21 @@ public class HomekitChildDiscoveryService extends AbstractThingHandlerDiscoveryS
     }
 
     private void discoverChildren(Thing bridge, Collection<Accessory> accessories) {
-        String representationPropertyPrefix = thingHandler.getThing().getConfiguration()
-                .get(Thing.PROPERTY_MAC_ADDRESS) instanceof String mac ? mac + "-" : "";
+        String bridgeMacAddress = thingHandler.getThing().getConfiguration()
+                .get(Thing.PROPERTY_MAC_ADDRESS) instanceof String mac ? mac : null;
+        if (bridgeMacAddress == null) {
+            return;
+        }
         accessories.forEach(accessory -> {
             if (accessory.aid instanceof Long aid && aid != 1L && accessory.services != null) {
-                String aidString = aid.toString();
-                ThingUID uid = new ThingUID(THING_TYPE_CHILD_ACCESSORY, bridge.getUID(), aidString);
+                ThingUID uid = new ThingUID(THING_TYPE_CHILD_ACCESSORY, bridge.getUID(), aid.toString());
+                String uniqueId = STRING_AID_FMT.formatted(bridgeMacAddress, aid);
+                String label = THING_LABEL_FMT.formatted(accessory.getAccessoryInstanceLabel(), uniqueId);
                 thingDiscovered(DiscoveryResultBuilder.create(uid) //
                         .withBridge(bridge.getUID()) //
-                        .withLabel(THING_LABEL_FMT.formatted(accessory.getAccessoryInstanceLabel(), bridge.getLabel()))
-                        .withProperty(CONFIG_ACCESSORY_ID, aidString)
-                        .withProperty(PROPERTY_REPRESENTATION, representationPropertyPrefix + aidString)
+                        .withLabel(label) //
+                        .withProperty(CONFIG_ACCESSORY_ID, aid.toString()) //
+                        .withProperty(PROPERTY_REPRESENTATION, uniqueId)
                         .withRepresentationProperty(PROPERTY_REPRESENTATION).build());
             }
         });

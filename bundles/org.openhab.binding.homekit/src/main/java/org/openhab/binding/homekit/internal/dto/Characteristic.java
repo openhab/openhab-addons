@@ -910,7 +910,7 @@ public class Characteristic {
         Optional.ofNullable(format).ifPresent(s -> props.put(PROPERTY_FORMAT, s));
         Optional.ofNullable(dataType).ifPresent(s -> props.put(PROPERTY_DATA_TYPE, s));
 
-        String channelDefinitionIdentifier = CHANNEL_DEFINITION_ID_FMT.formatted(charactersticIdentifier, iid);
+        String channelDefinitionIdentifier = STRING_AID_FMT.formatted(charactersticIdentifier, iid);
 
         ChannelDefinitionBuilder channelDefBuilder = new ChannelDefinitionBuilder(channelDefinitionIdentifier,
                 channelTypeUid).withLabel(getChannelLabel(characteristicType, i18nProvider, bundle))

@@ -85,7 +85,7 @@ public class HomekitMdnsDiscoveryParticipant implements MDNSDiscoveryParticipant
 
             if (ipAddress != null && macAddress != null && category != null) {
                 DiscoveryResultBuilder builder = DiscoveryResultBuilder.create(uid);
-                builder.withLabel(THING_LABEL_FMT.formatted(service.getName(), ipAddress)) //
+                builder.withLabel(THING_LABEL_FMT.formatted(service.getName(), macAddress)) //
                         .withProperty(CONFIG_HOST_NAME, getHostName(service)) //
                         .withProperty(CONFIG_IP_ADDRESS, ipAddress) //
                         .withProperty(Thing.PROPERTY_MAC_ADDRESS, macAddress) //

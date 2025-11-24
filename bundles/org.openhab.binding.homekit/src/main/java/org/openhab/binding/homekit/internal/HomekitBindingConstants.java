@@ -52,15 +52,19 @@ public class HomekitBindingConstants {
      */
     public static final String CHANNEL_TYPE_ID_FMT = "channel-type-%s-%d-%s-%s";
 
-    /*
-     * format string for channel-definition IDs which are used to instantiate channels
-     * format: [characteristicIdentifier]-[characteristicIid]
-     * example: occupancy-detected-2694
+    /**
+     * format string for channel-definition IDs like '[characteristicIdentifier]-[characteristicIid]'
+     * used to instantiate channels and labels like '[thingName]-[accessoryAid]' used to discover
+     * things; examples:
+     * <ul>
+     * <li>occupancy-detected-2694</li>
+     * <li>11:22:33:44:55:66-1234</li>
+     * </ul>
      */
-    public static final String CHANNEL_DEFINITION_ID_FMT = "%s-%d";
+    public static final String STRING_AID_FMT = "%s-%d";
 
-    // labels
-    public static final String THING_LABEL_FMT = "%s on %s";
+    // labels for things e.g. 'Living Room Light (11:22:33:44:55:66-1234)'
+    public static final String THING_LABEL_FMT = "%s (%s)";
 
     // configuration parameters
     public static final String CONFIG_HOST_NAME = "hostName";
