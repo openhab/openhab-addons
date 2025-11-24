@@ -53,7 +53,7 @@ public class Constants {
     public static final String PLAYING_ITEM_SEASON_NAME_CHANNEL = "playing-item-season-name";
     public static final String PLAYING_ITEM_SEASON_CHANNEL = "playing-item-season";
     public static final String PLAYING_ITEM_EPISODE_CHANNEL = "playing-item-episode";
-    public static final String PLAYING_ITEM_GENRES_CHANNEL = "playing-item-genders";
+    public static final String PLAYING_ITEM_GENRES_CHANNEL = "playing-item-genres";
     public static final String PLAYING_ITEM_TYPE_CHANNEL = "playing-item-type";
     public static final String PLAYING_ITEM_SECOND_CHANNEL = "playing-item-second";
     public static final String PLAYING_ITEM_TOTAL_SECOND_CHANNEL = "playing-item-total-seconds";

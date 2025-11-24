@@ -68,10 +68,10 @@
 		</tags>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="playing-item-genders-channel">
+	<channel-type id="playing-item-genres-channel">
 		<item-type>String</item-type>
-		<label>Playing Item Genders</label>
-		<description>Coma separate list genders of the item currently playing</description>
+		<label>Playing Item Genres</label>
+		<description>Comma separated list of genres of the item currently playing</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>Info</tag>

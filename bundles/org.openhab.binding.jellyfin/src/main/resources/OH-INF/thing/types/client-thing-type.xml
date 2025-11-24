@@ -18,7 +18,7 @@
 			<channel id="playing-item-season-name" typeId="playing-item-season-name-channel"/>
 			<channel id="playing-item-season" typeId="playing-item-season-channel"/>
 			<channel id="playing-item-episode" typeId="playing-item-episode-channel"/>
-			<channel id="playing-item-genders" typeId="playing-item-genders-channel"/>
+			<channel id="playing-item-genres" typeId="playing-item-genres-channel"/>
 			<channel id="playing-item-type" typeId="playing-item-type-channel"/>
 			<channel id="playing-item-percentage" typeId="playing-item-percentage-channel"/>
 			<channel id="playing-item-second" typeId="playing-item-second-channel"/>

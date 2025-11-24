@@ -27,6 +27,15 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.jellyfin.internal.Configuration;
 import org.openhab.binding.jellyfin.internal.Constants;
 import org.openhab.binding.jellyfin.internal.api.ApiClient;
+import org.openhab.binding.jellyfin.internal.api.generated.current.ItemsApi;
+import org.openhab.binding.jellyfin.internal.api.generated.current.SessionApi;
+import org.openhab.binding.jellyfin.internal.api.generated.current.UserLibraryApi;
+import org.openhab.binding.jellyfin.internal.api.generated.current.model.BaseItemDto;
+import org.openhab.binding.jellyfin.internal.api.generated.current.model.BaseItemDtoQueryResult;
+import org.openhab.binding.jellyfin.internal.api.generated.current.model.BaseItemKind;
+import org.openhab.binding.jellyfin.internal.api.generated.current.model.MessageCommand;
+import org.openhab.binding.jellyfin.internal.api.generated.current.model.PlayCommand;
+import org.openhab.binding.jellyfin.internal.api.generated.current.model.PlaystateCommand;
 import org.openhab.binding.jellyfin.internal.api.generated.current.model.SessionInfoDto;
 import org.openhab.binding.jellyfin.internal.api.generated.current.model.SystemInfo;
 import org.openhab.binding.jellyfin.internal.api.generated.current.model.UserDto;
@@ -114,6 +123,198 @@ public class ServerHandler extends BaseBridgeHandler implements ErrorEventListen
         this.tasks.putAll(
                 taskManager.initializeTasks(apiClient, errorEventBus, systemInfo -> this.handleConnection(systemInfo),
                         users -> this.handleUsersList(users), this, discoveryService));
+    }
+
+    // ---------------------------------------------------------------------
+    // Server-side helper wrappers
+    // ---------------------------------------------------------------------
+
+    /**
+     * Send a simple message (notification) to a client session.
+     */
+    public void sendDeviceMessage(@Nullable String sessionId, String header, String message, Integer timeoutMs) {
+        try {
+            SessionApi sessionApi = new SessionApi(apiClient);
+            MessageCommand msg = new MessageCommand();
+            msg.setHeader(header);
+            msg.setText(message);
+            if (timeoutMs != null) {
+                msg.setTimeoutMs(timeoutMs.longValue());
+            }
+            sessionApi.sendMessageCommand(sessionId, msg);
+        } catch (Exception e) {
+            logger.warn("Failed to send device message to session {}: {}", sessionId, e.getMessage());
+        }
+    }
+
+    /**
+     * Forward a playstate command (pause/resume/stop/seek) to a session.
+     */
+    public void sendPlayStateCommand(@Nullable String sessionId, PlaystateCommand command,
+            @Nullable Long seekPositionTicks, @Nullable String controllingUserId) {
+        try {
+            SessionApi sessionApi = new SessionApi(apiClient);
+            // controllingUserId may be null
+            sessionApi.sendPlaystateCommand(sessionId, command, seekPositionTicks == null ? 0L : seekPositionTicks,
+                    controllingUserId == null ? null : controllingUserId);
+        } catch (Exception e) {
+            logger.warn("Failed to send playstate command {} to session {}: {}", command, sessionId, e.getMessage());
+        }
+    }
+
+    /**
+     * Convenience overload without controllingUserId
+     */
+    public void sendPlayStateCommand(@Nullable String sessionId, PlaystateCommand command,
+            @Nullable Long seekPositionTicks) {
+        sendPlayStateCommand(sessionId, command, seekPositionTicks, null);
+    }
+
+    /**
+     * Ask a session to play an item (or list of items) using PlayCommand.
+     */
+    public void playItem(@Nullable String sessionId, PlayCommand playCommand, String itemId,
+            @Nullable Long startPositionTicks) {
+        try {
+            SessionApi sessionApi = new SessionApi(apiClient);
+            // play API expects item ids as UUID list
+            java.util.List<java.util.UUID> items = new java.util.ArrayList<>();
+            try {
+                items.add(java.util.UUID.fromString(itemId));
+            } catch (Exception ignore) {
+                logger.warn("Invalid UUID for playItem: {}", itemId);
+            }
+            sessionApi.play(sessionId, playCommand, items, startPositionTicks, null, null, null, null);
+        } catch (Exception e) {
+            logger.warn("Failed to request play for item {} on session {}: {}", itemId, sessionId, e.getMessage());
+        }
+    }
+
+    /**
+     * Run a simple search for items and return the first result (if any). This is a convenience method.
+     */
+    public @Nullable BaseItemDto searchItem(@Nullable String userId, String searchTerm, BaseItemKind kind) {
+        try {
+            // Determine a user id to use, falling back to the first active user if not provided
+            java.util.UUID uid = null;
+            if (userId != null) {
+                try {
+                    uid = java.util.UUID.fromString(userId);
+                } catch (Exception e) {
+                    // ignore and fall back
+                    uid = null;
+                }
+            }
+            if (uid == null) {
+                synchronized (activeUserIds) {
+                    if (!activeUserIds.isEmpty()) {
+                        try {
+                            uid = java.util.UUID.fromString(activeUserIds.get(0));
+                        } catch (Exception ex) {
+                            uid = null;
+                        }
+                    }
+                }
+            }
+            if (uid == null) {
+                // No user id available; cannot perform item search
+                return null;
+            }
+            ItemsApi itemsApi = new ItemsApi(apiClient);
+            BaseItemDtoQueryResult result = itemsApi.getItems(uid, /* maxOfficialRating */ null,
+                    /* hasThemeSong */ null, /* hasThemeVideo */ null, /* hasSubtitles */ null,
+                    /* hasSpecialFeature */ null, /* hasTrailer */ null, /* adjacentTo */ null, /* indexNumber */ null,
+                    /* parentIndexNumber */ null, /* hasParentalRating */ null, /* isHd */ null, /* is4K */ null,
+                    /* locationTypes */ null, /* excludeLocationTypes */ null, /* isMissing */ null,
+                    /* isUnaired */ null, /* minCommunityRating */ null, /* minCriticRating */ null,
+                    /* minPremiereDate */ null, /* minDateLastSaved */ null, /* minDateLastSavedForUser */ null,
+                    /* maxPremiereDate */ null, /* hasOverview */ null, /* hasImdbId */ null, /* hasTmdbId */ null,
+                    /* hasTvdbId */ null, /* isMovie */ null, /* isSeries */ null, /* isNews */ null, /* isKids */ null,
+                    /* isSports */ null, /* excludeItemIds */ null, /* startIndex */ 0, /* limit */ 1,
+                    /* recursive */ null, /* searchTerm */ searchTerm, /* sortOrder */ null, /* parentId */ null,
+                    /* fields */ null, /* excludeItemTypes */ null, /* includeItemTypes */ null, /* filters */ null,
+                    /* isFavorite */ null, /* mediaTypes */ null, /* imageTypes */ null, /* sortBy */ null,
+                    /* isPlayed */ null, /* genres */ null, /* officialRatings */ null, /* tags */ null,
+                    /* years */ null, /* enableUserData */ null, /* imageTypeLimit */ null, /* enableImageTypes */ null,
+                    /* person */ null, /* personIds */ null, /* personTypes */ null, /* studios */ null,
+                    /* artists */ null, /* excludeArtistIds */ null, /* artistIds */ null, /* albumArtistIds */ null,
+                    /* contributingArtistIds */ null, /* albums */ null, /* albumIds */ null, /* ids */ null,
+                    /* videoTypes */ null, /* minOfficialRating */ null, /* isLocked */ null, /* isPlaceHolder */ null,
+                    /* hasOfficialRating */ null, /* collapseBoxSetItems */ null, /* minWidth */ null,
+                    /* minHeight */ null, /* maxWidth */ null, /* maxHeight */ null, /* is3D */ null,
+                    /* seriesStatus */ null, /* nameStartsWithOrGreater */ null, /* nameStartsWith */ null,
+                    /* nameLessThan */ null, /* studioIds */ null, /* genreIds */ null,
+                    /* enableTotalRecordCount */ null, /* enableImages */ null);
+            if (result != null && result.getItems() != null && !result.getItems().isEmpty()) {
+                return result.getItems().get(0);
+            }
+        } catch (Exception e) {
+            logger.warn("Failed to search for {}: {}", searchTerm, e.getMessage());
+        }
+        return null;
+    }
+
+    /**
+     * Convenience overload that allows calling with (searchTerm, kind, userId)
+     */
+    public @Nullable BaseItemDto searchItem(String searchTerm, BaseItemKind kind, @Nullable String userId) {
+        return searchItem(userId, searchTerm, kind);
+    }
+
+    /**
+     * Return an item by id using the given user id where applicable.
+     */
+    public @Nullable BaseItemDto getItemById(@Nullable String userId, java.util.UUID itemId) {
+        try {
+            java.util.UUID uid = null;
+            if (userId != null) {
+                try {
+                    uid = java.util.UUID.fromString(userId);
+                } catch (Exception e) {
+                    uid = null;
+                }
+            }
+            if (uid == null) {
+                // Try to pick one active user if available
+                synchronized (activeUserIds) {
+                    if (!activeUserIds.isEmpty()) {
+                        try {
+                            uid = java.util.UUID.fromString(activeUserIds.get(0));
+                        } catch (Exception ex) {
+                            uid = null;
+                        }
+                    }
+                }
+            }
+            if (uid == null) {
+                return null;
+            }
+            UserLibraryApi userApi = new UserLibraryApi(apiClient);
+            return userApi.getItem(itemId, uid);
+        } catch (Exception e) {
+            logger.warn("Failed to fetch item {}: {}", itemId, e.getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * Sends a display content command to browse to a specific item on a client.
+     *
+     * @param sessionId The session ID of the client
+     * @param itemId The item ID to browse to
+     * @param itemType The item type (BaseItemKind enum value)
+     * @param itemName The item name for display
+     */
+    public void browseToItem(@Nullable String sessionId, String itemId, BaseItemKind itemType,
+            @Nullable String itemName) {
+        try {
+            SessionApi sessionApi = new SessionApi(apiClient);
+            sessionApi.displayContent(sessionId, itemType, itemId, itemName != null ? itemName : "");
+            logger.debug("Sent browse command to session {} for item {}", sessionId, itemId);
+        } catch (Exception e) {
+            logger.warn("Failed to send browse command to session {}: {}", sessionId, e.getMessage());
+            throw new RuntimeException("Failed to browse to item", e);
+        }
     }
 
     @Override

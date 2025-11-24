@@ -63,6 +63,10 @@ public class HandlerFactory extends BaseThingHandlerFactory {
             return new ServerHandler((Bridge) thing, client, taskManager);
         }
 
+        if (Constants.THING_TYPE_JELLYFIN_CLIENT.equals(thingTypeUID)) {
+            return new ClientHandler(thing);
+        }
+
         return null;
     }
 }
