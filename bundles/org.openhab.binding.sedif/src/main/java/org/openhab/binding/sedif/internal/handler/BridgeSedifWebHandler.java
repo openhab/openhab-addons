@@ -207,7 +207,7 @@ public class BridgeSedifWebHandler extends BaseBridgeHandler {
         // Step 4: Get contract page
         // =====================================================================
         resultSt = sedifApi.getContent(SedifHttpApi.URL_SEDIF_CONTRAT);
-        AuraContext appCtx = sedifApi.extractAuraContext(resultSt);
+        appCtx = sedifApi.extractAuraContext(resultSt);
 
         if (appCtx == null) {
             throw new SedifException("Unable to find app context in login process");
