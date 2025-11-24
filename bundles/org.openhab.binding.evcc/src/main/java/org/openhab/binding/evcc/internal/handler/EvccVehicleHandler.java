@@ -57,15 +57,17 @@ public class EvccVehicleHandler extends EvccBaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (command instanceof State) {
+        if (command instanceof State state) {
             String datapoint = Utils.getKeyFromChannelUID(channelUID).toLowerCase();
-            String value = command.toString();
+            String value = state.toString();
             if (value.contains(" ")) {
-                value = value.substring(0, command.toString().indexOf(" "));
+                value = value.substring(0, state.toString().indexOf(" "));
             }
             String url = endpoint + "/" + vehicleId + "/" + datapoint + "/" + value;
             logger.debug("Sending command to this url: {}", url);
-            sendCommand(url);
+            if (sendCommand(url)) {
+                updateState(channelUID, state);
+            }
         } else {
             super.handleCommand(channelUID, command);
         }

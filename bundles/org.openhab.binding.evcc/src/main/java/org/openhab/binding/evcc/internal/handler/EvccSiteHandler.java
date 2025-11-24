@@ -50,20 +50,22 @@ public class EvccSiteHandler extends EvccBaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (command instanceof State) {
-            String datapoint = Utils.getKeyFromChannelUID(channelUID).toLowerCase();
+        if (command instanceof State state) {
+            String datapoint = Utils.getKeyFromChannelUID(channelUID).toLowerCase().replaceAll("co2|price", "");
             String value;
-            if (command instanceof OnOffType) {
-                value = command == OnOffType.ON ? "true" : "false";
+            if (state instanceof OnOffType) {
+                value = state == OnOffType.ON ? "true" : "false";
             } else {
-                value = command.toString();
+                value = state.toString();
                 if (value.contains(" ")) {
-                    value = value.substring(0, command.toString().indexOf(" "));
+                    value = value.substring(0, state.toString().indexOf(" "));
                 }
             }
             String url = endpoint + "/" + datapoint + "/" + value;
             logger.debug("Sending command to this url: {}", url);
-            sendCommand(url);
+            if (sendCommand(url)) {
+                updateState(channelUID, state);
+            }
         } else {
             super.handleCommand(channelUID, command);
         }
@@ -101,14 +103,23 @@ public class EvccSiteHandler extends EvccBaseThingHandler {
     }
 
     private void modifyJSON(JsonObject state) {
-        for (Map.Entry<String, JsonElement> entry : state.getAsJsonObject(JSON_KEY_GRID).entrySet()) {
-            if ("currents".equals(entry.getKey())) {
-                addMeasurementDatapointsToState(state, entry.getValue().getAsJsonArray(), "Current");
-            } else if ("voltages".equals(entry.getKey())) {
-                addMeasurementDatapointsToState(state, entry.getValue().getAsJsonArray(), "Voltage");
-            } else {
-                state.add(JSON_KEY_GRID + Utils.capitalizeFirstLetter(entry.getKey()), entry.getValue());
+        for (Map.Entry<String, JsonElement> entry : state.get(JSON_KEY_GRID).getAsJsonObject().entrySet()) {
+            switch (entry.getKey()) {
+                case "currents":
+                    addMeasurementDatapointsToState(state, entry.getValue().getAsJsonArray(), "Current");
+                    break;
+                case "voltages":
+                    addMeasurementDatapointsToState(state, entry.getValue().getAsJsonArray(), "Voltage");
+                    break;
+                default:
+                    state.add(JSON_KEY_GRID + Utils.capitalizeFirstLetter(entry.getKey()), entry.getValue());
             }
+        }
+        // Backwards compatibility for evcc 0.209.8 and older
+        JsonElement startup = state.get("startup");
+        if (null != startup && startup.isJsonPrimitive() && startup.getAsJsonPrimitive().isBoolean()) {
+            state.add("startupComplete", startup);
+            state.remove("startup");
         }
         state.remove(JSON_KEY_GRID);
         state.remove(JSON_KEY_GRID_CONFIGURED);
