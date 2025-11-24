@@ -88,6 +88,7 @@ public class PrinterConfiguration {
     public static enum Series {
         A,
         P,
-        X
+        X,
+        H
     }
 }
