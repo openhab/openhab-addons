@@ -22,7 +22,7 @@ Whereas child `child-accessory` Things communicate via their respective `bridge-
 Both `lan-accessory` and `bridge-accessory` Things will be auto- discovered via mDNS.
 And once a `bridge-accessory` Thing has been instantiated and paired, its `child-accessory` Things will also be auto- discovered.
 
-## Configuration for Bridge and Root Accessory Things
+## Configuration for `bridge-accessory` and `lan-accessory` Things
 
 The following table shows the thing configuration parameters for `bridge-accessory` and `lan-accessory` Things.
 
@@ -47,7 +47,7 @@ As a general rule, `macAddress` is set by the mDNS auto- discovery process.
 However you can configure it manually if you wish.
 It must be the unique accessory identifier as found manually via (say) an mDNS discovery app.
 
-### Configuration for Child Accessory Things
+### Configuration for `child-accessory` Things
 
 The following table shows the thing configuration parameters for `child-accessory` Things.
 

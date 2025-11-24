@@ -12,6 +12,7 @@
 				<context>network-address</context>
 				<label>IP Address</label>
 				<description>IP v4 address of the HomeKit accessory.</description>
+				<advanced>true</advanced>
 			</parameter>
 			<parameter name="macAddress" type="text" required="true">
 				<label>MAC Address</label>
@@ -40,6 +41,7 @@
 				<context>network-address</context>
 				<label>IP Address</label>
 				<description>IP v4 address of the HomeKit bridge.</description>
+				<advanced>true</advanced>
 			</parameter>
 			<parameter name="macAddress" type="text" required="true">
 				<label>MAC Address</label>
