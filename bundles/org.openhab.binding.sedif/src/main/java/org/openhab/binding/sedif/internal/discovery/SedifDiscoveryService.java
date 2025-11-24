@@ -20,6 +20,7 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.sedif.internal.api.SedifHttpApi;
+import org.openhab.binding.sedif.internal.dto.AuraContext;
 import org.openhab.binding.sedif.internal.dto.Contract;
 import org.openhab.binding.sedif.internal.dto.ContractDetail;
 import org.openhab.binding.sedif.internal.dto.ContractDetail.CompteInfo;
@@ -112,11 +113,12 @@ public class SedifDiscoveryService extends AbstractThingHandlerDiscoveryService<
         }
 
         SedifHttpApi api = bridgeHandler.getSedifApi();
+        AuraContext appCtx = bridgeHandler.getAppContext();
 
         try {
             String contractId = contract.id;
             if (contractId != null) {
-                ContractDetail contractDetail = api.getContractDetails(contractId);
+                ContractDetail contractDetail = api.getContractDetails(contractId, appCtx);
 
                 if (contractDetail != null) {
                     for (CompteInfo compteInfo : contractDetail.compteInfo) {

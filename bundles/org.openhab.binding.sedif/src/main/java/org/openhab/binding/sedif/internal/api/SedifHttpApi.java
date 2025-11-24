@@ -62,7 +62,6 @@ public class SedifHttpApi {
     private final Gson gson;
     private final HttpClient httpClient;
 
-    private @Nullable AuraContext appCtx;
     private @Nullable String token = "";
 
     public static final String SEDIF_DOMAIN = ".leaudiledefrance.fr";
@@ -84,10 +83,6 @@ public class SedifHttpApi {
         this.httpClient = httpClient;
     }
 
-    public void setAppContext(@Nullable AuraContext appCtx) {
-        this.appCtx = appCtx;
-    }
-
     public void setToken(@Nullable String token) {
         this.token = token;
     }
@@ -97,11 +92,11 @@ public class SedifHttpApi {
     }
 
     public String getContent(String url) throws SedifException {
-        return getContent("", null, url, null);
+        return getContent("", null, null, url, null);
     }
 
-    private String getContent(String contractId, @Nullable CompteInfo meterInfo, String url, @Nullable AuraCommand cmd)
-            throws SedifException {
+    private String getContent(String contractId, @Nullable AuraContext appCtx, @Nullable CompteInfo meterInfo,
+            String url, @Nullable AuraCommand cmd) throws SedifException {
         try {
             Request request = httpClient.newRequest(url);
             request = request.timeout(SedifBindingConstants.REQUEST_TIMEOUT, TimeUnit.SECONDS);
@@ -143,7 +138,7 @@ public class SedifHttpApi {
                     }
                 }
 
-                String msg = getActionPayload(cmd);
+                String msg = getActionPayload(cmd, appCtx);
                 fields.put("message", msg);
 
                 request = request.content(new FormContentProvider(fields));
@@ -164,22 +159,23 @@ public class SedifHttpApi {
         }
     }
 
-    public @Nullable AuraResponse doAuth(String userName, String userPassword) throws SedifException {
+    public @Nullable AuraResponse doAuth(String userName, String userPassword, @Nullable AuraContext appCtx)
+            throws SedifException {
         // =====================================================================
         logger.trace("Step 3: Invoke the Sedif auth endpoint to do the login");
 
         AuraCommand cmd = AuraCommand.make("", "", "");
         cmd.setUser(userName, userPassword);
 
-        return getData("", null, URL_SEDIF_AUTHENTICATE_POST, cmd, AuraResponse.class);
+        return getData("", appCtx, null, URL_SEDIF_AUTHENTICATE_POST, cmd, AuraResponse.class);
     }
 
-    public @Nullable Contracts getContracts() throws SedifException {
+    public @Nullable Contracts getContracts(@Nullable AuraContext appCtx) throws SedifException {
         // =====================================================================
         logger.trace("Step 6: Get the contracts associated with the sedif accounts");
 
         AuraCommand cmd = AuraCommand.make("", "LTN009_ICL_ContratsGroupements", "getContratsGroupements");
-        Actions actions = getData("", null, URL_SEDIF_SITE, cmd, Actions.class);
+        Actions actions = getData("", appCtx, null, URL_SEDIF_SITE, cmd, Actions.class);
         if (actions != null) {
             ReturnValue retValue = actions.actions.get(0).returnValue;
             return (Contracts) ((retValue == null) ? null : retValue.returnValue);
@@ -188,7 +184,8 @@ public class SedifHttpApi {
         return null;
     }
 
-    public @Nullable ContractDetail getContractDetails(String contractId) throws SedifException {
+    public @Nullable ContractDetail getContractDetails(String contractId, @Nullable AuraContext appCtx)
+            throws SedifException {
         // =====================================================================
         logger.trace("Step 7: Get the contract details to have information about end user");
 
@@ -201,7 +198,7 @@ public class SedifHttpApi {
             paramsSub.put("contratId", contractId);
             paramsSub.put("contractId", contractId);
         }
-        Actions actions = getData(contractId, null, URL_SEDIF_SITE, cmd, Actions.class);
+        Actions actions = getData(contractId, appCtx, null, URL_SEDIF_SITE, cmd, Actions.class);
         if (actions != null) {
             ReturnValue retValue = actions.actions.get(0).returnValue;
             return (ContractDetail) ((retValue == null) ? null : retValue.returnValue);
@@ -209,8 +206,8 @@ public class SedifHttpApi {
         return null;
     }
 
-    public @Nullable MeterReading getConsumptionData(String contractId, @Nullable CompteInfo meterInfo, LocalDate from,
-            LocalDate to) throws SedifException {
+    public @Nullable MeterReading getConsumptionData(String contractId, @Nullable AuraContext appCtx,
+            @Nullable CompteInfo meterInfo, LocalDate from, LocalDate to) throws SedifException {
         logger.trace("Step 8: Get the water consumption data");
 
         AuraCommand cmd = AuraCommand.make("", "LTN015_ICL_ContratConsoHisto", "getData");
@@ -218,11 +215,12 @@ public class SedifHttpApi {
 
         paramsSub.put("TYPE_PAS", "JOURNEE"); // SEMAINE MOIS
 
-        return getMeasures(contractId, meterInfo, URL_SEDIF_SITE, cmd, from, to);
+        return getMeasures(contractId, appCtx, meterInfo, URL_SEDIF_SITE, cmd, from, to);
     }
 
-    private @Nullable MeterReading getMeasures(String contractId, @Nullable CompteInfo meterInfo, String apiUrl,
-            AuraCommand cmd, LocalDate from, LocalDate to) throws SedifException {
+    private @Nullable MeterReading getMeasures(String contractId, @Nullable AuraContext appCtx,
+            @Nullable CompteInfo meterInfo, String apiUrl, AuraCommand cmd, LocalDate from, LocalDate to)
+            throws SedifException {
         String dtStart = from.format(API_DATE_FORMAT);
         String dtEnd = to.format(API_DATE_FORMAT);
 
@@ -230,7 +228,7 @@ public class SedifHttpApi {
         paramsSub.put("DATE_DEBUT", dtStart);
         paramsSub.put("DATE_FIN", dtEnd);
 
-        Actions actions = getData(contractId, meterInfo, apiUrl, cmd, Actions.class);
+        Actions actions = getData(contractId, appCtx, meterInfo, apiUrl, cmd, Actions.class);
         if (actions != null) {
             ReturnValue retValue = actions.actions.get(0).returnValue;
             return (MeterReading) ((retValue == null) ? null : retValue.returnValue);
@@ -238,12 +236,12 @@ public class SedifHttpApi {
         return null;
     }
 
-    private @Nullable <T> T getData(String contractId, @Nullable CompteInfo meterInfo, String url,
-            @Nullable AuraCommand cmd, Class<T> clazz) throws SedifException {
+    private @Nullable <T> T getData(String contractId, @Nullable AuraContext appCtx, @Nullable CompteInfo meterInfo,
+            String url, @Nullable AuraCommand cmd, Class<T> clazz) throws SedifException {
         logger.debug("getData begin {}: {}", clazz.getName(), url);
 
         try {
-            String data = getContent(contractId, meterInfo, url, cmd);
+            String data = getContent(contractId, appCtx, meterInfo, url, cmd);
             if (data.contains("aura:invalidSession")) {
                 throw new InvalidSessionException("Communication with sedif failed, session invalid");
             }
@@ -271,7 +269,7 @@ public class SedifHttpApi {
         return gson.toJson(context);
     }
 
-    private String getActionPayload(AuraCommand cmd) {
+    private String getActionPayload(AuraCommand cmd, @Nullable AuraContext appCtx) {
         Actions actions = new Actions();
         Action action = new Action();
 

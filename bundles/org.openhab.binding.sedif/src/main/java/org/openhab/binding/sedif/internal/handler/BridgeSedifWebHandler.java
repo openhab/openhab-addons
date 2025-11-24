@@ -178,13 +178,12 @@ public class BridgeSedifWebHandler extends BaseBridgeHandler {
             throw new SedifException("Unable to find app context in login process");
         } else {
             logger.debug("Account {}: Successfully retrieved context", lcConfig.username);
-            sedifApi.setAppContext(appCtx);
         }
 
         // =====================================================================
         // Step 2: Authenticate
         // =====================================================================
-        AuraResponse resp = sedifApi.doAuth(lcConfig.username, lcConfig.password);
+        AuraResponse resp = sedifApi.doAuth(lcConfig.username, lcConfig.password, appCtx);
 
         String urlRedir = "";
         if (resp != null) {
@@ -208,13 +207,12 @@ public class BridgeSedifWebHandler extends BaseBridgeHandler {
         // Step 4: Get contract page
         // =====================================================================
         resultSt = sedifApi.getContent(SedifHttpApi.URL_SEDIF_CONTRAT);
-        appCtx = sedifApi.extractAuraContext(resultSt);
+        AuraContext appCtx = sedifApi.extractAuraContext(resultSt);
 
         if (appCtx == null) {
             throw new SedifException("Unable to find app context in login process");
         } else {
             logger.debug("Successfully retrieved contract context");
-            sedifApi.setAppContext(appCtx);
         }
 
         // =====================================================================
@@ -238,7 +236,7 @@ public class BridgeSedifWebHandler extends BaseBridgeHandler {
         // =====================================================================
         // Step 6a: Get contract
         // =====================================================================
-        Contracts contracts = sedifApi.getContracts();
+        Contracts contracts = sedifApi.getContracts(appCtx);
         if (contracts != null && contracts.contracts != null) {
             for (Contract contract : contracts.contracts) {
                 String contractName = contract.name;
@@ -250,6 +248,10 @@ public class BridgeSedifWebHandler extends BaseBridgeHandler {
         }
 
         connected = true;
+    }
+
+    public @Nullable AuraContext getAppContext() {
+        return appCtx;
     }
 
     public boolean isConnected() {
