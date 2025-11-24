@@ -40,6 +40,7 @@ import org.openhab.binding.sedif.internal.api.helpers.MeterReadingHelper;
 import org.openhab.binding.sedif.internal.config.SedifConfiguration;
 import org.openhab.binding.sedif.internal.dto.Contract;
 import org.openhab.binding.sedif.internal.dto.ContractDetail;
+import org.openhab.binding.sedif.internal.dto.ContractDetail.Client;
 import org.openhab.binding.sedif.internal.dto.ContractDetail.CompteInfo;
 import org.openhab.binding.sedif.internal.dto.MeterReading;
 import org.openhab.binding.sedif.internal.dto.MeterReading.Data.Consommation;
@@ -77,7 +78,6 @@ import com.google.gson.Gson;
  */
 
 @NonNullByDefault
-@SuppressWarnings("null")
 public class ThingSedifHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(ThingSedifHandler.class);
@@ -90,6 +90,7 @@ public class ThingSedifHandler extends BaseThingHandler {
     private static final int REFRESH_HOUR_OF_DAY = 1;
     private static final int REFRESH_MINUTE_OF_DAY = RANDOM_NUMBERS.nextInt(60);
     private static final int REFRESH_INTERVAL_IN_MIN = 120;
+    private final static int HISTORICAL_LOOKBACK_DAYS = 89;
 
     private String contractName;
     private String contractId;
@@ -97,7 +98,7 @@ public class ThingSedifHandler extends BaseThingHandler {
 
     private @Nullable CompteInfo currentMeterInfo;
 
-    private @Nullable SedifState sedifState;
+    private SedifState sedifState;
 
     private final ExpiringDayCache<ContractDetail> contractDetail;
     private final ExpiringDayCache<MeterReading> consumption;
@@ -115,11 +116,12 @@ public class ThingSedifHandler extends BaseThingHandler {
 
         this.gson = gson;
 
+        this.sedifState = new SedifState();
+
         this.contractDetail = new ExpiringDayCache<ContractDetail>("contractDetail", REFRESH_HOUR_OF_DAY,
                 REFRESH_MINUTE_OF_DAY, () -> {
                     try {
-                        ContractDetail contractDetail = getContractDetails();
-                        return contractDetail;
+                        return getContractDetails();
                     } catch (CommunicationFailedException ex) {
                         // We just return null, EpiringDayCache logic will retry the operation later.
                         logger.error("Failed to get contract details", ex);
@@ -127,7 +129,9 @@ public class ThingSedifHandler extends BaseThingHandler {
                     } catch (InvalidSessionException ex) {
                         // In case of session error, we force the bridge to reconnect after a delay
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-                        if (getBridge().getHandler() instanceof BridgeSedifWebHandler bridgeSedif) {
+
+                        Bridge lcBridge = getBridge();
+                        if (lcBridge != null && lcBridge.getHandler() instanceof BridgeSedifWebHandler bridgeSedif) {
                             bridgeSedif.scheduleReconnect();
                         }
                         return null;
@@ -143,19 +147,21 @@ public class ThingSedifHandler extends BaseThingHandler {
                     LocalDate today = LocalDate.now();
 
                     try {
-                        MeterReading meterReading = updateConsumptionData(today.minusDays(89), today, false);
+                        MeterReading meterReading = updateConsumptionData(today.minusDays(HISTORICAL_LOOKBACK_DAYS),
+                                today, false);
                         if (meterReading != null) {
                             MeterReadingHelper.calcAgregat(meterReading);
                         }
                         return meterReading;
                     } catch (CommunicationFailedException ex) {
                         // We just return null, EpxiringDayCache logic will retry the operation later.
-                        logger.error("Failed to get consumption data", ex);
+                        logger.warn("Failed to get consumption data", ex);
                         return null;
                     } catch (InvalidSessionException ex) {
                         // In case of session error, we force the bridge to reconnect after a delay
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-                        if (getBridge().getHandler() instanceof BridgeSedifWebHandler bridgeSedif) {
+                        Bridge lcBridge = getBridge();
+                        if (lcBridge != null && lcBridge.getHandler() instanceof BridgeSedifWebHandler bridgeSedif) {
                             bridgeSedif.scheduleReconnect();
                         }
                         return null;
@@ -172,6 +178,7 @@ public class ThingSedifHandler extends BaseThingHandler {
     @Override
     public synchronized void initialize() {
         loadSedifState();
+
         if (sedifState.getLastIndexDate() == null) {
             sedifState.setLastIndexDate(LocalDate.of(1980, 1, 1));
         }
@@ -207,16 +214,15 @@ public class ThingSedifHandler extends BaseThingHandler {
             if (file.exists()) {
                 byte[] bytes = Files.readAllBytes(file.toPath());
                 String content = new String(bytes, StandardCharsets.UTF_8);
-                sedifState = gson.fromJson(content, SedifState.class);
+                SedifState newState = gson.fromJson(content, SedifState.class);
+                if (newState != null) {
+                    sedifState = newState;
+                }
             }
         } catch (InterruptedIOException ioe) {
             logger.warn("Couldn't read Sedif MetaData information from file '{}'.", file.getAbsolutePath());
         } catch (IOException ioe) {
             logger.warn("Couldn't read Sedif MetaData information from file '{}'.", file.getAbsolutePath());
-        }
-
-        if (sedifState == null) {
-            sedifState = new SedifState();
         }
     }
 
@@ -231,7 +237,10 @@ public class ThingSedifHandler extends BaseThingHandler {
             file = new File(JSON_DIR + File.separator + "sedif.json");
 
             if (!file.exists()) {
-                file.getParentFile().mkdirs();
+                File parentFile = file.getParentFile();
+                if (parentFile != null) {
+                    parentFile.mkdirs();
+                }
                 file.createNewFile();
             }
 
@@ -294,8 +303,10 @@ public class ThingSedifHandler extends BaseThingHandler {
                 logger.debug("Retrieve data from {} to {}:", startDate, currentDate);
                 MeterReading meterReading = updateConsumptionData(startDate, currentDate, true);
                 if (meterReading != null) {
-                    newLastUpdateDate = meterReading.data.consommation[meterReading.data.consommation.length
-                            - 1].dateIndex.toLocalDate();
+                    Consommation[] consommation = meterReading.data.consommation;
+                    if (consommation != null) {
+                        newLastUpdateDate = consommation[consommation.length - 1].dateIndex.toLocalDate();
+                    }
                     hasData = true;
                 } else {
                     hasData = false;
@@ -319,7 +330,6 @@ public class ThingSedifHandler extends BaseThingHandler {
         }
 
         sedifState.setLastIndexDate(newLastUpdateDate);
-
         saveSedifState();
     }
 
@@ -345,30 +355,37 @@ public class ThingSedifHandler extends BaseThingHandler {
         logger.trace("updateContractDetail() called");
         contractDetail.getValue().ifPresentOrElse(values -> {
 
+            CompteInfo meterInfo = null;
+
             for (CompteInfo compteInfo : values.compteInfo) {
                 if (compteInfo.numCompteur.equals(numCompteur)) {
-                    currentMeterInfo = compteInfo;
+                    meterInfo = compteInfo;
                 }
             }
 
-            if (currentMeterInfo == null || currentMeterInfo.eLma.isBlank()) {
+            if (meterInfo == null || meterInfo.eLma.isBlank()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         String.format("Can't find meter for meterId {}", numCompteur));
                 return;
             }
 
+            this.currentMeterInfo = meterInfo;
+
             Map<String, String> props = this.editProperties();
 
-            addProps(props, PROPERTY_CONTRACT_ORGANIZING_AUTHORITY, values.contrat.autoriteOrganisatrice);
-            addProps(props, PROPERTY_CONTRACT_DATE_SORTIE_EPT, values.contrat.dateSortieEPT);
-            addProps(props, PROPERTY_CONTRACT_EINVOICE, "" + values.contrat.eFacture);
-            addProps(props, PROPERTY_CONTRACT_ICL_ACTIVE, "" + values.contrat.iclActive);
-            addProps(props, PROPERTY_CONTRACT_DIRECT_DEBIT, "" + values.contrat.prelevAuto);
-            addProps(props, PROPERTY_CONTRACT_NAME, values.contrat.name);
-            addProps(props, PROPERTY_CONTRACT_STREET, values.contrat.siteRue);
-            addProps(props, PROPERTY_CONTRACT_POST_CODE, values.contrat.siteCp);
-            addProps(props, PROPERTY_CONTRACT_TOWN, values.contrat.siteCommune);
-            addProps(props, PROPERTY_CONTRACT_STATE, values.contrat.statut);
+            Contract contrat = values.contrat;
+            if (contrat != null) {
+                addProps(props, PROPERTY_CONTRACT_ORGANIZING_AUTHORITY, contrat.autoriteOrganisatrice);
+                addProps(props, PROPERTY_CONTRACT_DATE_SORTIE_EPT, contrat.dateSortieEPT);
+                addProps(props, PROPERTY_CONTRACT_EINVOICE, "" + contrat.eFacture);
+                addProps(props, PROPERTY_CONTRACT_ICL_ACTIVE, "" + contrat.iclActive);
+                addProps(props, PROPERTY_CONTRACT_DIRECT_DEBIT, "" + contrat.prelevAuto);
+                addProps(props, PROPERTY_CONTRACT_NAME, contrat.name);
+                addProps(props, PROPERTY_CONTRACT_STREET, contrat.siteRue);
+                addProps(props, PROPERTY_CONTRACT_POST_CODE, contrat.siteCp);
+                addProps(props, PROPERTY_CONTRACT_TOWN, contrat.siteCommune);
+                addProps(props, PROPERTY_CONTRACT_STATE, contrat.statut);
+            }
             addProps(props, PROPERTY_CONTRACT_BALANCE, "" + values.solde);
 
             CompteInfo comptInfo = values.compteInfo.get(0);
@@ -377,29 +394,35 @@ public class ThingSedifHandler extends BaseThingHandler {
             addProps(props, PROPERTY_ID_PDS, comptInfo.idPds);
             addProps(props, PROPERTY_NUM_METER, comptInfo.numCompteur);
 
-            addProps(props, PROPERTY_CUSTOMER_BILLING_TOWN, values.contratClient.billingCity);
-            addProps(props, PROPERTY_CUSTOMER_BILLING_POST_CODE, values.contratClient.billingPostalCode);
-            addProps(props, PROPERTY_CUSTOMER_BILLING_STREET, values.contratClient.billingStreet);
-            addProps(props, PROPERTY_CUSTOMER_FIRST_NAME, values.contratClient.firstName);
-            addProps(props, PROPERTY_CUSTOMER_LAST_NAME, values.contratClient.lastName);
-            addProps(props, PROPERTY_CUSTOMER_NAME_SUP, values.contratClient.name);
-            addProps(props, PROPERTY_CUSTOMER_EMAIL, values.contratClient.email);
-            addProps(props, PROPERTY_CUSTOMER_GC, "" + values.contratClient.gC);
-            addProps(props, PROPERTY_CUSTOMER_MOBILE_PHONE, values.contratClient.mobilePhone);
-            addProps(props, PROPERTY_CUSTOMER_TITLE, values.contratClient.salutation);
-            addProps(props, PROPERTY_CUSTOMER_LOCK, "" + values.contratClient.verrouillageFiche);
+            Client client = values.contratClient;
+            if (client != null) {
+                addProps(props, PROPERTY_CUSTOMER_BILLING_TOWN, client.billingCity);
+                addProps(props, PROPERTY_CUSTOMER_BILLING_POST_CODE, client.billingPostalCode);
+                addProps(props, PROPERTY_CUSTOMER_BILLING_STREET, client.billingStreet);
+                addProps(props, PROPERTY_CUSTOMER_FIRST_NAME, client.firstName);
+                addProps(props, PROPERTY_CUSTOMER_LAST_NAME, client.lastName);
+                addProps(props, PROPERTY_CUSTOMER_NAME_SUP, client.name);
+                addProps(props, PROPERTY_CUSTOMER_EMAIL, client.email);
+                addProps(props, PROPERTY_CUSTOMER_GC, "" + client.gC);
+                addProps(props, PROPERTY_CUSTOMER_MOBILE_PHONE, client.mobilePhone);
+                addProps(props, PROPERTY_CUSTOMER_TITLE, client.salutation);
+                addProps(props, PROPERTY_CUSTOMER_LOCK, "" + client.verrouillageFiche);
+            }
 
-            addProps(props, PROPERTY_PAYER_BILLING_CITY, values.payeurClient.billingCity);
-            addProps(props, PROPERTY_PAYER_BILLING_POSTAL_CODE, values.payeurClient.billingPostalCode);
-            addProps(props, PROPERTY_PAYER_BILLING_STREET, values.payeurClient.billingStreet);
-            addProps(props, PROPERTY_PAYER_FIRST_NAME, values.payeurClient.firstName);
-            addProps(props, PROPERTY_PAYER_LAST_NAME, values.payeurClient.lastName);
-            addProps(props, PROPERTY_PAYER_NAME_SUP, values.payeurClient.name);
-            addProps(props, PROPERTY_PAYER_EMAIL, values.payeurClient.email);
-            addProps(props, PROPERTY_PAYER_GC, "" + values.payeurClient.gC);
-            addProps(props, PROPERTY_PAYER_MOBILE_PHONE, values.payeurClient.mobilePhone);
-            addProps(props, PROPERTY_PAYER_TITLE, values.payeurClient.salutation);
-            addProps(props, PROPERTY_PAYER_LOCK, "" + values.payeurClient.verrouillageFiche);
+            Client payeurClient = values.contratClient;
+            if (payeurClient != null) {
+                addProps(props, PROPERTY_PAYER_BILLING_CITY, payeurClient.billingCity);
+                addProps(props, PROPERTY_PAYER_BILLING_POSTAL_CODE, payeurClient.billingPostalCode);
+                addProps(props, PROPERTY_PAYER_BILLING_STREET, payeurClient.billingStreet);
+                addProps(props, PROPERTY_PAYER_FIRST_NAME, payeurClient.firstName);
+                addProps(props, PROPERTY_PAYER_LAST_NAME, payeurClient.lastName);
+                addProps(props, PROPERTY_PAYER_NAME_SUP, payeurClient.name);
+                addProps(props, PROPERTY_PAYER_EMAIL, payeurClient.email);
+                addProps(props, PROPERTY_PAYER_GC, "" + payeurClient.gC);
+                addProps(props, PROPERTY_PAYER_MOBILE_PHONE, payeurClient.mobilePhone);
+                addProps(props, PROPERTY_PAYER_TITLE, payeurClient.salutation);
+                addProps(props, PROPERTY_PAYER_LOCK, "" + payeurClient.verrouillageFiche);
+            }
 
             updateProperties(props);
         }, () -> {
@@ -430,14 +453,18 @@ public class ThingSedifHandler extends BaseThingHandler {
             double dayConsoMinus2 = 0;
             double dayConsoMinus3 = 0;
 
-            if (values.data.consommation.length - 1 >= 0) {
-                yesterdayConso = values.data.consommation[values.data.consommation.length - 1].consommation;
-            }
-            if (values.data.consommation.length - 2 >= 0) {
-                dayConsoMinus2 = values.data.consommation[values.data.consommation.length - 2].consommation;
-            }
-            if (values.data.consommation.length - 3 >= 0) {
-                dayConsoMinus3 = values.data.consommation[values.data.consommation.length - 3].consommation;
+            Consommation[] consommation = values.data.consommation;
+
+            if (consommation != null) {
+                if (consommation.length - 1 >= 0) {
+                    yesterdayConso = consommation[consommation.length - 1].consommation;
+                }
+                if (values.data.consommation.length - 2 >= 0) {
+                    dayConsoMinus2 = consommation[consommation.length - 2].consommation;
+                }
+                if (values.data.consommation.length - 3 >= 0) {
+                    dayConsoMinus3 = consommation[consommation.length - 3].consommation;
+                }
             }
 
             updateState(GROUP_DAILY_CONSUMPTION, CHANNEL_DAILY_YESTERDAY_CONSUMPTION,
@@ -454,19 +481,23 @@ public class ThingSedifHandler extends BaseThingHandler {
             double lastWeekConso = 0;
             double weekConsoMinus2 = 0;
 
-            if (values.data.weekConso.length - 1 >= 0) {
-                if (values.data.weekConso[values.data.weekConso.length - 1] != null) {
-                    thisWeekConso = values.data.weekConso[values.data.weekConso.length - 1].consommation;
+            Consommation[] weekConso = values.data.weekConso;
+
+            if (weekConso != null) {
+                if (weekConso.length - 1 >= 0) {
+                    if (values.data.weekConso[weekConso.length - 1] != null) {
+                        thisWeekConso = weekConso[weekConso.length - 1].consommation;
+                    }
                 }
-            }
-            if (values.data.weekConso.length - 2 >= 0) {
-                if (values.data.weekConso[values.data.weekConso.length - 2] != null) {
-                    lastWeekConso = values.data.weekConso[values.data.weekConso.length - 2].consommation;
+                if (weekConso.length - 2 >= 0) {
+                    if (weekConso[values.data.weekConso.length - 2] != null) {
+                        lastWeekConso = weekConso[weekConso.length - 2].consommation;
+                    }
                 }
-            }
-            if (values.data.weekConso.length - 3 >= 0) {
-                if (values.data.weekConso[values.data.weekConso.length - 3] != null) {
-                    weekConsoMinus2 = values.data.weekConso[values.data.weekConso.length - 3].consommation;
+                if (weekConso.length - 3 >= 0) {
+                    if (weekConso[values.data.weekConso.length - 3] != null) {
+                        weekConsoMinus2 = weekConso[weekConso.length - 3].consommation;
+                    }
                 }
             }
 
@@ -484,19 +515,23 @@ public class ThingSedifHandler extends BaseThingHandler {
             double lastMonthConso = 0;
             double monthConsoMinus2 = 0;
 
-            if (values.data.monthConso.length - 1 >= 0) {
-                if (values.data.monthConso[values.data.monthConso.length - 1] != null) {
-                    thisMonthConso = values.data.monthConso[values.data.monthConso.length - 1].consommation;
+            Consommation[] monthConso = values.data.weekConso;
+
+            if (monthConso != null) {
+                if (monthConso.length - 1 >= 0) {
+                    if (monthConso[monthConso.length - 1] != null) {
+                        thisMonthConso = monthConso[monthConso.length - 1].consommation;
+                    }
                 }
-            }
-            if (values.data.monthConso.length - 2 >= 0) {
-                if (values.data.monthConso[values.data.monthConso.length - 2] != null) {
-                    lastMonthConso = values.data.monthConso[values.data.monthConso.length - 2].consommation;
+                if (monthConso.length - 2 >= 0) {
+                    if (monthConso[monthConso.length - 2] != null) {
+                        lastMonthConso = monthConso[monthConso.length - 2].consommation;
+                    }
                 }
-            }
-            if (values.data.monthConso.length - 3 >= 0) {
-                if (values.data.monthConso[values.data.monthConso.length - 3] != null) {
-                    monthConsoMinus2 = values.data.monthConso[values.data.monthConso.length - 3].consommation;
+                if (monthConso.length - 3 >= 0) {
+                    if (monthConso[monthConso.length - 3] != null) {
+                        monthConsoMinus2 = monthConso[monthConso.length - 3].consommation;
+                    }
                 }
             }
 
@@ -514,19 +549,23 @@ public class ThingSedifHandler extends BaseThingHandler {
             double lastYearConso = 0;
             double yearConsoMinus2 = 0;
 
-            if (values.data.yearConso.length - 1 >= 0) {
-                if (values.data.yearConso[values.data.yearConso.length - 1] != null) {
-                    thisYearConso = values.data.yearConso[values.data.yearConso.length - 1].consommation;
+            Consommation[] yearConso = values.data.weekConso;
+
+            if (yearConso != null) {
+                if (yearConso.length - 1 >= 0) {
+                    if (yearConso[yearConso.length - 1] != null) {
+                        thisYearConso = yearConso[yearConso.length - 1].consommation;
+                    }
                 }
-            }
-            if (values.data.yearConso.length - 2 >= 0) {
-                if (values.data.yearConso[values.data.yearConso.length - 2] != null) {
-                    lastYearConso = values.data.yearConso[values.data.yearConso.length - 2].consommation;
+                if (yearConso.length - 2 >= 0) {
+                    if (yearConso[yearConso.length - 2] != null) {
+                        lastYearConso = yearConso[yearConso.length - 2].consommation;
+                    }
                 }
-            }
-            if (values.data.yearConso.length - 3 >= 0) {
-                if (values.data.yearConso[values.data.yearConso.length - 3] != null) {
-                    yearConsoMinus2 = values.data.yearConso[values.data.yearConso.length - 3].consommation;
+                if (yearConso.length - 3 >= 0) {
+                    if (yearConso[yearConso.length - 3] != null) {
+                        yearConsoMinus2 = yearConso[yearConso.length - 3].consommation;
+                    }
                 }
             }
 
@@ -539,8 +578,9 @@ public class ThingSedifHandler extends BaseThingHandler {
 
             updateState(GROUP_BASE, CHANNEL_MEAN_WATER_PRICE, new DecimalType(values.prixMoyenEau));
 
-            sedifState.setLastIndexDate(
-                    values.data.consommation[values.data.consommation.length - 1].dateIndex.toLocalDate());
+            if (consommation != null && consommation.length > 0) {
+                sedifState.setLastIndexDate(consommation[consommation.length - 1].dateIndex.toLocalDate());
+            }
             updateConsumptionTimeSeries(GROUP_DAILY_CONSUMPTION, CHANNEL_CONSUMPTION, values.data.consommation);
             updateConsumptionTimeSeries(GROUP_WEEKLY_CONSUMPTION, CHANNEL_CONSUMPTION, values.data.weekConso);
             updateConsumptionTimeSeries(GROUP_MONTHLY_CONSUMPTION, CHANNEL_CONSUMPTION, values.data.monthConso);
@@ -556,8 +596,7 @@ public class ThingSedifHandler extends BaseThingHandler {
     private @Nullable ContractDetail getContractDetails() throws SedifException {
         SedifHttpApi api = this.sedifApi;
         if (api != null) {
-            ContractDetail contractDetail = api.getContractDetails(contractId);
-            return contractDetail;
+            return api.getContractDetails(contractId);
         }
 
         return null;
@@ -569,8 +608,7 @@ public class ThingSedifHandler extends BaseThingHandler {
 
         SedifHttpApi api = this.sedifApi;
         if (api != null) {
-            MeterReading meterReading = api.getConsumptionData(contractId, currentMeterInfo, from, to);
-            return meterReading;
+            return api.getConsumptionData(contractId, currentMeterInfo, from, to);
         }
 
         return null;
@@ -579,7 +617,9 @@ public class ThingSedifHandler extends BaseThingHandler {
     @Override
     protected void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
         super.updateStatus(status, statusDetail, description);
-        if (getBridge().getStatus() == ThingStatus.ONLINE && status == ThingStatus.UNKNOWN) {
+
+        Bridge lcBridge = getBridge();
+        if (lcBridge != null && lcBridge.getStatus() == ThingStatus.ONLINE && status == ThingStatus.UNKNOWN) {
             setupRefreshJob();
         }
     }
@@ -607,26 +647,23 @@ public class ThingSedifHandler extends BaseThingHandler {
             }
 
             sedifApi = bridgeHandler.getSedifApi();
-            if (sedifApi != null) {
-                updateData();
+            updateData();
 
-                final LocalDateTime now = LocalDateTime.now();
-                final LocalDateTime nextDayFirstTimeUpdate = now.plusDays(1).withHour(REFRESH_HOUR_OF_DAY)
-                        .withMinute(REFRESH_MINUTE_OF_DAY).truncatedTo(ChronoUnit.MINUTES);
+            final LocalDateTime now = LocalDateTime.now();
+            final LocalDateTime nextDayFirstTimeUpdate = now.plusDays(1).withHour(REFRESH_HOUR_OF_DAY)
+                    .withMinute(REFRESH_MINUTE_OF_DAY).truncatedTo(ChronoUnit.MINUTES);
 
-                cancelRefreshJob();
-                long initialDelay = ChronoUnit.MINUTES.between(now, nextDayFirstTimeUpdate) % REFRESH_INTERVAL_IN_MIN
-                        + 1;
-                long delay = REFRESH_INTERVAL_IN_MIN;
+            cancelRefreshJob();
+            long initialDelay = ChronoUnit.MINUTES.between(now, nextDayFirstTimeUpdate) % REFRESH_INTERVAL_IN_MIN + 1;
+            long delay = REFRESH_INTERVAL_IN_MIN;
 
-                if (!consumption.isPresent() || !contractDetail.isPresent()) {
-                    initialDelay = 20;
-                }
-                refreshJob = scheduler.scheduleWithFixedDelay(this::updateData, initialDelay, delay, TimeUnit.MINUTES);
+            if (!consumption.isPresent() || !contractDetail.isPresent()) {
+                initialDelay = 20;
+            }
+            refreshJob = scheduler.scheduleWithFixedDelay(this::updateData, initialDelay, delay, TimeUnit.MINUTES);
 
-                if (this.getThing().getStatusInfo().getStatusDetail() != ThingStatusDetail.COMMUNICATION_ERROR) {
-                    updateStatus(ThingStatus.ONLINE);
-                }
+            if (this.getThing().getStatusInfo().getStatusDetail() != ThingStatusDetail.COMMUNICATION_ERROR) {
+                updateStatus(ThingStatus.ONLINE);
             }
         }
     }

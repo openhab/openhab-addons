@@ -12,8 +12,8 @@
  */
 package org.openhab.binding.sedif.internal.api;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Hashtable;
@@ -29,6 +29,7 @@ import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.FormContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.util.Fields;
 import org.openhab.binding.sedif.internal.constants.SedifBindingConstants;
 import org.openhab.binding.sedif.internal.dto.Action;
@@ -74,6 +75,8 @@ public class SedifHttpApi {
     public static final String URL_SEDIF_SITE = BASE_URL
             + "/espace-particuliers/s/sfsites/aura?r=36&aura.ApexAction.execute=1";
 
+    private static final String USER_AGENT = "Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:47.0) Gecko/20100101 Firefox/47.0";
+
     private static final DateTimeFormatter API_DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     public SedifHttpApi(Gson gson, HttpClient httpClient) {
@@ -102,7 +105,7 @@ public class SedifHttpApi {
         try {
             Request request = httpClient.newRequest(url);
             request = request.timeout(SedifBindingConstants.REQUEST_TIMEOUT, TimeUnit.SECONDS);
-            request = request.agent("Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:47.0) Gecko/20100101 Firefox/47.0");
+            request = request.agent(USER_AGENT);
 
             if (cmd == null) {
                 request = request.method(HttpMethod.GET);
@@ -120,7 +123,7 @@ public class SedifHttpApi {
 
                 // We put the to key syntax contratId & contractId because of an error on Sedif side.
                 // Some api calls need the contratId syntax, and other the contactId syntax, so putting it both is ok
-                if (!"".equals(contractId)) {
+                if (!contractId.isBlank()) {
                     paramsSub.put("contratId", contractId);
                     paramsSub.put("contractId", contractId);
                 }
@@ -131,11 +134,11 @@ public class SedifHttpApi {
                     String meterIdB = meterInfo.eLmb;
                     String meterIdA = meterInfo.eLma;
 
-                    if (!"".equals(meterIdB)) {
+                    if (!meterIdB.isBlank()) {
                         paramsSub.put("NUMERO_COMPTEUR", meterIdB);
                     }
 
-                    if (!"".equals(meterIdA)) {
+                    if (!meterIdA.isBlank()) {
                         paramsSub.put("ID_PDS", meterIdA);
                     }
                 }
@@ -148,7 +151,7 @@ public class SedifHttpApi {
 
             ContentResponse result = request.send();
 
-            if (result.getStatus() != 200) {
+            if (result.getStatus() != HttpStatus.OK_200) {
                 throw new SedifException("Error requesting '%s': %s", url, result.getContentAsString());
             }
 
@@ -177,8 +180,12 @@ public class SedifHttpApi {
 
         AuraCommand cmd = AuraCommand.make("", "LTN009_ICL_ContratsGroupements", "getContratsGroupements");
         Actions actions = getData("", null, URL_SEDIF_SITE, cmd, Actions.class);
-        ReturnValue retValue = actions.actions.get(0).returnValue;
-        return (Contracts) ((retValue == null) ? null : retValue.returnValue);
+        if (actions != null) {
+            ReturnValue retValue = actions.actions.get(0).returnValue;
+            return (Contracts) ((retValue == null) ? null : retValue.returnValue);
+        }
+
+        return null;
     }
 
     public @Nullable ContractDetail getContractDetails(String contractId) throws SedifException {
@@ -190,13 +197,16 @@ public class SedifHttpApi {
 
         // We put the to key syntax contratId & contractId because of an error on Sedif side.
         // Some api calls need the contratId syntax, and other the contactId syntax, so putting it both is ok
-        if (!"".equals(contractId)) {
+        if (!contractId.isBlank()) {
             paramsSub.put("contratId", contractId);
             paramsSub.put("contractId", contractId);
         }
         Actions actions = getData(contractId, null, URL_SEDIF_SITE, cmd, Actions.class);
-        ReturnValue retValue = actions.actions.get(0).returnValue;
-        return (ContractDetail) ((retValue == null) ? null : retValue.returnValue);
+        if (actions != null) {
+            ReturnValue retValue = actions.actions.get(0).returnValue;
+            return (ContractDetail) ((retValue == null) ? null : retValue.returnValue);
+        }
+        return null;
     }
 
     public @Nullable MeterReading getConsumptionData(String contractId, @Nullable CompteInfo meterInfo, LocalDate from,
@@ -221,23 +231,20 @@ public class SedifHttpApi {
         paramsSub.put("DATE_FIN", dtEnd);
 
         Actions actions = getData(contractId, meterInfo, apiUrl, cmd, Actions.class);
-        ReturnValue retValue = actions.actions.get(0).returnValue;
-        return (MeterReading) ((retValue == null) ? null : retValue.returnValue);
+        if (actions != null) {
+            ReturnValue retValue = actions.actions.get(0).returnValue;
+            return (MeterReading) ((retValue == null) ? null : retValue.returnValue);
+        }
+        return null;
     }
 
-    /*
-     * public <T> T getData(String url, @Nullable AuraCommand cmd, Class<T> clazz) throws SedifException {
-     * return getData(null, null, url, cmd, clazz);
-     * }
-     */
-
-    private <T> T getData(String contractId, @Nullable CompteInfo meterInfo, String url, @Nullable AuraCommand cmd,
-            Class<T> clazz) throws SedifException {
+    private @Nullable <T> T getData(String contractId, @Nullable CompteInfo meterInfo, String url,
+            @Nullable AuraCommand cmd, Class<T> clazz) throws SedifException {
         logger.debug("getData begin {}: {}", clazz.getName(), url);
 
         try {
             String data = getContent(contractId, meterInfo, url, cmd);
-            if (data.indexOf("aura:invalidSession") >= 0) {
+            if (data.contains("aura:invalidSession")) {
                 throw new InvalidSessionException("Communication with sedif failed, session invalid");
             }
 
@@ -271,7 +278,7 @@ public class SedifHttpApi {
         AuraContext lcAppCtx = appCtx;
         if (lcAppCtx != null) {
             String app = lcAppCtx.app;
-            if (app != null && app.indexOf("login") >= 0) {
+            if (app != null && app.contains("login")) {
                 action.descriptor = "apex://LightningLoginFormController/ACTION$login";
                 action.callingDescriptor = "markup://c:loginForm";
             } else {
@@ -286,22 +293,22 @@ public class SedifHttpApi {
         String userName = cmd.getUserName();
         String userPassword = cmd.getUserPassword();
 
-        if (userName != null && !"".equals(userName)) {
+        if (userName != null && !userName.isBlank()) {
             action.params.put("username", userName);
         }
-        if (userPassword != null && !"".equals(userPassword)) {
+        if (userPassword != null && !userPassword.isBlank()) {
             action.params.put("password", userPassword);
         }
 
-        if (nameSpace != null && !"".equals(nameSpace)) {
+        if (nameSpace != null && !nameSpace.isBlank()) {
             action.params.put("namespace", nameSpace);
         }
 
-        if (className != null && !"".equals(className)) {
+        if (className != null && !className.isBlank()) {
             action.params.put("classname", className);
         }
 
-        if (method != null && !"".equals(method)) {
+        if (method != null && !method.isBlank()) {
             action.params.put("method", method);
         }
 
@@ -314,30 +321,26 @@ public class SedifHttpApi {
     }
 
     public @Nullable AuraContext extractAuraContext(String html) throws SedifException {
-        try {
-            int pos1 = html.indexOf("resources.js");
-            if (pos1 >= 0) {
-                String sub1 = html.substring(0, pos1 + 1);
-                int pos2 = sub1.lastIndexOf("<script");
-                if (pos2 < 0) {
-                    throw new SedifException("Unable to find app context in login process");
-                }
-                int pos3 = sub1.indexOf("%7B", pos2 + 1);
-                if (pos3 < 0) {
-                    throw new SedifException("Unable to find app context in login process");
-                }
-                int pos4 = sub1.lastIndexOf("%7D");
-                if (pos4 < 0) {
-                    throw new SedifException("Unable to find app context in login process");
-                }
-
-                String sub2 = sub1.substring(pos3, pos4 + 3);
-                sub2 = URLDecoder.decode(sub2, "UTF-8");
-
-                return gson.fromJson(sub2, AuraContext.class);
+        int pos1 = html.indexOf("resources.js");
+        if (pos1 >= 0) {
+            String sub1 = html.substring(0, pos1 + 1);
+            int pos2 = sub1.lastIndexOf("<script");
+            if (pos2 < 0) {
+                throw new SedifException("Unable to find app context in login process");
             }
-        } catch (UnsupportedEncodingException e) {
-            throw new SedifException("Can't decode context in extractAuraContext {}", e.getMessage(), e);
+            int pos3 = sub1.indexOf("%7B", pos2 + 1);
+            if (pos3 < 0) {
+                throw new SedifException("Unable to find app context in login process");
+            }
+            int pos4 = sub1.lastIndexOf("%7D");
+            if (pos4 < 0) {
+                throw new SedifException("Unable to find app context in login process");
+            }
+
+            String sub2 = sub1.substring(pos3, pos4 + 3);
+            sub2 = URLDecoder.decode(sub2, StandardCharsets.UTF_8);
+
+            return gson.fromJson(sub2, AuraContext.class);
         }
 
         return null;

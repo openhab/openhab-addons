@@ -28,13 +28,11 @@ import org.openhab.binding.sedif.internal.dto.MeterReading;
 import org.openhab.binding.sedif.internal.dto.Value;
 import org.openhab.binding.sedif.internal.handler.BridgeSedifWebHandler;
 import org.openhab.binding.sedif.internal.handler.ThingSedifHandler;
-import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingRegistry;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
@@ -43,7 +41,6 @@ import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.http.HttpService;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -60,10 +57,6 @@ import com.google.gson.JsonSerializer;
 @Component(immediate = true, service = ThingHandlerFactory.class, configurationPid = "binding.sedif")
 public class SedifHandlerFactory extends BaseThingHandlerFactory {
     private final HttpClientFactory httpClientFactory;
-    private final OAuthFactory oAuthFactory;
-    private final HttpService httpService;
-    private final ThingRegistry thingRegistry;
-    private final ComponentContext componentContext;
     private final TimeZoneProvider timeZoneProvider;
 
     public static final DateTimeFormatter SEDIF_FORMATTER = DateTimeFormatter.ofPattern("uuuu-MM-dd'T'HH:mm:ss.SSSX");
@@ -77,16 +70,10 @@ public class SedifHandlerFactory extends BaseThingHandlerFactory {
 
     @Activate
     public SedifHandlerFactory(final @Reference LocaleProvider localeProvider,
-            final @Reference HttpClientFactory httpClientFactory, final @Reference OAuthFactory oAuthFactory,
-            final @Reference HttpService httpService, final @Reference ThingRegistry thingRegistry,
-            ComponentContext componentContext, final @Reference TimeZoneProvider timeZoneProvider) {
+            final @Reference HttpClientFactory httpClientFactory, final @Reference TimeZoneProvider timeZoneProvider) {
         this.localeProvider = localeProvider;
         this.timeZoneProvider = timeZoneProvider;
         this.httpClientFactory = httpClientFactory;
-        this.oAuthFactory = oAuthFactory;
-        this.httpService = httpService;
-        this.thingRegistry = thingRegistry;
-        this.componentContext = componentContext;
 
         RuntimeTypeAdapterFactory<Value> adapter = RuntimeTypeAdapterFactory.of(Value.class);
         adapter.registerSubtype(Contracts.class, "contrats", "Contracts");
@@ -126,8 +113,7 @@ public class SedifHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         if (THING_TYPE_GATEWAY_BRIDGE.equals(thing.getThingTypeUID())) {
-            BridgeSedifWebHandler handler = new BridgeSedifWebHandler((Bridge) thing, this.httpClientFactory,
-                    this.oAuthFactory, this.httpService, thingRegistry, componentContext, gson);
+            BridgeSedifWebHandler handler = new BridgeSedifWebHandler((Bridge) thing, this.httpClientFactory, gson);
             return handler;
         } else if (THING_TYPE_METER.equals(thing.getThingTypeUID())) {
             ThingSedifHandler handler = new ThingSedifHandler(thing, localeProvider, timeZoneProvider, gson);

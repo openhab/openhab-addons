@@ -16,8 +16,7 @@ import java.net.HttpCookie;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Collection;
-import java.util.Dictionary;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -41,21 +40,16 @@ import org.openhab.binding.sedif.internal.dto.Contracts;
 import org.openhab.binding.sedif.internal.dto.Event;
 import org.openhab.binding.sedif.internal.helpers.SedifListener;
 import org.openhab.binding.sedif.internal.types.SedifException;
-import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.io.net.http.TrustAllTrustManager;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
-import org.openhab.core.thing.ThingRegistry;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
-import org.osgi.framework.BundleContext;
-import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.http.HttpService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,16 +68,12 @@ public class BridgeSedifWebHandler extends BaseBridgeHandler {
 
     private Set<SedifListener> listeners = new CopyOnWriteArraySet<>();
 
-    private Dictionary<String, Contract> contractDict = new Hashtable<String, Contract>();
+    private HashMap<String, Contract> contractDict = new HashMap<>();
 
-    protected final HttpService httpService;
-    protected final BundleContext bundleContext;
     protected final HttpClient httpClient;
     protected final SedifHttpApi sedifApi;
-    protected final ThingRegistry thingRegistry;
 
     protected final Gson gson;
-    private String sid = "";
 
     private @Nullable AuraContext appCtx;
     private @Nullable String token = "";
@@ -93,9 +83,7 @@ public class BridgeSedifWebHandler extends BaseBridgeHandler {
     private static final int REQUEST_BUFFER_SIZE = 8000;
     private static final int RESPONSE_BUFFER_SIZE = 200000;
 
-    public BridgeSedifWebHandler(Bridge bridge, final @Reference HttpClientFactory httpClientFactory,
-            final @Reference OAuthFactory oAuthFactory, final @Reference HttpService httpService,
-            final @Reference ThingRegistry thingRegistry, ComponentContext componentContext, Gson gson) {
+    public BridgeSedifWebHandler(Bridge bridge, final @Reference HttpClientFactory httpClientFactory, Gson gson) {
         super(bridge);
 
         SslContextFactory sslContextFactory = new SslContextFactory.Client();
@@ -111,9 +99,6 @@ public class BridgeSedifWebHandler extends BaseBridgeHandler {
         }
 
         this.gson = gson;
-        this.httpService = httpService;
-        this.thingRegistry = thingRegistry;
-        this.bundleContext = componentContext.getBundleContext();
 
         this.httpClient = httpClientFactory.createHttpClient(SedifBindingConstants.BINDING_ID, sslContextFactory);
         this.httpClient.setFollowRedirects(false);
@@ -127,6 +112,16 @@ public class BridgeSedifWebHandler extends BaseBridgeHandler {
         }
 
         this.sedifApi = new SedifHttpApi(gson, this.httpClient);
+    }
+
+    @Override
+    public void dispose() {
+        super.dispose();
+        try {
+            httpClient.stop();
+        } catch (Exception e) {
+            logger.debug("HttpClient failed on bridge disposal: {}", e.getMessage(), e);
+        }
     }
 
     @Override
@@ -202,15 +197,6 @@ public class BridgeSedifWebHandler extends BaseBridgeHandler {
             if (urlRedir.isBlank()) {
                 throw new SedifException("Unable to find redir url in login process");
             }
-
-            sid = "";
-            String[] parts = urlRedir.split("&");
-            for (String part : parts) {
-                if (part.indexOf("sid") >= 0) {
-                    sid = part;
-                }
-            }
-            sid = sid.replace("sid=", "");
         }
 
         // =====================================================================
@@ -237,7 +223,7 @@ public class BridgeSedifWebHandler extends BaseBridgeHandler {
         List<HttpCookie> lCookie = httpClient.getCookieStore().getCookies();
         token = "";
         for (HttpCookie cookie : lCookie) {
-            if (cookie.getName().indexOf("__Host-ERIC_") >= 0) {
+            if (cookie.getName().startsWith("__Host-ERIC_")) {
                 token = cookie.getValue();
             }
         }
