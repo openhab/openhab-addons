@@ -156,11 +156,15 @@ sequenceDiagram
 1. **User Retrieval**: `ServerSyncTask` periodically fetches the user list from the Jellyfin server
 2. **User Processing**: `UserManager` filters enabled/visible users and detects changes
 3. **State Update**: Handler updates its internal `activeUserIds` list
-4. **Session Sync**: `ClientListUpdater` retrieves active sessions for each user
-5. **Client Map Update**: Session information is stored in the handler's `clients` map
+4. **Session Sync**: `ClientListUpdater` retrieves all active sessions from the server (using `getSessions(null, ...)`)
+   and filters them to include only sessions for enabled/visible users
+5. **Client Map Update**: Filtered session information is stored in the handler's `clients` map
 
 This process ensures that the handler maintains an up-to-date view of all active
 users and their current sessions.
+By retrieving all sessions in a single API call
+and filtering client-side, the implementation avoids potential issues with per-user
+session queries that may not return all client devices.
 
 ## Client Discovery Integration
 

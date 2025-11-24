@@ -21,7 +21,6 @@ package org.openhab.binding.jellyfin.internal.util.client;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 
 import org.openhab.binding.jellyfin.internal.api.ApiClient;
 import org.openhab.binding.jellyfin.internal.api.generated.current.SessionApi;
@@ -29,6 +28,12 @@ import org.openhab.binding.jellyfin.internal.api.generated.current.model.Session
 
 /**
  * Utility for updating the Jellyfin client list based on active users.
+ * 
+ * <p>
+ * This utility retrieves all active sessions from the Jellyfin server and filters
+ * them to include only sessions belonging to the specified user IDs. By querying all
+ * sessions in a single API call rather than per-user queries, this approach ensures
+ * that all client devices are discovered reliably.
  *
  * @author Initial contribution by openHAB Community
  */
@@ -38,7 +43,19 @@ public final class ClientListUpdater {
 
     /**
      * Updates the given client map with sessions for the given user IDs.
-     * Only sessions associated with the provided user IDs are included.
+     * 
+     * <p>
+     * This method retrieves all active sessions from the Jellyfin server using
+     * {@code getSessions(null, ...)} and filters them to include only sessions
+     * where the user ID matches one in the provided set. The client map is cleared
+     * and repopulated with the filtered results.
+     * 
+     * <p>
+     * <b>Implementation Note:</b> Using {@code null} for the userId parameter in
+     * {@code getSessions()} retrieves all sessions, which is then filtered client-side.
+     * This approach was found to be more reliable than querying sessions per user,
+     * as per-user queries may not return all client devices in certain Jellyfin
+     * configurations.
      *
      * @param apiClient the Jellyfin API client
      * @param userIds the set of user IDs to include
@@ -47,17 +64,15 @@ public final class ClientListUpdater {
     public static void updateClients(ApiClient apiClient, Set<String> userIds, Map<String, SessionInfoDto> clientMap) {
         var sessionApi = new SessionApi(apiClient);
         clientMap.clear();
-        for (String userId : userIds) {
-            try {
-                List<SessionInfoDto> sessions = sessionApi.getSessions(UUID.fromString(userId), null, null, null);
-                for (SessionInfoDto session : sessions) {
-                    if (userIds.contains(session.getUserId().toString())) {
-                        clientMap.put(session.getId(), session);
-                    }
+        try {
+            List<SessionInfoDto> sessions = sessionApi.getSessions(null, null, null, null);
+            for (SessionInfoDto session : sessions) {
+                if (session.getUserId() != null && userIds.contains(session.getUserId().toString())) {
+                    clientMap.put(session.getId(), session);
                 }
-            } catch (Exception e) {
-                // Log or handle as appropriate in the caller
             }
+        } catch (Exception e) {
+            // Log or handle as appropriate in the caller
         }
     }
 }
