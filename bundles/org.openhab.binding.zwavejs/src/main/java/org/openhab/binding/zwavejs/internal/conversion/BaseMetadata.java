@@ -65,10 +65,14 @@ public abstract class BaseMetadata {
     private static final Map<String, String> UNIT_REPLACEMENTS = Map.ofEntries(Map.entry("lux", "lx"), //
             Map.entry("Lux", "lx"), //
             Map.entry("KwH", "kWh"), //
+            Map.entry("hours", "h"), //
+            Map.entry("Hours", "h"), //
             Map.entry("minutes", "min"), //
             Map.entry("Minutes", "min"), //
             Map.entry("seconds", "s"), //
             Map.entry("Seconds", "s"), //
+            Map.entry("fahrenheit", "°F"), //
+            Map.entry("min/sec", ""), // special case ZUI sends min/sec as unit, but is actually dimensionless
             Map.entry("°(C/F)", ""), // special case where Zwave JS sends °F/C as unit, but is actually dimensionless
             Map.entry("°F/C", ""), // special case where Zwave JS sends °F/C as unit, but is actually dimensionless
             Map.entry("oC", "°C"), //
