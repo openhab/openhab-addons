@@ -23,6 +23,16 @@ Please note that these thing types are case sensitive (you need to define them *
 
 The Sonos devices are discovered through UPnP in the local network and all devices are put in the Inbox. Beware that all Sonos devices have to be added to the local Sonos installation as described in the Sonos setup procedure, e.g. through the Sonos Controller software or smartphone app.
 
+The auto-discovery is enabled by default.
+To disable it, you can create a file in the services directory called sonos.cfg with the following content:
+
+```ini
+org.openhab.sonos:enableAutoDiscovery=false
+```
+
+This configuration parameter only controls the Sonos auto-discovery process, not the openHAB auto-discovery.
+Moreover, if the openHAB auto-discovery is disabled, the Sonos auto-discovery is disabled too.
+
 ## Binding Configuration
 
 The binding has the following configuration options, which can be set for "binding:sonos":
