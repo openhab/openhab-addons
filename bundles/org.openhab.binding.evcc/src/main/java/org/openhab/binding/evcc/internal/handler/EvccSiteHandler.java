@@ -58,7 +58,7 @@ public class EvccSiteHandler extends EvccBaseThingHandler {
             } else {
                 value = state.toString();
                 if (value.contains(" ")) {
-                    value = value.substring(0, command.toString().indexOf(" "));
+                    value = value.substring(0, state.toString().indexOf(" "));
                 }
             }
             String url = endpoint + "/" + datapoint + "/" + value;
@@ -116,8 +116,9 @@ public class EvccSiteHandler extends EvccBaseThingHandler {
             }
         }
         // Backwards compatibility for evcc 0.209.8 and older
-        if (null != state.get("startup")) {
-            state.add("startupComplete", state.get("startup"));
+        JsonElement startup = state.get("startup");
+        if (null != startup && startup.isJsonPrimitive() && startup.getAsJsonPrimitive().isBoolean()) {
+            state.add("startupComplete", startup);
             state.remove("startup");
         }
         state.remove(JSON_KEY_GRID);
