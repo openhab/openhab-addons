@@ -29,9 +29,9 @@ public class HomekitBindingConstants {
     public static final String BINDING_ID = "homekit";
 
     // List of all Thing Type UIDs
-    public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "bridge");
-    public static final ThingTypeUID THING_TYPE_ROOT_ACCESSORY = new ThingTypeUID(BINDING_ID, "root-accessory");
+    public static final ThingTypeUID THING_TYPE_LAN_ACCESSORY = new ThingTypeUID(BINDING_ID, "lan-accessory");
     public static final ThingTypeUID THING_TYPE_CHILD_ACCESSORY = new ThingTypeUID(BINDING_ID, "child-accessory");
+    public static final ThingTypeUID THING_TYPE_BRIDGE_ACCESSORY = new ThingTypeUID(BINDING_ID, "bridge-accessory");
 
     // specific Channel Type UIDs
     public static final String FAKE_PROPERTY_CHANNEL = "property-fake-channel";

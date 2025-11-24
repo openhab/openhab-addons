@@ -7,21 +7,24 @@ Do not confuse this with the other HomeKit **integration** (https://www.openhab.
 
 There are three types of Things supported:
 
-- `root-accessory`: This integrates a single HomeKit accessory, whereby its services appear as channel groups, and the respective characteristics appear as channels.
-- `child-accessory`: This has similar functionality to a `root-accessory`, except the communication is done via the `bridge` (see below).
-- `bridge`: This integrates a HomeKit bridge accessory containing multiple `child-accessory` Things.
+- `lan-accessory`: This integrates a single HomeKit accessory, which has its own LAN connection.
+  Its services appear as channel groups, and their respective characteristics appear as channels.
+- `child-accessory`: This integrates a single HomeKit accessory, which does NOT have its own LAN connection.
+  It has the same functionality as a `lan-accessory`, except that its communication is done via a `bridge-accessory` (see below).
+- `bridge-accessory`: This integrates a HomeKit bridge accessory, which has its own LAN connection.
+  It does not have any own channels. But instead it contains multiple `child-accessory` Things (see above).
 
-Things of type `bridge` and `root-accessory` both communicate directly with their HomeKit device over the LAN.
-Whereas child `child-accessory` Things communicate via their respective `bridge` Thing.
+Things of type `bridge-accessory` and `lan-accessory` both communicate directly with their HomeKit accessory device via the LAN.
+Whereas child `child-accessory` Things communicate via their respective `bridge-accessory` Thing.
 
 ## Discovery
 
-Both `root-accessory` and `bridge` Things will be auto- discovered via mDNS.
-And once a `bridge` Thing has been instantiated and paired, its `child-accessory` Things will also be auto- discovered.
+Both `lan-accessory` and `bridge-accessory` Things will be auto- discovered via mDNS.
+And once a `bridge-accessory` Thing has been instantiated and paired, its `child-accessory` Things will also be auto- discovered.
 
 ## Configuration for Bridge and Root Accessory Things
 
-The following table shows the thing configuration parameters for `bridge` and `root-accessory` Things.
+The following table shows the thing configuration parameters for `bridge-accessory` and `lan-accessory` Things.
 
 | Name              | Type    | Description                                          | Default   | Required | Advanced |
 |-------------------|---------|------------------------------------------------------|-----------|----------|----------|
@@ -54,11 +57,11 @@ The following table shows the thing configuration parameters for `child-accessor
 
 As a general rule, `accessoryID` is set by the child auto- discovery process.
 However you can configure it manually if you wish.
-It must be the ID of the accessory within the `bridge`.
+It must be the ID of the accessory within the `bridge-accessory`.
 
 ## Thing Pairing
 
-The `bridge` and `root-accessory` Things need to be paired with their respective HomeKit accessories.
+The `bridge-accessory` and `lan-accessory` Things need to be paired with their respective HomeKit accessories.
 This requires entering the HomeKit pairing code by means of a Thing Action.
 
 Note that HomeKit accessories can only be paired with one controller, so if it is already paired with something else, you will need to remove that pairing first.
@@ -79,7 +82,8 @@ Whereas for case 2. above, must be `ON`.
 
 ## Channels
 
-For `root-accessory` and `child-accessory` Things, the Channels are auto-created depending on the services and characteristics published by the HomeKit accessory.
+For `lan-accessory` and `child-accessory` Things, the Channels are auto-created depending on the services and characteristics published by the HomeKit accessory.
+Things of type `bridge-accessory` do not have own channels.
 
 As a general rule openHAB has one channel for each HomeKit charactersitic.
 Some HomeKit accessories have separate charactersitics for 'target' and 'current' states.
@@ -103,17 +107,17 @@ Things are automatically configured when they are discovered.
 So for this reason it is difficult to create Things via a '.things' file, and therefore not recommended.
 
 ```java
-Bridge homekit:bridge:velux "VELUX Gateway" [ host="192.168.0.235:5001", macAddress="XX:XX:XX:XX:XX:XX", hostName="foobar._hap._tcp.local.", refreshInterval=60 ] {
-    Thing accessory 2 "VELUX Sensor" @ "Hallway" [ accessoryID=2 ]
-    Thing accessory 3 "VELUX Window" @ "Hallway" [ accessoryID=3 ]
-    Thing accessory 4 "VELUX Window" @ "Small bathroom" [ accessoryID=4 ]
+Bridge homekit:bridge-accessory:velux "VELUX Gateway" [ host="192.168.0.235:5001", macAddress="XX:XX:XX:XX:XX:XX", hostName="foobar._hap._tcp.local.", refreshInterval=60 ] {
+    Thing accessory2 "VELUX Sensor" @ "Hallway" [ accessoryID=2 ]
+    Thing accessory3 "VELUX Window" @ "Hallway" [ accessoryID=3 ]
+    Thing accessory4 "VELUX Window" @ "Small bathroom" [ accessoryID=4 ]
 }
 ```
 
 ### Item Configuration
 
 ```java
-Number:Temperature Color_Temperature "Color Temperature [%.1f mired]" <light> [ColorTemperature, Setpoint] { channel="homekit:root-accessory:297b703df234:lightbulb#color-temperature", unit="mired" }
+Number:Temperature Color_Temperature "Color Temperature [%.1f mired]" <light> [ColorTemperature, Setpoint] { channel="homekit:lan-accessory:297b703df234:lightbulb#color-temperature", unit="mired" }
 ```
 
 ### Sitemap Configuration

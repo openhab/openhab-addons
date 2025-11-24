@@ -39,8 +39,8 @@ import org.osgi.service.component.annotations.Component;
  * The device category is also included, allowing differentiation between bridges and accessories.
  * The discovery participant creates a ThingUID based on the MAC address and device category.
  * Discovered devices are published as Things of type
- * {@link org.openhab.binding.homekit.internal.HomekitBindingConstants#THING_TYPE_ROOT_ACCESSORY}
- * or {@link org.openhab.binding.homekit.internal.HomekitBindingConstants#THING_TYPE_BRIDGE}.
+ * {@link org.openhab.binding.homekit.internal.HomekitBindingConstants#THING_TYPE_LAN_ACCESSORY}
+ * or {@link org.openhab.binding.homekit.internal.HomekitBindingConstants#THING_TYPE_BRIDGE_ACCESSORY}.
  * Discovered Things include properties such as model name, protocol version, and IP address.
  * This class does not perform active scanning; instead, it relies on the central mDNS discovery
  * service to notify it of new services.
@@ -55,7 +55,7 @@ public class HomekitMdnsDiscoveryParticipant implements MDNSDiscoveryParticipant
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
-        return Set.of(THING_TYPE_BRIDGE, THING_TYPE_ROOT_ACCESSORY);
+        return Set.of(THING_TYPE_BRIDGE_ACCESSORY, THING_TYPE_LAN_ACCESSORY);
     }
 
     @Override
@@ -122,7 +122,8 @@ public class HomekitMdnsDiscoveryParticipant implements MDNSDiscoveryParticipant
         }
 
         if (mac != null && cat != null) {
-            return new ThingUID(AccessoryCategory.BRIDGE == cat ? THING_TYPE_BRIDGE : THING_TYPE_ROOT_ACCESSORY,
+            return new ThingUID(
+                    AccessoryCategory.BRIDGE == cat ? THING_TYPE_BRIDGE_ACCESSORY : THING_TYPE_LAN_ACCESSORY,
                     mac.replace(":", "").toLowerCase()); // thing id example "a1b2c3d4e5f6"
         }
 

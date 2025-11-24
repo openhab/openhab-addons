@@ -4,9 +4,9 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<thing-type id="root-accessory">
-		<label>HomeKit Device</label>
-		<description>HomeKit Root Accessory Device</description>
+	<thing-type id="lan-accessory">
+		<label>HomeKit LAN Accessory</label>
+		<description>HomeKit accessory with own LAN connection</description>
 		<config-description>
 			<parameter name="ipAddress" type="text" required="true">
 				<context>network-address</context>
@@ -32,9 +32,9 @@
 		</config-description>
 	</thing-type>
 
-	<bridge-type id="bridge">
-		<label>HomeKit Bridge</label>
-		<description>HomeKit Bridge</description>
+	<bridge-type id="bridge-accessory">
+		<label>HomeKit LAN Bridge Accessory</label>
+		<description>HomeKit accessory with LAN connection for support of child accessories</description>
 		<config-description>
 			<parameter name="ipAddress" type="text" required="true">
 				<context>network-address</context>
@@ -62,10 +62,10 @@
 
 	<thing-type id="child-accessory">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="bridge-accessory"/>
 		</supported-bridge-type-refs>
-		<label>HomeKit Device</label>
-		<description>HomeKit Child Accessory Device</description>
+		<label>HomeKit Child Accessory</label>
+		<description>HomeKit child of a bridge accessory without own LAN connection</description>
 		<config-description>
 			<parameter name="accessoryID" type="integer" required="true">
 				<label>Accessory ID</label>
