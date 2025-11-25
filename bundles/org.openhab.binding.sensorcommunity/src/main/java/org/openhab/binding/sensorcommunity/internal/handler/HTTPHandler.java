@@ -23,6 +23,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.api.Response;
+import org.eclipse.jetty.client.api.Result;
 import org.eclipse.jetty.client.util.BufferingResponseListener;
 import org.openhab.binding.sensorcommunity.internal.dto.SensorData;
 import org.openhab.binding.sensorcommunity.internal.dto.SensorDataValue;
@@ -63,9 +65,10 @@ public class HTTPHandler {
             req.timeout(15, TimeUnit.SECONDS).send(new BufferingResponseListener() {
                 @NonNullByDefault({})
                 @Override
-                public void onComplete(org.eclipse.jetty.client.api.Result result) {
-                    if (result.getResponse().getStatus() != 200) {
-                        callback.onError(Objects.requireNonNullElse(result.getResponse().getReason(), "Unknown error"));
+                public void onComplete(Result result) {
+                    Response response = result.getResponse();
+                    if (response.getStatus() != 200) {
+                        callback.onError(response.getStatus() + " - " + response.getReason());
                     } else {
                         callback.onResponse(Objects.requireNonNull(getContentAsString()));
                     }
