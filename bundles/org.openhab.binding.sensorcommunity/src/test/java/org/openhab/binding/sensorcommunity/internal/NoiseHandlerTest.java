@@ -13,6 +13,7 @@
 package org.openhab.binding.sensorcommunity.internal;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
 
 import java.util.HashMap;
 
@@ -24,6 +25,7 @@ import org.openhab.binding.sensorcommunity.internal.mock.ThingMock;
 import org.openhab.binding.sensorcommunity.internal.util.FileReader;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
+import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.types.UnDefType;
 
 /**
@@ -44,6 +46,7 @@ public class NoiseHandlerTest {
         t.setConfiguration(properties);
 
         NoiseHandlerExtension noiseHandler = new NoiseHandlerExtension(t);
+        noiseHandler.setCallback(mock(ThingHandlerCallback.class));
         String pmJson = FileReader.readFileInString("src/test/resources/noise-result.json");
         if (pmJson != null) {
             UpdateStatus result = noiseHandler.updateChannels(pmJson);
@@ -66,6 +69,7 @@ public class NoiseHandlerTest {
         t.setConfiguration(properties);
 
         NoiseHandlerExtension noiseHandler = new NoiseHandlerExtension(t);
+        noiseHandler.setCallback(mock(ThingHandlerCallback.class));
         String pmJson = FileReader.readFileInString("src/test/resources/condition-result-no-pressure.json");
         if (pmJson != null) {
             UpdateStatus result = noiseHandler.updateChannels(pmJson);
@@ -88,6 +92,7 @@ public class NoiseHandlerTest {
         t.setConfiguration(properties);
 
         NoiseHandlerExtension noiseHandler = new NoiseHandlerExtension(t);
+        noiseHandler.setCallback(mock(ThingHandlerCallback.class));
         UpdateStatus result = noiseHandler.updateChannels("[]");
         assertEquals(UpdateStatus.VALUE_EMPTY, result, "Valid update");
     }
@@ -102,6 +107,7 @@ public class NoiseHandlerTest {
         t.setConfiguration(properties);
 
         NoiseHandlerExtension noiseHandler = new NoiseHandlerExtension(t);
+        noiseHandler.setCallback(mock(ThingHandlerCallback.class));
         UpdateStatus result = noiseHandler.updateChannels(null);
         assertEquals(UpdateStatus.CONNECTION_ERROR, result, "Valid update");
     }
