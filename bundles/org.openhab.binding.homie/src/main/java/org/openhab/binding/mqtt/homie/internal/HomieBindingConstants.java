@@ -31,9 +31,8 @@ public class HomieBindingConstants {
     public static final ThingTypeUID LEGACY_MQTT_HOMIE300_THING = new ThingTypeUID(LEGACY_BINDING_ID, "homie300");
     public static final ThingTypeUID HOMIE_DEVICE_THING = new ThingTypeUID(BINDING_ID, "device");
 
-    public static final String CHANNEL_TYPE_HOMIE_PREFIX = "homie-";
-    public static final String CHANNEL_TYPE_HOMIE_STRING = "homie-string";
-    public static final String CHANNEL_TYPE_HOMIE_TRIGGER = "homie-trigger";
+    public static final String CHANNEL_TYPE_STRING = "string";
+    public static final String CHANNEL_TYPE_TRIGGER = "trigger";
 
     public static final String CHANNEL_PROPERTY_DATATYPE = "datatype";
     public static final String CHANNEL_PROPERTY_SETTABLE = "settable";

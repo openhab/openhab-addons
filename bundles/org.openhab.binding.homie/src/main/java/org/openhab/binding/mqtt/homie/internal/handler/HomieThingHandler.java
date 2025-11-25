@@ -127,7 +127,7 @@ public class HomieThingHandler extends AbstractMQTTThingHandler implements Devic
         updateThingType();
         ThingTypeUID typeID = getThing().getThingTypeUID();
         if (typeID.equals(HomieBindingConstants.HOMIE_DEVICE_THING)
-                || typeID.equals(HomieBindingConstants.LEGACY_MQTT_HOMIE300_THING)) {
+                || typeID.getBindingId().equals(HomieBindingConstants.LEGACY_BINDING_ID)) {
             logger.debug("Migrating Homie thing {} from generic type to dynamic type {}", getThing().getUID(),
                     device.thingTypeUID);
             changeThingType(device.thingTypeUID, getConfig());
