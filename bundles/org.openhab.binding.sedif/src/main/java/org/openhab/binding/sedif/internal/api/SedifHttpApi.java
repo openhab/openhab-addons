@@ -448,5 +448,4 @@ public class SedifHttpApi {
     public HashMap<String, Contract> getAllContracts() {
         return contractDict;
     }
-
 }
