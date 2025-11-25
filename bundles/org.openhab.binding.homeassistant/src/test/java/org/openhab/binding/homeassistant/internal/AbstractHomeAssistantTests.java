@@ -67,11 +67,13 @@ import org.openhab.core.util.BundleResolver;
 @MockitoSettings(strictness = Strictness.LENIENT)
 @NonNullByDefault
 public abstract class AbstractHomeAssistantTests extends JavaTest {
-    public static final String BINDING_ID = "mqtt";
+    public static final String MQTT_BINDING_ID = "mqtt";
+
+    public static final String BINDING_ID = "homeassistant";
 
     public static final String BRIDGE_TYPE_ID = "broker";
     public static final String BRIDGE_TYPE_LABEL = "MQTT Broker";
-    public static final ThingTypeUID BRIDGE_TYPE_UID = new ThingTypeUID(BINDING_ID, BRIDGE_TYPE_ID);
+    public static final ThingTypeUID BRIDGE_TYPE_UID = new ThingTypeUID(MQTT_BINDING_ID, BRIDGE_TYPE_ID);
     public static final String BRIDGE_ID = UUID.randomUUID().toString();
     public static final ThingUID BRIDGE_UID = new ThingUID(BRIDGE_TYPE_UID, BRIDGE_ID);
 
