@@ -126,26 +126,17 @@ public class HTTPHandler {
     }
 
     public boolean isParticulate(@Nullable List<SensorDataValue> valueList) {
-        if (valueList == null) {
-            return false;
-        }
-        return valueList.stream().map(v -> v.getValueType()).filter(t -> t.endsWith(P1) || t.endsWith(P2)).findAny()
-                .isPresent();
+        return valueList != null && valueList.stream().map(v -> v.getValueType())
+                .filter(t -> t.endsWith(P1) || t.endsWith(P2)).findAny().isPresent();
     }
 
     public boolean isCondition(@Nullable List<SensorDataValue> valueList) {
-        if (valueList == null) {
-            return false;
-        }
-        return valueList.stream().map(v -> v.getValueType()).filter(t -> t.equals(TEMPERATURE) || t.endsWith(HUMIDITY)
-                || t.endsWith(PRESSURE) || t.endsWith(PRESSURE_SEALEVEL)).findAny().isPresent();
+        return valueList != null && valueList.stream().map(v -> v.getValueType()).filter(t -> t.equals(TEMPERATURE)
+                || t.endsWith(HUMIDITY) || t.endsWith(PRESSURE) || t.endsWith(PRESSURE_SEALEVEL)).findAny().isPresent();
     }
 
     public boolean isNoise(@Nullable List<SensorDataValue> valueList) {
-        if (valueList == null) {
-            return false;
-        }
-        return valueList.stream().map(v -> v.getValueType())
+        return valueList != null && valueList.stream().map(v -> v.getValueType())
                 .filter(t -> t.endsWith(NOISE_EQ) || t.endsWith(NOISE_MAX) || t.endsWith(NOISE_MIN)).findAny()
                 .isPresent();
     }
