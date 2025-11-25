@@ -12,12 +12,10 @@
  */
 package org.openhab.binding.sedif.internal.handler;
 
-import java.net.HttpCookie;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.TimeUnit;
@@ -33,11 +31,7 @@ import org.openhab.binding.sedif.internal.api.SedifHttpApi;
 import org.openhab.binding.sedif.internal.config.SedifBridgeConfiguration;
 import org.openhab.binding.sedif.internal.constants.SedifBindingConstants;
 import org.openhab.binding.sedif.internal.discovery.SedifDiscoveryService;
-import org.openhab.binding.sedif.internal.dto.AuraContext;
-import org.openhab.binding.sedif.internal.dto.AuraResponse;
 import org.openhab.binding.sedif.internal.dto.Contract;
-import org.openhab.binding.sedif.internal.dto.Contracts;
-import org.openhab.binding.sedif.internal.dto.Event;
 import org.openhab.binding.sedif.internal.helpers.SedifListener;
 import org.openhab.binding.sedif.internal.types.SedifException;
 import org.openhab.core.io.net.http.HttpClientFactory;
@@ -64,21 +58,13 @@ import com.google.gson.Gson;
 @NonNullByDefault
 public class BridgeSedifWebHandler extends BaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(BridgeSedifWebHandler.class);
-    protected @Nullable SedifBridgeConfiguration config;
 
     private Set<SedifListener> listeners = new CopyOnWriteArraySet<>();
-
-    private HashMap<String, Contract> contractDict = new HashMap<>();
 
     protected final HttpClient httpClient;
     protected final SedifHttpApi sedifApi;
 
     protected final Gson gson;
-
-    private @Nullable AuraContext appCtx;
-    private @Nullable String token = "";
-
-    protected boolean connected = false;
 
     private static final int REQUEST_BUFFER_SIZE = 8000;
     private static final int RESPONSE_BUFFER_SIZE = 200000;
@@ -133,8 +119,14 @@ public class BridgeSedifWebHandler extends BaseBridgeHandler {
     public void scheduleConnection(int delay) {
         scheduler.schedule(() -> {
             try {
-                connectionInit();
-                if (connected) {
+                SedifBridgeConfiguration config = getConfigAs(SedifBridgeConfiguration.class);
+                sedifApi.connectionInit(config.username, config.password);
+                HashMap<String, Contract> contracts = sedifApi.getAllContracts();
+                for (Contract contract : contracts.values()) {
+                    fireOnContractReceivedEvent(contract);
+                }
+
+                if (sedifApi.isConnected()) {
                     updateStatus(ThingStatus.ONLINE);
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Connection failed");
@@ -147,113 +139,12 @@ public class BridgeSedifWebHandler extends BaseBridgeHandler {
 
     public void scheduleReconnect() {
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-        connected = false;
+        sedifApi.disconnect();
         scheduleConnection(30);
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-    }
-
-    public void connectionInit() throws SedifException {
-        config = getConfigAs(SedifBridgeConfiguration.class);
-
-        SedifBridgeConfiguration lcConfig = config;
-
-        if (connected) {
-            return;
-        }
-
-        sedifApi.removeAllCookie();
-
-        String resultSt;
-
-        // =====================================================================
-        // Step 1: getting salesforces context from login page
-        // =====================================================================
-        resultSt = sedifApi.getContent(SedifHttpApi.URL_SEDIF_AUTHENTICATE);
-        appCtx = sedifApi.extractAuraContext(resultSt);
-
-        if (appCtx == null) {
-            throw new SedifException("Unable to find app context in login process");
-        } else {
-            logger.debug("Account {}: Successfully retrieved context", lcConfig.username);
-            sedifApi.setAppContext(appCtx);
-        }
-
-        // =====================================================================
-        // Step 2: Authenticate
-        // =====================================================================
-        AuraResponse resp = sedifApi.doAuth(lcConfig.username, lcConfig.password);
-
-        String urlRedir = "";
-        if (resp != null) {
-            Event event = resp.events.getFirst();
-            Event.Attributes attr = event.attributes;
-            if (attr != null) {
-                urlRedir = (String) attr.values.get("url");
-            }
-
-            if (urlRedir.isBlank()) {
-                throw new SedifException("Unable to find redir url in login process");
-            }
-        }
-
-        // =====================================================================
-        // Step 3: Confirm login
-        // =====================================================================
-        resultSt = sedifApi.getContent(urlRedir);
-
-        // =====================================================================
-        // Step 4: Get contract page
-        // =====================================================================
-        resultSt = sedifApi.getContent(SedifHttpApi.URL_SEDIF_CONTRAT);
-        appCtx = sedifApi.extractAuraContext(resultSt);
-
-        if (appCtx == null) {
-            throw new SedifException("Unable to find app context in login process");
-        } else {
-            logger.debug("Successfully retrieved contract context");
-            sedifApi.setAppContext(appCtx);
-        }
-
-        // =====================================================================
-        // Step 5: Get cookie auth
-        // =====================================================================
-        List<HttpCookie> lCookie = httpClient.getCookieStore().getCookies();
-        token = "";
-        for (HttpCookie cookie : lCookie) {
-            if (cookie.getName().startsWith("__Host-ERIC_")) {
-                token = cookie.getValue();
-            }
-        }
-
-        if (token == null) {
-            throw new SedifException("Unable to find token in login process");
-        } else {
-            logger.debug("Account: Successfully asquire token");
-            sedifApi.setToken(token);
-        }
-
-        // =====================================================================
-        // Step 6a: Get contract
-        // =====================================================================
-        Contracts contracts = sedifApi.getContracts();
-        if (contracts != null && contracts.contracts != null) {
-            for (Contract contract : contracts.contracts) {
-                String contractName = contract.name;
-                if (contractName != null) {
-                    contractDict.put(contractName, contract);
-                    fireOnContractReceivedEvent(contract);
-                }
-            }
-        }
-
-        connected = true;
-    }
-
-    public boolean isConnected() {
-        return connected;
     }
 
     public SedifHttpApi getSedifApi() {
@@ -278,6 +169,6 @@ public class BridgeSedifWebHandler extends BaseBridgeHandler {
     }
 
     public @Nullable Contract getContract(String contractName) {
-        return contractDict.get(contractName);
+        return sedifApi.getContract(contractName);
     }
 }

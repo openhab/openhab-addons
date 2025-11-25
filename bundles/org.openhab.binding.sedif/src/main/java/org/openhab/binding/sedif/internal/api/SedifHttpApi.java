@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.sedif.internal.api;
 
+import java.net.HttpCookie;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -38,9 +41,11 @@ import org.openhab.binding.sedif.internal.dto.Actions;
 import org.openhab.binding.sedif.internal.dto.AuraCommand;
 import org.openhab.binding.sedif.internal.dto.AuraContext;
 import org.openhab.binding.sedif.internal.dto.AuraResponse;
+import org.openhab.binding.sedif.internal.dto.Contract;
 import org.openhab.binding.sedif.internal.dto.ContractDetail;
 import org.openhab.binding.sedif.internal.dto.ContractDetail.CompteInfo;
 import org.openhab.binding.sedif.internal.dto.Contracts;
+import org.openhab.binding.sedif.internal.dto.Event;
 import org.openhab.binding.sedif.internal.dto.MeterReading;
 import org.openhab.binding.sedif.internal.types.CommunicationFailedException;
 import org.openhab.binding.sedif.internal.types.InvalidSessionException;
@@ -64,6 +69,7 @@ public class SedifHttpApi {
 
     private @Nullable AuraContext appCtx;
     private @Nullable String token = "";
+    protected boolean connected = false;
 
     public static final String SEDIF_DOMAIN = ".leaudiledefrance.fr";
     public static final String BASE_URL = "https://connexion" + SEDIF_DOMAIN;
@@ -79,17 +85,106 @@ public class SedifHttpApi {
 
     private static final DateTimeFormatter API_DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
+    private HashMap<String, Contract> contractDict = new HashMap<>();
+
     public SedifHttpApi(Gson gson, HttpClient httpClient) {
         this.gson = gson;
         this.httpClient = httpClient;
     }
 
-    public void setAppContext(@Nullable AuraContext appCtx) {
-        this.appCtx = appCtx;
+    public void connectionInit(String userName, String userPassword) throws SedifException {
+        if (connected) {
+            return;
+        }
+
+        removeAllCookie();
+
+        // =====================================================================
+        // Step 1: getting salesforces context from login page
+        // =====================================================================
+        String resultSt = getContent(SedifHttpApi.URL_SEDIF_AUTHENTICATE);
+        appCtx = extractAuraContext(resultSt);
+
+        if (appCtx == null) {
+            throw new SedifException("Unable to find app context in login process");
+        } else {
+            logger.debug("Account {}: Successfully retrieved context", userName);
+        }
+
+        // =====================================================================
+        // Step 2: Authenticate
+        // =====================================================================
+        AuraResponse resp = doAuth(userName, userPassword);
+
+        String urlRedir = "";
+        if (resp != null) {
+            Event event = resp.events.getFirst();
+            Event.Attributes attr = event.attributes;
+            if (attr != null) {
+                urlRedir = (String) attr.values.get("url");
+            }
+
+            if (urlRedir.isBlank()) {
+                throw new SedifException("Unable to find redir url in login process");
+            }
+        }
+
+        // =====================================================================
+        // Step 3: Confirm login
+        // =====================================================================
+        resultSt = getContent(urlRedir);
+
+        // =====================================================================
+        // Step 4: Get contract page
+        // =====================================================================
+        resultSt = getContent(SedifHttpApi.URL_SEDIF_CONTRAT);
+        appCtx = extractAuraContext(resultSt);
+
+        if (appCtx == null) {
+            throw new SedifException("Unable to find app context in login process");
+        } else {
+            logger.debug("Successfully retrieved contract context");
+        }
+
+        // =====================================================================
+        // Step 5: Get cookie auth
+        // =====================================================================
+        List<HttpCookie> lCookie = httpClient.getCookieStore().getCookies();
+        token = "";
+        for (HttpCookie cookie : lCookie) {
+            if (cookie.getName().startsWith("__Host-ERIC_")) {
+                token = cookie.getValue();
+            }
+        }
+
+        if (token == null) {
+            throw new SedifException("Unable to find token in login process");
+        } else {
+            logger.debug("Account: Successfully asquire token");
+        }
+
+        // =====================================================================
+        // Step 6a: Get contract
+        // =====================================================================
+        Contracts contracts = getContracts();
+        if (contracts != null && contracts.contracts != null) {
+            for (Contract contract : contracts.contracts) {
+                String contractName = contract.name;
+                if (contractName != null) {
+                    contractDict.put(contractName, contract);
+                }
+            }
+        }
+
+        connected = true;
     }
 
-    public void setToken(@Nullable String token) {
-        this.token = token;
+    public boolean isConnected() {
+        return connected;
+    }
+
+    public void disconnect() {
+        connected = false;
     }
 
     public void removeAllCookie() {
@@ -345,4 +440,13 @@ public class SedifHttpApi {
 
         return null;
     }
+
+    public @Nullable Contract getContract(String contractName) {
+        return contractDict.get(contractName);
+    }
+
+    public HashMap<String, Contract> getAllContracts() {
+        return contractDict;
+    }
+
 }
