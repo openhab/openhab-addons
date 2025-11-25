@@ -54,7 +54,11 @@ public class IpTransport implements AutoCloseable {
     private static final Duration MINIMUM_REQUEST_INTERVAL = Duration.ofMillis(250);
 
     private final Logger logger = LoggerFactory.getLogger(IpTransport.class);
-    private final ExecutorService executor = Executors.newSingleThreadExecutor(r -> new Thread(r, "homekit-io"));
+    private final ExecutorService executor = Executors.newSingleThreadExecutor(r -> {
+        Thread t = new Thread(r, "homekit-io");
+        t.setDaemon(true);
+        return t;
+    });
 
     private final Socket socket;
     private final String hostName;
@@ -86,10 +90,25 @@ public class IpTransport implements AutoCloseable {
         logger.debug("Connected to {} alias {}", ipAddress, hostName);
     }
 
-    public void setSessionKeys(AsymmetricSessionKeys keys) throws IOException {
+    /**
+     * Sets the session keys for secure communication.
+     * This starts a read thread to listen for incoming responses.
+     *
+     * @param keys the asymmetric session keys for encryption/decryption
+     * @throws IOException
+     * @throws IllegalStateException if the secure session is already set or the read thread is already running
+     */
+    public void setSessionKeys(AsymmetricSessionKeys keys) throws IOException, IllegalStateException {
         logger.trace("setSessionKeys()");
+        if (secureSession != null) {
+            throw new IllegalStateException("Secure session already set");
+        }
+        if (readThread != null) {
+            throw new IllegalStateException("Read thread already running");
+        }
         secureSession = new SecureSession(socket, keys);
         Thread thread = new Thread(this::readTask, "homekit-read");
+        thread.setDaemon(true);
         readThread = thread;
         thread.start();
         logger.trace("setSessionKeys() {}", secureSession);
@@ -181,31 +200,31 @@ public class IpTransport implements AutoCloseable {
         earliestNextRequestTime = Instant.now().plus(MINIMUM_REQUEST_INTERVAL); // assume zero processing time
         if (secureSession instanceof SecureSession secureSession) {
             // before we write request, create CompletableFuture to read response (with a timeout)
-            CompletableFuture<byte[][]> readHttpResponseFuture = new CompletableFuture<>();
-            this.readHttpResponseFuture = readHttpResponseFuture;
+            CompletableFuture<byte[][]> readFuture = new CompletableFuture<>();
+            readHttpResponseFuture = readFuture;
             // create Future to write the request (with a timeout)
-            Future<@Nullable Void> writeTask = executor.submit(() -> {
+            Future<@Nullable Void> writeFuture = executor.submit(() -> {
                 secureSession.send(request);
                 return null;
             });
             // now wait for both write and read to complete
-            writeTask.get(TIMEOUT_MILLI_SECONDS, TimeUnit.MILLISECONDS);
-            response = readHttpResponseFuture.get(TIMEOUT_MILLI_SECONDS, TimeUnit.MILLISECONDS);
+            writeFuture.get(TIMEOUT_MILLI_SECONDS, TimeUnit.MILLISECONDS);
+            response = readFuture.get(TIMEOUT_MILLI_SECONDS, TimeUnit.MILLISECONDS);
         } else {
             OutputStream out = socket.getOutputStream();
             InputStream in = socket.getInputStream();
             // create Future to write the request (with a timeout)
-            Future<@Nullable Void> writeTask = executor.submit(() -> {
+            Future<@Nullable Void> writeFuture = executor.submit(() -> {
                 out.write(request);
                 out.flush();
                 return null;
             });
             // wait for write to complete
-            writeTask.get(TIMEOUT_MILLI_SECONDS, TimeUnit.MILLISECONDS);
+            writeFuture.get(TIMEOUT_MILLI_SECONDS, TimeUnit.MILLISECONDS);
             // create Future to read the response (with a timeout)
-            Future<byte[][]> readTask = executor.submit(() -> readPlainResponse(in, trace));
+            Future<byte[][]> readFuture = executor.submit(() -> readPlainResponse(in, trace));
             // wait for read to complete
-            response = readTask.get(TIMEOUT_MILLI_SECONDS, TimeUnit.MILLISECONDS);
+            response = readFuture.get(TIMEOUT_MILLI_SECONDS, TimeUnit.MILLISECONDS);
         }
         earliestNextRequestTime = Instant.now().plus(MINIMUM_REQUEST_INTERVAL); // allow actual processing time
 
@@ -300,7 +319,7 @@ public class IpTransport implements AutoCloseable {
     }
 
     @Override
-    public void close() {
+    public synchronized void close() {
         closing = true;
         secureSession = null;
         try {
@@ -320,7 +339,14 @@ public class IpTransport implements AutoCloseable {
         if (readHttpResponseFuture instanceof CompletableFuture<byte[][]> readFuture) {
             readFuture.complete(new byte[3][0]); // complete with an empty response
         }
-        executor.shutdown();
+        executor.shutdownNow();
+        try {
+            if (!executor.awaitTermination(500, TimeUnit.MILLISECONDS)) {
+                logger.debug("Executor did not terminate promptly");
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
     }
 
     /**
@@ -331,9 +357,9 @@ public class IpTransport implements AutoCloseable {
     private void handleResponse(byte[][] response) {
         String headers = new String(response[0], StandardCharsets.ISO_8859_1);
         if (headers.startsWith("HTTP")) {
-            if (readHttpResponseFuture instanceof CompletableFuture<byte[][]> future) {
+            if (readHttpResponseFuture instanceof CompletableFuture<byte[][]> readFuture) {
                 readHttpResponseFuture = null;
-                future.complete(response);
+                readFuture.complete(response);
             }
         } else if (headers.startsWith("EVENT")) {
             logger.trace("HTTP event:\n{}", new String(response[2], StandardCharsets.ISO_8859_1));
