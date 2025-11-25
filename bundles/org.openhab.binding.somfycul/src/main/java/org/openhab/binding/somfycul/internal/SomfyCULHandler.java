@@ -115,7 +115,6 @@ public class SomfyCULHandler extends BaseThingHandler {
         Properties p = new Properties();
 
         if (!file.exists()) {
-
             File parent = file.getParentFile();
             if (parent == null) {
                 throw new IOException("Cannot access parent directory for property files");
