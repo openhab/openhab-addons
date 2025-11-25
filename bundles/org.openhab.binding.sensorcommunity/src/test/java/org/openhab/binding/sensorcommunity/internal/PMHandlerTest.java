@@ -26,6 +26,7 @@ import org.openhab.binding.sensorcommunity.internal.mock.ThingMock;
 import org.openhab.binding.sensorcommunity.internal.util.FileReader;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -132,10 +133,8 @@ public class PMHandlerTest {
         if (pmJson != null) {
             UpdateStatus result = pmHandler.updateChannels(pmJson);
             assertEquals(UpdateStatus.VALUE_ERROR, result, "Valid update");
-            assertEquals(QuantityType.valueOf(-1, Units.MICROGRAM_PER_CUBICMETRE), pmHandler.getPM25Cache(),
-                    "Values undefined");
-            assertEquals(QuantityType.valueOf(-1, Units.MICROGRAM_PER_CUBICMETRE), pmHandler.getPM100Cache(),
-                    "Values undefined");
+            assertEquals(UnDefType.UNDEF, pmHandler.getPM25Cache(), "Values undefined");
+            assertEquals(UnDefType.UNDEF, pmHandler.getPM100Cache(), "Values undefined");
         } else {
             assertTrue(false);
         }

@@ -26,6 +26,7 @@ import org.openhab.binding.sensorcommunity.internal.util.FileReader;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
+import org.openhab.core.types.UnDefType;
 
 /**
  * The {@link ConditionHandlerTest} Test Condition Handler updates
@@ -51,8 +52,8 @@ public class ConditionHandlerTest {
             assertEquals(UpdateStatus.OK, result, "Valid update");
             assertEquals(QuantityType.valueOf(22.7, SIUnits.CELSIUS), condHandler.getTemperature(), "Temperature");
             assertEquals(QuantityType.valueOf(61., Units.PERCENT), condHandler.getHumidity(), "Humidity");
-            assertEquals(QuantityType.valueOf(-1, HECTO(SIUnits.PASCAL)), condHandler.getPressure(), "Pressure");
-            assertEquals(QuantityType.valueOf(-1, HECTO(SIUnits.PASCAL)), condHandler.getPressureSea(), "Pressure Sea");
+            assertEquals(UnDefType.UNDEF, condHandler.getPressure(), "Pressure");
+            assertEquals(UnDefType.UNDEF, condHandler.getPressureSea(), "Pressure Sea");
         } else {
             assertTrue(false);
         }
@@ -146,7 +147,7 @@ public class ConditionHandlerTest {
             assertEquals(QuantityType.valueOf(17.6, SIUnits.CELSIUS), condHandler.getTemperature(), "Temperature");
             assertEquals(QuantityType.valueOf(57.8, Units.PERCENT), condHandler.getHumidity(), "Humidity");
             assertEquals(QuantityType.valueOf(986.8, HECTO(SIUnits.PASCAL)), condHandler.getPressure(), "Pressure");
-            assertEquals(QuantityType.valueOf(-1, HECTO(SIUnits.PASCAL)), condHandler.getPressureSea(), "Pressure Sea");
+            assertEquals(UnDefType.UNDEF, condHandler.getPressureSea(), "Pressure Sea");
         } else {
             assertTrue(false);
         }

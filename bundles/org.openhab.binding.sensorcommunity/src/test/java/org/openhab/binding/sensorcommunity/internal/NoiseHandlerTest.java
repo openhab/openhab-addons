@@ -24,6 +24,7 @@ import org.openhab.binding.sensorcommunity.internal.mock.ThingMock;
 import org.openhab.binding.sensorcommunity.internal.util.FileReader;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
+import org.openhab.core.types.UnDefType;
 
 /**
  * The {@link NoiseHandlerTest} Test Noise Handler updates
@@ -69,9 +70,9 @@ public class NoiseHandlerTest {
         if (pmJson != null) {
             UpdateStatus result = noiseHandler.updateChannels(pmJson);
             assertEquals(UpdateStatus.VALUE_ERROR, result, "Valid update");
-            assertEquals(QuantityType.valueOf(-1, Units.DECIBEL), noiseHandler.getNoiseEQCache(), "Values undefined");
-            assertEquals(QuantityType.valueOf(-1, Units.DECIBEL), noiseHandler.getNoiseMinCache(), "Values undefined");
-            assertEquals(QuantityType.valueOf(-1, Units.DECIBEL), noiseHandler.getNoiseMaxCache(), "Values undefined");
+            assertEquals(UnDefType.UNDEF, noiseHandler.getNoiseEQCache(), "Values undefined");
+            assertEquals(UnDefType.UNDEF, noiseHandler.getNoiseMinCache(), "Values undefined");
+            assertEquals(UnDefType.UNDEF, noiseHandler.getNoiseMaxCache(), "Values undefined");
         } else {
             assertTrue(false);
         }
