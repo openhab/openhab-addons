@@ -21,9 +21,18 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public enum AccessoryPairingFeature {
-    NO(0x00), // no support for HAP Pairing
-    YES(0x01), // supports pairing via software, or Apple authentication coprocessor
-    SECURE_HTTP_DEPRECATED(0x02); // supports pairing via secure HTTP (deprecated)
+    /**
+     * no support for HAP Pairing
+     */
+    NO(0x00),
+    /**
+     * supports pairing via software, or Apple authentication coprocessor
+     */
+    YES(0x01),
+    /**
+     * supports pairing via secure HTTP (deprecated)
+     */
+    SECURE_HTTP_DEPRECATED(0x02);
 
     public final byte value;
 

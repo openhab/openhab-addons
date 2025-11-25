@@ -46,8 +46,8 @@ import org.osgi.service.component.annotations.Reference;
 @Component(service = ThingHandlerFactory.class)
 public class HomekitHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_BRIDGE_ACCESSORY,
-            THING_TYPE_CHILD_ACCESSORY, THING_TYPE_LAN_ACCESSORY);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_BRIDGE,
+            THING_TYPE_BRIDGED_ACCESSORY, THING_TYPE_ACCESSORY);
 
     private final HomekitTypeProvider typeProvider;
     private final ChannelTypeRegistry channelTypeRegistry;
@@ -77,9 +77,9 @@ public class HomekitHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
-        if (THING_TYPE_BRIDGE_ACCESSORY.equals(thingTypeUID)) {
+        if (THING_TYPE_BRIDGE.equals(thingTypeUID)) {
             return new HomekitBridgeHandler((Bridge) thing, typeProvider, keyStore, i18nProvider, bundle);
-        } else if (THING_TYPE_CHILD_ACCESSORY.equals(thingTypeUID) || THING_TYPE_LAN_ACCESSORY.equals(thingTypeUID)) {
+        } else if (THING_TYPE_BRIDGED_ACCESSORY.equals(thingTypeUID) || THING_TYPE_ACCESSORY.equals(thingTypeUID)) {
             return new HomekitAccessoryHandler(thing, typeProvider, channelTypeRegistry, channelGroupTypeRegistry,
                     keyStore, i18nProvider, bundle);
         }

@@ -45,7 +45,7 @@ public class HomekitPairingActions implements ThingActions {
         if (actions instanceof HomekitPairingActions accessoryActions) {
             return accessoryActions.pair(code, auth);
         } else {
-            throw new IllegalArgumentException("The 'actions' argument is not an instance of HomekitAccessoryActions");
+            throw new IllegalArgumentException("The 'actions' argument is not an instance of HomekitPairingActions");
         }
     }
 
@@ -53,7 +53,7 @@ public class HomekitPairingActions implements ThingActions {
         if (actions instanceof HomekitPairingActions accessoryActions) {
             return accessoryActions.unpair();
         } else {
-            throw new IllegalArgumentException("The 'actions' argument is not an instance of HomekitAccessoryActions");
+            throw new IllegalArgumentException("The 'actions' argument is not an instance of HomekitPairingActions");
         }
     }
 

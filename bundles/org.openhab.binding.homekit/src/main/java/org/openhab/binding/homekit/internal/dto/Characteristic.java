@@ -417,7 +417,11 @@ public class Characteristic {
                 break;
 
             case IDENTIFY:
-                // TODO
+                /*
+                 * The identify characteristic is used to trigger a physical identification action on the accessory,
+                 * such as blinking an LED or making a sound. It does not represent a state or property that can be
+                 * monitored or controlled, so we do not create a channel for it.
+                 */
                 itemType = null;
                 break;
 
@@ -463,7 +467,11 @@ public class Characteristic {
                 break;
 
             case LOCK_MANAGEMENT_CONTROL_POINT:
-                // TODO tlv8
+                /*
+                 * According to Apple specifications this Characteristic type returns data in a tlv8 format, however
+                 * there is no way to represent this in openHAB at present, nor is there any documentation about the
+                 * potential fields in such tlv, so we ignore it for now.
+                 */
                 itemType = null;
                 break;
 
@@ -839,8 +847,14 @@ public class Characteristic {
                 Optional.ofNullable(maxValue).map(v -> BigDecimal.valueOf(v)).ifPresent(b -> fragBldr.withMaximum(b));
                 Optional.ofNullable(minStep).map(v -> BigDecimal.valueOf(v)).ifPresent(b -> fragBldr.withStep(b));
 
-                if (isPercentage) {
+                if (isPercentage || "%".equals(uom) || CoreItemFactory.DIMMER == itemType) {
                     fragBldr.withPattern("%.0f %%");
+                    if (minValue == null) {
+                        fragBldr.withMinimum(BigDecimal.ZERO);
+                    }
+                    if (maxValue == null) {
+                        fragBldr.withMaximum(BigDecimal.valueOf(100));
+                    }
                 } else if (uom != null) {
                     fragBldr.withPattern("%.1f " + uom);
                 }

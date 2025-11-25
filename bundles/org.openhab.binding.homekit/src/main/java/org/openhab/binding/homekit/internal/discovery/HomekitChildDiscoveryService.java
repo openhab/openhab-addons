@@ -30,7 +30,7 @@ import org.osgi.service.component.annotations.Component;
 /**
  * Discovery service component that publishes newly discovered child accessories of a HomeKit bridge accessory.
  * Discovered devices are published as Things of type
- * {@link org.openhab.binding.homekit.internal.HomekitBindingConstants#THING_TYPE_CHILD_ACCESSORY} with a ThingUID
+ * {@link org.openhab.binding.homekit.internal.HomekitBindingConstants#THING_TYPE_BRIDGED_ACCESSORY} with a ThingUID
  * based on their accessory ID (aid).
  *
  * @author Andrew Fiddian-Green - Initial Contribution
@@ -42,7 +42,7 @@ public class HomekitChildDiscoveryService extends AbstractThingHandlerDiscoveryS
     private static final int TIMEOUT_SECONDS = 10;
 
     public HomekitChildDiscoveryService() {
-        super(HomekitBridgeHandler.class, Set.of(THING_TYPE_CHILD_ACCESSORY), TIMEOUT_SECONDS);
+        super(HomekitBridgeHandler.class, Set.of(THING_TYPE_BRIDGED_ACCESSORY), TIMEOUT_SECONDS);
     }
 
     @Override
@@ -72,7 +72,7 @@ public class HomekitChildDiscoveryService extends AbstractThingHandlerDiscoveryS
         }
         accessories.forEach(accessory -> {
             if (accessory.aid instanceof Long aid && aid != 1L && accessory.services != null) {
-                ThingUID uid = new ThingUID(THING_TYPE_CHILD_ACCESSORY, bridge.getUID(), aid.toString());
+                ThingUID uid = new ThingUID(THING_TYPE_BRIDGED_ACCESSORY, bridge.getUID(), aid.toString());
                 String uniqueId = STRING_AID_FMT.formatted(bridgeMacAddress, aid);
                 String label = THING_LABEL_FMT.formatted(accessory.getAccessoryInstanceLabel(), uniqueId);
                 thingDiscovered(DiscoveryResultBuilder.create(uid) //

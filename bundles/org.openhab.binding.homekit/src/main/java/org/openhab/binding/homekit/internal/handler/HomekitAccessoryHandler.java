@@ -484,7 +484,7 @@ public class HomekitAccessoryHandler extends HomekitBaseAccessoryHandler {
             }
             return; // success
         } catch (InterruptedException e) {
-            // shutting down; do nothing
+            Thread.currentThread().interrupt(); // shutting down; restore interrupt flag but otherwise do nothing
         } catch (Exception e) {
             if (isCommunicationException(e)) {
                 // communication exception; log at debug and try to reconnect

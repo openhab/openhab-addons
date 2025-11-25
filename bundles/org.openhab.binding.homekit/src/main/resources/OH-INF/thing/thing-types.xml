@@ -4,9 +4,9 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<thing-type id="lan-accessory">
-		<label>HomeKit LAN Accessory</label>
-		<description>HomeKit accessory with own LAN connection</description>
+	<thing-type id="accessory">
+		<label>HomeKit Accessory</label>
+		<description>HomeKit accessory with its own LAN connection</description>
 		<config-description>
 			<parameter name="ipAddress" type="text" required="true">
 				<context>network-address</context>
@@ -33,9 +33,9 @@
 		</config-description>
 	</thing-type>
 
-	<bridge-type id="bridge-accessory">
-		<label>HomeKit LAN Bridge Accessory</label>
-		<description>HomeKit accessory with LAN connection for support of child accessories</description>
+	<bridge-type id="bridge">
+		<label>HomeKit Bridge</label>
+		<description>HomeKit accessory with LAN connection that supports bridged accessories not having an own LAN connection</description>
 		<config-description>
 			<parameter name="ipAddress" type="text" required="true">
 				<context>network-address</context>
@@ -62,12 +62,12 @@
 		</config-description>
 	</bridge-type>
 
-	<thing-type id="child-accessory">
+	<thing-type id="bridged-accessory">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge-accessory"/>
+			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
-		<label>HomeKit Child Accessory</label>
-		<description>HomeKit child of a bridge accessory without own LAN connection</description>
+		<label>HomeKit Bridged Accessory</label>
+		<description>HomeKit without its own LAN connection and instead supported by a bridge</description>
 		<config-description>
 			<parameter name="accessoryID" type="integer" required="true">
 				<label>Accessory ID</label>

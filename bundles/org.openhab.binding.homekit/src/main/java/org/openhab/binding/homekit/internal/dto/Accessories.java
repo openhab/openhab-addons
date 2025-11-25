@@ -14,6 +14,7 @@ package org.openhab.binding.homekit.internal.dto;
 
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
@@ -23,8 +24,9 @@ import org.eclipse.jdt.annotation.Nullable;
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
+@NonNullByDefault
 public class Accessories {
-    public List<Accessory> accessories;
+    public @NonNullByDefault({}) List<Accessory> accessories;
 
     public @Nullable Accessory getAccessory(Long aid) {
         return accessories.stream().filter(a -> aid.equals(a.aid)).findFirst().orElse(null);
