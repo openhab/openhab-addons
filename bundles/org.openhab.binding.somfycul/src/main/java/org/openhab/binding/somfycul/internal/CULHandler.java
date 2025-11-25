@@ -141,49 +141,47 @@ public class CULHandler extends BaseBridgeHandler {
                     "@text/offline.config-error-missing");
             return;
         }
-            String port = config.port;
-            SerialPortIdentifier localPortId = serialPortManager.getIdentifier(port);
-            if (localPortId == null) {
-                String availablePorts = serialPortManager.getIdentifiers().map(id -> id.getName())
-                        .collect(Collectors.joining(System.lineSeparator()));
-                String description = i18nProvider.getText(bundle, "offline.config-error-port-not-found",
-                        "Serial port {0} could not be found. Available ports are:\n{1}", localeProvider.getLocale(),
-                        port, availablePorts);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, description);
-                return;
-            }
-            portId = localPortId;
-            logger.debug("got port: {}", config.port);
+        String port = config.port;
+        SerialPortIdentifier localPortId = serialPortManager.getIdentifier(port);
+        if (localPortId == null) {
+            String availablePorts = serialPortManager.getIdentifiers().map(id -> id.getName())
+                    .collect(Collectors.joining(System.lineSeparator()));
+            String description = i18nProvider.getText(bundle, "offline.config-error-port-not-found",
+                    "Serial port {0} could not be found. Available ports are:\n{1}", localeProvider.getLocale(), port,
+                    availablePorts);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, description);
+            return;
+        }
+        portId = localPortId;
+        logger.debug("got port: {}", config.port);
 
-            try {
-                SerialPort localSerialPort = localPortId.open("openHAB", 2000);
-                // set port parameters
-                int baudRate = config.baudrate;
-                localSerialPort.setSerialPortParams(baudRate, SerialPort.DATABITS_8, SerialPort.STOPBITS_1,
-                        SerialPort.PARITY_NONE);
+        try {
+            SerialPort localSerialPort = localPortId.open("openHAB", 2000);
+            // set port parameters
+            int baudRate = config.baudrate;
+            localSerialPort.setSerialPortParams(baudRate, SerialPort.DATABITS_8, SerialPort.STOPBITS_1,
+                    SerialPort.PARITY_NONE);
 
-                InputStream localInputStream = localSerialPort.getInputStream();
-                OutputStream localOutputStream = localSerialPort.getOutputStream();
+            InputStream localInputStream = localSerialPort.getInputStream();
+            OutputStream localOutputStream = localSerialPort.getOutputStream();
 
-                // Only set instance variables after successful initialization
-                serialPort = localSerialPort;
-                inputStream = localInputStream;
-                outputStream = localOutputStream;
+            // Only set instance variables after successful initialization
+            serialPort = localSerialPort;
+            inputStream = localInputStream;
+            outputStream = localOutputStream;
 
-                updateStatus(ThingStatus.ONLINE);
-            } catch (IOException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, i18nProvider.getText(bundle,
-                        "offline.comm-error-io", "IO Error: {0}", localeProvider.getLocale(), e.getMessage()));
-            } catch (PortInUseException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        i18nProvider.getText(bundle, "offline.comm-error-port-in-use", "Port already in use: {0}",
-                                localeProvider.getLocale(), port));
-            } catch (UnsupportedCommOperationException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        i18nProvider.getText(bundle, "offline.comm-error-unsupported-operation",
-                                "Unsupported operation on port: {0}: {1}", localeProvider.getLocale(), port,
-                                e.getMessage()));
-            }
+            updateStatus(ThingStatus.ONLINE);
+        } catch (IOException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, i18nProvider.getText(bundle,
+                    "offline.comm-error-io", "IO Error: {0}", localeProvider.getLocale(), e.getMessage()));
+        } catch (PortInUseException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, i18nProvider.getText(bundle,
+                    "offline.comm-error-port-in-use", "Port already in use: {0}", localeProvider.getLocale(), port));
+        } catch (UnsupportedCommOperationException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    i18nProvider.getText(bundle, "offline.comm-error-unsupported-operation",
+                            "Unsupported operation on port: {0}: {1}", localeProvider.getLocale(), port,
+                            e.getMessage()));
         }
     }
 
