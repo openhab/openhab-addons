@@ -178,12 +178,13 @@ public class BridgeSedifWebHandler extends BaseBridgeHandler {
             throw new SedifException("Unable to find app context in login process");
         } else {
             logger.debug("Account {}: Successfully retrieved context", lcConfig.username);
+            sedifApi.setAppContext(appCtx);
         }
 
         // =====================================================================
         // Step 2: Authenticate
         // =====================================================================
-        AuraResponse resp = sedifApi.doAuth(lcConfig.username, lcConfig.password, appCtx);
+        AuraResponse resp = sedifApi.doAuth(lcConfig.username, lcConfig.password);
 
         String urlRedir = "";
         if (resp != null) {
@@ -213,6 +214,7 @@ public class BridgeSedifWebHandler extends BaseBridgeHandler {
             throw new SedifException("Unable to find app context in login process");
         } else {
             logger.debug("Successfully retrieved contract context");
+            sedifApi.setAppContext(appCtx);
         }
 
         // =====================================================================
@@ -236,7 +238,7 @@ public class BridgeSedifWebHandler extends BaseBridgeHandler {
         // =====================================================================
         // Step 6a: Get contract
         // =====================================================================
-        Contracts contracts = sedifApi.getContracts(appCtx);
+        Contracts contracts = sedifApi.getContracts();
         if (contracts != null && contracts.contracts != null) {
             for (Contract contract : contracts.contracts) {
                 String contractName = contract.name;
@@ -248,10 +250,6 @@ public class BridgeSedifWebHandler extends BaseBridgeHandler {
         }
 
         connected = true;
-    }
-
-    public @Nullable AuraContext getAppContext() {
-        return appCtx;
     }
 
     public boolean isConnected() {

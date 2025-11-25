@@ -38,7 +38,6 @@ import org.openhab.binding.sedif.internal.api.ExpiringDayCache;
 import org.openhab.binding.sedif.internal.api.SedifHttpApi;
 import org.openhab.binding.sedif.internal.api.helpers.MeterReadingHelper;
 import org.openhab.binding.sedif.internal.config.SedifConfiguration;
-import org.openhab.binding.sedif.internal.dto.AuraContext;
 import org.openhab.binding.sedif.internal.dto.Contract;
 import org.openhab.binding.sedif.internal.dto.ContractDetail;
 import org.openhab.binding.sedif.internal.dto.ContractDetail.Client;
@@ -338,13 +337,7 @@ public class ThingSedifHandler extends BaseThingHandler {
             boolean updateHistorical) throws SedifException {
         logger.trace("startDate: {}, currentDate: {}", startDate, currentDate);
 
-        Bridge lcBridge = getBridge();
-        AuraContext appCtx = null;
-        if (lcBridge != null && lcBridge.getHandler() instanceof BridgeSedifWebHandler bridgeSedif) {
-            appCtx = bridgeSedif.getAppContext();
-        }
-
-        MeterReading meterReading = getConsumptionData(startDate, currentDate, appCtx);
+        MeterReading meterReading = getConsumptionData(startDate, currentDate);
         if (updateHistorical && meterReading == null) {
             return null;
         }
@@ -602,28 +595,20 @@ public class ThingSedifHandler extends BaseThingHandler {
 
     private @Nullable ContractDetail getContractDetails() throws SedifException {
         SedifHttpApi api = this.sedifApi;
-
-        Bridge lcBridge = getBridge();
-        AuraContext appCtx = null;
-        if (lcBridge != null && lcBridge.getHandler() instanceof BridgeSedifWebHandler bridgeSedif) {
-            appCtx = bridgeSedif.getAppContext();
-        }
-
         if (api != null) {
-            return api.getContractDetails(contractId, appCtx);
+            return api.getContractDetails(contractId);
         }
 
         return null;
     }
 
-    private @Nullable MeterReading getConsumptionData(LocalDate from, LocalDate to, @Nullable AuraContext appCtx)
-            throws SedifException {
+    private @Nullable MeterReading getConsumptionData(LocalDate from, LocalDate to) throws SedifException {
         logger.debug("getConsumptionData for from {} to {}", from.format(DateTimeFormatter.ISO_LOCAL_DATE),
                 to.format(DateTimeFormatter.ISO_LOCAL_DATE));
 
         SedifHttpApi api = this.sedifApi;
         if (api != null) {
-            return api.getConsumptionData(contractId, appCtx, currentMeterInfo, from, to);
+            return api.getConsumptionData(contractId, currentMeterInfo, from, to);
         }
 
         return null;
