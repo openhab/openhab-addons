@@ -101,7 +101,7 @@ public class Property implements AttributeChanged {
         this.propertyID = propertyID;
         channelUID = new ChannelUID(node.uid(), UIDUtils.encode(propertyID));
         channelTypeUID = new ChannelTypeUID(HomieBindingConstants.BINDING_ID,
-                HomieBindingConstants.CHANNEL_TYPE_HOMIE_STRING);
+                HomieBindingConstants.CHANNEL_TYPE_STRING);
     }
 
     /**
@@ -265,13 +265,12 @@ public class Property implements AttributeChanged {
             String channelTypeId;
 
             if (attributes.datatype.equals(DataTypeEnum.unknown)) {
-                channelTypeId = HomieBindingConstants.CHANNEL_TYPE_HOMIE_STRING;
+                channelTypeId = HomieBindingConstants.CHANNEL_TYPE_STRING;
             } else if (dimension != null) {
-                channelTypeId = HomieBindingConstants.CHANNEL_TYPE_HOMIE_PREFIX + "number-"
-                        + UIDUtils.encode(unit.toString().toLowerCase());
+                channelTypeId = "number-" + UIDUtils.encode(unit.toString().toLowerCase());
                 channelProperties.put(HomieBindingConstants.CHANNEL_PROPERTY_DATATYPE, attributes.datatype.toString());
             } else {
-                channelTypeId = HomieBindingConstants.CHANNEL_TYPE_HOMIE_PREFIX + attributes.datatype.toString();
+                channelTypeId = attributes.datatype.toString();
                 channelTypeId = channelTypeId.substring(0, channelTypeId.length() - 1);
             }
             this.channelTypeUID = new ChannelTypeUID(HomieBindingConstants.BINDING_ID, channelTypeId);

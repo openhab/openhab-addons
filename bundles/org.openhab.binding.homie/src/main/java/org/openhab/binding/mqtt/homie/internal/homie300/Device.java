@@ -231,9 +231,8 @@ public class Device implements AbstractMqttAttributeClass.AttributeChanged {
             String datatype = channelProperties.get(HomieBindingConstants.CHANNEL_PROPERTY_DATATYPE);
             if (datatype != null) {
                 attributes.datatype = PropertyAttributes.DataTypeEnum.valueOf(datatype);
-            } else if (channelId.startsWith(HomieBindingConstants.CHANNEL_TYPE_HOMIE_PREFIX)) {
-                attributes.datatype = PropertyAttributes.DataTypeEnum
-                        .valueOf(channelId.substring(HomieBindingConstants.CHANNEL_TYPE_HOMIE_PREFIX.length()) + "_");
+            } else if (channel.getChannelTypeUID().getBindingId().equals(HomieBindingConstants.BINDING_ID)) {
+                attributes.datatype = PropertyAttributes.DataTypeEnum.valueOf(channelId);
             }
             String label = channel.getLabel();
             if (label != null) {
