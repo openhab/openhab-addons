@@ -37,25 +37,35 @@ flowchart TD
     OH[openHAB Core]
     JB[Jellyfin Binding]
     JD[Discovery Service]
-    JH[Thing Handlers]
+    JH[Server Handler - Bridge]
+    JCH[Client Handler - Thing]
     JA[API Client]
     JS[Jellyfin Server]
 
     OH -->|Thing/Channel Events| JB
     JB --> JD
     JB --> JH
+    JB --> JCH
     JH --> JA
     JA <--> JS
     JD -->|Discovered Things| JH
+    JH -->|Session Updates| JCH
+    JCH -->|Commands| JH
     %% Note: Record members are omitted for clarity. See Record Details section.
 ```
 
 ## Main Components
 
 - **Discovery Service**: Detects available Jellyfin servers and devices on the network.
-- **Thing Handlers**: Manage the lifecycle and state of Jellyfin things (servers,
-  devices, users, etc.).
-  They expose channels for interaction.
+- **Server Handler (Bridge)**: Manages the lifecycle and state of the Jellyfin server
+  bridge thing.
+  Handles authentication, server polling, and maintains the list of active client
+  sessions.
+  Notifies child ClientHandlers about session state changes.
+- **Client Handler (Thing)**: Manages individual Jellyfin client devices as child
+  things of the server bridge.
+  Updates channels based on session information and delegates commands to the
+  ServerHandler.
 - **API Client**: Handles communication with the Jellyfin server using its REST API.
 
 Auto-generated code in `internal.api.generated` is not described here.
