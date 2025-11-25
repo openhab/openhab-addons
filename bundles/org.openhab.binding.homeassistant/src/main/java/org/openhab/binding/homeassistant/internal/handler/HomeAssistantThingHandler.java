@@ -185,7 +185,7 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
                     AbstractComponent<?> component = ComponentFactory.createComponent(thingUID, haID,
                             channelConfigurationJSON, this, this, this, scheduler, gson, python, unitProvider);
                     if (typeID.equals(HomeAssistantBindingConstants.HOMEASSISTANT_DEVICE_THING)
-                            || typeID.equals(HomeAssistantBindingConstants.LEGACY_MQTT_HOMEASSISTANT_THING)) {
+                            || typeID.getBindingId().equals(HomeAssistantBindingConstants.LEGACY_BINDING_ID)) {
                         typeID = calculateThingTypeUID(component);
                     }
 
@@ -315,7 +315,7 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
             ThingTypeUID typeID = getThing().getThingTypeUID();
             for (AbstractComponent<?> discovered : discoveredComponentsList) {
                 if (typeID.equals(HomeAssistantBindingConstants.HOMEASSISTANT_DEVICE_THING)
-                        || typeID.equals(HomeAssistantBindingConstants.LEGACY_MQTT_HOMEASSISTANT_THING)) {
+                        || typeID.getBindingId().equals(HomeAssistantBindingConstants.LEGACY_BINDING_ID)) {
                     typeID = calculateThingTypeUID(discovered);
                 }
                 AbstractComponent<?> known = haComponentsByUniqueId.get(discovered.getUniqueId());
@@ -399,6 +399,13 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
     }
 
     private boolean updateThingType(ThingTypeUID typeID) {
+        if (typeID.getBindingId().equals(HomeAssistantBindingConstants.LEGACY_BINDING_ID)) {
+            // Thing type needs to be migrated from legacy binding id, but we haven't yet calculated a new thing type
+            // with the proper binding id, so just skip it for now. As soon as we have a proper thing type, we'll
+            // perform the migration.
+            return true;
+        }
+
         // if this is a dynamic type, then we update the type
         if (!HomeAssistantBindingConstants.HOMEASSISTANT_DEVICE_THING.equals(typeID)
                 && !HomeAssistantBindingConstants.LEGACY_MQTT_HOMEASSISTANT_THING.equals(typeID)) {
@@ -406,8 +413,8 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
                     HomeAssistantBindingConstants.HOMEASSISTANT_DEVICE_THING);
 
             if (getThing().getThingTypeUID().equals(HomeAssistantBindingConstants.HOMEASSISTANT_DEVICE_THING)
-                    || getThing().getThingTypeUID()
-                            .equals(HomeAssistantBindingConstants.LEGACY_MQTT_HOMEASSISTANT_THING)) {
+                    || getThing().getThingTypeUID().getBindingId()
+                            .equals(HomeAssistantBindingConstants.LEGACY_BINDING_ID)) {
                 logger.debug("Migrating Home Assistant thing {} from generic type to dynamic type {}",
                         getThing().getUID(), typeID);
 
