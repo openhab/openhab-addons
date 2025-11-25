@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.entsoe.internal;
+package org.openhab.binding.entsoe.internal.config;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -26,5 +26,4 @@ public class EntsoeConfiguration {
     public int spotPricesAvailableCetHour = 13;
     public int historicDays = 1;
     public int requestTimeout = 30;
-    public String resolution = "PT15M";
 }

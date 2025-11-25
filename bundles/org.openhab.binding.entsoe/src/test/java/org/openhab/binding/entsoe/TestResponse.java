@@ -13,27 +13,19 @@
 package org.openhab.binding.entsoe;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.time.Instant;
 import java.util.Map;
 import java.util.Scanner;
 
-import javax.xml.parsers.ParserConfigurationException;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jetty.client.HttpClient;
 import org.junit.jupiter.api.Test;
-import org.openhab.binding.entsoe.internal.client.Client;
+import org.openhab.binding.entsoe.internal.client.EntsoeDocumentParser;
 import org.openhab.binding.entsoe.internal.client.SpotPrice;
-import org.openhab.binding.entsoe.internal.exception.EntsoeConfigurationException;
 import org.openhab.binding.entsoe.internal.exception.EntsoeResponseException;
 import org.openhab.core.library.types.DecimalType;
-import org.openhab.core.library.unit.Units;
-import org.xml.sax.SAXException;
 
 /**
  * {@link TestResponse} checks the parsing of a sample response XML file.
@@ -44,12 +36,29 @@ import org.xml.sax.SAXException;
 public class TestResponse {
 
     @Test
-    void test() {
-        try (Scanner inputScanner = new Scanner(new File("src/test/resources/response.xml"))) {
-            String content = inputScanner.useDelimiter("\\Z").next();
-            Map<Instant, SpotPrice> map = parseResponse(content);
+    void testSpotPrice() {
+        SpotPrice price;
+        try {
+            price = new SpotPrice("EUR", "MWH", 123.4);
+            assertEquals(0.1234, ((DecimalType) price.getState()).doubleValue(), 0.00001,
+                    "Unexpected spot price conversion from MWH to KWH");
+        } catch (EntsoeResponseException e) {
+            fail(e.getMessage());
+        }
+    }
 
-            assertEquals(2 * 24 * 4, map.size(), "Unexpected number of spot prices parsed");
+    @Test
+    void testPT15M() {
+        try (Scanner inputScanner = new Scanner(new File("src/test/resources/response-PT15M.xml"))) {
+            String content = inputScanner.useDelimiter("\\Z").next();
+
+            EntsoeDocumentParser parser = new EntsoeDocumentParser(content);
+            assertEquals(2, parser.getSequences().size(), "Unexpected number of sequences parsed");
+            assertEquals("PT15M", parser.getSequences().firstEntry().getValue(), "Wrong duration for first sequence");
+            assertEquals("PT15M", parser.getSequences().lastEntry().getValue(), "Wrong duration for second sequence");
+            Map<Instant, SpotPrice> map = parser.getPriceMap(parser.getSequences().firstKey());
+
+            assertEquals(2 * 24 * 4 - 1, map.size(), "Unexpected number of spot prices parsed");
 
             // Check some prices
             verifySpotPrice(map, "2025-10-30T23:00:00Z", 0.10281);
@@ -60,21 +69,30 @@ public class TestResponse {
         }
     }
 
-    private Map<Instant, SpotPrice> parseResponse(String content) {
-        Client client = new Client(mock(HttpClient.class));
-        try {
-            return client.parseXmlResponse(content, "PT15M");
-        } catch (ParserConfigurationException | SAXException | IOException | EntsoeResponseException
-                | EntsoeConfigurationException e) {
-            fail("Failed to parse XML response: " + e.getMessage());
-            return Map.of();
+    @Test
+    void testPT60M() {
+        try (Scanner inputScanner = new Scanner(new File("src/test/resources/response-PT60M.xml"))) {
+            String content = inputScanner.useDelimiter("\\Z").next();
+            EntsoeDocumentParser parser = new EntsoeDocumentParser(content);
+            assertEquals(1, parser.getSequences().size(), "Unexpected number of sequences parsed");
+            assertEquals("PT60M", parser.getSequences().firstEntry().getValue(), "Wrong duration for first sequence");
+            Map<Instant, SpotPrice> map = parser.getPriceMap(parser.getSequences().firstKey());
+
+            assertEquals(2 * 24, map.size(), "Unexpected number of spot prices parsed");
+
+            // Check some prices
+            verifySpotPrice(map, "2025-11-26T14:00:00Z", 0.27661);
+            verifySpotPrice(map, "2025-11-26T19:00:00Z", 0.15303);
+            verifySpotPrice(map, "2025-11-27T17:00:00Z", 0.13646);
+        } catch (FileNotFoundException e) {
+            fail("Test file not found: " + e.getMessage());
         }
     }
 
     private void verifySpotPrice(Map<Instant, SpotPrice> map, String timestamp, double expectedValue) {
         SpotPrice testPrice = map.get(Instant.parse(timestamp));
         assertNotNull(testPrice, "No spot price at " + timestamp);
-        DecimalType testState = testPrice.getState(Units.KILOWATT_HOUR).as(DecimalType.class);
+        DecimalType testState = testPrice.getState().as(DecimalType.class);
         assertNotNull(testState, "No DecimalType state at " + timestamp);
         assertEquals(expectedValue, testState.doubleValue(), 0.00001, "Unexpected spot price at " + timestamp);
     }
