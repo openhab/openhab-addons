@@ -38,7 +38,7 @@ public class DTOTest {
         String result = FileReader.readFileInString("src/test/resources/condition-result-no-pressure.json");
         Gson gson = new Gson();
         SensorData[] valueArray = gson.fromJson(result, SensorData[].class);
-        // System.out.println(valueArray.length);
+        assertNotNull(valueArray, "Array null check");
         assertEquals(2, valueArray.length, "Array size");
 
         SensorData d = valueArray[0];
@@ -65,6 +65,7 @@ public class DTOTest {
         Gson gson = new Gson();
         SensorData[] valueArray = gson.fromJson(result, SensorData[].class);
         // System.out.println(valueArray.length);
+        assertNotNull(valueArray, "Array null check");
         assertEquals(2, valueArray.length, "Array size");
 
         SensorData d = valueArray[0];

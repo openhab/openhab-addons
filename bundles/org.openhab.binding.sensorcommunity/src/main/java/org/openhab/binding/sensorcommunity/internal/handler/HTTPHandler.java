@@ -65,13 +65,7 @@ public class HTTPHandler {
                 @Override
                 public void onComplete(org.eclipse.jetty.client.api.Result result) {
                     if (result.getResponse().getStatus() != 200) {
-                        String failure;
-                        if (result.getResponse().getReason() != null) {
-                            failure = result.getResponse().getReason();
-                        } else {
-                            failure = result.getFailure().getMessage();
-                        }
-                        callback.onError(Objects.requireNonNullElse(failure, "Unknown error"));
+                        callback.onError(Objects.requireNonNullElse(result.getResponse().getReason(), "Unknown error"));
                     } else {
                         callback.onResponse(Objects.requireNonNull(getContentAsString()));
                     }
@@ -81,7 +75,8 @@ public class HTTPHandler {
     }
 
     public @Nullable List<SensorDataValue> getLatestValues(String response) {
-        SensorData[] valueArray = GSON.fromJson(response, SensorData[].class);
+        SensorData[] valueArray = Objects.requireNonNullElse(GSON.fromJson(response, SensorData[].class),
+                new SensorData[] {});
         if (valueArray.length == 0) {
             return null;
         } else if (valueArray.length == 1) {
