@@ -35,7 +35,7 @@ import org.openhab.binding.homekit.internal.crypto.Tlv8Codec;
 import org.openhab.binding.homekit.internal.enums.PairingMethod;
 import org.openhab.binding.homekit.internal.enums.PairingState;
 import org.openhab.binding.homekit.internal.enums.TlvType;
-import org.openhab.binding.homekit.internal.hap_services.PairVerifyClient;
+import org.openhab.binding.homekit.internal.hapservices.PairVerifyClient;
 import org.openhab.binding.homekit.internal.transport.IpTransport;
 
 /**

@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.homekit.internal.hap_services;
+package org.openhab.binding.homekit.internal.hapservices;
 
 import static org.openhab.binding.homekit.internal.HomekitBindingConstants.*;
 
