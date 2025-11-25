@@ -211,12 +211,14 @@ public class SomfyCULHandler extends BaseThingHandler {
                 break;
         }
 
-        if (somfyCommand == null)
+        if (somfyCommand == null) {
             return;
+        }
 
         Bridge bridge = getBridge();
-        if (bridge == null)
+        if (bridge == null) {
             return;
+        }
 
         ThingHandler handler = bridge.getHandler();
         if (!(handler instanceof CULHandler cul)) {
@@ -226,14 +228,16 @@ public class SomfyCULHandler extends BaseThingHandler {
         String rollingCode = p.getProperty("rollingCode");
         String address = p.getProperty("address");
 
-        if (rollingCode == null || address == null)
+        if (rollingCode == null || address == null) {
             return;
+        }
 
         final SomfyCommand finalCommand = somfyCommand;
 
         boolean ok = cul.executeCULCommand(getThing(), somfyCommand, rollingCode, address);
-        if (!ok)
+        if (!ok) {
             return;
+        }
 
         if (command instanceof State state) {
             updateState(channelUID, state);
