@@ -25,4 +25,5 @@ public class TadoHomeConfig {
     public @Nullable String username;
     public @Nullable Boolean rfcWithUser;
     public @Nullable Integer homeId;
+    public String tadoApiUrl = "https://my.tado.com/api/v2";
 }

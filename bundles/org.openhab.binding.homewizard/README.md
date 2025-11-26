@@ -81,6 +81,7 @@ For DSMR5 meters this is generally once per second, for older versions the frequ
 | gas_timestamp             | DateTime                  | This channel provides the time stamp of the total_gas measurement.                                           | hwe-p1                            |
 | power_failures            | Number                    | This channel provides the number of power failures detected by meter.                                        | hwe-p1                            |
 | long_power_failures       | Number                    | This channel provides the number of 'long' power failures detected by meter.                                 | hwe-p1                            |
+| tariff                    | Number                    | This channel provides the active tariff, matches one of the totals.                                        | hwe-p1                            |
 | power_switch              | Switch                    | This channel provides access to the power switch of the Energy Socket.                                       | hwe-skt                           |
 | power_lock                | Switch                    | This channel provides access to the power lock of the Energy Socket.                                         | hwe-skt                           |
 | ring_brightness           | Number:Dimensionless      | This channel provides access to the brightness of the ring of the Energy Socket.                             | hwe-skt                           |

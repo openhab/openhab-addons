@@ -15,6 +15,7 @@ package org.openhab.automation.jsscripting.internal;
 import static org.openhab.core.automation.module.script.ScriptEngineFactory.*;
 import static org.openhab.core.automation.module.script.ScriptTransformationService.OPENHAB_TRANSFORMATION_SCRIPT;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -58,6 +59,7 @@ import org.openhab.automation.jsscripting.internal.fs.ReadOnlySeekableByteArrayC
 import org.openhab.automation.jsscripting.internal.fs.watch.JSDependencyTracker;
 import org.openhab.automation.jsscripting.internal.scriptengine.InvocationInterceptingScriptEngineWithInvocableAndCompilableAndAutoCloseable;
 import org.openhab.automation.jsscripting.internal.scriptengine.helper.LifecycleTracker;
+import org.openhab.core.OpenHAB;
 import org.openhab.core.automation.module.script.ScriptExtensionAccessor;
 import org.openhab.core.automation.module.script.internal.handler.AbstractScriptModuleHandler;
 import org.openhab.core.automation.module.script.internal.handler.ScriptActionHandler;
@@ -110,8 +112,18 @@ public class OpenhabGraalJSScriptEngine
     private static final String EVENT_CONVERSION_CODE = "this.event = (typeof this.rules?._getTriggeredData === 'function') ? rules._getTriggeredData(ctx, true) : this.event";
     private static final Pattern USE_WRAPPER_DIRECTIVE = Pattern
             .compile("^\\s*([\"'])use wrapper(?:=(?<enabled>true|false))?\\1;?\\s*$");
+    /**
+     * Pattern to match the header of a JavaScript Immediately Invoked Function Expression (IIFE).
+     */
+    private static final Pattern IIFE_HEADER = Pattern
+            .compile("^\\s*\\(\\s*(?:function\\s*[\\w$]*\\s*\\([^)]*\\)|\\([^)]*\\)\\s*=>)\\s*\\{?.*$");
 
     private static final String REQUIRE_WRAPPER_NAME = "__wraprequire__";
+
+    static {
+        File cachePath = Path.of(OpenHAB.getUserDataFolder(), "cache", "org.graalvm.polyglot").toFile();
+        System.setProperty("polyglot.engine.userResourceCache", cachePath.getAbsolutePath());
+    }
     /** Shared Polyglot {@link Engine} across all instances of {@link OpenhabGraalJSScriptEngine} */
     private static final Engine ENGINE = Engine.newBuilder().allowExperimentalOptions(true)
             .option("engine.WarnInterpreterOnly", "false").build();
@@ -339,7 +351,8 @@ public class OpenhabGraalJSScriptEngine
                 } else {
                     logger.debug("Evaluating openhab-js injection from the file system for engine '{}' ...",
                             engineIdentifier);
-                    eval(OPENHAB_JS_INJECTION_CODE);
+                    // use delegate::eval instead of this::eval to avoid invocation of beforeInvocation, onScript, etc.
+                    delegate.eval(OPENHAB_JS_INJECTION_CODE);
                 }
             }
             logger.debug("Successfully initialized GraalJS script engine '{}'.", engineIdentifier);
@@ -354,15 +367,9 @@ public class OpenhabGraalJSScriptEngine
             return super.onScript(script);
         }
 
-        String newScript = script;
-        if (configuration.isEventConversionEnabled()) {
-            logger.debug("Injecting event conversion code into script for engine '{}'.", engineIdentifier);
-            newScript = EVENT_CONVERSION_CODE + System.lineSeparator() + newScript;
-        }
-
-        // keep this extendable for more directives by checking the first n lines (n = number of directives)
+        // keep this extendable for more directives by checking the first n+1 lines (n = number of directives)
         // up to two directives: "use strict" (handled by Graal) and "use wrapper"
-        List<String> header = script.lines().limit(2).toList();
+        List<String> header = script.lines().limit(3).toList();
         boolean useWrapper = isScriptAction()
                 || (isScriptCondition() && configuration.isScriptConditionWrapperEnabled());
         for (String line : header) {
@@ -381,6 +388,33 @@ public class OpenhabGraalJSScriptEngine
                 logger.warn("Invalid value '{}' for 'use wrapper' directive in script for engine '{}'.", enabled,
                         engineIdentifier);
             }
+        }
+
+        String newScript = script;
+
+        if (configuration.isEventConversionEnabled()) {
+            int lineNumber = 0;
+            // if the script contains an IIFE, make sure to inject the event conversion code inside the IIFE
+            for (int i = 0; i < header.size(); i++) {
+                if (IIFE_HEADER.matcher(header.get(i)).matches()) {
+                    lineNumber = i + 1;
+                    break;
+                }
+            }
+            logger.debug("Injecting event conversion code into script for engine '{}' after line {} ...",
+                    engineIdentifier, lineNumber);
+            // inject event conversion code into the script at the given line number
+            List<String> lines = newScript.lines().toList();
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < lines.size(); i++) {
+                if (i == lineNumber) {
+                    sb.append(EVENT_CONVERSION_CODE);
+                    sb.append(System.lineSeparator());
+                }
+                sb.append(lines.get(i));
+                sb.append(System.lineSeparator());
+            }
+            newScript = sb.toString();
         }
 
         if (useWrapper) {

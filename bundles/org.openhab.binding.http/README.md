@@ -58,6 +58,7 @@ The `image` channel-type supports `stateExtension` only.
 | `stateTransformation`   | yes      | -           | One or more transformation applied to received values before updating channel.                            |
 | `commandTransformation` | yes      | -           | One or more transformation applied to channel value before sending to a remote.                           |
 | `stateContent`          | yes      | -           | Content for state requests (if method is `PUT` or `POST`)                                                 |
+| `refreshAfterCommand`   | yes      | `FALSE`     | Refresh channel state after command execution                                                             |
 | `mode`                  | no       | `READWRITE` | Mode this channel is allowed to operate. `READONLY` means receive state, `WRITEONLY` means send commands. |
 
 Some channels have additional parameters.

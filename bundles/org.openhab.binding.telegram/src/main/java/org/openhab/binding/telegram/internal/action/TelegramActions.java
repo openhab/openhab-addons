@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URI;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.Base64;
@@ -52,10 +51,17 @@ import org.slf4j.LoggerFactory;
 
 import com.pengrad.telegrambot.model.request.InlineKeyboardButton;
 import com.pengrad.telegrambot.model.request.InlineKeyboardMarkup;
+import com.pengrad.telegrambot.model.request.InputMedia;
+import com.pengrad.telegrambot.model.request.InputMediaAnimation;
+import com.pengrad.telegrambot.model.request.InputMediaAudio;
+import com.pengrad.telegrambot.model.request.InputMediaDocument;
+import com.pengrad.telegrambot.model.request.InputMediaPhoto;
+import com.pengrad.telegrambot.model.request.InputMediaVideo;
 import com.pengrad.telegrambot.request.AnswerCallbackQuery;
 import com.pengrad.telegrambot.request.DeleteMessage;
 import com.pengrad.telegrambot.request.EditMessageReplyMarkup;
 import com.pengrad.telegrambot.request.SendAnimation;
+import com.pengrad.telegrambot.request.SendMediaGroup;
 import com.pengrad.telegrambot.request.SendMessage;
 import com.pengrad.telegrambot.request.SendPhoto;
 import com.pengrad.telegrambot.request.SendVideo;
@@ -466,7 +472,7 @@ public class TelegramActions implements ThingActions {
                     temp = "file://" + photoURL;
                 }
                 try {
-                    sendPhoto = new SendPhoto(chatId, Path.of(new URL(temp).getPath()).toFile());
+                    sendPhoto = new SendPhoto(chatId, Path.of(URI.create(temp).toURL().getPath()).toFile());
                 } catch (MalformedURLException e) {
                     logger.warn("Malformed URL: {}", photoURL);
                     return false;
@@ -528,6 +534,104 @@ public class TelegramActions implements ThingActions {
             @ActionInput(name = "photoURL") @Nullable String photoURL,
             @ActionInput(name = "caption") @Nullable String caption) {
         return sendTelegramPhoto(photoURL, caption, null, null);
+    }
+
+    @RuleAction(label = "send a media group", description = "Send a Telegram media group using the Telegram API.")
+    public @ActionOutput(label = "Success", type = "java.lang.Boolean") boolean sendTelegramMediaGroup(
+            @ActionInput(name = "chatId") @Nullable Long chatId,
+            @ActionInput(name = "mediaUrls") @Nullable List<String> mediaUrls,
+            @ActionInput(name = "mediaTypes") @Nullable List<String> mediaTypes) {
+        return sendTelegramMediaGroup(chatId, mediaUrls, mediaTypes, null, null, null);
+    }
+
+    @RuleAction(label = "send a media group", description = "Send a Telegram media group using the Telegram API.")
+    public @ActionOutput(label = "Success", type = "java.lang.Boolean") boolean sendTelegramMediaGroup(
+            @ActionInput(name = "mediaUrls") @Nullable List<String> mediaUrls,
+            @ActionInput(name = "mediaTypes") @Nullable List<String> mediaTypes) {
+        return sendTelegramMediaGroup(null, mediaUrls, mediaTypes, null, null, null);
+    }
+
+    @RuleAction(label = "send a media group", description = "Send a Telegram media group using the Telegram API.")
+    public @ActionOutput(label = "Success", type = "java.lang.Boolean") boolean sendTelegramMediaGroup(
+            @ActionInput(name = "chatId") @Nullable Long chatId,
+            @ActionInput(name = "mediaUrls") @Nullable List<String> mediaUrls,
+            @ActionInput(name = "mediaTypes") @Nullable List<String> mediaTypes,
+            @ActionInput(name = "replyToMessageId") @Nullable Integer replyToMessageId,
+            @ActionInput(name = "disableNotification") @Nullable Boolean disableNotification,
+            @ActionInput(name = "messageThreadId") @Nullable Integer messageThreadId) {
+
+        TelegramHandler localHandler = handler;
+        if (localHandler == null) {
+            logger.warn("TelegramActions: Action service ThingHandler is null");
+            return false;
+        }
+
+        if (mediaUrls == null || mediaUrls.isEmpty()) {
+            logger.warn("mediaUrls cannot be null or empty");
+            return false;
+        }
+
+        if (mediaTypes == null || mediaTypes.size() != mediaUrls.size()) {
+            logger.warn("mediaTypes must have the same size as mediaUrls");
+            return false;
+        }
+
+        List<Long> chatIdentifiers = (chatId != null) ? List.of(chatId) : localHandler.getReceiverChatIds();
+
+        boolean successful = true;
+        for (Long chat : chatIdentifiers) {
+            InputMedia<?>[] mediaArray = new InputMedia<?>[mediaUrls.size()];
+
+            for (int i = 0; i < mediaUrls.size(); i++) {
+                String url = mediaUrls.get(i);
+                String type = mediaTypes.get(i).toLowerCase();
+
+                try {
+                    InputMedia<?> media = switch (type) {
+                        case "photo" -> new InputMediaPhoto(url);
+                        case "video" -> new InputMediaVideo(url);
+                        case "animation" -> new InputMediaAnimation(url);
+                        case "audio" -> new InputMediaAudio(url);
+                        case "document" -> new InputMediaDocument(url);
+                        default -> {
+                            logger.warn("Unknown media type: {}", type);
+                            yield null;
+                        }
+                    };
+
+                    if (media == null) {
+                        successful = false;
+                        break;
+                    }
+
+                    mediaArray[i] = media;
+                } catch (IllegalArgumentException e) {
+                    logger.warn("Failed to create media object for URL {}: {}", url, e.getMessage());
+                    successful = false;
+                    break;
+                }
+            }
+
+            if (!successful) {
+                continue;
+            }
+
+            SendMediaGroup request = new SendMediaGroup(chat, mediaArray);
+
+            if (replyToMessageId != null) {
+                request.replyToMessageId(replyToMessageId);
+            }
+            if (disableNotification != null) {
+                request.disableNotification(disableNotification);
+            }
+            if (messageThreadId != null) {
+                request.messageThreadId(messageThreadId);
+            }
+
+            successful &= evaluateResponse(localHandler.execute(request));
+        }
+
+        return successful;
     }
 
     @RuleAction(label = "send animation", description = "Send an Animation using the Telegram API.")
@@ -595,7 +699,7 @@ public class TelegramActions implements ThingActions {
                 // Load video from local file system
                 logger.debug("Read file from local file system: {}", animationURL);
                 try {
-                    sendAnimation = new SendAnimation(chatId, Path.of(new URL(temp).getPath()).toFile());
+                    sendAnimation = new SendAnimation(chatId, Path.of(URI.create(temp).toURL().getPath()).toFile());
                 } catch (MalformedURLException e) {
                     logger.warn("Malformed URL, should start with http or file: {}", animationURL);
                     return false;
@@ -681,7 +785,7 @@ public class TelegramActions implements ThingActions {
                 // Load video from local file system with file://path
                 logger.debug("Read file from local file: {}", videoURL);
                 try {
-                    sendVideo = new SendVideo(chatId, Path.of(new URL(temp).getPath()).toFile());
+                    sendVideo = new SendVideo(chatId, Path.of(URI.create(temp).toURL().getPath()).toFile());
                 } catch (MalformedURLException e) {
                     logger.warn("Malformed URL, should start with http or file: {}", videoURL);
                     return false;
@@ -781,6 +885,23 @@ public class TelegramActions implements ThingActions {
     public static boolean sendTelegramAnswer(ThingActions actions, @Nullable Long chatId, @Nullable String replyId,
             @Nullable String message) {
         return ((TelegramActions) actions).sendTelegramAnswer(chatId, replyId, message);
+    }
+
+    public static boolean sendTelegramMediaGroup(ThingActions actions, @Nullable Long chatId,
+            @Nullable List<String> mediaUrls, @Nullable List<String> mediaTypes) {
+        return ((TelegramActions) actions).sendTelegramMediaGroup(chatId, mediaUrls, mediaTypes);
+    }
+
+    public static boolean sendTelegramMediaGroup(ThingActions actions, @Nullable List<String> mediaUrls,
+            @Nullable List<String> mediaTypes) {
+        return ((TelegramActions) actions).sendTelegramMediaGroup(mediaUrls, mediaTypes);
+    }
+
+    public static boolean sendTelegramMediaGroup(ThingActions actions, @Nullable Long chatId,
+            @Nullable List<String> mediaUrls, @Nullable List<String> mediaTypes, @Nullable Integer replyToMessageId,
+            @Nullable Boolean disableNotification, @Nullable Integer messageThreadId) {
+        return ((TelegramActions) actions).sendTelegramMediaGroup(chatId, mediaUrls, mediaTypes, replyToMessageId,
+                disableNotification, messageThreadId);
     }
 
     public static boolean sendTelegramAnswer(ThingActions actions, @Nullable String chatId, @Nullable String replyId,

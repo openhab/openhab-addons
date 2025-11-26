@@ -14,6 +14,7 @@ package org.openhab.binding.argoclima.internal.device.api;
 
 import java.io.EOFException;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.util.Collections;
 import java.util.List;
@@ -125,7 +126,7 @@ public abstract class ArgoClimaDeviceApiBase implements IArgoClimaDeviceAPI {
     protected static final URL newUrl(String server, int port, String path, String query) {
         var uriStr = URIUtil.newURI("http", server, port, path, query);
         try {
-            return new URL(uriStr);
+            return URI.create(uriStr).toURL();
         } catch (MalformedURLException e) {
             throw new IllegalArgumentException("Failed to build url from: " + uriStr, e);
         }

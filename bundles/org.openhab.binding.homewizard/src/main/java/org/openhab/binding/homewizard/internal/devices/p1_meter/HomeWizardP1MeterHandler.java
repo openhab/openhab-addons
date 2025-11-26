@@ -120,6 +120,9 @@ public class HomeWizardP1MeterHandler extends HomeWizardEnergyMeterHandler {
                             String.format("%d", meterVersion));
                 }
 
+                updateState(HomeWizardBindingConstants.CHANNEL_GROUP_ENERGY, HomeWizardBindingConstants.CHANNEL_TARIFF,
+                        new DecimalType(payload.getTariff()));
+
                 updateState(HomeWizardBindingConstants.CHANNEL_GROUP_ENERGY,
                         HomeWizardBindingConstants.CHANNEL_POWER_FAILURES,
                         new DecimalType(payload.getAnyPowerFailCount()));

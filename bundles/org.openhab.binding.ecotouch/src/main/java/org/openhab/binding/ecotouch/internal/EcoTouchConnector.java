@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
@@ -92,7 +93,7 @@ public class EcoTouchConnector {
         try {
             url = "http://" + ip + "/cgi/login?username=" + URLEncoder.encode(username, "UTF-8") + "&password="
                     + URLEncoder.encode(password, "UTF-8");
-            URL loginurl = new URL(url);
+            URL loginurl = URI.create(url).toURL();
             URLConnection connection = loginurl.openConnection();
             cookies = connection.getHeaderFields().get("Set-Cookie");
             BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
@@ -125,7 +126,7 @@ public class EcoTouchConnector {
     public void logout() {
         if (cookies != null) {
             try {
-                URL logouturl = new URL("http://" + ip + "/cgi/logout");
+                URL logouturl = URI.create("http://" + ip + "/cgi/logout").toURL();
                 logouturl.openConnection();
             } catch (Exception e) {
             }
@@ -201,7 +202,7 @@ public class EcoTouchConnector {
         while (loginAttempt < 2) {
             BufferedReader reader = null;
             try {
-                URLConnection connection = new URL(url).openConnection();
+                URLConnection connection = URI.create(url).toURL().openConnection();
                 var localCookies = cookies;
                 if (localCookies != null) {
                     for (String cookie : localCookies) {
@@ -271,7 +272,7 @@ public class EcoTouchConnector {
         while (loginAttempt < 2) {
             BufferedReader reader = null;
             try {
-                URLConnection connection = new URL(url).openConnection();
+                URLConnection connection = URI.create(url).toURL().openConnection();
                 var localCookies = cookies;
                 if (localCookies != null) {
                     for (String cookie : localCookies) {

@@ -41,6 +41,12 @@
 
 		</instruction-set>
 
+		<instruction-set targetVersion="3">
+			<add-channel id="tariff" groupIds="energy">
+				<type>homewizard:p1-tariff</type>
+			</add-channel>
+		</instruction-set>
+
 	</thing-type>
 
 </update:update-descriptions>

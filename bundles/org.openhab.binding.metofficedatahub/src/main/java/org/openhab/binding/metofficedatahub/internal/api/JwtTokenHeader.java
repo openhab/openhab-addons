@@ -27,6 +27,10 @@ public class JwtTokenHeader {
     @SerializedName("x5t")
     private String x5t = "";
 
+    // API Keys switched x5t to this field during 2025 at some point, when they were issued
+    @SerializedName("x5t#S256")
+    private String x5t256 = "";
+
     @SerializedName("kid")
     private String kid = "";
 
@@ -37,7 +41,7 @@ public class JwtTokenHeader {
     private String alg = "";
 
     public boolean isValid() {
-        if (x5t.isBlank() || kid.isBlank() || typ.isBlank() || alg.isBlank()) {
+        if ((x5t.isBlank() && x5t256.isBlank()) || kid.isBlank() || typ.isBlank() || alg.isBlank()) {
             return false;
         }
 

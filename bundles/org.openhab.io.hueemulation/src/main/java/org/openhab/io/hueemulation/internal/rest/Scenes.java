@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -178,7 +177,6 @@ public class Scenes implements RegistryChangeListener<Rule> {
         return Response.ok(cs.gson.toJson(cs.ds.scenes)).build();
     }
 
-    @SuppressWarnings({ "unused", "null" })
     @GET
     @Path("{username}/scenes/{id}")
     @Operation(summary = "Return a scene", responses = { @ApiResponse(responseCode = "200", description = "OK") })
@@ -193,7 +191,12 @@ public class Scenes implements RegistryChangeListener<Rule> {
             return NetworkUtils.singleError(cs.gson, uri, HueResponse.NOT_AVAILABLE, "Scene does not exist!");
         }
         HueSceneWithLightstates s = new HueSceneWithLightstates(sceneEntry);
-        for (String itemID : s.lights) {
+        List<String> lights = s.lights;
+        if (lights == null) {
+            lights = List.of();
+        }
+
+        for (String itemID : lights) {
             Item item;
             try {
                 item = itemRegistry.getItem(itemID);
@@ -260,6 +263,10 @@ public class Scenes implements RegistryChangeListener<Rule> {
 
         final HueChangeSceneEntry changeRequest = cs.gson.fromJson(body, HueChangeSceneEntry.class);
 
+        if (changeRequest == null) {
+            return NetworkUtils.singleError(cs.gson, uri, HueResponse.INVALID_JSON, "Empty body");
+        }
+
         Rule rule = ruleRegistry.remove(id);
         if (rule == null) {
             return NetworkUtils.singleError(cs.gson, uri, HueResponse.NOT_AVAILABLE, "Scene does not exist!");
@@ -278,10 +285,8 @@ public class Scenes implements RegistryChangeListener<Rule> {
 
         List<String> lights = changeRequest.lights;
         if (changeRequest.storelightstate && lights != null) {
-            @SuppressWarnings("null")
-            @NonNullByDefault({})
             List<Action> actions = lights.stream().map(itemID -> itemRegistry.get(itemID)).filter(Objects::nonNull)
-                    .map(item -> actionFromState(item.getUID(), item.getState())).collect(Collectors.toList());
+                    .map(item -> actionFromState(item.getUID(), item.getState())).toList();
             builder.withActions(actions);
         }
         Map<String, HueStateChange> lightStates = changeRequest.lightstates;
@@ -316,7 +321,6 @@ public class Scenes implements RegistryChangeListener<Rule> {
         ));
     }
 
-    @SuppressWarnings({ "null" })
     @POST
     @Path("{username}/scenes")
     @Operation(summary = "Create a new scene", responses = { @ApiResponse(responseCode = "200", description = "OK") })

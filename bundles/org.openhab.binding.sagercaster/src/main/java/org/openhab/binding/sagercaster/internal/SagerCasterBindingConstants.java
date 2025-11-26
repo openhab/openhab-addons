@@ -31,7 +31,7 @@ public class SagerCasterBindingConstants {
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_SAGERCASTER = new ThingTypeUID(BINDING_ID, "sagercaster");
-
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_SAGERCASTER);
     // Configuration elements
     public static final String CONFIG_LOCATION = "location";
     public static final String CONFIG_PERIOD = "observation-period";
@@ -49,6 +49,7 @@ public class SagerCasterBindingConstants {
     public static final String CHANNEL_PRESSURETREND = "pressure-trend";
     public static final String CHANNEL_TEMPERATURETREND = "temperature-trend";
     public static final String CHANNEL_TIMESTAMP = "timestamp";
+    public static final String CHANNEL_RELIABILITY = "reliability";
 
     // Input channel ids
     public static final String CHANNEL_CLOUDINESS = "cloudiness";

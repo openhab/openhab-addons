@@ -102,7 +102,6 @@ public class ScheduleTests {
         commonSetup.dispose();
     }
 
-    @SuppressWarnings("null")
     @Test
     public void addUpdateRemoveScheduleToRegistry() {
         HueCommand command = new HueCommand("/api/testuser/lights/1/state", "PUT", "{'on':true}");
@@ -116,9 +115,12 @@ public class ScheduleTests {
 
         // Check hue entry
         HueScheduleEntry sceneEntry = cs.ds.schedules.get("demo1");
-        assertThat(sceneEntry.command.address, is("/api/testuser/lights/1/state"));
-        assertThat(sceneEntry.command.method, is("PUT"));
-        assertThat(sceneEntry.command.body, is("{'on':true}"));
+        assertNotNull(sceneEntry);
+        command = sceneEntry.command;
+        assertNotNull(command);
+        assertThat(command.address, is("/api/testuser/lights/1/state"));
+        assertThat(command.method, is("PUT"));
+        assertThat(command.body, is("{'on':true}"));
         assertThat(sceneEntry.localtime, is(localtime));
 
         // Update
@@ -129,7 +131,10 @@ public class ScheduleTests {
         ruleRegistry.update(rule);
 
         sceneEntry = cs.ds.schedules.get("demo1");
-        assertThat(sceneEntry.command.address, is("/api/testuser/lights/1/state"));
+        assertNotNull(sceneEntry);
+        command = sceneEntry.command;
+        assertNotNull(command);
+        assertThat(command.address, is("/api/testuser/lights/1/state"));
         assertThat(sceneEntry.localtime, is(localtime));
 
         // Remove
@@ -139,43 +144,46 @@ public class ScheduleTests {
         assertThat(sceneEntry, nullValue());
     }
 
-    @SuppressWarnings("null")
     @Test
     public void addGetRemoveScheduleViaRest() throws Exception {
         // 1. Create
         String body = "{ 'name':'Wake up', 'description':'My wake up alarm', 'localtime':'2015-06-30T14:24:40'," + //
                 "'command':{'address':'/api/testuser/lights/1/state','method':'PUT','body':'{\"on\":true}'} }";
         ContentResponse response = commonSetup.sendPost("/testuser/schedules", body);
-        assertEquals(200, response.getStatus());
+        assertThat(response.getStatus(), is(200));
         assertThat(response.getContentAsString(), containsString("success"));
 
         // 1.1 Check for entry
         Entry<String, HueScheduleEntry> entry = cs.ds.schedules.entrySet().stream().findAny().get();
+        assertNotNull(entry);
         assertThat(entry.getValue().name, is("Wake up"));
-        assertThat(entry.getValue().command.address, is("/api/testuser/lights/1/state"));
-        assertThat(entry.getValue().command.method, is("PUT"));
-        assertThat(entry.getValue().command.body, is("{\"on\":true}"));
+        HueCommand command = entry.getValue().command;
+        assertNotNull(command);
+        assertThat(command.address, is("/api/testuser/lights/1/state"));
+        assertThat(command.method, is("PUT"));
+        assertThat(command.body, is("{\"on\":true}"));
         assertThat(entry.getValue().localtime, is("2015-06-30T14:24:40"));
 
         // 1.2 Check for rule
         Rule rule = ruleRegistry.get(entry.getKey());
+        assertNotNull(rule);
         assertThat(rule.getName(), is("Wake up"));
         assertThat(rule.getActions().get(0).getId(), is("command"));
         assertThat(rule.getActions().get(0).getTypeUID(), is("rules.HttpAction"));
 
         // 2. Get
         response = commonSetup.sendGet("/testuser/schedules/" + entry.getKey());
-        assertEquals(200, response.getStatus());
+        assertThat(response.getStatus(), is(200));
         HueSceneEntry fromJson = new Gson().fromJson(response.getContentAsString(), HueSceneEntry.class);
+        assertNotNull(fromJson);
         assertThat(fromJson.name, is(entry.getValue().name));
 
         // 3. Remove
         response = commonSetup.sendDelete("/testuser/schedules/" + entry.getKey());
-        assertEquals(200, response.getStatus());
+        assertThat(response.getStatus(), is(200));
         assertTrue(cs.ds.schedules.isEmpty());
     }
 
-    @SuppressWarnings("null")
     @Test
     public void updateScheduleViaRest() throws Exception {
         HueCommand command = new HueCommand("/api/testuser/lights/1/state", "PUT", "{'on':true}");
@@ -190,13 +198,16 @@ public class ScheduleTests {
         // Modify (just the name)
         String body = "{ 'name':'A new name'}";
         ContentResponse response = commonSetup.sendPut("/testuser/schedules/demo1", body);
-        assertEquals(200, response.getStatus());
+        assertThat(response.getStatus(), is(200));
         assertThat(response.getContentAsString(), containsString("name"));
 
         Entry<String, HueScheduleEntry> entry = cs.ds.schedules.entrySet().stream().findAny().get();
+        assertNotNull(entry);
         assertThat(entry.getValue().name, is("A new name"));
-        assertThat(entry.getValue().command.address, is("/api/testuser/lights/1/state")); // nothing else should have
-                                                                                          // changed
+        command = entry.getValue().command;
+        assertNotNull(command);
+        // nothing else should have changed
+        assertThat(command.address, is("/api/testuser/lights/1/state"));
         assertThat(entry.getValue().localtime, is(localtime));
 
         // Reset
@@ -212,10 +223,11 @@ public class ScheduleTests {
         // Modify (Change time)
         body = "{ 'localtime':'2015-06-30T14:24:40'}";
         response = commonSetup.sendPut("/testuser/schedules/demo1", body);
-        assertEquals(200, response.getStatus());
+        assertThat(response.getStatus(), is(200));
         assertThat(response.getContentAsString(), containsString("localtime"));
 
         entry = cs.ds.schedules.entrySet().stream().findAny().get();
+        assertNotNull(entry);
         assertThat(entry.getValue().name, is("test name")); // should not have changed
         assertThat(entry.getKey(), is(uid));
         assertThat(entry.getValue().localtime, is("2015-06-30T14:24:40"));
@@ -223,13 +235,16 @@ public class ScheduleTests {
         // Modify (Change command)
         body = "{ 'command':{'address':'/api/testuser/lights/2/state','method':'PUT','body':'{\"on\":true}'} }";
         response = commonSetup.sendPut("/testuser/schedules/demo1", body);
-        assertEquals(200, response.getStatus());
+        assertThat(response.getStatus(), is(200));
         assertThat(response.getContentAsString(), containsString("command"));
 
         entry = cs.ds.schedules.entrySet().stream().findAny().get();
+        assertNotNull(entry);
         assertThat(entry.getValue().name, is("test name")); // should not have changed
         assertThat(entry.getKey(), is(uid));
-        assertThat(entry.getValue().command.address, is("/api/testuser/lights/2/state"));
+        command = entry.getValue().command;
+        assertNotNull(command);
+        assertThat(command.address, is("/api/testuser/lights/2/state"));
     }
 
     @Test
@@ -247,6 +262,7 @@ public class ScheduleTests {
         Type type = new TypeToken<Map<String, HueSceneEntry>>() {
         }.getType();
         Map<String, HueSceneEntry> fromJson = new Gson().fromJson(response.getContentAsString(), type);
+        assertNotNull(fromJson);
         assertTrue(fromJson.containsKey("demo1"));
     }
 

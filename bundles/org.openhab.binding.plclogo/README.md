@@ -158,7 +158,8 @@ Follow observed block names are allowed for pulse things:
 | Bit   |                   | `NQ[1-64]`        |
 
 If `observe` is not set or set equal `block`, simply pulse with length `pulse` milliseconds is send to `block`.
-If `observe` is set and differ from `block`, binding will wait for value change on `observe` and send then a pulse with length `pulse` milliseconds to block.
+If `observe` is set and differ from `block`, binding will wait for value change on `observe` and send then a pulse
+with length `pulse` milliseconds to block.
 Please note, update rate for change detection depends on bridge refresh value.
 For both use cases: if `block` was `0` then `1` is send and vice versa.
 
@@ -171,13 +172,17 @@ Each device have currently three channels `diagnostic`, `rtc` and `weekday`:
 ```java
 channel="plclogo:device:<DeviceId>:diagnostic"
 channel="plclogo:device:<DeviceId>:rtc"
+channel="plclogo:device:<DeviceId>:datetime"
 channel="plclogo:device:<DeviceId>:weekday"
 ```
 
-Channels `diagnostic` and `weekday` supports `String` items. Channel `diagnostic` contains the last diagnostic message reported by LOGO!.
-Channel `weekday` contains current day of the week.
-The value is provided by LOGO!.
-Channel `rtc` supports `DateTime` items only. Since Siemens `0BA7` (LOGO! 7) devices will not transfer any useful data for this channel, local time of openHAB host will be used.
+Channel `diagnostic` contains the last diagnostic message reported by LOGO! as `String` item.
+Channel `weekday` contains current day of the week and shall be linked to `String` item too.
+Channel `datetime` reports current date/time used in LOGO! as `DateTime` item.
+These values are also provided by LOGO!.
+Channel `rtc` supports `DateTime` items only and returns the LOGO! real time clock value.
+Since Siemens `0BA7` (LOGO! 7) devices will not transfer any useful data for this channel, local time of
+openHAB host will be used.
 Rather for Siemens `0BA8` (LOGO! 8) devices, the data will be read from PLC.
 Since the smallest resolution provided by LOGO! is one second, `rtc` channel will be tried to update with the same rate.
 

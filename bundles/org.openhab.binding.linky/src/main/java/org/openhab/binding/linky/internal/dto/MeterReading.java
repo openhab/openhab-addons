@@ -44,32 +44,125 @@ public class MeterReading {
     public IntervalReading[] monthValue;
     public IntervalReading[] yearValue;
 
-    public static MeterReading convertFromComsumptionReport(ConsumptionReport comsumptionReport) {
+    public static MeterReading convertFromComsumptionReport(ConsumptionReport comsumptionReport, boolean useIndex) {
         MeterReading result = new MeterReading();
         result.readingType = new ReadingType();
 
         if (comsumptionReport.consumptions.aggregats != null) {
             if (comsumptionReport.consumptions.aggregats.days != null) {
-                result.baseValue = fromAgregat(comsumptionReport.consumptions.aggregats.days);
+                result.baseValue = fromAgregat(comsumptionReport.consumptions.aggregats.days, useIndex);
             } else if (comsumptionReport.consumptions.aggregats.heure != null) {
-                result.baseValue = fromAgregat(comsumptionReport.consumptions.aggregats.heure);
+                result.baseValue = fromAgregat(comsumptionReport.consumptions.aggregats.heure, useIndex);
             }
         }
 
         return result;
     }
 
-    public static IntervalReading[] fromAgregat(ConsumptionReport.Aggregate agregat) {
+    /**
+     * This method will get data from old ConsumptionReport.Aggregate that is the format use by the Web API.
+     * And will result to IntervalReading[] that is the format of the new Enedis API
+     *
+     * @param agregat
+     * @param useIndex : tell if we are reading value from raw consumption or from index value
+     * @return IntervalReading[] : the data structure of new API
+     */
+    public static IntervalReading[] fromAgregat(ConsumptionReport.Aggregate agregat, boolean useIndex) {
         int size = agregat.datas.size();
-        IntervalReading[] result = new IntervalReading[size];
+        IntervalReading[] result = null;
 
-        for (int i = 0; i < size; i++) {
-            Data dataObj = agregat.datas.get(i);
-            result[i] = new IntervalReading();
-            result[i].value = Double.valueOf(dataObj.valeur);
-            result[i].date = dataObj.dateDebut;
+        // For some unknown reason, index API don't return the index for day N-1.
+        // So array length is cut off 1
+        if (useIndex) {
+            result = new IntervalReading[size - 1];
+        } else {
+            result = new IntervalReading[size];
+        }
+
+        if (!useIndex) {
+            for (int i = 0; i < size; i++) {
+                Data dataObj = agregat.datas.get(i);
+                result[i] = new IntervalReading();
+                result[i].value = dataObj.valeur;
+                result[i].date = dataObj.dateDebut;
+            }
+        } else {
+            double lastVal = 0.0;
+            double[] lastValueSupplier = new double[10];
+            double[] lastValueDistributor = new double[4];
+            String lastCalendrierSupplier = "";
+            String lastCalendrierDistributor = "";
+
+            for (int idx = 0; idx < size; idx++) {
+                Data dataObj = agregat.datas.get(idx);
+                double value = dataObj.valeur;
+                String calendrierDistributor = "";
+                String calendrierSupplier = "";
+
+                if (dataObj.calendrier == null && idx > 0) {
+                    dataObj.calendrier = agregat.datas.get(idx - 1).calendrier;
+                }
+
+                if (dataObj.calendrier.length >= 1 && dataObj.calendrier[0] != null) {
+                    calendrierDistributor = dataObj.calendrier[0].idCalendrier;
+                }
+                if (dataObj.calendrier.length >= 2 && dataObj.calendrier[1] != null) {
+                    calendrierSupplier = dataObj.calendrier[1].idCalendrier;
+                }
+
+                if (idx > 0) {
+                    result[idx - 1] = new IntervalReading();
+                    result[idx - 1].value = value - lastVal;
+                    // The index in on nextDay N, but index difference give consumption for day N-1
+                    result[idx - 1].date = dataObj.dateDebut.minusDays(1);
+                    result[idx - 1].initIndexInfo();
+
+                    if (dataObj.classesTemporellesSupplier == null) {
+                        dataObj.classesTemporellesSupplier = agregat.datas.get(idx - 1).classesTemporellesSupplier;
+                    }
+
+                    if (dataObj.classesTemporellesDistributor == null) {
+                        dataObj.classesTemporellesDistributor = agregat.datas
+                                .get(idx - 1).classesTemporellesDistributor;
+                    }
+                }
+
+                initIndexValue(IndexMode.SUPPLIER, dataObj.classesTemporellesSupplier, result, idx, calendrierSupplier,
+                        lastCalendrierSupplier, lastValueSupplier);
+
+                initIndexValue(IndexMode.DISTRIBUTOR, dataObj.classesTemporellesDistributor, result, idx,
+                        calendrierDistributor, lastCalendrierDistributor, lastValueDistributor);
+
+                lastVal = value;
+                lastCalendrierDistributor = calendrierDistributor;
+                lastCalendrierSupplier = calendrierSupplier;
+            }
         }
 
         return result;
+    }
+
+    public static void initIndexValue(IndexMode indexMode, ClassesTemporelles[] classTp, IntervalReading[] ir, int idx,
+            String calendrier, String lastCalendrier, double[] lastValue) {
+        if (classTp != null) {
+            for (int idxClTp = 0; idxClTp < classTp.length; idxClTp++) {
+                ClassesTemporelles ct = classTp[idxClTp];
+
+                if (idx > 0) {
+                    // We check if calendar are the same that previous iteration
+                    // If not, we are not able to reconciliate index, and so set index value to 0 !
+
+                    if (calendrier.equals(lastCalendrier)) {
+                        ir[idx - 1].indexInfo[indexMode.getIdx()].value[idxClTp] = (ct.valeur - lastValue[idxClTp]);
+                    } else {
+                        ir[idx - 1].indexInfo[indexMode.getIdx()].value[idxClTp] = 0;
+                    }
+
+                    ir[idx - 1].indexInfo[indexMode.getIdx()].label[idxClTp] = ct.libelle;
+                }
+
+                lastValue[idxClTp] = ct.valeur;
+            }
+        }
     }
 }

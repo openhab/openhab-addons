@@ -163,6 +163,7 @@
 /bundles/org.openhab.binding.heliosventilation/ @ramack
 /bundles/org.openhab.binding.heos/ @Wire82
 /bundles/org.openhab.binding.herzborg/ @Sonic-Amiga
+/bundles/org.openhab.binding.homeassistant/ @antroids @ccutrer
 /bundles/org.openhab.binding.homeconnect/ @bruestel
 /bundles/org.openhab.binding.homekit/ @andrewfg
 /bundles/org.openhab.binding.homematic/ @FStolte @gerrieg @mdicke2s
@@ -233,6 +234,7 @@
 /bundles/org.openhab.binding.meteostick/ @cdjackson
 /bundles/org.openhab.binding.metofficedatahub/ @dag81
 /bundles/org.openhab.binding.mffan/ @mark-brooks-180
+/bundles/org.openhab.binding.mideaac/ @apella12
 /bundles/org.openhab.binding.miele/ @kgoderis @jlaur
 /bundles/org.openhab.binding.mielecloud/ @BjoernLange
 /bundles/org.openhab.binding.mihome/ @pboos
@@ -243,7 +245,9 @@
 /bundles/org.openhab.binding.minecraft/ @ibaton
 /bundles/org.openhab.binding.modbus/ @ssalonen
 /bundles/org.openhab.binding.modbus.e3dc/ @weymann
+/bundles/org.openhab.binding.modbus.foxinverter/ @holgerfriedrich
 /bundles/org.openhab.binding.modbus.helioseasycontrols/ @bern77
+/bundles/org.openhab.binding.modbus.lambda/ @chilobo
 /bundles/org.openhab.binding.modbus.kermi/ @KaaNee
 /bundles/org.openhab.binding.modbus.sbc/ @fwolter
 /bundles/org.openhab.binding.modbus.stiebeleltron/ @pail23
@@ -256,8 +260,6 @@
 /bundles/org.openhab.binding.mqtt.awtrixlight/ @DrRSatzteil
 /bundles/org.openhab.binding.mqtt.espmilighthub/ @Skinah
 /bundles/org.openhab.binding.mqtt.fpp/ @computergeek1507
-/bundles/org.openhab.binding.mqtt.generic/ @ccutrer
-/bundles/org.openhab.binding.mqtt.homeassistant/ @antroids @ccutrer
 /bundles/org.openhab.binding.mqtt.homie/ @ccutrer
 /bundles/org.openhab.binding.mqtt.ruuvigateway/ @ssalonen
 /bundles/org.openhab.binding.mspa/ @weymann
@@ -466,7 +468,7 @@
 /bundles/org.openhab.persistence.mapdb/ @openhab/add-ons-maintainers
 /bundles/org.openhab.persistence.mongodb/ @openhab/add-ons-maintainers
 /bundles/org.openhab.persistence.rrd4j/ @openhab/add-ons-maintainers
-/bundles/org.openhab.transform.basicprofiles/ @J-N-K
+/bundles/org.openhab.transform.basicprofiles/ @cweitkamp @J-N-K
 /bundles/org.openhab.transform.bin2json/ @paulianttila
 /bundles/org.openhab.transform.exec/ @openhab/add-ons-maintainers
 /bundles/org.openhab.transform.jinja/ @jochen314

@@ -6,8 +6,8 @@
 		https://openhab.org/schemas/config-description-1.0.0.xsd">
 	<config-description uri="thing-type:gpstracker:tracker">
 		<parameter name="trackerId" type="text" required="true">
-			<label>Tracker Id</label>
-			<description>Id configured in tracker application.</description>
+			<label>Tracker ID</label>
+			<description>ID configured in the tracker application.</description>
 			<advanced>false</advanced>
 		</parameter>
 	</config-description>

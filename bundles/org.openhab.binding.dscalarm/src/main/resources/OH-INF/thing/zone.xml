@@ -44,7 +44,15 @@
 				<label>Zone Tripped</label>
 				<description>Zone Tripped</description>
 			</channel>
+			<channel id="zone_battery_low" typeId="status">
+				<label>Zone Battery Low</label>
+				<description>Wireless zone low battery indicator</description>
+			</channel>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<config-description>
 			<parameter name="partitionNumber" type="integer" min="1" max="8">

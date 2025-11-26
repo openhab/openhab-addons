@@ -38,12 +38,12 @@ public class StatisticsDiscoveryMapper implements EvccDiscoveryMapper {
     @Override
     public Collection<DiscoveryResult> discover(JsonObject state, EvccBridgeHandler bridgeHandler) {
         List<DiscoveryResult> results = new ArrayList<>();
-        JsonObject statistics = state.getAsJsonObject(JSON_MEMBER_STATISTICS);
+        JsonObject statistics = state.getAsJsonObject(JSON_KEY_STATISTICS);
         if (statistics == null) {
             return results;
         }
         ThingUID uid = new ThingUID(EvccBindingConstants.THING_TYPE_STATISTICS, bridgeHandler.getThing().getUID(),
-                "statistics");
+                JSON_KEY_STATISTICS);
         DiscoveryResult result = DiscoveryResultBuilder.create(uid).withLabel("Statistics")
                 .withBridge(bridgeHandler.getThing().getUID()).withProperty(PROPERTY_TYPE, PROPERTY_TYPE_STATISTICS)
                 .withRepresentationProperty(PROPERTY_TYPE).build();

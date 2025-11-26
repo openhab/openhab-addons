@@ -424,6 +424,17 @@
 		<description>Locks and unlocks the door and maintains the lock state</description>
 		<tags>
 			<tag>Status</tag>
+			<tag>LockState</tag>
+		</tags>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+
+	<channel-type id="doorlock-doorstate">
+		<item-type>Contact</item-type>
+		<label>Door Sensor State</label>
+		<description>Door Sensor State</description>
+		<tags>
+			<tag>Status</tag>
 			<tag>OpenState</tag>
 		</tags>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>

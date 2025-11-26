@@ -21,6 +21,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
@@ -71,7 +72,7 @@ public class RdsAccessToken {
          * preferred JETTY library; the reason is that JETTY does not allow sending the
          * square brackets characters "[]" verbatim over HTTP connections
          */
-        URL url = new URL(URL_TOKEN);
+        URL url = URI.create(URL_TOKEN).toURL();
 
         HttpsURLConnection https = (HttpsURLConnection) url.openConnection();
 

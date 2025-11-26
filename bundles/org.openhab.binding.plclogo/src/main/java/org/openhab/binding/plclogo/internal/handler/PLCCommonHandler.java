@@ -12,7 +12,9 @@
  */
 package org.openhab.binding.plclogo.internal.handler;
 
-import static org.openhab.binding.plclogo.internal.PLCLogoBindingConstants.*;
+import static org.openhab.binding.plclogo.internal.PLCLogoBindingConstants.BLOCK_PROPERTY;
+import static org.openhab.binding.plclogo.internal.PLCLogoBindingConstants.LOGO_MEMORY_BLOCK;
+import static org.openhab.binding.plclogo.internal.PLCLogoBindingConstants.NOT_SUPPORTED;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -22,14 +24,11 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.plclogo.internal.PLCLogoBindingConstants;
 import org.openhab.binding.plclogo.internal.PLCLogoBindingConstants.Layout;
 import org.openhab.binding.plclogo.internal.PLCLogoClient;
-import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
-import org.openhab.core.thing.binding.BridgeHandler;
-import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,10 +46,8 @@ public abstract class PLCCommonHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(PLCCommonHandler.class);
 
-    private Map<String, @Nullable State> oldValues = new HashMap<>();
-
-    private @Nullable PLCLogoClient client;
     private String family = NOT_SUPPORTED;
+    private final Map<String, @Nullable State> oldValues = new HashMap<>();
 
     /**
      * Constructor.
@@ -72,8 +69,8 @@ public abstract class PLCCommonHandler extends BaseThingHandler {
         logger.debug("Dispose LOGO! common block handler.");
         super.dispose();
 
-        ThingBuilder tBuilder = editThing();
-        for (Channel channel : getThing().getChannels()) {
+        final var tBuilder = editThing();
+        for (final var channel : getThing().getChannels()) {
             tBuilder.withoutChannel(channel.getUID());
         }
         updateThing(tBuilder.build());
@@ -83,7 +80,6 @@ public abstract class PLCCommonHandler extends BaseThingHandler {
         }
 
         family = NOT_SUPPORTED;
-        client = null;
     }
 
     /**
@@ -92,13 +88,13 @@ public abstract class PLCCommonHandler extends BaseThingHandler {
      * @return Start address of data buffer
      */
     public int getStartAddress() {
-        String kind = getBlockKind();
-        String family = getLogoFamily();
+        final var kind = getBlockKind();
+        final var family = getLogoFamily();
         logger.debug("Get start address of {} LOGO! for {} blocks.", family, kind);
 
-        Map<?, Layout> memory = LOGO_MEMORY_BLOCK.get(family);
-        Layout layout = (memory != null) ? memory.get(kind) : null;
-        return layout != null ? layout.address : INVALID;
+        final var memory = LOGO_MEMORY_BLOCK.get(family);
+        final var layout = (memory != null) ? memory.get(kind) : null;
+        return (layout != null ? layout.address() : INVALID);
     }
 
     /**
@@ -107,13 +103,13 @@ public abstract class PLCCommonHandler extends BaseThingHandler {
      * @return Length of data buffer in bytes
      */
     public int getBufferLength() {
-        String kind = getBlockKind();
-        String family = getLogoFamily();
+        final var kind = getBlockKind();
+        final var family = getLogoFamily();
         logger.debug("Get data buffer length of {} LOGO! for {} blocks.", family, kind);
 
-        Map<?, Layout> memory = LOGO_MEMORY_BLOCK.get(family);
-        Layout layout = (memory != null) ? memory.get(kind) : null;
-        return layout != null ? layout.length : 0;
+        final var memory = LOGO_MEMORY_BLOCK.get(family);
+        final var layout = (memory != null) ? memory.get(kind) : null;
+        return (layout != null ? layout.length() : 0);
     }
 
     /**
@@ -152,11 +148,11 @@ public abstract class PLCCommonHandler extends BaseThingHandler {
      * @return Calculated address
      */
     protected int getAddress(final String name) {
-        int address = INVALID;
+        var address = INVALID;
 
         logger.debug("Get address of {} LOGO! for block {} .", getLogoFamily(), name);
 
-        int base = getBase(name);
+        final var base = getBase(name);
         if (isValid(name) && (base != INVALID)) {
             String block = name.split("\\.")[0];
             if (Character.isDigit(block.charAt(1))) {
@@ -181,12 +177,12 @@ public abstract class PLCCommonHandler extends BaseThingHandler {
      */
     protected int getBase(final String name) {
         Layout layout = null;
-        String family = getLogoFamily();
+        final var family = getLogoFamily();
 
         logger.debug("Get base address of {} LOGO! for block {} .", family, name);
 
-        String block = name.split("\\.")[0];
-        Map<?, Layout> memory = LOGO_MEMORY_BLOCK.get(family);
+        final var block = name.split("\\.")[0];
+        final var memory = LOGO_MEMORY_BLOCK.get(family);
         if (isValid(name) && !block.isEmpty() && (memory != null)) {
             if (Character.isDigit(block.charAt(1))) {
                 layout = memory.get(block.substring(0, 1));
@@ -197,7 +193,7 @@ public abstract class PLCCommonHandler extends BaseThingHandler {
             }
         }
 
-        return layout != null ? layout.address : INVALID;
+        return layout != null ? layout.address() : INVALID;
     }
 
     /**
@@ -206,9 +202,9 @@ public abstract class PLCCommonHandler extends BaseThingHandler {
      * @return True, if handler is valid and false otherwise
      */
     protected boolean isThingOnline() {
-        Bridge bridge = getBridge();
+        final var bridge = getBridge();
         if (bridge != null) {
-            Thing thing = getThing();
+            final var thing = getThing();
             return ((ThingStatus.ONLINE == bridge.getStatus()) && (ThingStatus.ONLINE == thing.getStatus()));
         }
         return false;
@@ -236,13 +232,14 @@ public abstract class PLCCommonHandler extends BaseThingHandler {
      * @return Configured LOGO! client
      */
     protected @Nullable PLCLogoClient getLogoClient() {
-        return client;
+        final var handler = getBridgeHandler();
+        return (handler != null) ? handler.getLogoClient() : null;
     }
 
     protected @Nullable PLCBridgeHandler getBridgeHandler() {
-        Bridge bridge = getBridge();
+        final var bridge = getBridge();
         if (bridge != null) {
-            BridgeHandler handler = bridge.getHandler();
+            final var handler = bridge.getHandler();
             if (handler instanceof PLCBridgeHandler bridgeHandler) {
                 return bridgeHandler;
             }
@@ -265,15 +262,15 @@ public abstract class PLCCommonHandler extends BaseThingHandler {
      * Perform thing initialization.
      */
     protected void doInitialization() {
-        PLCBridgeHandler handler = getBridgeHandler();
+        final var handler = getBridgeHandler();
         if (handler != null) {
             family = handler.getLogoFamily();
-            client = handler.getLogoClient();
+            final var client = handler.getLogoClient();
             if ((client == null) || NOT_SUPPORTED.equalsIgnoreCase(family)) {
-                String message = "Can not initialize LOGO! block handler.";
+                final var message = "Can not initialize LOGO! block handler.";
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, message);
 
-                Thing thing = getThing();
+                final var thing = getThing();
                 logger.warn("Can not initialize thing {} for LOGO! {}.", thing.getUID(), thing.getBridgeUID());
             }
         }

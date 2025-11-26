@@ -14,9 +14,6 @@ package org.openhab.binding.sagercaster.internal.discovery;
 
 import static org.openhab.binding.sagercaster.internal.SagerCasterBindingConstants.*;
 
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -60,39 +57,28 @@ public class SagerCasterDiscoveryService extends AbstractDiscoveryService {
     @Activate
     public SagerCasterDiscoveryService(final @Reference LocaleProvider localeProvider,
             final @Reference TranslationProvider i18nProvider, final @Reference LocationProvider locationProvider) {
-        super(Set.of(THING_TYPE_SAGERCASTER), DISCOVER_TIMEOUT_SECONDS, true);
+        super(SUPPORTED_THING_TYPES_UIDS, DISCOVER_TIMEOUT_SECONDS, true);
         this.locationProvider = locationProvider;
         this.localeProvider = localeProvider;
         this.i18nProvider = i18nProvider;
     }
 
     @Override
-    protected void activate(@Nullable Map<String, Object> configProperties) {
-        super.activate(configProperties);
-    }
-
-    @Override
-    protected void modified(@Nullable Map<String, Object> configProperties) {
-        super.modified(configProperties);
-    }
-
-    @Override
     protected void startScan() {
         logger.debug("Starting Sager Weathercaster discovery scan");
-        PointType location = locationProvider.getLocation();
-        if (location == null) {
+        if (locationProvider.getLocation() instanceof PointType location) {
+            createResults(location);
+        } else {
             logger.debug("LocationProvider.getLocation() is not set -> Will not provide any discovery results");
-            return;
         }
-        createResults(location);
     }
 
     @Override
     protected void startBackgroundDiscovery() {
         if (discoveryJob == null) {
             discoveryJob = scheduler.scheduleWithFixedDelay(() -> {
-                PointType currentLocation = locationProvider.getLocation();
-                if (currentLocation != null && !Objects.equals(currentLocation, previousLocation)) {
+                if (locationProvider.getLocation() instanceof PointType currentLocation
+                        && !currentLocation.equals(previousLocation)) {
                     logger.debug("Location has been changed from {} to {}: Creating new discovery results",
                             previousLocation, currentLocation);
                     createResults(currentLocation);
@@ -106,9 +92,8 @@ public class SagerCasterDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     protected void stopBackgroundDiscovery() {
-        ScheduledFuture<?> localJob = discoveryJob;
         logger.debug("Stopping Sager Weathercaster background discovery");
-        if (localJob != null && !localJob.isCancelled()) {
+        if (discoveryJob instanceof ScheduledFuture localJob && !localJob.isCancelled()) {
             if (localJob.cancel(true)) {
                 discoveryJob = null;
                 logger.debug("Stopped SagerCaster device background discovery");
@@ -117,7 +102,7 @@ public class SagerCasterDiscoveryService extends AbstractDiscoveryService {
     }
 
     public void createResults(PointType location) {
-        String propGeolocation = String.format("%s,%s", location.getLatitude(), location.getLongitude());
+        String propGeolocation = "%s,%s".formatted(location.getLatitude(), location.getLongitude());
         thingDiscovered(DiscoveryResultBuilder.create(SAGER_CASTER_THING).withLabel("Local Weather Forecast")
                 .withRepresentationProperty(CONFIG_LOCATION).withProperty(CONFIG_LOCATION, propGeolocation).build());
     }

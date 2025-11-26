@@ -114,8 +114,8 @@ public class FanControlConverter extends GenericConverter<FanControlCluster> {
                     break;
             }
 
-            StateDescription stateDescriptionMode = StateDescriptionFragmentBuilder.create().withPattern("%d")
-                    .withOptions(modeOptions).build().toStateDescription();
+            StateDescription stateDescriptionMode = StateDescriptionFragmentBuilder.create().withOptions(modeOptions)
+                    .build().toStateDescription();
 
             channels.put(modeChannel, stateDescriptionMode);
         }
