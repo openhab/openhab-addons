@@ -271,22 +271,12 @@ public class TidalApi {
         String manifestDecode = new String(Base64.getDecoder().decode(manifest), StandardCharsets.UTF_8);
         InputStream inputStream = new ByteArrayInputStream(manifestDecode.getBytes(StandardCharsets.UTF_8));
 
-        /*
-         * try (BufferedWriter writer = new BufferedWriter(
-         * new FileWriter("C:/eclipse/openhab-main/git/openhab-distro/launch/app/runtime/conf/html/test.mpd"))) {
-         * writer.write(manifestDecode);
-         * return "http://192.168.254.101:8080/static/test.mpd";
-         * } catch (IOException e) {
-         * e.printStackTrace();
-         * }
-         *
-         * if (urls != null && urls.length > 0) {
-         * return urls[0];
-         * }
-         *
-         *
-         * return "";
-         */
+        try (BufferedWriter writer = new BufferedWriter(
+                new FileWriter("C:/eclipse/openhab-main/git/openhab-distro/launch/app/runtime/conf/html/test.mpd"))) {
+            writer.write(manifestDecode);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         return inputStream;
     }

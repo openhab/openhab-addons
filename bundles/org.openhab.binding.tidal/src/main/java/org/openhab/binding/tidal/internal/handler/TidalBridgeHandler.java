@@ -368,12 +368,21 @@ public class TidalBridgeHandler extends BaseBridgeHandler
         int p1 = cmdVal.lastIndexOf('/');
         String trackId = cmdVal.substring(p1 + 1);
 
+        String title = "";
+        String artist = "";
+        MediaEntry entry = mediaService.getMediaRegistry().getEntry(cmdVal);
+        if (entry instanceof MediaTrack) {
+            MediaTrack track = (MediaTrack) entry;
+            artist = track.getArtist();
+            title = track.getName();
+
+        }
         InputStream inputStream = tidalApi.getTrackStream(trackId);
         // String uri = tidalApi.getTrackStreamUri(trackId);
 
         //
         try {
-            URLAudioStream urlAudioStream = new URLAudioStream(inputStream);
+            URLAudioStream urlAudioStream = new URLAudioStream(inputStream, artist, title);
             audioManager.play(urlAudioStream);
             // audioManager.stream(uri);
         } catch (AudioException ex) {
